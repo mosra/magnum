@@ -73,7 +73,7 @@ See also:
 @subsection changelog-latest-bugfixes Bug fixes
 
 -   Engine startup info was not properly printed to Android log since
-    introducing the `--magnum-log` option in 2018.02
+    introducing the `--magnum-log` option in version 2018.02
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
@@ -223,7 +223,7 @@ See also:
     maintainers and core developers
 -   A new set of @ref platforms "platform-specific guides" containing extended
     information that was previously scattered across @ref Platform application
-    class docs
+    class docs and elsewhere
 -   Completely reworked @ref platforms-android "Android building"
     documentation, now using Gradle CMake integration instead of the outdated
     and no longer supported Apache Ant workflow.

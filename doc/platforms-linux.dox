@@ -25,17 +25,15 @@
 
 namespace Magnum {
 
-/** @page platforms Platform-specific guides
-@brief General information, tips and troubleshooting for particular platforms
+/** @page platforms-linux Linux
+@brief Tips and tricks for Linux platforms
 
--   @subpage platforms-gl --- @copybrief platforms-gl
--   @subpage platforms-linux --- @copybrief platforms-linux
--   @subpage platforms-windows --- @copybrief platforms-windows
--   @subpage platforms-macos --- @copybrief platforms-macos
--   @subpage platforms-ios --- @copybrief platforms-ios
--   @subpage platforms-android --- @copybrief platforms-android
--   @subpage platforms-html5 --- @copybrief platforms-html5
+@tableofcontents
+@m_footernavigation
 
+@todoc packages
+@todoc desktop ES
+@todoc tests, mesa softpipe
 */
 
 }

@@ -1,0 +1,117 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+
+/** @page platforms-html5 HTML5 and WebGL
+@brief Building, testing and deploying HTML5 and WebGL projects
+
+@tableofcontents
+@m_footernavigation
+
+@todoc move stuff from Sdl2App and WindowlessEglApp
+@todoc explain the css and js file, command-line args
+@todoc testing, gl tests, coverage, travis setup
+@todoc static plugins
+
+The following guide explains basic workflow of using
+[Emscripten](http://kripken.github.io/emscripten-site/) for deploying HTML5
+apps using WebGL.
+
+See also @ref Platform::Sdl2Application for more information.
+
+@section platforms-html5-webgl Differences between WebGL and OpenGL ES
+
+WebGL is subset of OpenGL ES with some specific restrictions, namely
+requirement for unique buffer target binding, aligned buffer offset and
+stride and some other restrictions. The most prominent difference is that while
+the following was enough on desktop:
+
+@snippet Magnum.cpp Buffer-webgl-nope
+
+On WebGL (even 2.0) you always have to initialize the buffers like this (and
+other target hints for UBOs etc.):
+
+@snippet Magnum.cpp Buffer-webgl
+
+See @ref Buffer-webgl-restrictions "Buffer", @ref Mesh-webgl-restrictions "Mesh",
+@ref Texture::setSubImage() "*Texture::setSubImage()",
+@ref Mesh::addVertexBuffer(), @ref Renderer::setStencilFunction(),
+@ref Renderer::setStencilMask() and @ref Renderer::setBlendFunction()
+documentation for more information. The corresponding sections in official
+WebGL specification provide even more detail:
+
+-   [Differences Between WebGL and OpenGL ES 2.0](http://www.khronos.org/registry/webgl/specs/latest/1.0/#6)
+-   [Differences Between WebGL and OpenGL ES 3.0](https://www.khronos.org/registry/webgl/specs/latest/2.0/#5)
+
+@section platforms-html5-troubleshooting Troubleshooting
+
+@subsection platforms-html5-troubleshooting-bootstrap First Emscripten run takes long or fails
+
+Emscripten downloads and builds a lot of things on first startup or after
+upgrade. That's expected and might take quite some time. If you are calling
+Emscripten through the CMake toolchain, it might be attempting to bootstrap
+itself multiple times, taking extreme amounts of time, or even fail during the
+initial CMake compiler checks for various reasons such as
+
+@code{.shell-session}
+      File "/usr/lib/python2.7/subprocess.py", line 1025, in _execute_child
+        raise child_exception
+    OSError: [Errno 13] Permission denied
+@endcode
+
+The CMake toolchain might interfere with the bootstrap operation, causing it to
+fail. Solution is to wipe all Emscripten caches and trigger a rebuild of all
+needed libraries by compiling a minimal project. The @cb{.sh} -s WASM=1 @ce
+flag is needed in order to enable a rebuild of the `binaryen` tool as well:
+
+@code{.sh}
+emcc --clear-cache
+emcc --clear-ports
+echo "int main() {}" > main.cpp
+em++ -s WASM=1 main.cpp
+@endcode
+
+@subsection platforms-html5-troubleshooting-corrade-not-found CMake can't find _CORRADE_MODULE_DIR
+
+If initial CMake configuration fails with
+
+@code{.shell-session}
+  Could NOT find Corrade (missing: _CORRADE_MODULE_DIR)
+@endcode
+
+The solution is to explicitly pass `CMAKE_PREFIX_PATH` pointing to directory
+where Corrade is installed, for example:
+
+@code{.sh}
+mkdir build-emscripten && cd build-emscripte
+cmake .. \
+    -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/Emscripten-wasm.cmake \
+    -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system/ \
+    -G Ninja
+@endcode
+*/
+
+}

@@ -624,6 +624,8 @@ cmake .. ^
 cmake --build .
 @endcode
 
+See @ref platforms-gl-es-angle for more information about using ANGLE.
+
 @section building-cross Cross-compiling
 
 For cross-compiling you need to have *both* target and native version of
@@ -681,8 +683,8 @@ instead. When done, you can install the package using
 @cb{.bat} cmake --build . --target install @ce to make it available to
 depending projects.
 
-See @ref Platform::Sdl2Application documentation for more information about
-building your projects for WinRT.
+See @ref platforms-windows for more information about building your projects
+for WinRT.
 
 @subsection building-cross-win Cross-compiling for Windows using MinGW-w64
 
@@ -719,6 +721,9 @@ cmake --build .
 
 Then you can install the package using @cb{.sh} cmake --build . --target install @ce
 to make it available to depending projects.
+
+See @ref platforms-windows for more information about building your projects
+for Windows.
 
 @subsection building-cross-emscripten Cross-compiling for Emscripten
 
@@ -782,8 +787,8 @@ named `PKGBUILD-emscripten`, `PKGBUILD-emscripten-webgl2`,
 WebGL 1 / WebGL 2 optimized asm.js build (*slow* to compile), the second for
 unoptimized build (faster to compile) and the third for WebAssembly build.
 
-See @ref Platform::Sdl2Application documentation for more information about
-building your projects for Emscripten.
+See @ref platforms-html5 for more information about building your projects for
+Emscripten.
 
 @subsection building-cross-ios Cross-compiling for iOS
 
@@ -822,8 +827,8 @@ cmake --build .
 Then you can install the library using @cb{.sh} cmake --build . --target install @ce
 to make it available to depending projects.
 
-See @ref Platform::Sdl2Application documentation for more information about
-building your projects for iOS.
+See @ref platforms-ios documentation for more information about building your
+projects for iOS.
 
 @subsection building-cross-android Crosscompiling for Android
 
@@ -888,8 +893,8 @@ more information.
     build arbitrary Android projects. To fix it, use a different generator (for
     example Ninja, by passing `-G Ninja` to CMake).
 
-See @ref Platform::AndroidApplication documentation for more information about
-building your projects for Android.
+See @ref platforms-android for more information about building your projects
+for Android.
 
 @section building-ci Continuous Integration
 

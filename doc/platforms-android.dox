@@ -31,6 +31,9 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
+@todoc testing, gl tests, code coverage, travis setup
+@todoc static plugins
+
 The following guide explains how to build Android projects using minimal
 command-line tools, without Android Studio involved.
 
@@ -39,14 +42,16 @@ Running console utilities and tests on the device don't need much more, in case
 you want to develop actual applications, you need also Gradle and SDK platform +
 SDK platform build tools for version of your choice. Gradle is able to download
 all the dependencies on its own, however it's also possible to install system
-packages for a cleaner setup. On ArchLinux it's the `gradle` package and the
-following AUR packages, adapt the version numbers as necessary:
+packages for a cleaner setup.
 
--   [android-sdk](https://aur.archlinux.org/packages/android-sdk/)
--   [android-ndk](https://aur.archlinux.org/packages/android-ndk/)
--   [android-sdk-build-tools-26.0.2](https://aur.archlinux.org/packages/android-sdk-build-tools-26.0.2/)
--   [android-platform-25](https://aur.archlinux.org/packages/android-platform-25/)
--   [android-sdk-cmake](https://aur.archlinux.org/packages/android-sdk-cmake/)
+@note On ArchLinux it's the `gradle` package and the following AUR packages,
+    adapt the version numbers as necessary:
+@note
+    -   [android-sdk](https://aur.archlinux.org/packages/android-sdk/)
+    -   [android-ndk](https://aur.archlinux.org/packages/android-ndk/)
+    -   [android-sdk-build-tools-26.0.2](https://aur.archlinux.org/packages/android-sdk-build-tools-26.0.2/)
+    -   [android-platform-25](https://aur.archlinux.org/packages/android-platform-25/)
+    -   [android-sdk-cmake](https://aur.archlinux.org/packages/android-sdk-cmake/)
 
 Gradle requires Android SDK version of CMake, which is currently at version
 3.6. See below for an experimental way to @ref platforms-android-system-cmake "use the system CMake"
@@ -54,9 +59,9 @@ instead.
 
 @section platforms-android-command-line Building and running console applications
 
-Android allows to run arbitrary console utilities and tests. Assuming you have
-Magnum installed in the NDK path as described in @ref building-cross-android,
-build your project simply as this (adapt as needed):
+Android allows to run arbitrary console utilities and tests via ADB. Assuming
+you have Magnum installed in the NDK path as described in @ref building-cross-android,
+build your project simply as this (adapt version numbers and ABIs as needed):
 
 @code{.sh}
 mkdir build-android-arm64 && cd build-android-arm64
@@ -74,10 +79,10 @@ After that you can use ADB to upload your executable to the device and run it
 there. The global temporary directory is `/data/local/tmp` and while the parent
 directories often don't have permissions, it's possible to @cb{.sh} cd @ce into
 it and create arbitrary files there. Assuming you built an executable in
-`src/my-application`, the workflow would be like this:
+`build-android-arm64/src/my-application`, the workflow would be like this:
 
 @code{.sh}
-adb push src/my-application /data/local/tmp
+adb push build-android-arm64/src/my-application /data/local/tmp
 adb shell /data/local/tmp/my-application
 @endcode
 
@@ -86,18 +91,29 @@ continue from there. Besides plain command-line apps it's also possible to
 create an EGL context without any extra setup using
 @ref Platform::WindowlessEglApplication.
 
-@section platforms-android-apps Building and installing graphics applications
+@section platforms-android-apps Building and installing graphics apps
 
 Building of graphics applications is managed fully using Gradle, which also
-builds your CMake project internally. In case you don't have OpenGL ES build
-set up yet, you need to copy `FindEGL.cmake` and `FindOpenGLES2.cmake` (or
-`FindOpenGLES3.cmake`) from the `modules/` directory in Magnum source to the
-`modules/` dir in your project so it is able to find EGL and OpenGL ES
-libraries.
+builds your CMake project internally. It's possible to use other means such as
+`ndk-build`, but CMake is the officially preferred way. The following guide
+assumes you have Gradle installed in a system-wide location available in
+@cb{.sh} $PATH @ce. See the [Gradle installation docs](https://docs.gradle.org/current/userguide/installation.html)
+for more information, @ref platforms-android-gradlew "see below" if you want to
+use the `gradlew` wrappers instead.
+
+In case you don't have an OpenGL ES build set up yet, you need to copy
+`FindEGL.cmake` and `FindOpenGLES2.cmake` (or `FindOpenGLES3.cmake`) from the
+[modules/](https://github.com/mosra/magnum/tree/master/modules) directory in
+Magnum source to the `modules/` dir in your project so it is able to find EGL
+and OpenGL ES libraries.
 
 Magnum provides Android application wrapper in @ref Platform::AndroidApplication.
 See its documentation for more information about general usage. You can also
 use the Android Native Activity directly or any other way.
+
+@note The @ref Platform::AndroidApplication also contains a fully configured
+    bootstrap project that's ready to build and deploy. Check its documentation
+    for details.
 
 The first thing you need compared to building an app for other platforms is
 creating a shared library instead of an executable:
@@ -139,7 +155,7 @@ android {
             }
         }
         ndk {
-            abiFilters "arm64-v8a"
+            abiFilters 'arm64-v8a'
         }
     }
 
@@ -217,14 +233,120 @@ gradle installDebug
 after which you can launch the app from your home screen. See the
 @ref platforms-android-troubleshooting section below if you ran into problems.
 
+@section platforms-android-multiple-abis Building for multiple ABIs and system versions
+
+The above guide simplifies things a bit and builds for just a single ARM64 ABI.
+In order to support multiple platforms, you need to separately build and
+install the dependencies for all ABIs of choice --- create separate build
+directories and run CMake with different `CMAKE_ANDROID_ARCH_ABI` and
+corresponding `CMAKE_INSTALL_PREFIX`. Similarly with SDK versions, adapt
+`CMAKE_SYSTEM_VERSION` and `CMAKE_INSTALL_PREFIX` to a desired version. The
+headers are shared and should be always installed into `&lt;ndk&gt;/sysroot/usr`
+regardless of ABI or SDK version. The supported ABI values are:
+
+ABI         | Corresponding install prefix
+----------- | ----------------------------
+armeabi-v7a | &lt;nk&gt;/platforms/android-&lt;version&gt;/arch-arm/usr
+arm64-v8a   | &lt;nk&gt;/platforms/android-&lt;version&gt;/arch-arm64/usr
+x86         | &lt;nk&gt;/platforms/android-&lt;version&gt;/arch-x86/usr
+x86_64      | &lt;nk&gt;/platforms/android-&lt;version&gt;/arch-x86_64/usr
+
+After that, you can add the additional ABIs to the `abiFilters` list in your
+`build.gradle`.
+
+For example, building Magnum for 32-bit and 64-bit ARM with SDK version 24
+could look like this:
+
+@code{.sh}
+mkdir build-android-arm && cd build-android-arm
+cmake .. \
+    -DCMAKE_SYSTEM_NAME=Android \
+    -DCMAKE_SYSTEM_VERSION=24 \
+    -DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a \
+    -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
+    -DCMAKE_ANDROID_STL_TYPE=c++_static \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=<ndk>/platforms/android-24/arch-arm/usr \
+    -DMAGNUM_INCLUDE_INSTALL_PREFIX=<ndk>/sysroot/usr
+cmake --build . --target install
+
+cd ..
+
+mkdir build-android-arm64 && cd build-android-arm64
+cmake .. \
+    -DCMAKE_SYSTEM_NAME=Android \
+    -DCMAKE_SYSTEM_VERSION=24 \
+    -DCMAKE_ANDROID_ARCH_ABI=arm64-v8a \
+    -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
+    -DCMAKE_ANDROID_STL_TYPE=c++_static \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=<ndk>/platforms/android-24/arch-arm64/usr \
+    -DMAGNUM_INCLUDE_INSTALL_PREFIX=<ndk>/sysroot/usr
+cmake --build . --target install
+@endcode
+
+And the `build.gradle` for your app then looks like this:
+
+@code{.gradle}
+buildscript {
+    repositories {
+        jcenter()
+        google()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:3.0.1'
+    }
+}
+
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 25
+
+    defaultConfig {
+        minSdkVersion 24
+
+        externalNativeBuild {
+            cmake {
+                arguments '-DANDROID_STL=c++_static'
+            }
+        }
+        ndk {
+            abiFilters 'armeabi-v7a', 'arm64-v8a'
+        }
+    }
+
+    externalNativeBuild {
+        cmake {
+            path 'CMakeLists.txt'
+        }
+    }
+}
+@endcode
+
+See [the official documentation about ABIs](https://developer.android.com/ndk/guides/abis.html)
+for more information.
+
 @section platforms-android-output-redirection Redirecting output to Android log buffer
 
 While printing to standard output and standard error output "just works" with
 command-line apps, you might want to redirect your @ref Corrade::Utility::Debug "Debug",
 @ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error"
 output to Android log buffer. so it can be accessed through the @cb{.sh} adb logcat @ce
-utility. See @ref Corrade::Utility::AndroidLogStreamBuffer for more information
---- the @ref Platform::AndroidApplication sets this up implicitly.
+utility. See @ref Corrade::Utility::AndroidLogStreamBuffer for more
+information.
+
+The @ref Platform::AndroidApplication sets this up implicitly with a `magnum`
+tag, you can then filter it out like this, for example:
+
+@code{.shell-session}
+$ adb logcat *:S magnum
+...
+03-16 17:35:26.703 17726 17745 I magnum  : Renderer: Mali-G71 by ARM
+03-16 17:35:26.703 17726 17745 I magnum  : OpenGL version: OpenGL ES 3.2 v1.r2p0
+03-16 17:35:26.703 17726 17745 I magnum  : Using optional features:
+03-16 17:35:26.703 17726 17745 I magnum  :     GL_EXT_robustness
+@endcode
 
 @section platforms-android-system-cmake Using system-wide CMake installation
 
@@ -250,9 +372,58 @@ android {
 However, be aware that this is an experimental feature and may be broken.
 <em>(It didn't work for me with 3.10.)</em>
 
+@section platforms-android-gradlew Using gradlew wrappers instead of a system installation
+
+It's possible to bundle Gradle in the project itself as opposed to requiring a
+pre-existing system installation. It has the downside of having a bit more
+boilerplate files in your project, though.
+
+First, add the following to your `build.gradle` file:
+
+@code{.gradle}
+task wrapper(type: Wrapper) {
+    gradleVersion = '4.0'
+}
+@endcode
+
+Then run this on a system that has Gradle installed:
+
+@code{.sh}
+gradle wrapper
+@endcode
+
+This will generate the following files that you can then add to version
+control:
+
+-   `gradlew` shell script for Unix-like systems
+-   `gradle.bat` batch script for Windows
+-   `gradle/` directory with wrapper binaries
+
+With this in place, you can just use @cb{.sh} gradlew @ce instead of
+@cb{.sh} gradle @ce.
+
 @section platforms-android-troubleshooting Troubleshooting
 
-@subsection platforms-android-troubleshooting-anativeactivity App can't launch
+@subsection platforms-android-troubleshooting-cant-find Gradle CMake can't find dependencies
+
+Gradle by default searches only in the NDK install path. If you have your
+dependencies installed somewhere else (this goes especially for the *native*
+`corrade-rc` executable), you might want to point the `CMAKE_PREFIX_PATH`
+environment variable to your install location:
+
+@code{.sh}
+export CMAKE_PREFIX_PATH=<path-where-your-dependencies-are-installed>
+gradle build
+@endcode
+
+If you have the dependencies installed in the NDK path, but it still fails,
+check that you installed for the same SDK version as in `minSdkVersion` and all
+ABIs mentioned in `abiFilters` inside your `build.gradle` file --- Gradle runs
+CMake once for each entry in the list so it might happen that it finds them for
+all but one ABI. See @ref platforms-android-multiple-abis above for more
+information.
+
+@subsection platforms-android-troubleshooting-cant-launch App can't launch
 
 If your application can't launch (or it just blinks and then disappears), you
 can inspect @cb{.sh} adb logcat @ce output to see what went wrong, but be
@@ -260,8 +431,14 @@ quick, the log is spitting out a lot of info all the time. Possible causes:
 
 -   Mismatch between actual library name and library referenced from
     `AndroidManifest.xml`, causing Java to fail loading it
--   The device having an ABI for which the app was not compiled (check the
-    @cb{.gradle} abiFilters @ce option in `build.gradle`)
+-   The device has an ABI for which the app was not compiled (check the
+    @cb{.gradle} abiFilters @ce option in `build.gradle`) or the app was
+    compiled with SDK version that's not supported by the device yet. See the
+    [official API level documentation](https://developer.android.com/guide/topics/manifest/uses-sdk-element.html#ApiLevels)
+    for more information.
+-   The device doesn't support OpenGL ES 3.0 yet. Rebuild Magnum and its
+    dependencies with the `TARGET_GLES2` option enabled. See @ref building-features
+    for more information.
 -   Loading fails with `ANativeActivity_onCreate` symbol not being found. If
     you are using @ref Platform::AndroidApplication, this issue should be
     prevented, otherwise you need to add `-u ANativeActivity_onCreate` to your
@@ -276,8 +453,19 @@ quick, the log is spitting out a lot of info all the time. Possible causes:
 
 @subsection platforms-android-troubleshooting-term Gradle aborting due to termcap
 
-Gradle is crashing in case @cb{.sh} $TERM @ce is set to `xterm-256color` or
-`xterm-24`. Solution is to set @cb{.sh} TERM=xterm @ce. See
+If you see the following output, Gradle is crashing because @cb{.sh} $TERM @ce
+is set to `xterm-256color` or `xterm-24`:
+
+@code{.shell-session}
+$ gradle build
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Could not open terminal for stdout: could not get termcap entry
+@endcode
+
+Solution is to set @cb{.sh} TERM=xterm @ce. See
 [gradle/gradle#4440](https://github.com/gradle/gradle/issues/4440) for more
 information.
 
@@ -315,4 +503,5 @@ directory permissions such as
 it's often enough to just install such packages. In case of ArchLinux, all
 relevant packages are available in AUR.
 */
+
 }

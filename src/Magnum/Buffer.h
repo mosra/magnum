@@ -180,13 +180,19 @@ Buffers in @ref MAGNUM_TARGET_WEBGL "WebGL" need to be bound only to one unique
 target, i.e., @ref Buffer bound to @ref Buffer::TargetHint::Array cannot be
 later rebound to @ref Buffer::TargetHint::ElementArray. However, Magnum by
 default uses any sufficient target when binding the buffer internally (e.g. for
-setting data). To avoid GL errors, set target hint to desired target, either in
-constructor or using @ref Buffer::setTargetHint():
+setting data). To avoid GL errors, the following, while completely fine on
+desktop, is not sufficient on WebGL:
+
+@snippet Magnum.cpp Buffer-webgl-nope
+
+You have to set target hint to desired target, either in constructor or using
+@ref Buffer::setTargetHint() like this (and similarly for other bufffer types
+such as UBOs):
 
 @snippet Magnum.cpp Buffer-webgl
 
-To ease up the development, @ref Mesh checks proper target hint when adding
-vertex and index buffers in WebGL.
+To simplify debugging, @ref Mesh checks proper target hint when adding vertex
+and index buffers in WebGL.
 
 @section Buffer-performance-optimizations Performance optimizations
 

@@ -1,0 +1,87 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+
+/** @page platforms-gl OpenGL and OpenGL ES platforms
+@brief Information common for all platforms that support OpenGL and OpenGL ES
+
+@tableofcontents
+@m_footernavigation
+
+@todoc desktop gles
+
+@section platforms-gl-best-practices OpenGL best practices
+
+Various links gathered around the web:
+
+-   [Performance tuning applications for Intel Graphics for Linux and Chrome OS](http://software.intel.com/sites/default/files/Performance-tuning-applications-for-Intel-GEN-Graphics-for-Linux-and-Google-Chrome-OS.pdf) [PDF]
+-   [PowerVR Performance Recommendations](https://github.com/burningsun/pecker_framework/blob/master/参考资料/PowerVR.Performance%20Recommendations.pdf?raw=true) [PDF]
+-   [ATI Radeon HD 2000 programming guide](http://developer.amd.com/wordpress/media/2012/10/ATI_Radeon_HD_2000_programming_guide.pdf) [PDF]
+
+@section platforms-gl-es OpenGL ES
+
+@subsection platforms-gl-es-best-practices OpenGL ES best practices
+
+Various links gathered around the web:
+
+-   [Writing Portable OpenGL ES 2.0](https://www.khronos.org/assets/uploads/developers/library/2011-siggraph-mobile/Writing-Portable-OpenGL-ES-2.0_Aug-11.pdf) [PDF]
+-   [Optimize OpenGL ES 2.0 Performance for Tegra](http://docs.nvidia.com/tegra/index.html#GLES2_Perf_Main.html)
+
+@subsection platforms-gl-es-differences Differences to desktop GL
+
+-   Rendering to RGB textures doesn't work on many platforms, either due to
+    alignment issues or other factors. For example it is not possible to render
+    to @ref TextureFormat::RGB8 on iOS (but it works elsewhere); rendering to
+    @ref TextureFormat::RGB32F is not possible even on NVidia. Use RGBA formats
+    instead.
+-   While on desktop GL it's often permitted to upload a RGB image to a texture
+    with RGBA internal format, on mobile devices usually nothing happens. Be
+    sure to match the component count.
+-   Rendering to 16- and 32-bit float textures is only possible with OpenGL ES
+    3.2 or with the @extension{EXT,color_buffer_half_float} and
+    @extension{EXT,color_buffer_float} extensions. You can work around that
+    issue by rendering to 32-bit unsigned integer textures and using the
+    @glsl floatBitsToUInt() @ce GLSL function instead.
+-   Linear filtering on 32-bit float textures is only possible with
+    @extension{OES,texture_float_linear} (it's not even on ES 3.2 yet). You can
+    work around that issue by using half-float texture formats or doing the
+    interpolation manually in a shader.
+
+@subsection platforms-gl-es-angle ANGLE
+
+[ANGLE](https://github.com/google/angle) is a layer that translates OpenGL ES
+code to D3D, desktop GL or Vulkan, originally created for web browsers to
+provide better WebGL experience without relying on buggy OpenGL drivers on
+Windows.
+
+Related links:
+
+-   [WebGL Insights --- ANGLE](https://books.google.cz/books?id=6crECQAAQBAJ&lpg=PP1&pg=PA3&redir_esc=y#v=onepage&q&f=true)
+
+*/
+
+}
+

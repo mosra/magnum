@@ -25,16 +25,34 @@
 
 namespace Magnum {
 
-/** @page platforms Platform-specific guides
-@brief General information, tips and troubleshooting for particular platforms
+/** @page platforms-macos macOS
+@brief Tips and tricks for macOS
 
--   @subpage platforms-gl --- @copybrief platforms-gl
--   @subpage platforms-linux --- @copybrief platforms-linux
--   @subpage platforms-windows --- @copybrief platforms-windows
--   @subpage platforms-macos --- @copybrief platforms-macos
--   @subpage platforms-ios --- @copybrief platforms-ios
--   @subpage platforms-android --- @copybrief platforms-android
--   @subpage platforms-html5 --- @copybrief platforms-html5
+@tableofcontents
+@m_footernavigation
+
+@todoc homebrew
+@todoc travis setup
+@todoc bundling, dmg cpack
+
+With Apple decision to focus on Metal, macOS OpenGL support is stuck on version
+4.2 (i.e., a version before compute shaders are available).
+
+@section platforms-macos-opengl-best-practices Best practices
+
+Official Apple documentation:
+
+-   [Best Practices for Working with Vertex Data](https://developer.apple.com/library/mac/#documentation/graphicsimaging/Conceptual/OpenGL-MacProgGuide/opengl_vertexdata/opengl_vertexdata.html)
+-   [Best Practices for Working with Texture Data](https://developer.apple.com/library/mac/#documentation/graphicsimaging/Conceptual/OpenGL-MacProgGuide/opengl_texturedata/opengl_texturedata.html)
+
+@section platforms-macos-troubleshooting Troubleshooting
+
+-   @ref AbstractShaderProgram::validate() expects that the shader has a
+    properly configured framebuffer bound along with proper @ref Renderer
+    setup. That is often hard to achieve, so the function cannot be portably
+    used for shader validity testing.
+-   `GL_TIMESTAMP` used by @ref TimeQuery::timestamp() is not implemented on
+    macOS and gives zero results.
 
 */
 

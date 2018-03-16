@@ -377,9 +377,15 @@ CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
 #endif
 
 {
+/* [Buffer-webgl-nope] */
+Buffer vertices, indices;
+/* [Buffer-webgl-nope] */
+}
+
+{
 /* [Buffer-webgl] */
-Buffer vertices{Buffer::TargetHint::Array};
-Buffer indices{Buffer::TargetHint::ElementArray};
+Buffer vertices{Buffer::TargetHint::Array},
+    indices{Buffer::TargetHint::ElementArray};
 /* [Buffer-webgl] */
 }
 

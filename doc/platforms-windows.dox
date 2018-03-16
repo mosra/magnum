@@ -25,17 +25,20 @@
 
 namespace Magnum {
 
-/** @page platforms Platform-specific guides
-@brief General information, tips and troubleshooting for particular platforms
+/** @page platforms-windows Windows
+@brief Tips and tricks for Windows platforms
 
--   @subpage platforms-gl --- @copybrief platforms-gl
--   @subpage platforms-linux --- @copybrief platforms-linux
--   @subpage platforms-windows --- @copybrief platforms-windows
--   @subpage platforms-macos --- @copybrief platforms-macos
--   @subpage platforms-ios --- @copybrief platforms-ios
--   @subpage platforms-android --- @copybrief platforms-android
--   @subpage platforms-html5 --- @copybrief platforms-html5
+@tableofcontents
+@m_footernavigation
 
+See @ref Platform::Sdl2Application for more information about WinRT.
+
+@todoc DLL paths
+@todoc vcpkg
+@todoc desktop ES
+@todoc mingw, clang, clang/c2...
+@todoc "unicode"
+@todoc colored console output
 */
 
 }
