@@ -69,6 +69,11 @@ See also:
     @ref Primitives::coneSolid() and @ref Primitives::coneWireframe()
     primitives
 
+@subsection changelog-latest-bugfixes Bug fixes
+
+-   Engine startup info was not properly printed to Android log since
+    introducing the `--magnum-log` option in 2018.02
+
 @subsection changelog-latest-deprecated Deprecated APIs
 
 -   Class @cpp Primitives::Capsule2D @ce and @cpp Primitives::Capsule3D @ce is

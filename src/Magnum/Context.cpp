@@ -683,7 +683,7 @@ bool Context::tryCreate() {
     currentContext = this;
 
     /* Decide whether to print the initialization output or not */
-    std::ostream* output = _displayInitializationLog ? &std::cout : nullptr;
+    std::ostream* output = _displayInitializationLog ? Debug::output() : nullptr;
 
     /* Print some info and initialize state tracker (which also prints some
        more info) */
