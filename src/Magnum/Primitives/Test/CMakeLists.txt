@@ -30,6 +30,7 @@ corrade_add_test(PrimitivesCrosshairTest CrosshairTest.cpp LIBRARIES MagnumPrimi
 corrade_add_test(PrimitivesCubeTest CubeTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesConeTest ConeTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesCylinderTest CylinderTest.cpp LIBRARIES MagnumPrimitives)
+corrade_add_test(PrimitivesGridTest GridTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesIcosphereTest IcosphereTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesLineTest LineTest.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(PrimitivesPlaneTest PlaneTest.cpp LIBRARIES MagnumPrimitives)

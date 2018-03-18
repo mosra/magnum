@@ -56,6 +56,7 @@
 #include <Magnum/Primitives/Cone.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/Cylinder.h>
+#include <Magnum/Primitives/Grid.h>
 #include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/Primitives/Line.h>
 #include <Magnum/Primitives/Plane.h>
@@ -96,6 +97,7 @@ struct PrimitiveVisualizer: Platform::WindowlessApplication {
     std::pair<Trade::MeshData3D, std::string> coneWireframe();
     std::pair<Trade::MeshData3D, std::string> cubeWireframe();
     std::pair<Trade::MeshData3D, std::string> cylinderWireframe();
+    std::pair<Trade::MeshData3D, std::string> grid3DWireframe();
     std::pair<Trade::MeshData3D, std::string> line3D();
     std::pair<Trade::MeshData3D, std::string> planeWireframe();
     std::pair<Trade::MeshData3D, std::string> uvSphereWireframe();
@@ -108,6 +110,7 @@ struct PrimitiveVisualizer: Platform::WindowlessApplication {
     std::pair<Trade::MeshData3D, std::string> coneSolid();
     std::pair<Trade::MeshData3D, std::string> cubeSolid();
     std::pair<Trade::MeshData3D, std::string> cylinderSolid();
+    std::pair<Trade::MeshData3D, std::string> grid3DSolid();
     std::pair<Trade::MeshData3D, std::string> icosphereSolid();
     std::pair<Trade::MeshData3D, std::string> planeSolid();
     std::pair<Trade::MeshData3D, std::string> uvSphereSolid();
@@ -257,6 +260,7 @@ int PrimitiveVisualizer::exec() {
                        &PrimitiveVisualizer::coneWireframe,
                        &PrimitiveVisualizer::cubeWireframe,
                        &PrimitiveVisualizer::cylinderWireframe,
+                       &PrimitiveVisualizer::grid3DWireframe,
                        &PrimitiveVisualizer::line3D,
                        &PrimitiveVisualizer::planeWireframe,
                        &PrimitiveVisualizer::uvSphereWireframe})
@@ -337,6 +341,7 @@ int PrimitiveVisualizer::exec() {
                        &PrimitiveVisualizer::coneSolid,
                        &PrimitiveVisualizer::cubeSolid,
                        &PrimitiveVisualizer::cylinderSolid,
+                       &PrimitiveVisualizer::grid3DSolid,
                        &PrimitiveVisualizer::icosphereSolid,
                        &PrimitiveVisualizer::planeSolid,
                        &PrimitiveVisualizer::uvSphereSolid})
@@ -421,6 +426,10 @@ std::pair<Trade::MeshData3D, std::string> PrimitiveVisualizer::cylinderWireframe
     return {Primitives::cylinderWireframe(1, 32, 1.0f), "cylinderwireframe.png"};
 }
 
+std::pair<Trade::MeshData3D, std::string> PrimitiveVisualizer::grid3DWireframe() {
+    return {Primitives::grid3DWireframe({5, 3}), "grid3dwireframe.png"};
+}
+
 std::pair<Trade::MeshData3D, std::string> PrimitiveVisualizer::line3D() {
     auto line = Primitives::line3D();
     MeshTools::transformPointsInPlace(Matrix4::translation(Vector3::xAxis(-1.0f))*Matrix4::scaling(Vector3::xScale(2.0f)), line.positions(0));
@@ -463,6 +472,10 @@ std::pair<Trade::MeshData3D, std::string> PrimitiveVisualizer::cubeSolid() {
 
 std::pair<Trade::MeshData3D, std::string> PrimitiveVisualizer::cylinderSolid() {
     return {Primitives::cylinderSolid(1, 12, 1.0f, Primitives::CylinderFlag::CapEnds), "cylindersolid.png"};
+}
+
+std::pair<Trade::MeshData3D, std::string> PrimitiveVisualizer::grid3DSolid() {
+    return {Primitives::grid3DSolid({5, 3}), "grid3dsolid.png"};
 }
 
 std::pair<Trade::MeshData3D, std::string> PrimitiveVisualizer::icosphereSolid() {

@@ -31,6 +31,7 @@ set(MagnumPrimitives_SRCS
     Cone.cpp
     Cube.cpp
     Cylinder.cpp
+    Grid.cpp
     Icosphere.cpp
     Line.cpp
     Plane.cpp
@@ -48,6 +49,7 @@ set(MagnumPrimitives_HEADERS
     Cone.h
     Cube.h
     Cylinder.h
+    Grid.h
     Icosphere.h
     Line.h
     Plane.h

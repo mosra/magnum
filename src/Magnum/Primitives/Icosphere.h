@@ -47,6 +47,12 @@ normals.
 
 @image html primitives-icospheresolid.png
 
+The @p subdivisions parameter describes how many times is each icosphere
+triangle subdivided, recursively. Specifying @cpp 0 @ce will result in an
+icosphere with 20 faces, saying @cpp 1 @ce will result in an icosphere with 80
+faces (each triangle subdivided into four smaller), saying @cpp 2 @ce will
+result in 320 faces and so on. In particular, this is different from the
+`subdivisions` parameter in @ref grid3DSolid() or @ref grid3DWireframe().
 @see @ref uvSphereSolid(), @ref uvSphereWireframe()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D icosphereSolid(UnsignedInt subdivisions);

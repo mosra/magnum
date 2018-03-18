@@ -66,7 +66,8 @@ See also:
 @subsubsection changelog-latest-new-primitives Primitives library
 
 -   New @ref Primitives::circle3DSolid(), @ref Primitives::circle3DWireframe(),
-    @ref Primitives::coneSolid() and @ref Primitives::coneWireframe()
+    @ref Primitives::coneSolid(), @ref Primitives::coneWireframe(),
+    @ref Primitives::grid3DSolid() and @ref Primitives::grid3DWireframe()
     primitives
 
 @subsection changelog-latest-bugfixes Bug fixes
