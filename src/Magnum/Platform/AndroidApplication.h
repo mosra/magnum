@@ -46,6 +46,7 @@
 #undef None
 
 struct android_app;
+struct ANativeActivity;
 
 namespace Magnum { namespace Platform {
 
@@ -190,6 +191,13 @@ class AndroidApplication {
 
         /** @brief Moving is not allowed */
         AndroidApplication& operator=(AndroidApplication&&) = delete;
+
+        /**
+         * @brief Underlying native activity handle
+         *
+         * Use in case you need to call NDK functionality directly.
+         */
+        ANativeActivity* nativeActivity();
 
     protected:
         /** @copydoc Sdl2Application::createContext() */

@@ -78,6 +78,10 @@ AndroidApplication::~AndroidApplication() {
     eglTerminate(_display);
 }
 
+ANativeActivity* AndroidApplication::nativeActivity() {
+    return _state->activity;
+}
+
 void AndroidApplication::createContext() { createContext({}); }
 
 void AndroidApplication::createContext(const Configuration& configuration) {

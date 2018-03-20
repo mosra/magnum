@@ -62,6 +62,8 @@ See also:
 @subsubsection changelog-latest-new-platform Platform libraries
 
 -   Added @ref Platform::AndroidApplication::windowSize()
+-   Added @ref Platform::AndroidApplication::nativeActivity() to access
+    underlying `ANativeActivity` structure for calling various Android APIs
 
 @subsubsection changelog-latest-new-primitives Primitives library
 
