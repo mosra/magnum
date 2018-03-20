@@ -93,6 +93,12 @@ See also:
     targets, no need to call @ref CORRADE_PLUGIN_IMPORT() implicitly anymore.
     For this to work, you just need to update local copies of all Find modules.
     See @ref plugins-static for more information.
+-   The @ref Audio::AnyImporter "AnyAudioImporter", @ref Trade::AnyImageConverter "AnyImageConverter",
+    @ref Trade::AnyImageImporter "AnyImageImporter" and @ref Trade::AnySceneImporter "AnySceneImporter"
+    plugins were moved from the plugins repository to the core Magnum
+    repository. If you are using them statically via CMake, you need to update
+    your copies of `FindMagnum.cmake` and `FindMagnumPlugins.cmake` modules.
+    See @ref building and @ref cmake for more information.
 
 @subsection changelog-latest-bugfixes Bug fixes
 

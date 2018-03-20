@@ -30,4 +30,3 @@
 #endif
 
 #define OBJ_FILE "${OBJ_FILE}"
-#define PLY_FILE "${PLY_FILE}"

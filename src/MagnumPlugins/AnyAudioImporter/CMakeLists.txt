@@ -23,8 +23,6 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-find_package(Magnum REQUIRED Audio)
-
 if(BUILD_STATIC)
     set(MAGNUM_ANYAUDIOIMPORTER_BUILD_STATIC 1)
 endif()
@@ -43,9 +41,8 @@ add_library(AnyAudioImporterObjects OBJECT
     ${AnyAudioImporter_SRCS}
     ${AnyAudioImporter_HEADERS})
 target_include_directories(AnyAudioImporterObjects PUBLIC
-    $<TARGET_PROPERTY:Magnum::Audio,INTERFACE_INCLUDE_DIRECTORIES>
-    ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_BINARY_DIR}/src)
+    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:MagnumAudio,INTERFACE_INCLUDE_DIRECTORIES>)
 target_compile_definitions(AnyAudioImporterObjects PRIVATE "AnyAudioImporterObjects_EXPORTS")
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(AnyAudioImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -65,7 +62,7 @@ endif()
 target_include_directories(AnyAudioImporter PUBLIC
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_BINARY_DIR}/src)
-target_link_libraries(AnyAudioImporter Magnum::Magnum Magnum::Audio)
+target_link_libraries(AnyAudioImporter PUBLIC Magnum MagnumAudio)
 
 install(FILES ${AnyAudioImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyAudioImporter)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyAudioImporter)
@@ -86,7 +83,7 @@ if(BUILD_TESTS)
         ${PROJECT_SOURCE_DIR}/src
         ${PROJECT_BINARY_DIR}/src)
     set_target_properties(MagnumAnyAudioImporterTestLib PROPERTIES FOLDER "MagnumPlugins/AnyAudioImporter")
-    target_link_libraries(MagnumAnyAudioImporterTestLib Magnum::Magnum Magnum::Audio)
+    target_link_libraries(MagnumAnyAudioImporterTestLib PUBLIC Magnum MagnumAudio)
     add_subdirectory(Test)
 endif()
 

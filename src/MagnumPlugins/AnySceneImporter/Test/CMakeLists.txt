@@ -24,11 +24,9 @@
 #
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
-    set(OBJ_FILE mesh.obj)
-    set(PLY_FILE common.ply)
+    set(OBJ_FILE pointMesh.obj)
 else()
-    set(OBJ_FILE ${CMAKE_CURRENT_SOURCE_DIR}/mesh.obj)
-    set(PLY_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/StanfordImporter/Test/common.ply)
+    set(OBJ_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/ObjImporter/Test/pointMesh.obj)
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
@@ -37,8 +35,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 corrade_add_test(AnySceneImporterTest Test.cpp
     LIBRARIES MagnumAnySceneImporterTestLib
     FILES
-        mesh.obj
-        ../../StanfordImporter/Test/common.ply)
+        ../../ObjImporter/Test/pointMesh.obj)
 target_include_directories(AnySceneImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 # On Win32 we need to avoid dllimporting AnySceneImporter symbols, because it
 # would search for the symbols in some DLL even when they were linked

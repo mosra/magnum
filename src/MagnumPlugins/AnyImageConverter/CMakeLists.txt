@@ -41,9 +41,7 @@ add_library(AnyImageConverterObjects OBJECT
     ${AnyImageConverter_SRCS}
     ${AnyImageConverter_HEADERS})
 target_include_directories(AnyImageConverterObjects PUBLIC
-    $<TARGET_PROPERTY:Magnum::Magnum,INTERFACE_INCLUDE_DIRECTORIES>
-    ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_BINARY_DIR}/src)
+    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 target_compile_definitions(AnyImageConverterObjects PRIVATE "AnyImageConverterObjects_EXPORTS")
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(AnyImageConverterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -63,7 +61,7 @@ endif()
 target_include_directories(AnyImageConverter PUBLIC
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_BINARY_DIR}/src)
-target_link_libraries(AnyImageConverter Magnum::Magnum)
+target_link_libraries(AnyImageConverter PUBLIC Magnum)
 
 install(FILES ${AnyImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageConverter)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageConverter)
@@ -84,7 +82,7 @@ if(BUILD_TESTS)
         ${PROJECT_SOURCE_DIR}/src
         ${PROJECT_BINARY_DIR}/src)
     set_target_properties(MagnumAnyImageConverterTestLib PROPERTIES FOLDER "MagnumPlugins/AnyImageConverter")
-    target_link_libraries(MagnumAnyImageConverterTestLib Magnum::Magnum)
+    target_link_libraries(MagnumAnyImageConverterTestLib PUBLIC Magnum)
     add_subdirectory(Test)
 endif()
 

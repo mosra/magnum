@@ -141,6 +141,13 @@ loads them dynamically. However, if they are built as static (see
 executable and then explicitly imported. Also if you are going to use them as
 dependencies, you need to find the dependency and then link to it.
 
+-   `AnyAudioImporter` --- @ref Audio::AnyImporter "AnyAudioImporter" plugin
+-   `AnyImageConverter` --- @ref Trade::AnyImageConverter "AnyImageConverter"
+    plugin
+-   `AnyImageImporter` --- @ref Trade::AnyImageImporter "AnyImageImporter"
+    plugin
+-   `AnySceneImporter` --- @ref Trade::AnySceneImporter "AnySceneImporter"
+    plugin
 -   `MagnumFont` --- @ref Text::MagnumFont "MagnumFont" plugin
 -   `MagnumFontConverter` --- @ref Text::MagnumFontConverter "MagnumFontConverter"
     plugin

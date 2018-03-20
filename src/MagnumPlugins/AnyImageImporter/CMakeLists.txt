@@ -41,9 +41,7 @@ add_library(AnyImageImporterObjects OBJECT
     ${AnyImageImporter_SRCS}
     ${AnyImageImporter_HEADERS})
 target_include_directories(AnyImageImporterObjects PUBLIC
-    $<TARGET_PROPERTY:Magnum::Magnum,INTERFACE_INCLUDE_DIRECTORIES>
-    ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_BINARY_DIR}/src)
+    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 target_compile_definitions(AnyImageImporterObjects PRIVATE "AnyImageImporterObjects_EXPORTS")
 if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(AnyImageImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
@@ -63,7 +61,7 @@ endif()
 target_include_directories(AnyImageImporter PUBLIC
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_BINARY_DIR}/src)
-target_link_libraries(AnyImageImporter Magnum::Magnum)
+target_link_libraries(AnyImageImporter PUBLIC Magnum)
 
 install(FILES ${AnyImageImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageImporter)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageImporter)
@@ -84,7 +82,7 @@ if(BUILD_TESTS)
         ${PROJECT_SOURCE_DIR}/src
         ${PROJECT_BINARY_DIR}/src)
     set_target_properties(MagnumAnyImageImporterTestLib PROPERTIES FOLDER "MagnumPlugins/AnyImageImporter")
-    target_link_libraries(MagnumAnyImageImporterTestLib Magnum::Magnum)
+    target_link_libraries(MagnumAnyImageImporterTestLib PUBLIC Magnum)
     add_subdirectory(Test)
 endif()
 

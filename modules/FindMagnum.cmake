@@ -44,6 +44,10 @@
 # OpenGL ES libraries). Additional dependencies are specified by the
 # components. The optional components are:
 #
+#  AnyAudioImporter             - Any audio importer
+#  AnyImageConverter            - Any image converter
+#  AnyImageImporter             - Any image importer
+#  AnySceneImporter             - Any scene importer
 #  Audio                        - Audio library
 #  DebugTools                   - DebugTools library
 #  MeshTools                    - MeshTools library
@@ -391,7 +395,7 @@ endif()
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
 set(_MAGNUM_LIBRARY_COMPONENTS "^(Audio|DebugTools|MeshTools|Primitives|SceneGraph|Shaders|Shapes|Text|TextureTools|AndroidApplication|GlfwApplication|GlutApplication|GlxApplication|Sdl2Application|XEglApplication|WindowlessCglApplication|WindowlessEglApplication|WindowlessGlxApplication|WindowlessIosApplication|WindowlessWglApplication|WindowlessWindowsEglApplication|CglContext|EglContext|GlxContext|WglContext|OpenGLTester)$")
-set(_MAGNUM_PLUGIN_COMPONENTS "^(MagnumFont|MagnumFontConverter|ObjImporter|TgaImageConverter|TgaImporter|WavAudioImporter)$")
+set(_MAGNUM_PLUGIN_COMPONENTS "^(AnyAudioImporter|AnyImageConverter|AnyImageImporter|AnySceneImporter|MagnumFont|MagnumFontConverter|ObjImporter|TgaImageConverter|TgaImporter|WavAudioImporter)$")
 set(_MAGNUM_EXECUTABLE_COMPONENTS "^(distancefieldconverter|fontconverter|imageconverter|info|al-info)$")
 
 # Find all components
@@ -633,6 +637,17 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         elseif(_component STREQUAL TextureTools)
             set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Atlas.h)
         endif()
+
+        # No special setup for AnyAudioImporter plugin
+        # No special setup for AnyImageConverter plugin
+        # No special setup for AnyImageImporter plugin
+        # No special setup for AnySceneImporter plugin
+        # No special setup for MagnumFont plugin
+        # No special setup for MagnumFontConverter plugin
+        # No special setup for ObjImporter plugin
+        # No special setup for TgaImageConverter plugin
+        # No special setup for TgaImporter plugin
+        # No special setup for WavAudioImporter plugin
 
         # Find library/plugin includes
         if(_component MATCHES ${_MAGNUM_LIBRARY_COMPONENTS} OR _component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS})

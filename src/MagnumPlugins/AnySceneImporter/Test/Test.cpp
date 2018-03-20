@@ -26,8 +26,9 @@
 #include <sstream>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Magnum/Math/Vector3.h>
-#include <Magnum/Trade/MeshData3D.h>
+
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/Trade/MeshData3D.h"
 
 #include "MagnumPlugins/AnySceneImporter/AnySceneImporter.h"
 
@@ -39,7 +40,6 @@ struct AnySceneImporterTest: TestSuite::Tester {
     explicit AnySceneImporterTest();
 
     void obj();
-    void ply();
 
     void unknown();
 
@@ -49,7 +49,6 @@ struct AnySceneImporterTest: TestSuite::Tester {
 
 AnySceneImporterTest::AnySceneImporterTest(): _manager{MAGNUM_PLUGINS_IMPORTER_DIR} {
     addTests({&AnySceneImporterTest::obj,
-              &AnySceneImporterTest::ply,
 
               &AnySceneImporterTest::unknown});
 }
@@ -65,19 +64,6 @@ void AnySceneImporterTest::obj() {
     Containers::Optional<MeshData3D> mesh = importer.mesh3D(0);
     CORRADE_VERIFY(mesh);
     CORRADE_COMPARE(mesh->positions(0).size(), 3);
-}
-
-void AnySceneImporterTest::ply() {
-    if(_manager.loadState("StanfordImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("StanfordImporter plugin not found, cannot test");
-
-    AnySceneImporter importer{_manager};
-    CORRADE_VERIFY(importer.openFile(PLY_FILE));
-
-    /* Check only size, as it is good enough proof that it is working */
-    Containers::Optional<MeshData3D> mesh = importer.mesh3D(0);
-    CORRADE_VERIFY(mesh);
-    CORRADE_COMPARE(mesh->positions(0).size(), 5);
 }
 
 void AnySceneImporterTest::unknown() {

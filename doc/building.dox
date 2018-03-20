@@ -481,6 +481,14 @@ file formats. Additional plugins are provided in a separate plugin repository,
 see @ref building-plugins for more information. None of the plugins is built by
 default.
 
+-   `WITH_ANYAUDIOIMPORTER` --- Build the @ref Audio::AnyImporter "AnyAudioImporter"
+    plugin. Available only if `WITH_AUDIO` is enabled.
+-   `WITH_ANYIMAGECONVERTER` --- Build the
+    @ref Trade::AnyImageConverter "AnyImageConverter" plugin.
+-   `WITH_ANYIMAGEIMPORTER` --- Build the @ref Trade::AnyImageImporter "AnyImageImporter"
+    plugin.
+-   `WITH_ANYSCENEIMPORTER` --- Build the @ref Trade::AnySceneImporter "AnySceneImporter"
+    plugin.
 -   `WITH_MAGNUMFONT` --- Build the @ref Text::MagnumFont "MagnumFont" plugin.
     Available only if `WITH_TEXT` is enabled. Enables also building of the
     @ref Trade::TgaImporter "TgaImporter" plugin.

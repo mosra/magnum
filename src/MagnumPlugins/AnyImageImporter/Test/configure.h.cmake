@@ -30,5 +30,3 @@
 #endif
 
 #define TGA_FILE "${TGA_FILE}"
-#define JPEG_FILE "${JPEG_FILE}"
-#define PNG_FILE "${PNG_FILE}"

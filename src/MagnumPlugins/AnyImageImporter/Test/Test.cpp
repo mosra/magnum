@@ -26,7 +26,8 @@
 #include <sstream>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Magnum/Trade/ImageData.h>
+
+#include "Magnum/Trade/ImageData.h"
 
 #include "MagnumPlugins/AnyImageImporter/AnyImageImporter.h"
 
@@ -38,8 +39,6 @@ struct AnyImageImporterTest: TestSuite::Tester {
     explicit AnyImageImporterTest();
 
     void tga();
-    void jpeg();
-    void png();
 
     void unknown();
 
@@ -49,8 +48,6 @@ struct AnyImageImporterTest: TestSuite::Tester {
 
 AnyImageImporterTest::AnyImageImporterTest(): _manager{MAGNUM_PLUGINS_IMPORTER_DIR} {
     addTests({&AnyImageImporterTest::tga,
-              &AnyImageImporterTest::jpeg,
-              &AnyImageImporterTest::png,
 
               &AnyImageImporterTest::unknown});
 }
@@ -66,32 +63,6 @@ void AnyImageImporterTest::tga() {
     Containers::Optional<ImageData2D> image = importer.image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
-}
-
-void AnyImageImporterTest::jpeg() {
-    if(_manager.loadState("JpegImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("JpegImporter plugin not found, cannot test");
-
-    AnyImageImporter importer{_manager};
-    CORRADE_VERIFY(importer.openFile(JPEG_FILE));
-
-    /* Check only size, as it is good enough proof that it is working */
-    Containers::Optional<ImageData2D> image = importer.image2D(0);
-    CORRADE_VERIFY(image);
-    CORRADE_COMPARE(image->size(), Vector2i(3, 2));
-}
-
-void AnyImageImporterTest::png() {
-    if(_manager.loadState("PngImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("PngImporter plugin not found, cannot test");
-
-    AnyImageImporter importer{_manager};
-    CORRADE_VERIFY(importer.openFile(PNG_FILE));
-
-    /* Check only size, as it is good enough proof that it is working */
-    Containers::Optional<ImageData2D> image = importer.image2D(0);
-    CORRADE_VERIFY(image);
-    CORRADE_COMPARE(image->size(), Vector2i(3, 2));
 }
 
 void AnyImageImporterTest::unknown() {

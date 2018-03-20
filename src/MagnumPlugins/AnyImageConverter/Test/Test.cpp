@@ -27,8 +27,9 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Magnum/PixelFormat.h>
-#include <Magnum/Trade/ImageData.h>
+
+#include "Magnum/PixelFormat.h"
+#include "Magnum/Trade/ImageData.h"
 
 #include "MagnumPlugins/AnyImageConverter/AnyImageConverter.h"
 
@@ -39,7 +40,7 @@ namespace Magnum { namespace Trade { namespace Test {
 struct AnyImageConverterTest: TestSuite::Tester {
     explicit AnyImageConverterTest();
 
-    void png();
+    void tga();
 
     void unknown();
 
@@ -48,7 +49,7 @@ struct AnyImageConverterTest: TestSuite::Tester {
 };
 
 AnyImageConverterTest::AnyImageConverterTest(): _manager{MAGNUM_PLUGINS_IMAGECONVERTER_DIR} {
-    addTests({&AnyImageConverterTest::png,
+    addTests({&AnyImageConverterTest::tga,
 
               &AnyImageConverterTest::unknown});
 }
@@ -63,11 +64,11 @@ namespace {
     const ImageView2D Image{PixelFormat::RGB, PixelType::UnsignedByte, {2, 3}, Data};
 }
 
-void AnyImageConverterTest::png() {
-    if(_manager.loadState("PngImageConverter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("PngImageConverter plugin not found, cannot test");
+void AnyImageConverterTest::tga() {
+    if(_manager.loadState("TgaImageConverter") == PluginManager::LoadState::NotFound)
+        CORRADE_SKIP("TgaImageConverter plugin not found, cannot test");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_DIR, "output.png");
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_DIR, "output.tga");
 
     if(Utility::Directory::fileExists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));

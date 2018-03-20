@@ -58,13 +58,12 @@ Detects file type based on file extension, loads corresponding plugin and then
 tries to convert the file with it.
 
 This plugin depends on the @ref Trade library and is built if
-`WITH_ANYIMAGECONVERTER` is enabled when building Magnum Plugins. To use as a
-dynamic plugin, you need to load the @cpp "AnyImageConverter" @ce plugin from
+`WITH_ANYIMAGECONVERTER` is enabled when building Magnum. To use as a dynamic
+plugin, you need to load the @cpp "AnyImageConverter" @ce plugin from
 `MAGNUM_PLUGINS_IMPORTER_DIR`. To use as a static plugin or as a dependency of
 another plugin with CMake, you need to request the `AnyImageConverter`
-component of the `MagnumPlugins` package and link to the
-`MagnumPlugins::AnyImageConverter` target. See @ref building-plugins,
-@ref cmake-plugins and @ref plugins for more information.
+component of the `Magnum` package and link to the `Magnum::AnyImageConverter`
+target. See @ref building, @ref cmake and @ref plugins for more information.
 
 Supported formats for uncompressed data:
 

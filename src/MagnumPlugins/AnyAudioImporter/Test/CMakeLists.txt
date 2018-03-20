@@ -25,10 +25,8 @@
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(WAV_FILE stereo8.wav)
-    set(OGG_FILE mono16.ogg)
 else()
-    set(WAV_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/DrWavAudioImporter/Test/stereo8.wav)
-    set(OGG_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/StbVorbisAudioImporter/Test/mono16.ogg)
+    set(WAV_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/WavAudioImporter/Test/stereo8.wav)
 endif()
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
@@ -37,8 +35,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 corrade_add_test(AnyAudioImporterTest Test.cpp
     LIBRARIES MagnumAnyAudioImporterTestLib
     FILES
-        ../../DrWavAudioImporter/Test/stereo8.wav
-        ../../StbVorbisAudioImporter/Test/mono16.ogg)
+        ../../WavAudioImporter/Test/stereo8.wav)
 target_include_directories(AnyAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 # On Win32 we need to avoid dllimporting AnyAudioImporter symbols, because it
 # would search for the symbols in some DLL even when they were linked

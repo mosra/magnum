@@ -89,6 +89,10 @@ endif()
 option(WITH_IMAGECONVERTER "Build magnum-imageconverter utility" OFF)
 
 # Plugins
+option(WITH_ANYIMAGEIMPORTER "Build AnyImageImporter plugin" OFF)
+option(WITH_ANYAUDIOIMPORTER "Build AnyAudioImporter plugin" OFF)
+option(WITH_ANYIMAGECONVERTER "Build AnyImageConverter plugin" OFF)
+option(WITH_ANYSCENEIMPORTER "Build AnySceneImporter plugin" OFF)
 option(WITH_WAVAUDIOIMPORTER "Build WavAudioImporter plugin" OFF)
 option(WITH_MAGNUMFONT "Build MagnumFont plugin" OFF)
 cmake_dependent_option(WITH_MAGNUMFONTCONVERTER "Build MagnumFontConverter plugin" OFF "NOT TARGET_GLES" OFF)

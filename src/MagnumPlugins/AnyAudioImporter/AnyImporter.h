@@ -59,13 +59,12 @@ Detects file type based on file extension, loads corresponding plugin and then
 tries to open the file with it.
 
 This plugin depends on the @ref Audio library and is built if
-`WITH_ANYAUDIOIMPORTER` is enabled when building Magnum Plugins. To use as a
-dynamic plugin, you need to load the @cpp "AnyAudioImporter" @ce plugin from
+`WITH_ANYAUDIOIMPORTER` is enabled when building Magnum. To use as a dynamic
+plugin, you need to load the @cpp "AnyAudioImporter" @ce plugin from
 `MAGNUM_PLUGINS_IMPORTER_DIR`. To use as a static plugin or as a dependency of
 another plugin with CMake, you need to request the `AnyAudioImporter` component
-of the `MagnumPlugins` package and link to the
-`MagnumPlugins::AnyAudioImporter` target. See @ref building-plugins,
-@ref cmake-plugins and @ref plugins for more information.
+of the `Magnum` package and link to the `Magnum::AnyAudioImporter` target. See
+@ref building, @ref cmake and @ref plugins for more information.
 
 Supported formats:
 

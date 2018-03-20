@@ -37,7 +37,6 @@ struct AnyImporterTest: TestSuite::Tester {
     explicit AnyImporterTest();
 
     void wav();
-    void ogg();
 
     void unknown();
 
@@ -47,7 +46,6 @@ private:
 
 AnyImporterTest::AnyImporterTest(): _manager{MAGNUM_PLUGINS_AUDIOIMPORTER_DIR} {
     addTests({&AnyImporterTest::wav,
-              &AnyImporterTest::ogg,
 
               &AnyImporterTest::unknown});
 }
@@ -61,18 +59,6 @@ void AnyImporterTest::wav() {
 
     /* Check only parameters, as it is good enough proof that it is working */
     CORRADE_COMPARE(importer.format(), Buffer::Format::Stereo8);
-    CORRADE_COMPARE(importer.frequency(), 96000);
-}
-
-void AnyImporterTest::ogg() {
-    if(_manager.loadState("VorbisAudioImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("VorbisAudioImporter plugin not found, cannot test");
-
-    AnyImporter importer{_manager};
-    CORRADE_VERIFY(importer.openFile(OGG_FILE));
-
-    /* Check only parameters, as it is good enough proof that it is working */
-    CORRADE_COMPARE(importer.format(), Buffer::Format::Mono16);
     CORRADE_COMPARE(importer.frequency(), 96000);
 }
 
