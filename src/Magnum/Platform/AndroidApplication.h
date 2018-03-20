@@ -25,9 +25,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#if defined(CORRADE_TARGET_ANDROID) || defined(DOXYGEN_GENERATING_OUTPUT)
 /** @file
  * @brief Class @ref Magnum::Platform::AndroidApplication, macro @ref MAGNUM_ANDROIDAPPLICATION_MAIN()
  */
+#endif
 
 #include <memory>
 #include <EGL/egl.h>
@@ -37,10 +39,7 @@
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Platform/Platform.h"
 
-#ifndef CORRADE_TARGET_ANDROID
-#error this file is available only on Android build
-#endif
-
+#if defined(CORRADE_TARGET_ANDROID) || defined(DOXYGEN_GENERATING_OUTPUT)
 #include <android/input.h>
 
 /* Undef Xlib nonsense which might get pulled in by EGL */
@@ -564,5 +563,8 @@ typedef AndroidApplication Application;
 #endif
 
 }}
+#else
+#error this file is available only on Android build
+#endif
 
 #endif
