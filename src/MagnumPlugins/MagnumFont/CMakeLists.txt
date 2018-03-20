@@ -40,7 +40,9 @@ set(MagnumFont_HEADERS
 add_library(MagnumFontObjects OBJECT
     ${MagnumFont_SRCS}
     ${MagnumFont_HEADERS})
-target_include_directories(MagnumFontObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(MagnumFontObjects PUBLIC
+    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:MagnumText,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_PLUGINS_STATIC)
     target_compile_definitions(MagnumFontObjects PRIVATE "MagnumFontObjects_EXPORTS")
 endif()
