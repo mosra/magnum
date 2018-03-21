@@ -119,18 +119,20 @@ if(NOT BUILD_STATIC)
 elseif(BUILD_STATIC_PIC)
     set_target_properties(MagnumDebugTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_link_libraries(MagnumDebugTools Magnum)
+target_link_libraries(MagnumDebugTools PUBLIC
+    Magnum
+    MagnumGL)
 if(Corrade_TestSuite_FOUND)
-    target_link_libraries(MagnumDebugTools Corrade::TestSuite)
+    target_link_libraries(MagnumDebugTools PUBLIC Corrade::TestSuite)
 endif()
 if(WITH_SCENEGRAPH)
-    target_link_libraries(MagnumDebugTools MagnumSceneGraph)
+    target_link_libraries(MagnumDebugTools PUBLIC MagnumSceneGraph)
 endif()
 if(WITH_SHAPES)
-    target_link_libraries(MagnumDebugTools MagnumShapes MagnumPrimitives)
+    target_link_libraries(MagnumDebugTools PUBLIC MagnumShapes MagnumPrimitives)
 endif()
 if(WITH_SCENEGRAPH OR WITH_SHAPES)
-    target_link_libraries(MagnumDebugTools
+    target_link_libraries(MagnumDebugTools PUBLIC
         MagnumMeshTools
         MagnumShaders)
 endif()

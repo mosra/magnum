@@ -49,7 +49,9 @@ if(NOT BUILD_STATIC)
 elseif(BUILD_STATIC_PIC)
     set_target_properties(MagnumTextureTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_link_libraries(MagnumTextureTools Magnum)
+target_link_libraries(MagnumTextureTools PUBLIC
+    Magnum
+    MagnumGL)
 
 install(TARGETS MagnumTextureTools
     RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
