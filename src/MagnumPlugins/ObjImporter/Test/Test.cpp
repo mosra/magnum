@@ -214,7 +214,7 @@ void ObjImporterTest::mixedPrimitives() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->mesh3D(0));
-    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): mixed primitive MeshPrimitive::Points and MeshPrimitive::Lines\n");
+    CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): mixed primitive GL::MeshPrimitive::Points and GL::MeshPrimitive::Lines\n");
 }
 
 void ObjImporterTest::positionsOnly() {

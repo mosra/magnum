@@ -76,12 +76,12 @@ HOMEBREW_NO_AUTO_UPDATE=1 brew install ninja
 
 @section platforms-macos-troubleshooting Troubleshooting
 
--   @ref AbstractShaderProgram::validate() expects that the shader has a
-    properly configured framebuffer bound along with proper @ref Renderer
+-   @ref GL::AbstractShaderProgram::validate() expects that the shader has a
+    properly configured framebuffer bound along with proper @ref GL::Renderer
     setup. That is often hard to achieve, so the function cannot be portably
     used for shader validity testing.
--   `GL_TIMESTAMP` used by @ref TimeQuery::timestamp() is not implemented on
-    macOS and gives zero results.
+-   `GL_TIMESTAMP` used by @ref GL::TimeQuery::timestamp() is not implemented
+    on macOS and gives zero results.
 
 */
 

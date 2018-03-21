@@ -27,7 +27,7 @@
 
 #include "Magnum/GL/Context.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 ContextState::ContextState(Context& context, std::vector<std::string>&) {
     #ifndef MAGNUM_TARGET_GLES
@@ -41,4 +41,4 @@ ContextState::ContextState(Context& context, std::vector<std::string>&) {
     #endif
 }
 
-}}
+}}}

@@ -27,7 +27,7 @@
 
 #include "Magnum/GL/OpenGL.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 GLint maxTextureSideSize();
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -38,6 +38,6 @@ GLint maxTextureArrayLayers();
 #endif
 GLint maxCubeMapTextureSideSize();
 
-}}
+}}}
 
 #endif

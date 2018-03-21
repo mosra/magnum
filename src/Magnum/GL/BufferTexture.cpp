@@ -32,7 +32,7 @@
 #include "Magnum/GL/Implementation/State.h"
 #include "Magnum/GL/Implementation/TextureState.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 Int BufferTexture::maxSize() {
     #ifndef MAGNUM_TARGET_GLES
@@ -124,5 +124,5 @@ void BufferTexture::setBufferRangeImplementationDSAEXT(BufferTextureFormat inter
 }
 #endif
 
-}
+}}
 #endif

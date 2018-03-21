@@ -42,7 +42,7 @@
 #error this header is not available in OpenGL ES 2.0 build
 #endif
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 struct TransformFeedbackState {
     explicit TransformFeedbackState(Context& context, std::vector<std::string>& extensions);
@@ -66,6 +66,6 @@ struct TransformFeedbackState {
     void(TransformFeedback::*attachBasesImplementation)(GLuint, std::initializer_list<Buffer*>);
 };
 
-}}
+}}}
 
 #endif

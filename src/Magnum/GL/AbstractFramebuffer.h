@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::AbstractFramebuffer, enum @ref Magnum::FramebufferClear, @ref Magnum::FramebufferBlit, @ref Magnum::FramebufferBlitFilter, @ref Magnum::FramebufferTarget, enum set @ref Magnum::FramebufferClearMask
+ * @brief Class @ref Magnum::GL::AbstractFramebuffer, enum @ref Magnum::GL::FramebufferClear, @ref Magnum::GL::FramebufferBlit, @ref Magnum::GL::FramebufferBlitFilter, @ref Magnum::GL::FramebufferTarget, enum set @ref Magnum::GL::FramebufferClearMask
  */
 
 #include <Corrade/Containers/EnumSet.h>
@@ -35,7 +35,7 @@
 #include "Magnum/GL/AbstractObject.h"
 #include "Magnum/Math/Range.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /**
 @brief Mask for framebuffer clearing
@@ -143,7 +143,7 @@ namespace Implementation { struct FramebufferState; }
 
 See @ref DefaultFramebuffer and @ref Framebuffer for more information.
 
-@section AbstractFramebuffer-performance-optimization Performance optimizations and security
+@section GL-AbstractFramebuffer-performance-optimization Performance optimizations and security
 
 The engine tracks currently bound framebuffer and current viewport to avoid
 unnecessary calls to @fn_gl_keyword{BindFramebuffer} and @fn_gl{Viewport} when
@@ -822,6 +822,6 @@ CORRADE_ENUMSET_OPERATORS(FramebufferClearMask)
 CORRADE_ENUMSET_OPERATORS(FramebufferBlitMask)
 #endif
 
-}
+}}
 
 #endif

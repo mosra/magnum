@@ -60,9 +60,9 @@ to @fn_gl{PixelStore}. See also @ref Context::resetState() and
 @see @ref CompressedPixelStorage
 */
 class MAGNUM_GL_EXPORT PixelStorage {
-    friend AbstractFramebuffer;
-    friend AbstractTexture;
-    friend CubeMapTexture;
+    friend GL::AbstractFramebuffer;
+    friend GL::AbstractTexture;
+    friend GL::CubeMapTexture;
 
     public:
         /**
@@ -70,7 +70,7 @@ class MAGNUM_GL_EXPORT PixelStorage {
          *
          * @see @ref dataProperties()
          */
-        static std::size_t pixelSize(PixelFormat format, PixelType type);
+        static std::size_t pixelSize(GL::PixelFormat format, GL::PixelType type);
 
         /**
          * @brief Default constructor
@@ -197,7 +197,7 @@ class MAGNUM_GL_EXPORT PixelStorage {
          * byte offset of first pixel in the data array.
          * @see @ref pixelSize()
          */
-        std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> dataProperties(PixelFormat format, PixelType type, const Vector3i& size) const;
+        std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> dataProperties(GL::PixelFormat format, GL::PixelType type, const Vector3i& size) const;
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
@@ -244,8 +244,8 @@ which is ignored for compressed images.
 @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and WebGL.
 */
 class MAGNUM_GL_EXPORT CompressedPixelStorage: public PixelStorage {
-    friend AbstractTexture;
-    friend CubeMapTexture;
+    friend GL::AbstractTexture;
+    friend GL::CubeMapTexture;
 
     public:
         /**

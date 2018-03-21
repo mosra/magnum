@@ -27,7 +27,7 @@
 
 #include <Corrade/Utility/Debug.h>
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, Version value) {
@@ -66,4 +66,4 @@ Debug& operator<<(Debug& debug, Version value) {
 }
 #endif
 
-}
+}}

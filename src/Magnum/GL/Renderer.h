@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Renderer
+ * @brief Class @ref Magnum::GL::Renderer
  */
 
 #include <Corrade/Containers/EnumSet.h>
@@ -36,7 +36,7 @@
 #include "Magnum/GL/OpenGL.h"
 #include "Magnum/GL/visibility.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 namespace Implementation { struct RendererState; }
 
@@ -1635,17 +1635,17 @@ class MAGNUM_GL_EXPORT Renderer {
 CORRADE_ENUMSET_OPERATORS(Renderer::MemoryBarriers)
 #endif
 
-/** @debugoperatorclassenum{Magnum::Renderer,Magnum::Renderer::Error} */
+/** @debugoperatorclassenum{Renderer,Renderer::Error} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Renderer::Error value);
 
 #ifndef MAGNUM_TARGET_WEBGL
-/** @debugoperatorclassenum{Magnum::Renderer,Magnum::Renderer::ResetNotificationStrategy} */
+/** @debugoperatorclassenum{Renderer,Renderer::ResetNotificationStrategy} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Renderer::ResetNotificationStrategy value);
 
-/** @debugoperatorclassenum{Magnum::Renderer,Magnum::Renderer::GraphicsResetStatus} */
+/** @debugoperatorclassenum{Renderer,Renderer::GraphicsResetStatus} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Renderer::GraphicsResetStatus value);
 #endif
 
-}
+}}
 
 #endif

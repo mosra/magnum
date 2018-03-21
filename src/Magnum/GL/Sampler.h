@@ -26,14 +26,14 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Sampler
+ * @brief Class @ref Magnum::GL::Sampler
  */
 
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/OpenGL.h"
 #include "Magnum/GL/visibility.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /**
 @brief Texture sampler
@@ -275,28 +275,28 @@ class MAGNUM_GL_EXPORT Sampler {
         static Float maxMaxAnisotropy();
 };
 
-/** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::Filter} */
+/** @debugoperatorclassenum{Sampler,Sampler::Filter} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Sampler::Filter value);
 
-/** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::Mipmap} */
+/** @debugoperatorclassenum{Sampler,Sampler::Mipmap} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Sampler::Mipmap value);
 
-/** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::Wrapping} */
+/** @debugoperatorclassenum{Sampler,Sampler::Wrapping} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Sampler::Wrapping value);
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-/** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::CompareMode} */
+/** @debugoperatorclassenum{Sampler,Sampler::CompareMode} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Sampler::CompareMode value);
 
-/** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::CompareFunction} */
+/** @debugoperatorclassenum{Sampler,Sampler::CompareFunction} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Sampler::CompareFunction value);
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-/** @debugoperatorclassenum{Magnum::Sampler,Magnum::Sampler::DepthStencilMode} */
+/** @debugoperatorclassenum{Sampler,Sampler::DepthStencilMode} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Sampler::DepthStencilMode value);
 #endif
 
-}
+}}
 
 #endif

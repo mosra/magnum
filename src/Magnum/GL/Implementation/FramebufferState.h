@@ -37,7 +37,7 @@
 #include "Magnum/GL/Renderbuffer.h"
 #endif
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 struct FramebufferState {
     constexpr static const Range2Di DisengagedViewport{{}, {-1, -1}};
@@ -118,6 +118,6 @@ struct FramebufferState {
     Vector2i maxViewportSize;
 };
 
-}}
+}}}
 
 #endif

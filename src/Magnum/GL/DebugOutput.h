@@ -27,7 +27,7 @@
 
 #ifndef MAGNUM_TARGET_WEBGL
 /** @file
- * @brief Class @ref Magnum::DebugOutput, @ref Magnum::DebugMessage, @ref Magnum::DebugGroup
+ * @brief Class @ref Magnum::GL::DebugOutput, @ref Magnum::GL::DebugMessage, @ref Magnum::GL::DebugGroup
  */
 #endif
 
@@ -39,7 +39,7 @@
 #include "Magnum/GL/visibility.h"
 
 #ifndef MAGNUM_TARGET_WEBGL
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 namespace Implementation { struct DebugState; }
 
@@ -52,7 +52,7 @@ or from third party software and the application itself using @ref DebugMessage
 and @ref DebugGroup, which can be also used to mark various portions of command
 stream in various graphics debuggers, such as ApiTrace or gDEBugger.
 
-@section Magnum-DebugOutput-usage Basic usage
+@section GL-Magnum-DebugOutput-usage Basic usage
 
 Support for debug output is provided by OpenGL 4.3 / OpenGL ES 3.2 or
 @extension{KHR,debug} (desktop/ES extension, covered also by
@@ -412,13 +412,13 @@ class MAGNUM_GL_EXPORT DebugOutput {
         #endif
 };
 
-/** @debugoperatorclassenum{Magnum::DebugOutput,Magnum::DebugOutput::Source} */
+/** @debugoperatorclassenum{DebugOutput,DebugOutput::Source} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DebugOutput::Source value);
 
-/** @debugoperatorclassenum{Magnum::DebugOutput,Magnum::DebugOutput::Type} */
+/** @debugoperatorclassenum{DebugOutput,DebugOutput::Type} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DebugOutput::Type value);
 
-/** @debugoperatorclassenum{Magnum::DebugOutput,Magnum::DebugOutput::Severity} */
+/** @debugoperatorclassenum{DebugOutput,DebugOutput::Severity} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DebugOutput::Severity value);
 
 /**
@@ -428,7 +428,7 @@ Allows inserting messages GL command stream with labels, useful for example
 with conjunction with various graphics debuggers, such as ApiTrace or
 gDEBugger.
 
-@section DebugMessage-usage Basic usage
+@section GL-DebugMessage-usage Basic usage
 
 See @ref DebugOutput for introduction.
 
@@ -453,7 +453,7 @@ If OpenGL 4.3 is not supported and neither @extension{KHR,debug} nor
 @extension{EXT,debug_marker} nor @extension{GREMEDY,string_marker} are
 available, the function is essentially a no-op.
 
-@section DebugMessage-performance-notes Performance notes
+@section GL-DebugMessage-performance-notes Performance notes
 
 If you ensure that you always use the @cpp const char @ce overload of
 @ref insert() and the debug output is either not supported or turned off, the
@@ -595,10 +595,10 @@ class MAGNUM_GL_EXPORT DebugMessage {
         #endif
 };
 
-/** @debugoperatorclassenum{Magnum::DebugMessage,Magnum::DebugMessage::Source} */
+/** @debugoperatorclassenum{DebugMessage,DebugMessage::Source} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DebugMessage::Source value);
 
-/** @debugoperatorclassenum{Magnum::DebugMessage,Magnum::DebugMessage::Type} */
+/** @debugoperatorclassenum{DebugMessage,DebugMessage::Type} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DebugMessage::Type value);
 
 /**
@@ -607,7 +607,7 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DebugMessage::Type value);
 Allows marking portions of GL command stream with labels, useful for example
 with conjunction with various graphics debuggers, such as Apitrace or gDEBugger.
 
-@section DebugGroup-usage Basic usage
+@section GL-DebugGroup-usage Basic usage
 
 See @ref DebugOutput for introduction.
 
@@ -644,7 +644,7 @@ no-op.
     similarly for @ref pop(). So if you want to have nested debug groups, you
     need to create one instance for each level.
 
-@section DebugGroup-volume-control Interaction with debug output volume control
+@section GL-DebugGroup-volume-control Interaction with debug output volume control
 
 Besides putting hierarchical messages in debug output, the group also affects
 settings done by @ref DebugOutput::setEnabled(). Entering debug group inherits
@@ -655,7 +655,7 @@ to state set in parent debug group. No state is preserved, thus calling
 @ref push() after previous @ref pop() will not restore settings done when the
 group was active previously.
 
-@section DebugGroup-performance-notes Performance notes
+@section GL-DebugGroup-performance-notes Performance notes
 
 If you ensure that you always use the @cpp const char @ce overload of
 @ref push() and the debug output is either not supported or turned off, the
@@ -802,10 +802,10 @@ class MAGNUM_GL_EXPORT DebugGroup {
         bool _active;
 };
 
-/** @debugoperatorclassenum{Magnum::DebugGroup,Magnum::DebugGroup::Source} */
+/** @debugoperatorclassenum{DebugGroup,DebugGroup::Source} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DebugGroup::Source value);
 
-}
+}}
 #else
 #error this header is not available in WebGL build
 #endif

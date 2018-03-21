@@ -41,7 +41,7 @@
 #error this header is not available in WebGL 1.0 build
 #endif
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 struct QueryState {
     explicit QueryState(Context& context, std::vector<std::string>& extensions);
@@ -51,6 +51,6 @@ struct QueryState {
     void(AbstractQuery::*createImplementation)();
 };
 
-}}
+}}}
 
 #endif

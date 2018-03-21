@@ -38,7 +38,7 @@
 #include "Magnum/GL/Shader.h"
 #endif
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 struct ShaderState {
     explicit ShaderState(Context& context, std::vector<std::string>& extensions);
@@ -86,6 +86,6 @@ struct ShaderState {
     #endif
 };
 
-}}
+}}}
 
 #endif

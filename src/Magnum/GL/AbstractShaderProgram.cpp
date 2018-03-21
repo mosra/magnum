@@ -37,7 +37,7 @@
 #include "Magnum/GL/Implementation/State.h"
 #include "Magnum/Math/RectangularMatrix.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 namespace Implementation {
     /* Defined in Implementation/driverSpecific.cpp */
@@ -440,7 +440,7 @@ bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<Ab
 Int AbstractShaderProgram::uniformLocationInternal(const Containers::ArrayView<const char> name) {
     const GLint location = glGetUniformLocation(_id, name);
     if(location == -1)
-        Warning() << "AbstractShaderProgram: location of uniform \'" << Debug::nospace << std::string{name, name.size()} << Debug::nospace << "\' cannot be retrieved";
+        Warning{} << "GL::AbstractShaderProgram: location of uniform \'" << Debug::nospace << std::string{name, name.size()} << Debug::nospace << "\' cannot be retrieved";
     return location;
 }
 
@@ -448,7 +448,7 @@ Int AbstractShaderProgram::uniformLocationInternal(const Containers::ArrayView<c
 UnsignedInt AbstractShaderProgram::uniformBlockIndexInternal(const Containers::ArrayView<const char> name) {
     const GLuint index = glGetUniformBlockIndex(_id, name);
     if(index == GL_INVALID_INDEX)
-        Warning() << "AbstractShaderProgram: index of uniform block \'" << Debug::nospace << std::string{name, name.size()} << Debug::nospace << "\' cannot be retrieved";
+        Warning{} << "GL::AbstractShaderProgram: index of uniform block \'" << Debug::nospace << std::string{name, name.size()} << Debug::nospace << "\' cannot be retrieved";
     return index;
 }
 #endif
@@ -1103,4 +1103,4 @@ void AbstractShaderProgram::uniformImplementationDSAEXT(const GLint location, co
 }
 #endif
 
-}
+}}

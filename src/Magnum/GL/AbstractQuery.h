@@ -27,7 +27,7 @@
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 /** @file
- * @brief Class @ref Magnum::AbstractQuery
+ * @brief Class @ref Magnum::GL::AbstractQuery
  */
 #endif
 
@@ -40,7 +40,7 @@
 #include "Magnum/configure.h"
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 namespace Implementation { struct QueryState; }
 
@@ -224,7 +224,7 @@ inline GLuint AbstractQuery::release() {
     return id;
 }
 
-}
+}}
 #else
 #error this header is not available in WebGL 1.0 build
 #endif

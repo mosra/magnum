@@ -124,6 +124,10 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
+-   All GL-related headers and APIs from the root @ref Magnum/ directory and
+    @ref Magnum namespace were moved to @ref Magnum/GL directory and
+    @ref Magnum::GL namespace. See their documentation for information about
+    particular files, classes, enums, typedefs, values and functions.
 -   `Audio::Buffer::Format` is deprecated, use `Audio::BufferFormat` instead
 -   `setData()` functions in the @ref Image and @ref CompressedImage classes
     are deprecated because they don't offer anything extra over simple

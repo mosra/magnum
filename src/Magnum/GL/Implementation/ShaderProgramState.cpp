@@ -31,7 +31,7 @@
 
 #include "State.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string>& extensions): current(0), maxVertexAttributes(0)
         #ifndef MAGNUM_TARGET_GLES2
@@ -227,4 +227,4 @@ void ShaderProgramState::reset() {
     current = State::DisengagedBinding;
 }
 
-}}
+}}}

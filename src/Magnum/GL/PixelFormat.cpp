@@ -27,13 +27,13 @@
 
 #include <Corrade/Utility/Debug.h>
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const PixelFormat value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case PixelFormat::value: return debug << "PixelFormat::" #value;
+        #define _c(value) case PixelFormat::value: return debug << "GL::PixelFormat::" #value;
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         _c(Red)
         #endif
@@ -85,13 +85,13 @@ Debug& operator<<(Debug& debug, const PixelFormat value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "PixelFormat(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::PixelFormat(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const PixelType value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case PixelType::value: return debug << "PixelType::" #value;
+        #define _c(value) case PixelType::value: return debug << "GL::PixelType::" #value;
         _c(UnsignedByte)
         #ifndef MAGNUM_TARGET_GLES2
         _c(Byte)
@@ -142,13 +142,13 @@ Debug& operator<<(Debug& debug, const PixelType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "PixelType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::PixelType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case CompressedPixelFormat::value: return debug << "CompressedPixelFormat::" #value;
+        #define _c(value) case CompressedPixelFormat::value: return debug << "GL::CompressedPixelFormat::" #value;
         #ifndef MAGNUM_TARGET_GLES
         _c(Red)
         _c(RG)
@@ -213,8 +213,8 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "CompressedPixelFormat(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::CompressedPixelFormat(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
-}
+}}

@@ -115,9 +115,9 @@ void TgaImageConverterTest::wrongFormat() {
     const auto data = converter->exportToData(image);
     CORRADE_VERIFY(!data);
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color format PixelFormat::RG\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color format GL::PixelFormat::RG\n");
     #else
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color format PixelFormat::LuminanceAlpha\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color format GL::PixelFormat::LuminanceAlpha\n");
     #endif
 }
 
@@ -136,7 +136,7 @@ void TgaImageConverterTest::wrongType() {
     std::unique_ptr<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
     const auto data = converter->exportToData(image);
     CORRADE_VERIFY(!data);
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color type PixelType::Float\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color type GL::PixelType::Float\n");
 }
 
 void TgaImageConverterTest::rgb() {

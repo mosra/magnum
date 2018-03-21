@@ -63,21 +63,21 @@ void SamplerTest::debugFilter() {
     std::ostringstream out;
 
     Debug(&out) << Sampler::Filter::Linear << Sampler::Filter(0xdead);
-    CORRADE_COMPARE(out.str(), "Sampler::Filter::Linear Sampler::Filter(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Sampler::Filter::Linear GL::Sampler::Filter(0xdead)\n");
 }
 
 void SamplerTest::debugMipmap() {
     std::ostringstream out;
 
     Debug(&out) << Sampler::Mipmap::Base << Sampler::Mipmap(0xdead);
-    CORRADE_COMPARE(out.str(), "Sampler::Mipmap::Base Sampler::Mipmap(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Sampler::Mipmap::Base GL::Sampler::Mipmap(0xdead)\n");
 }
 
 void SamplerTest::debugWrapping() {
     std::ostringstream out;
 
     Debug(&out) << Sampler::Wrapping::ClampToEdge << Sampler::Wrapping(0xdead);
-    CORRADE_COMPARE(out.str(), "Sampler::Wrapping::ClampToEdge Sampler::Wrapping(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Sampler::Wrapping::ClampToEdge GL::Sampler::Wrapping(0xdead)\n");
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -85,14 +85,14 @@ void SamplerTest::debugCompareMode() {
     std::ostringstream out;
 
     Debug(&out) << Sampler::CompareMode::CompareRefToTexture << Sampler::CompareMode(0xdead);
-    CORRADE_COMPARE(out.str(), "Sampler::CompareMode::CompareRefToTexture Sampler::CompareMode(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Sampler::CompareMode::CompareRefToTexture GL::Sampler::CompareMode(0xdead)\n");
 }
 
 void SamplerTest::debugCompareFunction() {
     std::ostringstream out;
 
     Debug(&out) << Sampler::CompareFunction::GreaterOrEqual << Sampler::CompareFunction(0xdead);
-    CORRADE_COMPARE(out.str(), "Sampler::CompareFunction::GreaterOrEqual Sampler::CompareFunction(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Sampler::CompareFunction::GreaterOrEqual GL::Sampler::CompareFunction(0xdead)\n");
 }
 #endif
 
@@ -101,7 +101,7 @@ void SamplerTest::debugDepthStencilMode() {
     std::ostringstream out;
 
     Debug(&out) << Sampler::DepthStencilMode::StencilIndex << Sampler::DepthStencilMode(0xdead);
-    CORRADE_COMPARE(out.str(), "Sampler::DepthStencilMode::StencilIndex Sampler::DepthStencilMode(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Sampler::DepthStencilMode::StencilIndex GL::Sampler::DepthStencilMode(0xdead)\n");
 }
 #endif
 

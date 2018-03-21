@@ -34,7 +34,7 @@
 #include "Magnum/GL/Implementation/State.h"
 #include "Magnum/GL/Implementation/MeshState.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 void MeshView::draw(AbstractShaderProgram& shader, std::initializer_list<std::reference_wrapper<MeshView>> meshes) {
     /* Why std::initializer_list doesn't have empty()? */
@@ -45,7 +45,7 @@ void MeshView::draw(AbstractShaderProgram& shader, std::initializer_list<std::re
     #ifndef CORRADE_NO_ASSERT
     const Mesh* original = &meshes.begin()->get()._original.get();
     for(MeshView& mesh: meshes)
-        CORRADE_ASSERT(&mesh._original.get() == original, "MeshView::draw(): all meshes must be views of the same original mesh", );
+        CORRADE_ASSERT(&mesh._original.get() == original, "GL::MeshView::draw(): all meshes must be views of the same original mesh", );
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -72,7 +72,7 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
     #endif
     std::size_t i = 0;
     for(MeshView& mesh: meshes) {
-        CORRADE_ASSERT(mesh._instanceCount == 1, "MeshView::draw(): cannot draw multiple instanced meshes", );
+        CORRADE_ASSERT(mesh._instanceCount == 1, "GL::MeshView::draw(): cannot draw multiple instanced meshes", );
 
         count[i] = mesh._count;
         indices[i] = reinterpret_cast<GLvoid*>(mesh._indexOffset);
@@ -82,7 +82,7 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
             #ifndef MAGNUM_TARGET_GLES
             hasBaseVertex = true;
             #else
-            CORRADE_ASSERT(!original._indexBuffer, "MeshView::draw(): desktop OpenGL is required for base vertex specification in indexed meshes", );
+            CORRADE_ASSERT(!original._indexBuffer, "GL::MeshView::draw(): desktop OpenGL is required for base vertex specification in indexed meshes", );
             #endif
         }
 
@@ -128,7 +128,7 @@ void MeshView::multiDrawImplementationFallback(std::initializer_list<std::refere
         /* Nothing to draw in this mesh */
         if(!mesh._count) continue;
 
-        CORRADE_ASSERT(mesh._instanceCount == 1, "MeshView::draw(): cannot draw multiple instanced meshes", );
+        CORRADE_ASSERT(mesh._instanceCount == 1, "GL::MeshView::draw(): cannot draw multiple instanced meshes", );
 
         #ifndef MAGNUM_TARGET_GLES2
         mesh._original.get().drawInternal(mesh._count, mesh._baseVertex, 1, mesh._indexOffset, mesh._indexStart, mesh._indexEnd);
@@ -170,4 +170,4 @@ void MeshView::draw(AbstractShaderProgram& shader, TransformFeedback& xfb, Unsig
 }
 #endif
 
-}
+}}

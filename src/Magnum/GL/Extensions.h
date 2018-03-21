@@ -26,12 +26,12 @@
 */
 
 /** @file
- * @brief Namespace @ref Magnum::Extensions
+ * @brief Namespace @ref Magnum::GL::Extensions
  */
 
 #include "Magnum/GL/Version.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /* Standard Android build system thinks that it's okay to define unmangled
    unprefixed macros. I think that whoever did that needs to be punished,
@@ -475,6 +475,6 @@ namespace ANDROID {
 
 }
 
-}
+}}
 
 #endif

@@ -27,14 +27,14 @@
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 /** @file
- * @brief Class @ref Magnum::BufferTexture
+ * @brief Class @ref Magnum::GL::BufferTexture
  */
 #endif
 
 #include "Magnum/GL/AbstractTexture.h"
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /**
 @brief Buffer texture
@@ -42,7 +42,7 @@ namespace Magnum {
 This texture is, unlike classic textures such as @ref Texture, used as simple
 data source, without any unnecessary interpolation and wrapping methods.
 
-@section BufferTexture-usage Usage
+@section GL-BufferTexture-usage Usage
 
 Texture data are stored in buffer and after binding the buffer to the texture
 using @ref setBuffer(), you can fill the buffer at any time using data setting
@@ -63,13 +63,13 @@ textures, coordinates for buffer textures are integer coordinates passed to
 @glsl texelFetch() @ce. See @ref AbstractShaderProgram documentation for more
 information about usage in shaders.
 
-@section BufferTexture-performance-optimizations Performance optimizations
+@section GL-BufferTexture-performance-optimizations Performance optimizations
 
 If either @extension{ARB,direct_state_access} (part of OpenGL 4.5) or
 @extension{EXT,direct_state_access} is available, @ref setBuffer() functions
 use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and
 @fn_gl{BindTexture}. See
-@ref AbstractTexture-performance-optimization "relevant section in AbstractTexture documentation"
+@ref GL-AbstractTexture-performance-optimization "relevant section in AbstractTexture documentation"
 and respective function documentation for more information.
 
 @see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
@@ -242,7 +242,7 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
         #endif
 };
 
-}
+}}
 #else
 #error this header is not available in OpenGL ES 2.0 and WebGL build
 #endif

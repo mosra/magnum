@@ -28,7 +28,7 @@
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 RendererState::RendererState(Context& context, std::vector<std::string>& extensions)
     #ifndef MAGNUM_TARGET_WEBGL
@@ -118,4 +118,4 @@ void RendererState::PixelStorage::reset() {
     #endif
 }
 
-}}
+}}}

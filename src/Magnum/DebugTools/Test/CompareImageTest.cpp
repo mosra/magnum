@@ -305,7 +305,7 @@ void CompareImageTest::compareDifferentFormat() {
         compare.printErrorMessage(e, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), "Images a and b have different format, actual PixelFormat::RGBA/PixelType::Float but PixelFormat::RGB/PixelType::Float expected.\n");
+    CORRADE_COMPARE(out.str(), "Images a and b have different format, actual GL::PixelFormat::RGBA/GL::PixelType::Float but GL::PixelFormat::RGB/GL::PixelType::Float expected.\n");
 }
 
 void CompareImageTest::compareDifferentType() {
@@ -321,7 +321,7 @@ void CompareImageTest::compareDifferentType() {
         compare.printErrorMessage(e, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), "Images a and b have different format, actual PixelFormat::RGB/PixelType::UnsignedByte but PixelFormat::RGB/PixelType::UnsignedShort expected.\n");
+    CORRADE_COMPARE(out.str(), "Images a and b have different format, actual GL::PixelFormat::RGB/GL::PixelType::UnsignedByte but GL::PixelFormat::RGB/GL::PixelType::UnsignedShort expected.\n");
 }
 
 void CompareImageTest::compareSameZeroThreshold() {

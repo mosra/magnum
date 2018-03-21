@@ -27,14 +27,14 @@
 
 #ifndef MAGNUM_TARGET_WEBGL
 /** @file
- * @brief Class @ref Magnum::TimeQuery
+ * @brief Class @ref Magnum::GL::TimeQuery
  */
 #endif
 
 #include "Magnum/GL/AbstractQuery.h"
 
 #ifndef MAGNUM_TARGET_WEBGL
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /**
 @brief Query for elapsed time
@@ -161,7 +161,7 @@ class TimeQuery: public AbstractQuery {
         explicit TimeQuery(GLuint id, Target target, ObjectFlags flags) noexcept: AbstractQuery{id, GLenum(target), flags} {}
 };
 
-}
+}}
 #else
 #error this header is not available in WebGL 1.0 build
 #endif

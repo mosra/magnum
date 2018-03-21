@@ -37,7 +37,7 @@
 #endif
 #include "Magnum/GL/Implementation/MeshState.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 #ifndef MAGNUM_TARGET_GLES
 Int Buffer::minMapAlignment() {
@@ -579,7 +579,7 @@ bool Buffer::unmapImplementationDSAEXT() {
 Debug& operator<<(Debug& debug, Buffer::TargetHint value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Buffer::TargetHint::value: return debug << "Buffer::TargetHint::" #value;
+        #define _c(value) case Buffer::TargetHint::value: return debug << "GL::Buffer::TargetHint::" #value;
         _c(Array)
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_WEBGL
@@ -611,13 +611,13 @@ Debug& operator<<(Debug& debug, Buffer::TargetHint value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Buffer::TargetHint(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::Buffer::TargetHint(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 #ifndef MAGNUM_TARGET_GLES2
 Debug& operator<<(Debug& debug, Buffer::Target value) {
     switch(value) {
-        #define _c(value) case Buffer::Target::value: return debug << "Buffer::Target::" #value;
+        #define _c(value) case Buffer::Target::value: return debug << "GL::Buffer::Target::" #value;
         #ifndef MAGNUM_TARGET_WEBGL
         _c(AtomicCounter)
         _c(ShaderStorage)
@@ -626,9 +626,9 @@ Debug& operator<<(Debug& debug, Buffer::Target value) {
         #undef _c
     }
 
-    return debug << "Buffer::Target(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::Buffer::Target(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 #endif
 
-}
+}}

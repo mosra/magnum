@@ -35,7 +35,7 @@
 #include "Magnum/Math/Color.h"
 #endif
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 DefaultFramebuffer defaultFramebuffer;
 
@@ -138,7 +138,7 @@ void DefaultFramebuffer::initializeContextBasedFunctionality(Context& context) {
 Debug& operator<<(Debug& debug, const DefaultFramebuffer::Status value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case DefaultFramebuffer::Status::value: return debug << "DefaultFramebuffer::Status::" #value;
+        #define _c(value) case DefaultFramebuffer::Status::value: return debug << "GL::DefaultFramebuffer::Status::" #value;
         _c(Complete)
         #ifndef MAGNUM_TARGET_WEBGL
         _c(Undefined)
@@ -147,8 +147,8 @@ Debug& operator<<(Debug& debug, const DefaultFramebuffer::Status value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "DefaultFramebuffer::Status(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::DefaultFramebuffer::Status(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
-}
+}}

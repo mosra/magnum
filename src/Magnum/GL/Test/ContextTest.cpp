@@ -54,7 +54,7 @@ ContextTest::ContextTest() {
 }
 
 void ContextTest::extensions() {
-    const char* used[Implementation::ExtensionCount]{};
+    const char* used[GL::Implementation::ExtensionCount]{};
 
     /* Check that all extension indices are unique */
     for(Version version: {
@@ -81,9 +81,9 @@ void ContextTest::extensions() {
         Version::None})
     {
         for(const Extension& e: Extension::extensions(version)) {
-            if(e.index() >= Implementation::ExtensionCount) {
+            if(e.index() >= GL::Implementation::ExtensionCount) {
                 Error{} << "Index" << e.index() << "used by" << e.string()
-                        << "larger than" << Implementation::ExtensionCount;
+                        << "larger than" << GL::Implementation::ExtensionCount;
                 CORRADE_VERIFY(false);
             }
 
@@ -106,7 +106,7 @@ void ContextTest::debugFlag() {
     #else
     std::ostringstream out;
     Debug(&out) << Context::Flag::Debug << Context::Flag(0xdead);
-    CORRADE_COMPARE(out.str(), "Context::Flag::Debug Context::Flag(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Context::Flag::Debug GL::Context::Flag(0xdead)\n");
     #endif
 }
 
@@ -116,7 +116,7 @@ void ContextTest::debugFlags() {
     #else
     std::ostringstream out;
     Debug(&out) << Context::Flags{} << (Context::Flag::Debug|Context::Flag::NoError) << (Context::Flag::Debug|Context::Flag(0xded0));
-    CORRADE_COMPARE(out.str(), "Context::Flags{} Context::Flag::Debug|Context::Flag::NoError Context::Flag::Debug|Context::Flag(0xded0)\n");
+    CORRADE_COMPARE(out.str(), "GL::Context::Flags{} GL::Context::Flag::Debug|GL::Context::Flag::NoError GL::Context::Flag::Debug|GL::Context::Flag(0xded0)\n");
     #endif
 }
 
@@ -124,10 +124,10 @@ void ContextTest::debugDetectedDriver() {
     std::ostringstream out;
     #ifndef MAGNUM_TARGET_WEBGL
     Debug{&out} << Context::DetectedDriver::Amd << Context::DetectedDriver(0xdead);
-    CORRADE_COMPARE(out.str(), "Context::DetectedDriver::Amd Context::DetectedDriver(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Context::DetectedDriver::Amd GL::Context::DetectedDriver(0xdead)\n");
     #else
     Debug{&out} << Context::DetectedDriver::Angle << Context::DetectedDriver(0xdead);
-    CORRADE_COMPARE(out.str(), "Context::DetectedDriver::Angle Context::DetectedDriver(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Context::DetectedDriver::Angle GL::Context::DetectedDriver(0xdead)\n");
     #endif
 }
 
@@ -135,10 +135,10 @@ void ContextTest::debugDetectedDrivers() {
     std::ostringstream out;
     #ifndef MAGNUM_TARGET_WEBGL
     Debug{&out} << Context::DetectedDrivers{} << (Context::DetectedDriver::Amd|Context::DetectedDriver::NVidia) << (Context::DetectedDriver::Mesa|Context::DetectedDriver(0xde00));
-    CORRADE_COMPARE(out.str(), "Context::DetectedDrivers{} Context::DetectedDriver::Amd|Context::DetectedDriver::NVidia Context::DetectedDriver::Mesa|Context::DetectedDriver(0xde00)\n");
+    CORRADE_COMPARE(out.str(), "GL::Context::DetectedDrivers{} GL::Context::DetectedDriver::Amd|GL::Context::DetectedDriver::NVidia GL::Context::DetectedDriver::Mesa|GL::Context::DetectedDriver(0xde00)\n");
     #else
     Debug{&out} << Context::DetectedDrivers{} << (Context::DetectedDriver::Angle) << (Context::DetectedDriver::Angle|Context::DetectedDriver(0xde00));
-    CORRADE_COMPARE(out.str(), "Context::DetectedDrivers{} Context::DetectedDriver::Angle Context::DetectedDriver::Angle|Context::DetectedDriver(0xde00)\n");
+    CORRADE_COMPARE(out.str(), "GL::Context::DetectedDrivers{} GL::Context::DetectedDriver::Angle GL::Context::DetectedDriver::Angle|GL::Context::DetectedDriver(0xde00)\n");
     #endif
 }
 

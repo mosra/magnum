@@ -56,10 +56,11 @@ other target hints for UBOs etc.):
 
 @snippet MagnumGL.cpp Buffer-webgl
 
-See @ref Buffer-webgl-restrictions "Buffer", @ref Mesh-webgl-restrictions "Mesh",
-@ref Texture::setSubImage() "*Texture::setSubImage()",
-@ref Mesh::addVertexBuffer(), @ref Renderer::setStencilFunction(),
-@ref Renderer::setStencilMask() and @ref Renderer::setBlendFunction()
+See @ref GL-Buffer-webgl-restrictions "GL::Buffer",
+@ref GL-Mesh-webgl-restrictions "GL::Mesh",
+@ref GL::Texture::setSubImage() "GL::*Texture::setSubImage()",
+@ref GL::Mesh::addVertexBuffer(), @ref GL::Renderer::setStencilFunction(),
+@ref GL::Renderer::setStencilMask() and @ref GL::Renderer::setBlendFunction()
 documentation for more information. The corresponding sections in official
 WebGL specification provide even more detail:
 

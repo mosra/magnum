@@ -27,14 +27,14 @@
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 /** @file
- * @brief Enum @ref Magnum::BufferTextureFormat
+ * @brief Enum @ref Magnum::GL::BufferTextureFormat
  */
 #endif
 
 #include "Magnum/GL/OpenGL.h"
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /**
 @brief Internal buffer texture format
@@ -171,7 +171,7 @@ enum class BufferTextureFormat: GLenum {
     RGBA32F = GL_RGBA32F
 };
 
-}
+}}
 #else
 #error this header is not available in OpenGL ES 2.0 and WebGL build
 #endif

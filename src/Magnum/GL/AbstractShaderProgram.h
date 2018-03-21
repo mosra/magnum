@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::AbstractShaderProgram
+ * @brief Class @ref Magnum::GL::AbstractShaderProgram
  */
 
 #include <functional>
@@ -42,14 +42,14 @@
 #include <vector>
 #endif
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 namespace Implementation { struct ShaderProgramState; }
 
 /**
 @brief Base for shader program implementations
 
-@section AbstractShaderProgram-subclassing Subclassing workflow
+@section GL-AbstractShaderProgram-subclassing Subclassing workflow
 
 This class is designed to be used via subclassing. Subclasses define these
 functions and properties:
@@ -89,7 +89,7 @@ functions and properties:
     @snippet MagnumGL.cpp AbstractShaderProgram-xfb
 </li></ul>
 
-@subsection AbstractShaderProgram-attribute-location Binding attribute location
+@subsection GL-AbstractShaderProgram-attribute-location Binding attribute location
 
 The preferred workflow is to specify attribute location for vertex shader input
 attributes and fragment shader output attributes explicitly in the shader code,
@@ -155,7 +155,7 @@ out vec3 normal;
 @todo @extension2{EXT,separate_shader_objects,separate_shader_objects.gles}
     supports explicit attrib location
 
-@subsection AbstractShaderProgram-uniform-location Uniform locations
+@subsection GL-AbstractShaderProgram-uniform-location Uniform locations
 
 The preferred workflow is to specify uniform locations directly in the shader
 code, e.g.:
@@ -190,7 +190,7 @@ uniform mat3 normalMatrix;
 @requires_gles Explicit uniform location is not supported in WebGL. Use
     @ref uniformLocation() instead.
 
-@subsection AbstractShaderProgram-uniform-block-binding Uniform block bindings
+@subsection GL-AbstractShaderProgram-uniform-block-binding Uniform block bindings
 
 The preferred workflow is to specify uniform block binding directly in the
 shader code, e.g.:
@@ -240,7 +240,7 @@ layout(std140) uniform material {
 @requires_gles Explicit uniform block binding is not supported in WebGL. Use
     @ref uniformBlockIndex() and @ref setUniformBlockBinding() instead.
 
-@subsection AbstractShaderProgram-shader-storage-block-binding Shader storage block bindings
+@subsection GL-AbstractShaderProgram-shader-storage-block-binding Shader storage block bindings
 
 The workflow is to specify shader storage block binding directly in the shader
 code, e.g.:
@@ -261,7 +261,7 @@ layout(std430, binding = 1) buffer normals {
 @requires_gles31 Shader storage is not available in OpenGL ES 3.0 and older.
 @requires_gles Shader storage is not available in WebGL.
 
-@subsection AbstractShaderProgram-texture-units Specifying texture and image binding units
+@subsection GL-AbstractShaderProgram-texture-units Specifying texture and image binding units
 
 The preferred workflow is to specify texture/image binding unit directly in the
 shader code, e.g.:
@@ -295,7 +295,7 @@ uniform sampler2D specularTexture;
 @requires_gles Explicit texture binding unit is not supported in WebGL. Use
     @ref setUniform(Int, const T&) "setUniform(Int, Int)" instead.
 
-@subsection AbstractShaderProgram-transform-feedback Specifying transform feedback binding points
+@subsection GL-AbstractShaderProgram-transform-feedback Specifying transform feedback binding points
 
 The preferred workflow is to specify output binding points directly in the
 shader code, e.g.:
@@ -339,24 +339,24 @@ out vec3 velocity;
     in OpenGL ES or WebGL.
 @requires_webgl20 Transform feedback is not available in WebGL 1.0.
 
-@section AbstractShaderProgram-rendering-workflow Rendering workflow
+@section GL-AbstractShaderProgram-rendering-workflow Rendering workflow
 
 Basic workflow with AbstractShaderProgram subclasses is: instance shader
-class, configure attribute binding in meshes (see @ref Mesh-configuration "Mesh documentation"
+class, configure attribute binding in meshes (see @ref GL-Mesh-configuration "Mesh documentation"
 for more information) and map shader outputs to framebuffer attachments if
-needed (see @ref Framebuffer-usage "Framebuffer documentation" for more
+needed (see @ref GL-Framebuffer-usage "Framebuffer documentation" for more
 information). In each draw event set all required shader parameters, bind
 specific framebuffer (if needed) and then call @ref Mesh::draw(). Example:
 
 @snippet MagnumGL.cpp AbstractShaderProgram-rendering
 
-@section AbstractShaderProgram-compute-workflow Compute workflow
+@section GL-AbstractShaderProgram-compute-workflow Compute workflow
 
 Add just the @ref Shader::Type::Compute shader and implement uniform/texture
 setting functions as needed. After setting up required parameters call
 @ref dispatchCompute().
 
-@section AbstractShaderProgram-types Mapping between GLSL and Magnum types
+@section GL-AbstractShaderProgram-types Mapping between GLSL and Magnum types
 
 See @ref types for more information, only types with GLSL equivalent can be
 used (and their super- or subclasses with the same size and underlying type).
@@ -388,7 +388,7 @@ See also @ref Attribute::DataType enum for additional type options.
     @ref Matrix2x4, @ref Matrix4x2, @ref Matrix3x4 and @ref Matrix4x3) are not
     available in WebGL 1.0.
 
-@section AbstractShaderProgram-performance-optimization Performance optimizations
+@section GL-AbstractShaderProgram-performance-optimization Performance optimizations
 
 The engine tracks currently used shader program to avoid unnecessary calls to
 @fn_gl_keyword{UseProgram}. Shader limits (such as @ref maxVertexAttributes())
@@ -811,7 +811,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @see @fn_gl_keyword{BindAttribLocation}
          * @deprecated_gl Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
-         *      @ref AbstractShaderProgram-attribute-location "class documentation"
+         *      @ref GL-AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
          */
         void bindAttributeLocation(UnsignedInt location, const std::string& name) {
@@ -837,7 +837,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @see @fn_gl_keyword{BindFragDataLocationIndexed}
          * @deprecated_gl Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
-         *      @ref AbstractShaderProgram-attribute-location "class documentation"
+         *      @ref GL-AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
          * @requires_gl33 Extension @extension{ARB,blend_func_extended}
          * @requires_gl Multiple blend function inputs are not available in
@@ -862,7 +862,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @see @fn_gl_keyword{BindFragDataLocation}
          * @deprecated_gl Preferred usage is to specify attribute location
          *      explicitly in the shader instead of using this function. See
-         *      @ref AbstractShaderProgram-attribute-location "class documentation"
+         *      @ref GL-AbstractShaderProgram-attribute-location "class documentation"
          *      for more information.
          * @requires_gl30 Extension @extension{EXT,gpu_shader4}
          * @requires_gl Use explicit location specification in OpenGL ES 3.0 or
@@ -900,7 +900,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @see @fn_gl_keyword{TransformFeedbackVaryings}
          * @deprecated_gl Preferred usage is to specify transform feedback
          *      outputs explicitly in the shader instead of using this
-         *      function. See @ref AbstractShaderProgram-transform-feedback "class documentation"
+         *      function. See @ref GL-AbstractShaderProgram-transform-feedback "class documentation"
          *      for more information.
          * @requires_gl30 Extension @extension{EXT,transform_feedback}
          * @requires_gl40 Extension @extension{ARB,transform_feedback3} for
@@ -934,7 +934,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @see @ref setUniform(), @fn_gl_keyword{GetUniformLocation}
          * @deprecated_gl Preferred usage is to specify uniform location
          *      explicitly in the shader instead of using this function. See
-         *      @ref AbstractShaderProgram-uniform-location "class documentation"
+         *      @ref GL-AbstractShaderProgram-uniform-location "class documentation"
          *      for more information.
          */
         Int uniformLocation(const std::string& name) {
@@ -960,7 +960,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
          * @deprecated_gl Preferred usage is to specify uniform block binding
          *      explicitly in the shader instead of using this function. See
-         *      @ref AbstractShaderProgram-uniform-block-binding "class documentation"
+         *      @ref GL-AbstractShaderProgram-uniform-block-binding "class documentation"
          *      for more information.
          */
         UnsignedInt uniformBlockIndex(const std::string& name) {
@@ -1110,7 +1110,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @requires_webgl20 Uniform buffers are not available in WebGL 1.0.
          * @deprecated_gl Preferred usage is to specify uniform block binding
          *      explicitly in the shader instead of using this function. See
-         *      @ref AbstractShaderProgram-uniform-block-binding "class documentation"
+         *      @ref GL-AbstractShaderProgram-uniform-block-binding "class documentation"
          *      for more information.
          */
         void setUniformBlockBinding(UnsignedInt index, UnsignedInt binding) {
@@ -1300,6 +1300,6 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         #endif
 };
 
-}
+}}
 
 #endif

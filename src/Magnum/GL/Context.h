@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Context, @ref Magnum::Extension, macro @ref MAGNUM_ASSERT_VERSION_SUPPORTED(), @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
+ * @brief Class @ref Magnum::GL::Context, @ref Magnum::GL::Extension, macro @ref MAGNUM_ASSERT_VERSION_SUPPORTED(), @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
  */
 
 #include <cstdlib>
@@ -45,6 +45,10 @@
 
 namespace Magnum {
 
+namespace Platform { class Context; }
+
+namespace GL {
+
 namespace Implementation {
     struct ContextState;
     struct State;
@@ -60,8 +64,6 @@ namespace Implementation {
             #endif
     };
 }
-
-namespace Platform { class Context; }
 
 /**
 @brief Run-time information about OpenGL extension
@@ -110,7 +112,7 @@ also possible to create the context without using any `*Application` class
 using @ref Platform::Context subclass, see @ref platform documentation for more
 information.
 
-@section Context-command-line Command-line options
+@section GL-Context-command-line Command-line options
 
 The context is configurable through command-line options, that are passed
 either from the `Platform::*Application` classes or from the @ref Platform::Context
@@ -675,17 +677,17 @@ CORRADE_ENUMSET_OPERATORS(Context::Flags)
 CORRADE_ENUMSET_OPERATORS(Context::DetectedDrivers)
 
 #ifndef MAGNUM_TARGET_WEBGL
-/** @debugoperatorclassenum{Magnum::Context,Magnum::Context::Flag} */
+/** @debugoperatorclassenum{Context,Context::Flag} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Context::Flag value);
 
-/** @debugoperatorclassenum{Magnum::Context,Magnum::Context::Flags} */
+/** @debugoperatorclassenum{Context,Context::Flags} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Context::Flags value);
 #endif
 
-/** @debugoperatorclassenum{Magnum::Context,Magnum::Context::DetectedDriver} */
+/** @debugoperatorclassenum{Context,Context::DetectedDriver} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Context::DetectedDriver value);
 
-/** @debugoperatorclassenum{Magnum::Context,Magnum::Context::DetectedDrivers} */
+/** @debugoperatorclassenum{Context,Context::DetectedDrivers} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Context::DetectedDrivers value);
 
 /** @hideinitializer
@@ -700,7 +702,7 @@ Example usage:
 
 @snippet MagnumGL.cpp Context-MAGNUM_ASSERT_VERSION_SUPPORTED
 
-@see @ref Magnum::Context::isVersionSupported() "Context::isVersionSupported()",
+@see @ref Magnum::GL::Context::isVersionSupported() "GL::Context::isVersionSupported()",
     @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED(), @ref CORRADE_ASSERT(),
     @ref CORRADE_INTERNAL_ASSERT()
 */
@@ -718,7 +720,7 @@ Example usage:
 
 /** @hideinitializer
 @brief Assert that given OpenGL extension is supported
-@param extension    Extension name (from @ref Magnum::Extensions "Extensions"
+@param extension    Extension name (from the @ref Magnum::GL::Extensions "Extensions"
     namespace)
 
 Useful for initial checks on availability of required features.
@@ -745,6 +747,6 @@ Example usage:
     } while(0)
 #endif
 
-}
+}}
 
 #endif

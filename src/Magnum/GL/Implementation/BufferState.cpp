@@ -31,7 +31,7 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Implementation/State.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 const Buffer::TargetHint BufferState::targetForIndex[] = {
     Buffer::TargetHint::Array,
@@ -193,4 +193,4 @@ void BufferState::reset() {
     std::fill_n(bindings, std::size_t{TargetCount}, State::DisengagedBinding);
 }
 
-}}
+}}}

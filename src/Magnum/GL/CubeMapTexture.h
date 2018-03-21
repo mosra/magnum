@@ -26,14 +26,14 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::CubeMapTexture, enum @ref Magnum::CubeMapCoordinate
+ * @brief Class @ref Magnum::GL::CubeMapTexture, enum @ref Magnum::GL::CubeMapCoordinate
  */
 
 #include "Magnum/Array.h"
 #include "Magnum/GL/AbstractTexture.h"
 #include "Magnum/Math/Vector2.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /**
 @brief Cube map coordinate
@@ -65,7 +65,7 @@ turned upside down (+Y is top):
               | +Y |
               +----+
 
-@section CubeMapTexture-usage Basic usage
+@section GL-CubeMapTexture-usage Basic usage
 
 See @ref Texture documentation for introduction.
 
@@ -1120,6 +1120,6 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
 };
 
-}
+}}
 
 #endif

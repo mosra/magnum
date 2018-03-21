@@ -34,7 +34,7 @@
 #include "Magnum/GL/Implementation/State.h"
 #include "Magnum/GL/Implementation/DebugState.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 namespace {
 
@@ -202,7 +202,7 @@ void DebugOutput::callbackImplementationKhrES(const Callback callback, const voi
 Debug& operator<<(Debug& debug, const DebugOutput::Source value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case DebugOutput::Source::value: return debug << "DebugOutput::Source::" #value;
+        #define _c(value) case DebugOutput::Source::value: return debug << "GL::DebugOutput::Source::" #value;
         _c(Api)
         _c(WindowSystem)
         _c(ShaderCompiler)
@@ -213,13 +213,13 @@ Debug& operator<<(Debug& debug, const DebugOutput::Source value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "DebugOutput::Source(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::DebugOutput::Source(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DebugOutput::Type value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case DebugOutput::Type::value: return debug << "DebugOutput::Type::" #value;
+        #define _c(value) case DebugOutput::Type::value: return debug << "GL::DebugOutput::Type::" #value;
         _c(Error)
         _c(DeprecatedBehavior)
         _c(UndefinedBehavior)
@@ -233,12 +233,12 @@ Debug& operator<<(Debug& debug, const DebugOutput::Type value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "DebugOutput::Type(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::DebugOutput::Type(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DebugOutput::Severity value) {
     switch(value) {
-        #define _c(value) case DebugOutput::Severity::value: return debug << "DebugOutput::Severity::" #value;
+        #define _c(value) case DebugOutput::Severity::value: return debug << "GL::DebugOutput::Severity::" #value;
         _c(High)
         _c(Medium)
         _c(Low)
@@ -246,7 +246,7 @@ Debug& operator<<(Debug& debug, const DebugOutput::Severity value) {
         #undef _c
     }
 
-    return debug << "DebugOutput::Severity(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::DebugOutput::Severity(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
@@ -282,19 +282,19 @@ void DebugMessage::insertImplementationGremedy(Source, Type, UnsignedInt, DebugO
 Debug& operator<<(Debug& debug, const DebugMessage::Source value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case DebugMessage::Source::value: return debug << "DebugMessage::Source::" #value;
+        #define _c(value) case DebugMessage::Source::value: return debug << "GL::DebugMessage::Source::" #value;
         _c(ThirdParty)
         _c(Application)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "DebugMessage::Source(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::DebugMessage::Source(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DebugMessage::Type value) {
     switch(value) {
-        #define _c(value) case DebugMessage::Type::value: return debug << "DebugMessage::Type::" #value;
+        #define _c(value) case DebugMessage::Type::value: return debug << "GL::DebugMessage::Type::" #value;
         _c(Error)
         _c(DeprecatedBehavior)
         _c(UndefinedBehavior)
@@ -305,7 +305,7 @@ Debug& operator<<(Debug& debug, const DebugMessage::Type value) {
         #undef _c
     }
 
-    return debug << "DebugMessage::Type(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::DebugMessage::Type(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
@@ -327,13 +327,13 @@ Int DebugGroup::maxStackDepth() {
 }
 
 void DebugGroup::pushInternal(const Source source, const UnsignedInt id, const Containers::ArrayView<const char> message) {
-    CORRADE_ASSERT(!_active, "DebugGroup::push(): group is already active", );
+    CORRADE_ASSERT(!_active, "GL::DebugGroup::push(): group is already active", );
     Context::current().state().debug->pushGroupImplementation(source, id, message);
     _active = true;
 }
 
 void DebugGroup::pop() {
-    CORRADE_ASSERT(_active, "DebugGroup::pop(): group is not active", );
+    CORRADE_ASSERT(_active, "GL::DebugGroup::pop(): group is not active", );
     Context::current().state().debug->popGroupImplementation();
     _active = false;
 }
@@ -378,16 +378,16 @@ void DebugGroup::popImplementationExt() {
 Debug& operator<<(Debug& debug, const DebugGroup::Source value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case DebugGroup::Source::value: return debug << "DebugGroup::Source::" #value;
+        #define _c(value) case DebugGroup::Source::value: return debug << "GL::DebugGroup::Source::" #value;
         _c(ThirdParty)
         _c(Application)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "DebugGroup::Source(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::DebugGroup::Source(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
-}
+}}
 #endif

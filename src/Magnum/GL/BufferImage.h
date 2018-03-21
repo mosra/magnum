@@ -27,7 +27,7 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 /** @file
- * @brief Class @ref Magnum::BufferImage, @ref Magnum::CompressedBufferImage, typedef @ref Magnum::BufferImage1D, @ref Magnum::BufferImage2D, @ref Magnum::BufferImage3D, @ref Magnum::CompressedBufferImage1D, @ref Magnum::CompressedBufferImage2D, @ref Magnum::CompressedBufferImage3D
+ * @brief Class @ref Magnum::GL::BufferImage, @ref Magnum::GL::CompressedBufferImage, typedef @ref Magnum::GL::BufferImage1D, @ref Magnum::GL::BufferImage2D, @ref Magnum::GL::BufferImage3D, @ref Magnum::GL::CompressedBufferImage1D, @ref Magnum::GL::CompressedBufferImage2D, @ref Magnum::GL::CompressedBufferImage3D
  */
 #endif
 
@@ -36,7 +36,7 @@
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/Math/Vector4.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 #ifndef MAGNUM_TARGET_GLES2
 /**
@@ -160,7 +160,7 @@ template<UnsignedInt dimensions> class BufferImage {
          * See @ref PixelStorage::dataProperties() for more information.
          */
         std::tuple<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>, std::size_t> dataProperties() const {
-            return Implementation::imageDataProperties<dimensions>(*this);
+            return Magnum::Implementation::imageDataProperties<dimensions>(*this);
         }
 
         /** @brief Currently allocated data size */
@@ -366,7 +366,7 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          *      WebGL.
          */
         std::tuple<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>, std::size_t> dataProperties() const {
-            return Implementation::compressedImageDataProperties<dimensions>(*this);
+            return Magnum::Implementation::compressedImageDataProperties<dimensions>(*this);
         }
         #endif
 
@@ -489,6 +489,6 @@ template<UnsignedInt dimensions> inline void CompressedBufferImage<dimensions>::
 #error this header is not available in OpenGL ES 2.0 build
 #endif
 
-}
+}}
 
 #endif

@@ -25,7 +25,7 @@
 
 #include "PrimitiveQuery.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 void PrimitiveQuery::begin() {
     #ifndef MAGNUM_TARGET_GLES
@@ -49,4 +49,4 @@ void PrimitiveQuery::end() {
     #endif
 }
 
-}
+}}

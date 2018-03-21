@@ -400,8 +400,8 @@ void AbstractShaderProgramGLTest::uniformNotFound() {
     program.uniformLocation("nonexistent");
     program.uniformLocation(std::string{"another"});
     CORRADE_COMPARE(out.str(),
-        "AbstractShaderProgram: location of uniform 'nonexistent' cannot be retrieved\n"
-        "AbstractShaderProgram: location of uniform 'another' cannot be retrieved\n");
+        "GL::AbstractShaderProgram: location of uniform 'nonexistent' cannot be retrieved\n"
+        "GL::AbstractShaderProgram: location of uniform 'another' cannot be retrieved\n");
 }
 
 namespace {
@@ -592,8 +592,8 @@ void AbstractShaderProgramGLTest::uniformBlockIndexNotFound() {
     program.uniformBlockIndex("nonexistent");
     program.uniformBlockIndex(std::string{"another"});
     CORRADE_COMPARE(out.str(),
-        "AbstractShaderProgram: index of uniform block 'nonexistent' cannot be retrieved\n"
-        "AbstractShaderProgram: index of uniform block 'another' cannot be retrieved\n");
+        "GL::AbstractShaderProgram: index of uniform block 'nonexistent' cannot be retrieved\n"
+        "GL::AbstractShaderProgram: index of uniform block 'another' cannot be retrieved\n");
 }
 
 namespace {

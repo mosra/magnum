@@ -5,7 +5,7 @@
 #include "Magnum/GL/TransformFeedback.h"
 #include "Magnum/GL/Implementation/State.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 TransformFeedbackState::TransformFeedbackState(Context& context, std::vector<std::string>& extensions): maxInterleavedComponents{0}, maxSeparateAttributes{0}, maxSeparateComponents{0}
     #ifndef MAGNUM_TARGET_GLES
@@ -42,4 +42,4 @@ void TransformFeedbackState::reset() {
     binding = State::DisengagedBinding;
 }
 
-}}
+}}}

@@ -38,7 +38,7 @@
 #include "Magnum/GL/Implementation/State.h"
 #include "Magnum/GL/Implementation/TransformFeedbackState.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 Int TransformFeedback::maxInterleavedComponents() {
     #ifndef MAGNUM_TARGET_GLES
@@ -270,5 +270,5 @@ void TransformFeedback::end() {
     glEndTransformFeedback();
 }
 
-}
+}}
 #endif

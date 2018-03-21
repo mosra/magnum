@@ -29,7 +29,7 @@
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 QueryState::QueryState(Context& context, std::vector<std::string>& extensions) {
     /* Create implementation */
@@ -50,4 +50,4 @@ QueryState::QueryState(Context& context, std::vector<std::string>& extensions) {
     #endif
 }
 
-}}
+}}}

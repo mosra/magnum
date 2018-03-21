@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Framebuffer
+ * @brief Class @ref Magnum::GL::Framebuffer
  */
 
 #include <Corrade/Containers/ArrayView.h>
@@ -38,7 +38,7 @@
 #undef Status
 #endif
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /**
 @brief Framebuffer
@@ -47,9 +47,9 @@ Unlike @ref DefaultFramebuffer, which is used for on-screen rendering, this
 class is used for off-screen rendering, usable either in windowless
 applications, texture generation or for various post-processing effects.
 
-@section Framebuffer-usage Example usage
+@section GL-Framebuffer-usage Example usage
 
-See @ref DefaultFramebuffer-usage "DefaultFramebuffer documentation" for
+See @ref GL-DefaultFramebuffer-usage "DefaultFramebuffer documentation" for
 introduction. Imagine you have shader with multiple outputs (e.g. for deferred
 rendering). You want to render them off-screen to textures and then use the
 textures for actual on-screen rendering. First you need to create the
@@ -69,9 +69,9 @@ framebuffer, then bind the default and render the textures on screen:
 
 @snippet MagnumGL-framebuffer.cpp Framebuffer-usage-draw
 
-@section Framebuffer-performance-optimizations Performance optimizations
+@section GL-Framebuffer-performance-optimizations Performance optimizations
 
-See also @ref AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
+See also @ref GL-AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
 
 If either @extension{ARB,direct_state_access} (part of OpenGL 4.5) or
 @extension{EXT,direct_state_access} desktop extension is available, functions
@@ -939,7 +939,7 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
         #endif
 };
 
-/** @debugoperatorclassenum{Magnum::Framebuffer,Magnum::Framebuffer::Status} */
+/** @debugoperatorclassenum{Framebuffer,Framebuffer::Status} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Framebuffer::Status value);
 
 inline Framebuffer::Framebuffer(Framebuffer&& other) noexcept {
@@ -964,6 +964,6 @@ inline GLuint Framebuffer::release() {
     return id;
 }
 
-}
+}}
 
 #endif

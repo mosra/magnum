@@ -509,9 +509,9 @@ more information):
 There are also extensions to @ref Corrade::TestSuite::Tester for testing GPU
 code:
 
--   `WITH_OPENGLTESTER` --- The @ref OpenGLTester class. Enables also building
-    of the GL library and one of the windowless application libraries based on
-    the target platform.
+-   `WITH_OPENGLTESTER` --- The @ref GL::OpenGLTester class. Enables also
+    building of the GL library and one of the windowless application libraries
+    based on the target platform.
 
 Magnum also contains a set of dependency-less plugins for importing essential
 file formats. Additional plugins are provided in a separate plugin repository,
@@ -574,7 +574,7 @@ will be taken relative to executable location, which is useful for making
 relocatable installations.
 
 Note that each [namespace](namespaces.html) documentation, all @ref Platform
-library documentation and the @ref OpenGLTester class documentation contain
+library documentation and the @ref GL::OpenGLTester class documentation contain
 more detailed information about dependencies, availability on particular
 platform and also guide how to enable given library for building and how to use
 it with CMake.

@@ -486,7 +486,7 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
 11. Add new version enum value:
     -   to `src/Magnum/Version.h`
     -   to debug output in `src/Magnum/Version.cpp`
-    -   to @ref Extension::extensions() in `src/Magnum/Context.cpp`
+    -   to @ref GL::Extension::extensions() in `src/Magnum/Context.cpp`
     -   to @cpp Context::tryCreate() @ce in `src/Magnum/Context.cpp`
     -   to specify GLSL version in `src/Magnum/Shader.cpp`
     -   to the list in `src/Magnum/Platform/magnum-info.cpp`

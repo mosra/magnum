@@ -47,7 +47,7 @@
 #include "Magnum/GL/Implementation/TransformFeedbackState.h"
 #endif
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 State::State(Context& context, std::ostream* const out) {
     /* List of extensions used in current context. Guesstimate count to avoid
@@ -87,4 +87,4 @@ State::State(Context& context, std::ostream* const out) {
 
 State::~State() = default;
 
-}}
+}}}

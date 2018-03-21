@@ -30,7 +30,7 @@
 #include "Magnum/GL/GL.h"
 #include "Magnum/GL/OpenGL.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 struct BufferState;
 struct ContextState;
@@ -77,6 +77,6 @@ struct State {
     #endif
 };
 
-}}
+}}}
 
 #endif

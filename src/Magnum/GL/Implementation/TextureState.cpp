@@ -37,7 +37,7 @@
 
 #include "State.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 TextureState::TextureState(Context& context, std::vector<std::string>& extensions): maxSize{},
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -493,4 +493,4 @@ void TextureState::reset() {
     #endif
 }
 
-}}
+}}}

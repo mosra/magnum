@@ -44,7 +44,7 @@ libraries if the user wants to.
 
 By default, all underlying OpenGL objects are created in wrapper class
 constructor and deleted in wrapper class destructor. Constructing an object
-using default constructor requires active @ref Context instance. All OpenGL
+using default constructor requires active @ref GL::Context instance. All OpenGL
 objects are movable (but not copyable), although for performance reasons (and
 contrary to standard C++11 practice), the moved-from instance does *not* have
 any associated OpenGL object and is thus in *invalid state*. Using instance in
@@ -52,11 +52,11 @@ moved-from state may result in OpenGL errors being generated, in some cases
 even application crashes.
 
 Besides the default behavior, it is possible to construct the object without
-creating the underlying OpenGL object using the @ref NoCreate tag. Constructing
-the object this way does not require any active context and its state is then
-equivalent to the moved-from state. It is useful in case you need to construct
-the object before creating context (such as class members) or if you know you
-would overwrite it later with another object:
+creating the underlying OpenGL object using the @ref NoCreate tag.
+Constructing the object this way does not require any active context and its
+state is then equivalent to the moved-from state. It is useful in case you need
+to construct the object before creating context (such as class members) or if
+you know you would overwrite it later with another object:
 
 @snippet MagnumGL.cpp opengl-wrapping-nocreate
 
@@ -71,7 +71,7 @@ instance using @cpp wrap() @ce.
 @snippet MagnumGL.cpp opengl-wrapping-transfer
 
 The @cpp NoCreate @ce constructor, @cpp wrap() @ce and @cpp release() @ce
-functions are available for all OpenGL classes except @ref Shader, where
+functions are available for all OpenGL classes except @ref GL::Shader, where
 wrapping external instances makes less sense.
 
 Note that interaction with third-party OpenGL code as shown above usually needs
@@ -85,7 +85,7 @@ Magnum, using some specialized GUI library etc. But bear in mind that in order
 to improve performance and avoid redundant state changes, Magnum internally
 tracks OpenGL state such as currently bound objects, activated renderer
 features etc. When combining Magnum with third-party code, the internal state
-tracker may get confused and you need to reset it using @ref Context::resetState():
+tracker may get confused and you need to reset it using @ref GL::Context::resetState():
 
 @snippet MagnumGL.cpp opengl-wrapping-state
 
@@ -111,7 +111,7 @@ do the checks. Documentation of each type, function and enum value explicitly
 states whether the functionality is available everywhere or whether particular
 GL version/extension is required. The information is also aggregated on
 @ref opengl-required-extensions documentation page. Use
-@ref Context::isVersionSupported() or @ref Context::isExtensionSupported():
+@ref GL::Context::isVersionSupported() or @ref GL::Context::isExtensionSupported():
 
 @snippet MagnumGL.cpp opengl-wrapping-extensions
 
@@ -130,10 +130,10 @@ binding them, reducing the amount of needed API calls. Magnum API is designed
 around direct state access as it is far easier to use and less error-prone, but
 if these extensions are not available, the functionality is emulated through
 classic bind-to-edit approach. Other examples of extension-dependent
-functionality is @ref DebugMessage "debug output" which is simply no-op when
-required extensions are not available, @ref Texture::setStorage() emulation on
-platforms that don't support it etc. The goal is to abstract away the (mostly
-unimportant) differences for easier porting.
+functionality is @ref GL::DebugMessage "debug output" which is simply no-op
+when required extensions are not available, @ref GL::Texture::setStorage()
+emulation on platforms that don't support it etc. The goal is to abstract away
+the (mostly unimportant) differences for easier porting.
 
 @snippet MagnumGL.cpp opengl-wrapping-dsa
 

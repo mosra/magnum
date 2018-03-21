@@ -34,7 +34,7 @@
 #include "Magnum/GL/Implementation/State.h"
 #include "Magnum/GL/Implementation/TextureState.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 Vector2i RectangleTexture::maxSize() {
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
@@ -88,5 +88,5 @@ CompressedBufferImage2D RectangleTexture::compressedSubImage(const Range2Di& ran
     return std::move(image);
 }
 
-}
+}}
 #endif

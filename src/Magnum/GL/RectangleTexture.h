@@ -27,7 +27,7 @@
 
 #ifndef MAGNUM_TARGET_GLES
 /** @file
- * @brief Class @ref Magnum::RectangleTexture
+ * @brief Class @ref Magnum::GL::RectangleTexture
  */
 #endif
 
@@ -36,14 +36,14 @@
 #include "Magnum/Math/Vector2.h"
 
 #ifndef MAGNUM_TARGET_GLES
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /**
 @brief Rectangle texture
 
 See also @ref AbstractTexture documentation for more information.
 
-@section RectangleTexture-usage Usage
+@section GL-RectangleTexture-usage Usage
 
 Common usage is to fully configure all texture parameters and then set the
 data from e.g. @ref Image2D. Example configuration:
@@ -609,7 +609,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         explicit RectangleTexture(GLuint id, ObjectFlags flags) noexcept: AbstractTexture{id, GL_TEXTURE_RECTANGLE, flags} {}
 };
 
-}
+}}
 #else
 #error this header is not available in OpenGL ES build
 #endif

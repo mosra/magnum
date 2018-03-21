@@ -33,19 +33,19 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 /** @file
- * @brief Class @ref Magnum::TransformFeedback
+ * @brief Class @ref Magnum::GL::TransformFeedback
  */
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 namespace Implementation { struct TransformFeedbackState; }
 
 /**
 @brief Transform feedback
 
-@section TransformFeedback-performance-optimizations Performance optimizations
+@section GL-TransformFeedback-performance-optimizations Performance optimizations
 
 The engine tracks currently bound transform feedback to avoid unnecessary calls
 to @fn_gl_keyword{BindTransformFeedback}. Transform feedback limits and
@@ -459,7 +459,7 @@ inline GLuint TransformFeedback::release() {
     return id;
 }
 
-}
+}}
 #else
 #error this header is not available in OpenGL ES 2.0 build
 #endif

@@ -55,8 +55,8 @@ mesh and configuring the shader itself.
 
 Each shader expects some set of vertex attributes, thus when adding vertex
 buffer into the mesh, you need to specify which shader attributes are on which
-position in the buffer. See @ref Mesh::addVertexBuffer() for details and usage
-examples. Example mesh configuration for @ref Shaders::Phong shader:
+position in the buffer. See @ref GL::Mesh::addVertexBuffer() for details and
+usage examples. Example mesh configuration for @ref Shaders::Phong shader:
 
 @snippet MagnumShaders.cpp shaders-setup
 

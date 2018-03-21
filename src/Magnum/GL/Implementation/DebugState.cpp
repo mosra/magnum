@@ -29,7 +29,7 @@
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 DebugState::DebugState(Context& context, std::vector<std::string>& extensions):
     maxLabelLength{0},
@@ -109,4 +109,4 @@ DebugState::DebugState(Context& context, std::vector<std::string>& extensions):
     }
 }
 
-}}
+}}}

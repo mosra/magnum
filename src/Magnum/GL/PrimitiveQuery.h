@@ -27,14 +27,14 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 /** @file
- * @brief Class @ref Magnum::PrimitiveQuery
+ * @brief Class @ref Magnum::GL::PrimitiveQuery
  */
 #endif
 
 #include "Magnum/GL/AbstractQuery.h"
 
 #ifndef MAGNUM_TARGET_GLES2
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /**
 @brief Query for primitives
@@ -206,7 +206,7 @@ class MAGNUM_GL_EXPORT PrimitiveQuery: public AbstractQuery {
         #endif
 };
 
-}
+}}
 #else
 #error this header is not available in OpenGL ES 2.0 build
 #endif

@@ -54,9 +54,9 @@ Various links gathered around the web:
 
 -   Rendering to RGB textures doesn't work on many platforms, either due to
     alignment issues or other factors. For example it is not possible to render
-    to @ref TextureFormat::RGB8 on iOS (but it works elsewhere); rendering to
-    @ref TextureFormat::RGB32F is not possible even on NVidia. Use RGBA formats
-    instead.
+    to @ref GL::TextureFormat::RGB8 on iOS (but it works elsewhere); rendering
+    to @ref GL::TextureFormat::RGB32F is not possible even on NVidia. Use RGBA
+    formats instead.
 -   While on desktop GL it's often permitted to upload a RGB image to a texture
     with RGBA internal format, on mobile devices usually nothing happens. Be
     sure to match the component count.

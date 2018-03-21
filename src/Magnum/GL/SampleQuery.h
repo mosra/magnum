@@ -27,14 +27,14 @@
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 /** @file
- * @brief Class @ref Magnum::SampleQuery
+ * @brief Class @ref Magnum::GL::SampleQuery
  */
 #endif
 
 #include "Magnum/GL/AbstractQuery.h"
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /**
 @brief Query for samples
@@ -250,7 +250,7 @@ class SampleQuery: public AbstractQuery {
         explicit SampleQuery(GLuint id, Target target, ObjectFlags flags) noexcept: AbstractQuery{id, GLenum(target), flags} {}
 };
 
-}
+}}
 #else
 #error this header is not available in WebGL 1.0 build
 #endif

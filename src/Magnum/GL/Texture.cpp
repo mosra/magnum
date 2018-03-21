@@ -36,7 +36,7 @@
 #include "Magnum/GL/BufferImage.h"
 #endif
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 namespace Implementation {
 
@@ -107,4 +107,4 @@ template class MAGNUM_GL_EXPORT Texture<2>;
 template class MAGNUM_GL_EXPORT Texture<3>;
 #endif
 
-}
+}}

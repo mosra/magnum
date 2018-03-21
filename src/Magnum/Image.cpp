@@ -27,7 +27,7 @@
 
 namespace Magnum {
 
-template<UnsignedInt dimensions> Image<dimensions>::Image(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: _storage{storage}, _format{format}, _type{type}, _size{size}, _data{std::move(data)} {
+template<UnsignedInt dimensions> Image<dimensions>::Image(PixelStorage storage, GL::PixelFormat format, GL::PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: _storage{storage}, _format{format}, _type{type}, _size{size}, _data{std::move(data)} {
     CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "Image::Image(): bad image data size, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
 }
 

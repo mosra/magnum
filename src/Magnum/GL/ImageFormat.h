@@ -27,14 +27,14 @@
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 /** @file
- * @brief Enum @ref Magnum::ImageAccess, @ref Magnum::ImageFormat
+ * @brief Enum @ref Magnum::GL::ImageAccess, @ref Magnum::GL::ImageFormat
  */
 #endif
 
 #include "Magnum/GL/OpenGL.h"
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /**
 @brief Image access
@@ -309,7 +309,7 @@ enum class ImageFormat: GLenum {
     #endif
 };
 
-}
+}}
 #else
 #error this header is not available in OpenGL ES 2.0 and WebGL build
 #endif

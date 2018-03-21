@@ -35,7 +35,7 @@
 typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
 #endif
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* FramebufferClear[Mask], FramebufferBlit[Mask], FramebufferBlitFilter,
@@ -90,26 +90,6 @@ enum class ImageFormat: GLenum;
 enum class ImageAccess: GLenum;
 #endif
 
-template<UnsignedInt> class Image;
-typedef Image<1> Image1D;
-typedef Image<2> Image2D;
-typedef Image<3> Image3D;
-
-template<UnsignedInt> class CompressedImage;
-typedef CompressedImage<1> CompressedImage1D;
-typedef CompressedImage<2> CompressedImage2D;
-typedef CompressedImage<3> CompressedImage3D;
-
-template<UnsignedInt> class ImageView;
-typedef ImageView<1> ImageView1D;
-typedef ImageView<2> ImageView2D;
-typedef ImageView<3> ImageView3D;
-
-template<UnsignedInt> class CompressedImageView;
-typedef CompressedImageView<1> CompressedImageView1D;
-typedef CompressedImageView<2> CompressedImageView2D;
-typedef CompressedImageView<3> CompressedImageView3D;
-
 enum class MeshPrimitive: GLenum;
 
 class Mesh;
@@ -125,11 +105,6 @@ typedef MultisampleTexture<3> MultisampleTexture2DArray;
 enum class PixelFormat: GLenum;
 enum class PixelType: GLenum;
 enum class CompressedPixelFormat: GLenum;
-
-class PixelStorage;
-#ifndef MAGNUM_TARGET_GLES
-class CompressedPixelStorage;
-#endif
 
 /* ObjectFlag, ObjectFlags are used only in conjunction with *::wrap() function */
 
@@ -173,7 +148,7 @@ class TransformFeedback;
 enum class Version: Int;
 #endif
 
-}
+}}
 
 #endif
 

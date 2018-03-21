@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::AbstractObject
+ * @brief Class @ref Magnum::GL::AbstractObject
  */
 
 #include <string>
@@ -36,7 +36,7 @@
 #include "Magnum/GL/OpenGL.h"
 #include "Magnum/GL/visibility.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 namespace Implementation { struct DebugState; }
 
@@ -131,6 +131,6 @@ class MAGNUM_GL_EXPORT AbstractObject {
 
 CORRADE_ENUMSET_OPERATORS(ObjectFlags)
 
-}
+}}
 
 #endif

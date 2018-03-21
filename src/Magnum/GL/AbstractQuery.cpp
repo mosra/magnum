@@ -34,7 +34,7 @@
 #include "Magnum/GL/Implementation/QueryState.h"
 #include "Magnum/GL/Implementation/State.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 AbstractQuery::AbstractQuery(GLenum target): _target{target}, _flags{ObjectFlag::DeleteOnDestruction} {
     (this->*Context::current().state().query->createImplementation)();
@@ -161,4 +161,4 @@ void AbstractQuery::end() {
     #endif
 }
 
-}
+}}

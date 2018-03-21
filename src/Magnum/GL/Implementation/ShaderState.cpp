@@ -31,7 +31,7 @@
 #include "Magnum/GL/Context.h"
 #endif
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 ShaderState::ShaderState(Context& context, std::vector<std::string>&):
     maxVertexOutputComponents{}, maxFragmentInputComponents{},
@@ -61,4 +61,4 @@ ShaderState::ShaderState(Context& context, std::vector<std::string>&):
     #endif
 }
 
-}}
+}}}

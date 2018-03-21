@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Attribute
+ * @brief Class @ref Magnum::GL::Attribute
  */
 
 #include <Corrade/Containers/EnumSet.h>
@@ -35,7 +35,7 @@
 #include "Magnum/GL/OpenGL.h"
 #include "Magnum/GL/visibility.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 namespace Implementation { template<class> struct Attribute; }
 
@@ -55,11 +55,12 @@ to floating-point shader inputs. In this case you may want to normalize the
 values (e.g. color components from @cpp 0 @ce -- @cpp 255 @ce to @cpp 0.0f @ce
 -- @cpp 1.0f @ce) --- see @ref DataOption::Normalized.
 
-Only some types are allowed as attribute types, see @ref AbstractShaderProgram-types
+Only some types are allowed as attribute types, see @ref GL-AbstractShaderProgram-types
 for more information.
 
-See @ref AbstractShaderProgram-subclassing for example usage in shaders and
-@ref Mesh-configuration for example usage when adding vertex buffers to mesh.
+See @ref GL-AbstractShaderProgram-subclassing for example usage in shaders and
+@ref GL-Mesh-configuration for example usage when adding vertex buffers to
+mesh.
 */
 template<UnsignedInt location, class T> class Attribute {
     public:
@@ -305,10 +306,10 @@ template<UnsignedInt location, class T> class Attribute {
 };
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
-/** @debugoperatorclassenum{Magnum::Attribute,Magnum::Attribute::Components} */
+/** @debugoperatorclassenum{Attribute,Attribute::Components} */
 template<class T> Debug& operator<<(Debug& debug, Attribute<T>::Components);
 
-/** @debugoperatorclassenum{Magnum::Attribute,Magnum::Attribute::DataType} */
+/** @debugoperatorclassenum{Attribute,Attribute::DataType} */
 template<class T> Debug& operator<<(Debug& debug, Attribute<T>::DataType);
 #endif
 
@@ -795,6 +796,6 @@ template<class T> struct Attribute<Math::Matrix4<T>>: Attribute<Math::Matrix<4, 
 
 }
 
-}
+}}
 
 #endif

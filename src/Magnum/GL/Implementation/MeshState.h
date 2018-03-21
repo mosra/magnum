@@ -30,7 +30,7 @@
 
 #include "Magnum/GL/Mesh.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 struct ContextState;
 
@@ -76,6 +76,6 @@ struct MeshState {
     #endif
 };
 
-}}
+}}}
 
 #endif

@@ -74,15 +74,16 @@ which you can use for platform-aware code.
 @section portability-extensions Extension-aware code
 
 Some functionality is depending on support of a particular OpenGL extension and
-thus the decision cannot be made at compile time. Header @ref Extensions.h
+thus the decision cannot be made at compile time. Header @ref GL/Extensions.h
 contains list of extensions, which you can pass to
-@ref Context::isExtensionSupported() and decide based on that:
+@ref GL::Context::isExtensionSupported() and decide based on that:
 
 @snippet MagnumGL.cpp portability-extensions
 
-You can also decide on particular OpenGL version using @ref Context::isVersionSupported(),
-but remember that some features from that version might be available even if
-the drivers don't fully expose that version.
+You can also decide on particular OpenGL version using
+@ref GL::Context::isVersionSupported(), but remember that some features from
+that version might be available even if the drivers don't fully expose that
+version.
 
 On the other hand, if you don't want to write fallback code for unsupported
 extensions, you can use macros @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED() or
@@ -95,9 +96,9 @@ Each class, function or enum value is marked accordingly if it needs specific
 extension or specific OpenGL version. Various classes in Magnum are taking
 advantage of some extensions and enable faster code paths if given extension is
 available, but also have proper fallback when it's not, see for example
-@ref AbstractShaderProgram-performance-optimization "AbstractShaderProgram",
-@ref AbstractTexture-performance-optimization "AbstractTexture" or
-@ref Mesh-performance-optimization "Mesh". See also @ref opengl-required-extensions.
+@ref GL-AbstractShaderProgram-performance-optimization "AbstractShaderProgram",
+@ref GL-AbstractTexture-performance-optimization "AbstractTexture" or
+@ref GL-Mesh-performance-optimization "Mesh". See also @ref opengl-required-extensions.
 
 @section portability-shaders Writing portable shaders
 
@@ -109,7 +110,7 @@ precision qualifiers in OpenGL ES etc.
 
 Shader class allows you to explicitly specify shader version and based on that
 you can decide on the syntax in your shader code. You can also use
-@ref Context::supportedVersion() to conveniently select the first supported
+@ref GL::Context::supportedVersion() to conveniently select the first supported
 version from a list:
 
 <p>
@@ -136,14 +137,14 @@ void main() {
 It is often desirable to query extension presence based on actually used GLSL
 version --- while the extension might be supported in the driver, it might not
 be available in given GLSL version (e.g. causing compilation errors). You can
-use @ref Context::isExtensionSupported(Version) const to check that the
+use @ref GL::Context::isExtensionSupported(Version) const to check that the
 extension is present in given version:
 
 @snippet MagnumGL.cpp portability-shaders-bind
 
-See also @ref AbstractShaderProgram class documentation for information about
-specifying attribute location, uniform location and texture binding unit in
-various OpenGL versions.
+See also @ref GL::AbstractShaderProgram class documentation for information
+about specifying attribute location, uniform location and texture binding unit
+in various OpenGL versions.
 
 All shaders in @ref Shaders namespace support desktop OpenGL starting from
 version 2.1 and also OpenGL ES 2.0 and 3.0 (or WebGL 1.0 / 2.0). Feel free to

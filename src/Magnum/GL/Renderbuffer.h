@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Renderbuffer
+ * @brief Class @ref Magnum::GL::Renderbuffer
  */
 
 #include <Corrade/Containers/ArrayView.h>
@@ -35,7 +35,7 @@
 #include "Magnum/GL/AbstractObject.h"
 #include "Magnum/GL/GL.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 namespace Implementation { struct FramebufferState; }
 
@@ -45,7 +45,7 @@ namespace Implementation { struct FramebufferState; }
 Attachable to framebuffer as render target, see @ref Framebuffer documentation
 for more information.
 
-@section Renderbuffer-performance-optimizations Performance optimizations
+@section GL-Renderbuffer-performance-optimizations Performance optimizations
 
 The engine tracks currently bound renderbuffer to avoid unnecessary calls to
 @fn_gl{BindRenderbuffer} in @ref setStorage(). Renderbuffer limits and
@@ -302,6 +302,6 @@ inline GLuint Renderbuffer::release() {
     return id;
 }
 
-}
+}}
 
 #endif

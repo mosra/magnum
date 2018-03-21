@@ -59,12 +59,12 @@ template<UnsignedInt dimensions> class Image {
          * The data are expected to be of proper size for given @p storage
          * parameters.
          */
-        explicit Image(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept;
+        explicit Image(PixelStorage storage, GL::PixelFormat format, GL::PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept;
 
         /** @overload
          * Similar to the above, but uses default @ref PixelStorage parameters.
          */
-        explicit Image(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{{}, format, type, size, std::move(data)} {}
+        explicit Image(GL::PixelFormat format, GL::PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{{}, format, type, size, std::move(data)} {}
 
         /**
          * @brief Constructor
@@ -79,12 +79,12 @@ template<UnsignedInt dimensions> class Image {
          * @ref AbstractFramebuffer::read() "*Framebuffer::read()" to fill the
          * image with data using @p storage settings.
          */
-        /*implicit*/ Image(PixelStorage storage, PixelFormat format, PixelType type) noexcept: _storage{storage}, _format{format}, _type{type}, _data{} {}
+        /*implicit*/ Image(PixelStorage storage, GL::PixelFormat format, GL::PixelType type) noexcept: _storage{storage}, _format{format}, _type{type}, _data{} {}
 
         /** @overload
          * Similar to the above, but uses default @ref PixelStorage parameters.
          */
-        /*implicit*/ Image(PixelFormat format, PixelType type) noexcept: Image{{}, format, type} {}
+        /*implicit*/ Image(GL::PixelFormat format, GL::PixelType type) noexcept: Image{{}, format, type} {}
 
         /** @brief Copying is not allowed */
         Image(const Image<dimensions>&) = delete;
@@ -107,10 +107,10 @@ template<UnsignedInt dimensions> class Image {
         PixelStorage storage() const { return _storage; }
 
         /** @brief Format of pixel data */
-        PixelFormat format() const { return _format; }
+        GL::PixelFormat format() const { return _format; }
 
         /** @brief Data type of pixel data */
-        PixelType type() const { return _type; }
+        GL::PixelType type() const { return _type; }
 
         /**
          * @brief Pixel size (in bytes)
@@ -180,7 +180,7 @@ template<UnsignedInt dimensions> class Image {
          * expected to be of proper size for given @p storage parameters.
          * @see @ref release()
          */
-        CORRADE_DEPRECATED("move-assign a new instance instead") void setData(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
+        CORRADE_DEPRECATED("move-assign a new instance instead") void setData(PixelStorage storage, GL::PixelFormat format, GL::PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
             *this = Image<dimensions>{storage, format, type, size, std::move(data)};
         }
 
@@ -189,7 +189,7 @@ template<UnsignedInt dimensions> class Image {
          *
          * @deprecated Move-assign a new instance instead.
          */
-        CORRADE_DEPRECATED("move-assign a new instance instead") void setData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
+        CORRADE_DEPRECATED("move-assign a new instance instead") void setData(GL::PixelFormat format, GL::PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
             *this = Image<dimensions>{format, type, size, std::move(data)};
         }
         #endif
@@ -205,8 +205,8 @@ template<UnsignedInt dimensions> class Image {
 
     private:
         PixelStorage _storage;
-        PixelFormat _format;
-        PixelType _type;
+        GL::PixelFormat _format;
+        GL::PixelType _type;
         Math::Vector<Dimensions, Int> _size;
         Containers::Array<char> _data;
 };
@@ -247,7 +247,7 @@ template<UnsignedInt dimensions> class CompressedImage {
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.
          */
-        explicit CompressedImage(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data);
+        explicit CompressedImage(CompressedPixelStorage storage, GL::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data);
         #endif
 
         /**
@@ -259,7 +259,7 @@ template<UnsignedInt dimensions> class CompressedImage {
          * Similar the above, but uses default @ref CompressedPixelStorage
          * parameters (or the hardcoded ones in OpenGL ES and WebGL).
          */
-        explicit CompressedImage(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data);
+        explicit CompressedImage(GL::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data);
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -314,7 +314,7 @@ template<UnsignedInt dimensions> class CompressedImage {
         #endif
 
         /** @brief Format of compressed pixel data */
-        CompressedPixelFormat format() const { return _format; }
+        GL::CompressedPixelFormat format() const { return _format; }
 
         /** @brief Image size */
         VectorTypeFor<dimensions, Int> size() const { return _size; }
@@ -372,7 +372,7 @@ template<UnsignedInt dimensions> class CompressedImage {
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.
          */
-        CORRADE_DEPRECATED("move-assign a new instance instead") void setData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
+        CORRADE_DEPRECATED("move-assign a new instance instead") void setData(CompressedPixelStorage storage, GL::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
             *this = CompressedImage<dimensions>{storage, format, size, std::move(data)};
         }
         #endif
@@ -388,7 +388,7 @@ template<UnsignedInt dimensions> class CompressedImage {
          * Similar the above, but uses default @ref CompressedPixelStorage
          * parameters (or the hardcoded ones in OpenGL ES and WebGL).
          */
-        CORRADE_DEPRECATED("move-assign a new instance instead") void setData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
+        CORRADE_DEPRECATED("move-assign a new instance instead") void setData(GL::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
             *this = CompressedImage<dimensions>{format, size, std::move(data)};
         }
         #endif
@@ -406,7 +406,7 @@ template<UnsignedInt dimensions> class CompressedImage {
         #ifndef MAGNUM_TARGET_GLES
         CompressedPixelStorage _storage;
         #endif
-        CompressedPixelFormat _format;
+        GL::CompressedPixelFormat _format;
         Math::Vector<Dimensions, Int> _size;
         Containers::Array<char> _data;
 };
@@ -484,7 +484,7 @@ template<UnsignedInt dimensions> inline CompressedImage<dimensions>::CompressedI
     #ifndef MAGNUM_TARGET_GLES
     const CompressedPixelStorage storage,
     #endif
-    const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data):
+    const GL::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data):
     #ifndef MAGNUM_TARGET_GLES
     _storage{storage},
     #endif
@@ -501,7 +501,7 @@ template<UnsignedInt dimensions> inline CompressedImage<dimensions>::CompressedI
     {}
 
 #ifndef MAGNUM_TARGET_GLES
-template<UnsignedInt dimensions> inline CompressedImage<dimensions>::CompressedImage(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): CompressedImage{{}, format, size, std::move(data)} {}
+template<UnsignedInt dimensions> inline CompressedImage<dimensions>::CompressedImage(const GL::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): CompressedImage{{}, format, size, std::move(data)} {}
 
 template<UnsignedInt dimensions> inline CompressedImage<dimensions>::CompressedImage(): CompressedImage{CompressedPixelStorage{}} {}
 #endif

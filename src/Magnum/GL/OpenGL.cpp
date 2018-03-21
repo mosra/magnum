@@ -28,7 +28,7 @@
 #include "Magnum/Types.h"
 #include "Magnum/GL/OpenGL.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /* Verify types */
 static_assert(std::is_same<GLubyte, UnsignedByte>::value, "GLubyte is not the same as UnsignedByte");
@@ -47,4 +47,4 @@ static_assert(std::is_same<GLdouble, Double>::value, "GLdouble is not the same a
 static_assert(GL_FALSE == false, "GL_FALSE is not the same as false");
 static_assert(GL_TRUE == true, "GL_TRUE is not the same as true");
 
-}
+}}

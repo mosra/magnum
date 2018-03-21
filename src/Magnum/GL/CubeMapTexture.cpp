@@ -34,7 +34,7 @@
 #include "Magnum/GL/Implementation/State.h"
 #include "Magnum/GL/Implementation/TextureState.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 static_assert(GL_TEXTURE_CUBE_MAP_POSITIVE_X - GL_TEXTURE_CUBE_MAP_POSITIVE_X == 0 &&
               GL_TEXTURE_CUBE_MAP_NEGATIVE_X - GL_TEXTURE_CUBE_MAP_POSITIVE_X == 1 &&
@@ -64,7 +64,7 @@ void CubeMapTexture::image(const Int level, Image3D& image) {
     createIfNotAlready();
 
     const Vector3i size{imageSize(level), 6};
-    const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
+    const std::size_t dataSize = Magnum::Implementation::imageDataSizeFor(image, size);
 
     /* Reallocate only if needed */
     Containers::Array<char> data{image.release()};
@@ -86,7 +86,7 @@ void CubeMapTexture::image(const Int level, BufferImage3D& image, const BufferUs
     createIfNotAlready();
 
     const Vector3i size{imageSize(level), 6};
-    const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
+    const std::size_t dataSize = Magnum::Implementation::imageDataSizeFor(image, size);
 
     /* Reallocate only if needed */
     if(image.dataSize() < dataSize)
@@ -115,7 +115,7 @@ void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) 
     if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
         dataOffset = 0;
         dataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)*6;
-    } else std::tie(dataOffset, dataSize) = Implementation::compressedImageDataOffsetSizeFor(image, size);
+    } else std::tie(dataOffset, dataSize) = Magnum::Implementation::compressedImageDataOffsetSizeFor(image, size);
 
     /* Internal texture format */
     GLint format;
@@ -148,7 +148,7 @@ void CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D& i
     if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
         dataOffset = 0;
         dataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)*6;
-    } else std::tie(dataOffset, dataSize) = Implementation::compressedImageDataOffsetSizeFor(image, size);
+    } else std::tie(dataOffset, dataSize) = Magnum::Implementation::compressedImageDataOffsetSizeFor(image, size);
 
     /* Internal texture format */
     GLint format;
@@ -172,7 +172,7 @@ CompressedBufferImage3D CubeMapTexture::compressedImage(const Int level, Compres
 
 void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, Image2D& image) {
     const Vector2i size = imageSize(level);
-    const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
+    const std::size_t dataSize = Magnum::Implementation::imageDataSizeFor(image, size);
 
     /* Reallocate only if needed */
     Containers::Array<char> data{image.release()};
@@ -192,7 +192,7 @@ Image2D CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int leve
 
 void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, BufferImage2D& image, const BufferUsage usage) {
     const Vector2i size = imageSize(level);
-    const std::size_t dataSize = Implementation::imageDataSizeFor(image, size);
+    const std::size_t dataSize = Magnum::Implementation::imageDataSizeFor(image, size);
 
     /* Reallocate only if needed */
     if(image.dataSize() < dataSize)
@@ -219,7 +219,7 @@ void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const I
     if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
         dataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level);
     else
-        dataSize = Implementation::compressedImageDataSizeFor(image, size);
+        dataSize = Magnum::Implementation::compressedImageDataSizeFor(image, size);
 
     /* Internal texture format */
     GLint format;
@@ -250,7 +250,7 @@ void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const I
     if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
         dataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level);
     else
-        dataSize = Implementation::compressedImageDataSizeFor(image, size);
+        dataSize = Magnum::Implementation::compressedImageDataSizeFor(image, size);
 
     /* Internal texture format */
     GLint format;
@@ -315,7 +315,7 @@ CubeMapTexture& CubeMapTexture::setCompressedSubImage(const Int level, const Vec
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     image.storage().applyUnpack();
-    glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), Implementation::occupiedCompressedImageDataSize(image, image.data().size()), image.data());
+    glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), Magnum::Implementation::occupiedCompressedImageDataSize(image, image.data().size()), image.data());
     return *this;
 }
 
@@ -324,7 +324,7 @@ CubeMapTexture& CubeMapTexture::setCompressedSubImage(const Int level, const Vec
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
     image.storage().applyUnpack();
-    glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), Implementation::occupiedCompressedImageDataSize(image, image.dataSize()), nullptr);
+    glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), Magnum::Implementation::occupiedCompressedImageDataSize(image, image.dataSize()), nullptr);
     return *this;
 }
 #endif
@@ -336,7 +336,7 @@ CubeMapTexture& CubeMapTexture::setSubImage(const CubeMapCoordinate coordinate, 
     image.storage().applyUnpack();
     (this->*Context::current().state().texture->cubeSubImageImplementation)(coordinate, level, offset, image.size(), image.format(), image.type(), image.data()
         #ifdef MAGNUM_TARGET_GLES2
-        + Implementation::pixelStorageSkipOffset(image)
+        + Magnum::Implementation::pixelStorageSkipOffset(image)
         #endif
         );
     return *this;
@@ -360,7 +360,7 @@ CubeMapTexture& CubeMapTexture::setCompressedSubImage(const CubeMapCoordinate co
        to reset anything */
     image.storage().applyUnpack();
     #endif
-    (this->*Context::current().state().texture->cubeCompressedSubImageImplementation)(coordinate, level, offset, image.size(), image.format(), image.data(), Implementation::occupiedCompressedImageDataSize(image, image.data().size()));
+    (this->*Context::current().state().texture->cubeCompressedSubImageImplementation)(coordinate, level, offset, image.size(), image.format(), image.data(), Magnum::Implementation::occupiedCompressedImageDataSize(image, image.data().size()));
     return *this;
 }
 
@@ -372,7 +372,7 @@ CubeMapTexture& CubeMapTexture::setCompressedSubImage(const CubeMapCoordinate co
        to reset anything */
     image.storage().applyUnpack();
     #endif
-    (this->*Context::current().state().texture->cubeCompressedSubImageImplementation)(coordinate, level, offset, image.size(), image.format(), nullptr, Implementation::occupiedCompressedImageDataSize(image, image.dataSize()));
+    (this->*Context::current().state().texture->cubeCompressedSubImageImplementation)(coordinate, level, offset, image.size(), image.format(), nullptr, Magnum::Implementation::occupiedCompressedImageDataSize(image, image.dataSize()));
     return *this;
 }
 #endif
@@ -544,4 +544,4 @@ void CubeMapTexture::compressedSubImageImplementationDSAEXT(const CubeMapCoordin
 }
 #endif
 
-}
+}}

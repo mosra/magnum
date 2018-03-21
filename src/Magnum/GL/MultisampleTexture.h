@@ -27,7 +27,7 @@
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 /** @file
- * @brief Class @ref Magnum::MultisampleTexture, typedef @ref Magnum::MultisampleTexture2D, @ref Magnum::MultisampleTexture2DArray
+ * @brief Class @ref Magnum::GL::MultisampleTexture, typedef @ref Magnum::GL::MultisampleTexture2D, @ref Magnum::GL::MultisampleTexture2DArray
  */
 #endif
 
@@ -36,7 +36,7 @@
 #include "Magnum/Math/Vector3.h"
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 namespace Implementation {
     template<UnsignedInt> constexpr GLenum multisampleTextureTarget();
@@ -72,7 +72,7 @@ Template class for 2D mulitsample texture and 2D multisample texture array.
 Used only from shaders for manual multisample resolve and other operations. See
 also @ref AbstractTexture documentation for more information.
 
-@section MultisampleTexture-usage Usage
+@section GL-MultisampleTexture-usage Usage
 
 As multisample textures have no sampler state, the only thing you need is to
 set storage:
@@ -338,7 +338,7 @@ typedef MultisampleTexture<2> MultisampleTexture2D;
 */
 typedef MultisampleTexture<3> MultisampleTexture2DArray;
 
-}
+}}
 #else
 #error this header is not available in OpenGL ES 2.0 and WebGL build
 #endif

@@ -45,7 +45,7 @@
 #endif
 #endif
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 struct TextureState {
     explicit TextureState(Context& context, std::vector<std::string>& extensions);
@@ -157,6 +157,6 @@ struct TextureState {
     #endif
 };
 
-}}
+}}}
 
 #endif

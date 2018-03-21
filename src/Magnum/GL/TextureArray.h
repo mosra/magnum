@@ -27,7 +27,7 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 /** @file
- * @brief Class @ref Magnum::TextureArray, typedef @ref Magnum::Texture1DArray, @ref Magnum::Texture2DArray
+ * @brief Class @ref Magnum::GL::TextureArray, typedef @ref Magnum::GL::Texture1DArray, @ref Magnum::GL::Texture2DArray
  */
 #endif
 
@@ -37,7 +37,7 @@
 #include "Magnum/Math/Vector3.h"
 
 #ifndef MAGNUM_TARGET_GLES2
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 namespace Implementation {
     template<UnsignedInt> constexpr GLenum textureArrayTarget();
@@ -53,7 +53,7 @@ namespace Implementation {
 Template class for one- and two-dimensional texture arrays. See also
 @ref AbstractTexture documentation for more information.
 
-@section TextureArray-usage Usage
+@section GL-TextureArray-usage Usage
 
 See @ref Texture documentation for introduction.
 
@@ -841,7 +841,7 @@ typedef TextureArray<1> Texture1DArray;
 */
 typedef TextureArray<2> Texture2DArray;
 
-}
+}}
 #else
 #error this header is not available in OpenGL ES 2.0 build
 #endif

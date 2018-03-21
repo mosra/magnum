@@ -73,13 +73,13 @@ void MeshTest::indexSize() {
 void MeshTest::debugPrimitive() {
     std::ostringstream o;
     Debug(&o) << MeshPrimitive::TriangleFan << MeshPrimitive(0xdead);
-    CORRADE_COMPARE(o.str(), "MeshPrimitive::TriangleFan MeshPrimitive(0xdead)\n");
+    CORRADE_COMPARE(o.str(), "GL::MeshPrimitive::TriangleFan GL::MeshPrimitive(0xdead)\n");
 }
 
 void MeshTest::debugIndexType() {
     std::ostringstream o;
     Debug(&o) << Mesh::IndexType::UnsignedShort << Mesh::IndexType(0xdead);
-    CORRADE_COMPARE(o.str(), "Mesh::IndexType::UnsignedShort Mesh::IndexType(0xdead)\n");
+    CORRADE_COMPARE(o.str(), "GL::Mesh::IndexType::UnsignedShort GL::Mesh::IndexType(0xdead)\n");
 }
 
 void MeshTest::configurationPrimitive() {

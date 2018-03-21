@@ -44,7 +44,7 @@ void ShaderTest::debugType() {
     std::ostringstream out;
 
     Debug(&out) << Shader::Type::Fragment << Shader::Type(0xdead);
-    CORRADE_COMPARE(out.str(), "Shader::Type::Fragment Shader::Type(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Shader::Type::Fragment GL::Shader::Type(0xdead)\n");
 }
 
 }}

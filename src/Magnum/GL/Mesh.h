@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Mesh
+ * @brief Class @ref Magnum::GL::Mesh
  */
 
 #include <vector>
@@ -38,7 +38,7 @@
 #include "Magnum/GL/Attribute.h"
 #include "Magnum/GL/GL.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /**
  * @brief Mesh primitive type
@@ -140,7 +140,7 @@ namespace Implementation { struct MeshState; }
 /**
 @brief Mesh
 
-@section Mesh-configuration Mesh configuration
+@section GL-Mesh-configuration Mesh configuration
 
 You have to specify at least primitive and vertex/index count using
 @ref setPrimitive() and @ref setCount(). Then fill your vertex buffers with
@@ -202,19 +202,19 @@ this:
 
 @snippet MagnumGL.cpp Mesh-dynamic
 
-@section Mesh-rendering Rendering meshes
+@section GL-Mesh-rendering Rendering meshes
 
 Basic workflow is: bind specific framebuffer for drawing (if needed), set up
 respective shader (see
-@ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
+@ref GL-AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
 for more infromation) and call @ref Mesh::draw().
 
-@section Mesh-webgl-restrictions WebGL restrictions
+@section GL-Mesh-webgl-restrictions WebGL restrictions
 
 @ref MAGNUM_TARGET_WEBGL "WebGL" puts some restrictions on vertex buffer
 layout, see @ref addVertexBuffer() documentation for details.
 
-@section Mesh-performance-optimization Performance optimizations
+@section GL-Mesh-performance-optimization Performance optimizations
 
 If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL ES 3.0,
 WebGL 2.0, @extension{OES,vertex_array_object} in OpenGL ES 2.0 or
@@ -586,14 +586,14 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * (specified in implementation of given shader) and offsets between
          * interleaved attributes.
          *
-         * See @ref Mesh-configuration "class documentation" for simple usage
-         * example. For more involved example imagine that you have buffer
-         * with 76 bytes of some other data at the beginning (possibly material
-         * configuration) and then the interleaved vertex array. Each vertex
-         * consists of weight, position, texture coordinate and normal. You
-         * want to draw it with @ref Shaders::Phong, but it accepts only
-         * position and normal, so you have to skip weight and texture
-         * coordinate in each vertex:
+         * See @ref GL-Mesh-configuration "class documentation" for simple
+         * usage example. For more involved example imagine that you have a
+         * buffer with 76 bytes of some other data at the beginning (possibly
+         * material configuration) and then the interleaved vertex array. Each
+         * vertex consists of a weight, position, texture coordinate and
+         * a normal. You want to draw it with @ref Shaders::Phong, but it
+         * accepts only a position and a normal, so you have to skip the weight
+         * and the texture coordinate in each vertex:
          *
          * @snippet MagnumGL.cpp Mesh-addVertexBuffer1
          *
@@ -750,7 +750,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * Expects that the shader is compatible with this mesh and is fully
          * set up. If vertex/index count or instance count is `0`, no draw
          * commands are issued. See also
-         * @ref AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
+         * @ref GL-AbstractShaderProgram-rendering-workflow "AbstractShaderProgram documentation"
          * for more information. If @extension{ARB,vertex_array_object} (part
          * of OpenGL 3.0), OpenGL ES 3.0, WebGL 2.0, @extension{OES,vertex_array_object}
          * in OpenGL ES 2.0 or @webgl_extension{OES,vertex_array_object} in
@@ -985,10 +985,10 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         std::vector<AttributeLayout> _attributes;
 };
 
-/** @debugoperatorenum{Magnum::MeshPrimitive} */
+/** @debugoperatorenum{MeshPrimitive} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, MeshPrimitive value);
 
-/** @debugoperatorclassenum{Magnum::Mesh,Magnum::Mesh::IndexType} */
+/** @debugoperatorclassenum{Mesh,Mesh::IndexType} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Mesh::IndexType value);
 
 inline GLuint Mesh::release() {
@@ -997,12 +997,12 @@ inline GLuint Mesh::release() {
     return id;
 }
 
-}
+}}
 
 namespace Corrade { namespace Utility {
 
 /** @configurationvalue{Magnum::MeshPrimitive} */
-template<> struct MAGNUM_GL_EXPORT ConfigurationValue<Magnum::MeshPrimitive> {
+template<> struct MAGNUM_GL_EXPORT ConfigurationValue<Magnum::GL::MeshPrimitive> {
     ConfigurationValue() = delete;
 
     /**
@@ -1010,18 +1010,18 @@ template<> struct MAGNUM_GL_EXPORT ConfigurationValue<Magnum::MeshPrimitive> {
      *
      * If the value is invalid, returns empty string.
      */
-    static std::string toString(Magnum::MeshPrimitive value, ConfigurationValueFlags);
+    static std::string toString(Magnum::GL::MeshPrimitive value, ConfigurationValueFlags);
 
     /**
      * @brief Reads enum value as string
      *
      * If the value is invalid, returns @ref Magnum::MeshPrimitive::Points "MeshPrimitive::Points".
      */
-    static Magnum::MeshPrimitive fromString(const std::string& stringValue, ConfigurationValueFlags);
+    static Magnum::GL::MeshPrimitive fromString(const std::string& stringValue, ConfigurationValueFlags);
 };
 
 /** @configurationvalue{Magnum::Mesh::IndexType} */
-template<> struct MAGNUM_GL_EXPORT ConfigurationValue<Magnum::Mesh::IndexType> {
+template<> struct MAGNUM_GL_EXPORT ConfigurationValue<Magnum::GL::Mesh::IndexType> {
     ConfigurationValue() = delete;
 
     /**
@@ -1029,14 +1029,14 @@ template<> struct MAGNUM_GL_EXPORT ConfigurationValue<Magnum::Mesh::IndexType> {
      *
      * If the value is invalid, returns empty string.
      */
-    static std::string toString(Magnum::Mesh::IndexType value, ConfigurationValueFlags);
+    static std::string toString(Magnum::GL::Mesh::IndexType value, ConfigurationValueFlags);
 
     /**
      * @brief Read enum value as string
      *
      * If the value is invalid, returns @ref Magnum::Mesh::IndexType::UnsignedInt "Mesh::IndexType::UnsignedInt".
      */
-    static Magnum::Mesh::IndexType fromString(const std::string& stringValue, ConfigurationValueFlags);
+    static Magnum::GL::Mesh::IndexType fromString(const std::string& stringValue, ConfigurationValueFlags);
 };
 
 }}

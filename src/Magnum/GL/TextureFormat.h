@@ -26,12 +26,12 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::TextureFormat
+ * @brief Enum @ref Magnum::GL::TextureFormat
  */
 
 #include "Magnum/GL/OpenGL.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /**
 @brief Internal texture format
@@ -1757,6 +1757,6 @@ enum class TextureFormat: GLenum {
     #endif
 };
 
-}
+}}
 
 #endif

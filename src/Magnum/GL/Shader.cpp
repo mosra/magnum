@@ -43,7 +43,7 @@
 typedef char GLchar;
 #endif
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 namespace Implementation {
     /* defined in Implementation/driverSpecific.cpp */
@@ -670,7 +670,7 @@ Shader::Shader(const Version version, const Type type): _type(type), _id(0) {
         case Version::None: return;
     }
 
-    CORRADE_ASSERT(false, "Shader::Shader(): unsupported version" << version, );
+    CORRADE_ASSERT(false, "GL::Shader::Shader(): unsupported version" << version, );
 }
 
 Shader::~Shader() {
@@ -740,7 +740,7 @@ void Shader::addSourceImplementationEmscriptenPthread(std::string source) {
 
 Shader& Shader::addFile(const std::string& filename) {
     CORRADE_ASSERT(Utility::Directory::fileExists(filename),
-        "Shader file " << '\'' + filename + '\'' << " cannot be read.", *this);
+        "GL::Shader file " << '\'' + filename + '\'' << " cannot be read.", *this);
 
     addSource(Utility::Directory::readString(filename));
     return *this;
@@ -753,7 +753,7 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
        reallocating it for each of them) */
     std::size_t maxSourceCount = 0;
     for(Shader& shader: shaders) {
-        CORRADE_ASSERT(shader._sources.size() > 1, "Shader::compile(): no files added", false);
+        CORRADE_ASSERT(shader._sources.size() > 1, "GL::Shader::compile(): no files added", false);
         maxSourceCount = std::max(shader._sources.size(), maxSourceCount);
     }
     /** @todo ArrayTuple/VLAs */
@@ -814,7 +814,7 @@ bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shade
 Debug& operator<<(Debug& debug, const Shader::Type value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Shader::Type::value: return debug << "Shader::Type::" #value;
+        #define _c(value) case Shader::Type::value: return debug << "GL::Shader::Type::" #value;
         _c(Vertex)
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         _c(TessellationControl)
@@ -827,8 +827,8 @@ Debug& operator<<(Debug& debug, const Shader::Type value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Shader::Type(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::Shader::Type(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
-}
+}}

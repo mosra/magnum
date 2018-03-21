@@ -44,7 +44,7 @@ void DefaultFramebufferTest::debugStatus() {
     std::ostringstream out;
 
     Debug(&out) << DefaultFramebuffer::Status::Complete << DefaultFramebuffer::Status(0xdead);
-    CORRADE_COMPARE(out.str(), "DefaultFramebuffer::Status::Complete DefaultFramebuffer::Status(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::DefaultFramebuffer::Status::Complete GL::DefaultFramebuffer::Status(0xdead)\n");
 }
 
 }}

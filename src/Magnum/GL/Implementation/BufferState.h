@@ -27,7 +27,7 @@
 
 #include "Magnum/GL/Buffer.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 struct BufferState {
     enum: std::size_t {
@@ -88,6 +88,6 @@ struct BufferState {
     #endif
 };
 
-}}
+}}}
 
 #endif

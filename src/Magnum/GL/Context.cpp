@@ -61,7 +61,7 @@
 #include "Magnum/GL/Implementation/TransformFeedbackState.h"
 #endif
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 const std::vector<Extension>& Extension::extensions(Version version) {
     #define _extension(prefix, vendor, extension)                           \
@@ -445,7 +445,7 @@ namespace {
 bool Context::hasCurrent() { return currentContext; }
 
 Context& Context::current() {
-    CORRADE_ASSERT(currentContext, "Context::current(): no current context", *currentContext);
+    CORRADE_ASSERT(currentContext, "GL::Context::current(): no current context", *currentContext);
     return *currentContext;
 }
 
@@ -521,7 +521,7 @@ bool Context::tryCreate() {
     #else
     const std::string version = versionString();
     if(version.find("WebGL 2") == std::string::npos) {
-        Error() << "Context: unsupported version string:" << version;
+        Error{} << "GL::Context: unsupported version string:" << version;
         return false;
     }
     majorVersion = 3;
@@ -543,7 +543,7 @@ bool Context::tryCreate() {
     {
         #ifndef MAGNUM_TARGET_GLES2
         CORRADE_ASSERT(versionNumberError == Renderer::Error::InvalidEnum,
-            "Context: cannot retrieve OpenGL version:" << versionNumberError, false);
+            "GL::Context: cannot retrieve OpenGL version:" << versionNumberError, false);
         #endif
 
         /* Allow ES2 context on driver that reports ES3 as supported */
@@ -567,20 +567,20 @@ bool Context::tryCreate() {
             minorVersion = 0;
             #endif
         } else {
-            Error() << "Context: unsupported version string:" << version;
+            Error{} << "GL::Context: unsupported version string:" << version;
             return false;
         }
     }
     #endif
 
     /* Compose the version enum */
-    _version = Magnum::version(majorVersion, minorVersion);
+    _version = GL::version(majorVersion, minorVersion);
 
     /* Check that version retrieval went right */
     #ifndef CORRADE_NO_ASSERT
     const auto error = Renderer::error();
     CORRADE_ASSERT(error == Renderer::Error::NoError,
-        "Context: cannot retrieve OpenGL version:" << error, false);
+        "GL::Context: cannot retrieve OpenGL version:" << error, false);
     #endif
 
     /* Check that the version is supported (now it probably is, but be sure) */
@@ -593,9 +593,9 @@ bool Context::tryCreate() {
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        Error() << "Context: unsupported OpenGL version" << std::make_pair(majorVersion, minorVersion);
+        Error{} << "GL::Context: unsupported OpenGL version" << std::make_pair(majorVersion, minorVersion);
         #else
-        Error() << "Context: unsupported OpenGL ES version" << std::make_pair(majorVersion, minorVersion);
+        Error{} << "GL::Context: unsupported OpenGL ES version" << std::make_pair(majorVersion, minorVersion);
         #endif
 
         /* Reset the version so the context is not marked as successfully created */
@@ -678,7 +678,7 @@ bool Context::tryCreate() {
     setupDriverWorkarounds();
 
     /* Set this context as current */
-    CORRADE_ASSERT(!currentContext, "Context: Another context currently active", false);
+    CORRADE_ASSERT(!currentContext, "GL::Context: Another context currently active", false);
     currentContext = this;
 
     /* Decide whether to print the initialization output or not */
@@ -886,7 +886,7 @@ void Context::resetState(const States states) {
 Debug& operator<<(Debug& debug, const Context::Flag value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Context::Flag::value: return debug << "Context::Flag::" #value;
+        #define _c(value) case Context::Flag::value: return debug << "GL::Context::Flag::" #value;
         _c(Debug)
         _c(NoError)
         #ifndef MAGNUM_TARGET_GLES2
@@ -896,11 +896,11 @@ Debug& operator<<(Debug& debug, const Context::Flag value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Context::Flag(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "GL::Context::Flag(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Context::Flags value) {
-    return Containers::enumSetDebugOutput(debug, value, "Context::Flags{}", {
+    return Containers::enumSetDebugOutput(debug, value, "GL::Context::Flags{}", {
         Context::Flag::Debug,
         Context::Flag::NoError,
         #ifndef MAGNUM_TARGET_GLES2
@@ -913,7 +913,7 @@ Debug& operator<<(Debug& debug, const Context::Flags value) {
 Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Context::DetectedDriver::value: return debug << "Context::DetectedDriver::" #value;
+        #define _c(value) case Context::DetectedDriver::value: return debug << "GL::Context::DetectedDriver::" #value;
         #ifndef MAGNUM_TARGET_WEBGL
         _c(Amd)
         #endif
@@ -932,11 +932,11 @@ Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Context::DetectedDriver(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "GL::Context::DetectedDriver(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Context::DetectedDrivers value) {
-    return Containers::enumSetDebugOutput(debug, value, "Context::DetectedDrivers{}", {
+    return Containers::enumSetDebugOutput(debug, value, "GL::Context::DetectedDrivers{}", {
         #ifndef MAGNUM_TARGET_WEBGL
         Context::DetectedDriver::Amd,
         #endif
@@ -955,4 +955,4 @@ Debug& operator<<(Debug& debug, const Context::DetectedDrivers value) {
 }
 #endif
 
-}
+}}

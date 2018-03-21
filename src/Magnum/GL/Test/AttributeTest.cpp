@@ -358,7 +358,7 @@ void AttributeTest::debugComponents1() {
 
     std::ostringstream out;
     Debug{&out} << Attribute::Components::One << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "Attribute::Components::One Attribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Attribute::Components::One GL::Attribute::Components(0xdead)\n");
 }
 
 void AttributeTest::debugComponents2() {
@@ -366,7 +366,7 @@ void AttributeTest::debugComponents2() {
 
     std::ostringstream out;
     Debug{&out} << Attribute::Components::Two << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "Attribute::Components::Two Attribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Attribute::Components::Two GL::Attribute::Components(0xdead)\n");
 }
 
 void AttributeTest::debugComponents3() {
@@ -374,7 +374,7 @@ void AttributeTest::debugComponents3() {
 
     std::ostringstream out;
     Debug{&out} << Attribute::Components::Three << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "Attribute::Components::Three Attribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Attribute::Components::Three GL::Attribute::Components(0xdead)\n");
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -383,7 +383,7 @@ void AttributeTest::debugComponents4() {
 
     std::ostringstream out;
     Debug{&out} << Attribute::Components::Four << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "Attribute::Components::Four Attribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Attribute::Components::Four GL::Attribute::Components(0xdead)\n");
 }
 #endif
 
@@ -392,7 +392,7 @@ void AttributeTest::debugComponentsMatrix2() {
 
     std::ostringstream out;
     Debug{&out} << Attribute::Components::Two << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "Attribute::Components::Two Attribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Attribute::Components::Two GL::Attribute::Components(0xdead)\n");
 }
 
 void AttributeTest::debugComponentsMatrix3() {
@@ -400,7 +400,7 @@ void AttributeTest::debugComponentsMatrix3() {
 
     std::ostringstream out;
     Debug{&out} << Attribute::Components::Three << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "Attribute::Components::Three Attribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Attribute::Components::Three GL::Attribute::Components(0xdead)\n");
 }
 
 void AttributeTest::debugComponentsMatrix4() {
@@ -408,7 +408,7 @@ void AttributeTest::debugComponentsMatrix4() {
 
     std::ostringstream out;
     Debug{&out} << Attribute::Components::Four << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "Attribute::Components::Four Attribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Attribute::Components::Four GL::Attribute::Components(0xdead)\n");
 }
 
 void AttributeTest::debugComponentsVector4() {
@@ -416,7 +416,7 @@ void AttributeTest::debugComponentsVector4() {
 
     std::ostringstream out;
     Debug{&out} << Attribute::Components::Three << Attribute::Components(0xdead);
-    CORRADE_COMPARE(out.str(), "Attribute::Components::Three Attribute::Components(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Attribute::Components::Three GL::Attribute::Components(0xdead)\n");
 }
 
 void AttributeTest::debugDataTypeFloat() {
@@ -424,7 +424,7 @@ void AttributeTest::debugDataTypeFloat() {
 
     std::ostringstream out;
     Debug{&out} << Attribute::DataType::HalfFloat << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out.str(), "Attribute::DataType::HalfFloat Attribute::DataType(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::HalfFloat GL::Attribute::DataType(0xdead)\n");
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -433,7 +433,7 @@ void AttributeTest::debugDataTypeInt() {
 
     std::ostringstream out;
     Debug{&out} << Attribute::DataType::Short << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out.str(), "Attribute::DataType::Short Attribute::DataType(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::Short GL::Attribute::DataType(0xdead)\n");
 }
 #endif
 
@@ -443,7 +443,7 @@ void AttributeTest::debugDataTypeDouble() {
 
     std::ostringstream out;
     Debug{&out} << Attribute::DataType::Double << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out.str(), "Attribute::DataType::Double Attribute::DataType(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::Double GL::Attribute::DataType(0xdead)\n");
 }
 #endif
 
@@ -452,7 +452,7 @@ void AttributeTest::debugDataTypeVector3() {
 
     std::ostringstream out;
     Debug{&out} << Attribute::DataType::HalfFloat << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out.str(), "Attribute::DataType::HalfFloat Attribute::DataType(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::HalfFloat GL::Attribute::DataType(0xdead)\n");
 }
 
 void AttributeTest::debugDataTypeVector4() {
@@ -460,7 +460,7 @@ void AttributeTest::debugDataTypeVector4() {
 
     std::ostringstream out;
     Debug{&out} << Attribute::DataType::HalfFloat << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out.str(), "Attribute::DataType::HalfFloat Attribute::DataType(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::HalfFloat GL::Attribute::DataType(0xdead)\n");
 }
 
 }}

@@ -37,125 +37,125 @@
 
 namespace Magnum {
 
-std::size_t PixelStorage::pixelSize(PixelFormat format, PixelType type) {
+std::size_t PixelStorage::pixelSize(GL::PixelFormat format, GL::PixelType type) {
     std::size_t size = 0;
     switch(type) {
-        case PixelType::UnsignedByte:
+        case GL::PixelType::UnsignedByte:
         #ifndef MAGNUM_TARGET_GLES2
-        case PixelType::Byte:
+        case GL::PixelType::Byte:
         #endif
             size = 1; break;
-        case PixelType::UnsignedShort:
+        case GL::PixelType::UnsignedShort:
         #ifndef MAGNUM_TARGET_GLES2
-        case PixelType::Short:
+        case GL::PixelType::Short:
         #endif
-        case PixelType::HalfFloat:
+        case GL::PixelType::HalfFloat:
             size = 2; break;
-        case PixelType::UnsignedInt:
+        case GL::PixelType::UnsignedInt:
         #ifndef MAGNUM_TARGET_GLES2
-        case PixelType::Int:
+        case GL::PixelType::Int:
         #endif
-        case PixelType::Float:
+        case GL::PixelType::Float:
             size = 4; break;
 
         #ifndef MAGNUM_TARGET_GLES
-        case PixelType::UnsignedByte332:
-        case PixelType::UnsignedByte233Rev:
+        case GL::PixelType::UnsignedByte332:
+        case GL::PixelType::UnsignedByte233Rev:
             return 1;
         #endif
-        case PixelType::UnsignedShort565:
+        case GL::PixelType::UnsignedShort565:
         #ifndef MAGNUM_TARGET_GLES
-        case PixelType::UnsignedShort565Rev:
+        case GL::PixelType::UnsignedShort565Rev:
         #endif
-        case PixelType::UnsignedShort4444:
+        case GL::PixelType::UnsignedShort4444:
         #ifndef MAGNUM_TARGET_WEBGL
-        case PixelType::UnsignedShort4444Rev:
+        case GL::PixelType::UnsignedShort4444Rev:
         #endif
-        case PixelType::UnsignedShort5551:
+        case GL::PixelType::UnsignedShort5551:
         #ifndef MAGNUM_TARGET_WEBGL
-        case PixelType::UnsignedShort1555Rev:
+        case GL::PixelType::UnsignedShort1555Rev:
         #endif
             return 2;
         #ifndef MAGNUM_TARGET_GLES
-        case PixelType::UnsignedInt8888:
-        case PixelType::UnsignedInt8888Rev:
-        case PixelType::UnsignedInt1010102:
+        case GL::PixelType::UnsignedInt8888:
+        case GL::PixelType::UnsignedInt8888Rev:
+        case GL::PixelType::UnsignedInt1010102:
         #endif
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        case PixelType::UnsignedInt2101010Rev:
+        case GL::PixelType::UnsignedInt2101010Rev:
         #endif
         #ifndef MAGNUM_TARGET_GLES2
-        case PixelType::UnsignedInt10F11F11FRev:
-        case PixelType::UnsignedInt5999Rev:
+        case GL::PixelType::UnsignedInt10F11F11FRev:
+        case GL::PixelType::UnsignedInt5999Rev:
         #endif
-        case PixelType::UnsignedInt248:
+        case GL::PixelType::UnsignedInt248:
             return 4;
         #ifndef MAGNUM_TARGET_GLES2
-        case PixelType::Float32UnsignedInt248Rev:
+        case GL::PixelType::Float32UnsignedInt248Rev:
             return 8;
         #endif
     }
 
     switch(format) {
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        case PixelFormat::Red:
+        case GL::PixelFormat::Red:
         #endif
         #ifndef MAGNUM_TARGET_GLES2
-        case PixelFormat::RedInteger:
+        case GL::PixelFormat::RedInteger:
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        case PixelFormat::Green:
-        case PixelFormat::Blue:
-        case PixelFormat::GreenInteger:
-        case PixelFormat::BlueInteger:
+        case GL::PixelFormat::Green:
+        case GL::PixelFormat::Blue:
+        case GL::PixelFormat::GreenInteger:
+        case GL::PixelFormat::BlueInteger:
         #endif
         #ifdef MAGNUM_TARGET_GLES2
-        case PixelFormat::Luminance:
+        case GL::PixelFormat::Luminance:
         #endif
-        case PixelFormat::DepthComponent:
+        case GL::PixelFormat::DepthComponent:
         #ifndef MAGNUM_TARGET_WEBGL
-        case PixelFormat::StencilIndex:
+        case GL::PixelFormat::StencilIndex:
         #endif
             return 1*size;
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        case PixelFormat::RG:
+        case GL::PixelFormat::RG:
         #endif
         #ifndef MAGNUM_TARGET_GLES2
-        case PixelFormat::RGInteger:
+        case GL::PixelFormat::RGInteger:
         #endif
         #ifdef MAGNUM_TARGET_GLES2
-        case PixelFormat::LuminanceAlpha:
+        case GL::PixelFormat::LuminanceAlpha:
         #endif
             return 2*size;
-        case PixelFormat::RGB:
+        case GL::PixelFormat::RGB:
         #ifndef MAGNUM_TARGET_GLES2
-        case PixelFormat::RGBInteger:
+        case GL::PixelFormat::RGBInteger:
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        case PixelFormat::BGR:
-        case PixelFormat::BGRInteger:
+        case GL::PixelFormat::BGR:
+        case GL::PixelFormat::BGRInteger:
         #endif
         #ifdef MAGNUM_TARGET_GLES2
-        case PixelFormat::SRGB:
+        case GL::PixelFormat::SRGB:
         #endif
             return 3*size;
-        case PixelFormat::RGBA:
+        case GL::PixelFormat::RGBA:
         #ifndef MAGNUM_TARGET_GLES2
-        case PixelFormat::RGBAInteger:
+        case GL::PixelFormat::RGBAInteger:
         #endif
         #ifndef MAGNUM_TARGET_WEBGL
-        case PixelFormat::BGRA:
+        case GL::PixelFormat::BGRA:
         #endif
         #ifdef MAGNUM_TARGET_GLES2
-        case PixelFormat::SRGBAlpha:
+        case GL::PixelFormat::SRGBAlpha:
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        case PixelFormat::BGRAInteger:
+        case GL::PixelFormat::BGRAInteger:
         #endif
             return 4*size;
 
         /* Handled above */
-        case PixelFormat::DepthStencil:
+        case GL::PixelFormat::DepthStencil:
             CORRADE_ASSERT(false, "PixelStorage::pixelSize(): invalid PixelType specified for depth/stencil PixelFormat", 0);
     }
 
@@ -174,7 +174,7 @@ bool PixelStorage::operator==(const PixelStorage& other) const {
         _alignment == other._alignment;
 }
 
-std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> PixelStorage::dataProperties(const PixelFormat format, const PixelType type, const Vector3i& size) const {
+std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> PixelStorage::dataProperties(const GL::PixelFormat format, const GL::PixelType type, const Vector3i& size) const {
     const std::size_t pixelSize = PixelStorage::pixelSize(format, type);
     const Math::Vector3<std::size_t> dataSize{
         std::size_t((((
@@ -211,18 +211,18 @@ std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> 
 #endif
 
 void PixelStorage::applyInternal(const bool isUnpack) {
-    Implementation::RendererState::PixelStorage& state = isUnpack ?
+    GL::Implementation::RendererState::PixelStorage& state = isUnpack ?
         Context::current().state().renderer->unpackPixelStorage :
         Context::current().state().renderer->packPixelStorage;
 
     /* Alignment */
-    if(state.alignment == Implementation::RendererState::PixelStorage::DisengagedValue || state.alignment != _alignment)
+    if(state.alignment == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.alignment != _alignment)
         glPixelStorei(isUnpack ? GL_UNPACK_ALIGNMENT : GL_PACK_ALIGNMENT,
             state.alignment = _alignment);
 
     /* Row length */
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    if(state.rowLength == Implementation::RendererState::PixelStorage::DisengagedValue || state.rowLength != _rowLength)
+    if(state.rowLength == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.rowLength != _rowLength)
     {
         /** @todo Use real value for GL_PACK_ROW_LENGTH_NV when it is in headers */
         #ifndef MAGNUM_TARGET_GLES2
@@ -237,7 +237,7 @@ void PixelStorage::applyInternal(const bool isUnpack) {
 
     #ifndef MAGNUM_TARGET_GLES
     /* Image height (on ES for unpack only, taken care of below) */
-    if(state.imageHeight == Implementation::RendererState::PixelStorage::DisengagedValue || state.imageHeight != _imageHeight)
+    if(state.imageHeight == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.imageHeight != _imageHeight)
         glPixelStorei(isUnpack ? GL_UNPACK_IMAGE_HEIGHT : GL_PACK_IMAGE_HEIGHT,
             state.imageHeight = _imageHeight);
     #endif
@@ -245,18 +245,18 @@ void PixelStorage::applyInternal(const bool isUnpack) {
     /* On ES2 done by modifying data pointer */
     #ifndef MAGNUM_TARGET_GLES2
     /* Skip pixels */
-    if(state.skip.x() == Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.x() != _skip.x())
+    if(state.skip.x() == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.x() != _skip.x())
         glPixelStorei(isUnpack ? GL_UNPACK_SKIP_PIXELS : GL_PACK_SKIP_PIXELS,
             state.skip.x() = _skip.x());
 
     /* Skip rows */
-    if(state.skip.y() == Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.y() != _skip.y())
+    if(state.skip.y() == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.y() != _skip.y())
         glPixelStorei(isUnpack ? GL_UNPACK_SKIP_ROWS : GL_PACK_SKIP_ROWS,
             state.skip.y() = _skip.y());
 
     #ifndef MAGNUM_TARGET_GLES
     /* Skip images (on ES for unpack only, taken care of below) */
-    if(state.skip.z() == Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.z() != _skip.z())
+    if(state.skip.z() == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.z() != _skip.z())
         glPixelStorei(isUnpack ? GL_UNPACK_SKIP_IMAGES : GL_PACK_SKIP_IMAGES,
             state.skip.z() = _skip.z());
     #endif
@@ -270,11 +270,11 @@ void PixelStorage::applyUnpack() {
     Implementation::RendererState::PixelStorage& state = Context::current().state().renderer->unpackPixelStorage;
 
     /* Image height (on ES for unpack only) */
-    if(state.imageHeight == Implementation::RendererState::PixelStorage::DisengagedValue || state.imageHeight != _imageHeight)
+    if(state.imageHeight == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.imageHeight != _imageHeight)
         glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, state.imageHeight = _imageHeight);
 
     /* Skip images (on ES for unpack only) */
-    if(state.skip.z() == Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.z() != _skip.z())
+    if(state.skip.z() == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.z() != _skip.z())
         glPixelStorei(GL_UNPACK_SKIP_IMAGES, state.skip.z() = _skip.z());
     #endif
 }
@@ -289,27 +289,27 @@ bool CompressedPixelStorage::operator==(const CompressedPixelStorage& other) con
 void CompressedPixelStorage::applyInternal(const bool isUnpack) {
     PixelStorage::applyInternal(isUnpack);
 
-    Implementation::RendererState::PixelStorage& state = isUnpack ?
+    GL::Implementation::RendererState::PixelStorage& state = isUnpack ?
         Context::current().state().renderer->unpackPixelStorage :
         Context::current().state().renderer->packPixelStorage;
 
     /* Compressed block width */
-    if(state.compressedBlockSize.x() == Implementation::RendererState::PixelStorage::DisengagedValue || state.compressedBlockSize.x() != _blockSize.x())
+    if(state.compressedBlockSize.x() == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.compressedBlockSize.x() != _blockSize.x())
         glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_WIDTH : GL_PACK_COMPRESSED_BLOCK_WIDTH,
             state.compressedBlockSize.x() = _blockSize.x());
 
     /* Compressed block height */
-    if(state.compressedBlockSize.y() == Implementation::RendererState::PixelStorage::DisengagedValue || state.compressedBlockSize.y() != _blockSize.y())
+    if(state.compressedBlockSize.y() == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.compressedBlockSize.y() != _blockSize.y())
         glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_HEIGHT : GL_PACK_COMPRESSED_BLOCK_HEIGHT,
             state.compressedBlockSize.y() = _blockSize.y());
 
     /* Compressed block depth */
-    if(state.compressedBlockSize.z() == Implementation::RendererState::PixelStorage::DisengagedValue || state.compressedBlockSize.z() != _blockSize.z())
+    if(state.compressedBlockSize.z() == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.compressedBlockSize.z() != _blockSize.z())
         glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_DEPTH : GL_PACK_COMPRESSED_BLOCK_DEPTH,
             state.compressedBlockSize.z() = _blockSize.z());
 
     /* Compressed block size */
-    if(state.compressedBlockDataSize == Implementation::RendererState::PixelStorage::DisengagedValue || state.compressedBlockDataSize != _blockDataSize)
+    if(state.compressedBlockDataSize == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.compressedBlockDataSize != _blockDataSize)
         glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_SIZE : GL_PACK_COMPRESSED_BLOCK_SIZE,
             state.compressedBlockDataSize = _blockDataSize);
 }

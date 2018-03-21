@@ -53,7 +53,7 @@ void RendererTest::debugError() {
     std::ostringstream out;
 
     Debug(&out) << Renderer::Error::InvalidOperation << Renderer::Error(0xdead);
-    CORRADE_COMPARE(out.str(), "Renderer::Error::InvalidOperation Renderer::Error(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Renderer::Error::InvalidOperation GL::Renderer::Error(0xdead)\n");
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
@@ -61,14 +61,14 @@ void RendererTest::debugResetNotificationStrategy() {
     std::ostringstream out;
 
     Debug(&out) << Renderer::ResetNotificationStrategy::LoseContextOnReset << Renderer::ResetNotificationStrategy(0xdead);
-    CORRADE_COMPARE(out.str(), "Renderer::ResetNotificationStrategy::LoseContextOnReset Renderer::ResetNotificationStrategy(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Renderer::ResetNotificationStrategy::LoseContextOnReset GL::Renderer::ResetNotificationStrategy(0xdead)\n");
 }
 
 void RendererTest::debugGraphicsResetStatus() {
     std::ostringstream out;
 
     Debug(&out) << Renderer::GraphicsResetStatus::GuiltyContextReset << Renderer::GraphicsResetStatus(0xdead);
-    CORRADE_COMPARE(out.str(), "Renderer::GraphicsResetStatus::GuiltyContextReset Renderer::GraphicsResetStatus(0xdead)\n");
+    CORRADE_COMPARE(out.str(), "GL::Renderer::GraphicsResetStatus::GuiltyContextReset GL::Renderer::GraphicsResetStatus(0xdead)\n");
 }
 #endif
 

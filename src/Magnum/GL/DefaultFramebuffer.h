@@ -26,12 +26,12 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::DefaultFramebuffer
+ * @brief Class @ref Magnum::GL::DefaultFramebuffer
  */
 
 #include "Magnum/GL/AbstractFramebuffer.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /**
 @brief Default framebuffer
@@ -40,7 +40,7 @@ Default framebuffer, i.e. the actual screen surface. It is automatically
 created when @ref Context is created and it is available through global
 variable @ref defaultFramebuffer.
 
-@section DefaultFramebuffer-usage Usage
+@section GL-DefaultFramebuffer-usage Usage
 
 When you are using only the default framebuffer, the usage is simple. You
 must ensure that it is properly resized when window surface is resized. In case
@@ -62,9 +62,9 @@ example:
 See documentation of particular functions and @ref Framebuffer documentation
 for more involved usage, usage of non-default or multiple framebuffers.
 
-@section DefaultFramebuffer-performance-optimizations Performance optimizations
+@section GL-DefaultFramebuffer-performance-optimizations Performance optimizations
 
-See also @ref AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
+See also @ref GL-AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
 
 If either @extension{ARB,direct_state_access} (part of OpenGL 4.5) or
 @extension{EXT,direct_state_access} desktop extension is available, functions
@@ -506,9 +506,9 @@ class MAGNUM_GL_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 /** @brief Default framebuffer instance */
 extern DefaultFramebuffer MAGNUM_GL_EXPORT defaultFramebuffer;
 
-/** @debugoperatorclassenum{Magnum::DefaultFramebuffer,Magnum::DefaultFramebuffer::Status} */
+/** @debugoperatorclassenum{DefaultFramebuffer,DefaultFramebuffer::Status} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DefaultFramebuffer::Status value);
 
-}
+}}
 
 #endif

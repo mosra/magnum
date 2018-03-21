@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::MeshView
+ * @brief Class @ref Magnum::GL::MeshView
  */
 
 #include <functional>
@@ -36,7 +36,7 @@
 #include "Magnum/GL/OpenGL.h"
 #include "Magnum/GL/visibility.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 namespace Implementation { struct MeshState; }
 
@@ -306,6 +306,6 @@ inline MeshView& MeshView::setIndexRange(Int first, UnsignedInt start, UnsignedI
     return *this;
 }
 
-}
+}}
 
 #endif

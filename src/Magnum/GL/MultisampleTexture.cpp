@@ -31,7 +31,7 @@
 
 #include "Magnum/GL/Implementation/maxTextureSize.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 template<> Vector2i MAGNUM_GL_EXPORT maxMultisampleTextureSize<2>() {
     #ifndef MAGNUM_TARGET_GLES
@@ -56,5 +56,5 @@ template<> Vector3i MAGNUM_GL_EXPORT maxMultisampleTextureSize<3>() {
     return {Vector2i{Implementation::maxTextureSideSize()}, Implementation::max3DTextureDepth()};
 }
 
-}}
+}}}
 #endif

@@ -29,7 +29,7 @@
 #include "Magnum/GL/Implementation/State.h"
 #include "Magnum/GL/Implementation/TextureState.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 GLint maxTextureSideSize() {
     GLint& value = Context::current().state().texture->maxSize;
@@ -75,4 +75,4 @@ GLint maxCubeMapTextureSideSize() {
     return value;
 }
 
-}}
+}}}

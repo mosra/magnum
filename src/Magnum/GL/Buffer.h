@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Buffer, enum @ref Magnum::BufferUsage
+ * @brief Class @ref Magnum::GL::Buffer, enum @ref Magnum::GL::BufferUsage
  */
 
 #include <cstddef>
@@ -45,7 +45,7 @@
 #include <Corrade/Utility/Macros.h>
 #endif
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /**
 @brief Buffer usage
@@ -141,7 +141,7 @@ namespace Implementation { struct BufferState; }
 Encapsulates one OpenGL buffer object and provides functions for convenient
 data updates.
 
-@section Buffer-data-updating Data updating
+@section GL-Buffer-data-updating Data updating
 
 Default way to set or update buffer data with @ref setData() or @ref setSubData()
 is to use @ref Corrade::Containers::ArrayView. See its documentation for
@@ -154,7 +154,7 @@ There is also overload for array-like containers from STL, such as
 
 @snippet MagnumGL.cpp Buffer-setdata-stl
 
-@section Buffer-data-mapping Memory mapping
+@section GL-Buffer-data-mapping Memory mapping
 
 Buffer data can be also updated asynchronously. First you need to allocate
 the buffer to desired size by passing @cpp nullptr @ce to @ref setData(), e.g.:
@@ -174,7 +174,7 @@ memory operations performed by OpenGL on unmapping. Example:
 
 @snippet MagnumGL.cpp Buffer-flush
 
-@section Buffer-webgl-restrictions WebGL restrictions
+@section GL-Buffer-webgl-restrictions WebGL restrictions
 
 Buffers in @ref MAGNUM_TARGET_WEBGL "WebGL" need to be bound only to one unique
 target, i.e., @ref Buffer bound to @ref Buffer::TargetHint::Array cannot be
@@ -194,7 +194,7 @@ such as UBOs):
 To simplify debugging, @ref Mesh checks proper target hint when adding vertex
 and index buffers in WebGL.
 
-@section Buffer-performance-optimizations Performance optimizations
+@section GL-Buffer-performance-optimizations Performance optimizations
 
 The engine tracks currently bound buffers to avoid unnecessary calls to
 @fn_gl_keyword{BindBuffer}. If the buffer is already bound to some target,
@@ -1176,7 +1176,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          *
          * Flushes specified subsection of mapped range. Use only if you called
          * @ref map() with @ref MapFlag::FlushExplicit flag. See
-         * @ref Buffer-data-mapping "class documentation" for usage example.
+         * @ref GL-Buffer-data-mapping "class documentation" for usage example.
          *
          * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
          * nor @extension{EXT,direct_state_access} desktop extension is
@@ -1332,11 +1332,11 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
 CORRADE_ENUMSET_OPERATORS(Buffer::MapFlags)
 #endif
 
-/** @debugoperatorclassenum{Magnum::Buffer,Magnum::Buffer::TargetHint} */
+/** @debugoperatorclassenum{Buffer,Buffer::TargetHint} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Buffer::TargetHint value);
 
 #ifndef MAGNUM_TARGET_GLES2
-/** @debugoperatorclassenum{Magnum::Buffer,Magnum::Buffer::Target} */
+/** @debugoperatorclassenum{Buffer,Buffer::Target} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Buffer::Target value);
 #endif
 
@@ -1376,6 +1376,6 @@ template<class T> Containers::Array<T> inline Buffer::subData(const GLintptr off
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
-}
+}}
 
 #endif

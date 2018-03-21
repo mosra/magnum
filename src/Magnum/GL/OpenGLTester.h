@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::OpenGLTester
+ * @brief Class @ref Magnum::GL::OpenGLTester
  */
 
 #include <Corrade/TestSuite/Tester.h>
@@ -59,7 +59,7 @@
 #include "Magnum/GL/TimeQuery.h"
 #endif
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /**
 @brief Base class for OpenGL tests and benchmarks
@@ -86,7 +86,7 @@ corrade_add_test(YourTest YourTest.cpp LIBRARIES Magnum::OpenGLTester)
 
 See @ref building, @ref cmake and @ref testsuite for more information.
 
-@section OpenGLTester-running Running the test executables
+@section GL-OpenGLTester-running Running the test executables
 
 Implicitly, running the test executables requires presence of a GPU with OpenGL
 drivers. In addition, on desktop, unless Magnum is built with
@@ -105,7 +105,7 @@ on such drivers.
 See @ref TestSuite-Tester-running for more information about running the tests
 on particular platforms.
 
-@section OpenGLTester-context OpenGL context creation
+@section GL-OpenGLTester-context OpenGL context creation
 
 Upon construction the class creates an OpenGL context, meaning you don't have
 to worry about OpenGL context being available during the tests. If the context
@@ -116,7 +116,7 @@ misuses will propagate to following test cases. See
 @ref TestSuite-Tester-command-line "command-line option overview" for a way
 to run single isolated test cases.
 
-@section OpenGLTester-debug Debug context and error checking
+@section GL-OpenGLTester-debug Debug context and error checking
 
 On platforms that support it, the OpenGL context is created with synchronous
 debug output, meaning that every OpenGL error is directly reported to standard
@@ -125,7 +125,7 @@ upon encountering a GL error --- this should be done explicitly with
 @ref MAGNUM_VERIFY_NO_ERROR() instead, as the debug output is not available on
 all platforms and not all GL errors are fatal.
 
-@section OpenGLTester-benchmarks GPU time benchmarks
+@section GL-OpenGLTester-benchmarks GPU time benchmarks
 
 This class adds @ref BenchmarkType::GpuTime to the benchmark type enum,
 allowing you to measure time spent on GPU as opposed to CPU or wall clock time.
@@ -266,7 +266,7 @@ class OpenGLTester: public TestSuite::Tester {
 };
 
 /** @hideinitializer
-@relatesalso Magnum::OpenGLTester
+@relatesalso Magnum::GL::OpenGLTester
 @brief Verify that no OpenGL error occurred
 
 Equivalent to
@@ -275,6 +275,6 @@ Equivalent to
 */
 #define MAGNUM_VERIFY_NO_ERROR() CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError)
 
-}
+}}
 
 #endif

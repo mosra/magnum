@@ -31,7 +31,7 @@
 
 #include "State.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 MeshState::MeshState(Context& context, ContextState& contextState, std::vector<std::string>& extensions): currentVAO(0)
     #ifndef MAGNUM_TARGET_GLES2
@@ -185,4 +185,4 @@ void MeshState::reset() {
     currentVAO = State::DisengagedBinding;
 }
 
-}}
+}}}

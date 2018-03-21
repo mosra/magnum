@@ -32,7 +32,7 @@
 #include "Magnum/GL/Implementation/State.h"
 #include "Magnum/GL/Implementation/TextureState.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 /* Check correctness of binary OR in setMinificationFilter(). If nobody fucks
    anything up, this assert should produce the same results on all dimensions,
@@ -68,20 +68,20 @@ Float Sampler::maxMaxAnisotropy() {
 Debug& operator<<(Debug& debug, const Sampler::Filter value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Sampler::Filter::value: return debug << "Sampler::Filter::" #value;
+        #define _c(value) case Sampler::Filter::value: return debug << "GL::Sampler::Filter::" #value;
         _c(Nearest)
         _c(Linear)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::Filter(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "GL::Sampler::Filter(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Sampler::Mipmap value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Sampler::Mipmap::value: return debug << "Sampler::Mipmap::" #value;
+        #define _c(value) case Sampler::Mipmap::value: return debug << "GL::Sampler::Mipmap::" #value;
         _c(Base)
         _c(Nearest)
         _c(Linear)
@@ -89,13 +89,13 @@ Debug& operator<<(Debug& debug, const Sampler::Mipmap value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::Mipmap(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "GL::Sampler::Mipmap(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Sampler::Wrapping value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Sampler::Wrapping::value: return debug << "Sampler::Wrapping::" #value;
+        #define _c(value) case Sampler::Wrapping::value: return debug << "GL::Sampler::Wrapping::" #value;
         _c(Repeat)
         _c(MirroredRepeat)
         _c(ClampToEdge)
@@ -109,27 +109,27 @@ Debug& operator<<(Debug& debug, const Sampler::Wrapping value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::Wrapping(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "GL::Sampler::Wrapping(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 Debug& operator<<(Debug& debug, const Sampler::CompareMode value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Sampler::CompareMode::value: return debug << "Sampler::CompareMode::" #value;
+        #define _c(value) case Sampler::CompareMode::value: return debug << "GL::Sampler::CompareMode::" #value;
         _c(None)
         _c(CompareRefToTexture)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::CompareMode(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::Sampler::CompareMode(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Sampler::CompareFunction value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Sampler::CompareFunction::value: return debug << "Sampler::CompareFunction::" #value;
+        #define _c(value) case Sampler::CompareFunction::value: return debug << "GL::Sampler::CompareFunction::" #value;
         _c(Never)
         _c(Always)
         _c(Less)
@@ -142,7 +142,7 @@ Debug& operator<<(Debug& debug, const Sampler::CompareFunction value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::CompareFunction(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::Sampler::CompareFunction(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
@@ -150,16 +150,16 @@ Debug& operator<<(Debug& debug, const Sampler::CompareFunction value) {
 Debug& operator<<(Debug& debug, const Sampler::DepthStencilMode value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Sampler::DepthStencilMode::value: return debug << "Sampler::DepthStencilMode::" #value;
+        #define _c(value) case Sampler::DepthStencilMode::value: return debug << "GL::Sampler::DepthStencilMode::" #value;
         _c(DepthComponent)
         _c(StencilIndex)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Sampler::DepthStencilMode(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::Sampler::DepthStencilMode(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 #endif
 
-}
+}}

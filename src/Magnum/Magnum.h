@@ -90,7 +90,8 @@ Defined if built as static libraries. Default are shared libraries.
 
 Defined if the library is built in a way that allows multiple thread-local
 Magnum contexts. Enabled by default.
-@see @ref building, @ref cmake, @ref Magnum::Context::current() "Context::current()"
+@see @ref building, @ref cmake,
+    @ref Magnum::GL::Context::current() "GL::Context::current()"
 */
 #define MAGNUM_BUILD_MULTITHREADED
 #undef MAGNUM_BUILD_MULTITHREADED

@@ -49,7 +49,7 @@ Using driver workarounds:
 These identifiers correspond to the strings in the below listing. For debugging
 and diagnostic purpose it's possible to disable particular workarounds by
 passing their identifier string to the `--magnum-disable-workarounds`
-command-line option. See @ref Context-command-line for more information.
+command-line option. See @ref GL-Context-command-line for more information.
 
 @snippet src/Magnum/GL/Implementation/driverSpecific.cpp workarounds
 

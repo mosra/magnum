@@ -35,7 +35,7 @@
 #include "Magnum/GL/Implementation/DebugState.h"
 #endif
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 #ifndef MAGNUM_TARGET_WEBGL
 namespace {
@@ -198,4 +198,4 @@ std::string AbstractObject::getLabelImplementationExt(const GLenum identifier, c
 }
 #endif
 
-}
+}}

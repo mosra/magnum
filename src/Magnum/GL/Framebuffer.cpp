@@ -56,7 +56,7 @@
 #include "Magnum/Math/Color.h"
 #endif
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 const Framebuffer::DrawAttachment Framebuffer::DrawAttachment::None = Framebuffer::DrawAttachment(GL_NONE);
 const Framebuffer::BufferAttachment Framebuffer::BufferAttachment::Depth = Framebuffer::BufferAttachment(GL_DEPTH_ATTACHMENT);
@@ -422,7 +422,7 @@ void Framebuffer::textureLayerImplementationDSAEXT(BufferAttachment attachment, 
 Debug& operator<<(Debug& debug, const Framebuffer::Status value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Framebuffer::Status::value: return debug << "Framebuffer::Status::" #value;
+        #define _c(value) case Framebuffer::Status::value: return debug << "GL::Framebuffer::Status::" #value;
         _c(Complete)
         _c(IncompleteAttachment)
         _c(IncompleteMissingAttachment)
@@ -441,8 +441,8 @@ Debug& operator<<(Debug& debug, const Framebuffer::Status value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Framebuffer::Status(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::Framebuffer::Status(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
-}
+}}

@@ -34,7 +34,7 @@
 #include "Magnum/GL/Implementation/FramebufferState.h"
 #include "Magnum/GL/Implementation/State.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 Int Renderbuffer::maxSize() {
     GLint& value = Context::current().state().framebuffer->maxRenderbufferSize;
@@ -183,4 +183,4 @@ void Renderbuffer::storageMultisampleImplementationDSAEXT(GLsizei samples, Rende
 }
 #endif
 
-}
+}}

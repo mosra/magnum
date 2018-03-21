@@ -31,7 +31,7 @@
 
 #include "State.h"
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 constexpr const Range2Di FramebufferState::DisengagedViewport;
 
@@ -355,4 +355,4 @@ void FramebufferState::reset() {
     viewport = DisengagedViewport;
 }
 
-}}
+}}}

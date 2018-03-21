@@ -89,7 +89,7 @@ adb shell /data/local/tmp/my-application
 You can also use @cb{.sh} adb shell @ce to enter the device shell directly and
 continue from there. Besides plain command-line apps it's also possible to
 create an EGL context without any extra setup using
-@ref Platform::WindowlessEglApplication. See also @ref OpenGLTester for
+@ref Platform::WindowlessEglApplication. See also @ref GL::OpenGLTester for
 information about OpenGL testing.
 
 @section platforms-android-apps Building and installing graphics apps

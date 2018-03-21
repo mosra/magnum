@@ -35,7 +35,7 @@
 #error this header is not available in WebGL build
 #endif
 
-namespace Magnum { namespace Implementation {
+namespace Magnum { namespace GL { namespace Implementation {
 
 struct DebugState {
     explicit DebugState(Context& context, std::vector<std::string>& extensions);
@@ -53,6 +53,6 @@ struct DebugState {
     DebugOutput::Callback messageCallback;
 };
 
-}}
+}}}
 
 #endif

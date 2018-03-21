@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Shader
+ * @brief Class @ref Magnum::GL::Shader
  */
 
 #include <functional>
@@ -37,7 +37,7 @@
 #include "Magnum/GL/AbstractObject.h"
 #include "Magnum/GL/GL.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 namespace Implementation { struct ShaderState; }
 
@@ -46,7 +46,7 @@ namespace Implementation { struct ShaderState; }
 
 See @ref AbstractShaderProgram for usage information.
 
-@section Shader-performance-optimizations Performance optimizations
+@section GL-Shader-performance-optimizations Performance optimizations
 
 Shader limits and implementation-defined values (such as @ref maxUniformComponents())
 are cached, so repeated queries don't result in repeated @fn_gl{Get} calls.
@@ -630,7 +630,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         std::vector<std::string> _sources;
 };
 
-/** @debugoperatorclassenum{Magnum::Shader,Magnum::Shader::Type} */
+/** @debugoperatorclassenum{Shader,Shader::Type} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Shader::Type value);
 
 inline Shader::Shader(Shader&& other) noexcept: _type(other._type), _id(other._id), _sources(std::move(other._sources)) {
@@ -645,6 +645,6 @@ inline Shader& Shader::operator=(Shader&& other) noexcept {
     return *this;
 }
 
-}
+}}
 
 #endif

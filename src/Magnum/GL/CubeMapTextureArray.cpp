@@ -32,7 +32,7 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Implementation/maxTextureSize.h"
 
-namespace Magnum {
+namespace Magnum { namespace GL {
 
 Vector3i CubeMapTextureArray::maxSize() {
     #ifndef MAGNUM_TARGET_GLES
@@ -89,5 +89,5 @@ CompressedBufferImage3D CubeMapTextureArray::compressedSubImage(const Int level,
 }
 #endif
 
-}
+}}
 #endif
