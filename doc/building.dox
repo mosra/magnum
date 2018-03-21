@@ -383,16 +383,20 @@ By default the engine is built for desktop OpenGL. Using the `TARGET_*` CMake
 options you can target other platforms. Note that some features are
 available for desktop OpenGL only, see @ref requires-gl.
 
--   `TARGET_GLES` --- Target OpenGL ES.
--   `TARGET_GLES2` --- Target OpenGL ES 2.0 instead of 3.0 and later. Currently
-    enabled by default when `TARGET_GLES` is set.
+-   `TARGET_GLES` --- Target OpenGL ES. Available only when `WITH_GL` is
+    enabled.
+-   `TARGET_GLES2` --- Target OpenGL ES 2.0 instead of 3.0 and later. Available
+    only when `WITH_GL` is set. Currently enabled by default when `TARGET_GLES`
+    is set.
 -   `TARGET_DESKTOP_GLES` --- Target OpenGL ES on desktop, i.e. use OpenGL ES
     emulation in desktop OpenGL drivers. Available on Linux and Windows, though
-    might not be supported by all drivers.
+    might not be supported by all drivers. Available only when `WITH_GL` is
+    enabled.
 -   `TARGET_HEADLESS` --- Build command-line utilities for use on a headless
     machine. Basically it means that EGL with no display attachment is being
     used everywhere instead of platform-specific toolkits like CGL, GLX or WGL.
-    Supported mainly on OpenGL ES drivers.
+    Supported mainly on OpenGL ES drivers. Available only when `WITH_GL` is
+    enabled.
 
 By default the engine is built in a way that allows having multiple independent
 thread-local Magnum contents. This might cause some performance penalties ---
@@ -411,22 +415,27 @@ be built and which not:
 
 -   `WITH_AUDIO` --- Build the @ref Audio library. Depends on
     [OpenAL](https://www.openal.org/), not built by default.
--   `WITH_DEBUGTOOLS` --- Build the @ref DebugTools library.
+-   `WITH_DEBUGTOOLS` --- Build the @ref DebugTools library. Enables also
+    building of the GL library.
+-   `WITH_GL` --- Build the @ref GL library
 -   `WITH_MESHTOOLS` --- Build the @ref MeshTools library. Enables also
-    building of the Trade library.
+    building of the Trade and GL libraries.
 -   `WITH_PRIMITIVES` --- Build the @ref Primitives library. Enables also
-    building of the Trade library.
+    building of the Trade and GL libraries.
 -   `WITH_SCENEGRAPH` --- Build the @ref SceneGraph library. Enabled
     automatically if `WITH_SHAPES` is enabled.
--   `WITH_SHADERS` --- Build the @ref Shaders library.
+-   `WITH_SHADERS` --- Build the @ref Shaders library. Enables also building of
+    the GL library.
 -   `WITH_SHAPES` --- Build the @ref Shapes library. Enables also building of
     the SceneGraph library. Enabled automatically if `WITH_DEBUGTOOLS` is
     enabled.
 -   `WITH_TEXT` --- Build the @ref Text library. Enables also building of
-    the TextureTools library.
--   `WITH_TEXTURETOOLS` --- Build the @ref TextureTools library. Enabled
-    automatically if `WITH_TEXT` or `WITH_DISTANCEFIELDCONVERTER` is enabled.
--   `WITH_TRADE` --- Build the @ref Trade library
+    the TextureTools and GL libraries.
+-   `WITH_TEXTURETOOLS` --- Build the @ref TextureTools library. Enables also
+    building of the GL library. Enabled automatically if `WITH_TEXT` or
+    `WITH_DISTANCEFIELDCONVERTER` is enabled.
+-   `WITH_TRADE` --- Build the @ref Trade library. Enables also building of the
+    GL library.
 
 There are more involved component dependencies that are not described here (for
 example the @ref DebugTools has some functionality that gets built only when
@@ -442,49 +451,63 @@ your platform best:
 
 -   `WITH_ANDROIDAPPLICATION` --- Build the
     @ref Platform::AndroidApplication "AndroidApplication" library. Available
-    only on @ref CORRADE_TARGET_ANDROID "Android".
+    only on @ref CORRADE_TARGET_ANDROID "Android". Enables also building of the
+    GL library.
 -   `WITH_GLFWAPPLICATION` --- Build the
     @ref Platform::GlfwApplication "GlfwApplication" library. Depends on
-    [GLFW](http://glfw.org).
+    [GLFW](http://glfw.org). Enables also building of the GL library.
 -   `WITH_GLUTAPPLICATION` --- Build the
     @ref Platform::GlutApplication "GlutApplication" library. Depends on
-    [GLUT](http://freeglut.sourceforge.net/).
+    [GLUT](http://freeglut.sourceforge.net/). Enables also building of the GL
+    library.
 -   `WITH_GLXAPPLICATION` --- Build the
     @ref Platform::GlxApplication "GlxApplication" library. Depends on **X11**.
+    Enables also building of the GL library.
 -   `WITH_SDL2APPLICATION` --- Build the
     @ref Platform::Sdl2Application "Sdl2Application" library. Depends on
-    [SDL2](http://www.libsdl.org).
+    [SDL2](http://www.libsdl.org). Enables also building of the GL library.
 -   `WITH_XEGLAPPLICATION` --- Build the
-    @ref Platform::XEglApplication "XEglApplication" library.
+    @ref Platform::XEglApplication "XEglApplication" library. Enables also
+    building of the GL library.
 -   `WITH_WINDOWLESSCGLAPPLICATION` --- Build the
     @ref Platform::WindowlessCglApplication "WindowlessCglApplication" library.
+    Enables also building of the GL library.
 -   `WITH_WINDOWLESSEGLAPPLICATION` --- Build the
     @ref Platform::WindowlessEglApplication "WindowlessEglApplication" library.
+    Enables also building of the GL library.
 -   `WITH_WINDOWLESSGLXAPPLICATION` --- Build the
     @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication" library.
+    Enables also building of the GL library.
 -   `WITH_WINDOWLESSIOSAPPLICATION` --- Build the
     @ref Platform::WindowlessIosApplication "WindowlessIosApplication" library.
+    Enables also building of the GL library.
 -   `WITH_WINDOWLESSWGLAPPLICATION` --- Build the
     @ref Platform::WindowlessWglApplication "WindowlessWglApplication" library.
+    Enables also building of the GL library.
 -   `WITH_WINDOWLESSWINDOWSEGLAPPLICATION` --- Build the
     @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"
-    library.
+    library. Enables also building of the GL library.
 
 None of the context libraries is built by default. Similarly to the application
 libraries, they are always built as static. You need them only if you chose to
 not use any of the application libraries above (see @ref platform-custom for
 more information):
 
--   `WITH_CGLCONTEXT` --- Build the CGL context handling library.
--   `WITH_EGLCONTEXT` --- Build the EGL context handling library.
--   `WITH_GLXCONTEXT` --- Build the GLX context handling library.
--   `WITH_WGLCONTEXT` --- Build the WGL context handling library.
+-   `WITH_CGLCONTEXT` --- Build the CGL context handling library. Enables also
+    building of the GL library.
+-   `WITH_EGLCONTEXT` --- Build the EGL context handling library. Enables also
+    building of the GL library.
+-   `WITH_GLXCONTEXT` --- Build the GLX context handling library. Enables also
+    building of the GL library.
+-   `WITH_WGLCONTEXT` --- Build the WGL context handling library. Enables also
+    building of the GL library.
 
 There are also extensions to @ref Corrade::TestSuite::Tester for testing GPU
 code:
 
--   `WITH_OPENGLTESTER` --- The @ref OpenGLTester class. Enables building of
-    one of the windowless application libraries based on the target platform.
+-   `WITH_OPENGLTESTER` --- The @ref OpenGLTester class. Enables also building
+    of the GL library and one of the windowless application libraries based on
+    the target platform.
 
 Magnum also contains a set of dependency-less plugins for importing essential
 file formats. Additional plugins are provided in a separate plugin repository,

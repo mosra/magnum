@@ -38,15 +38,21 @@ if(CORRADE_TARGET_EMSCRIPTEN AND NOT TARGET_GLES2)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_WEBGL2=1")
 endif()
 
-add_library(snippets STATIC
+add_library(snippets-Magnum STATIC
     plugins.cpp
-    Magnum.cpp
-    MagnumMath.cpp
-    MagnumMeshTools.cpp
-    MagnumShaders.cpp
-    MagnumText.cpp)
-target_link_libraries(snippets PRIVATE Magnum)
-set_target_properties(snippets PROPERTIES FOLDER "Magnum/doc/snippets")
+    MagnumMath.cpp)
+target_link_libraries(snippets-Magnum PRIVATE Magnum)
+set_target_properties(snippets-Magnum PROPERTIES FOLDER "Magnum/doc/snippets")
+
+if(WITH_GL)
+    add_library(snippets-MagnumGL STATIC
+        MagnumGL.cpp
+        MagnumMeshTools.cpp
+        MagnumShaders.cpp
+        MagnumText.cpp)
+    target_link_libraries(snippets-MagnumGL PRIVATE MagnumGL)
+    set_target_properties(snippets-MagnumGL PROPERTIES FOLDER "Magnum/doc/snippets")
+endif()
 
 find_package(Corrade COMPONENTS TestSuite)
 
@@ -81,7 +87,7 @@ if(WITH_SDL2APPLICATION)
 
     add_library(snippets-MagnumPlatform STATIC
         MagnumPlatform.cpp
-        Magnum-framebuffer.cpp)
+        MagnumGL-framebuffer.cpp)
     target_link_libraries(snippets-MagnumPlatform PRIVATE MagnumSdl2Application)
 
     set_target_properties(

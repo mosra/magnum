@@ -26,7 +26,9 @@
 if(WITH_AUDIO)
     add_subdirectory(OpenAL)
 endif()
-add_subdirectory(OpenGL)
+if(WITH_GL)
+    add_subdirectory(OpenGL)
+endif()
 
 if(MAGNUM_BUILD_DEPRECATED)
     add_subdirectory(Optional)

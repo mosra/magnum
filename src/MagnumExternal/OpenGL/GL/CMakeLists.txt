@@ -25,7 +25,7 @@
 
 # flextGLPlatform.cpp is compiled as part of Magnum*Context libraries in Platform
 add_library(MagnumFlextGLObjects OBJECT flextGL.cpp)
-target_include_directories(MagnumFlextGLObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(MagnumFlextGLObjects PUBLIC $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_STATIC)
     target_compile_definitions(MagnumFlextGLObjects PRIVATE "FlextGL_EXPORTS")
 endif()

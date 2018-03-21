@@ -655,65 +655,11 @@ using Math::Literals::operator "" _degf;
 using Math::Literals::operator "" _radf;
 #endif
 
-/* Forward declarations for all types in root namespace */
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
-/* FramebufferClear[Mask], FramebufferBlit[Mask], FramebufferBlitFilter,
-   FramebufferTarget enums used only directly with framebuffer instance */
-class AbstractFramebuffer;
-
-#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-class AbstractQuery;
-#endif
-class AbstractShaderProgram;
-class AbstractTexture;
-
 template<UnsignedInt, class T> class Array;
 template<class T> class Array1D;
 template<class T> class Array2D;
 template<class T> class Array3D;
-
-template<UnsignedInt, class> class Attribute;
-
-enum class BufferUsage: GLenum;
-class Buffer;
-
-#ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt> class BufferImage;
-typedef BufferImage<1> BufferImage1D;
-typedef BufferImage<2> BufferImage2D;
-typedef BufferImage<3> BufferImage3D;
-
-template<UnsignedInt> class CompressedBufferImage;
-typedef CompressedBufferImage<1> CompressedBufferImage1D;
-typedef CompressedBufferImage<2> CompressedBufferImage2D;
-typedef CompressedBufferImage<3> CompressedBufferImage3D;
-#endif
-
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-class BufferTexture;
-enum class BufferTextureFormat: GLenum;
-#endif
-
-class Context;
-
-class CubeMapTexture;
-enum class CubeMapCoordinate: GLenum;
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-class CubeMapTextureArray;
-#endif
-
-/* DebugOutput, DebugMessage, DebugGroup used only statically */
-/* DefaultFramebuffer is available only through global instance */
-/* DimensionTraits forward declaration is not needed */
-
-class Extension;
-class Framebuffer;
-
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-enum class ImageFormat: GLenum;
-enum class ImageAccess: GLenum;
-#endif
 
 template<UnsignedInt> class Image;
 typedef Image<1> Image1D;
@@ -735,39 +681,10 @@ typedef CompressedImageView<1> CompressedImageView1D;
 typedef CompressedImageView<2> CompressedImageView2D;
 typedef CompressedImageView<3> CompressedImageView3D;
 
-enum class MeshPrimitive: GLenum;
-
-class Mesh;
-class MeshView;
-
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-/* MultisampleTextureSampleLocations enum used only in the function */
-template<UnsignedInt> class MultisampleTexture;
-typedef MultisampleTexture<2> MultisampleTexture2D;
-typedef MultisampleTexture<3> MultisampleTexture2DArray;
-#endif
-
-enum class PixelFormat: GLenum;
-enum class PixelType: GLenum;
-enum class CompressedPixelFormat: GLenum;
-
 class PixelStorage;
 #ifndef MAGNUM_TARGET_GLES
 class CompressedPixelStorage;
 #endif
-
-/* ObjectFlag, ObjectFlags are used only in conjunction with *::wrap() function */
-
-class PrimitiveQuery;
-class SampleQuery;
-class TimeQuery;
-
-#ifndef MAGNUM_TARGET_GLES
-class RectangleTexture;
-#endif
-
-class Renderbuffer;
-enum class RenderbufferFormat: GLenum;
 
 enum class ResourceState: UnsignedByte;
 enum class ResourceDataState: UnsignedByte;
@@ -776,34 +693,7 @@ template<class T, class U = T> class Resource;
 class ResourceKey;
 template<class...> class ResourceManager;
 
-class Sampler;
-class Shader;
-
-template<UnsignedInt> class Texture;
-#ifndef MAGNUM_TARGET_GLES
-typedef Texture<1> Texture1D;
-#endif
-typedef Texture<2> Texture2D;
-#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-typedef Texture<3> Texture3D;
-#endif
-
-#ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt> class TextureArray;
-#ifndef MAGNUM_TARGET_GLES
-typedef TextureArray<1> Texture1DArray;
-#endif
-typedef TextureArray<2> Texture2DArray;
-#endif
-
-enum class TextureFormat: GLenum;
-
-#ifndef MAGNUM_TARGET_GLES2
-class TransformFeedback;
-#endif
 class Timeline;
-
-enum class Version: Int;
 #endif
 
 }

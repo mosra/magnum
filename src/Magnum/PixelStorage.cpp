@@ -27,13 +27,13 @@
 
 #include <Corrade/Utility/Assert.h>
 
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/PixelFormat.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/PixelFormat.h"
 #include "Magnum/Math/Vector4.h"
 
-#include "Implementation/RendererState.h"
-#include "Implementation/State.h"
+#include "Magnum/GL/Implementation/RendererState.h"
+#include "Magnum/GL/Implementation/State.h"
 
 namespace Magnum {
 

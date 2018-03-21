@@ -51,7 +51,7 @@ and diagnostic purpose it's possible to disable particular workarounds by
 passing their identifier string to the `--magnum-disable-workarounds`
 command-line option. See @ref Context-command-line for more information.
 
-@snippet src/Magnum/Implementation/driverSpecific.cpp workarounds
+@snippet src/Magnum/GL/Implementation/driverSpecific.cpp workarounds
 
 */
 }

@@ -48,7 +48,7 @@ If you include @ref Magnum.h, you get these predefined macros:
 
 Example usage:
 
-@snippet Magnum.cpp portability-targets
+@snippet MagnumGL.cpp portability-targets
 
 Each feature is marked accordingly if it is not available in some targets. See
 also @ref requires-gl, @ref requires-gles20 and @ref requires-gles30.
@@ -78,7 +78,7 @@ thus the decision cannot be made at compile time. Header @ref Extensions.h
 contains list of extensions, which you can pass to
 @ref Context::isExtensionSupported() and decide based on that:
 
-@snippet Magnum.cpp portability-extensions
+@snippet MagnumGL.cpp portability-extensions
 
 You can also decide on particular OpenGL version using @ref Context::isVersionSupported(),
 but remember that some features from that version might be available even if
@@ -89,7 +89,7 @@ extensions, you can use macros @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED() or
 @ref MAGNUM_ASSERT_VERSION_SUPPORTED() to add mandatory requirement of given
 extension or version:
 
-@snippet Magnum.cpp portability-extension-assert
+@snippet MagnumGL.cpp portability-extension-assert
 
 Each class, function or enum value is marked accordingly if it needs specific
 extension or specific OpenGL version. Various classes in Magnum are taking
@@ -113,7 +113,7 @@ you can decide on the syntax in your shader code. You can also use
 version from a list:
 
 <p>
-@snippet Magnum.cpp portability-shaders
+@snippet MagnumGL.cpp portability-shaders
 </p>
 
 @code{.vert}
@@ -139,7 +139,7 @@ be available in given GLSL version (e.g. causing compilation errors). You can
 use @ref Context::isExtensionSupported(Version) const to check that the
 extension is present in given version:
 
-@snippet Magnum.cpp portability-shaders-bind
+@snippet MagnumGL.cpp portability-shaders-bind
 
 See also @ref AbstractShaderProgram class documentation for information about
 specifying attribute location, uniform location and texture binding unit in

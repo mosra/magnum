@@ -32,13 +32,13 @@ template<UnsignedInt dimensions> Image<dimensions>::Image(PixelStorage storage, 
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template class MAGNUM_EXPORT Image<1>;
-template class MAGNUM_EXPORT Image<2>;
-template class MAGNUM_EXPORT Image<3>;
+template class MAGNUM_GL_EXPORT Image<1>;
+template class MAGNUM_GL_EXPORT Image<2>;
+template class MAGNUM_GL_EXPORT Image<3>;
 
-template class MAGNUM_EXPORT CompressedImage<1>;
-template class MAGNUM_EXPORT CompressedImage<2>;
-template class MAGNUM_EXPORT CompressedImage<3>;
+template class MAGNUM_GL_EXPORT CompressedImage<1>;
+template class MAGNUM_GL_EXPORT CompressedImage<2>;
+template class MAGNUM_GL_EXPORT CompressedImage<3>;
 #endif
 
 }

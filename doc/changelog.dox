@@ -48,6 +48,14 @@ See also:
 
 @subsection changelog-latest-new New features
 
+@subsubsection changelog-latest-new-math Math library
+
+-   Added @ref Math::isInf(), @ref Math::isNan()
+
+@subsubsection changelog-latest-new-gl GL library
+
+-   A new library that now contains wrappers for the OpenGL family of graphics
+    APIs, separated from the core Magnum library
 -   Initial support for OpenGL ES 3.2 and OpenGL 4.6
 -   New OpenGL extension support:
     -   @extension{ARB,texture_filter_anisotropic}
@@ -59,10 +67,6 @@ See also:
         @webgl_extension{WEBGL,color_buffer_float},
         @webgl_extension{EXT,color_buffer_float}
 -   Ported @ref OpenGLTester to WebGL
-
-@subsubsection changelog-latest-new-math Math library
-
--   Added @ref Math::isInf(), @ref Math::isNan()
 
 @subsubsection changelog-latest-new-platform Platform libraries
 
@@ -164,6 +168,11 @@ See also:
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
+-   Code that was previously linking just to the core @ref Magnum library may
+    now need to explicitly link to the @ref Magnum::Trade and @ref Magnum::GL
+    libraries as well. If using CMake, these dependencies might get linked in
+    transitively from other libraries, but that doesn't handle all cases. Due
+    to the complexity of this change, no backwards compatibility is provided.
 -   Removed `PixelStorage::setSwapBytes()`, as every Magnum API dealing with
     images basically only asserted that it's not set. Use
     @ref Corrade::Utility::Endianness instead.

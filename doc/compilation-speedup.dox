@@ -56,6 +56,7 @@ available, each namespace has its own:
 -   @ref Magnum/Magnum.h
 -   @ref Magnum/Audio/Audio.h
 -   @ref Magnum/DebugTools/DebugTools.h
+-   @ref Magnum/GL/GL.h
 -   @ref Magnum/Math/Math.h
 -   @ref Magnum/DartIntegration/DartIntegration.h
 -   @ref Magnum/OvrIntegration/OvrIntegration.h

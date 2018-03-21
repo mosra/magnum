@@ -44,7 +44,7 @@ bound somewhere. Method chaining encourages you to configure whole object in
 one run, effectively reducing the number of needed bindings. Consider the
 following example:
 
-@snippet Magnum.cpp method-chaining-texture
+@snippet MagnumGL.cpp method-chaining-texture
 
 This code is written that similar configuration steps are grouped together,
 which might be good when somebody needs to change something for all three
@@ -53,7 +53,7 @@ names and after each configuration step the texture must be rebound to another.
 With method chaining used the code looks much lighter and each object is
 configured in one run, reducing count of bind calls from 9 to 3.
 
-@snippet Magnum.cpp method-chaining-texture-chained
+@snippet MagnumGL.cpp method-chaining-texture-chained
 
 Method chaining is not used on non-configuring functions, such as
 @ref Framebuffer::clear() or @ref Mesh::draw(), as these won't be commonly used
