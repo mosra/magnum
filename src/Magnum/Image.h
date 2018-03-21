@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Image, @ref Magnum::CompressedImage typedef @ref Magnum::Image1D, @ref Magnum::Image2D, @ref Magnum::Image3D, @ref Magnum::CompressedImage1D, @ref Magnum::CompressedImage2D, @ref Magnum::CompressedImage3D
+ * @brief Class @ref Magnum::Image, @ref Magnum::CompressedImage, typedef @ref Magnum::Image1D, @ref Magnum::Image2D, @ref Magnum::Image3D, @ref Magnum::CompressedImage1D, @ref Magnum::CompressedImage2D, @ref Magnum::CompressedImage3D
  */
 
 #include <Corrade/Containers/Array.h>
