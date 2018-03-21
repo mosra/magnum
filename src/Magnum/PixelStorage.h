@@ -38,8 +38,6 @@
 
 namespace Magnum {
 
-namespace Implementation { struct RendererState; }
-
 /**
 @brief Pixel storage parameters
 
