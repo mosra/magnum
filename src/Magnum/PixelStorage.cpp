@@ -156,7 +156,7 @@ std::size_t PixelStorage::pixelSize(PixelFormat format, PixelType type) {
 
         /* Handled above */
         case PixelFormat::DepthStencil:
-            CORRADE_ASSERT(false, "AbstractImage::pixelSize(): invalid PixelType specified for depth/stencil PixelFormat", 0);
+            CORRADE_ASSERT(false, "PixelStorage::pixelSize(): invalid PixelType specified for depth/stencil PixelFormat", 0);
     }
 
     CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
