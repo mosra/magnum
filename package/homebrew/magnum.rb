@@ -8,6 +8,7 @@ class Magnum < Formula
   depends_on "cmake"
   depends_on "corrade"
   depends_on "sdl2"
+  depends_on "glfw"
 
   def install
     system "mkdir build"
