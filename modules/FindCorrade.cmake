@@ -109,7 +109,9 @@
 #  CORRADE_*_LIBRARIES          - Expands to ``Corrade::*`` target. Use
 #   ``Corrade::*`` target directly instead.
 #  CORRADE_CXX_FLAGS            - Pedantic compile flags. Use
-#   :prop_tgt:`CORRADE_USE_PEDANTIC_FLAGS` property instead.
+#   :prop_tgt:`CORRADE_USE_PEDANTIC_FLAGS` property or
+#   :variable:`CORRADE_PEDANTIC_COMPILER_DEFINITIONS` /
+#   :variable:`CORRADE_PEDANTIC_COMPILER_OPTIONS` list variables instead.
 #
 # Corrade provides these macros and functions:
 #
@@ -418,13 +420,18 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
                 find_file(CORRADE_TESTSUITE_XCTEST_RUNNER XCTestRunner.mm.in
                     PATH_SUFFIXES share/corrade/TestSuite)
                 set(CORRADE_TESTSUITE_XCTEST_RUNNER_NEEDED CORRADE_TESTSUITE_XCTEST_RUNNER)
-            endif()
 
             # ADB runner file
-            if(CORRADE_TARGET_ANDROID)
+            elseif(CORRADE_TARGET_ANDROID)
                 find_file(CORRADE_TESTSUITE_ADB_RUNNER AdbRunner.sh
                     PATH_SUFFIXES share/corrade/TestSuite)
                 set(CORRADE_TESTSUITE_ADB_RUNNER_NEEDED CORRADE_TESTSUITE_ADB_RUNNER)
+
+            # Emscripten runner file
+            elseif(CORRADE_TARGET_EMSCRIPTEN)
+                find_file(CORRADE_TESTSUITE_EMSCRIPTEN_RUNNER EmscriptenRunner.html.in
+                    PATH_SUFFIXES share/corrade/TestSuite)
+                set(CORRADE_TESTSUITE_EMSCRIPTEN_RUNNER_NEEDED CORRADE_TESTSUITE_EMSCRIPTEN_RUNNER)
             endif()
 
         # Utility library (contains all setup that is used by others)
@@ -502,6 +509,7 @@ find_package_handle_standard_args(Corrade REQUIRED_VARS
     _CORRADE_CONFIGURE_FILE
     ${CORRADE_TESTSUITE_XCTEST_RUNNER_NEEDED}
     ${CORRADE_TESTSUITE_ADB_RUNNER_NEEDED}
+    ${CORRADE_TESTSUITE_EMSCRIPTEN_RUNNER_NEEDED}
     HANDLE_COMPONENTS)
 
 # Finalize the finding process
