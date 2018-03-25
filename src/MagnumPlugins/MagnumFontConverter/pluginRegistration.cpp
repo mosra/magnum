@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/PluginManager/AbstractManager.h>
+
 #include "MagnumPlugins/MagnumFontConverter/MagnumFontConverter.h"
 
 CORRADE_PLUGIN_REGISTER(MagnumFontConverter, Magnum::Text::MagnumFontConverter,

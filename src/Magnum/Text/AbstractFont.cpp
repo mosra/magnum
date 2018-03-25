@@ -34,6 +34,10 @@
 
 namespace Magnum { namespace Text {
 
+std::string AbstractFont::pluginInterface() {
+    return "cz.mosra.magnum.Text.AbstractFont/0.2.4";
+}
+
 AbstractFont::AbstractFont(): _size(0.0f) {}
 
 AbstractFont::AbstractFont(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractPlugin{manager, plugin}, _size{0.0f}, _lineHeight{0.0f} {}

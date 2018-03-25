@@ -27,6 +27,7 @@
 
 #include <sstream>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Utility/Configuration.h>
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/Image.h"

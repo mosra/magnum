@@ -27,6 +27,7 @@
 
 #include <sstream>
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Utility/Configuration.h>
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/Unicode.h>
 

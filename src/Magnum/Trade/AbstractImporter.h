@@ -79,8 +79,6 @@ checked by the implementation:
 -   All `do*()` implementations taking data ID as parameter are called only if
     the ID is from valid range.
 
-Plugin interface string is @cpp "cz.mosra.magnum.Trade.AbstractImporter/0.3" @ce.
-
 @attention @ref Corrade::Containers::Array instances returned from the plugin
     should *not* use anything else than the default deleter, otherwise this can
     cause dangling function pointer call on array destruction if the plugin
@@ -89,8 +87,6 @@ Plugin interface string is @cpp "cz.mosra.magnum.Trade.AbstractImporter/0.3" @ce
 @todo How to handle casting from std::unique_ptr<> in more convenient way?
 */
 class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlugin<AbstractImporter> {
-    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Trade.AbstractImporter/0.3")
-
     public:
         /**
          * @brief Features supported by this importer
@@ -107,6 +103,15 @@ class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlug
 
         /** @brief Set of features supported by this importer */
         typedef Containers::EnumSet<Feature> Features;
+
+        /**
+         * @brief Plugin interface
+         *
+         * @code{.cpp}
+         * "cz.mosra.magnum.Trade.AbstractImporter/0.3"
+         * @endcode
+         */
+        static std::string pluginInterface();
 
         /** @brief Default constructor */
         explicit AbstractImporter();

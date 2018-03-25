@@ -31,6 +31,10 @@
 
 namespace Magnum { namespace Audio {
 
+std::string AbstractImporter::pluginInterface() {
+    return "cz.mosra.magnum.Audio.AbstractImporter/0.1";
+}
+
 AbstractImporter::AbstractImporter() = default;
 
 AbstractImporter::AbstractImporter(PluginManager::Manager<AbstractImporter>& manager): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager} {}

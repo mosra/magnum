@@ -71,12 +71,8 @@ checked by the implementation:
     @ref Feature::OpenData is supported.
 -   All `do*()` implementations working on opened file are called only if
     there is any file opened.
-
-Plugin interface string is @cpp "cz.mosra.magnum.Text.AbstractFont/0.2.4" @ce.
 */
 class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
-    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFont/0.2.4")
-
     public:
         /**
          * @brief Features supported by this importer
@@ -103,6 +99,15 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
 
         /** @brief Set of features supported by this importer */
         typedef Containers::EnumSet<Feature> Features;
+
+        /**
+         * @brief Plugin interface
+         *
+         * @code{.cpp}
+         * "cz.mosra.magnum.Text.AbstractFont/0.2.4"
+         * @endcode
+         */
+        static std::string pluginInterface();
 
         /** @brief Default constructor */
         explicit AbstractFont();

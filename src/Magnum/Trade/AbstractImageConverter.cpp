@@ -34,6 +34,10 @@
 
 namespace Magnum { namespace Trade {
 
+std::string AbstractImageConverter::pluginInterface() {
+    return "cz.mosra.magnum.Trade.AbstractImporter/0.3";
+}
+
 AbstractImageConverter::AbstractImageConverter() = default;
 
 AbstractImageConverter::AbstractImageConverter(PluginManager::Manager<AbstractImageConverter>& manager): PluginManager::AbstractManagingPlugin<AbstractImageConverter>{manager} {}

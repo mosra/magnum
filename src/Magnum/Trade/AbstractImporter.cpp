@@ -43,6 +43,10 @@
 
 namespace Magnum { namespace Trade {
 
+std::string AbstractImporter::pluginInterface() {
+    return "cz.mosra.magnum.Trade.AbstractImporter/0.3";
+}
+
 AbstractImporter::AbstractImporter() = default;
 
 AbstractImporter::AbstractImporter(PluginManager::Manager<AbstractImporter>& manager): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager} {}

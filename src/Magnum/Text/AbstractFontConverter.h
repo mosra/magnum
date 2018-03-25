@@ -30,6 +30,7 @@
  */
 
 #include <memory>
+#include <Corrade/Containers/EnumSet.h>
 #include <Corrade/PluginManager/AbstractPlugin.h>
 
 #include "Magnum/Magnum.h"
@@ -68,16 +69,12 @@ checked by the implementation:
 -   Function `doImport*FromData()` is called only if there is at least one data
     array passed.
 
-Plugin interface string is @cpp "cz.mosra.magnum.Text.AbstractFontConverter/0.1.2" @ce.
-
 @attention @ref Corrade::Containers::Array instances returned from the plugin
     should *not* use anything else than the default deleter, otherwise this can
     cause dangling function pointer call on array destruction if the plugin
     gets unloaded before the array is destroyed.
 */
 class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPlugin {
-    CORRADE_PLUGIN_INTERFACE("cz.mosra.magnum.Text.AbstractFontConverter/0.1.2")
-
     public:
         /**
          * @brief Features supported by this converter
@@ -128,6 +125,15 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * @see @ref features()
          */
         typedef Containers::EnumSet<Feature> Features;
+
+        /**
+         * @brief Plugin interface
+         *
+         * @code{.cpp}
+         * "cz.mosra.magnum.Text.AbstractFontConverter/0.1.2"
+         * @endcode
+         */
+        static std::string pluginInterface();
 
         /** @brief Default constructor */
         explicit AbstractFontConverter();
