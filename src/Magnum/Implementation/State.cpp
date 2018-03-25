@@ -71,7 +71,7 @@ State::State(Context& context, std::ostream* const out) {
     query.reset(new QueryState{context, extensions});
     #endif
     renderer.reset(new RendererState{context, extensions});
-    shader.reset(new ShaderState);
+    shader.reset(new ShaderState(context, extensions));
     shaderProgram.reset(new ShaderProgramState{context, extensions});
     texture.reset(new TextureState{context, extensions});
     #ifndef MAGNUM_TARGET_GLES2

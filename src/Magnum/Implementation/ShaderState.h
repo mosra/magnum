@@ -25,27 +25,23 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <string>
+#include <vector>
+
+#include "Magnum/Magnum.h"
 #include "Magnum/OpenGL.h"
-#include "Magnum/Types.h"
-#include "Magnum/configure.h"
+
+#ifdef _MSC_VER
+/* Otherwise the member function pointers will have different size based on
+   whether the header was included or not. CAUSES SERIOUS MEMORY CORRUPTION AND
+   IS NOT CAUGHT BY ANY WARNING WHATSOEVER! AARGH! */
+#include "Magnum/Shader.h"
+#endif
 
 namespace Magnum { namespace Implementation {
 
 struct ShaderState {
-    explicit ShaderState():
-        maxVertexOutputComponents{}, maxFragmentInputComponents{},
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        maxTessellationControlInputComponents{}, maxTessellationControlOutputComponents{}, maxTessellationControlTotalOutputComponents{}, maxTessellationEvaluationInputComponents{}, maxTessellationEvaluationOutputComponents{}, maxGeometryInputComponents{}, maxGeometryOutputComponents{}, maxGeometryTotalOutputComponents{}, maxAtomicCounterBuffers{}, maxCombinedAtomicCounterBuffers{}, maxAtomicCounters{}, maxCombinedAtomicCounters{}, maxImageUniforms{}, maxCombinedImageUniforms{}, maxShaderStorageBlocks{}, maxCombinedShaderStorageBlocks{},
-        #endif
-        maxTextureImageUnits{}, maxTextureImageUnitsCombined{},
-        #ifndef MAGNUM_TARGET_GLES2
-        maxUniformBlocks{}, maxCombinedUniformBlocks{},
-        #endif
-        maxUniformComponents{}, maxUniformComponentsCombined{}
-        #ifndef MAGNUM_TARGET_GLES2
-        , maxCombinedUniformComponents{}
-        #endif
-        {}
+    explicit ShaderState(Context& context, std::vector<std::string>& extensions);
 
     enum: std::size_t {
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -54,6 +50,8 @@ struct ShaderState {
         StageCount = 2
         #endif
     };
+
+    void(Shader::*addSourceImplementation)(std::string);
 
     GLint maxVertexOutputComponents,
         maxFragmentInputComponents;

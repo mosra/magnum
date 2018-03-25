@@ -39,6 +39,8 @@
 
 namespace Magnum {
 
+namespace Implementation { struct ShaderState; }
+
 /**
 @brief Shader
 
@@ -50,6 +52,8 @@ Shader limits and implementation-defined values (such as @ref maxUniformComponen
 are cached, so repeated queries don't result in repeated @fn_gl{Get} calls.
  */
 class MAGNUM_EXPORT Shader: public AbstractObject {
+    friend Implementation::ShaderState;
+
     public:
         /**
          * @brief Shader type
@@ -614,6 +618,11 @@ class MAGNUM_EXPORT Shader: public AbstractObject {
 
     private:
         Shader& setLabelInternal(Containers::ArrayView<const char> label);
+
+        void MAGNUM_LOCAL addSourceImplementationDefault(std::string source);
+        #if defined(CORRADE_TARGET_EMSCRIPTEN) && defined(__EMSCRIPTEN_PTHREADS__)
+        void MAGNUM_LOCAL addSourceImplementationEmscriptenPthread(std::string source);
+        #endif
 
         Type _type;
         GLuint _id;

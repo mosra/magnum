@@ -59,6 +59,7 @@ set(Magnum_SRCS
     Implementation/MeshState.cpp
     Implementation/RendererState.cpp
     Implementation/ShaderProgramState.cpp
+    Implementation/ShaderState.cpp
     Implementation/State.cpp
     Implementation/TextureState.cpp
     Implementation/driverSpecific.cpp

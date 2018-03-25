@@ -76,6 +76,10 @@ See also:
 
 -   Engine startup info was not properly printed to Android log since
     introducing the `--magnum-log` option in version 2018.02
+-   Working around Emscripten issue where `-s USE_PTHREADS=1` would cause all
+    shader sources containing Unicode characters to be truncated to empty
+    strings. See the @cpp "emscripten-pthreads-broken-unicode-shader-sources" @ce
+    workaround description for details.
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
