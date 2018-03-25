@@ -49,7 +49,14 @@ struct AttributeCount {
         next
         #endif
     ) const {
+        #ifdef _MSC_VER
+        #pragma warning(push)
+        #pragma warning(disable:4127) /* conditional expression is constant (of course) */
+        #endif
         CORRADE_ASSERT(sizeof...(next) == 0 || AttributeCount{}(next...) == first.size() || AttributeCount{}(next...) == ~std::size_t(0), "MeshTools::interleave(): attribute arrays don't have the same length, expected" << first.size() << "but got" << AttributeCount{}(next...), 0);
+        #ifdef _MSC_VER
+        #pragma warning(pop)
+        #endif
 
         return first.size();
     }
