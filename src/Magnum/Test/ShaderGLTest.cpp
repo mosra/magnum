@@ -48,6 +48,7 @@ struct ShaderGLTest: OpenGLTester {
     void addSourceNoVersion();
     void addFile();
     void compile();
+    void compileUtf8();
     void compileNoVersion();
 };
 
@@ -63,6 +64,7 @@ ShaderGLTest::ShaderGLTest() {
               &ShaderGLTest::addSourceNoVersion,
               &ShaderGLTest::addFile,
               &ShaderGLTest::compile,
+              &ShaderGLTest::compileUtf8,
               &ShaderGLTest::compileNoVersion});
 }
 
@@ -263,6 +265,24 @@ void ShaderGLTest::compile() {
     Shader shader2(v, Shader::Type::Fragment);
     shader2.addSource("[fu] bleh error #:! stuff\n");
     CORRADE_VERIFY(!shader2.compile());
+}
+
+void ShaderGLTest::compileUtf8() {
+    #ifndef MAGNUM_TARGET_GLES
+    constexpr Version v =
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL210
+        #else
+        Version::GL310
+        #endif
+        ;
+    #else
+    constexpr Version v = Version::GLES200;
+    #endif
+
+    Shader shader(v, Shader::Type::Fragment);
+    shader.addSource("/* hýždě */ void main() {} \n");
+    CORRADE_VERIFY(shader.compile());
 }
 
 void ShaderGLTest::compileNoVersion() {
