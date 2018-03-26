@@ -560,6 +560,40 @@ In order to remove GL functionality, be sure to touch all places mentioned
 above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
 unless it doesn't affect public API at all.
 
+@section developers-driver-workaround Checklist for adding / removing a driver workaround
+
+1.  Put a descriptive string with even more descriptive comment into the
+    `KnownWorkarounds` array in `src/Magnum/Implementation/driverSpecific.cpp`,
+    ideally reuse some of the already existing vendor prefixes
+2.  If the workaround can be tied down to a particular platform / target, add
+    apropriate @cpp #ifdef @ce around it
+3.  Create (or extend) a pair of (member) @cpp private @ce `MAGNUM_LOCAL`
+    `*Implementation*()` functions in the affected class, `*ImplementationDefault()`
+    having the optimistic default behavior, the other having the workaround.
+    Add the appropriate @cpp #ifdef @ce around, if any.
+4.  Add a new (member) function pointer in `src/Implementation/SomeState.h` and
+    call it from the affected class instead of executing the implementation
+    directly. Add the appropriate @cpp #ifdef @ce around, if any.
+5.  Add a branch into `src/Implementation/SomeState.cpp` (with appropriate
+    @cpp #ifdef @ce around, if any). First check for driver and other
+    circumstances and call the @cpp !context.isDriverWorkaroundDisabled("the-workaround-string") @ce
+    <em>last</em> after you are really sure you need to use it --- calling this
+    function will append the workaround string to the engine startup log and
+    it's not desirable to list workarounds that weren't used.
+6.  Test the affected functionality with the workaround enabled and verify it
+    works
+7.  Disable the workaround using `--magnum-disable-workarounds` on command-line
+    and verify it's still broken --- if not, there's something off!
+8.  Add a changelog entry.
+9.  Verify the driver workaround is listed in the snippet in
+    @ref opengl-workarounds
+
+Removeing a workaround is simply a matter of searching for its string, removing
+all occurences of that string and removing all `*Implementation*()` functions
+that were used only if the workaround was in place. No need to deprecate
+anything, users explicitly disabling given workaround will only be informed
+that such workaround does not exist anymore.
+
 @section developers-dependency Checklist for adding, removing or updating a dependency
 
 1.  Verify that there are no important clients stuck on the old version with no

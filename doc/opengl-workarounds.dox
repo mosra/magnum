@@ -1,0 +1,57 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page opengl-workarounds Driver workarounds
+@brief List of OpenGL driver workarounds used by Magnum
+
+@m_footernavigation
+
+Driver workarounds used by a particular app are listed in the engine startup
+log such as here:
+
+@code{.shell-session}
+Renderer: GeForce GT 740M/PCIe/SSE2 by NVIDIA Corporation
+OpenGL version: 4.6.0 NVIDIA 390.25
+Using optional features:
+    GL_ARB_ES2_compatibility
+    GL_ARB_direct_state_access
+    ...
+Using driver workarounds:
+    no-forward-compatible-core-context
+    no-layout-qualifiers-on-old-glsl
+    nv-zero-context-profile-mask
+    ...
+@endcode
+
+These identifiers correspond to the strings in the below listing. For debugging
+and diagnostic purpose it's possible to disable particular workarounds by
+passing their identifier string to the `--magnum-disable-workarounds`
+command-line option. See @ref Context-command-line for more information.
+
+@snippet src/Magnum/Implementation/driverSpecific.cpp workarounds
+
+*/
+}

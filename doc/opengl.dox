@@ -46,6 +46,12 @@ general they should be avoided.
 
 -   @subpage opengl-deprecated
 
+The OpenGL driver world is far from ideal and in order to work on majority of
+platforms, the engine has to work around some driver bugs. An exhaustive list
+is here:
+
+-   @subpage opengl-workarounds
+
 @section opengl-required-extensions Version and extension requirements
 
 The engine requires at least OpenGL 2.1 or OpenGL ES 2.0, but some specific

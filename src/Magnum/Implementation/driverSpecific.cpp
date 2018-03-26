@@ -35,6 +35,7 @@ namespace Magnum {
 namespace {
     /* Search the code for the following strings to see where they are implemented. */
     std::vector<std::string> KnownWorkarounds{
+        /* [workarounds] */
         #if !defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)
         /* Creating core context with specific version on AMD and NV
            proprietary drivers on Linux/Windows and Intel drivers on Windows
@@ -112,6 +113,7 @@ namespace {
            https://github.com/kripken/emscripten/blob/7f89560101843198787530731f40a65288f6f15f/src/fetch-worker.js#L54-L58 */
         "emscripten-pthreads-broken-unicode-shader-sources"
         #endif
+        /* [workarounds] */
     };
 }
 

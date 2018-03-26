@@ -917,6 +917,7 @@ EXCLUDE_SYMBOLS        = Magnum::*Implementation \
 # command).
 
 EXAMPLE_PATH           = doc/snippets/ \
+                         src/ \
                          ../magnum-examples/src/ \
                          ../magnum-integration/doc/snippets/ \
 

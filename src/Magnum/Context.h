@@ -124,8 +124,7 @@ Arguments:
 -   `...` --- main application arguments (see `-h` or `--help` for details)
 -   `--magnum-help` --- display this help message and exit
 -   `--magnum-disable-workarounds LIST` --- driver workarounds to disable (see
-    [src/Magnum/Implementation/driverSpecific.cpp](https://github.com/mosra/magnum/blob/master/src/Magnum/Implementation/driverSpecific.cpp)
-    for detailed info) (environment: `MAGNUM_DISABLE_WORKAROUNDS`)
+    @ref opengl-workarounds for detailed info) (environment: `MAGNUM_DISABLE_WORKAROUNDS`)
 -   `--magnum-disable-extensions LIST` --- OpenGL extensions to disable
     (environment: `MAGNUM_DISABLE_EXTENSIONS`)
 
