@@ -34,6 +34,7 @@ if(CORRADE_TARGET_EMSCRIPTEN AND NOT TARGET_GLES2)
 endif()
 
 add_library(snippets STATIC
+    plugins.cpp
     Magnum.cpp
     MagnumMeshTools.cpp
     MagnumShaders.cpp
