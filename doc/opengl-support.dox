@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @page opengl-support OpenGL support state
+/** @page opengl-support Support state
 @brief List of (un)supported OpenGL features and extensions.
 
 @tableofcontents
