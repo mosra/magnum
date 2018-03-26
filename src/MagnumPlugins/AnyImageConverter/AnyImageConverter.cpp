@@ -73,7 +73,7 @@ bool AnyImageConverter::doExportToFile(const ImageView2D& image, const std::stri
 
     /* Try to convert the file (error output should be printed by the plugin
        itself) */
-    return static_cast<PluginManager::Manager<AbstractImageConverter>*>(manager())->instance(plugin)->exportToFile(image, filename);
+    return static_cast<PluginManager::Manager<AbstractImageConverter>*>(manager())->instantiate(plugin)->exportToFile(image, filename);
 }
 
 bool AnyImageConverter::doExportToFile(const CompressedImageView2D&, const std::string& filename) {
