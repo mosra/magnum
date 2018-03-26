@@ -164,6 +164,12 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
 
 CORRADE_ENUMSET_OPERATORS(PhongMaterialData::Flags)
 
+/** @debugoperatorclassenum{PhongMaterialData::Flag} */
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, PhongMaterialData::Flag value);
+
+/** @debugoperatorclassenum{PhongMaterialData::Flags} */
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, PhongMaterialData::Flags value);
+
 /* Ugly as hell. */
 
 inline Color3 PhongMaterialData::ambientColor() const {

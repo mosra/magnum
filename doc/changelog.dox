@@ -73,6 +73,11 @@ See also:
     @ref Primitives::grid3DSolid() and @ref Primitives::grid3DWireframe()
     primitives
 
+@subsubsection changelog-latest-new-trade Trade library
+
+-   Debug output operator for @ref Trade::PhongMaterialData::Flag and
+    @ref Trade::PhongMaterialData::Flags
+
 @subsection changelog-latest-buildsystem Build system
 
 -   All plugin interfaces now implement

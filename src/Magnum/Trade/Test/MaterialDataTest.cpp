@@ -44,6 +44,8 @@ class MaterialDataTest: public TestSuite::Tester {
         void constructMovePhongNoSpecularTexture();
 
         void debugType();
+        void debugPhongFlag();
+        void debugPhongFlags();
 };
 
 MaterialDataTest::MaterialDataTest() {
@@ -56,7 +58,9 @@ MaterialDataTest::MaterialDataTest() {
               &MaterialDataTest::constructMovePhongNoDiffuseTexture,
               &MaterialDataTest::constructMovePhongNoSpecularTexture,
 
-              &MaterialDataTest::debugType});
+              &MaterialDataTest::debugType,
+              &MaterialDataTest::debugPhongFlag,
+              &MaterialDataTest::debugPhongFlags});
 }
 
 void MaterialDataTest::constructPhong() {
@@ -236,6 +240,20 @@ void MaterialDataTest::debugType() {
 
     Debug(&out) << MaterialType::Phong << MaterialType(0xbe);
     CORRADE_COMPARE(out.str(), "Trade::MaterialType::Phong Trade::MaterialType(0xbe)\n");
+}
+
+void MaterialDataTest::debugPhongFlag() {
+    std::ostringstream out;
+
+    Debug{&out} << PhongMaterialData::Flag::AmbientTexture << PhongMaterialData::Flag(0xf0);
+    CORRADE_COMPARE(out.str(), "Trade::PhongMaterialData::Flag::AmbientTexture Trade::PhongMaterialData::Flag(0xf0)\n");
+}
+
+void MaterialDataTest::debugPhongFlags() {
+    std::ostringstream out;
+
+    Debug{&out} << (PhongMaterialData::Flag::DiffuseTexture|PhongMaterialData::Flag::SpecularTexture) << PhongMaterialData::Flags{};
+    CORRADE_COMPARE(out.str(), "Trade::PhongMaterialData::Flag::DiffuseTexture|Trade::PhongMaterialData::Flag::SpecularTexture Trade::PhongMaterialData::Flags{}\n");
 }
 
 }}}

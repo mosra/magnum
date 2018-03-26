@@ -25,6 +25,8 @@
 
 #include "PhongMaterialData.h"
 
+#include <Corrade/Containers/EnumSet.hpp>
+
 namespace Magnum { namespace Trade {
 
 PhongMaterialData::PhongMaterialData(PhongMaterialData&& other) noexcept: AbstractMaterialData{std::move(other)}, _flags{other._flags}, _shininess{other._shininess} {
@@ -96,6 +98,25 @@ Color3& PhongMaterialData::specularColor() {
 UnsignedInt& PhongMaterialData::specularTexture() {
     CORRADE_ASSERT(_flags & Flag::SpecularTexture, "Trade::PhongMaterialData::specularTexture(): the material doesn't have specular texture", _specular.texture);
     return _specular.texture;
+}
+
+Debug& operator<<(Debug& debug, const PhongMaterialData::Flag value) {
+    switch(value) {
+        #define _c(v) case PhongMaterialData::Flag::v: return debug << "Trade::PhongMaterialData::Flag::" #v;
+        _c(AmbientTexture)
+        _c(DiffuseTexture)
+        _c(SpecularTexture)
+        #undef _c
+    }
+
+    return debug << "Trade::PhongMaterialData::Flag(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const PhongMaterialData::Flags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Trade::PhongMaterialData::Flags{}", {
+        PhongMaterialData::Flag::AmbientTexture,
+        PhongMaterialData::Flag::DiffuseTexture,
+        PhongMaterialData::Flag::SpecularTexture});
 }
 
 }}
