@@ -32,7 +32,7 @@ namespace Magnum {
 @m_footernavigation
 
 @todoc homebrew
-@todoc travis setup
+@todoc code coverage
 @todoc bundling, dmg cpack
 
 With Apple decision to focus on Metal, macOS OpenGL support is stuck on version
@@ -44,6 +44,35 @@ Official Apple documentation:
 
 -   [Best Practices for Working with Vertex Data](https://developer.apple.com/library/mac/#documentation/graphicsimaging/Conceptual/OpenGL-MacProgGuide/opengl_vertexdata/opengl_vertexdata.html)
 -   [Best Practices for Working with Texture Data](https://developer.apple.com/library/mac/#documentation/graphicsimaging/Conceptual/OpenGL-MacProgGuide/opengl_texturedata/opengl_texturedata.html)
+
+@section platforms-macos-travis Setting up macOS build on Travis CI
+
+A lot of Travis features is shared between Linux and macOS, see
+@ref platforms-linux-travis for more information.
+
+In general, a macOS build is done by adding the following to your `.travis.yml`
+matrix build. See [the official documentation](https://docs.travis-ci.com/user/reference/osx/)
+for more information.
+
+@code{.yml}
+matrix:
+  include:
+  - language: cpp
+    os: osx
+    compiler: clang
+@endcode
+
+Most of the build setup can be shared with Linux, as both systems have roughly
+the same set of packages. For installing dependencies there's no builtin way,
+but you can use Homebrew. Be aware that calling for example
+@cb{.sh} brew install ninja @ce by default causes Homebrew to update itself
+first. That currently (March 2018) takes almost two minutes. It's possible to
+skip the update by setting an environment variable as shown below, however this
+might fail in case you need a very recent version of a package.
+
+@code{.sh}
+HOMEBREW_NO_AUTO_UPDATE=1 brew install ninja
+@endcode
 
 @section platforms-macos-troubleshooting Troubleshooting
 

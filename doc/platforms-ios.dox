@@ -34,7 +34,8 @@ namespace Magnum {
 With Apple decision to focus on Metal, iOS OpenGL ES support is stuck on
 version 3.0 (i.e., a version before compute shaders are available).
 
-See also @ref Platform::Sdl2Application for more information.
+See also @ref Platform::Sdl2Application for more information. Some of the
+@ref platforms-macos "macOS platform-specific info" applies here as well.
 
 @section platforms-ios-best-practices Best practices
 

@@ -32,8 +32,64 @@ namespace Magnum {
 @m_footernavigation
 
 @todoc packages
+@todoc code coverage
 @todoc desktop ES
+@todoc archlinux PKGBUILDs
 @todoc tests, mesa softpipe
+
+@section platforms-linux-travis Setting up Linux build on Travis CI
+
+In general, a Linux build is done by adding the following to your `.travis.yml`
+matrix build. Currently Ubuntu 14.04 is the latest you can get. See
+[the official documentation](https://docs.travis-ci.com/user/reference/trusty/)
+for more information.
+
+@code{.yml}
+matrix:
+  include:
+  - language: cpp
+    os: linux
+    dist: trusty
+    compiler: gcc
+@endcode
+
+It's advisable to use the container builds instead of the sudo-enabled ones as
+they are generally much faster to boot up, however they have restrictions on
+what packages can be installed. Installing packages is done by adding the
+following to your `.travis.yml`
+
+@code{.yml}
+matrix:
+  include:
+  - language: cpp
+    os: linux
+    ...
+    addons:
+      apt:
+        packages:
+        - ninja-build
+        - libsdl2-dev
+        ...
+@endcode
+
+You can find out how's the package named by searching for Ubuntu Trusty
+packages. The packages are whitelisted, be sure to check the `ubuntu-trusty`
+file in https://github.com/travis-ci/apt-package-whitelist before adding a
+package to the list. Some packages might require enabling a third-party PPA, a
+whitelist for them is at https://github.com/travis-ci/apt-source-whitelist. If
+a package is not whitelisted, you can either request it by opening an issue on
+these repos (prepare that it may take *long* to get through in some cases), or
+build it manually and then cache the result.
+
+Travis supports ANSI color escape codes, so don't forget to enable colored
+output for @ref Corrade::TestSuite output. It supports more than just ANSI
+color escaping --- if you use Ninja, it will display just the condensed
+single-line output.
+
+@code{.sh}
+CORRADE_TEST_COLOR=ON ctest -V
+@endcode
+
 */
 
 }
