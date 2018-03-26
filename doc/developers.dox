@@ -188,9 +188,12 @@ Similarly to @ref developers-library except points 2 and 5, with:
     adapting plugin name and plugin interface string. It's needed to be in a
     separate file that gets compiled only to the plugin library, not to the
     test library.
-4.  Create `configure.h.cmake` for plugin-specific information about whether
+4.  Create `importStaticPlugin.cpp` by copypasting it from another plugin and
+    adapting plugin name. This will get installed along with plugin headers to
+    aid with automatic import.
+5.  Create `configure.h.cmake` for plugin-specific information about whether
     the library was built as static or not
-5.  Create a new `src/MagnumPlugins/PluginName/CMakeLists.txt`, copy over
+6.  Create a new `src/MagnumPlugins/PluginName/CMakeLists.txt`, copy over
     up-to-date license header from other CMake files and populate it (replaces
     point 5 in @ref developers-library):
     -   add source files to `PluginName_SRCS` variable
@@ -219,13 +222,16 @@ Similarly to @ref developers-library except points 2 and 5, with:
         @cmake add_plugin() @ce
     -   verify that @cmake set_target_properties(PluginName PROPERTIES POSITION_INDEPENDENT_CODE ON) @ce
         is done in case `BUILD_STATIC_PIC` is set
+    -   verify that in case of `BUILD_PLUGINS_STATIC` the
+        `importStaticPlugin.cpp` file is installed  is set and that an
+        *absolute* path to it is added to @cmake target_sources() @ce
     -   verify that @cmake add_library(MagnumPlugins::PluginName ALIAS PluginName) @ce
         (or equivalent) is added to make the library visible for CMake
         subprojects
-6.  If there is more than one interface header (other than just `PluginName.h`
+7.  If there is more than one interface header (other than just `PluginName.h`
     being installed), add a new `visibility.h` header. Otherwise put the
     visibility macros directly in `PluginName.h`.
-7.  If the plugin handles a new format:
+8.  If the plugin handles a new format:
     -   if the plugin is not named directly after the format, add an alias to
         it (for example the @ref Trade::MiniExrImageConverter "MiniExrImageConverter"
         plugin is aliased to `OpenExrImageConverter`)
