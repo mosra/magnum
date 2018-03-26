@@ -36,7 +36,7 @@
 namespace Magnum { namespace Trade {
 
 std::string AbstractImageConverter::pluginInterface() {
-    return "cz.mosra.magnum.Trade.AbstractImporter/0.3";
+    return "cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1";
 }
 
 std::vector<std::string> AbstractImageConverter::pluginSearchPaths() {
