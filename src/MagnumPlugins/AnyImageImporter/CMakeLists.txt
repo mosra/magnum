@@ -68,6 +68,14 @@ target_link_libraries(AnyImageImporter Magnum::Magnum)
 install(FILES ${AnyImageImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageImporter)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageImporter)
 
+# Automatic static plugin import
+if(BUILD_PLUGINS_STATIC)
+    install(FILES importStaticPlugin.cpp DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageImporter)
+    if(NOT CMAKE_VERSION VERSION_LESS 3.1)
+        target_sources(AnyImageImporter INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/importStaticPlugin.cpp)
+    endif()
+endif()
+
 if(BUILD_TESTS)
     add_library(MagnumAnyImageImporterTestLib STATIC
         $<TARGET_OBJECTS:AnyImageImporterObjects>
