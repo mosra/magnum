@@ -164,10 +164,10 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
 
 CORRADE_ENUMSET_OPERATORS(PhongMaterialData::Flags)
 
-/** @debugoperatorclassenum{PhongMaterialData::Flag} */
+/** @debugoperatorclassenum{PhongMaterialData,PhongMaterialData::Flag} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, PhongMaterialData::Flag value);
 
-/** @debugoperatorclassenum{PhongMaterialData::Flags} */
+/** @debugoperatorclassenum{PhongMaterialData,PhongMaterialData::Flags} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, PhongMaterialData::Flags value);
 
 /* Ugly as hell. */

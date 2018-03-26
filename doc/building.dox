@@ -837,6 +837,10 @@ configured and @ref building-corrade-cross-android "Corrade built for Android".
 CMake 3.7 is required, as it has Android support builtin. The supported
 toolchain is now Clang with libc++, GCC is not supported anymore.
 
+@attention
+    You might want to grab at least CMake 3.9.2 instead of just 3.7, as it
+    [fixes an issue with the Clang toolchain](https://gitlab.kitware.com/cmake/cmake/issues/17253).
+
 Create a build directory and run `cmake` and the build command in it. Set
 `CMAKE_SYSTEM_NAME` to `Android` to enable the crosscompilation,
 `CMAKE_ANDROID_NDK_TOOLCHAIN_VERSION` and `CMAKE_ANDROID_STL_TYPE` to use Clang
