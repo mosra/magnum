@@ -28,6 +28,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 # Files shared between main library and unit test library
 set(Magnum_SRCS
+    PixelStorage.cpp
     Resource.cpp
     Timeline.cpp)
 

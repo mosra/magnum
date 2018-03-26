@@ -842,6 +842,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_extension_keyword{GetnCompressedTexImage,ARB,robustness},
          *      @fn_gl_extension_keyword{GetCompressedTextureImage,EXT,direct_state_access},
          *      eventually @fn_gl_keyword{GetCompressedTexImage}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -867,6 +869,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * See @ref compressedImage(Int, CompressedImage&) for more
          * information. The storage is not reallocated if it is large enough to
          * contain the new data, which means that @p usage might get ignored.
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -956,6 +960,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @def_gl{TEXTURE_COMPRESSED_BLOCK_HEIGHT}, then
          *      @fn_gl_keyword{GetCompressedTextureSubImage}
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
          *      @ref CompressedPixelStorage::compressedBlockSize() and
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
@@ -986,6 +992,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * See @ref compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
          *      @ref CompressedPixelStorage::compressedBlockSize() and
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
@@ -1020,10 +1028,20 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * and has better performance characteristics. This call also has no
          * equivalent in @extension{ARB,direct_state_access}, thus the texture
          * needs to be bound to some texture unit before the operation.
+         *
+         * On OpenGL ES 2.0 and WebGL 1.0, if @ref PixelStorage::skip() is set,
+         * the functionality is emulated by adjusting the data pointer.
          * @see @ref maxSize(), @ref Framebuffer::copyImage(), @fn_gl{PixelStore},
          *      then @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexImage1D} / @fn_gl_keyword{TexImage2D} /
          *      @fn_gl_keyword{TexImage3D}
+         * @requires_gles30 Extension @extension{EXT,unpack_subimage}/
+         *      @extension{NV,pack_subimage} in OpenGL ES 2.0 if
+         *      @ref PixelStorage::rowLength() is set to a non-zero value.
+         * @requires_gles30 Non-zero @ref PixelStorage::imageHeight() for 3D
+         *      images is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Non-zero @ref PixelStorage::rowLength() is not
+         *      supported in WebGL 1.0.
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
@@ -1076,6 +1094,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl{BindTexture} and @fn_gl_keyword{CompressedTexImage1D} /
          *      @fn_gl_keyword{CompressedTexImage2D} /
          *      @fn_gl_keyword{CompressedTexImage3D}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          * @deprecated_gl Prefer to use @ref setStorage() and
          *      @ref setCompressedSubImage() instead.
          */
@@ -1086,6 +1108,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
          * @requires_webgl20 Pixel buffer objects are not available in WebGL
@@ -1099,6 +1125,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         }
 
         /** @overload
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
          * @requires_webgl20 Pixel buffer objects are not available in WebGL
@@ -1123,6 +1153,9 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already).
+         *
+         * On OpenGL ES 2.0 and WebGL 1.0, if @ref PixelStorage::skip() is set,
+         * the functionality is emulated by adjusting the data pointer.
          * @see @ref setStorage(), @ref Framebuffer::copySubImage(),
          *      @fn_gl{PixelStore}, @fn_gl2_keyword{TextureSubImage1D,TexSubImage1D} /
          *      @fn_gl2_keyword{TextureSubImage2D,TexSubImage2D} /
@@ -1133,6 +1166,13 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexSubImage1D} / @fn_gl_keyword{TexSubImage2D} /
          *      @fn_gl_keyword{TexSubImage3D}
+         * @requires_gles30 Extension @extension{EXT,unpack_subimage}/
+         *      @extension{NV,pack_subimage} in OpenGL ES 2.0 if
+         *      @ref PixelStorage::rowLength() is set to a non-zero value.
+         * @requires_gles30 Non-zero @ref PixelStorage::imageHeight() for 3D
+         *      images is not available in OpenGL ES 2.0.
+         * @requires_webgl20 Non-zero @ref PixelStorage::rowLength() is not
+         *      supported in WebGL 1.0.
          * @requires_gles In @ref MAGNUM_TARGET_WEBGL "WebGL" the @ref PixelType
          *      of data passed in @p image must match the original one
          *      specified in @ref setImage(). It means that you might not be
@@ -1190,6 +1230,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl_keyword{CompressedTexSubImage1D} /
          *      @fn_gl_keyword{CompressedTexSubImage2D} /
          *      @fn_gl_keyword{CompressedTexSubImage3D}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          */
         Texture<dimensions>& setCompressedSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, const CompressedImageView<dimensions>& image) {
             DataHelper<Dimensions>::setCompressedSubImage(*this, level, offset, image);
@@ -1198,6 +1242,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
          * @requires_webgl20 Pixel buffer objects are not available in WebGL
@@ -1209,6 +1257,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         }
 
         /** @overload
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
          * @requires_webgl20 Pixel buffer objects are not available in WebGL

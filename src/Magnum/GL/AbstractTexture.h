@@ -105,6 +105,19 @@ However, if @extension{ARB,direct_state_access} is not available and both
 @extension{EXT,direct_state_access} and @extension{ARB,robustness} are
 available, the robust version is preferred over DSA.
 
+Pixel storage mode defined by @ref PixelStorage and @ref CompressedPixelStorage
+is applied either right before doing image upload (such as various
+@ref Texture::setImage() "setImage()", @ref Texture::setSubImage() "setSubImage()",
+@ref Texture::setCompressedImage() "setCompressedImage()" or
+@ref Texture::setCompressedSubImage() "setCompressedSubImage()" functions)
+using @fn_gl_keyword{PixelStore} with @def_gl{UNPACK_*} parameters or right
+before doing image download (such as various @ref Texture::image() "image()",
+@ref Texture::subImage() "subImage()", @ref Texture::compressedImage() "compressedImage()",
+or @ref Texture::compressedSubImage() "compressedSubImage()" functions) using
+@fn_gl{PixelStore} with @def_gl{PACK_*}. The engine tracks currently used pixel
+pack/unpack parameters to avoid unnecessary calls to @fn_gl{PixelStore}. See
+also @ref Context::resetState() and @ref Context::State::PixelStorage.
+
 To achieve least state changes, fully configure each texture in one run --
 method chaining comes in handy --- and try to have often used textures in
 dedicated units, not occupied by other textures. First configure the texture

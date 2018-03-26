@@ -33,9 +33,11 @@
 #include <tuple>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/GL/GL.h"
-#include "Magnum/GL/visibility.h"
 #include "Magnum/Math/Vector3.h"
+
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+#include "Magnum/GL/PixelFormat.h"
+#endif
 
 namespace Magnum {
 
@@ -43,34 +45,18 @@ namespace Magnum {
 @brief Pixel storage parameters
 
 Descibes how to interpret data which are read from or stored into @ref Image,
-@ref ImageView, @ref BufferImage and @ref Trade::ImageData using
-@ref Texture::setImage() "*Texture::setImage()", @ref Texture::setSubImage() "*Texture::setSubImage()",
-@ref Texture::image() "*Texture::image()", @ref Texture::subImage() "*Texture::subImage()"
-and @ref AbstractFramebuffer::read() "*Framebuffer::read()".
-
-@section PixelFormat-performance-optimizations Performance optimizations
-
-The storage mode is applied either right before doing image upload using
-@fn_gl_keyword{PixelStore} with @def_gl{UNPACK_*} parameters or right before
-doing image download using @fn_gl{PixelStore} with @def_gl{PACK_*}. The engine
-tracks currently used pixel pack/unpack parameters to avoid unnecessary calls
-to @fn_gl{PixelStore}. See also @ref Context::resetState() and
-@ref Context::State::PixelStorage.
+@ref ImageView, @ref Trade::ImageData or for example @ref GL::BufferImage.
 
 @see @ref CompressedPixelStorage
 */
-class MAGNUM_GL_EXPORT PixelStorage {
-    friend GL::AbstractFramebuffer;
-    friend GL::AbstractTexture;
-    friend GL::CubeMapTexture;
-
+class MAGNUM_EXPORT PixelStorage {
     public:
-        /**
-         * @brief Pixel size for given format/type combination (in bytes)
-         *
-         * @see @ref dataProperties()
+        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+        /** @brief @copybrief GL::pixelSize()
+         * @deprecated Use @ref GL::pixelSize() instead.
          */
-        static std::size_t pixelSize(GL::PixelFormat format, GL::PixelType type);
+        static CORRADE_DEPRECATED("use GL::pixelSize() instead") std::size_t pixelSize(GL::PixelFormat format, GL::PixelType type);
+        #endif
 
         /**
          * @brief Default constructor
@@ -97,73 +83,39 @@ class MAGNUM_GL_EXPORT PixelStorage {
          * Not applicable for @ref CompressedPixelStorage. Valid values are
          * @cpp 1 @ce, @cpp 2 @ce, @cpp 4 @ce and @cpp 8 @ce. Default is
          * @cpp 4 @ce.
-         * @see @fn_gl{PixelStore} with @def_gl_keyword{PACK_ALIGNMENT}/
-         *      @def_gl_keyword{UNPACK_ALIGNMENT}
          */
         PixelStorage& setAlignment(Int alignment) {
             _alignment = alignment;
             return *this;
         }
 
-        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-        /**
-         * @brief Row length
-         *
-         * @requires_gles30 Extension @extension{EXT,unpack_subimage}/
-         *      @extension{NV,pack_subimage} in OpenGL ES 2.0.
-         * @requires_webgl20 Row length specification is not available in WebGL
-         *      1.0.
-         */
+        /** @brief Row length */
         constexpr Int rowLength() const { return _rowLength; }
 
         /**
          * @brief Set row length
          *
          * Used only on 2D and 3D images. If set to @cpp 0 @ce, size
-         * information from actual image is used. Default is @cpp 0 @ce.
-         * @see @fn_gl{PixelStore} with @def_gl_keyword{UNPACK_ROW_LENGTH}/
-         *      @def_gl_keyword{PACK_ROW_LENGTH}
-         * @requires_gles30 Extension @extension{EXT,unpack_subimage}/
-         *      @extension{NV,pack_subimage} in OpenGL ES 2.0.
-         * @requires_webgl20 Row length specification is not available in WebGL
-         *      1.0.
+         * information from the actual image is used. Default is @cpp 0 @ce.
          */
         PixelStorage& setRowLength(Int length) {
             _rowLength = length;
             return *this;
         }
-        #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
-        /**
-         * @brief Image height
-         *
-         * @requires_gles30 Image height specification is not available in
-         *      OpenGL ES 2.0
-         * @requires_webgl20 Image height specification is not available in
-         *      WebGL 1.0.
-         */
+        /** @brief Image height */
         constexpr Int imageHeight() const { return _imageHeight; }
 
         /**
          * @brief Set image height
          *
          * Used only on 3D images. If set to @cpp 0 @ce, size information from
-         * actual image is used. Default is @cpp 0 @ce.
-         * @see @fn_gl{PixelStore} with @def_gl_keyword{UNPACK_IMAGE_HEIGHT}/
-         *      @def_gl_keyword{PACK_IMAGE_HEIGHT}
-         * @requires_gles30 Image height specification is not available in
-         *      OpenGL ES 2.0
-         * @requires_webgl20 Image height specification is not available in
-         *      WebGL 1.0.
-         * @requires_gl Image height specification is available only for unpack
-         *      in OpenGL ES and WebGL.
+         * the actual image is used. Default is @cpp 0 @ce.
          */
         PixelStorage& setImageHeight(Int height) {
             _imageHeight = height;
             return *this;
         }
-        #endif
 
         /** @brief Pixel, row and image skipping */
         constexpr Vector3i skip() const { return _skip; }
@@ -172,15 +124,7 @@ class MAGNUM_GL_EXPORT PixelStorage {
          * @brief Set pixel, row and image skipping
          *
          * The Y value is used only for 2D and 3D images, the Z value is used
-         * only for 3D images. Default is @cpp 0 @ce. On OpenGL ES 2.0 and
-         * WebGL 1.0 the functionality is emulated by increasing the data
-         * pointer.
-         * @see @fn_gl{PixelStore} with @def_gl_keyword{UNPACK_SKIP_PIXELS}/
-         *      @def_gl_keyword{PACK_SKIP_PIXELS}, @def_gl_keyword{UNPACK_SKIP_ROWS}/
-         *      @def_gl_keyword{PACK_SKIP_ROWS}, @def_gl_keyword{UNPACK_SKIP_IMAGES}/
-         *      @def_gl_keyword{PACK_SKIP_IMAGES}
-         * @requires_gl Image skip specification is available only for unpack
-         *      in OpenGL ES and WebGL.
+         * only for 3D images. Default is @cpp 0 @ce.
          */
         PixelStorage& setSkip(const Vector3i& skip) {
             _skip = skip;
@@ -190,63 +134,51 @@ class MAGNUM_GL_EXPORT PixelStorage {
         /**
          * @brief Data properties for given parameters
          *
+         * Returns byte offset in each direction and @cpp {rowLength, rowCount, layerCount} @ce
+         * for image of given @p size with current pixel storage parameters,
+         * and given @p pixelSize. The offset reflects the @ref skip()
+         * parameter. Sum of the byte offset vector gives the byte offset of
+         * first pixel in the data array.
+         * @see @ref GL::pixelSize()
+         */
+        std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties(std::size_t pixelSize, const Vector3i& size) const;
+
+        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+        /** @brief @copybrief dataProperties(std::size_t, const Vector3i&) const
+         *
          * Returns byte offset in each direction, (row length, row count, layer
          * count) and pixel size for image of given @p size with current pixel
-         * storage parameters, @p format and @p type. The offset reflects the
-         * @ref skip() parameter. Sum of the byte offset vector gives the
-         * byte offset of first pixel in the data array.
-         * @see @ref pixelSize()
+         * storage parameters, @p format and @p type.
+         * @deprecated Use @ref dataProperties(std::size_t, const Vector3i&) const
+         *      instead.
          */
-        std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> dataProperties(GL::PixelFormat format, GL::PixelType type, const Vector3i& size) const;
+        CORRADE_DEPRECATED("use dataProperties(std::size_t, const Vector3i&) instead") std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> dataProperties(GL::PixelFormat format, GL::PixelType type, const Vector3i& size) const;
+        #endif
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
     #else
     private:
     #endif
-        /* Bool parameter is ugly, but this is implementation detail of
-           internal API so who cares */
-        void MAGNUM_GL_LOCAL applyInternal(bool isUnpack);
-
-        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-        Int _rowLength;
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        Int _imageHeight;
-        #endif
+        Int _rowLength,
+            _imageHeight;
         Vector3i _skip;
 
     private:
-        /* Used internally in *Texture::image(), *Texture::subImage(),
-           *Texture::setImage(), *Texture::setSubImage() and
-           *Framebuffer::read() */
-        void MAGNUM_GL_LOCAL applyUnpack();
-        void MAGNUM_GL_LOCAL applyPack() { applyInternal(false); }
-
         Int _alignment;
 };
 
-#ifndef MAGNUM_TARGET_GLES
 /**
 @brief Compressed pixel storage parameters
 
 Descibes how to interpret data which are read from or stored into
-@ref CompressedImage, @ref CompressedImageView, @ref CompressedBufferImage and
-@ref Trade::ImageData using @ref Texture::setCompressedImage() "*Texture::setCompressedImage(),
-@ref Texture::setCompressedSubImage() "*Texture::setCompressedSubImage()",
-@ref Texture::compressedImage() "*Texture::compressedImage()" and
-@ref Texture::compressedSubImage() "*Texture::compressedSubImage()".
+@ref CompressedImage, @ref CompressedImageView, @ref Trade::ImageData or for
+example @ref GL::CompressedBufferImage.
 
 Includes all parameters from @ref PixelStorage, except for @ref alignment(),
 which is ignored for compressed images.
-
-@requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
-@requires_gl Compressed pixel storage is hardcoded in OpenGL ES and WebGL.
 */
-class MAGNUM_GL_EXPORT CompressedPixelStorage: public PixelStorage {
-    friend GL::AbstractTexture;
-    friend GL::CubeMapTexture;
-
+class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
     public:
         /**
          * @brief Default constructor
@@ -330,29 +262,26 @@ class MAGNUM_GL_EXPORT CompressedPixelStorage: public PixelStorage {
         using PixelStorage::alignment;
         using PixelStorage::setAlignment;
 
-        /* Bool parameter is ugly, but this is implementation detail of
-           internal API so who cares */
-        void MAGNUM_GL_LOCAL applyInternal(bool isUnpack);
-
-        /* Used internally in *Texture::compressedImage(), *Texture::compressedSubImage(),
-           *Texture::setCompressedImage() and *Texture::setCompressedSubImage() */
-        void MAGNUM_GL_LOCAL applyUnpack() { applyInternal(true); }
-        void MAGNUM_GL_LOCAL applyPack() { applyInternal(false); }
-
         Vector3i _blockSize;
         Int _blockDataSize;
 };
-#endif
 
-constexpr PixelStorage::PixelStorage() noexcept:
-    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    _rowLength{0},
-    #endif
-    #ifndef MAGNUM_TARGET_GLES2
-    _imageHeight{0},
-    #endif
-    _skip{0},
-    _alignment{4} {}
+constexpr PixelStorage::PixelStorage() noexcept: _rowLength{0}, _imageHeight{0}, _skip{0}, _alignment{4} {}
+
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+/* These have to be in the header because GL::pixelSize() is in Magnum::GL and
+   putting that in the source would mean undefined reference */
+inline std::size_t PixelStorage::pixelSize(const GL::PixelFormat format, const GL::PixelType type) {
+    return GL::pixelSize(format, type);
+}
+
+inline std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> PixelStorage::dataProperties(const GL::PixelFormat format, const GL::PixelType type, const Vector3i& size) const {
+    const std::size_t pixelSize = GL::pixelSize(format, type);
+    Math::Vector3<std::size_t> offset, dataSize;
+    std::tie(offset, dataSize) = dataProperties(pixelSize, size);
+    return std::make_tuple(offset, dataSize, pixelSize);
+}
+#endif
 
 namespace Implementation {
     /* Used in *Image::dataProperties() */
@@ -363,7 +292,6 @@ namespace Implementation {
         return std::make_tuple(Math::Vector<dimensions, std::size_t>::pad(offset), Math::Vector<dimensions, std::size_t>::pad(dataSize), pixelSize);
     }
 
-    #ifndef MAGNUM_TARGET_GLES2
     /* Used in Compressed*Image::dataProperties() */
     template<std::size_t dimensions, class T> std::tuple<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>, std::size_t> compressedImageDataProperties(const T& image) {
         Math::Vector3<std::size_t> offset, blockCount;
@@ -371,7 +299,6 @@ namespace Implementation {
         std::tie(offset, blockCount, blockSize) = image.storage().dataProperties(Vector3i::pad(image.size(), 1));
         return std::make_tuple(Math::Vector<dimensions, std::size_t>::pad(offset), Math::Vector<dimensions, std::size_t>::pad(blockCount), blockSize);
     }
-    #endif
 
     /* Used in image query functions */
     template<std::size_t dimensions, class T> std::size_t imageDataSizeFor(const T& image, const Math::Vector<dimensions, Int>& size) {
@@ -384,19 +311,11 @@ namespace Implementation {
         if(offset.z())
             dataOffset += offset.z();
         else if(offset.y()) {
-            #ifndef MAGNUM_TARGET_GLES2
             if(!image.storage().imageHeight())
-            #endif
-            {
                 dataOffset += offset.y();
-            }
         } else if(offset.x()) {
-            #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
             if(!image.storage().rowLength())
-            #endif
-            {
                 dataOffset += offset.x();
-            }
         }
         return dataOffset + dataSize.product();
     }
@@ -406,7 +325,6 @@ namespace Implementation {
         return imageDataSizeFor(image, image.size());
     }
 
-    #ifndef MAGNUM_TARGET_GLES
     template<std::size_t dimensions, class T> std::pair<std::size_t, std::size_t> compressedImageDataOffsetSizeFor(const T& image, const Math::Vector<dimensions, Int>& size) {
         CORRADE_INTERNAL_ASSERT(image.storage().compressedBlockSize().product() && image.storage().compressedBlockDataSize());
 
@@ -430,20 +348,13 @@ namespace Implementation {
         return image.storage().compressedBlockSize().product() && image.storage().compressedBlockDataSize()
             ? compressedImageDataOffsetSizeFor(image, image.size()).second : dataSize;
     }
-    #else
-    template<class T> std::size_t occupiedCompressedImageDataSize(const T&, std::size_t dataSize) {
-        return dataSize;
-    }
-    #endif
 
-    #ifdef MAGNUM_TARGET_GLES2
     template<std::size_t dimensions, class T> std::ptrdiff_t pixelStorageSkipOffsetFor(const T& image, const Math::Vector<dimensions, Int>& size) {
         return std::get<0>(image.storage().dataProperties(image.format(), image.type(), Vector3i::pad(size, 1))).sum();
     }
     template<class T> std::ptrdiff_t pixelStorageSkipOffset(const T& image) {
         return pixelStorageSkipOffsetFor(image, image.size());
     }
-    #endif
 }
 
 }

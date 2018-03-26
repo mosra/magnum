@@ -69,6 +69,28 @@ struct RendererState {
     };
 
     PixelStorage packPixelStorage, unpackPixelStorage;
+
+    /* Bool parameter is ugly, but this is implementation detail of internal
+       API so who cares */
+    void applyPixelStorageInternal(const Magnum::PixelStorage& storage, bool unpack);
+    /* Used internally in *Texture::image(), *Texture::subImage(),
+       *Texture::setImage(), *Texture::setSubImage() and *Framebuffer::read() */
+    void applyPixelStoragePack(const Magnum::PixelStorage& storage) {
+        applyPixelStorageInternal(storage, false);
+    }
+    void applyPixelStorageUnpack(const Magnum::PixelStorage& storage);
+
+    /* Bool parameter is ugly, but this is implementation detail of internal
+       API so who cares */
+    void applyPixelStorageInternal(const CompressedPixelStorage& storage, bool unpack);
+    /* Used internally in *Texture::compressedImage(), *Texture::compressedSubImage(),
+       *Texture::setCompressedImage() and *Texture::setCompressedSubImage() */
+    void applyPixelStoragePack(const CompressedPixelStorage& storage) {
+        applyPixelStorageInternal(storage, false);
+    }
+    void applyPixelStorageUnpack(const CompressedPixelStorage& storage) {
+        applyPixelStorageInternal(storage, true);
+    }
 };
 
 }}}

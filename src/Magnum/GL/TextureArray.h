@@ -510,6 +510,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::compressedImage(Int, CompressedImage&) for more
          * information.
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -531,6 +533,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
          * for more information.
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -597,6 +601,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
          *      @ref CompressedPixelStorage::compressedBlockSize() and
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
@@ -623,6 +629,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
          *      @ref CompressedPixelStorage::compressedBlockSize() and
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
@@ -681,6 +689,10 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::setCompressedImage() for more information.
          * @see @ref maxSize()
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          * @deprecated_gl Prefer to use @ref setStorage() and
          *      @ref setCompressedSubImage() instead.
          */
@@ -690,6 +702,10 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /** @overload
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          * @deprecated_gl Prefer to use @ref setStorage() and
          *      @ref setCompressedSubImage() instead.
          */
@@ -699,6 +715,10 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /** @overload
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          * @deprecated_gl Prefer to use @ref setStorage() and
          *      @ref setCompressedSubImage() instead.
          */
@@ -761,19 +781,33 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      @fn_gl_extension_keyword{CompressedTextureSubImage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{CompressedTexSubImage2D} / @fn_gl_keyword{CompressedTexSubImage3D}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          */
         TextureArray<dimensions>& setCompressedSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, const CompressedImageView<dimensions+1>& image) {
             DataHelper<dimensions+1>::setCompressedSubImage(*this, level, offset, image);
             return *this;
         }
 
-        /** @overload */
+        /** @overload
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
+         */
         TextureArray<dimensions>& setCompressedSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, CompressedBufferImage<dimensions+1>& image) {
             DataHelper<dimensions+1>::setCompressedSubImage(*this, level, offset, image);
             return *this;
         }
 
-        /** @overload */
+        /** @overload
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
+         */
         TextureArray<dimensions>& setCompressedSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, CompressedBufferImage<dimensions+1>&& image) {
             return setCompressedSubImage(level, offset, image);
         }

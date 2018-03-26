@@ -190,7 +190,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @brief Pixel size (in bytes)
          *
          * The image is expected to be uncompressed.
-         * @see @ref isCompressed(), @ref PixelStorage::pixelSize()
+         * @see @ref isCompressed(), @ref Magnum::pixelSize()
          */
         std::size_t pixelSize() const;
 

@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::GL::PixelFormat, @ref Magnum::GL::PixelType, @ref Magnum::GL::CompressedPixelFormat
+ * @brief Enum @ref Magnum::GL::PixelFormat, @ref Magnum::GL::PixelType, @ref Magnum::GL::CompressedPixelFormat, function @ref Magnum::GL::pixelSize()
  */
 
 #include "Magnum/Magnum.h"
@@ -1233,6 +1233,13 @@ enum class CompressedPixelFormat: GLenum {
     SRGB8Alpha8Astc12x12 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR
     #endif
 };
+
+/**
+@brief Pixel size for given format/type combination (in bytes)
+
+@see @ref PixelStorage::dataProperties()
+*/
+MAGNUM_GL_EXPORT std::size_t pixelSize(PixelFormat format, PixelType type);
 
 /** @debugoperatorenum{PixelFormat} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, PixelFormat value);

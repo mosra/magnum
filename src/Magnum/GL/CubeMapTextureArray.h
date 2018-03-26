@@ -473,6 +473,8 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::compressedImage(Int, CompressedImage&) for more
          *      information.
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl Texture image queries are not available in OpenGL ES.
          *      See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -494,6 +496,8 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
          * for more information.
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl Texture image queries are not available in OpenGL ES.
          *      See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -560,6 +564,8 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
          *      @ref CompressedPixelStorage::compressedBlockSize() and
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
@@ -586,6 +592,8 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
          *      @ref CompressedPixelStorage::compressedBlockSize() and
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
@@ -654,6 +662,10 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::setCompressedImage() for more information.
          * @see @ref maxSize()
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES.
          * @deprecated_gl Prefer to use @ref setStorage() and
          *      @ref setCompressedSubImage() instead.
          */
@@ -714,19 +726,33 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          * -Z).
          *
          * See @ref Texture::setCompressedSubImage() for more information.
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES.
          */
         CubeMapTextureArray& setCompressedSubImage(Int level, const Vector3i& offset, const CompressedImageView3D& image) {
             DataHelper<3>::setCompressedSubImage(*this, level, offset, image);
             return *this;
         }
 
-        /** @overload */
+        /** @overload
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES.
+         */
         CubeMapTextureArray& setCompressedSubImage(Int level, const Vector3i& offset, CompressedBufferImage3D& image) {
             DataHelper<3>::setCompressedSubImage(*this, level, offset, image);
             return *this;
         }
 
-        /** @overload */
+        /** @overload
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES.
+         */
         CubeMapTextureArray& setCompressedSubImage(Int level, const Vector3i& offset, CompressedBufferImage3D&& image) {
             return setCompressedSubImage(level, offset, image);
         }

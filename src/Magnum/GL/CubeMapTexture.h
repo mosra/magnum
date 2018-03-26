@@ -567,6 +567,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *      @def_gl{TEXTURE_INTERNAL_FORMAT}, @def_gl{TEXTURE_WIDTH},
          *      @def_gl{TEXTURE_HEIGHT}, then
          *      @fn_gl2_keyword{GetCompressedTextureImage,GetCompressedTexImage}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
@@ -589,6 +591,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * information. The storage is not reallocated if it is large enough to
          * contain the new data, which means that @p usage might get ignored.
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -689,6 +693,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *      @fn_gl_extension_keyword{GetnCompressedTexImage,ARB,robustness},
          *      @fn_gl_extension_keyword{GetCompressedTextureImage,EXT,direct_state_access},
          *      eventually @fn_gl_keyword{GetCompressedTexImage}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -710,6 +716,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * for more information. The storage is not reallocated if it is large
          * enough to contain the new data, which means that @p usage might get
          * ignored.
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -774,6 +782,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
          *      @ref CompressedPixelStorage::compressedBlockSize() and
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
@@ -800,6 +810,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
          * for more information.
          * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
          *      @ref CompressedPixelStorage::compressedBlockSize() and
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
@@ -827,6 +839,11 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setImage() for more information.
          * @see @ref maxSize()
+         * @requires_gles30 Extension @extension{EXT,unpack_subimage}/
+         *      @extension{NV,pack_subimage} in OpenGL ES 2.0 if
+         *      @ref PixelStorage::rowLength() is set to a non-zero value.
+         * @requires_webgl20 Non-zero @ref PixelStorage::rowLength() is not
+         *      supported in WebGL 1.0.
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
@@ -868,6 +885,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setCompressedImage() for more information.
          * @see @ref maxSize()
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          * @deprecated_gl Prefer to use @ref setStorage() and
          *      @ref setCompressedSubImage() instead.
          */
@@ -878,6 +899,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
          * @requires_webgl20 Pixel buffer objects are not available in WebGL
@@ -891,6 +916,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         }
 
         /** @overload
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
          * @requires_webgl20 Pixel buffer objects are not available in WebGL
@@ -945,6 +974,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * @see @ref setStorage(), @fn_gl2{CompressedTextureSubImage3D,CompressedTexSubImage3D}
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl In OpenGL ES and WebGL you need to set image for each
          *      face separately.
          */
@@ -952,6 +983,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
 
         /** @overload
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl In OpenGL ES and WebGL you need to set image for each
          *      face separately.
          */
@@ -959,6 +992,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
 
         /** @overload
          * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
          * @requires_gl In OpenGL ES and WebGL you need to set image for each
          *      face separately.
          */
@@ -972,6 +1007,11 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setSubImage() for more information.
+         * @requires_gles30 Extension @extension{EXT,unpack_subimage}/
+         *      @extension{NV,pack_subimage} in OpenGL ES 2.0 if
+         *      @ref PixelStorage::rowLength() is set to a non-zero value.
+         * @requires_webgl20 Non-zero @ref PixelStorage::rowLength() is not
+         *      supported in WebGL 1.0.
          */
         CubeMapTexture& setSubImage(CubeMapCoordinate coordinate, Int level, const Vector2i& offset, const ImageView2D& image);
 
@@ -1000,11 +1040,19 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompressedSubImage() for more information.
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          */
         CubeMapTexture& setCompressedSubImage(CubeMapCoordinate coordinate, Int level, const Vector2i& offset, const CompressedImageView2D& image);
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
          * @requires_webgl20 Pixel buffer objects are not available in WebGL
@@ -1013,6 +1061,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         CubeMapTexture& setCompressedSubImage(CubeMapCoordinate coordinate, Int level, const Vector2i& offset, CompressedBufferImage2D& image);
 
         /** @overload
+         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default @ref CompressedPixelStorage
+         * @requires_gl Non-default @ref CompressedPixelStorage is not
+         *      available in OpenGL ES and WebGL.
          * @requires_gles30 Pixel buffer objects are not available in OpenGL ES
          *      2.0.
          * @requires_webgl20 Pixel buffer objects are not available in WebGL

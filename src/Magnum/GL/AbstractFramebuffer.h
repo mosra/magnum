@@ -152,6 +152,12 @@ switching framebuffers. Framebuffer limits and implementation-defined values
 in repeated @fn_gl{Get} calls. See also @ref Context::resetState() and
 @ref Context::State::Framebuffers.
 
+Pixel storage mode defined by @ref PixelStorage is applied either right before
+doing image download via @ref read() using @fn_gl{PixelStore} with
+@def_gl{PACK_*}. The engine tracks currently used pixel pack parameters to
+avoid unnecessary calls to @fn_gl{PixelStore}. See also @ref Context::resetState()
+and @ref Context::State::PixelStorage.
+
 If extension @extension{ARB,direct_state_access} (part of OpenGL 4.5) is
 available, @ref blit(), @ref clearDepth(), @ref clearStencil() and
 @ref clearDepthStencil() functions use DSA to avoid unnecessary call to
@@ -342,13 +348,20 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          *
          * Image parameters like format and type of pixel data are taken from
          * given image. The storage is not reallocated if it is large enough to
-         * contain the new data.
+         * contain the new data. On OpenGL ES 2.0 and WebGL 1.0, if
+         * @ref PixelStorage::skip() is set, the functionality is emulated by
+         * adjusting the data pointer.
          *
          * If @extension{ARB,robustness} is available, the operation is
          * protected from buffer overflow.
          * @see @fn_gl{BindFramebuffer}, then @fn_gl{PixelStore} and
          *      @fn_gl_keyword{ReadPixels} or
          *      @fn_gl_extension_keyword{ReadnPixels,ARB,robustness}
+         * @requires_gles30 Extension @extension{EXT,unpack_subimage}/
+         *      @extension{NV,pack_subimage} in OpenGL ES 2.0 if
+         *      @ref PixelStorage::rowLength() is set to a non-zero value.
+         * @requires_webgl20 Non-zero @ref PixelStorage::rowLength() is not
+         *      supported in WebGL 1.0.
          */
         void read(const Range2Di& rectangle, Image2D& image);
 

@@ -39,6 +39,7 @@
 #ifndef MAGNUM_TARGET_WEBGL
 #include "Magnum/GL/Implementation/DebugState.h"
 #endif
+#include "Magnum/GL/Implementation/RendererState.h"
 #include "Magnum/GL/Implementation/State.h"
 #include "Magnum/GL/Implementation/TextureState.h"
 #include "Magnum/Math/Color.h"
@@ -1699,7 +1700,7 @@ template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, Image<
         data = Containers::Array<char>{dataSize};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    image.storage().applyPack();
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
     (this->*Context::current().state().texture->getImageImplementation)(level, image.format(), image.type(), data.size(), data);
     image = Image<dimensions>{image.storage(), image.format(), image.type(), size, std::move(data)};
 }
@@ -1719,7 +1720,7 @@ template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, Buffer
         image.setData(image.storage(), image.format(), image.type(), size, nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
-    image.storage().applyPack();
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
     (this->*Context::current().state().texture->getImageImplementation)(level, image.format(), image.type(), dataSize, nullptr);
 }
 
@@ -1749,7 +1750,7 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLi
         data = Containers::Array<char>{dataSize};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    image.storage().applyPack();
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
     (this->*Context::current().state().texture->getCompressedImageImplementation)(level, data.size(), data);
     image = CompressedImage<dimensions>{image.storage(), CompressedPixelFormat(format), size, std::move(data)};
 }
@@ -1781,7 +1782,7 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLi
         image.setData(image.storage(), CompressedPixelFormat(format), size, nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
-    image.storage().applyPack();
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
     (this->*Context::current().state().texture->getCompressedImageImplementation)(level, dataSize, nullptr);
 }
 
@@ -1803,7 +1804,7 @@ template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint leve
         data = Containers::Array<char>{dataSize};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    image.storage().applyPack();
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
     glGetTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), GLenum(image.format()), GLenum(image.type()), data.size(), data);
     image = Image<dimensions>{image.storage(), image.format(), image.type(), size, std::move(data)};
 }
@@ -1827,7 +1828,7 @@ template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint leve
         image.setData(image.storage(), image.format(), image.type(), size, nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
-    image.storage().applyPack();
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
     glGetTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), GLenum(image.format()), GLenum(image.type()), dataSize, nullptr);
 }
 
@@ -1868,7 +1869,7 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const 
         data = Containers::Array<char>{dataSize};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    image.storage().applyPack();
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
     glGetCompressedTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), data.size(), data);
     image = CompressedImage<dimensions>{CompressedPixelFormat(format), size, std::move(data)};
 }
@@ -1903,7 +1904,7 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const 
         image.setData(image.storage(), CompressedPixelFormat(format), size, nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
-    image.storage().applyPack();
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
     glGetCompressedTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), dataSize, nullptr);
 }
 
@@ -1992,53 +1993,53 @@ void AbstractTexture::DataHelper<3>::setStorageMultisample(AbstractTexture& text
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::DataHelper<1>::setImage(AbstractTexture& texture, const GLint level, const TextureFormat internalFormat, const ImageView1D& image) {
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     texture.bindInternal();
     glTexImage1D(texture._target, level, GLint(internalFormat), image.size()[0], 0, GLenum(image.format()), GLenum(image.type()), image.data());
 }
 
 void AbstractTexture::DataHelper<1>::setCompressedImage(AbstractTexture& texture, const GLint level, const CompressedImageView1D& image) {
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     texture.bindInternal();
     glCompressedTexImage1D(texture._target, level, GLenum(image.format()), image.size()[0], 0, Magnum::Implementation::occupiedCompressedImageDataSize(image, image.data().size()), image.data());
 }
 
 void AbstractTexture::DataHelper<1>::setImage(AbstractTexture& texture, const GLint level, const TextureFormat internalFormat, BufferImage1D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     texture.bindInternal();
     glTexImage1D(texture._target, level, GLint(internalFormat), image.size()[0], 0, GLenum(image.format()), GLenum(image.type()), nullptr);
 }
 
 void AbstractTexture::DataHelper<1>::setCompressedImage(AbstractTexture& texture, const GLint level, CompressedBufferImage1D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     texture.bindInternal();
     glCompressedTexImage1D(texture._target, level, GLenum(image.format()), image.size()[0], 0, Magnum::Implementation::occupiedCompressedImageDataSize(image, image.dataSize()), nullptr);
 }
 
 void AbstractTexture::DataHelper<1>::setSubImage(AbstractTexture& texture, const GLint level, const Math::Vector<1, GLint>& offset, const ImageView1D& image) {
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     (texture.*Context::current().state().texture->subImage1DImplementation)(level, offset, image.size(), image.format(), image.type(), image.data());
 }
 
 void AbstractTexture::DataHelper<1>::setCompressedSubImage(AbstractTexture& texture, const GLint level, const Math::Vector<1, GLint>& offset, const CompressedImageView1D& image) {
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     (texture.*Context::current().state().texture->compressedSubImage1DImplementation)(level, offset, image.size(), image.format(), image.data(), Magnum::Implementation::occupiedCompressedImageDataSize(image, image.data().size()));
 }
 
 void AbstractTexture::DataHelper<1>::setSubImage(AbstractTexture& texture, const GLint level, const Math::Vector<1, GLint>& offset, BufferImage1D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     (texture.*Context::current().state().texture->subImage1DImplementation)(level, offset, image.size(), image.format(), image.type(), nullptr);
 }
 
 void AbstractTexture::DataHelper<1>::setCompressedSubImage(AbstractTexture& texture, const GLint level, const Math::Vector<1, GLint>& offset, CompressedBufferImage1D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     (texture.*Context::current().state().texture->compressedSubImage1DImplementation)(level, offset, image.size(), image.format(), nullptr, Magnum::Implementation::occupiedCompressedImageDataSize(image, image.dataSize()));
 }
 #endif
@@ -2047,7 +2048,7 @@ void AbstractTexture::DataHelper<2>::setImage(AbstractTexture& texture, const GL
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     (texture.*Context::current().state().texture->image2DImplementation)(target, level, internalFormat, image.size(), image.format(), image.type(), image.data()
         #ifdef MAGNUM_TARGET_GLES2
         + Magnum::Implementation::pixelStorageSkipOffset(image)
@@ -2062,7 +2063,7 @@ void AbstractTexture::DataHelper<2>::setCompressedImage(AbstractTexture& texture
     #ifndef MAGNUM_TARGET_GLES
     /* Pixel storage is completely ignored for compressed images on ES, no need
        to reset anything */
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     #endif
     texture.bindInternal();
     glCompressedTexImage2D(target, level, GLenum(image.format()), image.size().x(), image.size().y(), 0, Magnum::Implementation::occupiedCompressedImageDataSize(image, image.data().size()), image.data());
@@ -2071,7 +2072,7 @@ void AbstractTexture::DataHelper<2>::setCompressedImage(AbstractTexture& texture
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::DataHelper<2>::setImage(AbstractTexture& texture, const GLenum target, const GLint level, const TextureFormat internalFormat, BufferImage2D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     texture.bindInternal();
     glTexImage2D(target, level, GLint(internalFormat), image.size().x(), image.size().y(), 0, GLenum(image.format()), GLenum(image.type()), nullptr);
 }
@@ -2081,7 +2082,7 @@ void AbstractTexture::DataHelper<2>::setCompressedImage(AbstractTexture& texture
     #ifndef MAGNUM_TARGET_GLES
     /* Pixel storage is completely ignored for compressed images on ES, no need
        to reset anything */
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     #endif
     texture.bindInternal();
     glCompressedTexImage2D(target, level, GLenum(image.format()), image.size().x(), image.size().y(), 0, Magnum::Implementation::occupiedCompressedImageDataSize(image, image.dataSize()), nullptr);
@@ -2092,7 +2093,7 @@ void AbstractTexture::DataHelper<2>::setSubImage(AbstractTexture& texture, const
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     (texture.*Context::current().state().texture->subImage2DImplementation)(level, offset, image.size(), image.format(), image.type(), image.data()
         #ifdef MAGNUM_TARGET_GLES2
         + Magnum::Implementation::pixelStorageSkipOffset(image)
@@ -2107,7 +2108,7 @@ void AbstractTexture::DataHelper<2>::setCompressedSubImage(AbstractTexture& text
     #ifndef MAGNUM_TARGET_GLES
     /* Pixel storage is completely ignored for compressed images on ES, no need
        to reset anything */
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     #endif
     (texture.*Context::current().state().texture->compressedSubImage2DImplementation)(level, offset, image.size(), image.format(), image.data(), Magnum::Implementation::occupiedCompressedImageDataSize(image, image.data().size()));
 }
@@ -2115,7 +2116,7 @@ void AbstractTexture::DataHelper<2>::setCompressedSubImage(AbstractTexture& text
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::DataHelper<2>::setSubImage(AbstractTexture& texture, const GLint level, const Vector2i& offset, BufferImage2D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     (texture.*Context::current().state().texture->subImage2DImplementation)(level, offset, image.size(), image.format(), image.type(), nullptr, image.storage());
 }
 
@@ -2124,7 +2125,7 @@ void AbstractTexture::DataHelper<2>::setCompressedSubImage(AbstractTexture& text
     #ifndef MAGNUM_TARGET_GLES
     /* Pixel storage is completely ignored for compressed images on ES, no need
        to reset anything */
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     #endif
     (texture.*Context::current().state().texture->compressedSubImage2DImplementation)(level, offset, image.size(), image.format(), nullptr, Magnum::Implementation::occupiedCompressedImageDataSize(image, image.dataSize()));
 }
@@ -2135,7 +2136,7 @@ void AbstractTexture::DataHelper<3>::setImage(AbstractTexture& texture, const GL
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     (texture.*Context::current().state().texture->image3DImplementation)(level, internalFormat, image.size(), image.format(), image.type(), image.data()
         #ifdef MAGNUM_TARGET_GLES2
         + Magnum::Implementation::pixelStorageSkipOffset(image)
@@ -2150,7 +2151,7 @@ void AbstractTexture::DataHelper<3>::setCompressedImage(AbstractTexture& texture
     #ifndef MAGNUM_TARGET_GLES
     /* Pixel storage is completely ignored for compressed images on ES, no need
        to reset anything */
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     #endif
     texture.bindInternal();
     #ifndef MAGNUM_TARGET_GLES2
@@ -2164,7 +2165,7 @@ void AbstractTexture::DataHelper<3>::setCompressedImage(AbstractTexture& texture
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::DataHelper<3>::setImage(AbstractTexture& texture, const GLint level, const TextureFormat internalFormat, BufferImage3D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     texture.bindInternal();
     glTexImage3D(texture._target, level, GLint(internalFormat), image.size().x(), image.size().y(), image.size().z(), 0, GLenum(image.format()), GLenum(image.type()), nullptr);
 }
@@ -2174,7 +2175,7 @@ void AbstractTexture::DataHelper<3>::setCompressedImage(AbstractTexture& texture
     #ifndef MAGNUM_TARGET_GLES
     /* Pixel storage is completely ignored for compressed images on ES, no need
        to reset anything */
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     #endif
     texture.bindInternal();
     glCompressedTexImage3D(texture._target, level, GLenum(image.format()), image.size().x(), image.size().y(), image.size().z(), 0, Magnum::Implementation::occupiedCompressedImageDataSize(image, image.dataSize()), nullptr);
@@ -2186,7 +2187,7 @@ void AbstractTexture::DataHelper<3>::setSubImage(AbstractTexture& texture, const
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     (texture.*Context::current().state().texture->subImage3DImplementation)(level, offset, image.size(), image.format(), image.type(), image.data()
         #ifdef MAGNUM_TARGET_GLES2
         + Magnum::Implementation::pixelStorageSkipOffset(image)
@@ -2201,7 +2202,7 @@ void AbstractTexture::DataHelper<3>::setCompressedSubImage(AbstractTexture& text
     #ifndef MAGNUM_TARGET_GLES
     /* Pixel storage is completely ignored for compressed images on ES, no need
        to reset anything */
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     #endif
     (texture.*Context::current().state().texture->compressedSubImage3DImplementation)(level, offset, image.size(), image.format(), image.data(), Magnum::Implementation::occupiedCompressedImageDataSize(image, image.data().size()));
 }
@@ -2210,7 +2211,7 @@ void AbstractTexture::DataHelper<3>::setCompressedSubImage(AbstractTexture& text
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractTexture::DataHelper<3>::setSubImage(AbstractTexture& texture, const GLint level, const Vector3i& offset, BufferImage3D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     (texture.*Context::current().state().texture->subImage3DImplementation)(level, offset, image.size(), image.format(), image.type(), nullptr, image.storage());
 }
 
@@ -2219,7 +2220,7 @@ void AbstractTexture::DataHelper<3>::setCompressedSubImage(AbstractTexture& text
     #ifndef MAGNUM_TARGET_GLES
     /* Pixel storage is completely ignored for compressed images on ES, no need
        to reset anything */
-    image.storage().applyUnpack();
+    Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
     #endif
     (texture.*Context::current().state().texture->compressedSubImage3DImplementation)(level, offset, image.size(), image.format(), nullptr, Magnum::Implementation::occupiedCompressedImageDataSize(image, image.dataSize()));
 }

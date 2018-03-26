@@ -40,7 +40,6 @@ set(MagnumGL_SRCS
     MeshView.cpp
     OpenGL.cpp
     PixelFormat.cpp
-    ../PixelStorage.cpp # temporary
     Renderbuffer.cpp
     Renderer.cpp
     Sampler.cpp

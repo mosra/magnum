@@ -147,7 +147,7 @@ template<UnsignedInt dimensions> class BufferImage {
         /**
          * @brief Pixel size (in bytes)
          *
-         * @see @ref PixelStorage::pixelSize()
+         * @see @ref Magnum::pixelSize(), @ref GL::pixelSize()
          */
         std::size_t pixelSize() const { return PixelStorage::pixelSize(_format, _type); }
 

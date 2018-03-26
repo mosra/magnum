@@ -43,6 +43,7 @@
 #include "Magnum/GL/TextureArray.h"
 #endif
 #include "Magnum/GL/Implementation/FramebufferState.h"
+#include "Magnum/GL/Implementation/RendererState.h"
 #include "Magnum/GL/Implementation/State.h"
 
 namespace Magnum { namespace GL {
@@ -306,10 +307,10 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     #endif
-    image.storage().applyPack();
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
     (Context::current().state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), data.size(), data
         #ifdef MAGNUM_TARGET_GLES2
-        + Implementation::pixelStorageSkipOffsetFor(image, rectangle.size())
+        + Magnum::Implementation::pixelStorageSkipOffsetFor(image, rectangle.size())
         #endif
         );
     image = Image2D{image.storage(), image.format(), image.type(), rectangle.size(), std::move(data)};
@@ -332,7 +333,7 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, BufferImage2D& image, 
         image.setData(image.storage(), image.format(), image.type(), rectangle.size(), nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
-    image.storage().applyPack();
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
     (Context::current().state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), dataSize, nullptr);
 }
 
