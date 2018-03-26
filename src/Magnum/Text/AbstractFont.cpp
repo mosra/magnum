@@ -32,10 +32,24 @@
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Text/GlyphCache.h"
 
+#include "Magnum/Text/configure.h"
+
 namespace Magnum { namespace Text {
 
 std::string AbstractFont::pluginInterface() {
     return "cz.mosra.magnum.Text.AbstractFont/0.2.4";
+}
+
+std::vector<std::string> AbstractFont::pluginSearchPaths() {
+    return {
+        #ifdef CORRADE_IS_DEBUG_BUILD
+        "magnum-d/fonts",
+        Utility::Directory::join(MAGNUM_PLUGINS_DEBUG_DIR, "fonts")
+        #else
+        "magnum/fonts",
+        Utility::Directory::join(MAGNUM_PLUGINS_DIR, "fonts")
+        #endif
+    };
 }
 
 AbstractFont::AbstractFont(): _size(0.0f) {}

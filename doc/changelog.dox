@@ -73,6 +73,14 @@ See also:
     @ref Primitives::grid3DSolid() and @ref Primitives::grid3DWireframe()
     primitives
 
+@subsection changelog-latest-buildsystem Build system
+
+-   All plugin interfaces now implement
+    @ref Corrade::PluginManager::AbstractPlugin::pluginSearchPaths() "pluginSearchPaths()"
+    for plugin directory autodetection --- you no longer need to specify the
+    plugin directory explicitly when loading plugins. See @ref plugins-loading
+    for more information.
+
 @subsection changelog-latest-bugfixes Bug fixes
 
 -   Engine startup info was not properly printed to Android log since

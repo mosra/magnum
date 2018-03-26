@@ -29,10 +29,24 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Directory.h>
 
+#include "Magnum/Audio/configure.h"
+
 namespace Magnum { namespace Audio {
 
 std::string AbstractImporter::pluginInterface() {
     return "cz.mosra.magnum.Audio.AbstractImporter/0.1";
+}
+
+std::vector<std::string> AbstractImporter::pluginSearchPaths() {
+    return {
+        #ifdef CORRADE_IS_DEBUG_BUILD
+        "magnum-d/audioimporters",
+        Utility::Directory::join(MAGNUM_PLUGINS_DEBUG_DIR, "audioimporters")
+        #else
+        "magnum/audioimporters",
+        Utility::Directory::join(MAGNUM_PLUGINS_DIR, "audioimporters")
+        #endif
+    };
 }
 
 AbstractImporter::AbstractImporter() = default;

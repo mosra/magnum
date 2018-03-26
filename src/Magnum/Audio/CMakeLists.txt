@@ -44,6 +44,9 @@ set(MagnumAudio_HEADERS
 
     visibility.h)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+
 if(WITH_SCENEGRAPH)
     list(APPEND MagnumAudio_HEADERS
         Listener.h

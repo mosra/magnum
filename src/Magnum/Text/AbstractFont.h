@@ -109,6 +109,18 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          */
         static std::string pluginInterface();
 
+        /**
+         * @brief Plugin search paths
+         *
+         * First looks in `magnum/fonts/` or `magnum-d/fonts/` next to the
+         * executable and as a fallback in `magnum/fonts/` or `magnum-d/fonts/`
+         * in the runtime install location (`lib[64]/` on Unix-like systems,
+         * `bin/` on Windows). The system-wide plugin search directory is
+         * configurable using the `MAGNUM_PLUGINS_DIR` CMake variables, see
+         * @ref building for more information.
+         */
+        static std::vector<std::string> pluginSearchPaths();
+
         /** @brief Default constructor */
         explicit AbstractFont();
 

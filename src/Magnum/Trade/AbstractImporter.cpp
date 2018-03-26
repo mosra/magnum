@@ -40,11 +40,24 @@
 #include "Magnum/Trade/ObjectData3D.h"
 #include "Magnum/Trade/SceneData.h"
 #include "Magnum/Trade/TextureData.h"
+#include "Magnum/Trade/configure.h"
 
 namespace Magnum { namespace Trade {
 
 std::string AbstractImporter::pluginInterface() {
     return "cz.mosra.magnum.Trade.AbstractImporter/0.3";
+}
+
+std::vector<std::string> AbstractImporter::pluginSearchPaths() {
+    return {
+        #ifdef CORRADE_IS_DEBUG_BUILD
+        "magnum-d/importers",
+        Utility::Directory::join(MAGNUM_PLUGINS_DEBUG_DIR, "importers")
+        #else
+        "magnum/importers",
+        Utility::Directory::join(MAGNUM_PLUGINS_DIR, "importers")
+        #endif
+    };
 }
 
 AbstractImporter::AbstractImporter() = default;
