@@ -71,5 +71,5 @@ check() {
 }
 
 package() {
-    echo "Open build-coverage/coverage/index.html to see the results." && false
+    echo "Open ../../build-coverage/coverage/index.html to see the results." && false
 }
