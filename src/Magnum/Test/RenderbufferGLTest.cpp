@@ -40,10 +40,14 @@ struct RenderbufferGLTest: OpenGLTester {
     void constructMove();
     void wrap();
 
+    #ifndef MAGNUM_TARGET_WEBGL
     void label();
+    #endif
 
     void setStorage();
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void setStorageMultisample();
+    #endif
 };
 
 RenderbufferGLTest::RenderbufferGLTest() {
@@ -52,10 +56,16 @@ RenderbufferGLTest::RenderbufferGLTest() {
               &RenderbufferGLTest::constructMove,
               &RenderbufferGLTest::wrap,
 
+              #ifndef MAGNUM_TARGET_WEBGL
               &RenderbufferGLTest::label,
+              #endif
 
               &RenderbufferGLTest::setStorage,
-              &RenderbufferGLTest::setStorageMultisample});
+
+              #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+              &RenderbufferGLTest::setStorageMultisample
+              #endif
+              });
 }
 
 void RenderbufferGLTest::construct() {
@@ -126,6 +136,7 @@ void RenderbufferGLTest::wrap() {
     glDeleteRenderbuffers(1, &id);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void RenderbufferGLTest::label() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
@@ -145,6 +156,7 @@ void RenderbufferGLTest::label() {
 
     CORRADE_COMPARE(renderbuffer.label(), "MyRenderbuffer");
 }
+#endif
 
 void RenderbufferGLTest::setStorage() {
     #ifndef MAGNUM_TARGET_GLES
@@ -163,6 +175,7 @@ void RenderbufferGLTest::setStorage() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void RenderbufferGLTest::setStorageMultisample() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
@@ -183,6 +196,7 @@ void RenderbufferGLTest::setStorageMultisample() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+#endif
 
 }}
 

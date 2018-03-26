@@ -43,7 +43,9 @@ struct BufferGLTest: OpenGLTester {
     void constructMove();
     void wrap();
 
+    #ifndef MAGNUM_TARGET_WEBGL
     void label();
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     void bindBase();
@@ -51,9 +53,11 @@ struct BufferGLTest: OpenGLTester {
     #endif
 
     void data();
+    #ifndef MAGNUM_TARGET_WEBGL
     void map();
     void mapRange();
     void mapRangeExplicitFlush();
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     void copy();
     #endif
@@ -66,7 +70,9 @@ BufferGLTest::BufferGLTest() {
               &BufferGLTest::constructMove,
               &BufferGLTest::wrap,
 
+              #ifndef MAGNUM_TARGET_WEBGL
               &BufferGLTest::label,
+              #endif
 
               #ifndef MAGNUM_TARGET_GLES2
               &BufferGLTest::bindBase,
@@ -74,9 +80,11 @@ BufferGLTest::BufferGLTest() {
               #endif
 
               &BufferGLTest::data,
+              #ifndef MAGNUM_TARGET_WEBGL
               &BufferGLTest::map,
               &BufferGLTest::mapRange,
               &BufferGLTest::mapRangeExplicitFlush,
+              #endif
               #ifndef MAGNUM_TARGET_GLES2
               &BufferGLTest::copy,
               #endif
@@ -138,6 +146,7 @@ void BufferGLTest::wrap() {
     glDeleteBuffers(1, &id);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void BufferGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
     if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
@@ -154,6 +163,7 @@ void BufferGLTest::label() {
 
     CORRADE_COMPARE(buffer.label(), "MyBuffer");
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void BufferGLTest::bindBase() {
@@ -262,6 +272,7 @@ void BufferGLTest::data() {
     #endif
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void BufferGLTest::map() {
     #ifdef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::OES::mapbuffer>())
@@ -369,6 +380,7 @@ void BufferGLTest::mapRangeExplicitFlush() {
     CORRADE_COMPARE(changedContents[4], 107);
     #endif
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void BufferGLTest::copy() {

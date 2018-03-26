@@ -178,7 +178,8 @@ void RendererGLTest::renderData() {
 void RendererGLTest::renderMesh() {
     TestFont font;
     Mesh mesh{NoCreate};
-    Buffer vertexBuffer, indexBuffer;
+    Buffer vertexBuffer{Buffer::TargetHint::Array},
+        indexBuffer{Buffer::TargetHint::ElementArray};
     Range2D bounds;
     std::tie(mesh, bounds) = Text::Renderer3D::render(font, nullGlyphCache,
         0.25f, "abc", vertexBuffer, indexBuffer, BufferUsage::StaticDraw, Alignment::TopCenter);
@@ -267,7 +268,7 @@ void RendererGLTest::mutableText() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::map_buffer_range>())
         CORRADE_SKIP(Extensions::GL::ARB::map_buffer_range::string() + std::string(" is not supported"));
-    #elif defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_EMSCRIPTEN)
+    #elif defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(!Context::current().isExtensionSupported<Extensions::GL::EXT::map_buffer_range>() &&
        !Context::current().isExtensionSupported<Extensions::GL::OES::mapbuffer>())
         CORRADE_SKIP("No required extension is supported");

@@ -37,7 +37,9 @@ struct AbstractTextureGLTest: OpenGLTester {
     void constructCopy();
     void constructMove();
 
+    #ifndef MAGNUM_TARGET_WEBGL
     void label();
+    #endif
 };
 
 AbstractTextureGLTest::AbstractTextureGLTest() {
@@ -45,7 +47,10 @@ AbstractTextureGLTest::AbstractTextureGLTest() {
               &AbstractTextureGLTest::constructCopy,
               &AbstractTextureGLTest::constructMove,
 
-              &AbstractTextureGLTest::label});
+              #ifndef MAGNUM_TARGET_WEBGL
+              &AbstractTextureGLTest::label
+              #endif
+              });
 }
 
 void AbstractTextureGLTest::construct() {
@@ -86,6 +91,7 @@ void AbstractTextureGLTest::constructMove() {
     CORRADE_COMPARE(c.id(), id);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void AbstractTextureGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
     if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
@@ -102,6 +108,7 @@ void AbstractTextureGLTest::label() {
 
     CORRADE_COMPARE(texture.label(), "MyTexture");
 }
+#endif
 
 }}
 

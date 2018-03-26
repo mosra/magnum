@@ -42,7 +42,9 @@ struct ShaderGLTest: OpenGLTester {
     void constructCopy();
     void constructMove();
 
+    #ifndef MAGNUM_TARGET_WEBGL
     void label();
+    #endif
 
     void addSource();
     void addSourceNoVersion();
@@ -58,7 +60,9 @@ ShaderGLTest::ShaderGLTest() {
               &ShaderGLTest::constructCopy,
               &ShaderGLTest::constructMove,
 
+              #ifndef MAGNUM_TARGET_WEBGL
               &ShaderGLTest::label,
+              #endif
 
               &ShaderGLTest::addSource,
               &ShaderGLTest::addSourceNoVersion,
@@ -141,6 +145,7 @@ void ShaderGLTest::constructMove() {
     #endif
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void ShaderGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
     if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
@@ -159,6 +164,7 @@ void ShaderGLTest::label() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+#endif
 
 void ShaderGLTest::addSource() {
     #ifndef MAGNUM_TARGET_GLES

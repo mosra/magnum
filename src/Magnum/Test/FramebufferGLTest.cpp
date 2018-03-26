@@ -60,16 +60,22 @@ struct FramebufferGLTest: OpenGLTester {
     void constructMove();
     void wrap();
 
+    #ifndef MAGNUM_TARGET_WEBGL
     void label();
+    #endif
 
     void attachRenderbuffer();
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void attachRenderbufferMultisample();
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     void attachTexture1D();
     #endif
     void attachTexture2D();
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void attachTexture3D();
+    #endif
     #ifndef MAGNUM_TARGET_GLES
     void attachTexture1DArray();
     #endif
@@ -110,7 +116,9 @@ struct FramebufferGLTest: OpenGLTester {
     void clearStencil();
     void clearDepthStencil();
     #endif
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void invalidate();
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     void invalidateSub();
     #endif
@@ -133,7 +141,9 @@ struct FramebufferGLTest: OpenGLTester {
     void copySubImageTexture1D();
     #endif
     void copySubImageTexture2D();
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void copySubImageTexture3D();
+    #endif
     #ifndef MAGNUM_TARGET_GLES
     void copySubImageTexture1DArray();
     #endif
@@ -147,9 +157,11 @@ struct FramebufferGLTest: OpenGLTester {
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void copySubImageCubeMapTextureArray();
     #endif
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void blit();
+    #endif
 
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     private:
         TextureFormat rgbaFormatES2, depthStencilFormatES2;
     #endif
@@ -161,16 +173,22 @@ FramebufferGLTest::FramebufferGLTest() {
               &FramebufferGLTest::constructMove,
               &FramebufferGLTest::wrap,
 
+              #ifndef MAGNUM_TARGET_WEBGL
               &FramebufferGLTest::label,
+              #endif
 
               &FramebufferGLTest::attachRenderbuffer,
+              #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
               &FramebufferGLTest::attachRenderbufferMultisample,
+              #endif
 
               #ifndef MAGNUM_TARGET_GLES
               &FramebufferGLTest::attachTexture1D,
               #endif
               &FramebufferGLTest::attachTexture2D,
+              #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
               &FramebufferGLTest::attachTexture3D,
+              #endif
               #ifndef MAGNUM_TARGET_GLES
               &FramebufferGLTest::attachTexture1DArray,
               #endif
@@ -211,7 +229,9 @@ FramebufferGLTest::FramebufferGLTest() {
               &FramebufferGLTest::clearStencil,
               &FramebufferGLTest::clearDepthStencil,
               #endif
+              #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
               &FramebufferGLTest::invalidate,
+              #endif
               #ifndef MAGNUM_TARGET_GLES2
               &FramebufferGLTest::invalidateSub,
               #endif
@@ -234,7 +254,9 @@ FramebufferGLTest::FramebufferGLTest() {
               &FramebufferGLTest::copySubImageTexture1D,
               #endif
               &FramebufferGLTest::copySubImageTexture2D,
+              #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
               &FramebufferGLTest::copySubImageTexture3D,
+              #endif
               #ifndef MAGNUM_TARGET_GLES
               &FramebufferGLTest::copySubImageTexture1DArray,
               #endif
@@ -248,9 +270,12 @@ FramebufferGLTest::FramebufferGLTest() {
               #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
               &FramebufferGLTest::copySubImageCubeMapTextureArray,
               #endif
-              &FramebufferGLTest::blit});
+              #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+              &FramebufferGLTest::blit
+              #endif
+              });
 
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(Context::current().isExtensionSupported<Extensions::GL::EXT::texture_storage>()) {
         rgbaFormatES2 = TextureFormat::RGBA8;
         depthStencilFormatES2 = TextureFormat::Depth24Stencil8;
@@ -332,6 +357,7 @@ void FramebufferGLTest::wrap() {
     glDeleteFramebuffers(1, &id);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void FramebufferGLTest::label() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
@@ -353,6 +379,7 @@ void FramebufferGLTest::label() {
 
     CORRADE_COMPARE(framebuffer.label(), "MyFramebuffer");
 }
+#endif
 
 void FramebufferGLTest::attachRenderbuffer() {
     #ifndef MAGNUM_TARGET_GLES
@@ -370,16 +397,22 @@ void FramebufferGLTest::attachRenderbuffer() {
     /* Separate depth and stencil renderbuffers are not supported (or at least
        on my NVidia, thus we need to do this juggling with one renderbuffer */
     Renderbuffer depthStencil;
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(Context::current().isExtensionSupported<Extensions::GL::OES::packed_depth_stencil>())
     #endif
     {
-        #ifdef MAGNUM_TARGET_GLES2
+        #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         Debug() << "Using" << Extensions::GL::OES::packed_depth_stencil::string();
         #endif
-        depthStencil.setStorage(RenderbufferFormat::Depth24Stencil8, Vector2i(128));
+        depthStencil.setStorage(
+            #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+            RenderbufferFormat::Depth24Stencil8,
+            #else
+            RenderbufferFormat::DepthStencil,
+            #endif
+            Vector2i(128));
     }
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     else depthStencil.setStorage(RenderbufferFormat::DepthComponent16, Vector2i(128));
     #endif
 
@@ -387,7 +420,7 @@ void FramebufferGLTest::attachRenderbuffer() {
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), color)
                .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, depthStencil);
 
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(Context::current().isExtensionSupported<Extensions::GL::OES::packed_depth_stencil>())
     #endif
     {
@@ -399,6 +432,7 @@ void FramebufferGLTest::attachRenderbuffer() {
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void FramebufferGLTest::attachRenderbufferMultisample() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
@@ -416,7 +450,7 @@ void FramebufferGLTest::attachRenderbufferMultisample() {
     color.setStorageMultisample(Renderbuffer::maxSamples(), RenderbufferFormat::RGBA4, Vector2i(128));
     #endif
 
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::OES::packed_depth_stencil);
     #endif
 
@@ -436,6 +470,7 @@ void FramebufferGLTest::attachRenderbufferMultisample() {
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::attachTexture1D() {
@@ -471,11 +506,15 @@ void FramebufferGLTest::attachTexture2D() {
     MAGNUM_VERIFY_NO_ERROR();
 
     Texture2D color;
-    #ifndef MAGNUM_TARGET_GLES2
-    color.setStorage(1, TextureFormat::RGBA8, Vector2i(128));
-    #else
-    color.setStorage(1, rgbaFormatES2, Vector2i(128));
-    #endif
+    color.setStorage(1,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::RGBA8,
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        rgbaFormatES2,
+        #else
+        TextureFormat::RGBA,
+        #endif
+        Vector2i(128));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -483,18 +522,24 @@ void FramebufferGLTest::attachTexture2D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(Context::current().isExtensionSupported<Extensions::GL::OES::packed_depth_stencil>())
     #endif
     {
-        #ifdef MAGNUM_TARGET_GLES2
+        #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         Debug() << "Using" << Extensions::GL::OES::packed_depth_stencil::string();
         #endif
 
         /** @todo Is there any better way to select proper sized/unsized format on ES2? */
         Texture2D depthStencil;
-        #ifndef MAGNUM_TARGET_GLES2
-        depthStencil.setStorage(1, TextureFormat::Depth24Stencil8, Vector2i(128));
+        #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
+        depthStencil.setStorage(1,
+            #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+            TextureFormat::Depth24Stencil8,
+            #else
+            TextureFormat::DepthStencil,
+            #endif
+            Vector2i(128));
         framebuffer.attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
         #else
         depthStencil.setStorage(1, depthStencilFormatES2, Vector2i(128));
@@ -503,7 +548,7 @@ void FramebufferGLTest::attachTexture2D() {
         #endif
     }
 
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     else if(Context::current().isExtensionSupported<Extensions::GL::OES::depth_texture>()) {
         Debug() << "Using" << Extensions::GL::OES::depth_texture::string();
 
@@ -518,6 +563,7 @@ void FramebufferGLTest::attachTexture2D() {
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void FramebufferGLTest::attachTexture3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
@@ -528,11 +574,13 @@ void FramebufferGLTest::attachTexture3D() {
     #endif
 
     Texture3D color;
-    #ifndef MAGNUM_TARGET_GLES2
-    color.setStorage(1, TextureFormat::RGBA8, Vector3i(128));
-    #else
-    color.setStorage(1, rgbaFormatES2, Vector3i(128));
-    #endif
+    color.setStorage(1,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::RGBA8,
+        #else
+        rgbaFormatES2,
+        #endif
+        Vector3i(128));
 
     Framebuffer framebuffer({{}, Vector2i(128)});
     framebuffer.attachTextureLayer(Framebuffer::ColorAttachment(0), color, 0, 0);
@@ -541,6 +589,7 @@ void FramebufferGLTest::attachTexture3D() {
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::attachTexture1DArray() {
@@ -686,25 +735,35 @@ void FramebufferGLTest::attachCubeMapTexture() {
     Framebuffer framebuffer({{}, Vector2i(128)});
 
     CubeMapTexture color;
-    #ifndef MAGNUM_TARGET_GLES2
-    color.setStorage(1, TextureFormat::RGBA8, Vector2i(128));
-    #else
-    color.setStorage(1, rgbaFormatES2, Vector2i(128));
-    #endif
+    color.setStorage(1,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::RGBA8,
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        rgbaFormatES2,
+        #else
+        TextureFormat::RGBA,
+        #endif
+        Vector2i(128));
     framebuffer.attachCubeMapTexture(Framebuffer::ColorAttachment(0), color, CubeMapCoordinate::NegativeZ, 0);
 
     CubeMapTexture depthStencil;
 
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(Context::current().isExtensionSupported<Extensions::GL::OES::packed_depth_stencil>())
     #endif
     {
-        #ifdef MAGNUM_TARGET_GLES2
+        #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         Debug() << "Using" << Extensions::GL::OES::packed_depth_stencil::string();
         #endif
 
-        #ifndef MAGNUM_TARGET_GLES2
-        depthStencil.setStorage(1, TextureFormat::Depth24Stencil8, Vector2i(128));
+        #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
+        depthStencil.setStorage(1,
+            #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+            TextureFormat::Depth24Stencil8,
+            #else
+            TextureFormat::DepthStencil,
+            #endif
+            Vector2i(128));
         framebuffer.attachCubeMapTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, CubeMapCoordinate::NegativeZ, 0);
         #else
         depthStencil.setStorage(1, depthStencilFormatES2, Vector2i(128));
@@ -713,7 +772,7 @@ void FramebufferGLTest::attachCubeMapTexture() {
         #endif
     }
 
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     else if(Context::current().isExtensionSupported<Extensions::GL::OES::depth_texture>()) {
         Debug() << "Using" << Extensions::GL::OES::depth_texture::string();
 
@@ -937,24 +996,37 @@ void FramebufferGLTest::multipleColorOutputs() {
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
     #elif defined(MAGNUM_TARGET_GLES2)
+    #ifdef MAGNUM_TARGET_WEBGL
+    if(!Context::current().isExtensionSupported<Extensions::GL::WEBGL::draw_buffers>())
+        CORRADE_SKIP(Extensions::GL::WEBGL::draw_buffers::string() + std::string(" is not available."));
+    #else
     if(!Context::current().isExtensionSupported<Extensions::GL::EXT::draw_buffers>() &&
        !Context::current().isExtensionSupported<Extensions::GL::NV::draw_buffers>())
         CORRADE_SKIP("No required extension available.");
     #endif
+    #endif
 
     Texture2D color1;
-    #ifndef MAGNUM_TARGET_GLES2
-    color1.setStorage(1, TextureFormat::RGBA8, Vector2i(128));
-    #else
-    color1.setStorage(1, rgbaFormatES2, Vector2i(128));
-    #endif
+    color1.setStorage(1,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::RGBA8,
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        rgbaFormatES2,
+        #else
+        TextureFormat::RGBA,
+        #endif
+        Vector2i(128));
 
     Texture2D color2;
-    #ifndef MAGNUM_TARGET_GLES2
-    color2.setStorage(1, TextureFormat::RGBA8, Vector2i(128));
-    #else
-    color2.setStorage(1, rgbaFormatES2, Vector2i(128));
-    #endif
+    color2.setStorage(1,
+        #ifndef MAGNUM_TARGET_GLES2
+        TextureFormat::RGBA8,
+        #elif !defined(MAGNUM_TARGET_WEBGL)
+        rgbaFormatES2,
+        #else
+        TextureFormat::RGBA,
+        #endif
+        Vector2i(128));
 
     Renderbuffer depth;
     depth.setStorage(RenderbufferFormat::DepthComponent16, Vector2i(128));
@@ -967,6 +1039,7 @@ void FramebufferGLTest::multipleColorOutputs() {
                             {1, Framebuffer::ColorAttachment(0)},
                             {2, Framebuffer::DrawAttachment::None}});
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     #ifdef MAGNUM_TARGET_GLES2
     if(Context::current().isExtensionSupported<Extensions::GL::NV::read_buffer>())
     #endif
@@ -976,6 +1049,7 @@ void FramebufferGLTest::multipleColorOutputs() {
         #endif
         framebuffer.mapForRead(Framebuffer::ColorAttachment(1));
     }
+    #endif
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
@@ -998,16 +1072,22 @@ void FramebufferGLTest::clear() {
     /* Separate depth and stencil renderbuffers are not supported (or at least
        on my NVidia, thus we need to do this juggling with one renderbuffer */
     Renderbuffer depthStencil;
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(Context::current().isExtensionSupported<Extensions::GL::OES::packed_depth_stencil>())
     #endif
     {
-        #ifdef MAGNUM_TARGET_GLES2
+        #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         Debug() << "Using" << Extensions::GL::OES::packed_depth_stencil::string();
         #endif
-        depthStencil.setStorage(RenderbufferFormat::Depth24Stencil8, Vector2i(128));
+        depthStencil.setStorage(
+            #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+            RenderbufferFormat::Depth24Stencil8,
+            #else
+            RenderbufferFormat::DepthStencil,
+            #endif
+            Vector2i(128));
     }
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     else depthStencil.setStorage(RenderbufferFormat::DepthComponent16, Vector2i(128));
     #endif
 
@@ -1015,7 +1095,7 @@ void FramebufferGLTest::clear() {
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), color)
                .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, depthStencil);
 
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(Context::current().isExtensionSupported<Extensions::GL::OES::packed_depth_stencil>())
     #endif
     {
@@ -1234,6 +1314,7 @@ void FramebufferGLTest::clearDepthStencil() {
 }
 #endif
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void FramebufferGLTest::invalidate() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
@@ -1260,6 +1341,7 @@ void FramebufferGLTest::invalidate() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void FramebufferGLTest::invalidateSub() {
@@ -1310,16 +1392,22 @@ void FramebufferGLTest::read() {
     /* Separate depth and stencil renderbuffers are not supported (or at least
        on my NVidia, thus we need to do this juggling with one renderbuffer */
     Renderbuffer depthStencil;
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(Context::current().isExtensionSupported<Extensions::GL::OES::packed_depth_stencil>())
     #endif
     {
-        #ifdef MAGNUM_TARGET_GLES2
+        #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         Debug() << "Using" << Extensions::GL::OES::packed_depth_stencil::string();
         #endif
-        depthStencil.setStorage(RenderbufferFormat::Depth24Stencil8, Vector2i(128));
+        depthStencil.setStorage(
+            #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+            RenderbufferFormat::Depth24Stencil8,
+            #else
+            RenderbufferFormat::DepthStencil,
+            #endif
+            Vector2i(128));
     }
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     else depthStencil.setStorage(RenderbufferFormat::DepthComponent16, Vector2i(128));
     #endif
 
@@ -1327,7 +1415,7 @@ void FramebufferGLTest::read() {
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), color)
                .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, depthStencil);
 
-    #ifdef MAGNUM_TARGET_GLES2
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(Context::current().isExtensionSupported<Extensions::GL::OES::packed_depth_stencil>())
     #endif
     {
@@ -1351,6 +1439,7 @@ void FramebufferGLTest::read() {
     CORRADE_COMPARE(colorImage.data().size(), (DataOffset + 8*16)*sizeof(Color4ub));
     CORRADE_COMPARE(colorImage.data<Color4ub>()[DataOffset], Color4ub(128, 64, 32, 17));
 
+    #ifndef MAGNUM_TARGET_WEBGL
     #ifdef MAGNUM_TARGET_GLES
     if(Context::current().isExtensionSupported<Extensions::GL::NV::read_depth>())
     #endif
@@ -1394,6 +1483,7 @@ void FramebufferGLTest::read() {
         CORRADE_COMPARE(depthStencilImage.data<UnsignedInt>()[0] >> 8, 12378300);
         CORRADE_COMPARE(depthStencilImage.data<UnsignedByte>()[0], 67);
     }
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -1481,8 +1571,10 @@ void FramebufferGLTest::copyImageTexture2D() {
     storage.setStorage(1,
         #ifndef MAGNUM_TARGET_GLES2
         TextureFormat::RGBA8,
-        #else
+        #elif !defined(MAGNUM_TARGET_WEBGL)
         rgbaFormatES2,
+        #else
+        TextureFormat::RGBA,
         #endif
         Vector2i{4})
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
@@ -1494,8 +1586,10 @@ void FramebufferGLTest::copyImageTexture2D() {
     fb.copyImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, 0,
         #ifndef MAGNUM_TARGET_GLES2
         TextureFormat::RGBA8
-        #else
+        #elif !defined(MAGNUM_TARGET_WEBGL)
         rgbaFormatES2
+        #else
+        TextureFormat::RGBA
         #endif
         );
 
@@ -1575,8 +1669,10 @@ void FramebufferGLTest::copyImageCubeMapTexture() {
     storage.setStorage(1,
         #ifndef MAGNUM_TARGET_GLES2
         TextureFormat::RGBA8,
-        #else
+        #elif !defined(MAGNUM_TARGET_WEBGL)
         rgbaFormatES2,
+        #else
+        TextureFormat::RGBA,
         #endif
         Vector2i{4})
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
@@ -1588,8 +1684,10 @@ void FramebufferGLTest::copyImageCubeMapTexture() {
     fb.copyImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, CubeMapCoordinate::PositiveX, 0,
         #ifndef MAGNUM_TARGET_GLES2
         TextureFormat::RGBA8
-        #else
+        #elif !defined(MAGNUM_TARGET_WEBGL)
         rgbaFormatES2
+        #else
+        TextureFormat::RGBA
         #endif
         );
 
@@ -1641,8 +1739,10 @@ void FramebufferGLTest::copySubImageTexture2D() {
     storage.setStorage(1,
         #ifndef MAGNUM_TARGET_GLES2
         TextureFormat::RGBA8,
-        #else
+        #elif !defined(MAGNUM_TARGET_WEBGL)
         rgbaFormatES2,
+        #else
+        TextureFormat::RGBA,
         #endif
         Vector2i{4})
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
@@ -1654,8 +1754,10 @@ void FramebufferGLTest::copySubImageTexture2D() {
     texture.setStorage(1,
         #ifndef MAGNUM_TARGET_GLES2
         TextureFormat::RGBA8,
-        #else
+        #elif !defined(MAGNUM_TARGET_WEBGL)
         rgbaFormatES2,
+        #else
+        TextureFormat::RGBA,
         #endif
         Vector2i{4})
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, ZeroStorage});
@@ -1839,8 +1941,10 @@ void FramebufferGLTest::copySubImageCubeMapTexture() {
     storage.setStorage(1,
         #ifndef MAGNUM_TARGET_GLES2
         TextureFormat::RGBA8,
-        #else
+        #elif !defined(MAGNUM_TARGET_WEBGL)
         rgbaFormatES2,
+        #else
+        TextureFormat::RGBA,
         #endif
         Vector2i{4})
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
@@ -1852,8 +1956,10 @@ void FramebufferGLTest::copySubImageCubeMapTexture() {
     texture.setStorage(1,
         #ifndef MAGNUM_TARGET_GLES2
         TextureFormat::RGBA8,
-        #else
+        #elif !defined(MAGNUM_TARGET_WEBGL)
         rgbaFormatES2,
+        #else
+        TextureFormat::RGBA,
         #endif
         Vector2i{4})
         .setSubImage(CubeMapCoordinate::NegativeY, 0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, ZeroStorage});
@@ -1935,6 +2041,7 @@ void FramebufferGLTest::copySubImageCubeMapTextureArray() {
 }
 #endif
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void FramebufferGLTest::blit() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
@@ -1983,6 +2090,7 @@ void FramebufferGLTest::blit() {
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(imageAfter.data<Color4ub>()[0], Color4ub(128, 64, 32, 17));
 }
+#endif
 
 }}
 

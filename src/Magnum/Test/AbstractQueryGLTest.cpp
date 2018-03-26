@@ -37,7 +37,9 @@ struct AbstractQueryGLTest: OpenGLTester {
     void constructCopy();
     void constructMove();
 
+    #ifndef MAGNUM_TARGET_WEBGL
     void label();
+    #endif
 };
 
 AbstractQueryGLTest::AbstractQueryGLTest() {
@@ -45,7 +47,10 @@ AbstractQueryGLTest::AbstractQueryGLTest() {
               &AbstractQueryGLTest::constructCopy,
               &AbstractQueryGLTest::constructMove,
 
-              &AbstractQueryGLTest::label});
+              #ifndef MAGNUM_TARGET_WEBGL
+              &AbstractQueryGLTest::label
+              #endif
+              });
 }
 
 void AbstractQueryGLTest::construct() {
@@ -108,6 +113,7 @@ void AbstractQueryGLTest::constructMove() {
     CORRADE_COMPARE(c.id(), id);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void AbstractQueryGLTest::label() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::GL::EXT::occlusion_query_boolean>())
@@ -142,6 +148,7 @@ void AbstractQueryGLTest::label() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+#endif
 
 }}
 

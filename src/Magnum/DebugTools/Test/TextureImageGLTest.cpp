@@ -31,11 +31,11 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Texture.h"
 #include "Magnum/TextureFormat.h"
-#include "Magnum/DebugTools/BufferData.h"
 #include "Magnum/DebugTools/TextureImage.h"
 #include "Magnum/Math/Range.h"
 
 #ifndef MAGNUM_TARGET_GLES2
+#include "Magnum/DebugTools/BufferData.h"
 #include "Magnum/BufferImage.h"
 #endif
 
@@ -87,7 +87,13 @@ namespace {
 
 void TextureImageGLTest::subImage2D() {
     Texture2D texture;
-    texture.setImage(0, TextureFormat::RGBA8, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, Data2D});
+    texture.setImage(0,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        TextureFormat::RGBA8,
+        #else
+        TextureFormat::RGBA,
+        #endif
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, Data2D});
 
     Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {PixelFormat::RGBA, PixelType::UnsignedByte});
     MAGNUM_VERIFY_NO_ERROR();
@@ -113,13 +119,19 @@ void TextureImageGLTest::subImage2DBuffer() {
 void TextureImageGLTest::subImageCube() {
     ImageView2D view{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{2}, Data2D};
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    constexpr TextureFormat format = TextureFormat::RGBA8;
+    #else
+    constexpr TextureFormat format = TextureFormat::RGBA;
+    #endif
+
     CubeMapTexture texture;
-    texture.setImage(CubeMapCoordinate::PositiveX, 0, TextureFormat::RGBA8, view)
-           .setImage(CubeMapCoordinate::NegativeX, 0, TextureFormat::RGBA8, view)
-           .setImage(CubeMapCoordinate::PositiveY, 0, TextureFormat::RGBA8, view)
-           .setImage(CubeMapCoordinate::NegativeY, 0, TextureFormat::RGBA8, view)
-           .setImage(CubeMapCoordinate::PositiveZ, 0, TextureFormat::RGBA8, view)
-           .setImage(CubeMapCoordinate::NegativeZ, 0, TextureFormat::RGBA8, view);
+    texture.setImage(CubeMapCoordinate::PositiveX, 0, format, view)
+           .setImage(CubeMapCoordinate::NegativeX, 0, format, view)
+           .setImage(CubeMapCoordinate::PositiveY, 0, format, view)
+           .setImage(CubeMapCoordinate::NegativeY, 0, format, view)
+           .setImage(CubeMapCoordinate::PositiveZ, 0, format, view)
+           .setImage(CubeMapCoordinate::NegativeZ, 0, format, view);
 
     Image2D image = textureSubImage(texture, CubeMapCoordinate::PositiveX, 0, {{}, Vector2i{2}}, {PixelFormat::RGBA, PixelType::UnsignedByte});
     MAGNUM_VERIFY_NO_ERROR();

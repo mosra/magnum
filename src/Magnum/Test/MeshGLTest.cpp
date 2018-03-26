@@ -43,7 +43,7 @@
 
 namespace Magnum { namespace Test {
 
-/* Tests also MeshView class. */
+/* Tests also the MeshView class. */
 
 struct MeshGLTest: OpenGLTester {
     explicit MeshGLTest();
@@ -53,7 +53,9 @@ struct MeshGLTest: OpenGLTester {
     void constructMove();
     void wrap();
 
+    #ifndef MAGNUM_TARGET_WEBGL
     void label();
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     void addVertexBufferUnsignedInt();
@@ -88,8 +90,10 @@ struct MeshGLTest: OpenGLTester {
     void addVertexBufferIntWithUnsignedShort();
     void addVertexBufferIntWithShort();
     #endif
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     /* Other Float types omitted (covered by addVertexBufferNormalized()) */
     void addVertexBufferFloatWithHalfFloat();
+    #endif
     #ifndef MAGNUM_TARGET_GLES
     void addVertexBufferFloatWithDouble();
     void addVertexBufferVector3WithUnsignedInt10f11f11fRev();
@@ -148,7 +152,10 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::constructMove,
               &MeshGLTest::wrap,
 
-              &MeshGLTest::label});
+              #ifndef MAGNUM_TARGET_WEBGL
+              &MeshGLTest::label
+              #endif
+              });
 
     /* First instance is always using Attribute, second DynamicAttribute */
     addInstancedTests({
@@ -185,7 +192,9 @@ MeshGLTest::MeshGLTest() {
         &MeshGLTest::addVertexBufferIntWithUnsignedShort,
         &MeshGLTest::addVertexBufferIntWithShort,
         #endif
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         &MeshGLTest::addVertexBufferFloatWithHalfFloat,
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         &MeshGLTest::addVertexBufferFloatWithDouble,
         &MeshGLTest::addVertexBufferVector3WithUnsignedInt10f11f11fRev,
@@ -215,8 +224,10 @@ MeshGLTest::MeshGLTest() {
               #ifndef MAGNUM_TARGET_GLES
               &MeshGLTest::setBaseVertex,
               #endif
+              #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
               &MeshGLTest::setInstanceCount,
               &MeshGLTest::setInstanceCountIndexed,
+              #endif
               #ifndef MAGNUM_TARGET_GLES
               &MeshGLTest::setInstanceCountBaseInstance,
               &MeshGLTest::setInstanceCountBaseInstanceIndexed,
@@ -224,7 +235,9 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::setInstanceCountBaseVertexBaseInstance,
               #endif
 
+              #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
               &MeshGLTest::addVertexBufferInstancedFloat,
+              #endif
               #ifndef MAGNUM_TARGET_GLES2
               &MeshGLTest::addVertexBufferInstancedInteger,
               #endif
@@ -334,6 +347,7 @@ void MeshGLTest::wrap() {
     #endif
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void MeshGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
     if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
@@ -350,6 +364,7 @@ void MeshGLTest::label() {
 
     CORRADE_COMPARE(mesh.label(), "MyMesh");
 }
+#endif
 
 namespace {
     struct FloatShader: AbstractShaderProgram {
@@ -849,7 +864,12 @@ void MeshGLTest::addVertexBufferMatrixNxN() {
 
     const auto value = Checker(FloatShader("mat3",
         "vec4(valueInterpolated[0][0], valueInterpolated[1][1], valueInterpolated[2][2], 0.0)"),
-        RenderbufferFormat::RGBA8, mesh).get<Color3ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        mesh).get<Color3ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, Color3ub(96, 24, 156));
@@ -1142,6 +1162,7 @@ void MeshGLTest::addVertexBufferIntWithShort() {
 }
 #endif
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void MeshGLTest::addVertexBufferFloatWithHalfFloat() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::half_float_vertex>())
@@ -1179,6 +1200,7 @@ void MeshGLTest::addVertexBufferFloatWithHalfFloat() {
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 186);
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void MeshGLTest::addVertexBufferFloatWithDouble() {
@@ -1827,10 +1849,15 @@ void MeshGLTest::setInstanceCount() {
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
         CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
     #elif defined(MAGNUM_TARGET_GLES2)
+    #ifndef MAGNUM_TARGET_WEBGL
     if(!Context::current().isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() &&
        !Context::current().isExtensionSupported<Extensions::GL::EXT::draw_instanced>() &&
        !Context::current().isExtensionSupported<Extensions::GL::NV::draw_instanced>())
         CORRADE_SKIP("Required extension is not available.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>())
+        CORRADE_SKIP(Extensions::GL::ANGLE::instanced_arrays::string() + std::string(" is not available."));
+    #endif
     #endif
 
     typedef Attribute<0, Float> Attribute;
@@ -1868,10 +1895,15 @@ void MeshGLTest::setInstanceCountIndexed() {
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
         CORRADE_SKIP(Extensions::GL::ARB::draw_instanced::string() + std::string(" is not available."));
     #elif defined(MAGNUM_TARGET_GLES2)
+    #ifndef MAGNUM_TARGET_WEBGL
     if(!Context::current().isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() &&
        !Context::current().isExtensionSupported<Extensions::GL::EXT::draw_instanced>() &&
        !Context::current().isExtensionSupported<Extensions::GL::NV::draw_instanced>())
         CORRADE_SKIP("Required extension is not available.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>())
+        CORRADE_SKIP(Extensions::GL::ANGLE::instanced_arrays::string() + std::string(" is not available."));
+    #endif
     #endif
 
     Buffer vertices;
@@ -2041,6 +2073,7 @@ void MeshGLTest::setInstanceCountBaseVertexBaseInstance() {
 }
 #endif
 
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void MeshGLTest::addVertexBufferInstancedFloat() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::draw_instanced>())
@@ -2048,6 +2081,7 @@ void MeshGLTest::addVertexBufferInstancedFloat() {
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::instanced_arrays>())
         CORRADE_SKIP(Extensions::GL::ARB::instanced_arrays::string() + std::string(" is not available."));
     #elif defined(MAGNUM_TARGET_GLES2)
+    #ifndef MAGNUM_TARGET_WEBGL
     if(!Context::current().isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>() &&
        !Context::current().isExtensionSupported<Extensions::GL::EXT::instanced_arrays>() &&
        !Context::current().isExtensionSupported<Extensions::GL::NV::instanced_arrays>())
@@ -2056,6 +2090,10 @@ void MeshGLTest::addVertexBufferInstancedFloat() {
        !Context::current().isExtensionSupported<Extensions::GL::EXT::draw_instanced>() &&
        !Context::current().isExtensionSupported<Extensions::GL::NV::draw_instanced>())
         CORRADE_SKIP("Required drawing extension is not available.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>())
+        CORRADE_SKIP(Extensions::GL::ANGLE::instanced_arrays::string() + std::string(" is not available."));
+    #endif
     #endif
 
     typedef Attribute<0, Float> Attribute;
@@ -2087,6 +2125,7 @@ void MeshGLTest::addVertexBufferInstancedFloat() {
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_COMPARE(value, 96);
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::addVertexBufferInstancedInteger() {
@@ -2211,7 +2250,7 @@ template<class T> T MultiChecker::get(PixelFormat format, PixelType type) {
 #endif
 
 void MeshGLTest::multiDraw() {
-    #ifdef MAGNUM_TARGET_GLES
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     if(!Context::current().isExtensionSupported<Extensions::GL::EXT::multi_draw_arrays>())
         Debug() << Extensions::GL::EXT::multi_draw_arrays::string() << "not supported, using fallback implementation";
     #endif
@@ -2235,7 +2274,7 @@ void MeshGLTest::multiDraw() {
 }
 
 void MeshGLTest::multiDrawIndexed() {
-    #ifdef MAGNUM_TARGET_GLES
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     if(!Context::current().isExtensionSupported<Extensions::GL::EXT::multi_draw_arrays>())
         Debug() << Extensions::GL::EXT::multi_draw_arrays::string() << "not supported, using fallback implementation";
     #endif

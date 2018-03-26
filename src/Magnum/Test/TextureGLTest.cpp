@@ -50,19 +50,25 @@ struct TextureGLTest: OpenGLTester {
     void construct1D();
     #endif
     void construct2D();
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void construct3D();
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     void wrap1D();
     #endif
     void wrap2D();
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void wrap3D();
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     void bind1D();
     #endif
     void bind2D();
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void bind3D();
+    #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
@@ -76,13 +82,17 @@ struct TextureGLTest: OpenGLTester {
     void sampling1D();
     #endif
     void sampling2D();
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void sampling3D();
+    #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
     #ifndef MAGNUM_TARGET_GLES
     void samplingSRGBDecode1D();
     #endif
     void samplingSRGBDecode2D();
     void samplingSRGBDecode3D();
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
@@ -90,7 +100,7 @@ struct TextureGLTest: OpenGLTester {
     #endif
     void samplingSwizzle2D();
     void samplingSwizzle3D();
-    #else
+    #elif !defined(MAGNUM_TARGET_WEBGL)
     void samplingMaxLevel2D();
     void samplingMaxLevel3D();
     void samplingCompare2D();
@@ -110,7 +120,7 @@ struct TextureGLTest: OpenGLTester {
     void samplingDepthStencilMode2D();
     void samplingDepthStencilMode3D();
     #endif
-    #ifdef MAGNUM_TARGET_GLES
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     void samplingBorder2D();
     void samplingBorder3D();
     #endif
@@ -119,7 +129,9 @@ struct TextureGLTest: OpenGLTester {
     void storage1D();
     #endif
     void storage2D();
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void storage3D();
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     void image1D();
@@ -163,6 +175,7 @@ struct TextureGLTest: OpenGLTester {
     void compressedSubImage2DQueryBuffer();
     #endif
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void image3D();
     #ifndef MAGNUM_TARGET_GLES2
     void image3DBuffer();
@@ -188,24 +201,31 @@ struct TextureGLTest: OpenGLTester {
     void compressedSubImage3DQuery();
     void compressedSubImage3DQueryBuffer();
     #endif
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     void generateMipmap1D();
     #endif
     void generateMipmap2D();
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void generateMipmap3D();
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     void invalidateImage1D();
     #endif
     void invalidateImage2D();
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void invalidateImage3D();
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     void invalidateSubImage1D();
     #endif
     void invalidateSubImage2D();
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void invalidateSubImage3D();
+    #endif
 
     void srgbStorage();
     void srgbAlphaStorage();
@@ -403,19 +423,25 @@ TextureGLTest::TextureGLTest() {
         &TextureGLTest::construct1D,
         #endif
         &TextureGLTest::construct2D,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         &TextureGLTest::construct3D,
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::wrap1D,
         #endif
         &TextureGLTest::wrap2D,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         &TextureGLTest::wrap3D,
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::bind1D,
         #endif
         &TextureGLTest::bind2D,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         &TextureGLTest::bind3D,
+        #endif
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         #ifndef MAGNUM_TARGET_GLES
@@ -429,13 +455,17 @@ TextureGLTest::TextureGLTest() {
         &TextureGLTest::sampling1D,
         #endif
         &TextureGLTest::sampling2D,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         &TextureGLTest::sampling3D,
+        #endif
 
+        #ifndef MAGNUM_TARGET_WEBGL
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::samplingSRGBDecode1D,
         #endif
         &TextureGLTest::samplingSRGBDecode2D,
         &TextureGLTest::samplingSRGBDecode3D,
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_GLES
@@ -443,7 +473,7 @@ TextureGLTest::TextureGLTest() {
         #endif
         &TextureGLTest::samplingSwizzle2D,
         &TextureGLTest::samplingSwizzle3D,
-        #else
+        #elif !defined(MAGNUM_TARGET_WEBGL)
         &TextureGLTest::samplingMaxLevel2D,
         &TextureGLTest::samplingMaxLevel3D,
         &TextureGLTest::samplingCompare2D,
@@ -463,7 +493,7 @@ TextureGLTest::TextureGLTest() {
         &TextureGLTest::samplingDepthStencilMode2D,
         &TextureGLTest::samplingDepthStencilMode3D,
         #endif
-        #ifdef MAGNUM_TARGET_GLES
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
         &TextureGLTest::samplingBorder2D,
         &TextureGLTest::samplingBorder3D,
         #endif
@@ -472,7 +502,10 @@ TextureGLTest::TextureGLTest() {
         &TextureGLTest::storage1D,
         #endif
         &TextureGLTest::storage2D,
-        &TextureGLTest::storage3D});
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        &TextureGLTest::storage3D
+        #endif
+        });
 
     #ifndef MAGNUM_TARGET_GLES
     addInstancedTests({
@@ -522,6 +555,7 @@ TextureGLTest::TextureGLTest() {
         #endif
         }, CompressedPixelStorage2DDataCount);
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     addInstancedTests({
         &TextureGLTest::image3D,
         #ifndef MAGNUM_TARGET_GLES2
@@ -551,25 +585,32 @@ TextureGLTest::TextureGLTest() {
         &TextureGLTest::compressedSubImage3DQueryBuffer
         #endif
         }, CompressedPixelStorage3DDataCount);
+    #endif
 
     addTests({
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::generateMipmap1D,
         #endif
         &TextureGLTest::generateMipmap2D,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         &TextureGLTest::generateMipmap3D,
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::invalidateImage1D,
         #endif
         &TextureGLTest::invalidateImage2D,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         &TextureGLTest::invalidateImage3D,
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureGLTest::invalidateSubImage1D,
         #endif
         &TextureGLTest::invalidateSubImage2D,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         &TextureGLTest::invalidateSubImage3D,
+        #endif
 
         &TextureGLTest::srgbStorage,
         &TextureGLTest::srgbAlphaStorage});
@@ -599,6 +640,7 @@ void TextureGLTest::construct2D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void TextureGLTest::construct3D() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_3D>())
@@ -614,6 +656,7 @@ void TextureGLTest::construct3D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::wrap1D() {
@@ -647,6 +690,7 @@ void TextureGLTest::wrap2D() {
     glDeleteTextures(1, &id);
 }
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void TextureGLTest::wrap3D() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_3D>())
@@ -666,6 +710,7 @@ void TextureGLTest::wrap3D() {
     Texture3D::wrap(id);
     glDeleteTextures(1, &id);
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::bind1D() {
@@ -707,6 +752,7 @@ void TextureGLTest::bind2D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void TextureGLTest::bind3D() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_3D>())
@@ -730,6 +776,7 @@ void TextureGLTest::bind3D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+#endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #ifndef MAGNUM_TARGET_GLES
@@ -905,12 +952,16 @@ void TextureGLTest::sampling2D() {
            .setWrapping(Sampler::Wrapping::ClampToEdge)
            #endif
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
+           #ifndef MAGNUM_TARGET_GLES2
            .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
-           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
+           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual)
+            #endif
+           ;
 
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void TextureGLTest::samplingSRGBDecode2D() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::GL::EXT::sRGB>())
@@ -924,6 +975,7 @@ void TextureGLTest::samplingSRGBDecode2D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void TextureGLTest::samplingSwizzle2D() {
@@ -937,7 +989,7 @@ void TextureGLTest::samplingSwizzle2D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
-#else
+#elif !defined(MAGNUM_TARGET_WEBGL)
 void TextureGLTest::samplingMaxLevel2D() {
     if(!Context::current().isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
         CORRADE_SKIP(Extensions::GL::APPLE::texture_max_level::string() + std::string(" is not supported."));
@@ -998,7 +1050,7 @@ void TextureGLTest::samplingDepthStencilMode2D() {
 }
 #endif
 
-#ifdef MAGNUM_TARGET_GLES
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
 void TextureGLTest::samplingBorder2D() {
     if(!Context::current().isExtensionSupported<Extensions::GL::NV::texture_border_clamp>() &&
        !Context::current().isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>())
@@ -1012,6 +1064,7 @@ void TextureGLTest::samplingBorder2D() {
 }
 #endif
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void TextureGLTest::sampling3D() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_3D>())
@@ -1139,6 +1192,7 @@ void TextureGLTest::samplingBorder3D() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 #endif
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::storage1D() {
@@ -1160,7 +1214,13 @@ void TextureGLTest::storage1D() {
 
 void TextureGLTest::storage2D() {
     Texture2D texture;
-    texture.setStorage(5, TextureFormat::RGBA8, Vector2i(32));
+    texture.setStorage(5,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        TextureFormat::RGBA8,
+        #else
+        TextureFormat::RGBA,
+        #endif
+        Vector2i(32));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -1181,6 +1241,7 @@ void TextureGLTest::storage2D() {
     #endif
 }
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void TextureGLTest::storage3D() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_3D>())
@@ -1208,6 +1269,7 @@ void TextureGLTest::storage3D() {
     MAGNUM_VERIFY_NO_ERROR();
     #endif
 }
+#endif
 
 namespace {
 
@@ -1392,12 +1454,23 @@ void TextureGLTest::image2D() {
     setTestCaseDescription(PixelStorage2DData[testCaseInstanceId()].name);
 
     #ifdef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
     if(PixelStorage2DData[testCaseInstanceId()].storage != PixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::EXT::unpack_subimage>())
         CORRADE_SKIP(Extensions::GL::EXT::unpack_subimage::string() + std::string(" is not supported."));
+    #else
+    if(PixelStorage2DData[testCaseInstanceId()].storage != PixelStorage{})
+        CORRADE_SKIP("Image unpack is not supported in WebGL 1.");
+    #endif
     #endif
 
     Texture2D texture;
-    texture.setImage(0, TextureFormat::RGBA8, ImageView2D{
+    texture.setImage(0,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        TextureFormat::RGBA8,
+        #else
+        TextureFormat::RGBA,
+        #endif
+        ImageView2D{
         PixelStorage2DData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
         PixelStorage2DData[testCaseInstanceId()].dataSparse});
@@ -1465,12 +1538,22 @@ void TextureGLTest::subImage2D() {
     setTestCaseDescription(PixelStorage2DData[testCaseInstanceId()].name);
 
     #ifdef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
     if(PixelStorage2DData[testCaseInstanceId()].storage != PixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::EXT::unpack_subimage>())
         CORRADE_SKIP(Extensions::GL::EXT::unpack_subimage::string() + std::string(" is not supported."));
+    #else
+    if(PixelStorage2DData[testCaseInstanceId()].storage != PixelStorage{})
+        CORRADE_SKIP("Image unpack is not supported in WebGL 1.");
+    #endif
     #endif
 
     Texture2D texture;
-    texture.setImage(0, TextureFormat::RGBA8,
+    texture.setImage(0,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        TextureFormat::RGBA8,
+        #else
+        TextureFormat::RGBA,
+        #endif
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero2D));
     texture.setSubImage(0, Vector2i(1), ImageView2D{PixelStorage2DData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
@@ -1813,6 +1896,7 @@ void TextureGLTest::compressedSubImage2DQueryBuffer() {
 }
 #endif
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void TextureGLTest::image3D() {
     setTestCaseDescription(PixelStorage3DData[testCaseInstanceId()].name);
 
@@ -2279,6 +2363,7 @@ void TextureGLTest::compressedSubImage3DQueryBuffer() {
     }
 }
 #endif
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::generateMipmap1D() {
@@ -2314,7 +2399,12 @@ void TextureGLTest::generateMipmap2D() {
     #endif
 
     Texture2D texture;
-    texture.setImage(0, TextureFormat::RGBA8,
+    texture.setImage(0,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        TextureFormat::RGBA8,
+        #else
+        TextureFormat::RGBA,
+        #endif
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(32)));
 
     /** @todo How to test this on ES? */
@@ -2340,6 +2430,7 @@ void TextureGLTest::generateMipmap2D() {
     #endif
 }
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void TextureGLTest::generateMipmap3D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
@@ -2375,6 +2466,7 @@ void TextureGLTest::generateMipmap3D() {
     MAGNUM_VERIFY_NO_ERROR();
     #endif
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::invalidateImage1D() {
@@ -2388,12 +2480,19 @@ void TextureGLTest::invalidateImage1D() {
 
 void TextureGLTest::invalidateImage2D() {
     Texture2D texture;
-    texture.setStorage(2, TextureFormat::RGBA8, Vector2i(32));
+    texture.setStorage(2,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        TextureFormat::RGBA8,
+        #else
+        TextureFormat::RGBA,
+        #endif
+        Vector2i(32));
     texture.invalidateImage(1);
 
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void TextureGLTest::invalidateImage3D() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_3D>())
@@ -2406,6 +2505,7 @@ void TextureGLTest::invalidateImage3D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::invalidateSubImage1D() {
@@ -2419,12 +2519,19 @@ void TextureGLTest::invalidateSubImage1D() {
 
 void TextureGLTest::invalidateSubImage2D() {
     Texture2D texture;
-    texture.setStorage(2, TextureFormat::RGBA8, Vector2i(32));
+    texture.setStorage(2,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        TextureFormat::RGBA8,
+        #else
+        TextureFormat::RGBA,
+        #endif
+        Vector2i(32));
     texture.invalidateSubImage(1, Vector2i(2), Vector2i(8));
 
     MAGNUM_VERIFY_NO_ERROR();
 }
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void TextureGLTest::invalidateSubImage3D() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_3D>())
@@ -2437,6 +2544,7 @@ void TextureGLTest::invalidateSubImage3D() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+#endif
 
 void TextureGLTest::srgbStorage() {
     #ifdef MAGNUM_TARGET_GLES2
@@ -2461,7 +2569,13 @@ void TextureGLTest::srgbStorage() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    texture.setStorage(1, TextureFormat::SRGB8, Vector2i{32});
+    texture.setStorage(1,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        TextureFormat::SRGB8,
+        #else
+        TextureFormat::SRGB,
+        #endif
+        Vector2i{32});
 
     MAGNUM_VERIFY_NO_ERROR();
 }
@@ -2489,7 +2603,13 @@ void TextureGLTest::srgbAlphaStorage() {
 
     MAGNUM_VERIFY_NO_ERROR();
 
-    texture.setStorage(1, TextureFormat::SRGB8Alpha8, Vector2i{32});
+    texture.setStorage(1,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        TextureFormat::SRGB8Alpha8,
+        #else
+        TextureFormat::SRGBAlpha,
+        #endif
+        Vector2i{32});
 
     MAGNUM_VERIFY_NO_ERROR();
 }

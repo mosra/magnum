@@ -55,10 +55,12 @@ struct CubeMapTextureGLTest: OpenGLTester {
     #endif
 
     void sampling();
+    #ifndef MAGNUM_TARGET_WEBGL
     void samplingSRGBDecode();
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     void samplingSwizzle();
-    #else
+    #elif !defined(MAGNUM_TARGET_WEBGL)
     void samplingMaxLevel();
     void samplingCompare();
     #endif
@@ -68,7 +70,7 @@ struct CubeMapTextureGLTest: OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES2
     void samplingDepthStencilMode();
     #endif
-    #ifdef MAGNUM_TARGET_GLES
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     void samplingBorder();
     #endif
 
@@ -91,7 +93,9 @@ struct CubeMapTextureGLTest: OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES2
     void compressedImageBuffer();
     #endif
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     void immutableCompressedImage();
+    #endif
     void compressedSubImage();
     #ifndef MAGNUM_TARGET_GLES2
     void compressedSubImageBuffer();
@@ -121,7 +125,13 @@ namespace {
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
         0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
 
-    enum: std::size_t { PixelStorageDataCount = 2 };
+    enum: std::size_t { PixelStorageDataCount =
+        #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
+        2
+        #else
+        1
+        #endif
+    };
 
     const struct {
         const char* name;
@@ -288,10 +298,12 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               #endif
 
               &CubeMapTextureGLTest::sampling,
+              #ifndef MAGNUM_TARGET_WEBGL
               &CubeMapTextureGLTest::samplingSRGBDecode,
+              #endif
               #ifndef MAGNUM_TARGET_GLES2
               &CubeMapTextureGLTest::samplingSwizzle,
-              #else
+              #elif !defined(MAGNUM_TARGET_WEBGL)
               &CubeMapTextureGLTest::samplingMaxLevel,
               &CubeMapTextureGLTest::samplingCompare,
               #endif
@@ -301,7 +313,7 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               #ifndef MAGNUM_TARGET_GLES2
               &CubeMapTextureGLTest::samplingDepthStencilMode,
               #endif
-              #ifdef MAGNUM_TARGET_GLES
+              #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
               &CubeMapTextureGLTest::samplingBorder,
               #endif
 
@@ -331,7 +343,9 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
         #ifndef MAGNUM_TARGET_GLES2
         &CubeMapTextureGLTest::compressedImageBuffer,
         #endif
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         &CubeMapTextureGLTest::immutableCompressedImage,
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         &CubeMapTextureGLTest::compressedFullImageQuery,
         &CubeMapTextureGLTest::compressedFullImageQueryBuffer,
@@ -468,6 +482,7 @@ void CubeMapTextureGLTest::sampling() {
    MAGNUM_VERIFY_NO_ERROR();
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void CubeMapTextureGLTest::samplingSRGBDecode() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::GL::EXT::sRGB>())
@@ -481,6 +496,7 @@ void CubeMapTextureGLTest::samplingSRGBDecode() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void CubeMapTextureGLTest::samplingSwizzle() {
@@ -494,7 +510,7 @@ void CubeMapTextureGLTest::samplingSwizzle() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
-#else
+#elif !defined(MAGNUM_TARGET_WEBGL)
 void CubeMapTextureGLTest::samplingMaxLevel() {
     if(!Context::current().isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
         CORRADE_SKIP(Extensions::GL::APPLE::texture_max_level::string() + std::string(" is not supported."));
@@ -556,7 +572,7 @@ void CubeMapTextureGLTest::samplingDepthStencilMode() {
 }
 #endif
 
-#ifdef MAGNUM_TARGET_GLES
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
 void CubeMapTextureGLTest::samplingBorder() {
     if(!Context::current().isExtensionSupported<Extensions::GL::NV::texture_border_clamp>() &&
        !Context::current().isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>())
@@ -572,7 +588,13 @@ void CubeMapTextureGLTest::samplingBorder() {
 
 void CubeMapTextureGLTest::storage() {
     CubeMapTexture texture;
-    texture.setStorage(5, TextureFormat::RGBA8, Vector2i(32));
+    texture.setStorage(5,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        TextureFormat::RGBA8,
+        #else
+        TextureFormat::RGBA,
+        #endif
+        Vector2i(32));
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -598,12 +620,22 @@ void CubeMapTextureGLTest::image() {
     setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
 
     #ifdef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
     if(PixelStorageData[testCaseInstanceId()].storage != PixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::EXT::unpack_subimage>())
         CORRADE_SKIP(Extensions::GL::EXT::unpack_subimage::string() + std::string(" is not supported."));
+    #else
+    if(PixelStorageData[testCaseInstanceId()].storage != PixelStorage{})
+        CORRADE_SKIP("Image unpack is not supported in WebGL 1.");
+    #endif
     #endif
 
     CubeMapTexture texture;
-    texture.setImage(CubeMapCoordinate::PositiveX, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::PositiveX, 0,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        TextureFormat::RGBA8,
+        #else
+        TextureFormat::RGBA,
+        #endif
         ImageView2D{PixelStorageData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
         PixelStorageData[testCaseInstanceId()].dataSparse});
@@ -671,22 +703,33 @@ void CubeMapTextureGLTest::subImage() {
     setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
 
     #ifdef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
     if(PixelStorageData[testCaseInstanceId()].storage != PixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::EXT::unpack_subimage>())
         CORRADE_SKIP(Extensions::GL::EXT::unpack_subimage::string() + std::string(" is not supported."));
+    #else
+    if(PixelStorageData[testCaseInstanceId()].storage != PixelStorage{})
+        CORRADE_SKIP("Image unpack is not supported in WebGL 1.");
+    #endif
+    #endif
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    constexpr TextureFormat format = TextureFormat::RGBA8;
+    #else
+    constexpr TextureFormat format = TextureFormat::RGBA;
     #endif
 
     CubeMapTexture texture;
-    texture.setImage(CubeMapCoordinate::PositiveX, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::PositiveX, 0, format,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
-    texture.setImage(CubeMapCoordinate::NegativeX, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::NegativeX, 0, format,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
-    texture.setImage(CubeMapCoordinate::PositiveY, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::PositiveY, 0, format,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
-    texture.setImage(CubeMapCoordinate::NegativeY, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::NegativeY, 0, format,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
-    texture.setImage(CubeMapCoordinate::PositiveZ, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::PositiveZ, 0, format,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
-    texture.setImage(CubeMapCoordinate::NegativeZ, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::NegativeZ, 0, format,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(4), Zero));
     texture.setSubImage(CubeMapCoordinate::PositiveX, 0, Vector2i(1), ImageView2D{
         PixelStorageData[testCaseInstanceId()].storage,
@@ -899,6 +942,7 @@ void CubeMapTextureGLTest::compressedImageBuffer() {
 }
 #endif
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void CubeMapTextureGLTest::immutableCompressedImage() {
     setTestCaseDescription(CompressedPixelStorageData[testCaseInstanceId()].name);
 
@@ -953,6 +997,7 @@ void CubeMapTextureGLTest::immutableCompressedImage() {
         TestSuite::Compare::Container);
     #endif
 }
+#endif
 
 namespace {
     /* Just 12x12 zeros compressed using RGBA DXT3 by the driver */
@@ -1275,18 +1320,24 @@ void CubeMapTextureGLTest::compressedFullImageQueryBuffer() {
 #endif
 
 void CubeMapTextureGLTest::generateMipmap() {
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    constexpr TextureFormat format = TextureFormat::RGBA8;
+    #else
+    constexpr TextureFormat format = TextureFormat::RGBA;
+    #endif
+
     CubeMapTexture texture;
-    texture.setImage(CubeMapCoordinate::PositiveX, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::PositiveX, 0, format,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(32)));
-    texture.setImage(CubeMapCoordinate::PositiveY, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::PositiveY, 0, format,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(32)));
-    texture.setImage(CubeMapCoordinate::PositiveZ, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::PositiveZ, 0, format,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(32)));
-    texture.setImage(CubeMapCoordinate::NegativeX, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::NegativeX, 0, format,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(32)));
-    texture.setImage(CubeMapCoordinate::NegativeY, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::NegativeY, 0, format,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(32)));
-    texture.setImage(CubeMapCoordinate::NegativeZ, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::NegativeZ, 0, format,
         ImageView2D(PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(32)));
 
     /** @todo How to test this on ES? */
@@ -1314,7 +1365,13 @@ void CubeMapTextureGLTest::generateMipmap() {
 
 void CubeMapTextureGLTest::invalidateImage() {
     CubeMapTexture texture;
-    texture.setStorage(2, TextureFormat::RGBA8, Vector2i(32));
+    texture.setStorage(2,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        TextureFormat::RGBA8,
+        #else
+        TextureFormat::RGBA,
+        #endif
+        Vector2i(32));
     texture.invalidateImage(1);
 
     MAGNUM_VERIFY_NO_ERROR();
@@ -1322,16 +1379,24 @@ void CubeMapTextureGLTest::invalidateImage() {
 
 void CubeMapTextureGLTest::invalidateSubImage() {
     CubeMapTexture texture;
-    texture.setStorage(2, TextureFormat::RGBA8, Vector2i(32));
+    texture.setStorage(2,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        TextureFormat::RGBA8,
+        #else
+        TextureFormat::RGBA,
+        #endif
+        Vector2i(32));
     texture.invalidateSubImage(1, Vector3i(2), Vector3i(Vector2i(8), 4));
 
     {
+        #ifndef MAGNUM_TARGET_WEBGL
         /* Mesa (last checked version 12.0.6) treats cube map images as having
            only single layer instead of 6, so the above invalidation call
            fails. Relevant source code (scroll up to see imageDepth = 1):
            https://github.com/anholt/mesa/blob/1c0ac1976ac7a87bfd2ade47f25047c31527f18a/src/mesa/main/texobj.c#L2179 */
         CORRADE_EXPECT_FAIL_IF((Context::current().detectedDriver() & Context::DetectedDriver::Mesa),
             "Broken on Mesa.");
+        #endif
 
         MAGNUM_VERIFY_NO_ERROR();
     }

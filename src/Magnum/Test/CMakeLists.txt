@@ -128,20 +128,14 @@ set_target_properties(
     PROPERTIES FOLDER "Magnum/Test")
 
 if(BUILD_GL_TESTS)
-    corrade_add_test(AbstractObjectGLTest AbstractObjectGLTest.cpp LIBRARIES MagnumOpenGLTester)
-    corrade_add_test(AbstractQueryGLTest AbstractQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(AbstractTextureGLTest AbstractTextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(BufferGLTest BufferGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(ContextGLTest ContextGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(CubeMapTextureGLTest CubeMapTextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
-    corrade_add_test(DebugOutputGLTest DebugOutputGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(FramebufferGLTest FramebufferGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(MeshGLTest MeshGLTest.cpp LIBRARIES MagnumOpenGLTester)
-    corrade_add_test(PixelStorageGLTest PixelStorageGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(RenderbufferGLTest RenderbufferGLTest.cpp LIBRARIES MagnumOpenGLTester)
-    corrade_add_test(SampleQueryGLTest SampleQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(TextureGLTest TextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
-    corrade_add_test(TimeQueryGLTest TimeQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
 
     corrade_add_resource(AbstractShaderProgramGLTest_RES AbstractShaderProgramGLTestFiles/resources.conf)
     corrade_add_test(AbstractShaderProgramGLTest
@@ -149,32 +143,58 @@ if(BUILD_GL_TESTS)
         ${AbstractShaderProgramGLTest_RES}
         LIBRARIES MagnumOpenGLTester)
 
+    if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+        set(SHADERGLTEST_FILES_DIR "ShaderGLTestFiles")
+    else()
+        set(SHADERGLTEST_FILES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ShaderGLTestFiles)
+    endif()
+
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
-    corrade_add_test(ShaderGLTest ShaderGLTest.cpp LIBRARIES MagnumOpenGLTester)
+    corrade_add_test(ShaderGLTest ShaderGLTest.cpp
+        LIBRARIES MagnumOpenGLTester
+        FILES ShaderGLTestFiles/shader.glsl)
     target_include_directories(ShaderGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 
     set_target_properties(
-        AbstractObjectGLTest
-        AbstractQueryGLTest
         AbstractTextureGLTest
         BufferGLTest
         ContextGLTest
         CubeMapTextureGLTest
-        DebugOutputGLTest
         FramebufferGLTest
         MeshGLTest
-        PixelStorageGLTest
         RenderbufferGLTest
-        SampleQueryGLTest
         TextureGLTest
-        TimeQueryGLTest
 
         AbstractShaderProgramGLTest
         AbstractShaderProgramGLTest_RES-dependencies
 
         ShaderGLTest
         PROPERTIES FOLDER "Magnum/Test")
+
+    if(NOT MAGNUM_TARGET_WEBGL)
+        corrade_add_test(AbstractObjectGLTest AbstractObjectGLTest.cpp LIBRARIES MagnumOpenGLTester)
+        corrade_add_test(DebugOutputGLTest DebugOutputGLTest.cpp LIBRARIES MagnumOpenGLTester)
+
+        set_target_properties(
+            AbstractObjectGLTest
+            DebugOutputGLTest
+            PROPERTIES FOLDER "Magnum/Test")
+    endif()
+
+    if(NOT (MAGNUM_TARGET_WEBGL AND MAGNUM_TARGET_GLES2))
+        corrade_add_test(AbstractQueryGLTest AbstractQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
+        corrade_add_test(PixelStorageGLTest PixelStorageGLTest.cpp LIBRARIES MagnumOpenGLTester)
+        corrade_add_test(SampleQueryGLTest SampleQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
+        corrade_add_test(TimeQueryGLTest TimeQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
+
+        set_target_properties(
+            AbstractQueryGLTest
+            PixelStorageGLTest
+            SampleQueryGLTest
+            TimeQueryGLTest
+            PROPERTIES FOLDER "Magnum/Test")
+    endif()
 
     if(NOT MAGNUM_TARGET_GLES2)
         corrade_add_test(BufferImageGLTest BufferImageGLTest.cpp LIBRARIES MagnumOpenGLTester)

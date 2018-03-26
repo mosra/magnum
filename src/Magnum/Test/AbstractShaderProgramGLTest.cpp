@@ -53,7 +53,9 @@ struct AbstractShaderProgramGLTest: OpenGLTester {
     void constructCopy();
     void constructMove();
 
+    #ifndef MAGNUM_TARGET_WEBGL
     void label();
+    #endif
 
     void create();
     void createMultipleOutputs();
@@ -81,7 +83,9 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
               &AbstractShaderProgramGLTest::constructCopy,
               &AbstractShaderProgramGLTest::constructMove,
 
+              #ifndef MAGNUM_TARGET_WEBGL
               &AbstractShaderProgramGLTest::label,
+              #endif
 
               &AbstractShaderProgramGLTest::create,
               &AbstractShaderProgramGLTest::createMultipleOutputs,
@@ -150,6 +154,7 @@ void AbstractShaderProgramGLTest::constructMove() {
     CORRADE_COMPARE(c.id(), id);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void AbstractShaderProgramGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
     if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
@@ -164,6 +169,7 @@ void AbstractShaderProgramGLTest::label() {
 
     MAGNUM_VERIFY_NO_ERROR();
 }
+#endif
 
 namespace {
     struct MyPublicShader: AbstractShaderProgram {

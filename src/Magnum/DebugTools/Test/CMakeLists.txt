@@ -46,11 +46,12 @@ if(Corrade_TestSuite_FOUND)
 endif()
 
 if(BUILD_GL_TESTS)
-    corrade_add_test(DebugToolsBufferDataGLTest BufferDataGLTest.cpp LIBRARIES MagnumDebugTools MagnumOpenGLTester)
     corrade_add_test(DebugToolsTextureImageGLTest TextureImageGLTest.cpp LIBRARIES MagnumDebugTools MagnumOpenGLTester)
+    set_target_properties(DebugToolsTextureImageGLTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
 
-    set_target_properties(
-        DebugToolsBufferDataGLTest
-        DebugToolsTextureImageGLTest
-        PROPERTIES FOLDER "Magnum/DebugTools/Test")
+    if(NOT (MAGNUM_TARGET_GLES2 AND MAGNUM_TARGET_WEBGL))
+        corrade_add_test(DebugToolsBufferDataGLTest BufferDataGLTest.cpp LIBRARIES MagnumDebugTools MagnumOpenGLTester)
+
+        set_target_properties(DebugToolsBufferDataGLTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
+    endif()
 endif()
