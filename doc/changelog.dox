@@ -82,6 +82,8 @@ See also:
     strings. See the @cpp "emscripten-pthreads-broken-unicode-shader-sources" @ce
     workaround description for details.
 -   @ref Attribute::DataType::HalfFloat was not available on WebGL 2 by mistake
+-   A wrong code path for @ref Framebuffer::checkStatus() was selected on WebGL
+    1 by mistake
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

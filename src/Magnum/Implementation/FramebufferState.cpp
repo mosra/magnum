@@ -185,10 +185,8 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     #ifndef MAGNUM_TARGET_WEBGL
     bindImplementation = &Framebuffer::bindImplementationDefault;
     bindInternalImplementation = &Framebuffer::bindImplementationDefault;
-    #endif
     checkStatusImplementation = &Framebuffer::checkStatusImplementationDefault;
 
-    #ifndef MAGNUM_TARGET_WEBGL
     if(context.isExtensionSupported<Extensions::GL::ANGLE::framebuffer_blit>()) {
         extensions.push_back(Extensions::GL::ANGLE::framebuffer_blit::string());
 
@@ -211,6 +209,8 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         bindInternalImplementation = &Framebuffer::bindImplementationSingle;
         checkStatusImplementation = &Framebuffer::checkStatusImplementationSingle;
     }
+    #else
+    checkStatusImplementation = &Framebuffer::checkStatusImplementationSingle;
     #endif
 
     #ifndef MAGNUM_TARGET_WEBGL
