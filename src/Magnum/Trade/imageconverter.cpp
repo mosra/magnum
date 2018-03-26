@@ -32,8 +32,6 @@
 #include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/ImageData.h"
 
-#include "imageconverterConfigure.h"
-
 namespace Magnum {
 
 /** @page magnum-imageconverter Image conversion utility
@@ -57,8 +55,7 @@ Arguments:
     @ref Trade::AnyImageImporter "AnyImageImporter")
 -   `--converter CONVERTER` --- image converter plugin (default:
     @ref Trade::AnyImageConverter "AnyImageConverter")
--   `--plugin-dir DIR` --- base plugin dir (defaults to plugin directory in
-    Magnum install location)
+-   `--plugin-dir DIR` --- override base plugin dir
 
 @section magnum-imageconverter-example Example usage
 
@@ -80,17 +77,21 @@ int main(int argc, char** argv) {
         .addArgument("output").setHelp("output", "output image")
         .addOption("importer", "AnyImageImporter").setHelp("importer", "image importer plugin")
         .addOption("converter", "AnyImageConverter").setHelp("converter", "image converter plugin")
-        .addOption("plugin-dir", Utility::Directory::join(Utility::Directory::path(Utility::Directory::executableLocation()), MAGNUM_PLUGINS_DIR)).setHelp("plugin-dir", "base plugin dir", "DIR")
+        .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         .setHelp("Converts images of different formats.")
         .parse(argc, argv);
 
     /* Load importer plugin */
-    PluginManager::Manager<Trade::AbstractImporter> importerManager(Utility::Directory::join(args.value("plugin-dir"), "importers/"));
+    PluginManager::Manager<Trade::AbstractImporter> importerManager{
+        args.value("plugin-dir").empty() ? std::string{} :
+        Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractImporter::pluginSearchPaths()[0])};
     std::unique_ptr<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
     if(!importer) return 1;
 
     /* Load converter plugin */
-    PluginManager::Manager<Trade::AbstractImageConverter> converterManager(Utility::Directory::join(args.value("plugin-dir"), "imageconverters/"));
+    PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
+        args.value("plugin-dir").empty() ? std::string{} :
+        Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths()[0])};
     std::unique_ptr<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
     if(!converter) return 2;
 

@@ -51,11 +51,7 @@ set_target_properties(MagnumTrade PROPERTIES FOLDER "Magnum/Trade")
 install(FILES ${MagnumTrade_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Trade)
 
 if(WITH_IMAGECONVERTER)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/imageconverterConfigure.h.cmake
-                   ${CMAKE_CURRENT_BINARY_DIR}/imageconverterConfigure.h)
-
     add_executable(magnum-imageconverter imageconverter.cpp)
-    target_include_directories(magnum-imageconverter PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(magnum-imageconverter Magnum)
     set_target_properties(magnum-imageconverter PROPERTIES FOLDER "Magnum/Trade")
 

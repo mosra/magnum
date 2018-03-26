@@ -54,8 +54,6 @@
 #error no windowless application available on this platform
 #endif
 
-#include "fontconverterConfigure.h"
-
 namespace Magnum {
 
 /**
@@ -80,8 +78,7 @@ Arguments:
 -   `-h`, `--help` --- display help message and exit
 -   `--font FONT` --- font plugin
 -   `--converter CONVERTER` --- font converter plugin
--   `--plugin-dir DIR` --- base plugin dir (defaults to plugin directory in
-    Magnum install location)
+-   `--plugin-dir DIR` --- override base plugin dir
 -   `--characters CHARACTERS` --- characters to include in the output (default:
     `abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789?!:;,.&nbsp;`)
 -   `--font-size N` --- input font size (default: `128`)
@@ -127,7 +124,7 @@ FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessAp
         .addArgument("output").setHelp("output", "output filename prefix")
         .addNamedArgument("font").setHelp("font", "font plugin")
         .addNamedArgument("converter").setHelp("converter", "font converter plugin")
-        .addOption("plugin-dir", Utility::Directory::join(Utility::Directory::path(Utility::Directory::executableLocation()), MAGNUM_PLUGINS_DIR)).setHelp("plugin-dir", "base plugin dir", "DIR")
+        .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
         .addOption("characters", "abcdefghijklmnopqrstuvwxyz"
                                  "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
                                  "0123456789?!:;,. ").setHelp("characters", "characters to include in the output")
@@ -144,15 +141,21 @@ FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessAp
 
 int FontConverter::exec() {
     /* Font converter dependencies */
-    PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager(Utility::Directory::join(args.value("plugin-dir"), "imageconverters/"));
+    PluginManager::Manager<Trade::AbstractImageConverter> imageConverterManager{
+        args.value("plugin-dir").empty() ? std::string{} :
+        Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths()[0])};
 
     /* Load font */
-    PluginManager::Manager<Text::AbstractFont> fontManager(Utility::Directory::join(args.value("plugin-dir"), "fonts/"));
+    PluginManager::Manager<Text::AbstractFont> fontManager{
+        args.value("plugin-dir").empty() ? std::string{} :
+        Utility::Directory::join(args.value("plugin-dir"), Text::AbstractFont::pluginSearchPaths()[0])};
     std::unique_ptr<Text::AbstractFont> font = fontManager.loadAndInstantiate(args.value("font"));
     if(!font) return 1;
 
     /* Load font converter */
-    PluginManager::Manager<Text::AbstractFontConverter> converterManager(Utility::Directory::join(args.value("plugin-dir"), "fontconverters/"));
+    PluginManager::Manager<Text::AbstractFontConverter> converterManager{
+        args.value("plugin-dir").empty() ? std::string{} :
+        Utility::Directory::join(args.value("plugin-dir"), Text::AbstractFontConverter::pluginSearchPaths()[0])};
     std::unique_ptr<Text::AbstractFontConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
     if(!converter) return 2;
 

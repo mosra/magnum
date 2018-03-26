@@ -58,11 +58,7 @@ install(TARGETS MagnumTextureTools
 install(FILES ${MagnumTextureTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/TextureTools)
 
 if(WITH_DISTANCEFIELDCONVERTER)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/distancefieldconverterConfigure.h.cmake
-                   ${CMAKE_CURRENT_BINARY_DIR}/distancefieldconverterConfigure.h)
-
     add_executable(magnum-distancefieldconverter distancefieldconverter.cpp)
-    target_include_directories(magnum-distancefieldconverter PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
     target_link_libraries(magnum-distancefieldconverter Magnum MagnumTextureTools)
     if(MAGNUM_TARGET_HEADLESS)
         target_link_libraries(magnum-distancefieldconverter MagnumWindowlessEglApplication)
