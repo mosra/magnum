@@ -112,6 +112,31 @@ cmake .. \
     -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system/ \
     -G Ninja
 @endcode
+
+@subsection platforms-html5-troubleshooting-loading-failed Application fails to load
+
+Depending on what's the exact error printed in the browser console, the
+following scenarios are possible:
+
+-   By default, the size of Emscripten heap is restricted to 16 MB. That might
+    not be enough if you have large compiled-in resources or allocate large
+    amount of memory. This can be solved either with:
+    -   Adding `-s TOTAL_MEMORY=&lt;bytes&gt;` to compiler/linker flags, where
+        &lt;bytes&gt; is the new heap size
+    -   Adding `-s ALLOW_MEMORY_GROWTH=1` to compiler/linker flags. This is
+        useful in case you don't know how much memory you need in advance and
+        [might disable some optimizations](https://kripken.github.io/emscripten-site/docs/optimizing/Optimizing-Code.html#memory-growth).
+    -   Setting `Module { TOTAL_MEMORY: &lt;bytes&gt;; }` in the JavaScript
+        driver file
+-   Sometimes Chromium-based browsers refuse to create WebGL context on a
+    particular page, while on other sites it works and the same page works in
+    other browsers such as Firefox. This can be caused by Chromium running for
+    too long, restart it and try again.
+-   If you compile your application with a different set of compiler / linker
+    flags or a different Emscripten version than your dependencies, it can fail
+    to load for a variety of random reasons. Try to rebuild everything with the
+    same set of flags.
+
 */
 
 }
