@@ -75,7 +75,7 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGI
 if(BUILD_PLUGINS_STATIC)
     install(FILES importStaticPlugin.cpp DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/WavAudioImporter)
     if(NOT CMAKE_VERSION VERSION_LESS 3.1)
-        target_sources(WavAudioImporter INTERFACE importStaticPlugin.cpp)
+        target_sources(WavAudioImporter INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/importStaticPlugin.cpp)
     endif()
 endif()
 
