@@ -148,20 +148,18 @@ int FontConverter::exec() {
 
     /* Load font */
     PluginManager::Manager<Text::AbstractFont> fontManager(Utility::Directory::join(args.value("plugin-dir"), "fonts/"));
-    if(!(fontManager.load(args.value("font")) & PluginManager::LoadState::Loaded))
-        std::exit(1);
-    std::unique_ptr<Text::AbstractFont> font = fontManager.instance(args.value("font"));
+    std::unique_ptr<Text::AbstractFont> font = fontManager.loadAndInstantiate(args.value("font"));
+    if(!font) return 1;
 
     /* Load font converter */
     PluginManager::Manager<Text::AbstractFontConverter> converterManager(Utility::Directory::join(args.value("plugin-dir"), "fontconverters/"));
-    if(!(converterManager.load(args.value("converter")) & PluginManager::LoadState::Loaded))
-        std::exit(1);
-    std::unique_ptr<Text::AbstractFontConverter> converter = converterManager.instance(args.value("converter"));
+    std::unique_ptr<Text::AbstractFontConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
+    if(!converter) return 2;
 
     /* Open font */
     if(!font->openFile(args.value("input"), args.value<Float>("font-size"))) {
         Error() << "Cannot open font" << args.value("input");
-        std::exit(1);
+        return 3;
     }
 
     /* Create distance field glyph cache if radius is specified */

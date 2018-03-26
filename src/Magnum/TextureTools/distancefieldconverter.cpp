@@ -141,21 +141,19 @@ DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Plat
 int DistanceFieldConverter::exec() {
     /* Load importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> importerManager(Utility::Directory::join(args.value("plugin-dir"), "importers/"));
-    if(!(importerManager.load(args.value("importer")) & PluginManager::LoadState::Loaded))
-        return 1;
-    std::unique_ptr<Trade::AbstractImporter> importer = importerManager.instance(args.value("importer"));
+    std::unique_ptr<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
+    if(!importer) return 1;
 
     /* Load converter plugin */
     PluginManager::Manager<Trade::AbstractImageConverter> converterManager(Utility::Directory::join(args.value("plugin-dir"), "imageconverters/"));
-    if(!(converterManager.load(args.value("converter")) & PluginManager::LoadState::Loaded))
-        return 1;
-    std::unique_ptr<Trade::AbstractImageConverter> converter = converterManager.instance(args.value("converter"));
+    std::unique_ptr<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
+    if(!converter) return 2;
 
     /* Open input file */
     Containers::Optional<Trade::ImageData2D> image;
     if(!importer->openFile(args.value("input")) || !(image = importer->image2D(0))) {
         Error() << "Cannot open file" << args.value("input");
-        return 1;
+        return 3;
     }
 
     /* Decide about internal format */
@@ -165,7 +163,7 @@ int DistanceFieldConverter::exec() {
     else if(image->format() == PixelFormat::RGBA) internalFormat = TextureFormat::RGBA8;
     else {
         Error() << "Unsupported image format" << image->format();
-        return 1;
+        return 4;
     }
 
     /* Input texture */
@@ -191,7 +189,7 @@ int DistanceFieldConverter::exec() {
     output.image(0, result);
     if(!converter->exportToFile(result, args.value("output"))) {
         Error() << "Cannot save file" << args.value("output");
-        return 1;
+        return 5;
     }
 
     return 0;
