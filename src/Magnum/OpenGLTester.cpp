@@ -27,20 +27,23 @@
 
 #include "Magnum/Context.h"
 #include "Magnum/Extensions.h"
+#ifndef MAGNUM_TARGET_WEBGL
 #include "Magnum/DebugOutput.h"
+#endif
 
 namespace Magnum {
 
 OpenGLTester::OpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})}, _windowlessApplication{{arguments().first, arguments().second}} {
     /* Try to create debug context, fallback to normal one if not possible. No
-       such thing on macOS or iOS. */
-    #ifndef CORRADE_TARGET_APPLE
+       such thing on macOS, iOS or WebGL. */
+    #if !defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)
     if(!_windowlessApplication.tryCreateContext(Platform::WindowlessApplication::Configuration{}.setFlags(Platform::WindowlessApplication::Configuration::Flag::Debug)))
         _windowlessApplication.createContext();
     #else
     _windowlessApplication.createContext();
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
     if(Context::current().isExtensionSupported<Extensions::GL::KHR::debug>()) {
         Renderer::enable(Renderer::Feature::DebugOutput);
         Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
@@ -49,10 +52,12 @@ OpenGLTester::OpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfigu
         /* Disable "Buffer detailed info" message on NV (too spammy) */
         DebugOutput::setEnabled(DebugOutput::Source::Api, DebugOutput::Type::Other, {131185}, false);
     }
+    #endif
 }
 
 OpenGLTester::~OpenGLTester() = default;
 
+#ifndef MAGNUM_TARGET_WEBGL
 void OpenGLTester::gpuTimeBenchmarkBegin() {
     setBenchmarkName("GPU time");
 
@@ -66,5 +71,6 @@ std::uint64_t OpenGLTester::gpuTimeBenchmarkEnd() {
     _gpuTimeQuery.end();
     return _gpuTimeQuery.result<UnsignedLong>();
 }
+#endif
 
 }

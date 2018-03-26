@@ -58,6 +58,7 @@ See also:
         their WebGL counterparts @webgl_extension{EXT,color_buffer_half_float},
         @webgl_extension{WEBGL,color_buffer_float},
         @webgl_extension{EXT,color_buffer_float}
+-   Ported @ref OpenGLTester to WebGL
 
 @subsubsection changelog-latest-new-platform Platform libraries
 

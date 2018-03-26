@@ -183,9 +183,7 @@ if(BUILD_TESTS)
 endif()
 
 # OpenGLTester library, built by default only if GL tests are enabled
-if(NOT CORRADE_TARGET_EMSCRIPTEN)
-    cmake_dependent_option(WITH_OPENGLTESTER "Build OpenGLTester library" OFF "NOT BUILD_GL_TESTS" ON)
-endif()
+cmake_dependent_option(WITH_OPENGLTESTER "Build OpenGLTester library" OFF "NOT BUILD_GL_TESTS" ON)
 
 # Dynamic linking is meaningless on Emscripten and too inconvenient on Android
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
@@ -231,7 +229,7 @@ if(CORRADE_TARGET_EMSCRIPTEN)
 endif()
 
 if(WITH_OPENGLTESTER)
-    if(MAGNUM_TARGET_HEADLESS OR CORRADE_TARGET_ANDROID)
+    if(MAGNUM_TARGET_HEADLESS OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
         set(WITH_WINDOWLESSEGLAPPLICATION ON)
         set(OPENGLTESTER_APPLICATION MagnumWindowlessEglApplication)
     elseif(CORRADE_TARGET_IOS)

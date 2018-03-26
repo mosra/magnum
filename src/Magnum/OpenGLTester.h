@@ -32,9 +32,8 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Renderer.h"
-#include "Magnum/TimeQuery.h"
 
-#if defined(MAGNUM_TARGET_HEADLESS) || defined(CORRADE_TARGET_ANDROID)
+#if defined(MAGNUM_TARGET_HEADLESS) || defined(CORRADE_TARGET_EMSCRIPTEN) || defined(CORRADE_TARGET_ANDROID)
 #include "Magnum/Platform/WindowlessEglApplication.h"
 #elif defined(CORRADE_TARGET_IOS)
 #include "Magnum/Platform/WindowlessIosApplication.h"
@@ -56,6 +55,10 @@
 #error cannot run OpenGL tests on this platform
 #endif
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include "Magnum/TimeQuery.h"
+#endif
+
 namespace Magnum {
 
 /**
@@ -65,15 +68,14 @@ Extends @ref Corrade::TestSuite::Tester with features for OpenGL testing and
 benchmarking. Be sure to read its documentation first to have an overview of
 the base features.
 
-This class is available only on platforms with corresponding
-`Platform::Windowless*Application` implementation. That currently means all
-platforms except @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". It is built into
-a separate static library and only if `WITH_OPENGLTESTER` is enabled when
-building Magnum. To use it with CMake, you need to request the `OpenGLTester`
-component of the `Magnum` package. Derive your test class from this class
-instead of @ref Corrade::TestSuite::Tester and either link to
-`Magnum::OpenGLTester` target or add it to the `LIBRARIES` section of the
-@ref corrade-cmake-add-test "corrade_add_test()" macro:
+This class is available on platforms with corresponding
+`Platform::Windowless*Application` implementation, which currently means all
+platforms. It is built into a separate static library and only if
+`WITH_OPENGLTESTER` is enabled when building Magnum. To use it with CMake, you
+need to request the `OpenGLTester` component of the `Magnum` package. Derive
+your test class from this class instead of @ref Corrade::TestSuite::Tester and
+either link to `Magnum::OpenGLTester` target or add it to the `LIBRARIES`
+section of the @ref corrade-cmake-add-test "corrade_add_test()" macro:
 
 @code{.cmake}
 find_package(Magnum REQUIRED OpenGLTester)
@@ -91,7 +93,8 @@ drivers. In addition, on desktop, unless Magnum is built with
 `MAGNUM_TARGET_HEADLESS`, OpenGL context creation requires a graphical desktop
 to be running. On embedded systems (and @ref CORRADE_TARGET_IOS "iOS",
 @ref CORRADE_TARGET_ANDROID "Android" in particular) running the tests has no
-special requirements.
+special requirements. On Emscripten the tests have to be running in a browser,
+as Node.js environment doesn't provide a WebGL context.
 
 On virtualized systems and systems without a GPU (e.g. CI servers) it's
 possible to link against e.g. Mesa softpipe or
@@ -126,9 +129,11 @@ all platforms and not all GL errors are fatal.
 
 This class adds @ref BenchmarkType::GpuTime to the benchmark type enum,
 allowing you to measure time spent on GPU as opposed to CPU or wall clock time.
+@requires_gles GPU time benchmarking is not available on WebGL.
 */
 class OpenGLTester: public TestSuite::Tester {
     public:
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Benchmark type
          *
@@ -167,9 +172,11 @@ class OpenGLTester: public TestSuite::Tester {
              * thus may cause pipeline bubble. Increase number of iterations
              * passed to @ref CORRADE_BENCHMARK() to amortize the measurement
              * error.
+             * @requires_gles GPU time benchmarking is not available on WebGL.
              */
             GpuTime = 32
         };
+        #endif
 
         /**
          * @brief Constructor
@@ -180,11 +187,13 @@ class OpenGLTester: public TestSuite::Tester {
 
         ~OpenGLTester();
 
+        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Add benchmarks
          *
          * Extends @ref Corrade::TestSuite::Tester::addBenchmarks(std::initializer_list<void(Derived::*)()>, std::size_t, BenchmarkType) with support
          * for GPU benchmark types.
+         * @requires_gles GPU time benchmarking is not available on WebGL.
          */
         template<class Derived> void addBenchmarks(std::initializer_list<void(Derived::*)()> benchmarks, std::size_t batchCount, BenchmarkType benchmarkType = BenchmarkType::Default) {
             if(benchmarkType == BenchmarkType::GpuTime)
@@ -198,6 +207,7 @@ class OpenGLTester: public TestSuite::Tester {
          *
          * Extends @ref Corrade::TestSuite::Tester::addBenchmarks(std::initializer_list<void(Derived::*)()>, std::size_t, void(Derived::*)(), void(Derived::*)(), BenchmarkType) with support
          * for GPU benchmark types.
+         * @requires_gles GPU time benchmarking is not available on WebGL.
          */
         template<class Derived> void addBenchmarks(std::initializer_list<void(Derived::*)()> benchmarks, std::size_t batchCount, void(Derived::*setup)(), void(Derived::*teardown)(), BenchmarkType benchmarkType = BenchmarkType::Default) {
             if(benchmarkType == BenchmarkType::GpuTime)
@@ -211,6 +221,7 @@ class OpenGLTester: public TestSuite::Tester {
          *
          * Extends @ref Corrade::TestSuite::Tester::addInstancedBenchmarks(std::initializer_list<void(Derived::*)()>, std::size_t, std::size_t, BenchmarkType) with support for GPU
          * benchmark types.
+         * @requires_gles GPU time benchmarking is not available on WebGL.
          */
         template<class Derived> void addInstancedBenchmarks(std::initializer_list<void(Derived::*)()> benchmarks, std::size_t batchCount, std::size_t instanceCount, BenchmarkType benchmarkType = BenchmarkType::Default) {
             if(benchmarkType == BenchmarkType::GpuTime)
@@ -224,6 +235,7 @@ class OpenGLTester: public TestSuite::Tester {
          *
          * Extends @ref Corrade::TestSuite::Tester::addInstancedBenchmarks(std::initializer_list<void(Derived::*)()>, std::size_t, std::size_t, void(Derived::*)(), void(Derived::*)(), BenchmarkType)
          * with support for GPU benchmark types.
+         * @requires_gles GPU time benchmarking is not available on WebGL.
          */
         template<class Derived> void addInstancedBenchmarks(std::initializer_list<void(Derived::*)()> benchmarks, std::size_t batchCount, std::size_t instanceCount, void(Derived::*setup)(), void(Derived::*teardown)(), BenchmarkType benchmarkType = BenchmarkType::Default) {
             if(benchmarkType == BenchmarkType::GpuTime)
@@ -231,10 +243,13 @@ class OpenGLTester: public TestSuite::Tester {
             else
                 Tester::addInstancedBenchmarks(benchmarks, batchCount, instanceCount, setup, teardown, Tester::BenchmarkType(Int(benchmarkType)));
         }
+        #endif
 
     private:
+        #ifndef MAGNUM_TARGET_WEBGL
         void gpuTimeBenchmarkBegin();
         std::uint64_t gpuTimeBenchmarkEnd();
+        #endif
 
         struct WindowlessApplication: Platform::WindowlessApplication {
             explicit WindowlessApplication(const Arguments& arguments): Platform::WindowlessApplication{arguments, NoCreate} {}
@@ -245,7 +260,9 @@ class OpenGLTester: public TestSuite::Tester {
 
         } _windowlessApplication;
 
+        #ifndef MAGNUM_TARGET_WEBGL
         TimeQuery _gpuTimeQuery{NoCreate};
+        #endif
 };
 
 /** @hideinitializer
