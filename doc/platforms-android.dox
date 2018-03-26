@@ -31,7 +31,7 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-@todoc testing, gl tests, code coverage, travis setup
+@todoc code coverage
 @todoc static plugins
 
 The following guide explains how to build Android projects using minimal
@@ -89,7 +89,8 @@ adb shell /data/local/tmp/my-application
 You can also use @cb{.sh} adb shell @ce to enter the device shell directly and
 continue from there. Besides plain command-line apps it's also possible to
 create an EGL context without any extra setup using
-@ref Platform::WindowlessEglApplication.
+@ref Platform::WindowlessEglApplication. See also @ref OpenGLTester for
+information about OpenGL testing.
 
 @section platforms-android-apps Building and installing graphics apps
 
@@ -369,8 +370,9 @@ android {
 }
 @endcode
 
-However, be aware that this is an experimental feature and may be broken.
-<em>(It didn't work for me with 3.10.)</em>
+However, be aware that this is an experimental feature and may be broken. At
+the time of writing (March 2018), it didn't work for me with NDK r16b, Android
+buid plugin 3.0.1 and CMake 3.10.
 
 @section platforms-android-gradlew Using gradlew wrappers instead of a system installation
 
@@ -401,6 +403,194 @@ control:
 
 With this in place, you can just use @cb{.sh} gradlew @ce instead of
 @cb{.sh} gradle @ce.
+
+@section platforms-android-travis Setting up Android build on Travis CI
+
+For simple compilation tests, add the following to your `.travis.yml` matrix
+builds. According to the [Travis Android documentation](https://docs.travis-ci.com/user/languages/android/),
+`build-tools-22.0.1` and `android-22` are always present, so your builds
+shouldn't get any extra delay when requesting them. The @cb{.sh} $TARGET @ce
+environment variable is used here only to disambiguate later, you might or
+might not need it.
+
+@code{.yml}
+matrix:
+  include:
+  # ...
+  - language: android
+    os: linux
+    dist: trusty
+    env:
+    - TARGET=android
+    android:
+      components:
+      - build-tools-22.0.1
+      - android-22
+@endcode
+
+At the time of writing (March 2018), while the generic Ubuntu 14.04 images
+already have CMake 3.9.2, for some reason the Android Ubuntu 14.04 images have
+just CMake 3.2. Android support is builtin since version 3.7, but
+[an important fix](https://gitlab.kitware.com/cmake/cmake/issues/17253) for the
+LLVM toolchain was merged as late as in 3.9.2, so you may want to grab that
+version. Example `.travis.yml` setup that downloads the binary and extracts it
+to @cb{.sh} $HOME/cmake @ce, with @cb{.sh} $PATH @ce setup and caching:
+
+@code{.yml}
+cache:
+  directories:
+  - $HOME/cmake
+
+install:
+- >
+  if [ "$TARGET" == "android" ] && [ ! -e "$HOME/cmake/bin" ]; then
+    cd $HOME ;
+    wget https://cmake.org/files/v3.9/cmake-3.9.2-Linux-x86_64.tar.gz &&
+    mkdir -p cmake &&
+    cd cmake &&
+    tar --strip-components=1 -xzf ../cmake-3.9.2-Linux-x86_64.tar.gz &&
+    cd $TRAVIS_BUILD_DIR ;
+  fi
+- >
+  if [ "$TARGET" == "android" ]; then
+    export PATH=$HOME/cmake/bin:$PATH &&
+    cmake --version ;
+  fi
+@endcode
+
+The NDK can be fetched as a simple `*.zip` file. However, version r16b has over
+800 MB, so you might want to explore creation of a
+[Standalone Toolchain](https://developer.android.com/ndk/guides/standalone_toolchain.html)
+with only the things you need to speed up the build. Again, downlading it into
+@cb{.sh} $HOME/android-ndk-r16b @ce is a matter of adding this into your
+@cb{.yml} install: @ce section:
+
+@code{.yml}
+- >
+  if [ "$TARGET" == "android" ]; then
+    cd $HOME ;
+    wget https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip &&
+    unzip -q android-*.zip &&
+    cd $TRAVIS_BUILD_DIR ;
+  fi
+@endcode
+
+Travis CI discourages caching the NDK, as downloading the cache will take
+roughly the same amount of time as downloading it from upstream.
+
+Building your actual code is just a matter of setting up a correct NDK path.
+You can install the dependencies to any location as long as you specify the
+same location in `CMAKE_PREFIX_PATH` and `CMAKE_FIND_ROOT_PATH` in depending
+projects. Using `armeabi-v7a` instead of `arm64-v8a` ensures that you can run
+the code in a preinstalled emulator later, see below.
+
+@code{.sh}
+mkdir build-android-arm && cd build-android-arm
+cmake .. \
+    -DCMAKE_ANDROID_NDK=$HOME/android-ndk-r16b \
+    -DCMAKE_SYSTEM_NAME=Android \
+    -DCMAKE_SYSTEM_VERSION=22 \
+    -DCMAKE_ANDROID_ARCH_ABI=armeabi-v7a \
+    -DCMAKE_ANDROID_NDK_TOOLCHAIN_VERSION=clang \
+    -DCMAKE_ANDROID_STL_TYPE=c++_static \
+    -DCMAKE_PREFIX_PATH=$HOME/deps \
+    -DCMAKE_FIND_ROOT_PATH=$HOME/deps \
+    ...
+@endcode
+
+@subsection platforms-android-travis-run Running tests on the emulator
+
+In order to run your tests on the emulator, you need to request some system
+image. Again, `sys-img-armeabi-v7a-android-22` is part of the default
+installation, so it shouldn't add any extra time to your build:
+
+@code{.yml}
+matrix:
+  include:
+  - language: android
+    # ...
+    android:
+      components:
+      # ...
+      - sys-img-armeabi-v7a-android-22
+@endcode
+
+As described [in the Travis documentation](https://docs.travis-ci.com/user/languages/android/#How-to-Create-and-Start-an-Emulator),
+create a system image and wait  for the emulator to start (be prepared, it can
+easily take up *minutes*). Assuming you use
+the @ref TestSuite-Tester-running-cmake "Corrade::TestSuite Android integration",
+simply run your tests via `ctest` and optionally enable colored output for
+extra clarity:
+
+@code{.sh}
+echo no | android create avd --force -n test -t android-22 --abi armeabi-v7a
+emulator -avd test -no-audio -no-window &
+android-wait-for-emulator
+CORRADE_TEST_COLOR=ON ctest -V
+@endcode
+
+@subsection platforms-android-travis-bundle APK bundle creation
+
+At the time of writing (March 2018), Travis Ubuntu 14.04 has Gradle 4.0,
+however the Android build plugin 3.0 requires at least Gradle 4.1, so you need
+to backport `gradle.build` to plugin version 2.3.3 compared to the
+@ref platforms-android-apps "template above". In particular, the `classpath`
+needs to be updated, `compileSdkVersion`  and `minSdkVersion` adapted to
+versions defined in @cb{.yml} components: @ce in your `travis.yml` file and the
+`buildToolsVersion` explicitly specified, because that's needed in plugin
+versions before 3.0:
+
+@code{.gradle}
+buildscript {
+    // ...
+    dependencies {
+        classpath 'com.android.tools.build:gradle:2.3.3'
+    }
+}
+
+// ...
+
+android {
+    compileSdkVersion 22
+    buildToolsVersion '26.0.2'
+
+    defaultConfig {
+        minSdkVersion 22
+        // ...
+@endcode
+
+Gradle bundles its own CMake 3.6, downloading it on-demand and then failing
+because SDK licenses are not signed. Solution is to install CMake and sign its
+license explicitly beforehand. Add the following to your `.travis.yml`:
+
+@code{.yml}
+before_install:
+- if [ "$TARGET" == "android" ]; then yes | sdkmanager "cmake;3.6.4111459"; fi
+@endcode
+
+Unlike above, and especially if you build for multiple ABIs, it's better to
+install all dependencies where Gradle expects them. In particular, in case of
+Corrade and ARM64 ABI and NDK being in @cb{.sh} $HOME/android-ndk-r16b @ce, the
+install prefixes look like this:
+
+@code{.sh}
+cmake .. \
+    -DCMAKE_INSTALL_PREFIX=$HOME/android-ndk-r16b/platforms/android-22/arch-arm64/usr \
+    -DCORRADE_INCLUDE_INSTALL_PREFIX=$HOME/android-ndk-r16b/sysroot/usr \
+    ...
+@endcode
+
+Finally, you need to tell Gradle where the NDK is located and where to look for
+native binaries (for example the `corrade-rc` executable) using environment
+variables. At last, execute `gradle build` in the directory where
+`build.gradle` is:
+
+@code{.sh}
+export ANDROID_NDK_HOME=$HOME/android-ndk-r16b
+export CMAKE_PREFIX_PATH=$HOME/deps-native/
+
+gradle build
+@endcode
 
 @section platforms-android-troubleshooting Troubleshooting
 
