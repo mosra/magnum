@@ -416,7 +416,7 @@ class DynamicAttribute {
             UnsignedInt = GL_UNSIGNED_INT,      /**< Unsigned int */
             Int = GL_INT,                       /**< Int */
 
-            #ifndef MAGNUM_TARGET_WEBGL
+            #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
             /**
              * Half float. Only for float attribute types.
              * @requires_gl30 Extension @extension{ARB,half_float_vertex}

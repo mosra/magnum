@@ -81,6 +81,7 @@ See also:
     shader sources containing Unicode characters to be truncated to empty
     strings. See the @cpp "emscripten-pthreads-broken-unicode-shader-sources" @ce
     workaround description for details.
+-   @ref Attribute::DataType::HalfFloat was not available on WebGL 2 by mistake
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
