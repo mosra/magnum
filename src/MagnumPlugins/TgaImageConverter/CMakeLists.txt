@@ -64,6 +64,14 @@ target_link_libraries(TgaImageConverter Magnum)
 install(FILES ${TgaImageConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)
 
+# Automatic static plugin import
+if(BUILD_PLUGINS_STATIC)
+    install(FILES importStaticPlugin.cpp DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)
+    if(NOT CMAKE_VERSION VERSION_LESS 3.1)
+        target_sources(TgaImageConverter INTERFACE importStaticPlugin.cpp)
+    endif()
+endif()
+
 if(BUILD_TESTS)
     add_library(MagnumTgaImageConverterTestLib STATIC
         $<TARGET_OBJECTS:TgaImageConverterObjects>

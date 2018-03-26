@@ -64,6 +64,14 @@ target_link_libraries(ObjImporter Magnum MagnumMeshTools)
 install(FILES ${ObjImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/ObjImporter)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/ObjImporter)
 
+# Automatic static plugin import
+if(BUILD_PLUGINS_STATIC)
+    install(FILES importStaticPlugin.cpp DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/ObjImporter)
+    if(NOT CMAKE_VERSION VERSION_LESS 3.1)
+        target_sources(ObjImporter INTERFACE importStaticPlugin.cpp)
+    endif()
+endif()
+
 if(BUILD_TESTS)
     add_library(MagnumObjImporterTestLib STATIC
         $<TARGET_OBJECTS:ObjImporterObjects>

@@ -69,6 +69,14 @@ endif()
 install(FILES ${MagnumFontConverter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFontConverter)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFontConverter)
 
+# Automatic static plugin import
+if(BUILD_PLUGINS_STATIC)
+    install(FILES importStaticPlugin.cpp DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFontConverter)
+    if(NOT CMAKE_VERSION VERSION_LESS 3.1)
+        target_sources(MagnumFontConverter INTERFACE importStaticPlugin.cpp)
+    endif()
+endif()
+
 if(BUILD_GL_TESTS)
     # On Win32 we need to avoid dllimporting TgaImageConverter symbols, because
     # it would search for the symbols in some DLL even when they were linked

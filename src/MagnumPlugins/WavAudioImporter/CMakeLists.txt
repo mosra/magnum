@@ -71,6 +71,14 @@ target_link_libraries(WavAudioImporter Magnum MagnumAudio)
 install(FILES ${WavAudioImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/WavAudioImporter)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/WavAudioImporter)
 
+# Automatic static plugin import
+if(BUILD_PLUGINS_STATIC)
+    install(FILES importStaticPlugin.cpp DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/WavAudioImporter)
+    if(NOT CMAKE_VERSION VERSION_LESS 3.1)
+        target_sources(WavAudioImporter INTERFACE importStaticPlugin.cpp)
+    endif()
+endif()
+
 if(BUILD_TESTS)
     add_library(MagnumWavAudioImporterTestLib STATIC
         $<TARGET_OBJECTS:WavAudioImporterObjects>
