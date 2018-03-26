@@ -437,7 +437,13 @@ enum class RenderbufferFormat: GLenum {
      *      Use @ref RenderbufferFormat::RGBA32UI or @ref RenderbufferFormat::RGBA32I
      *      instead if not available.
      */
-    RGBA32F = GL_RGBA32F,
+    RGBA32F =
+        #ifndef MAGNUM_TARGET_WEBGL
+        GL_RGBA32F
+        #else
+        0x8814
+        #endif
+        ,
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
