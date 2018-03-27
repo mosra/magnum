@@ -4,10 +4,16 @@
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Trade/AbstractImporter.h"
 
+#ifdef __has_include
+#if __has_include(<MagnumPlugins/TinyGltfImporter/importStaticPlugin.cpp>) && \
+    __has_include(<MagnumPlugins/StbTrueTypeFont/importStaticPlugin.cpp>)
 /* [static-import] */
 /* No need to do this if you use CMake */
-#include <MagnumPlugins/TgaImporter/importStaticPlugin.cpp>
+#include <MagnumPlugins/TinyGltfImporter/importStaticPlugin.cpp>
+#include <MagnumPlugins/StbTrueTypeFont/importStaticPlugin.cpp>
 /* [static-import] */
+#endif
+#endif
 
 using namespace Magnum;
 
@@ -39,8 +45,8 @@ fontManager.load("MagnumFont");
 
 {
 /* [aliases] */
-PluginManager::Manager<Text::AbstractFont> fontManager;
-fontManager.setPreferredPlugins("TrueTypeFont", {"HarfBuzzFont", "FreeTypeFont"});
+PluginManager::Manager<Text::AbstractFont> manager;
+manager.setPreferredPlugins("TrueTypeFont", {"HarfBuzzFont", "FreeTypeFont"});
 /* [aliases] */
 }
 

@@ -116,10 +116,14 @@ explicitly find the plugin and link it into the executable. If you use CMake,
 it would look like this:
 
 @code{.cmake}
-find_package(MagnumPlugins REQUIRED PngImporter)
+find_package(MagnumPlugins REQUIRED
+    TinyGltfImporter
+    StbTrueTypeFont)
 
-add_executable(MyApp ...)
-target_link_libraries(MyApp ... MagnumPlugins::PngImporter)
+add_executable(my-app my-app.cpp)
+target_link_libraries(my-app PRIVATE
+    MagnumPlugins::TinyGltfImporter
+    MagnumPlugins::StbTrueTypeFont)
 @endcode
 
 The only user-visible behavioral change in the code will be that
@@ -141,20 +145,20 @@ application. The static import file contains just a simple call to
 
 @section plugins-aliases Plugin aliases and "any" plugins
 
-There's usually more than one plugin available to achieve a particular thing
---- for example in order to open a PNG file, you can choose among
+There's usually more than one plugin available to achieve a particular goal ---
+for example in order to open a PNG file, you can choose among
 @ref Trade::PngImporter "PngImporter", @ref Trade::StbImageImporter "StbImageImporter"
 or @ref Trade::DevIlImageImporter "DevIlImageImporter" plugins. Rather than
-this being an unnecessary redundancy, it allows you to choose among different
-performance / portability / feature tradeoffs --- choose a plugin with no
-external dependencies or on the other hand pick the fastest possible
-implementation.
+this being an unnecessary redundancy, it allows you to pick a particular
+performance / portability / feature tradeoff --- a plugin with no external
+dependencies for a web build or, on the other hand, the fastest possible
+implementation for a tool that does heavy image processing.
 
-The decision what plugin to use is usually done in the buildsystem or during
-the deploy. To make this simpler in the code itself, all plugins that support a
-particular format provide a common *alias*. In the case of PNG images, you can
-just load a @cpp "PngImporter" @ce plugin and if @ref Trade::PngImporter "PngImporter"
-is not available, it will pick up any of the other candidates.
+To make this simpler in the code and defer the decision to the buildsystem or
+app deployment, all plugins that support a particular format provide a common
+*alias* --- in case of PNG images, you can just load a @cpp "PngImporter" @ce
+plugin and if  @ref Trade::PngImporter "PngImporter" is not available, it will
+pick up any of the other candidates.
 
 For greater control you can also use
 @ref Corrade::PluginManager::AbstractManager::setPreferredPlugins() "setPreferredPlugins()",
@@ -196,7 +200,8 @@ all possible knobs and switches that a file format could support, the plugins
 have a possibility to supply additional configuration via the
 @ref Corrade::PluginManager::AbstractPlugin::configuration() "configuration()"
 function. For example, in the @ref Trade-AssimpImporter-configuration "AssimpImporter"
-plugin you can toggle various postprocessing modules:
+plugin you can toggle various postprocessing steps that are applied to loaded
+scene files:
 
 @snippet plugins.cpp configuration
 

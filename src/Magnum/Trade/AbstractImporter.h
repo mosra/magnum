@@ -54,7 +54,7 @@ data. See @ref plugins for more information and `*Importer` classes in
 @section Trade-AbstractImporter-subclassing Subclassing
 
 The plugin needs to implement the @ref doFeatures(), @ref doIsOpened()
-functions, at least one of @ref doOpenData() / @ref doOpenFile() @ref doOpenState()
+functions, at least one of @ref doOpenData() / @ref doOpenFile() / @ref doOpenState()
 functions, function @ref doClose() and one or more tuples of data access
 functions, based on what features are supported in given format.
 

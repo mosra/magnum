@@ -39,6 +39,7 @@ See @ref Platform::Sdl2Application for more information about WinRT.
 @todoc mingw, clang, clang/c2...
 @todoc "unicode"
 @todoc colored console output
+@todoc lcov on mingw (ugh)
 */
 
 }
