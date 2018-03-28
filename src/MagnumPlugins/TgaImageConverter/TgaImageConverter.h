@@ -67,10 +67,6 @@ dependency of another plugin with CMake, you need to request the
 `TgaImageConverter` component of the `Magnum` package and link to the
 `Magnum::TgaImageConverter` target. See @ref building, @ref cmake and
 @ref plugins for more information.
-
-@section Trade-TgaImageConverter-limitations Behavior and limitations
-
-Does *not* support non-default @ref PixelStorage::swapBytes() values.
 */
 class MAGNUM_TGAIMAGECONVERTER_EXPORT TgaImageConverter: public AbstractImageConverter {
     public:

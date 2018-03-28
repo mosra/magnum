@@ -46,13 +46,6 @@ TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager& manager, co
 auto TgaImageConverter::doFeatures() const -> Features { return Feature::ConvertData; }
 
 Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& image) {
-    #ifndef MAGNUM_TARGET_GLES
-    if(image.storage().swapBytes()) {
-        Error() << "Trade::TgaImageConverter::exportToData(): pixel byte swap is not supported";
-        return nullptr;
-    }
-    #endif
-
     if(image.format() != PixelFormat::RGB &&
        image.format() != PixelFormat::RGBA
        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))

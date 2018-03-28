@@ -171,9 +171,6 @@ bool PixelStorage::operator==(const PixelStorage& other) const {
         _imageHeight == other._imageHeight &&
         #endif
         _skip == other._skip &&
-        #ifndef MAGNUM_TARGET_GLES
-        _swapBytes == other._swapBytes &&
-        #endif
         _alignment == other._alignment;
 }
 
@@ -217,13 +214,6 @@ void PixelStorage::applyInternal(const bool isUnpack) {
     Implementation::RendererState::PixelStorage& state = isUnpack ?
         Context::current().state().renderer->unpackPixelStorage :
         Context::current().state().renderer->packPixelStorage;
-
-    #ifndef MAGNUM_TARGET_GLES
-    /* Byte swap */
-    if(state.swapBytes == Containers::NullOpt || state.swapBytes != _swapBytes)
-        glPixelStorei(isUnpack ? GL_UNPACK_SWAP_BYTES : GL_PACK_SWAP_BYTES,
-          *(state.swapBytes = _swapBytes));
-    #endif
 
     /* Alignment */
     if(state.alignment == Implementation::RendererState::PixelStorage::DisengagedValue || state.alignment != _alignment)

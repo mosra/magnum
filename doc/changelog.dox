@@ -150,6 +150,9 @@ See also:
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
+-   Removed `PixelStorage::setSwapBytes()`, as every Magnum API dealing with
+    images basically only asserted that it's not set. Use
+    @ref Corrade::Utility::Endianness instead.
 -   Removed the @cpp Buffer::Usage @ce enum that was deprecated in 2014.01, use
     the global @ref BufferUsage enum instead
 -   Removed the `Magnum/Query.h` header that was deprecated in 2015.05, use one

@@ -87,29 +87,6 @@ class MAGNUM_EXPORT PixelStorage {
             return !operator==(other);
         }
 
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @brief Whether to reverse byte order
-         *
-         * @requires_gl Not available in OpenGL ES or WebGL.
-         */
-        constexpr bool swapBytes() const { return _swapBytes; }
-
-        /**
-         * @brief Enable or disable byte order reversion
-         *
-         * Not applicable for @ref CompressedPixelStorage. Default is
-         * @cpp false @ce.
-         * @see @fn_gl{PixelStore} with @def_gl_keyword{PACK_SWAP_BYTES}/
-         *      @def_gl_keyword{UNPACK_SWAP_BYTES}
-         * @requires_gl Not available in OpenGL ES or WebGL.
-         */
-        PixelStorage& setSwapBytes(bool enabled) {
-            _swapBytes = enabled;
-            return *this;
-        }
-        #endif
-
         /** @brief Row alignment */
         constexpr Int alignment() const { return _alignment; }
 
@@ -245,9 +222,6 @@ class MAGNUM_EXPORT PixelStorage {
         void MAGNUM_LOCAL applyUnpack();
         void MAGNUM_LOCAL applyPack() { applyInternal(false); }
 
-        #ifndef MAGNUM_TARGET_GLES
-        bool _swapBytes;
-        #endif
         Int _alignment;
 };
 
@@ -262,8 +236,8 @@ Descibes how to interpret data which are read from or stored into
 @ref Texture::compressedImage() "*Texture::compressedImage()" and
 @ref Texture::compressedSubImage() "*Texture::compressedSubImage()".
 
-Includes all parameters from @ref PixelStorage, except for @ref swapBytes() and
-@ref alignment(), which are ignored for compressed images.
+Includes all parameters from @ref PixelStorage, except for @ref alignment(),
+which is ignored for compressed images.
 
 @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
 @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and WebGL.
@@ -352,10 +326,6 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
         #endif
 
     private:
-        #ifndef MAGNUM_TARGET_GLES
-        using PixelStorage::swapBytes;
-        using PixelStorage::setSwapBytes;
-        #endif
         using PixelStorage::alignment;
         using PixelStorage::setAlignment;
 
@@ -381,9 +351,6 @@ constexpr PixelStorage::PixelStorage() noexcept:
     _imageHeight{0},
     #endif
     _skip{0},
-    #ifndef MAGNUM_TARGET_GLES
-    _swapBytes{false},
-    #endif
     _alignment{4} {}
 
 namespace Implementation {

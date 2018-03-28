@@ -115,9 +115,6 @@ void PixelStorageTest::compare() {
      .setImageHeight(15)
      #endif
      .setSkip({1, 3, 4})
-     #ifndef MAGNUM_TARGET_GLES
-     .setSwapBytes(true)
-     #endif
      .setAlignment(3);
 
     CORRADE_VERIFY(a == a);
@@ -130,9 +127,6 @@ void PixelStorageTest::compare() {
     CORRADE_VERIFY(PixelStorage{}.setImageHeight(32) != PixelStorage{}.setImageHeight(31));
     #endif
     CORRADE_VERIFY(PixelStorage{}.setSkip({1, 5, 7}) != PixelStorage{}.setSkip({7, 1, 5}));
-    #ifndef MAGNUM_TARGET_GLES
-    CORRADE_VERIFY(PixelStorage{}.setSwapBytes(false) != PixelStorage{}.setSwapBytes(true));
-    #endif
     CORRADE_VERIFY(PixelStorage{}.setAlignment(3) != PixelStorage{}.setAlignment(5));
 }
 

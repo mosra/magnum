@@ -447,10 +447,6 @@ bool Comparator<DebugTools::CompareImage>::operator()(const ImageView2D& actual,
         formatSupported,
         "DebugTools::CompareImage: format" << expected.format() << Debug::nospace << "/" << expected.type() << "is not supported", {});
     #endif
-    #ifndef MAGNUM_TARGET_GLES
-    CORRADE_ASSERT(!actual.storage().swapBytes() && !expected.storage().swapBytes(),
-        "DebugTools::CompareImage: pixel storage with byte swap is not supported", {});
-    #endif
 
     std::vector<Float> delta;
     std::tie(delta, _max, _mean) = DebugTools::Implementation::calculateImageDelta(actual, expected);

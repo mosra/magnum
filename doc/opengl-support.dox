@@ -543,6 +543,10 @@ add any performance gains, is not supported in Magnum. See also
     code.
 -   Direct vertex data specification (as opposed to using buffers) is not
     supported, as it encourages bad practices.
+-   @fn_gl{glPixelStore} with @def_gl{PACK_SWAP_BYTES} / @def_gl{UNPACK_SWAP_BYTES}.
+    Too much burden imposed on every API that deals with pixel storage. Use
+    @ref Corrade::Utility::Endianness instead. Note that this state is also not
+    tracked, so it won't get reset in case a 3rd party code enables it.
 
 @subsection opengl-unsupported-extensions Unsupported ARB / Khronos extensions
 

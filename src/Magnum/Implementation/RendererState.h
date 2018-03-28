@@ -27,7 +27,6 @@
 
 #include <string>
 #include <vector>
-#include <Corrade/Containers/Optional.h>
 
 #include "Magnum/Renderer.h"
 #include "Magnum/Math/Vector3.h"
@@ -51,9 +50,6 @@ struct RendererState {
 
         void reset();
 
-        #ifndef MAGNUM_TARGET_GLES
-        Containers::Optional<bool> swapBytes;
-        #endif
         Int alignment;
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         Int rowLength;

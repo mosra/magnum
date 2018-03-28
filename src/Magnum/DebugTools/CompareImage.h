@@ -113,10 +113,9 @@ In OpenGL ES 2.0 and WebGL 1.0, @ref PixelFormat::Luminance and
 @ref PixelFormat::LuminanceAlpha are also accepted in place of
 @ref PixelFormat::Red and @ref PixelFormat::RG.
 
-Supports all @ref PixelStorage parameters *except* non-default
-@ref PixelStorage::swapBytes() values. The images don't need to have the same
-pixel storage parameters, meaning you are able to compare different subimages
-of a larger image as long as they have the same size.
+Supports all @ref PixelStorage parameters. The images don't need to have the
+same pixel storage parameters, meaning you are able to compare different
+subimages of a larger image as long as they have the same size.
 
 The comparator first compares both images to have the same pixel format/type
 combination and size. Each pixel is then first converted to @ref Magnum::Float "Float"

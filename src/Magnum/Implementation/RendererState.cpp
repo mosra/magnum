@@ -86,9 +86,6 @@ RendererState::RendererState(Context& context, std::vector<std::string>& extensi
 }
 
 RendererState::PixelStorage::PixelStorage():
-    #ifndef MAGNUM_TARGET_GLES
-    swapBytes{false},
-    #endif
     alignment{4}
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     , rowLength{0}
@@ -104,9 +101,6 @@ RendererState::PixelStorage::PixelStorage():
     {}
 
 void RendererState::PixelStorage::reset() {
-    #ifndef MAGNUM_TARGET_GLES
-    swapBytes = Containers::NullOpt;
-    #endif
     alignment = DisengagedValue;
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* Resets to 0 instead of DisengagedValue in case the EXT_unpack_subimage/
