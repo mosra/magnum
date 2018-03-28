@@ -44,7 +44,7 @@
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/PhongMaterialData.h"
 
-#include "MagnumPlugins/TgaImporter/TgaImporter.h"
+#include "MagnumPlugins/AnyImageImporter/AnyImageImporter.h"
 
 using namespace Corrade::Containers;
 
@@ -929,7 +929,7 @@ UnsignedInt ObjImporter::doImage2DCount() const { return _state->textures.size()
 std::optional<ImageData2D> ObjImporter::doImage2D(UnsignedInt id) {
     CORRADE_ASSERT(manager(), "Trade::ObjImporter::image2D(): the plugin must be instantiated with access to plugin manager in order to open image files", {});
 
-    std::unique_ptr<AbstractImporter> imageImporter = manager()->loadAndInstantiate("TgaImporter"); // probably AnyImageImporter would be the way to go here...
+    AnyImageImporter imageImporter = AnyImageImporter{manager()}
     if(!imageImporter->openFile(_state->fileRoot + _state->textures[id])) {
         return std::nullopt;
     }
