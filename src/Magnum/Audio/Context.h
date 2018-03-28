@@ -476,7 +476,7 @@ MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED(Extensions::ALC::SOFTX::HRTF);
     } while(0)
 #endif
 
-/** @debugoperatorclassenum{Magnum::Audio::Context,Magnum::Audio::Context::HrtfStatus} */
+/** @debugoperatorclassenum{Context,Context::HrtfStatus} */
 MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, Context::HrtfStatus value);
 
 }}

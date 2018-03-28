@@ -1179,7 +1179,7 @@ inline Color4<Float> operator "" _srgbaf(unsigned long long value) {
 }
 
 /**
-@debugoperator{Magnum::Math::Color3}
+@debugoperator{Color3}
 
 Prints the value as hex color (e.g. @cb{.shell-session} #ff33aa @ce). Other
 underlying types are handled by @ref operator<<(Corrade::Utility::Debug&, const Vector<size, T>&).
@@ -1187,7 +1187,7 @@ underlying types are handled by @ref operator<<(Corrade::Utility::Debug&, const 
 MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color3<UnsignedByte>& value);
 
 /**
-@debugoperator{Magnum::Math::Color4}
+@debugoperator{Color4}
 
 Prints the value as hex color (e.g. @cb{.shell-session} #9933aaff @ce). Other
 underlying types are handled by @ref operator<<(Corrade::Utility::Debug&, const Vector<size, T>&).

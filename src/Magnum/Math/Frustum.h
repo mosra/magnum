@@ -146,7 +146,7 @@ template<class T> class Frustum {
         Vector4<T> _data[6];
 };
 
-/** @debugoperator{Magnum::Math::Frustum} */
+/** @debugoperator{Frustum} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Frustum<T>& value) {
     debug << "Frustum({" << Corrade::Utility::Debug::nospace;
     for(std::size_t i = 0; i != 6; ++i) {

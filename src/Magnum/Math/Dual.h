@@ -323,7 +323,7 @@ template<class T, class U, class V = typename std::enable_if<!Implementation::Is
     }
 #endif
 
-/** @debugoperator{Magnum::Math::Dual} */
+/** @debugoperator{Dual} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Dual<T>& value) {
     return debug << "Dual(" << Corrade::Utility::Debug::nospace
         << value.real() << Corrade::Utility::Debug::nospace << ","

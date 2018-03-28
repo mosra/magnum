@@ -429,7 +429,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
 
 MAGNUM_DUAL_OPERATOR_IMPLEMENTATION(DualQuaternion, Quaternion, T)
 
-/** @debugoperator{Magnum::Math::DualQuaternion} */
+/** @debugoperator{DualQuaternion} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const DualQuaternion<T>& value) {
     return debug << "DualQuaternion({{" << Corrade::Utility::Debug::nospace
         << value.real().vector().x() << Corrade::Utility::Debug::nospace << ","

@@ -588,7 +588,7 @@ template<std::size_t size, std::size_t cols, class T> inline RectangularMatrix<c
     return RectangularMatrix<1, size, T>(vector)*matrix;
 }
 
-/** @debugoperator{Magnum::Math::RectangularMatrix} */
+/** @debugoperator{RectangularMatrix} */
 template<std::size_t cols, std::size_t rows, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Magnum::Math::RectangularMatrix<cols, rows, T>& value) {
     debug << "Matrix(" << Corrade::Utility::Debug::nospace;
     for(std::size_t row = 0; row != rows; ++row) {

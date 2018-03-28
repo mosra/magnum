@@ -194,7 +194,7 @@ typedef Composition<2> Composition2D;
 typedef Composition<3> Composition3D;
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
-/** @debugoperatorclassenum{Magnum::Shapes::Composition,Magnum::Shapes::Composition::Type} */
+/** @debugoperatorclassenum{Composition,Composition::Type} */
 template<UnsignedInt dimensions> Debug& operator<<(Debug& debug, typename Composition<dimensions>::Type value);
 #endif
 

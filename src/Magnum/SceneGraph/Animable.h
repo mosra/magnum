@@ -56,7 +56,7 @@ enum class AnimationState: UnsignedByte {
     Running
 };
 
-/** @debugoperatorenum{Magnum::SceneGraph::AnimationState} */
+/** @debugoperatorenum{AnimationState} */
 MAGNUM_SCENEGRAPH_EXPORT Debug& operator<<(Debug& debug, AnimationState value);
 
 /**

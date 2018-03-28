@@ -354,7 +354,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
 
 MAGNUM_DUAL_OPERATOR_IMPLEMENTATION(DualComplex, Vector2, T)
 
-/** @debugoperator{Magnum::Math::DualQuaternion} */
+/** @debugoperator{DualComplex} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const DualComplex<T>& value) {
     return debug << "DualComplex({" << Corrade::Utility::Debug::nospace
           << value.real().real() << Corrade::Utility::Debug::nospace << ","

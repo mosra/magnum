@@ -235,7 +235,7 @@ template<std::size_t size> class BoolVector {
         UnsignedByte _data[(size-1)/8+1];
 };
 
-/** @debugoperator{Magnum::Math::BoolVector} */
+/** @debugoperator{BoolVector} */
 template<std::size_t size> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const BoolVector<size>& value) {
     debug << "BoolVector(" << Corrade::Utility::Debug::nospace;
     for(std::size_t i = 0; i != size; ++i) {

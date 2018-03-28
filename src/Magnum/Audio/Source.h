@@ -705,7 +705,7 @@ class MAGNUM_AUDIO_EXPORT Source {
         ALuint _id;
 };
 
-/** @debugoperatorclassenum{Magnum::Audio::Source,Magnum::Audio::Source::State} */
+/** @debugoperatorclassenum{Source,Source::State} */
 MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, Source::State value);
 
 inline Source::Source(Source&& other): _id(other._id) {

@@ -508,7 +508,7 @@ template<class T> inline Quaternion<T> operator/(T scalar, const Quaternion<T>& 
     return {scalar/quaternion.vector(), scalar/quaternion.scalar()};
 }
 
-/** @debugoperator{Magnum::Math::Quaternion} */
+/** @debugoperator{Quaternion} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Quaternion<T>& value) {
     return debug << "Quaternion({" << Corrade::Utility::Debug::nospace
         << value.vector().x() << Corrade::Utility::Debug::nospace << ","

@@ -162,7 +162,7 @@ inline Half operator "" _h(long double value) { return Half(Float(value)); }
 
 }
 
-/** @debugoperator{Magnum::Math::Half} */
+/** @debugoperator{Half} */
 inline Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, Half value) {
     return debug << Float(value);
 }

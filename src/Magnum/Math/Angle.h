@@ -267,12 +267,12 @@ constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(Fl
 template<class T> constexpr Deg<T>::Deg(Unit<Rad, T> value): Unit<Math::Deg, T>(T(180)*T(value)/Math::Constants<T>::pi()) {}
 template<class T> constexpr Rad<T>::Rad(Unit<Deg, T> value): Unit<Math::Rad, T>(T(value)*Math::Constants<T>::pi()/T(180)) {}
 
-/** @debugoperator{Magnum::Math::Rad} */
+/** @debugoperator{Rad} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Unit<Rad, T>& value) {
     return debug << "Rad(" << Corrade::Utility::Debug::nospace << T(value) << Corrade::Utility::Debug::nospace << ")";
 }
 
-/** @debugoperator{Magnum::Math::Deg} */
+/** @debugoperator{Deg} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Unit<Deg, T>& value) {
     return debug << "Deg(" << Corrade::Utility::Debug::nospace << T(value) << Corrade::Utility::Debug::nospace << ")";
 }

@@ -1075,7 +1075,7 @@ operator/(const Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b)
     return copy /= b;
 }
 
-/** @debugoperator{Magnum::Math::Vector} */
+/** @debugoperator{Vector} */
 template<std::size_t size, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Vector<size, T>& value) {
     debug << "Vector(" << Corrade::Utility::Debug::nospace;
     for(std::size_t i = 0; i != size; ++i) {

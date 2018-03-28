@@ -540,7 +540,7 @@ template<UnsignedInt dimensions, class T> inline Range<dimensions, T> join(const
     return {min(a.min(), b.min()), max(a.max(), b.max())};
 }
 
-/** @debugoperator{Magnum::Math::Range} */
+/** @debugoperator{Range} */
 template<UnsignedInt dimensions, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Range<dimensions, T>& value) {
     debug << "Range({" << Corrade::Utility::Debug::nospace << value.min()[0];
     for(UnsignedInt i = 1; i != dimensions; ++i)
