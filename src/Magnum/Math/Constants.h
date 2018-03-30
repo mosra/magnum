@@ -71,8 +71,19 @@ template<class T> struct Constants {
     static constexpr T sqrt2(); /**< @brief Square root of 2 */
     static constexpr T sqrt3(); /**< @brief Square root of 3 */
 
-    static constexpr T nan();   /**< @brief Quiet NaN */
-    static constexpr T inf();   /**< @brief Positive infinity */
+    /**
+     * @brief Quiet NaN
+     *
+     * @see @ref isNan()
+     */
+    static constexpr T nan();
+
+    /**
+     * @brief Positive infinity
+     *
+     * @see @ref isInf()
+     */
+    static constexpr T inf();
     #endif
 };
 

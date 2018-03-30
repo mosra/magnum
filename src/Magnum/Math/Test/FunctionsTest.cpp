@@ -65,6 +65,8 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void log();
     void exp();
     void div();
+    void isInf();
+    void isNan();
     void trigonometric();
     void trigonometricWithBase();
 };
@@ -110,6 +112,8 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::log,
               &FunctionsTest::exp,
               &FunctionsTest::div,
+              &FunctionsTest::isInf,
+              &FunctionsTest::isNan,
               &FunctionsTest::trigonometric,
               &FunctionsTest::trigonometricWithBase});
 }
@@ -330,6 +334,20 @@ void FunctionsTest::div() {
     std::tie(quotient, remainder) = Math::div(57, 6);
     CORRADE_COMPARE(quotient, 9);
     CORRADE_COMPARE(remainder, 3);
+}
+
+void FunctionsTest::isInf() {
+    CORRADE_VERIFY(Math::isInf(Constants::inf()));
+    CORRADE_VERIFY(Math::isInf(-Constants::inf()));
+    CORRADE_VERIFY(!Math::isInf(Constants::nan()));
+    CORRADE_VERIFY(!Math::isInf(5.3f));
+}
+
+void FunctionsTest::isNan() {
+    CORRADE_VERIFY(!Math::isNan(Constants::inf()));
+    CORRADE_VERIFY(!Math::isNan(-Constants::inf()));
+    CORRADE_VERIFY(Math::isNan(Constants::nan()));
+    CORRADE_VERIFY(!Math::isNan(5.3f));
 }
 
 void FunctionsTest::trigonometric() {

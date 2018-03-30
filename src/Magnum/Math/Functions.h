@@ -112,6 +112,21 @@ template<class Integral> std::pair<Integral, Integral> div(Integral x, Integral 
     return {result.quot, result.rem};
 }
 
+/**
+@brief If given number is a positive or negative infinity
+
+@see @ref isNan(), @ref Constants::inf()
+*/
+template<class T> bool isInf(T value) { return std::isinf(value); }
+
+/**
+@brief If given number is NaN
+
+Equivalent to @cpp value != value @ce.
+@see @ref isInf(), @ref Constants::nan()
+*/
+template<class T> bool isNan(T value) { return std::isnan(value); }
+
 /** @todo Can't trigonometric functions be done with only one overload? */
 
 /* The functions accept Unit instead of Rad to make them working with operator

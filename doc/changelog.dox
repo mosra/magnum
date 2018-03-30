@@ -60,6 +60,10 @@ See also:
         @webgl_extension{EXT,color_buffer_float}
 -   Ported @ref OpenGLTester to WebGL
 
+@subsubsection changelog-latest-new-math Math library
+
+-   Added @ref Math::isInf(), @ref Math::isNan()
+
 @subsubsection changelog-latest-new-platform Platform libraries
 
 -   Added @ref Platform::AndroidApplication::windowSize()
