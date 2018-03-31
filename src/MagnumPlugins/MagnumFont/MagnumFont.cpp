@@ -118,7 +118,7 @@ auto MagnumFont::doOpenFile(const std::string& filename, Float) -> Metrics {
     /* Open the configuration file */
     Utility::Configuration conf(filename, Utility::Configuration::Flag::ReadOnly|Utility::Configuration::Flag::SkipComments);
     if(!conf.isValid() || conf.isEmpty()) {
-        Error() << "Text::MagnumFont::openFile(): cannot open file" << filename << conf.isValid();
+        Error() << "Text::MagnumFont::openFile(): cannot open file" << filename;
         return {};
     }
 

@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/OpenGLTester.h"
@@ -36,15 +37,26 @@ namespace Magnum { namespace Text { namespace Test {
 struct MagnumFontGLTest: OpenGLTester {
     explicit MagnumFontGLTest();
 
+    void nonexistent();
     void properties();
     void layout();
     void createGlyphCache();
 };
 
 MagnumFontGLTest::MagnumFontGLTest() {
-    addTests({&MagnumFontGLTest::properties,
+    addTests({&MagnumFontGLTest::nonexistent,
+              &MagnumFontGLTest::properties,
               &MagnumFontGLTest::layout,
               &MagnumFontGLTest::createGlyphCache});
+}
+
+void MagnumFontGLTest::nonexistent() {
+    MagnumFont font;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!font.openFile("nonexistent.conf", 0.0f));
+    CORRADE_COMPARE(out.str(), "Text::MagnumFont::openFile(): cannot open file nonexistent.conf\n");
 }
 
 void MagnumFontGLTest::properties() {
