@@ -70,8 +70,7 @@ struct WavFormatChunk {
 };
 #pragma pack()
 
-/** @debugoperatorenum{WavAudioFormat} */
-MAGNUM_WAVAUDIOIMPORTER_EXPORT Debug& operator<<(Debug& debug, WavAudioFormat value);
+Debug& operator<<(Debug& debug, WavAudioFormat value);
 
 }}}
 
