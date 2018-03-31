@@ -23,9 +23,19 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+    set(MAGNUMFONT_TEST_DIR ".")
+else()
+    set(MAGNUMFONT_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+endif()
+
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_test(MagnumFontGLTest MagnumFontGLTest.cpp LIBRARIES MagnumMagnumFontTestLib MagnumOpenGLTester)
+corrade_add_test(MagnumFontGLTest MagnumFontGLTest.cpp
+    LIBRARIES MagnumMagnumFontTestLib MagnumOpenGLTester
+    FILES
+        font.conf
+        font.tga)
 set_target_properties(MagnumFontGLTest PROPERTIES FOLDER "MagnumPlugins/MagnumFont/Test")
 target_include_directories(MagnumFontGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
