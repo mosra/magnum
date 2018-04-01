@@ -55,6 +55,21 @@ StdOptionalTest::StdOptionalTest() {
 #endif
 void StdOptionalTest::conversion() {
     Debug{} << "Using C++ version" << CORRADE_CXX_STANDARD;
+    #ifdef __has_include
+    Debug{} << "__has_include is supported";
+    #if __has_include(<optional>)
+    Debug{} << "<optional> header is present";
+    #else
+    Debug{} << "<optional> header is not present";
+    #endif
+    #if __has_include(<experimental/optional>)
+    Debug{} << "<experimental/optional> header is present";
+    #else
+    Debug{} << "<experimental/optional> header is not present";
+    #endif
+    #else
+    Debug{} << "__has_include is not supported";
+    #endif
     #ifdef _MAGNUM_HAS_STD_OPTIONAL
     Debug{} << "Using a conversion to std::optional, C++17 should be present";
     CORRADE_VERIFY(CORRADE_CXX_STANDARD >= 201703L);
