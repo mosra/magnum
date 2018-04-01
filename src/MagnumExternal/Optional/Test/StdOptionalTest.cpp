@@ -75,7 +75,13 @@ void StdOptionalTest::conversion() {
     CORRADE_VERIFY(CORRADE_CXX_STANDARD >= 201703L);
     #else
     Debug{} << "Using a typedef to std::optional, C++17 should not be present";
-    CORRADE_VERIFY(CORRADE_CXX_STANDARD < 201703L);
+    {
+        #ifdef CORRADE_TARGET_APPLE
+        CORRADE_EXPECT_FAIL_IF(CORRADE_CXX_STANDARD >= 201703L,
+            "Even Xcode 9.3 beta doesn't have the <optional> header, only <experimental/optional>, thus a typedef is used.");
+        #endif
+        CORRADE_VERIFY(CORRADE_CXX_STANDARD < 201703L);
+    }
     #endif
 
     Containers::Optional<int> a{5};
