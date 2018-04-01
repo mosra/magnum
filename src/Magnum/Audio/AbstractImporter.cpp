@@ -29,7 +29,9 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Directory.h>
 
+#ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 #include "Magnum/Audio/configure.h"
+#endif
 
 namespace Magnum { namespace Audio {
 
@@ -37,6 +39,7 @@ std::string AbstractImporter::pluginInterface() {
     return "cz.mosra.magnum.Audio.AbstractImporter/0.1";
 }
 
+#ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 std::vector<std::string> AbstractImporter::pluginSearchPaths() {
     return {
         #ifdef CORRADE_IS_DEBUG_BUILD
@@ -48,6 +51,7 @@ std::vector<std::string> AbstractImporter::pluginSearchPaths() {
         #endif
     };
 }
+#endif
 
 AbstractImporter::AbstractImporter() = default;
 

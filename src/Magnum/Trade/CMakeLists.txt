@@ -41,8 +41,10 @@ set(MagnumTrade_HEADERS
     TextureData.h
     Trade.h)
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+if(NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+endif()
 
 # Force IDEs to display all header files in project view
 add_custom_target(MagnumTrade SOURCES ${MagnumTrade_HEADERS})

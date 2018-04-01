@@ -33,7 +33,9 @@
 
 #include "Magnum/Text/GlyphCache.h"
 
+#ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 #include "Magnum/Text/configure.h"
+#endif
 
 namespace Magnum { namespace Text {
 
@@ -57,6 +59,7 @@ std::string AbstractFontConverter::pluginInterface() {
     return "cz.mosra.magnum.Text.AbstractFontConverter/0.1.2";
 }
 
+#ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 std::vector<std::string> AbstractFontConverter::pluginSearchPaths() {
     return {
         #ifdef CORRADE_IS_DEBUG_BUILD
@@ -68,6 +71,7 @@ std::vector<std::string> AbstractFontConverter::pluginSearchPaths() {
         #endif
     };
 }
+#endif
 
 AbstractFontConverter::AbstractFontConverter() = default;
 

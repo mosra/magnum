@@ -93,6 +93,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          */
         static std::string pluginInterface();
 
+        #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
         /**
          * @brief Plugin search paths
          *
@@ -103,8 +104,12 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * system-wide plugin search directory is configurable using the
          * `MAGNUM_PLUGINS_DIR` CMake variables, see @ref building for more
          * information.
+         *
+         * Not defined on platforms without
+         *      @ref CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT "dynamic plugin support".
          */
         static std::vector<std::string> pluginSearchPaths();
+        #endif
 
         /** @brief Default constructor */
         explicit AbstractImporter();

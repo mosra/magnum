@@ -40,7 +40,10 @@
 #include "Magnum/Trade/ObjectData3D.h"
 #include "Magnum/Trade/SceneData.h"
 #include "Magnum/Trade/TextureData.h"
+
+#ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 #include "Magnum/Trade/configure.h"
+#endif
 
 namespace Magnum { namespace Trade {
 
@@ -48,6 +51,7 @@ std::string AbstractImporter::pluginInterface() {
     return "cz.mosra.magnum.Trade.AbstractImporter/0.3";
 }
 
+#ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 std::vector<std::string> AbstractImporter::pluginSearchPaths() {
     return {
         #ifdef CORRADE_IS_DEBUG_BUILD
@@ -59,6 +63,7 @@ std::vector<std::string> AbstractImporter::pluginSearchPaths() {
         #endif
     };
 }
+#endif
 
 AbstractImporter::AbstractImporter() = default;
 
