@@ -40,7 +40,6 @@ namespace Magnum { namespace Trade { namespace Test {
 struct TgaImporterTest: TestSuite::Tester {
     explicit TgaImporterTest();
 
-    void openNonexistent();
     void openShort();
     void paletted();
     void compressed();
