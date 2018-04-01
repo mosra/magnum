@@ -31,6 +31,7 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 #include <tuple>
 #include <Corrade/PluginManager/AbstractPlugin.h>
 

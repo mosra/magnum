@@ -30,6 +30,7 @@
  */
 
 #include <memory>
+#include <vector>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/PluginManager/AbstractPlugin.h>
 
