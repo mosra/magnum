@@ -33,8 +33,10 @@
 #include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/ImageData.h"
-#include "MagnumPlugins/TgaImageConverter/TgaImageConverter.h"
-#include "MagnumPlugins/TgaImporter/TgaImporter.h"
+#include "Magnum/Trade/AbstractImageConverter.h"
+#include "Magnum/Trade/AbstractImporter.h"
+
+#include "configure.h"
 
 namespace Magnum { namespace Trade { namespace Test {
 
@@ -46,6 +48,10 @@ struct TgaImageConverterTest: TestSuite::Tester {
 
     void rgb();
     void rgba();
+
+    /* Explicitly forbid system-wide plugin dependencies */
+    PluginManager::Manager<AbstractImageConverter> _converterManager{"nonexistent"};
+    PluginManager::Manager<AbstractImporter> _importerManager{"nonexistent"};
 };
 
 namespace {
@@ -81,6 +87,16 @@ TgaImageConverterTest::TgaImageConverterTest() {
 
               &TgaImageConverterTest::rgb,
               &TgaImageConverterTest::rgba});
+
+    /* Load the plugin directly from the build tree. Otherwise it's static and
+       already loaded. */
+    #ifdef TGAIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT(_converterManager.load(TGAIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+    /* Optional plugins that don't have to be here */
+    #ifdef TGAIMPORTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT(_importerManager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
 }
 
 void TgaImageConverterTest::wrongFormat() {
@@ -95,7 +111,8 @@ void TgaImageConverterTest::wrongFormat() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    const auto data = TgaImageConverter().exportToData(image);
+    std::unique_ptr<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+    const auto data = converter->exportToData(image);
     CORRADE_VERIFY(!data);
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color format PixelFormat::RG\n");
@@ -116,17 +133,23 @@ void TgaImageConverterTest::wrongType() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    const auto data = TgaImageConverter().exportToData(image);
+    std::unique_ptr<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+    const auto data = converter->exportToData(image);
     CORRADE_VERIFY(!data);
     CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color type PixelType::Float\n");
 }
 
 void TgaImageConverterTest::rgb() {
-    const auto data = TgaImageConverter().exportToData(OriginalRGB);
+    std::unique_ptr<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+    const auto data = converter->exportToData(OriginalRGB);
+    CORRADE_VERIFY(data);
 
-    TgaImporter importer;
-    CORRADE_VERIFY(importer.openData(data));
-    Containers::Optional<Trade::ImageData2D> converted = importer.image2D(0);
+    if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
+
+    std::unique_ptr<AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
+    CORRADE_VERIFY(importer->openData(data));
+    Containers::Optional<Trade::ImageData2D> converted = importer->image2D(0);
     CORRADE_VERIFY(converted);
 
     CORRADE_COMPARE(converted->storage().alignment(), 1);
@@ -138,11 +161,16 @@ void TgaImageConverterTest::rgb() {
 }
 
 void TgaImageConverterTest::rgba() {
-    const auto data = TgaImageConverter().exportToData(OriginalRGBA);
+    std::unique_ptr<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+    const auto data = converter->exportToData(OriginalRGBA);
+    CORRADE_VERIFY(data);
 
-    TgaImporter importer;
-    CORRADE_VERIFY(importer.openData(data));
-    Containers::Optional<Trade::ImageData2D> converted = importer.image2D(0);
+    if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
+
+    std::unique_ptr<AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
+    CORRADE_VERIFY(importer->openData(data));
+    Containers::Optional<Trade::ImageData2D> converted = importer->image2D(0);
     CORRADE_VERIFY(converted);
 
     CORRADE_COMPARE(converted->storage().alignment(), 4);

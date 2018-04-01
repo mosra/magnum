@@ -23,7 +23,5 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "MagnumPlugins/AnySceneImporter/AnySceneImporter.h"
-
-CORRADE_PLUGIN_REGISTER(AnySceneImporter, Magnum::Trade::AnySceneImporter,
-    "cz.mosra.magnum.Trade.AbstractImporter/0.3")
+#cmakedefine TGAIMAGECONVERTER_PLUGIN_FILENAME "${TGAIMAGECONVERTER_PLUGIN_FILENAME}"
+#cmakedefine TGAIMPORTER_PLUGIN_FILENAME "${TGAIMPORTER_PLUGIN_FILENAME}"

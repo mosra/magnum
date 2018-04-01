@@ -38,7 +38,7 @@
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TGAIMPORTER_BUILD_STATIC
-    #if defined(TgaImporter_EXPORTS) || defined(TgaImporterObjects_EXPORTS)
+    #ifdef TgaImporter_EXPORTS
         #define MAGNUM_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
         #define MAGNUM_TGAIMPORTER_EXPORT CORRADE_VISIBILITY_IMPORT

@@ -86,3 +86,7 @@ bool AnyImageConverter::doExportToFile(const CompressedImageView2D&, const std::
 }
 
 }}
+
+
+CORRADE_PLUGIN_REGISTER(AnyImageConverter, Magnum::Trade::AnyImageConverter,
+    "cz.mosra.magnum.Trade.AbstractImageConverter/0.2.1")

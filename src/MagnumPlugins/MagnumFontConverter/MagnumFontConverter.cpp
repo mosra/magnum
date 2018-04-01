@@ -113,3 +113,6 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
 }
 
 }}
+
+CORRADE_PLUGIN_REGISTER(MagnumFontConverter, Magnum::Text::MagnumFontConverter,
+    "cz.mosra.magnum.Text.AbstractFontConverter/0.1.2")

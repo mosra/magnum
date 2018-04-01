@@ -30,8 +30,8 @@
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/PixelFormat.h"
+#include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
-#include "MagnumPlugins/TgaImporter/TgaImporter.h"
 
 #include "configure.h"
 
@@ -53,6 +53,9 @@ struct TgaImporterTest: TestSuite::Tester {
     void grayscaleBits16();
 
     void useTwice();
+
+    /* Explicitly forbid system-wide plugin dependencies */
+    PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
 
 TgaImporterTest::TgaImporterTest() {
@@ -68,54 +71,60 @@ TgaImporterTest::TgaImporterTest() {
               &TgaImporterTest::grayscaleBits16,
 
               &TgaImporterTest::useTwice});
+
+    /* Load the plugin directly from the build tree. Otherwise it's static and
+       already loaded. */
+    #ifdef TGAIMPORTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT(_manager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
 }
 
 void TgaImporterTest::openShort() {
-    TgaImporter importer;
+    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    CORRADE_VERIFY(importer.openData(data));
+    CORRADE_VERIFY(importer->openData(data));
 
     std::ostringstream debug;
     Error redirectError{&debug};
-    CORRADE_VERIFY(!importer.image2D(0));
+    CORRADE_VERIFY(!importer->image2D(0));
     CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): the file is too short: 17 bytes\n");
 }
 
 void TgaImporterTest::paletted() {
-    TgaImporter importer;
+    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    CORRADE_VERIFY(importer.openData(data));
+    CORRADE_VERIFY(importer->openData(data));
 
     std::ostringstream debug;
     Error redirectError{&debug};
-    CORRADE_VERIFY(!importer.image2D(0));
+    CORRADE_VERIFY(!importer->image2D(0));
     CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): paletted files are not supported\n");
 }
 
 void TgaImporterTest::compressed() {
-    TgaImporter importer;
+    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = { 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-    CORRADE_VERIFY(importer.openData(data));
+    CORRADE_VERIFY(importer->openData(data));
 
     std::ostringstream debug;
     Error redirectError{&debug};
-    CORRADE_VERIFY(!importer.image2D(0));
+    CORRADE_VERIFY(!importer->image2D(0));
     CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): unsupported (compressed?) image type: 9\n");
 }
 
 void TgaImporterTest::colorBits16() {
-    TgaImporter importer;
+    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0 };
-    CORRADE_VERIFY(importer.openData(data));
+    CORRADE_VERIFY(importer->openData(data));
 
     std::ostringstream debug;
     Error redirectError{&debug};
-    CORRADE_VERIFY(!importer.image2D(0));
+    CORRADE_VERIFY(!importer->image2D(0));
     CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): unsupported color bits-per-pixel: 16\n");
 }
 
 void TgaImporterTest::colorBits24() {
-    TgaImporter importer;
+    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = {
         0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
         1, 2, 3, 2, 3, 4,
@@ -127,9 +136,9 @@ void TgaImporterTest::colorBits24() {
         5, 4, 3, 6, 5, 4,
         7, 6, 5, 8, 7, 6
     };
-    CORRADE_VERIFY(importer.openData(data));
+    CORRADE_VERIFY(importer->openData(data));
 
-    Containers::Optional<Trade::ImageData2D> image = importer.image2D(0);
+    Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->storage().alignment(), 1);
     CORRADE_COMPARE(image->format(), PixelFormat::RGB);
@@ -140,7 +149,7 @@ void TgaImporterTest::colorBits24() {
 }
 
 void TgaImporterTest::colorBits32() {
-    TgaImporter importer;
+    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = {
         0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 32, 0,
         1, 2, 3, 1, 2, 3, 4, 1,
@@ -152,9 +161,9 @@ void TgaImporterTest::colorBits32() {
         5, 4, 3, 1, 6, 5, 4, 1,
         7, 6, 5, 1, 8, 7, 6, 1
     };
-    CORRADE_VERIFY(importer.openData(data));
+    CORRADE_VERIFY(importer->openData(data));
 
-    Containers::Optional<Trade::ImageData2D> image = importer.image2D(0);
+    Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->storage().alignment(), 4);
     CORRADE_COMPARE(image->format(), PixelFormat::RGBA);
@@ -165,16 +174,16 @@ void TgaImporterTest::colorBits32() {
 }
 
 void TgaImporterTest::grayscaleBits8() {
-    TgaImporter importer;
+    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = {
         0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 8, 0,
         1, 2,
         3, 4,
         5, 6
     };
-    CORRADE_VERIFY(importer.openData(data));
+    CORRADE_VERIFY(importer->openData(data));
 
-    Containers::Optional<Trade::ImageData2D> image = importer.image2D(0);
+    Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->storage().alignment(), 1);
     #ifndef MAGNUM_TARGET_GLES2
@@ -189,27 +198,27 @@ void TgaImporterTest::grayscaleBits8() {
 }
 
 void TgaImporterTest::grayscaleBits16() {
-    TgaImporter importer;
+    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = { 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0 };
-    CORRADE_VERIFY(importer.openData(data));
+    CORRADE_VERIFY(importer->openData(data));
 
     std::ostringstream debug;
     Error redirectError{&debug};
-    CORRADE_VERIFY(!importer.image2D(0));
+    CORRADE_VERIFY(!importer->image2D(0));
     CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): unsupported grayscale bits-per-pixel: 16\n");
 }
 
 void TgaImporterTest::useTwice() {
-    TgaImporter importer;
-    CORRADE_VERIFY(importer.openFile(Utility::Directory::join(TGAIMPORTER_TEST_DIR, "file.tga")));
+    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(TGAIMPORTER_TEST_DIR, "file.tga")));
 
     /* Verify that the file is rewinded for second use */
     {
-        Containers::Optional<Trade::ImageData2D> image = importer.image2D(0);
+        Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
         CORRADE_VERIFY(image);
         CORRADE_COMPARE(image->size(), (Vector2i{2, 3}));
     } {
-        Containers::Optional<Trade::ImageData2D> image = importer.image2D(0);
+        Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
         CORRADE_VERIFY(image);
         CORRADE_COMPARE(image->size(), (Vector2i{2, 3}));
     }

@@ -123,3 +123,6 @@ UnsignedInt AnyImageImporter::doImage2DCount() const { return _in->image2DCount(
 Containers::Optional<ImageData2D> AnyImageImporter::doImage2D(const UnsignedInt id) { return _in->image2D(id); }
 
 }}
+
+CORRADE_PLUGIN_REGISTER(AnyImageImporter, Magnum::Trade::AnyImageImporter,
+    "cz.mosra.magnum.Trade.AbstractImporter/0.3")

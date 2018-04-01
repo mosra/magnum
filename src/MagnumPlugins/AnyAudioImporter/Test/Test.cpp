@@ -27,7 +27,7 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "MagnumPlugins/AnyAudioImporter/AnyImporter.h"
+#include "Magnum/Audio/AbstractImporter.h"
 
 #include "configure.h"
 
@@ -40,34 +40,44 @@ struct AnyImporterTest: TestSuite::Tester {
 
     void unknown();
 
-private:
-    PluginManager::Manager<AbstractImporter> _manager;
+    /* Explicitly forbid system-wide plugin dependencies */
+    PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
 
-AnyImporterTest::AnyImporterTest(): _manager{MAGNUM_PLUGINS_AUDIOIMPORTER_DIR} {
+AnyImporterTest::AnyImporterTest() {
     addTests({&AnyImporterTest::wav,
 
               &AnyImporterTest::unknown});
+
+    /* Load the plugin directly from the build tree. Otherwise it's static and
+       already loaded. */
+    #ifdef ANYAUDIOIMPORTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT(_manager.load(ANYAUDIOIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+    /* Optional plugins that don't have to be here */
+    #ifdef WAVAUDIOIMPORTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT(_manager.load(WAVAUDIOIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
 }
 
 void AnyImporterTest::wav() {
-    if(_manager.loadState("WavAudioImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("WavAudioImporter plugin not found, cannot test");
+    if(!(_manager.loadState("WavAudioImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("WavAudioImporter plugin not enabled, cannot test");
 
-    AnyImporter importer{_manager};
-    CORRADE_VERIFY(importer.openFile(WAV_FILE));
+    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
+    CORRADE_VERIFY(importer->openFile(WAV_FILE));
 
     /* Check only parameters, as it is good enough proof that it is working */
-    CORRADE_COMPARE(importer.format(), Buffer::Format::Stereo8);
-    CORRADE_COMPARE(importer.frequency(), 96000);
+    CORRADE_COMPARE(importer->format(), Buffer::Format::Stereo8);
+    CORRADE_COMPARE(importer->frequency(), 96000);
 }
 
 void AnyImporterTest::unknown() {
     std::ostringstream output;
     Error redirectError{&output};
 
-    AnyImporter importer{_manager};
-    CORRADE_VERIFY(!importer.openFile("sound.mid"));
+    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
+    CORRADE_VERIFY(!importer->openFile("sound.mid"));
 
     CORRADE_COMPARE(output.str(), "Audio::AnyImporter::openFile(): cannot determine type of file sound.mid\n");
 }

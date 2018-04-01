@@ -29,19 +29,37 @@ else()
     set(OBJ_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/ObjImporter/Test/pointMesh.obj)
 endif()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+# CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
+# https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since Corrade
+# doesn't support dynamic plugins on iOS, this sorta works around that. Should
+# be revisited when updating Travis to newer Xcode (current has CMake 3.6).
+if(NOT BUILD_PLUGINS_STATIC)
+    set(ANYSCENEIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:AnySceneImporter>)
+    if(WITH_OBJIMPORTER)
+        set(OBJIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:ObjImporter>)
+    endif()
+
+    # First replace ${} variables, then $<> generator expressions
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+    file(GENERATE OUTPUT $<TARGET_FILE_DIR:AnySceneImporterTest>/configure.h
+        INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+else()
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+endif()
 
 corrade_add_test(AnySceneImporterTest Test.cpp
-    LIBRARIES MagnumAnySceneImporterTestLib
+    LIBRARIES Magnum
     FILES
         ../../ObjImporter/Test/pointMesh.obj)
-target_include_directories(AnySceneImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-# On Win32 we need to avoid dllimporting AnySceneImporter symbols, because it
-# would search for the symbols in some DLL even when they were linked
-# statically. However it apparently doesn't matter that they were dllexported
-# when building the static library. EH.
-if(WIN32)
-    target_compile_definitions(AnySceneImporterTest PRIVATE "MAGNUM_ANYSCENEIMPORTER_BUILD_STATIC")
+if(NOT BUILD_PLUGINS_STATIC)
+    target_include_directories(AnySceneImporterTest PRIVATE $<TARGET_FILE_DIR:AnySceneImporterTest>)
+else()
+    target_include_directories(AnySceneImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(AnySceneImporterTest PRIVATE AnySceneImporter)
+    if(WITH_OBJIMPORTER)
+        target_link_libraries(AnySceneImporterTest PRIVATE ObjImporter)
+    endif()
 endif()
 set_target_properties(AnySceneImporterTest PROPERTIES FOLDER "MagnumPlugins/AnySceneImporter/Test")

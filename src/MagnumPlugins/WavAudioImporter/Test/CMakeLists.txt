@@ -29,11 +29,25 @@ else()
     set(WAVAUDIOIMPORTER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+# CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
+# https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since Corrade
+# doesn't support dynamic plugins on iOS, this sorta works around that. Should
+# be revisited when updating Travis to newer Xcode (current has CMake 3.6).
+if(NOT BUILD_PLUGINS_STATIC)
+    set(WAVAUDIOIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:WavAudioImporter>)
+
+    # First replace ${} variables, then $<> generator expressions
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+    file(GENERATE OUTPUT $<TARGET_FILE_DIR:WavAudioImporterTest>/configure.h
+        INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+else()
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+endif()
 
 corrade_add_test(WavAudioImporterTest WavImporterTest.cpp
-    LIBRARIES MagnumWavAudioImporterTestLib
+    LIBRARIES MagnumAudio
     FILES
         unsupportedChannelCount.wav
         unsupportedFormat.wav
@@ -67,12 +81,19 @@ corrade_add_test(WavAudioImporterTest WavImporterTest.cpp
 
         surround51Channel16.wav
         surround71Channel24.wav)
-target_include_directories(WavAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-set_target_properties(WavAudioImporterTest PROPERTIES FOLDER "MagnumPlugins/WavAudioImporter/Test")
-# On Win32 we need to avoid dllimporting WavAudioImporter symbols, because it
-# would search for the symbols in some DLL even though they were linked
-# statically. However it apparently doesn't matter that they were dllexported
-# when building the static library. EH.
-if(WIN32)
-    target_compile_definitions(WavAudioImporterTest PRIVATE "MAGNUM_WAVAUDIOIMPORTER_BUILD_STATIC")
+if(NOT BUILD_PLUGINS_STATIC)
+    target_include_directories(WavAudioImporterTest PRIVATE $<TARGET_FILE_DIR:WavAudioImporterTest>)
+else()
+    target_include_directories(WavAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(WavAudioImporterTest PRIVATE WavAudioImporter)
 endif()
+
+corrade_add_test(WavAudioImporterWavHeaderTest
+    WavHeaderTest.cpp
+    $<TARGET_OBJECTS:WavAudioImporterObjects>
+    LIBRARIES MagnumAudio)
+
+set_target_properties(
+    WavAudioImporterTest
+    WavAudioImporterWavHeaderTest
+    PROPERTIES FOLDER "MagnumPlugins/WavAudioImporter/Test")

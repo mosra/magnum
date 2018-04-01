@@ -30,44 +30,23 @@ endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-set(MagnumFont_SRCS
-    MagnumFont.cpp)
-
-set(MagnumFont_HEADERS
-    MagnumFont.h)
-
-# Objects shared between plugin and test library
-add_library(MagnumFontObjects OBJECT
-    ${MagnumFont_SRCS}
-    ${MagnumFont_HEADERS})
-target_include_directories(MagnumFontObjects PUBLIC
-    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
-    $<TARGET_PROPERTY:MagnumText,INTERFACE_INCLUDE_DIRECTORIES>)
-if(NOT BUILD_PLUGINS_STATIC)
-    target_compile_definitions(MagnumFontObjects PRIVATE "MagnumFontObjects_EXPORTS")
-endif()
-if(NOT BUILD_PLUGINS_STATIC OR BUILD_STATIC_PIC)
-    set_target_properties(MagnumFontObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
-endif()
-set_target_properties(MagnumFontObjects PROPERTIES FOLDER "MagnumPlugins/MagnumFont")
-
 # MagnumFont plugin
 add_plugin(MagnumFont
     "${MAGNUM_PLUGINS_FONT_DEBUG_BINARY_INSTALL_DIR};${MAGNUM_PLUGINS_FONT_DEBUG_LIBRARY_INSTALL_DIR}"
     "${MAGNUM_PLUGINS_FONT_RELEASE_BINARY_INSTALL_DIR};${MAGNUM_PLUGINS_FONT_RELEASE_LIBRARY_INSTALL_DIR}"
     MagnumFont.conf
-    $<TARGET_OBJECTS:MagnumFontObjects>
-    pluginRegistration.cpp)
-if(BUILD_STATIC_PIC)
+    MagnumFont.cpp
+    MagnumFont.h)
+if(BUILD_PLUGINS_STATIC AND BUILD_STATIC_PIC)
     set_target_properties(MagnumFont PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_link_libraries(MagnumFont Magnum MagnumText)
+target_link_libraries(MagnumFont PUBLIC Magnum MagnumText)
 if(CORRADE_TARGET_WINDOWS)
-    target_link_libraries(MagnumFont TgaImporter)
+    target_link_libraries(MagnumFont PUBLIC TgaImporter)
 endif()
 
-install(FILES ${MagnumFont_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFont)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFont)
+install(FILES MagnumFont.h ${CMAKE_CURRENT_BINARY_DIR}/configure.h
+    DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFont)
 
 # Automatic static plugin import
 if(BUILD_PLUGINS_STATIC)
@@ -78,25 +57,6 @@ if(BUILD_PLUGINS_STATIC)
 endif()
 
 if(BUILD_GL_TESTS)
-    # On Win32 we need to avoid dllimporting TgaImporter symbols, because it
-    # would search for the symbols in some DLL even when they were linked
-    # statically. However it apparently doesn't matter that they were
-    # dllexported when building the static library. EH.
-    if(WIN32)
-        add_library(MagnumMagnumFontTestLib STATIC
-            ${MagnumFont_SRCS}
-            ${MagnumFont_HEADERS})
-        target_compile_definitions(MagnumMagnumFontTestLib
-            PRIVATE "MAGNUM_TGAIMPORTER_BUILD_STATIC"
-            PUBLIC "MAGNUM_MAGNUMFONT_BUILD_STATIC")
-    else()
-        add_library(MagnumMagnumFontTestLib STATIC
-            $<TARGET_OBJECTS:MagnumFontObjects>
-            ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
-    endif()
-    set_target_properties(MagnumMagnumFontTestLib PROPERTIES FOLDER "MagnumPlugins/MagnumFont")
-    target_link_libraries(MagnumMagnumFontTestLib Magnum MagnumText MagnumTgaImporterTestLib)
-
     add_subdirectory(Test)
 endif()
 

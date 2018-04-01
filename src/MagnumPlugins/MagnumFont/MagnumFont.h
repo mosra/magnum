@@ -36,7 +36,7 @@
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_MAGNUMFONT_BUILD_STATIC
-    #if defined(MagnumFont_EXPORTS) || defined(MagnumFontObjects_EXPORTS)
+    #ifdef MagnumFont_EXPORTS
         #define MAGNUM_MAGNUMFONT_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
         #define MAGNUM_MAGNUMFONT_EXPORT CORRADE_VISIBILITY_IMPORT

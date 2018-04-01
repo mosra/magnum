@@ -27,8 +27,9 @@
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/OpenGLTester.h"
+#include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/GlyphCache.h"
-#include "MagnumPlugins/MagnumFont/MagnumFont.h"
+#include "Magnum/Trade/AbstractImporter.h"
 
 #include "configure.h"
 
@@ -41,6 +42,10 @@ struct MagnumFontGLTest: OpenGLTester {
     void properties();
     void layout();
     void createGlyphCache();
+
+    /* Explicitly forbid system-wide plugin dependencies */
+    PluginManager::Manager<Trade::AbstractImporter> _importerManager{"nonexistent"};
+    PluginManager::Manager<AbstractFont> _fontManager{"nonexistent"};
 };
 
 MagnumFontGLTest::MagnumFontGLTest() {
@@ -48,37 +53,46 @@ MagnumFontGLTest::MagnumFontGLTest() {
               &MagnumFontGLTest::properties,
               &MagnumFontGLTest::layout,
               &MagnumFontGLTest::createGlyphCache});
+
+    /* Load the plugins directly from the build tree. Otherwise they're static
+       and already loaded. */
+    #if defined(TGAIMPORTER_PLUGIN_FILENAME) && defined(MAGNUMFONT_PLUGIN_FILENAME)
+    CORRADE_INTERNAL_ASSERT(_importerManager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT(_fontManager.load(MAGNUMFONT_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
 }
 
 void MagnumFontGLTest::nonexistent() {
-    MagnumFont font;
+    std::unique_ptr<AbstractFont> font = _fontManager.instantiate("MagnumFont");
 
     std::ostringstream out;
     Error redirectError{&out};
-    CORRADE_VERIFY(!font.openFile("nonexistent.conf", 0.0f));
+    CORRADE_VERIFY(!font->openFile("nonexistent.conf", 0.0f));
     CORRADE_COMPARE(out.str(), "Text::MagnumFont::openFile(): cannot open file nonexistent.conf\n");
 }
 
 void MagnumFontGLTest::properties() {
-    MagnumFont font;
-    CORRADE_VERIFY(font.openFile(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
-    CORRADE_COMPARE(font.size(), 16.0f);
-    CORRADE_COMPARE(font.ascent(), 25.0f);
-    CORRADE_COMPARE(font.descent(), -10.0f);
-    CORRADE_COMPARE(font.lineHeight(), 39.7333f);
-    CORRADE_COMPARE(font.glyphAdvance(font.glyphId(U'W')), Vector2(23.0f, 0.0f));
+    std::unique_ptr<AbstractFont> font = _fontManager.instantiate("MagnumFont");
+
+    CORRADE_VERIFY(font->openFile(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
+    CORRADE_COMPARE(font->size(), 16.0f);
+    CORRADE_COMPARE(font->ascent(), 25.0f);
+    CORRADE_COMPARE(font->descent(), -10.0f);
+    CORRADE_COMPARE(font->lineHeight(), 39.7333f);
+    CORRADE_COMPARE(font->glyphAdvance(font->glyphId(U'W')), Vector2(23.0f, 0.0f));
 }
 
 void MagnumFontGLTest::layout() {
-    MagnumFont font;
-    CORRADE_VERIFY(font.openFile(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
+    std::unique_ptr<AbstractFont> font = _fontManager.instantiate("MagnumFont");
+
+    CORRADE_VERIFY(font->openFile(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
 
     /* Fill the cache with some fake glyphs */
     GlyphCache cache(Vector2i(256));
-    cache.insert(font.glyphId(U'W'), {25, 34}, {{0, 8}, {16, 128}});
-    cache.insert(font.glyphId(U'e'), {25, 12}, {{16, 4}, {64, 32}});
+    cache.insert(font->glyphId(U'W'), {25, 34}, {{0, 8}, {16, 128}});
+    cache.insert(font->glyphId(U'e'), {25, 12}, {{16, 4}, {64, 32}});
 
-    auto layouter = font.layout(cache, 0.5f, "Wave");
+    auto layouter = font->layout(cache, 0.5f, "Wave");
     CORRADE_VERIFY(layouter);
     CORRADE_COMPARE(layouter->glyphCount(), 4);
 
@@ -113,11 +127,12 @@ void MagnumFontGLTest::layout() {
 }
 
 void MagnumFontGLTest::createGlyphCache() {
-    MagnumFont font;
-    CORRADE_VERIFY(font.openFile(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
+    std::unique_ptr<AbstractFont> font = _fontManager.instantiate("MagnumFont");
+
+    CORRADE_VERIFY(font->openFile(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
 
     /* Just testing that nothing crashes, asserts or errors */
-    std::unique_ptr<GlyphCache> cache = font.createGlyphCache();
+    std::unique_ptr<GlyphCache> cache = font->createGlyphCache();
 
     MAGNUM_VERIFY_NO_ERROR();
     CORRADE_VERIFY(cache);

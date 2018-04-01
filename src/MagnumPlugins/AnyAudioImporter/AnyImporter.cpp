@@ -82,3 +82,6 @@ UnsignedInt AnyImporter::doFrequency() const { return _in->frequency(); }
 Containers::Array<char> AnyImporter::doData() { return _in->data(); }
 
 }}
+
+CORRADE_PLUGIN_REGISTER(AnyAudioImporter, Magnum::Audio::AnyImporter,
+    "cz.mosra.magnum.Audio.AbstractImporter/0.1")

@@ -23,14 +23,34 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_test(TgaImageConverterTest TgaImageConverterTest.cpp LIBRARIES MagnumTgaImageConverterTestLib MagnumTgaImporterTestLib)
-set_target_properties(TgaImageConverterTest PROPERTIES FOLDER "MagnumPlugins/TgaImageConverter/Test")
-# On Win32 we need to avoid dllimporting TgaImporter and TgaImageConverterTest
-# symbols, because it would search for the symbols in some DLL even though they
-# were linked statically. However it apparently doesn't matter that they were
-# dllexported when building the static library. EH.
-if(WIN32)
-    target_compile_definitions(TgaImageConverterTest PRIVATE
-        "MAGNUM_TGAIMAGECONVERTER_BUILD_STATIC"
-        "MAGNUM_TGAIMPORTER_BUILD_STATIC")
+# CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
+# https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since Corrade
+# doesn't support dynamic plugins on iOS, this sorta works around that. Should
+# be revisited when updating Travis to newer Xcode (current has CMake 3.6).
+if(NOT BUILD_PLUGINS_STATIC)
+    set(TGAIMAGECONVERTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImageConverter>)
+    if(WITH_TGAIMPORTER)
+        set(TGAIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
+    endif()
+
+    # First replace ${} variables, then $<> generator expressions
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+    file(GENERATE OUTPUT $<TARGET_FILE_DIR:TgaImageConverterTest>/configure.h
+        INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+else()
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 endif()
+
+corrade_add_test(TgaImageConverterTest TgaImageConverterTest.cpp LIBRARIES Magnum)
+if(NOT BUILD_PLUGINS_STATIC)
+    target_include_directories(TgaImageConverterTest PRIVATE $<TARGET_FILE_DIR:TgaImageConverterTest>)
+else()
+    target_include_directories(TgaImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(TgaImageConverterTest PRIVATE TgaImageConverter)
+    if(WITH_TGAIMPORTER)
+        target_link_libraries(TgaImageConverterTest PRIVATE TgaImporter)
+    endif()
+endif()
+set_target_properties(TgaImageConverterTest PROPERTIES FOLDER "MagnumPlugins/TgaImageConverter/Test")

@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2016 Alice Margatroid <loveoverwhelming@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -23,9 +24,32 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/PluginManager/AbstractManager.h>
+#include <sstream>
+#include <Corrade/TestSuite/Tester.h>
 
-#include "MagnumPlugins/MagnumFontConverter/MagnumFontConverter.h"
+#include "Magnum/Magnum.h"
+#include "MagnumPlugins/WavAudioImporter/WavHeader.h"
 
-CORRADE_PLUGIN_REGISTER(MagnumFontConverter, Magnum::Text::MagnumFontConverter,
-    "cz.mosra.magnum.Text.AbstractFontConverter/0.1.2")
+namespace Magnum { namespace Audio { namespace Test {
+
+struct WavHeaderTest: TestSuite::Tester {
+    explicit WavHeaderTest();
+
+    void debugAudioFormat();
+};
+
+WavHeaderTest::WavHeaderTest() {
+    addTests({&WavHeaderTest::debugAudioFormat});
+}
+
+void WavHeaderTest::debugAudioFormat() {
+    std::ostringstream out;
+
+    Debug{&out} << Implementation::WavAudioFormat::IeeeFloat << Implementation::WavAudioFormat(0xdead);
+    CORRADE_COMPARE(out.str(), "Audio::WavAudioFormat::IeeeFloat Audio::WavAudioFormat(0xdead)\n");
+}
+
+}}}
+
+CORRADE_TEST_MAIN(Magnum::Audio::Test::WavHeaderTest)
+

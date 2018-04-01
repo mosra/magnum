@@ -29,9 +29,8 @@
 #include <Corrade/PluginManager/Manager.h>
 
 #include "Magnum/PixelFormat.h"
+#include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/ImageData.h"
-
-#include "MagnumPlugins/AnyImageConverter/AnyImageConverter.h"
 
 #include "configure.h"
 
@@ -44,14 +43,27 @@ struct AnyImageConverterTest: TestSuite::Tester {
 
     void unknown();
 
-    private:
-        PluginManager::Manager<AbstractImageConverter> _manager;
+    /* Explicitly forbid system-wide plugin dependencies */
+    PluginManager::Manager<AbstractImageConverter> _manager{"nonexistent"};
 };
 
-AnyImageConverterTest::AnyImageConverterTest(): _manager{MAGNUM_PLUGINS_IMAGECONVERTER_DIR} {
+AnyImageConverterTest::AnyImageConverterTest() {
     addTests({&AnyImageConverterTest::tga,
 
               &AnyImageConverterTest::unknown});
+
+    /* Load the plugin directly from the build tree. Otherwise it's static and
+       already loaded. */
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT(_manager.load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+    /* Optional plugins that don't have to be here */
+    #ifdef TGAIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT(_manager.load(TGAIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+
+    /* Create the output directory if it doesn't exist yet */
+    CORRADE_INTERNAL_ASSERT(Utility::Directory::mkpath(ANYIMAGECONVERTER_TEST_DIR));
 }
 
 namespace {
@@ -65,8 +77,8 @@ namespace {
 }
 
 void AnyImageConverterTest::tga() {
-    if(_manager.loadState("TgaImageConverter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("TgaImageConverter plugin not found, cannot test");
+    if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_DIR, "output.tga");
 
@@ -74,8 +86,8 @@ void AnyImageConverterTest::tga() {
         CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     /* Just test that the exported file exists */
-    AnyImageConverter converter{_manager};
-    CORRADE_VERIFY(converter.exportToFile(Image, filename));
+    std::unique_ptr<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+    CORRADE_VERIFY(converter->exportToFile(Image, filename));
     CORRADE_VERIFY(Utility::Directory::fileExists(filename));
 }
 
@@ -83,8 +95,8 @@ void AnyImageConverterTest::unknown() {
     std::ostringstream output;
     Error redirectError{&output};
 
-    AnyImageConverter converter{_manager};
-    CORRADE_VERIFY(!converter.exportToFile(Image, "image.xcf"));
+    std::unique_ptr<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+    CORRADE_VERIFY(!converter->exportToFile(Image, "image.xcf"));
 
     CORRADE_COMPARE(output.str(), "Trade::AnyImageConverter::exportToFile(): cannot determine type of file image.xcf\n");
 }

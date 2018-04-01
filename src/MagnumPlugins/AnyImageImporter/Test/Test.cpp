@@ -27,9 +27,8 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 
+#include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
-
-#include "MagnumPlugins/AnyImageImporter/AnyImageImporter.h"
 
 #include "configure.h"
 
@@ -42,25 +41,35 @@ struct AnyImageImporterTest: TestSuite::Tester {
 
     void unknown();
 
-    private:
-        PluginManager::Manager<AbstractImporter> _manager;
+    /* Explicitly forbid system-wide plugin dependencies */
+    PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
 
-AnyImageImporterTest::AnyImageImporterTest(): _manager{MAGNUM_PLUGINS_IMPORTER_DIR} {
+AnyImageImporterTest::AnyImageImporterTest() {
     addTests({&AnyImageImporterTest::tga,
 
               &AnyImageImporterTest::unknown});
+
+    /* Load the plugin directly from the build tree. Otherwise it's static and
+       already loaded. */
+    #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT(_manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+    /* Optional plugins that don't have to be here */
+    #ifdef TGAIMPORTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT(_manager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
 }
 
 void AnyImageImporterTest::tga() {
-    if(_manager.loadState("TgaImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("TgaImporter plugin not found, cannot test");
+    if(!(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImporter plugin not enabled, cannot test");
 
-    AnyImageImporter importer{_manager};
-    CORRADE_VERIFY(importer.openFile(TGA_FILE));
+    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer->openFile(TGA_FILE));
 
     /* Check only size, as it is good enough proof that it is working */
-    Containers::Optional<ImageData2D> image = importer.image2D(0);
+    Containers::Optional<ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
 }
@@ -69,8 +78,8 @@ void AnyImageImporterTest::unknown() {
     std::ostringstream output;
     Error redirectError{&output};
 
-    AnyImageImporter importer{_manager};
-    CORRADE_VERIFY(!importer.openFile("image.xcf"));
+    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
+    CORRADE_VERIFY(!importer->openFile("image.xcf"));
 
     CORRADE_COMPARE(output.str(), "Trade::AnyImageImporter::openFile(): cannot determine type of file image.xcf\n");
 }

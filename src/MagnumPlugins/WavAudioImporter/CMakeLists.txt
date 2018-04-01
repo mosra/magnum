@@ -30,21 +30,10 @@ endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-set(WavAudioImporter_SRCS
-    WavHeader.cpp
-    WavImporter.cpp)
-
-set(WavAudioImporter_HEADERS
-    WavImporter.h)
-
-set(WavAudioImporter_PRIVATE_HEADERS
-    WavHeader.h)
-
 # Objects shared between plugin and test library
 add_library(WavAudioImporterObjects OBJECT
-    ${WavAudioImporter_SRCS}
-    ${WavAudioImporter_HEADERS}
-    ${WavAudioImporter_PRIVATE_HEADERS})
+    WavHeader.cpp
+    WavHeader.h)
 target_include_directories(WavAudioImporterObjects PUBLIC
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:MagnumAudio,INTERFACE_INCLUDE_DIRECTORIES>)
@@ -61,15 +50,16 @@ add_plugin(WavAudioImporter
     "${MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_BINARY_INSTALL_DIR};${MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_LIBRARY_INSTALL_DIR}"
     "${MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_BINARY_INSTALL_DIR};${MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_LIBRARY_INSTALL_DIR}"
     WavAudioImporter.conf
-    $<TARGET_OBJECTS:WavAudioImporterObjects>
-    pluginRegistration.cpp)
-if(BUILD_STATIC_PIC)
+    WavImporter.cpp
+    WavImporter.h
+    $<TARGET_OBJECTS:WavAudioImporterObjects>)
+if(BUILD_PLUGINS_STATIC AND BUILD_STATIC_PIC)
     set_target_properties(WavAudioImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_link_libraries(WavAudioImporter Magnum MagnumAudio)
+target_link_libraries(WavAudioImporter PUBLIC Magnum MagnumAudio)
 
-install(FILES ${WavAudioImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/WavAudioImporter)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/WavAudioImporter)
+install(FILES WavImporter.h ${CMAKE_CURRENT_BINARY_DIR}/configure.h
+    DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/WavAudioImporter)
 
 # Automatic static plugin import
 if(BUILD_PLUGINS_STATIC)
@@ -80,12 +70,6 @@ if(BUILD_PLUGINS_STATIC)
 endif()
 
 if(BUILD_TESTS)
-    add_library(MagnumWavAudioImporterTestLib STATIC
-        $<TARGET_OBJECTS:WavAudioImporterObjects>
-        ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
-    set_target_properties(MagnumWavAudioImporterTestLib PROPERTIES FOLDER "MagnumPlugins/WavAudioImporter")
-    target_link_libraries(MagnumWavAudioImporterTestLib Magnum MagnumAudio)
-
     add_subdirectory(Test)
 endif()
 

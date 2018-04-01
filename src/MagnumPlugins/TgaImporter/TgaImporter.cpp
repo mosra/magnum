@@ -140,3 +140,6 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
 }
 
 }}
+
+CORRADE_PLUGIN_REGISTER(TgaImporter, Magnum::Trade::TgaImporter,
+    "cz.mosra.magnum.Trade.AbstractImporter/0.3")

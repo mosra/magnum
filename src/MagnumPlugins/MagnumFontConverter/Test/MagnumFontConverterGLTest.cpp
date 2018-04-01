@@ -33,11 +33,11 @@
 #include "Magnum/OpenGLTester.h"
 #include "Magnum/Text/GlyphCache.h"
 #include "Magnum/Text/AbstractFont.h"
+#include "Magnum/Text/AbstractFontConverter.h"
+#include "Magnum/Trade/AbstractImageConverter.h"
+#include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
-#include "MagnumPlugins/MagnumFontConverter/MagnumFontConverter.h"
-#include "MagnumPlugins/TgaImporter/TgaImporter.h"
 
-#include "../../MagnumFont/Test/configure.h"
 #include "configure.h"
 
 namespace Magnum { namespace Text { namespace Test {
@@ -46,10 +46,26 @@ struct MagnumFontConverterGLTest: OpenGLTester {
     explicit MagnumFontConverterGLTest();
 
     void exportFont();
+
+    /* Explicitly forbid system-wide plugin dependencies */
+    PluginManager::Manager<Trade::AbstractImageConverter> _imageConverterManager{"nonexistent"};
+    PluginManager::Manager<AbstractFontConverter> _fontConverterManager{"nonexistent"};
+    PluginManager::Manager<Trade::AbstractImporter> _importerManager{"nonexistent"};
 };
 
 MagnumFontConverterGLTest::MagnumFontConverterGLTest() {
     addTests({&MagnumFontConverterGLTest::exportFont});
+
+    /* Load the plugins directly from the build tree. Otherwise they are static
+       and already loaded. */
+    #if defined(TGAIMAGECONVERTER_PLUGIN_FILENAME) && defined(MAGNUMFONTCONVERTER_PLUGIN_FILENAME)
+    CORRADE_INTERNAL_ASSERT(_imageConverterManager.load(TGAIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    CORRADE_INTERNAL_ASSERT(_fontConverterManager.load(MAGNUMFONTCONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+    /* Optional plugins that don't have to be here */
+    #ifdef TGAIMPORTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT(_importerManager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
 }
 
 void MagnumFontConverterGLTest::exportFont() {
@@ -102,8 +118,8 @@ void MagnumFontConverterGLTest::exportFont() {
     cache.insert(font.glyphId(U'e'), {25, 12}, {{16, 4}, {64, 32}});
 
     /* Convert the file */
-    MagnumFontConverter converter;
-    converter.exportFontToFile(font, cache, Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave");
+    std::unique_ptr<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
+    converter->exportFontToFile(font, cache, Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave");
 
     /* Verify font parameters */
     /** @todo This might behave differently elsewhere due to unspecified order of glyphs in cache */
@@ -111,10 +127,13 @@ void MagnumFontConverterGLTest::exportFont() {
                        Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"),
                        TestSuite::Compare::File);
 
+    if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImporter plugin not enabled, not testing glyph cache contents");
+
     /* Verify font image, no need to test image contents, as the image is garbage anyway */
-    Trade::TgaImporter importer;
-    CORRADE_VERIFY(importer.openFile(Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.tga")));
-    Containers::Optional<Trade::ImageData2D> image = importer.image2D(0);
+    std::unique_ptr<Trade::AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.tga")));
+    Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->size(), Vector2i(256));
     CORRADE_COMPARE(image->format(), PixelFormat::Red);

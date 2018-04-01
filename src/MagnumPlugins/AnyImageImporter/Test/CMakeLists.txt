@@ -29,19 +29,37 @@ else()
     set(TGA_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/TgaImporter/Test/file.tga)
 endif()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+# CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
+# https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since Corrade
+# doesn't support dynamic plugins on iOS, this sorta works around that. Should
+# be revisited when updating Travis to newer Xcode (current has CMake 3.6).
+if(NOT BUILD_PLUGINS_STATIC)
+    set(ANYIMAGEIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:AnyImageImporter>)
+    if(WITH_TGAIMPORTER)
+        set(TGAIMAGEIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
+    endif()
+
+    # First replace ${} variables, then $<> generator expressions
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+    file(GENERATE OUTPUT $<TARGET_FILE_DIR:AnyImageImporterTest>/configure.h
+        INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+else()
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+endif()
 
 corrade_add_test(AnyImageImporterTest Test.cpp
-    LIBRARIES MagnumAnyImageImporterTestLib
+    LIBRARIES Magnum
     FILES
         ../../TgaImporter/Test/file.tga)
-target_include_directories(AnyImageImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-# On Win32 we need to avoid dllimporting AnyImageImporter symbols, because it
-# would search for the symbols in some DLL even when they were linked
-# statically. However it apparently doesn't matter that they were dllexported
-# when building the static library. EH.
-if(WIN32)
-    target_compile_definitions(AnyImageImporterTest PRIVATE "MAGNUM_ANYIMAGEIMPORTER_BUILD_STATIC")
+if(NOT BUILD_PLUGINS_STATIC)
+    target_include_directories(AnyImageImporterTest PRIVATE $<TARGET_FILE_DIR:AnyImageImporterTest>)
+else()
+    target_include_directories(AnyImageImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(AnyImageImporterTest PRIVATE AnyImageImporter)
+    if(WITH_TGAIMPORTER)
+        target_link_libraries(AnyImageImporterTest PRIVATE TgaImporter)
+    endif()
 endif()
 set_target_properties(AnyImageImporterTest PROPERTIES FOLDER "MagnumPlugins/AnyImageImporter/Test")

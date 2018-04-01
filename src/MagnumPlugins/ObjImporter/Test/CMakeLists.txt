@@ -29,11 +29,25 @@ else()
     set(OBJIMPORTER_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+# CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
+# https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since Corrade
+# doesn't support dynamic plugins on iOS, this sorta works around that. Should
+# be revisited when updating Travis to newer Xcode (current has CMake 3.6).
+if(NOT BUILD_PLUGINS_STATIC)
+    set(OBJIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:ObjImporter>)
+
+    # First replace ${} variables, then $<> generator expressions
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+    file(GENERATE OUTPUT $<TARGET_FILE_DIR:ObjImporterTest>/configure.h
+        INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+else()
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+endif()
 
 corrade_add_test(ObjImporterTest Test.cpp
-    LIBRARIES MagnumObjImporterTestLib
+    LIBRARIES Magnum
     FILES
         emptyFile.obj
         keywords.obj
@@ -52,12 +66,10 @@ corrade_add_test(ObjImporterTest Test.cpp
         wrongIndexCount.obj
         wrongNumberCount.obj
         wrongNumbers.obj)
-target_include_directories(ObjImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-set_target_properties(ObjImporterTest PROPERTIES FOLDER "MagnumPlugins/ObjImporter/Test")
-# On Win32 we need to avoid dllimporting ObjImporter symbols, because it would
-# search for the symbols in some DLL even though they were linked statically.
-# However it apparently doesn't matter that they were dllexported when building
-# the static library. EH.
-if(WIN32)
-    target_compile_definitions(ObjImporterTest PRIVATE "MAGNUM_OBJIMPORTER_BUILD_STATIC")
+if(NOT BUILD_PLUGINS_STATIC)
+    target_include_directories(ObjImporterTest PRIVATE $<TARGET_FILE_DIR:ObjImporterTest>)
+else()
+    target_include_directories(ObjImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(ObjImporterTest PRIVATE ObjImporter)
 endif()
+set_target_properties(ObjImporterTest PROPERTIES FOLDER "MagnumPlugins/ObjImporter/Test")

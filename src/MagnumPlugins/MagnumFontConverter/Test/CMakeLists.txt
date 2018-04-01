@@ -23,19 +23,37 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+# CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
+# https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since Corrade
+# doesn't support dynamic plugins on iOS, this sorta works around that. Should
+# be revisited when updating Travis to newer Xcode (current has CMake 3.6).
+if(NOT BUILD_PLUGINS_STATIC)
+    set(MAGNUMFONTCONVERTER_PLUGIN_FILENAME $<TARGET_FILE:MagnumFontConverter>)
+    set(TGAIMAGECONVERTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImageConverter>)
+    if(WITH_TGAIMPORTER)
+        set(TGAIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
+    endif()
 
-corrade_add_test(MagnumFontConverterGLTest MagnumFontConverterGLTest.cpp LIBRARIES
-    MagnumMagnumFontConverterTestLib
-    MagnumTgaImporterTestLib
-    MagnumOpenGLTester)
-set_target_properties(MagnumFontConverterGLTest PROPERTIES FOLDER "MagnumPlugins/MagnumFontConverter/Test")
-target_include_directories(MagnumFontConverterGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-# On Win32 we need to avoid dllimporting TgaImporter symbols, because it would
-# search for the symbols in some DLL even though they were linked statically.
-# However it apparently doesn't matter that they were dllexported when building
-# the static library. EH.
-if(WIN32)
-    target_compile_definitions(MagnumFontConverterGLTest PRIVATE "MAGNUM_TGAIMPORTER_BUILD_STATIC")
+    # First replace ${} variables, then $<> generator expressions
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+    file(GENERATE OUTPUT $<TARGET_FILE_DIR:MagnumFontConverterGLTest>/configure.h
+        INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+else()
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 endif()
+
+corrade_add_test(MagnumFontConverterGLTest MagnumFontConverterGLTest.cpp
+    LIBRARIES MagnumText MagnumOpenGLTester)
+if(NOT BUILD_PLUGINS_STATIC)
+    target_include_directories(MagnumFontConverterGLTest PRIVATE $<TARGET_FILE_DIR:MagnumFontConverterGLTest>)
+else()
+    target_include_directories(MagnumFontConverterGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(MagnumFontConverterGLTest PRIVATE
+        MagnumFontConverter) # TgaImageConverter should get linked transitively
+    if(WITH_TGAIMPORTER)
+        target_link_libraries(MagnumFontConverterGLTest PRIVATE TgaImporter)
+    endif()
+endif()
+set_target_properties(MagnumFontConverterGLTest PROPERTIES FOLDER "MagnumPlugins/MagnumFontConverter/Test")

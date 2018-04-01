@@ -198,3 +198,6 @@ std::string AnySceneImporter::doImage3DName(const UnsignedInt id) { return _in->
 Containers::Optional<ImageData3D> AnySceneImporter::doImage3D(const UnsignedInt id) { return _in->image3D(id); }
 
 }}
+
+CORRADE_PLUGIN_REGISTER(AnySceneImporter, Magnum::Trade::AnySceneImporter,
+    "cz.mosra.magnum.Trade.AbstractImporter/0.3")

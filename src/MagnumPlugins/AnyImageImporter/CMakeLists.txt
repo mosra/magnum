@@ -30,41 +30,20 @@ endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-set(AnyImageImporter_SRCS
-    AnyImageImporter.cpp)
-
-set(AnyImageImporter_HEADERS
-    AnyImageImporter.h)
-
-# Objects shared between plugin and test library
-add_library(AnyImageImporterObjects OBJECT
-    ${AnyImageImporter_SRCS}
-    ${AnyImageImporter_HEADERS})
-target_include_directories(AnyImageImporterObjects PUBLIC
-    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
-target_compile_definitions(AnyImageImporterObjects PRIVATE "AnyImageImporterObjects_EXPORTS")
-if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
-    set_target_properties(AnyImageImporterObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
-endif()
-set_target_properties(AnyImageImporterObjects PROPERTIES FOLDER "MagnumPlugins/AnyImageImporter")
-
 # AnyImageImporter plugin
 add_plugin(AnyImageImporter
     "${MAGNUM_PLUGINS_IMPORTER_DEBUG_BINARY_INSTALL_DIR};${MAGNUM_PLUGINS_IMPORTER_DEBUG_LIBRARY_INSTALL_DIR}"
     "${MAGNUM_PLUGINS_IMPORTER_RELEASE_BINARY_INSTALL_DIR};${MAGNUM_PLUGINS_IMPORTER_RELEASE_LIBRARY_INSTALL_DIR}"
     AnyImageImporter.conf
-    $<TARGET_OBJECTS:AnyImageImporterObjects>
-    pluginRegistration.cpp)
-if(BUILD_STATIC_PIC)
+    AnyImageImporter.cpp
+    AnyImageImporter.h)
+if(BUILD_PLUGINS_STATIC AND BUILD_STATIC_PIC)
     set_target_properties(AnyImageImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_include_directories(AnyImageImporter PUBLIC
-    ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_BINARY_DIR}/src)
 target_link_libraries(AnyImageImporter PUBLIC Magnum)
 
-install(FILES ${AnyImageImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageImporter)
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageImporter)
+install(FILES AnyImageImporter.h ${CMAKE_CURRENT_BINARY_DIR}/configure.h
+    DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageImporter)
 
 # Automatic static plugin import
 if(BUILD_PLUGINS_STATIC)
@@ -75,14 +54,6 @@ if(BUILD_PLUGINS_STATIC)
 endif()
 
 if(BUILD_TESTS)
-    add_library(MagnumAnyImageImporterTestLib STATIC
-        $<TARGET_OBJECTS:AnyImageImporterObjects>
-        ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
-    target_include_directories(MagnumAnyImageImporterTestLib PUBLIC
-        ${PROJECT_SOURCE_DIR}/src
-        ${PROJECT_BINARY_DIR}/src)
-    set_target_properties(MagnumAnyImageImporterTestLib PROPERTIES FOLDER "MagnumPlugins/AnyImageImporter")
-    target_link_libraries(MagnumAnyImageImporterTestLib PUBLIC Magnum)
     add_subdirectory(Test)
 endif()
 

@@ -29,13 +29,33 @@ else()
     set(MAGNUMFONT_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 endif()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+# CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
+# https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since Corrade
+# doesn't support dynamic plugins on iOS, this sorta works around that. Should
+# be revisited when updating Travis to newer Xcode (current has CMake 3.6).
+if(NOT BUILD_PLUGINS_STATIC)
+    set(MAGNUMFONT_PLUGIN_FILENAME $<TARGET_FILE:MagnumFont>)
+    set(TGAIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
+
+    # First replace ${} variables, then $<> generator expressions
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+    file(GENERATE OUTPUT $<TARGET_FILE_DIR:MagnumFontGLTest>/configure.h
+        INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+else()
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+endif()
 
 corrade_add_test(MagnumFontGLTest MagnumFontGLTest.cpp
-    LIBRARIES MagnumMagnumFontTestLib MagnumOpenGLTester
+    LIBRARIES MagnumText MagnumOpenGLTester
     FILES
         font.conf
         font.tga)
+if(NOT BUILD_PLUGINS_STATIC)
+    target_include_directories(MagnumFontGLTest PRIVATE $<TARGET_FILE_DIR:MagnumFontGLTest>)
+else()
+    target_include_directories(MagnumFontGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(MagnumFontGLTest PRIVATE MagnumFont TgaImporter)
+endif()
 set_target_properties(MagnumFontGLTest PROPERTIES FOLDER "MagnumPlugins/MagnumFont/Test")
-target_include_directories(MagnumFontGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})

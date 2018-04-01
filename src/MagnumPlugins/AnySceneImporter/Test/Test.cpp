@@ -28,9 +28,8 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Vector3.h"
+#include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/MeshData3D.h"
-
-#include "MagnumPlugins/AnySceneImporter/AnySceneImporter.h"
 
 #include "configure.h"
 
@@ -43,25 +42,35 @@ struct AnySceneImporterTest: TestSuite::Tester {
 
     void unknown();
 
-    private:
-        PluginManager::Manager<AbstractImporter> _manager;
+    /* Explicitly forbid system-wide plugin dependencies */
+    PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
 
-AnySceneImporterTest::AnySceneImporterTest(): _manager{MAGNUM_PLUGINS_IMPORTER_DIR} {
+AnySceneImporterTest::AnySceneImporterTest() {
     addTests({&AnySceneImporterTest::obj,
 
               &AnySceneImporterTest::unknown});
+
+    /* Load the plugin directly from the build tree. Otherwise it's static and
+       already loaded. */
+    #ifdef ANYSCENEIMPORTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT(_manager.load(ANYSCENEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+    /* Optional plugins that don't have to be here */
+    #ifdef OBJIMPORTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT(_manager.load(OBJIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
 }
 
 void AnySceneImporterTest::obj() {
-    if(_manager.loadState("ObjImporter") == PluginManager::LoadState::NotFound)
-        CORRADE_SKIP("ObjImporter plugin not found, cannot test");
+    if(!(_manager.loadState("ObjImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("ObjImporter plugin not enabled, cannot test");
 
-    AnySceneImporter importer{_manager};
-    CORRADE_VERIFY(importer.openFile(OBJ_FILE));
+    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
+    CORRADE_VERIFY(importer->openFile(OBJ_FILE));
 
     /* Check only size, as it is good enough proof that it is working */
-    Containers::Optional<MeshData3D> mesh = importer.mesh3D(0);
+    Containers::Optional<MeshData3D> mesh = importer->mesh3D(0);
     CORRADE_VERIFY(mesh);
     CORRADE_COMPARE(mesh->positions(0).size(), 3);
 }
@@ -70,8 +79,8 @@ void AnySceneImporterTest::unknown() {
     std::ostringstream output;
     Error redirectError{&output};
 
-    AnySceneImporter importer{_manager};
-    CORRADE_VERIFY(!importer.openFile("mesh.wtf"));
+    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
+    CORRADE_VERIFY(!importer->openFile("mesh.wtf"));
 
     CORRADE_COMPARE(output.str(), "Trade::AnySceneImporter::openFile(): cannot determine type of file mesh.wtf\n");
 }
