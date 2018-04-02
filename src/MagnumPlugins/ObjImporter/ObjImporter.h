@@ -33,6 +33,8 @@
 
 #include "MagnumPlugins/ObjImporter/configure.h"
 
+#include <Corrade/Containers/Array.h>
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_OBJIMPORTER_BUILD_STATIC
     #if defined(ObjImporter_EXPORTS) || defined(ObjImporterObjects_EXPORTS)
@@ -93,14 +95,26 @@ class MAGNUM_OBJIMPORTER_EXPORT ObjImporter: public AbstractImporter {
         MAGNUM_OBJIMPORTER_LOCAL void doOpenFile(const std::string& filename) override;
         MAGNUM_OBJIMPORTER_LOCAL void doClose() override;
 
+        MAGNUM_OBJIMPORTER_LOCAL UnsignedInt doObject3DCount() const override;
+        MAGNUM_OBJIMPORTER_LOCAL Int doObject3DForName(const std::string& name) override;
+        MAGNUM_OBJIMPORTER_LOCAL std::string doObject3DName(UnsignedInt id) override;
+        MAGNUM_OBJIMPORTER_LOCAL std::unique_ptr<ObjectData3D> doObject3D(UnsignedInt id) override;
+
         MAGNUM_OBJIMPORTER_LOCAL UnsignedInt doMesh3DCount() const override;
         MAGNUM_OBJIMPORTER_LOCAL Int doMesh3DForName(const std::string& name) override;
         MAGNUM_OBJIMPORTER_LOCAL std::string doMesh3DName(UnsignedInt id) override;
         MAGNUM_OBJIMPORTER_LOCAL Containers::Optional<MeshData3D> doMesh3D(UnsignedInt id) override;
 
-        MAGNUM_OBJIMPORTER_LOCAL void parseMeshNames();
+        MAGNUM_OBJIMPORTER_LOCAL UnsignedInt doMaterialCount() const override;
+        MAGNUM_OBJIMPORTER_LOCAL std::unique_ptr<AbstractMaterialData> doMaterial(UnsignedInt id) override;
 
-        std::unique_ptr<File> _file;
+        MAGNUM_OBJIMPORTER_LOCAL UnsignedInt doImage2DCount() const;
+        MAGNUM_OBJIMPORTER_LOCAL std::optional<ImageData2D> doImage2D(UnsignedInt id);
+
+        MAGNUM_OBJIMPORTER_LOCAL void parse();
+        MAGNUM_OBJIMPORTER_LOCAL void parseMaterialLibrary(Containers::ArrayView<const char> libname);
+
+        std::unique_ptr<struct ImporterState> _state;
 };
 
 }}

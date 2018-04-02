@@ -60,6 +60,9 @@ if(BUILD_STATIC_PIC)
     set_target_properties(ObjImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(ObjImporter Magnum MagnumMeshTools)
+if(CORRADE_TARGET_WINDOWS)
+    target_link_libraries(ObjImporter AnyImageImporter)
+endif()
 
 install(FILES ${ObjImporter_HEADERS} DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/ObjImporter)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/ObjImporter)
@@ -73,11 +76,26 @@ if(BUILD_PLUGINS_STATIC)
 endif()
 
 if(BUILD_TESTS)
-    add_library(MagnumObjImporterTestLib STATIC
-        $<TARGET_OBJECTS:ObjImporterObjects>
-        ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
+    # On Win32 we need to avoid dllimporting AnyImageImporter symbols, because
+    # it would search for the symbols in some DLL even when they were linked
+    # statically. However it apparently doesn't matter that they were
+    # dllexported when building the static library. EH. And because the
+    # -DObjImporterObjects_EXPORTS is no longer set in this case, we need
+    # to avoid dllimporting ObjImporter symbols as well.
+    if(CORRADE_TARGET_WINDOWS)
+        add_library(MagnumObjImporterTestLib STATIC
+            ${ObjImporter_SRCS}
+            ${ObjImporter_HEADERS})
+        target_compile_definitions(MagnumObjImporterTestLib PRIVATE
+            "MAGNUM_ANYIMAGEIMPORTER_BUILD_STATIC"
+            "MAGNUM_OBJIMPORTER_BUILD_STATIC")
+    else()
+        add_library(MagnumObjImporterTestLib STATIC
+            $<TARGET_OBJECTS:ObjImporterObjects>
+            ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
+    endif()
     set_target_properties(MagnumObjImporterTestLib PROPERTIES FOLDER "MagnumPlugins/ObjImporter")
-    target_link_libraries(MagnumObjImporterTestLib Magnum MagnumMeshTools)
+    target_link_libraries(MagnumObjImporterTestLib Magnum MagnumMeshTools MagnumAnyImageImporterTestLib)
 
     add_subdirectory(Test)
 endif()
