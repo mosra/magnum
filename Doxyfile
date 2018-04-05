@@ -837,6 +837,7 @@ WARN_LOGFILE           =
 INPUT                  = src/Magnum \
                          src/MagnumPlugins \
                          doc/ \
+                         ../magnum-plugins/src/Magnum \
                          ../magnum-plugins/src/MagnumPlugins \
                          ../magnum-plugins/doc/ \
                          ../magnum-integration/src/Magnum \
