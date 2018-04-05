@@ -377,9 +377,9 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
     elseif(_component STREQUAL Primitives)
         set(_MAGNUM_${_COMPONENT}_DEPENDENCIES Trade)
     elseif(_component STREQUAL MagnumFont)
-        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES TgaImporter) # and below
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES Trade TgaImporter) # and below
     elseif(_component STREQUAL MagnumFontConverter)
-        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES TgaImageConverter) # and below
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES Trade TgaImageConverter) # and below
     elseif(_component STREQUAL ObjImporter)
         set(_MAGNUM_${_COMPONENT}_DEPENDENCIES MeshTools) # and below
     endif()
