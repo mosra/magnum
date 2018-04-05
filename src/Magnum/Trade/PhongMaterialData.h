@@ -38,7 +38,7 @@ namespace Magnum { namespace Trade {
 /**
 @brief Phong material data
 */
-class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
+class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
     public:
         enum: UnsignedInt {
             AmbientTextureID = 0,   /**< Ambient texture ID for mapping with texture coordinates */
@@ -165,10 +165,10 @@ class MAGNUM_EXPORT PhongMaterialData: public AbstractMaterialData {
 CORRADE_ENUMSET_OPERATORS(PhongMaterialData::Flags)
 
 /** @debugoperatorclassenum{PhongMaterialData,PhongMaterialData::Flag} */
-MAGNUM_EXPORT Debug& operator<<(Debug& debug, PhongMaterialData::Flag value);
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, PhongMaterialData::Flag value);
 
 /** @debugoperatorclassenum{PhongMaterialData,PhongMaterialData::Flags} */
-MAGNUM_EXPORT Debug& operator<<(Debug& debug, PhongMaterialData::Flags value);
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, PhongMaterialData::Flags value);
 
 /* Ugly as hell. */
 

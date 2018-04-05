@@ -412,8 +412,10 @@ be built and which not:
 -   `WITH_AUDIO` --- Build the @ref Audio library. Depends on
     [OpenAL](https://www.openal.org/), not built by default.
 -   `WITH_DEBUGTOOLS` --- Build the @ref DebugTools library.
--   `WITH_MESHTOOLS` --- Build the @ref MeshTools library.
--   `WITH_PRIMITIVES` --- Build the @ref Primitives library.
+-   `WITH_MESHTOOLS` --- Build the @ref MeshTools library. Enables also
+    building of the Trade library.
+-   `WITH_PRIMITIVES` --- Build the @ref Primitives library. Enables also
+    building of the Trade library.
 -   `WITH_SCENEGRAPH` --- Build the @ref SceneGraph library. Enabled
     automatically if `WITH_SHAPES` is enabled.
 -   `WITH_SHADERS` --- Build the @ref Shaders library.
@@ -424,6 +426,7 @@ be built and which not:
     the TextureTools library.
 -   `WITH_TEXTURETOOLS` --- Build the @ref TextureTools library. Enabled
     automatically if `WITH_TEXT` or `WITH_DISTANCEFIELDCONVERTER` is enabled.
+-   `WITH_TRADE` --- Build the @ref Trade library
 
 There are more involved component dependencies that are not described here (for
 example the @ref DebugTools has some functionality that gets built only when
@@ -491,11 +494,12 @@ default.
 -   `WITH_ANYAUDIOIMPORTER` --- Build the @ref Audio::AnyImporter "AnyAudioImporter"
     plugin. Enables also building of the @ref Audio library.
 -   `WITH_ANYIMAGECONVERTER` --- Build the
-    @ref Trade::AnyImageConverter "AnyImageConverter" plugin.
+    @ref Trade::AnyImageConverter "AnyImageConverter" plugin. Enables also
+    building of the @ref Trade library.
 -   `WITH_ANYIMAGEIMPORTER` --- Build the @ref Trade::AnyImageImporter "AnyImageImporter"
-    plugin.
+    plugin. Enables also building of the @ref Trade library.
 -   `WITH_ANYSCENEIMPORTER` --- Build the @ref Trade::AnySceneImporter "AnySceneImporter"
-    plugin.
+    plugin. Enables also building of the @ref Trade library.
 -   `WITH_MAGNUMFONT` --- Build the @ref Text::MagnumFont "MagnumFont" plugin.
     Enables also building of the @ref Text library and the
     @ref Trade::TgaImporter "TgaImporter" plugin.
@@ -504,11 +508,12 @@ default.
     building of the @ref Text library and the
     @ref Trade::TgaImageConverter "TgaImageConverter" plugin.
 -   `WITH_OBJIMPORTER` --- Build the @ref Trade::ObjImporter "ObjImporter"
-    plugin.
+    plugin. Enables also building of the @ref Trade library.
 -   `WITH_TGAIMPORTER` --- Build the @ref Trade::TgaImporter "TgaImporter"
-    plugin.
+    plugin. Enables also building of the @ref Trade library.
 -   `WITH_TGAIMAGECONVERTER` --- Build the
-    @ref Trade::TgaImageConverter "TgaImageConverter" plugin.
+    @ref Trade::TgaImageConverter "TgaImageConverter" plugin. Enables also
+    building of the @ref Trade library.
 -   `WITH_WAVAUDIOIMPORTER` --- Build the @ref Audio::WavImporter "WavAudioImporter"
     plugin. Enables also building of the @ref Audio library.
 

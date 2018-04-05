@@ -23,6 +23,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+find_package(Corrade REQUIRED PluginManager)
 find_package(OpenAL REQUIRED)
 
 set(MagnumAudio_SRCS

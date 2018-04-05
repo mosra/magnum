@@ -57,6 +57,7 @@
 #  Shapes                       - Shapes library
 #  Text                         - Text library
 #  TextureTools                 - TextureTools library
+#  Trade                        - Trade library
 #  GlfwApplication              - GLFW application
 #  GlutApplication              - GLUT application
 #  GlxApplication               - GLX application
@@ -87,7 +88,7 @@
 #
 # Example usage with specifying additional components is::
 #
-#  find_package(Magnum REQUIRED MeshTools Primitives GlutApplication)
+#  find_package(Magnum REQUIRED Trade MeshTools Primitives GlutApplication)
 #
 # For each component is then defined:
 #
@@ -206,8 +207,20 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# Dependencies
-find_package(Corrade REQUIRED Utility PluginManager)
+# Corrade library dependencies
+set(_MAGNUM_CORRADE_DEPENDENCIES )
+foreach(_component ${Magnum_FIND_COMPONENTS})
+    string(TOUPPER ${_component} _COMPONENT)
+
+    # Unrolling the transitive dependencies here so this doesn't need to be
+    # after resolving inter-component dependencies. Listing also all plugins.
+    if(_component MATCHES "^(Audio|DebugTools|MeshTools|Primitives|Text|TextureTools|Trade|.+Importer|.+ImageConverter|.+Font)$")
+        set(_MAGNUM_${_COMPONENT}_CORRADE_DEPENDENCIES PluginManager)
+    endif()
+
+    list(APPEND _MAGNUM_CORRADE_DEPENDENCIES ${_MAGNUM_${_COMPONENT}_CORRADE_DEPENDENCIES})
+endforeach()
+find_package(Corrade REQUIRED Utility ${_MAGNUM_CORRADE_DEPENDENCIES})
 
 # Root include dir
 find_path(MAGNUM_INCLUDE_DIR
@@ -302,8 +315,7 @@ if(NOT TARGET Magnum::Magnum)
 
     # Dependent libraries
     set_property(TARGET Magnum::Magnum APPEND PROPERTY INTERFACE_LINK_LIBRARIES
-         Corrade::Utility
-         Corrade::PluginManager)
+         Corrade::Utility)
 
     # Dependent libraries and includes
     if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
@@ -339,7 +351,9 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
     elseif(_component STREQUAL Text)
         set(_MAGNUM_${_COMPONENT}_DEPENDENCIES TextureTools)
     elseif(_component STREQUAL DebugTools)
-        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES MeshTools Primitives SceneGraph Shaders Shapes)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES MeshTools Primitives SceneGraph Shaders Shapes Trade)
+    elseif(_component STREQUAL MeshTools)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES Trade)
     elseif(_component STREQUAL OpenGLTester)
         if(MAGNUM_TARGET_HEADLESS OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
             set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessEglApplication)
@@ -360,16 +374,20 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 set(_MAGNUM_${_COMPONENT}_DEPENDENCIES WindowlessWindowsEglApplication)
             endif()
         endif()
+    elseif(_component STREQUAL Primitives)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES Trade)
     elseif(_component STREQUAL MagnumFont)
         set(_MAGNUM_${_COMPONENT}_DEPENDENCIES TgaImporter) # and below
     elseif(_component STREQUAL MagnumFontConverter)
         set(_MAGNUM_${_COMPONENT}_DEPENDENCIES TgaImageConverter) # and below
     elseif(_component STREQUAL ObjImporter)
-        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES MeshTools)
+        set(_MAGNUM_${_COMPONENT}_DEPENDENCIES MeshTools) # and below
     endif()
 
     if(_component MATCHES ".+AudioImporter")
         list(APPEND _MAGNUM_${_COMPONENT}_DEPENDENCIES Audio)
+    elseif(_component MATCHES ".+(Importer|ImageConverter)")
+        list(APPEND _MAGNUM_${_COMPONENT}_DEPENDENCIES Trade)
     elseif(_component MATCHES ".+(Font|FontConverter)")
         list(APPEND _MAGNUM_${_COMPONENT}_DEPENDENCIES Text TextureTools)
     endif()
@@ -394,7 +412,7 @@ endif()
 
 # Component distinction (listing them explicitly to avoid mistakes with finding
 # components from other repositories)
-set(_MAGNUM_LIBRARY_COMPONENTS "^(Audio|DebugTools|MeshTools|Primitives|SceneGraph|Shaders|Shapes|Text|TextureTools|AndroidApplication|GlfwApplication|GlutApplication|GlxApplication|Sdl2Application|XEglApplication|WindowlessCglApplication|WindowlessEglApplication|WindowlessGlxApplication|WindowlessIosApplication|WindowlessWglApplication|WindowlessWindowsEglApplication|CglContext|EglContext|GlxContext|WglContext|OpenGLTester)$")
+set(_MAGNUM_LIBRARY_COMPONENTS "^(Audio|DebugTools|MeshTools|Primitives|SceneGraph|Shaders|Shapes|Text|TextureTools|Trade|AndroidApplication|GlfwApplication|GlutApplication|GlxApplication|Sdl2Application|XEglApplication|WindowlessCglApplication|WindowlessEglApplication|WindowlessGlxApplication|WindowlessIosApplication|WindowlessWglApplication|WindowlessWindowsEglApplication|CglContext|EglContext|GlxContext|WglContext|OpenGLTester)$")
 set(_MAGNUM_PLUGIN_COMPONENTS "^(AnyAudioImporter|AnyImageConverter|AnyImageImporter|AnySceneImporter|MagnumFont|MagnumFontConverter|ObjImporter|TgaImageConverter|TgaImporter|WavAudioImporter)$")
 set(_MAGNUM_EXECUTABLE_COMPONENTS "^(distancefieldconverter|fontconverter|imageconverter|info|al-info)$")
 
@@ -612,7 +630,7 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             set_property(TARGET Magnum::${_component} APPEND PROPERTY
                 INTERFACE_INCLUDE_DIRECTORIES ${OPENAL_INCLUDE_DIR})
             set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                INTERFACE_LINK_LIBRARIES ${OPENAL_LIBRARY})
+                INTERFACE_LINK_LIBRARIES ${OPENAL_LIBRARY} Corrade::PluginManager)
 
         # No special setup for DebugTools library
 
@@ -631,11 +649,20 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
         # No special setup for SceneGraph library
         # No special setup for Shaders library
         # No special setup for Shapes library
-        # No special setup for Text library
+
+        # Text library
+        elseif(_component STREQUAL Text)
+            set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES Corrade::PluginManager)
 
         # TextureTools library
         elseif(_component STREQUAL TextureTools)
             set(_MAGNUM_${_COMPONENT}_INCLUDE_PATH_NAMES Atlas.h)
+
+        # Trade library
+        elseif(_component STREQUAL Trade)
+            set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES Corrade::PluginManager)
         endif()
 
         # No special setup for AnyAudioImporter plugin

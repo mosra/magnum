@@ -57,7 +57,7 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/modules/")
 
 # Find Corrade first so we can check on the target
-find_package(Corrade REQUIRED PluginManager Utility)
+find_package(Corrade REQUIRED Utility)
 
 include(CMakeDependentOption)
 
@@ -113,6 +113,7 @@ cmake_dependent_option(WITH_SCENEGRAPH "Build SceneGraph library" ON "NOT WITH_S
 cmake_dependent_option(WITH_SHADERS "Build Shaders library" ON "NOT WITH_DEBUGTOOLS OR ( NOT WITH_SHAPES AND NOT WITH_SCENEGRAPH )" ON)
 cmake_dependent_option(WITH_TEXT "Build Text library" ON "NOT WITH_FONTCONVERTER;NOT WITH_MAGNUMFONT;NOT WITH_MAGNUMFONTCONVERTER" ON)
 cmake_dependent_option(WITH_TEXTURETOOLS "Build TextureTools library" ON "NOT WITH_TEXT;NOT WITH_DISTANCEFIELDCONVERTER" ON)
+cmake_dependent_option(WITH_TRADE "Build Trade library" ON "NOT WITH_MESHTOOLS;NOT WITH_PRIMITIVES;NOT WITH_IMAGECONVERTER;NOT WITH_ANYIMAGEIMPORTER;NOT WITH_ANYIMAGECONVERTER;NOT WITH_ANYSCENEIMPORTER;NOT WITH_OBJIMPORTER;NOT WITH_TGAIMAGECONVERTER;NOT WITH_TGAIMPORTER" ON)
 
 # EGL context and windowless EGL application, available everywhere
 cmake_dependent_option(WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "NOT TARGET_GLES OR TARGET_DESKTOP_GLES OR NOT WITH_MAGNUMINFO" ON)

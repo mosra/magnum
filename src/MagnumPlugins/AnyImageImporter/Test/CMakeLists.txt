@@ -50,7 +50,7 @@ else()
 endif()
 
 corrade_add_test(AnyImageImporterTest Test.cpp
-    LIBRARIES Magnum
+    LIBRARIES MagnumTrade
     FILES
         ../../TgaImporter/Test/file.tga)
 if(NOT BUILD_PLUGINS_STATIC)

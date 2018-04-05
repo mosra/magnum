@@ -23,6 +23,8 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+find_package(Corrade REQUIRED PluginManager)
+
 if(BUILD_PLUGINS_STATIC)
     set(MAGNUM_TGAIMAGECONVERTER_BUILD_STATIC 1)
 endif()
@@ -40,7 +42,7 @@ add_plugin(TgaImageConverter
 if(BUILD_PLUGINS_STATIC AND BUILD_STATIC_PIC)
     set_target_properties(TgaImageConverter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_link_libraries(TgaImageConverter PUBLIC Magnum)
+target_link_libraries(TgaImageConverter PUBLIC MagnumTrade)
 
 install(FILES TgaImageConverter.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/TgaImageConverter)

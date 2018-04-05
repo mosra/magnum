@@ -77,7 +77,9 @@ if(NOT BUILD_STATIC)
 elseif(BUILD_STATIC_PIC)
     set_target_properties(MagnumMeshTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_link_libraries(MagnumMeshTools Magnum)
+target_link_libraries(MagnumMeshTools PUBLIC
+    Magnum
+    MagnumTrade)
 
 install(TARGETS MagnumMeshTools
     RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -98,7 +100,9 @@ if(BUILD_TESTS)
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumMeshToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
-    target_link_libraries(MagnumMeshToolsTestLib Magnum)
+    target_link_libraries(MagnumMeshToolsTestLib PUBLIC
+        Magnum
+        MagnumMeshTools)
 
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too

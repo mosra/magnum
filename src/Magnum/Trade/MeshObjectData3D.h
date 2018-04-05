@@ -39,7 +39,7 @@ namespace Magnum { namespace Trade {
 Provides access to material information for given mesh instance.
 @see @ref MeshObjectData2D
 */
-class MAGNUM_EXPORT MeshObjectData3D: public ObjectData3D {
+class MAGNUM_TRADE_EXPORT MeshObjectData3D: public ObjectData3D {
     public:
         /**
          * @brief Constructor

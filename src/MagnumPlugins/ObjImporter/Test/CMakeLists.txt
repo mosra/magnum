@@ -47,7 +47,7 @@ else()
 endif()
 
 corrade_add_test(ObjImporterTest Test.cpp
-    LIBRARIES Magnum
+    LIBRARIES MagnumTrade
     FILES
         emptyFile.obj
         keywords.obj

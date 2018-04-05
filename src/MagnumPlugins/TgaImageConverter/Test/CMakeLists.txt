@@ -43,7 +43,8 @@ else()
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 endif()
 
-corrade_add_test(TgaImageConverterTest TgaImageConverterTest.cpp LIBRARIES Magnum)
+corrade_add_test(TgaImageConverterTest TgaImageConverterTest.cpp
+    LIBRARIES MagnumTrade)
 if(NOT BUILD_PLUGINS_STATIC)
     target_include_directories(TgaImageConverterTest PRIVATE $<TARGET_FILE_DIR:TgaImageConverterTest>)
 else()

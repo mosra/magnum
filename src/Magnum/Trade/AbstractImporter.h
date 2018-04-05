@@ -35,8 +35,8 @@
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/visibility.h"
 #include "Magnum/Trade/Trade.h"
+#include "Magnum/Trade/visibility.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include "MagnumExternal/Optional/OptionalWrapper.h"
@@ -86,7 +86,7 @@ checked by the implementation:
 
 @todo How to handle casting from std::unique_ptr<> in more convenient way?
 */
-class MAGNUM_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlugin<AbstractImporter> {
+class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlugin<AbstractImporter> {
     public:
         /**
          * @brief Features supported by this importer

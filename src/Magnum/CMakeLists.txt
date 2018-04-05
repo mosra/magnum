@@ -63,22 +63,7 @@ set(Magnum_SRCS
     Implementation/State.cpp
     Implementation/TextureState.cpp
     Implementation/driverSpecific.cpp
-    Implementation/maxTextureSize.cpp
-
-    Trade/AbstractImageConverter.cpp
-    Trade/AbstractImporter.cpp
-    Trade/AbstractMaterialData.cpp
-    Trade/ImageData.cpp
-    Trade/LightData.cpp
-    Trade/MeshData2D.cpp
-    Trade/MeshData3D.cpp
-    Trade/MeshObjectData2D.cpp
-    Trade/MeshObjectData3D.cpp
-    Trade/ObjectData2D.cpp
-    Trade/ObjectData3D.cpp
-    Trade/PhongMaterialData.cpp
-    Trade/SceneData.cpp
-    Trade/TextureData.cpp)
+    Implementation/maxTextureSize.cpp)
 
 set(Magnum_HEADERS
     AbstractFramebuffer.h
@@ -249,8 +234,7 @@ target_include_directories(Magnum PUBLIC
     ${PROJECT_BINARY_DIR}/src
     ${PROJECT_SOURCE_DIR}/src/MagnumExternal/OpenGL)
 target_link_libraries(Magnum
-    Corrade::Utility
-    Corrade::PluginManager)
+    Corrade::Utility)
 if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
     target_link_libraries(Magnum ${OPENGL_gl_LIBRARY})
 elseif(TARGET_GLES2)
@@ -305,7 +289,6 @@ endif()
 
 add_subdirectory(Math)
 add_subdirectory(Platform)
-add_subdirectory(Trade)
 
 if(WITH_AUDIO)
     add_subdirectory(Audio)
@@ -341,6 +324,10 @@ endif()
 
 if(WITH_TEXTURETOOLS)
     add_subdirectory(TextureTools)
+endif()
+
+if(WITH_TRADE)
+    add_subdirectory(Trade)
 endif()
 
 if(BUILD_TESTS)

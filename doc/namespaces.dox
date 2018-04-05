@@ -405,11 +405,12 @@ See @ref building and @ref cmake for more information.
 Contains plugin interfaces for importing data of various formats and classes
 for direct access to the data.
 
-This library is built as part of Magnum by default. To use it, you need to
-find the `Magnum` package and link to the `Magnum::Magnum` target:
+This library is built if `WITH_TRADE` is enabled when building Magnum. To use
+this library with CMake, you need to request the `Trade` component of the
+`Magnum` package and link to the `Magnum::Trade` target:
 
 @code{.cmake}
-find_package(Magnum REQUIRED)
+find_package(Magnum REQUIRED Trade)
 
 # ...
 target_link_libraries(your-app Magnum::Trade)

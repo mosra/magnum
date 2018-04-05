@@ -49,7 +49,7 @@ else()
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 endif()
 
-corrade_add_test(AnyImageConverterTest Test.cpp LIBRARIES Magnum)
+corrade_add_test(AnyImageConverterTest Test.cpp LIBRARIES MagnumTrade)
 if(NOT BUILD_PLUGINS_STATIC)
     target_include_directories(AnyImageConverterTest PRIVATE $<TARGET_FILE_DIR:AnyImageConverterTest>)
 else()

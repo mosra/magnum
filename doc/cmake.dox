@@ -102,6 +102,7 @@ the components. The optional components are:
 -   `Shapes` --- @ref Shapes library
 -   `Text` --- @ref Text library
 -   `TextureTools` --- @ref TextureTools library
+-   `Trade` --- @ref Trade library
 
 Platform namespace is split into more components:
 
@@ -173,7 +174,7 @@ in build and use it with CMake.
 Example usage with specifying additional components is:
 
 @code{.cmake}
-find_package(Magnum REQUIRED MeshTools Primitives Sdl2Application)
+find_package(Magnum REQUIRED Trade MeshTools Primitives Sdl2Application)
 @endcode
 
 For each component is then defined:

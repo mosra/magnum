@@ -33,14 +33,14 @@
 #include <vector>
 
 #include "Magnum/Types.h"
-#include "Magnum/visibility.h"
+#include "Magnum/Trade/visibility.h"
 
 namespace Magnum { namespace Trade {
 
 /**
 @brief Scene data
 */
-class MAGNUM_EXPORT SceneData {
+class MAGNUM_TRADE_EXPORT SceneData {
     public:
         /**
          * @brief Constructor

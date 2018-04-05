@@ -23,6 +23,8 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+find_package(Corrade REQUIRED PluginManager)
+
 if(BUILD_STATIC)
     set(MAGNUM_ANYIMAGECONVERTER_BUILD_STATIC 1)
 endif()
@@ -40,7 +42,7 @@ add_plugin(AnyImageConverter
 if(BUILD_PLUGINS_STATIC AND BUILD_STATIC_PIC)
     set_target_properties(AnyImageConverter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_link_libraries(AnyImageConverter PUBLIC Magnum)
+target_link_libraries(AnyImageConverter PUBLIC MagnumTrade)
 
 install(FILES AnyImageConverter.h ${CMAKE_CURRENT_BINARY_DIR}/configure.h
     DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/AnyImageConverter)

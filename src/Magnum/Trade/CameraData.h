@@ -29,10 +29,8 @@
  * @brief Class @ref Magnum::Trade::CameraData
  */
 
-#include <string>
-
-#include "Magnum/Math/Angle.h"
 #include "Magnum/Magnum.h"
+#include "Magnum/Math/Angle.h"
 
 namespace Magnum { namespace Trade {
 

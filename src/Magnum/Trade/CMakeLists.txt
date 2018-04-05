@@ -23,6 +23,23 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+find_package(Corrade REQUIRED PluginManager)
+
+set(MagnumTrade_SRCS
+    AbstractImageConverter.cpp
+    AbstractImporter.cpp
+    AbstractMaterialData.cpp
+    ImageData.cpp
+    LightData.cpp
+    MeshData2D.cpp
+    MeshData3D.cpp
+    MeshObjectData2D.cpp
+    MeshObjectData3D.cpp
+    ObjectData2D.cpp
+    ObjectData3D.cpp
+    PhongMaterialData.cpp
+    SceneData.cpp
+    TextureData.cpp)
 set(MagnumTrade_HEADERS
     AbstractImporter.h
     AbstractImageConverter.h
@@ -39,22 +56,41 @@ set(MagnumTrade_HEADERS
     PhongMaterialData.h
     SceneData.h
     TextureData.h
-    Trade.h)
+    Trade.h
+
+    visibility.h)
 
 if(NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 endif()
 
-# Force IDEs to display all header files in project view
-add_custom_target(MagnumTrade SOURCES ${MagnumTrade_HEADERS})
-set_target_properties(MagnumTrade PROPERTIES FOLDER "Magnum/Trade")
+# Trade library
+add_library(MagnumTrade ${SHARED_OR_STATIC}
+    ${MagnumTrade_SRCS})
+set_target_properties(MagnumTrade PROPERTIES
+    DEBUG_POSTFIX "-d"
+    FOLDER "Magnum/Trade")
+if(NOT BUILD_STATIC)
+    set_target_properties(MagnumTrade PROPERTIES VERSION ${MAGNUM_LIBRARY_VERSION} SOVERSION ${MAGNUM_LIBRARY_SOVERSION})
+elseif(BUILD_STATIC_PIC)
+    set_target_properties(MagnumTrade PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+target_link_libraries(MagnumTrade PUBLIC
+    Magnum
+    Corrade::PluginManager)
 
+install(TARGETS MagnumTrade
+    RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+    LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+    ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 install(FILES ${MagnumTrade_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Trade)
 
 if(WITH_IMAGECONVERTER)
     add_executable(magnum-imageconverter imageconverter.cpp)
-    target_link_libraries(magnum-imageconverter Magnum)
+    target_link_libraries(magnum-imageconverter PRIVATE
+        Magnum
+        MagnumTrade)
     set_target_properties(magnum-imageconverter PROPERTIES FOLDER "Magnum/Trade")
 
     install(TARGETS magnum-imageconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
@@ -66,3 +102,6 @@ endif()
 if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
+
+# Magnum Trade target alias for superprojects
+add_library(Magnum::Trade ALIAS MagnumTrade)

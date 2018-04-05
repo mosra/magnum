@@ -89,9 +89,9 @@ template<UnsignedInt dimensions> ImageData<dimensions>::operator CompressedImage
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-template class MAGNUM_EXPORT ImageData<1>;
-template class MAGNUM_EXPORT ImageData<2>;
-template class MAGNUM_EXPORT ImageData<3>;
+template class MAGNUM_TRADE_EXPORT ImageData<1>;
+template class MAGNUM_TRADE_EXPORT ImageData<2>;
+template class MAGNUM_TRADE_EXPORT ImageData<3>;
 #endif
 
 }}

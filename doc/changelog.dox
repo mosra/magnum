@@ -99,6 +99,8 @@ See also:
     repository. If you are using them statically via CMake, you need to update
     your copies of `FindMagnum.cmake` and `FindMagnumPlugins.cmake` modules.
     See @ref building and @ref cmake for more information.
+-   The @ref Trade namespace is now a separate library, allowing to use core
+    Magnum functionality without @ref Corrade::PluginManager
 
 @subsection changelog-latest-bugfixes Bug fixes
 

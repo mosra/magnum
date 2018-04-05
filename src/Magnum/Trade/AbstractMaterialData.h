@@ -30,7 +30,7 @@
  */
 
 #include "Magnum/Magnum.h"
-#include "Magnum/visibility.h"
+#include "Magnum/Trade/visibility.h"
 
 namespace Magnum { namespace Trade {
 
@@ -48,7 +48,7 @@ enum class MaterialType: UnsignedByte {
 
 Subclasses provide access to parameters for given material type.
 */
-class MAGNUM_EXPORT AbstractMaterialData {
+class MAGNUM_TRADE_EXPORT AbstractMaterialData {
     public:
         virtual ~AbstractMaterialData();
 
@@ -87,8 +87,8 @@ class MAGNUM_EXPORT AbstractMaterialData {
         const void* _importerState;
 };
 
-/** @debugoperatorenum{Magnum::Trade::MaterialType} */
-MAGNUM_EXPORT Debug& operator<<(Debug& debug, MaterialType value);
+/** @debugoperatorenum{MaterialType} */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, MaterialType value);
 
 }}
 

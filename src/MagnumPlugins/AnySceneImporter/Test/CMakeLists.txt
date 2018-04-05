@@ -50,7 +50,7 @@ else()
 endif()
 
 corrade_add_test(AnySceneImporterTest Test.cpp
-    LIBRARIES Magnum
+    LIBRARIES MagnumTrade
     FILES
         ../../ObjImporter/Test/pointMesh.obj)
 if(NOT BUILD_PLUGINS_STATIC)

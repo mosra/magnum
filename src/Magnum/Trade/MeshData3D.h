@@ -32,7 +32,7 @@
 #include <vector>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/visibility.h"
+#include "Magnum/Trade/visibility.h"
 
 namespace Magnum { namespace Trade {
 
@@ -43,7 +43,7 @@ Provides access to mesh data and additional information, such as primitive
 type.
 @see @ref MeshData2D
 */
-class MAGNUM_EXPORT MeshData3D {
+class MAGNUM_TRADE_EXPORT MeshData3D {
     public:
         /**
          * @brief Constructor

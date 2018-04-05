@@ -34,22 +34,22 @@ endif()
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-corrade_add_test(TradeAbstractImageConverterTest AbstractImageConverterTest.cpp LIBRARIES Magnum)
+corrade_add_test(TradeAbstractImageConverterTest AbstractImageConverterTest.cpp LIBRARIES MagnumTrade)
 target_include_directories(TradeAbstractImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(TradeAbstractImporterTest AbstractImporterTest.cpp
-    LIBRARIES Magnum
+    LIBRARIES MagnumTrade
     FILES file.bin)
 target_include_directories(TradeAbstractImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-corrade_add_test(TradeCameraDataTest CameraDataTest.cpp LIBRARIES Magnum)
-corrade_add_test(TradeImageDataTest ImageDataTest.cpp LIBRARIES Magnum)
-corrade_add_test(TradeLightDataTest LightDataTest.cpp LIBRARIES Magnum)
-corrade_add_test(TradeMaterialDataTest MaterialDataTest.cpp LIBRARIES Magnum)
-corrade_add_test(TradeMeshData2DTest MeshData2DTest.cpp LIBRARIES Magnum)
-corrade_add_test(TradeMeshData3DTest MeshData3DTest.cpp LIBRARIES Magnum)
-corrade_add_test(TradeObjectData2DTest ObjectData2DTest.cpp LIBRARIES Magnum)
-corrade_add_test(TradeObjectData3DTest ObjectData3DTest.cpp LIBRARIES Magnum)
-corrade_add_test(TradeSceneDataTest SceneDataTest.cpp LIBRARIES Magnum)
-corrade_add_test(TradeTextureDataTest TextureDataTest.cpp LIBRARIES Magnum)
+corrade_add_test(TradeCameraDataTest CameraDataTest.cpp LIBRARIES MagnumTrade)
+corrade_add_test(TradeImageDataTest ImageDataTest.cpp LIBRARIES MagnumTrade)
+corrade_add_test(TradeLightDataTest LightDataTest.cpp LIBRARIES MagnumTrade)
+corrade_add_test(TradeMaterialDataTest MaterialDataTest.cpp LIBRARIES MagnumTrade)
+corrade_add_test(TradeMeshData2DTest MeshData2DTest.cpp LIBRARIES MagnumTrade)
+corrade_add_test(TradeMeshData3DTest MeshData3DTest.cpp LIBRARIES MagnumTrade)
+corrade_add_test(TradeObjectData2DTest ObjectData2DTest.cpp LIBRARIES MagnumTrade)
+corrade_add_test(TradeObjectData3DTest ObjectData3DTest.cpp LIBRARIES MagnumTrade)
+corrade_add_test(TradeSceneDataTest SceneDataTest.cpp LIBRARIES MagnumTrade)
+corrade_add_test(TradeTextureDataTest TextureDataTest.cpp LIBRARIES MagnumTrade)
 
 set_target_properties(
     TradeAbstractImageConverterTest

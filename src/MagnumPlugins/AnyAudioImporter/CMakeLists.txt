@@ -23,6 +23,8 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+find_package(Corrade REQUIRED PluginManager)
+
 if(BUILD_STATIC)
     set(MAGNUM_ANYAUDIOIMPORTER_BUILD_STATIC 1)
 endif()

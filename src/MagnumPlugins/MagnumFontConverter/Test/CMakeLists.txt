@@ -45,7 +45,7 @@ else()
 endif()
 
 corrade_add_test(MagnumFontConverterGLTest MagnumFontConverterGLTest.cpp
-    LIBRARIES MagnumText MagnumOpenGLTester)
+    LIBRARIES MagnumText MagnumTrade MagnumOpenGLTester)
 if(NOT BUILD_PLUGINS_STATIC)
     target_include_directories(MagnumFontConverterGLTest PRIVATE $<TARGET_FILE_DIR:MagnumFontConverterGLTest>)
 else()

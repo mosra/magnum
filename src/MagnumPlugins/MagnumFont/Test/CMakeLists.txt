@@ -48,7 +48,7 @@ else()
 endif()
 
 corrade_add_test(MagnumFontGLTest MagnumFontGLTest.cpp
-    LIBRARIES MagnumText MagnumOpenGLTester
+    LIBRARIES MagnumText MagnumTrade MagnumOpenGLTester
     FILES
         font.conf
         font.tga)

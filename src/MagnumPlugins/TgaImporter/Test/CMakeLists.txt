@@ -47,7 +47,7 @@ else()
 endif()
 
 corrade_add_test(TgaImporterTest TgaImporterTest.cpp
-    LIBRARIES Magnum
+    LIBRARIES MagnumTrade
     FILES file.tga)
 if(NOT BUILD_PLUGINS_STATIC)
     target_include_directories(TgaImporterTest PRIVATE $<TARGET_FILE_DIR:TgaImporterTest>)

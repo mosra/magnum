@@ -23,6 +23,8 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+find_package(Corrade REQUIRED PluginManager)
+
 if(BUILD_PLUGINS_STATIC)
     set(MAGNUM_OBJIMPORTER_BUILD_STATIC 1)
 endif()
@@ -40,7 +42,7 @@ add_plugin(ObjImporter
 if(BUILD_PLUGINS_STATIC AND BUILD_STATIC_PIC)
     set_target_properties(ObjImporter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_link_libraries(ObjImporter PUBLIC Magnum MagnumMeshTools)
+target_link_libraries(ObjImporter PUBLIC MagnumTrade MagnumMeshTools)
 
 install(FILES ObjImporter.h ${CMAKE_CURRENT_BINARY_DIR}/configure.h
     DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/ObjImporter)
