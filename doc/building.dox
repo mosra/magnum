@@ -489,7 +489,7 @@ see @ref building-plugins for more information. None of the plugins is built by
 default.
 
 -   `WITH_ANYAUDIOIMPORTER` --- Build the @ref Audio::AnyImporter "AnyAudioImporter"
-    plugin. Available only if `WITH_AUDIO` is enabled.
+    plugin. Enables also building of the @ref Audio library.
 -   `WITH_ANYIMAGECONVERTER` --- Build the
     @ref Trade::AnyImageConverter "AnyImageConverter" plugin.
 -   `WITH_ANYIMAGEIMPORTER` --- Build the @ref Trade::AnyImageImporter "AnyImageImporter"
@@ -497,11 +497,11 @@ default.
 -   `WITH_ANYSCENEIMPORTER` --- Build the @ref Trade::AnySceneImporter "AnySceneImporter"
     plugin.
 -   `WITH_MAGNUMFONT` --- Build the @ref Text::MagnumFont "MagnumFont" plugin.
-    Available only if `WITH_TEXT` is enabled. Enables also building of the
+    Enables also building of the @ref Text library and the
     @ref Trade::TgaImporter "TgaImporter" plugin.
 -   `WITH_MAGNUMFONTCONVERTER` --- Build the
-    @ref Text::MagnumFontConverter "MagnumFontConverter" plugin. Available only
-    if `WITH_TEXT` is enabled. Enables also building of their
+    @ref Text::MagnumFontConverter "MagnumFontConverter" plugin. Enables also
+    building of the @ref Text library and the
     @ref Trade::TgaImageConverter "TgaImageConverter" plugin.
 -   `WITH_OBJIMPORTER` --- Build the @ref Trade::ObjImporter "ObjImporter"
     plugin.
@@ -510,7 +510,7 @@ default.
 -   `WITH_TGAIMAGECONVERTER` --- Build the
     @ref Trade::TgaImageConverter "TgaImageConverter" plugin.
 -   `WITH_WAVAUDIOIMPORTER` --- Build the @ref Audio::WavImporter "WavAudioImporter"
-    plugin. Available only if `WITH_AUDIO` is enabled.
+    plugin. Enables also building of the @ref Audio library.
 
 There are also a few command-line utilities, also all disabled by default:
 
