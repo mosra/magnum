@@ -78,6 +78,5 @@ cmake .. ^
     -DTARGET_GLES2=%TARGET_GLES2% ^
     -DBUILD_TESTS=ON ^
     -DBUILD_STATIC=ON ^
-    -DBUILD_PLUGINS_STATIC=ON ^
     -G "%GENERATOR%" -A x64 || exit /b
 cmake --build . --config Release -- /m /v:m || exit /b

@@ -816,8 +816,8 @@ architectures in `CMAKE_OSX_ARCHITECTURES`. Be sure to set
 
 As every application is in its own sandbox, it doesn't make sense to build
 shared libraries (although it is supported). Enable `BUILD_STATIC` to build
-static libraries. You might also have problems using dynamic plugins, enable
-`BUILD_PLUGINS_STATIC` to build also plugins as static. OpenGL ES 2.0 is
+static libraries. Dynamically loaded plugins are not supported on iOS at the
+moment, thus `BUILD_PLUGINS_STATIC` is implicitly enabled. OpenGL ES 2.0 is
 enabled by default, switch to 3.0 by disabling `TARGET_GLES2`.
 
 Please note that `BUILD_MULTITHREADED` is supported only since Xcode 7.3 and
