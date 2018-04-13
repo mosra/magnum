@@ -39,6 +39,7 @@ set(Magnum_SRCS
     DefaultFramebuffer.cpp
     Framebuffer.cpp
     Image.cpp
+    ImageView.cpp
     Mesh.cpp
     MeshView.cpp
     OpenGL.cpp

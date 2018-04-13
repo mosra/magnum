@@ -70,9 +70,7 @@ template<UnsignedInt dimensions> class ImageView {
          * The data are expected to be of proper size for given @p storage
          * parameters.
          */
-        explicit ImageView(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data) noexcept: _storage{storage}, _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<const char*>(data.data()), data.size()} {
-            CORRADE_ASSERT(!_data || Implementation::imageDataSize(*this) <= _data.size(), "ImageView::ImageView(): bad image data size, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
-        }
+        explicit ImageView(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data) noexcept;
 
         /** @overload
          * Similar to the above, but uses default @ref PixelStorage parameters.
@@ -140,10 +138,7 @@ template<UnsignedInt dimensions> class ImageView {
          * passed in constructor. The data are expected to be of proper size
          * for given @p storage parameters.
          */
-        void setData(Containers::ArrayView<const void> data) {
-            CORRADE_ASSERT(Implementation::imageDataSize(*this) <= data.size(), "ImageView::setData(): bad image data size, got" << data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
-            _data = {reinterpret_cast<const char*>(data.data()), data.size()};
-        }
+        void setData(Containers::ArrayView<const void> data);
 
     private:
         PixelStorage _storage;
