@@ -165,6 +165,7 @@ template<UnsignedInt dimensions> class Image {
             return reinterpret_cast<const T*>(_data.data());
         }
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Set image data
          * @param storage           Storage of pixel data
@@ -173,18 +174,25 @@ template<UnsignedInt dimensions> class Image {
          * @param size              Image size
          * @param data              Image data
          *
+         * @deprecated Move-assign a new instance instead.
+         *
          * Deletes previous data and replaces them with new. The data are
          * expected to be of proper size for given @p storage parameters.
          * @see @ref release()
          */
-        void setData(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data);
+        CORRADE_DEPRECATED("move-assign a new instance instead") void setData(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
+            *this = Image<dimensions>{storage, format, type, size, std::move(data)};
+        }
 
         /** @overload
          * Similar to the above, but uses default @ref PixelStorage parameters.
+         *
+         * @deprecated Move-assign a new instance instead.
          */
-        void setData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
-            setData({}, format, type, size, std::move(data));
+        CORRADE_DEPRECATED("move-assign a new instance instead") void setData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
+            *this = Image<dimensions>{format, type, size, std::move(data)};
         }
+        #endif
 
         /**
          * @brief Release data storage
@@ -346,6 +354,7 @@ template<UnsignedInt dimensions> class CompressedImage {
             return reinterpret_cast<const T*>(_data.data());
         }
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Set image data
@@ -354,6 +363,8 @@ template<UnsignedInt dimensions> class CompressedImage {
          * @param size              Image size
          * @param data              Image data
          *
+         * @deprecated Move-assign a new instance instead.
+         *
          * Deletes previous data and replaces them with new. Note that the
          * data are not copied, but they are deleted on destruction.
          * @see @ref release()
@@ -361,7 +372,9 @@ template<UnsignedInt dimensions> class CompressedImage {
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.
          */
-        void setData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data);
+        CORRADE_DEPRECATED("move-assign a new instance instead") void setData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
+            *this = CompressedImage<dimensions>{storage, format, size, std::move(data)};
+        }
         #endif
 
         /**
@@ -370,10 +383,15 @@ template<UnsignedInt dimensions> class CompressedImage {
          * @param size              Image size
          * @param data              Image data
          *
+         * @deprecated Move-assign a new instance instead.
+         *
          * Similar the above, but uses default @ref CompressedPixelStorage
          * parameters (or the hardcoded ones in OpenGL ES and WebGL).
          */
-        void setData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data);
+        CORRADE_DEPRECATED("move-assign a new instance instead") void setData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
+            *this = CompressedImage<dimensions>{format, size, std::move(data)};
+        }
+        #endif
 
         /**
          * @brief Release data storage
@@ -486,10 +504,6 @@ template<UnsignedInt dimensions> inline CompressedImage<dimensions>::CompressedI
 template<UnsignedInt dimensions> inline CompressedImage<dimensions>::CompressedImage(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data): CompressedImage{{}, format, size, std::move(data)} {}
 
 template<UnsignedInt dimensions> inline CompressedImage<dimensions>::CompressedImage(): CompressedImage{CompressedPixelStorage{}} {}
-
-template<UnsignedInt dimensions> inline void CompressedImage<dimensions>::setData(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
-    setData({}, format, size, std::move(data));
-}
 #endif
 
 }

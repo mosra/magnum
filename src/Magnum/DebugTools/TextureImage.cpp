@@ -149,7 +149,7 @@ void textureSubImage(Texture2D& texture, const Int level, const Range2Di& range,
         /* release() needs to be called after querying the size to avoid zeroing it out */
         {
             Vector2i imageSize = image.size();
-            image.setData(image.storage(), reinterpretFormat, PixelType::UnsignedInt, imageSize, image.release());
+            image = Image2D{image.storage(), reinterpretFormat, PixelType::UnsignedInt, imageSize, image.release()};
         }
 
         fb.read(range, image);
@@ -157,7 +157,7 @@ void textureSubImage(Texture2D& texture, const Int level, const Range2Di& range,
         /* release() needs to be called after querying the size to avoid zeroing it out */
         {
             Vector2i imageSize = image.size();
-            image.setData(image.storage(), imageFormat, PixelType::Float, imageSize, image.release());
+            image = Image2D{image.storage(), imageFormat, PixelType::Float, imageSize, image.release()};
         }
         return;
     }

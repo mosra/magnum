@@ -31,29 +31,6 @@ template<UnsignedInt dimensions> Image<dimensions>::Image(PixelStorage storage, 
     CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "Image::Image(): bad image data size, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
 }
 
-template<UnsignedInt dimensions> void Image<dimensions>::setData(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
-    _storage = storage;
-    _format = format;
-    _type = type;
-    _size = size;
-    CORRADE_ASSERT(Implementation::imageDataSize(*this) <= data.size(), "Image::setData(): bad image data size, got" << data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
-    _data = std::move(data);
-}
-
-template<UnsignedInt dimensions> void CompressedImage<dimensions>::setData(
-    #ifndef MAGNUM_TARGET_GLES
-    CompressedPixelStorage storage,
-    #endif
-    CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data)
-{
-    #ifndef MAGNUM_TARGET_GLES
-    _storage = storage;
-    #endif
-    _format = format;
-    _size = size;
-    _data = std::move(data);
-}
-
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_EXPORT Image<1>;
 template class MAGNUM_EXPORT Image<2>;

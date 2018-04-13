@@ -313,7 +313,7 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
         + Implementation::pixelStorageSkipOffsetFor(image, rectangle.size())
         #endif
         );
-    image.setData(image.storage(), image.format(), image.type(), rectangle.size(), std::move(data));
+    image = Image2D{image.storage(), image.format(), image.type(), rectangle.size(), std::move(data)};
 }
 
 Image2D AbstractFramebuffer::read(const Range2Di& rectangle, Image2D&& image) {

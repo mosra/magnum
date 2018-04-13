@@ -75,7 +75,7 @@ void CubeMapTexture::image(const Int level, Image3D& image) {
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     image.storage().applyPack();
     glGetTextureImage(_id, level, GLenum(image.format()), GLenum(image.type()), data.size(), data);
-    image.setData(image.storage(), image.format(), image.type(), size, std::move(data));
+    image = Image3D{image.storage(), image.format(), image.type(), size, std::move(data)};
 }
 
 Image3D CubeMapTexture::image(const Int level, Image3D&& image) {
@@ -130,7 +130,7 @@ void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     image.storage().applyPack();
     (this->*Context::current().state().texture->getFullCompressedCubeImageImplementation)(level, size.xy(), dataOffset, dataSize, data);
-    image.setData(image.storage(), CompressedPixelFormat(format), size, std::move(data));
+    image = CompressedImage3D{image.storage(), CompressedPixelFormat(format), size, std::move(data)};
 }
 
 CompressedImage3D CubeMapTexture::compressedImage(const Int level, CompressedImage3D&& image) {
@@ -183,7 +183,7 @@ void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     image.storage().applyPack();
     (this->*Context::current().state().texture->getCubeImageImplementation)(coordinate, level, size, image.format(), image.type(), data.size(), data);
-    image.setData(image.storage(), image.format(), image.type(), size, std::move(data));
+    image = Image2D{image.storage(), image.format(), image.type(), size, std::move(data)};
 }
 
 Image2D CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, Image2D&& image) {
@@ -234,7 +234,7 @@ void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const I
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     image.storage().applyPack();
     (this->*Context::current().state().texture->getCompressedCubeImageImplementation)(coordinate, level, size, data.size(), data);
-    image.setData(image.storage(), CompressedPixelFormat(format), size, std::move(data));
+    image = CompressedImage2D{image.storage(), CompressedPixelFormat(format), size, std::move(data)};
 }
 
 CompressedImage2D CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, CompressedImage2D&& image) {

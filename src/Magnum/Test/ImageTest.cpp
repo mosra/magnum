@@ -40,8 +40,6 @@ struct ImageTest: TestSuite::Tester {
     void constructMove();
     void constructMoveCompressed();
 
-    void setData();
-    void setDataCompressed();
     void toView();
     void toViewCompressed();
     void release();
@@ -56,8 +54,6 @@ ImageTest::ImageTest() {
               &ImageTest::constructMove,
               &ImageTest::constructMoveCompressed,
 
-              &ImageTest::setData,
-              &ImageTest::setDataCompressed,
               &ImageTest::toView,
               &ImageTest::toViewCompressed,
               &ImageTest::release,
@@ -167,39 +163,6 @@ void ImageTest::constructMoveCompressed() {
     CORRADE_COMPARE(c.size(), Vector2i(4, 4));
     CORRADE_COMPARE(c.data(), data);
     CORRADE_COMPARE(c.data().size(), 8);
-}
-
-void ImageTest::setData() {
-    auto data = new char[3*3];
-    Image2D a{PixelStorage{}.setAlignment(1),
-        PixelFormat::RGB, PixelType::UnsignedByte, {1, 3}, Containers::Array<char>{data, 3*3}};
-    auto data2 = new char[2*2*4];
-    a.setData(PixelFormat::RGBA, PixelType::UnsignedShort, {2, 1}, Containers::Array<char>{data2, 2*2*4});
-
-    CORRADE_COMPARE(a.storage().alignment(), 4);
-    CORRADE_COMPARE(a.format(), PixelFormat::RGBA);
-    CORRADE_COMPARE(a.type(), PixelType::UnsignedShort);
-    CORRADE_COMPARE(a.size(), Vector2i(2, 1));
-    CORRADE_COMPARE(a.data(), data2);
-}
-
-void ImageTest::setDataCompressed() {
-    auto data = new char[8];
-    CompressedImage2D a{CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}};
-    auto data2 = new char[16];
-    a.setData(
-        #ifndef MAGNUM_TARGET_GLES
-        CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
-        #endif
-        CompressedPixelFormat::RGBAS3tcDxt3, {8, 4}, Containers::Array<char>{data2, 16});
-
-    #ifndef MAGNUM_TARGET_GLES
-    CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
-    #endif
-    CORRADE_COMPARE(a.format(), CompressedPixelFormat::RGBAS3tcDxt3);
-    CORRADE_COMPARE(a.size(), Vector2i(8, 4));
-    CORRADE_COMPARE(a.data(), data2);
-    CORRADE_COMPARE(a.data().size(), 16);
 }
 
 void ImageTest::toView() {
