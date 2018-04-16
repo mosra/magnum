@@ -7,7 +7,7 @@ arch=('i686' 'x86_64')
 url="http://magnum.graphics"
 license=('MIT')
 depends=('corrade' 'openal' 'freeglut' 'sdl2' 'glfw')
-makedepends=('cmake' 'ninja')
+makedepends=('cmake' 'ninja' 'lcov')
 options=('!strip')
 provides=('magnum-git')
 
@@ -75,5 +75,5 @@ check() {
 }
 
 package() {
-    echo "Open ../../build-coverage/coverage/index.html to see the results." && false
+    echo "Open file://$_rootdir/build-coverage/coverage/index.html to see the results." && false
 }
