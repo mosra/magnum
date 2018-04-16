@@ -63,9 +63,6 @@ template<UnsignedInt dimensions> class BufferImage {
          * @param size              Image size
          * @param data              Image data
          * @param usage             Image buffer usage
-         *
-         * @todo Make it more flexible (usable with
-         *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
         explicit BufferImage(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
 
@@ -189,8 +186,6 @@ template<UnsignedInt dimensions> class BufferImage {
          * zero-sized @p data will not reallocate current storage, but expects
          * that current data size is large enough for the new parameters.
          * @see @ref Buffer::setData()
-         * @todo Make it more flexible (usable with
-         *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
         void setData(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
 
@@ -254,9 +249,6 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @param size              Image size
          * @param data              Image data
          * @param usage             Image buffer usage
-         *
-         * @todo Make it more flexible (usable with
-         *      @extension{ARB,buffer_storage}, avoiding relocations...)
          *
          * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
@@ -403,8 +395,6 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.
-         * @todo Make it more flexible (usable with
-         *      @extension{ARB,buffer_storage}, avoiding relocations...)
          */
         void setData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
         #endif
