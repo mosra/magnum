@@ -102,7 +102,7 @@ if(BUILD_TESTS)
     endif()
     target_link_libraries(MagnumMeshToolsTestLib PUBLIC
         Magnum
-        MagnumMeshTools)
+        MagnumTrade)
 
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too
