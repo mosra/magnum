@@ -42,10 +42,46 @@ namespace Magnum { namespace GL {
 /**
 @brief Buffer image
 
-Stores image data in GPU memory. Interchangeable with @ref Image,
-@ref ImageView or @ref Trade::ImageData.
-@see @ref BufferImage1D, @ref BufferImage2D, @ref BufferImage3D,
-    @ref CompressedBufferImage, @ref Buffer
+Stores multi-dimensional image data in GPU memory together with layout and
+pixel format description. See @ref Image for the client memory counterpart.
+
+This class can act as a drop-in replacement for @ref Image, @ref ImageView and
+@ref Trade::ImageData APIs. See also @ref CompressedBufferImage for equivalent
+functionality targeted on compressed image formats.
+
+@section GL-BufferImage-usage Basic usage
+
+The image creates a @ref Buffer instance and fills it with passed data, storing
+corresponding image size and pixel format properties. Because this is a
+GL-centric class, it's common to specify the format using @ref GL::PixelFormat
+and @link GL::PixelType @endlink:
+
+@snippet MagnumGL.cpp BufferImage-usage
+
+It's also possible to pass the generic @ref Magnum::PixelFormat to it, however
+the @ref format() and @ref type() queries will always return the GL-specific
+value. On construction, the image internally calculates pixel size
+corresponding to given pixel format using either @ref GL::pixelSize() or
+@ref Magnum::pixelSize(). This value is needed to check that the passed data
+are large enough and also required by most of image manipulation operations.
+
+Besides creating and owning the buffer, you can also pass existing buffer to
+it, for example to use buffer storage and other advanced functionality. The
+image will take an ownership of the buffer, you can use @ref Buffer::wrap() to
+make a non-owning copy.
+
+@snippet MagnumGL.cpp BufferImage-usage-wrap
+
+It's also possible to create just an image placeholder, storing only the image
+properties without data or size. That is useful for example to specify desired
+format of image queries in graphics APIs:
+
+@snippet MagnumGL.cpp BufferImage-usage-query
+
+Similarly to @ref ImageView, this class supports extra storage parameters.
+See @ref ImageView-usage for more information.
+
+@see @ref BufferImage1D, @ref BufferImage2D, @ref BufferImage3D
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
 */
@@ -66,10 +102,61 @@ template<UnsignedInt dimensions> class BufferImage {
          */
         explicit BufferImage(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
 
-        /** @overload
-         * Similar to the above, but uses default @ref PixelStorage parameters.
+        /**
+         * @brief Constructor
+         * @param format            Format of pixel data
+         * @param type              Data type of pixel data
+         * @param size              Image size
+         * @param data              Image data
+         * @param usage             Image buffer usage
+         *
+         * Equivalent to calling @ref BufferImage(PixelStorage, PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage)
+         * with default-constructed @ref PixelStorage.
          */
         explicit BufferImage(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage): BufferImage{{}, format, type, size, data, usage} {}
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Constructor
+         * @deprecated Use either @ref GL::PixelFormat together with
+         *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
+         */
+        explicit CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") BufferImage(PixelStorage storage, Magnum::PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage): BufferImage{storage, PixelFormat(UnsignedInt(format)), type, size, data, usage} {}
+
+        /**
+         * @brief Constructor
+         *
+         * @deprecated Use either @ref GL::PixelFormat together with
+         *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
+         */
+        explicit CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") BufferImage(Magnum::PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage): BufferImage{PixelFormat(UnsignedInt(format)), type, size, data, usage} {}
+        #endif
+
+        /**
+         * @brief Constructor
+         * @param storage           Storage of pixel data
+         * @param format            Format of pixel data
+         * @param size              Image size
+         * @param data              Image data
+         * @param usage             Image buffer usage
+         *
+         * Converts @ref Magnum::PixelFormat to GL-specific values using
+         * @ref pixelFormat() and @ref pixelType() and then calls
+         * @ref BufferImage(PixelStorage, PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage).
+         */
+        explicit BufferImage(PixelStorage storage, Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
+
+        /**
+         * @brief Constructor
+         * @param format            Format of pixel data
+         * @param size              Image size
+         * @param data              Image data
+         * @param usage             Image buffer usage
+         *
+         * Equivalent to calling @ref BufferImage(PixelStorage, Magnum::PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage)
+         * with default-constructed @ref PixelStorage.
+         */
+        explicit BufferImage(Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage): BufferImage{{}, format, size, data, usage} {}
 
         /**
          * @brief Construct from existing buffer
@@ -85,29 +172,117 @@ template<UnsignedInt dimensions> class BufferImage {
          */
         explicit BufferImage(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept;
 
-        /** @overload
-         * Similar to the above, but uses default @ref PixelStorage parameters.
+        /**
+         * @brief Construct from existing buffer
+         * @param format            Format of pixel data
+         * @param type              Data type of pixel data
+         * @param size              Image size
+         * @param buffer            Buffer
+         * @param dataSize          Buffer data size
+         *
+         * Equivalent to calling @ref BufferImage(PixelStorage, PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Buffer&&, std::size_t)
+         * with default-constructed @ref PixelStorage.
          */
         explicit BufferImage(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: BufferImage{{}, format, type, size, std::move(buffer), dataSize} {}
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
-         * @brief Constructor
+         * @brief Construct from existing buffer
+         * @deprecated Use either @ref GL::PixelFormat together with
+         *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
+         */
+        explicit CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") BufferImage(PixelStorage storage, Magnum::PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: BufferImage{storage, PixelFormat(UnsignedInt(format)), type, size, std::move(buffer), dataSize} {}
+
+        /**
+         * @brief Construct from existing buffer
+         * @deprecated Use either @ref GL::PixelFormat together with
+         *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
+         */
+        explicit CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") BufferImage(Magnum::PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: BufferImage{PixelFormat(UnsignedInt(format)), type, size, std::move(buffer), dataSize} {}
+        #endif
+
+        /**
+         * @brief Construct from existing buffer
+         * @param storage           Storage of pixel data
+         * @param format            Format of pixel data
+         * @param size              Image size
+         * @param buffer            Buffer
+         * @param dataSize          Buffer data size
+         *
+         * Converts @ref Magnum::PixelFormat to GL-specific values using
+         * @ref pixelFormat() and @ref pixelType() and then calls
+         * @ref BufferImage(PixelStorage, PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Buffer&&, std::size_t).
+         */
+        explicit BufferImage(PixelStorage storage, Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept;
+
+        /**
+         * @brief Construct from existing buffer
+         * @param format            Format of pixel data
+         * @param size              Image size
+         * @param buffer            Buffer
+         * @param dataSize          Buffer data size
+         *
+         * Equivalent to calling @ref BufferImage(PixelStorage, Magnum::PixelFormat, const VectorTypeFor<dimensions, Int>&, Buffer&&, std::size_t)
+         * with default-constructed @ref PixelStorage.
+         */
+        explicit BufferImage(Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: BufferImage{{}, format, size, std::move(buffer), dataSize} {}
+
+        /**
+         * @brief Construct an image placeholder
          * @param storage           Storage of pixel data
          * @param format            Format of pixel data
          * @param type              Data type of pixel data
          *
          * Size is zero and buffer are empty, call @ref setData() to fill the
-         * image with data or use @ref Texture::image() "*Texture::image()"/
-         * @ref Texture::subImage() "*Texture::subImage()"/
-         * @ref AbstractFramebuffer::read() "*Framebuffer::read()" to fill the
-         * image with data using @p storage settings.
+         * image with data.
          */
         /*implicit*/ BufferImage(PixelStorage storage, PixelFormat format, PixelType type);
 
-        /** @overload
-         * Similar to the above, but uses default @ref PixelStorage parameters.
+        /**
+         * @brief Construct an image placeholder
+         * @param format            Format of pixel data
+         * @param type              Data type of pixel data
+         *
+         * Equivalent to calling @ref BufferImage(PixelStorage, PixelFormat, PixelType)
+         * with default-constructed @ref PixelStorage.
          */
         /*implicit*/ BufferImage(PixelFormat format, PixelType type): BufferImage{{}, format, type} {}
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Construct an image placeholder
+         * @deprecated Use either @ref GL::PixelFormat together with
+         *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
+         */
+        /*implicit*/ CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") BufferImage(PixelStorage storage, Magnum::PixelFormat format, PixelType type): BufferImage{storage, PixelFormat(UnsignedInt(format)), type} {}
+
+        /**
+         * @brief Construct an image placeholder
+         * @deprecated Use either @ref GL::PixelFormat together with
+         *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
+         */
+        /*implicit*/ CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") BufferImage(Magnum::PixelFormat format, PixelType type): BufferImage{PixelFormat(UnsignedInt(format)), type} {}
+        #endif
+
+        /**
+         * @brief Construct an image placeholder
+         * @param storage           Storage of pixel data
+         * @param format            Format of pixel data
+         *
+         * Converts @ref Magnum::PixelFormat to GL-specific values using
+         * @ref pixelFormat() and @ref pixelType() and then calls
+         * @ref BufferImage(PixelStorage, PixelFormat, PixelType).
+         */
+        /*implicit*/ BufferImage(PixelStorage storage, Magnum::PixelFormat format);
+
+        /**
+         * @brief Construct an image placeholder
+         * @param format            Format of pixel data
+         *
+         * Equivalent to calling @ref BufferImage(PixelStorage, Magnum::PixelFormat)
+         * with default-constructed @ref PixelStorage.
+         */
+        /*implicit*/ BufferImage(Magnum::PixelFormat format): BufferImage{{}, format} {}
 
         /**
          * @brief Construct without creating the underlying OpenGL object
@@ -149,7 +324,7 @@ template<UnsignedInt dimensions> class BufferImage {
          *
          * @see @ref Magnum::pixelSize(), @ref GL::pixelSize()
          */
-        std::size_t pixelSize() const { return PixelStorage::pixelSize(_format, _type); }
+        UnsignedInt pixelSize() const;
 
         /** @brief Image size */
         VectorTypeFor<Dimensions, Int> size() const { return _size; }
@@ -196,11 +371,59 @@ template<UnsignedInt dimensions> class BufferImage {
             setData({}, format, type, size, data, usage);
         }
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Set image data
+         * @deprecated Use either @ref GL::PixelFormat together with
+         *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
+         */
+        CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") void setData(PixelStorage storage, Magnum::PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage) {
+            setData(storage, PixelFormat(UnsignedInt(format)), type, size, data, usage);
+        }
+
+        /**
+         * @brief Set image data
+         * @deprecated Use either @ref GL::PixelFormat together with
+         *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
+         */
+        CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") void setData(Magnum::PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage) {
+            setData({}, PixelFormat(UnsignedInt(format)), type, size, data, usage);
+        }
+        #endif
+
+        /**
+         * @brief Set image data
+         * @param storage           Storage of pixel data
+         * @param format            Format of pixel data
+         * @param size              Image size
+         * @param data              Image data
+         * @param usage             Image buffer usage
+         *
+         * Converts @ref Magnum::PixelFormat to GL-specific values using
+         * @ref pixelFormat() and @ref pixelType() and then calls
+         * @ref setData(PixelStorage, PixelFormat, PixelType, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage).
+         */
+        void setData(PixelStorage storage, Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
+
+        /**
+         * @brief Set image data
+         * @param format            Format of pixel data
+         * @param size              Image size
+         * @param data              Image data
+         * @param usage             Image buffer usage
+         *
+         * Equivalent to calling @ref setData(PixelStorage, Magnum::PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage)
+         * with default-constructed @ref PixelStorage.
+         */
+        void setData(Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage) {
+            setData({}, format, size, data, usage);
+        }
+
         /**
          * @brief Release the image buffer
          *
-         * Releases the ownership of the image buffer and resets internal state
-         * to default.
+         * Releases the ownership of the data array and resets @ref size() to
+         * zero. The state afterwards is equivalent to moved-from state.
          * @see @ref buffer()
          */
         Buffer release();
@@ -226,10 +449,43 @@ typedef BufferImage<3> BufferImage3D;
 /**
 @brief Compressed buffer image
 
-Stores image data in GPU memory.
+Stores multi-dimensional compressed image data in GPU memory together with
+layout and compressed block description. See @ref CompressedImage for the
+client memory counterpart.
 
-See @ref BufferImage for more information. Interchangeable with @ref CompressedImage,
-@ref CompressedImageView or @ref Trade::ImageData.
+This class can act as a drop-in replacement for @ref CompressedImage,
+@ref CompressedImageView and @ref Trade::ImageData APIs. See also
+@ref BufferImage for equivalent functionality targeted on non-compressed image
+formats.
+
+@section GL-CompressedBufferImage-usage Basic usage
+
+The image creates a @ref Buffer instance and fills it with passed data, storing
+corresponding image size and compression format properties. Because this is a
+GL-centric class, it's common to specify the format using
+@link GL::CompressedPixelFormat @endlink:
+
+@snippet MagnumGL.cpp CompressedBufferImage-usage
+
+It's also possible to pass the generic @ref Magnum::CompressedPixelFormat to
+it, however the @ref format() query will always return the GL-specific value.
+
+Besides creating and owning the buffer, you can also pass existing buffer to
+it, for example to use buffer storage and other advanced functionality. The
+image will take an ownership of the buffer, you can use @ref Buffer::wrap() to
+make a non-owning copy.
+
+@snippet MagnumGL.cpp CompressedBufferImage-usage-wrap
+
+It's also possible to create just an image placeholder, storing only the image
+properties without data or size. That is useful for example to specify desired
+format of image queries in graphics APIs:
+
+@snippet MagnumGL.cpp CompressedBufferImage-usage-query
+
+Similarly to @ref CompressedImageView, this class supports extra storage
+parameters. See @ref CompressedImageView-usage for more information.
+
 @see @ref CompressedBufferImage1D, @ref CompressedBufferImage2D,
     @ref CompressedBufferImage3D
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
@@ -241,7 +497,6 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
             Dimensions = dimensions /**< Image dimension count */
         };
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Constructor
          * @param storage           Storage of compressed pixel data
@@ -251,11 +506,11 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @param usage             Image buffer usage
          *
          * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default compressed pixel storage
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.
          */
         explicit CompressedBufferImage(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
-        #endif
 
         /**
          * @brief Constructor
@@ -264,57 +519,112 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @param data              Image data
          * @param usage             Image buffer usage
          *
-         * Similar the above, but uses default @ref CompressedPixelStorage
-         * parameters (or the hardcoded ones in OpenGL ES and WebGL).
+         * Equivalent to calling @ref CompressedBufferImage(CompressedPixelStorage, Magnum::CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage)
+         * with default-constructed @ref CompressedPixelStorage.
          */
-        explicit CompressedBufferImage(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
+        explicit CompressedBufferImage(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage): CompressedBufferImage{{}, format, size, data, usage} {}
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Constructor
          * @param storage           Storage of compressed pixel data
          * @param format            Format of compressed pixel data
          * @param size              Image size
-         * @param buffer            Image data
-         * @param dataSize          Image buffer usage
+         * @param data              Image data
+         * @param usage             Image buffer usage
          *
+         * Converts @ref Magnum::CompressedPixelFormat to a GL-specific value
+         * using @ref compressedPixelFormat() and and then calls
+         * @ref CompressedBufferImage(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage).
+         */
+        explicit CompressedBufferImage(CompressedPixelStorage storage, Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
+
+        /**
+         * @brief Constructor
+         * @param format            Format of compressed pixel data
+         * @param size              Image size
+         * @param data              Image data
+         * @param usage             Image buffer usage
+         *
+         * Equivalent to calling @ref CompressedBufferImage(CompressedPixelStorage, Magnum::CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage)
+         * with default-constructed @ref CompressedPixelStorage.
+         */
+        explicit CompressedBufferImage(Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage): CompressedBufferImage{{}, format, size, data, usage} {}
+
+        /**
+         * @brief Constructor
+         * @param storage           Storage of compressed pixel data
+         * @param format            Format of compressed pixel data
+         * @param size              Image size
+         * @param buffer            Buffer
+         * @param dataSize          Buffer data size
+         *
+         * If @p dataSize is @cpp 0 @ce, the buffer is unconditionally
+         * reallocated on the first call to @ref setData().
          * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default compressed pixel storage
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.
          */
         explicit CompressedBufferImage(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept;
-        #endif
 
-        /** @overload
-         * Similar the above, but uses default @ref CompressedPixelStorage
-         * parameters (or the hardcoded ones in OpenGL ES and WebGL).
-         */
-        explicit CompressedBufferImage(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept;
-
-        #ifndef MAGNUM_TARGET_GLES
         /**
-         * @brief Constructor
+         * @brief Construct from existing buffer
+         * @param format            Format of compressed pixel data
+         * @param size              Image size
+         * @param buffer            Buffer
+         * @param dataSize          Buffer data size
+         *
+         * Equivalent to calling @ref CompressedBufferImage(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Buffer&&, std::size_t)
+         * with default-constructed @ref CompressedPixelStorage.
+         */
+        explicit CompressedBufferImage(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: CompressedBufferImage{{}, format, size, std::move(buffer), dataSize} {}
+
+        /**
+         * @brief Construct from existing buffer
+         * @param storage           Storage of compressed pixel data
+         * @param format            Format of compressed pixel data
+         * @param size              Image size
+         * @param buffer            Buffer
+         * @param dataSize          Buffer data size
+         *
+         * Converts @ref Magnum::CompressedPixelFormat to a GL-specific value
+         * using @ref compressedPixelFormat() and and then calls
+         * @ref CompressedBufferImage(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Buffer&&, std::size_t).
+         */
+        explicit CompressedBufferImage(CompressedPixelStorage storage, Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept;
+
+        /**
+         * @brief Construct from existing buffer
+         * @param format            Format of compressed pixel data
+         * @param size              Image size
+         * @param buffer            Buffer
+         * @param dataSize          Buffer data size
+         *
+         * Equivalent to calling @ref CompressedBufferImage(CompressedPixelStorage, Magnum::CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Buffer&&, std::size_t)
+         * with default-constructed @ref CompressedPixelStorage.
+         */
+        explicit CompressedBufferImage(Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: CompressedBufferImage{{}, format, size, std::move(buffer), dataSize} {}
+
+        /**
+         * @brief Construct an image placeholder
          * @param storage           Storage of compressed pixel data
          *
          * Format is undefined, size is zero and buffer is empty, call
-         * @ref setData() to fill the image with data or use
-         * @ref Texture::compressedImage() "*Texture::compressedImage()"/
-         * @ref Texture::compressedSubImage() "*Texture::compressedSubImage()"
-         * to fill the image with data using @p storage settings.
+         * @ref setData() to fill the image with data.
          * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         *      for non-default compressed pixel storage
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.
          */
         /*implicit*/ CompressedBufferImage(CompressedPixelStorage storage);
-        #endif
 
         /**
-         * @brief Constructor
+         * @brief Construct an image placeholder
          *
-         * Similar the above, but uses default @ref CompressedPixelStorage
-         * parameters (or the hardcoded ones in OpenGL ES and WebGL).
+         * Equivalent to calling @ref CompressedBufferImage(CompressedPixelStorage)
+         * with default-constructed @ref CompressedPixelStorage.
          */
-        /*implicit*/ CompressedBufferImage();
+        /*implicit*/ CompressedBufferImage(): CompressedBufferImage{CompressedPixelStorage{}} {}
 
         /**
          * @brief Construct without creating the underlying OpenGL object
@@ -338,16 +648,8 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
         /** @brief Move assignment */
         CompressedBufferImage<dimensions>& operator=(CompressedBufferImage<dimensions>&& other) noexcept;
 
-        #ifndef MAGNUM_TARGET_GLES
-        /**
-         * @brief Storage of compressed pixel data
-         *
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
-         * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
-         *      WebGL.
-         */
+        /** @brief Storage of compressed pixel data */
         CompressedPixelStorage storage() const { return _storage; }
-        #endif
 
         /** @brief Format of compressed pixel data */
         CompressedPixelFormat format() const { return _format; }
@@ -355,7 +657,6 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
         /** @brief Image size */
         VectorTypeFor<Dimensions, Int> size() const { return _size; }
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Compressed image data properties
          *
@@ -368,7 +669,6 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
         std::tuple<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>, std::size_t> dataProperties() const {
             return Magnum::Implementation::compressedImageDataProperties<dimensions>(*this);
         }
-        #endif
 
         /**
          * @brief Image buffer
@@ -380,7 +680,6 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
         /** @brief Raw data size */
         std::size_t dataSize() const { return _dataSize; }
 
-        #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Set image data
          * @param storage           Storage of compressed pixel data
@@ -389,15 +688,13 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @param data              Image data
          * @param usage             Image buffer usage
          *
-         * Updates the image buffer with given data. The data are *not* deleted
-         * after filling the buffer.
+         * Updates the image buffer with given data.
          * @see @ref Buffer::setData()
          * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.
          */
         void setData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
-        #endif
 
         /**
          * @brief Set image data
@@ -406,24 +703,52 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @param data              Image data
          * @param usage             Image buffer usage
          *
-         * Similar the above, but uses default @ref CompressedPixelStorage
-         * parameters (or the hardcoded ones in OpenGL ES and WebGL).
+         * Equivalent to calling @ref setData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage)
+         * with default-constructed @ref CompressedPixelStorage.
          */
-        void setData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
+        void setData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage) {
+            setData({}, format, size, data, usage);
+        }
+
+        /**
+         * @brief Set image data
+         * @param storage           Storage of compressed pixel data
+         * @param format            Format of compressed pixel data
+         * @param size              Image size
+         * @param data              Image data
+         * @param usage             Image buffer usage
+         *
+         * Converts @ref Magnum::CompressedPixelFormat to a GL-specific value
+         * using @ref compressedPixelFormat() and and then calls
+         * @ref setData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage).
+         */
+        void setData(CompressedPixelStorage storage, Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage);
+
+        /**
+         * @brief Set image data
+         * @param format            Format of compressed pixel data
+         * @param size              Image size
+         * @param data              Image data
+         * @param usage             Image buffer usage
+         *
+         * Equivalent to calling @ref setData(CompressedPixelStorage, Magnum::CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::ArrayView<const void>, BufferUsage)
+         * with default-constructed @ref CompressedPixelStorage.
+         */
+        void setData(Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage) {
+            setData({}, format, size, data, usage);
+        }
 
         /**
          * @brief Release the image buffer
          *
-         * Releases the ownership of the image buffer and resets internal state
-         * to default.
+         * Releases the ownership of the data array and resets @ref size() to
+         * zero. The state afterwards is equivalent to moved-from state.
          * @see @ref buffer()
          */
         Buffer release();
 
     private:
-        #ifndef MAGNUM_TARGET_GLES
         CompressedPixelStorage _storage;
-        #endif
         CompressedPixelFormat _format;
         Math::Vector<Dimensions, Int> _size;
         Buffer _buffer;
@@ -443,11 +768,7 @@ template<UnsignedInt dimensions> inline BufferImage<dimensions>::BufferImage(Buf
     other._size = {};
 }
 
-template<UnsignedInt dimensions> inline CompressedBufferImage<dimensions>::CompressedBufferImage(CompressedBufferImage<dimensions>&& other) noexcept:
-    #ifndef MAGNUM_TARGET_GLES
-    _storage{std::move(other._storage)},
-    #endif
-    _format{std::move(other._format)}, _size{std::move(other._size)}, _buffer{std::move(other._buffer)}, _dataSize{std::move(other._dataSize)} {
+template<UnsignedInt dimensions> inline CompressedBufferImage<dimensions>::CompressedBufferImage(CompressedBufferImage<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _size{std::move(other._size)}, _buffer{std::move(other._buffer)}, _dataSize{std::move(other._dataSize)} {
     other._size = {};
     other._dataSize = {};
 }
@@ -464,27 +785,13 @@ template<UnsignedInt dimensions> inline BufferImage<dimensions>& BufferImage<dim
 
 template<UnsignedInt dimensions> inline CompressedBufferImage<dimensions>& CompressedBufferImage<dimensions>::operator=(CompressedBufferImage<dimensions>&& other) noexcept {
     using std::swap;
-    #ifndef MAGNUM_TARGET_GLES
     swap(_storage, other._storage);
-    #endif
     swap(_format, other._format);
     swap(_size, other._size);
     swap(_buffer, other._buffer);
     swap(_dataSize, other._dataSize);
     return *this;
 }
-
-#ifndef MAGNUM_TARGET_GLES
-template<UnsignedInt dimensions> inline CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data, const BufferUsage usage): CompressedBufferImage{{}, format, size, data, usage} {}
-
-template<UnsignedInt dimensions> inline CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: CompressedBufferImage{{}, format, size, std::move(buffer), dataSize} {}
-
-template<UnsignedInt dimensions> inline CompressedBufferImage<dimensions>::CompressedBufferImage(): CompressedBufferImage{CompressedPixelStorage{}} {}
-
-template<UnsignedInt dimensions> inline void CompressedBufferImage<dimensions>::setData(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data, const BufferUsage usage) {
-    setData({}, format, size, data, usage);
-}
-#endif
 
 }
 

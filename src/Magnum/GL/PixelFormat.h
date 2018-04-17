@@ -26,8 +26,10 @@
 */
 
 /** @file
- * @brief Enum @ref Magnum::GL::PixelFormat, @ref Magnum::GL::PixelType, @ref Magnum::GL::CompressedPixelFormat, function @ref Magnum::GL::pixelSize()
+ * @brief Enum @ref Magnum::GL::PixelFormat, @ref Magnum::GL::PixelType, @ref Magnum::GL::CompressedPixelFormat, function @ref Magnum::GL::hasPixelFormat(), @ref Magnum::GL::pixelFormat(), @ref Magnum::GL::pixelType(), @ref Magnum::GL::pixelSize(), @ref Magnum::GL::hasCompressedPixelFormat(), @ref Magnum::GL::compressedPixelFormat()
  */
+
+#include <Corrade/Utility/Assert.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/OpenGL.h"
@@ -50,7 +52,8 @@ In most cases you may want to use @ref PixelFormat::Red (for grayscale images),
 See documentation of these values for possible limitations when using OpenGL ES
 2.0 or WebGL.
 
-@see @ref Image, @ref ImageView, @ref BufferImage, @ref Trade::ImageData
+@see @ref Magnum::PixelFormat, @ref pixelFormat(), @ref hasPixelFormat(),
+    @ref Image, @ref ImageView, @ref BufferImage, @ref Trade::ImageData
 @m_enum_values_as_keywords
 */
 enum class PixelFormat: GLenum {
@@ -333,7 +336,8 @@ In most cases you may want to use @ref PixelType::UnsignedByte along with
 See documentation of these values for possible limitations when using OpenGL ES
 2.0 or WebGL.
 
-@see @ref Image, @ref ImageView, @ref BufferImage, @ref Trade::ImageData
+@see @ref Magnum::PixelFormat, @ref pixelType(), @ref hasPixelFormat(),
+    @ref Image, @ref ImageView, @ref BufferImage, @ref Trade::ImageData
 @m_enum_values_as_keywords
 */
 enum class PixelType: GLenum {
@@ -596,12 +600,93 @@ enum class PixelType: GLenum {
 };
 
 /**
+@brief Check availability of a generic pixel format
+
+Some OpenGL targets don't support all generic pixel formats (for example WebGL
+1.0 and OpenGL ES 2.0 don't support most of single- and two-component or
+integer formats). Returns @cpp false @ce if current target can't support such
+format, @cpp true @ce otherwise. Moreover, returns @cpp true @ce also for all
+formats that are @ref isPixelFormatImplementationSpecific(). The @p format
+value is expected to be valid.
+
+@note Support of some formats depends on presence of a particular OpenGL
+    extension. Such check is outside of the scope of this function and you are
+    expected to verify extension availability before using such format.
+
+@see @ref pixelFormat(), @ref pixelType()
+*/
+MAGNUM_GL_EXPORT bool hasPixelFormat(Magnum::PixelFormat format);
+
+/**
+@brief Convert a generic pixel format to OpenGL pixel format
+
+In case @ref isPixelFormatImplementationSpecific() returns @cpp false @ce for
+@p format, maps it to a corresponding OpenGL pixel format. In case
+@ref isPixelFormatImplementationSpecific() returns @cpp true @ce, assumes
+@p format stores OpenGL-specific pixel format and returns
+@ref pixelFormatUnwrap() cast to @ref GL::PixelFormat.
+
+Not all generic pixel formats may be available on all targets and this function
+expects that given format is available on the target. Use @ref hasPixelFormat()
+to query availability of given format.
+
+@note On OpenGL ES 2.0 and WebGL 1.0, one- and two-channel texture formats are
+    always translated to @ref PixelFormat::Luminance and
+    @ref PixelFormat::LuminanceAlpha, independently on the
+    @extension{EXT,texture_rg} being present or not. If you wish to use @ref PixelFormat::Red and @ref PixelFormat::RG instead, specify the GL-specific
+    pixel format directly instead of using the generic enum.
+
+@see @ref pixelType()
+*/
+MAGNUM_GL_EXPORT PixelFormat pixelFormat(Magnum::PixelFormat format);
+
+/**
+@brief Convert a generic pixel type to OpenGL pixel type
+
+In case @ref isPixelFormatImplementationSpecific() returns @cpp false @ce for
+@p format, maps it to a corresponding OpenGL pixel type. In case
+@ref isPixelFormatImplementationSpecific() returns @cpp true @ce, assumes
+@p extra stores OpenGL-specific pixel type and returns it cast to
+@ref GL::PixelType.
+
+Not all generic pixel formats may be available on all targets and this function
+expects that given format is available on the target. Use @ref hasPixelFormat()
+to query availability of given format.
+@see @ref pixelFormat()
+*/
+MAGNUM_GL_EXPORT PixelType pixelType(Magnum::PixelFormat format, UnsignedInt extra = 0);
+
+/**
+@brief Pixel size for given format/type combination (in bytes)
+
+@see @ref Magnum::pixelSize(), @ref PixelStorage::dataProperties()
+*/
+MAGNUM_GL_EXPORT UnsignedInt pixelSize(PixelFormat format, PixelType type);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/** @brief @copybrief pixelSize(PixelFormat, PixelType)
+ * @deprecated Use either @ref GL::PixelFormat together with
+ *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
+ */
+inline CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") UnsignedInt pixelSize(Magnum::PixelFormat format, PixelType type) {
+    return pixelSize(PixelFormat(UnsignedInt(format)), type);
+}
+#endif
+
+/** @debugoperatorenum{PixelFormat} */
+MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, PixelFormat value);
+
+/** @debugoperatorenum{PixelType} */
+MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, PixelType value);
+
+/**
 @brief Format of compressed pixel data
 
 Equivalent to `Compressed*` values of @ref TextureFormat enum.
 
-@see @ref CompressedImage, @ref CompressedImageView, @ref CompressedBufferImage,
-    @ref Trade::ImageData
+@see @ref Magnum::CompressedPixelFormat, @ref compressedPixelFormat(),
+    @ref hasCompressedPixelFormat(), @ref CompressedImage,
+    @ref CompressedImageView, @ref CompressedBufferImage, @ref Trade::ImageData
 @m_enum_values_as_keywords
 */
 enum class CompressedPixelFormat: GLenum {
@@ -1235,17 +1320,38 @@ enum class CompressedPixelFormat: GLenum {
 };
 
 /**
-@brief Pixel size for given format/type combination (in bytes)
+@brief Check availability of generic compressed pixel format
 
-@see @ref PixelStorage::dataProperties()
+Some OpenGL targets don't support all generic pixel formats (for example ASTC
+compression might not be available on WebGL 1.0). Returns @cpp false @ce if
+current target can't support such format, @cpp true @ce otherwise. Moreover,
+returns @cpp true @ce also for all formats that are
+@ref isCompressedPixelFormatImplementationSpecific().The @p format value is
+expected to be valid.
+
+@note Support of some formats depends on presence of a particular OpenGL
+    extension. Such check is outside of the scope of this function and you are
+    expected to verify extension availability before using such format.
+
+@see @ref pixelFormat(), @ref pixelType()
 */
-MAGNUM_GL_EXPORT std::size_t pixelSize(PixelFormat format, PixelType type);
+MAGNUM_GL_EXPORT bool hasCompressedPixelFormat(Magnum::CompressedPixelFormat format);
 
-/** @debugoperatorenum{PixelFormat} */
-MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, PixelFormat value);
+/**
+@brief Convert generic compressed pixel format to OpenGL compressed pixel format
 
-/** @debugoperatorenum{PixelType} */
-MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, PixelType value);
+In case @ref isCompressedPixelFormatImplementationSpecific() returns
+@cpp false @ce for @p format, maps it to a corresponding OpenGL pixel format.
+In case @ref isCompressedPixelFormatImplementationSpecific() returns
+@cpp true @ce, assumes @p format stores OpenGL-specific pixel format and
+returns @ref compressedPixelFormatUnwrap() cast to @ref GL::CompressedPixelFormat.
+
+Not all generic pixel formats may be available on all targets and this function
+expects that given format is available on the target. Use
+@ref hasCompressedPixelFormat() to query availability of given format.
+@see @ref pixelFormat()
+*/
+MAGNUM_GL_EXPORT CompressedPixelFormat compressedPixelFormat(Magnum::CompressedPixelFormat format);
 
 /** @debugoperatorenum{CompressedPixelFormat} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, CompressedPixelFormat value);
@@ -1255,20 +1361,10 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, CompressedPixelFormat value);
 #ifdef MAGNUM_BUILD_DEPRECATED
 /* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
 
-/** @brief @copybrief GL::PixelFormat
- * @deprecated Use @ref GL::PixelFormat instead.
- */
-typedef CORRADE_DEPRECATED("use GL::PixelFormat instead") Magnum::GL::PixelFormat PixelFormat;
-
 /** @brief @copybrief GL::PixelType
  * @deprecated Use @ref GL::PixelType instead.
  */
 typedef CORRADE_DEPRECATED("use GL::PixelType instead") Magnum::GL::PixelType PixelType;
-
-/** @brief @copybrief GL::CompressedPixelFormat
- * @deprecated Use @ref GL::CompressedPixelFormat instead.
- */
-typedef CORRADE_DEPRECATED("use GL::CompressedPixelFormat instead") Magnum::GL::CompressedPixelFormat CompressedPixelFormat;
 #endif
 
 }

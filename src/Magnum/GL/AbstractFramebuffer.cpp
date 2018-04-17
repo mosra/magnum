@@ -35,6 +35,7 @@
 #include "Magnum/GL/CubeMapTextureArray.h"
 #endif
 #include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/PixelFormat.h"
 #ifndef MAGNUM_TARGET_GLES
 #include "Magnum/GL/RectangleTexture.h"
 #endif
@@ -308,12 +309,12 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     #endif
     Context::current().state().renderer->applyPixelStoragePack(image.storage());
-    (Context::current().state().framebuffer->readImplementation)(rectangle, image.format(), image.type(), data.size(), data
+    (Context::current().state().framebuffer->readImplementation)(rectangle, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), data.size(), data
         #ifdef MAGNUM_TARGET_GLES2
         + Magnum::Implementation::pixelStorageSkipOffsetFor(image, rectangle.size())
         #endif
         );
-    image = Image2D{image.storage(), image.format(), image.type(), rectangle.size(), std::move(data)};
+    image = Image2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), rectangle.size(), std::move(data)};
 }
 
 Image2D AbstractFramebuffer::read(const Range2Di& rectangle, Image2D&& image) {

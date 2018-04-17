@@ -26,7 +26,6 @@
 corrade_add_test(GLAttributeTest AttributeTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLAbstractShaderProgramTest AbstractShaderProgramTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLBufferTest BufferTest.cpp LIBRARIES MagnumGL)
-corrade_add_test(GLFormatTest FormatTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLContextTest ContextTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLCubeMapTextureTest CubeMapTextureTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLDefaultFramebufferTest DefaultFramebufferTest.cpp LIBRARIES MagnumGL)
@@ -34,6 +33,7 @@ corrade_add_test(GLFramebufferTest FramebufferTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLImageTest ../../Test/ImageTest.cpp LIBRARIES MagnumGL) # temporary
 corrade_add_test(GLImageViewTest ../../Test/ImageViewTest.cpp LIBRARIES MagnumGL) # temporary
 corrade_add_test(GLMeshTest MeshTest.cpp LIBRARIES MagnumGL)
+corrade_add_test(GLPixelFormatTest PixelFormatTest.cpp LIBRARIES MagnumGLTestLib)
 corrade_add_test(GLPixelStorageTest ../../Test/PixelStorageTest.cpp LIBRARIES MagnumGL) # temporary
 corrade_add_test(GLRendererTest RendererTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLRenderbufferTest RenderbufferTest.cpp LIBRARIES MagnumGL)
@@ -46,7 +46,6 @@ set_target_properties(
     GLAttributeTest
     GLAbstractShaderProgramTest
     GLBufferTest
-    GLFormatTest
     GLContextTest
     GLCubeMapTextureTest
     GLDefaultFramebufferTest
@@ -55,6 +54,7 @@ set_target_properties(
     GLImageViewTest
     GLMeshTest
     GLPixelStorageTest
+    GLPixelFormatTest
     GLRendererTest
     GLRenderbufferTest
     GLSamplerTest

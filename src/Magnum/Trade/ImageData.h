@@ -39,16 +39,41 @@ namespace Magnum { namespace Trade {
 /**
 @brief Image data
 
-Access to either uncompressed or compressed image data provided by
-@ref AbstractImporter subclasses, the compression state is distinguished with
-@ref isCompressed(). Uncompressed images have @ref format(), @ref type(),
-@ref pixelSize() and @ref dataProperties() properties and are convertible to
-@ref ImageView. Compressed images have just the @ref compressedFormat()
-property and are convertible to @ref CompressedImageView.
+Used mainly by @ref AbstractImporter classes to store either compressed or
+non-compressed multi-dimensional image data together with layout and pixel
+format description.
 
-Uncompressed image is interchangeable with @ref Image, @ref ImageView or
-@ref BufferImage, compressed with @ref CompressedImage, @ref CompressedImageView
-or @ref CompressedBufferImage.
+This class can act as a drop-in replacement for @ref Image or
+@ref CompressedImage, @ref ImageView or @ref CompressedImageView and is
+implicitly convertible to either @ref ImageView or @ref CompressedImageView.
+Particular graphics API wrappers provide additional image classes, for example
+@ref GL::BufferImage or @ref GL::CompressedBufferImage.
+
+@section Trade-ImageData-usage Basic usage
+
+The image usually comes out of @ref AbstractImporter::image1D(),
+@ref AbstractImporter::image2D() "image2D()" or
+@ref AbstractImporter::image3D() "image3D()" and, based on what format the
+particular imported data is in, it stores either compressed or uncompressed
+data.
+
+@snippet MagnumTrade.cpp ImageData-construction
+
+@snippet MagnumTrade.cpp ImageData-construction-compressed
+
+As with @ref Image / @ref ImageView, this class supports extra storage
+parameters and implementation-specific format specification, if the importer
+has a need for that. See the @ref ImageView documentation for more information.
+
+When using the image, its compression status can be distinguished using
+@ref isCompressed(). Uncompressed image properties are available through
+@ref storage(), @ref format(), @ref formatExtra() and @ref pixelSize();
+compressed properties through @ref compressedStorage() and
+@ref compressedFormat(). Example of uploading the image to
+@link GL::Texture @endlink:
+
+@snippet MagnumTrade.cpp ImageData-usage
+
 @see @ref ImageData1D, @ref ImageData2D, @ref ImageData3D
 */
 template<UnsignedInt dimensions> class ImageData {
@@ -61,22 +86,123 @@ template<UnsignedInt dimensions> class ImageData {
          * @brief Construct uncompressed image data
          * @param storage           Storage of pixel data
          * @param format            Format of pixel data
+         * @param size              Image size
+         * @param data              Image data
+         * @param importerState     Importer-specific state
+         *
+         * The @p data array is expected to be of proper size for given
+         * parameters.
+         */
+        explicit ImageData(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @brief Construct uncompressed image data
+         * @param format            Format of pixel data
+         * @param size              Image size
+         * @param data              Image data
+         * @param importerState     Importer-specific state
+         *
+         * Equivalent to calling @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * with default-constructed @ref PixelStorage.
+         */
+        explicit ImageData(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept: ImageData{{}, format, size, std::move(data), importerState} {}
+
+        /**
+         * @brief Construct uncompressed image data with implementation-specific pixel format
+         * @param storage           Storage of pixel data
+         * @param format            Format of pixel data
+         * @param formatExtra       Additional pixel format specifier
+         * @param pixelSize         Size of a pixel in given format
+         * @param size              Image size
+         * @param data              Image data
+         * @param importerState     Importer-specific state
+         *
+         * Unlike with @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*),
+         * where pixel size is calculated automatically using
+         * @ref pixelSize(PixelFormat), this allows you to specify an
+         * implementation-specific pixel format and pixel size directly. Uses
+         * @ref pixelFormatWrap() internally to wrap @p format in
+         * @ref Magnum::PixelFormat "PixelFormat".
+         *
+         * The @p data array is expected to be of proper size for given
+         * parameters.
+         */
+        explicit ImageData(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+
+        /** @overload
+         *
+         * Equivalent to the above for @p format already wrapped with
+         * @ref pixelFormatWrap().
+         */
+        explicit ImageData(PixelStorage storage, PixelFormat format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @brief Construct uncompressed image data with implementation-specific pixel format
+         * @param storage           Storage of pixel data
+         * @param format            Format of pixel data
+         * @param formatExtra       Additional pixel format specifier
+         * @param size              Image size
+         * @param data              Image data
+         * @param importerState     Importer-specific state
+         *
+         * Uses ADL to find a corresponding @cpp pixelSize(T, U) @ce overload,
+         * then calls @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * with calculated pixel size.
+         */
+        template<class T, class U> explicit ImageData(PixelStorage storage, T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @brief Construct uncompressed image data with implementation-specific pixel format
+         * @param storage           Storage of pixel data
+         * @param format            Format of pixel data
+         * @param size              Image size
+         * @param data              Image data
+         * @param importerState     Importer-specific state
+         *
+         * Uses ADL to find a corresponding @cpp pixelSize(T) @ce overload,
+         * then calls @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * with calculated pixel size and @p formatExtra set to @cpp 0 @ce.
+         */
+        template<class T> explicit ImageData(PixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+
+        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+        /**
+         * @brief Construct uncompressed image data
+         * @param format            Format of pixel data
          * @param type              Data type of pixel data
          * @param size              Image size
          * @param data              Image data
          * @param importerState     Importer-specific state
          *
-         * The data are expected to be of proper size for given @p storage
-         * parameters.
+         * @deprecated Use the generic @ref ImageData(PixelStorage, T, U, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         *      instead --- the pixel storage parameter is used to distinguish
+         *      between compressed and uncompressed data.
          */
-        explicit ImageData(PixelStorage storage, PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+        template<class = void> explicit CORRADE_DEPRECATED("use Image(PixelStorage, T, U, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*) instead") ImageData(PixelFormat format, GL::PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+        #endif
 
-        /** @overload
-         * Similar to the above, but uses default @ref PixelStorage parameters.
+        /**
+         * @brief Construct compressed image data
+         * @param storage           Storage of compressed pixel data
+         * @param format            Format of compressed pixel data
+         * @param size              Image size
+         * @param data              Image data
+         * @param importerState     Importer-specific state
          */
-        explicit ImageData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept: ImageData{{}, format, type, size, std::move(data), importerState} {}
+        explicit ImageData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
 
-        #ifndef MAGNUM_TARGET_GLES
+        /**
+         * @brief Construct compressed image data
+         * @param format            Format of compressed pixel data
+         * @param size              Image size
+         * @param data              Image data
+         * @param importerState     Importer-specific state
+         *
+         * Equivalent to calling @ref ImageData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * with default-constructed @ref CompressedPixelStorage.
+         */
+        explicit ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept: ImageData{{}, format, size, std::move(data), importerState} {}
+
         /**
          * @brief Construct compressed image data
          * @param storage           Storage of compressed pixel data
@@ -85,26 +211,10 @@ template<UnsignedInt dimensions> class ImageData {
          * @param data              Image data
          * @param importerState     Importer-specific state
          *
-         * Note that the image data are not copied on construction, but they
-         * are deleted on class destruction.
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
-         * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
-         *      WebGL.
+         * Uses @ref compressedPixelFormatWrap() internally to convert
+         * @p format to @ref CompressedPixelFormat.
          */
-        explicit ImageData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
-        #endif
-
-        /**
-         * @brief Construct compressed image data
-         * @param format            Format of compressed pixel data
-         * @param size              Image size
-         * @param data              Image data
-         * @param importerState     Importer-specific state
-         *
-         * Similar the above, but uses default @ref CompressedPixelStorage
-         * parameters (or the hardcoded ones in OpenGL ES and WebGL).
-         */
-        explicit ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+        template<class T> explicit ImageData(CompressedPixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
 
         /** @brief Copying is not allowed */
         ImageData(const ImageData<dimensions>&) = delete;
@@ -152,34 +262,55 @@ template<UnsignedInt dimensions> class ImageData {
         /**
          * @brief Format of pixel data
          *
+         * Returns either a defined value from the
+         * @ref Magnum::PixelFormat "PixelFormat" enum or a wrapped
+         * implementation-specific value. Use
+         * @ref isPixelFormatImplementationSpecific() to distinguish the case
+         * and @ref pixelFormatUnwrap() to extract an implementation-specific
+         * value, if needed.
+         *
          * The image is expected to be uncompressed.
          * @see @ref isCompressed(), @ref compressedFormat()
          */
         PixelFormat format() const;
 
         /**
-         * @brief Data type of pixel data
+         * @brief Additional pixel format specifier
+         *
+         * Some implementations (such as OpenGL) define a pixel format using
+         * two values. This field contains the second implementation-specific
+         * value verbatim, if any. See @ref format() for more information.
          *
          * The image is expected to be uncompressed.
          * @see @ref isCompressed()
          */
-        PixelType type() const;
+        UnsignedInt formatExtra() const;
 
-        #ifndef MAGNUM_TARGET_GLES
+        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+        /**
+         * @brief Data type of pixel data
+         *
+         * @deprecated Cast @ref formatExtra() to @ref GL::PixelType instead.
+         */
+        CORRADE_DEPRECATED("cast formatExtra() to GL::PixelType instead") GL::PixelType type() const { return GL::PixelType(formatExtra()); }
+        #endif
+
         /**
          * @brief Storage of compressed pixel data
          *
          * The image is expected to be compressed.
-         * @see @ref isCompressed(), @ref storage())
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
-         * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
-         *      WebGL.
+         * @see @ref isCompressed(), @ref storage()
          */
         CompressedPixelStorage compressedStorage() const;
-        #endif
 
         /**
          * @brief Format of compressed pixel data
+         *
+         * Returns either a defined value from the @ref CompressedPixelFormat
+         * enum or a wrapped implementation-specific value. Use
+         * @ref isCompressedPixelFormatImplementationSpecific() to distinguish
+         * the case and @ref compressedPixelFormatUnwrap() to extract an
+         * implementation-specific value, if needed.
          *
          * The image is expected to be compressed.
          * @see @ref isCompressed(), @ref format()
@@ -192,7 +323,7 @@ template<UnsignedInt dimensions> class ImageData {
          * The image is expected to be uncompressed.
          * @see @ref isCompressed(), @ref Magnum::pixelSize()
          */
-        std::size_t pixelSize() const;
+        UnsignedInt pixelSize() const;
 
         /** @brief Image size */
         VectorTypeFor<dimensions, Int> size() const { return _size; }
@@ -261,18 +392,19 @@ template<UnsignedInt dimensions> class ImageData {
         const void* importerState() const { return _importerState; }
 
     private:
+        explicit ImageData(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+
         bool _compressed;
         union {
             PixelStorage _storage;
-            #ifndef MAGNUM_TARGET_GLES
             CompressedPixelStorage _compressedStorage;
-            #endif
         };
         union {
             PixelFormat _format;
             CompressedPixelFormat _compressedFormat;
         };
-        PixelType _type;
+        UnsignedInt _formatExtra;
+        UnsignedInt _pixelSize;
         Math::Vector<Dimensions, Int> _size;
         Containers::Array<char> _data;
         const void* _importerState;
@@ -287,31 +419,43 @@ typedef ImageData<2> ImageData2D;
 /** @brief Three-dimensional image */
 typedef ImageData<3> ImageData3D;
 
-template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(
-    #ifndef MAGNUM_TARGET_GLES
-    const CompressedPixelStorage storage,
+template<UnsignedInt dimensions> template<class T, class U> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage,
+    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+    Implementation::wrapPixelFormatIfNotGLSpecific(format),
+    #else
+    UnsignedInt(format),
     #endif
-    const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState) noexcept: _compressed{true},
-    #ifndef MAGNUM_TARGET_GLES
-    _compressedStorage{storage},
-    #endif
-    _compressedFormat{format}, _size{size}, _data{std::move(data)}, _importerState{importerState} {}
+    UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra), size, std::move(data), importerState} {
+    static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,
+        "format types larger than 32bits are not supported");
+}
 
-#ifndef MAGNUM_TARGET_GLES
-template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{{}, format, size, std::move(data), importerState} {}
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+CORRADE_IGNORE_DEPRECATED_PUSH
+template<UnsignedInt dimensions> template<class> inline ImageData<dimensions>::ImageData(const PixelFormat format, const GL::PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{PixelStorage{}, format, type, size, std::move(data), importerState} {}
+CORRADE_IGNORE_DEPRECATED_POP
 #endif
+
+template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), {}, Implementation::pixelSizeAdl(format), size, std::move(data), importerState} {
+    static_assert(sizeof(T) <= 4,
+        "format types larger than 32bits are not supported");
+}
+
+template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), size, std::move(data), importerState} {
+    static_assert(sizeof(T) <= 4,
+        "format types larger than 32bits are not supported");
+}
 
 template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(ImageData<dimensions>&& other) noexcept: _compressed{std::move(other._compressed)}, _size{std::move(other._size)}, _data{std::move(other._data)}, _importerState{std::move(other._importerState)} {
     if(_compressed) {
-        #ifndef MAGNUM_TARGET_GLES
         new(&_compressedStorage) CompressedPixelStorage{std::move(other._compressedStorage)};
-        #endif
         _compressedFormat = std::move(other._compressedFormat);
     }
     else {
         new(&_storage) PixelStorage{std::move(other._storage)};
         _format = std::move(other._format);
-        _type = std::move(other._type);
+        _formatExtra = std::move(other._formatExtra);
+        _pixelSize = std::move(other._pixelSize);
     }
 
     other._size = {};
@@ -321,16 +465,15 @@ template<UnsignedInt dimensions> inline ImageData<dimensions>& ImageData<dimensi
     using std::swap;
     swap(_compressed, other._compressed);
     if(_compressed) {
-        #ifndef MAGNUM_TARGET_GLES
         swap(_compressedStorage, other._compressedStorage);
-        #endif
         swap(_compressedFormat, other._compressedFormat);
     }
     else {
         swap(_storage, other._storage);
         swap(_format, other._format);
     }
-    swap(_type, other._type);
+    swap(_formatExtra, other._formatExtra);
+    swap(_pixelSize, other._pixelSize);
     swap(_size, other._size);
     swap(_data, other._data);
     swap(_importerState, other._importerState);

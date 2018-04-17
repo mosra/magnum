@@ -1,5 +1,3 @@
-#ifndef Magnum_GL_visibility_h
-#define Magnum_GL_visibility_h
 /*
     This file is part of Magnum.
 
@@ -25,24 +23,48 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Utility/VisibilityMacros.h>
-
-#include "Magnum/configure.h"
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef MAGNUM_BUILD_STATIC
-    #if defined(MagnumGL_EXPORTS) || defined(MagnumGLObjects_EXPORTS)
-        #define MAGNUM_GL_EXPORT CORRADE_VISIBILITY_EXPORT
-    #else
-        #define MAGNUM_GL_EXPORT CORRADE_VISIBILITY_IMPORT
-    #endif
-#else
-    #define MAGNUM_GL_EXPORT CORRADE_VISIBILITY_STATIC
-#endif
-#define MAGNUM_GL_LOCAL CORRADE_VISIBILITY_LOCAL
-#else
-#define MAGNUM_GL_EXPORT
-#define MAGNUM_GL_LOCAL
+#include "Magnum/PixelFormat.h"
+#include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/ImageData.h"
+#ifdef MAGNUM_TARGET_GL
+#include "Magnum/GL/Texture.h"
 #endif
 
+using namespace Magnum;
+using namespace Magnum::Math::Literals;
+
+int main() {
+
+{
+/* [ImageData-construction] */
+Containers::Array<char> data;
+Trade::ImageData2D image{PixelFormat::RGB8Unorm, {32, 32}, std::move(data)};
+/* [ImageData-construction] */
+}
+
+{
+/* [ImageData-construction-compressed] */
+Containers::Array<char> data;
+Trade::ImageData2D image{CompressedPixelFormat::Bc1RGBUnorm,
+    {32, 32}, std::move(data)};
+/* [ImageData-construction-compressed] */
+}
+
+#ifdef MAGNUM_TARGET_GL
+{
+/* [ImageData-usage] */
+std::unique_ptr<Trade::AbstractImporter> importer;
+Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
+if(!image) Fatal{} << "Oopsie!";
+
+GL::Texture2D texture;
+// ...
+if(!image->isCompressed())
+    texture.setSubImage(0, {}, *image);
+else
+    texture.setCompressedSubImage(0, {}, *image);
+/* [ImageData-usage] */
+}
 #endif
+
+}

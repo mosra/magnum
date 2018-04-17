@@ -34,12 +34,9 @@ set(MagnumGL_SRCS
     Context.cpp
     DefaultFramebuffer.cpp
     Framebuffer.cpp
-    ../Image.cpp # temporary
-    ../ImageView.cpp # temporary
     Mesh.cpp
     MeshView.cpp
     OpenGL.cpp
-    PixelFormat.cpp
     Renderbuffer.cpp
     Renderer.cpp
     Sampler.cpp
@@ -58,6 +55,9 @@ set(MagnumGL_SRCS
     Implementation/TextureState.cpp
     Implementation/driverSpecific.cpp
     Implementation/maxTextureSize.cpp)
+
+set(MagnumGL_GracefulAssert_SRCS
+    PixelFormat.cpp)
 
 set(MagnumGL_HEADERS
     AbstractFramebuffer.h
@@ -170,16 +170,35 @@ if(NOT (TARGET_WEBGL AND TARGET_GLES2))
         Implementation/QueryState.h)
 endif()
 
+# Objects shared between main and test library
+add_library(MagnumGLObjects OBJECT
+    ${MagnumGL_SRCS}
+    ${MagnumGL_HEADERS}
+    ${MagnumGL_PRIVATE_HEADERS})
+# We can use both implicit include path (GLES2/gl2.h) where our headers can
+# be overriden with system ones or explicit (MagnumExternal/OpenGL/GLES2/gl2ext.h)
+# where only our headers will be used
+target_include_directories(MagnumGLObjects PUBLIC
+    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
+    ${PROJECT_SOURCE_DIR}/src/MagnumExternal/OpenGL)
+if(NOT BUILD_STATIC)
+    target_compile_definitions(MagnumGLObjects PRIVATE "MagnumGLObjects_EXPORTS" "FlextGL_EXPORTS")
+endif()
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(MagnumGLObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+set_target_properties(MagnumGLObjects PROPERTIES FOLDER "Magnum/GL")
+
 # Link in GL function pointer variables on platforms that support it
 if(NOT CORRADE_TARGET_EMSCRIPTEN)
-    list(APPEND MagnumGL_SRCS $<TARGET_OBJECTS:MagnumFlextGLObjects>)
+    set(MagnumGL_FlextGL_SRCS $<TARGET_OBJECTS:MagnumFlextGLObjects>)
 endif()
 
 # GL library
 add_library(MagnumGL ${SHARED_OR_STATIC}
-    ${MagnumGL_SRCS}
-    ${MagnumGL_HEADERS}
-    ${MagnumGL_PRIVATE_HEADERS})
+    $<TARGET_OBJECTS:MagnumGLObjects>
+    ${MagnumGL_FlextGL_SRCS}
+    ${MagnumGL_GracefulAssert_SRCS})
 set_target_properties(MagnumGL PROPERTIES
     DEBUG_POSTFIX "-d"
     FOLDER "Magnum/GL")
@@ -193,8 +212,6 @@ endif()
 # be overriden with system ones or explicit (MagnumExternal/OpenGL/GLES2/gl2ext.h)
 # where only our headers will be used
 target_include_directories(MagnumGL PUBLIC
-    ${PROJECT_SOURCE_DIR}/src
-    ${PROJECT_BINARY_DIR}/src
     ${PROJECT_SOURCE_DIR}/src/MagnumExternal/OpenGL)
 target_link_libraries(MagnumGL PUBLIC Magnum)
 if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
@@ -249,6 +266,40 @@ if(WITH_OPENGLTESTER)
 endif()
 
 if(BUILD_TESTS)
+    # Library with graceful assert for testing
+    add_library(MagnumGLTestLib ${SHARED_OR_STATIC}
+        $<TARGET_OBJECTS:MagnumGLObjects>
+        ${MagnumGL_FlextGL_SRCS}
+        ${MagnumGL_GracefulAssert_SRCS})
+    target_include_directories(MagnumGLTestLib PUBLIC
+        ${PROJECT_SOURCE_DIR}/src/MagnumExternal/OpenGL)
+    set_target_properties(MagnumGLTestLib PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/GL")
+    target_compile_definitions(MagnumGLTestLib PRIVATE
+        "CORRADE_GRACEFUL_ASSERT" "MagnumGL_EXPORTS" "FlextGL_EXPORTS")
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumGLTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
+    target_link_libraries(MagnumGLTestLib PUBLIC
+        Magnum)
+    if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
+        target_link_libraries(MagnumGLTestLib PUBLIC ${OPENGL_gl_LIBRARY})
+    elseif(TARGET_GLES2)
+        target_link_libraries(MagnumGLTestLib PUBLIC OpenGLES2::OpenGLES2)
+    else()
+        target_link_libraries(MagnumGLTestLib PUBLIC OpenGLES3::OpenGLES3)
+    endif()
+
+    # On Windows we need to install first and then run the tests to avoid "DLL
+    # not found" hell, thus we need to install this too
+    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING AND NOT BUILD_STATIC)
+        install(TARGETS MagnumGLTestLib
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    endif()
+
     add_subdirectory(Test)
 endif()
 

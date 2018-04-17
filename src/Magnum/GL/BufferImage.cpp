@@ -30,18 +30,25 @@
 namespace Magnum { namespace GL {
 
 #ifndef MAGNUM_TARGET_GLES2
-template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> const data, const BufferUsage usage): _storage{storage}, _format{format}, _type{type}, _size{size}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{data.size()} {
-    CORRADE_ASSERT(Magnum::Implementation::imageDataSize(*this) <= data.size(), "GL::BufferImage::BufferImage(): bad image data size, got" << data.size() << "but expected at least" << Magnum::Implementation::imageDataSize(*this), );
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> const data, const BufferUsage usage): BufferImage{storage, format, type, size, Buffer{Buffer::TargetHint::PixelPack}, data.size()} {
     _buffer.setData(data, usage);
 }
+
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> const data, const BufferUsage usage): BufferImage{storage, GL::pixelFormat(format), GL::pixelType(format), size, data, usage} {}
 
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: _storage{storage}, _format{format}, _type{type}, _size{size}, _buffer{std::move(buffer)}, _dataSize{dataSize} {
     CORRADE_ASSERT(Magnum::Implementation::imageDataSize(*this) <= dataSize, "GL::BufferImage::BufferImage(): bad image data size, got" << dataSize << "but expected at least" << Magnum::Implementation::imageDataSize(*this), );
 }
 
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: BufferImage{storage, GL::pixelFormat(format), GL::pixelType(format), size, std::move(buffer), dataSize} {}
+
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type): _storage{storage}, _format{format}, _type{type}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{0} {}
 
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const Magnum::PixelFormat format): _storage{storage}, _format{GL::pixelFormat(format)}, _type{GL::pixelType(format)}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{0} {}
+
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(NoCreateT) noexcept: _format{PixelFormat::RGBA}, _type{PixelType::UnsignedByte}, _buffer{NoCreate}, _dataSize{} {}
+
+template<UnsignedInt dimensions> UnsignedInt BufferImage<dimensions>::pixelSize() const { return GL::pixelSize(_format, _type); }
 
 template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> const data, const BufferUsage usage) {
     _storage = storage;
@@ -59,54 +66,35 @@ template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const Pix
     }
 }
 
-template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(
-    #ifndef MAGNUM_TARGET_GLES
-    const CompressedPixelStorage storage,
-    #endif
-    const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data, const BufferUsage usage):
-    #ifndef MAGNUM_TARGET_GLES
-    _storage{storage},
-    #endif
-    _format{format}, _size{size}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{data.size()}
-{
+template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const PixelStorage storage, const Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> const data, const BufferUsage usage) {
+    setData(storage, GL::pixelFormat(format), GL::pixelType(format), size, data, usage);
+}
+
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data, const BufferUsage usage): CompressedBufferImage{storage, format, size, Buffer{Buffer::TargetHint::PixelPack}, data.size()} {
     _buffer.setData(data, usage);
 }
 
-template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(
-    #ifndef MAGNUM_TARGET_GLES
-    const CompressedPixelStorage storage,
-    #endif
-    const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept:
-    #ifndef MAGNUM_TARGET_GLES
-    _storage{storage},
-    #endif
-    _format{format}, _size{size}, _buffer{std::move(buffer)}, _dataSize{dataSize} {}
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage, const Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data, const BufferUsage usage): CompressedBufferImage{storage, compressedPixelFormat(format), size, data, usage} {}
 
-template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(
-    #ifndef MAGNUM_TARGET_GLES
-    const CompressedPixelStorage storage
-    #endif
-    ):
-    #ifndef MAGNUM_TARGET_GLES
-    _storage{storage},
-    #endif
-    _format{}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{} {}
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: _storage{storage}, _format{format}, _size{size}, _buffer{std::move(buffer)}, _dataSize{dataSize} {}
+
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage, const Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: CompressedBufferImage{storage, compressedPixelFormat(format), size, std::move(buffer), dataSize} {}
+
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage): _storage{storage}, _format{}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{} {}
 
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(NoCreateT) noexcept: _format{}, _buffer{NoCreate}, _dataSize{} {}
 
-template<UnsignedInt dimensions> void CompressedBufferImage<dimensions>::setData(
-    #ifndef MAGNUM_TARGET_GLES
-    const CompressedPixelStorage storage,
-    #endif
-    const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data, const BufferUsage usage)
-{
-    #ifndef MAGNUM_TARGET_GLES
+template<UnsignedInt dimensions> void CompressedBufferImage<dimensions>::setData(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data, const BufferUsage usage) {
     _storage = storage;
-    #endif
     _format = format;
     _size = size;
     _buffer.setData(data, usage);
     _dataSize = data.size();
+}
+
+
+template<UnsignedInt dimensions> void CompressedBufferImage<dimensions>::setData(const CompressedPixelStorage storage, const Magnum::CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data, const BufferUsage usage) {
+    setData(storage, compressedPixelFormat(format), size, data, usage);
 }
 
 template<UnsignedInt dimensions> Buffer BufferImage<dimensions>::release() {

@@ -52,10 +52,21 @@ Descibes how to interpret data which are read from or stored into @ref Image,
 class MAGNUM_EXPORT PixelStorage {
     public:
         #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-        /** @brief @copybrief GL::pixelSize()
-         * @deprecated Use @ref GL::pixelSize() instead.
+        /** @brief Pixel size
+         * @deprecated Use @ref Magnum::pixelSize() or  @ref GL::pixelSize()
+         *      instead.
          */
         static CORRADE_DEPRECATED("use GL::pixelSize() instead") std::size_t pixelSize(GL::PixelFormat format, GL::PixelType type);
+
+        /** @brief Pixel size
+         * @deprecated Use @ref Magnum::pixelSize() or  @ref GL::pixelSize()
+         *      instead.
+         */
+        static CORRADE_DEPRECATED("use GL::pixelSize() instead") std::size_t pixelSize(PixelFormat format, GL::PixelType type) {
+            CORRADE_IGNORE_DEPRECATED_PUSH
+            return pixelSize(GL::PixelFormat(format), type);
+            CORRADE_IGNORE_DEPRECATED_POP
+        }
         #endif
 
         /**
@@ -153,6 +164,20 @@ class MAGNUM_EXPORT PixelStorage {
          *      instead.
          */
         CORRADE_DEPRECATED("use dataProperties(std::size_t, const Vector3i&) instead") std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> dataProperties(GL::PixelFormat format, GL::PixelType type, const Vector3i& size) const;
+
+        /** @brief @copybrief dataProperties(std::size_t, const Vector3i&) const
+         *
+         * Returns byte offset in each direction, (row length, row count, layer
+         * count) and pixel size for image of given @p size with current pixel
+         * storage parameters, @p format and @p type.
+         * @deprecated Use @ref dataProperties(std::size_t, const Vector3i&) const
+         *      instead.
+         */
+        CORRADE_DEPRECATED("use dataProperties(std::size_t, const Vector3i&) instead") std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> dataProperties(PixelFormat format, GL::PixelType type, const Vector3i& size) const {
+            CORRADE_IGNORE_DEPRECATED_PUSH
+            return dataProperties(GL::PixelFormat(format), type, size);
+            CORRADE_IGNORE_DEPRECATED_POP
+        }
         #endif
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -287,9 +312,8 @@ namespace Implementation {
     /* Used in *Image::dataProperties() */
     template<std::size_t dimensions, class T> std::tuple<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>, std::size_t> imageDataProperties(const T& image) {
         Math::Vector3<std::size_t> offset, dataSize;
-        std::size_t pixelSize;
-        std::tie(offset, dataSize, pixelSize) = image.storage().dataProperties(image.format(), image.type(), Vector3i::pad(image.size(), 1));
-        return std::make_tuple(Math::Vector<dimensions, std::size_t>::pad(offset), Math::Vector<dimensions, std::size_t>::pad(dataSize), pixelSize);
+        std::tie(offset, dataSize) = image.storage().dataProperties(image.pixelSize(), Vector3i::pad(image.size(), 1));
+        return std::make_tuple(Math::Vector<dimensions, std::size_t>::pad(offset), Math::Vector<dimensions, std::size_t>::pad(dataSize), image.pixelSize());
     }
 
     /* Used in Compressed*Image::dataProperties() */
@@ -303,8 +327,7 @@ namespace Implementation {
     /* Used in image query functions */
     template<std::size_t dimensions, class T> std::size_t imageDataSizeFor(const T& image, const Math::Vector<dimensions, Int>& size) {
         Math::Vector3<std::size_t> offset, dataSize;
-        std::size_t pixelSize;
-        std::tie(offset, dataSize, pixelSize) = image.storage().dataProperties(image.format(), image.type(), Vector3i::pad(size, 1));
+        std::tie(offset, dataSize) = image.storage().dataProperties(image.pixelSize(), Vector3i::pad(size, 1));
 
         /* Smallest line/rectangle/cube that covers the area */
         std::size_t dataOffset = 0;
@@ -350,7 +373,7 @@ namespace Implementation {
     }
 
     template<std::size_t dimensions, class T> std::ptrdiff_t pixelStorageSkipOffsetFor(const T& image, const Math::Vector<dimensions, Int>& size) {
-        return std::get<0>(image.storage().dataProperties(image.format(), image.type(), Vector3i::pad(size, 1))).sum();
+        return std::get<0>(image.storage().dataProperties(image.pixelSize(), Vector3i::pad(size, 1))).sum();
     }
     template<class T> std::ptrdiff_t pixelStorageSkipOffset(const T& image) {
         return pixelStorageSkipOffsetFor(image, image.size());

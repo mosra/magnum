@@ -1,5 +1,3 @@
-#ifndef Magnum_GL_visibility_h
-#define Magnum_GL_visibility_h
 /*
     This file is part of Magnum.
 
@@ -25,24 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Utility/VisibilityMacros.h>
-
-#include "Magnum/configure.h"
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef MAGNUM_BUILD_STATIC
-    #if defined(MagnumGL_EXPORTS) || defined(MagnumGLObjects_EXPORTS)
-        #define MAGNUM_GL_EXPORT CORRADE_VISIBILITY_EXPORT
-    #else
-        #define MAGNUM_GL_EXPORT CORRADE_VISIBILITY_IMPORT
-    #endif
-#else
-    #define MAGNUM_GL_EXPORT CORRADE_VISIBILITY_STATIC
-#endif
-#define MAGNUM_GL_LOCAL CORRADE_VISIBILITY_LOCAL
-#else
-#define MAGNUM_GL_EXPORT
-#define MAGNUM_GL_LOCAL
-#endif
-
+/* See Magnum/GL/PixelFormat.cpp and Magnum/GL/Test/PixelFormatTest.cpp */
+#ifdef _c
+_c(Bc1RGBUnorm, RGBS3tcDxt1)
+_c(Bc1RGBAUnorm, RGBAS3tcDxt1)
+_c(Bc2RGBAUnorm, RGBAS3tcDxt3)
+_c(Bc3RGBAUnorm, RGBAS3tcDxt5)
 #endif

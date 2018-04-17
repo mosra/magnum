@@ -25,21 +25,45 @@
 
 #include "ImageView.h"
 
+#include "Magnum/PixelFormat.h"
+
 namespace Magnum {
 
-template<UnsignedInt dimensions> ImageView<dimensions>::ImageView(PixelStorage storage, GL::PixelFormat format, GL::PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data) noexcept: _storage{storage}, _format{format}, _type{type}, _size{size}, _data{reinterpret_cast<const char*>(data.data()), data.size()} {
+template<UnsignedInt dimensions> ImageView<dimensions>::ImageView(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data) noexcept: ImageView{storage, format, {},  Magnum::pixelSize(format), size, data} {}
+
+template<UnsignedInt dimensions> ImageView<dimensions>::ImageView(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data) noexcept: ImageView{storage, pixelFormatWrap(format), formatExtra, pixelSize, size, data} {}
+
+template<UnsignedInt dimensions> ImageView<dimensions>::ImageView(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _size{size}, _data{reinterpret_cast<const char*>(data.data()), data.size()} {
     CORRADE_ASSERT(!_data || Implementation::imageDataSize(*this) <= _data.size(), "ImageView::ImageView(): bad image data size, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
 }
+
+template<UnsignedInt dimensions> ImageView<dimensions>::ImageView(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{storage, format, {}, Magnum::pixelSize(format), size} {}
+
+template<UnsignedInt dimensions> ImageView<dimensions>::ImageView(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{storage, pixelFormatWrap(format), formatExtra, pixelSize, size} {}
+
+template<UnsignedInt dimensions> ImageView<dimensions>::ImageView(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _size{size}, _data{nullptr} {}
 
 template<UnsignedInt dimensions> void ImageView<dimensions>::setData(const Containers::ArrayView<const void> data) {
     CORRADE_ASSERT(Implementation::imageDataSize(*this) <= data.size(), "ImageView::setData(): bad image data size, got" << data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
     _data = {reinterpret_cast<const char*>(data.data()), data.size()};
 }
 
+template<UnsignedInt dimensions> CompressedImageView<dimensions>::CompressedImageView(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data) noexcept: _storage{storage}, _format{format}, _size{size}, _data{reinterpret_cast<const char*>(data.data()), data.size()} {}
+
+template<UnsignedInt dimensions> CompressedImageView<dimensions>::CompressedImageView(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size) noexcept: _storage{storage}, _format{format}, _size{size} {}
+
+template<UnsignedInt dimensions> CompressedImageView<dimensions>::CompressedImageView(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data) noexcept: CompressedImageView{storage, compressedPixelFormatWrap(format), size, data} {}
+
+template<UnsignedInt dimensions> CompressedImageView<dimensions>::CompressedImageView(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size) noexcept: CompressedImageView{storage, compressedPixelFormatWrap(format), size} {}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_EXPORT ImageView<1>;
 template class MAGNUM_EXPORT ImageView<2>;
 template class MAGNUM_EXPORT ImageView<3>;
+
+template class MAGNUM_EXPORT CompressedImageView<1>;
+template class MAGNUM_EXPORT CompressedImageView<2>;
+template class MAGNUM_EXPORT CompressedImageView<3>;
 #endif
 
 }

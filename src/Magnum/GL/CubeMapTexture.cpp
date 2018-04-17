@@ -30,6 +30,7 @@
 #include "Magnum/GL/BufferImage.h"
 #endif
 #include "Magnum/GL/Context.h"
+#include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/Implementation/maxTextureSize.h"
 #include "Magnum/GL/Implementation/RendererState.h"
 #include "Magnum/GL/Implementation/State.h"
@@ -74,8 +75,8 @@ void CubeMapTexture::image(const Int level, Image3D& image) {
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer->applyPixelStoragePack(image.storage());
-    glGetTextureImage(_id, level, GLenum(image.format()), GLenum(image.type()), data.size(), data);
-    image = Image3D{image.storage(), image.format(), image.type(), size, std::move(data)};
+    glGetTextureImage(_id, level, GLenum(pixelFormat(image.format())), GLenum(pixelType(image.format(), image.formatExtra())), data.size(), data);
+    image = Image3D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, std::move(data)};
 }
 
 Image3D CubeMapTexture::image(const Int level, Image3D&& image) {
@@ -182,8 +183,8 @@ void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, 
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer->applyPixelStoragePack(image.storage());
-    (this->*Context::current().state().texture->getCubeImageImplementation)(coordinate, level, size, image.format(), image.type(), data.size(), data);
-    image = Image2D{image.storage(), image.format(), image.type(), size, std::move(data)};
+    (this->*Context::current().state().texture->getCubeImageImplementation)(coordinate, level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), data.size(), data);
+    image = Image2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, std::move(data)};
 }
 
 Image2D CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, Image2D&& image) {
@@ -298,7 +299,7 @@ CubeMapTexture& CubeMapTexture::setSubImage(const Int level, const Vector3i& off
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
-    (this->*Context::current().state().texture->cubeSubImage3DImplementation)(level, offset, image.size(), image.format(), image.type(), image.data(), image.storage());
+    (this->*Context::current().state().texture->cubeSubImage3DImplementation)(level, offset, image.size(), pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data(), image.storage());
     return *this;
 }
 
@@ -316,7 +317,7 @@ CubeMapTexture& CubeMapTexture::setCompressedSubImage(const Int level, const Vec
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
-    glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), Magnum::Implementation::occupiedCompressedImageDataSize(image, image.data().size()), image.data());
+    glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(compressedPixelFormat(image.format())), Magnum::Implementation::occupiedCompressedImageDataSize(image, image.data().size()), image.data());
     return *this;
 }
 
@@ -335,7 +336,7 @@ CubeMapTexture& CubeMapTexture::setSubImage(const CubeMapCoordinate coordinate, 
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
     Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
-    (this->*Context::current().state().texture->cubeSubImageImplementation)(coordinate, level, offset, image.size(), image.format(), image.type(), image.data()
+    (this->*Context::current().state().texture->cubeSubImageImplementation)(coordinate, level, offset, image.size(), pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data()
         #ifdef MAGNUM_TARGET_GLES2
         + Magnum::Implementation::pixelStorageSkipOffset(image)
         #endif
@@ -356,23 +357,15 @@ CubeMapTexture& CubeMapTexture::setCompressedSubImage(const CubeMapCoordinate co
     #ifndef MAGNUM_TARGET_GLES2
     Buffer::unbindInternal(Buffer::TargetHint::PixelUnpack);
     #endif
-    #ifndef MAGNUM_TARGET_GLES
-    /* Pixel storage is completely ignored for compressed images on ES, no need
-       to reset anything */
     Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
-    #endif
-    (this->*Context::current().state().texture->cubeCompressedSubImageImplementation)(coordinate, level, offset, image.size(), image.format(), image.data(), Magnum::Implementation::occupiedCompressedImageDataSize(image, image.data().size()));
+    (this->*Context::current().state().texture->cubeCompressedSubImageImplementation)(coordinate, level, offset, image.size(), compressedPixelFormat(image.format()), image.data(), Magnum::Implementation::occupiedCompressedImageDataSize(image, image.data().size()));
     return *this;
 }
 
 #ifndef MAGNUM_TARGET_GLES2
 CubeMapTexture& CubeMapTexture::setCompressedSubImage(const CubeMapCoordinate coordinate, const Int level, const Vector2i& offset, CompressedBufferImage2D& image) {
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
-    #ifndef MAGNUM_TARGET_GLES
-    /* Pixel storage is completely ignored for compressed images on ES, no need
-       to reset anything */
     Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
-    #endif
     (this->*Context::current().state().texture->cubeCompressedSubImageImplementation)(coordinate, level, offset, image.size(), image.format(), nullptr, Magnum::Implementation::occupiedCompressedImageDataSize(image, image.dataSize()));
     return *this;
 }
@@ -509,7 +502,7 @@ void CubeMapTexture::subImageImplementationDefault(const GLint level, const Vect
 }
 
 void CubeMapTexture::subImageImplementationSvga3DSliceBySlice(const GLint level, const Vector3i& offset, const Vector3i& size, const PixelFormat format, const PixelType type, const GLvoid* const data, const PixelStorage& storage) {
-    const std::size_t stride = std::get<1>(storage.dataProperties(format, type, size)).xy().product();
+    const std::size_t stride = std::get<1>(storage.dataProperties(pixelSize(format, type), size)).xy().product();
     for(Int i = 0; i != size.z(); ++i)
         subImageImplementationDefault(level, {offset.xy(), offset.z() + i}, {size.xy(), 1}, format, type, static_cast<const char*>(data) + stride*i, storage);
 }

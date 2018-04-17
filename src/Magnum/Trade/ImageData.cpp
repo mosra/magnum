@@ -25,11 +25,21 @@
 
 #include "ImageData.h"
 
+#include "Magnum/PixelFormat.h"
+
 namespace Magnum { namespace Trade {
 
-template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: _compressed{false}, _storage{storage}, _format{format}, _type{type}, _size{size}, _data{std::move(data)}, _importerState{importerState} {
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, format, {}, Magnum::pixelSize(format), size, std::move(data), importerState} {}
+
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, pixelFormatWrap(format), formatExtra, pixelSize, size, std::move(data), importerState} {}
+
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: _compressed{false}, _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _size{size}, _data{std::move(data)}, _importerState{importerState} {
     CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "Trade::ImageData::ImageData(): bad image data size, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
 }
+
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: _compressed{true}, _compressedStorage{storage}, _compressedFormat{format}, _size{size}, _data{std::move(data)}, _importerState{importerState} {}
+
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, compressedPixelFormatWrap(format), size, std::move(data), importerState} {}
 
 template<UnsignedInt dimensions> PixelStorage ImageData<dimensions>::storage() const {
     CORRADE_ASSERT(!_compressed, "Trade::ImageData::storage(): the image is compressed", {});
@@ -41,26 +51,24 @@ template<UnsignedInt dimensions> PixelFormat ImageData<dimensions>::format() con
     return _format;
 }
 
-template<UnsignedInt dimensions> PixelType ImageData<dimensions>::type() const {
-    CORRADE_ASSERT(!_compressed, "Trade::ImageData::type(): the image is compressed", {});
-    return _type;
+template<UnsignedInt dimensions> UnsignedInt ImageData<dimensions>::formatExtra() const {
+    CORRADE_ASSERT(!_compressed, "Trade::ImageData::formatExtra(): the image is compressed", {});
+    return _formatExtra;
 }
 
-#ifndef MAGNUM_TARGET_GLES
 template<UnsignedInt dimensions> CompressedPixelStorage ImageData<dimensions>::compressedStorage() const {
     CORRADE_ASSERT(_compressed, "Trade::ImageData::compressedStorage(): the image is not compressed", {});
     return _compressedStorage;
 }
-#endif
 
 template<UnsignedInt dimensions> CompressedPixelFormat ImageData<dimensions>::compressedFormat() const {
     CORRADE_ASSERT(_compressed, "Trade::ImageData::compressedFormat(): the image is not compressed", {});
     return _compressedFormat;
 }
 
-template<UnsignedInt dimensions> std::size_t ImageData<dimensions>::pixelSize() const {
+template<UnsignedInt dimensions> UnsignedInt ImageData<dimensions>::pixelSize() const {
     CORRADE_ASSERT(!_compressed, "Trade::ImageData::pixelSize(): the image is compressed", {});
-    return PixelStorage::pixelSize(_format, _type);
+    return _pixelSize;
 }
 
 template<UnsignedInt dimensions> std::tuple<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>, std::size_t> ImageData<dimensions>::dataProperties() const {
@@ -70,21 +78,15 @@ template<UnsignedInt dimensions> std::tuple<VectorTypeFor<dimensions, std::size_
 
 template<UnsignedInt dimensions> ImageData<dimensions>::operator ImageView<dimensions>() const
 {
-    CORRADE_ASSERT(!_compressed, "Trade::ImageData::type(): the image is compressed", (ImageView<dimensions>{_storage, _format, _type, _size}));
-    return ImageView<dimensions>{_storage, _format, _type, _size, _data};
+    CORRADE_ASSERT(!_compressed, "Trade::ImageData::type(): the image is compressed", (ImageView<dimensions>{_storage, _format, _formatExtra, _pixelSize, _size}));
+    return ImageView<dimensions>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
 }
 
 template<UnsignedInt dimensions> ImageData<dimensions>::operator CompressedImageView<dimensions>() const
 {
-    #ifndef MAGNUM_TARGET_GLES
     CORRADE_ASSERT(_compressed, "Trade::ImageData::type(): the image is not compressed", (CompressedImageView<dimensions>{_compressedStorage, _compressedFormat, _size}));
-    #else
-    CORRADE_ASSERT(_compressed, "Trade::ImageData::type(): the image is not compressed", (CompressedImageView<dimensions>{_compressedFormat, _size}));
-    #endif
     return CompressedImageView<dimensions>{
-        #ifndef MAGNUM_TARGET_GLES
         _compressedStorage,
-        #endif
         _compressedFormat, _size, _data};
 }
 

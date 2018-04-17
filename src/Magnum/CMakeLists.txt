@@ -28,9 +28,14 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 # Files shared between main library and unit test library
 set(Magnum_SRCS
+    Image.cpp
+    ImageView.cpp
     PixelStorage.cpp
     Resource.cpp
     Timeline.cpp)
+
+set(Magnum_GracefulAssert_SRCS
+    PixelFormat.cpp)
 
 set(Magnum_HEADERS
     AbstractResourceLoader.h
@@ -39,6 +44,7 @@ set(Magnum_HEADERS
     Image.h
     ImageView.h
     Magnum.h
+    PixelFormat.h
     PixelStorage.h
     Resource.h
     ResourceManager.h
@@ -65,7 +71,6 @@ if(WITH_GL AND BUILD_DEPRECATED)
         Mesh.h
         MeshView.h
         OpenGL.h
-        PixelFormat.h
         Renderbuffer.h
         RenderbufferFormat.h
         Renderer.h
@@ -127,7 +132,7 @@ set(MagnumMath_SRCS
     Math/Packing.cpp
     Math/instantiation.cpp)
 
-# Objects shared between main and test library
+# Objects shared between main and math test library
 add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
 target_include_directories(MagnumMathObjects PUBLIC
     ${PROJECT_SOURCE_DIR}/src
@@ -141,11 +146,32 @@ if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
 endif()
 set_target_properties(MagnumMathObjects PROPERTIES FOLDER "Magnum/Math")
 
-# Main library
-add_library(Magnum ${SHARED_OR_STATIC}
+# Objects shared between main and test library
+add_library(MagnumObjects OBJECT
     ${Magnum_SRCS}
     ${Magnum_HEADERS}
-    $<TARGET_OBJECTS:MagnumMathObjects>)
+    ${Magnum_PRIVATE_HEADERS})
+target_include_directories(MagnumObjects PUBLIC
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_BINARY_DIR}/src
+    $<TARGET_PROPERTY:Corrade::Utility,INTERFACE_INCLUDE_DIRECTORIES>)
+if(BUILD_DEPRECATED AND TARGET_GL) # TODO: remove once compat gets dropped
+    target_include_directories(MagnumObjects PUBLIC
+        ${PROJECT_SOURCE_DIR}/src/MagnumExternal/OpenGL)
+endif()
+if(NOT BUILD_STATIC)
+    target_compile_definitions(MagnumObjects PRIVATE "MagnumObjects_EXPORTS")
+endif()
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(MagnumObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+set_target_properties(MagnumObjects PROPERTIES FOLDER "Magnum")
+
+# Main library
+add_library(Magnum ${SHARED_OR_STATIC}
+    $<TARGET_OBJECTS:MagnumMathObjects>
+    $<TARGET_OBJECTS:MagnumObjects>
+    ${Magnum_GracefulAssert_SRCS})
 set_target_properties(Magnum PROPERTIES
     DEBUG_POSTFIX "-d"
     FOLDER "Magnum")
@@ -157,6 +183,10 @@ endif()
 target_include_directories(Magnum PUBLIC
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_BINARY_DIR}/src)
+if(BUILD_DEPRECATED AND TARGET_GL) # TODO: remove once compat gets dropped
+    target_include_directories(Magnum PUBLIC
+        ${PROJECT_SOURCE_DIR}/src/MagnumExternal/OpenGL)
+endif()
 target_link_libraries(Magnum PUBLIC
     Corrade::Utility)
 
@@ -215,7 +245,7 @@ if(WITH_TRADE)
 endif()
 
 if(BUILD_TESTS)
-    # Library with graceful assert for testing
+    # Math library with graceful assert for testing
     add_library(MagnumMathTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumMathObjects>
         ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
@@ -228,10 +258,32 @@ if(BUILD_TESTS)
         FOLDER "Magnum/Math")
     target_link_libraries(MagnumMathTestLib Corrade::Utility)
 
+    # Library with graceful assert for testing
+    add_library(MagnumTestLib ${SHARED_OR_STATIC}
+        $<TARGET_OBJECTS:MagnumMathObjects>
+        $<TARGET_OBJECTS:MagnumObjects>
+        ${Magnum_GracefulAssert_SRCS})
+    target_include_directories(MagnumTestLib PUBLIC
+        ${PROJECT_SOURCE_DIR}/src
+        ${PROJECT_BINARY_DIR}/src)
+    if(BUILD_DEPRECATED AND TARGET_GL) # TODO: remove once compat gets dropped
+        target_include_directories(MagnumTestLib PUBLIC
+            ${PROJECT_SOURCE_DIR}/src/MagnumExternal/OpenGL)
+    endif()
+    target_compile_definitions(MagnumTestLib PRIVATE
+        "CORRADE_GRACEFUL_ASSERT" "Magnum_EXPORTS")
+    set_target_properties(MagnumTestLib PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum")
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
+    target_link_libraries(MagnumTestLib PUBLIC Corrade::Utility)
+
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too
     if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING AND NOT BUILD_STATIC)
-        install(TARGETS MagnumMathTestLib
+        install(TARGETS MagnumMathTestLib MagnumTestLib
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
             LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
             ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})

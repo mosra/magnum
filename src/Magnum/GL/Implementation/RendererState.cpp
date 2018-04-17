@@ -194,6 +194,11 @@ void RendererState::applyPixelStorageUnpack(const Magnum::PixelStorage& storage)
 }
 
 void RendererState::applyPixelStorageInternal(const CompressedPixelStorage& storage, const bool isUnpack) {
+    #ifdef MAGNUM_TARGET_GLES
+    CORRADE_ASSERT(storage == CompressedPixelStorage{},
+        "GL: non-default CompressedPixelStorage parameters are not supported on OpenGLES or WebGL", );
+    static_cast<void>(isUnpack);
+    #else
     applyPixelStorageInternal(static_cast<const Magnum::PixelStorage&>(storage), isUnpack);
 
     PixelStorage& state = isUnpack ? unpackPixelStorage : packPixelStorage;
@@ -221,6 +226,7 @@ void RendererState::applyPixelStorageInternal(const CompressedPixelStorage& stor
        state.compressedBlockDataSize != storage.compressedBlockDataSize())
         glPixelStorei(isUnpack ? GL_UNPACK_COMPRESSED_BLOCK_SIZE : GL_PACK_COMPRESSED_BLOCK_SIZE,
             state.compressedBlockDataSize = storage.compressedBlockDataSize());
+    #endif
 }
 
 }}}

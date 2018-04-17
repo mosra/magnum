@@ -25,20 +25,38 @@
 
 #include "Image.h"
 
+#include "Magnum/PixelFormat.h"
+
 namespace Magnum {
 
-template<UnsignedInt dimensions> Image<dimensions>::Image(PixelStorage storage, GL::PixelFormat format, GL::PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: _storage{storage}, _format{format}, _type{type}, _size{size}, _data{std::move(data)} {
+template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{storage, format, {}, Magnum::pixelSize(format), size, std::move(data)} {}
+
+template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{storage, pixelFormatWrap(format), formatExtra, pixelSize, size, std::move(data)} {}
+
+template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _size{size}, _data{std::move(data)} {
     CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "Image::Image(): bad image data size, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this), );
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template class MAGNUM_GL_EXPORT Image<1>;
-template class MAGNUM_GL_EXPORT Image<2>;
-template class MAGNUM_GL_EXPORT Image<3>;
+template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format) noexcept: Image{storage, format, {}, Magnum::pixelSize(format)} {}
 
-template class MAGNUM_GL_EXPORT CompressedImage<1>;
-template class MAGNUM_GL_EXPORT CompressedImage<2>;
-template class MAGNUM_GL_EXPORT CompressedImage<3>;
+template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize) noexcept: Image{storage, pixelFormatWrap(format), formatExtra, pixelSize} {}
+
+template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _data{} {}
+
+template<UnsignedInt dimensions> CompressedImage<dimensions>::CompressedImage(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: _storage{storage}, _format{format}, _size{size}, _data{std::move(data)} {}
+
+template<UnsignedInt dimensions> CompressedImage<dimensions>::CompressedImage(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: CompressedImage{storage, compressedPixelFormatWrap(format), size, std::move(data)} {}
+
+template<UnsignedInt dimensions> CompressedImage<dimensions>::CompressedImage(const CompressedPixelStorage storage) noexcept: _storage{storage}, _format{} {}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template class MAGNUM_EXPORT Image<1>;
+template class MAGNUM_EXPORT Image<2>;
+template class MAGNUM_EXPORT Image<3>;
+
+template class MAGNUM_EXPORT CompressedImage<1>;
+template class MAGNUM_EXPORT CompressedImage<2>;
+template class MAGNUM_EXPORT CompressedImage<3>;
 #endif
 
 }
