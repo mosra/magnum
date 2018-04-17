@@ -78,6 +78,7 @@ Trade::MeshData3D uvSphereWireframe(const UnsignedInt rings, const UnsignedInt s
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+/* LCOV_EXCL_START */
 Trade::MeshData3D UVSphere::solid(const UnsignedInt rings, const UnsignedInt segments, const UVSphereTextureCoords textureCoords) {
     return uvSphereSolid(rings, segments, textureCoords);
 }
@@ -85,6 +86,7 @@ Trade::MeshData3D UVSphere::solid(const UnsignedInt rings, const UnsignedInt seg
 Trade::MeshData3D UVSphere::wireframe(const UnsignedInt rings, const UnsignedInt segments) {
     return uvSphereWireframe(rings, segments);
 }
+/* LCOV_EXCL_STOP */
 #endif
 
 }}

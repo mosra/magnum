@@ -85,9 +85,11 @@ Trade::MeshData3D icosphereSolid(const UnsignedInt subdivisions) {
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+/* LCOV_EXCL_START */
 Trade::MeshData3D Icosphere::solid(const UnsignedInt subdivisions) {
     return icosphereSolid(subdivisions);
 }
+/* LCOV_EXCL_STOP */
 #endif
 
 }}

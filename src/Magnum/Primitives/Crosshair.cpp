@@ -48,6 +48,7 @@ Trade::MeshData3D crosshair3D() {
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+/* LCOV_EXCL_START */
 Trade::MeshData2D Crosshair2D::wireframe() {
     return crosshair2D();
 }
@@ -55,6 +56,7 @@ Trade::MeshData2D Crosshair2D::wireframe() {
 Trade::MeshData3D Crosshair3D::wireframe() {
     return crosshair3D();
 }
+/* LCOV_EXCL_STOP */
 #endif
 
 }}

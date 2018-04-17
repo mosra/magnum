@@ -86,6 +86,7 @@ Trade::MeshData3D cylinderWireframe(const UnsignedInt rings, const UnsignedInt s
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+/* LCOV_EXCL_START */
 Trade::MeshData3D Cylinder::solid(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength, const CylinderFlags flags) {
     return cylinderSolid(rings, segments, halfLength, flags);
 }
@@ -93,6 +94,7 @@ Trade::MeshData3D Cylinder::solid(const UnsignedInt rings, const UnsignedInt seg
 Trade::MeshData3D Cylinder::wireframe(const UnsignedInt rings, const UnsignedInt segments, const Float halfLength) {
     return cylinderWireframe(rings, segments, halfLength);
 }
+/* LCOV_EXCL_STOP */
 #endif
 
 }}

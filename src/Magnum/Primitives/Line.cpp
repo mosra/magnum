@@ -45,6 +45,7 @@ Trade::MeshData3D line3D() {
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+/* LCOV_EXCL_START */
 Trade::MeshData2D Line2D::wireframe() {
     return line2D();
 }
@@ -52,6 +53,7 @@ Trade::MeshData2D Line2D::wireframe() {
 Trade::MeshData3D Line3D::wireframe() {
     return line3D();
 }
+/* LCOV_EXCL_STOP */
 #endif
 
 }}
