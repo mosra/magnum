@@ -49,11 +49,11 @@ template<std::size_t size, class T> Float calculateImageDelta(const ImageView2D&
     /* Precalculate parameters for pixel access */
     Math::Vector2<std::size_t> dataOffset, dataSize;
 
-    std::tie(dataOffset, dataSize, std::ignore) = actual.dataProperties();
+    std::tie(dataOffset, dataSize) = actual.dataProperties();
     const char* const actualPixels = actual.data() + dataOffset.sum();
     const std::size_t actualStride = dataSize.x();
 
-    std::tie(dataOffset, dataSize, std::ignore) = expected.dataProperties();
+    std::tie(dataOffset, dataSize) = expected.dataProperties();
     const char* const expectedPixels = expected.data() + dataOffset.sum();
     const std::size_t expectedStride = dataSize.x();
 
@@ -328,11 +328,11 @@ void printPixelDeltas(Debug& out, const std::vector<Float>& delta, const ImageVi
     /* Precalculate parameters for pixel access */
     Math::Vector2<std::size_t> offset, size;
 
-    std::tie(offset, size, std::ignore) = actual.dataProperties();
+    std::tie(offset, size) = actual.dataProperties();
     const char* const actualPixels = actual.data() + offset.sum();
     const std::size_t actualStride = size.x();
 
-    std::tie(offset, size, std::ignore) = expected.dataProperties();
+    std::tie(offset, size) = expected.dataProperties();
     const char* const expectedPixels = expected.data() + offset.sum();
     const std::size_t expectedStride = size.x();
 

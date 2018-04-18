@@ -53,6 +53,9 @@ struct BufferImageGLTest: OpenGLTester {
     void constructMove();
     void constructMoveCompressed();
 
+    void dataProperties();
+    void dataPropertiesCompressed();
+
     void setData();
     void setDataGeneric();
     void setDataCompressed();
@@ -79,6 +82,9 @@ BufferImageGLTest::BufferImageGLTest() {
               &BufferImageGLTest::constructCopyCompressed,
               &BufferImageGLTest::constructMove,
               &BufferImageGLTest::constructMoveCompressed,
+
+              &BufferImageGLTest::dataProperties,
+              &BufferImageGLTest::dataPropertiesCompressed,
 
               &BufferImageGLTest::setData,
               &BufferImageGLTest::setDataGeneric,
@@ -442,6 +448,31 @@ void BufferImageGLTest::constructMoveCompressed() {
     CORRADE_COMPARE(c.size(), Vector2i(4, 4));
     CORRADE_COMPARE(c.dataSize(), 8);
     CORRADE_COMPARE(c.buffer().id(), id);
+}
+
+void BufferImageGLTest::dataProperties() {
+    const char data[224]{};
+    BufferImage3D image{
+        PixelStorage{}
+            .setAlignment(8)
+            .setSkip({3, 2, 1}),
+        Magnum::PixelFormat::R8Unorm, {2, 4, 6}, data, BufferUsage::StaticDraw};
+    CORRADE_COMPARE(image.dataProperties(),
+        (std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>>{{3, 16, 32}, {8, 4, 6}}));
+}
+
+void BufferImageGLTest::dataPropertiesCompressed() {
+    /* Yes, I know, this is totally bogus and doesn't match the BC1 format */
+    const char data[1]{};
+    CompressedBufferImage3D image{
+        CompressedPixelStorage{}
+            .setCompressedBlockSize({3, 4, 5})
+            .setCompressedBlockDataSize(16)
+            .setImageHeight(12)
+            .setSkip({5, 8, 11}),
+        CompressedPixelFormat::Bc1RGBAUnorm, {2, 8, 11}, data, BufferUsage::StaticDraw};
+    CORRADE_COMPARE(image.dataProperties(),
+        (std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>>{{2*16, 2*16, 9*16}, {1, 3, 3}}));
 }
 
 void BufferImageGLTest::setData() {

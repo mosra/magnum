@@ -335,7 +335,7 @@ template<UnsignedInt dimensions> class ImageData {
          * @ref PixelStorage::dataProperties() for more information.
          * @see @ref isCompressed()
          */
-        std::tuple<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>, std::size_t> dataProperties() const;
+        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
 
         /* compressed data properties are not available because the importers
            are not setting any block size pixel storage properties to avoid

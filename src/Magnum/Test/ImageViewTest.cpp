@@ -48,6 +48,9 @@ struct ImageViewTest: TestSuite::Tester {
     void constructInvalidSize();
     void constructCompressedInvalidSize();
 
+    void dataProperties();
+    void dataPropertiesCompressed();
+
     void setData();
     void setDataCompressed();
 
@@ -69,6 +72,9 @@ ImageViewTest::ImageViewTest() {
 
               &ImageViewTest::constructInvalidSize,
               &ImageViewTest::constructCompressedInvalidSize,
+
+              &ImageViewTest::dataProperties,
+              &ImageViewTest::dataPropertiesCompressed,
 
               &ImageViewTest::setData,
               &ImageViewTest::setDataCompressed,
@@ -484,6 +490,32 @@ void ImageViewTest::constructCompressedInvalidSize() {
         CompressedImageView2D{CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, data};
         CORRADE_COMPARE(out.str(), "CompressedImageView::CompressedImageView(): data too small, got 2 but expected at least 4 bytes\n");
     }
+}
+
+void ImageViewTest::dataProperties() {
+    const char data[224]{};
+    ImageView3D image{
+        PixelStorage{}
+            .setAlignment(8)
+            .setSkip({3, 2, 1}),
+        PixelFormat::R8Unorm, {2, 4, 6}, data};
+    CORRADE_COMPARE(image.dataProperties(),
+        (std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>>{{3, 16, 32}, {8, 4, 6}}));
+}
+
+void ImageViewTest::dataPropertiesCompressed() {
+    /* Yes, I know, this is totally bogus and doesn't match the BC1 format */
+    const char data[1]{};
+    CompressedImageView3D image{
+        CompressedPixelStorage{}
+            .setCompressedBlockSize({3, 4, 5})
+            .setCompressedBlockDataSize(16)
+            .setImageHeight(12)
+            .setSkip({5, 8, 11}),
+        CompressedPixelFormat::Bc1RGBAUnorm, {2, 8, 11},
+        data};
+    CORRADE_COMPARE(image.dataProperties(),
+        (std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>>{{2*16, 2*16, 9*16}, {1, 3, 3}}));
 }
 
 void ImageViewTest::setData() {

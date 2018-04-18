@@ -30,13 +30,15 @@
  */
 
 #include <cstddef>
-#include <tuple>
+#include <utility>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Vector3.h"
 
 #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
 #include "Magnum/GL/PixelFormat.h"
+
+#include <tuple>
 #endif
 
 namespace Magnum {
@@ -265,7 +267,7 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
          * Expects @ref compressedBlockSize() and @ref compressedBlockDataSize()
          * to be non-zero.
          */
-        std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> dataProperties(const Vector3i& size) const;
+        std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties(const Vector3i& size) const;
 
         /* Overloads to remove WTF-factor from method chaining order */
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -310,18 +312,17 @@ inline std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::s
 
 namespace Implementation {
     /* Used in *Image::dataProperties() */
-    template<std::size_t dimensions, class T> std::tuple<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>, std::size_t> imageDataProperties(const T& image) {
+    template<std::size_t dimensions, class T> std::pair<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>> imageDataProperties(const T& image) {
         Math::Vector3<std::size_t> offset, dataSize;
         std::tie(offset, dataSize) = image.storage().dataProperties(image.pixelSize(), Vector3i::pad(image.size(), 1));
-        return std::make_tuple(Math::Vector<dimensions, std::size_t>::pad(offset), Math::Vector<dimensions, std::size_t>::pad(dataSize), image.pixelSize());
+        return std::make_pair(Math::Vector<dimensions, std::size_t>::pad(offset), Math::Vector<dimensions, std::size_t>::pad(dataSize));
     }
 
     /* Used in Compressed*Image::dataProperties() */
-    template<std::size_t dimensions, class T> std::tuple<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>, std::size_t> compressedImageDataProperties(const T& image) {
+    template<std::size_t dimensions, class T> std::pair<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>> compressedImageDataProperties(const T& image) {
         Math::Vector3<std::size_t> offset, blockCount;
-        std::size_t blockSize;
-        std::tie(offset, blockCount, blockSize) = image.storage().dataProperties(Vector3i::pad(image.size(), 1));
-        return std::make_tuple(Math::Vector<dimensions, std::size_t>::pad(offset), Math::Vector<dimensions, std::size_t>::pad(blockCount), blockSize);
+        std::tie(offset, blockCount) = image.storage().dataProperties(Vector3i::pad(image.size(), 1));
+        return std::make_pair(Math::Vector<dimensions, std::size_t>::pad(offset), Math::Vector<dimensions, std::size_t>::pad(blockCount));
     }
 
     /* Used in image query functions */
@@ -352,12 +353,11 @@ namespace Implementation {
         CORRADE_INTERNAL_ASSERT(image.storage().compressedBlockSize().product() && image.storage().compressedBlockDataSize());
 
         Math::Vector3<std::size_t> offset, blockCount;
-        std::size_t blockDataSize;
-        std::tie(offset, blockCount, blockDataSize) = image.storage().dataProperties(Vector3i::pad(size, 1));
+        std::tie(offset, blockCount) = image.storage().dataProperties(Vector3i::pad(size, 1));
 
         const auto realBlockCount = Math::Vector3<std::size_t>{(Vector3i::pad(size, 1) + image.storage().compressedBlockSize() - Vector3i{1})/image.storage().compressedBlockSize()};
 
-        return {offset.sum(), (blockCount.product() - (blockCount.x() - realBlockCount.x()) - (blockCount.y() - realBlockCount.y())*blockCount.x())*blockDataSize};
+        return {offset.sum(), (blockCount.product() - (blockCount.x() - realBlockCount.x()) - (blockCount.y() - realBlockCount.y())*blockCount.x())*image.storage().compressedBlockDataSize()};
     }
 
     /* Used in image query functions */
@@ -373,7 +373,7 @@ namespace Implementation {
     }
 
     template<std::size_t dimensions, class T> std::ptrdiff_t pixelStorageSkipOffsetFor(const T& image, const Math::Vector<dimensions, Int>& size) {
-        return std::get<0>(image.storage().dataProperties(image.pixelSize(), Vector3i::pad(size, 1))).sum();
+        return image.storage().dataProperties(image.pixelSize(), Vector3i::pad(size, 1)).first.sum();
     }
     template<class T> std::ptrdiff_t pixelStorageSkipOffset(const T& image) {
         return pixelStorageSkipOffsetFor(image, image.size());

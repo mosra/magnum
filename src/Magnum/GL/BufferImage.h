@@ -334,7 +334,7 @@ template<UnsignedInt dimensions> class BufferImage {
          *
          * See @ref PixelStorage::dataProperties() for more information.
          */
-        std::tuple<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>, std::size_t> dataProperties() const {
+        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const {
             return Magnum::Implementation::imageDataProperties<dimensions>(*this);
         }
 
@@ -666,7 +666,7 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.
          */
-        std::tuple<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>, std::size_t> dataProperties() const {
+        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const {
             return Magnum::Implementation::compressedImageDataProperties<dimensions>(*this);
         }
 

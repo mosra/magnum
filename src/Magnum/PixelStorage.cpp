@@ -50,7 +50,7 @@ std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> PixelStorage::
         size.product() ? dataSize : Math::Vector3<std::size_t>{}};
 }
 
-std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> CompressedPixelStorage::dataProperties(const Vector3i& size) const {
+std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> CompressedPixelStorage::dataProperties(const Vector3i& size) const {
     CORRADE_ASSERT(_blockDataSize && _blockSize.product(), "CompressedPixelStorage::dataProperties(): expected non-zero storage parameters", {});
 
     const Vector3i blockCount = (size + _blockSize - Vector3i{1})/_blockSize;
@@ -62,7 +62,7 @@ std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> 
     const Vector3i skipBlockCount = (_skip + _blockSize - Vector3i{1})/_blockSize;
     const Math::Vector3<std::size_t> offset = (Math::Vector3<std::size_t>{1, dataSize.x(), dataSize.xy().product()}*Math::Vector3<std::size_t>{skipBlockCount})*_blockDataSize;
 
-    return std::make_tuple(offset, size.product() ? dataSize : Math::Vector3<std::size_t>{}, _blockDataSize);
+    return std::make_pair(offset, size.product() ? dataSize : Math::Vector3<std::size_t>{});
 }
 
 bool CompressedPixelStorage::operator==(const CompressedPixelStorage& other) const {

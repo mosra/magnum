@@ -55,6 +55,7 @@ struct ImageDataTest: TestSuite::Tester {
     void toViewCompressedImplementationSpecific();
 
     void access();
+    void dataProperties();
 
     void release();
     void releaseCompressed();
@@ -82,6 +83,7 @@ ImageDataTest::ImageDataTest() {
               &ImageDataTest::toViewCompressedImplementationSpecific,
 
               &ImageDataTest::access,
+              &ImageDataTest::dataProperties,
 
               &ImageDataTest::release,
               &ImageDataTest::releaseCompressed});
@@ -494,6 +496,17 @@ void ImageDataTest::access() {
     const ImageData2D& ca = a;
     CORRADE_COMPARE(a.data(), data);
     CORRADE_COMPARE(ca.data(), data);
+}
+
+void ImageDataTest::dataProperties() {
+    ImageData3D image{
+        PixelStorage{}
+            .setAlignment(8)
+            .setSkip({3, 2, 1}),
+        PixelFormat::R8Unorm, {2, 4, 6},
+        Containers::Array<char>{224}};
+    CORRADE_COMPARE(image.dataProperties(),
+        (std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>>{{3, 16, 32}, {8, 4, 6}}));
 }
 
 void ImageDataTest::release() {

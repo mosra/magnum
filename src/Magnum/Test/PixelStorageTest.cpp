@@ -246,7 +246,7 @@ void PixelStorageTest::dataPropertiesCompressed() {
         .setCompressedBlockDataSize(16);
 
     CORRADE_COMPARE(storage.dataProperties({2, 8, 11}),
-        (std::tuple<Vector3st, Vector3st, std::size_t>{{}, {1, 2, 3}, 16}));
+        (std::pair<Vector3st, Vector3st>{{}, {1, 2, 3}}));
 }
 
 void PixelStorageTest::dataPropertiesCompressedRowLength() {
@@ -257,7 +257,7 @@ void PixelStorageTest::dataPropertiesCompressedRowLength() {
         .setSkip({5, 8, 0});
 
     CORRADE_COMPARE(storage.dataProperties({2, 8, 11}),
-        (std::tuple<Vector3st, Vector3st, std::size_t>{{2*9, 8*9, 0}, {4, 2, 3}, 9}));
+        (std::pair<Vector3st, Vector3st>{{2*9, 8*9, 0}, {4, 2, 3}}));
 }
 
 void PixelStorageTest::dataPropertiesCompressedImageHeight() {
@@ -268,7 +268,7 @@ void PixelStorageTest::dataPropertiesCompressedImageHeight() {
         .setSkip({5, 8, 11});
 
     CORRADE_COMPARE(storage.dataProperties({2, 8, 11}),
-        (std::tuple<Vector3st, Vector3st, std::size_t>{{2*16, 2*16, 9*16}, {1, 3, 3}, 16}));
+        (std::pair<Vector3st, Vector3st>{{2*16, 2*16, 9*16}, {1, 3, 3}}));
 }
 
 void PixelStorageTest::dataOffsetSizeCompressed() {

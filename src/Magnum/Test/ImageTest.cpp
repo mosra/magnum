@@ -61,6 +61,9 @@ struct ImageTest: TestSuite::Tester {
     void access();
     void accessCompressed();
 
+    void dataProperties();
+    void dataPropertiesCompressed();
+
     void release();
     void releaseCompressed();
 };
@@ -92,6 +95,9 @@ ImageTest::ImageTest() {
 
               &ImageTest::access,
               &ImageTest::accessCompressed,
+
+              &ImageTest::dataProperties,
+              &ImageTest::dataPropertiesCompressed,
 
               &ImageTest::release,
               &ImageTest::releaseCompressed});
@@ -604,6 +610,31 @@ void ImageTest::accessCompressed() {
     const CompressedImage2D& ca = a;
     CORRADE_COMPARE(a.data(), data);
     CORRADE_COMPARE(ca.data(), data);
+}
+
+void ImageTest::dataProperties() {
+    Image3D image{
+        PixelStorage{}
+            .setAlignment(8)
+            .setSkip({3, 2, 1}),
+        PixelFormat::R8Unorm, {2, 4, 6},
+        Containers::Array<char>{224}};
+    CORRADE_COMPARE(image.dataProperties(),
+        (std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>>{{3, 16, 32}, {8, 4, 6}}));
+}
+
+void ImageTest::dataPropertiesCompressed() {
+    /* Yes, I know, this is totally bogus and doesn't match the BC1 format */
+    CompressedImage3D image{
+        CompressedPixelStorage{}
+            .setCompressedBlockSize({3, 4, 5})
+            .setCompressedBlockDataSize(16)
+            .setImageHeight(12)
+            .setSkip({5, 8, 11}),
+        CompressedPixelFormat::Bc1RGBAUnorm, {2, 8, 11},
+        Containers::Array<char>{1}};
+    CORRADE_COMPARE(image.dataProperties(),
+        (std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>>{{2*16, 2*16, 9*16}, {1, 3, 3}}));
 }
 
 void ImageTest::release() {

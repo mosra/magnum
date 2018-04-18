@@ -71,7 +71,7 @@ template<UnsignedInt dimensions> UnsignedInt ImageData<dimensions>::pixelSize() 
     return _pixelSize;
 }
 
-template<UnsignedInt dimensions> std::tuple<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>, std::size_t> ImageData<dimensions>::dataProperties() const {
+template<UnsignedInt dimensions> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> ImageData<dimensions>::dataProperties() const {
     CORRADE_ASSERT(!_compressed, "Trade::ImageData::dataProperties(): the image is compressed", {});
     return Implementation::imageDataProperties<dimensions>(*this);
 }
