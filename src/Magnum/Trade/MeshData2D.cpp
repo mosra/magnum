@@ -34,7 +34,7 @@ MeshData2D::MeshData2D(const MeshPrimitive primitive, std::vector<UnsignedInt> i
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-MeshData2D::MeshData2D(const MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector2>> positions, std::vector<std::vector<Vector2>> textureCoords2D, const void* const importerState): MeshData2D{primitive, std::move(indices), std::move(positions), std::move(textureCoords2D), {}, importerState} {}
+MeshData2D::MeshData2D(const MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector2>> positions, std::vector<std::vector<Vector2>> textureCoords2D, const void* const importerState): MeshData2D{primitive, std::move(indices), std::move(positions), std::move(textureCoords2D), {}, importerState} {} /* LCOV_EXCL_LINE */
 #endif
 
 MeshData2D::MeshData2D(MeshData2D&&)
