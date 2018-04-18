@@ -203,7 +203,10 @@ set(MagnumMath_SRCS
 
 # Objects shared between main and test library
 add_library(MagnumMathObjects OBJECT ${MagnumMath_SRCS})
-target_include_directories(MagnumMathObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(MagnumMathObjects PUBLIC
+    ${PROJECT_SOURCE_DIR}/src
+    ${PROJECT_BINARY_DIR}/src
+    $<TARGET_PROPERTY:Corrade::Utility,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_STATIC)
     target_compile_definitions(MagnumMathObjects PRIVATE "MagnumMathObjects_EXPORTS")
 endif()
@@ -336,7 +339,9 @@ if(BUILD_TESTS)
     add_library(MagnumMathTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumMathObjects>
         ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
-    target_include_directories(MagnumMathTestLib PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
+    target_include_directories(MagnumMathTestLib PUBLIC
+        ${PROJECT_SOURCE_DIR}/src
+        ${PROJECT_BINARY_DIR}/src)
     target_compile_definitions(MagnumMathTestLib PRIVATE "CORRADE_GRACEFUL_ASSERT")
     set_target_properties(MagnumMathTestLib PROPERTIES
         DEBUG_POSTFIX "-d"
