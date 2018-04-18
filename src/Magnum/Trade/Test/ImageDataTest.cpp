@@ -30,20 +30,19 @@
 
 namespace Magnum { namespace Trade { namespace Test {
 
-class ImageDataTest: public TestSuite::Tester {
-    public:
-        explicit ImageDataTest();
+struct ImageDataTest: TestSuite::Tester {
+    explicit ImageDataTest();
 
-        void construct();
-        void constructCompressed();
-        void constructCopy();
-        void constructMove();
-        void constructMoveCompressed();
+    void construct();
+    void constructCompressed();
+    void constructCopy();
+    void constructMove();
+    void constructMoveCompressed();
 
-        void toView();
-        void toViewCompressed();
-        void release();
-        void releaseCompressed();
+    void toView();
+    void toViewCompressed();
+    void release();
+    void releaseCompressed();
 };
 
 ImageDataTest::ImageDataTest() {
