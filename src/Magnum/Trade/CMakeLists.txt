@@ -29,7 +29,6 @@ set(MagnumTrade_SRCS
     AbstractImageConverter.cpp
     AbstractImporter.cpp
     AbstractMaterialData.cpp
-    ImageData.cpp
     LightData.cpp
     MeshData2D.cpp
     MeshData3D.cpp
@@ -40,6 +39,10 @@ set(MagnumTrade_SRCS
     PhongMaterialData.cpp
     SceneData.cpp
     TextureData.cpp)
+
+set(MagnumTrade_GracefulAssert_SRCS
+    ImageData.cpp)
+
 set(MagnumTrade_HEADERS
     AbstractImporter.h
     AbstractImageConverter.h
@@ -65,9 +68,26 @@ if(NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 endif()
 
+# Objects shared between main and test library
+add_library(MagnumTradeObjects OBJECT
+    ${MagnumTrade_SRCS}
+    ${MagnumTrade_HEADERS})
+target_include_directories(MagnumTradeObjects PUBLIC
+    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>)
+if(NOT BUILD_STATIC)
+    target_compile_definitions(MagnumTradeObjects PRIVATE "MagnumTradeObjects_EXPORTS")
+endif()
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(MagnumTradeObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+set_target_properties(MagnumTradeObjects PROPERTIES FOLDER "Magnum/Trade")
+
 # Trade library
 add_library(MagnumTrade ${SHARED_OR_STATIC}
-    ${MagnumTrade_SRCS})
+    $<TARGET_OBJECTS:MagnumTradeObjects>
+    ${MagnumTrade_GracefulAssert_SRCS})
 set_target_properties(MagnumTrade PROPERTIES
     DEBUG_POSTFIX "-d"
     FOLDER "Magnum/Trade")
@@ -101,6 +121,35 @@ if(WITH_IMAGECONVERTER)
 endif()
 
 if(BUILD_TESTS)
+    # Library with graceful assert for testing
+    add_library(MagnumTradeTestLib ${SHARED_OR_STATIC}
+        $<TARGET_OBJECTS:MagnumTradeObjects>
+        ${MagnumTrade_GracefulAssert_SRCS})
+    target_include_directories(MagnumTradeTestLib PUBLIC
+        ${PROJECT_SOURCE_DIR}/src
+        ${PROJECT_BINARY_DIR}/src)
+    target_compile_definitions(MagnumTradeTestLib PRIVATE
+        "CORRADE_GRACEFUL_ASSERT" "MagnumTrade_EXPORTS")
+    set_target_properties(MagnumTradeTestLib PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum")
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumTradeTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
+    target_link_libraries(MagnumTradeTestLib
+        Magnum
+        MagnumGL
+        Corrade::PluginManager)
+
+    # On Windows we need to install first and then run the tests to avoid "DLL
+    # not found" hell, thus we need to install this too
+    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING AND NOT BUILD_STATIC)
+        install(TARGETS MagnumTradeTestLib
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    endif()
+
     add_subdirectory(Test)
 endif()
 

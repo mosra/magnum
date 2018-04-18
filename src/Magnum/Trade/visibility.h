@@ -31,7 +31,7 @@
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_BUILD_STATIC
-    #ifdef MagnumTrade_EXPORTS
+    #if defined(MagnumTrade_EXPORTS) || defined(MagnumTradeObjects_EXPORTS)
         #define MAGNUM_TRADE_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
         #define MAGNUM_TRADE_EXPORT CORRADE_VISIBILITY_IMPORT

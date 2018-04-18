@@ -109,12 +109,14 @@ endif()
 # OpenGL ES 3.0 and WebGL 2.0 stuff
 if(NOT TARGET_GLES2)
     list(APPEND MagnumGL_SRCS
-        BufferImage.cpp
         PrimitiveQuery.cpp
         TextureArray.cpp
         TransformFeedback.cpp
 
         Implementation/TransformFeedbackState.cpp)
+
+    list(APPEND MagnumGL_GracefulAssert_SRCS
+        BufferImage.cpp)
 
     list(APPEND MagnumGL_HEADERS
         BufferImage.h

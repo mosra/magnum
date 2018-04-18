@@ -37,7 +37,7 @@ template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const Pixe
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> const data, const BufferUsage usage): BufferImage{storage, GL::pixelFormat(format), GL::pixelType(format), size, data, usage} {}
 
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: _storage{storage}, _format{format}, _type{type}, _size{size}, _buffer{std::move(buffer)}, _dataSize{dataSize} {
-    CORRADE_ASSERT(Magnum::Implementation::imageDataSize(*this) <= dataSize, "GL::BufferImage::BufferImage(): bad image data size, got" << dataSize << "but expected at least" << Magnum::Implementation::imageDataSize(*this), );
+    CORRADE_ASSERT(Magnum::Implementation::imageDataSize(*this) <= dataSize, "GL::BufferImage::BufferImage(): data too small, got" << dataSize << "but expected at least" << Magnum::Implementation::imageDataSize(*this) << "bytes", );
 }
 
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const PixelStorage storage, const Magnum::PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, const std::size_t dataSize) noexcept: BufferImage{storage, GL::pixelFormat(format), GL::pixelType(format), size, std::move(buffer), dataSize} {}
@@ -58,9 +58,9 @@ template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const Pix
 
     /* Keep the old storage if zero-sized nullptr buffer was passed */
     if(data.data() == nullptr && data.size() == 0)
-        CORRADE_ASSERT(Magnum::Implementation::imageDataSize(*this) <= _dataSize, "GL::BufferImage::setData(): bad current storage size, got" << _dataSize << "but expected at least" << Magnum::Implementation::imageDataSize(*this), );
+        CORRADE_ASSERT(Magnum::Implementation::imageDataSize(*this) <= _dataSize, "GL::BufferImage::setData(): current storage too small, got" << _dataSize << "but expected at least" << Magnum::Implementation::imageDataSize(*this) << "bytes", );
     else {
-        CORRADE_ASSERT(Magnum::Implementation::imageDataSize(*this) <= data.size(), "GL::BufferImage::setData(): bad image data size, got" << data.size() << "but expected at least" << Magnum::Implementation::imageDataSize(*this), );
+        CORRADE_ASSERT(Magnum::Implementation::imageDataSize(*this) <= data.size(), "GL::BufferImage::setData(): data too small, got" << data.size() << "but expected at least" << Magnum::Implementation::imageDataSize(*this) << "bytes", );
         _buffer.setData(data, usage);
         _dataSize = data.size();
     }
