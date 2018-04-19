@@ -50,31 +50,21 @@ enum class MeshPrimitive: GLenum {
     Points = GL_POINTS,
 
     /**
-     * First two vertices define first line segment, each following
-     * vertex defines another segment.
-     */
-    LineStrip = GL_LINE_STRIP,
-
-    /** Line strip, last and first vertex are connected together. */
-    LineLoop = GL_LINE_LOOP,
-
-    /**
      * Each pair of vertices defines a single line, lines aren't
      * connected together.
      */
     Lines = GL_LINES,
 
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    /**
-     * Line strip with adjacency information.
-     * @requires_gl32 Extension @extension{ARB,geometry_shader4}
-     * @requires_gles30 Not defined in OpenGL ES 2.0.
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension{EXT,geometry_shader}
-     * @requires_gles Geometry shaders are not available in WebGL.
-     */
-    LineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
+    /** Line strip, last and first vertex are connected together. */
+    LineLoop = GL_LINE_LOOP,
 
+    /**
+     * First two vertices define first line segment, each following
+     * vertex defines another segment.
+     */
+    LineStrip = GL_LINE_STRIP,
+
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     /**
      * Lines with adjacency information.
      * @requires_gl32 Extension @extension{ARB,geometry_shader4}
@@ -84,7 +74,20 @@ enum class MeshPrimitive: GLenum {
      * @requires_gles Geometry shaders are not available in WebGL.
      */
     LinesAdjacency = GL_LINES_ADJACENCY,
+
+    /**
+     * Line strip with adjacency information.
+     * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+     * @requires_gles30 Not defined in OpenGL ES 2.0.
+     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+     *      @extension{EXT,geometry_shader}
+     * @requires_gles Geometry shaders are not available in WebGL.
+     */
+    LineStripAdjacency = GL_LINE_STRIP_ADJACENCY,
     #endif
+
+    /** Each three vertices define one triangle. */
+    Triangles = GL_TRIANGLES,
 
     /**
      * First three vertices define first triangle, each following
@@ -98,20 +101,7 @@ enum class MeshPrimitive: GLenum {
      */
     TriangleFan = GL_TRIANGLE_FAN,
 
-    /** Each three vertices define one triangle. */
-    Triangles = GL_TRIANGLES,
-
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    /**
-     * Triangle strip with adjacency information.
-     * @requires_gl32 Extension @extension{ARB,geometry_shader4}
-     * @requires_gles30 Not defined in OpenGL ES 2.0.
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension{EXT,geometry_shader}
-     * @requires_gles Geometry shaders are not available in WebGL.
-     */
-    TriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY,
-
     /**
      * Triangles with adjacency information.
      * @requires_gl32 Extension @extension{ARB,geometry_shader4}
@@ -121,6 +111,16 @@ enum class MeshPrimitive: GLenum {
      * @requires_gles Geometry shaders are not available in WebGL.
      */
     TrianglesAdjacency = GL_TRIANGLES_ADJACENCY,
+
+    /**
+     * Triangle strip with adjacency information.
+     * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+     * @requires_gles30 Not defined in OpenGL ES 2.0.
+     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+     *      @extension{EXT,geometry_shader}
+     * @requires_gles Geometry shaders are not available in WebGL.
+     */
+    TriangleStripAdjacency = GL_TRIANGLE_STRIP_ADJACENCY,
 
     /**
      * Patches.
