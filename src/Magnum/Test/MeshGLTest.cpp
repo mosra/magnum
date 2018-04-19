@@ -904,7 +904,7 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
                 DynamicAttribute::Kind::Long, 1,
                 DynamicAttribute::Components::Three,
                 DynamicAttribute::DataType::Double})
-            .addVertexBuffer(buffer, 3*3*8 + 6*4, 3*3*8, DynamicAttribute{
+            .addVertexBuffer(buffer, 3*3*8 + 6*8, 3*3*8, DynamicAttribute{
                 DynamicAttribute::Kind::Long, 2,
                 DynamicAttribute::Components::Three,
                 DynamicAttribute::DataType::Double});
