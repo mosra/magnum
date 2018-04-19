@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Array.h"
@@ -35,6 +36,8 @@ struct ArrayTest: TestSuite::Tester {
     void construct();
     void equality();
     void access();
+
+    void debug();
 };
 
 typedef Magnum::Array1D<Int> Array1D;
@@ -44,7 +47,9 @@ typedef Magnum::Array3D<Int> Array3D;
 ArrayTest::ArrayTest() {
     addTests({&ArrayTest::construct,
               &ArrayTest::equality,
-              &ArrayTest::access});
+              &ArrayTest::access,
+
+              &ArrayTest::debug});
 }
 
 void ArrayTest::construct() {
@@ -107,6 +112,13 @@ void ArrayTest::access() {
 
     CORRADE_COMPARE(c.xy(), Array2D(-5, 6));
     CORRADE_COMPARE(cc.xy(), Array2D(-5, 6));
+}
+
+void ArrayTest::debug() {
+    std::ostringstream out;
+
+    Debug{&out} << Array<4, Int>{5, 6, 7, 8} << Array1D{13} << Array2D{71, 2} << Array3D{1, 2, 3};
+    CORRADE_COMPARE(out.str(), "Array(5, 6, 7, 8) Array(13) Array(71, 2) Array(1, 2, 3)\n");
 }
 
 }}
