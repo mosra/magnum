@@ -140,7 +140,8 @@ void MeshView::multiDrawImplementationFallback(std::initializer_list<std::refere
 #endif
 
 MeshView& MeshView::setIndexRange(Int first) {
-    _indexOffset = _original.get()._indexOffset + first*_original.get().indexSize();
+     CORRADE_ASSERT(_original.get()._indexBuffer, "MeshView::setIndexRange(): mesh is not indexed", *this);
+    _indexOffset = _original.get()._indexOffset + first*_original.get().indexTypeSize();
     return *this;
 }
 

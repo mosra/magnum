@@ -34,7 +34,6 @@ set(MagnumGL_SRCS
     Context.cpp
     DefaultFramebuffer.cpp
     Framebuffer.cpp
-    Mesh.cpp
     MeshView.cpp
     OpenGL.cpp
     Renderbuffer.cpp
@@ -57,6 +56,7 @@ set(MagnumGL_SRCS
     Implementation/maxTextureSize.cpp)
 
 set(MagnumGL_GracefulAssert_SRCS
+    Mesh.cpp
     PixelFormat.cpp)
 
 set(MagnumGL_HEADERS

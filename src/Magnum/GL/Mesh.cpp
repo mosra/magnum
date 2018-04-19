@@ -27,6 +27,7 @@
 
 #include <Corrade/Utility/Debug.h>
 
+#include "Magnum/Mesh.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Context.h"
@@ -42,6 +43,92 @@
 #include "Magnum/GL/Implementation/State.h"
 
 namespace Magnum { namespace GL {
+
+namespace {
+
+constexpr MeshPrimitive PrimitiveMapping[]{
+    MeshPrimitive::Points,
+    MeshPrimitive::Lines,
+    MeshPrimitive::LineLoop,
+    MeshPrimitive::LineStrip,
+    MeshPrimitive::Triangles,
+    MeshPrimitive::TriangleStrip,
+    MeshPrimitive::TriangleFan
+};
+
+constexpr MeshIndexType IndexTypeMapping[]{
+    MeshIndexType::UnsignedByte,
+    MeshIndexType::UnsignedShort,
+    MeshIndexType::UnsignedInt
+};
+
+}
+
+MeshPrimitive meshPrimitive(const Magnum::MeshPrimitive primitive) {
+    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    if(primitive == Magnum::MeshPrimitive::LinesAdjacency ||
+       primitive == Magnum::MeshPrimitive::LineStripAdjacency ||
+       primitive == Magnum::MeshPrimitive::TrianglesAdjacency ||
+       primitive == Magnum::MeshPrimitive::TriangleStripAdjacency ||
+       primitive == Magnum::MeshPrimitive::Patches)
+        return MeshPrimitive(UnsignedInt(primitive));
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
+
+    CORRADE_ASSERT(UnsignedInt(primitive) < Containers::arraySize(PrimitiveMapping),
+        "GL::meshPrimitive(): invalid primitive" << primitive, {});
+    return PrimitiveMapping[UnsignedInt(primitive)];
+}
+
+MeshIndexType meshIndexType(const Magnum::MeshIndexType type) {
+    CORRADE_ASSERT(UnsignedInt(type) < Containers::arraySize(IndexTypeMapping),
+        "GL::meshIndexType(): invalid type" << type, {});
+    return IndexTypeMapping[UnsignedInt(type)];
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+Debug& operator<<(Debug& debug, MeshPrimitive value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case MeshPrimitive::value: return debug << "GL::MeshPrimitive::" #value;
+        _c(Points)
+        _c(Lines)
+        _c(LineLoop)
+        _c(LineStrip)
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        _c(LineStripAdjacency)
+        _c(LinesAdjacency)
+        #endif
+        _c(Triangles)
+        _c(TriangleStrip)
+        _c(TriangleFan)
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        _c(TrianglesAdjacency)
+        _c(TriangleStripAdjacency)
+        _c(Patches)
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "GL::MeshPrimitive(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, MeshIndexType value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case MeshIndexType::value: return debug << "GL::MeshIndexType::" #value;
+        _c(UnsignedByte)
+        _c(UnsignedShort)
+        _c(UnsignedInt)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "GL::MeshIndexType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+}
+#endif
 
 struct Mesh::AttributeLayout {
     explicit AttributeLayout(const Buffer& buffer, GLuint location, GLint size, GLenum type, DynamicAttribute::Kind kind, GLintptr offset, GLsizei stride, GLuint divisor) noexcept: buffer{Buffer::wrap(buffer.id())}, location{location}, size{size}, type{type}, kind{kind}, offset{offset}, stride{stride}, divisor{divisor} {}
@@ -110,15 +197,11 @@ Int Mesh::maxElementsVertices() {
 }
 #endif
 
-std::size_t Mesh::indexSize(IndexType type) {
-    switch(type) {
-        case IndexType::UnsignedByte: return 1;
-        case IndexType::UnsignedShort: return 2;
-        case IndexType::UnsignedInt: return 4;
-    }
-
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+#ifdef MAGNUM_BUILD_DEPRECATED
+std::size_t Mesh::indexSize(Magnum::MeshIndexType type) {
+    return meshIndexTypeSize(type);
 }
+#endif
 
 Mesh::Mesh(const MeshPrimitive primitive): _primitive{primitive}, _flags{ObjectFlag::DeleteOnDestruction}, _count{0}, _baseVertex{0}, _instanceCount{1},
     #ifndef MAGNUM_TARGET_GLES
@@ -127,7 +210,7 @@ Mesh::Mesh(const MeshPrimitive primitive): _primitive{primitive}, _flags{ObjectF
     #ifndef MAGNUM_TARGET_GLES2
     _indexStart(0), _indexEnd(0),
     #endif
-    _indexOffset(0), _indexType(IndexType::UnsignedInt), _indexBuffer(nullptr)
+    _indexOffset(0), _indexType(MeshIndexType::UnsignedInt), _indexBuffer(nullptr)
 {
     (this->*Context::current().state().mesh->createImplementation)();
 }
@@ -139,7 +222,7 @@ Mesh::Mesh(NoCreateT) noexcept: _id{0}, _primitive{MeshPrimitive::Triangles}, _f
     #ifndef MAGNUM_TARGET_GLES2
     _indexStart(0), _indexEnd(0),
     #endif
-    _indexOffset(0), _indexType(IndexType::UnsignedInt), _indexBuffer(nullptr) {}
+    _indexOffset(0), _indexType(MeshIndexType::UnsignedInt), _indexBuffer(nullptr) {}
 
 Mesh::~Mesh() {
     /* Moved out or not deleting on destruction, nothing to do */
@@ -222,6 +305,23 @@ Mesh& Mesh::setLabelInternal(const Containers::ArrayView<const char> label) {
 }
 #endif
 
+MeshIndexType Mesh::indexType() const {
+    CORRADE_ASSERT(_indexBuffer, "Mesh::indexType(): mesh is not indexed", {});
+    return _indexType;
+}
+
+UnsignedInt Mesh::indexTypeSize() const {
+    CORRADE_ASSERT(_indexBuffer, "Mesh::indexTypeSize(): mesh is not indexed", {});
+
+    switch(_indexType) {
+        case MeshIndexType::UnsignedByte: return 1;
+        case MeshIndexType::UnsignedShort: return 2;
+        case MeshIndexType::UnsignedInt: return 4;
+    }
+
+    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+}
+
 Mesh& Mesh::addVertexBufferInstanced(Buffer& buffer, const UnsignedInt divisor, const GLintptr offset, const GLsizei stride, const DynamicAttribute& attribute) {
     AttributeLayout l{buffer,
         attribute.location(),
@@ -235,7 +335,7 @@ Mesh& Mesh::addVertexBufferInstanced(Buffer& buffer, const UnsignedInt divisor, 
     return *this;
 }
 
-Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end) {
+Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, MeshIndexType type, UnsignedInt start, UnsignedInt end) {
     #ifdef MAGNUM_TARGET_WEBGL
     CORRADE_ASSERT(buffer.targetHint() == Buffer::TargetHint::ElementArray,
         "GL::Mesh::setIndexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::ElementArray << "but got" << buffer.targetHint(), *this);
@@ -628,121 +728,5 @@ void Mesh::drawElementsInstancedImplementationNV(const GLsizei count, const GLin
 }
 #endif
 #endif
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-Debug& operator<<(Debug& debug, MeshPrimitive value) {
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case MeshPrimitive::value: return debug << "GL::MeshPrimitive::" #value;
-        _c(Points)
-        _c(LineStrip)
-        _c(LineLoop)
-        _c(Lines)
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        _c(LineStripAdjacency)
-        _c(LinesAdjacency)
-        #endif
-        _c(TriangleStrip)
-        _c(TriangleFan)
-        _c(Triangles)
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        _c(TriangleStripAdjacency)
-        _c(TrianglesAdjacency)
-        _c(Patches)
-        #endif
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "GL::MeshPrimitive(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
-}
-
-Debug& operator<<(Debug& debug, Mesh::IndexType value) {
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(value) case Mesh::IndexType::value: return debug << "GL::Mesh::IndexType::" #value;
-        _c(UnsignedByte)
-        _c(UnsignedShort)
-        _c(UnsignedInt)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "GL::Mesh::IndexType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
-}
-#endif
-
-}}
-
-namespace Corrade { namespace Utility {
-
-std::string ConfigurationValue<Magnum::GL::MeshPrimitive>::toString(Magnum::GL::MeshPrimitive value, ConfigurationValueFlags) {
-    switch(value) {
-        #define _c(value) case Magnum::GL::MeshPrimitive::value: return #value;
-        _c(Points)
-        _c(LineStrip)
-        _c(LineLoop)
-        _c(Lines)
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        _c(LineStripAdjacency)
-        _c(LinesAdjacency)
-        #endif
-        _c(TriangleStrip)
-        _c(TriangleFan)
-        _c(Triangles)
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        _c(TriangleStripAdjacency)
-        _c(TrianglesAdjacency)
-        _c(Patches)
-        #endif
-        #undef _c
-    }
-
-    return {};
-}
-
-Magnum::GL::MeshPrimitive ConfigurationValue<Magnum::GL::MeshPrimitive>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
-    #define _c(value) if(stringValue == #value) return Magnum::GL::MeshPrimitive::value;
-    _c(LineStrip)
-    _c(LineLoop)
-    _c(Lines)
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    _c(LineStripAdjacency)
-    _c(LinesAdjacency)
-    #endif
-    _c(TriangleStrip)
-    _c(TriangleFan)
-    _c(Triangles)
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    _c(TriangleStripAdjacency)
-    _c(TrianglesAdjacency)
-    _c(Patches)
-    #endif
-    #undef _c
-
-    return Magnum::GL::MeshPrimitive::Points;
-}
-
-std::string ConfigurationValue<Magnum::GL::Mesh::IndexType>::toString(Magnum::GL::Mesh::IndexType value, ConfigurationValueFlags) {
-    switch(value) {
-        #define _c(value) case Magnum::GL::Mesh::IndexType::value: return #value;
-        _c(UnsignedByte)
-        _c(UnsignedShort)
-        _c(UnsignedInt)
-        #undef _c
-    }
-
-    return {};
-}
-
-Magnum::GL::Mesh::IndexType ConfigurationValue<Magnum::GL::Mesh::IndexType>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
-    #define _c(value) if(stringValue == #value) return Magnum::GL::Mesh::IndexType::value;
-    _c(UnsignedByte)
-    _c(UnsignedShort)
-    _c(UnsignedInt)
-    #undef _c
-
-    return Magnum::GL::Mesh::IndexType::UnsignedInt;
-}
 
 }}

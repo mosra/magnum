@@ -113,6 +113,10 @@ class MAGNUM_GL_EXPORT MeshView {
         /** @brief Movement is not allowed */
         MeshView& operator=(MeshView&& other) = delete;
 
+        /** @brief Original mesh */
+        Mesh& mesh() { return _original; }
+        const Mesh& mesh() const { return _original; } /**< @overload */
+
         /** @brief Vertex/index count */
         Int count() const { return _count; }
 
@@ -161,7 +165,9 @@ class MAGNUM_GL_EXPORT MeshView {
          * @ref setIndexRange(Int), as index range functionality is not
          * available there. Ignored when calling
          * @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
-         * @see @ref setCount()
+         *
+         * Expects that the original mesh is indexed.
+         * @see @ref setCount(), @ref mesh(), @ref Mesh::isIndexed()
          */
         /* MinGW/MSVC needs inline also here to avoid linkage conflicts */
         inline MeshView& setIndexRange(Int first, UnsignedInt start, UnsignedInt end);
@@ -174,7 +180,9 @@ class MAGNUM_GL_EXPORT MeshView {
          * Prefer to use @ref setIndexRange(Int, UnsignedInt, UnsignedInt) for
          * better performance. Ignored when calling
          * @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
-         * @see @ref setCount()
+         *
+         * Expects that the original mesh is indexed.
+         * @see @ref setCount(), @ref mesh(), @ref Mesh::isIndexed()
          */
         MeshView& setIndexRange(Int first);
 

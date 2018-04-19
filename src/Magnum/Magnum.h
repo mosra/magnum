@@ -698,6 +698,9 @@ typedef CompressedImageView<1> CompressedImageView1D;
 typedef CompressedImageView<2> CompressedImageView2D;
 typedef CompressedImageView<3> CompressedImageView3D;
 
+enum class MeshPrimitive: UnsignedInt;
+enum class MeshIndexType: UnsignedInt;
+
 enum class PixelFormat: UnsignedInt;
 enum class CompressedPixelFormat: UnsignedInt;
 
@@ -759,8 +762,6 @@ typedef CORRADE_DEPRECATED("use GL::Framebuffer instead") GL::Framebuffer Frameb
 typedef CORRADE_DEPRECATED("use GL::ImageAccess instead") GL::ImageAccess ImageAccess;
 typedef CORRADE_DEPRECATED("use GL::ImageFormat instead") GL::ImageFormat ImageFormat;
 #endif
-
-typedef CORRADE_DEPRECATED("use GL::MeshPrimitive instead") GL::MeshPrimitive MeshPrimitive;
 
 typedef CORRADE_DEPRECATED("use GL::Mesh instead") GL::Mesh Mesh;
 typedef CORRADE_DEPRECATED("use GL::MeshView instead") GL::MeshView MeshView;

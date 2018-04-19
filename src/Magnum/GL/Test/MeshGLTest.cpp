@@ -41,7 +41,7 @@
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Vector4.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 /* Tests also the MeshView class. */
 
@@ -52,6 +52,8 @@ struct MeshGLTest: OpenGLTester {
     void constructCopy();
     void constructMove();
     void wrap();
+
+    template<class T> void primitive();
 
     #ifndef MAGNUM_TARGET_WEBGL
     void label();
@@ -112,8 +114,8 @@ struct MeshGLTest: OpenGLTester {
     void addVertexBufferMultiple();
     void addVertexBufferMultipleGaps();
 
-    void setIndexBuffer();
-    void setIndexBufferRange();
+    template<class T> void setIndexBuffer();
+    template<class T> void setIndexBufferRange();
     void setIndexBufferUnsignedInt();
 
     void unbindVAOWhenSettingIndexBufferData();
@@ -151,6 +153,9 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::constructCopy,
               &MeshGLTest::constructMove,
               &MeshGLTest::wrap,
+
+              &MeshGLTest::primitive<GL::MeshPrimitive>,
+              &MeshGLTest::primitive<Magnum::MeshPrimitive>,
 
               #ifndef MAGNUM_TARGET_WEBGL
               &MeshGLTest::label
@@ -214,8 +219,10 @@ MeshGLTest::MeshGLTest() {
     addTests({&MeshGLTest::addVertexBufferMultiple,
               &MeshGLTest::addVertexBufferMultipleGaps,
 
-              &MeshGLTest::setIndexBuffer,
-              &MeshGLTest::setIndexBufferRange,
+              &MeshGLTest::setIndexBuffer<GL::MeshIndexType>,
+              &MeshGLTest::setIndexBuffer<Magnum::MeshIndexType>,
+              &MeshGLTest::setIndexBufferRange<GL::MeshIndexType>,
+              &MeshGLTest::setIndexBufferRange<Magnum::MeshIndexType>,
               &MeshGLTest::setIndexBufferUnsignedInt,
 
               &MeshGLTest::unbindVAOWhenSettingIndexBufferData,
@@ -345,6 +352,21 @@ void MeshGLTest::wrap() {
     #else
     glDeleteVertexArraysOES(1, &id);
     #endif
+}
+
+template<class T> void MeshGLTest::primitive() {
+    setTestCaseName(std::is_same<T, MeshPrimitive>::value ?
+        "setPrimitive<GL::MeshPrimitive>" :
+        "setPrimitive<Magnum::MeshPrimitive>");
+
+    {
+        Mesh mesh{T::LineLoop};
+        CORRADE_COMPARE(mesh.primitive(), MeshPrimitive::LineLoop);
+    } {
+        Mesh mesh;
+        mesh.setPrimitive(T::TriangleFan);
+        CORRADE_COMPARE(mesh.primitive(), MeshPrimitive::TriangleFan);
+    }
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
@@ -542,15 +564,18 @@ Checker::Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh
         .setCount(2);
 
     /* Skip first vertex so we test also offsets */
-    MeshView(mesh)
-        .setCount(1)
+    MeshView view{mesh};
+    view.setCount(1)
         .setBaseVertex(mesh.baseVertex())
         .setInstanceCount(mesh.instanceCount())
         #ifndef MAGNUM_TARGET_GLES
         .setBaseInstance(mesh.baseInstance())
         #endif
-        .setIndexRange(1)
-        .draw(shader);
+        ;
+
+    if(view.mesh().isIndexed()) view.setIndexRange(1);
+
+    view.draw(shader);
 }
 
 template<class T> T Checker::get(PixelFormat format, PixelType type) {
@@ -1635,20 +1660,26 @@ namespace {
     constexpr Color4ub indexedResult(64 + 15 + 97, 17 + 164 + 28, 56 + 17, 255);
 }
 
-void MeshGLTest::setIndexBuffer() {
+template<class T> void MeshGLTest::setIndexBuffer() {
+    setTestCaseName(std::is_same<T, MeshIndexType>::value ?
+        "setIndexBuffer<GL::MeshIndexType>" :
+        "setIndexBuffer<Magnum::MeshIndexType>");
+
     Buffer vertices;
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
 
-    constexpr UnsignedShort indexData[] = { 2, 1, 0 };
+    constexpr UnsignedByte indexData[] = { 2, 1, 0 };
     Buffer indices{Buffer::TargetHint::ElementArray};
     indices.setData(indexData, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.addVertexBuffer(vertices, 1*4,  MultipleShader::Position(),
                          MultipleShader::Normal(), MultipleShader::TextureCoordinates())
-        .setIndexBuffer(indices, 2, Mesh::IndexType::UnsignedShort);
+        .setIndexBuffer(indices, 2, T::UnsignedByte);
 
     MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(mesh.indexType(), MeshIndexType::UnsignedByte);
+    CORRADE_COMPARE(mesh.indexTypeSize(), 1);
 
     const auto value = Checker(MultipleShader{},
         #ifndef MAGNUM_TARGET_GLES2
@@ -1662,7 +1693,11 @@ void MeshGLTest::setIndexBuffer() {
     CORRADE_COMPARE(value, indexedResult);
 }
 
-void MeshGLTest::setIndexBufferRange() {
+template<class T> void MeshGLTest::setIndexBufferRange() {
+    setTestCaseName(std::is_same<T, MeshIndexType>::value ?
+        "setIndexBufferRange<GL::MeshIndexType>" :
+        "setIndexBufferRange<Magnum::MeshIndexType>");
+
     Buffer vertices;
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
 
@@ -1673,9 +1708,11 @@ void MeshGLTest::setIndexBufferRange() {
     Mesh mesh;
     mesh.addVertexBuffer(vertices, 1*4,  MultipleShader::Position(),
                          MultipleShader::Normal(), MultipleShader::TextureCoordinates())
-        .setIndexBuffer(indices, 2, Mesh::IndexType::UnsignedShort, 0, 1);
+        .setIndexBuffer(indices, 2, T::UnsignedShort, 0, 1);
 
     MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(mesh.indexType(), GL::MeshIndexType::UnsignedShort);
+    CORRADE_COMPARE(mesh.indexTypeSize(), 2);
 
     const auto value = Checker(MultipleShader{},
         #ifndef MAGNUM_TARGET_GLES2
@@ -1708,6 +1745,8 @@ void MeshGLTest::setIndexBufferUnsignedInt() {
         .setIndexBuffer(indices, 4, Mesh::IndexType::UnsignedInt);
 
     MAGNUM_VERIFY_NO_ERROR();
+    CORRADE_COMPARE(mesh.indexType(), GL::MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE(mesh.indexTypeSize(), 4);
 
     const auto value = Checker(MultipleShader{},
         #ifndef MAGNUM_TARGET_GLES2
@@ -2326,6 +2365,6 @@ void MeshGLTest::multiDrawBaseVertex() {
 }
 #endif
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::MeshGLTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::MeshGLTest)

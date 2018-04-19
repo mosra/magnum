@@ -26,16 +26,212 @@
 */
 
 /** @file
- * @deprecated Use @ref Magnum/GL/Mesh.h instead.
+ * @brief Enum @ref Magnum::MeshPrimitive, @ref Magnum::MeshIndexType, function @ref Magnum::meshIndexTypeSize()
  */
 
-#include "Magnum/configure.h"
+#include <string>
+
+#include "Magnum/Magnum.h"
+#include "Magnum/visibility.h"
 
 #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
 #include "Magnum/GL/Mesh.h"
-CORRADE_DEPRECATED_FILE("use Magnum/GL/Mesh.h instead")
-#else
-#error use Magnum/GL/Mesh.h instead
 #endif
+
+namespace Magnum {
+
+/**
+@brief Mesh primitive type
+
+In case of OpenGL, corresponds to @ref GL::MeshPrimitive and is convertible to
+it using @ref GL::meshPrimitive(). See documentation of each value for more
+information about the mapping.
+*/
+enum class MeshPrimitive: UnsignedInt {
+    /**
+     * Single points.
+     *
+     * Corresponds to @ref GL::MeshPrimitive::Points.
+     */
+    Points,
+
+    /**
+     * Each pair of vertices defines a single line, lines aren't
+     * connected together.
+     *
+     * Corresponds to @ref GL::MeshPrimitive::Lines.
+     */
+    Lines,
+
+    /**
+     * Line strip, last and first vertex are connected together.
+     *
+     * Corresponds to @ref GL::MeshPrimitive::LineLoop.
+     */
+    LineLoop,
+
+    /**
+     * First two vertices define first line segment, each following
+     * vertex defines another segment.
+     *
+     * Corresponds to @ref GL::MeshPrimitive::LineStrip.
+     */
+    LineStrip,
+
+    /**
+     * Each three vertices define one triangle.
+     *
+     * Corresponds to @ref GL::MeshPrimitive::Triangles.
+     */
+    Triangles,
+
+    /**
+     * First three vertices define first triangle, each following
+     * vertex defines another triangle.
+     *
+     * Corresponds to @ref GL::MeshPrimitive::TriangleStrip.
+     */
+    TriangleStrip,
+
+    /**
+     * First vertex is center, each following vertex is connected to
+     * previous and center vertex.
+     *
+     * Corresponds to @ref GL::MeshPrimitive::TriangleFan.
+     */
+    TriangleFan,
+
+    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    /**
+     * Lines with adjacency information.
+     * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+     * @requires_gles30 Not defined in OpenGL ES 2.0.
+     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+     *      @extension{EXT,geometry_shader}
+     * @requires_gles Geometry shaders are not available in WebGL.
+     */
+    LinesAdjacency CORRADE_DEPRECATED_ENUM("use GL::MeshPrimitive::Patches instead") = UnsignedInt(GL::MeshPrimitive::LinesAdjacency),
+
+    /**
+     * Line strip with adjacency information.
+     * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+     * @requires_gles30 Not defined in OpenGL ES 2.0.
+     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+     *      @extension{EXT,geometry_shader}
+     * @requires_gles Geometry shaders are not available in WebGL.
+     */
+    LineStripAdjacency CORRADE_DEPRECATED_ENUM("use GL::MeshPrimitive::Patches instead") = UnsignedInt(GL::MeshPrimitive::LineStripAdjacency),
+
+    /**
+     * Triangles with adjacency information.
+     * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+     * @requires_gles30 Not defined in OpenGL ES 2.0.
+     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+     *      @extension{EXT,geometry_shader}
+     * @requires_gles Geometry shaders are not available in WebGL.
+     */
+    TrianglesAdjacency CORRADE_DEPRECATED_ENUM("use GL::MeshPrimitive::Patches instead") = UnsignedInt(GL::MeshPrimitive::TrianglesAdjacency),
+
+    /**
+     * Triangle strip with adjacency information.
+     * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+     * @requires_gles30 Not defined in OpenGL ES 2.0.
+     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
+     *      @extension{EXT,geometry_shader}
+     * @requires_gles Geometry shaders are not available in WebGL.
+     */
+    TriangleStripAdjacency CORRADE_DEPRECATED_ENUM("use GL::MeshPrimitive::Patches instead") = UnsignedInt(GL::MeshPrimitive::TriangleStripAdjacency),
+
+    /**
+     * Patches.
+     * @deprecated Use @ref GL::MeshPrimitive::Patches instead
+     */
+    Patches CORRADE_DEPRECATED_ENUM("use GL::MeshPrimitive::Patches instead") = UnsignedInt(GL::MeshPrimitive::Patches)
+    #endif
+};
+
+/** @debugoperatorenum{MeshPrimitive} */
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, MeshPrimitive value);
+
+/**
+@brief Mesh primitive type
+
+In case of OpenGL, corresponds to @ref GL::MeshIndexType and is convertible to
+it using @ref GL::meshIndexType(). See documentation of each value for more
+information about the mapping.
+@see @ref meshIndexTypeSize()
+*/
+enum class MeshIndexType: UnsignedInt {
+    /**
+     * Unsigned byte
+     *
+     * Corresponds to @ref GL::MeshIndexType::UnsignedByte.
+     */
+    UnsignedByte,
+
+    /**
+     * Unsigned short
+     *
+     * Corresponds to @ref GL::MeshIndexType::UnsignedShort.
+     */
+    UnsignedShort,
+
+    /**
+     * Unsigned int
+     *
+     * Corresponds to @ref GL::MeshIndexType::UnsignedInt.
+     */
+    UnsignedInt
+};
+
+/** @brief Size of given mesh index type */
+MAGNUM_EXPORT UnsignedInt meshIndexTypeSize(MeshIndexType type);
+
+/** @debugoperatorenum{MeshIndexType} */
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, MeshIndexType value);
+
+}
+
+namespace Corrade { namespace Utility {
+
+/** @configurationvalue{Magnum::MeshPrimitive} */
+template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::MeshPrimitive> {
+    ConfigurationValue() = delete;
+
+    /**
+     * @brief Writes enum value as string
+     *
+     * If the value is invalid, returns empty string.
+     */
+    static std::string toString(Magnum::MeshPrimitive value, ConfigurationValueFlags);
+
+    /**
+     * @brief Reads enum value as string
+     *
+     * If the value is invalid, returns @ref Magnum::MeshPrimitive::Points "MeshPrimitive::Points".
+     */
+    static Magnum::MeshPrimitive fromString(const std::string& stringValue, ConfigurationValueFlags);
+};
+
+/** @configurationvalue{Magnum::MeshIndexType} */
+template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::MeshIndexType> {
+    ConfigurationValue() = delete;
+
+    /**
+     * @brief Write enum value as string
+     *
+     * If the value is invalid, returns empty string.
+     */
+    static std::string toString(Magnum::MeshIndexType value, ConfigurationValueFlags);
+
+    /**
+     * @brief Read enum value as string
+     *
+     * If the value is invalid, returns @ref Magnum::MeshIndexType::UnsignedInt "MeshIndexType::UnsignedInt".
+     */
+    static Magnum::MeshIndexType fromString(const std::string& stringValue, ConfigurationValueFlags);
+};
+
+}}
 
 #endif

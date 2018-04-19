@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::GL::Mesh
+ * @brief Class @ref Magnum::GL::Mesh, enum @ref Magnum::GL::MeshPrimitive, @ref Magnum::GL::MeshIndexType, function @ref Magnum::GL::meshPrimitive(), @ref Magnum::GL::meshIndexType()
  */
 
 #include <vector>
@@ -41,11 +41,12 @@
 namespace Magnum { namespace GL {
 
 /**
- * @brief Mesh primitive type
- *
- * @see @ref Mesh::primitive(), @ref Mesh::setPrimitive()
- * @m_enum_values_as_keywords
- */
+@brief Mesh primitive type
+
+@see @ref Magnum::MeshPrimitive, @ref meshPrimitive(), @ref Mesh::primitive(),
+    @ref Mesh::setPrimitive()
+@m_enum_values_as_keywords
+*/
 enum class MeshPrimitive: GLenum {
     /** Single points. */
     Points = GL_POINTS,
@@ -134,6 +135,41 @@ enum class MeshPrimitive: GLenum {
     Patches = GL_PATCHES
     #endif
 };
+
+/**
+@brief Convert generic mesh primitive to OpenGL mesh primitive
+
+@see @ref meshIndexType()
+*/
+MAGNUM_GL_EXPORT MeshPrimitive meshPrimitive(Magnum::MeshPrimitive);
+
+/**
+@brief Index type
+
+@see @ref Magnum::MeshIndexType, @ref meshIndexType(),
+    @ref meshIndexTypeSize(), @ref Mesh::setIndexBuffer()
+@m_enum_values_as_keywords
+*/
+enum class MeshIndexType: GLenum {
+    UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */
+    UnsignedShort = GL_UNSIGNED_SHORT,  /**< Unsigned short */
+
+    /**
+     * Unsigned int
+     * @requires_gles30 Extension @extension{OES,element_index_uint}
+     *       in OpenGL ES 2.0.
+     * @requires_webgl20 Extension @webgl_extension{OES,element_index_uint}
+     *      in WebGL 1.0.
+     */
+    UnsignedInt = GL_UNSIGNED_INT
+};
+
+/**
+@brief Convert generic mesh index type to OpenGL mesh index type
+
+@see @ref meshPrimitive(), @ref meshIndexTypeSize()
+*/
+MAGNUM_GL_EXPORT MeshIndexType meshIndexType(Magnum::MeshIndexType);
 
 namespace Implementation { struct MeshState; }
 
@@ -240,25 +276,13 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
     friend Implementation::MeshState;
 
     public:
-        /**
-         * @brief Index type
-         *
-         * @see @ref setIndexBuffer(), @ref indexSize()
-         * @m_enum_values_as_keywords
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief MeshIndexType
+         * @deprecated Use @ref Magnum::MeshIndexType or @ref GL::MeshIndexType
+         *      instead.
          */
-        enum class IndexType: GLenum {
-            UnsignedByte = GL_UNSIGNED_BYTE,    /**< Unsigned byte */
-            UnsignedShort = GL_UNSIGNED_SHORT,  /**< Unsigned short */
-
-            /**
-             * Unsigned int
-             * @requires_gles30 Extension @extension{OES,element_index_uint}
-             *       in OpenGL ES 2.0.
-             * @requires_webgl20 Extension @webgl_extension{OES,element_index_uint}
-             *      in WebGL 1.0.
-             */
-            UnsignedInt = GL_UNSIGNED_INT
-        };
+        typedef CORRADE_DEPRECATED("use MeshIndexType instead") Magnum::MeshIndexType IndexType;
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -308,12 +332,12 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         static Int maxElementsVertices();
         #endif
 
-        /**
-         * @brief Size of given index type
-         *
-         * @see @ref indexSize() const
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief meshIndexTypeSize()
+         * @deprecated Use @ref meshIndexTypeSize() instead.
          */
-        static std::size_t indexSize(IndexType type);
+        static CORRADE_DEPRECATED("use meshIndexTypeSize() instead") std::size_t indexSize(Magnum::MeshIndexType type);
+        #endif
 
         /**
          * @brief Wrap existing OpenGL vertex array object
@@ -356,6 +380,9 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          *      @fn_gl_keyword{GenVertexArrays}
          */
         explicit Mesh(MeshPrimitive primitive = MeshPrimitive::Triangles);
+
+        /** @overload */
+        explicit Mesh(Magnum::MeshPrimitive primitive): Mesh{meshPrimitive(primitive)} {}
 
         /**
          * @brief Construct without creating the underlying OpenGL object
@@ -466,11 +493,28 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         bool isIndexed() const { return _indexBuffer; }
 
         /**
-         * @brief Index size
+         * @brief Index type
          *
-         * @see @ref indexSize(IndexType)
+         * Expects that the mesh is indexed.
+         * @see @ref isIndexed()
          */
-        std::size_t indexSize() const { return indexSize(_indexType); }
+        MeshIndexType indexType() const;
+
+        /**
+         * @brief Index type size
+         *
+         * Expects that the mesh is indexed.
+         * @see @ref isIndexed(), @ref meshIndexTypeSize(Magnum::MeshIndexType)
+         */
+        UnsignedInt indexTypeSize() const;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Index size
+         * @deprecated Use @ref indexTypeSize() instead.
+         */
+        CORRADE_DEPRECATED("use indexTypeSize() instead") std::size_t indexSize() const { return indexTypeSize(); }
+        #endif
 
         /** @brief Primitive type */
         MeshPrimitive primitive() const { return _primitive; }
@@ -484,6 +528,11 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         Mesh& setPrimitive(MeshPrimitive primitive) {
             _primitive = primitive;
             return *this;
+        }
+
+        /** @overload */
+        Mesh& setPrimitive(Magnum::MeshPrimitive primitive) {
+            return setPrimitive(meshPrimitive(primitive));
         }
 
         /** @brief Vertex/index count */
@@ -710,9 +759,9 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * The smaller range is specified with @p start and @p end the less
          * memory operations are needed (and possibly some optimizations),
          * improving draw performance. Specifying @cpp 0 @ce for both
-         * parameters behaves the same as @ref setIndexBuffer(Buffer&, GLintptr, IndexType).
+         * parameters behaves the same as @ref setIndexBuffer(Buffer&, GLintptr, MeshIndexType).
          * On OpenGL ES 2.0 this function behaves always as
-         * @ref setIndexBuffer(Buffer&, GLintptr, IndexType), as this
+         * @ref setIndexBuffer(Buffer&, GLintptr, MeshIndexType), as this
          * functionality is not available there.
          *
          * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
@@ -726,7 +775,12 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          *      @ref maxElementsVertices(), @ref setCount(), @ref isIndexed(),
          *      @fn_gl{BindVertexArray}, @fn_gl{BindBuffer}
          */
-        Mesh& setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type, UnsignedInt start, UnsignedInt end);
+        Mesh& setIndexBuffer(Buffer& buffer, GLintptr offset, MeshIndexType type, UnsignedInt start, UnsignedInt end);
+
+        /** @overload */
+        Mesh& setIndexBuffer(Buffer& buffer, GLintptr offset, Magnum::MeshIndexType type, UnsignedInt start, UnsignedInt end) {
+            return setIndexBuffer(buffer, offset, meshIndexType(type), start, end);
+        }
 
         /**
          * @brief Set index buffer
@@ -735,12 +789,17 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @param type          Index data type
          * @return Reference to self (for method chaining)
          *
-         * Alternative to @ref setIndexBuffer(Buffer&, GLintptr, IndexType, UnsignedInt, UnsignedInt)
+         * Alternative to @ref setIndexBuffer(Buffer&, GLintptr, MeshIndexType, UnsignedInt, UnsignedInt)
          * with unspecified index limits, see its documentation for more
          * information. Prefer to set index limits for better performance.
          */
-        Mesh& setIndexBuffer(Buffer& buffer, GLintptr offset, IndexType type) {
+        Mesh& setIndexBuffer(Buffer& buffer, GLintptr offset, MeshIndexType type) {
             return setIndexBuffer(buffer, offset, type, 0, 0);
+        }
+
+        /** @overload */
+        Mesh& setIndexBuffer(Buffer& buffer, GLintptr offset, Magnum::MeshIndexType type) {
+            return setIndexBuffer(buffer, offset, meshIndexType(type));
         }
 
         /**
@@ -979,7 +1038,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         UnsignedInt _indexStart, _indexEnd;
         #endif
         GLintptr _indexOffset;
-        IndexType _indexType;
+        MeshIndexType _indexType;
         Buffer* _indexBuffer;
 
         std::vector<AttributeLayout> _attributes;
@@ -988,8 +1047,8 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
 /** @debugoperatorenum{MeshPrimitive} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, MeshPrimitive value);
 
-/** @debugoperatorclassenum{Mesh,Mesh::IndexType} */
-MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Mesh::IndexType value);
+/** @debugoperatorenum{MeshIndexType} */
+MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, MeshIndexType value);
 
 inline GLuint Mesh::release() {
     const GLuint id = _id;
@@ -1002,11 +1061,6 @@ inline GLuint Mesh::release() {
 #ifdef MAGNUM_BUILD_DEPRECATED
 /* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
 
-/** @brief @copybrief GL::MeshPrimitive
- * @deprecated Use @ref GL::MeshPrimitive instead.
- */
-typedef CORRADE_DEPRECATED("use GL::MeshPrimitive instead") Magnum::GL::MeshPrimitive MeshPrimitive;
-
 /** @brief @copybrief GL::Mesh
  * @deprecated Use @ref GL::Mesh instead.
  */
@@ -1014,47 +1068,5 @@ typedef CORRADE_DEPRECATED("use GL::Mesh instead") Magnum::GL::Mesh Mesh;
 #endif
 
 }
-
-namespace Corrade { namespace Utility {
-
-/** @configurationvalue{Magnum::MeshPrimitive} */
-template<> struct MAGNUM_GL_EXPORT ConfigurationValue<Magnum::GL::MeshPrimitive> {
-    ConfigurationValue() = delete;
-
-    /**
-     * @brief Writes enum value as string
-     *
-     * If the value is invalid, returns empty string.
-     */
-    static std::string toString(Magnum::GL::MeshPrimitive value, ConfigurationValueFlags);
-
-    /**
-     * @brief Reads enum value as string
-     *
-     * If the value is invalid, returns @ref Magnum::MeshPrimitive::Points "MeshPrimitive::Points".
-     */
-    static Magnum::GL::MeshPrimitive fromString(const std::string& stringValue, ConfigurationValueFlags);
-};
-
-/** @configurationvalue{Magnum::Mesh::IndexType} */
-template<> struct MAGNUM_GL_EXPORT ConfigurationValue<Magnum::GL::Mesh::IndexType> {
-    ConfigurationValue() = delete;
-
-    /**
-     * @brief Write enum value as string
-     *
-     * If the value is invalid, returns empty string.
-     */
-    static std::string toString(Magnum::GL::Mesh::IndexType value, ConfigurationValueFlags);
-
-    /**
-     * @brief Read enum value as string
-     *
-     * If the value is invalid, returns @ref Magnum::Mesh::IndexType::UnsignedInt "Mesh::IndexType::UnsignedInt".
-     */
-    static Magnum::GL::Mesh::IndexType fromString(const std::string& stringValue, ConfigurationValueFlags);
-};
-
-}}
 
 #endif

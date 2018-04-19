@@ -55,6 +55,9 @@ See also:
     @ref isCompressedPixelFormatImplementationSpecific() utilities now used by
     @ref Image / @ref CompressedImage and @ref ImageView /
     @ref CompressedImageView instead of the GL-specific formats
+-   New @ref MeshPrimitive and @ref MeshIndexType enums containing generic
+    API-independent mesh primitive types and index types, together with
+    @ref meshIndexTypeSize() utilities
 
 @subsubsection changelog-latest-new-math Math library
 
@@ -68,7 +71,13 @@ See also:
     @ref GL::hasCompressedPixelFormat(), @ref compressedPixelFormat() utilities
     for converting generic @ref PixelFormat / @ref CompressedPixelFormat to
     GL-specific @ref GL::PixelFormat, @ref GL::PixelType and
-    @ref GL::CompressedPixelFormat values
+    @ref GL::CompressedPixelFormat values. The @ref BufferImage and
+    @ref CompressedBufferImage classes now have overloads accepting both types.
+-   New @ref GL::meshPrimitive() and @ref GL::meshIndexType() utilities for
+    converting generic @ref MeshPrimitive and @ref MeshIndexType to GL-specific
+    @ref GL::MeshPrimitive and @ref GL::MeshIndexType values. The @ref Mesh
+    class now has overloads accepting both types.
+-   New @ref Mesh::indexType() and @ref MeshView::mesh() getters
 -   Initial support for OpenGL ES 3.2 and OpenGL 4.6
 -   New OpenGL extension support:
     -   @extension{ARB,texture_filter_anisotropic}
@@ -105,6 +114,12 @@ See also:
     on all targets including OpenGL ES and WebGL, however at the moment, until
     a compatibility code path is implemented, the @ref GL library expects that
     all parameters are at their defaults.
+
+@subsubsection changelog-latest-changes-gl GL library
+
+-   The @ref GL::Mesh::indexTypeSize() and @ref GL::MeshView::setIndexRange()
+    now expect that the mesh is indexed (instead of silently not doing
+    anything)
 
 @subsection changelog-latest-buildsystem Build system
 
@@ -166,6 +181,14 @@ See also:
 -   `setData()` functions in the @ref Image and @ref CompressedImage classes
     are deprecated because they don't offer anything extra over simple
     move-assignment of a new instance.
+-   The @ref MeshPrimitive enum now contains generic API-independent values.
+    The additional GL-specific types are present there, but marked as
+    deprecated. Use the GL-specific @ref GL::MeshPrimitive enum instead.
+-   THe `GL::Mesh::IndexType` enum and the `Mesh::indexSize(MeshIndexType)`
+    function is deprecated, use @ref Magnum::MeshIndexType /
+    @ref GL::MeshIndexType and @ref meshIndexTypeSize() instead
+-   The `GL::Mesh::indexSize()` function is deprecated, use
+    @ref GL::Mesh::indexTypeSize() instead
 -   Class @cpp Primitives::Capsule2D @ce and @cpp Primitives::Capsule3D @ce is
     deprecated, use @ref Primitives::capsule2DWireframe(),
     @ref Primitives::capsule3DSolid() and @ref Primitives::capsule3DWireframe()
@@ -249,6 +272,20 @@ See also:
     @ref Magnum::CompressedPixelFormat may break. In all other cases,
     @ref CompressedImage::format() "CompressedImage*::format()"
     returns @ref Magnum::CompressedPixelFormat.
+-   `MeshPrimitive` has been moved verbatim to @ref GL::MeshPrimitive and
+    there's a new @ref Magnum::MeshPrimitive enum for generic primitive types.
+    It contains (deprecated) additional @ref GL::MeshPrimitive values for
+    covering most of backwards compatibility, but code that relies on these
+    two types being the same (or have values that match GL enums) may break.
+    In particular, @ref GL::Mesh::primitive() now returns
+    @ref GL::MeshPrimitive instead of @ref Magnum::MeshPrimitive, code
+    depending on the return type being implicitly convertible to
+    @ref Magnum::MeshPrimitive may break. IN all other cases,
+    @ref Trade::MeshData2D::primitive() "Trade::MeshData*D::primitive()" etc.
+    returns @ref Magnum::MeshPrimitive.
+-   Configuration value reader/writers are now for only
+    @ref Magnum::MeshPrimitive and @ref Magnum::MeshIndexType, not for
+    @ref GL::MeshPrimitive or @ref GL::MeshIndexType
 -   The @ref Image::pixelSize(), @ref ImageView::pixelSize(),
     @ref Trade::ImageData::pixelSize() and @ref BufferImage::pixelSize()
     functions now return @ref UnsignedInt instead of @cpp std::size_t @ce.

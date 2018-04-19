@@ -91,6 +91,7 @@ enum class ImageAccess: GLenum;
 #endif
 
 enum class MeshPrimitive: GLenum;
+enum class MeshIndexType: GLenum;
 
 class Mesh;
 class MeshView;

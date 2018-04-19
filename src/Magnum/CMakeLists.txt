@@ -28,6 +28,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 # Files shared between main library and unit test library
 set(Magnum_SRCS
+    Mesh.cpp
     PixelStorage.cpp
     Resource.cpp
     Timeline.cpp)
@@ -44,6 +45,7 @@ set(Magnum_HEADERS
     Image.h
     ImageView.h
     Magnum.h
+    Mesh.h
     PixelFormat.h
     PixelStorage.h
     Resource.h
@@ -68,7 +70,6 @@ if(WITH_GL AND BUILD_DEPRECATED)
         DefaultFramebuffer.h
         Extensions.h
         Framebuffer.h
-        Mesh.h
         MeshView.h
         OpenGL.h
         Renderbuffer.h
