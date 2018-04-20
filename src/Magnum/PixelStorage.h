@@ -58,15 +58,15 @@ class MAGNUM_EXPORT PixelStorage {
          * @deprecated Use @ref Magnum::pixelSize() or  @ref GL::pixelSize()
          *      instead.
          */
-        static CORRADE_DEPRECATED("use GL::pixelSize() instead") std::size_t pixelSize(GL::PixelFormat format, GL::PixelType type);
+        template<class = void> static CORRADE_DEPRECATED("use GL::pixelSize() instead") std::size_t pixelSize(GL::PixelFormat format, GL::PixelType type);
 
         /** @brief Pixel size
          * @deprecated Use @ref Magnum::pixelSize() or  @ref GL::pixelSize()
          *      instead.
          */
-        static CORRADE_DEPRECATED("use GL::pixelSize() instead") std::size_t pixelSize(PixelFormat format, GL::PixelType type) {
+        template<class T = void> static CORRADE_DEPRECATED("use GL::pixelSize() instead") std::size_t pixelSize(PixelFormat format, GL::PixelType type) {
             CORRADE_IGNORE_DEPRECATED_PUSH
-            return pixelSize(GL::PixelFormat(format), type);
+            return pixelSize<T>(GL::PixelFormat(format), type);
             CORRADE_IGNORE_DEPRECATED_POP
         }
         #endif
@@ -165,7 +165,7 @@ class MAGNUM_EXPORT PixelStorage {
          * @deprecated Use @ref dataProperties(std::size_t, const Vector3i&) const
          *      instead.
          */
-        CORRADE_DEPRECATED("use dataProperties(std::size_t, const Vector3i&) instead") std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> dataProperties(GL::PixelFormat format, GL::PixelType type, const Vector3i& size) const;
+        template<class = void> CORRADE_DEPRECATED("use dataProperties(std::size_t, const Vector3i&) instead") std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> dataProperties(GL::PixelFormat format, GL::PixelType type, const Vector3i& size) const;
 
         /** @brief @copybrief dataProperties(std::size_t, const Vector3i&) const
          *
@@ -175,9 +175,9 @@ class MAGNUM_EXPORT PixelStorage {
          * @deprecated Use @ref dataProperties(std::size_t, const Vector3i&) const
          *      instead.
          */
-        CORRADE_DEPRECATED("use dataProperties(std::size_t, const Vector3i&) instead") std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> dataProperties(PixelFormat format, GL::PixelType type, const Vector3i& size) const {
+        template<class T = void> CORRADE_DEPRECATED("use dataProperties(std::size_t, const Vector3i&) instead") std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> dataProperties(PixelFormat format, GL::PixelType type, const Vector3i& size) const {
             CORRADE_IGNORE_DEPRECATED_PUSH
-            return dataProperties(GL::PixelFormat(format), type, size);
+            return dataProperties<T>(GL::PixelFormat(format), type, size);
             CORRADE_IGNORE_DEPRECATED_POP
         }
         #endif
@@ -297,12 +297,13 @@ constexpr PixelStorage::PixelStorage() noexcept: _rowLength{0}, _imageHeight{0},
 
 #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
 /* These have to be in the header because GL::pixelSize() is in Magnum::GL and
-   putting that in the source would mean undefined reference */
-inline std::size_t PixelStorage::pixelSize(const GL::PixelFormat format, const GL::PixelType type) {
+   putting that in the source would mean undefined reference. And MSVC would
+   instantiate them in the source if these wouldn't be templated. */
+template<class> inline std::size_t PixelStorage::pixelSize(const GL::PixelFormat format, const GL::PixelType type) {
     return GL::pixelSize(format, type);
 }
 
-inline std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> PixelStorage::dataProperties(const GL::PixelFormat format, const GL::PixelType type, const Vector3i& size) const {
+template<class> inline std::tuple<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>, std::size_t> PixelStorage::dataProperties(const GL::PixelFormat format, const GL::PixelType type, const Vector3i& size) const {
     const std::size_t pixelSize = GL::pixelSize(format, type);
     Math::Vector3<std::size_t> offset, dataSize;
     std::tie(offset, dataSize) = dataProperties(pixelSize, size);
