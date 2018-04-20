@@ -32,7 +32,9 @@
 #endif
 
 #include "Magnum/Array.h"
+#include "Magnum/Sampler.h"
 #include "Magnum/GL/AbstractTexture.h"
+#include "Magnum/GL/Sampler.h"
 #include "Magnum/Math/Vector3.h"
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -228,9 +230,14 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::setMinificationFilter() for more information.
          */
-        CubeMapTextureArray& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
+        CubeMapTextureArray& setMinificationFilter(SamplerFilter filter, SamplerMipmap mipmap = SamplerMipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
             return *this;
+        }
+
+        /** @overload */
+        CubeMapTextureArray& setMinificationFilter(Magnum::SamplerFilter filter, Magnum::SamplerMipmap mipmap = Magnum::SamplerMipmap::Base) {
+            return setMinificationFilter(samplerFilter(filter), samplerMipmap(mipmap));
         }
 
         /**
@@ -239,9 +246,14 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::setMagnificationFilter() for more information.
          */
-        CubeMapTextureArray& setMagnificationFilter(Sampler::Filter filter) {
+        CubeMapTextureArray& setMagnificationFilter(SamplerFilter filter) {
             AbstractTexture::setMagnificationFilter(filter);
             return *this;
+        }
+
+        /** @overload */
+        CubeMapTextureArray& setMagnificationFilter(Magnum::SamplerFilter filter) {
+            return setMagnificationFilter(samplerFilter(filter));
         }
 
         /**
@@ -287,9 +299,14 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::setWrapping() for more information.
          */
-        CubeMapTextureArray& setWrapping(const Array2D<Sampler::Wrapping>& wrapping) {
+        CubeMapTextureArray& setWrapping(const Array2D<SamplerWrapping>& wrapping) {
             DataHelper<2>::setWrapping(*this, wrapping);
             return *this;
+        }
+
+        /** @overload */
+        CubeMapTextureArray& setWrapping(const Array2D<Magnum::SamplerWrapping>& wrapping) {
+            return setWrapping(samplerWrapping(wrapping));
         }
 
         /**
@@ -375,7 +392,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::setCompareMode() for more information.
          */
-        CubeMapTextureArray& setCompareMode(Sampler::CompareMode mode) {
+        CubeMapTextureArray& setCompareMode(SamplerCompareMode mode) {
             AbstractTexture::setCompareMode(mode);
             return *this;
         }
@@ -386,7 +403,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * See @ref Texture::setCompareFunction() for more information.
          */
-        CubeMapTextureArray& setCompareFunction(Sampler::CompareFunction function) {
+        CubeMapTextureArray& setCompareFunction(SamplerCompareFunction function) {
             AbstractTexture::setCompareFunction(function);
             return *this;
         }
@@ -398,7 +415,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          * See @ref Texture::setDepthStencilMode() for more information.
          * @requires_gl43 Extension @extension{ARB,stencil_texturing}
          */
-        CubeMapTextureArray& setDepthStencilMode(Sampler::DepthStencilMode mode) {
+        CubeMapTextureArray& setDepthStencilMode(SamplerDepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);
             return *this;
         }

@@ -65,9 +65,9 @@ struct TextureArrayGLTest: OpenGLTester {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    void sampling1D();
+    template<class T> void sampling1D();
     #endif
-    void sampling2D();
+    template<class T> void sampling2D();
 
     #ifndef MAGNUM_TARGET_GLES
     void samplingSRGBDecode1D();
@@ -149,6 +149,17 @@ struct TextureArrayGLTest: OpenGLTester {
 };
 
 namespace {
+    struct GenericSampler {
+        typedef Magnum::SamplerFilter Filter;
+        typedef Magnum::SamplerMipmap Mipmap;
+        typedef Magnum::SamplerWrapping Wrapping;
+    };
+    struct GLSampler {
+        typedef GL::SamplerFilter Filter;
+        typedef GL::SamplerMipmap Mipmap;
+        typedef GL::SamplerWrapping Wrapping;
+    };
+
     #ifndef MAGNUM_TARGET_GLES
     constexpr UnsignedByte Data1D[]{
         0, 0, 0, 0, 0, 0, 0, 0,
@@ -269,9 +280,11 @@ TextureArrayGLTest::TextureArrayGLTest() {
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        &TextureArrayGLTest::sampling1D,
+        &TextureArrayGLTest::sampling1D<GenericSampler>,
+        &TextureArrayGLTest::sampling1D<GLSampler>,
         #endif
-        &TextureArrayGLTest::sampling2D,
+        &TextureArrayGLTest::sampling2D<GenericSampler>,
+        &TextureArrayGLTest::sampling2D<GLSampler>,
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::samplingSRGBDecode1D,
@@ -541,19 +554,22 @@ void TextureArrayGLTest::bindImage2D() {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void TextureArrayGLTest::sampling1D() {
+template<class T> void TextureArrayGLTest::sampling1D() {
+    setTestCaseName(std::is_same<T, GenericSampler>::value ?
+        "sampling1D<GenericSampler>" : "sampling1D<GLSampler>");
+
     if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
-    texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
-           .setMagnificationFilter(Sampler::Filter::Linear)
+    texture.setMinificationFilter(T::Filter::Linear, T::Mipmap::Linear)
+           .setMagnificationFilter(T::Filter::Linear)
            .setMinLod(-750.0f)
            .setMaxLod(750.0f)
            .setLodBias(0.5f)
            .setBaseLevel(1)
            .setMaxLevel(750)
-           .setWrapping(Sampler::Wrapping::ClampToBorder)
+           .setWrapping(T::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
            .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
@@ -615,15 +631,18 @@ void TextureArrayGLTest::samplingDepthStencilMode1D() {
 }
 #endif
 
-void TextureArrayGLTest::sampling2D() {
+template<class T> void TextureArrayGLTest::sampling2D() {
+    setTestCaseName(std::is_same<T, GenericSampler>::value ?
+        "sampling2D<GenericSampler>" : "sampling2D<GLSampler>");
+
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
         CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray texture;
-    texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
-           .setMagnificationFilter(Sampler::Filter::Linear)
+    texture.setMinificationFilter(T::Filter::Linear, T::Mipmap::Linear)
+           .setMagnificationFilter(T::Filter::Linear)
            #ifndef MAGNUM_TARGET_GLES2
            .setMinLod(-750.0f)
            .setMaxLod(750.0f)
@@ -634,10 +653,10 @@ void TextureArrayGLTest::sampling2D() {
            .setMaxLevel(750)
            #endif
            #ifndef MAGNUM_TARGET_GLES
-           .setWrapping(Sampler::Wrapping::ClampToBorder)
+           .setWrapping(T::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
            #else
-           .setWrapping(Sampler::Wrapping::ClampToEdge)
+           .setWrapping(T::Wrapping::ClampToEdge)
            #endif
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
            #ifndef MAGNUM_TARGET_GLES

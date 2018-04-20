@@ -393,11 +393,11 @@ void AbstractTexture::setMaxLevel(Int level) {
 }
 #endif
 
-void AbstractTexture::setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap) {
+void AbstractTexture::setMinificationFilter(SamplerFilter filter, SamplerMipmap mipmap) {
     (this->*Context::current().state().texture->parameteriImplementation)(GL_TEXTURE_MIN_FILTER, GLint(filter)|GLint(mipmap));
 }
 
-void AbstractTexture::setMagnificationFilter(const Sampler::Filter filter) {
+void AbstractTexture::setMagnificationFilter(const SamplerFilter filter) {
     (this->*Context::current().state().texture->parameteriImplementation)(GL_TEXTURE_MAG_FILTER, GLint(filter));
 }
 
@@ -465,7 +465,7 @@ void AbstractTexture::setSwizzleInternal(const GLint r, const GLint g, const GLi
 #endif
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-void AbstractTexture::setCompareMode(const Sampler::CompareMode mode) {
+void AbstractTexture::setCompareMode(const SamplerCompareMode mode) {
     (this->*Context::current().state().texture->parameteriImplementation)(
         #ifndef MAGNUM_TARGET_GLES2
         GL_TEXTURE_COMPARE_MODE
@@ -475,7 +475,7 @@ void AbstractTexture::setCompareMode(const Sampler::CompareMode mode) {
         , GLenum(mode));
 }
 
-void AbstractTexture::setCompareFunction(const Sampler::CompareFunction function) {
+void AbstractTexture::setCompareFunction(const SamplerCompareFunction function) {
     (this->*Context::current().state().texture->parameteriImplementation)(
         #ifndef MAGNUM_TARGET_GLES2
         GL_TEXTURE_COMPARE_FUNC
@@ -487,7 +487,7 @@ void AbstractTexture::setCompareFunction(const Sampler::CompareFunction function
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-void AbstractTexture::setDepthStencilMode(const Sampler::DepthStencilMode mode) {
+void AbstractTexture::setDepthStencilMode(const SamplerDepthStencilMode mode) {
     (this->*Context::current().state().texture->parameteriImplementation)(GL_DEPTH_STENCIL_TEXTURE_MODE, GLenum(mode));
 }
 #endif
@@ -2209,12 +2209,12 @@ void AbstractTexture::DataHelper<3>::invalidateSubImage(AbstractTexture& texture
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void AbstractTexture::DataHelper<1>::setWrapping(AbstractTexture& texture, const Array1D<Sampler::Wrapping>& wrapping) {
+void AbstractTexture::DataHelper<1>::setWrapping(AbstractTexture& texture, const Array1D<SamplerWrapping>& wrapping) {
     (texture.*Context::current().state().texture->parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping.x()));
 }
 #endif
 
-void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture& texture, const Array2D<Sampler::Wrapping>& wrapping) {
+void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture& texture, const Array2D<SamplerWrapping>& wrapping) {
     const Implementation::TextureState& state = *Context::current().state().texture;
 
     (texture.*state.parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping.x()));
@@ -2222,7 +2222,7 @@ void AbstractTexture::DataHelper<2>::setWrapping(AbstractTexture& texture, const
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-void AbstractTexture::DataHelper<3>::setWrapping(AbstractTexture& texture, const Array3D<Sampler::Wrapping>& wrapping) {
+void AbstractTexture::DataHelper<3>::setWrapping(AbstractTexture& texture, const Array3D<SamplerWrapping>& wrapping) {
     const Implementation::TextureState& state = *Context::current().state().texture;
 
     (texture.*state.parameteriImplementation)(GL_TEXTURE_WRAP_S, GLint(wrapping.x()));

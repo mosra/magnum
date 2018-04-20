@@ -54,7 +54,7 @@ struct CubeMapTextureGLTest: OpenGLTester {
     void bindImage();
     #endif
 
-    void sampling();
+    template<class T> void sampling();
     #ifndef MAGNUM_TARGET_WEBGL
     void samplingSRGBDecode();
     #endif
@@ -120,6 +120,17 @@ struct CubeMapTextureGLTest: OpenGLTester {
 };
 
 namespace {
+    struct GenericSampler {
+        typedef Magnum::SamplerFilter Filter;
+        typedef Magnum::SamplerMipmap Mipmap;
+        typedef Magnum::SamplerWrapping Wrapping;
+    };
+    struct GLSampler {
+        typedef GL::SamplerFilter Filter;
+        typedef GL::SamplerMipmap Mipmap;
+        typedef GL::SamplerWrapping Wrapping;
+    };
+
     constexpr UnsignedByte Data[]{
         0, 0, 0, 0, 0, 0, 0, 0,
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
@@ -297,7 +308,8 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               &CubeMapTextureGLTest::bindImage,
               #endif
 
-              &CubeMapTextureGLTest::sampling,
+              &CubeMapTextureGLTest::sampling<GenericSampler>,
+              &CubeMapTextureGLTest::sampling<GLSampler>,
               #ifndef MAGNUM_TARGET_WEBGL
               &CubeMapTextureGLTest::samplingSRGBDecode,
               #endif
@@ -453,24 +465,27 @@ void CubeMapTextureGLTest::bindImage() {
 }
 #endif
 
-void CubeMapTextureGLTest::sampling() {
+template<class T> void CubeMapTextureGLTest::sampling() {
+    setTestCaseName(std::is_same<T, GenericSampler>::value ?
+        "sampling<GenericSampler>" : "sampling<GLSampler>");
+
     CubeMapTexture texture;
-    texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
-           .setMagnificationFilter(Sampler::Filter::Linear)
+    texture.setMinificationFilter(T::Filter::Linear, T::Mipmap::Linear)
+           .setMagnificationFilter(T::Filter::Linear)
            #ifndef MAGNUM_TARGET_GLES2
            .setMinLod(-750.0f)
            .setMaxLod(750.0f)
            #ifndef MAGNUM_TARGET_GLES
-           .setLodBias(0.5f)
+           .setLodBias(0.5f) /* todo both types */
            #endif
            .setBaseLevel(1)
            .setMaxLevel(750)
            #endif
            #ifndef MAGNUM_TARGET_GLES
-           .setWrapping(Sampler::Wrapping::ClampToBorder)
+           .setWrapping(T::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
            #else
-           .setWrapping(Sampler::Wrapping::ClampToEdge)
+           .setWrapping(T::Wrapping::ClampToEdge)
            #endif
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
             #ifndef MAGNUM_TARGET_GLES2

@@ -35,7 +35,6 @@
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
 #include "Magnum/GL/GL.h"
-#include "Magnum/GL/Sampler.h"
 
 namespace Magnum { namespace GL {
 
@@ -457,8 +456,8 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         void setMaxLevel(Int level);
         #endif
-        void setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap);
-        void setMagnificationFilter(Sampler::Filter filter);
+        void setMinificationFilter(SamplerFilter filter, SamplerMipmap mipmap);
+        void setMagnificationFilter(SamplerFilter filter);
         #ifndef MAGNUM_TARGET_GLES2
         void setMinLod(Float lod);
         void setMaxLod(Float lod);
@@ -489,11 +488,11 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         #endif
 
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        void setCompareMode(Sampler::CompareMode mode);
-        void setCompareFunction(Sampler::CompareFunction function);
+        void setCompareMode(SamplerCompareMode mode);
+        void setCompareFunction(SamplerCompareFunction function);
         #endif
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        void setDepthStencilMode(Sampler::DepthStencilMode mode);
+        void setDepthStencilMode(SamplerDepthStencilMode mode);
         #endif
         void invalidateImage(Int level);
         void generateMipmap();
@@ -727,7 +726,7 @@ template<> struct MAGNUM_GL_EXPORT AbstractTexture::DataHelper<1> {
     static Math::Vector<1, GLint> compressedBlockSize(GLenum target, TextureFormat format);
     static Math::Vector<1, GLint> imageSize(AbstractTexture& texture, GLint level);
 
-    static void setWrapping(AbstractTexture& texture, const Array1D<Sampler::Wrapping>& wrapping);
+    static void setWrapping(AbstractTexture& texture, const Array1D<SamplerWrapping>& wrapping);
 
     static void setStorage(AbstractTexture& texture, GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size);
 
@@ -752,7 +751,7 @@ template<> struct MAGNUM_GL_EXPORT AbstractTexture::DataHelper<2> {
     static Vector2i imageSize(AbstractTexture& texture, GLint level);
     #endif
 
-    static void setWrapping(AbstractTexture& texture, const Array2D<Sampler::Wrapping>& wrapping);
+    static void setWrapping(AbstractTexture& texture, const Array2D<SamplerWrapping>& wrapping);
 
     static void setStorage(AbstractTexture& texture, GLsizei levels, TextureFormat internalFormat, const Vector2i& size);
 
@@ -797,7 +796,7 @@ template<> struct MAGNUM_GL_EXPORT AbstractTexture::DataHelper<3> {
     static Vector3i imageSize(AbstractTexture& texture, GLint level);
     #endif
 
-    static void setWrapping(AbstractTexture& texture, const Array3D<Sampler::Wrapping>& wrapping);
+    static void setWrapping(AbstractTexture& texture, const Array3D<SamplerWrapping>& wrapping);
 
     static void setStorage(AbstractTexture& texture, GLsizei levels, TextureFormat internalFormat, const Vector3i& size);
 

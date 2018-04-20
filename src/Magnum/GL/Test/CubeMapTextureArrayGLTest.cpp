@@ -48,7 +48,7 @@ struct CubeMapTextureArrayGLTest: OpenGLTester {
     void bind();
     void bindImage();
 
-    void sampling();
+    template<class T> void sampling();
     void samplingSRGBDecode();
     void samplingBorderInteger();
     void samplingSwizzle();
@@ -84,6 +84,17 @@ struct CubeMapTextureArrayGLTest: OpenGLTester {
 };
 
 namespace {
+    struct GenericSampler {
+        typedef Magnum::SamplerFilter Filter;
+        typedef Magnum::SamplerMipmap Mipmap;
+        typedef Magnum::SamplerWrapping Wrapping;
+    };
+    struct GLSampler {
+        typedef GL::SamplerFilter Filter;
+        typedef GL::SamplerMipmap Mipmap;
+        typedef GL::SamplerWrapping Wrapping;
+    };
+
     constexpr UnsignedByte Data[]{
         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
@@ -270,7 +281,8 @@ CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
               &CubeMapTextureArrayGLTest::bind,
               &CubeMapTextureArrayGLTest::bindImage,
 
-              &CubeMapTextureArrayGLTest::sampling,
+              &CubeMapTextureArrayGLTest::sampling<GenericSampler>,
+              &CubeMapTextureArrayGLTest::sampling<GLSampler>,
               &CubeMapTextureArrayGLTest::samplingSRGBDecode,
               &CubeMapTextureArrayGLTest::samplingBorderInteger,
               &CubeMapTextureArrayGLTest::samplingSwizzle,
@@ -415,7 +427,10 @@ void CubeMapTextureArrayGLTest::bindImage() {
     #endif
 }
 
-void CubeMapTextureArrayGLTest::sampling() {
+template<class T> void CubeMapTextureArrayGLTest::sampling() {
+    setTestCaseName(std::is_same<T, GenericSampler>::value ?
+        "sampling<GenericSampler>" : "sampling<GLSampler>");
+
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
@@ -425,8 +440,8 @@ void CubeMapTextureArrayGLTest::sampling() {
     #endif
 
     CubeMapTextureArray texture;
-    texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
-           .setMagnificationFilter(Sampler::Filter::Linear)
+    texture.setMinificationFilter(T::Filter::Linear, T::Mipmap::Linear)
+           .setMagnificationFilter(T::Filter::Linear)
            .setMinLod(-750.0f)
            .setMaxLod(750.0f)
             #ifndef MAGNUM_TARGET_GLES
@@ -435,10 +450,10 @@ void CubeMapTextureArrayGLTest::sampling() {
            .setBaseLevel(1)
            .setMaxLevel(750)
            #ifndef MAGNUM_TARGET_GLES
-           .setWrapping(Sampler::Wrapping::ClampToBorder)
+           .setWrapping(T::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
            #else
-           .setWrapping(Sampler::Wrapping::ClampToEdge)
+           .setWrapping(T::Wrapping::ClampToEdge)
            #endif
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
            .setCompareMode(Sampler::CompareMode::CompareRefToTexture)

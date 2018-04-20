@@ -30,8 +30,10 @@
  */
 
 #include "Magnum/Array.h"
+#include "Magnum/Sampler.h"
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/GL/AbstractTexture.h"
+#include "Magnum/GL/Sampler.h"
 #include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace GL {
@@ -328,7 +330,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set minification filter
          * @param filter        Filter
          * @param mipmap        Mipmap filtering. If set to anything else than
-         *      @ref Sampler::Mipmap::Base, make sure textures for all mip
+         *      @ref SamplerMipmap::Base, make sure textures for all mip
          *      levels are set or call @ref generateMipmap().
          * @return Reference to self (for method chaining)
          *
@@ -336,17 +338,22 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * texture size. If neither @extension{ARB,direct_state_access} (part
          * of OpenGL 4.5) nor @extension{EXT,direct_state_access} desktop
          * extension is available, the texture is bound before the operation
-         * (if not already). Initial value is {@ref Sampler::Filter::Nearest,
-         * @ref Sampler::Mipmap::Linear}.
+         * (if not already). Initial value is {@ref SamplerFilter::Nearest,
+         * @ref SamplerMipmap::Linear}.
          * @see @ref setMagnificationFilter(), @ref setBaseLevel(),
          *      @ref setMaxLevel(), @fn_gl2_keyword{TextureParameter,TexParameter},
          *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_MIN_FILTER}
          */
-        Texture<dimensions>& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
+        Texture<dimensions>& setMinificationFilter(SamplerFilter filter, SamplerMipmap mipmap = SamplerMipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
             return *this;
+        }
+
+        /** @overload */
+        Texture<dimensions>& setMinificationFilter(Magnum::SamplerFilter filter, Magnum::SamplerMipmap mipmap = Magnum::SamplerMipmap::Base) {
+            return setMinificationFilter(samplerFilter(filter), samplerMipmap(mipmap));
         }
 
         /**
@@ -358,15 +365,20 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * texture size. If neither @extension{ARB,direct_state_access} (part
          * of OpenGL 4.5) nor @extension{EXT,direct_state_access} desktop
          * extension is available, the texture is bound before the operation
-         * (if not already). Initial value is @ref Sampler::Filter::Linear.
+         * (if not already). Initial value is @ref SamplerFilter::Linear.
          * @see @ref setMinificationFilter(), @fn_gl2_keyword{TextureParameter,TexParameter},
          *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_MAG_FILTER}
          */
-        Texture<dimensions>& setMagnificationFilter(Sampler::Filter filter) {
+        Texture<dimensions>& setMagnificationFilter(SamplerFilter filter) {
             AbstractTexture::setMagnificationFilter(filter);
             return *this;
+        }
+
+        /** @overload */
+        Texture<dimensions>& setMagnificationFilter(Magnum::SamplerFilter filter) {
+            return setMagnificationFilter(samplerFilter(filter));
         }
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -450,16 +462,21 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
-         * already). Initial value is @ref Sampler::Wrapping::Repeat.
+         * already). Initial value is @ref SamplerWrapping::Repeat.
          * @see @ref setBorderColor(), @fn_gl2_keyword{TextureParameter,TexParameter},
          *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_WRAP_S},
          *      @def_gl_keyword{TEXTURE_WRAP_T}, @def_gl_keyword{TEXTURE_WRAP_R}
          */
-        Texture<dimensions>& setWrapping(const Array<dimensions, Sampler::Wrapping>& wrapping) {
+        Texture<dimensions>& setWrapping(const Array<dimensions, SamplerWrapping>& wrapping) {
             DataHelper<dimensions>::setWrapping(*this, wrapping);
             return *this;
+        }
+
+        /** @overload */
+        Texture<dimensions>& setWrapping(const Array<dimensions, Magnum::SamplerWrapping>& wrapping) {
+            return setWrapping(samplerWrapping(wrapping));
         }
 
         #ifndef MAGNUM_TARGET_WEBGL
@@ -467,7 +484,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set border color
          * @return Reference to self (for method chaining)
          *
-         * Border color when wrapping is set to @ref Sampler::Wrapping::ClampToBorder.
+         * Border color when wrapping is set to @ref SamplerWrapping::ClampToBorder.
          * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
          * nor @extension{EXT,direct_state_access} is available, the texture is
          * bound before the operation (if not already). Initial value is
@@ -492,7 +509,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Border color for integer textures when wrapping is set to
-         * @ref Sampler::Wrapping::ClampToBorder. If neither
+         * @ref SamplerWrapping::ClampToBorder. If neither
          * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
          * @extension{EXT,direct_state_access} is available, the texture is
          * bound before the operation (if not already). Initial value is
@@ -616,7 +633,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
          * nor @extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
-         * already). Initial value is @ref Sampler::CompareMode::None.
+         * already). Initial value is @ref SamplerCompareMode::None.
          * @note Depth textures can be only 1D or 2D.
          * @see @ref setCompareFunction(), @fn_gl2_keyword{TextureParameter,TexParameter},
          *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
@@ -627,7 +644,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @requires_webgl20 Depth texture comparison is not available in WebGL
          *      1.0.
          */
-        Texture<dimensions>& setCompareMode(Sampler::CompareMode mode) {
+        Texture<dimensions>& setCompareMode(SamplerCompareMode mode) {
             AbstractTexture::setCompareMode(mode);
             return *this;
         }
@@ -637,11 +654,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Comparison operator used when comparison mode is set to
-         * @ref Sampler::CompareMode::CompareRefToTexture. If neither
+         * @ref SamplerCompareMode::CompareRefToTexture. If neither
          * @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
          * @extension{EXT,direct_state_access} desktop extension is available,
          * the texture is bound before the operation (if not already). Initial
-         * value is @ref Sampler::CompareFunction::LessOrEqual.
+         * value is @ref SamplerCompareFunction::LessOrEqual.
          * @note Depth textures can be only 1D or 2D.
          * @see @ref setCompareMode(), @fn_gl2_keyword{TextureParameter,TexParameter},
          *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
@@ -652,7 +669,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @requires_webgl20 Depth texture comparison is not available in WebGL
          *      1.0.
          */
-        Texture<dimensions>& setCompareFunction(Sampler::CompareFunction function) {
+        Texture<dimensions>& setCompareFunction(SamplerCompareFunction function) {
             AbstractTexture::setCompareFunction(function);
             return *this;
         }
@@ -667,7 +684,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * texturing. If neither @extension{ARB,direct_state_access} (part of
          * OpenGL 4.5) nor @extension{EXT,direct_state_access} is available,
          * the texture is bound before the operation (if not already). Initial
-         * value is @ref Sampler::DepthStencilMode::DepthComponent.
+         * value is @ref SamplerDepthStencilMode::DepthComponent.
          * @note Depth textures can be only 1D or 2D.
          * @see @fn_gl2_keyword{TextureParameter,TexParameter},
          *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
@@ -678,7 +695,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      and older.
          * @requires_gles Stencil texturing is not available in WebGL.
          */
-        Texture<dimensions>& setDepthStencilMode(Sampler::DepthStencilMode mode) {
+        Texture<dimensions>& setDepthStencilMode(SamplerDepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);
             return *this;
         }

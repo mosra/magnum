@@ -58,6 +58,8 @@ See also:
 -   New @ref MeshPrimitive and @ref MeshIndexType enums containing generic
     API-independent mesh primitive types and index types, together with
     @ref meshIndexTypeSize() utilities
+-   New @ref SamplerFilter, @ref SamplerMipmap and @ref SamplerWrapping enums
+    containing generic API-independent texture sampler modes
 
 @subsubsection changelog-latest-new-math Math library
 
@@ -78,6 +80,12 @@ See also:
     @ref GL::MeshPrimitive and @ref GL::MeshIndexType values. The @ref Mesh
     class now has overloads accepting both types.
 -   New @ref Mesh::indexType() and @ref MeshView::mesh() getters
+-   New @ref GL::samplerFilter(), @ref GL::samplerMipmap() and
+    @ref GL::samplerWrapping() utilities for converting generic
+    @ref SamplerFilter, @ref SamplerMipmap and @ref SamplerWrapping to G
+    L-specific @ref GL::SamplerFilter, @ref GL::SamplerMipmap and
+    @ref GL::SamplerWrapping values. All texture classes now have overloads
+    accepting both types.
 -   Initial support for OpenGL ES 3.2 and OpenGL 4.6
 -   New OpenGL extension support:
     -   @extension{ARB,texture_filter_anisotropic}
@@ -189,6 +197,13 @@ See also:
     @ref GL::MeshIndexType and @ref meshIndexTypeSize() instead
 -   The `GL::Mesh::indexSize()` function is deprecated, use
     @ref GL::Mesh::indexTypeSize() instead
+-   The `Sampler` class and the `Sampler::Filter`, `Sampler::Mipmap`,
+    `Sampler::Wrapping`, `Sampler::CompareMode`, `Sampler::CompareFunction` and
+    `Sampler::DepthStencilMode` enums are deprecated, use @ref GL::Sampler,
+    @ref SamplerFilter / @ref GL::SamplerFilter, @ref SamplerMipmap /
+    @ref GL::SamplerMipmap, @ref SamplerWrapping / @ref GL::SamplerWrapping,
+    @ref GL::SamplerCompareMode, @ref GL::SamplerCompareFunction and
+    @ref GL::SamplerDepthStencilMode instead
 -   Class @cpp Primitives::Capsule2D @ce and @cpp Primitives::Capsule3D @ce is
     deprecated, use @ref Primitives::capsule2DWireframe(),
     @ref Primitives::capsule3DSolid() and @ref Primitives::capsule3DWireframe()

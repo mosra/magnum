@@ -79,11 +79,11 @@ struct TextureGLTest: OpenGLTester {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    void sampling1D();
+    template<class T> void sampling1D();
     #endif
-    void sampling2D();
+    template<class T> void sampling2D();
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    void sampling3D();
+    template<class T> void sampling3D();
     #endif
 
     #ifndef MAGNUM_TARGET_WEBGL
@@ -232,6 +232,17 @@ struct TextureGLTest: OpenGLTester {
 };
 
 namespace {
+    struct GenericSampler {
+        typedef Magnum::SamplerFilter Filter;
+        typedef Magnum::SamplerMipmap Mipmap;
+        typedef Magnum::SamplerWrapping Wrapping;
+    };
+    struct GLSampler {
+        typedef GL::SamplerFilter Filter;
+        typedef GL::SamplerMipmap Mipmap;
+        typedef GL::SamplerWrapping Wrapping;
+    };
+
     #ifndef MAGNUM_TARGET_GLES
     constexpr UnsignedByte Data1D[]{
         0, 0, 0, 0,
@@ -452,11 +463,14 @@ TextureGLTest::TextureGLTest() {
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        &TextureGLTest::sampling1D,
+        &TextureGLTest::sampling1D<GenericSampler>,
+        &TextureGLTest::sampling1D<GLSampler>,
         #endif
-        &TextureGLTest::sampling2D,
+        &TextureGLTest::sampling2D<GenericSampler>,
+        &TextureGLTest::sampling2D<GLSampler>,
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-        &TextureGLTest::sampling3D,
+        &TextureGLTest::sampling3D<GenericSampler>,
+        &TextureGLTest::sampling3D<GLSampler>,
         #endif
 
         #ifndef MAGNUM_TARGET_WEBGL
@@ -869,16 +883,19 @@ void TextureGLTest::bindImage3D() {
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void TextureGLTest::sampling1D() {
+template<class T> void TextureGLTest::sampling1D() {
+    setTestCaseName(std::is_same<T, GenericSampler>::value ?
+        "sampling1D<GenericSampler>" : "sampling1D<GLSampler>");
+
     Texture1D texture;
-    texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
-           .setMagnificationFilter(Sampler::Filter::Linear)
+    texture.setMinificationFilter(T::Filter::Linear, T::Mipmap::Linear)
+           .setMagnificationFilter(T::Filter::Linear)
            .setMinLod(-750.0f)
            .setMaxLod(750.0f)
            .setLodBias(0.5f)
            .setBaseLevel(1)
            .setMaxLevel(750)
-           .setWrapping(Sampler::Wrapping::ClampToBorder)
+           .setWrapping(T::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
            .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
@@ -932,10 +949,13 @@ void TextureGLTest::samplingDepthStencilMode1D() {
 }
 #endif
 
-void TextureGLTest::sampling2D() {
+template<class T> void TextureGLTest::sampling2D() {
+    setTestCaseName(std::is_same<T, GenericSampler>::value ?
+        "sampling2D<GenericSampler>" : "sampling2D<GLSampler>");
+
     Texture2D texture;
-    texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
-           .setMagnificationFilter(Sampler::Filter::Linear)
+    texture.setMinificationFilter(T::Filter::Linear, T::Mipmap::Linear)
+           .setMagnificationFilter(T::Filter::Linear)
            #ifndef MAGNUM_TARGET_GLES2
            .setMinLod(-750.0f)
            .setMaxLod(750.0f)
@@ -946,10 +966,10 @@ void TextureGLTest::sampling2D() {
            .setMaxLevel(750)
            #endif
            #ifndef MAGNUM_TARGET_GLES
-           .setWrapping(Sampler::Wrapping::ClampToBorder)
+           .setWrapping(T::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
            #else
-           .setWrapping(Sampler::Wrapping::ClampToEdge)
+           .setWrapping(T::Wrapping::ClampToEdge)
            #endif
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
            #ifndef MAGNUM_TARGET_GLES2
@@ -1065,15 +1085,18 @@ void TextureGLTest::samplingBorder2D() {
 #endif
 
 #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-void TextureGLTest::sampling3D() {
+template<class T> void TextureGLTest::sampling3D() {
+    setTestCaseName(std::is_same<T, GenericSampler>::value ?
+        "sampling3D<GenericSampler>" : "sampling3D<GLSampler>");
+
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_3D>())
         CORRADE_SKIP(Extensions::GL::OES::texture_3D::string() + std::string(" is not supported."));
     #endif
 
     Texture3D texture;
-    texture.setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
-           .setMagnificationFilter(Sampler::Filter::Linear)
+    texture.setMinificationFilter(T::Filter::Linear, T::Mipmap::Linear)
+           .setMagnificationFilter(T::Filter::Linear)
            #ifndef MAGNUM_TARGET_GLES2
            .setMinLod(-750.0f)
            .setMaxLod(750.0f)
@@ -1084,10 +1107,10 @@ void TextureGLTest::sampling3D() {
            .setMaxLevel(750)
            #endif
            #ifndef MAGNUM_TARGET_GLES
-           .setWrapping(Sampler::Wrapping::ClampToBorder)
+           .setWrapping(T::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
            #else
-           .setWrapping(Sampler::Wrapping::ClampToEdge)
+           .setWrapping(T::Wrapping::ClampToEdge)
            #endif
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy());
 

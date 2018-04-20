@@ -26,16 +26,131 @@
 */
 
 /** @file
- * @deprecated Use @ref Magnum/GL/Sampler.h instead.
+ * @brief Enum @ref Magnum::SamplerFilter, @ref Magnum::SamplerMipmap, @ref Magnum::SamplerWrapping
  */
 
-#include "Magnum/configure.h"
+#include "Magnum/Magnum.h"
+#include "Magnum/visibility.h"
 
 #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
 #include "Magnum/GL/Sampler.h"
-CORRADE_DEPRECATED_FILE("use Magnum/GL/Sampler.h instead")
-#else
-#error use Magnum/GL/Sampler.h instead
 #endif
+
+namespace Magnum {
+
+/**
+@brief Texture sampler filtering
+
+In case of OpenGL, corresponds to @ref GL::SamplerFilter and is convertible to
+it using @ref GL::samplerFilter(). See documentation of each value for more
+information about the mapping.
+@see @ref SamplerMipmap, @ref SamplerWrapping
+*/
+enum class SamplerFilter: UnsignedInt {
+    /**
+     * Nearest neighbor filtering.
+     *
+     * Corresponds to @ref GL::SamplerFilter::Nearest.
+     */
+    Nearest,
+
+    /**
+     * Linear interpolation filtering.
+     *
+     * Corresponds to @ref GL::SamplerFilter::Linear.
+     */
+    Linear
+};
+
+/**
+@brief Texture sampler mip level selection
+
+In case of OpenGL, corresponds to @ref GL::SamplerMipmap and is convertible to
+it using @ref GL::samplerMipmap(). See documentation of each value for more
+information about the mapping.
+@see @ref SamplerFilter, @ref SamplerWrapping
+*/
+enum class SamplerMipmap: UnsignedInt {
+    /**
+     * Select base mip level
+     *
+     * Corresponds to @ref GL::SamplerMipmap::Base.
+     */
+    Base,
+
+    /**
+     * Select nearest mip level.
+     *
+     * Corresponds to @ref GL::SamplerMipmap::Nearest.
+     */
+    Nearest,
+
+    /**
+     * Linear interpolation of nearest mip levels.
+     *
+     * Corresponds to @ref GL::SamplerMipmap::Linear.
+     */
+    Linear
+};
+
+/**
+@brief Texture sampler wrapping
+
+In case of OpenGL, corresponds to @ref GL::SamplerWrapping and is convertible
+to it using @ref GL::samplerWrapping(). See documentation of each value for
+more information about the mapping. Note that not every mode is available on
+all targets, use @ref GL::hasSamplerWrapping() to check for its presence.
+@see @ref SamplerFilter, @ref SamplerMipmap
+*/
+enum class SamplerWrapping: UnsignedInt {
+    /**
+     * Repeat texture.
+     *
+     * Corresponds to @ref GL::SamplerWrapping::Repeat.
+     */
+    Repeat,
+
+    /**
+     * Repeat mirrored texture.
+     *
+     * Corresponds to @ref GL::SamplerWrapping::MirroredRepeat.
+     */
+    MirroredRepeat,
+
+    /**
+     * Clamp to edge. Coordinates out of the range will be clamped to
+     * first / last column / row in given direction.
+     *
+     * Corresponds to @ref GL::SamplerWrapping::ClampToEdge.
+     */
+    ClampToEdge,
+
+    /**
+     * Clamp to border color. Coordinates out of range will be clamped
+     * to border color.
+     *
+     * Corresponds to @ref GL::SamplerWrapping::ClampToBorder.
+     */
+    ClampToBorder,
+
+    /**
+     * Mirror the texture once in negative coordinates and clamp to
+     * edge after that.
+     *
+     * Corresponds to @ref GL::SamplerWrapping::MirrorClampToEdge.
+     */
+    MirrorClampToEdge
+};
+
+/** @debugoperatorenum{SamplerFilter} */
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, SamplerFilter value);
+
+/** @debugoperatorenum{SamplerMipmap} */
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, SamplerMipmap value);
+
+/** @debugoperatorenum{SamplerWrapping} */
+MAGNUM_EXPORT Debug& operator<<(Debug& debug, SamplerWrapping value);
+
+}
 
 #endif

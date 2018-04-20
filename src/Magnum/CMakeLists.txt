@@ -31,6 +31,7 @@ set(Magnum_SRCS
     Mesh.cpp
     PixelStorage.cpp
     Resource.cpp
+    Sampler.cpp
     Timeline.cpp)
 
 set(Magnum_GracefulAssert_SRCS
@@ -51,6 +52,7 @@ set(Magnum_HEADERS
     Resource.h
     ResourceManager.h
     ResourceManager.hpp
+    Sampler.h
     Tags.h
     Timeline.h
     Types.h
@@ -75,7 +77,6 @@ if(WITH_GL AND BUILD_DEPRECATED)
         Renderbuffer.h
         RenderbufferFormat.h
         Renderer.h
-        Sampler.h
         Shader.h
         Tags.h
         Texture.h

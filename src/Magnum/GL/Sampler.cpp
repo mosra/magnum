@@ -27,6 +27,7 @@
 
 #include <Corrade/Utility/Debug.h>
 
+#include "Magnum/Sampler.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Implementation/State.h"
@@ -37,7 +38,7 @@ namespace Magnum { namespace GL {
 /* Check correctness of binary OR in setMinificationFilter(). If nobody fucks
    anything up, this assert should produce the same results on all dimensions,
    thus testing only on AbstractTexture. */
-#define filter_or(filter, mipmap) (GLint(Sampler::Filter::filter)|GLint(Sampler::Mipmap::mipmap))
+#define filter_or(filter, mipmap) (GLint(SamplerFilter::filter)|GLint(SamplerMipmap::mipmap))
 static_assert((filter_or(Nearest, Base) == GL_NEAREST) &&
               (filter_or(Nearest, Nearest) == GL_NEAREST_MIPMAP_NEAREST) &&
               (filter_or(Nearest, Linear) == GL_NEAREST_MIPMAP_LINEAR) &&
@@ -46,6 +47,64 @@ static_assert((filter_or(Nearest, Base) == GL_NEAREST) &&
               (filter_or(Linear, Linear) == GL_LINEAR_MIPMAP_LINEAR),
     "Unsupported constants for GL texture filtering");
 #undef filter_or
+
+namespace {
+
+constexpr SamplerFilter FilterMapping[]{
+    SamplerFilter::Nearest,
+    SamplerFilter::Linear
+};
+
+constexpr SamplerMipmap MipmapMapping[]{
+    SamplerMipmap::Base,
+    SamplerMipmap::Nearest,
+    SamplerMipmap::Linear
+};
+
+constexpr SamplerWrapping WrappingMapping[]{
+    SamplerWrapping::Repeat,
+    SamplerWrapping::MirroredRepeat,
+    SamplerWrapping::ClampToEdge,
+    #ifndef MAGNUM_TARGET_WEBGL
+    SamplerWrapping::ClampToBorder,
+    #else
+    SamplerWrapping{},
+    #endif
+    #ifndef MAGNUM_TARGET_GLES
+    SamplerWrapping::MirrorClampToEdge
+    #else
+    SamplerWrapping{}
+    #endif
+};
+
+}
+
+SamplerFilter samplerFilter(const Magnum::SamplerFilter filter) {
+    CORRADE_ASSERT(UnsignedInt(filter) < Containers::arraySize(FilterMapping),
+        "GL::samplerFilter(): invalid filter" << filter, {});
+    return FilterMapping[UnsignedInt(filter)];
+}
+
+SamplerMipmap samplerMipmap(const Magnum::SamplerMipmap mipmap) {
+    CORRADE_ASSERT(UnsignedInt(mipmap) < Containers::arraySize(MipmapMapping),
+        "GL::samplerMipmap(): invalid filter" << mipmap, {});
+    return MipmapMapping[UnsignedInt(mipmap)];
+}
+
+bool hasSamplerWrapping(const Magnum::SamplerWrapping wrapping) {
+    CORRADE_ASSERT(UnsignedInt(wrapping) < Containers::arraySize(WrappingMapping),
+        "GL::hasSamplerWrapping(): invalid wrapping" << wrapping, {});
+    return UnsignedInt(WrappingMapping[UnsignedInt(wrapping)]);
+}
+
+SamplerWrapping samplerWrapping(const Magnum::SamplerWrapping wrapping) {
+    CORRADE_ASSERT(UnsignedInt(wrapping) < Containers::arraySize(WrappingMapping),
+        "GL::samplerWrapping(): invalid wrapping" << wrapping, {});
+    const SamplerWrapping out = WrappingMapping[UnsignedInt(wrapping)];
+    CORRADE_ASSERT(UnsignedInt(out),
+        "GL::samplerWrapping(): wrapping" << wrapping << "is not supported on this target", {});
+    return out;
+}
 
 Float Sampler::maxMaxAnisotropy() {
     GLfloat& value = Context::current().state().texture->maxMaxAnisotropy;
@@ -65,23 +124,23 @@ Float Sampler::maxMaxAnisotropy() {
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug& operator<<(Debug& debug, const Sampler::Filter value) {
+Debug& operator<<(Debug& debug, const SamplerFilter value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Sampler::Filter::value: return debug << "GL::Sampler::Filter::" #value;
+        #define _c(value) case SamplerFilter::value: return debug << "GL::SamplerFilter::" #value;
         _c(Nearest)
         _c(Linear)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Sampler::Filter(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "GL::SamplerFilter(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, const Sampler::Mipmap value) {
+Debug& operator<<(Debug& debug, const SamplerMipmap value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Sampler::Mipmap::value: return debug << "GL::Sampler::Mipmap::" #value;
+        #define _c(value) case SamplerMipmap::value: return debug << "GL::SamplerMipmap::" #value;
         _c(Base)
         _c(Nearest)
         _c(Linear)
@@ -89,13 +148,13 @@ Debug& operator<<(Debug& debug, const Sampler::Mipmap value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Sampler::Mipmap(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "GL::SamplerMipmap(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, const Sampler::Wrapping value) {
+Debug& operator<<(Debug& debug, const SamplerWrapping value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Sampler::Wrapping::value: return debug << "GL::Sampler::Wrapping::" #value;
+        #define _c(value) case SamplerWrapping::value: return debug << "GL::SamplerWrapping::" #value;
         _c(Repeat)
         _c(MirroredRepeat)
         _c(ClampToEdge)
@@ -109,27 +168,27 @@ Debug& operator<<(Debug& debug, const Sampler::Wrapping value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Sampler::Wrapping(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "GL::SamplerWrapping(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-Debug& operator<<(Debug& debug, const Sampler::CompareMode value) {
+Debug& operator<<(Debug& debug, const SamplerCompareMode value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Sampler::CompareMode::value: return debug << "GL::Sampler::CompareMode::" #value;
+        #define _c(value) case SamplerCompareMode::value: return debug << "GL::SamplerCompareMode::" #value;
         _c(None)
         _c(CompareRefToTexture)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Sampler::CompareMode(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::SamplerCompareMode(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, const Sampler::CompareFunction value) {
+Debug& operator<<(Debug& debug, const SamplerCompareFunction value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Sampler::CompareFunction::value: return debug << "GL::Sampler::CompareFunction::" #value;
+        #define _c(value) case SamplerCompareFunction::value: return debug << "GL::SamplerCompareFunction::" #value;
         _c(Never)
         _c(Always)
         _c(Less)
@@ -142,22 +201,22 @@ Debug& operator<<(Debug& debug, const Sampler::CompareFunction value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Sampler::CompareFunction(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::SamplerCompareFunction(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-Debug& operator<<(Debug& debug, const Sampler::DepthStencilMode value) {
+Debug& operator<<(Debug& debug, const SamplerDepthStencilMode value) {
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Sampler::DepthStencilMode::value: return debug << "GL::Sampler::DepthStencilMode::" #value;
+        #define _c(value) case SamplerDepthStencilMode::value: return debug << "GL::SamplerDepthStencilMode::" #value;
         _c(DepthComponent)
         _c(StencilIndex)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Sampler::DepthStencilMode(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "GL::SamplerDepthStencilMode(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 #endif

@@ -32,8 +32,10 @@
 #endif
 
 #include "Magnum/Array.h"
+#include "Magnum/Sampler.h"
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/GL/AbstractTexture.h"
+#include "Magnum/GL/Sampler.h"
 #include "Magnum/Math/Vector3.h"
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -248,9 +250,14 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::setMinificationFilter() for more information.
          */
-        TextureArray<dimensions>& setMinificationFilter(Sampler::Filter filter, Sampler::Mipmap mipmap = Sampler::Mipmap::Base) {
+        TextureArray<dimensions>& setMinificationFilter(SamplerFilter filter, SamplerMipmap mipmap = SamplerMipmap::Base) {
             AbstractTexture::setMinificationFilter(filter, mipmap);
             return *this;
+        }
+
+        /** @overload */
+        TextureArray<dimensions>& setMinificationFilter(Magnum::SamplerFilter filter, Magnum::SamplerMipmap mipmap = Magnum::SamplerMipmap::Base) {
+            return setMinificationFilter(samplerFilter(filter), samplerMipmap(mipmap));
         }
 
         /**
@@ -259,9 +266,14 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::setMagnificationFilter() for more information.
          */
-        TextureArray<dimensions>& setMagnificationFilter(Sampler::Filter filter) {
+        TextureArray<dimensions>& setMagnificationFilter(SamplerFilter filter) {
             AbstractTexture::setMagnificationFilter(filter);
             return *this;
+        }
+
+        /** @overload */
+        TextureArray<dimensions>& setMagnificationFilter(Magnum::SamplerFilter filter) {
+            return setMagnificationFilter(samplerFilter(filter));
         }
 
         /**
@@ -307,9 +319,14 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::setWrapping() for more information.
          */
-        TextureArray<dimensions>& setWrapping(const Array<dimensions, Sampler::Wrapping>& wrapping) {
+        TextureArray<dimensions>& setWrapping(const Array<dimensions, SamplerWrapping>& wrapping) {
             DataHelper<dimensions>::setWrapping(*this, wrapping);
             return *this;
+        }
+
+        /** @overload */
+        TextureArray<dimensions>& setWrapping(const Array<dimensions, Magnum::SamplerWrapping>& wrapping) {
+            return setWrapping(samplerWrapping(wrapping));
         }
 
         #ifndef MAGNUM_TARGET_WEBGL
@@ -403,7 +420,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::setCompareMode() for more information.
          */
-        TextureArray<dimensions>& setCompareMode(Sampler::CompareMode mode) {
+        TextureArray<dimensions>& setCompareMode(SamplerCompareMode mode) {
             AbstractTexture::setCompareMode(mode);
             return *this;
         }
@@ -414,7 +431,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::setCompareFunction() for more information.
          */
-        TextureArray<dimensions>& setCompareFunction(Sampler::CompareFunction function) {
+        TextureArray<dimensions>& setCompareFunction(SamplerCompareFunction function) {
             AbstractTexture::setCompareFunction(function);
             return *this;
         }
@@ -430,7 +447,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      and older.
          * @requires_gles Stencil texturing is not available in WebGL.
          */
-        TextureArray<dimensions>& setDepthStencilMode(Sampler::DepthStencilMode mode) {
+        TextureArray<dimensions>& setDepthStencilMode(SamplerDepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);
             return *this;
         }

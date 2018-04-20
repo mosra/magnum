@@ -38,7 +38,6 @@ set(MagnumGL_SRCS
     OpenGL.cpp
     Renderbuffer.cpp
     Renderer.cpp
-    Sampler.cpp
     Shader.cpp
     Texture.cpp
     Version.cpp
@@ -57,7 +56,8 @@ set(MagnumGL_SRCS
 
 set(MagnumGL_GracefulAssert_SRCS
     Mesh.cpp
-    PixelFormat.cpp)
+    PixelFormat.cpp
+    Sampler.cpp)
 
 set(MagnumGL_HEADERS
     AbstractFramebuffer.h

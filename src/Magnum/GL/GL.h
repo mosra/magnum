@@ -32,6 +32,7 @@
 #include "Magnum/Types.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+typedef int GLint; /* Needed for sampler enums */
 typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
 #endif
 
@@ -119,6 +120,13 @@ class RectangleTexture;
 
 class Renderbuffer;
 enum class RenderbufferFormat: GLenum;
+
+enum class SamplerFilter: GLint;
+enum class SamplerMipmap: GLint;
+enum class SamplerWrapping: GLint;
+enum class SamplerCompareMode: GLenum;
+enum class SamplerCompareFunction: GLenum;
+enum class SamplerDepthStencilMode: GLenum;
 
 class Sampler;
 class Shader;

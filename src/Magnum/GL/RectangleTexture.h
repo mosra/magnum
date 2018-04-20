@@ -32,7 +32,9 @@
 #endif
 
 #include "Magnum/Array.h"
+#include "Magnum/Sampler.h"
 #include "Magnum/GL/AbstractTexture.h"
+#include "Magnum/GL/Sampler.h"
 #include "Magnum/Math/Vector2.h"
 
 #ifndef MAGNUM_TARGET_GLES
@@ -159,11 +161,16 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMinificationFilter() for more information.
-         * Initial value is @ref Sampler::Filter::Linear.
+         * Initial value is @ref SamplerFilter::Linear.
          */
-        RectangleTexture& setMinificationFilter(Sampler::Filter filter) {
-            AbstractTexture::setMinificationFilter(filter, Sampler::Mipmap::Base);
+        RectangleTexture& setMinificationFilter(SamplerFilter filter) {
+            AbstractTexture::setMinificationFilter(filter, SamplerMipmap::Base);
             return *this;
+        }
+
+        /** @overload */
+        RectangleTexture& setMinificationFilter(Magnum::SamplerFilter filter) {
+            return setMinificationFilter(samplerFilter(filter));
         }
 
         /**
@@ -172,9 +179,14 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          *
          * See @ref Texture::setMagnificationFilter() for more information.
          */
-        RectangleTexture& setMagnificationFilter(Sampler::Filter filter) {
+        RectangleTexture& setMagnificationFilter(SamplerFilter filter) {
             AbstractTexture::setMagnificationFilter(filter);
             return *this;
+        }
+
+        /** @overload */
+        RectangleTexture& setMagnificationFilter(Magnum::SamplerFilter filter) {
+            return setMagnificationFilter(samplerFilter(filter));
         }
 
         /**
@@ -183,14 +195,19 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          *
          * Sets wrapping type for coordinates out of @f$ [ 0, size - 1 ] @f$
          * range. See @ref Texture::setWrapping() for more information. Initial
-         * value is @ref Sampler::Wrapping::ClampToEdge.
-         * @attention Only @ref Sampler::Wrapping::ClampToEdge and
-         *      @ref Sampler::Wrapping::ClampToBorder is supported on this
+         * value is @ref SamplerWrapping::ClampToEdge.
+         * @attention Only @ref SamplerWrapping::ClampToEdge and
+         *      @ref SamplerWrapping::ClampToBorder is supported on this
          *      texture type.
          */
-        RectangleTexture& setWrapping(const Array2D<Sampler::Wrapping>& wrapping) {
+        RectangleTexture& setWrapping(const Array2D<SamplerWrapping>& wrapping) {
             DataHelper<2>::setWrapping(*this, wrapping);
             return *this;
+        }
+
+        /** @overload */
+        RectangleTexture& setWrapping(const Array2D<Magnum::SamplerWrapping>& wrapping) {
+            return setWrapping(samplerWrapping(wrapping));
         }
 
         /**
@@ -267,7 +284,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          *
          * See @ref Texture::setCompareMode() for more information.
          */
-        RectangleTexture& setCompareMode(Sampler::CompareMode mode) {
+        RectangleTexture& setCompareMode(SamplerCompareMode mode) {
             AbstractTexture::setCompareMode(mode);
             return *this;
         }
@@ -278,7 +295,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          *
          * See @ref Texture::setCompareFunction() for more information.
          */
-        RectangleTexture& setCompareFunction(Sampler::CompareFunction function) {
+        RectangleTexture& setCompareFunction(SamplerCompareFunction function) {
             AbstractTexture::setCompareFunction(function);
             return *this;
         }
@@ -290,7 +307,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * See @ref Texture::setDepthStencilMode() for more information.
          * @requires_gl43 Extension @extension{ARB,stencil_texturing}
          */
-        RectangleTexture& setDepthStencilMode(Sampler::DepthStencilMode mode) {
+        RectangleTexture& setDepthStencilMode(SamplerDepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);
             return *this;
         }

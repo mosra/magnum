@@ -284,7 +284,7 @@ enum class TextureFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * Red component, non-normalized unsigned byte. Can't be filtered using
-     * @ref Sampler::Filter::Linear.
+     * @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -295,7 +295,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized unsigned byte. Can't be
-     * filtered using @ref Sampler::Filter::Linear.
+     * filtered using @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -306,7 +306,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component non-normalized unsigned byte. Can't be filtered
-     * using @ref Sampler::Filter::Linear.
+     * using @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -317,7 +317,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized unsigned byte. Can't be filtered
-     * using @ref Sampler::Filter::Linear.
+     * using @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -328,7 +328,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, non-normalized signed byte. Can't be filtered using
-     * @ref Sampler::Filter::Linear.
+     * @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -339,7 +339,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized signed byte. Can't be
-     * filtered using @ref Sampler::Filter::Linear.
+     * filtered using @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -350,7 +350,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component non-normalized signed byte. Can't be filtered using
-     * @ref Sampler::Filter::Linear.
+     * @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -361,7 +361,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized signed byte. Can't be filtered using
-     * @ref Sampler::Filter::Linear.
+     * @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -372,7 +372,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, non-normalized unsigned short. Can't be filtered using
-     * @ref Sampler::Filter::Linear.
+     * @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -383,7 +383,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized unsigned short. Can't be
-     * filtered using @ref Sampler::Filter::Linear.
+     * filtered using @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -394,7 +394,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component non-normalized unsigned short. Can't be filtered
-     * using @ref Sampler::Filter::Linear.
+     * using @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -405,7 +405,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized unsigned short. Can't be filtered
-     * using @ref Sampler::Filter::Linear.
+     * using @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -416,7 +416,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, non-normalized signed short. Can't be filtered using
-     * @ref Sampler::Filter::Linear.
+     * @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -427,7 +427,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized signed short. Can't be
-     * filtered using @ref Sampler::Filter::Linear.
+     * filtered using @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -438,7 +438,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component non-normalized signed short. Can't be filtered using
-     * @ref Sampler::Filter::Linear.
+     * @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -449,7 +449,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized signed short. Can't be filtered
-     * using @ref Sampler::Filter::Linear.
+     * using @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -460,7 +460,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, non-normalized unsigned int. Can't be filtered using
-     * @ref Sampler::Filter::Linear.
+     * @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -471,7 +471,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized unsigned int. Can't be
-     * filtered using @ref Sampler::Filter::Linear.
+     * filtered using @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -482,7 +482,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component non-normalized unsigned int. Can't be filtered using
-     * @ref Sampler::Filter::Linear.
+     * @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -493,7 +493,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized unsigned int. Can't be filtered
-     * using @ref Sampler::Filter::Linear.
+     * using @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -504,7 +504,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red component, non-normalized signed int. Can't be filtered using
-     * @ref Sampler::Filter::Linear.
+     * @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -515,7 +515,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized signed int. Can't be
-     * filtered using @ref Sampler::Filter::Linear.
+     * filtered using @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -526,7 +526,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGB, each component non-normalized signed int. Can't be filtered using
-     * @ref Sampler::Filter::Linear.
+     * @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -537,7 +537,7 @@ enum class TextureFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized signed int. Can't be filtered using
-     * @ref Sampler::Filter::Linear.
+     * @ref SamplerFilter::Linear.
      * @requires_gl30 Extension @extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
@@ -555,7 +555,7 @@ enum class TextureFormat: GLenum {
      *      (@extension2{OES,texture_half_float,OES_texture_float}) in OpenGL
      *      ES 2.0 instead.
      * @requires_gles30 Extension @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
-     *      for filtering using @ref Sampler::Filter::Linear in OpenGL ES 2.0.
+     *      for filtering using @ref SamplerFilter::Linear in OpenGL ES 2.0.
      * @requires_gles32 Extension @extension{EXT,color_buffer_half_float} to
      *      use as a render target. Use @ref TextureFormat::R16UI or
      *      @ref TextureFormat::R16I instead if not available.
@@ -563,7 +563,7 @@ enum class TextureFormat: GLenum {
      *      in combination with @ref PixelFormat::HalfFloat (@webgl_extension{OES,texture_half_float})
      *      in WebGL 1.0.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
-     *      for filtering using @ref Sampler::Filter::Linear in WebGL 1.0.
+     *      for filtering using @ref SamplerFilter::Linear in WebGL 1.0.
      * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
      *      to use as a render target in WebGL 2.0; use @ref TextureFormat::R16UI
      *      or @ref TextureFormat::R16I instead if not available. Only three-
@@ -582,7 +582,7 @@ enum class TextureFormat: GLenum {
      *      (@extension2{OES,texture_half_float,OES_texture_float}) in OpenGL
      *      ES 2.0 instead.
      * @requires_gles30 Extension @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
-     *      for filtering using @ref Sampler::Filter::Linear in OpenGL ES 2.0.
+     *      for filtering using @ref SamplerFilter::Linear in OpenGL ES 2.0.
      * @requires_gles32 Extension @extension{EXT,color_buffer_half_float} to
      *      use as a render target in OpenGL ES. Use @ref TextureFormat::RG16UI
      *      or @ref TextureFormat::RG16I instead if not available.
@@ -590,7 +590,7 @@ enum class TextureFormat: GLenum {
      *      in combination with @ref PixelFormat::HalfFloat (@webgl_extension{OES,texture_half_float})
      *      in WebGL 1.0 instead.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
-     *      for filtering using @ref Sampler::Filter::Linear in WebGL 1.0.
+     *      for filtering using @ref SamplerFilter::Linear in WebGL 1.0.
      * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
      *      to use as a render target in WebGL 2.0; use @ref TextureFormat::RG16UI
      *      or @ref TextureFormat::RG16I instead if not available. Only three-
@@ -608,12 +608,12 @@ enum class TextureFormat: GLenum {
      *      @ref PixelFormat::HalfFloat (@extension2{OES,texture_half_float,OES_texture_float})
      *      in OpenGL ES 2.0 instead.
      * @requires_gles30 Extension @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
-     *      for filtering using @ref Sampler::Filter::Linear in OpenGL ES 2.0.
+     *      for filtering using @ref SamplerFilter::Linear in OpenGL ES 2.0.
      * @requires_webgl20 Use @ref TextureFormat::RGB in combination with
      *      @ref PixelFormat::HalfFloat (@webgl_extension{OES,texture_half_float})
      *      in WebGL 1.0 instead.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
-     *      for filtering using @ref Sampler::Filter::Linear in WebGL 1.0.
+     *      for filtering using @ref SamplerFilter::Linear in WebGL 1.0.
      * @requires_gl Can't be used as a render target in OpenGL ES or WebGL 2.0.
      *      Use @ref TextureFormat::RGBA16F instead. Use @ref TextureFormat::RGB
      *      in combination with @ref PixelFormat::HalfFloat
@@ -630,7 +630,7 @@ enum class TextureFormat: GLenum {
      *      @ref PixelFormat::HalfFloat (@extension2{OES,texture_half_float,OES_texture_float})
      *      in OpenGL ES 2.0 instead.
      * @requires_gles30 Extension @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
-     *      for filtering using @ref Sampler::Filter::Linear.
+     *      for filtering using @ref SamplerFilter::Linear.
      * @requires_gles32 Extension @extension{EXT,color_buffer_half_float} to
      *      use as a render target in OpenGL ES. Use @ref TextureFormat::RGBA16UI
      *      or @ref TextureFormat::RGBA16I instead if not available.
@@ -638,7 +638,7 @@ enum class TextureFormat: GLenum {
      *      @ref PixelFormat::HalfFloat (@webgl_extension{OES,texture_half_float})
      *      in WebGL 1.0 instead.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
-     *      for filtering using @ref Sampler::Filter::Linear in WebGL 1.0.
+     *      for filtering using @ref SamplerFilter::Linear in WebGL 1.0.
      * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
      *      to use as a render target in WebGL 2.0. Use @ref TextureFormat::RGBA16UI
      *      or @ref TextureFormat::RGBA16I instead if not available. Use
@@ -657,12 +657,12 @@ enum class TextureFormat: GLenum {
      *      a render target. Use @ref TextureFormat::R32UI or
      *      @ref TextureFormat::R32I instead if not available.
      * @requires_es_extension Extension @extension{OES,texture_float_linear}
-     *      for filtering using @ref Sampler::Filter::Linear.
+     *      for filtering using @ref SamplerFilter::Linear.
      * @requires_webgl20 Use @ref TextureFormat::Red / @ref TextureFormat::Luminance
      *      in combination with @ref PixelFormat::Float (@webgl_extension{OES,texture_float})
      *      in WebGL 1.0 instead.
      * @requires_webgl_extension Extension @webgl_extension{OES,texture_float_linear}
-     *      for filtering using @ref Sampler::Filter::Linear.
+     *      for filtering using @ref SamplerFilter::Linear.
      * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
      *      to use as a render target in WebGL 2.0; use @ref TextureFormat::R32UI
      *      or @ref TextureFormat::R32I instead if not available. Only three-
@@ -682,12 +682,12 @@ enum class TextureFormat: GLenum {
      *      a render target. Use @ref TextureFormat::RG32UI or
      *      @ref TextureFormat::RG32I instead if not available.
      * @requires_es_extension Extension @extension{OES,texture_float_linear}
-     *      for filtering using @ref Sampler::Filter::Linear.
+     *      for filtering using @ref SamplerFilter::Linear.
      * @requires_webgl20 Use @ref TextureFormat::RG / @ref TextureFormat::LuminanceAlpha
      *      in combination with @ref PixelFormat::Float (@webgl_extension{OES,texture_float})
      *      in WebGL 1.0 instead.
      * @requires_webgl_extension Extension @webgl_extension{OES,texture_float_linear}
-     *      for filtering using @ref Sampler::Filter::Linear.
+     *      for filtering using @ref SamplerFilter::Linear.
      * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
      *      to use as a render target in WebGL 2.0; use @ref TextureFormat::RG32UI
      *      or @ref TextureFormat::RG32I instead if not available. Only three-
@@ -704,12 +704,12 @@ enum class TextureFormat: GLenum {
      *      @ref PixelFormat::Float (@extension{OES,texture_float}) in OpenGL
      *      ES 2.0 instead.
      * @requires_es_extension Extension @extension{OES,texture_float_linear}
-     *      for filtering using @ref Sampler::Filter::Linear.
+     *      for filtering using @ref SamplerFilter::Linear.
      * @requires_webgl20 Use @ref TextureFormat::RGB in combination with
      *      @ref PixelFormat::Float (@webgl_extension{OES,texture_float}) in
      *      WebGL 1.0 instead.
      * @requires_webgl_extension Extension @webgl_extension{OES,texture_float_linear}
-     *      for filtering using @ref Sampler::Filter::Linear.
+     *      for filtering using @ref SamplerFilter::Linear.
      * @requires_gl Can't be used as a render target in OpenGL ES or WebGL 2.0.
      *      Use @ref TextureFormat::RGBA32F instead. Use @ref TextureFormat::RGB
      *      in combination with @ref PixelFormat::Float
@@ -724,7 +724,7 @@ enum class TextureFormat: GLenum {
      *      @ref PixelFormat::Float (@extension{OES,texture_float}) in OpenGL
      *      ES 2.0 instead.
      * @requires_es_extension Extension @extension{OES,texture_float_linear}
-     *      for filtering using @ref Sampler::Filter::Linear.
+     *      for filtering using @ref SamplerFilter::Linear.
      * @requires_gles32 Extension @extension{EXT,color_buffer_float} to
      *      use as a render target in OpenGL ES. Use @ref TextureFormat::RGBA32UI
      *      or @ref TextureFormat::RGBA32I instead if not available.
@@ -732,7 +732,7 @@ enum class TextureFormat: GLenum {
      *      @ref PixelFormat::Float (@webgl_extension{OES,texture_float}) in
      *      WebGL 1.0 instead.
      * @requires_webgl_extension Extension @webgl_extension{OES,texture_float_linear}
-     *      for filtering using @ref Sampler::Filter::Linear.
+     *      for filtering using @ref SamplerFilter::Linear.
      * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
      *      to use as a render target in WebGL 2.0. Use @ref TextureFormat::RGBA32UI
      *      or @ref TextureFormat::RGBA32I instead if not available. Use
@@ -930,7 +930,7 @@ enum class TextureFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * RGBA, non-normalized unsigned, each RGB component 10bit, alpha 2bit.
-     * Can't be filtered using @ref Sampler::Filter::Linear.
+     * Can't be filtered using @ref SamplerFilter::Linear.
      * @requires_gl33 Extension @extension{ARB,texture_rgb10_a2ui}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.

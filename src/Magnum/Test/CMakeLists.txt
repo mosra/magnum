@@ -32,6 +32,7 @@ target_compile_definitions(PixelFormatTest PRIVATE "CORRADE_GRACEFUL_ASSERT")
 corrade_add_test(PixelStorageTest PixelStorageTest.cpp LIBRARIES Magnum)
 corrade_add_test(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES Magnum)
 target_compile_definitions(ResourceManagerTest PRIVATE "CORRADE_GRACEFUL_ASSERT")
+corrade_add_test(SamplerTest SamplerTest.cpp LIBRARIES MagnumTestLib)
 
 add_library(ResourceManagerLocalInstanceTestLib ${SHARED_OR_STATIC} ResourceManagerLocalInstanceTestLib.cpp)
 target_link_libraries(ResourceManagerLocalInstanceTestLib Magnum)

@@ -50,7 +50,7 @@ struct RectangleTextureGLTest: OpenGLTester {
     void bind();
     void bindImage();
 
-    void sampling();
+    template<class T> void sampling();
     void samplingSRGBDecode();
     void samplingBorderInteger();
     void samplingSwizzle();
@@ -76,6 +76,15 @@ struct RectangleTextureGLTest: OpenGLTester {
 };
 
 namespace {
+    struct GenericSampler {
+        typedef Magnum::SamplerFilter Filter;
+        typedef Magnum::SamplerWrapping Wrapping;
+    };
+    struct GLSampler {
+        typedef GL::SamplerFilter Filter;
+        typedef GL::SamplerWrapping Wrapping;
+    };
+
     constexpr UnsignedByte Data[]{
         0, 0, 0, 0, 0, 0, 0, 0,
         0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
@@ -108,7 +117,8 @@ RectangleTextureGLTest::RectangleTextureGLTest() {
               &RectangleTextureGLTest::bind,
               &RectangleTextureGLTest::bindImage,
 
-              &RectangleTextureGLTest::sampling,
+              &RectangleTextureGLTest::sampling<GenericSampler>,
+              &RectangleTextureGLTest::sampling<GLSampler>,
               &RectangleTextureGLTest::samplingSRGBDecode,
               &RectangleTextureGLTest::samplingBorderInteger,
               &RectangleTextureGLTest::samplingSwizzle,
@@ -215,14 +225,17 @@ void RectangleTextureGLTest::bindImage() {
     MAGNUM_VERIFY_NO_ERROR();
 }
 
-void RectangleTextureGLTest::sampling() {
+template<class T> void RectangleTextureGLTest::sampling() {
+    setTestCaseName(std::is_same<T, GenericSampler>::value ?
+        "sampling<GenericSampler>" : "sampling<GLSampler>");
+
     if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
     RectangleTexture texture;
-    texture.setMinificationFilter(Sampler::Filter::Linear)
-           .setMagnificationFilter(Sampler::Filter::Linear)
-           .setWrapping(Sampler::Wrapping::ClampToBorder)
+    texture.setMinificationFilter(T::Filter::Linear)
+           .setMagnificationFilter(T::Filter::Linear)
+           .setWrapping(T::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
            .setCompareMode(Sampler::CompareMode::CompareRefToTexture)

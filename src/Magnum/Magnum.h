@@ -714,6 +714,10 @@ template<class T, class U = T> class Resource;
 class ResourceKey;
 template<class...> class ResourceManager;
 
+enum class SamplerFilter: UnsignedInt;
+enum class SamplerMipmap: UnsignedInt;
+enum class SamplerWrapping: UnsignedInt;
+
 class Timeline;
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -786,7 +790,7 @@ typedef CORRADE_DEPRECATED("use GL::RectangleTexture instead") GL::RectangleText
 typedef CORRADE_DEPRECATED("use GL::Renderbuffer instead") GL::Renderbuffer Renderbuffer;
 typedef CORRADE_DEPRECATED("use GL::RenderbufferFormat instead") GL::RenderbufferFormat RenderbufferFormat;
 
-typedef CORRADE_DEPRECATED("use GL::Sampler instead") GL::Sampler Sampler;
+struct CORRADE_DEPRECATED("use GL::Sampler, SamplerFilter, GL::SamplerFilter,  SamplerMipmap, GL::SamplerMipmap, SamplerWrapping, GL::SamplerWrapping, GL::SamplerCompareMode, GL::SamplerCompareFunction or GL::SamplerDepthStencilMode instead") Sampler;
 typedef CORRADE_DEPRECATED("use GL::Shader instead") GL::Shader Shader;
 
 template<UnsignedInt dimensions> using Texture CORRADE_DEPRECATED_ALIAS("use GL::Texture instead") = GL::Texture<dimensions>;

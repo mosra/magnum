@@ -408,13 +408,13 @@ enum class PixelType: GLenum {
      * @requires_gles30 Extension @extension2{OES,texture_half_float,OES_texture_float}
      *      to use for texture reading in OpenGL ES 2.0.
      * @requires_gles30 Extension @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
-     *      for filtering the texture using @ref Sampler::Filter::Linear.
+     *      for filtering the texture using @ref SamplerFilter::Linear.
      * @requires_gles32 Extension @extension{EXT,color_buffer_half_float}
      *      to use the texture as a render target.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float} to
      *      use for texture reading in WebGL 1.0.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
-     *      for filtering the texture using @ref Sampler::Filter::Linear.
+     *      for filtering the texture using @ref SamplerFilter::Linear.
      * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_half_float}
      *      to use the texture as a render target.
      */
@@ -431,11 +431,11 @@ enum class PixelType: GLenum {
      * @requires_gles32 Extension @extension{EXT,color_half_float} to use the
      *      texture as a render target.
      * @requires_es_extension Extension @extension{OES,texture_float_linear}
-     *      for filtering the texture using @ref Sampler::Filter::Linear.
+     *      for filtering the texture using @ref SamplerFilter::Linear.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_float} to use
      *      for texture reading in WebGL 1.0.
      * @requires_webgl_extension Extension @webgl_extension{OES,texture_float_linear}
-     *      for filtering the texture using @ref Sampler::Filter::Linear.
+     *      for filtering the texture using @ref SamplerFilter::Linear.
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,color_buffer_float}
      *      in WebGL 1.0 or @webgl_extension{EXT,color_buffer_float} in WebGL
      *      2.0 to use the texture as a render target.
