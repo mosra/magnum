@@ -421,11 +421,11 @@ typedef ImageData<3> ImageData3D;
 
 template<UnsignedInt dimensions> template<class T, class U> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage,
     #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-    Implementation::wrapPixelFormatIfNotGLSpecific(format),
+    Magnum::Implementation::wrapPixelFormatIfNotGLSpecific(format),
     #else
     UnsignedInt(format),
     #endif
-    UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra), size, std::move(data), importerState} {
+    UnsignedInt(formatExtra), Magnum::Implementation::pixelSizeAdl(format, formatExtra), size, std::move(data), importerState} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
@@ -436,7 +436,7 @@ template<UnsignedInt dimensions> template<class> inline ImageData<dimensions>::I
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
-template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), {}, Implementation::pixelSizeAdl(format), size, std::move(data), importerState} {
+template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), {}, Magnum::Implementation::pixelSizeAdl(format), size, std::move(data), importerState} {
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
 }
