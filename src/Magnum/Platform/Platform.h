@@ -34,7 +34,10 @@ namespace Magnum { namespace Platform {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class> class BasicScreen;
 template<class> class BasicScreenedApplication;
-class Context;
+
+#ifdef MAGNUM_TARGET_GL
+class GLContext;
+#endif
 #endif
 
 }}

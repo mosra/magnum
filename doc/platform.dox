@@ -164,10 +164,10 @@ back to no-AA rendering:
 In case you want to use some not-yet-supported toolkit or you don't want to use
 the application wrappers in @ref Platform namespace, you can initialize Magnum
 manually. First create OpenGL context and then create instance of
-@ref Platform::Context class, which will take care of proper initialization and
-feature detection. The instance must be alive for whole application lifetime.
-Example @cpp main() @ce function with manual initialization is in the following
-code listing.
+@ref Platform::GLContext class, which will take care of proper initialization
+and feature detection. The instance must be alive for whole application
+lifetime. Example @cpp main() @ce function with manual initialization is in the
+following code listing.
 
 @note Fully contained application using with manual Magnum initialization on
     top of Qt toolkit is available in `base-qt` branch of
@@ -178,11 +178,11 @@ code listing.
 
 @snippet MagnumPlatform-custom.cpp custom
 
-@attention The @ref Platform::Context instance is bound to a single OpenGL
+@attention The @ref Platform::GLContext instance is bound to a single OpenGL
     context, which must be always set as current when calling any Magnum APIs
     touching OpenGL state.
 
-On majority of platforms the @ref Platform::Context class does GL function
+On majority of platforms the @ref Platform::GLContext class does GL function
 pointer loading using platform-specific APIs. In that case you also need to
 find particular `*Context` library, add its include dir and then link to it.
 These platform-specific libraries are available:
@@ -220,7 +220,7 @@ is accompanied by a @ref Platform::WindowlessEglContext "Platform::Windowless*Co
 class that manages just GL context creation, making it current and destruction.
 Similarly to using custom platform toolkits above, the workflow is to first
 create a GL context instance, then making it current and finally instantiating
-the @ref Platform::Context instance to initialize Magnum.
+the @ref Platform::GLContext instance to initialize Magnum.
 
 Similarly as with the applications, to simplify the porting, the library
 provides @cpp Platform::WindowlessGLContext @ce typedef, but only if just one

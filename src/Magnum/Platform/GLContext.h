@@ -1,5 +1,5 @@
-#ifndef Magnum_Platform_Context_h
-#define Magnum_Platform_Context_h
+#ifndef Magnum_Platform_GLContext_h
+#define Magnum_Platform_GLContext_h
 /*
     This file is part of Magnum.
 
@@ -25,21 +25,34 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_TARGET_GL
+/** @file
+ * @brief Class @ref Magnum::Platform::GLContext
+ */
+#endif
+
 #include <Corrade/Utility/Debug.h>
 
-#include "Magnum/Context.h"
-#include "Magnum/OpenGL.h"
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/OpenGL.h"
 
 namespace Magnum { namespace Platform {
 
 /**
-@brief Platform-specific context
+@brief Platform-specific OpenGL context
 
 In most cases not needed to be used directly as the initialization is done
 automatically in `*Application` classes. See @ref platform for more
 information.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
-class Context: public Magnum::Context {
+class GLContext: public GL::Context {
     public:
         /**
          * @brief Constructor
@@ -54,24 +67,24 @@ class Context: public Magnum::Context {
          *      @def_gl{MINOR_VERSION}, @def_gl{CONTEXT_FLAGS},
          *      @def_gl{NUM_EXTENSIONS}, @fn_gl{GetString} with @def_gl{EXTENSIONS}
          */
-        explicit Context(Int argc, const char** argv): Context{NoCreate, argc, argv} { create(); }
+        explicit GLContext(Int argc, const char** argv): GLContext{NoCreate, argc, argv} { create(); }
 
         /** @overload */
-        explicit Context(Int argc, char** argv): Context{argc, const_cast<const char**>(argv)} {}
+        explicit GLContext(Int argc, char** argv): GLContext{argc, const_cast<const char**>(argv)} {}
 
         /** @overload */
-        explicit Context(Int argc, std::nullptr_t argv): Context{argc, static_cast<const char**>(argv)} {}
+        explicit GLContext(Int argc, std::nullptr_t argv): GLContext{argc, static_cast<const char**>(argv)} {}
 
         /**
          * @brief Default constructor
          *
          * Equivalent to passing @cpp {0, nullptr} @ce to
-         * @ref Context(Int, const char**). Even if the command-line options
+         * @ref GLContext(Int, const char**). Even if the command-line options
          * are not propagated, it's still possible to affect the renderer
          * behavior from the environment. See @ref Context-command-line for
          * more information.
          */
-        explicit Context(): Context{0, nullptr} {}
+        explicit GLContext(): GLContext{0, nullptr} {}
 
         /**
          * @brief Construct the class without doing complete setup
@@ -81,18 +94,18 @@ class Context: public Magnum::Context {
          * left in empty state. Use @ref create() or @ref tryCreate() to
          * complete the setup.
          */
-        explicit Context(NoCreateT, Int argc, const char** argv):
+        explicit GLContext(NoCreateT, Int argc, const char** argv):
             #ifndef CORRADE_TARGET_EMSCRIPTEN
-            Magnum::Context{NoCreate, argc, argv, flextGLInit} {}
+            GL::Context{NoCreate, argc, argv, flextGLInit} {}
             #else
-            Magnum::Context{NoCreate, argc, argv, nullptr} {}
+            GL::Context{NoCreate, argc, argv, nullptr} {}
             #endif
 
         /** @overload */
-        explicit Context(NoCreateT, Int argc, char** argv): Context{NoCreate, argc, const_cast<const char**>(argv)} {}
+        explicit GLContext(NoCreateT, Int argc, char** argv): GLContext{NoCreate, argc, const_cast<const char**>(argv)} {}
 
         /** @overload */
-        explicit Context(NoCreateT, Int argc, std::nullptr_t argv): Context{NoCreate, argc, static_cast<const char**>(argv)} {}
+        explicit GLContext(NoCreateT, Int argc, std::nullptr_t argv): GLContext{NoCreate, argc, static_cast<const char**>(argv)} {}
 
         /**
          * @brief Construct the class without doing complete setup
@@ -103,7 +116,7 @@ class Context: public Magnum::Context {
          * renderer behavior from the environment. See @ref Context-command-line
          * for more information.
          */
-        explicit Context(NoCreateT): Context{NoCreate, 0, nullptr} {}
+        explicit GLContext(NoCreateT): GLContext{NoCreate, 0, nullptr} {}
 
         /**
          * @brief Complete the context setup and exit on failure
@@ -114,7 +127,7 @@ class Context: public Magnum::Context {
          * output and the application exits. See @ref Context(Int, char**) for
          * more information and @ref tryCreate() for an alternative.
          */
-        void create() { return Magnum::Context::create(); }
+        void create() { return GL::Context::create(); }
 
         /**
          * @brief Complete the context setup
@@ -122,10 +135,12 @@ class Context: public Magnum::Context {
          * Unlike @ref create() just prints a message to error output and
          * returns `false` on error.
          */
-        bool tryCreate() { return Magnum::Context::tryCreate(); }
-
+        bool tryCreate() { return GL::Context::tryCreate(); }
 };
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

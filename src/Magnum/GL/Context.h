@@ -45,7 +45,7 @@
 
 namespace Magnum {
 
-namespace Platform { class Context; }
+namespace Platform { class GLContext; }
 
 namespace GL {
 
@@ -109,14 +109,14 @@ through @ref Context::current() is automatically created during construction of
 `*Application` classes in @ref Platform namespace. You can safely assume that
 the instance is available during whole lifetime of `*Application` object. It's
 also possible to create the context without using any `*Application` class
-using @ref Platform::Context subclass, see @ref platform documentation for more
-information.
+using @ref Platform::GLContext subclass, see @ref platform documentation for
+more information.
 
 @section GL-Context-command-line Command-line options
 
 The context is configurable through command-line options, that are passed
-either from the `Platform::*Application` classes or from the @ref Platform::Context
-class. Usage:
+either from the `Platform::*Application` classes or from the
+@ref Platform::GLContext class. Usage:
 
 @code{.sh}
 <application> [--magnum-help] [--magnum-disable-workarounds LIST]
@@ -634,7 +634,7 @@ class MAGNUM_GL_EXPORT Context {
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */
         friend Implementation::ContextState;
-        friend Platform::Context;
+        friend Platform::GLContext;
         #endif
 
         explicit Context(NoCreateT, Int argc, const char** argv, void functionLoader());

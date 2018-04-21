@@ -25,7 +25,7 @@
 
 # Headers
 set(MagnumPlatform_HEADERS
-    Context.h
+    GLContext.h
     Platform.h
     Screen.h
     ScreenedApplication.h
