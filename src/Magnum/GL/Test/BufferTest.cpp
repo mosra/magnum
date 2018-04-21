@@ -27,9 +27,9 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Buffer.h"
+#include "Magnum/GL/Buffer.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct BufferTest: TestSuite::Tester {
     explicit BufferTest();
@@ -75,6 +75,6 @@ void BufferTest::debugTarget() {
 }
 #endif
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::BufferTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::BufferTest)

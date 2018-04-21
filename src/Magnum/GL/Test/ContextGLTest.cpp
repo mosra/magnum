@@ -25,11 +25,11 @@
 
 #include <algorithm>
 
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/OpenGLTester.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/OpenGLTester.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct ContextGLTest: OpenGLTester {
     explicit ContextGLTest();
@@ -72,14 +72,14 @@ void ContextGLTest::isVersionSupported() {
     CORRADE_VERIFY(!Context::current().isVersionSupported(Version(Int(v)+1)));
 
     /* No assertions should be fired */
-    MAGNUM_ASSERT_VERSION_SUPPORTED(v);
-    MAGNUM_ASSERT_VERSION_SUPPORTED(Version(Int(v)-1));
+    MAGNUM_ASSERT_GL_VERSION_SUPPORTED(v);
+    MAGNUM_ASSERT_GL_VERSION_SUPPORTED(Version(Int(v)-1));
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void ContextGLTest::isVersionSupportedES() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::ES2_compatibility>())
-        CORRADE_SKIP(Extensions::GL::ARB::ES2_compatibility::string() + std::string(" extension should not be supported, can't test"));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::ES2_compatibility>())
+        CORRADE_SKIP(Extensions::ARB::ES2_compatibility::string() + std::string(" extension should not be supported, can't test"));
 
     /* No assertions should be fired */
     CORRADE_VERIFY(Context::current().isVersionSupported(Version::GLES200));
@@ -96,25 +96,25 @@ void ContextGLTest::supportedVersion() {
 
 void ContextGLTest::isExtensionSupported() {
     #ifndef MAGNUM_TARGET_GLES
-    if(Context::current().isExtensionSupported<Extensions::GL::GREMEDY::string_marker>())
-        CORRADE_SKIP(Extensions::GL::GREMEDY::string_marker::string() + std::string(" extension should not be supported, can't test"));
+    if(Context::current().isExtensionSupported<Extensions::GREMEDY::string_marker>())
+        CORRADE_SKIP(Extensions::GREMEDY::string_marker::string() + std::string(" extension should not be supported, can't test"));
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_filter_anisotropic::string() + std::string(" extension should be supported, can't test"));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_filter_anisotropic>())
+        CORRADE_SKIP(Extensions::EXT::texture_filter_anisotropic::string() + std::string(" extension should be supported, can't test"));
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>())
-        CORRADE_SKIP(Extensions::GL::ARB::explicit_attrib_location::string() + std::string(" extension should be supported, can't test"));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::explicit_attrib_location>())
+        CORRADE_SKIP(Extensions::ARB::explicit_attrib_location::string() + std::string(" extension should be supported, can't test"));
 
     /* Test that we have proper extension list parser */
     std::vector<std::string> extensions = Context::current().extensionStrings();
     CORRADE_VERIFY(std::find(extensions.begin(), extensions.end(),
-        Extensions::GL::EXT::texture_filter_anisotropic::string()) != extensions.end());
+        Extensions::EXT::texture_filter_anisotropic::string()) != extensions.end());
     CORRADE_VERIFY(std::find(extensions.begin(), extensions.end(),
-        Extensions::GL::GREMEDY::string_marker::string()) == extensions.end());
+        Extensions::GREMEDY::string_marker::string()) == extensions.end());
 
     /* This is disabled in GL < 3.2 to work around GLSL compiler bugs */
-    CORRADE_VERIFY(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(Version::GL310));
-    CORRADE_VERIFY(Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(Version::GL320));
+    CORRADE_VERIFY(!Context::current().isExtensionSupported<Extensions::ARB::explicit_attrib_location>(Version::GL310));
+    CORRADE_VERIFY(Context::current().isExtensionSupported<Extensions::ARB::explicit_attrib_location>(Version::GL320));
     #else
     CORRADE_SKIP("No useful extensions to test on OpenGL ES");
     #endif
@@ -122,23 +122,23 @@ void ContextGLTest::isExtensionSupported() {
 
 void ContextGLTest::isExtensionDisabled() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::vertex_array_object::string() + std::string(" extension should be supported, can't test"));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::vertex_array_object>())
+        CORRADE_SKIP(Extensions::ARB::vertex_array_object::string() + std::string(" extension should be supported, can't test"));
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>())
-        CORRADE_SKIP(Extensions::GL::ARB::explicit_attrib_location::string() + std::string(" extension should be supported, can't test"));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::explicit_attrib_location>())
+        CORRADE_SKIP(Extensions::ARB::explicit_attrib_location::string() + std::string(" extension should be supported, can't test"));
 
     /* This is not disabled anywhere */
-    CORRADE_VERIFY(!Context::current().isExtensionDisabled<Extensions::GL::ARB::vertex_array_object>());
+    CORRADE_VERIFY(!Context::current().isExtensionDisabled<Extensions::ARB::vertex_array_object>());
 
     /* This is disabled in GL < 3.2 to work around GLSL compiler bugs */
-    CORRADE_VERIFY(Context::current().isExtensionDisabled<Extensions::GL::ARB::explicit_attrib_location>(Version::GL310));
-    CORRADE_VERIFY(!Context::current().isExtensionDisabled<Extensions::GL::ARB::explicit_attrib_location>(Version::GL320));
+    CORRADE_VERIFY(Context::current().isExtensionDisabled<Extensions::ARB::explicit_attrib_location>(Version::GL310));
+    CORRADE_VERIFY(!Context::current().isExtensionDisabled<Extensions::ARB::explicit_attrib_location>(Version::GL320));
     #else
     CORRADE_SKIP("No useful extensions to test on OpenGL ES");
     #endif
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::ContextGLTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::ContextGLTest)

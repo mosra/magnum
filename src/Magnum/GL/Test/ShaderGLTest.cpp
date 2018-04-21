@@ -25,14 +25,14 @@
 
 #include <Corrade/Utility/Directory.h>
 
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/Shader.h"
-#include "Magnum/OpenGLTester.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Shader.h"
+#include "Magnum/GL/OpenGLTester.h"
 
 #include "configure.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct ShaderGLTest: OpenGLTester {
     explicit ShaderGLTest();
@@ -80,7 +80,7 @@ void ShaderGLTest::construct() {
         const Shader shader(Version::GLES300, Shader::Type::Fragment);
         #endif
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(shader.id() > 0);
         CORRADE_COMPARE(shader.type(), Shader::Type::Fragment);
         #ifndef MAGNUM_TARGET_GLES
@@ -90,7 +90,7 @@ void ShaderGLTest::construct() {
         #endif
     }
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void ShaderGLTest::constructNoVersion() {
@@ -111,7 +111,7 @@ void ShaderGLTest::constructMove() {
     #endif
     const Int id = a.id();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
     Shader b(std::move(a));
@@ -133,7 +133,7 @@ void ShaderGLTest::constructMove() {
     const Int cId = c.id();
     c = std::move(b);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
@@ -148,8 +148,8 @@ void ShaderGLTest::constructMove() {
 #ifndef MAGNUM_TARGET_WEBGL
 void ShaderGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
-    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
     #ifndef MAGNUM_TARGET_GLES
@@ -162,7 +162,7 @@ void ShaderGLTest::label() {
     shader.setLabel("MyShader");
     CORRADE_COMPARE(shader.label(), "MyShader");
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
@@ -305,6 +305,6 @@ void ShaderGLTest::compileNoVersion() {
     CORRADE_VERIFY(shader.compile());
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::ShaderGLTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::ShaderGLTest)

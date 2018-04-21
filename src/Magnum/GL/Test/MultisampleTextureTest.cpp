@@ -25,9 +25,9 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/MultisampleTexture.h"
+#include "Magnum/GL/MultisampleTexture.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct MultisampleTextureTest: TestSuite::Tester {
     explicit MultisampleTextureTest();
@@ -59,6 +59,6 @@ void MultisampleTextureTest::construct2DArrayNoCreate() {
     CORRADE_VERIFY(true);
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::MultisampleTextureTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::MultisampleTextureTest)

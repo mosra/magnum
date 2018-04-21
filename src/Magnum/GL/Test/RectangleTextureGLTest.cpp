@@ -26,20 +26,19 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/BufferImage.h"
 #include "Magnum/Image.h"
-#include "Magnum/ImageFormat.h"
-#include "Magnum/OpenGLTester.h"
-#include "Magnum/PixelFormat.h"
-#include "Magnum/RectangleTexture.h"
-#include "Magnum/TextureFormat.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/BufferImage.h"
+#include "Magnum/GL/ImageFormat.h"
+#include "Magnum/GL/OpenGLTester.h"
+#include "Magnum/GL/PixelFormat.h"
+#include "Magnum/GL/RectangleTexture.h"
+#include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/OpenGLTester.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct RectangleTextureGLTest: OpenGLTester {
     explicit RectangleTextureGLTest();
@@ -147,22 +146,22 @@ RectangleTextureGLTest::RectangleTextureGLTest() {
 }
 
 void RectangleTextureGLTest::construct() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
     {
         RectangleTexture texture;
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
     }
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void RectangleTextureGLTest::wrap() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
     GLuint id;
     glGenTextures(1, &id);
@@ -179,58 +178,58 @@ void RectangleTextureGLTest::wrap() {
 }
 
 void RectangleTextureGLTest::bind() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
     RectangleTexture texture;
     texture.bind(15);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     AbstractTexture::unbind(15);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     AbstractTexture::bind(7, {&texture, nullptr, &texture});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     AbstractTexture::unbind(7, 3);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void RectangleTextureGLTest::bindImage() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
-        CORRADE_SKIP(Extensions::GL::ARB::shader_image_load_store::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::shader_image_load_store>())
+        CORRADE_SKIP(Extensions::ARB::shader_image_load_store::string() + std::string(" is not supported."));
 
     RectangleTexture texture;
     texture.setStorage(TextureFormat::RGBA8, Vector2i{32})
         .bindImage(2, ImageAccess::ReadWrite, ImageFormat::RGBA8);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     AbstractTexture::unbindImage(2);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     AbstractTexture::bindImages(1, {&texture, nullptr, &texture});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     AbstractTexture::unbindImages(1, 3);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 template<class T> void RectangleTextureGLTest::sampling() {
     setTestCaseName(std::is_same<T, GenericSampler>::value ?
         "sampling<GenericSampler>" : "sampling<GLSampler>");
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
     RectangleTexture texture;
     texture.setMinificationFilter(T::Filter::Linear)
@@ -238,83 +237,83 @@ template<class T> void RectangleTextureGLTest::sampling() {
            .setWrapping(T::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
-           .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
-           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
+           .setCompareMode(SamplerCompareMode::CompareRefToTexture)
+           .setCompareFunction(SamplerCompareFunction::GreaterOrEqual);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void RectangleTextureGLTest::samplingSRGBDecode() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_sRGB_decode>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_sRGB_decode>())
+        CORRADE_SKIP(Extensions::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
 
     RectangleTexture texture;
     texture.setSRGBDecode(false);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void RectangleTextureGLTest::samplingBorderInteger() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_integer>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_integer>())
+        CORRADE_SKIP(Extensions::EXT::texture_integer::string() + std::string(" is not supported."));
 
     RectangleTexture a;
-    a.setWrapping(Sampler::Wrapping::ClampToBorder)
+    a.setWrapping(SamplerWrapping::ClampToBorder)
      .setBorderColor(Vector4i(1, 56, 78, -2));
     RectangleTexture b;
-    b.setWrapping(Sampler::Wrapping::ClampToBorder)
+    b.setWrapping(SamplerWrapping::ClampToBorder)
      .setBorderColor(Vector4ui(35, 56, 78, 15));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void RectangleTextureGLTest::samplingSwizzle() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::ARB::texture_swizzle::string() + std::string(" is not supported."));
 
     RectangleTexture texture;
     texture.setSwizzle<'b', 'g', 'r', '0'>();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void RectangleTextureGLTest::samplingDepthStencilMode() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
-        CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::stencil_texturing>())
+        CORRADE_SKIP(Extensions::ARB::stencil_texturing::string() + std::string(" is not supported."));
 
     RectangleTexture texture;
-    texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
+    texture.setDepthStencilMode(SamplerDepthStencilMode::StencilIndex);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void RectangleTextureGLTest::storage() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
     RectangleTexture texture;
     texture.setStorage(TextureFormat::RGBA8, Vector2i(32));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(texture.imageSize(), Vector2i(32));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void RectangleTextureGLTest::image() {
     setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8, ImageView2D{
@@ -322,12 +321,12 @@ void RectangleTextureGLTest::image() {
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
         PixelStorageData[testCaseInstanceId()].dataSparse});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Image2D image = texture.image({PixelStorageData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorageData[testCaseInstanceId()].offset),
@@ -338,8 +337,8 @@ void RectangleTextureGLTest::image() {
 void RectangleTextureGLTest::imageBuffer() {
     setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8, BufferImage2D{
@@ -348,13 +347,13 @@ void RectangleTextureGLTest::imageBuffer() {
         PixelStorageData[testCaseInstanceId()].dataSparse,
         BufferUsage::StaticDraw});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     BufferImage2D image = texture.image({PixelStorageData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorageData[testCaseInstanceId()].offset),
@@ -375,8 +374,8 @@ namespace {
 void RectangleTextureGLTest::subImage() {
     setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8,
@@ -386,11 +385,11 @@ void RectangleTextureGLTest::subImage() {
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
         PixelStorageData[testCaseInstanceId()].dataSparse});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Image2D image = texture.image({PixelFormat::RGBA, PixelType::UnsignedByte});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
@@ -400,8 +399,8 @@ void RectangleTextureGLTest::subImage() {
 void RectangleTextureGLTest::subImageBuffer() {
     setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
     RectangleTexture texture;
     texture.setImage(TextureFormat::RGBA8,
@@ -412,12 +411,12 @@ void RectangleTextureGLTest::subImageBuffer() {
         PixelStorageData[testCaseInstanceId()].dataSparse,
         BufferUsage::StaticDraw});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     BufferImage2D image = texture.image({PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData),
@@ -428,22 +427,22 @@ void RectangleTextureGLTest::subImageBuffer() {
 void RectangleTextureGLTest::subImageQuery() {
     setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
-        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
 
     RectangleTexture texture;
     texture.setStorage(TextureFormat::RGBA8, Vector2i{4})
            .setSubImage({}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, SubDataComplete});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Image2D image = texture.subImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}),
         {PixelStorageData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorageData[testCaseInstanceId()].offset),
@@ -454,23 +453,23 @@ void RectangleTextureGLTest::subImageQuery() {
 void RectangleTextureGLTest::subImageQueryBuffer() {
     setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
-        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
 
     RectangleTexture texture;
     texture.setStorage(TextureFormat::RGBA8, Vector2i{4})
            .setSubImage({}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, SubDataComplete});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     BufferImage2D image = texture.subImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}),
         {PixelStorageData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorageData[testCaseInstanceId()].offset),
@@ -503,27 +502,27 @@ void RectangleTextureGLTest::compressedSubImageQueryBuffer() {
 }
 
 void RectangleTextureGLTest::invalidateImage() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
     RectangleTexture texture;
     texture.setStorage(TextureFormat::RGBA8, Vector2i(32));
     texture.invalidateImage();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void RectangleTextureGLTest::invalidateSubImage() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));
 
     RectangleTexture texture;
     texture.setStorage(TextureFormat::RGBA8, Vector2i(32));
     texture.invalidateSubImage(Vector2i(4), Vector2i(16));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::RectangleTextureGLTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::RectangleTextureGLTest)

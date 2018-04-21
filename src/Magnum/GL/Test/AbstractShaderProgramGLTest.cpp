@@ -27,24 +27,23 @@
 #include <Corrade/Utility/Resource.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Magnum/AbstractShaderProgram.h"
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
 #include "Magnum/Image.h"
-#include "Magnum/ImageView.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
 #ifndef MAGNUM_TARGET_GLES2
-#include "Magnum/ImageFormat.h"
+#include "Magnum/GL/ImageFormat.h"
 #endif
-#include "Magnum/PixelFormat.h"
-#include "Magnum/Shader.h"
-#include "Magnum/Texture.h"
-#include "Magnum/TextureFormat.h"
+#include "Magnum/GL/PixelFormat.h"
+#include "Magnum/GL/Shader.h"
+#include "Magnum/GL/Texture.h"
+#include "Magnum/GL/TextureFormat.h"
+#include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Math/Color.h"
-#include "Magnum/OpenGLTester.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct AbstractShaderProgramGLTest: OpenGLTester {
     explicit AbstractShaderProgramGLTest();
@@ -120,11 +119,11 @@ void AbstractShaderProgramGLTest::construct() {
     {
         const DummyShader shader;
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(shader.id() > 0);
     }
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void AbstractShaderProgramGLTest::constructCopy() {
@@ -136,7 +135,7 @@ void AbstractShaderProgramGLTest::constructMove() {
     DummyShader a;
     const Int id = a.id();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
     DummyShader b(std::move(a));
@@ -148,7 +147,7 @@ void AbstractShaderProgramGLTest::constructMove() {
     const Int cId = c.id();
     c = std::move(b);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
@@ -157,8 +156,8 @@ void AbstractShaderProgramGLTest::constructMove() {
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractShaderProgramGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
-    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
     DummyShader shader;
@@ -167,7 +166,7 @@ void AbstractShaderProgramGLTest::label() {
     shader.setLabel("DummyShader");
     CORRADE_COMPARE(shader.label(), "DummyShader");
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
@@ -218,20 +217,20 @@ void AbstractShaderProgramGLTest::create() {
     frag.addSource(rs.get("MyShader.frag"));
     const bool fragCompiled = frag.compile();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(vertCompiled);
     CORRADE_VERIFY(fragCompiled);
 
     MyPublicShader program;
     program.attachShaders({vert, frag});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     program.bindAttributeLocation(0, "position");
     const bool linked = program.link();
     const bool valid = program.validate().first;
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);
     {
         #ifdef CORRADE_TARGET_APPLE
@@ -245,7 +244,7 @@ void AbstractShaderProgramGLTest::create() {
     const Int colorUniform = program.uniformLocation("color");
     const Int additionsUniform = program.uniformLocation("additions");
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(matrixUniform >= 0);
     CORRADE_VERIFY(multiplierUniform >= 0);
     CORRADE_VERIFY(colorUniform >= 0);
@@ -276,14 +275,14 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
     frag.addSource(rs.get("MyShaderFragmentOutputs.frag"));
     const bool fragCompiled = frag.compile();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(vertCompiled);
     CORRADE_VERIFY(fragCompiled);
 
     MyPublicShader program;
     program.attachShaders({vert, frag});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     program.bindAttributeLocation(0, "position");
     program.bindFragmentDataLocation(0, "first");
@@ -291,7 +290,7 @@ void AbstractShaderProgramGLTest::createMultipleOutputs() {
     const bool linked = program.link();
     const bool valid = program.validate().first;
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);
     {
         #ifdef CORRADE_TARGET_APPLE
@@ -330,14 +329,14 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
     frag.addSource(rs.get("MyShaderFragmentOutputs.frag"));
     const bool fragCompiled = frag.compile();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(vertCompiled);
     CORRADE_VERIFY(fragCompiled);
 
     MyPublicShader program;
     program.attachShaders({vert, frag});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     program.bindAttributeLocation(0, "position");
     program.bindFragmentDataLocationIndexed(0, 0, "first");
@@ -345,7 +344,7 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
     const bool linked = program.link();
     const bool valid = program.validate().first;
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);
     {
         #ifdef CORRADE_TARGET_APPLE
@@ -463,37 +462,37 @@ MyShader::MyShader() {
 void AbstractShaderProgramGLTest::uniform() {
     MyShader shader;
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     shader.setUniform(shader.multiplierUniform, 0.35f);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void AbstractShaderProgramGLTest::uniformVector() {
     MyShader shader;
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     shader.setUniform(shader.colorUniform, Vector4(0.3f, 0.7f, 1.0f, 0.25f));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void AbstractShaderProgramGLTest::uniformMatrix() {
     MyShader shader;
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     shader.setUniform(shader.matrixUniform, Matrix4x4::fromDiagonal({0.3f, 0.7f, 1.0f, 0.25f}));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void AbstractShaderProgramGLTest::uniformArray() {
     MyShader shader;
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* Testing also implicit conversion to base type (Vector4[] -> Math::Vector<4, Float>[]) */
     #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */
@@ -506,7 +505,7 @@ void AbstractShaderProgramGLTest::uniformArray() {
     };
     shader.setUniform(shader.additionsUniform, values);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -533,19 +532,19 @@ void AbstractShaderProgramGLTest::createUniformBlocks() {
     frag.addSource(rs.get("UniformBlockShader.frag"));
     const bool fragCompiled = frag.compile();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(vertCompiled);
     CORRADE_VERIFY(fragCompiled);
 
     MyPublicShader program;
     program.attachShaders({vert, frag});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     const bool linked = program.link();
     const bool valid = program.validate().first;
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(linked);
     {
         #ifdef CORRADE_TARGET_APPLE
@@ -557,7 +556,7 @@ void AbstractShaderProgramGLTest::createUniformBlocks() {
     const Int matricesUniformBlock = program.uniformBlockIndex("matrices");
     const Int materialUniformBlock = program.uniformBlockIndex("material");
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(matricesUniformBlock >= 0);
     CORRADE_VERIFY(materialUniformBlock >= 0);
 }
@@ -641,18 +640,18 @@ UniformBlockShader::UniformBlockShader() {
 void AbstractShaderProgramGLTest::uniformBlock() {
     UniformBlockShader shader;
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     shader.setUniformBlockBinding(shader.matricesUniformBlock, 0);
     shader.setUniformBlockBinding(shader.materialUniformBlock, 1);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void AbstractShaderProgramGLTest::compute() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::compute_shader>())
-        CORRADE_SKIP(Extensions::GL::ARB::compute_shader::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::compute_shader>())
+        CORRADE_SKIP(Extensions::ARB::compute_shader::string() + std::string(" is not supported."));
     #else
     if(!Context::current().isVersionSupported(Version::GLES310))
         CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
@@ -683,7 +682,7 @@ void AbstractShaderProgramGLTest::compute() {
         }
     } shader;
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     const Color4ub inData[] = {
         { 10,  20,  30,  40},
@@ -708,18 +707,18 @@ void AbstractShaderProgramGLTest::compute() {
     Texture2D out;
     out.setStorage(1, TextureFormat::RGBA8UI, {2, 2});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     shader.setImages(in, out)
         .dispatchCompute({1, 1, 1});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     /** @todo Test on ES */
     #ifndef MAGNUM_TARGET_GLES
     const auto data = out.image(0, {PixelFormat::RGBAInteger, PixelType::UnsignedByte}).release();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE_AS(Containers::arrayCast<const Color4ub>(data),
         Containers::arrayView(outData),
@@ -728,6 +727,6 @@ void AbstractShaderProgramGLTest::compute() {
 }
 #endif
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::AbstractShaderProgramGLTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::AbstractShaderProgramGLTest)

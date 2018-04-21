@@ -26,10 +26,10 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Context.h"
-#include "Magnum/Version.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Version.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct ContextTest: TestSuite::Tester {
     explicit ContextTest();
@@ -142,6 +142,6 @@ void ContextTest::debugDetectedDrivers() {
     #endif
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::ContextTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::ContextTest)

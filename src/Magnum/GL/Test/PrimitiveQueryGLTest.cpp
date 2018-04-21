@@ -26,21 +26,21 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Resource.h>
 
-#include "Magnum/AbstractShaderProgram.h"
-#include "Magnum/Buffer.h"
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/Framebuffer.h"
-#include "Magnum/Mesh.h"
-#include "Magnum/OpenGLTester.h"
-#include "Magnum/PrimitiveQuery.h"
-#include "Magnum/Renderbuffer.h"
-#include "Magnum/RenderbufferFormat.h"
-#include "Magnum/Shader.h"
-#include "Magnum/TransformFeedback.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Framebuffer.h"
+#include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/OpenGLTester.h"
+#include "Magnum/GL/PrimitiveQuery.h"
+#include "Magnum/GL/Renderbuffer.h"
+#include "Magnum/GL/RenderbufferFormat.h"
+#include "Magnum/GL/Shader.h"
+#include "Magnum/GL/TransformFeedback.h"
 #include "Magnum/Math/Vector2.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct PrimitiveQueryGLTest: OpenGLTester {
     explicit PrimitiveQueryGLTest();
@@ -77,8 +77,8 @@ PrimitiveQueryGLTest::PrimitiveQueryGLTest() {
 
 void PrimitiveQueryGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::ARB::transform_feedback2::string() + std::string(" is not available."));
     #endif
 
     GLuint id;
@@ -98,11 +98,11 @@ void PrimitiveQueryGLTest::wrap() {
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void PrimitiveQueryGLTest::primitivesGenerated() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
-        CORRADE_SKIP(Extensions::GL::EXT::transform_feedback::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::transform_feedback>())
+        CORRADE_SKIP(Extensions::EXT::transform_feedback::string() + std::string(" is not available."));
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
-        CORRADE_SKIP(Extensions::GL::EXT::geometry_shader::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() + std::string(" is not available."));
     #endif
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
@@ -155,7 +155,7 @@ void PrimitiveQueryGLTest::primitivesGenerated() {
         .setCount(9)
         .addVertexBuffer(vertices, 0, MyShader::Position());
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     PrimitiveQuery q{PrimitiveQuery::Target::PrimitivesGenerated};
     q.begin();
@@ -168,7 +168,7 @@ void PrimitiveQueryGLTest::primitivesGenerated() {
     const UnsignedInt count = q.result<UnsignedInt>();
     const bool availableAfter = q.resultAvailable();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(!availableBefore);
     CORRADE_VERIFY(availableAfter);
     CORRADE_COMPARE(count, 3);
@@ -177,8 +177,8 @@ void PrimitiveQueryGLTest::primitivesGenerated() {
 
 #ifndef MAGNUM_TARGET_GLES
 void PrimitiveQueryGLTest::primitivesGeneratedIndexed() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback3>())
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback3::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback3>())
+        CORRADE_SKIP(Extensions::ARB::transform_feedback3::string() + std::string(" is not available."));
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
     Renderbuffer color;
@@ -222,7 +222,7 @@ void PrimitiveQueryGLTest::primitivesGeneratedIndexed() {
         .setCount(9)
         .addVertexBuffer(vertices, 0, MyShader::Position());
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     PrimitiveQuery q{PrimitiveQuery::Target::PrimitivesGenerated};
     q.begin(0);
@@ -233,15 +233,15 @@ void PrimitiveQueryGLTest::primitivesGeneratedIndexed() {
     q.end();
     const UnsignedInt count = q.result<UnsignedInt>();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(count, 3);
 }
 #endif
 
 void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::ARB::transform_feedback2::string() + std::string(" is not available."));
     #endif
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
@@ -294,7 +294,7 @@ void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
     mesh.setPrimitive(MeshPrimitive::Triangles)
         .setCount(9);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     TransformFeedback feedback;
     feedback.attachBuffer(0, output);
@@ -312,15 +312,15 @@ void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
     q.end();
     const UnsignedInt count = q.result<UnsignedInt>();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(count, 3); /* Three triangles (9 vertices) */
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void PrimitiveQueryGLTest::transformFeedbackOverflow() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback_overflow_query>())
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback_overflow_query::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback_overflow_query>())
+        CORRADE_SKIP(Extensions::ARB::transform_feedback_overflow_query::string() + std::string(" is not available."));
     #endif
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
@@ -373,7 +373,7 @@ void PrimitiveQueryGLTest::transformFeedbackOverflow() {
     mesh.setPrimitive(MeshPrimitive::Triangles)
         .setCount(9);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     TransformFeedback feedback;
     /* Deliberately one vertex smaller to not fit two of them */
@@ -395,12 +395,12 @@ void PrimitiveQueryGLTest::transformFeedbackOverflow() {
     const bool overflown1 = q1.result<bool>();
     const bool overflown2 = q2.result<bool>();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(!overflown1);
     CORRADE_VERIFY(overflown2); /* Got space for only 17 vertices instead of 2*9 */
 }
 #endif
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::PrimitiveQueryGLTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::PrimitiveQueryGLTest)

@@ -26,9 +26,9 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Framebuffer.h"
+#include "Magnum/GL/Framebuffer.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct FramebufferTest: TestSuite::Tester {
     explicit FramebufferTest();
@@ -60,6 +60,6 @@ void FramebufferTest::debugStatus() {
     CORRADE_COMPARE(out.str(), "GL::Framebuffer::Status::IncompleteMissingAttachment GL::Framebuffer::Status(0xdead)\n");
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::FramebufferTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::FramebufferTest)

@@ -25,9 +25,9 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/TextureArray.h"
+#include "Magnum/GL/TextureArray.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct TextureArrayTest: TestSuite::Tester {
     explicit TextureArrayTest();
@@ -66,6 +66,6 @@ void TextureArrayTest::construct2DNoCreate() {
     CORRADE_VERIFY(true);
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::TextureArrayTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::TextureArrayTest)

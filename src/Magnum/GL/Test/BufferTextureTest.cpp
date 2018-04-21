@@ -25,9 +25,9 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/BufferTexture.h"
+#include "Magnum/GL/BufferTexture.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct BufferTextureTest: TestSuite::Tester {
     explicit BufferTextureTest();
@@ -48,6 +48,6 @@ void BufferTextureTest::constructNoCreate() {
     CORRADE_VERIFY(true);
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::BufferTextureTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::BufferTextureTest)

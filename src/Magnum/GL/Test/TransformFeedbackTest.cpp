@@ -25,9 +25,9 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/TransformFeedback.h"
+#include "Magnum/GL/TransformFeedback.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct TransformFeedbackTest: TestSuite::Tester {
     explicit TransformFeedbackTest();
@@ -48,6 +48,6 @@ void TransformFeedbackTest::constructNoCreate() {
     CORRADE_VERIFY(true);
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::TransformFeedbackTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::TransformFeedbackTest)

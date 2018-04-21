@@ -25,9 +25,9 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/PrimitiveQuery.h"
+#include "Magnum/GL/PrimitiveQuery.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct PrimitiveQueryTest: TestSuite::Tester {
     explicit PrimitiveQueryTest();
@@ -48,6 +48,6 @@ void PrimitiveQueryTest::constructNoCreate() {
     CORRADE_VERIFY(true);
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::PrimitiveQueryTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::PrimitiveQueryTest)

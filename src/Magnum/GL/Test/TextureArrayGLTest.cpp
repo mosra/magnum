@@ -25,19 +25,19 @@
 
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/BufferImage.h"
 #include "Magnum/Image.h"
-#include "Magnum/ImageFormat.h"
-#include "Magnum/OpenGLTester.h"
-#include "Magnum/PixelFormat.h"
-#include "Magnum/TextureArray.h"
-#include "Magnum/TextureFormat.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/BufferImage.h"
+#include "Magnum/GL/ImageFormat.h"
+#include "Magnum/GL/OpenGLTester.h"
+#include "Magnum/GL/PixelFormat.h"
+#include "Magnum/GL/TextureArray.h"
+#include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct TextureArrayGLTest: OpenGLTester {
     explicit TextureArrayGLTest();
@@ -375,34 +375,34 @@ TextureArrayGLTest::TextureArrayGLTest() {
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureArrayGLTest::construct1D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
 
     {
         Texture1DArray texture;
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
     }
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
 void TextureArrayGLTest::construct2D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
 
     {
         Texture2DArray texture;
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
     }
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -424,8 +424,8 @@ void TextureArrayGLTest::wrap1D() {
 
 void TextureArrayGLTest::wrap2D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
 
     GLuint id;
@@ -444,85 +444,85 @@ void TextureArrayGLTest::wrap2D() {
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureArrayGLTest::bind1D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
     texture.bind(15);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     AbstractTexture::unbind(15);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     AbstractTexture::bind(7, {&texture, nullptr, &texture});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     AbstractTexture::unbind(7, 3);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
 void TextureArrayGLTest::bind2D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray texture;
     texture.bind(15);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     AbstractTexture::unbind(15);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     AbstractTexture::bind(7, {&texture, nullptr, &texture});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     AbstractTexture::unbind(7, 3);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
 #ifndef MAGNUM_TARGET_GLES
 void TextureArrayGLTest::bindImage1D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
-        CORRADE_SKIP(Extensions::GL::ARB::shader_image_load_store::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::shader_image_load_store>())
+        CORRADE_SKIP(Extensions::ARB::shader_image_load_store::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, {32, 4})
         .bindImage(2, 0, 1, ImageAccess::ReadWrite, ImageFormat::RGBA8);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     texture.bindImageLayered(3, 0, ImageAccess::ReadWrite, ImageFormat::RGBA8);
 
     AbstractTexture::unbindImage(2);
     AbstractTexture::unbindImage(3);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     AbstractTexture::bindImages(1, {&texture, nullptr, &texture});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     AbstractTexture::unbindImages(1, 3);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
 void TextureArrayGLTest::bindImage2D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
-        CORRADE_SKIP(Extensions::GL::ARB::shader_image_load_store::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::shader_image_load_store>())
+        CORRADE_SKIP(Extensions::ARB::shader_image_load_store::string() + std::string(" is not supported."));
     #else
     if(!Context::current().isVersionSupported(Version::GLES310))
         CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
@@ -532,23 +532,23 @@ void TextureArrayGLTest::bindImage2D() {
     texture.setStorage(1, TextureFormat::RGBA8, {32, 32, 4})
         .bindImage(2, 0, 1, ImageAccess::ReadWrite, ImageFormat::RGBA8);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     texture.bindImageLayered(3, 0, ImageAccess::ReadWrite, ImageFormat::RGBA8);
 
     AbstractTexture::unbindImage(2);
     AbstractTexture::unbindImage(3);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     AbstractTexture::bindImages(1, {&texture, nullptr, &texture});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     AbstractTexture::unbindImages(1, 3);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     #endif
 }
 #endif
@@ -558,8 +558,8 @@ template<class T> void TextureArrayGLTest::sampling1D() {
     setTestCaseName(std::is_same<T, GenericSampler>::value ?
         "sampling1D<GenericSampler>" : "sampling1D<GLSampler>");
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
     texture.setMinificationFilter(T::Filter::Linear, T::Mipmap::Linear)
@@ -572,62 +572,62 @@ template<class T> void TextureArrayGLTest::sampling1D() {
            .setWrapping(T::Wrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f))
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
-           .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
-           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
+           .setCompareMode(SamplerCompareMode::CompareRefToTexture)
+           .setCompareFunction(SamplerCompareFunction::GreaterOrEqual);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void TextureArrayGLTest::samplingSRGBDecode1D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_sRGB_decode>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_sRGB_decode>())
+        CORRADE_SKIP(Extensions::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
     texture.setSRGBDecode(false);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void TextureArrayGLTest::samplingSwizzle1D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::ARB::texture_swizzle::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
     texture.setSwizzle<'b', 'g', 'r', '0'>();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void TextureArrayGLTest::samplingBorderInteger1D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_integer>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_integer>())
+        CORRADE_SKIP(Extensions::EXT::texture_integer::string() + std::string(" is not supported."));
 
     Texture1DArray a;
-    a.setWrapping(Sampler::Wrapping::ClampToBorder)
+    a.setWrapping(SamplerWrapping::ClampToBorder)
      .setBorderColor(Vector4i(1, 56, 78, -2));
     Texture1DArray b;
-    b.setWrapping(Sampler::Wrapping::ClampToBorder)
+    b.setWrapping(SamplerWrapping::ClampToBorder)
      .setBorderColor(Vector4ui(35, 56, 78, 15));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void TextureArrayGLTest::samplingDepthStencilMode1D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
-        CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::stencil_texturing>())
+        CORRADE_SKIP(Extensions::ARB::stencil_texturing::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
-    texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
+    texture.setDepthStencilMode(SamplerDepthStencilMode::StencilIndex);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
@@ -636,8 +636,8 @@ template<class T> void TextureArrayGLTest::sampling2D() {
         "sampling2D<GenericSampler>" : "sampling2D<GLSampler>");
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray texture;
@@ -660,131 +660,131 @@ template<class T> void TextureArrayGLTest::sampling2D() {
            #endif
            .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
            #ifndef MAGNUM_TARGET_GLES
-           .setCompareMode(Sampler::CompareMode::CompareRefToTexture)
-           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual)
+           .setCompareMode(SamplerCompareMode::CompareRefToTexture)
+           .setCompareFunction(SamplerCompareFunction::GreaterOrEqual)
            #endif
            ;
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void TextureArrayGLTest::samplingSRGBDecode2D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_sRGB_decode>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_sRGB_decode>())
+        CORRADE_SKIP(Extensions::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
 
     Texture2DArray texture;
     texture.setSRGBDecode(false);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 #ifndef MAGNUM_TARGET_GLES2
 void TextureArrayGLTest::samplingSwizzle2D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_swizzle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_swizzle::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_swizzle>())
+        CORRADE_SKIP(Extensions::ARB::texture_swizzle::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray texture;
     texture.setSwizzle<'b', 'g', 'r', '0'>();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #else
 void TextureArrayGLTest::samplingMaxLevel2D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::APPLE::texture_max_level>())
-        CORRADE_SKIP(Extensions::GL::APPLE::texture_max_level::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::APPLE::texture_max_level>())
+        CORRADE_SKIP(Extensions::APPLE::texture_max_level::string() + std::string(" is not supported."));
 
     Texture2DArray texture;
     texture.setMaxLevel(750);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void TextureArrayGLTest::samplingCompare2D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::shadow_samplers>() ||
-       !Context::current().isExtensionSupported<Extensions::GL::NV::shadow_samplers_array>())
-        CORRADE_SKIP(Extensions::GL::NV::shadow_samplers_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::shadow_samplers>() ||
+       !Context::current().isExtensionSupported<Extensions::NV::shadow_samplers_array>())
+        CORRADE_SKIP(Extensions::NV::shadow_samplers_array::string() + std::string(" is not supported."));
 
     Texture2DArray texture;
-    texture.setCompareMode(Sampler::CompareMode::CompareRefToTexture)
-           .setCompareFunction(Sampler::CompareFunction::GreaterOrEqual);
+    texture.setCompareMode(SamplerCompareMode::CompareRefToTexture)
+           .setCompareFunction(SamplerCompareFunction::GreaterOrEqual);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void TextureArrayGLTest::samplingBorderInteger2D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_integer>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_integer::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_integer>())
+        CORRADE_SKIP(Extensions::EXT::texture_integer::string() + std::string(" is not supported."));
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_border_clamp::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_border_clamp>())
+        CORRADE_SKIP(Extensions::EXT::texture_border_clamp::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray a;
-    a.setWrapping(Sampler::Wrapping::ClampToBorder)
+    a.setWrapping(SamplerWrapping::ClampToBorder)
      .setBorderColor(Vector4i(1, 56, 78, -2));
     Texture2DArray b;
-    b.setWrapping(Sampler::Wrapping::ClampToBorder)
+    b.setWrapping(SamplerWrapping::ClampToBorder)
      .setBorderColor(Vector4ui(35, 56, 78, 15));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void TextureArrayGLTest::samplingDepthStencilMode2D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::stencil_texturing>())
-        CORRADE_SKIP(Extensions::GL::ARB::stencil_texturing::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::stencil_texturing>())
+        CORRADE_SKIP(Extensions::ARB::stencil_texturing::string() + std::string(" is not supported."));
     #else
     if(!Context::current().isVersionSupported(Version::GLES310))
         CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
     #endif
 
     Texture2DArray texture;
-    texture.setDepthStencilMode(Sampler::DepthStencilMode::StencilIndex);
+    texture.setDepthStencilMode(SamplerDepthStencilMode::StencilIndex);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
 #ifdef MAGNUM_TARGET_GLES
 void TextureArrayGLTest::samplingBorder2D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::NV::texture_border_clamp>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::EXT::texture_border_clamp>())
+    if(!Context::current().isExtensionSupported<Extensions::NV::texture_border_clamp>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::texture_border_clamp>())
         CORRADE_SKIP("No required extension is supported.");
 
     Texture2DArray texture;
-    texture.setWrapping(Sampler::Wrapping::ClampToBorder)
+    texture.setWrapping(SamplerWrapping::ClampToBorder)
            .setBorderColor(Color3(0.5f));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureArrayGLTest::storage1D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
     texture.setStorage(5, TextureFormat::RGBA8, Vector2i(32));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(texture.imageSize(0), Vector2i(32, 32));
     CORRADE_COMPARE(texture.imageSize(1), Vector2i(16, 32));
@@ -793,20 +793,20 @@ void TextureArrayGLTest::storage1D() {
     CORRADE_COMPARE(texture.imageSize(4), Vector2i( 2, 32));
     CORRADE_COMPARE(texture.imageSize(5), Vector2i( 0,  0)); /* not available */
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
 void TextureArrayGLTest::storage2D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray texture;
     texture.setStorage(5, TextureFormat::RGBA8, Vector3i(32));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES2
     #ifdef MAGNUM_TARGET_GLES
@@ -821,7 +821,7 @@ void TextureArrayGLTest::storage2D() {
     CORRADE_COMPARE(texture.imageSize(4), Vector3i( 2,  2, 32));
     CORRADE_COMPARE(texture.imageSize(5), Vector3i( 0,  0,  0)); /* not available */
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     #endif
 }
 
@@ -829,20 +829,20 @@ void TextureArrayGLTest::storage2D() {
 void TextureArrayGLTest::image1D() {
     setTestCaseDescription(PixelStorage1DData[testCaseInstanceId()].name);
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8, ImageView2D{
         PixelStorage1DData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), PixelStorage1DData[testCaseInstanceId()].dataSparse});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Image2D image = texture.image(0, {PixelStorage1DData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorage1DData[testCaseInstanceId()].offset),
@@ -853,8 +853,8 @@ void TextureArrayGLTest::image1D() {
 void TextureArrayGLTest::image1DBuffer() {
     setTestCaseDescription(PixelStorage1DData[testCaseInstanceId()].name);
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8, BufferImage2D{
@@ -862,14 +862,14 @@ void TextureArrayGLTest::image1DBuffer() {
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), PixelStorage1DData[testCaseInstanceId()].dataSparse,
         BufferUsage::StaticDraw});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     BufferImage2D image = texture.image(0,
         {PixelStorage1DData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     auto imageData = image.buffer().data();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(2));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorage1DData[testCaseInstanceId()].offset),
@@ -890,8 +890,8 @@ namespace {
 void TextureArrayGLTest::subImage1D() {
     setTestCaseDescription(PixelStorage1DData[testCaseInstanceId()].name);
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
@@ -900,11 +900,11 @@ void TextureArrayGLTest::subImage1D() {
         PixelStorage1DData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), PixelStorage1DData[testCaseInstanceId()].dataSparse});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Image2D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
@@ -915,8 +915,8 @@ void TextureArrayGLTest::subImage1D() {
 void TextureArrayGLTest::subImage1DBuffer() {
     setTestCaseDescription(PixelStorage1DData[testCaseInstanceId()].name);
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
@@ -927,12 +927,12 @@ void TextureArrayGLTest::subImage1DBuffer() {
         PixelStorage1DData[testCaseInstanceId()].dataSparse,
         BufferUsage::StaticDraw});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     BufferImage2D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     auto imageData = image.buffer().data();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i(4));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData),
@@ -943,22 +943,22 @@ void TextureArrayGLTest::subImage1DBuffer() {
 void TextureArrayGLTest::subImage1DQuery() {
     setTestCaseDescription(PixelStorage1DData[testCaseInstanceId()].name);
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
-        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
            .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, SubData1DComplete});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Image2D image = texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}),
         {PixelStorage1DData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorage1DData[testCaseInstanceId()].offset),
@@ -969,23 +969,23 @@ void TextureArrayGLTest::subImage1DQuery() {
 void TextureArrayGLTest::subImage1DQueryBuffer() {
     setTestCaseDescription(PixelStorage1DData[testCaseInstanceId()].name);
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
-        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
            .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, SubData1DComplete});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     BufferImage2D image = texture.subImage(0, Range2Di::fromSize(Vector2i{1}, Vector2i{2}),
         {PixelStorage1DData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     auto imageData = image.buffer().data();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector2i{2});
 
@@ -1024,8 +1024,8 @@ void TextureArrayGLTest::image2D() {
     setTestCaseDescription(PixelStorage2DData[testCaseInstanceId()].name);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray texture;
@@ -1034,14 +1034,14 @@ void TextureArrayGLTest::image2D() {
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(2),
         PixelStorage2DData[testCaseInstanceId()].dataSparse});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
     Image3D image = texture.image(0, {PixelStorage2DData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorage2DData[testCaseInstanceId()].offset),
@@ -1054,8 +1054,8 @@ void TextureArrayGLTest::image2DBuffer() {
     setTestCaseDescription(PixelStorage2DData[testCaseInstanceId()].name);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray texture;
@@ -1065,7 +1065,7 @@ void TextureArrayGLTest::image2DBuffer() {
         PixelStorage2DData[testCaseInstanceId()].dataSparse,
         BufferUsage::StaticDraw});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
@@ -1073,7 +1073,7 @@ void TextureArrayGLTest::image2DBuffer() {
         PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     auto imageData = image.buffer().data();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(2));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorage2DData[testCaseInstanceId()].offset),
@@ -1114,8 +1114,8 @@ void TextureArrayGLTest::subImage2D() {
     setTestCaseDescription(PixelStorage2DData[testCaseInstanceId()].name);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray texture;
@@ -1126,13 +1126,13 @@ void TextureArrayGLTest::subImage2D() {
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i(2),
         PixelStorage2DData[testCaseInstanceId()].dataSparse});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
     Image3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(4));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
@@ -1145,8 +1145,8 @@ void TextureArrayGLTest::subImage2DBuffer() {
     setTestCaseDescription(PixelStorage2DData[testCaseInstanceId()].name);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray texture;
@@ -1158,14 +1158,14 @@ void TextureArrayGLTest::subImage2DBuffer() {
         PixelStorage2DData[testCaseInstanceId()].dataSparse,
         BufferUsage::StaticDraw});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
     BufferImage3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i(4));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData),
@@ -1178,22 +1178,22 @@ void TextureArrayGLTest::subImage2DBuffer() {
 void TextureArrayGLTest::subImage2DQuery() {
     setTestCaseDescription(PixelStorage2DData[testCaseInstanceId()].name);
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
-        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
 
     Texture2DArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector3i{4})
            .setSubImage(0, {}, ImageView3D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{4}, SubData2DComplete});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Image3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}),
         {PixelStorage2DData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{2});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorage2DData[testCaseInstanceId()].offset),
@@ -1204,23 +1204,23 @@ void TextureArrayGLTest::subImage2DQuery() {
 void TextureArrayGLTest::subImage2DQueryBuffer() {
     setTestCaseDescription(PixelStorage2DData[testCaseInstanceId()].name);
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
-        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
 
     Texture2DArray texture;
     texture.setStorage(1, TextureFormat::RGBA8, Vector3i{4})
            .setSubImage(0, {}, ImageView3D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector3i{4}, SubData2DComplete});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     BufferImage3D image = texture.subImage(0, Range3Di::fromSize(Vector3i{1}, Vector3i{2}),
         {PixelStorage2DData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{2});
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(PixelStorage2DData[testCaseInstanceId()].offset),
@@ -1233,20 +1233,20 @@ void TextureArrayGLTest::compressedImage2D() {
     setTestCaseDescription(CompressedPixelStorage2DData[testCaseInstanceId()].name);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
     #ifndef MAGNUM_TARGET_WEBGL
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::WEBGL::compressed_texture_s3tc>())
-        CORRADE_SKIP(Extensions::GL::WEBGL::compressed_texture_s3tc::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::compressed_texture_s3tc>())
+        CORRADE_SKIP(Extensions::WEBGL::compressed_texture_s3tc::string() + std::string(" is not supported."));
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
-        CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
+        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray texture;
@@ -1257,12 +1257,12 @@ void TextureArrayGLTest::compressedImage2D() {
         CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 2},
         CompressedPixelStorage2DData[testCaseInstanceId()].dataSparse});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CompressedImage3D image = texture.compressedImage(0, {CompressedPixelStorage2DData[testCaseInstanceId()].storage});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
@@ -1275,20 +1275,20 @@ void TextureArrayGLTest::compressedImage2DBuffer() {
     setTestCaseDescription(CompressedPixelStorage2DData[testCaseInstanceId()].name);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
     #ifndef MAGNUM_TARGET_WEBGL
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::WEBGL::compressed_texture_s3tc>())
-        CORRADE_SKIP(Extensions::GL::WEBGL::compressed_texture_s3tc::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::compressed_texture_s3tc>())
+        CORRADE_SKIP(Extensions::WEBGL::compressed_texture_s3tc::string() + std::string(" is not supported."));
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
-        CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
+        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray texture;
@@ -1300,13 +1300,13 @@ void TextureArrayGLTest::compressedImage2DBuffer() {
         CompressedPixelStorage2DData[testCaseInstanceId()].dataSparse,
         BufferUsage::StaticDraw});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CompressedBufferImage3D image = texture.compressedImage(0, {CompressedPixelStorage2DData[testCaseInstanceId()].storage}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
@@ -1357,20 +1357,20 @@ void TextureArrayGLTest::compressedSubImage2D() {
     setTestCaseDescription(CompressedPixelStorage2DData[testCaseInstanceId()].name);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
     #ifndef MAGNUM_TARGET_WEBGL
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::WEBGL::compressed_texture_s3tc>())
-        CORRADE_SKIP(Extensions::GL::WEBGL::compressed_texture_s3tc::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::compressed_texture_s3tc>())
+        CORRADE_SKIP(Extensions::WEBGL::compressed_texture_s3tc::string() + std::string(" is not supported."));
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
-        CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
+        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray texture;
@@ -1383,12 +1383,12 @@ void TextureArrayGLTest::compressedSubImage2D() {
         CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 2},
         CompressedPixelStorage2DData[testCaseInstanceId()].dataSparse});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CompressedImage3D image = texture.compressedImage(0, {});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{12, 4, 4}));
 
@@ -1407,20 +1407,20 @@ void TextureArrayGLTest::compressedSubImage2DBuffer() {
     setTestCaseDescription(CompressedPixelStorage2DData[testCaseInstanceId()].name);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
     #ifndef MAGNUM_TARGET_WEBGL
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::WEBGL::compressed_texture_s3tc>())
-        CORRADE_SKIP(Extensions::GL::WEBGL::compressed_texture_s3tc::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::compressed_texture_s3tc>())
+        CORRADE_SKIP(Extensions::WEBGL::compressed_texture_s3tc::string() + std::string(" is not supported."));
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
-        CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
+        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray texture;
@@ -1434,13 +1434,13 @@ void TextureArrayGLTest::compressedSubImage2DBuffer() {
         CompressedPixelStorage2DData[testCaseInstanceId()].dataSparse,
         BufferUsage::StaticDraw});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CompressedBufferImage3D image = texture.compressedImage(0, {}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{12, 4, 4}));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData),
@@ -1453,27 +1453,27 @@ void TextureArrayGLTest::compressedSubImage2DBuffer() {
 void TextureArrayGLTest::compressedSubImage2DQuery() {
     setTestCaseDescription(CompressedPixelStorage2DData[testCaseInstanceId()].name);
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
-        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
-    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
-        CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
-    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage == CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::ARB::internalformat_query2>())
-        CORRADE_SKIP(Extensions::GL::ARB::internalformat_query2::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
+        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage == CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::internalformat_query2>())
+        CORRADE_SKIP(Extensions::ARB::internalformat_query2::string() + std::string(" is not supported."));
 
     Texture2DArray texture;
     texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {12, 4, 4})
            .setCompressedSubImage(0, {}, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
                {12, 4, 4}, CompressedSubData2DComplete});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CompressedImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 0, 1}, {4, 4, 2}), {CompressedPixelStorage2DData[testCaseInstanceId()].storage});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
@@ -1484,23 +1484,23 @@ void TextureArrayGLTest::compressedSubImage2DQuery() {
 void TextureArrayGLTest::compressedSubImage2DQueryBuffer() {
     setTestCaseDescription(CompressedPixelStorage2DData[testCaseInstanceId()].name);
 
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>())
-        CORRADE_SKIP(Extensions::GL::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_compression_s3tc>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
-    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::ARB::compressed_texture_pixel_storage>())
-        CORRADE_SKIP(Extensions::GL::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
-    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage == CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::GL::ARB::internalformat_query2>())
-        CORRADE_SKIP(Extensions::GL::ARB::internalformat_query2::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::get_texture_sub_image>())
+        CORRADE_SKIP(Extensions::ARB::get_texture_sub_image::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
+        CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
+        CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+    if(CompressedPixelStorage2DData[testCaseInstanceId()].storage == CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::internalformat_query2>())
+        CORRADE_SKIP(Extensions::ARB::internalformat_query2::string() + std::string(" is not supported."));
 
     Texture2DArray texture;
     texture.setStorage(1, TextureFormat::CompressedRGBAS3tcDxt3, {12, 4, 4})
            .setCompressedSubImage(0, {}, CompressedImageView3D{CompressedPixelFormat::RGBAS3tcDxt3,
                {12, 4, 4}, CompressedSubData2DComplete});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CompressedBufferImage3D image = texture.compressedSubImage(0, Range3Di::fromSize({4, 0, 1}, {4, 4, 2}), {
         #ifndef MAGNUM_TARGET_GLES
@@ -1509,7 +1509,7 @@ void TextureArrayGLTest::compressedSubImage2DQueryBuffer() {
     }, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), (Vector3i{4, 4, 2}));
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(CompressedPixelStorage2DData[testCaseInstanceId()].offset),
@@ -1518,10 +1518,10 @@ void TextureArrayGLTest::compressedSubImage2DQueryBuffer() {
 }
 
 void TextureArrayGLTest::generateMipmap1D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
     texture.setImage(0, TextureFormat::RGBA8,
@@ -1532,7 +1532,7 @@ void TextureArrayGLTest::generateMipmap1D() {
 
     texture.generateMipmap();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(texture.imageSize(0), Vector2i(32, 32));
     CORRADE_COMPARE(texture.imageSize(1), Vector2i(16, 32));
@@ -1541,16 +1541,16 @@ void TextureArrayGLTest::generateMipmap1D() {
     CORRADE_COMPARE(texture.imageSize(4), Vector2i( 2, 32));
     CORRADE_COMPARE(texture.imageSize(5), Vector2i( 1, 32));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
 void TextureArrayGLTest::generateMipmap2D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not supported."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray texture;
@@ -1565,7 +1565,7 @@ void TextureArrayGLTest::generateMipmap2D() {
 
     texture.generateMipmap();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(texture.imageSize(0), Vector3i(32, 32, 32));
@@ -1575,62 +1575,62 @@ void TextureArrayGLTest::generateMipmap2D() {
     CORRADE_COMPARE(texture.imageSize(4), Vector3i( 2,  2, 32));
     CORRADE_COMPARE(texture.imageSize(5), Vector3i( 1,  1, 32));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureArrayGLTest::invalidateImage1D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
     texture.setStorage(2, TextureFormat::RGBA8, Vector2i(32));
     texture.invalidateImage(1);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
 void TextureArrayGLTest::invalidateImage2D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray texture;
     texture.setStorage(2, TextureFormat::RGBA8, Vector3i(32));
     texture.invalidateImage(1);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void TextureArrayGLTest::invalidateSubImage1D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
     texture.setStorage(2, TextureFormat::RGBA8, Vector2i(32));
     texture.invalidateSubImage(1, Vector2i(2), Vector2i(8));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
 void TextureArrayGLTest::invalidateSubImage2D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     #endif
 
     Texture2DArray texture;
     texture.setStorage(2, TextureFormat::RGBA8, Vector3i(32));
     texture.invalidateSubImage(1, Vector3i(2), Vector3i(8));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::TextureArrayGLTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::TextureArrayGLTest)

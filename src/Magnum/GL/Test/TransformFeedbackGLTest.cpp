@@ -23,24 +23,24 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/AbstractShaderProgram.h"
-#include "Magnum/Buffer.h"
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/Framebuffer.h"
 #include "Magnum/Image.h"
-#include "Magnum/Mesh.h"
-#include "Magnum/OpenGLTester.h"
-#include "Magnum/PixelFormat.h"
-#include "Magnum/PrimitiveQuery.h"
-#include "Magnum/SampleQuery.h"
-#include "Magnum/Renderbuffer.h"
-#include "Magnum/RenderbufferFormat.h"
-#include "Magnum/Shader.h"
-#include "Magnum/TransformFeedback.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Framebuffer.h"
+#include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/OpenGLTester.h"
+#include "Magnum/GL/PixelFormat.h"
+#include "Magnum/GL/PrimitiveQuery.h"
+#include "Magnum/GL/SampleQuery.h"
+#include "Magnum/GL/Renderbuffer.h"
+#include "Magnum/GL/RenderbufferFormat.h"
+#include "Magnum/GL/Shader.h"
+#include "Magnum/GL/TransformFeedback.h"
 #include "Magnum/Math/Vector2.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct TransformFeedbackGLTest: OpenGLTester {
     explicit TransformFeedbackGLTest();
@@ -111,18 +111,18 @@ TransformFeedbackGLTest::TransformFeedbackGLTest() {
 
 void TransformFeedbackGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
     {
         TransformFeedback feedback;
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(feedback.id() > 0);
     }
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void TransformFeedbackGLTest::constructCopy() {
@@ -132,14 +132,14 @@ void TransformFeedbackGLTest::constructCopy() {
 
 void TransformFeedbackGLTest::constructMove() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
     TransformFeedback a;
     const Int id = a.id();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
     TransformFeedback b{std::move(a)};
@@ -151,7 +151,7 @@ void TransformFeedbackGLTest::constructMove() {
     const Int cId = c.id();
     c = std::move(b);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
@@ -159,8 +159,8 @@ void TransformFeedbackGLTest::constructMove() {
 
 void TransformFeedbackGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
     GLuint id;
@@ -180,11 +180,11 @@ void TransformFeedbackGLTest::wrap() {
 void TransformFeedbackGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
-    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
     TransformFeedback feedback;
@@ -193,23 +193,23 @@ void TransformFeedbackGLTest::label() {
     {
         #ifdef MAGNUM_TARGET_GLES
         CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia &&
-                              !Context::current().isExtensionSupported<Extensions::GL::KHR::debug>(),
+                              !Context::current().isExtensionSupported<Extensions::KHR::debug>(),
             "NVidia 387.34 ES3.2 complains that GL_TRANSFORM_FEEDBACK can't be used with glGetObjectLabelEXT().");
         #endif
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
     }
 
     feedback.setLabel("MyXfb");
     {
         #ifdef MAGNUM_TARGET_GLES
         CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::NVidia &&
-                              !Context::current().isExtensionSupported<Extensions::GL::KHR::debug>(),
+                              !Context::current().isExtensionSupported<Extensions::KHR::debug>(),
             "NVidia 387.34 ES3.2 complains that GL_TRANSFORM_FEEDBACK can't be used with glGetObjectLabelEXT().");
         #endif
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
 
         CORRADE_COMPARE(feedback.label(), "MyXfb");
-        MAGNUM_VERIFY_NO_ERROR(); /* Check for errors again to flush the error state */
+        MAGNUM_VERIFY_NO_GL_ERROR(); /* Check for errors again to flush the error state */
     }
 }
 
@@ -264,8 +264,8 @@ XfbShader::XfbShader() {
 
 void TransformFeedbackGLTest::attachBase() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
@@ -290,14 +290,14 @@ void TransformFeedbackGLTest::attachBase() {
     TransformFeedback feedback;
     feedback.attachBuffer(0, output);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Renderer::enable(Renderer::Feature::RasterizerDiscard);
     feedback.begin(shader, TransformFeedback::PrimitiveMode::Points);
     mesh.draw(shader);
     feedback.end();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     auto data = Containers::arrayCast<const Vector2>(output.mapRead(0, 2*sizeof(Vector2)));
     CORRADE_COMPARE(data[0], Vector2(1.0f, -1.0f));
@@ -307,8 +307,8 @@ void TransformFeedbackGLTest::attachBase() {
 
 void TransformFeedbackGLTest::attachRange() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
@@ -333,14 +333,14 @@ void TransformFeedbackGLTest::attachRange() {
     TransformFeedback feedback;
     feedback.attachBuffer(0, output, 256, 2*sizeof(Vector2));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Renderer::enable(Renderer::Feature::RasterizerDiscard);
     feedback.begin(shader, TransformFeedback::PrimitiveMode::Points);
     mesh.draw(shader);
     feedback.end();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     auto data = Containers::arrayCast<const Vector2>(output.mapRead(256, 2*sizeof(Vector2)));
     CORRADE_COMPARE(data[0], Vector2(1.0f, -1.0f));
@@ -396,8 +396,8 @@ XfbMultiShader::XfbMultiShader() {
 
 void TransformFeedbackGLTest::attachBases() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
@@ -423,14 +423,14 @@ void TransformFeedbackGLTest::attachBases() {
     TransformFeedback feedback;
     feedback.attachBuffers(0, {&output1, &output2});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Renderer::enable(Renderer::Feature::RasterizerDiscard);
     feedback.begin(shader, TransformFeedback::PrimitiveMode::Points);
     mesh.draw(shader);
     feedback.end();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     auto data1 = Containers::arrayCast<const Vector2>(output1.mapRead(0, 2*sizeof(Vector2)));
     CORRADE_COMPARE(data1[0], Vector2(1.0f, -1.0f));
@@ -445,8 +445,8 @@ void TransformFeedbackGLTest::attachBases() {
 
 void TransformFeedbackGLTest::attachRanges() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::ARB::transform_feedback2::string() + std::string(" is not supported."));
     #endif
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
@@ -475,14 +475,14 @@ void TransformFeedbackGLTest::attachRanges() {
         std::make_tuple(&output2, 512, 2*sizeof(Float))
     });
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Renderer::enable(Renderer::Feature::RasterizerDiscard);
     feedback.begin(shader, TransformFeedback::PrimitiveMode::Points);
     mesh.draw(shader);
     feedback.end();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     auto data1 = Containers::arrayCast<const Vector2>(output1.mapRead(256, 2*sizeof(Vector2)));
     CORRADE_COMPARE(data1[0], Vector2(1.0f, -1.0f));
@@ -498,8 +498,8 @@ void TransformFeedbackGLTest::attachRanges() {
 #ifndef MAGNUM_TARGET_GLES
 void TransformFeedbackGLTest::interleaved() {
     /* ARB_transform_feedback3 needed for gl_SkipComponents1 */
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback3>())
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback3::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback3>())
+        CORRADE_SKIP(Extensions::ARB::transform_feedback3::string() + std::string(" is not supported."));
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
     Renderbuffer color;
@@ -550,14 +550,14 @@ void TransformFeedbackGLTest::interleaved() {
     TransformFeedback feedback;
     feedback.attachBuffer(0, output);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Renderer::enable(Renderer::Feature::RasterizerDiscard);
     feedback.begin(shader, TransformFeedback::PrimitiveMode::Points);
     mesh.draw(shader);
     feedback.end();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     auto data = Containers::arrayCast<const Vector2>(output.mapRead(0, 4*sizeof(Vector2)));
     CORRADE_COMPARE(data[0], Vector2(1.0f, -1.0f));
@@ -571,12 +571,12 @@ void TransformFeedbackGLTest::draw() {
     setTestCaseDescription(DrawData[testCaseInstanceId()].name);
 
     /* ARB_transform_feedback2 needed as base, other optional */
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback2>())
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback2::string() + std::string(" is not supported."));
-    if(DrawData[testCaseInstanceId()].stream && (!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback3>() || TransformFeedback::maxVertexStreams() < 2))
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback3::string() + std::string(" is not supported well enough."));
-    if(DrawData[testCaseInstanceId()].instances && !Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback_instanced>())
-        CORRADE_SKIP(Extensions::GL::ARB::transform_feedback_instanced::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback2>())
+        CORRADE_SKIP(Extensions::ARB::transform_feedback2::string() + std::string(" is not supported."));
+    if(DrawData[testCaseInstanceId()].stream && (!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback3>() || TransformFeedback::maxVertexStreams() < 2))
+        CORRADE_SKIP(Extensions::ARB::transform_feedback3::string() + std::string(" is not supported well enough."));
+    if(DrawData[testCaseInstanceId()].instances && !Context::current().isExtensionSupported<Extensions::ARB::transform_feedback_instanced>())
+        CORRADE_SKIP(Extensions::ARB::transform_feedback_instanced::string() + std::string(" is not supported."));
 
     /* Bind some FB to avoid errors on contexts w/o default FB */
     Renderbuffer color;
@@ -630,7 +630,7 @@ void TransformFeedbackGLTest::draw() {
     TransformFeedback feedback;
     feedback.attachBuffer(0, outputBuffer);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     PrimitiveQuery queryStream0{PrimitiveQuery::Target::TransformFeedbackPrimitivesWritten},
         queryStreamN{PrimitiveQuery::Target::TransformFeedbackPrimitivesWritten};
@@ -649,7 +649,7 @@ void TransformFeedbackGLTest::draw() {
         queryStreamN.end();
     queryStream0.end();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(queryStream0.result<UnsignedInt>(), DrawData[testCaseInstanceId()].countStream0);
     if(DrawData[testCaseInstanceId()].stream)
@@ -694,15 +694,15 @@ void TransformFeedbackGLTest::draw() {
     outputMesh.draw(drawShader, feedback, DrawData[testCaseInstanceId()].stream);
     q.end();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(q.result<UnsignedInt>(), DrawData[testCaseInstanceId()].countDraw);
     CORRADE_COMPARE(fb.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data<UnsignedByte>()[0], 153);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::TransformFeedbackGLTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::TransformFeedbackGLTest)

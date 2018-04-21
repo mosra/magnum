@@ -27,11 +27,12 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Magnum/BufferImage.h"
 #include "Magnum/PixelFormat.h"
-#include "Magnum/OpenGLTester.h"
+#include "Magnum/GL/BufferImage.h"
+#include "Magnum/GL/PixelFormat.h"
+#include "Magnum/GL/OpenGLTester.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct BufferImageGLTest: OpenGLTester {
     explicit BufferImageGLTest();
@@ -104,7 +105,7 @@ void BufferImageGLTest::construct() {
     const auto imageData = a.buffer().data();
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(a.storage().alignment(), 1);
     CORRADE_COMPARE(a.format(), GL::PixelFormat::Red);
@@ -127,7 +128,7 @@ void BufferImageGLTest::constructGeneric() {
     const auto imageData = a.buffer().data();
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(a.storage().alignment(), 1);
     CORRADE_COMPARE(a.format(), GL::PixelFormat::Red);
@@ -154,7 +155,7 @@ void BufferImageGLTest::constructCompressed() {
     const auto imageData = a.buffer().data();
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
@@ -183,7 +184,7 @@ void BufferImageGLTest::constructCompressedGeneric() {
     const auto imageData = a.buffer().data();
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
@@ -212,7 +213,7 @@ void BufferImageGLTest::constructBuffer() {
     const auto imageData = a.buffer().data();
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_VERIFY(!buffer.id());
     CORRADE_COMPARE(a.buffer().id(), id);
@@ -241,7 +242,7 @@ void BufferImageGLTest::constructBufferGeneric() {
     const auto imageData = a.buffer().data();
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_VERIFY(!buffer.id());
     CORRADE_COMPARE(a.buffer().id(), id);
@@ -274,7 +275,7 @@ void BufferImageGLTest::constructBufferCompressed() {
     const auto imageData = a.buffer().data();
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
@@ -309,7 +310,7 @@ void BufferImageGLTest::constructBufferCompressedGeneric() {
     const auto imageData = a.buffer().data();
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
@@ -332,7 +333,7 @@ void BufferImageGLTest::constructInvalidSize() {
     Error redirectError{&out};
 
     /* Doesn't consider alignment */
-    BufferImage2D{PixelFormat::RGB8Unorm, {1, 3}, Containers::Array<char>{3*3}, BufferUsage::StaticDraw};
+    BufferImage2D{Magnum::PixelFormat::RGB8Unorm, {1, 3}, Containers::Array<char>{3*3}, BufferUsage::StaticDraw};
     CORRADE_COMPARE(out.str(), "GL::BufferImage::BufferImage(): data too small, got 9 but expected at least 12 bytes\n");
 }
 
@@ -343,14 +344,14 @@ void BufferImageGLTest::constructCompressedInvalidSize() {
     {
         std::ostringstream out;
         Error redirectError{&out};
-        CompressedBufferImage2D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, Containers::Array<char>{2}, BufferUsage::StaticDraw};
+        CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, Containers::Array<char>{2}, BufferUsage::StaticDraw};
         CORRADE_COMPARE(out.str(), "GL::CompressedBufferImage::CompressedBufferImage(): data too small, got 2 but expected at least 4 bytes\n");
 
     /* Size should be rounded up even if the image size is not full block */
     } {
         std::ostringstream out;
         Error redirectError{&out};
-        CompressedBufferImage2D{CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, Containers::Array<char>{2}, BufferUsage::StaticDraw};
+        CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, Containers::Array<char>{2}, BufferUsage::StaticDraw};
         CORRADE_COMPARE(out.str(), "GL::CompressedBufferImage::CompressedBufferImage(): data too small, got 2 but expected at least 4 bytes\n");
     }
 }
@@ -370,7 +371,7 @@ void BufferImageGLTest::constructMove() {
     BufferImage2D a{PixelFormat::Red, PixelType::UnsignedByte, {4, 1}, data, BufferUsage::StaticDraw};
     const Int id = a.buffer().id();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
     BufferImage2D b(std::move(a));
@@ -390,7 +391,7 @@ void BufferImageGLTest::constructMove() {
     const Int cId = c.buffer().id();
     c = std::move(b);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.buffer().id(), cId);
@@ -408,7 +409,7 @@ void BufferImageGLTest::constructMoveCompressed() {
     CompressedBufferImage2D a{CompressedPixelFormat::RGBAS3tcDxt1, {4, 4}, data, BufferUsage::StaticDraw};
     const Int id = a.buffer().id();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
     CompressedBufferImage2D b{std::move(a)};
@@ -434,7 +435,7 @@ void BufferImageGLTest::constructMoveCompressed() {
     const Int cId = c.buffer().id();
     c = std::move(b);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.buffer().id(), cId);
@@ -470,7 +471,7 @@ void BufferImageGLTest::dataPropertiesCompressed() {
             .setCompressedBlockDataSize(16)
             .setImageHeight(12)
             .setSkip({5, 8, 11}),
-        CompressedPixelFormat::Bc1RGBAUnorm, {2, 8, 11}, data, BufferUsage::StaticDraw};
+        Magnum::CompressedPixelFormat::Bc1RGBAUnorm, {2, 8, 11}, data, BufferUsage::StaticDraw};
     CORRADE_COMPARE(image.dataProperties(),
         (std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>>{{2*16, 2*16, 9*16}, {1, 3, 3}}));
 }
@@ -487,7 +488,7 @@ void BufferImageGLTest::setData() {
     const auto imageData = a.buffer().data();
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(a.storage().alignment(), 4);
     CORRADE_COMPARE(a.format(), GL::PixelFormat::RGBA);
@@ -514,7 +515,7 @@ void BufferImageGLTest::setDataGeneric() {
     const auto imageData = a.buffer().data();
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(a.storage().alignment(), 4);
     CORRADE_COMPARE(a.format(), GL::PixelFormat::RGBA);
@@ -544,7 +545,7 @@ void BufferImageGLTest::setDataCompressed() {
     const auto imageData = a.buffer().data();
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
@@ -575,7 +576,7 @@ void BufferImageGLTest::setDataCompressedGeneric() {
     const auto imageData = a.buffer().data();
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
@@ -611,6 +612,6 @@ void BufferImageGLTest::releaseCompressed() {
     CORRADE_COMPARE(b.id(), id);
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::BufferImageGLTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::BufferImageGLTest)

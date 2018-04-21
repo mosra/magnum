@@ -23,12 +23,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/OpenGLTester.h"
-#include "Magnum/SampleQuery.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/OpenGLTester.h"
+#include "Magnum/GL/SampleQuery.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct AbstractQueryGLTest: OpenGLTester {
     explicit AbstractQueryGLTest();
@@ -55,8 +55,8 @@ AbstractQueryGLTest::AbstractQueryGLTest() {
 
 void AbstractQueryGLTest::construct() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::occlusion_query_boolean>())
-        CORRADE_SKIP(Extensions::GL::EXT::occlusion_query_boolean::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::occlusion_query_boolean>())
+        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() + std::string(" is not supported."));
     #endif
 
     {
@@ -66,11 +66,11 @@ void AbstractQueryGLTest::construct() {
         const SampleQuery query{SampleQuery::Target::AnySamplesPassed};
         #endif
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(query.id() > 0);
     }
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void AbstractQueryGLTest::constructCopy() {
@@ -80,8 +80,8 @@ void AbstractQueryGLTest::constructCopy() {
 
 void AbstractQueryGLTest::constructMove() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::occlusion_query_boolean>())
-        CORRADE_SKIP(Extensions::GL::EXT::occlusion_query_boolean::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::occlusion_query_boolean>())
+        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() + std::string(" is not supported."));
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
@@ -91,7 +91,7 @@ void AbstractQueryGLTest::constructMove() {
     #endif
     const Int id = a.id();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
     SampleQuery b(std::move(a));
@@ -107,7 +107,7 @@ void AbstractQueryGLTest::constructMove() {
     const Int cId = c.id();
     c = std::move(b);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
@@ -116,13 +116,13 @@ void AbstractQueryGLTest::constructMove() {
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractQueryGLTest::label() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::occlusion_query_boolean>())
-        CORRADE_SKIP(Extensions::GL::EXT::occlusion_query_boolean::string() + std::string(" is not supported."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::occlusion_query_boolean>())
+        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() + std::string(" is not supported."));
     #endif
 
     /* No-Op version is tested in AbstractObjectGLTest */
-    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
     #ifndef MAGNUM_TARGET_GLES
@@ -132,7 +132,7 @@ void AbstractQueryGLTest::label() {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::direct_state_access>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
     #endif
     {
         query.begin(); query.end();
@@ -146,10 +146,10 @@ void AbstractQueryGLTest::label() {
     query.setLabel("MyQuery");
     CORRADE_COMPARE(query.label(), "MyQuery");
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::AbstractQueryGLTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::AbstractQueryGLTest)

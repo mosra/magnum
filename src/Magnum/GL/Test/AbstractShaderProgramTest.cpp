@@ -25,9 +25,9 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/AbstractShaderProgram.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct AbstractShaderProgramTest: TestSuite::Tester {
     explicit AbstractShaderProgramTest();
@@ -55,6 +55,6 @@ void AbstractShaderProgramTest::constructNoCreate() {
     CORRADE_VERIFY(true);
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::AbstractShaderProgramTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::AbstractShaderProgramTest)

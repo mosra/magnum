@@ -26,19 +26,19 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Resource.h>
 
-#include "Magnum/AbstractShaderProgram.h"
-#include "Magnum/Buffer.h"
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/Framebuffer.h"
-#include "Magnum/Mesh.h"
-#include "Magnum/OpenGLTester.h"
-#include "Magnum/Renderbuffer.h"
-#include "Magnum/RenderbufferFormat.h"
-#include "Magnum/SampleQuery.h"
-#include "Magnum/Shader.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Framebuffer.h"
+#include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/OpenGLTester.h"
+#include "Magnum/GL/Renderbuffer.h"
+#include "Magnum/GL/RenderbufferFormat.h"
+#include "Magnum/GL/SampleQuery.h"
+#include "Magnum/GL/Shader.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct SampleQueryGLTest: OpenGLTester {
     explicit SampleQueryGLTest();
@@ -63,8 +63,8 @@ SampleQueryGLTest::SampleQueryGLTest() {
 
 void SampleQueryGLTest::wrap() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::occlusion_query_boolean>())
-        CORRADE_SKIP(Extensions::GL::EXT::occlusion_query_boolean::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::occlusion_query_boolean>())
+        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() + std::string(" is not available."));
     #endif
 
     GLuint id;
@@ -150,8 +150,8 @@ MyShader::MyShader() {
 
 void SampleQueryGLTest::querySamplesPassed() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::occlusion_query_boolean>())
-        CORRADE_SKIP(Extensions::GL::EXT::occlusion_query_boolean::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::occlusion_query_boolean>())
+        CORRADE_SKIP(Extensions::EXT::occlusion_query_boolean::string() + std::string(" is not available."));
     #endif
 
     Renderbuffer renderbuffer;
@@ -175,7 +175,7 @@ void SampleQueryGLTest::querySamplesPassed() {
 
     MyShader shader;
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     framebuffer.bind();
 
@@ -193,7 +193,7 @@ void SampleQueryGLTest::querySamplesPassed() {
     const UnsignedInt count = q.result<UnsignedInt>();
     const bool availableAfter = q.resultAvailable();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(!availableBefore);
     CORRADE_VERIFY(availableAfter);
     #ifndef MAGNUM_TARGET_GLES
@@ -205,8 +205,8 @@ void SampleQueryGLTest::querySamplesPassed() {
 
 #ifndef MAGNUM_TARGET_GLES
 void SampleQueryGLTest::conditionalRender() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::NV::conditional_render>())
-        CORRADE_SKIP(Extensions::GL::NV::conditional_render::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::NV::conditional_render>())
+        CORRADE_SKIP(Extensions::NV::conditional_render::string() + std::string(" is not available."));
 
     Renderbuffer renderbuffer;
     renderbuffer.setStorage(RenderbufferFormat::RGBA8, Vector2i(32));
@@ -226,7 +226,7 @@ void SampleQueryGLTest::conditionalRender() {
     MyShader shader;
     framebuffer.bind();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     SampleQuery qYes{SampleQuery::Target::SamplesPassed},
         qNo{SampleQuery::Target::SamplesPassed},
@@ -244,7 +244,7 @@ void SampleQueryGLTest::conditionalRender() {
     q.end();
     qYes.endConditionalRender();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(qYes.result<bool>());
     CORRADE_VERIFY(q.result<bool>());
 
@@ -259,12 +259,12 @@ void SampleQueryGLTest::conditionalRender() {
     q.end();
     qNo.endConditionalRender();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(!qNo.result<bool>());
     CORRADE_VERIFY(!q.result<bool>());
 }
 #endif
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::SampleQueryGLTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::SampleQueryGLTest)

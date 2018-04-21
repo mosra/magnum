@@ -25,9 +25,9 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/BufferImage.h"
+#include "Magnum/GL/BufferImage.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct BufferImageTest: TestSuite::Tester {
     explicit BufferImageTest();
@@ -59,6 +59,6 @@ void BufferImageTest::constructNoCreateCompressed() {
     CORRADE_VERIFY(true);
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::BufferImageTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::BufferImageTest)

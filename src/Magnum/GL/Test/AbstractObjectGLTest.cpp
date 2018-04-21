@@ -23,12 +23,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Buffer.h"
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/OpenGLTester.h"
+#include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/OpenGLTester.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct AbstractObjectGLTest: OpenGLTester {
     explicit AbstractObjectGLTest();
@@ -41,17 +41,17 @@ AbstractObjectGLTest::AbstractObjectGLTest() {
 }
 
 void AbstractObjectGLTest::labelNoOp() {
-    if(Context::current().isExtensionSupported<Extensions::GL::KHR::debug>())
-        CORRADE_SKIP(Extensions::GL::KHR::debug::string() + std::string(" is supported."));
-    if(Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
-        CORRADE_SKIP(Extensions::GL::EXT::debug_label::string() + std::string(" is supported."));
+    if(Context::current().isExtensionSupported<GL::Extensions::KHR::debug>())
+        CORRADE_SKIP(GL::Extensions::KHR::debug::string() + std::string(" is supported."));
+    if(Context::current().isExtensionSupported<GL::Extensions::EXT::debug_label>())
+        CORRADE_SKIP(GL::Extensions::EXT::debug_label::string() + std::string(" is supported."));
 
     Buffer buffer;
     buffer.setLabel("MyBuffer");
     CORRADE_COMPARE(buffer.label(), "");
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::AbstractObjectGLTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::AbstractObjectGLTest)

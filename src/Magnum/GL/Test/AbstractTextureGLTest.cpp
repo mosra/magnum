@@ -23,12 +23,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/Texture.h"
-#include "Magnum/OpenGLTester.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Texture.h"
+#include "Magnum/GL/OpenGLTester.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct AbstractTextureGLTest: OpenGLTester {
     explicit AbstractTextureGLTest();
@@ -57,11 +57,11 @@ void AbstractTextureGLTest::construct() {
     {
         const Texture2D texture;
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(texture.id() > 0);
     }
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void AbstractTextureGLTest::constructCopy() {
@@ -73,7 +73,7 @@ void AbstractTextureGLTest::constructMove() {
     Texture2D a;
     const Int id = a.id();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
     Texture2D b(std::move(a));
@@ -85,7 +85,7 @@ void AbstractTextureGLTest::constructMove() {
     const Int cId = c.id();
     c = std::move(b);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
@@ -94,22 +94,22 @@ void AbstractTextureGLTest::constructMove() {
 #ifndef MAGNUM_TARGET_WEBGL
 void AbstractTextureGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
-    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
     Texture2D texture;
 
     CORRADE_COMPARE(texture.label(), "");
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     texture.setLabel("MyTexture");
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(texture.label(), "MyTexture");
 }
 #endif
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::AbstractTextureGLTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::AbstractTextureGLTest)

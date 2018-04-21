@@ -25,9 +25,9 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/TimeQuery.h"
+#include "Magnum/GL/TimeQuery.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct TimeQueryTest: TestSuite::Tester {
     explicit TimeQueryTest();
@@ -48,6 +48,6 @@ void TimeQueryTest::constructNoCreate() {
     CORRADE_VERIFY(true);
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::TimeQueryTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::TimeQueryTest)

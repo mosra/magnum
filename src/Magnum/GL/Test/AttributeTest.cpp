@@ -26,9 +26,9 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/AbstractShaderProgram.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct AttributeTest: TestSuite::Tester {
     explicit AttributeTest();
@@ -463,6 +463,6 @@ void AttributeTest::debugDataTypeVector4() {
     CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::HalfFloat GL::Attribute::DataType(0xdead)\n");
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::AttributeTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::AttributeTest)

@@ -25,9 +25,9 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Renderbuffer.h"
+#include "Magnum/GL/Renderbuffer.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct RenderbufferTest: TestSuite::Tester {
     explicit RenderbufferTest();
@@ -48,6 +48,6 @@ void RenderbufferTest::constructNoCreate() {
     CORRADE_VERIFY(true);
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::RenderbufferTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::RenderbufferTest)

@@ -26,9 +26,9 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Renderer.h"
+#include "Magnum/GL/Renderer.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct RendererTest: TestSuite::Tester {
     explicit RendererTest();
@@ -72,6 +72,6 @@ void RendererTest::debugGraphicsResetStatus() {
 }
 #endif
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::RendererTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::RendererTest)

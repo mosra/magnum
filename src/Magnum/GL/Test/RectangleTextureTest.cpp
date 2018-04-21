@@ -25,9 +25,9 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/RectangleTexture.h"
+#include "Magnum/GL/RectangleTexture.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct RectangleTextureTest: TestSuite::Tester {
     explicit RectangleTextureTest();
@@ -48,6 +48,6 @@ void RectangleTextureTest::constructNoCreate() {
     CORRADE_VERIFY(true);
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::RectangleTextureTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::RectangleTextureTest)

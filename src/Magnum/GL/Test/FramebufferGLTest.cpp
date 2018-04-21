@@ -25,32 +25,32 @@
 
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Magnum/Context.h"
-#include "Magnum/CubeMapTexture.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/Framebuffer.h"
 #include "Magnum/Image.h"
-#include "Magnum/PixelFormat.h"
-#include "Magnum/Renderbuffer.h"
-#include "Magnum/RenderbufferFormat.h"
-#include "Magnum/Texture.h"
-#include "Magnum/TextureFormat.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/CubeMapTexture.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Framebuffer.h"
+#include "Magnum/GL/OpenGLTester.h"
+#include "Magnum/GL/PixelFormat.h"
+#include "Magnum/GL/Renderbuffer.h"
+#include "Magnum/GL/RenderbufferFormat.h"
+#include "Magnum/GL/Texture.h"
+#include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Math/Color.h"
-#include "Magnum/OpenGLTester.h"
 
 #ifndef MAGNUM_TARGET_GLES2
-#include "Magnum/BufferImage.h"
-#include "Magnum/MultisampleTexture.h"
-#include "Magnum/TextureArray.h"
+#include "Magnum/GL/BufferImage.h"
+#include "Magnum/GL/MultisampleTexture.h"
+#include "Magnum/GL/TextureArray.h"
 #endif
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-#include "Magnum/CubeMapTextureArray.h"
+#include "Magnum/GL/CubeMapTextureArray.h"
 #endif
 #ifndef MAGNUM_TARGET_GLES
-#include "Magnum/RectangleTexture.h"
+#include "Magnum/GL/RectangleTexture.h"
 #endif
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct FramebufferGLTest: OpenGLTester {
     explicit FramebufferGLTest();
@@ -276,7 +276,7 @@ FramebufferGLTest::FramebufferGLTest() {
               });
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(Context::current().isExtensionSupported<Extensions::GL::EXT::texture_storage>()) {
+    if(Context::current().isExtensionSupported<Extensions::EXT::texture_storage>()) {
         rgbaFormatES2 = TextureFormat::RGBA8;
         depthStencilFormatES2 = TextureFormat::Depth24Stencil8;
     } else {
@@ -288,19 +288,19 @@ FramebufferGLTest::FramebufferGLTest() {
 
 void FramebufferGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     {
         const Framebuffer framebuffer({{32, 16}, {128, 256}});
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(framebuffer.id() > 0);
         CORRADE_COMPARE(framebuffer.viewport(), Range2Di({32, 16}, {128, 256}));
     }
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void FramebufferGLTest::constructCopy() {
@@ -310,14 +310,14 @@ void FramebufferGLTest::constructCopy() {
 
 void FramebufferGLTest::constructMove() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     Framebuffer a({{32, 16}, {128, 256}});
     const Int id = a.id();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
     Framebuffer b(std::move(a));
@@ -330,7 +330,7 @@ void FramebufferGLTest::constructMove() {
     const Int cId = c.id();
     c = std::move(b);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
@@ -339,8 +339,8 @@ void FramebufferGLTest::constructMove() {
 
 void FramebufferGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     GLuint id;
@@ -360,22 +360,22 @@ void FramebufferGLTest::wrap() {
 #ifndef MAGNUM_TARGET_WEBGL
 void FramebufferGLTest::label() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     /* No-Op version is tested in AbstractObjectGLTest */
-    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
     Framebuffer framebuffer({{}, Vector2i(32)});
 
     CORRADE_COMPARE(framebuffer.label(), "");
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     framebuffer.setLabel("MyFramebuffer");
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(framebuffer.label(), "MyFramebuffer");
 }
@@ -383,8 +383,8 @@ void FramebufferGLTest::label() {
 
 void FramebufferGLTest::attachRenderbuffer() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     Renderbuffer color;
@@ -398,11 +398,11 @@ void FramebufferGLTest::attachRenderbuffer() {
        on my NVidia, thus we need to do this juggling with one renderbuffer */
     Renderbuffer depthStencil;
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(Context::current().isExtensionSupported<Extensions::GL::OES::packed_depth_stencil>())
+    if(Context::current().isExtensionSupported<Extensions::OES::packed_depth_stencil>())
     #endif
     {
         #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        Debug() << "Using" << Extensions::GL::OES::packed_depth_stencil::string();
+        Debug() << "Using" << Extensions::OES::packed_depth_stencil::string();
         #endif
         depthStencil.setStorage(
             #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
@@ -421,13 +421,13 @@ void FramebufferGLTest::attachRenderbuffer() {
                .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, depthStencil);
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(Context::current().isExtensionSupported<Extensions::GL::OES::packed_depth_stencil>())
+    if(Context::current().isExtensionSupported<Extensions::OES::packed_depth_stencil>())
     #endif
     {
         framebuffer.attachRenderbuffer(Framebuffer::BufferAttachment::Stencil, depthStencil);
     }
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
@@ -435,11 +435,11 @@ void FramebufferGLTest::attachRenderbuffer() {
 #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void FramebufferGLTest::attachRenderbufferMultisample() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current().isExtensionSupported<Extensions::GL::ANGLE::framebuffer_multisample>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>())
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::framebuffer_multisample>() &&
+       !Context::current().isExtensionSupported<Extensions::NV::framebuffer_multisample>())
         CORRADE_SKIP("Required extension is not available.");
     #endif
 
@@ -451,7 +451,7 @@ void FramebufferGLTest::attachRenderbufferMultisample() {
     #endif
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::OES::packed_depth_stencil);
+    MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(Extensions::OES::packed_depth_stencil);
     #endif
 
     Renderbuffer depthStencil;
@@ -466,7 +466,7 @@ void FramebufferGLTest::attachRenderbufferMultisample() {
                .attachRenderbuffer(Framebuffer::BufferAttachment::Stencil, depthStencil);
                #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
@@ -474,8 +474,8 @@ void FramebufferGLTest::attachRenderbufferMultisample() {
 
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::attachTexture1D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
 
     Texture1D color;
     color.setStorage(1, TextureFormat::RGBA8, 128);
@@ -487,7 +487,7 @@ void FramebufferGLTest::attachTexture1D() {
     framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color, 0)
                .attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
@@ -495,15 +495,15 @@ void FramebufferGLTest::attachTexture1D() {
 
 void FramebufferGLTest::attachTexture2D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Framebuffer framebuffer({{}, Vector2i(128)});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Texture2D color;
     color.setStorage(1,
@@ -516,18 +516,18 @@ void FramebufferGLTest::attachTexture2D() {
         #endif
         Vector2i(128));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color, 0);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(Context::current().isExtensionSupported<Extensions::GL::OES::packed_depth_stencil>())
+    if(Context::current().isExtensionSupported<Extensions::OES::packed_depth_stencil>())
     #endif
     {
         #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        Debug() << "Using" << Extensions::GL::OES::packed_depth_stencil::string();
+        Debug() << "Using" << Extensions::OES::packed_depth_stencil::string();
         #endif
 
         /** @todo Is there any better way to select proper sized/unsized format on ES2? */
@@ -549,8 +549,8 @@ void FramebufferGLTest::attachTexture2D() {
     }
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    else if(Context::current().isExtensionSupported<Extensions::GL::OES::depth_texture>()) {
-        Debug() << "Using" << Extensions::GL::OES::depth_texture::string();
+    else if(Context::current().isExtensionSupported<Extensions::OES::depth_texture>()) {
+        Debug() << "Using" << Extensions::OES::depth_texture::string();
 
         Texture2D depth;
         depth.setStorage(1, TextureFormat::DepthComponent16, Vector2i(128));
@@ -558,7 +558,7 @@ void FramebufferGLTest::attachTexture2D() {
     }
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
@@ -566,11 +566,11 @@ void FramebufferGLTest::attachTexture2D() {
 #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void FramebufferGLTest::attachTexture3D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_3D>())
-        CORRADE_SKIP(Extensions::GL::OES::texture_3D::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::OES::texture_3D>())
+        CORRADE_SKIP(Extensions::OES::texture_3D::string() + std::string(" is not available."));
     #endif
 
     Texture3D color;
@@ -585,7 +585,7 @@ void FramebufferGLTest::attachTexture3D() {
     Framebuffer framebuffer({{}, Vector2i(128)});
     framebuffer.attachTextureLayer(Framebuffer::ColorAttachment(0), color, 0, 0);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
@@ -593,10 +593,10 @@ void FramebufferGLTest::attachTexture3D() {
 
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::attachTexture1DArray() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not available."));
 
     Texture1DArray color;
     color.setStorage(1, TextureFormat::RGBA8, {128, 8});
@@ -608,7 +608,7 @@ void FramebufferGLTest::attachTexture1DArray() {
     framebuffer.attachTextureLayer(Framebuffer::ColorAttachment(0), color, 0, 3)
                .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0, 3);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
@@ -617,10 +617,10 @@ void FramebufferGLTest::attachTexture1DArray() {
 #ifndef MAGNUM_TARGET_GLES2
 void FramebufferGLTest::attachTexture2DArray() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not available."));
     #endif
 
     Texture2DArray color;
@@ -633,7 +633,7 @@ void FramebufferGLTest::attachTexture2DArray() {
     framebuffer.attachTextureLayer(Framebuffer::ColorAttachment(0), color, 0, 3)
                .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0, 3);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
@@ -642,10 +642,10 @@ void FramebufferGLTest::attachTexture2DArray() {
 #ifndef MAGNUM_TARGET_GLES2
 void FramebufferGLTest::attachTexture2DMultisample() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::ARB::texture_multisample::string() + std::string(" is not available."));
     #else
     if(!Context::current().isVersionSupported(Version::GLES310))
         CORRADE_SKIP("OpenGL ES 3.1 is not supported.");
@@ -665,7 +665,7 @@ void FramebufferGLTest::attachTexture2DMultisample() {
     framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color)
                .attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
@@ -674,13 +674,13 @@ void FramebufferGLTest::attachTexture2DMultisample() {
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void FramebufferGLTest::attachTexture2DMultisampleArray() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::ARB::texture_multisample::string() + std::string(" is not available."));
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_storage_multisample_2d_array>())
-        CORRADE_SKIP(Extensions::GL::OES::texture_storage_multisample_2d_array::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::OES::texture_storage_multisample_2d_array>())
+        CORRADE_SKIP(Extensions::OES::texture_storage_multisample_2d_array::string() + std::string(" is not available."));
     #endif
 
     MultisampleTexture2DArray color;
@@ -697,7 +697,7 @@ void FramebufferGLTest::attachTexture2DMultisampleArray() {
     framebuffer.attachTextureLayer(Framebuffer::ColorAttachment(0), color, 3)
                .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 3);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
@@ -705,10 +705,10 @@ void FramebufferGLTest::attachTexture2DMultisampleArray() {
 
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::attachRectangleTexture() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not available."));
 
     RectangleTexture color;
     color.setStorage(TextureFormat::RGBA8, Vector2i(128));
@@ -720,7 +720,7 @@ void FramebufferGLTest::attachRectangleTexture() {
     framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color)
                .attachTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
@@ -728,8 +728,8 @@ void FramebufferGLTest::attachRectangleTexture() {
 
 void FramebufferGLTest::attachCubeMapTexture() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     Framebuffer framebuffer({{}, Vector2i(128)});
@@ -749,11 +749,11 @@ void FramebufferGLTest::attachCubeMapTexture() {
     CubeMapTexture depthStencil;
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(Context::current().isExtensionSupported<Extensions::GL::OES::packed_depth_stencil>())
+    if(Context::current().isExtensionSupported<Extensions::OES::packed_depth_stencil>())
     #endif
     {
         #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        Debug() << "Using" << Extensions::GL::OES::packed_depth_stencil::string();
+        Debug() << "Using" << Extensions::OES::packed_depth_stencil::string();
         #endif
 
         #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
@@ -773,15 +773,15 @@ void FramebufferGLTest::attachCubeMapTexture() {
     }
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    else if(Context::current().isExtensionSupported<Extensions::GL::OES::depth_texture>()) {
-        Debug() << "Using" << Extensions::GL::OES::depth_texture::string();
+    else if(Context::current().isExtensionSupported<Extensions::OES::depth_texture>()) {
+        Debug() << "Using" << Extensions::OES::depth_texture::string();
 
         depthStencil.setStorage(1, TextureFormat::DepthComponent16, Vector2i(128));
         framebuffer.attachCubeMapTexture(Framebuffer::BufferAttachment::Depth, depthStencil, CubeMapCoordinate::NegativeZ, 0);
     }
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
@@ -789,13 +789,13 @@ void FramebufferGLTest::attachCubeMapTexture() {
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void FramebufferGLTest::attachCubeMapTextureArray() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not available."));
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_cube_map_array::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not available."));
     #endif
 
     CubeMapTextureArray color;
@@ -808,7 +808,7 @@ void FramebufferGLTest::attachCubeMapTextureArray() {
     framebuffer.attachTextureLayer(Framebuffer::ColorAttachment(0), color, 0, 3)
                .attachTextureLayer(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0, 3);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
@@ -817,13 +817,13 @@ void FramebufferGLTest::attachCubeMapTextureArray() {
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void FramebufferGLTest::attachLayeredTexture3D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
-        CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() + std::string(" is not available."));
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
-        CORRADE_SKIP(Extensions::GL::EXT::geometry_shader::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() + std::string(" is not available."));
     #endif
 
     Texture3D color;
@@ -832,17 +832,17 @@ void FramebufferGLTest::attachLayeredTexture3D() {
     Framebuffer framebuffer{{{}, Vector2i{128}}};
     framebuffer.attachLayeredTexture(Framebuffer::ColorAttachment{0}, color, 0);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::attachLayeredTexture1DArray() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
-        CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() + std::string(" is not available."));
 
     Texture1DArray color;
     color.setStorage(1, TextureFormat::RGBA8, {128, 8});
@@ -854,7 +854,7 @@ void FramebufferGLTest::attachLayeredTexture1DArray() {
     framebuffer.attachLayeredTexture(Framebuffer::ColorAttachment{0}, color, 0)
                .attachLayeredTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
@@ -862,13 +862,13 @@ void FramebufferGLTest::attachLayeredTexture1DArray() {
 
 void FramebufferGLTest::attachLayeredTexture2DArray() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
-        CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() + std::string(" is not available."));
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
-        CORRADE_SKIP(Extensions::GL::EXT::geometry_shader::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() + std::string(" is not available."));
     #endif
 
     Texture2DArray color;
@@ -881,20 +881,20 @@ void FramebufferGLTest::attachLayeredTexture2DArray() {
     framebuffer.attachLayeredTexture(Framebuffer::ColorAttachment{0}, color, 0)
                .attachLayeredTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 void FramebufferGLTest::attachLayeredCubeMapTexture() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
-        CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() + std::string(" is not available."));
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
-        CORRADE_SKIP(Extensions::GL::EXT::geometry_shader::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() + std::string(" is not available."));
     #endif
 
     CubeMapTexture color;
@@ -907,24 +907,24 @@ void FramebufferGLTest::attachLayeredCubeMapTexture() {
     framebuffer.attachLayeredTexture(Framebuffer::ColorAttachment{0}, color, 0)
                .attachLayeredTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 void FramebufferGLTest::attachLayeredCubeMapTextureArray() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
-        CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not available."));
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
-        CORRADE_SKIP(Extensions::GL::EXT::geometry_shader::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_cube_map_array::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not available."));
     #endif
 
     CubeMapTextureArray color;
@@ -937,24 +937,24 @@ void FramebufferGLTest::attachLayeredCubeMapTextureArray() {
     framebuffer.attachLayeredTexture(Framebuffer::ColorAttachment{0}, color, 0)
                .attachLayeredTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil, 0);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 void FramebufferGLTest::attachLayeredTexture2DMultisampleArray() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
-        CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_multisample::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(Extensions::ARB::geometry_shader4::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
+        CORRADE_SKIP(Extensions::ARB::texture_multisample::string() + std::string(" is not available."));
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
-        CORRADE_SKIP(Extensions::GL::EXT::geometry_shader::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_storage_multisample_2d_array>())
-        CORRADE_SKIP(Extensions::GL::OES::texture_storage_multisample_2d_array::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(Extensions::EXT::geometry_shader::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::OES::texture_storage_multisample_2d_array>())
+        CORRADE_SKIP(Extensions::OES::texture_storage_multisample_2d_array::string() + std::string(" is not available."));
     #endif
 
     MultisampleTexture2DArray color;
@@ -971,7 +971,7 @@ void FramebufferGLTest::attachLayeredTexture2DMultisampleArray() {
     framebuffer.attachLayeredTexture(Framebuffer::ColorAttachment{0}, color)
                .attachLayeredTexture(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
@@ -979,8 +979,8 @@ void FramebufferGLTest::attachLayeredTexture2DMultisampleArray() {
 
 void FramebufferGLTest::detach() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     Framebuffer framebuffer({{}, Vector2i(128)});
@@ -988,20 +988,20 @@ void FramebufferGLTest::detach() {
                .detach(Framebuffer::BufferAttachment::Depth)
                .detach(Framebuffer::BufferAttachment::Stencil);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void FramebufferGLTest::multipleColorOutputs() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #elif defined(MAGNUM_TARGET_GLES2)
     #ifdef MAGNUM_TARGET_WEBGL
-    if(!Context::current().isExtensionSupported<Extensions::GL::WEBGL::draw_buffers>())
-        CORRADE_SKIP(Extensions::GL::WEBGL::draw_buffers::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_buffers>())
+        CORRADE_SKIP(Extensions::WEBGL::draw_buffers::string() + std::string(" is not available."));
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::draw_buffers>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::NV::draw_buffers>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::draw_buffers>() &&
+       !Context::current().isExtensionSupported<Extensions::NV::draw_buffers>())
         CORRADE_SKIP("No required extension available.");
     #endif
     #endif
@@ -1041,25 +1041,25 @@ void FramebufferGLTest::multipleColorOutputs() {
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     #ifdef MAGNUM_TARGET_GLES2
-    if(Context::current().isExtensionSupported<Extensions::GL::NV::read_buffer>())
+    if(Context::current().isExtensionSupported<Extensions::NV::read_buffer>())
     #endif
     {
         #ifdef MAGNUM_TARGET_GLES2
-        Debug() << "Using" << Extensions::GL::NV::read_buffer::string();
+        Debug() << "Using" << Extensions::NV::read_buffer::string();
         #endif
         framebuffer.mapForRead(Framebuffer::ColorAttachment(1));
     }
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
 
 void FramebufferGLTest::clear() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     Renderbuffer color;
@@ -1073,11 +1073,11 @@ void FramebufferGLTest::clear() {
        on my NVidia, thus we need to do this juggling with one renderbuffer */
     Renderbuffer depthStencil;
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(Context::current().isExtensionSupported<Extensions::GL::OES::packed_depth_stencil>())
+    if(Context::current().isExtensionSupported<Extensions::OES::packed_depth_stencil>())
     #endif
     {
         #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        Debug() << "Using" << Extensions::GL::OES::packed_depth_stencil::string();
+        Debug() << "Using" << Extensions::OES::packed_depth_stencil::string();
         #endif
         depthStencil.setStorage(
             #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
@@ -1096,18 +1096,18 @@ void FramebufferGLTest::clear() {
                .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, depthStencil);
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(Context::current().isExtensionSupported<Extensions::GL::OES::packed_depth_stencil>())
+    if(Context::current().isExtensionSupported<Extensions::OES::packed_depth_stencil>())
     #endif
     {
         framebuffer.attachRenderbuffer(Framebuffer::BufferAttachment::Stencil, depthStencil);
     }
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -1123,18 +1123,18 @@ void FramebufferGLTest::clearColorI() {
     Framebuffer framebuffer({{}, Vector2i{16}});
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     framebuffer.clearColor(0, Vector4i{-124, 67, 37, 17});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Image2D colorImage = framebuffer.read({{}, Vector2i{1}},
         {PixelFormat::RGBAInteger, PixelType::Int});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(colorImage.data<Vector4i>()[0], (Vector4i{-124, 67, 37, 17}));
 }
 
@@ -1150,18 +1150,18 @@ void FramebufferGLTest::clearColorUI() {
     Framebuffer framebuffer({{}, Vector2i{16}});
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     framebuffer.clearColor(0, Vector4ui{240, 67, 37, 17});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Image2D colorImage = framebuffer.read({{}, Vector2i{1}},
         {PixelFormat::RGBAInteger, PixelType::UnsignedInt});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(colorImage.data<Vector4ui>()[0], (Vector4ui{240, 67, 37, 17}));
 }
 
@@ -1177,18 +1177,18 @@ void FramebufferGLTest::clearColorF() {
     Framebuffer framebuffer({{}, Vector2i{16}});
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     framebuffer.clearColor(0, Math::unpack<Color4>(Color4ub{128, 64, 32, 17}));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Image2D colorImage = framebuffer.read({{}, Vector2i{1}},
         {PixelFormat::RGBA, PixelType::UnsignedByte});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(colorImage.data<Color4ub>()[0], (Color4ub{128, 64, 32, 17}));
 }
 
@@ -1210,25 +1210,25 @@ void FramebufferGLTest::clearDepth() {
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
                .attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     framebuffer.clearDepth(Math::unpack<Float, UnsignedShort>(48352));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifdef MAGNUM_TARGET_GLES
-    if(Context::current().isExtensionSupported<Extensions::GL::NV::read_depth>())
+    if(Context::current().isExtensionSupported<Extensions::NV::read_depth>())
     #endif
     {
         #ifdef MAGNUM_TARGET_GLES
-        Debug() << "Using" << Extensions::GL::NV::read_depth::string();
+        Debug() << "Using" << Extensions::NV::read_depth::string();
         #endif
 
         Image2D depthImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::DepthComponent, PixelType::UnsignedShort});
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE(depthImage.data<UnsignedShort>()[0], 48352);
     }
 }
@@ -1249,25 +1249,25 @@ void FramebufferGLTest::clearStencil() {
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
                .attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     framebuffer.clearStencil(67);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifdef MAGNUM_TARGET_GLES
-    if(Context::current().isExtensionSupported<Extensions::GL::NV::read_stencil>())
+    if(Context::current().isExtensionSupported<Extensions::NV::read_stencil>())
     #endif
     {
         #ifdef MAGNUM_TARGET_GLES
-        Debug() << "Using" << Extensions::GL::NV::read_stencil::string();
+        Debug() << "Using" << Extensions::NV::read_stencil::string();
         #endif
 
         Image2D stencilImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::StencilIndex, PixelType::UnsignedByte});
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE(stencilImage.data<UnsignedByte>()[0], 67);
     }
 }
@@ -1290,23 +1290,23 @@ void FramebufferGLTest::clearDepthStencil() {
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
                .attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     framebuffer.clearDepthStencil(Math::unpack<Float, UnsignedShort>(48352), 67);
 
     #ifdef MAGNUM_TARGET_GLES
-    if(Context::current().isExtensionSupported<Extensions::GL::NV::read_depth_stencil>())
+    if(Context::current().isExtensionSupported<Extensions::NV::read_depth_stencil>())
     #endif
     {
         #ifdef MAGNUM_TARGET_GLES
-        Debug() << "Using" << Extensions::GL::NV::read_depth_stencil::string();
+        Debug() << "Using" << Extensions::NV::read_depth_stencil::string();
         #endif
 
         Image2D depthStencilImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::DepthStencil, PixelType::UnsignedInt248});
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         /** @todo This will probably fail on different systems */
         CORRADE_COMPARE(depthStencilImage.data<UnsignedInt>()[0] >> 8, 12378300);
         CORRADE_COMPARE(depthStencilImage.data<UnsignedByte>()[0], 67);
@@ -1317,8 +1317,8 @@ void FramebufferGLTest::clearDepthStencil() {
 #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void FramebufferGLTest::invalidate() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     Renderbuffer color;
@@ -1335,19 +1335,19 @@ void FramebufferGLTest::invalidate() {
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), color)
                .attachRenderbuffer(Framebuffer::BufferAttachment::Stencil, stencil);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     framebuffer.invalidate({Framebuffer::InvalidationAttachment::Depth, Framebuffer::ColorAttachment(0)});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void FramebufferGLTest::invalidateSub() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     Renderbuffer color;
@@ -1360,14 +1360,14 @@ void FramebufferGLTest::invalidateSub() {
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), color)
                .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, depth);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
     framebuffer.invalidate({Framebuffer::InvalidationAttachment::Depth, Framebuffer::ColorAttachment(0)},
                            {{32, 16}, {79, 64}});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
@@ -1378,8 +1378,8 @@ namespace {
 
 void FramebufferGLTest::read() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     Renderbuffer color;
@@ -1393,11 +1393,11 @@ void FramebufferGLTest::read() {
        on my NVidia, thus we need to do this juggling with one renderbuffer */
     Renderbuffer depthStencil;
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(Context::current().isExtensionSupported<Extensions::GL::OES::packed_depth_stencil>())
+    if(Context::current().isExtensionSupported<Extensions::OES::packed_depth_stencil>())
     #endif
     {
         #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        Debug() << "Using" << Extensions::GL::OES::packed_depth_stencil::string();
+        Debug() << "Using" << Extensions::OES::packed_depth_stencil::string();
         #endif
         depthStencil.setStorage(
             #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
@@ -1416,13 +1416,13 @@ void FramebufferGLTest::read() {
                .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, depthStencil);
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(Context::current().isExtensionSupported<Extensions::GL::OES::packed_depth_stencil>())
+    if(Context::current().isExtensionSupported<Extensions::OES::packed_depth_stencil>())
     #endif
     {
         framebuffer.attachRenderbuffer(Framebuffer::BufferAttachment::Stencil, depthStencil);
     }
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
@@ -1434,51 +1434,51 @@ void FramebufferGLTest::read() {
     Image2D colorImage = framebuffer.read(Range2Di::fromSize({16, 8}, {8, 16}),
         {DataStorage, PixelFormat::RGBA, PixelType::UnsignedByte});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
     CORRADE_COMPARE(colorImage.data().size(), (DataOffset + 8*16)*sizeof(Color4ub));
     CORRADE_COMPARE(colorImage.data<Color4ub>()[DataOffset], Color4ub(128, 64, 32, 17));
 
     #ifndef MAGNUM_TARGET_WEBGL
     #ifdef MAGNUM_TARGET_GLES
-    if(Context::current().isExtensionSupported<Extensions::GL::NV::read_depth>())
+    if(Context::current().isExtensionSupported<Extensions::NV::read_depth>())
     #endif
     {
         #ifdef MAGNUM_TARGET_GLES
-        Debug() << "Using" << Extensions::GL::NV::read_depth::string();
+        Debug() << "Using" << Extensions::NV::read_depth::string();
         #endif
 
         Image2D depthImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::DepthComponent, PixelType::UnsignedShort});
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE(depthImage.data<UnsignedShort>()[0], 48352);
     }
 
     #ifdef MAGNUM_TARGET_GLES
-    if(Context::current().isExtensionSupported<Extensions::GL::NV::read_stencil>())
+    if(Context::current().isExtensionSupported<Extensions::NV::read_stencil>())
     #endif
     {
         #ifdef MAGNUM_TARGET_GLES
-        Debug() << "Using" << Extensions::GL::NV::read_stencil::string();
+        Debug() << "Using" << Extensions::NV::read_stencil::string();
         #endif
 
         Image2D stencilImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::StencilIndex, PixelType::UnsignedByte});
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE(stencilImage.data<UnsignedByte>()[0], 67);
     }
 
     #ifdef MAGNUM_TARGET_GLES
-    if(Context::current().isExtensionSupported<Extensions::GL::NV::read_depth_stencil>())
+    if(Context::current().isExtensionSupported<Extensions::NV::read_depth_stencil>())
     #endif
     {
         #ifdef MAGNUM_TARGET_GLES
-        Debug() << "Using" << Extensions::GL::NV::read_depth_stencil::string();
+        Debug() << "Using" << Extensions::NV::read_depth_stencil::string();
         #endif
 
         Image2D depthStencilImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::DepthStencil, PixelType::UnsignedInt248});
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         /** @todo This will probably fail on different systems */
         CORRADE_COMPARE(depthStencilImage.data<UnsignedInt>()[0] >> 8, 12378300);
         CORRADE_COMPARE(depthStencilImage.data<UnsignedByte>()[0], 67);
@@ -1489,8 +1489,8 @@ void FramebufferGLTest::read() {
 #ifndef MAGNUM_TARGET_GLES2
 void FramebufferGLTest::readBuffer() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     Renderbuffer color;
@@ -1503,7 +1503,7 @@ void FramebufferGLTest::readBuffer() {
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), color)
                .attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
@@ -1516,7 +1516,7 @@ void FramebufferGLTest::readBuffer() {
         {DataStorage, PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
     CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
     auto colorData = colorImage.buffer().data();
@@ -1539,8 +1539,8 @@ namespace {
 
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::copyImageTexture1D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
 
     Texture2D storage;
     storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
@@ -1552,7 +1552,7 @@ void FramebufferGLTest::copyImageTexture1D() {
     Texture1D texture;
     fb.copyImage(Range2Di::fromSize(Vector2i{1}, {2, 1}), texture, 0, TextureFormat::RGBA8);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(texture.imageSize(0)[0], 2);
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
@@ -1563,8 +1563,8 @@ void FramebufferGLTest::copyImageTexture1D() {
 
 void FramebufferGLTest::copyImageTexture2D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     Texture2D storage;
@@ -1593,7 +1593,7 @@ void FramebufferGLTest::copyImageTexture2D() {
         #endif
         );
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(texture.imageSize(0), Vector2i{2});
@@ -1607,10 +1607,10 @@ void FramebufferGLTest::copyImageTexture2D() {
 
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::copyImageTexture1DArray() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not available."));
 
     Texture2D storage;
     storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
@@ -1622,7 +1622,7 @@ void FramebufferGLTest::copyImageTexture1DArray() {
     Texture1DArray texture;
     fb.copyImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, 0, TextureFormat::RGBA8);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(texture.imageSize(0), Vector2i{2});
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
@@ -1633,10 +1633,10 @@ void FramebufferGLTest::copyImageTexture1DArray() {
 }
 
 void FramebufferGLTest::copyImageRectangleTexture() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not available."));
 
     Texture2D storage;
     storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
@@ -1648,7 +1648,7 @@ void FramebufferGLTest::copyImageRectangleTexture() {
     RectangleTexture texture;
     fb.copyImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, TextureFormat::RGBA8);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(texture.imageSize(), Vector2i{2});
     CORRADE_COMPARE_AS(texture.image({PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
@@ -1661,8 +1661,8 @@ void FramebufferGLTest::copyImageRectangleTexture() {
 
 void FramebufferGLTest::copyImageCubeMapTexture() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -1698,7 +1698,7 @@ void FramebufferGLTest::copyImageCubeMapTexture() {
 
     fb.copyImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, CubeMapCoordinate::PositiveX, 0, format);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(texture.imageSize(0), Vector2i{2});
@@ -1712,8 +1712,8 @@ void FramebufferGLTest::copyImageCubeMapTexture() {
 
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::copySubImageTexture1D() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
 
     Texture2D storage;
     storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
@@ -1727,7 +1727,7 @@ void FramebufferGLTest::copySubImageTexture1D() {
         .setSubImage(0, {}, ImageView1D{PixelFormat::RGBA, PixelType::UnsignedByte, 4, ZeroStorage});
     fb.copySubImage(Range2Di::fromSize(Vector2i{1}, {2, 1}), texture, 0, 1);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
         (Containers::Array<char>{Containers::InPlaceInit, {
@@ -1738,8 +1738,8 @@ void FramebufferGLTest::copySubImageTexture1D() {
 
 void FramebufferGLTest::copySubImageTexture2D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     Texture2D storage;
@@ -1770,7 +1770,7 @@ void FramebufferGLTest::copySubImageTexture2D() {
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, ZeroStorage});
     fb.copySubImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, 0, Vector2i{1});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
@@ -1786,11 +1786,11 @@ void FramebufferGLTest::copySubImageTexture2D() {
 #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void FramebufferGLTest::copySubImageTexture3D() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current().isExtensionSupported<Extensions::GL::OES::texture_3D>())
-        CORRADE_SKIP(Extensions::GL::OES::texture_3D::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::OES::texture_3D>())
+        CORRADE_SKIP(Extensions::OES::texture_3D::string() + std::string(" is not available."));
     #endif
 
     Texture2D storage;
@@ -1817,7 +1817,7 @@ void FramebufferGLTest::copySubImageTexture3D() {
         .setSubImage(0, {}, ImageView3D{PixelFormat::RGBA, PixelType::UnsignedByte, {4, 4, 2}, ZeroStorage});
     fb.copySubImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, 0, Vector3i{1});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
@@ -1838,10 +1838,10 @@ void FramebufferGLTest::copySubImageTexture3D() {
 
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::copySubImageTexture1DArray() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not available."));
 
     Texture2D storage;
     storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
@@ -1855,7 +1855,7 @@ void FramebufferGLTest::copySubImageTexture1DArray() {
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, ZeroStorage});
     fb.copySubImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, 0, Vector2i{1});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
         (Containers::Array<char>{Containers::InPlaceInit, {
@@ -1870,10 +1870,10 @@ void FramebufferGLTest::copySubImageTexture1DArray() {
 #ifndef MAGNUM_TARGET_GLES2
 void FramebufferGLTest::copySubImageTexture2DArray() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_array::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not available."));
     #endif
 
     Texture2D storage;
@@ -1888,7 +1888,7 @@ void FramebufferGLTest::copySubImageTexture2DArray() {
         .setSubImage(0, {}, ImageView3D{PixelFormat::RGBA, PixelType::UnsignedByte, {4, 4, 2}, ZeroStorage});
     fb.copySubImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, 0, Vector3i{1});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
@@ -1909,10 +1909,10 @@ void FramebufferGLTest::copySubImageTexture2DArray() {
 
 #ifndef MAGNUM_TARGET_GLES
 void FramebufferGLTest::copySubImageRectangleTexture() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_rectangle::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
+        CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not available."));
 
     Texture2D storage;
     storage.setStorage(1, TextureFormat::RGBA8, Vector2i{4})
@@ -1926,7 +1926,7 @@ void FramebufferGLTest::copySubImageRectangleTexture() {
         .setSubImage({}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, ZeroStorage});
     fb.copySubImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, Vector2i{1});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE_AS(texture.image({PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
         (Containers::Array<char>{Containers::InPlaceInit, {
@@ -1940,8 +1940,8 @@ void FramebufferGLTest::copySubImageRectangleTexture() {
 
 void FramebufferGLTest::copySubImageCubeMapTexture() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     Texture2D storage;
@@ -1972,7 +1972,7 @@ void FramebufferGLTest::copySubImageCubeMapTexture() {
         .setSubImage(CubeMapCoordinate::NegativeY, 0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, ZeroStorage});
     fb.copySubImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, 0, {1, 1, 3});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE_AS(texture.image(CubeMapCoordinate::NegativeY, 0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
@@ -1988,13 +1988,13 @@ void FramebufferGLTest::copySubImageCubeMapTexture() {
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void FramebufferGLTest::copySubImageCubeMapTextureArray() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::GL::ARB::texture_cube_map_array::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not available."));
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
-        CORRADE_SKIP(Extensions::GL::EXT::texture_cube_map_array::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
+        CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not available."));
     #endif
 
     Texture2D storage;
@@ -2009,7 +2009,7 @@ void FramebufferGLTest::copySubImageCubeMapTextureArray() {
         .setSubImage(0, {}, ImageView3D{PixelFormat::RGBA, PixelType::UnsignedByte, {4, 4, 6}, ZeroStorage});
     fb.copySubImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, 0, {1, 1, 3});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE_AS(texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte}).release(),
@@ -2051,11 +2051,11 @@ void FramebufferGLTest::copySubImageCubeMapTextureArray() {
 #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void FramebufferGLTest::blit() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current().isExtensionSupported<Extensions::GL::NV::framebuffer_blit>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::ANGLE::framebuffer_blit>())
+    if(!Context::current().isExtensionSupported<Extensions::NV::framebuffer_blit>() &&
+       !Context::current().isExtensionSupported<Extensions::ANGLE::framebuffer_blit>())
         CORRADE_SKIP("Required extension is not available.");
     #endif
 
@@ -2072,7 +2072,7 @@ void FramebufferGLTest::blit() {
     a.attachRenderbuffer(Framebuffer::ColorAttachment(0), colorA);
     b.attachRenderbuffer(Framebuffer::ColorAttachment(0), colorB);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(a.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(a.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
     CORRADE_COMPARE(b.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
@@ -2087,18 +2087,18 @@ void FramebufferGLTest::blit() {
     /* The framebuffer should be black before */
     Image2D imageBefore = b.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(imageBefore.data<Color4ub>()[0], Color4ub());
 
     /* And have given color after */
     Framebuffer::blit(a, b, a.viewport(), FramebufferBlit::Color);
     Image2D imageAfter = b.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(imageAfter.data<Color4ub>()[0], Color4ub(128, 64, 32, 17));
 }
 #endif
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::FramebufferGLTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::FramebufferGLTest)

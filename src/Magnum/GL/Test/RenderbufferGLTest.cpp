@@ -23,14 +23,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/OpenGLTester.h"
+#include "Magnum/GL/Renderbuffer.h"
+#include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/Math/Vector2.h"
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/Renderbuffer.h"
-#include "Magnum/RenderbufferFormat.h"
-#include "Magnum/OpenGLTester.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct RenderbufferGLTest: OpenGLTester {
     explicit RenderbufferGLTest();
@@ -70,18 +70,18 @@ RenderbufferGLTest::RenderbufferGLTest() {
 
 void RenderbufferGLTest::construct() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     {
         const Renderbuffer renderbuffer;
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(renderbuffer.id() > 0);
     }
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void RenderbufferGLTest::constructCopy() {
@@ -91,14 +91,14 @@ void RenderbufferGLTest::constructCopy() {
 
 void RenderbufferGLTest::constructMove() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     Renderbuffer a;
     const Int id = a.id();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
     Renderbuffer b(std::move(a));
@@ -110,7 +110,7 @@ void RenderbufferGLTest::constructMove() {
     const Int cId = c.id();
     c = std::move(b);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
@@ -118,8 +118,8 @@ void RenderbufferGLTest::constructMove() {
 
 void RenderbufferGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     GLuint id;
@@ -139,20 +139,20 @@ void RenderbufferGLTest::wrap() {
 #ifndef MAGNUM_TARGET_WEBGL
 void RenderbufferGLTest::label() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
-    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
     Renderbuffer renderbuffer;
 
     CORRADE_COMPARE(renderbuffer.label(), "");
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     renderbuffer.setLabel("MyRenderbuffer");
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(renderbuffer.label(), "MyRenderbuffer");
 }
@@ -160,8 +160,8 @@ void RenderbufferGLTest::label() {
 
 void RenderbufferGLTest::setStorage() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
     Renderbuffer renderbuffer;
@@ -172,17 +172,17 @@ void RenderbufferGLTest::setStorage() {
     renderbuffer.setStorage(RenderbufferFormat::RGBA4, {128, 128});
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 void RenderbufferGLTest::setStorageMultisample() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::framebuffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
+        CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current().isExtensionSupported<Extensions::GL::ANGLE::framebuffer_multisample>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>())
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::framebuffer_multisample>() &&
+       !Context::current().isExtensionSupported<Extensions::NV::framebuffer_multisample>())
         CORRADE_SKIP("Required extension is not available.");
     #endif
 
@@ -194,10 +194,10 @@ void RenderbufferGLTest::setStorageMultisample() {
     renderbuffer.setStorageMultisample(Renderbuffer::maxSamples(), RenderbufferFormat::RGBA4, {128, 128});
     #endif
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::RenderbufferGLTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::RenderbufferGLTest)

@@ -26,9 +26,9 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Version.h"
+#include "Magnum/GL/Version.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct VersionTest: TestSuite::Tester {
     explicit VersionTest();
@@ -126,6 +126,6 @@ void VersionTest::debugES() {
 }
 #endif
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::VersionTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::VersionTest)

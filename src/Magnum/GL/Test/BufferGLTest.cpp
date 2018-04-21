@@ -28,12 +28,12 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Magnum/Buffer.h"
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/OpenGLTester.h"
+#include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/OpenGLTester.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct BufferGLTest: OpenGLTester {
     explicit BufferGLTest();
@@ -95,13 +95,13 @@ void BufferGLTest::construct() {
     {
         Buffer buffer;
 
-        MAGNUM_VERIFY_NO_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_VERIFY(buffer.id() > 0);
         CORRADE_COMPARE(buffer.targetHint(), Buffer::TargetHint::Array);
         CORRADE_COMPARE(buffer.size(), 0);
     }
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void BufferGLTest::constructCopy() {
@@ -113,7 +113,7 @@ void BufferGLTest::constructMove() {
     Buffer a;
     const Int id = a.id();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(id > 0);
 
     Buffer b(std::move(a));
@@ -125,7 +125,7 @@ void BufferGLTest::constructMove() {
     const Int cId = c.id();
     c = std::move(b);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(cId > 0);
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
@@ -149,17 +149,17 @@ void BufferGLTest::wrap() {
 #ifndef MAGNUM_TARGET_WEBGL
 void BufferGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
-    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::EXT::debug_label>())
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
         CORRADE_SKIP("Required extension is not available");
 
     Buffer buffer;
 
     CORRADE_COMPARE(buffer.label(), "");
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     buffer.setLabel("MyBuffer");
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(buffer.label(), "MyBuffer");
 }
@@ -168,32 +168,32 @@ void BufferGLTest::label() {
 #ifndef MAGNUM_TARGET_GLES2
 void BufferGLTest::bindBase() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::uniform_buffer_object::string() + std::string{" is not supported."});
+    if(!Context::current().isExtensionSupported<Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(Extensions::ARB::uniform_buffer_object::string() + std::string{" is not supported."});
     #endif
 
     Buffer buffer;
     buffer.bind(Buffer::Target::Uniform, 15);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Buffer::unbind(Buffer::Target::Uniform, 15);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Buffer::bind(Buffer::Target::Uniform, 7, {&buffer, nullptr, &buffer});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     Buffer::unbind(Buffer::Target::Uniform, 7, 3);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void BufferGLTest::bindRange() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
-        CORRADE_SKIP(Extensions::GL::ARB::uniform_buffer_object::string() + std::string{" is not supported."});
+    if(!Context::current().isExtensionSupported<Extensions::ARB::uniform_buffer_object>())
+        CORRADE_SKIP(Extensions::ARB::uniform_buffer_object::string() + std::string{" is not supported."});
     #endif
 
     /* Check that we have correct offset alignment */
@@ -203,14 +203,14 @@ void BufferGLTest::bindRange() {
     buffer.setData({nullptr, 1024}, BufferUsage::StaticDraw)
          .bind(Buffer::Target::Uniform, 15, 256, 13);
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     /** @todo C++14: get rid of std::make_tuple */
     Buffer::bind(Buffer::Target::Uniform, 7, {
         std::make_tuple(&buffer, 256, 13), {},
         std::make_tuple(&buffer, 768, 64)});
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 #endif
 
@@ -220,25 +220,25 @@ void BufferGLTest::data() {
     /* Plain array */
     constexpr Int data[] = {2, 7, 5, 13, 25};
     buffer.setData({data, 5}, BufferUsage::StaticDraw);
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
 
     /* STL vector */
     std::vector<Int> data2{2, 7, 5, 13, 25};
     buffer.setData(data2, BufferUsage::StaticDraw);
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
 
     /* STL array */
     std::array<Int, 5> data3{{2, 7, 5, 13, 25}};
     buffer.setData(data3, BufferUsage::StaticDraw);
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
     auto contents = buffer.data();
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(Containers::arrayCast<Int>(contents),
         Containers::arrayView(data),
         TestSuite::Compare::Container);
@@ -247,25 +247,25 @@ void BufferGLTest::data() {
     /* Plain array */
     constexpr Int subData[] = {125, 3, 15};
     buffer.setSubData(4, {subData, 3});
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
 
     /* STL vector */
     std::vector<Int> subData2{125, 3, 15};
     buffer.setSubData(4, subData2);
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
 
     /* STL array */
     std::array<Int, 3> subData3{{125, 3, 15}};
     buffer.setSubData(4, subData3);
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(buffer.size(), 5*4);
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
     auto subContents = buffer.subData(4, 3*4);
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(Containers::arrayCast<Int>(subContents),
         Containers::arrayView(subData),
         TestSuite::Compare::Container);
@@ -275,8 +275,8 @@ void BufferGLTest::data() {
 #ifndef MAGNUM_TARGET_WEBGL
 void BufferGLTest::map() {
     #ifdef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::OES::mapbuffer>())
-        CORRADE_SKIP(Extensions::GL::OES::mapbuffer::string() + std::string(" is not supported"));
+    if(!Context::current().isExtensionSupported<Extensions::OES::mapbuffer>())
+        CORRADE_SKIP(Extensions::OES::mapbuffer::string() + std::string(" is not supported"));
     #endif
     Buffer buffer;
 
@@ -290,7 +290,7 @@ void BufferGLTest::map() {
         Buffer::MapAccess::WriteOnly
         #endif
         );
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_VERIFY(contents);
     #ifndef MAGNUM_TARGET_GLES2
@@ -299,7 +299,7 @@ void BufferGLTest::map() {
     contents[3] = 107;
 
     CORRADE_VERIFY(buffer.unmap());
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
@@ -311,11 +311,11 @@ void BufferGLTest::map() {
 
 void BufferGLTest::mapRange() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::map_buffer_range>())
-        CORRADE_SKIP(Extensions::GL::ARB::map_buffer_range::string() + std::string(" is not supported"));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::map_buffer_range>())
+        CORRADE_SKIP(Extensions::ARB::map_buffer_range::string() + std::string(" is not supported"));
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::map_buffer_range>())
-        CORRADE_SKIP(Extensions::GL::EXT::map_buffer_range::string() + std::string(" is not supported"));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::map_buffer_range>())
+        CORRADE_SKIP(Extensions::EXT::map_buffer_range::string() + std::string(" is not supported"));
     #endif
 
     constexpr char data[] = {2, 7, 5, 13, 25};
@@ -323,7 +323,7 @@ void BufferGLTest::mapRange() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Containers::ArrayView<char> contents = buffer.map(1, 4, Buffer::MapFlag::Read|Buffer::MapFlag::Write);
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_VERIFY(contents);
     CORRADE_COMPARE(contents.size(), 4);
@@ -331,7 +331,7 @@ void BufferGLTest::mapRange() {
     contents[3] = 107;
 
     CORRADE_VERIFY(buffer.unmap());
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
@@ -343,11 +343,11 @@ void BufferGLTest::mapRange() {
 
 void BufferGLTest::mapRangeExplicitFlush() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::map_buffer_range>())
-        CORRADE_SKIP(Extensions::GL::ARB::map_buffer_range::string() + std::string(" is not supported"));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::map_buffer_range>())
+        CORRADE_SKIP(Extensions::ARB::map_buffer_range::string() + std::string(" is not supported"));
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::map_buffer_range>())
-        CORRADE_SKIP(Extensions::GL::EXT::map_buffer_range::string() + std::string(" is not supported"));
+    if(!Context::current().isExtensionSupported<Extensions::EXT::map_buffer_range>())
+        CORRADE_SKIP(Extensions::EXT::map_buffer_range::string() + std::string(" is not supported"));
     #endif
 
     constexpr char data[] = {2, 7, 5, 13, 25};
@@ -359,7 +359,7 @@ void BufferGLTest::mapRangeExplicitFlush() {
     CORRADE_VERIFY(contents);
     contents[2] = 99;
     CORRADE_VERIFY(buffer.unmap());
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* Unflushed range _might_ not be changed, thus nothing to test */
 
@@ -368,9 +368,9 @@ void BufferGLTest::mapRangeExplicitFlush() {
     CORRADE_VERIFY(contents);
     contents[3] = 107;
     buffer.flushMappedRange(3, 1);
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(buffer.unmap());
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* Flushed range should be changed */
     /** @todo How to verify the contents in ES? */
@@ -392,7 +392,7 @@ void BufferGLTest::copy() {
     buffer2.setData({nullptr, 5}, BufferUsage::StaticRead);
 
     Buffer::copy(buffer1, buffer2, 1, 2, 3);
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
@@ -411,12 +411,12 @@ void BufferGLTest::invalidate() {
     /* Just test that no errors are emitted */
 
     buffer.invalidateSubData(3, 2);
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     buffer.invalidateData();
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::BufferGLTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::BufferGLTest)

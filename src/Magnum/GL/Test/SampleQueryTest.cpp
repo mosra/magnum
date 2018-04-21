@@ -25,9 +25,9 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/SampleQuery.h"
+#include "Magnum/GL/SampleQuery.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct SampleQueryTest: TestSuite::Tester {
     explicit SampleQueryTest();
@@ -48,6 +48,6 @@ void SampleQueryTest::constructNoCreate() {
     CORRADE_VERIFY(true);
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::SampleQueryTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::SampleQueryTest)

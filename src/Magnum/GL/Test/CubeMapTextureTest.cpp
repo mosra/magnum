@@ -25,9 +25,9 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/CubeMapTexture.h"
+#include "Magnum/GL/CubeMapTexture.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace GL { namespace Test {
 
 struct CubeMapTextureTest: TestSuite::Tester {
     explicit CubeMapTextureTest();
@@ -48,6 +48,6 @@ void CubeMapTextureTest::constructNoCreate() {
     CORRADE_VERIFY(true);
 }
 
-}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Test::CubeMapTextureTest)
+CORRADE_TEST_MAIN(Magnum::GL::Test::CubeMapTextureTest)
