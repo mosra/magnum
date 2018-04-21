@@ -136,7 +136,7 @@ void DefaultFramebuffer::initializeContextBasedFunctionality(Context& context) {
 
     /* Fake initial glViewport() call for ApiTrace */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::GREMEDY::string_marker>())
+    if(context.isExtensionSupported<Extensions::GREMEDY::string_marker>())
         glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
     #endif
 }

@@ -227,22 +227,22 @@ void Context::setupDriverWorkarounds() {
 
     #ifndef MAGNUM_TARGET_GLES
     #ifdef CORRADE_TARGET_WINDOWS
-    if((detectedDriver() & DetectedDriver::IntelWindows) && !isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>() && !isDriverWorkaroundDisabled("intel-windows-glsl-exposes-unsupported-shading-language-420pack"))
-        _setRequiredVersion(GL::ARB::shading_language_420pack, None);
+    if((detectedDriver() & DetectedDriver::IntelWindows) && !isExtensionSupported<Extensions::ARB::shading_language_420pack>() && !isDriverWorkaroundDisabled("intel-windows-glsl-exposes-unsupported-shading-language-420pack"))
+        _setRequiredVersion(ARB::shading_language_420pack, None);
     #endif
 
     if(!isDriverWorkaroundDisabled("no-layout-qualifiers-on-old-glsl")) {
-        _setRequiredVersion(GL::ARB::explicit_attrib_location, GL320);
-        _setRequiredVersion(GL::ARB::explicit_uniform_location, GL320);
-        _setRequiredVersion(GL::ARB::shading_language_420pack, GL320);
+        _setRequiredVersion(ARB::explicit_attrib_location, GL320);
+        _setRequiredVersion(ARB::explicit_uniform_location, GL320);
+        _setRequiredVersion(ARB::shading_language_420pack, GL320);
     }
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if((detectedDriver() & DetectedDriver::Svga3D) &&
-       isExtensionSupported<Extensions::GL::ARB::get_texture_sub_image>() &&
+       isExtensionSupported<Extensions::ARB::get_texture_sub_image>() &&
        !isDriverWorkaroundDisabled("svga3d-gettexsubimage-oob-write"))
-        _setRequiredVersion(GL::ARB::get_texture_sub_image, None);
+        _setRequiredVersion(ARB::get_texture_sub_image, None);
     #endif
 
     #undef _setRequiredVersion

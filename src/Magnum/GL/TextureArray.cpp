@@ -45,7 +45,7 @@ namespace {
 
 template<UnsignedInt dimensions> VectorTypeFor<dimensions+1, Int> TextureArray<dimensions>::maxSize() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_array>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
         return {};
     #endif
 

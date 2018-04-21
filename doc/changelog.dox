@@ -178,6 +178,8 @@ See also:
     @ref MAGNUM_VERIFY_NO_GL_ERROR() instead
 -   The `Platform::Context` class is deprecated, use @ref Platform::GLContext
     instead
+-   The `Extensions::GL` namespace is deprecated, use @ref GL::Extensions
+    instead
 -   The @ref PixelFormat and @ref CompressedPixelFormat enum now contains
     generic API-independent values. The GL-specific formats are present there,
     but marked as deprecated. Use either the generic values or

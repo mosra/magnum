@@ -46,8 +46,8 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 {
     /* Create implementation */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
-        extensions.emplace_back(Extensions::GL::ARB::direct_state_access::string());
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
+        extensions.emplace_back(Extensions::ARB::direct_state_access::string());
         createImplementation = &Framebuffer::createImplementationDSA;
         createRenderbufferImplementation = &Renderbuffer::createImplementationDSA;
 
@@ -60,7 +60,7 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
     /* DSA/non-DSA implementation */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
         /* Extension added above */
 
         checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDSA;
@@ -91,8 +91,8 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
         renderbufferStorageImplementation = &Renderbuffer::storageImplementationDSA;
 
-    } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-        extensions.emplace_back(Extensions::GL::EXT::direct_state_access::string());
+    } else if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
+        extensions.emplace_back(Extensions::EXT::direct_state_access::string());
 
         checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDSAEXT;
 
@@ -172,7 +172,7 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
     if(context.isVersionSupported(Version::GLES320))
         textureImplementation = &Framebuffer::textureImplementationDefault;
-    else if(context.isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+    else if(context.isExtensionSupported<Extensions::EXT::geometry_shader>())
         textureImplementation = &Framebuffer::textureImplementationEXT;
     else
         textureImplementation = nullptr;
@@ -187,21 +187,21 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     bindInternalImplementation = &Framebuffer::bindImplementationDefault;
     checkStatusImplementation = &Framebuffer::checkStatusImplementationDefault;
 
-    if(context.isExtensionSupported<Extensions::GL::ANGLE::framebuffer_blit>()) {
-        extensions.push_back(Extensions::GL::ANGLE::framebuffer_blit::string());
+    if(context.isExtensionSupported<Extensions::ANGLE::framebuffer_blit>()) {
+        extensions.push_back(Extensions::ANGLE::framebuffer_blit::string());
 
-    } else if(context.isExtensionSupported<Extensions::GL::APPLE::framebuffer_multisample>()) {
-        extensions.push_back(Extensions::GL::APPLE::framebuffer_multisample::string());
+    } else if(context.isExtensionSupported<Extensions::APPLE::framebuffer_multisample>()) {
+        extensions.push_back(Extensions::APPLE::framebuffer_multisample::string());
 
-    } else if(context.isExtensionSupported<Extensions::GL::NV::framebuffer_blit>()) {
-        extensions.push_back(Extensions::GL::NV::framebuffer_blit::string());
+    } else if(context.isExtensionSupported<Extensions::NV::framebuffer_blit>()) {
+        extensions.push_back(Extensions::NV::framebuffer_blit::string());
 
     /* NV_framebuffer_multisample requires NV_framebuffer_blit, which has these
        enums. However, on my system only NV_framebuffer_multisample is
        supported, but NV_framebuffer_blit isn't. I will hold my breath and
        assume these enums are available. */
-    } else if(context.isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>()) {
-        extensions.push_back(Extensions::GL::NV::framebuffer_multisample::string());
+    } else if(context.isExtensionSupported<Extensions::NV::framebuffer_multisample>()) {
+        extensions.push_back(Extensions::NV::framebuffer_multisample::string());
 
     /* If no such extension is available, reset back to single target */
     } else {
@@ -215,18 +215,18 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
     #ifndef MAGNUM_TARGET_WEBGL
     /* Framebuffer draw mapping on ES2 */
-    if(context.isExtensionSupported<Extensions::GL::EXT::draw_buffers>()) {
-        extensions.push_back(Extensions::GL::EXT::draw_buffers::string());
+    if(context.isExtensionSupported<Extensions::EXT::draw_buffers>()) {
+        extensions.push_back(Extensions::EXT::draw_buffers::string());
 
         drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationEXT;
-    } else if(context.isExtensionSupported<Extensions::GL::NV::draw_buffers>()) {
-        extensions.push_back(Extensions::GL::NV::draw_buffers::string());
+    } else if(context.isExtensionSupported<Extensions::NV::draw_buffers>()) {
+        extensions.push_back(Extensions::NV::draw_buffers::string());
 
         drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationNV;
     } else drawBuffersImplementation = nullptr;
     #else
-    if(context.isExtensionSupported<Extensions::GL::WEBGL::draw_buffers>()) {
-        extensions.push_back(Extensions::GL::WEBGL::draw_buffers::string());
+    if(context.isExtensionSupported<Extensions::WEBGL::draw_buffers>()) {
+        extensions.push_back(Extensions::WEBGL::draw_buffers::string());
         /* The EXT implementation is exposed in Emscripten */
         drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationEXT;
     } else drawBuffersImplementation = nullptr;
@@ -236,15 +236,15 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     /* Framebuffer reading implementation in desktop/ES */
     #ifndef MAGNUM_TARGET_WEBGL
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::ARB::robustness>())
+    if(context.isExtensionSupported<Extensions::ARB::robustness>())
     #else
-    if(context.isExtensionSupported<Extensions::GL::EXT::robustness>())
+    if(context.isExtensionSupported<Extensions::EXT::robustness>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.emplace_back(Extensions::GL::ARB::robustness::string());
+        extensions.emplace_back(Extensions::ARB::robustness::string());
         #else
-        extensions.push_back(Extensions::GL::EXT::robustness::string());
+        extensions.push_back(Extensions::EXT::robustness::string());
         #endif
 
         readImplementation = &AbstractFramebuffer::readImplementationRobustness;
@@ -257,12 +257,12 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
     /* Multisample renderbuffer storage implementation */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
         /* Extension added above */
 
         renderbufferStorageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationDSA;
 
-    } else if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+    } else if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
         /* Extension added above */
 
         renderbufferStorageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationDSAEXT;
@@ -270,12 +270,12 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     #endif
     {
         #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        if(context.isExtensionSupported<Extensions::GL::ANGLE::framebuffer_multisample>()) {
-            extensions.push_back(Extensions::GL::ANGLE::framebuffer_multisample::string());
+        if(context.isExtensionSupported<Extensions::ANGLE::framebuffer_multisample>()) {
+            extensions.push_back(Extensions::ANGLE::framebuffer_multisample::string());
 
             renderbufferStorageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationANGLE;
-        } else if (context.isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>()) {
-            extensions.push_back(Extensions::GL::NV::framebuffer_multisample::string());
+        } else if (context.isExtensionSupported<Extensions::NV::framebuffer_multisample>()) {
+            extensions.push_back(Extensions::NV::framebuffer_multisample::string());
 
             renderbufferStorageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationNV;
         } else renderbufferStorageMultisampleImplementation = nullptr;
@@ -286,10 +286,10 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
     /* Framebuffer invalidation implementation on desktop GL */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::ARB::invalidate_subdata>()) {
-        extensions.emplace_back(Extensions::GL::ARB::invalidate_subdata::string());
+    if(context.isExtensionSupported<Extensions::ARB::invalidate_subdata>()) {
+        extensions.emplace_back(Extensions::ARB::invalidate_subdata::string());
 
-        if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+        if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
             /* Extension added above */
             invalidateImplementation = &AbstractFramebuffer::invalidateImplementationDSA;
             invalidateSubImplementation = &AbstractFramebuffer::invalidateImplementationDSA;
@@ -305,8 +305,8 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
     /* Framebuffer invalidation implementation on ES2 */
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(context.isExtensionSupported<Extensions::GL::EXT::discard_framebuffer>()) {
-        extensions.push_back(Extensions::GL::EXT::discard_framebuffer::string());
+    if(context.isExtensionSupported<Extensions::EXT::discard_framebuffer>()) {
+        extensions.push_back(Extensions::EXT::discard_framebuffer::string());
 
         invalidateImplementation = &AbstractFramebuffer::invalidateImplementationDefault;
     } else {
@@ -321,7 +321,7 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
     /* Blit implementation on desktop GL */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
         /* Extension added above */
         blitImplementation = &AbstractFramebuffer::blitImplementationDSA;
 
@@ -329,12 +329,12 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
     /* Blit implementation on ES2 */
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(context.isExtensionSupported<Extensions::GL::ANGLE::framebuffer_blit>()) {
-        extensions.push_back(Extensions::GL::ANGLE::framebuffer_blit::string());
+    if(context.isExtensionSupported<Extensions::ANGLE::framebuffer_blit>()) {
+        extensions.push_back(Extensions::ANGLE::framebuffer_blit::string());
         blitImplementation = &AbstractFramebuffer::blitImplementationANGLE;
 
-    } else if(context.isExtensionSupported<Extensions::GL::NV::framebuffer_blit>()) {
-        extensions.push_back(Extensions::GL::NV::framebuffer_blit::string());
+    } else if(context.isExtensionSupported<Extensions::NV::framebuffer_blit>()) {
+        extensions.push_back(Extensions::NV::framebuffer_blit::string());
         blitImplementation = &AbstractFramebuffer::blitImplementationNV;
 
     } else blitImplementation = nullptr;

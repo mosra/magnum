@@ -105,7 +105,7 @@ void defaultCallback(const DebugOutput::Source source, const DebugOutput::Type t
 }
 
 Int DebugOutput::maxLoggedMessages() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>())
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
         return 0;
 
     GLint& value = Context::current().state().debug->maxLoggedMessages;
@@ -122,7 +122,7 @@ Int DebugOutput::maxLoggedMessages() {
 }
 
 Int DebugOutput::maxMessageLength() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>())
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
         return 0;
 
     GLint& value = Context::current().state().debug->maxMessageLength;
@@ -310,7 +310,7 @@ Debug& operator<<(Debug& debug, const DebugMessage::Type value) {
 #endif
 
 Int DebugGroup::maxStackDepth() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>())
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
         return 0;
 
     GLint& value = Context::current().state().debug->maxStackDepth;

@@ -153,7 +153,7 @@ Int Mesh::maxElementIndex()
 #endif
 {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::ES3_compatibility>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::ES3_compatibility>())
         return 0xFFFFFFFFl;
     #endif
 

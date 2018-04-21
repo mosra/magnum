@@ -177,9 +177,9 @@ void Renderer::setLogicOperation(const LogicOperation operation) {
 #ifndef MAGNUM_TARGET_WEBGL
 Renderer::ResetNotificationStrategy Renderer::resetNotificationStrategy() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::robustness>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::robustness>())
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::robustness>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::robustness>())
     #endif
         return ResetNotificationStrategy::NoResetNotification;
 

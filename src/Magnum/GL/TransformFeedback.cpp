@@ -42,7 +42,7 @@ namespace Magnum { namespace GL {
 
 Int TransformFeedback::maxInterleavedComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::transform_feedback>())
         return 0;
     #endif
 
@@ -56,7 +56,7 @@ Int TransformFeedback::maxInterleavedComponents() {
 
 Int TransformFeedback::maxSeparateAttributes() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::transform_feedback>())
         return 0;
     #endif
 
@@ -70,7 +70,7 @@ Int TransformFeedback::maxSeparateAttributes() {
 
 Int TransformFeedback::maxSeparateComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::transform_feedback>())
         return 0;
     #endif
 
@@ -84,7 +84,7 @@ Int TransformFeedback::maxSeparateComponents() {
 
 #ifndef MAGNUM_TARGET_GLES
 Int TransformFeedback::maxBuffers() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback3>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback3>())
         return maxSeparateAttributes();
 
     GLint& value = Context::current().state().transformFeedback->maxBuffers;
@@ -96,7 +96,7 @@ Int TransformFeedback::maxBuffers() {
 }
 
 Int TransformFeedback::maxVertexStreams() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::transform_feedback3>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::transform_feedback3>())
         return 1;
 
     GLint& value = Context::current().state().transformFeedback->maxVertexStreams;

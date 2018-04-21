@@ -107,7 +107,7 @@ namespace {
 }
 
 Int AbstractObject::maxLabelLength() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::KHR::debug>())
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
         return 0;
 
     GLint& value = Context::current().state().debug->maxLabelLength;

@@ -41,7 +41,7 @@ namespace Magnum { namespace GL {
 
 #ifndef MAGNUM_TARGET_GLES
 Int Buffer::minMapAlignment() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::map_buffer_alignment>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::map_buffer_alignment>())
         return 1;
 
     GLint& value = Context::current().state().buffer->minMapAlignment;
@@ -57,7 +57,7 @@ Int Buffer::minMapAlignment() {
 #ifndef MAGNUM_TARGET_WEBGL
 Int Buffer::maxAtomicCounterBindings() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::shader_atomic_counters>())
     #else
     if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
@@ -73,7 +73,7 @@ Int Buffer::maxAtomicCounterBindings() {
 
 Int Buffer::maxShaderStorageBindings() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::shader_storage_buffer_object>())
     #else
     if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
@@ -90,7 +90,7 @@ Int Buffer::maxShaderStorageBindings() {
 
 Int Buffer::uniformOffsetAlignment() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::uniform_buffer_object>())
         return 1;
     #endif
 
@@ -105,7 +105,7 @@ Int Buffer::uniformOffsetAlignment() {
 #ifndef MAGNUM_TARGET_WEBGL
 Int Buffer::shaderStorageOffsetAlignment() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::shader_storage_buffer_object>())
     #else
     if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
@@ -122,7 +122,7 @@ Int Buffer::shaderStorageOffsetAlignment() {
 
 Int Buffer::maxUniformBindings() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::uniform_buffer_object>())
         return 0;
     #endif
 

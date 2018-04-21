@@ -84,23 +84,23 @@ UnsignedInt typeToIndex(const Shader::Type type) {
 
 #ifndef MAGNUM_TARGET_GLES
 bool isTypeSupported(const Shader::Type type) {
-    if(type == Shader::Type::Geometry && !Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+    if(type == Shader::Type::Geometry && !Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
         return false;
 
-    if((type == Shader::Type::TessellationControl || type == Shader::Type::TessellationEvaluation) && !Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
+    if((type == Shader::Type::TessellationControl || type == Shader::Type::TessellationEvaluation) && !Context::current().isExtensionSupported<Extensions::ARB::tessellation_shader>())
         return false;
 
-    if(type == Shader::Type::Compute && !Context::current().isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+    if(type == Shader::Type::Compute && !Context::current().isExtensionSupported<Extensions::ARB::compute_shader>())
         return false;
 
     return true;
 }
 #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 bool isTypeSupported(const Shader::Type type) {
-    if(type == Shader::Type::Geometry && !Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+    if(type == Shader::Type::Geometry && !Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
         return false;
 
-    if((type == Shader::Type::TessellationControl || type == Shader::Type::TessellationEvaluation) && !Context::current().isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
+    if((type == Shader::Type::TessellationControl || type == Shader::Type::TessellationEvaluation) && !Context::current().isExtensionSupported<Extensions::EXT::tessellation_shader>())
         return false;
 
     if(type == Shader::Type::Compute && !Context::current().isVersionSupported(Version::GLES310))
@@ -138,10 +138,10 @@ Int Shader::maxVertexOutputComponents() {
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 Int Shader::maxTessellationControlInputComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::tessellation_shader>())
         return 0;
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::tessellation_shader>())
         return 0;
     #endif
 
@@ -156,10 +156,10 @@ Int Shader::maxTessellationControlInputComponents() {
 
 Int Shader::maxTessellationControlOutputComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::tessellation_shader>())
         return 0;
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::tessellation_shader>())
         return 0;
     #endif
 
@@ -174,10 +174,10 @@ Int Shader::maxTessellationControlOutputComponents() {
 
 Int Shader::maxTessellationControlTotalOutputComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::tessellation_shader>())
         return 0;
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::tessellation_shader>())
         return 0;
     #endif
 
@@ -192,10 +192,10 @@ Int Shader::maxTessellationControlTotalOutputComponents() {
 
 Int Shader::maxTessellationEvaluationInputComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::tessellation_shader>())
         return 0;
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::tessellation_shader>())
         return 0;
     #endif
 
@@ -210,10 +210,10 @@ Int Shader::maxTessellationEvaluationInputComponents() {
 
 Int Shader::maxTessellationEvaluationOutputComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::tessellation_shader>())
         return 0;
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::tessellation_shader>())
         return 0;
     #endif
 
@@ -228,10 +228,10 @@ Int Shader::maxTessellationEvaluationOutputComponents() {
 
 Int Shader::maxGeometryInputComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
         return 0;
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
         return 0;
     #endif
 
@@ -247,10 +247,10 @@ Int Shader::maxGeometryInputComponents() {
 
 Int Shader::maxGeometryOutputComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
         return 0;
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
         return 0;
     #endif
 
@@ -266,10 +266,10 @@ Int Shader::maxGeometryOutputComponents() {
 
 Int Shader::maxGeometryTotalOutputComponents() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::geometry_shader4>())
         return 0;
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::geometry_shader>())
         return 0;
     #endif
 
@@ -308,7 +308,7 @@ Int Shader::maxFragmentInputComponents() {
 Int Shader::maxAtomicCounterBuffers(const Type type) {
     if(
         #ifndef MAGNUM_TARGET_GLES
-        !Context::current().isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>() ||
+        !Context::current().isExtensionSupported<Extensions::ARB::shader_atomic_counters>() ||
         #else
         !Context::current().isVersionSupported(Version::GLES310) ||
         #endif
@@ -337,7 +337,7 @@ Int Shader::maxAtomicCounterBuffers(const Type type) {
 
 Int Shader::maxCombinedAtomicCounterBuffers() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::shader_atomic_counters>())
     #else
     if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
@@ -355,7 +355,7 @@ Int Shader::maxCombinedAtomicCounterBuffers() {
 Int Shader::maxAtomicCounters(const Type type) {
     if(
         #ifndef MAGNUM_TARGET_GLES
-        !Context::current().isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>() ||
+        !Context::current().isExtensionSupported<Extensions::ARB::shader_atomic_counters>() ||
         #else
         !Context::current().isVersionSupported(Version::GLES310) ||
         #endif
@@ -384,7 +384,7 @@ Int Shader::maxAtomicCounters(const Type type) {
 
 Int Shader::maxCombinedAtomicCounters() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::shader_atomic_counters>())
     #else
     if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
@@ -402,7 +402,7 @@ Int Shader::maxCombinedAtomicCounters() {
 Int Shader::maxImageUniforms(const Type type) {
     if(
         #ifndef MAGNUM_TARGET_GLES
-        !Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>() ||
+        !Context::current().isExtensionSupported<Extensions::ARB::shader_image_load_store>() ||
         #else
         !Context::current().isVersionSupported(Version::GLES310) ||
         #endif
@@ -431,7 +431,7 @@ Int Shader::maxImageUniforms(const Type type) {
 
 Int Shader::maxCombinedImageUniforms() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::shader_image_load_store>())
     #else
     if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
@@ -449,7 +449,7 @@ Int Shader::maxCombinedImageUniforms() {
 Int Shader::maxShaderStorageBlocks(const Type type) {
     if(
         #ifndef MAGNUM_TARGET_GLES
-        !Context::current().isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>() ||
+        !Context::current().isExtensionSupported<Extensions::ARB::shader_storage_buffer_object>() ||
         #else
         !Context::current().isVersionSupported(Version::GLES310) ||
         #endif
@@ -478,7 +478,7 @@ Int Shader::maxShaderStorageBlocks(const Type type) {
 
 Int Shader::maxCombinedShaderStorageBlocks() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::shader_atomic_counters>())
     #else
     if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
@@ -531,7 +531,7 @@ Int Shader::maxCombinedTextureImageUnits() {
 #ifndef MAGNUM_TARGET_GLES2
 Int Shader::maxUniformBlocks(const Type type) {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>() || !isTypeSupported(type))
+    if(!Context::current().isExtensionSupported<Extensions::ARB::uniform_buffer_object>() || !isTypeSupported(type))
     #else
     if(!isTypeSupported(type))
     #endif
@@ -559,7 +559,7 @@ Int Shader::maxUniformBlocks(const Type type) {
 
 Int Shader::maxCombinedUniformBlocks() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::uniform_buffer_object>())
         return 0;
     #endif
 
@@ -613,7 +613,7 @@ Int Shader::maxUniformComponents(const Type type) {
 #ifndef MAGNUM_TARGET_GLES2
 Int Shader::maxCombinedUniformComponents(const Type type) {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>() || !isTypeSupported(type))
+    if(!Context::current().isExtensionSupported<Extensions::ARB::uniform_buffer_object>() || !isTypeSupported(type))
     #else
     if(!isTypeSupported(type))
     #endif

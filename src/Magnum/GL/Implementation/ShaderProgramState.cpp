@@ -62,13 +62,13 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::ARB::separate_shader_objects>())
+    if(context.isExtensionSupported<Extensions::ARB::separate_shader_objects>())
     #else
     if(context.isVersionSupported(Version::GLES310))
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.emplace_back(Extensions::GL::ARB::separate_shader_objects::string());
+        extensions.emplace_back(Extensions::ARB::separate_shader_objects::string());
         #endif
 
         uniform1fvImplementation = &AbstractShaderProgram::uniformImplementationSSO;
@@ -115,15 +115,15 @@ ShaderProgramState::ShaderProgramState(Context& context, std::vector<std::string
 
     #ifndef MAGNUM_TARGET_WEBGL
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>())
+    if(context.isExtensionSupported<Extensions::EXT::direct_state_access>())
     #else
-    if(context.isExtensionSupported<Extensions::GL::EXT::separate_shader_objects>())
+    if(context.isExtensionSupported<Extensions::EXT::separate_shader_objects>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.emplace_back(Extensions::GL::EXT::direct_state_access::string());
+        extensions.emplace_back(Extensions::EXT::direct_state_access::string());
         #else
-        extensions.push_back(Extensions::GL::EXT::separate_shader_objects::string());
+        extensions.push_back(Extensions::EXT::separate_shader_objects::string());
         #endif
 
         uniform1fvImplementation = &AbstractShaderProgram::uniformImplementationDSAEXT_SSOEXT;

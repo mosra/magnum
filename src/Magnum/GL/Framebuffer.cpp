@@ -75,11 +75,11 @@ const Framebuffer::InvalidationAttachment Framebuffer::InvalidationAttachment::S
 Int Framebuffer::maxColorAttachments() {
     #ifdef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_WEBGL
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::draw_buffers>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::NV::fbo_color_attachments>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::draw_buffers>() &&
+       !Context::current().isExtensionSupported<Extensions::NV::fbo_color_attachments>())
         return 0;
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::WEBGL::draw_buffers>())
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_buffers>())
         return 0;
     #endif
     #endif

@@ -36,10 +36,10 @@ namespace Magnum { namespace GL {
 
 Int BufferTexture::maxSize() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
         return 0;
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_buffer>())
         return 0;
     #endif
 
@@ -54,10 +54,10 @@ Int BufferTexture::maxSize() {
 
 Int BufferTexture::offsetAlignment() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_range>())
         return 1;
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_buffer>())
         return 0;
     #endif
 

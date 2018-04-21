@@ -34,8 +34,8 @@ namespace Magnum { namespace GL { namespace Implementation {
 QueryState::QueryState(Context& context, std::vector<std::string>& extensions) {
     /* Create implementation */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
-        extensions.emplace_back(Extensions::GL::ARB::direct_state_access::string());
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
+        extensions.emplace_back(Extensions::ARB::direct_state_access::string());
         createImplementation = &AbstractQuery::createImplementationDSA;
 
     } else

@@ -39,26 +39,26 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     #endif
 {
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::ARB::vertex_array_object>())
+    if(context.isExtensionSupported<Extensions::ARB::vertex_array_object>())
     #elif defined(MAGNUM_TARGET_GLES2)
-    if(context.isExtensionSupported<Extensions::GL::OES::vertex_array_object>())
+    if(context.isExtensionSupported<Extensions::OES::vertex_array_object>())
     #else
     static_cast<void>(context);
     static_cast<void>(extensions);
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.emplace_back(Extensions::GL::ARB::vertex_array_object::string());
+        extensions.emplace_back(Extensions::ARB::vertex_array_object::string());
         #elif defined(MAGNUM_TARGET_GLES2)
-        extensions.push_back(Extensions::GL::OES::vertex_array_object::string());
+        extensions.push_back(Extensions::OES::vertex_array_object::string());
         #endif
 
         createImplementation = &Mesh::createImplementationVAO;
         destroyImplementation = &Mesh::destroyImplementationVAO;
 
         #ifndef MAGNUM_TARGET_GLES
-        if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
-            extensions.emplace_back(Extensions::GL::EXT::direct_state_access::string());
+        if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
+            extensions.emplace_back(Extensions::EXT::direct_state_access::string());
 
             attributePointerImplementation = &Mesh::attributePointerImplementationDSAEXT;
         } else
@@ -86,8 +86,8 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
 
     #ifndef MAGNUM_TARGET_GLES
     /* DSA create implementation (other cases handled above) */
-    if(context.isExtensionSupported<Extensions::GL::ARB::direct_state_access>()) {
-        extensions.emplace_back(Extensions::GL::ARB::direct_state_access::string());
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
+        extensions.emplace_back(Extensions::ARB::direct_state_access::string());
         createImplementation = &Mesh::createImplementationVAODSA;
     }
     #endif
@@ -95,8 +95,8 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     #ifdef MAGNUM_TARGET_GLES
     #ifndef MAGNUM_TARGET_WEBGL
     /* Multi draw implementation on ES */
-    if(context.isExtensionSupported<Extensions::GL::EXT::multi_draw_arrays>()) {
-        extensions.push_back(Extensions::GL::EXT::multi_draw_arrays::string());
+    if(context.isExtensionSupported<Extensions::EXT::multi_draw_arrays>()) {
+        extensions.push_back(Extensions::EXT::multi_draw_arrays::string());
 
         multiDrawImplementation = &MeshView::multiDrawImplementationDefault;
     } else multiDrawImplementation = &MeshView::multiDrawImplementationFallback;
@@ -107,21 +107,21 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
 
     #ifdef MAGNUM_TARGET_GLES2
     /* Instanced draw ímplementation on ES2 */
-    if(context.isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>()) {
-        extensions.push_back(Extensions::GL::ANGLE::instanced_arrays::string());
+    if(context.isExtensionSupported<Extensions::ANGLE::instanced_arrays>()) {
+        extensions.push_back(Extensions::ANGLE::instanced_arrays::string());
 
         drawArraysInstancedImplementation = &Mesh::drawArraysInstancedImplementationANGLE;
         drawElementsInstancedImplementation = &Mesh::drawElementsInstancedImplementationANGLE;
     }
     #ifndef MAGNUM_TARGET_WEBGL
-    else if(context.isExtensionSupported<Extensions::GL::EXT::draw_instanced>()) {
-        extensions.push_back(Extensions::GL::EXT::draw_instanced::string());
+    else if(context.isExtensionSupported<Extensions::EXT::draw_instanced>()) {
+        extensions.push_back(Extensions::EXT::draw_instanced::string());
 
         drawArraysInstancedImplementation = &Mesh::drawArraysInstancedImplementationEXT;
         drawElementsInstancedImplementation = &Mesh::drawElementsInstancedImplementationEXT;
 
-    } else if(context.isExtensionSupported<Extensions::GL::NV::draw_instanced>()) {
-        extensions.push_back(Extensions::GL::NV::draw_instanced::string());
+    } else if(context.isExtensionSupported<Extensions::NV::draw_instanced>()) {
+        extensions.push_back(Extensions::NV::draw_instanced::string());
 
         drawArraysInstancedImplementation = &Mesh::drawArraysInstancedImplementationNV;
         drawElementsInstancedImplementation = &Mesh::drawElementsInstancedImplementationNV;
@@ -135,26 +135,26 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
 
     #ifndef MAGNUM_TARGET_GLES
     /* Partial EXT_DSA implementation of vertex attrib divisor */
-    if(context.isExtensionSupported<Extensions::GL::EXT::direct_state_access>()) {
+    if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
         if(glVertexArrayVertexAttribDivisorEXT)
             vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationDSAEXT;
         else vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationVAO;
     } else vertexAttribDivisorImplementation = nullptr;
     #elif defined(MAGNUM_TARGET_GLES2)
     /* Instanced arrays implementation on ES2 */
-    if(context.isExtensionSupported<Extensions::GL::ANGLE::instanced_arrays>()) {
+    if(context.isExtensionSupported<Extensions::ANGLE::instanced_arrays>()) {
         /* Extension added above */
 
         vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationANGLE;
     }
     #ifndef MAGNUM_TARGET_WEBGL
-    else if(context.isExtensionSupported<Extensions::GL::EXT::instanced_arrays>()) {
-        extensions.push_back(Extensions::GL::EXT::instanced_arrays::string());
+    else if(context.isExtensionSupported<Extensions::EXT::instanced_arrays>()) {
+        extensions.push_back(Extensions::EXT::instanced_arrays::string());
 
         vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationEXT;
 
-    } else if(context.isExtensionSupported<Extensions::GL::NV::instanced_arrays>()) {
-        extensions.push_back(Extensions::GL::NV::instanced_arrays::string());
+    } else if(context.isExtensionSupported<Extensions::NV::instanced_arrays>()) {
+        extensions.push_back(Extensions::NV::instanced_arrays::string());
 
         vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationNV;
     }
@@ -165,7 +165,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     #ifndef MAGNUM_TARGET_GLES
     /* If we are on core profile and ARB_VAO was explicitly disabled by the
        user, we need to bind a default VAO so we are still able to draw things */
-    if(context.isExtensionDisabled<Extensions::GL::ARB::vertex_array_object>() && context.isCoreProfileInternal(contextState)) {
+    if(context.isExtensionDisabled<Extensions::ARB::vertex_array_object>() && context.isCoreProfileInternal(contextState)) {
         glGenVertexArrays(1, &defaultVAO);
         glBindVertexArray(defaultVAO);
     }

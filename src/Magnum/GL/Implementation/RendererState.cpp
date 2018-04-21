@@ -38,11 +38,11 @@ RendererState::RendererState(Context& context, std::vector<std::string>& extensi
 {
     /* Float depth clear value implementation */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::ARB::ES2_compatibility>())
+    if(context.isExtensionSupported<Extensions::ARB::ES2_compatibility>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.emplace_back(Extensions::GL::ARB::ES2_compatibility::string());
+        extensions.emplace_back(Extensions::ARB::ES2_compatibility::string());
         #endif
 
         clearDepthfImplementation = &Renderer::clearDepthfImplementationES;
@@ -54,15 +54,15 @@ RendererState::RendererState(Context& context, std::vector<std::string>& extensi
     #ifndef MAGNUM_TARGET_WEBGL
     /* Graphics reset status implementation */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::GL::ARB::robustness>())
+    if(context.isExtensionSupported<Extensions::ARB::robustness>())
     #else
-    if(context.isExtensionSupported<Extensions::GL::EXT::robustness>())
+    if(context.isExtensionSupported<Extensions::EXT::robustness>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
-        extensions.emplace_back(Extensions::GL::ARB::robustness::string());
+        extensions.emplace_back(Extensions::ARB::robustness::string());
         #else
-        extensions.push_back(Extensions::GL::EXT::robustness::string());
+        extensions.push_back(Extensions::EXT::robustness::string());
         #endif
 
         graphicsResetStatusImplementation = &Renderer::graphicsResetStatusImplementationRobustness;
@@ -78,9 +78,9 @@ RendererState::RendererState(Context& context, std::vector<std::string>& extensi
     unpackPixelStorage.disengagedRowLength = PixelStorage::DisengagedValue;
     packPixelStorage.disengagedRowLength = PixelStorage::DisengagedValue;
     #ifdef MAGNUM_TARGET_GLES2
-    if(!context.isExtensionSupported<Extensions::GL::EXT::unpack_subimage>())
+    if(!context.isExtensionSupported<Extensions::EXT::unpack_subimage>())
         unpackPixelStorage.disengagedRowLength = 0;
-    if(!context.isExtensionSupported<Extensions::GL::NV::pack_subimage>())
+    if(!context.isExtensionSupported<Extensions::NV::pack_subimage>())
         packPixelStorage.disengagedRowLength = 0;
     #endif
     #endif

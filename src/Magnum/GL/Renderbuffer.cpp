@@ -49,7 +49,7 @@ Int Renderbuffer::maxSize() {
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 Int Renderbuffer::maxSamples() {
     #ifdef MAGNUM_TARGET_GLES2
-    if(!Context::current().isExtensionSupported<Extensions::GL::ANGLE::framebuffer_multisample>() && !Context::current().isExtensionSupported<Extensions::GL::NV::framebuffer_multisample>())
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::framebuffer_multisample>() && !Context::current().isExtensionSupported<Extensions::NV::framebuffer_multisample>())
         return 0;
     #endif
 

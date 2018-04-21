@@ -62,7 +62,7 @@ Float AbstractTexture::maxLodBias() {
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 Int AbstractTexture::maxColorSamples() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
     #else
     if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
@@ -79,7 +79,7 @@ Int AbstractTexture::maxColorSamples() {
 
 Int AbstractTexture::maxDepthSamples() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
     #else
     if(!Context::current().isVersionSupported(Version::GLES310))
     #endif
@@ -96,7 +96,7 @@ Int AbstractTexture::maxDepthSamples() {
 
 Int AbstractTexture::maxIntegerSamples() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_multisample>())
     #else
     if(!Context::current().isVersionSupported(Version::GLES310))
     #endif

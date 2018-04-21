@@ -37,7 +37,7 @@
 namespace Magnum { namespace GL {
 
 Vector2i RectangleTexture::maxSize() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::texture_rectangle>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
         return {};
 
     GLint& value = Context::current().state().texture->maxRectangleSize;

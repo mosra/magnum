@@ -62,11 +62,11 @@ Vector2i AbstractFramebuffer::maxViewportSize() {
 Int AbstractFramebuffer::maxDrawBuffers() {
     #ifdef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_WEBGL
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::draw_buffers>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::NV::draw_buffers>())
+    if(!Context::current().isExtensionSupported<Extensions::EXT::draw_buffers>() &&
+       !Context::current().isExtensionSupported<Extensions::NV::draw_buffers>())
         return 0;
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::WEBGL::draw_buffers>())
+    if(!Context::current().isExtensionSupported<Extensions::WEBGL::draw_buffers>())
         return 0;
     #endif
     #endif
@@ -87,7 +87,7 @@ Int AbstractFramebuffer::maxDrawBuffers() {
 
 #ifndef MAGNUM_TARGET_GLES
 Int AbstractFramebuffer::maxDualSourceDrawBuffers() {
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::blend_func_extended>())
+    if(!Context::current().isExtensionSupported<Extensions::ARB::blend_func_extended>())
         return 0;
 
     GLint& value = Context::current().state().framebuffer->maxDualSourceDrawBuffers;

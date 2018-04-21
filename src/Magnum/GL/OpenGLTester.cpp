@@ -44,7 +44,7 @@ OpenGLTester::OpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfigu
     #endif
 
     #ifndef MAGNUM_TARGET_WEBGL
-    if(Context::current().isExtensionSupported<Extensions::GL::KHR::debug>()) {
+    if(Context::current().isExtensionSupported<Extensions::KHR::debug>()) {
         Renderer::enable(Renderer::Feature::DebugOutput);
         Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
         DebugOutput::setDefaultCallback();
