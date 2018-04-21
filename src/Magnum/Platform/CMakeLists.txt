@@ -31,6 +31,10 @@ set(MagnumPlatform_HEADERS
     ScreenedApplication.h
     ScreenedApplication.hpp)
 
+if(BUILD_DEPRECATED AND TARGET_GL)
+    list(APPEND MagnumPlatform_HEADERS Context.h)
+endif()
+
 # Files to display in project view of IDEs only (filled in below)
 set(MagnumPlatform_FILES )
 

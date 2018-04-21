@@ -1,5 +1,5 @@
-#ifndef Magnum_Platform_Platform_h
-#define Magnum_Platform_Platform_h
+#ifndef Magnum_Platform_Context_h
+#define Magnum_Platform_Context_h
 /*
     This file is part of Magnum.
 
@@ -26,30 +26,16 @@
 */
 
 /** @file
- * @brief Forward declarations for the @ref Magnum::Platform namespace
+ * @deprecated Use @ref Magnum/Platform/GLContext.h instead.
  */
 
 #include "Magnum/configure.h"
 
-#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-#include <Corrade/Utility/Macros.h>
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/Platform/GLContext.h"
+CORRADE_DEPRECATED_FILE("use Magnum/Platform/GLContext.h instead")
+#else
+#error use Magnum/Platform/GLContext.h instead
 #endif
-
-namespace Magnum { namespace Platform {
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<class> class BasicScreen;
-template<class> class BasicScreenedApplication;
-
-#ifdef MAGNUM_TARGET_GL
-class GLContext;
-
-#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-typedef CORRADE_DEPRECATED("use Platform::GLContext instead") GLContext Context;
-#endif
-#endif
-#endif
-
-}}
 
 #endif
