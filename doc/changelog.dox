@@ -171,6 +171,11 @@ See also:
     @ref Magnum namespace were moved to @ref Magnum/GL directory and
     @ref Magnum::GL namespace. See their documentation for information about
     particular files, classes, enums, typedefs, values and functions.
+-   The `MAGNUM_ASSERT_VERSION_SUPPORTED()`, `MAGNUM_ASSERT_EXTENSION_SUPPORTED()`
+    and `MAGNUM_VERIFY_NO_ERROR()` macros are deprecated, use
+    @ref MAGNUM_ASSERT_GL_VERSION_SUPPORTED(),
+    @ref MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED() and
+    @ref MAGNUM_VERIFY_NO_GL_ERROR() instead
 -   The @ref PixelFormat and @ref CompressedPixelFormat enum now contains
     generic API-independent values. The GL-specific formats are present there,
     but marked as deprecated. Use either the generic values or

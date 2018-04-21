@@ -72,7 +72,7 @@ target_link_libraries(your-app Magnum::GL)
 @endcode
 
 See @ref building, @ref cmake and @ref opengl for more information.
-@see @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
+@see @ref MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED()
 */
 namespace Extensions {
 

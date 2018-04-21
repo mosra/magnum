@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::GL::Context, @ref Magnum::GL::Extension, macro @ref MAGNUM_ASSERT_VERSION_SUPPORTED(), @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
+ * @brief Class @ref Magnum::GL::Context, @ref Magnum::GL::Extension, macro @ref MAGNUM_ASSERT_GL_VERSION_SUPPORTED(), @ref MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED()
  */
 
 #include <cstdlib>
@@ -495,7 +495,7 @@ class MAGNUM_GL_EXPORT Context {
         /**
          * @brief Whether given OpenGL version is supported
          *
-         * @see @ref supportedVersion(), @ref MAGNUM_ASSERT_VERSION_SUPPORTED()
+         * @see @ref supportedVersion(), @ref MAGNUM_ASSERT_GL_VERSION_SUPPORTED()
          */
         bool isVersionSupported(Version version) const;
 
@@ -524,7 +524,7 @@ class MAGNUM_GL_EXPORT Context {
          * @snippet MagnumGL.cpp Context-isExtensionSupported
          *
          * @see @ref isExtensionSupported(const Extension&) const,
-         *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED(),
+         *      @ref MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(),
          *      @ref isExtensionDisabled()
          */
         template<class T> bool isExtensionSupported() const {
@@ -552,7 +552,7 @@ class MAGNUM_GL_EXPORT Context {
          * hardware, but for general usage prefer @ref isExtensionSupported() const,
          * as it does most operations in compile time.
          * @see @ref supportedExtensions(), @ref Extension::extensions(),
-         *      @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED()
+         *      @ref MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED()
          */
         bool isExtensionSupported(const Extension& extension) const {
             return isVersionSupported(_extensionRequiredVersion[extension.index()]) && _extensionStatus[extension.index()];
@@ -700,18 +700,18 @@ By default, if assertion fails, an message is printed to error output and the
 application aborts. If `CORRADE_NO_ASSERT` is defined, this macro does nothing.
 Example usage:
 
-@snippet MagnumGL.cpp Context-MAGNUM_ASSERT_VERSION_SUPPORTED
+@snippet MagnumGL.cpp Context-MAGNUM_ASSERT_GL_VERSION_SUPPORTED
 
 @see @ref Magnum::GL::Context::isVersionSupported() "GL::Context::isVersionSupported()",
-    @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED(), @ref CORRADE_ASSERT(),
+    @ref MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(), @ref CORRADE_ASSERT(),
     @ref CORRADE_INTERNAL_ASSERT()
 */
 #ifdef CORRADE_NO_ASSERT
-#define MAGNUM_ASSERT_VERSION_SUPPORTED(version) do {} while(0)
+#define MAGNUM_ASSERT_GL_VERSION_SUPPORTED(version) do {} while(0)
 #else
-#define MAGNUM_ASSERT_VERSION_SUPPORTED(version)                            \
+#define MAGNUM_ASSERT_GL_VERSION_SUPPORTED(version)                         \
     do {                                                                    \
-        if(!Magnum::Context::current().isVersionSupported(version)) {       \
+        if(!Magnum::GL::Context::current().isVersionSupported(version)) {   \
             Corrade::Utility::Error() << "Magnum: required version" << version << "is not supported"; \
             std::abort();                                                   \
         }                                                                   \
@@ -729,18 +729,18 @@ By default, if assertion fails, an message is printed to error output and the
 application aborts. If `CORRADE_NO_ASSERT` is defined, this macro does nothing.
 Example usage:
 
-@snippet MagnumGL.cpp Context-MAGNUM_ASSERT_EXTENSION_SUPPORTED
+@snippet MagnumGL.cpp Context-MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED
 
-@see @ref Magnum::Context::isExtensionSupported() "Context::isExtensionSupported()",
-    @ref MAGNUM_ASSERT_VERSION_SUPPORTED(), @ref CORRADE_ASSERT(),
+@see @ref Magnum::GL::Context::isExtensionSupported() "Context::isExtensionSupported()",
+    @ref MAGNUM_ASSERT_GL_VERSION_SUPPORTED(), @ref CORRADE_ASSERT(),
     @ref CORRADE_INTERNAL_ASSERT()
 */
 #ifdef CORRADE_NO_ASSERT
-#define MAGNUM_ASSERT_EXTENSION_SUPPORTED(extension) do {} while(0)
+#define MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(extension) do {} while(0)
 #else
-#define MAGNUM_ASSERT_EXTENSION_SUPPORTED(extension)                        \
+#define MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(extension)                     \
     do {                                                                    \
-        if(!Magnum::Context::current().isExtensionSupported<extension>()) { \
+        if(!Magnum::GL::Context::current().isExtensionSupported<extension>()) { \
             Corrade::Utility::Error() << "Magnum: required extension" << extension::string() << "is not supported"; \
             std::abort();                                                   \
         }                                                                   \
@@ -761,6 +761,20 @@ typedef CORRADE_DEPRECATED("use GL::Extension instead") Magnum::GL::Extension Ex
  * @deprecated Use @ref GL::Context instead.
  */
 typedef CORRADE_DEPRECATED("use GL::Context instead") Magnum::GL::Context Context;
+
+/** @brief @copybrief MAGNUM_ASSERT_GL_VERSION_SUPPORTED()
+ * @deprecated Use @ref MAGNUM_ASSERT_GL_VERSION_SUPPORTED()
+ */
+#define MAGNUM_ASSERT_VERSION_SUPPORTED(version) \
+    CORRADE_DEPRECATED_MACRO(MAGNUM_ASSERT_VERSION_SUPPORTED(), "use MAGNUM_ASSERT_GL_VERSION_SUPPORTED() instead") \
+    MAGNUM_ASSERT_GL_VERSION_SUPPORTED(version)
+
+/** @brief @copybrief MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED()
+ * @deprecated Use @ref MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED()
+ */
+#define MAGNUM_ASSERT_EXTENSION_SUPPORTED(extension) \
+    CORRADE_DEPRECATED_MACRO(MAGNUM_ASSERT_EXTENSION_SUPPORTED(), "use MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED() instead") \
+    MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(extension)
 #endif
 
 }

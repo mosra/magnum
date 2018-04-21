@@ -571,13 +571,13 @@ if(Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_
 }
 /* [Context-isExtensionSupported-version] */
 
-/* [Context-MAGNUM_ASSERT_VERSION_SUPPORTED] */
+/* [Context-MAGNUM_ASSERT_GL_VERSION_SUPPORTED] */
 MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
-/* [Context-MAGNUM_ASSERT_VERSION_SUPPORTED] */
+/* [Context-MAGNUM_ASSERT_GL_VERSION_SUPPORTED] */
 
-/* [Context-MAGNUM_ASSERT_EXTENSION_SUPPORTED] */
+/* [Context-MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED] */
 MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
-/* [Context-MAGNUM_ASSERT_EXTENSION_SUPPORTED] */
+/* [Context-MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED] */
 }
 #endif
 
@@ -1109,9 +1109,9 @@ texture.setStorage(16, TextureFormat::RGBA8, {1024, 1024});
 #if !defined(MAGNUM_TARGET_WEBGL) && !defined(CORRADE_TARGET_ANDROID)
 struct A: TestSuite::Tester {
 void foo() {
-/* [OpenGLTester-MAGNUM_VERIFY_NO_ERROR] */
+/* [OpenGLTester-MAGNUM_VERIFY_NO_GL_ERROR] */
 CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError);
-/* [OpenGLTester-MAGNUM_VERIFY_NO_ERROR] */
+/* [OpenGLTester-MAGNUM_VERIFY_NO_GL_ERROR] */
 }
 };
 #endif

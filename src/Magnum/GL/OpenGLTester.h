@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::GL::OpenGLTester
+ * @brief Class @ref Magnum::GL::OpenGLTester, macro @ref MAGNUM_VERIFY_NO_GL_ERROR()
  */
 
 #include <Corrade/TestSuite/Tester.h>
@@ -122,8 +122,8 @@ On platforms that support it, the OpenGL context is created with synchronous
 debug output, meaning that every OpenGL error is directly reported to standard
 output. While it is possible, the tester class doesn't abort the test cases
 upon encountering a GL error --- this should be done explicitly with
-@ref MAGNUM_VERIFY_NO_ERROR() instead, as the debug output is not available on
-all platforms and not all GL errors are fatal.
+@ref MAGNUM_VERIFY_NO_GL_ERROR() instead, as the debug output is not available
+on all platforms and not all GL errors are fatal.
 
 @section GL-OpenGLTester-benchmarks GPU time benchmarks
 
@@ -271,9 +271,9 @@ class OpenGLTester: public TestSuite::Tester {
 
 Equivalent to
 
-@snippet MagnumGL.cpp OpenGLTester-MAGNUM_VERIFY_NO_ERROR
+@snippet MagnumGL.cpp OpenGLTester-MAGNUM_VERIFY_NO_GL_ERROR
 */
-#define MAGNUM_VERIFY_NO_ERROR() CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError)
+#define MAGNUM_VERIFY_NO_GL_ERROR() CORRADE_COMPARE(Magnum::GL::Renderer::error(), Magnum::GL::Renderer::Error::NoError)
 
 }
 
@@ -284,6 +284,13 @@ Equivalent to
  * @deprecated Use @ref GL::OpenGLTester instead.
  */
 typedef CORRADE_DEPRECATED("use GL::OpenGLTester instead") Magnum::GL::OpenGLTester OpenGLTester;
+
+/** @brief @copybrief MAGNUM_VERIFY_NO_GL_ERROR()
+ * @deprecated Use @ref MAGNUM_VERIFY_NO_GL_ERROR() instead.
+*/
+#define MAGNUM_VERIFY_NO_ERROR() \
+    CORRADE_DEPRECATED_MACRO(MAGNUM_VERIFY_NO_ERROR(),"use MAGNUM_VERIFY_NO_GL_ERROR() instead") \
+    MAGNUM_VERIFY_NO_GL_ERROR()
 #endif
 
 }

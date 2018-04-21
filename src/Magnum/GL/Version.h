@@ -45,7 +45,7 @@ namespace Implementation {
 /**
 @brief OpenGL version
 
-@see @ref version(), @ref Context, @ref MAGNUM_ASSERT_VERSION_SUPPORTED()
+@see @ref version(), @ref Context, @ref MAGNUM_ASSERT_GL_VERSION_SUPPORTED()
 */
 enum class Version: Int {
     None = 0xFFFF,                  /**< Unspecified */

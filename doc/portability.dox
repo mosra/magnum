@@ -86,8 +86,8 @@ that version might be available even if the drivers don't fully expose that
 version.
 
 On the other hand, if you don't want to write fallback code for unsupported
-extensions, you can use macros @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED() or
-@ref MAGNUM_ASSERT_VERSION_SUPPORTED() to add mandatory requirement of given
+extensions, you can use macros @ref MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED() or
+@ref MAGNUM_ASSERT_GL_VERSION_SUPPORTED() to add mandatory requirement of given
 extension or version:
 
 @snippet MagnumGL.cpp portability-extension-assert
