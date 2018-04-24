@@ -27,7 +27,7 @@
 
 #include "Magnum/Shapes/Shapes.h"
 
-#include "AbstractBoxRenderer.h"
+#include "Magnum/DebugTools/Implementation/AbstractBoxRenderer.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 

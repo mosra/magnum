@@ -25,9 +25,9 @@
 
 #include "ObjectRenderer.h"
 
-#include "Magnum/Buffer.h"
-#include "Magnum/Mesh.h"
 #include "Magnum/DebugTools/ResourceManager.h"
+#include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/Mesh.h"
 #include "Magnum/MeshTools/CompressIndices.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/Primitives/Axis.h"
@@ -63,35 +63,35 @@ template<> struct Renderer<3> {
 /* Doxygen gets confused when using {} to initialize parent object */
 template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): SceneGraph::Drawable<dimensions, Float>(object, drawables), _options{ResourceManager::instance().get<ObjectRendererOptions>(options)} {
     /* Shader */
-    _shader = ResourceManager::instance().get<AbstractShaderProgram, Shaders::VertexColor<dimensions>>(Renderer<dimensions>::shader());
-    if(!_shader) ResourceManager::instance().set<AbstractShaderProgram>(_shader.key(), new Shaders::VertexColor<dimensions>);
+    _shader = ResourceManager::instance().get<GL::AbstractShaderProgram, Shaders::VertexColor<dimensions>>(Renderer<dimensions>::shader());
+    if(!_shader) ResourceManager::instance().set<GL::AbstractShaderProgram>(_shader.key(), new Shaders::VertexColor<dimensions>);
 
     /* Mesh and vertex buffer */
-    _mesh = ResourceManager::instance().get<Mesh>(Renderer<dimensions>::mesh());
-    _vertexBuffer = ResourceManager::instance().get<Buffer>(Renderer<dimensions>::vertexBuffer());
-    _indexBuffer = ResourceManager::instance().get<Buffer>(Renderer<dimensions>::indexBuffer());
+    _mesh = ResourceManager::instance().get<GL::Mesh>(Renderer<dimensions>::mesh());
+    _vertexBuffer = ResourceManager::instance().get<GL::Buffer>(Renderer<dimensions>::vertexBuffer());
+    _indexBuffer = ResourceManager::instance().get<GL::Buffer>(Renderer<dimensions>::indexBuffer());
     if(_mesh) return;
 
     /* Create the mesh */
-    Buffer* vertexBuffer = new Buffer{Buffer::TargetHint::Array};
-    Buffer* indexBuffer = new Buffer{Buffer::TargetHint::ElementArray};
-    Mesh* mesh = new Mesh;
+    GL::Buffer* vertexBuffer = new GL::Buffer{GL::Buffer::TargetHint::Array};
+    GL::Buffer* indexBuffer = new GL::Buffer{GL::Buffer::TargetHint::ElementArray};
+    GL::Mesh* mesh = new GL::Mesh;
 
     auto data = Renderer<dimensions>::meshData();
 
-    vertexBuffer->setData(MeshTools::interleave(data.positions(0), data.colors(0)), BufferUsage::StaticDraw);
+    vertexBuffer->setData(MeshTools::interleave(data.positions(0), data.colors(0)), GL::BufferUsage::StaticDraw);
     ResourceManager::instance().set(_vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
-    indexBuffer->setData(MeshTools::compressIndicesAs<UnsignedByte>(data.indices()), BufferUsage::StaticDraw);
+    indexBuffer->setData(MeshTools::compressIndicesAs<UnsignedByte>(data.indices()), GL::BufferUsage::StaticDraw);
     ResourceManager::instance().set(_indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
-    mesh->setPrimitive(MeshPrimitive::Lines)
+    mesh->setPrimitive(GL::MeshPrimitive::Lines)
         .setCount(data.indices().size())
         .addVertexBuffer(*vertexBuffer, 0,
             typename Shaders::VertexColor<dimensions>::Position(),
             typename Shaders::VertexColor<dimensions>::Color{Shaders::VertexColor<dimensions>::Color::Components::Four})
-        .setIndexBuffer(*indexBuffer, 0, Mesh::IndexType::UnsignedByte, 0, data.positions(0).size());
-    ResourceManager::instance().set<Mesh>(_mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
+        .setIndexBuffer(*indexBuffer, 0, GL::MeshIndexType::UnsignedByte, 0, data.positions(0).size());
+    ResourceManager::instance().set<GL::Mesh>(_mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
 /* To avoid deleting pointers to incomplete type on destruction of Resource members */

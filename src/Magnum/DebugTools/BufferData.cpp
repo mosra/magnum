@@ -28,7 +28,7 @@
 #ifndef MAGNUM_TARGET_WEBGL
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
-void bufferSubData(Buffer& buffer, GLintptr offset, GLsizeiptr size, void* output) {
+void bufferSubData(GL::Buffer& buffer, GLintptr offset, GLsizeiptr size, void* output) {
     Containers::ArrayView<const char> data = buffer.mapRead(offset, size);
     std::copy(data.begin(), data.end(), reinterpret_cast<char*>(output));
     buffer.unmap();

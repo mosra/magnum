@@ -25,7 +25,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "../Implementation/CapsuleRendererTransformation.h"
+#include "Magnum/DebugTools/Implementation/CapsuleRendererTransformation.h"
 
 namespace Magnum { namespace DebugTools { namespace Test {
 

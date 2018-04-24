@@ -25,7 +25,7 @@
 
 #include "AbstractBoxRenderer.h"
 
-#include "Magnum/Mesh.h"
+#include "Magnum/GL/Mesh.h"
 #include "Magnum/Primitives/Cube.h"
 #include "Magnum/Primitives/Square.h"
 #include "Magnum/Trade/MeshData2D.h"

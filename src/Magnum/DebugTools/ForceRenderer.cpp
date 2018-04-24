@@ -25,13 +25,13 @@
 
 #include "ForceRenderer.h"
 
-#include "Magnum/Buffer.h"
-#include "Magnum/Mesh.h"
+#include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/Mesh.h"
 #include "Magnum/DebugTools/ResourceManager.h"
 #include "Magnum/SceneGraph/Camera.h"
 #include "Magnum/Shaders/Flat.h"
 
-#include "Implementation/ForceRendererTransformation.h"
+#include "Magnum/DebugTools/Implementation/ForceRendererTransformation.h"
 
 namespace Magnum { namespace DebugTools {
 
@@ -58,31 +58,31 @@ constexpr std::array<UnsignedByte, 6> indices{{
 
 template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, const VectorTypeFor<dimensions, Float>& forcePosition, const VectorTypeFor<dimensions, Float>& force, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): SceneGraph::Drawable<dimensions, Float>(object, drawables), _forcePosition(forcePosition), _force(force), _options(ResourceManager::instance().get<ForceRendererOptions>(options)) {
     /* Shader */
-    _shader = ResourceManager::instance().get<AbstractShaderProgram, Shaders::Flat<dimensions>>(shaderKey<dimensions>());
-    if(!_shader) ResourceManager::instance().set<AbstractShaderProgram>(_shader.key(), new Shaders::Flat<dimensions>);
+    _shader = ResourceManager::instance().get<GL::AbstractShaderProgram, Shaders::Flat<dimensions>>(shaderKey<dimensions>());
+    if(!_shader) ResourceManager::instance().set<GL::AbstractShaderProgram>(_shader.key(), new Shaders::Flat<dimensions>);
 
     /* Mesh and vertex buffer */
-    _mesh = ResourceManager::instance().get<Mesh>("force");
-    _vertexBuffer = ResourceManager::instance().get<Buffer>("force-vertices");
-    _indexBuffer = ResourceManager::instance().get<Buffer>("force-indices");
+    _mesh = ResourceManager::instance().get<GL::Mesh>("force");
+    _vertexBuffer = ResourceManager::instance().get<GL::Buffer>("force-vertices");
+    _indexBuffer = ResourceManager::instance().get<GL::Buffer>("force-indices");
     if(_mesh) return;
 
     /* Create the mesh */
-    Buffer* vertexBuffer = new Buffer{Buffer::TargetHint::Array};
-    Buffer* indexBuffer = new Buffer{Buffer::TargetHint::ElementArray};
+    GL::Buffer* vertexBuffer = new GL::Buffer{GL::Buffer::TargetHint::Array};
+    GL::Buffer* indexBuffer = new GL::Buffer{GL::Buffer::TargetHint::ElementArray};
 
-    _vertexBuffer->setData(positions, BufferUsage::StaticDraw);
+    _vertexBuffer->setData(positions, GL::BufferUsage::StaticDraw);
     ResourceManager::instance().set(_vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
-    _indexBuffer->setData(indices, BufferUsage::StaticDraw);
+    _indexBuffer->setData(indices, GL::BufferUsage::StaticDraw);
     ResourceManager::instance().set(_indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
-    Mesh* mesh = new Mesh;
-    mesh->setPrimitive(MeshPrimitive::Lines)
+    GL::Mesh* mesh = new GL::Mesh;
+    mesh->setPrimitive(GL::MeshPrimitive::Lines)
         .setCount(indices.size())
         .addVertexBuffer(*vertexBuffer, 0,
             typename Shaders::Flat<dimensions>::Position(Shaders::Flat<dimensions>::Position::Components::Two))
-        .setIndexBuffer(*indexBuffer, 0, Mesh::IndexType::UnsignedByte, 0, positions.size());
+        .setIndexBuffer(*indexBuffer, 0, GL::MeshIndexType::UnsignedByte, 0, positions.size());
     ResourceManager::instance().set(_mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
 

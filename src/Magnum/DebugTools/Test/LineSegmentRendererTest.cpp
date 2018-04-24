@@ -29,7 +29,7 @@
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 
-#include "../Implementation/LineSegmentRendererTransformation.h"
+#include "Magnum/DebugTools/Implementation/LineSegmentRendererTransformation.h"
 
 namespace Magnum { namespace DebugTools { namespace Test {
 

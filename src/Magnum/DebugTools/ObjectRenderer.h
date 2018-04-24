@@ -30,9 +30,10 @@
  */
 
 #include "Magnum/Resource.h"
+#include "Magnum/DebugTools/visibility.h"
+#include "Magnum/GL/GL.h"
 #include "Magnum/SceneGraph/Drawable.h"
 #include "Magnum/Shaders/Shaders.h"
-#include "Magnum/DebugTools/visibility.h"
 
 namespace Magnum { namespace DebugTools {
 
@@ -104,9 +105,9 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: 
         void draw(const MatrixTypeFor<dimensions, Float>& transformationMatrix, SceneGraph::Camera<dimensions, Float>& camera) override;
 
         Resource<ObjectRendererOptions> _options;
-        Resource<AbstractShaderProgram, Shaders::VertexColor<dimensions>> _shader;
-        Resource<Mesh> _mesh;
-        Resource<Buffer> _vertexBuffer, _indexBuffer;
+        Resource<GL::AbstractShaderProgram, Shaders::VertexColor<dimensions>> _shader;
+        Resource<GL::Mesh> _mesh;
+        Resource<GL::Buffer> _vertexBuffer, _indexBuffer;
 };
 
 /** @brief Two-dimensional object renderer */

@@ -25,8 +25,8 @@
 
 #include "PointRenderer.h"
 
-#include "Magnum/Mesh.h"
 #include "Magnum/DebugTools/ShapeRenderer.h"
+#include "Magnum/GL/Mesh.h"
 #include "Magnum/Shapes/Point.h"
 #include "Magnum/Primitives/Crosshair.h"
 #include "Magnum/Shaders/Flat.h"

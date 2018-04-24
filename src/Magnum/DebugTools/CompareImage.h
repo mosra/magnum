@@ -33,6 +33,7 @@
 #include <Corrade/TestSuite/Comparator.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/GL/GL.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/DebugTools/visibility.h"
 

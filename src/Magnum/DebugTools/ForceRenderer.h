@@ -30,6 +30,7 @@
  */
 
 #include "Magnum/Resource.h"
+#include "Magnum/GL/GL.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/SceneGraph/Drawable.h"
 #include "Magnum/Shaders/Shaders.h"
@@ -135,9 +136,9 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: p
         const VectorTypeFor<dimensions, Float>& _force;
 
         Resource<ForceRendererOptions> _options;
-        Resource<AbstractShaderProgram, Shaders::Flat<dimensions>> _shader;
-        Resource<Mesh> _mesh;
-        Resource<Buffer> _vertexBuffer, _indexBuffer;
+        Resource<GL::AbstractShaderProgram, Shaders::Flat<dimensions>> _shader;
+        Resource<GL::Mesh> _mesh;
+        Resource<GL::Buffer> _vertexBuffer, _indexBuffer;
 };
 
 /** @brief Two-dimensional force renderer */

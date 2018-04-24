@@ -27,7 +27,7 @@
 
 #include "Magnum/Shapes/Shapes.h"
 
-#include "AbstractShapeRenderer.h"
+#include "Magnum/DebugTools/Implementation/AbstractShapeRenderer.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
@@ -39,7 +39,7 @@ template<> class AbstractCapsuleRenderer<2>: public AbstractShapeRenderer<2> {
         ~AbstractCapsuleRenderer();
 
     protected:
-        Resource<MeshView> bottom, cylinder, top;
+        Resource<GL::MeshView> bottom, cylinder, top;
 };
 
 template<> class AbstractCapsuleRenderer<3>: public AbstractShapeRenderer<3> {
@@ -48,7 +48,7 @@ template<> class AbstractCapsuleRenderer<3>: public AbstractShapeRenderer<3> {
         ~AbstractCapsuleRenderer();
 
     protected:
-        Resource<MeshView> bottom, cylinder, top;
+        Resource<GL::MeshView> bottom, cylinder, top;
 };
 
 template<UnsignedInt dimensions> class CapsuleRenderer: public AbstractCapsuleRenderer<dimensions> {

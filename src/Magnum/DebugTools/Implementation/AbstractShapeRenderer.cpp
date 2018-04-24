@@ -27,10 +27,10 @@
 
 #include <Corrade/Containers/Array.h>
 
-#include "Magnum/AbstractShaderProgram.h"
-#include "Magnum/Buffer.h"
-#include "Magnum/Mesh.h"
 #include "Magnum/DebugTools/ResourceManager.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/Mesh.h"
 #include "Magnum/MeshTools/CompressIndices.h"
 #include "Magnum/Shaders/Flat.h"
 #include "Magnum/Trade/MeshData2D.h"
@@ -44,16 +44,16 @@ template<UnsignedInt dimensions> ResourceKey shaderKey();
 template<> inline ResourceKey shaderKey<2>() { return ResourceKey("FlatShader2D"); }
 template<> inline ResourceKey shaderKey<3>() { return ResourceKey("FlatShader3D"); }
 
-template<UnsignedInt dimensions> void create(typename MeshData<dimensions>::Type&, Resource<Mesh>&, Resource<Buffer>&, Resource<Buffer>&);
+template<UnsignedInt dimensions> void create(typename MeshData<dimensions>::Type&, Resource<GL::Mesh>&, Resource<GL::Buffer>&, Resource<GL::Buffer>&);
 
-template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource, Resource<Buffer>& vertexBufferResource, Resource<Buffer>& indexBufferResource) {
+template<> void create<2>(Trade::MeshData2D& data, Resource<GL::Mesh>& meshResource, Resource<GL::Buffer>& vertexBufferResource, Resource<GL::Buffer>& indexBufferResource) {
     /* Vertex buffer */
-    Buffer* buffer = new Buffer{Buffer::TargetHint::Array};
-    buffer->setData(data.positions(0), BufferUsage::StaticDraw);
+    GL::Buffer* buffer = new GL::Buffer{GL::Buffer::TargetHint::Array};
+    buffer->setData(data.positions(0), GL::BufferUsage::StaticDraw);
     ResourceManager::instance().set(vertexBufferResource.key(), buffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Mesh configuration */
-    Mesh* mesh = new Mesh;
+    GL::Mesh* mesh = new GL::Mesh;
     mesh->setPrimitive(data.primitive())
         .addVertexBuffer(*buffer, 0, Shaders::Flat2D::Position());
     ResourceManager::instance().set(meshResource.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
@@ -63,12 +63,12 @@ template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource,
         CORRADE_INTERNAL_ASSERT(indexBufferResource.key() != ResourceKey());
 
         Containers::Array<char> indexData;
-        Mesh::IndexType indexType;
+        MeshIndexType indexType;
         UnsignedInt indexStart, indexEnd;
         std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(data.indices());
 
-        Buffer* indexBuffer = new Buffer{Buffer::TargetHint::ElementArray};
-        indexBuffer->setData(indexData, BufferUsage::StaticDraw);
+        GL::Buffer* indexBuffer = new GL::Buffer{GL::Buffer::TargetHint::ElementArray};
+        indexBuffer->setData(indexData, GL::BufferUsage::StaticDraw);
         mesh->setCount(data.indices().size())
             .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
 
@@ -78,14 +78,14 @@ template<> void create<2>(Trade::MeshData2D& data, Resource<Mesh>& meshResource,
     } else mesh->setCount(data.positions(0).size());
 }
 
-template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource, Resource<Buffer>& vertexBufferResource, Resource<Buffer>& indexBufferResource) {
+template<> void create<3>(Trade::MeshData3D& data, Resource<GL::Mesh>& meshResource, Resource<GL::Buffer>& vertexBufferResource, Resource<GL::Buffer>& indexBufferResource) {
     /* Vertex buffer */
-    Buffer* vertexBuffer = new Buffer{Buffer::TargetHint::Array};
-    vertexBuffer->setData(data.positions(0), BufferUsage::StaticDraw);
+    GL::Buffer* vertexBuffer = new GL::Buffer{GL::Buffer::TargetHint::Array};
+    vertexBuffer->setData(data.positions(0), GL::BufferUsage::StaticDraw);
     ResourceManager::instance().set(vertexBufferResource.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     /* Mesh configuration */
-    Mesh* mesh = new Mesh;
+    GL::Mesh* mesh = new GL::Mesh;
     mesh->setPrimitive(data.primitive())
         .addVertexBuffer(*vertexBuffer, 0, Shaders::Flat3D::Position());
     ResourceManager::instance().set(meshResource.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
@@ -95,12 +95,12 @@ template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource,
         CORRADE_INTERNAL_ASSERT(indexBufferResource.key() != ResourceKey());
 
         Containers::Array<char> indexData;
-        Mesh::IndexType indexType;
+        MeshIndexType indexType;
         UnsignedInt indexStart, indexEnd;
         std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(data.indices());
 
-        Buffer* indexBuffer = new Buffer{Buffer::TargetHint::ElementArray};
-        indexBuffer->setData(indexData, BufferUsage::StaticDraw);
+        GL::Buffer* indexBuffer = new GL::Buffer{GL::Buffer::TargetHint::ElementArray};
+        indexBuffer->setData(indexData, GL::BufferUsage::StaticDraw);
         mesh->setCount(data.indices().size())
             .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
 
@@ -113,12 +113,12 @@ template<> void create<3>(Trade::MeshData3D& data, Resource<Mesh>& meshResource,
 }
 
 template<UnsignedInt dimensions> AbstractShapeRenderer<dimensions>::AbstractShapeRenderer(ResourceKey meshKey, ResourceKey vertexBufferKey, ResourceKey indexBufferKey) {
-    wireframeShader = ResourceManager::instance().get<AbstractShaderProgram, Shaders::Flat<dimensions>>(shaderKey<dimensions>());
-    wireframeMesh = ResourceManager::instance().get<Mesh>(meshKey);
-    vertexBuffer = ResourceManager::instance().get<Buffer>(vertexBufferKey);
-    indexBuffer = ResourceManager::instance().get<Buffer>(indexBufferKey);
+    wireframeShader = ResourceManager::instance().get<GL::AbstractShaderProgram, Shaders::Flat<dimensions>>(shaderKey<dimensions>());
+    wireframeMesh = ResourceManager::instance().get<GL::Mesh>(meshKey);
+    vertexBuffer = ResourceManager::instance().get<GL::Buffer>(vertexBufferKey);
+    indexBuffer = ResourceManager::instance().get<GL::Buffer>(indexBufferKey);
 
-    if(!wireframeShader) ResourceManager::instance().set<AbstractShaderProgram>(shaderKey<dimensions>(),
+    if(!wireframeShader) ResourceManager::instance().set<GL::AbstractShaderProgram>(shaderKey<dimensions>(),
         new Shaders::Flat<dimensions>, ResourceDataState::Final, ResourcePolicy::Resident);
 }
 

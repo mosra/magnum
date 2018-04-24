@@ -31,6 +31,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/DebugTools/visibility.h"
+#include "Magnum/GL/GL.h"
 
 namespace Magnum { namespace DebugTools {
 
@@ -49,7 +50,7 @@ reinterpreted as @ref PixelType::UnsignedInt using additional shader and
 `floatBitsToUint()` GLSL function and then reinterpreted back to
 @ref PixelType::Float when read to client memory.
 */
-MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(Texture2D& texture, Int level, const Range2Di& range, Image2D& image);
+MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, Image2D& image);
 
 /**
 @brief Read range of given texture mip level to image
@@ -60,7 +61,7 @@ Convenience alternative to the above, example usage:
 Image2D image = DebugTools::textureSubImage(texture, 0, rect, {PixelFormat::RGBA, PixelType::UnsignedByte});
 @endcode
 */
-MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(Texture2D& texture, Int level, const Range2Di& range, Image2D&& image);
+MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, Image2D&& image);
 
 /**
 @brief Read range of given cube map texture coordinate mip level to image
@@ -72,7 +73,7 @@ it (such as OpenGL ES) by creating a framebuffer object and using
 Note that only @ref Magnum::PixelFormat "PixelFormat" and @ref PixelType values
 that are marked as framebuffer readable are supported.
 */
-MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(CubeMapTexture& texture, CubeMapCoordinate coordinate, Int level, const Range2Di& range, Image2D& image);
+MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, Image2D& image);
 
 /**
 @brief Read range of given cube map texture coordinate mip level to image
@@ -83,7 +84,7 @@ Convenience alternative to the above, example usage:
 Image2D image = DebugTools::textureSubImage(texture, CubeMapCoordinate::PositiveX, 0, rect, {PixelFormat::RGBA, PixelType::UnsignedByte});
 @endcode
 */
-MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(CubeMapTexture& texture, CubeMapCoordinate coordinate, Int level, const Range2Di& range, Image2D&& image);
+MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, Image2D&& image);
 
 #ifndef MAGNUM_TARGET_GLES2
 /**
@@ -99,7 +100,7 @@ that are marked as framebuffer readable are supported.
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
 */
-MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(Texture2D& texture, Int level, const Range2Di& range, BufferImage2D& image, BufferUsage usage);
+MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, GL::BufferImage2D& image, GL::BufferUsage usage);
 
 /**
 @brief Read range of given texture mip level to buffer image
@@ -110,7 +111,7 @@ Convenience alternative to the above, example usage:
 BufferImage2D image = DebugTools::textureSubImage(texture, 0, rect, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
 @endcode
 */
-MAGNUM_DEBUGTOOLS_EXPORT BufferImage2D textureSubImage(Texture2D& texture, Int level, const Range2Di& range, BufferImage2D&& image, BufferUsage usage);
+MAGNUM_DEBUGTOOLS_EXPORT GL::BufferImage2D textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, GL::BufferImage2D&& image, GL::BufferUsage usage);
 
 /**
 @brief Read range of given cube map texture coordinate mip level to buffer image
@@ -124,7 +125,7 @@ that are marked as framebuffer readable are supported.
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
 */
-MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(CubeMapTexture& texture, CubeMapCoordinate coordinate, Int level, const Range2Di& range, BufferImage2D& image, BufferUsage usage);
+MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, GL::BufferImage2D& image, GL::BufferUsage usage);
 
 /**
 @brief Read range of given cube map texture coordinate mip level to buffer image
@@ -135,7 +136,7 @@ Convenience alternative to the above, example usage:
 BufferImage2D image = DebugTools::textureSubImage(texture, CubeMapCoordinate::PositiveX, 0, rect, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
 @endcode
 */
-MAGNUM_DEBUGTOOLS_EXPORT BufferImage2D textureSubImage(CubeMapTexture& texture, CubeMapCoordinate coordinate, Int level, const Range2Di& range, BufferImage2D&& image, BufferUsage usage);
+MAGNUM_DEBUGTOOLS_EXPORT GL::BufferImage2D textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, GL::BufferImage2D&& image, GL::BufferUsage usage);
 #endif
 
 }}

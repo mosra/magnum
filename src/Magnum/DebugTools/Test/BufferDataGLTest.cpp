@@ -25,12 +25,12 @@
 
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Magnum/OpenGLTester.h"
 #include "Magnum/DebugTools/BufferData.h"
+#include "Magnum/GL/OpenGLTester.h"
 
 namespace Magnum { namespace DebugTools { namespace Test {
 
-struct BufferDataGLTest: Magnum::OpenGLTester {
+struct BufferDataGLTest: Magnum::GL::OpenGLTester {
     explicit BufferDataGLTest();
 
     void data();
@@ -47,19 +47,19 @@ namespace {
 }
 
 void BufferDataGLTest::data() {
-    Buffer buffer;
-    buffer.setData(Data, BufferUsage::StaticDraw);
+    GL::Buffer buffer;
+    buffer.setData(Data, GL::BufferUsage::StaticDraw);
     const Containers::Array<Int> contents = bufferData<Int>(buffer);
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(contents, Containers::arrayView(Data),
         TestSuite::Compare::Container);
 }
 
 void BufferDataGLTest::subData() {
-    Buffer buffer;
-    buffer.setData(Data, BufferUsage::StaticDraw);
+    GL::Buffer buffer;
+    buffer.setData(Data, GL::BufferUsage::StaticDraw);
     const Containers::Array<Int> contents = bufferSubData<Int>(buffer, 4, 3);
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE_AS(contents, Containers::arrayView(Data).slice(1, 4),
         TestSuite::Compare::Container);
 }

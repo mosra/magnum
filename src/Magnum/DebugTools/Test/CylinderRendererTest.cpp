@@ -25,7 +25,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "../Implementation/CylinderRendererTransformation.h"
+#include "Magnum/DebugTools/Implementation/CylinderRendererTransformation.h"
 
 namespace Magnum { namespace DebugTools { namespace Test {
 

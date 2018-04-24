@@ -25,8 +25,8 @@
 
 #include "CylinderRenderer.h"
 
-#include "Magnum/Mesh.h"
 #include "Magnum/DebugTools/ShapeRenderer.h"
+#include "Magnum/GL/Mesh.h"
 #include "Magnum/Shapes/Cylinder.h"
 #include "Magnum/Primitives/Cylinder.h"
 #include "Magnum/Primitives/Square.h"

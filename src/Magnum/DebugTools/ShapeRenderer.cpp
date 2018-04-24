@@ -30,13 +30,13 @@
 #include "Magnum/Shapes/Shape.h"
 #include "Magnum/SceneGraph/Camera.h"
 
-#include "Implementation/AxisAlignedBoxRenderer.h"
-#include "Implementation/BoxRenderer.h"
-#include "Implementation/CapsuleRenderer.h"
-#include "Implementation/CylinderRenderer.h"
-#include "Implementation/LineSegmentRenderer.h"
-#include "Implementation/PointRenderer.h"
-#include "Implementation/SphereRenderer.h"
+#include "Magnum/DebugTools/Implementation/AxisAlignedBoxRenderer.h"
+#include "Magnum/DebugTools/Implementation/BoxRenderer.h"
+#include "Magnum/DebugTools/Implementation/CapsuleRenderer.h"
+#include "Magnum/DebugTools/Implementation/CylinderRenderer.h"
+#include "Magnum/DebugTools/Implementation/LineSegmentRenderer.h"
+#include "Magnum/DebugTools/Implementation/PointRenderer.h"
+#include "Magnum/DebugTools/Implementation/SphereRenderer.h"
 
 namespace Magnum { namespace DebugTools {
 

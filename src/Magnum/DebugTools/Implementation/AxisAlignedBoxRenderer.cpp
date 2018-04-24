@@ -25,7 +25,7 @@
 
 #include "AxisAlignedBoxRenderer.h"
 
-#include "Magnum/Mesh.h"
+#include "Magnum/GL/Mesh.h"
 #include "Magnum/DebugTools/ShapeRenderer.h"
 #include "Magnum/Shapes/AxisAlignedBox.h"
 #include "Magnum/Shaders/Flat.h"

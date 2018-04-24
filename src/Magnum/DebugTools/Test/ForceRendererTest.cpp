@@ -26,7 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 
-#include "../Implementation/ForceRendererTransformation.h"
+#include "Magnum/DebugTools/Implementation/ForceRendererTransformation.h"
 
 namespace Magnum { namespace DebugTools { namespace Implementation { namespace Test {
 

@@ -28,6 +28,7 @@
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Resource.h"
 #include "Magnum/DebugTools/DebugTools.h"
+#include "Magnum/GL/GL.h"
 #include "Magnum/SceneGraph/SceneGraph.h"
 #include "Magnum/Shaders/Shaders.h"
 #include "Magnum/Trade/Trade.h"
@@ -56,11 +57,11 @@ template<UnsignedInt dimensions> class AbstractShapeRenderer {
         /* Call only if the mesh resource isn't already present */
         void createResources(typename MeshData<dimensions>::Type data);
 
-        Resource<AbstractShaderProgram, Shaders::Flat<dimensions>> wireframeShader;
-        Resource<Mesh> wireframeMesh;
+        Resource<GL::AbstractShaderProgram, Shaders::Flat<dimensions>> wireframeShader;
+        Resource<GL::Mesh> wireframeMesh;
 
     private:
-        Resource<Buffer> indexBuffer, vertexBuffer;
+        Resource<GL::Buffer> indexBuffer, vertexBuffer;
 };
 
 }}}
