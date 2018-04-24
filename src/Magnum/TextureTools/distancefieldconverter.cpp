@@ -27,12 +27,12 @@
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/PluginManager/Manager.h>
 
-#include "Magnum/Math/Range.h"
 #include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"
-#include "Magnum/Renderer.h"
-#include "Magnum/Texture.h"
-#include "Magnum/TextureFormat.h"
+#include "Magnum/Math/Range.h"
+#include "Magnum/GL/Renderer.h"
+#include "Magnum/GL/Texture.h"
+#include "Magnum/GL/TextureFormat.h"
 #include "Magnum/TextureTools/DistanceField.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
@@ -87,7 +87,8 @@ Arguments:
 -   `--plugin-dir DIR` --- override base plugin dir
 -   `--output-size "X Y"` --- size of output image
 -   `--radius N` --- distance field computation radius
--   `--magnum-...` --- engine-specific options (see @ref Context for details)
+-   `--magnum-...` --- engine-specific options (see
+    @ref GL-Context-command-line for details)
 
 Images with @ref PixelFormat::Red, @ref PixelFormat::RGB or @ref PixelFormat::RGBA
 are accepted on input.
@@ -158,7 +159,7 @@ int DistanceFieldConverter::exec() {
     }
 
     /* Decide about internal format */
-    TextureFormat internalFormat;
+    GL::TextureFormat internalFormat;
     if(image->format() == PixelFormat::Red) internalFormat = TextureFormat::R8;
     else if(image->format() == PixelFormat::RGB) internalFormat = TextureFormat::RGB8;
     else if(image->format() == PixelFormat::RGBA) internalFormat = TextureFormat::RGBA8;
@@ -168,7 +169,7 @@ int DistanceFieldConverter::exec() {
     }
 
     /* Input texture */
-    Texture2D input;
+    GL::Texture2D input;
     input.setMinificationFilter(Sampler::Filter::Linear)
         .setMagnificationFilter(Sampler::Filter::Linear)
         .setWrapping(Sampler::Wrapping::ClampToEdge)
@@ -176,10 +177,10 @@ int DistanceFieldConverter::exec() {
         .setSubImage(0, {}, *image);
 
     /* Output texture */
-    Texture2D output;
+    GL::Texture2D output;
     output.setStorage(1, TextureFormat::R8, args.value<Vector2i>("output-size"));
 
-    CORRADE_INTERNAL_ASSERT(Renderer::error() == Renderer::Error::NoError);
+    CORRADE_INTERNAL_ASSERT(GL::Renderer::error() == GL::Renderer::Error::NoError);
 
     /* Do it */
     Debug() << "Converting image of size" << image->size() << "to distance field...";

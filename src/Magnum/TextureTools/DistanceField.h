@@ -29,11 +29,11 @@
  * @brief Function @ref Magnum::TextureTools::distanceField()
  */
 
+#include "Magnum/Magnum.h"
+#include "Magnum/GL/GL.h"
 #ifndef MAGNUM_TARGET_GLES
 #include "Magnum/Math/Vector2.h"
 #endif
-#include "Magnum/Magnum.h"
-
 #include "Magnum/TextureTools/visibility.h"
 
 namespace Magnum { namespace TextureTools {
@@ -46,7 +46,7 @@ namespace Magnum { namespace TextureTools {
 @param radius       Max lookup radius in input texture
 @param imageSize    Input texture size. Needed only in OpenGL ES, in desktop
     OpenGL the information is gathered automatically using
-    @ref Texture2D::imageSize().
+    @ref GL::Texture2D::imageSize().
 
 Converts binary image (stored in red channel of @p input) to signed distance
 field (stored in red channel in @p rectangle of @p output). The purpose of this
@@ -85,19 +85,20 @@ http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnifica
 
 @note If internal format of @p output texture is not renderable, this function
     prints message to error output and does nothing. In desktop OpenGL and
-    OpenGL ES 3.0 it's common to render to @ref TextureFormat::R8. In OpenGL ES
-    2.0 you can use @ref TextureFormat::Red if @extension{EXT,texture_rg} is
-    available, if not, the smallest but still inefficient supported format is
-    in most cases @ref TextureFormat::RGB, rendering to @ref TextureFormat::Luminance
-    is not supported in most cases.
+    OpenGL ES 3.0 it's common to render to @ref GL::TextureFormat::R8. In
+    OpenGL ES 2.0 you can use @ref GL::TextureFormat::Red if
+    @extension{EXT,texture_rg} is available, if not, the smallest but still
+    inefficient supported format is in most cases @ref GL::TextureFormat::RGB,
+    rendering to @ref GL::TextureFormat::Luminance is not supported in most
+    cases.
 
 @bug ES (and maybe GL < 3.20) implementation behaves slightly different
     (jaggies, visible e.g. when rendering outlined fonts)
 */
 #ifndef MAGNUM_TARGET_GLES
-void MAGNUM_TEXTURETOOLS_EXPORT distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangle, Int radius, const Vector2i& imageSize = Vector2i());
+void MAGNUM_TEXTURETOOLS_EXPORT distanceField(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, Int radius, const Vector2i& imageSize = Vector2i());
 #else
-void MAGNUM_TEXTURETOOLS_EXPORT distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangle, Int radius, const Vector2i& imageSize);
+void MAGNUM_TEXTURETOOLS_EXPORT distanceField(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, Int radius, const Vector2i& imageSize);
 #endif
 
 }}

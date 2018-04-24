@@ -28,14 +28,14 @@
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/Math/Range.h"
-#include "Magnum/AbstractShaderProgram.h"
-#include "Magnum/Buffer.h"
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/Framebuffer.h"
-#include "Magnum/Mesh.h"
-#include "Magnum/Shader.h"
-#include "Magnum/Texture.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Framebuffer.h"
+#include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/Shader.h"
+#include "Magnum/GL/Texture.h"
 #include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
 #ifdef MAGNUM_BUILD_STATIC
@@ -48,9 +48,9 @@ namespace Magnum { namespace TextureTools {
 
 namespace {
 
-class DistanceFieldShader: public AbstractShaderProgram {
+class DistanceFieldShader: public GL::AbstractShaderProgram {
     public:
-        typedef Attribute<0, Vector2> Position;
+        typedef GL::Attribute<0, Vector2> Position;
 
         explicit DistanceFieldShader();
 
@@ -69,7 +69,7 @@ class DistanceFieldShader: public AbstractShaderProgram {
             return *this;
         }
 
-        DistanceFieldShader& bindTexture(Texture2D& texture) {
+        DistanceFieldShader& bindTexture(GL::Texture2D& texture) {
             texture.bind(TextureUnit);
             return *this;
         }
@@ -91,27 +91,27 @@ DistanceFieldShader::DistanceFieldShader() {
     Utility::Resource rs("MagnumTextureTools");
 
     #ifndef MAGNUM_TARGET_GLES
-    const Version v = Context::current().supportedVersion({Version::GL320, Version::GL300, Version::GL210});
+    const GL::Version v = GL::Context::current().supportedVersion({GL::Version::GL320, GL::Version::GL300, GL::Version::GL210});
     #else
-    const Version v = Context::current().supportedVersion({Version::GLES300, Version::GLES200});
+    const GL::Version v = GL::Context::current().supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
-    Shader vert = Shaders::Implementation::createCompatibilityShader(rs, v, Shader::Type::Vertex);
-    Shader frag = Shaders::Implementation::createCompatibilityShader(rs, v, Shader::Type::Fragment);
+    GL::Shader vert = Shaders::Implementation::createCompatibilityShader(rs, v, GL::Shader::Type::Vertex);
+    GL::Shader frag = Shaders::Implementation::createCompatibilityShader(rs, v, GL::Shader::Type::Fragment);
 
     vert.addSource(rs.get("FullScreenTriangle.glsl"))
         .addSource(rs.get("DistanceFieldShader.vert"));
     frag.addSource(rs.get("DistanceFieldShader.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 
     attachShaders({vert, frag});
 
     /* Older GLSL doesn't have gl_VertexID, vertices must be supplied explicitly */
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isVersionSupported(Version::GL300))
+    if(!GL::Context::current().isVersionSupported(GL::Version::GL300))
     #else
-    if(!Context::current().isVersionSupported(Version::GLES300))
+    if(!GL::Context::current().isVersionSupported(GL::Version::GLES300))
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
@@ -120,16 +120,16 @@ DistanceFieldShader::DistanceFieldShader() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>())
     #endif
     {
         radiusUniform = uniformLocation("radius");
         scalingUniform = uniformLocation("scaling");
 
         #ifndef MAGNUM_TARGET_GLES
-        if(!Context::current().isVersionSupported(Version::GL320))
+        if(!GL::Context::current().isVersionSupported(GL::Version::GL320))
         #else
-        if(!Context::current().isVersionSupported(Version::GLES300))
+        if(!GL::Context::current().isVersionSupported(GL::Version::GLES300))
         #endif
         {
             imageSizeInvertedUniform = uniformLocation("imageSizeInverted");
@@ -137,7 +137,7 @@ DistanceFieldShader::DistanceFieldShader() {
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::shading_language_420pack>())
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::shading_language_420pack>())
     #endif
     {
         setUniform(uniformLocation("textureData"), TextureUnit);
@@ -146,13 +146,13 @@ DistanceFieldShader::DistanceFieldShader() {
 
 }
 #ifndef MAGNUM_TARGET_GLES
-void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangle, const Int radius, const Vector2i&)
+void distanceField(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, const Int radius, const Vector2i&)
 #else
-void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangle, const Int radius, const Vector2i& imageSize)
+void distanceField(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, const Int radius, const Vector2i& imageSize)
 #endif
 {
     #ifndef MAGNUM_TARGET_GLES
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::framebuffer_object);
+    MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::framebuffer_object);
     #endif
 
     /** @todo Disable depth test, blending and then enable it back (if was previously) */
@@ -161,13 +161,13 @@ void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangl
     Vector2i imageSize = input.imageSize(0);
     #endif
 
-    Framebuffer framebuffer(rectangle);
-    framebuffer.attachTexture(Framebuffer::ColorAttachment(0), output, 0);
+    GL::Framebuffer framebuffer(rectangle);
+    framebuffer.attachTexture(GL::Framebuffer::ColorAttachment(0), output, 0);
     framebuffer.bind();
-    framebuffer.clear(FramebufferClear::Color);
+    framebuffer.clear(GL::FramebufferClear::Color);
 
-    const Framebuffer::Status status = framebuffer.checkStatus(FramebufferTarget::Draw);
-    if(status != Framebuffer::Status::Complete) {
+    const GL::Framebuffer::Status status = framebuffer.checkStatus(GL::FramebufferTarget::Draw);
+    if(status != GL::Framebuffer::Status::Complete) {
         Error() << "TextureTools::distanceField(): cannot render to given output texture, unexpected framebuffer status"
                 << status;
         return;
@@ -179,24 +179,24 @@ void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangl
         .bindTexture(input);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isVersionSupported(Version::GL320))
+    if(!GL::Context::current().isVersionSupported(GL::Version::GL320))
     #else
-    if(!Context::current().isVersionSupported(Version::GLES300))
+    if(!GL::Context::current().isVersionSupported(GL::Version::GLES300))
     #endif
     {
         shader.setImageSizeInverted(1.0f/Vector2(imageSize));
     }
 
-    Mesh mesh;
-    mesh.setPrimitive(MeshPrimitive::Triangles)
+    GL::Mesh mesh;
+    mesh.setPrimitive(GL::MeshPrimitive::Triangles)
         .setCount(3);
 
     /* Older GLSL doesn't have gl_VertexID, vertices must be supplied explicitly */
-    Buffer buffer;
+    GL::Buffer buffer;
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isVersionSupported(Version::GL300))
+    if(!GL::Context::current().isVersionSupported(GL::Version::GL300))
     #else
-    if(!Context::current().isVersionSupported(Version::GLES300))
+    if(!GL::Context::current().isVersionSupported(GL::Version::GLES300))
     #endif
     {
         constexpr Vector2 triangle[] = {
@@ -204,7 +204,7 @@ void distanceField(Texture2D& input, Texture2D& output, const Range2Di& rectangl
             Vector2(-1.0, -3.0),
             Vector2( 3.0,  1.0)
         };
-        buffer.setData(triangle, BufferUsage::StaticDraw);
+        buffer.setData(triangle, GL::BufferUsage::StaticDraw);
         mesh.addVertexBuffer(buffer, 0, DistanceFieldShader::Position());
     }
 
