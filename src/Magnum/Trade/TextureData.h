@@ -62,7 +62,7 @@ class TextureData {
          * @param image                 Texture image ID
          * @param importerState         Importer-specific state
          */
-        TextureData(Type type, Sampler::Filter minificationFilter, Sampler::Filter magnificationFilter, Sampler::Mipmap mipmapFilter, Array3D<Sampler::Wrapping> wrapping, UnsignedInt image, const void* importerState = nullptr) noexcept: _type{type}, _minificationFilter{minificationFilter}, _magnificationFilter{magnificationFilter}, _mipmapFilter{mipmapFilter}, _wrapping{wrapping}, _image{image}, _importerState{importerState} {}
+        TextureData(Type type, SamplerFilter minificationFilter, SamplerFilter magnificationFilter, SamplerMipmap mipmapFilter, Array3D<SamplerWrapping> wrapping, UnsignedInt image, const void* importerState = nullptr) noexcept: _type{type}, _minificationFilter{minificationFilter}, _magnificationFilter{magnificationFilter}, _mipmapFilter{mipmapFilter}, _wrapping{wrapping}, _image{image}, _importerState{importerState} {}
 
         /** @brief Copying is not allowed */
         TextureData(const TextureData&) = delete;
@@ -80,16 +80,16 @@ class TextureData {
         Type type() const { return _type; }
 
         /** @brief Minification filter */
-        Sampler::Filter minificationFilter() const { return _minificationFilter; }
+        SamplerFilter minificationFilter() const { return _minificationFilter; }
 
         /** @brief Magnification filter */
-        Sampler::Filter magnificationFilter() const { return _magnificationFilter; }
+        SamplerFilter magnificationFilter() const { return _magnificationFilter; }
 
         /** @brief Mipmap filter */
-        Sampler::Mipmap mipmapFilter() const { return _mipmapFilter; }
+        SamplerMipmap mipmapFilter() const { return _mipmapFilter; }
 
         /** @brief Wrapping */
-        Array3D<Sampler::Wrapping> wrapping() const { return _wrapping; }
+        Array3D<SamplerWrapping> wrapping() const { return _wrapping; }
 
         /**
          * @brief Image ID
@@ -111,9 +111,9 @@ class TextureData {
 
     private:
         Type _type;
-        Sampler::Filter _minificationFilter, _magnificationFilter;
-        Sampler::Mipmap _mipmapFilter;
-        Array3D<Sampler::Wrapping> _wrapping;
+        SamplerFilter _minificationFilter, _magnificationFilter;
+        SamplerMipmap _mipmapFilter;
+        Array3D<SamplerWrapping> _wrapping;
         UnsignedInt _image;
         const void* _importerState;
 };

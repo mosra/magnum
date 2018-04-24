@@ -25,8 +25,8 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Trade/SceneData.h"
 #include "Magnum/Magnum.h"
+#include "Magnum/Trade/SceneData.h"
 
 namespace Magnum { namespace Trade { namespace Test {
 

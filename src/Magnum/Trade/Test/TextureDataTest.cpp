@@ -52,18 +52,18 @@ TextureDataTest::TextureDataTest() {
 void TextureDataTest::construct() {
     const int a{};
     const TextureData data{TextureData::Type::Cube,
-        Sampler::Filter::Linear,
-        Sampler::Filter::Nearest,
-        Sampler::Mipmap::Nearest,
-        {Sampler::Wrapping::Repeat, Sampler::Wrapping::ClampToEdge, Sampler::Wrapping::MirroredRepeat},
+        SamplerFilter::Linear,
+        SamplerFilter::Nearest,
+        SamplerMipmap::Nearest,
+        {SamplerWrapping::Repeat, SamplerWrapping::ClampToEdge, SamplerWrapping::MirroredRepeat},
         42,
         &a};
 
     CORRADE_COMPARE(data.type(), TextureData::Type::Cube);
-    CORRADE_COMPARE(data.minificationFilter(), Sampler::Filter::Linear);
-    CORRADE_COMPARE(data.magnificationFilter(), Sampler::Filter::Nearest);
-    CORRADE_COMPARE(data.mipmapFilter(), Sampler::Mipmap::Nearest);
-    CORRADE_COMPARE(data.wrapping(), (Array3D<Sampler::Wrapping>{Sampler::Wrapping::Repeat, Sampler::Wrapping::ClampToEdge, Sampler::Wrapping::MirroredRepeat}));
+    CORRADE_COMPARE(data.minificationFilter(), SamplerFilter::Linear);
+    CORRADE_COMPARE(data.magnificationFilter(), SamplerFilter::Nearest);
+    CORRADE_COMPARE(data.mipmapFilter(), SamplerMipmap::Nearest);
+    CORRADE_COMPARE(data.wrapping(), (Array3D<SamplerWrapping>{SamplerWrapping::Repeat, SamplerWrapping::ClampToEdge, SamplerWrapping::MirroredRepeat}));
     CORRADE_COMPARE(data.image(), 42);
     CORRADE_COMPARE(data.importerState(), &a);
 }
@@ -76,38 +76,38 @@ void TextureDataTest::constructCopy() {
 void TextureDataTest::constructMove() {
     const int a{};
     TextureData data{TextureData::Type::Cube,
-        Sampler::Filter::Linear,
-        Sampler::Filter::Nearest,
-        Sampler::Mipmap::Nearest,
-        {Sampler::Wrapping::Repeat, Sampler::Wrapping::ClampToEdge, Sampler::Wrapping::MirroredRepeat},
+        SamplerFilter::Linear,
+        SamplerFilter::Nearest,
+        SamplerMipmap::Nearest,
+        {SamplerWrapping::Repeat, SamplerWrapping::ClampToEdge, SamplerWrapping::MirroredRepeat},
         42,
         &a};
 
     TextureData b{std::move(data)};
 
     CORRADE_COMPARE(b.type(), TextureData::Type::Cube);
-    CORRADE_COMPARE(b.minificationFilter(), Sampler::Filter::Linear);
-    CORRADE_COMPARE(b.magnificationFilter(), Sampler::Filter::Nearest);
-    CORRADE_COMPARE(b.mipmapFilter(), Sampler::Mipmap::Nearest);
-    CORRADE_COMPARE(b.wrapping(), (Array3D<Sampler::Wrapping>{Sampler::Wrapping::Repeat, Sampler::Wrapping::ClampToEdge, Sampler::Wrapping::MirroredRepeat}));
+    CORRADE_COMPARE(b.minificationFilter(), SamplerFilter::Linear);
+    CORRADE_COMPARE(b.magnificationFilter(), SamplerFilter::Nearest);
+    CORRADE_COMPARE(b.mipmapFilter(), SamplerMipmap::Nearest);
+    CORRADE_COMPARE(b.wrapping(), (Array3D<SamplerWrapping>{SamplerWrapping::Repeat, SamplerWrapping::ClampToEdge, SamplerWrapping::MirroredRepeat}));
     CORRADE_COMPARE(b.image(), 42);
     CORRADE_COMPARE(b.importerState(), &a);
 
     const int c{};
     TextureData d{TextureData::Type::Texture2D,
-        Sampler::Filter::Nearest,
-        Sampler::Filter::Linear,
-        Sampler::Mipmap::Base,
-        Sampler::Wrapping::ClampToEdge,
+        SamplerFilter::Nearest,
+        SamplerFilter::Linear,
+        SamplerMipmap::Base,
+        SamplerWrapping::ClampToEdge,
         13,
         &c};
     d = std::move(b);
 
     CORRADE_COMPARE(d.type(), TextureData::Type::Cube);
-    CORRADE_COMPARE(d.minificationFilter(), Sampler::Filter::Linear);
-    CORRADE_COMPARE(d.magnificationFilter(), Sampler::Filter::Nearest);
-    CORRADE_COMPARE(d.mipmapFilter(), Sampler::Mipmap::Nearest);
-    CORRADE_COMPARE(d.wrapping(), (Array3D<Sampler::Wrapping>{Sampler::Wrapping::Repeat, Sampler::Wrapping::ClampToEdge, Sampler::Wrapping::MirroredRepeat}));
+    CORRADE_COMPARE(d.minificationFilter(), SamplerFilter::Linear);
+    CORRADE_COMPARE(d.magnificationFilter(), SamplerFilter::Nearest);
+    CORRADE_COMPARE(d.mipmapFilter(), SamplerMipmap::Nearest);
+    CORRADE_COMPARE(d.wrapping(), (Array3D<SamplerWrapping>{SamplerWrapping::Repeat, SamplerWrapping::ClampToEdge, SamplerWrapping::MirroredRepeat}));
     CORRADE_COMPARE(d.image(), 42);
     CORRADE_COMPARE(d.importerState(), &a);
 }

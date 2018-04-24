@@ -102,7 +102,7 @@ int main(int argc, char** argv) {
         return 3;
     }
 
-    Debug() << "Converting image of size" << image->size() << Debug::nospace << ", format" << image->format() << "and type"  << image->type() << "to" << args.value("output");
+    Debug() << "Converting image of size" << image->size() << "and format" << image->format() << "to" << args.value("output");
 
     /* Save output file */
     if(!converter->exportToFile(*image, args.value("output"))) {

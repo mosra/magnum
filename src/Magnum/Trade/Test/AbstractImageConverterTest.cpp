@@ -74,7 +74,7 @@ void AbstractImageConverterTest::exportToFile() {
 
     /* doExportToFile() should call doExportToData() */
     DataExporter exporter;
-    ImageView2D image(PixelFormat::RGBA, PixelType::UnsignedByte, {0xfe, 0xed}, {nullptr, 0xfe*0xed*4});
+    ImageView2D image(PixelFormat::RGBA8Unorm, {0xfe, 0xed}, {nullptr, 0xfe*0xed*4});
     CORRADE_VERIFY(exporter.exportToFile(image, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
     CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
         "\xFE\xED", TestSuite::Compare::FileToString);
@@ -102,13 +102,13 @@ void AbstractImageConverterTest::exportToDataImageData() {
 
     {
         /* Should get "B" when converting uncompressed */
-        ImageData2D image{PixelFormat::RGBA, PixelType::UnsignedByte, {}, nullptr};
+        ImageData2D image{PixelFormat::RGBA8Unorm, {}, nullptr};
         CORRADE_COMPARE_AS(exporter.exportToData(image),
             (Containers::Array<char>{Containers::InPlaceInit, {'B'}}),
             TestSuite::Compare::Container);
     } {
         /* Should get "C" when converting compressed */
-        ImageData2D image{CompressedPixelFormat::RGBAS3tcDxt1, {}, nullptr};
+        ImageData2D image{CompressedPixelFormat::Bc1RGBUnorm, {}, nullptr};
         CORRADE_COMPARE_AS(exporter.exportToData(image),
             (Containers::Array<char>{Containers::InPlaceInit, {'C'}}),
             TestSuite::Compare::Container);
@@ -120,13 +120,13 @@ void AbstractImageConverterTest::exportToFileImageData() {
 
     {
         /* Should get "B" when converting uncompressed */
-        ImageData2D image{PixelFormat::RGBA, PixelType::UnsignedByte, {}, nullptr};
+        ImageData2D image{PixelFormat::RGBA16F, {}, nullptr};
         CORRADE_VERIFY(exporter.exportToFile(image, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
         CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
             "B", TestSuite::Compare::FileToString);
     } {
         /* Should get "C" when converting compressed */
-        ImageData2D image{CompressedPixelFormat::RGBAS3tcDxt1, {}, nullptr};
+        ImageData2D image{CompressedPixelFormat::Bc2RGBAUnorm, {}, nullptr};
         CORRADE_VERIFY(exporter.exportToFile(image, Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out")));
         CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
             "C", TestSuite::Compare::FileToString);
