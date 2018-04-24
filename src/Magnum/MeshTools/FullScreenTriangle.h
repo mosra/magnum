@@ -25,10 +25,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_TARGET_GL
 /** @file
  * @brief Function @ref Magnum::MeshTools::fullScreenTriangle()
  */
+#endif
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include <memory>
 #include <utility>
 
@@ -79,15 +84,25 @@ void main() {
     #endif
 }
 @endcode
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 std::pair<std::unique_ptr<GL::Buffer>, GL::Mesh> MAGNUM_MESHTOOLS_EXPORT fullScreenTriangle(GL::Version version);
 
-/**
-@overload
+/** @overload
 
 This function implicitly uses current context version.
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 std::pair<std::unique_ptr<GL::Buffer>, GL::Mesh> MAGNUM_MESHTOOLS_EXPORT fullScreenTriangle();
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 }}
 

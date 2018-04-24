@@ -23,19 +23,24 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-corrade_add_resource(MagnumTextureTools_RCS resources.conf)
-set_target_properties(MagnumTextureTools_RCS-dependencies PROPERTIES FOLDER "Magnum/TextureTools")
-
 set(MagnumTextureTools_SRCS
-    Atlas.cpp
-    DistanceField.cpp
-    ${MagnumTextureTools_RCS})
+    Atlas.cpp)
 
 set(MagnumTextureTools_HEADERS
     Atlas.h
-    DistanceField.h
 
     visibility.h)
+
+if(TARGET_GL)
+    corrade_add_resource(MagnumTextureTools_RCS resources.conf)
+    set_target_properties(MagnumTextureTools_RCS-dependencies PROPERTIES FOLDER "Magnum/TextureTools")
+
+    list(APPEND MagnumTextureTools_SRCS
+        DistanceField.cpp
+        ${MagnumTextureTools_RCS})
+
+    list(APPEND MagnumTextureTools_HEADERS DistanceField.h)
+endif()
 
 # TextureTools library
 add_library(MagnumTextureTools ${SHARED_OR_STATIC}
@@ -50,8 +55,10 @@ elseif(BUILD_STATIC_PIC)
     set_target_properties(MagnumTextureTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumTextureTools PUBLIC
-    Magnum
-    MagnumGL)
+    Magnum)
+if(WITH_GL)
+    target_link_libraries(MagnumTextureTools PUBLIC MagnumGL)
+endif()
 
 install(TARGETS MagnumTextureTools
     RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}

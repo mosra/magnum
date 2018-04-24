@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#ifndef MAGNUM_TARGET_WEBGL
+#if defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_WEBGL)
 /** @file
  * @brief Function @ref Magnum::DebugTools::bufferData(), @ref Magnum::DebugTools::bufferSubData()
  */
@@ -36,7 +36,7 @@
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/DebugTools/visibility.h"
 
-#ifndef MAGNUM_TARGET_WEBGL
+#if defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_WEBGL)
 namespace Magnum { namespace DebugTools {
 
 namespace Implementation {
@@ -48,6 +48,11 @@ namespace Implementation {
 
 Emulates @ref GL::Buffer::subData() call on platforms that don't support it
 (such as OpenGL ES) by using @ref GL::Buffer::map().
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+
 @requires_gles30 Extension @extension{EXT,map_buffer_range} in OpenGL ES
     2.0.
 @requires_gles Buffer mapping is not available in WebGL.
@@ -63,6 +68,11 @@ template<class T> Containers::Array<T> inline bufferSubData(GL::Buffer& buffer, 
 
 Emulates @ref GL::Buffer::data() call on platforms that don't support it (such
 as OpenGL ES) by using @ref GL::Buffer::map().
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+
 @requires_gles30 Extension @extension{EXT,map_buffer_range} in OpenGL ES
     2.0.
 @requires_gles Buffer mapping is not available in WebGL.
@@ -75,7 +85,7 @@ template<class T = char> Containers::Array<T> inline bufferData(GL::Buffer& buff
 
 }}
 #else
-#error this header is not available in WebGL build
+#error this header is available only in the OpenGL (ES) build and not available in the WebGL build
 #endif
 
 #endif

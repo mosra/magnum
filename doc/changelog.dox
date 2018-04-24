@@ -131,6 +131,11 @@ See also:
 
 @subsection changelog-latest-buildsystem Build system
 
+-   The core @ref Magnum library is not depending on OpenGL anymore, all
+    GL-related APIs are now part of a new @ref GL library
+-   @ref Primitives and @ref Trade libraries do not depend on OpenGL anymore
+-   @ref DebugTools, @ref MeshTools and @ref TextureTools have only an optional
+    dependency on the @ref GL library, controlled with `TARGET_GL` CMake option
 -   All plugin interfaces now implement
     @ref Corrade::PluginManager::AbstractPlugin::pluginSearchPaths() "pluginSearchPaths()"
     for plugin directory autodetection --- you no longer need to specify the

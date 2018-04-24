@@ -25,9 +25,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_TARGET_GL
 /** @file
  * @brief Class @ref Magnum::DebugTools::ForceRenderer, @ref Magnum::DebugTools::ForceRendererOptions, typedef @ref Magnum::DebugTools::ForceRenderer2D, @ref Magnum::DebugTools::ForceRenderer3D
  */
+#endif
 
 #include "Magnum/Resource.h"
 #include "Magnum/GL/GL.h"
@@ -36,12 +38,17 @@
 #include "Magnum/Shaders/Shaders.h"
 #include "Magnum/DebugTools/visibility.h"
 
+#ifdef MAGNUM_TARGET_GL
 namespace Magnum { namespace DebugTools {
 
 /**
 @brief Force renderer options
 
 See @ref ForceRenderer documentation for more information.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 class ForceRendererOptions {
     public:
@@ -101,6 +108,10 @@ Vector3 force;
 new DebugTools::ForceRenderer2D(object, {0.3f, 1.5f, -0.7f}, &force, "my", debugDrawables);
 @endcode
 
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+
 @see @ref ForceRenderer2D, @ref ForceRenderer3D, @ref ForceRendererOptions
 */
 template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: public SceneGraph::Drawable<dimensions, Float> {
@@ -148,5 +159,8 @@ typedef ForceRenderer<2> ForceRenderer2D;
 typedef ForceRenderer<3> ForceRenderer3D;
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

@@ -25,8 +25,6 @@
 
 # Files shared between main library and unit test library
 set(MagnumMeshTools_SRCS
-    Compile.cpp
-    FullScreenTriangle.cpp
     Tipsify.cpp)
 
 # Files compiled with different flags for main library and unit test library
@@ -38,11 +36,9 @@ set(MagnumMeshTools_GracefulAssert_SRCS
 
 set(MagnumMeshTools_HEADERS
     CombineIndexedArrays.h
-    Compile.h
     CompressIndices.h
     Duplicate.h
     FlipNormals.h
-    FullScreenTriangle.h
     GenerateFlatNormals.h
     Interleave.h
     RemoveDuplicates.h
@@ -52,11 +48,21 @@ set(MagnumMeshTools_HEADERS
 
     visibility.h)
 
+if(TARGET_GL)
+    list(APPEND MagnumMeshTools_SRCS
+        Compile.cpp
+        FullScreenTriangle.cpp)
+
+    list(APPEND MagnumMeshTools_HEADERS
+        Compile.h
+        FullScreenTriangle.h)
+endif()
+
 # Objects shared between main and test library
 add_library(MagnumMeshToolsObjects OBJECT
     ${MagnumMeshTools_SRCS}
     ${MagnumMeshTools_HEADERS})
-target_include_directories(MagnumMeshToolsObjects PUBLIC $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(MagnumMeshToolsObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_STATIC)
     target_compile_definitions(MagnumMeshToolsObjects PRIVATE "MagnumMeshToolsObjects_EXPORTS")
 endif()
@@ -64,6 +70,9 @@ if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
     set_target_properties(MagnumMeshToolsObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 set_target_properties(MagnumMeshToolsObjects PROPERTIES FOLDER "Magnum/MeshTools")
+if(TARGET_GL)
+    target_include_directories(MagnumMeshToolsObjects PUBLIC $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
+endif()
 
 # Main MeshTools library
 add_library(MagnumMeshTools ${SHARED_OR_STATIC}
@@ -78,8 +87,10 @@ elseif(BUILD_STATIC_PIC)
     set_target_properties(MagnumMeshTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumMeshTools PUBLIC
-    Magnum
-    MagnumTrade)
+    Magnum)
+if(TARGET_GL)
+    target_link_libraries(MagnumMeshTools PUBLIC MagnumGL MagnumTrade)
+endif()
 
 install(TARGETS MagnumMeshTools
     RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -101,8 +112,10 @@ if(BUILD_TESTS)
         set_target_properties(MagnumMeshToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
     target_link_libraries(MagnumMeshToolsTestLib PUBLIC
-        Magnum
-        MagnumTrade)
+        Magnum)
+    if(TARGET_GL)
+        target_link_libraries(MagnumMeshToolsTestLib PUBLIC MagnumGL MagnumTrade)
+    endif()
 
     # On Windows we need to install first and then run the tests to avoid "DLL
     # not found" hell, thus we need to install this too

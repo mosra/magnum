@@ -34,6 +34,9 @@
 namespace Magnum { namespace DebugTools {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+class Profiler;
+
+#ifdef MAGNUM_TARGET_GL
 template<UnsignedInt> class ForceRenderer;
 typedef ForceRenderer<2> ForceRenderer2D;
 typedef ForceRenderer<3> ForceRenderer3D;
@@ -44,13 +47,13 @@ typedef ObjectRenderer<2> ObjectRenderer2D;
 typedef ObjectRenderer<3> ObjectRenderer3D;
 class ObjectRendererOptions;
 
-class Profiler;
 class ResourceManager;
 
 template<UnsignedInt> class ShapeRenderer;
 typedef ShapeRenderer<2> ShapeRenderer2D;
 typedef ShapeRenderer<3> ShapeRenderer3D;
 class ShapeRendererOptions;
+#endif
 #endif
 
 }}

@@ -74,7 +74,6 @@ add_library(MagnumTradeObjects OBJECT
     ${MagnumTrade_HEADERS})
 target_include_directories(MagnumTradeObjects PUBLIC
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
-    $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_STATIC)
     target_compile_definitions(MagnumTradeObjects PRIVATE "MagnumTradeObjects_EXPORTS")
@@ -98,7 +97,6 @@ elseif(BUILD_STATIC_PIC)
 endif()
 target_link_libraries(MagnumTrade PUBLIC
     Magnum
-    MagnumGL
     Corrade::PluginManager)
 
 install(TARGETS MagnumTrade
@@ -138,7 +136,6 @@ if(BUILD_TESTS)
     endif()
     target_link_libraries(MagnumTradeTestLib
         Magnum
-        MagnumGL
         Corrade::PluginManager)
 
     # On Windows we need to install first and then run the tests to avoid "DLL

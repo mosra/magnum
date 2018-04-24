@@ -29,6 +29,9 @@
  * @brief Function @ref Magnum::TextureTools::distanceField()
  */
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/GL.h"
 #ifndef MAGNUM_TARGET_GLES
@@ -92,6 +95,10 @@ http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnifica
     rendering to @ref GL::TextureFormat::Luminance is not supported in most
     cases.
 
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+
 @bug ES (and maybe GL < 3.20) implementation behaves slightly different
     (jaggies, visible e.g. when rendering outlined fonts)
 */
@@ -102,5 +109,8 @@ void MAGNUM_TEXTURETOOLS_EXPORT distanceField(GL::Texture2D& input, GL::Texture2
 #endif
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

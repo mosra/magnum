@@ -25,9 +25,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_TARGET_GL
 /** @file
  * @brief Class @ref Magnum::DebugTools::ResourceManager
  */
+#endif
 
 #include "Magnum/ResourceManager.h"
 
@@ -49,21 +51,27 @@
 #include "Magnum/GL/MeshView.h"
 #endif
 
-namespace Magnum {
-
-namespace DebugTools {
+#ifdef MAGNUM_TARGET_GL
+namespace Magnum { namespace DebugTools {
 
 /**
 @brief Resource manager for debug tools
 
 Stores various data used by debug renderers. See @ref debug-tools for more
 information.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 class MAGNUM_DEBUGTOOLS_EXPORT ResourceManager: public Magnum::ResourceManager<Magnum::Implementation::ResourceManagerLocalInstance, GL::AbstractShaderProgram, GL::Buffer, GL::Mesh, GL::MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions> {
     public:
         explicit ResourceManager();
         ~ResourceManager();
 };
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 }}
 

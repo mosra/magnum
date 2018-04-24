@@ -30,6 +30,7 @@
  */
 
 #include <tuple>
+#include <vector>
 
 #include "Magnum/Mesh.h"
 #include "Magnum/MeshTools/visibility.h"

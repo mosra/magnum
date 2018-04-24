@@ -24,23 +24,82 @@
 #
 
 set(MagnumDebugTools_SRCS
-    Profiler.cpp
-    ResourceManager.cpp
-    TextureImage.cpp)
+    Profiler.cpp)
 
 set(MagnumDebugTools_HEADERS
     DebugTools.h
-    Profiler.h
-    ResourceManager.h
-    TextureImage.h
-    visibility.h)
+    Profiler.h)
 
 # Header files to display in project view of IDEs only
 set(MagnumDebugTools_PRIVATE_HEADERS )
 
-if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_GLES2)
-    corrade_add_resource(MagnumDebugTools_RESOURCES resources.conf)
-    list(APPEND MagnumDebugTools_SRCS ${MagnumDebugTools_RESOURCES})
+if(TARGET_GL)
+    list(APPEND MagnumDebugTools_SRCS
+        ResourceManager.cpp
+        TextureImage.cpp)
+
+    list(APPEND MagnumDebugTools_HEADERS
+        ResourceManager.h
+        TextureImage.h
+        visibility.h)
+
+    if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_GLES2)
+        corrade_add_resource(MagnumDebugTools_RESOURCES resources.conf)
+        list(APPEND MagnumDebugTools_SRCS ${MagnumDebugTools_RESOURCES})
+    endif()
+
+    if(NOT MAGNUM_TARGET_WEBGL)
+        list(APPEND MagnumDebugTools_SRCS
+            BufferData.cpp)
+
+        list(APPEND MagnumDebugTools_HEADERS
+            BufferData.h)
+    endif()
+
+    if(WITH_SCENEGRAPH)
+        list(APPEND MagnumDebugTools_SRCS
+            ForceRenderer.cpp
+            ObjectRenderer.cpp)
+
+        list(APPEND MagnumDebugTools_HEADERS
+            ForceRenderer.h
+            ObjectRenderer.h)
+
+        list(APPEND MagnumDebugTools_PRIVATE_HEADERS
+            Implementation/ForceRendererTransformation.h)
+    endif()
+
+    if(WITH_SHAPES)
+        list(APPEND MagnumDebugTools_SRCS
+            ShapeRenderer.cpp
+
+            Implementation/AbstractBoxRenderer.cpp
+            Implementation/AbstractShapeRenderer.cpp
+            Implementation/AxisAlignedBoxRenderer.cpp
+            Implementation/BoxRenderer.cpp
+            Implementation/CapsuleRenderer.cpp
+            Implementation/CylinderRenderer.cpp
+            Implementation/LineSegmentRenderer.cpp
+            Implementation/PointRenderer.cpp
+            Implementation/SphereRenderer.cpp)
+
+        list(APPEND MagnumDebugTools_HEADERS
+            ShapeRenderer.h)
+
+        list(APPEND MagnumDebugTools_PRIVATE_HEADERS
+            Implementation/AbstractBoxRenderer.h
+            Implementation/AbstractShapeRenderer.h
+            Implementation/AxisAlignedBoxRenderer.h
+            Implementation/BoxRenderer.h
+            Implementation/CapsuleRenderer.h
+            Implementation/CapsuleRendererTransformation.h
+            Implementation/CylinderRenderer.h
+            Implementation/CylinderRendererTransformation.h
+            Implementation/LineSegmentRenderer.h
+            Implementation/LineSegmentRendererTransformation.h
+            Implementation/PointRenderer.h
+            Implementation/SphereRenderer.h)
+    endif()
 endif()
 
 # Build the TestSuite-related functionality only if it is present
@@ -51,59 +110,6 @@ if(Corrade_TestSuite_FOUND)
 
     list(APPEND MagnumDebugTools_HEADERS
         CompareImage.h)
-endif()
-
-if(NOT MAGNUM_TARGET_WEBGL)
-    list(APPEND MagnumDebugTools_SRCS
-        BufferData.cpp)
-
-    list(APPEND MagnumDebugTools_HEADERS
-        BufferData.h)
-endif()
-
-if(WITH_SCENEGRAPH)
-    list(APPEND MagnumDebugTools_SRCS
-        ForceRenderer.cpp
-        ObjectRenderer.cpp)
-
-    list(APPEND MagnumDebugTools_HEADERS
-        ForceRenderer.h
-        ObjectRenderer.h)
-
-    list(APPEND MagnumDebugTools_PRIVATE_HEADERS
-        Implementation/ForceRendererTransformation.h)
-endif()
-
-if(WITH_SHAPES)
-    list(APPEND MagnumDebugTools_SRCS
-        ShapeRenderer.cpp
-
-        Implementation/AbstractBoxRenderer.cpp
-        Implementation/AbstractShapeRenderer.cpp
-        Implementation/AxisAlignedBoxRenderer.cpp
-        Implementation/BoxRenderer.cpp
-        Implementation/CapsuleRenderer.cpp
-        Implementation/CylinderRenderer.cpp
-        Implementation/LineSegmentRenderer.cpp
-        Implementation/PointRenderer.cpp
-        Implementation/SphereRenderer.cpp)
-
-    list(APPEND MagnumDebugTools_HEADERS
-        ShapeRenderer.h)
-
-    list(APPEND MagnumDebugTools_PRIVATE_HEADERS
-        Implementation/AbstractBoxRenderer.h
-        Implementation/AbstractShapeRenderer.h
-        Implementation/AxisAlignedBoxRenderer.h
-        Implementation/BoxRenderer.h
-        Implementation/CapsuleRenderer.h
-        Implementation/CapsuleRendererTransformation.h
-        Implementation/CylinderRenderer.h
-        Implementation/CylinderRendererTransformation.h
-        Implementation/LineSegmentRenderer.h
-        Implementation/LineSegmentRendererTransformation.h
-        Implementation/PointRenderer.h
-        Implementation/SphereRenderer.h)
 endif()
 
 # DebugTools library
@@ -119,22 +125,23 @@ if(NOT BUILD_STATIC)
 elseif(BUILD_STATIC_PIC)
     set_target_properties(MagnumDebugTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_link_libraries(MagnumDebugTools PUBLIC
-    Magnum
-    MagnumGL)
+target_link_libraries(MagnumDebugTools PUBLIC Magnum)
 if(Corrade_TestSuite_FOUND)
     target_link_libraries(MagnumDebugTools PUBLIC Corrade::TestSuite)
 endif()
-if(WITH_SCENEGRAPH)
-    target_link_libraries(MagnumDebugTools PUBLIC MagnumSceneGraph)
-endif()
-if(WITH_SHAPES)
-    target_link_libraries(MagnumDebugTools PUBLIC MagnumShapes MagnumPrimitives)
-endif()
-if(WITH_SCENEGRAPH OR WITH_SHAPES)
-    target_link_libraries(MagnumDebugTools PUBLIC
-        MagnumMeshTools
-        MagnumShaders)
+if(TARGET_GL)
+    target_link_libraries(MagnumDebugTools PUBLIC MagnumGL)
+    if(WITH_SCENEGRAPH)
+        target_link_libraries(MagnumDebugTools PUBLIC MagnumSceneGraph)
+    endif()
+    if(WITH_SHAPES)
+        target_link_libraries(MagnumDebugTools PUBLIC MagnumShapes MagnumPrimitives)
+    endif()
+    if(WITH_SCENEGRAPH OR WITH_SHAPES)
+        target_link_libraries(MagnumDebugTools PUBLIC
+            MagnumMeshTools
+            MagnumShaders)
+    endif()
 endif()
 
 install(TARGETS MagnumDebugTools

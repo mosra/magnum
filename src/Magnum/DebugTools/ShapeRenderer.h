@@ -25,9 +25,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_TARGET_GL
 /** @file
  * @brief Class @ref Magnum::DebugTools::ShapeRenderer, @ref Magnum::DebugTools::ShapeRendererOptions, typedef @ref Magnum::DebugTools::ShapeRenderer2D, @ref Magnum::DebugTools::ShapeRenderer3D
  */
+#endif
 
 #include "Magnum/Resource.h"
 #include "Magnum/Math/Color.h"
@@ -36,6 +38,7 @@
 #include "Magnum/Shapes/shapeImplementation.h"
 #include "Magnum/DebugTools/visibility.h"
 
+#ifdef MAGNUM_TARGET_GL
 namespace Magnum { namespace DebugTools {
 
 template<UnsignedInt> class ShapeRenderer;
@@ -50,6 +53,10 @@ namespace Implementation {
 @brief Shape renderer options
 
 See @ref ShapeRenderer documentation for more information.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 class ShapeRendererOptions {
     public:
@@ -134,6 +141,10 @@ Shapes::AbstractShape2D* shape;
 new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables);
 @endcode
 
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+
 @see @ref ShapeRenderer2D, @ref ShapeRenderer3D, @ref ShapeRendererOptions
 
 @todo Different drawing style for inverted shapes? (marking the "inside" somehow)
@@ -174,5 +185,8 @@ typedef ShapeRenderer<2> ShapeRenderer2D;
 typedef ShapeRenderer<3> ShapeRenderer3D;
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

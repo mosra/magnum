@@ -280,6 +280,10 @@ find_package(Magnum REQUIRED MeshTools)
 target_link_libraries(your-app Magnum::MeshTools)
 @endcode
 
+Note that functionality depending on @ref GL APIs is available only if Magnum
+is built with both `WITH_GL` and `TARGET_GL` enabled (which is done by
+default).
+
 See @ref building and @ref cmake for more information.
 */
 
@@ -416,6 +420,10 @@ find_package(Magnum REQUIRED TextureTools)
 # ...
 target_link_libraries(your-app Magnum::TextureTools)
 @endcode
+
+Note that functionality depending on @ref GL APIs is available only if Magnum
+is built with both `WITH_GL` and `TARGET_GL` enabled (which is done by
+default).
 
 See @ref building and @ref cmake for more information.
 */

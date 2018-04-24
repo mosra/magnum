@@ -25,9 +25,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_TARGET_GL
 /** @file
  * @brief Class @ref Magnum::DebugTools::ObjectRenderer, @ref Magnum::DebugTools::ObjectRendererOptions, typedef @ref Magnum::DebugTools::ObjectRenderer2D, @ref Magnum::DebugTools::ObjectRenderer3D
  */
+#endif
 
 #include "Magnum/Resource.h"
 #include "Magnum/DebugTools/visibility.h"
@@ -35,12 +37,17 @@
 #include "Magnum/SceneGraph/Drawable.h"
 #include "Magnum/Shaders/Shaders.h"
 
+#ifdef MAGNUM_TARGET_GL
 namespace Magnum { namespace DebugTools {
 
 /**
 @brief Object renderer options
 
 See @ref ObjectRenderer documentation for more information.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 class ObjectRendererOptions {
     public:
@@ -83,6 +90,10 @@ Object3D* object;
 new DebugTools::ObjectRenderer2D(object, "my", debugDrawables);
 @endcode
 
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+
 @see @ref ObjectRenderer2D, @ref ObjectRenderer3D, @ref ObjectRendererOptions
 */
 template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: public SceneGraph::Drawable<dimensions, Float> {
@@ -117,5 +128,8 @@ typedef ObjectRenderer<2> ObjectRenderer2D;
 typedef ObjectRenderer<3> ObjectRenderer3D;
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif
