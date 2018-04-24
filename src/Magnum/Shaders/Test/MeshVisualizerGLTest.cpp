@@ -23,14 +23,14 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/OpenGLTester.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Shaders/MeshVisualizer.h"
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-struct MeshVisualizerGLTest: OpenGLTester {
+struct MeshVisualizerGLTest: GL::OpenGLTester {
     explicit MeshVisualizerGLTest();
 
     void compile();
@@ -61,16 +61,16 @@ void MeshVisualizerGLTest::compile() {
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void MeshVisualizerGLTest::compileWireframeGeometryShader() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
-        CORRADE_SKIP(Extensions::GL::ARB::geometry_shader4::string() + std::string(" is not supported"));
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
+        CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
     #else
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
-        CORRADE_SKIP(Extensions::GL::EXT::geometry_shader::string() + std::string(" is not supported"));
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
+        CORRADE_SKIP(GL::Extensions::EXT::geometry_shader::string() + std::string(" is not supported"));
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
-    if(Context::current().isExtensionSupported<Extensions::GL::NV::shader_noperspective_interpolation>())
-        Debug() << "Using" << Extensions::GL::NV::shader_noperspective_interpolation::string();
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::NV::shader_noperspective_interpolation>())
+        Debug() << "Using" << GL::Extensions::NV::shader_noperspective_interpolation::string();
     #endif
 
     Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe);

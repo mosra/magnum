@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::Shaders::Phong
  */
 
-#include "Magnum/AbstractShaderProgram.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shaders/Generic.h"
@@ -88,7 +88,7 @@ part and then separate the alpha like this:
 
 @see @ref shaders
 */
-class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
+class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
     public:
         /**
          * @brief Vertex position
@@ -147,7 +147,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * This function can be safely used for constructing (and later
          * destructing) objects even without any OpenGL context being active.
          */
-        explicit Phong(NoCreateT) noexcept: AbstractShaderProgram{NoCreate} {}
+        explicit Phong(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
 
         /** @brief Flags */
         Flags flags() const { return _flags; }
@@ -173,13 +173,13 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * Has effect only if @ref Flag::AmbientTexture is set.
          * @see @ref bindTextures(), @ref setAmbientColor()
          */
-        Phong& bindAmbientTexture(Texture2D& texture);
+        Phong& bindAmbientTexture(GL::Texture2D& texture);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief bindAmbientTexture()
          * @deprecated Use @ref bindAmbientTexture() instead.
          */
-        CORRADE_DEPRECATED("use bindAmbientTexture() instead") Phong& setAmbientTexture(Texture2D& texture) {
+        CORRADE_DEPRECATED("use bindAmbientTexture() instead") Phong& setAmbientTexture(GL::Texture2D& texture) {
             return bindAmbientTexture(texture);
         }
         #endif
@@ -205,13 +205,13 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * Has effect only if @ref Flag::DiffuseTexture is set.
          * @see @ref bindTextures(), @ref setDiffuseColor()
          */
-        Phong& bindDiffuseTexture(Texture2D& texture);
+        Phong& bindDiffuseTexture(GL::Texture2D& texture);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief bindDiffuseTexture()
          * @deprecated Use @ref bindDiffuseTexture() instead.
          */
-        CORRADE_DEPRECATED("use bindDiffuseTexture() instead") Phong& setDiffuseTexture(Texture2D& texture) {
+        CORRADE_DEPRECATED("use bindDiffuseTexture() instead") Phong& setDiffuseTexture(GL::Texture2D& texture) {
             return bindDiffuseTexture(texture);
         }
         #endif
@@ -238,13 +238,13 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * Has effect only if @ref Flag::SpecularTexture is set.
          * @see @ref bindTextures(), @ref setSpecularColor()
          */
-        Phong& bindSpecularTexture(Texture2D& texture);
+        Phong& bindSpecularTexture(GL::Texture2D& texture);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief bindSpecularTexture()
          * @deprecated Use @ref bindSpecularTexture() instead.
          */
-        CORRADE_DEPRECATED("use bindSpecularTexture() instead") Phong& setSpecularTexture(Texture2D& texture) {
+        CORRADE_DEPRECATED("use bindSpecularTexture() instead") Phong& setSpecularTexture(GL::Texture2D& texture) {
             return bindSpecularTexture(texture);
         }
         #endif
@@ -259,13 +259,13 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @see @ref bindAmbientTexture(), @ref bindDiffuseTexture(),
          *      @ref bindSpecularTexture()
          */
-        Phong& bindTextures(Texture2D* ambient, Texture2D* diffuse, Texture2D* specular);
+        Phong& bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::Texture2D* specular);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief bindTextures()
          * @deprecated Use @ref bindTextures() instead.
          */
-        CORRADE_DEPRECATED("use bindTextures() instead") Phong& setTextures(Texture2D* ambient, Texture2D* diffuse, Texture2D* specular) {
+        CORRADE_DEPRECATED("use bindTextures() instead") Phong& setTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::Texture2D* specular) {
             return bindTextures(ambient, diffuse, specular);
         }
         #endif

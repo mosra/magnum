@@ -23,12 +23,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/OpenGLTester.h"
+#include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Shaders/Flat.h"
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-struct FlatGLTest: OpenGLTester {
+struct FlatGLTest: GL::OpenGLTester {
     explicit FlatGLTest();
 
     void compile2D();

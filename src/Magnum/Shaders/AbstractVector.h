@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::Shaders::AbstractVector, typedef @ref Magnum::Shaders::AbstractVector2D, @ref Magnum::Shaders::AbstractVector3D
  */
 
-#include "Magnum/AbstractShaderProgram.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/Shaders/Generic.h"
 
 namespace Magnum { namespace Shaders {
@@ -40,7 +40,7 @@ namespace Magnum { namespace Shaders {
 See @ref DistanceFieldVector and @ref Vector for more information.
 @see @ref shaders, @ref AbstractVector2D, @ref AbstractVector3D
 */
-template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProgram {
+template<UnsignedInt dimensions> class AbstractVector: public GL::AbstractShaderProgram {
     public:
         /**
          * @brief Vertex position
@@ -61,13 +61,13 @@ template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProg
          * @brief Bind vector texture
          * @return Reference to self (for method chaining)
          */
-        AbstractVector<dimensions>& bindVectorTexture(Texture2D& texture);
+        AbstractVector<dimensions>& bindVectorTexture(GL::Texture2D& texture);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief bindVectorTexture()
          * @deprecated Use @ref bindVectorTexture() instead.
          */
-        CORRADE_DEPRECATED("use bindVectorTexture() instead") AbstractVector<dimensions>& setVectorTexture(Texture2D& texture) {
+        CORRADE_DEPRECATED("use bindVectorTexture() instead") AbstractVector<dimensions>& setVectorTexture(GL::Texture2D& texture) {
             return bindVectorTexture(texture);
         }
         #endif
@@ -79,7 +79,7 @@ template<UnsignedInt dimensions> class AbstractVector: public AbstractShaderProg
     #endif
         enum: Int { VectorTextureLayer = 15 };
 
-        explicit AbstractVector(NoCreateT) noexcept: AbstractShaderProgram{NoCreate} {}
+        explicit AbstractVector(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
         explicit AbstractVector() = default;
         ~AbstractVector() = default;
 };

@@ -23,12 +23,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/OpenGLTester.h"
+#include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Shaders/VertexColor.h"
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-struct VertexColorGLTest: OpenGLTester {
+struct VertexColorGLTest: GL::OpenGLTester {
     explicit VertexColorGLTest();
 
     void compile2D();

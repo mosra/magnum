@@ -25,12 +25,12 @@
 
 #include "AbstractVector.h"
 
-#include "Magnum/Texture.h"
+#include "Magnum/GL/Texture.h"
 #include "Magnum/Shaders/visibility.h"
 
 namespace Magnum { namespace Shaders {
 
-template<UnsignedInt dimensions> AbstractVector<dimensions>& AbstractVector<dimensions>::bindVectorTexture(Texture2D& texture) {
+template<UnsignedInt dimensions> AbstractVector<dimensions>& AbstractVector<dimensions>::bindVectorTexture(GL::Texture2D& texture) {
     texture.bind(VectorTextureLayer);
     return *this;
 }

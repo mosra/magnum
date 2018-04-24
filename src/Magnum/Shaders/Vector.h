@@ -89,7 +89,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
          * @return Reference to self (for method chaining)
          */
         Vector& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
-            AbstractShaderProgram::setUniform(_transformationProjectionMatrixUniform, matrix);
+            GL::AbstractShaderProgram::setUniform(_transformationProjectionMatrixUniform, matrix);
             return *this;
         }
 
@@ -101,7 +101,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
          * @see @ref setColor()
          */
         Vector& setBackgroundColor(const Color4& color) {
-            AbstractShaderProgram::setUniform(_backgroundColorUniform, color);
+            GL::AbstractShaderProgram::setUniform(_backgroundColorUniform, color);
             return *this;
         }
 
@@ -112,18 +112,18 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
          * @see @ref setBackgroundColor()
          */
         Vector& setColor(const Color4& color) {
-            AbstractShaderProgram::setUniform(_colorUniform, color);
+            GL::AbstractShaderProgram::setUniform(_colorUniform, color);
             return *this;
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* Overloads to remove WTF-factor from method chaining order */
-        Vector<dimensions>& bindVectorTexture(Texture2D& texture) {
+        Vector<dimensions>& bindVectorTexture(GL::Texture2D& texture) {
             AbstractVector<dimensions>::bindVectorTexture(texture);
             return *this;
         }
         #ifdef MAGNUM_BUILD_DEPRECATED
-        CORRADE_DEPRECATED("use bindVectorTexture() instead") Vector<dimensions>& setVectorTexture(Texture2D& texture) {
+        CORRADE_DEPRECATED("use bindVectorTexture() instead") Vector<dimensions>& setVectorTexture(GL::Texture2D& texture) {
             return bindVectorTexture(texture);
         }
         #endif

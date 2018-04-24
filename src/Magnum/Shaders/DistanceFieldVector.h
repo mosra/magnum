@@ -92,7 +92,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @return Reference to self (for method chaining)
          */
         DistanceFieldVector& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
-            AbstractShaderProgram::setUniform(_transformationProjectionMatrixUniform, matrix);
+            GL::AbstractShaderProgram::setUniform(_transformationProjectionMatrixUniform, matrix);
             return *this;
         }
 
@@ -103,7 +103,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @see @ref setOutlineColor()
          */
         DistanceFieldVector& setColor(const Color4& color) {
-            AbstractShaderProgram::setUniform(_colorUniform, color);
+            GL::AbstractShaderProgram::setUniform(_colorUniform, color);
             return *this;
         }
 
@@ -114,7 +114,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @see @ref setOutlineRange(), @ref setColor()
          */
         DistanceFieldVector& setOutlineColor(const Color4& color) {
-            AbstractShaderProgram::setUniform(_outlineColorUniform, color);
+            GL::AbstractShaderProgram::setUniform(_outlineColorUniform, color);
             return *this;
         }
 
@@ -133,7 +133,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @see @ref setOutlineColor()
          */
         DistanceFieldVector& setOutlineRange(Float start, Float end) {
-            AbstractShaderProgram::setUniform(_outlineRangeUniform, Vector2(start, end));
+            GL::AbstractShaderProgram::setUniform(_outlineRangeUniform, Vector2(start, end));
             return *this;
         }
 
@@ -146,18 +146,18 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * aliased). Initial value is @cpp 0.04f @ce.
          */
         DistanceFieldVector& setSmoothness(Float value) {
-            AbstractShaderProgram::setUniform(_smoothnessUniform, value);
+            GL::AbstractShaderProgram::setUniform(_smoothnessUniform, value);
             return *this;
         }
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* Overloads to remove WTF-factor from method chaining order */
-        DistanceFieldVector<dimensions>& bindVectorTexture(Texture2D& texture) {
+        DistanceFieldVector<dimensions>& bindVectorTexture(GL::Texture2D& texture) {
             AbstractVector<dimensions>::bindVectorTexture(texture);
             return *this;
         }
         #ifdef MAGNUM_BUILD_DEPRECATED
-        CORRADE_DEPRECATED("use bindVectorTexture() instead") DistanceFieldVector<dimensions>& setVectorTexture(Texture2D& texture) {
+        CORRADE_DEPRECATED("use bindVectorTexture() instead") DistanceFieldVector<dimensions>& setVectorTexture(GL::Texture2D& texture) {
             return bindVectorTexture(texture);
         }
         #endif

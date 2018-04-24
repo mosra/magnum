@@ -27,11 +27,11 @@
 
 #include <Corrade/Utility/Resource.h>
 
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/Shader.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Shader.h"
 
-#include "Implementation/CreateCompatibilityShader.h"
+#include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
 namespace Magnum { namespace Shaders {
 
@@ -50,26 +50,26 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor() {
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
-    const Version version = Context::current().supportedVersion({Version::GL320, Version::GL310, Version::GL300, Version::GL210});
+    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
     #else
-    const Version version = Context::current().supportedVersion({Version::GLES300, Version::GLES200});
+    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
-    Shader vert = Implementation::createCompatibilityShader(rs, version, Shader::Type::Vertex);
-    Shader frag = Implementation::createCompatibilityShader(rs, version, Shader::Type::Fragment);
+    GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
+    GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
     vert.addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
     frag.addSource(rs.get("VertexColor.frag"));
 
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 
     attachShaders({vert, frag});
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #else
-    if(!Context::current().isVersionSupported(Version::GLES300))
+    if(!GL::Context::current().isVersionSupported(GL::Version::GLES300))
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
@@ -79,7 +79,7 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
     #endif
     {
         _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");

@@ -23,12 +23,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/OpenGLTester.h"
+#include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Shaders/Vector.h"
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-struct VectorGLTest: OpenGLTester {
+struct VectorGLTest: GL::OpenGLTester {
     explicit VectorGLTest();
 
     void compile2D();

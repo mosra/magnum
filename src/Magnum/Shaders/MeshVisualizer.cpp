@@ -28,11 +28,11 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Resource.h>
 
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/Shader.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Shader.h"
 
-#include "Implementation/CreateCompatibilityShader.h"
+#include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
 namespace Magnum { namespace Shaders {
 
@@ -40,15 +40,15 @@ MeshVisualizer::MeshVisualizer(const Flags flags): _flags{flags} {
     #ifndef MAGNUM_TARGET_GLES2
     if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader)) {
         #ifndef MAGNUM_TARGET_GLES
-        MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL320);
-        MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
+        MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GL320);
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::geometry_shader4);
         #elif !defined(MAGNUM_TARGET_WEBGL)
-        MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::EXT::geometry_shader);
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::EXT::geometry_shader);
         #endif
     }
     #else
     if(_flags & Flag::Wireframe)
-        MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::OES::standard_derivatives);
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::OES::standard_derivatives);
     #endif
 
     #ifdef MAGNUM_BUILD_STATIC
@@ -59,24 +59,24 @@ MeshVisualizer::MeshVisualizer(const Flags flags): _flags{flags} {
     Utility::Resource rs("MagnumShaders");
 
     #ifndef MAGNUM_TARGET_GLES
-    const Version version = Context::current().supportedVersion({Version::GL320, Version::GL310, Version::GL300, Version::GL210});
-    CORRADE_INTERNAL_ASSERT(!flags || flags & Flag::NoGeometryShader || version >= Version::GL320);
+    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GL320, GL::Version::GL310, GL::Version::GL300, GL::Version::GL210});
+    CORRADE_INTERNAL_ASSERT(!flags || flags & Flag::NoGeometryShader || version >= GL::Version::GL320);
     #elif !defined(MAGNUM_TARGET_WEBGL)
-    const Version version = Context::current().supportedVersion({Version::GLES310, Version::GLES300, Version::GLES200});
-    CORRADE_INTERNAL_ASSERT(!flags || flags & Flag::NoGeometryShader || version >= Version::GLES310);
+    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GLES310, GL::Version::GLES300, GL::Version::GLES200});
+    CORRADE_INTERNAL_ASSERT(!flags || flags & Flag::NoGeometryShader || version >= GL::Version::GLES310);
     #else
-    const Version version = Context::current().supportedVersion({Version::GLES300, Version::GLES200});
+    const GL::Version version = GL::Context::current().supportedVersion({GL::Version::GLES300, GL::Version::GLES200});
     #endif
 
-    Shader vert = Implementation::createCompatibilityShader(rs, version, Shader::Type::Vertex);
-    Shader frag = Implementation::createCompatibilityShader(rs, version, Shader::Type::Fragment);
+    GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
+    GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
     vert.addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         .addSource(flags & Flag::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
         #ifdef MAGNUM_TARGET_WEBGL
         .addSource("#define SUBSCRIPTING_WORKAROUND\n")
         #elif defined(MAGNUM_TARGET_GLES2)
-        .addSource(Context::current().detectedDriver() & Context::DetectedDriver::Angle ?
+        .addSource(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Angle ?
             "#define SUBSCRIPTING_WORKAROUND\n" : "")
         #endif
         .addSource(rs.get("generic.glsl"))
@@ -86,18 +86,18 @@ MeshVisualizer::MeshVisualizer(const Flags flags): _flags{flags} {
         .addSource(rs.get("MeshVisualizer.frag"));
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    Containers::Optional<Shader> geom;
+    Containers::Optional<GL::Shader> geom;
     if(flags & Flag::Wireframe && !(flags & Flag::NoGeometryShader)) {
-        geom = Implementation::createCompatibilityShader(rs, version, Shader::Type::Geometry);
+        geom = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Geometry);
         geom->addSource(rs.get("MeshVisualizer.geom"));
     }
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(geom) CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, *geom, frag}));
+    if(geom) CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, *geom, frag}));
     else
     #endif
-        CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+        CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 
     attachShaders({vert, frag});
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -105,16 +105,16 @@ MeshVisualizer::MeshVisualizer(const Flags flags): _flags{flags} {
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version))
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
     #else
-    if(!Context::current().isVersionSupported(Version::GLES300))
+    if(!GL::Context::current().isVersionSupported(GL::Version::GLES300))
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
 
         #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
         #ifndef MAGNUM_TARGET_GLES
-        if(!Context::current().isVersionSupported(Version::GL310))
+        if(!GL::Context::current().isVersionSupported(GL::Version::GL310))
         #endif
         {
             bindAttributeLocation(VertexIndex::Location, "vertexIndex");
@@ -125,7 +125,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): _flags{flags} {
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>(version))
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>(version))
     #endif
     {
         _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");

@@ -29,8 +29,8 @@
  * @brief Class @ref Magnum::Shaders::Flat, typedef @ref Magnum::Shaders::Flat2D, @ref Magnum::Shaders::Flat3D
  */
 
-#include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/DimensionTraits.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
@@ -85,7 +85,7 @@ Common rendering setup:
 
 @see @ref shaders, @ref Flat2D, @ref Flat3D
 */
-template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public AbstractShaderProgram {
+template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::AbstractShaderProgram {
     public:
         /**
          * @brief Vertex position
@@ -140,7 +140,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          * This function can be safely used for constructing (and later
          * destructing) objects even without any OpenGL context being active.
          */
-        explicit Flat(NoCreateT) noexcept: AbstractShaderProgram{NoCreate} {}
+        explicit Flat(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
 
         /** @brief Flags */
         Flags flags() const { return _flags; }
@@ -175,13 +175,13 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public Abstra
          * Has effect only if @ref Flag::Textured is set.
          * @see @ref setColor()
          */
-        Flat<dimensions>& bindTexture(Texture2D& texture);
+        Flat<dimensions>& bindTexture(GL::Texture2D& texture);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief bindTexture()
          * @deprecated Use @ref bindTexture() instead.
          */
-        CORRADE_DEPRECATED("use bindTexture() instead") Flat<dimensions>& setTexture(Texture2D& texture) {
+        CORRADE_DEPRECATED("use bindTexture() instead") Flat<dimensions>& setTexture(GL::Texture2D& texture) {
             return bindTexture(texture);
         }
         #endif

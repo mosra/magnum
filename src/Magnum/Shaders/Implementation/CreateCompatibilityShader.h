@@ -27,9 +27,9 @@
 
 #include <Corrade/Utility/Resource.h>
 
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/Shader.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Shader.h"
 
 /* Enable only when compiling Shaders library and thus work around
    "static symbol not used" warning when using this file for TextureTools */
@@ -41,15 +41,15 @@ static void importShaderResources() {
 
 namespace Magnum { namespace Shaders { namespace Implementation {
 
-inline Shader createCompatibilityShader(const Utility::Resource& rs, Version version, Shader::Type type) {
-    Shader shader(version, type);
+inline GL::Shader createCompatibilityShader(const Utility::Resource& rs, GL::Version version, GL::Shader::Type type) {
+    GL::Shader shader(version, type);
 
     #ifndef MAGNUM_TARGET_GLES
-    if(Context::current().isExtensionDisabled<Extensions::GL::ARB::explicit_attrib_location>(version))
+    if(GL::Context::current().isExtensionDisabled<GL::Extensions::ARB::explicit_attrib_location>(version))
         shader.addSource("#define DISABLE_GL_ARB_explicit_attrib_location\n");
-    if(Context::current().isExtensionDisabled<Extensions::GL::ARB::shading_language_420pack>(version))
+    if(GL::Context::current().isExtensionDisabled<GL::Extensions::ARB::shading_language_420pack>(version))
         shader.addSource("#define DISABLE_GL_ARB_shading_language_420pack\n");
-    if(Context::current().isExtensionDisabled<Extensions::GL::ARB::explicit_uniform_location>(version))
+    if(GL::Context::current().isExtensionDisabled<GL::Extensions::ARB::explicit_uniform_location>(version))
         shader.addSource("#define DISABLE_GL_ARB_explicit_uniform_location\n");
     #endif
 

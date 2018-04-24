@@ -23,12 +23,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/OpenGLTester.h"
+#include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Shaders/DistanceFieldVector.h"
 
 namespace Magnum { namespace Shaders { namespace Test {
 
-struct DistanceFieldVectorGLTest: OpenGLTester {
+struct DistanceFieldVectorGLTest: GL::OpenGLTester {
     explicit DistanceFieldVectorGLTest();
 
     void compile2D();

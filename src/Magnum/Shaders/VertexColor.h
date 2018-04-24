@@ -29,8 +29,8 @@
  * @brief Class @ref Magnum::Shaders::VertexColor
  */
 
-#include "Magnum/AbstractShaderProgram.h"
 #include "Magnum/DimensionTraits.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
@@ -63,7 +63,7 @@ Common rendering setup:
 
 @see @ref shaders, @ref VertexColor2D, @ref VertexColor3D
 */
-template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public AbstractShaderProgram {
+template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public GL::AbstractShaderProgram {
     public:
         /**
          * @brief Vertex position

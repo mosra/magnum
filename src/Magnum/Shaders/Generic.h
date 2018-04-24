@@ -29,7 +29,7 @@
  * @brief Struct @ref Magnum::Shaders::Generic, typedef @ref Magnum::Shaders::Generic2D, @ref Magnum::Shaders::Generic3D
  */
 
-#include "Magnum/Attribute.h"
+#include "Magnum/GL/Attribute.h"
 
 namespace Magnum { namespace Shaders {
 
@@ -51,21 +51,21 @@ template<UnsignedInt dimensions> struct Generic {
      *
      * @ref Vector2 in 2D and @ref Vector3 in 3D.
      */
-    typedef Attribute<0, T> Position;
+    typedef GL::Attribute<0, T> Position;
 
     /**
      * @brief 2D texture coordinates
      *
      * @ref Vector2.
      */
-    typedef Attribute<1, Vector2> TextureCoordinates;
+    typedef GL::Attribute<1, Vector2> TextureCoordinates;
 
     /**
      * @brief Vertex normal
      *
      * @ref Vector3, defined only in 3D.
      */
-    typedef Attribute<2, Vector3> Normal;
+    typedef GL::Attribute<2, Vector3> Normal;
 
     /**
      * @brief Vertex color
@@ -73,7 +73,7 @@ template<UnsignedInt dimensions> struct Generic {
      * @ref Color4, however defaults to @ref Color3 if @ref MAGNUM_BUILD_DEPRECATED
      * is defined. See the constructor documentation for more information.
      */
-    struct Color: Attribute<3, Color4> {
+    struct Color: GL::Attribute<3, Color4> {
         /**
          * @brief Constructor
          * @param components    Component count
@@ -100,9 +100,9 @@ typedef Generic<3> Generic3D;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 struct BaseGeneric {
-    typedef Attribute<1, Vector2> TextureCoordinates;
+    typedef GL::Attribute<1, Vector2> TextureCoordinates;
 
-    struct Color: Attribute<3, Color4> {
+    struct Color: GL::Attribute<3, Color4> {
         constexpr explicit Color(Components components, DataType dataType = DataType::Float, DataOptions dataOptions = DataOptions()): Attribute<3, Color4>{components, dataType, dataOptions} {}
 
         #ifdef MAGNUM_BUILD_DEPRECATED
@@ -112,12 +112,12 @@ struct BaseGeneric {
 };
 
 template<> struct Generic<2>: BaseGeneric {
-    typedef Attribute<0, Vector2> Position;
+    typedef GL::Attribute<0, Vector2> Position;
 };
 
 template<> struct Generic<3>: BaseGeneric {
-    typedef Attribute<0, Vector3> Position;
-    typedef Attribute<2, Vector3> Normal;
+    typedef GL::Attribute<0, Vector3> Position;
+    typedef GL::Attribute<2, Vector3> Normal;
 };
 #endif
 
