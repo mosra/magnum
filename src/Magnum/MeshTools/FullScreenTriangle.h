@@ -32,7 +32,7 @@
 #include <memory>
 #include <utility>
 
-#include "Magnum/Magnum.h"
+#include "Magnum/GL/GL.h"
 #include "Magnum/MeshTools/visibility.h"
 
 namespace Magnum { namespace MeshTools {
@@ -80,14 +80,14 @@ void main() {
 }
 @endcode
 */
-std::pair<std::unique_ptr<Buffer>, Mesh> MAGNUM_MESHTOOLS_EXPORT fullScreenTriangle(Version version);
+std::pair<std::unique_ptr<GL::Buffer>, GL::Mesh> MAGNUM_MESHTOOLS_EXPORT fullScreenTriangle(GL::Version version);
 
 /**
 @overload
 
 This function implicitly uses current context version.
 */
-std::pair<std::unique_ptr<Buffer>, Mesh> MAGNUM_MESHTOOLS_EXPORT fullScreenTriangle();
+std::pair<std::unique_ptr<GL::Buffer>, GL::Mesh> MAGNUM_MESHTOOLS_EXPORT fullScreenTriangle();
 
 }}
 

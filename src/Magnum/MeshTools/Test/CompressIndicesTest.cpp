@@ -53,28 +53,28 @@ CompressIndicesTest::CompressIndicesTest() {
 
 void CompressIndicesTest::compressChar() {
     Containers::Array<char> data;
-    Mesh::IndexType type;
+    MeshIndexType type;
     UnsignedInt start, end;
     std::tie(data, type, start, end) = MeshTools::compressIndices(
         std::vector<UnsignedInt>{1, 2, 3, 0, 4});
 
     CORRADE_COMPARE(start, 0);
     CORRADE_COMPARE(end, 4);
-    CORRADE_COMPARE(type, Mesh::IndexType::UnsignedByte);
+    CORRADE_COMPARE(type, MeshIndexType::UnsignedByte);
     CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()),
         (std::vector<char>{ 0x01, 0x02, 0x03, 0x00, 0x04 }));
 }
 
 void CompressIndicesTest::compressShort() {
     Containers::Array<char> data;
-    Mesh::IndexType type;
+    MeshIndexType type;
     UnsignedInt start, end;
     std::tie(data, type, start, end) = MeshTools::compressIndices(
         std::vector<UnsignedInt>{1, 256, 0, 5});
 
     CORRADE_COMPARE(start, 0);
     CORRADE_COMPARE(end, 256);
-    CORRADE_COMPARE(type, Mesh::IndexType::UnsignedShort);
+    CORRADE_COMPARE(type, MeshIndexType::UnsignedShort);
     if(!Utility::Endianness::isBigEndian()) {
         CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()),
             (std::vector<char>{ 0x01, 0x00,
@@ -92,14 +92,14 @@ void CompressIndicesTest::compressShort() {
 
 void CompressIndicesTest::compressInt() {
     Containers::Array<char> data;
-    Mesh::IndexType type;
+    MeshIndexType type;
     UnsignedInt start, end;
     std::tie(data, type, start, end) = MeshTools::compressIndices(
         std::vector<UnsignedInt>{65536, 3, 2});
 
     CORRADE_COMPARE(start, 2);
     CORRADE_COMPARE(end, 65536);
-    CORRADE_COMPARE(type, Mesh::IndexType::UnsignedInt);
+    CORRADE_COMPARE(type, MeshIndexType::UnsignedInt);
 
     if(!Utility::Endianness::isBigEndian()) {
         CORRADE_COMPARE(std::vector<char>(data.begin(), data.end()),

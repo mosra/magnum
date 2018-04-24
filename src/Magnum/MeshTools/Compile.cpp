@@ -25,7 +25,8 @@
 
 #include "Compile.h"
 
-#include "Magnum/Buffer.h"
+#include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/Mesh.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/CompressIndices.h"
 #include "Magnum/MeshTools/Interleave.h"
@@ -38,8 +39,8 @@
 
 namespace Magnum { namespace MeshTools {
 
-std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const Trade::MeshData2D& meshData, const BufferUsage usage) {
-    Mesh mesh;
+std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData2D& meshData, const GL::BufferUsage usage) {
+    GL::Mesh mesh;
     mesh.setPrimitive(meshData.primitive());
 
     /* Decide about stride and offsets */
@@ -49,7 +50,7 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
         stride += sizeof(Shaders::Generic2D::TextureCoordinates::Type);
 
     /* Create vertex buffer */
-    std::unique_ptr<Buffer> vertexBuffer{new Buffer{Buffer::TargetHint::Array}};
+    std::unique_ptr<GL::Buffer> vertexBuffer{new GL::Buffer{GL::Buffer::TargetHint::Array}};
 
     /* Interleave positions */
     Containers::Array<char> data = MeshTools::interleave(
@@ -75,14 +76,14 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
     vertexBuffer->setData(data, usage);
 
     /* If indexed, fill index buffer and configure indexed mesh */
-    std::unique_ptr<Buffer> indexBuffer;
+    std::unique_ptr<GL::Buffer> indexBuffer;
     if(meshData.isIndexed()) {
         Containers::Array<char> indexData;
-        Mesh::IndexType indexType;
+        MeshIndexType indexType;
         UnsignedInt indexStart, indexEnd;
         std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(meshData.indices());
 
-        indexBuffer.reset(new Buffer{Buffer::TargetHint::ElementArray});
+        indexBuffer.reset(new GL::Buffer{GL::Buffer::TargetHint::ElementArray});
         indexBuffer->setData(indexData, usage);
         mesh.setCount(meshData.indices().size())
             .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
@@ -93,8 +94,8 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
     return std::make_tuple(std::move(mesh), std::move(vertexBuffer), std::move(indexBuffer));
 }
 
-std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const Trade::MeshData3D& meshData, const BufferUsage usage) {
-    Mesh mesh;
+std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData3D& meshData, const GL::BufferUsage usage) {
+    GL::Mesh mesh;
     mesh.setPrimitive(meshData.primitive());
 
     /* Decide about stride and offsets */
@@ -109,7 +110,7 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
         stride += sizeof(Shaders::Generic3D::TextureCoordinates::Type);
 
     /* Create vertex buffer */
-    std::unique_ptr<Buffer> vertexBuffer{new Buffer{Buffer::TargetHint::Array}};
+    std::unique_ptr<GL::Buffer> vertexBuffer{new GL::Buffer{GL::Buffer::TargetHint::Array}};
 
     /* Interleave positions */
     Containers::Array<char> data = MeshTools::interleave(
@@ -147,14 +148,14 @@ std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const
     vertexBuffer->setData(data, usage);
 
     /* If indexed, fill index buffer and configure indexed mesh */
-    std::unique_ptr<Buffer> indexBuffer;
+    std::unique_ptr<GL::Buffer> indexBuffer;
     if(meshData.isIndexed()) {
         Containers::Array<char> indexData;
-        Mesh::IndexType indexType;
+        MeshIndexType indexType;
         UnsignedInt indexStart, indexEnd;
         std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(meshData.indices());
 
-        indexBuffer.reset(new Buffer{Buffer::TargetHint::ElementArray});
+        indexBuffer.reset(new GL::Buffer{GL::Buffer::TargetHint::ElementArray});
         indexBuffer->setData(indexData, usage);
         mesh.setCount(meshData.indices().size())
             .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);

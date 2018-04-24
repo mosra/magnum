@@ -32,7 +32,7 @@
 #include <tuple>
 #include <memory>
 
-#include "Magnum/Magnum.h"
+#include "Magnum/GL/GL.h"
 #include "Magnum/Trade/Trade.h"
 #include "Magnum/MeshTools/visibility.h"
 
@@ -57,7 +57,7 @@ greater flexibility.
 
 @see @ref shaders-generic
 */
-MAGNUM_MESHTOOLS_EXPORT std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const Trade::MeshData2D& meshData, BufferUsage usage);
+MAGNUM_MESHTOOLS_EXPORT std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData2D& meshData, GL::BufferUsage usage);
 
 /**
 @brief Compile 3D mesh data
@@ -78,7 +78,7 @@ greater flexibility.
 
 @see @ref shaders-generic
 */
-MAGNUM_MESHTOOLS_EXPORT std::tuple<Mesh, std::unique_ptr<Buffer>, std::unique_ptr<Buffer>> compile(const Trade::MeshData3D& meshData, BufferUsage usage);
+MAGNUM_MESHTOOLS_EXPORT std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData3D& meshData, GL::BufferUsage usage);
 
 }}
 

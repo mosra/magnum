@@ -25,44 +25,44 @@
 
 #include "FullScreenTriangle.h"
 
-#include "Magnum/Attribute.h"
-#include "Magnum/Buffer.h"
-#include "Magnum/Context.h"
-#include "Magnum/Mesh.h"
-#include "Magnum/Version.h"
+#include "Magnum/GL/Attribute.h"
+#include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/Version.h"
 #include "Magnum/Math/Vector2.h"
 
 namespace Magnum { namespace MeshTools {
 
-std::pair<std::unique_ptr<Buffer>, Mesh> fullScreenTriangle(Version version) {
-    Mesh mesh;
-    mesh.setPrimitive(MeshPrimitive::Triangles)
+std::pair<std::unique_ptr<GL::Buffer>, GL::Mesh> fullScreenTriangle(GL::Version version) {
+    GL::Mesh mesh;
+    mesh.setPrimitive(GL::MeshPrimitive::Triangles)
         .setCount(3);
 
-    std::unique_ptr<Buffer> buffer;
+    std::unique_ptr<GL::Buffer> buffer;
     #ifndef MAGNUM_TARGET_GLES
-    if(version < Version::GL300)
+    if(version < GL::Version::GL300)
     #else
-    if(version < Version::GLES300)
+    if(version < GL::Version::GLES300)
     #endif
     {
-        buffer.reset(new Buffer);
+        buffer.reset(new GL::Buffer);
         constexpr Vector2 triangle[] = {
             {-1.0f,  1.0f},
             {-1.0f, -3.0f},
             { 3.0f,  1.0f}
         };
-        buffer->setData(triangle, BufferUsage::StaticDraw);
+        buffer->setData(triangle, GL::BufferUsage::StaticDraw);
         /** @todo Is it possible to attach moveable buffer here to avoid heap
            allocation? OTOH this is more effective in most (modern) cases */
-        mesh.addVertexBuffer(*buffer, 0, Attribute<0, Vector2>{});
+        mesh.addVertexBuffer(*buffer, 0, GL::Attribute<0, Vector2>{});
     }
 
     return {std::move(buffer), std::move(mesh)};
 }
 
-std::pair<std::unique_ptr<Buffer>, Mesh> fullScreenTriangle() {
-    return fullScreenTriangle(Context::current().version());
+std::pair<std::unique_ptr<GL::Buffer>, GL::Mesh> fullScreenTriangle() {
+    return fullScreenTriangle(GL::Context::current().version());
 }
 
 }}
