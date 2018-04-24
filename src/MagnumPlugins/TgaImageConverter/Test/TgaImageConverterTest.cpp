@@ -44,7 +44,6 @@ struct TgaImageConverterTest: TestSuite::Tester {
     explicit TgaImageConverterTest();
 
     void wrongFormat();
-    void wrongType();
 
     void rgb();
     void rgba();
@@ -71,19 +70,18 @@ namespace {
     };
 
     const ImageView2D OriginalRGB{PixelStorage{}.setSkip({0, 1, 0}),
-        PixelFormat::RGB, PixelType::UnsignedByte, {2, 3}, OriginalDataRGB};
+        PixelFormat::RGB8Unorm, {2, 3}, OriginalDataRGB};
 
     constexpr char OriginalDataRGBA[] = {
         1, 2, 3, 4, 2, 3, 4, 5,
         3, 4, 5, 6, 4, 5, 6, 7,
         5, 6, 7, 8, 6, 7, 8, 9
     };
-    const ImageView2D OriginalRGBA{PixelFormat::RGBA, PixelType::UnsignedByte, {2, 3}, OriginalDataRGBA};
+    const ImageView2D OriginalRGBA{PixelFormat::RGBA8Unorm, {2, 3}, OriginalDataRGBA};
 }
 
 TgaImageConverterTest::TgaImageConverterTest() {
     addTests({&TgaImageConverterTest::wrongFormat,
-              &TgaImageConverterTest::wrongType,
 
               &TgaImageConverterTest::rgb,
               &TgaImageConverterTest::rgba});
@@ -100,13 +98,7 @@ TgaImageConverterTest::TgaImageConverterTest() {
 }
 
 void TgaImageConverterTest::wrongFormat() {
-    ImageView2D image{
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        PixelFormat::RG,
-        #else
-        PixelFormat::LuminanceAlpha,
-        #endif
-        PixelType::UnsignedByte, {}, nullptr};
+    ImageView2D image{PixelFormat::RG8Unorm, {}, nullptr};
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -114,29 +106,7 @@ void TgaImageConverterTest::wrongFormat() {
     std::unique_ptr<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
     const auto data = converter->exportToData(image);
     CORRADE_VERIFY(!data);
-    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color format GL::PixelFormat::RG\n");
-    #else
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color format GL::PixelFormat::LuminanceAlpha\n");
-    #endif
-}
-
-void TgaImageConverterTest::wrongType() {
-    ImageView2D image{
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        PixelFormat::Red,
-        #else
-        PixelFormat::Luminance,
-        #endif
-        PixelType::Float, {}, nullptr};
-
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    std::unique_ptr<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
-    const auto data = converter->exportToData(image);
-    CORRADE_VERIFY(!data);
-    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported color type GL::PixelType::Float\n");
+    CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported pixel format PixelFormat::RG8Unorm\n");
 }
 
 void TgaImageConverterTest::rgb() {
@@ -154,8 +124,7 @@ void TgaImageConverterTest::rgb() {
 
     CORRADE_COMPARE(converted->storage().alignment(), 1);
     CORRADE_COMPARE(converted->size(), Vector2i(2, 3));
-    CORRADE_COMPARE(converted->format(), PixelFormat::RGB);
-    CORRADE_COMPARE(converted->type(), PixelType::UnsignedByte);
+    CORRADE_COMPARE(converted->format(), PixelFormat::RGB8Unorm);
     CORRADE_COMPARE_AS(converted->data(), Containers::arrayView(ConvertedDataRGB),
         TestSuite::Compare::Container);
 }
@@ -175,8 +144,7 @@ void TgaImageConverterTest::rgba() {
 
     CORRADE_COMPARE(converted->storage().alignment(), 4);
     CORRADE_COMPARE(converted->size(), Vector2i(2, 3));
-    CORRADE_COMPARE(converted->format(), PixelFormat::RGBA);
-    CORRADE_COMPARE(converted->type(), PixelType::UnsignedByte);
+    CORRADE_COMPARE(converted->format(), PixelFormat::RGBA8Unorm);
     CORRADE_COMPARE_AS(converted->data(), Containers::arrayView(OriginalDataRGBA),
         TestSuite::Compare::Container);
 }

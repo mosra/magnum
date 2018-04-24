@@ -46,25 +46,6 @@ TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager& manager, co
 auto TgaImageConverter::doFeatures() const -> Features { return Feature::ConvertData; }
 
 Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& image) {
-    if(image.format() != PixelFormat::RGB &&
-       image.format() != PixelFormat::RGBA
-       #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-       && image.format() != PixelFormat::Red
-       #endif
-       #ifdef MAGNUM_TARGET_GLES2
-       && image.format() != PixelFormat::Luminance
-       #endif
-       )
-    {
-        Error() << "Trade::TgaImageConverter::exportToData(): unsupported color format" << image.format();
-        return nullptr;
-    }
-
-    if(image.type() != PixelType::UnsignedByte) {
-        Error() << "Trade::TgaImageConverter::exportToData(): unsupported color type" << image.type();
-        return nullptr;
-    }
-
     /* Initialize data buffer */
     const auto pixelSize = UnsignedByte(image.pixelSize());
     Containers::Array<char> data{Containers::ValueInit, sizeof(Implementation::TgaHeader) + pixelSize*image.size().product()};
@@ -72,19 +53,16 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& ima
     /* Fill header */
     auto header = reinterpret_cast<Implementation::TgaHeader*>(data.begin());
     switch(image.format()) {
-        case PixelFormat::RGB:
-        case PixelFormat::RGBA:
+        case PixelFormat::RGB8Unorm:
+        case PixelFormat::RGBA8Unorm:
             header->imageType = 2;
             break;
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        case PixelFormat::Red:
-        #endif
-        #ifdef MAGNUM_TARGET_GLES2
-        case PixelFormat::Luminance:
-        #endif
+        case PixelFormat::R8Unorm:
             header->imageType = 3;
             break;
-        default: CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        default:
+            Error() << "Trade::TgaImageConverter::exportToData(): unsupported pixel format" << image.format();
+            return nullptr;
     }
     header->bpp = pixelSize*8;
     header->width = UnsignedShort(Utility::Endianness::littleEndian(image.size().x()));
@@ -101,11 +79,11 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& ima
             std::copy_n(imageData + y*rowStride, rowSize, data.begin() + sizeof(Implementation::TgaHeader) + y*rowSize);
     } else std::copy_n(imageData, pixelSize*image.size().product(), data.begin() + sizeof(Implementation::TgaHeader));
 
-    if(image.format() == PixelFormat::RGB) {
+    if(image.format() == PixelFormat::RGB8Unorm) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.begin()+sizeof(Implementation::TgaHeader));
         std::transform(pixels, pixels + image.size().product(), pixels,
             [](Math::Vector3<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r'>(pixel); });
-    } else if(image.format() == PixelFormat::RGBA) {
+    } else if(image.format() == PixelFormat::RGBA8Unorm) {
         auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data.begin()+sizeof(Implementation::TgaHeader));
         std::transform(pixels, pixels + image.size().product(), pixels,
             [](Math::Vector4<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r', 'a'>(pixel); });

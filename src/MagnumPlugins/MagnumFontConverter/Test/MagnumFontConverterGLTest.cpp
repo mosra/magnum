@@ -136,8 +136,7 @@ void MagnumFontConverterGLTest::exportFont() {
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->size(), Vector2i(256));
-    CORRADE_COMPARE(image->format(), PixelFormat::Red);
-    CORRADE_COMPARE(image->type(), PixelType::UnsignedByte);
+    CORRADE_COMPARE(image->format(), PixelFormat::R8Unorm);
 }
 
 }}}

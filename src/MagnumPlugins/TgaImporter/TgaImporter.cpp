@@ -37,11 +37,6 @@
 #include "Magnum/Trade/ImageData.h"
 #include "MagnumPlugins/TgaImporter/TgaHeader.h"
 
-#ifdef MAGNUM_TARGET_GLES2
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#endif
-
 namespace Magnum { namespace Trade {
 
 TgaImporter::TgaImporter() = default;
@@ -87,10 +82,10 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     if(header.imageType == 2) {
         switch(header.bpp) {
             case 24:
-                format = PixelFormat::RGB;
+                format = PixelFormat::RGB8Unorm;
                 break;
             case 32:
-                format = PixelFormat::RGBA;
+                format = PixelFormat::RGBA8Unorm;
                 break;
             default:
                 Error() << "Trade::TgaImporter::image2D(): unsupported color bits-per-pixel:" << header.bpp;
@@ -99,14 +94,7 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
 
     /* Grayscale */
     } else if(header.imageType == 3) {
-        #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        format = Context::hasCurrent() && Context::current().isExtensionSupported<Extensions::GL::EXT::texture_rg>() ?
-            PixelFormat::Red : PixelFormat::Luminance;
-        #elif !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        format = PixelFormat::Red;
-        #else
-        format = PixelFormat::Luminance;
-        #endif
+        format = PixelFormat::R8Unorm;
         if(header.bpp != 8) {
             Error() << "Trade::TgaImporter::image2D(): unsupported grayscale bits-per-pixel:" << header.bpp;
             return Containers::NullOpt;
@@ -126,17 +114,17 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     if((size.x()*header.bpp/8)%4 != 0)
         storage.setAlignment(1);
 
-    if(format == PixelFormat::RGB) {
+    if(format == PixelFormat::RGB8Unorm) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.data());
         std::transform(pixels, pixels + size.product(), pixels,
             [](Math::Vector3<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r'>(pixel); });
-    } else if(format == PixelFormat::RGBA) {
+    } else if(format == PixelFormat::RGBA8Unorm) {
         auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data.data());
         std::transform(pixels, pixels + size.product(), pixels,
             [](Math::Vector4<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r', 'a'>(pixel); });
     }
 
-    return ImageData2D{storage, format, PixelType::UnsignedByte, size, std::move(data)};
+    return ImageData2D{storage, format, size, std::move(data)};
 }
 
 }}

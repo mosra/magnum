@@ -73,7 +73,7 @@ namespace {
         5, 6, 7, 6, 7, 8, 0, 0
     };
 
-    const ImageView2D Image{PixelFormat::RGB, PixelType::UnsignedByte, {2, 3}, Data};
+    const ImageView2D Image{PixelFormat::RGB8Unorm, {2, 3}, Data};
 }
 
 void AnyImageConverterTest::tga() {

@@ -102,7 +102,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
     std::copy(confStr.begin(), confStr.end(), confData.begin());
 
     /* Save cache image */
-    Image2D image(PixelFormat::Red, PixelType::UnsignedByte);
+    Image2D image{PixelFormat::R8Unorm};
     cache.texture().image(0, image);
     auto tgaData = Trade::TgaImageConverter().exportToData(image);
 

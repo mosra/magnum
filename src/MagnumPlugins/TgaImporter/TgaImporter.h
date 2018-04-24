@@ -68,15 +68,10 @@ need to request the `TgaImporter` component of the `Magnum` package and link to
 the `Magnum::TgaImporter` target. See @ref building, @ref cmake and
 @ref plugins for more information.
 
-The images are imported with @ref PixelType::UnsignedByte and @ref PixelFormat::RGB,
-@ref PixelFormat::RGBA or @ref PixelFormat::Red, respectively. Grayscale images
-require extension @extension{ARB,texture_rg}. Images are imported with default
-@ref PixelStorage parameters except for alignment, which may be changed to `1`
-if the data require it.
-
-In OpenGL ES 2.0, if @extension{EXT,texture_rg} is not supported and in
-WebGL 1.0, grayscale images use @ref PixelFormat::Luminance instead of
-@ref PixelFormat::Red.
+The images are imported with @ref PixelFormat::RGB8Unorm,
+@ref PixelFormat::RGBA8Unorm or @ref PixelFormat::R8Unorm, respectively. Images
+are imported with default @ref PixelStorage parameters except for alignment,
+which may be changed to `1` if the data require it.
 */
 class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:

@@ -140,9 +140,8 @@ void TgaImporterTest::colorBits24() {
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->storage().alignment(), 1);
-    CORRADE_COMPARE(image->format(), PixelFormat::RGB);
+    CORRADE_COMPARE(image->format(), PixelFormat::RGB8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
-    CORRADE_COMPARE(image->type(), PixelType::UnsignedByte);
     CORRADE_COMPARE_AS(image->data(), Containers::arrayView(pixels),
         TestSuite::Compare::Container);
 }
@@ -165,9 +164,8 @@ void TgaImporterTest::colorBits32() {
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->storage().alignment(), 4);
-    CORRADE_COMPARE(image->format(), PixelFormat::RGBA);
+    CORRADE_COMPARE(image->format(), PixelFormat::RGBA8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
-    CORRADE_COMPARE(image->type(), PixelType::UnsignedByte);
     CORRADE_COMPARE_AS(image->data(), Containers::arrayView(pixels),
         TestSuite::Compare::Container);
 }
@@ -185,13 +183,8 @@ void TgaImporterTest::grayscaleBits8() {
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->storage().alignment(), 1);
-    #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_COMPARE(image->format(), PixelFormat::Red);
-    #else
-    CORRADE_COMPARE(image->format(), PixelFormat::Luminance);
-    #endif
+    CORRADE_COMPARE(image->format(), PixelFormat::R8Unorm);
     CORRADE_COMPARE(image->size(), Vector2i(2, 3));
-    CORRADE_COMPARE(image->type(), PixelType::UnsignedByte);
     CORRADE_COMPARE_AS(image->data(), Containers::arrayView(data).suffix(18),
         TestSuite::Compare::Container);
 }

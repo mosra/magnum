@@ -55,9 +55,8 @@ namespace Magnum { namespace Trade {
 @brief TGA image converter plugin
 
 Creates Truevision TGA (`*.tga`) files from images with format
-@ref PixelFormat::RGB, @ref PixelFormat::RGBA or @ref PixelFormat::Red (or
-@ref PixelFormat::Luminance in OpenGL ES 2.0 and WebGL 1.0) and type
-@ref PixelType::UnsignedByte.
+@ref PixelFormat::RGB8Unorm, @ref PixelFormat::RGBA8Unorm or
+@ref PixelFormat::R8Unorm.
 
 This plugin depends on the @ref Trade library and is built if
 `WITH_TGAIMAGECONVERTER` is enabled when building Magnum. To use as a dynamic

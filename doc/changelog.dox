@@ -135,6 +135,13 @@ See also:
     now expect that the mesh is indexed (instead of silently not doing
     anything)
 
+@subsubsection changelog-latest-changes-plugins Plugins
+
+-   @ref Trade::TgaImporter "TgaImporter" and
+    @ref Trade::TgaImageConverter "TgaImageConverter" plugins now operate on
+    the generic @ref PixelFormat instead of GL-specific @ref GL::PixelFormat /
+    @ref GL::PixelType
+
 @subsection changelog-latest-buildsystem Build system
 
 -   The core @ref Magnum library is not depending on OpenGL anymore, all
@@ -321,6 +328,9 @@ See also:
 -   Configuration value reader/writers are now for only
     @ref Magnum::MeshPrimitive and @ref Magnum::MeshIndexType, not for
     @ref GL::MeshPrimitive or @ref GL::MeshIndexType
+-   The @ref Trade::TgaImageConverter "TgaImageConverter" plugin no longer
+    accepts GL-specific pixel formats, only the non-deprecated values from the
+    generic @ref PixelFormat enum
 -   The @ref Image::pixelSize(), @ref ImageView::pixelSize(),
     @ref Trade::ImageData::pixelSize() and @ref BufferImage::pixelSize()
     functions now return @ref UnsignedInt instead of @cpp std::size_t @ce.
