@@ -30,8 +30,8 @@
 #include <Corrade/Utility/String.h>
 #include <Corrade/Utility/Unicode.h>
 
-#include "Magnum/Version.h"
-#include "Magnum/Platform/Context.h"
+#include "Magnum/GL/Version.h"
+#include "Magnum/Platform/GLContext.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 
 namespace Magnum { namespace Platform {
@@ -52,7 +52,7 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, const Configuration
 }
 
 GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
-    _context{new Context{NoCreate, arguments.argc, arguments.argv}},
+    _context{new GLContext{NoCreate, arguments.argc, arguments.argv}},
     _flags{Flag::Redraw}
 {
     /* Save global instance */
@@ -74,7 +74,7 @@ void GlfwApplication::createContext(const Configuration& configuration) {
 }
 
 bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == Version::None, "Platform::GlfwApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::GlfwApplication::tryCreateContext(): context already created", false);
 
     /* Window flags */
     GLFWmonitor* monitor = nullptr; /* Needed for setting fullscreen */
@@ -104,13 +104,13 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
     glfwWindowHint(GLFW_STEREO, flags >= Configuration::Flag::Stereo);
 
     /* Set context version, if requested */
-    if(configuration.version() != Version::None) {
+    if(configuration.version() != GL::Version::None) {
         Int major, minor;
         std::tie(major, minor) = version(configuration.version());
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
         #ifndef MAGNUM_TARGET_GLES
-        if(configuration.version() >= Version::GL310) {
+        if(configuration.version() >= GL::Version::GL310) {
             glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, true);
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         }
@@ -263,7 +263,7 @@ void GlfwApplication::textInputEvent(TextInputEvent&) {}
 GlfwApplication::Configuration::Configuration():
     _title{"Magnum GLFW Application"},
     _size{800, 600}, _sampleCount{0},
-    _version{Version::None},
+    _version{GL::Version::None},
     _windowFlags{WindowFlag::Focused},
     _cursorMode{CursorMode::Normal} {}
 

@@ -36,11 +36,12 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
+#include "Magnum/GL/GL.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Platform/Platform.h"
 
 /* We must include our own GL headers first to avoid conflicts */
-#include "Magnum/OpenGL.h"
+#include "Magnum/GL/OpenGL.h"
 
 #include <GLFW/glfw3.h>
 
@@ -356,7 +357,7 @@ class GlfwApplication {
         static GlfwApplication* _instance;
 
         GLFWwindow* _window;
-        std::unique_ptr<Platform::Context> _context;
+        std::unique_ptr<Platform::GLContext> _context;
         Flags _flags;
 };
 
@@ -534,7 +535,7 @@ class GlfwApplication::Configuration {
         }
 
         /** @brief Context version */
-        Version version() const { return _version; }
+        GL::Version version() const { return _version; }
 
         /**
          * @brief Set context version
@@ -542,9 +543,9 @@ class GlfwApplication::Configuration {
          * If requesting version greater or equal to OpenGL 3.1, core profile
          * is used. The created context will then have any version which is
          * backwards-compatible with requested one. Default is
-         * @ref Version::None, i.e. any provided version is used.
+         * @ref GL::Version::None, i.e. any provided version is used.
          */
-        Configuration& setVersion(Version version) {
+        Configuration& setVersion(GL::Version version) {
             _version = version;
             return *this;
         }
@@ -558,7 +559,7 @@ class GlfwApplication::Configuration {
          *
          * Default is @cpp 0 @ce, thus no multisampling. The actual sample
          * count is ignored, GLFW either enables it or disables. See also
-         * @ref Renderer::Feature::Multisampling.
+         * @ref GL::Renderer::Feature::Multisampling.
          */
         Configuration& setSampleCount(Int count) {
             _sampleCount = count;
@@ -583,7 +584,7 @@ class GlfwApplication::Configuration {
         std::string _title;
         Vector2i _size;
         Int _sampleCount;
-        Version _version;
+        GL::Version _version;
         Flags _flags;
         WindowFlags _windowFlags;
         CursorMode _cursorMode;

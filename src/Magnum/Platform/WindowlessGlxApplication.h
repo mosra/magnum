@@ -32,7 +32,12 @@
 #include <memory>
 #include <Corrade/Containers/EnumSet.h>
 
-#include "Magnum/OpenGL.h"
+/* Include our GL headers first to avoid conflicts */
+#include "Magnum/Magnum.h"
+#include "Magnum/Tags.h"
+#include "Magnum/GL/OpenGL.h"
+#include "Magnum/Platform/Platform.h"
+
 #include <GL/glx.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -42,9 +47,6 @@
 #undef None
 #undef Status
 
-#include "Magnum/Magnum.h"
-#include "Magnum/Tags.h"
-#include "Magnum/Platform/Platform.h"
 
 namespace Magnum { namespace Platform {
 
@@ -80,14 +82,15 @@ class WindowlessGlxContext {
          * compatibility OpenGL 2.1 context is created instead to make the
          * driver use the latest available version.
          *
-         * Once the context is created, make it current using @ref makeCurrent()
-         * and create @ref Platform::Context instance to be able to use Magnum.
+         * Once the context is created, make it current using
+         * @ref makeCurrent() and create @ref Platform::GLContext instance to
+         * be able to use Magnum.
          * @see @ref isCreated()
          */
-        explicit WindowlessGlxContext(const Configuration& configuration, Context* context = nullptr);
+        explicit WindowlessGlxContext(const Configuration& configuration, GLContext* context = nullptr);
 
         /**
-         * @brief Construct without creating the context
+         * @brief Construct without creating an OpenGL context
          *
          * Move a instance with created context over to make it usable.
          */
@@ -168,7 +171,7 @@ class WindowlessGlxContext::Configuration {
          * @brief Set context flags
          * @return Reference to self (for method chaining)
          *
-         * Default is no flag. See also @ref Context::flags().
+         * Default is no flag. See also @ref GL::Context::flags().
          */
         Configuration& setFlags(Flags flags) {
             _flags = flags;
@@ -351,7 +354,7 @@ class WindowlessGlxApplication {
 
     private:
         WindowlessGlxContext _glContext;
-        std::unique_ptr<Platform::Context> _context;
+        std::unique_ptr<Platform::GLContext> _context;
 };
 
 /** @hideinitializer

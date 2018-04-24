@@ -40,8 +40,8 @@
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/OpenGL.h"
 #include "Magnum/Tags.h"
+#include "Magnum/GL/OpenGL.h"
 #include "Magnum/Platform/Platform.h"
 
 namespace Magnum { namespace Platform {
@@ -67,11 +67,12 @@ class WindowlessWindowsEglContext {
          * @param context       Optional Magnum context instance constructed
          *      using @ref NoCreate to manage driver workarounds
          *
-         * Once the context is created, make it current using @ref makeCurrent()
-         * and create @ref Platform::Context instance to be able to use Magnum.
+         * Once the context is created, make it current using
+         * @ref makeCurrent() and create @ref Platform::GLContext instance to
+         * be able to use Magnum.
          * @see @ref isCreated()
          */
-        explicit WindowlessWindowsEglContext(const Configuration& configuration, Context* context = nullptr);
+        explicit WindowlessWindowsEglContext(const Configuration& configuration, GLContext* context = nullptr);
 
         /**
          * @brief Construct without creating the context
@@ -156,7 +157,7 @@ class WindowlessWindowsEglContext::Configuration {
          * @brief Set context flags
          * @return Reference to self (for method chaining)
          *
-         * Default is no flag. See also @ref Context::flags().
+         * Default is no flag. See also @ref GL::Context::flags().
          */
         Configuration& setFlags(Flags flags) {
             _flags = flags;
@@ -338,7 +339,7 @@ class WindowlessWindowsEglApplication {
 
     private:
         WindowlessWindowsEglContext _glContext;
-        std::unique_ptr<Platform::Context> _context;
+        std::unique_ptr<Platform::GLContext> _context;
 };
 
 /** @hideinitializer

@@ -24,7 +24,7 @@
 */
 
 /* [windowless] */
-#include <Magnum/Context.h>
+#include <Magnum/GL/Context.h>
 #include <Magnum/Platform/WindowlessEglApplication.h>
 
 using namespace Magnum;

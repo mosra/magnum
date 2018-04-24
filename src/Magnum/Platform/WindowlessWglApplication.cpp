@@ -29,8 +29,8 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Magnum/Version.h"
-#include "Magnum/Platform/Context.h"
+#include "Magnum/GL/Version.h"
+#include "Magnum/Platform/GLContext.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* Define stuff that we need because I can't be bothered with creating a new
@@ -46,7 +46,7 @@
 
 namespace Magnum { namespace Platform {
 
-WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, Context* const magnumContext) {
+WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, GLContext* const magnumContext) {
     /* Register the window class (if not yet done) */
     WNDCLASSW wc;
     if(!GetClassInfoW(GetModuleHandleW(nullptr), L"Magnum Windowless Application", &wc)) {
@@ -242,7 +242,7 @@ WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, c
     createContext(configuration);
 }
 
-WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new Context{NoCreate, arguments.argc, arguments.argv}} {}
+WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}} {}
 
 void WindowlessWglApplication::createContext() { createContext({}); }
 

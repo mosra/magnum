@@ -67,8 +67,9 @@ class WindowlessIosContext {
          * @param context       Optional Magnum context instance constructed
          *      using @ref NoCreate to manage driver workarounds
          *
-         * Once the context is created, make it current using @ref makeCurrent()
-         * and create @ref Platform::Context instance to be able to use Magnum.
+         * Once the context is created, make it current using
+         * @ref makeCurrent() and create @ref Platform::GLContext instance to
+         * be able to use Magnum.
          * @see @ref isCreated()
          */
         explicit WindowlessIosContext(const Configuration& configuration, Context* context = nullptr);
@@ -300,7 +301,7 @@ class WindowlessIosApplication {
 
     private:
         WindowlessIosContext _glContext;
-        std::unique_ptr<Platform::Context> _context;
+        std::unique_ptr<Platform::GLContext> _context;
 };
 
 /** @hideinitializer

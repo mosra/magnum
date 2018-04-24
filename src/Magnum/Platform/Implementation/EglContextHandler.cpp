@@ -29,10 +29,10 @@
 #include <EGL/eglext.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Magnum/Context.h"
-#include "Magnum/Version.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Version.h"
 
-#include "Egl.h"
+#include "Magnum/Platform/Implementation/Egl.h"
 
 namespace Magnum { namespace Platform { namespace Implementation {
 
@@ -111,7 +111,7 @@ void EglContextHandler::createContext(const AbstractXApplication::Configuration&
     /* Set context version, if requested. On desktop needs
        EGL_KHR_create_context. */
     /** @todo Test for presence of EGL_KHR_create_context extension */
-    if(configuration.version() != Version::None) {
+    if(configuration.version() != GL::Version::None) {
         Int major, minor;
         std::tie(major, minor) = version(configuration.version());
 
@@ -121,7 +121,7 @@ void EglContextHandler::createContext(const AbstractXApplication::Configuration&
         attributes[3] = minor;
 
         #ifndef MAGNUM_TARGET_GLES
-        if(configuration.version() >= Version::GL310) {
+        if(configuration.version() >= GL::Version::GL310) {
             attributes[4] = EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR;
             attributes[5] = EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR;
         }

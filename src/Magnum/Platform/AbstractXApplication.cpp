@@ -27,8 +27,8 @@
 
 #include <Corrade/Utility/System.h>
 
-#include "Magnum/Platform/Context.h"
-#include "Magnum/Version.h"
+#include "Magnum/GL/Version.h"
+#include "Magnum/Platform/GLContext.h"
 
 #include "Implementation/AbstractContextHandler.h"
 
@@ -41,7 +41,7 @@ AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandle
     createContext(configuration);
 }
 
-AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, NoCreateT): _contextHandler{contextHandler}, _context{new Context{NoCreate, arguments.argc, arguments.argv}}, _flags{Flag::Redraw} {}
+AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, NoCreateT): _contextHandler{contextHandler}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}}, _flags{Flag::Redraw} {}
 
 void AbstractXApplication::createContext() { createContext({}); }
 
@@ -50,7 +50,7 @@ void AbstractXApplication::createContext(const Configuration& configuration) {
 }
 
 bool AbstractXApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == Version::None, "Platform::AbstractXApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::AbstractXApplication::tryCreateContext(): context already created", false);
 
     _viewportSize = configuration.size();
 
@@ -175,7 +175,7 @@ void AbstractXApplication::mousePressEvent(MouseEvent&) {}
 void AbstractXApplication::mouseReleaseEvent(MouseEvent&) {}
 void AbstractXApplication::mouseMoveEvent(MouseMoveEvent&) {}
 
-AbstractXApplication::Configuration::Configuration(): _title("Magnum X Application"), _size(800, 600), _version(Version::None) {}
+AbstractXApplication::Configuration::Configuration(): _title("Magnum X Application"), _size(800, 600), _version(GL::Version::None) {}
 AbstractXApplication::Configuration::~Configuration() = default;
 
 }}

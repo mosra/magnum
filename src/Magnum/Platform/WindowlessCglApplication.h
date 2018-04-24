@@ -33,14 +33,14 @@
 
 #include <memory>
 
-#include "Magnum/OpenGL.h"
+#include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
+#include "Magnum/GL/OpenGL.h"
+#include "Magnum/Platform/Platform.h"
+
 #include <OpenGL/OpenGL.h>
 #include <OpenGL/CGLTypes.h>
 #include <OpenGL/CGLCurrent.h>
-
-#include "Magnum/Magnum.h"
-#include "Magnum/Platform/Platform.h"
 
 namespace Magnum { namespace Platform {
 
@@ -72,10 +72,11 @@ class WindowlessCglContext {
          * context.
          *
          * Once the context is created, make it current using @ref makeCurrent()
-         * and create @ref Platform::Context instance to be able to use Magnum.
+         * and create @ref Platform::GLContext instance to be able to use
+         * Magnum.
          * @see @ref isCreated()
          */
-        explicit WindowlessCglContext(const Configuration& configuration, Context* context = nullptr);
+        explicit WindowlessCglContext(const Configuration& configuration, GLContext* context = nullptr);
 
         /**
          * @brief Construct without creating the context
@@ -302,7 +303,7 @@ class WindowlessCglApplication {
 
     private:
         WindowlessCglContext _glContext;
-        std::unique_ptr<Platform::Context> _context;
+        std::unique_ptr<Platform::GLContext> _context;
 };
 
 /** @hideinitializer

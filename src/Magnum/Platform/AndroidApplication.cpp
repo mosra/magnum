@@ -29,8 +29,8 @@
 #include <Corrade/Utility/Debug.h>
 #include <android_native_app_glue.h>
 
-#include "Magnum/Version.h"
-#include "Magnum/Platform/Context.h"
+#include "Magnum/GL/Version.h"
+#include "Magnum/Platform/GLContext.h"
 
 #include "Implementation/Egl.h"
 
@@ -66,7 +66,7 @@ AndroidApplication::AndroidApplication(const Arguments& arguments, const Configu
     createContext(configuration);
 }
 
-AndroidApplication::AndroidApplication(const Arguments& arguments, NoCreateT): _state{arguments}, _context{new Context{NoCreate, 0, nullptr}} {
+AndroidApplication::AndroidApplication(const Arguments& arguments, NoCreateT): _state{arguments}, _context{new GLContext{NoCreate, 0, nullptr}} {
     /* Redirect debug output to Android log */
     _logOutput.reset(new LogOutput);
 }

@@ -30,8 +30,8 @@
 #include <GL/glxext.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Magnum/Context.h"
-#include "Magnum/Version.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Version.h"
 
 namespace Magnum { namespace Platform { namespace Implementation {
 
@@ -85,7 +85,7 @@ void GlxContextHandler::createContext(const AbstractXApplication::Configuration&
     };
 
     /* Set context version, if requested */
-    if(configuration.version() != Version::None) {
+    if(configuration.version() != GL::Version::None) {
         Int major, minor;
         std::tie(major, minor) = version(configuration.version());
 
@@ -95,7 +95,7 @@ void GlxContextHandler::createContext(const AbstractXApplication::Configuration&
         attributes[3] = minor;
 
         #ifndef MAGNUM_TARGET_GLES
-        if(configuration.version() >= Version::GL310) {
+        if(configuration.version() >= GL::Version::GL310) {
             attributes[4] = GLX_CONTEXT_PROFILE_MASK_ARB;
             attributes[5] = GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
         }

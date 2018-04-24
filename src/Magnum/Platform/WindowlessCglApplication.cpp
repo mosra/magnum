@@ -30,12 +30,12 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Magnum/Version.h"
+#include "Magnum/GL/Version.h"
 #include "Magnum/Platform/Context.h"
 
 namespace Magnum { namespace Platform {
 
-WindowlessCglContext::WindowlessCglContext(const Configuration&, Context*) {
+WindowlessCglContext::WindowlessCglContext(const Configuration&, GLContext*) {
     int formatCount;
     CGLPixelFormatAttribute attributes32[] = {
         kCGLPFAAccelerated,
@@ -105,7 +105,7 @@ WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, c
     createContext(configuration);
 }
 
-WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new Context{NoCreate, arguments.argc, arguments.argv}} {}
+WindowlessCglApplication::WindowlessCglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}} {}
 
 WindowlessCglApplication::~WindowlessCglApplication() = default;
 
@@ -116,7 +116,7 @@ void WindowlessCglApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessCglApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessCglApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::WindowlessCglApplication::tryCreateContext(): context already created", false);
 
     WindowlessCglContext glContext{configuration, _context.get()};
     if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())

@@ -27,8 +27,8 @@
 
 #include <tuple>
 
-#include "Magnum/Version.h"
-#include "Magnum/Platform/Context.h"
+#include "Magnum/GL/Version.h"
+#include "Magnum/Platform/GLContext.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 
 namespace Magnum { namespace Platform {
@@ -43,7 +43,7 @@ GlutApplication::GlutApplication(const Arguments& arguments, const Configuration
     createContext(configuration);
 }
 
-GlutApplication::GlutApplication(const Arguments& arguments, NoCreateT): _context{new Context{NoCreate, arguments.argc, arguments.argv}} {
+GlutApplication::GlutApplication(const Arguments& arguments, NoCreateT): _context{new GLContext{NoCreate, arguments.argc, arguments.argv}} {
     /* Save global instance */
     _instance = this;
 
@@ -59,7 +59,7 @@ void GlutApplication::createContext(const Configuration& configuration) {
 }
 
 bool GlutApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == Version::None, "Platform::GlutApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::GlutApplication::tryCreateContext(): context already created", false);
 
     unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
 
@@ -70,12 +70,12 @@ bool GlutApplication::tryCreateContext(const Configuration& configuration) {
     glutInitWindowSize(configuration.size().x(), configuration.size().y());
 
     /* Set context version, if requested */
-    if(configuration.version() != Version::None) {
+    if(configuration.version() != GL::Version::None) {
         Int major, minor;
         std::tie(major, minor) = version(configuration.version());
         glutInitContextVersion(major, minor);
         #ifndef MAGNUM_TARGET_GLES
-        if(configuration.version() >= Version::GL310)
+        if(configuration.version() >= GL::Version::GL310)
             glutInitContextProfile(GLUT_CORE_PROFILE);
         #endif
     }
@@ -142,7 +142,7 @@ void GlutApplication::mousePressEvent(MouseEvent&) {}
 void GlutApplication::mouseReleaseEvent(MouseEvent&) {}
 void GlutApplication::mouseMoveEvent(MouseMoveEvent&) {}
 
-GlutApplication::Configuration::Configuration(): _title("Magnum GLUT Application"), _size(800, 600), _sampleCount(0), _version(Version::None) {}
+GlutApplication::Configuration::Configuration(): _title("Magnum GLUT Application"), _size(800, 600), _sampleCount(0), _version(GL::Version::None) {}
 GlutApplication::Configuration::~Configuration() = default;
 
 template class BasicScreen<GlutApplication>;

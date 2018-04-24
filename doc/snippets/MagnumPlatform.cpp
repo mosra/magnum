@@ -24,8 +24,8 @@
 */
 
 /* [windowed] */
-#include <Magnum/DefaultFramebuffer.h>
-#include <Magnum/Renderer.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
+#include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Platform/Context.h>

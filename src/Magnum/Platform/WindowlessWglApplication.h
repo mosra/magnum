@@ -38,8 +38,8 @@
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/OpenGL.h"
 #include "Magnum/Tags.h"
+#include "Magnum/GL/OpenGL.h"
 #include "Magnum/Platform/Platform.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -81,11 +81,12 @@ class WindowlessWglContext {
          * compatibility OpenGL 2.1 context is created instead to make the
          * driver use the latest available version.
          *
-         * Once the context is created, make it current using @ref makeCurrent()
-         * and create @ref Platform::Context instance to be able to use Magnum.
+         * Once the context is created, make it current using
+         * @ref makeCurrent() and create @ref Platform::GLContext instance to
+         * be able to use Magnum.
          * @see @ref isCreated()
          */
-        explicit WindowlessWglContext(const Configuration& configuration, Context* context = nullptr);
+        explicit WindowlessWglContext(const Configuration& configuration, GLContext* context = nullptr);
 
         /**
          * @brief Construct without creating the context
@@ -169,7 +170,7 @@ class WindowlessWglContext::Configuration {
          * @brief Set context flags
          * @return Reference to self (for method chaining)
          *
-         * Default is no flag. See also @ref Context::flags().
+         * Default is no flag. See also @ref GL::Context::flags().
          */
         Configuration& setFlags(Flags flags) {
             _flags = flags;
@@ -350,7 +351,7 @@ class WindowlessWglApplication {
 
     private:
         WindowlessWglContext _glContext;
-        std::unique_ptr<Platform::Context> _context;
+        std::unique_ptr<Platform::GLContext> _context;
 };
 
 /** @hideinitializer

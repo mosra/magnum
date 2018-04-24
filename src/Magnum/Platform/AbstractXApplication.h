@@ -42,6 +42,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
+#include "Magnum/GL/GL.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Platform/Platform.h"
 
@@ -188,7 +189,7 @@ class AbstractXApplication {
         Atom _deleteWindow;
 
         std::unique_ptr<Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>> _contextHandler;
-        std::unique_ptr<Platform::Context> _context;
+        std::unique_ptr<Platform::GLContext> _context;
 
         /** @todo Get this from the created window */
         Vector2i _viewportSize;
@@ -240,10 +241,10 @@ class AbstractXApplication::Configuration {
         }
 
         /** @copydoc Sdl2Application::Configuration::version() */
-        Version version() const { return _version; }
+        GL::Version version() const { return _version; }
 
         /** @copydoc Sdl2Application::Configuration::setVersion() */
-        Configuration& setVersion(Version version) {
+        Configuration& setVersion(GL::Version version) {
             _version = version;
             return *this;
         }
@@ -251,7 +252,7 @@ class AbstractXApplication::Configuration {
     private:
         std::string _title;
         Vector2i _size;
-        Version _version;
+        GL::Version _version;
 };
 
 /**

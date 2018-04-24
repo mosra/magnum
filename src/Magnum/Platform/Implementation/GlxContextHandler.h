@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/OpenGL.h"
+#include "Magnum/GL/OpenGL.h"
 
 #define Status int
 #include <GL/glx.h>

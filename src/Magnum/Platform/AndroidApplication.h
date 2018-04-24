@@ -338,8 +338,8 @@ class AndroidApplication::Configuration {
          * @brief Set context version
          *
          * @note This function does nothing and is included only for
-         *      compatibility with other toolkits. @ref Version::GLES200 or
-         *      @ref Version::GLES300 is used based on engine compile-time
+         *      compatibility with other toolkits. @ref GL::Version::GLES200 or
+         *      @ref GL::Version::GLES300 is used based on engine compile-time
          *      settings.
          */
         Configuration& setVersion(Version) { return *this; }

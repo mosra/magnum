@@ -36,6 +36,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
+#include "Magnum/GL/GL.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Platform/Platform.h"
 
@@ -568,16 +569,16 @@ class Sdl2Application {
          * @brief Viewport event
          *
          * Called when window size changes. The default implementation does
-         * nothing, if you want to respond to size changes, you should pass the
-         * new size to @ref DefaultFramebuffer::setViewport() and possibly
-         * elsewhere (to @ref SceneGraph::Camera::setViewport(), other
-         * framebuffers...).
+         * nothing. If you want to respond to size changes, you should pass the
+         * new size to @ref GL::DefaultFramebuffer::setViewport() (if using
+         * OpenGL) and possibly elsewhere (to
+         * @ref SceneGraph::Camera::setViewport(), other framebuffers...).
          *
          * Note that this function might not get called at all if the window
          * size doesn't change. You should configure the initial state of your
          * cameras, framebuffers etc. in application constructor rather than
          * relying on this function to be called. Viewport of default
-         * framebuffer can be retrieved via @ref DefaultFramebuffer::viewport().
+         * framebuffer can be retrieved via @ref GL::DefaultFramebuffer::viewport().
          */
         virtual void viewportEvent(const Vector2i& size);
 
@@ -585,9 +586,10 @@ class Sdl2Application {
          * @brief Draw event
          *
          * Called when the screen is redrawn. You should clean the framebuffer
-         * using @ref DefaultFramebuffer::clear() and then add your own drawing
-         * functions. After drawing is finished, call @ref swapBuffers(). If
-         * you want to draw immediately again, call also @ref redraw().
+         * using @ref GL::DefaultFramebuffer::clear() (if using OpenGL) and
+         * then add your own drawing functions. After drawing is finished, call
+         * @ref swapBuffers(). If you want to draw immediately again, call also
+         * @ref redraw().
          */
         virtual void drawEvent() = 0;
 
@@ -765,7 +767,7 @@ class Sdl2Application {
         SDL_Surface* _glContext;
         #endif
 
-        std::unique_ptr<Platform::Context> _context;
+        std::unique_ptr<Platform::GLContext> _context;
 
         Flags _flags;
 };
@@ -934,7 +936,7 @@ class Sdl2Application::Configuration {
          * @brief Set context flags
          * @return Reference to self (for method chaining)
          *
-         * Default is no flag. See also @ref Context::flags().
+         * Default is no flag. See also @ref GL::Context::flags().
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
         Configuration& setFlags(Flags flags) {
@@ -947,7 +949,7 @@ class Sdl2Application::Configuration {
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
-        Version version() const { return _version; }
+        GL::Version version() const { return _version; }
         #endif
 
         /**
@@ -956,12 +958,13 @@ class Sdl2Application::Configuration {
          * If requesting version greater or equal to OpenGL 3.1, core profile
          * is used. The created context will then have any version which is
          * backwards-compatible with requested one. Default is
-         * @ref Version::None, i.e. any provided version is used.
+         * @ref GL::Version::None, i.e. any provided version is used.
          * @note In @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" this function
-         *      does nothing (@ref Version::GLES200 or @ref Version::GLES300 is
-         *      used implicitly based on the target).
+         *      does nothing (@ref GL::Version::GLES200 or
+         *      @ref GL::Version::GLES300 is used implicitly based on the
+         *      target).
          */
-        Configuration& setVersion(Version version) {
+        Configuration& setVersion(GL::Version version) {
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             _version = version;
             #else
@@ -978,7 +981,7 @@ class Sdl2Application::Configuration {
          * @return Reference to self (for method chaining)
          *
          * Default is @cpp 0 @ce, thus no multisampling. See also
-         * @ref Renderer::Feature::Multisampling.
+         * @ref GL::Renderer::Feature::Multisampling.
          */
         Configuration& setSampleCount(Int count) {
             _sampleCount = count;
@@ -997,7 +1000,8 @@ class Sdl2Application::Configuration {
          * @brief Set sRGB-capable default framebuffer
          * @return Reference to self (for method chaining)
          *
-         * Default is @cpp false @ce. See also @ref Renderer::Feature::FramebufferSRGB.
+         * Default is @cpp false @ce. See also
+         * @ref GL::Renderer::Feature::FramebufferSRGB.
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
         Configuration& setSRGBCapable(bool enabled) {
@@ -1014,7 +1018,7 @@ class Sdl2Application::Configuration {
         WindowFlags _windowFlags;
         Int _sampleCount;
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        Version _version;
+        GL::Version _version;
         Flags _flags;
         bool _sRGBCapable;
         #endif

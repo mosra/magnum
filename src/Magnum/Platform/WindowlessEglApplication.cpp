@@ -28,14 +28,14 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Magnum/Version.h"
-#include "Magnum/Platform/Context.h"
+#include "Magnum/GL/Version.h"
+#include "Magnum/Platform/GLContext.h"
 
 #include "Implementation/Egl.h"
 
 namespace Magnum { namespace Platform {
 
-WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, Context*) {
+WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, GLContext*) {
     /* Initialize */
     _display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if(!eglInitialize(_display, nullptr, nullptr)) {
@@ -147,7 +147,7 @@ WindowlessEglApplication::WindowlessEglApplication(const Arguments& arguments, c
     createContext(configuration);
 }
 
-WindowlessEglApplication::WindowlessEglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new Context{NoCreate, arguments.argc, arguments.argv}} {}
+WindowlessEglApplication::WindowlessEglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}} {}
 
 void WindowlessEglApplication::createContext() { createContext({}); }
 
@@ -156,7 +156,7 @@ void WindowlessEglApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessEglApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessEglApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::WindowlessEglApplication::tryCreateContext(): context already created", false);
 
     WindowlessEglContext glContext{configuration, _context.get()};
     if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())

@@ -40,7 +40,7 @@
 #undef Status
 
 #include "Magnum/Magnum.h"
-#include "Magnum/OpenGL.h"
+#include "Magnum/GL/OpenGL.h"
 #include "Magnum/Tags.h"
 #include "Magnum/Platform/Platform.h"
 
@@ -69,10 +69,11 @@ class WindowlessEglContext {
          *      using @ref NoCreate to manage driver workarounds
          *
          * Once the context is created, make it current using @ref makeCurrent()
-         * and create @ref Platform::Context instance to be able to use Magnum.
+         * and create @ref Platform::GLContext instance to be able to use
+         * Magnum.
          * @see @ref isCreated()
          */
-        explicit WindowlessEglContext(const Configuration& configuration, Context* context = nullptr);
+        explicit WindowlessEglContext(const Configuration& configuration, GLContext* context = nullptr);
 
         /**
          * @brief Construct without creating the context
@@ -164,7 +165,7 @@ class WindowlessEglContext::Configuration {
          * @brief Set context flags
          * @return Reference to self (for method chaining)
          *
-         * Default is no flag. See also @ref Context::flags().
+         * Default is no flag. See also @ref GL::Context::flags().
          * @requires_gles Context flags are not available in WebGL.
          */
         Configuration& setFlags(Flags flags) {
@@ -431,7 +432,7 @@ class WindowlessEglApplication {
 
     private:
         WindowlessEglContext _glContext;
-        std::unique_ptr<Platform::Context> _context;
+        std::unique_ptr<Platform::GLContext> _context;
 };
 
 /** @hideinitializer

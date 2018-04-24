@@ -32,9 +32,9 @@
 #include <emscripten/emscripten.h>
 #endif
 
-#include "Magnum/Version.h"
+#include "Magnum/GL/Version.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/Platform/Context.h"
+#include "Magnum/Platform/GLContext.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 
 namespace Magnum { namespace Platform {
@@ -70,7 +70,7 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT): _glCont
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     _minimalLoopPeriod{0},
     #endif
-    _context{new Context{NoCreate, arguments.argc, arguments.argv}}, _flags{Flag::Redraw}
+    _context{new GLContext{NoCreate, arguments.argc, arguments.argv}}, _flags{Flag::Redraw}
 {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         Error() << "Cannot initialize SDL.";
@@ -85,7 +85,7 @@ void Sdl2Application::createContext(const Configuration& configuration) {
 }
 
 bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == Version::None, "Platform::Sdl2Application::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::Sdl2Application::tryCreateContext(): context already created", false);
 
     /* Enable double buffering and 24bt depth buffer */
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
@@ -103,14 +103,14 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     /** @todo Remove when Emscripten has proper SDL2 support */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Set context version, if user-specified */
-    if(configuration.version() != Version::None) {
+    if(configuration.version() != GL::Version::None) {
         Int major, minor;
         std::tie(major, minor) = version(configuration.version());
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, major);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, minor);
 
         #ifndef MAGNUM_TARGET_GLES
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, configuration.version() >= Version::GL310 ?
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, configuration.version() >= GL::Version::GL310 ?
             SDL_GL_CONTEXT_PROFILE_CORE : SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
         #else
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
@@ -181,7 +181,7 @@ bool Sdl2Application::tryCreateContext(const Configuration& configuration) {
     constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
     const char* vendorString;
     #endif
-    if(configuration.version() == Version::None && (!_glContext
+    if(configuration.version() == GL::Version::None && (!_glContext
         #ifndef CORRADE_TARGET_APPLE
         /* Sorry about the UGLY code, HOPEFULLY THERE WON'T BE MORE WORKAROUNDS */
         || (vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR)),
@@ -538,7 +538,7 @@ Sdl2Application::Configuration::Configuration():
     #endif
     _windowFlags{}, _sampleCount(0)
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    , _version(Version::None), _sRGBCapable{false}
+    , _version(GL::Version::None), _sRGBCapable{false}
     #endif
     {}
 

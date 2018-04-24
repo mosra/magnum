@@ -26,34 +26,34 @@
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Magnum/AbstractShaderProgram.h"
-#include "Magnum/Buffer.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Buffer.h"
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-#include "Magnum/BufferTexture.h"
+#include "Magnum/GL/BufferTexture.h"
 #endif
-#include "Magnum/Context.h"
-#include "Magnum/CubeMapTexture.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/CubeMapTexture.h"
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-#include "Magnum/CubeMapTextureArray.h"
+#include "Magnum/GL/CubeMapTextureArray.h"
 #endif
 #ifndef MAGNUM_TARGET_WEBGL
-#include "Magnum/DebugOutput.h"
+#include "Magnum/GL/DebugOutput.h"
 #endif
-#include "Magnum/Extensions.h"
-#include "Magnum/Framebuffer.h"
-#include "Magnum/Mesh.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Framebuffer.h"
+#include "Magnum/GL/Mesh.h"
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-#include "Magnum/MultisampleTexture.h"
+#include "Magnum/GL/MultisampleTexture.h"
 #endif
 #ifndef MAGNUM_TARGET_GLES
-#include "Magnum/RectangleTexture.h"
+#include "Magnum/GL/RectangleTexture.h"
 #endif
-#include "Magnum/Renderbuffer.h"
-#include "Magnum/Shader.h"
-#include "Magnum/Texture.h"
+#include "Magnum/GL/Renderbuffer.h"
+#include "Magnum/GL/Shader.h"
+#include "Magnum/GL/Texture.h"
 #ifndef MAGNUM_TARGET_GLES2
-#include "Magnum/TextureArray.h"
-#include "Magnum/TransformFeedback.h"
+#include "Magnum/GL/TextureArray.h"
+#include "Magnum/GL/TransformFeedback.h"
 #endif
 
 #if defined(MAGNUM_TARGET_HEADLESS) || defined(CORRADE_TARGET_EMSCRIPTEN) || defined(CORRADE_TARGET_ANDROID)
@@ -100,7 +100,8 @@ Arguments:
 -   `-s`, `--short` --- display just essential info and exit
 -   `--all-extensions` --- display extensions also for fully supported versions
 -   `--limits` --- display also limits and implementation-defined values
--   `--magnum-...` --- engine-specific options (see @ref Context for details)
+-   `--magnum-...` --- engine-specific options (see
+    @ref GL-Context-command-line for details)
 
 @subsection magnum-gl-info-usage-emscripten Usage on Emscripten
 
@@ -281,7 +282,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     /* Create context here, so the context creation info is displayed at proper
        place */
     createContext();
-    Context& c = Context::current();
+    GL::Context& c = GL::Context::current();
 
     #ifndef MAGNUM_TARGET_GLES
     Debug() << "Core profile:" << (c.isCoreProfile() ? "yes" : "no");
@@ -307,41 +308,41 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug() << "";
 
     /* Get first future (not supported) version */
-    std::vector<Version> versions{
+    std::vector<GL::Version> versions{
         #ifndef MAGNUM_TARGET_GLES
-        Version::GL300,
-        Version::GL310,
-        Version::GL320,
-        Version::GL330,
-        Version::GL400,
-        Version::GL410,
-        Version::GL420,
-        Version::GL430,
-        Version::GL440,
-        Version::GL450,
-        Version::GL460,
+        GL::Version::GL300,
+        GL::Version::GL310,
+        GL::Version::GL320,
+        GL::Version::GL330,
+        GL::Version::GL400,
+        GL::Version::GL410,
+        GL::Version::GL420,
+        GL::Version::GL430,
+        GL::Version::GL440,
+        GL::Version::GL450,
+        GL::Version::GL460,
         #else
-        Version::GLES300,
+        GL::Version::GLES300,
         #ifndef MAGNUM_TARGET_WEBGL
-        Version::GLES310,
-        Version::GLES320,
+        GL::Version::GLES310,
+        GL::Version::GLES320,
         #endif
         #endif
-        Version::None
+        GL::Version::None
     };
     std::size_t future = 0;
 
     if(!args.isSet("all-extensions"))
-        while(versions[future] != Version::None && c.isVersionSupported(versions[future]))
+        while(versions[future] != GL::Version::None && c.isVersionSupported(versions[future]))
             ++future;
 
     /* Display supported OpenGL extensions from unsupported versions */
     for(std::size_t i = future; i != versions.size(); ++i) {
-        if(versions[i] != Version::None)
+        if(versions[i] != GL::Version::None)
             Debug() << versions[i] << "extension support:";
         else Debug() << "Vendor extension support:";
 
-        for(const auto& extension: Extension::extensions(versions[i])) {
+        for(const auto& extension: GL::Extension::extensions(versions[i])) {
             std::string extensionName = extension.string();
             Debug d;
             d << "   " << extensionName << std::string(60-extensionName.size(), ' ');
@@ -361,239 +362,239 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     if(!args.isSet("limits")) return;
 
     /* Limits and implementation-defined values */
-    #define _h(val) Debug() << "\n " << Extensions::GL::val::string() + std::string(":");
+    #define _h(val) Debug() << "\n " << GL::Extensions::val::string() + std::string(":");
     #define _l(val) Debug() << "   " << #val << (sizeof(#val) > 64 ? "\n" + std::string(68, ' ') : std::string(64 - sizeof(#val), ' ')) << val;
     #define _lvec(val) Debug() << "   " << #val << (sizeof(#val) > 42 ? "\n" + std::string(46, ' ') : std::string(42 - sizeof(#val), ' ')) << val;
 
     Debug() << "Limits and implementation-defined values:";
-    _lvec(AbstractFramebuffer::maxViewportSize())
-    _l(AbstractFramebuffer::maxDrawBuffers())
-    _l(Framebuffer::maxColorAttachments())
+    _lvec(GL::AbstractFramebuffer::maxViewportSize())
+    _l(GL::AbstractFramebuffer::maxDrawBuffers())
+    _l(GL::Framebuffer::maxColorAttachments())
     #ifndef MAGNUM_TARGET_GLES2
-    _l(Mesh::maxElementIndex())
-    _l(Mesh::maxElementsIndices())
-    _l(Mesh::maxElementsVertices())
+    _l(GL::Mesh::maxElementIndex())
+    _l(GL::Mesh::maxElementsIndices())
+    _l(GL::Mesh::maxElementsVertices())
     #endif
-    _l(Renderbuffer::maxSize())
+    _l(GL::Renderbuffer::maxSize())
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    _l(Renderbuffer::maxSamples())
+    _l(GL::Renderbuffer::maxSamples())
     #endif
-    _l(Shader::maxVertexOutputComponents())
-    _l(Shader::maxFragmentInputComponents())
-    _l(Shader::maxTextureImageUnits(Shader::Type::Vertex))
+    _l(GL::Shader::maxVertexOutputComponents())
+    _l(GL::Shader::maxFragmentInputComponents())
+    _l(GL::Shader::maxTextureImageUnits(GL::Shader::Type::Vertex))
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    _l(Shader::maxTextureImageUnits(Shader::Type::TessellationControl))
-    _l(Shader::maxTextureImageUnits(Shader::Type::TessellationEvaluation))
-    _l(Shader::maxTextureImageUnits(Shader::Type::Geometry))
-    _l(Shader::maxTextureImageUnits(Shader::Type::Compute))
+    _l(GL::Shader::maxTextureImageUnits(GL::Shader::Type::TessellationControl))
+    _l(GL::Shader::maxTextureImageUnits(GL::Shader::Type::TessellationEvaluation))
+    _l(GL::Shader::maxTextureImageUnits(GL::Shader::Type::Geometry))
+    _l(GL::Shader::maxTextureImageUnits(GL::Shader::Type::Compute))
     #endif
-    _l(Shader::maxTextureImageUnits(Shader::Type::Fragment))
-    _l(Shader::maxCombinedTextureImageUnits())
-    _l(Shader::maxUniformComponents(Shader::Type::Vertex))
+    _l(GL::Shader::maxTextureImageUnits(GL::Shader::Type::Fragment))
+    _l(GL::Shader::maxCombinedTextureImageUnits())
+    _l(GL::Shader::maxUniformComponents(GL::Shader::Type::Vertex))
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    _l(Shader::maxUniformComponents(Shader::Type::TessellationControl))
-    _l(Shader::maxUniformComponents(Shader::Type::TessellationEvaluation))
-    _l(Shader::maxUniformComponents(Shader::Type::Geometry))
-    _l(Shader::maxUniformComponents(Shader::Type::Compute))
+    _l(GL::Shader::maxUniformComponents(GL::Shader::Type::TessellationControl))
+    _l(GL::Shader::maxUniformComponents(GL::Shader::Type::TessellationEvaluation))
+    _l(GL::Shader::maxUniformComponents(GL::Shader::Type::Geometry))
+    _l(GL::Shader::maxUniformComponents(GL::Shader::Type::Compute))
     #endif
-    _l(Shader::maxUniformComponents(Shader::Type::Fragment))
-    _l(AbstractShaderProgram::maxVertexAttributes())
+    _l(GL::Shader::maxUniformComponents(GL::Shader::Type::Fragment))
+    _l(GL::AbstractShaderProgram::maxVertexAttributes())
     #ifndef MAGNUM_TARGET_GLES2
-    _l(AbstractTexture::maxLodBias())
+    _l(GL::AbstractTexture::maxLodBias())
     #endif
     #ifndef MAGNUM_TARGET_GLES
-    _lvec(Texture1D::maxSize())
+    _lvec(GL::Texture1D::maxSize())
     #endif
-    _lvec(Texture2D::maxSize())
+    _lvec(GL::Texture2D::maxSize())
     #ifndef MAGNUM_TARGET_GLES2
-    _lvec(Texture3D::maxSize()) /* Checked ES2 version below */
+    _lvec(GL::Texture3D::maxSize()) /* Checked ES2 version below */
     #endif
-    _lvec(CubeMapTexture::maxSize())
+    _lvec(GL::CubeMapTexture::maxSize())
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::blend_func_extended>()) {
+    if(c.isExtensionSupported<GL::Extensions::ARB::blend_func_extended>()) {
         _h(ARB::blend_func_extended)
 
-        _l(AbstractFramebuffer::maxDualSourceDrawBuffers())
+        _l(GL::AbstractFramebuffer::maxDualSourceDrawBuffers())
     }
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::compute_shader>())
+    if(c.isExtensionSupported<GL::Extensions::ARB::compute_shader>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
         _h(ARB::compute_shader)
         #endif
 
-        _l(AbstractShaderProgram::maxComputeSharedMemorySize())
-        _l(AbstractShaderProgram::maxComputeWorkGroupInvocations())
-        _lvec(AbstractShaderProgram::maxComputeWorkGroupCount())
-        _lvec(AbstractShaderProgram::maxComputeWorkGroupSize())
+        _l(GL::AbstractShaderProgram::maxComputeSharedMemorySize())
+        _l(GL::AbstractShaderProgram::maxComputeWorkGroupInvocations())
+        _lvec(GL::AbstractShaderProgram::maxComputeWorkGroupCount())
+        _lvec(GL::AbstractShaderProgram::maxComputeWorkGroupSize())
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::explicit_uniform_location>())
+    if(c.isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
         _h(ARB::explicit_uniform_location)
         #endif
 
-        _l(AbstractShaderProgram::maxUniformLocations())
+        _l(GL::AbstractShaderProgram::maxUniformLocations())
     }
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::map_buffer_alignment>()) {
+    if(c.isExtensionSupported<GL::Extensions::ARB::map_buffer_alignment>()) {
         _h(ARB::map_buffer_alignment)
 
-        _l(Buffer::minMapAlignment())
+        _l(GL::Buffer::minMapAlignment())
     }
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::shader_atomic_counters>())
+    if(c.isExtensionSupported<GL::Extensions::ARB::shader_atomic_counters>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
         _h(ARB::shader_atomic_counters)
         #endif
 
-        _l(Buffer::maxAtomicCounterBindings())
-        _l(Shader::maxAtomicCounterBuffers(Shader::Type::Vertex))
-        _l(Shader::maxAtomicCounterBuffers(Shader::Type::TessellationControl))
-        _l(Shader::maxAtomicCounterBuffers(Shader::Type::TessellationEvaluation))
-        _l(Shader::maxAtomicCounterBuffers(Shader::Type::Geometry))
-        _l(Shader::maxAtomicCounterBuffers(Shader::Type::Compute))
-        _l(Shader::maxAtomicCounterBuffers(Shader::Type::Fragment))
-        _l(Shader::maxCombinedAtomicCounterBuffers())
-        _l(Shader::maxAtomicCounters(Shader::Type::Vertex))
-        _l(Shader::maxAtomicCounters(Shader::Type::TessellationControl))
-        _l(Shader::maxAtomicCounters(Shader::Type::TessellationEvaluation))
-        _l(Shader::maxAtomicCounters(Shader::Type::Geometry))
-        _l(Shader::maxAtomicCounters(Shader::Type::Compute))
-        _l(Shader::maxAtomicCounters(Shader::Type::Fragment))
-        _l(Shader::maxCombinedAtomicCounters())
-        _l(AbstractShaderProgram::maxAtomicCounterBufferSize())
+        _l(GL::Buffer::maxAtomicCounterBindings())
+        _l(GL::Shader::maxAtomicCounterBuffers(GL::Shader::Type::Vertex))
+        _l(GL::Shader::maxAtomicCounterBuffers(GL::Shader::Type::TessellationControl))
+        _l(GL::Shader::maxAtomicCounterBuffers(GL::Shader::Type::TessellationEvaluation))
+        _l(GL::Shader::maxAtomicCounterBuffers(GL::Shader::Type::Geometry))
+        _l(GL::Shader::maxAtomicCounterBuffers(GL::Shader::Type::Compute))
+        _l(GL::Shader::maxAtomicCounterBuffers(GL::Shader::Type::Fragment))
+        _l(GL::Shader::maxCombinedAtomicCounterBuffers())
+        _l(GL::Shader::maxAtomicCounters(GL::Shader::Type::Vertex))
+        _l(GL::Shader::maxAtomicCounters(GL::Shader::Type::TessellationControl))
+        _l(GL::Shader::maxAtomicCounters(GL::Shader::Type::TessellationEvaluation))
+        _l(GL::Shader::maxAtomicCounters(GL::Shader::Type::Geometry))
+        _l(GL::Shader::maxAtomicCounters(GL::Shader::Type::Compute))
+        _l(GL::Shader::maxAtomicCounters(GL::Shader::Type::Fragment))
+        _l(GL::Shader::maxCombinedAtomicCounters())
+        _l(GL::AbstractShaderProgram::maxAtomicCounterBufferSize())
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::shader_image_load_store>())
+    if(c.isExtensionSupported<GL::Extensions::ARB::shader_image_load_store>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
         _h(ARB::shader_image_load_store)
         #endif
 
-        _l(Shader::maxImageUniforms(Shader::Type::Vertex))
-        _l(Shader::maxImageUniforms(Shader::Type::TessellationControl))
-        _l(Shader::maxImageUniforms(Shader::Type::TessellationEvaluation))
-        _l(Shader::maxImageUniforms(Shader::Type::Geometry))
-        _l(Shader::maxImageUniforms(Shader::Type::Compute))
-        _l(Shader::maxImageUniforms(Shader::Type::Fragment))
-        _l(Shader::maxCombinedImageUniforms())
-        _l(AbstractShaderProgram::maxCombinedShaderOutputResources())
-        _l(AbstractShaderProgram::maxImageUnits())
+        _l(GL::Shader::maxImageUniforms(GL::Shader::Type::Vertex))
+        _l(GL::Shader::maxImageUniforms(GL::Shader::Type::TessellationControl))
+        _l(GL::Shader::maxImageUniforms(GL::Shader::Type::TessellationEvaluation))
+        _l(GL::Shader::maxImageUniforms(GL::Shader::Type::Geometry))
+        _l(GL::Shader::maxImageUniforms(GL::Shader::Type::Compute))
+        _l(GL::Shader::maxImageUniforms(GL::Shader::Type::Fragment))
+        _l(GL::Shader::maxCombinedImageUniforms())
+        _l(GL::AbstractShaderProgram::maxCombinedShaderOutputResources())
+        _l(GL::AbstractShaderProgram::maxImageUnits())
         #ifndef MAGNUM_TARGET_GLES
-        _l(AbstractShaderProgram::maxImageSamples())
+        _l(GL::AbstractShaderProgram::maxImageSamples())
         #endif
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::shader_storage_buffer_object>())
+    if(c.isExtensionSupported<GL::Extensions::ARB::shader_storage_buffer_object>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
         _h(ARB::shader_storage_buffer_object)
         #endif
 
-        _l(Buffer::shaderStorageOffsetAlignment())
-        _l(Buffer::maxShaderStorageBindings())
-        _l(Shader::maxShaderStorageBlocks(Shader::Type::Vertex))
-        _l(Shader::maxShaderStorageBlocks(Shader::Type::TessellationControl))
-        _l(Shader::maxShaderStorageBlocks(Shader::Type::TessellationEvaluation))
-        _l(Shader::maxShaderStorageBlocks(Shader::Type::Geometry))
-        _l(Shader::maxShaderStorageBlocks(Shader::Type::Compute))
-        _l(Shader::maxShaderStorageBlocks(Shader::Type::Fragment))
-        _l(Shader::maxCombinedShaderStorageBlocks())
+        _l(GL::Buffer::shaderStorageOffsetAlignment())
+        _l(GL::Buffer::maxShaderStorageBindings())
+        _l(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Vertex))
+        _l(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::TessellationControl))
+        _l(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::TessellationEvaluation))
+        _l(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Geometry))
+        _l(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Compute))
+        _l(GL::Shader::maxShaderStorageBlocks(GL::Shader::Type::Fragment))
+        _l(GL::Shader::maxCombinedShaderStorageBlocks())
         /* AbstractShaderProgram::maxCombinedShaderOutputResources() already in shader_image_load_store */
-        _l(AbstractShaderProgram::maxShaderStorageBlockSize())
+        _l(GL::AbstractShaderProgram::maxShaderStorageBlockSize())
     }
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::texture_multisample>())
+    if(c.isExtensionSupported<GL::Extensions::ARB::texture_multisample>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
         _h(ARB::texture_multisample)
         #endif
 
-        _l(AbstractTexture::maxColorSamples())
-        _l(AbstractTexture::maxDepthSamples())
-        _l(AbstractTexture::maxIntegerSamples())
-        _lvec(MultisampleTexture2D::maxSize())
-        _lvec(MultisampleTexture2DArray::maxSize())
+        _l(GL::AbstractTexture::maxColorSamples())
+        _l(GL::AbstractTexture::maxDepthSamples())
+        _l(GL::AbstractTexture::maxIntegerSamples())
+        _lvec(GL::MultisampleTexture2D::maxSize())
+        _lvec(GL::MultisampleTexture2DArray::maxSize())
     }
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::texture_rectangle>()) {
+    if(c.isExtensionSupported<GL::Extensions::ARB::texture_rectangle>()) {
         _h(ARB::texture_rectangle)
 
-        _lvec(RectangleTexture::maxSize())
+        _lvec(GL::RectangleTexture::maxSize())
     }
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::uniform_buffer_object>())
+    if(c.isExtensionSupported<GL::Extensions::ARB::uniform_buffer_object>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
         _h(ARB::uniform_buffer_object)
         #endif
 
-        _l(Buffer::uniformOffsetAlignment())
-        _l(Buffer::maxUniformBindings())
-        _l(Shader::maxUniformBlocks(Shader::Type::Vertex))
+        _l(GL::Buffer::uniformOffsetAlignment())
+        _l(GL::Buffer::maxUniformBindings())
+        _l(GL::Shader::maxUniformBlocks(GL::Shader::Type::Vertex))
         #ifndef MAGNUM_TARGET_WEBGL
-        _l(Shader::maxUniformBlocks(Shader::Type::TessellationControl))
-        _l(Shader::maxUniformBlocks(Shader::Type::TessellationEvaluation))
-        _l(Shader::maxUniformBlocks(Shader::Type::Geometry))
-        _l(Shader::maxUniformBlocks(Shader::Type::Compute))
+        _l(GL::Shader::maxUniformBlocks(GL::Shader::Type::TessellationControl))
+        _l(GL::Shader::maxUniformBlocks(GL::Shader::Type::TessellationEvaluation))
+        _l(GL::Shader::maxUniformBlocks(GL::Shader::Type::Geometry))
+        _l(GL::Shader::maxUniformBlocks(GL::Shader::Type::Compute))
         #endif
-        _l(Shader::maxUniformBlocks(Shader::Type::Fragment))
-        _l(Shader::maxCombinedUniformBlocks())
-        _l(Shader::maxCombinedUniformComponents(Shader::Type::Vertex))
+        _l(GL::Shader::maxUniformBlocks(GL::Shader::Type::Fragment))
+        _l(GL::Shader::maxCombinedUniformBlocks())
+        _l(GL::Shader::maxCombinedUniformComponents(GL::Shader::Type::Vertex))
         #ifndef MAGNUM_TARGET_WEBGL
-        _l(Shader::maxCombinedUniformComponents(Shader::Type::TessellationControl))
-        _l(Shader::maxCombinedUniformComponents(Shader::Type::TessellationEvaluation))
-        _l(Shader::maxCombinedUniformComponents(Shader::Type::Geometry))
-        _l(Shader::maxCombinedUniformComponents(Shader::Type::Compute))
+        _l(GL::Shader::maxCombinedUniformComponents(GL::Shader::Type::TessellationControl))
+        _l(GL::Shader::maxCombinedUniformComponents(GL::Shader::Type::TessellationEvaluation))
+        _l(GL::Shader::maxCombinedUniformComponents(GL::Shader::Type::Geometry))
+        _l(GL::Shader::maxCombinedUniformComponents(GL::Shader::Type::Compute))
         #endif
-        _l(Shader::maxCombinedUniformComponents(Shader::Type::Fragment))
-        _l(AbstractShaderProgram::maxUniformBlockSize())
+        _l(GL::Shader::maxCombinedUniformComponents(GL::Shader::Type::Fragment))
+        _l(GL::AbstractShaderProgram::maxUniformBlockSize())
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::EXT::gpu_shader4>())
+    if(c.isExtensionSupported<GL::Extensions::EXT::gpu_shader4>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
         _h(EXT::gpu_shader4)
         #endif
 
-        _l(AbstractShaderProgram::minTexelOffset())
-        _l(AbstractShaderProgram::maxTexelOffset())
+        _l(GL::AbstractShaderProgram::minTexelOffset())
+        _l(GL::AbstractShaderProgram::maxTexelOffset())
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::EXT::texture_array>())
+    if(c.isExtensionSupported<GL::Extensions::EXT::texture_array>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -601,41 +602,41 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        _lvec(Texture1DArray::maxSize())
+        _lvec(GL::Texture1DArray::maxSize())
         #endif
-        _lvec(Texture2DArray::maxSize())
+        _lvec(GL::Texture2DArray::maxSize())
     }
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::EXT::transform_feedback>())
+    if(c.isExtensionSupported<GL::Extensions::EXT::transform_feedback>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
         _h(EXT::transform_feedback)
         #endif
 
-        _l(TransformFeedback::maxInterleavedComponents())
-        _l(TransformFeedback::maxSeparateAttributes())
-        _l(TransformFeedback::maxSeparateComponents())
+        _l(GL::TransformFeedback::maxInterleavedComponents())
+        _l(GL::TransformFeedback::maxSeparateAttributes())
+        _l(GL::TransformFeedback::maxSeparateComponents())
     }
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::transform_feedback3>()) {
+    if(c.isExtensionSupported<GL::Extensions::ARB::transform_feedback3>()) {
         _h(ARB::transform_feedback3)
 
-        _l(TransformFeedback::maxBuffers())
-        _l(TransformFeedback::maxVertexStreams())
+        _l(GL::TransformFeedback::maxBuffers())
+        _l(GL::TransformFeedback::maxVertexStreams())
     }
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::geometry_shader4>())
+    if(c.isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
     #else
-    if(c.isExtensionSupported<Extensions::GL::EXT::geometry_shader>())
+    if(c.isExtensionSupported<GL::Extensions::EXT::geometry_shader>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -644,17 +645,17 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(EXT::geometry_shader)
         #endif
 
-        _l(Shader::maxGeometryInputComponents())
-        _l(Shader::maxGeometryOutputComponents())
-        _l(Shader::maxGeometryTotalOutputComponents())
+        _l(GL::Shader::maxGeometryInputComponents())
+        _l(GL::Shader::maxGeometryOutputComponents())
+        _l(GL::Shader::maxGeometryTotalOutputComponents())
     }
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::tessellation_shader>())
+    if(c.isExtensionSupported<GL::Extensions::ARB::tessellation_shader>())
     #else
-    if(c.isExtensionSupported<Extensions::GL::EXT::tessellation_shader>())
+    if(c.isExtensionSupported<GL::Extensions::EXT::tessellation_shader>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -663,19 +664,19 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(EXT::tessellation_shader)
         #endif
 
-        _l(Shader::maxTessellationControlInputComponents())
-        _l(Shader::maxTessellationControlOutputComponents())
-        _l(Shader::maxTessellationControlTotalOutputComponents())
-        _l(Shader::maxTessellationEvaluationInputComponents())
-        _l(Shader::maxTessellationEvaluationOutputComponents())
+        _l(GL::Shader::maxTessellationControlInputComponents())
+        _l(GL::Shader::maxTessellationControlOutputComponents())
+        _l(GL::Shader::maxTessellationControlTotalOutputComponents())
+        _l(GL::Shader::maxTessellationEvaluationInputComponents())
+        _l(GL::Shader::maxTessellationEvaluationOutputComponents())
     }
     #endif
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::texture_buffer_object>())
+    if(c.isExtensionSupported<GL::Extensions::ARB::texture_buffer_object>())
     #else
-    if(c.isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+    if(c.isExtensionSupported<GL::Extensions::EXT::texture_buffer>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -684,13 +685,13 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(EXT::texture_buffer)
         #endif
 
-        _l(BufferTexture::maxSize())
+        _l(GL::BufferTexture::maxSize())
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::texture_buffer_range>())
+    if(c.isExtensionSupported<GL::Extensions::ARB::texture_buffer_range>())
     #else
-    if(c.isExtensionSupported<Extensions::GL::EXT::texture_buffer>())
+    if(c.isExtensionSupported<GL::Extensions::EXT::texture_buffer>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -699,13 +700,13 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         /* Header added above */
         #endif
 
-        _l(BufferTexture::offsetAlignment())
+        _l(GL::BufferTexture::offsetAlignment())
     }
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::texture_cube_map_array>())
+    if(c.isExtensionSupported<GL::Extensions::ARB::texture_cube_map_array>())
     #else
-    if(c.isExtensionSupported<Extensions::GL::EXT::texture_cube_map_array>())
+    if(c.isExtensionSupported<GL::Extensions::EXT::texture_cube_map_array>())
     #endif
     {
         #ifndef MAGNUM_TARGET_GLES
@@ -714,39 +715,39 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         _h(EXT::texture_cube_map_array)
         #endif
 
-        _lvec(CubeMapTextureArray::maxSize())
+        _lvec(GL::CubeMapTextureArray::maxSize())
     }
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(c.isExtensionSupported<Extensions::GL::ARB::texture_filter_anisotropic>()) {
+    if(c.isExtensionSupported<GL::Extensions::ARB::texture_filter_anisotropic>()) {
         _h(ARB::texture_filter_anisotropic)
 
-        _l(Sampler::maxMaxAnisotropy())
+        _l(GL::Sampler::maxMaxAnisotropy())
     } else
     #endif
-    if(c.isExtensionSupported<Extensions::GL::EXT::texture_filter_anisotropic>()) {
+    if(c.isExtensionSupported<GL::Extensions::EXT::texture_filter_anisotropic>()) {
         _h(EXT::texture_filter_anisotropic)
 
-        _l(Sampler::maxMaxAnisotropy())
+        _l(GL::Sampler::maxMaxAnisotropy())
     }
 
     #ifndef MAGNUM_TARGET_WEBGL
-    if(c.isExtensionSupported<Extensions::GL::KHR::debug>()) {
+    if(c.isExtensionSupported<GL::Extensions::KHR::debug>()) {
         _h(KHR::debug)
 
-        _l(AbstractObject::maxLabelLength())
-        _l(DebugOutput::maxLoggedMessages())
-        _l(DebugOutput::maxMessageLength())
-        _l(DebugGroup::maxStackDepth())
+        _l(GL::AbstractObject::maxLabelLength())
+        _l(GL::DebugOutput::maxLoggedMessages())
+        _l(GL::DebugOutput::maxMessageLength())
+        _l(GL::DebugGroup::maxStackDepth())
     }
     #endif
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(c.isExtensionSupported<Extensions::GL::OES::texture_3D>()) {
+    if(c.isExtensionSupported<GL::Extensions::OES::texture_3D>()) {
         _h(OES::texture_3D)
 
-        _lvec(Texture3D::maxSize())
+        _lvec(GL::Texture3D::maxSize())
     }
     #endif
 
