@@ -56,11 +56,11 @@ namespace Magnum { namespace DebugTools {
 #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
 namespace {
 
-class FloatReinterpretShader: public AbstractShaderProgram {
+class FloatReinterpretShader: public GL::AbstractShaderProgram {
     public:
         explicit FloatReinterpretShader();
 
-        FloatReinterpretShader& setTexture(Texture2D& texture, Int level) {
+        FloatReinterpretShader& setTexture(GL::Texture2D& texture, Int level) {
             texture.bind(0);
             setUniform(levelUniform, level);
             return *this;
@@ -78,12 +78,12 @@ FloatReinterpretShader::FloatReinterpretShader() {
     #endif
     Utility::Resource rs{"MagnumDebugTools"};
 
-    Shader vert{Version::GLES300, Shader::Type::Vertex};
-    Shader frag{Version::GLES300, Shader::Type::Fragment};
+    GL::Shader vert{GL::Version::GLES300, GL::Shader::Type::Vertex};
+    GL::Shader frag{GL::Version::GLES300, GL::Shader::Type::Fragment};
     vert.addSource(rs.get("TextureImage.vert"));
     frag.addSource(rs.get("TextureImage.frag"));
 
-    CORRADE_INTERNAL_ASSERT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT(GL::Shader::compile({vert, frag}));
     attachShaders({vert, frag});
 
     CORRADE_INTERNAL_ASSERT(link());
@@ -97,68 +97,61 @@ FloatReinterpretShader::FloatReinterpretShader() {
 
 void textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& range, Image2D& image) {
     #ifndef MAGNUM_TARGET_GLES
-    if(Context::current().isExtensionSupported<GL::Extensions::ARB::get_texture_sub_image>()) {
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::get_texture_sub_image>()) {
         texture.subImage(level, range, image);
         return;
     }
     #endif
 
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
-    if(image.type() == PixelType::Float) {
-        const PixelFormat imageFormat = image.format();
-        TextureFormat textureFormat;
-        PixelFormat reinterpretFormat;
-        switch(imageFormat) {
-            case PixelFormat::Red:
-                textureFormat = TextureFormat::R32UI;
-                reinterpretFormat = PixelFormat::RedInteger;
+    GL::PixelType type = GL::pixelType(image.format(), image.formatExtra());
+    if(type == GL::PixelType::Float) {
+        GL::TextureFormat textureFormat;
+        GL::PixelFormat reinterpretFormat;
+        GL::PixelFormat format = GL::pixelFormat(image.format());
+        switch(format) {
+            case GL::PixelFormat::Red:
+                textureFormat = GL::TextureFormat::R32UI;
+                reinterpretFormat = GL::PixelFormat::RedInteger;
                 break;
-            case PixelFormat::RG:
-                textureFormat = TextureFormat::RG32UI;
-                reinterpretFormat = PixelFormat::RGInteger;
+            case GL::PixelFormat::RG:
+                textureFormat = GL::TextureFormat::RG32UI;
+                reinterpretFormat = GL::PixelFormat::RGInteger;
                 break;
-            case PixelFormat::RGB:
-                textureFormat = TextureFormat::RGB32UI;
-                reinterpretFormat = PixelFormat::RGBInteger;
+            case GL::PixelFormat::RGB:
+                textureFormat = GL::TextureFormat::RGB32UI;
+                reinterpretFormat = GL::PixelFormat::RGBInteger;
                 break;
-            case PixelFormat::RGBA:
-                textureFormat = TextureFormat::RGBA32UI;
-                reinterpretFormat = PixelFormat::RGBAInteger;
+            case GL::PixelFormat::RGBA:
+                textureFormat = GL::TextureFormat::RGBA32UI;
+                reinterpretFormat = GL::PixelFormat::RGBAInteger;
                 break;
             default:
-                CORRADE_ASSERT(false, "DebugTools::textureSubImage(): unsupported pixel format" << image.format(), );
+                CORRADE_ASSERT(false, "DebugTools::textureSubImage(): unsupported pixel format" << format, );
         }
 
-        Texture2D output;
+        GL::Texture2D output;
         output.setStorage(1, textureFormat, range.max());
 
-        Framebuffer fb{range};
-        fb.attachTexture(Framebuffer::ColorAttachment{0}, output, 0)
+        GL::Framebuffer fb{range};
+        fb.attachTexture(GL::Framebuffer::ColorAttachment{0}, output, 0)
           .bind();
 
-        CORRADE_INTERNAL_ASSERT(fb.checkStatus(FramebufferTarget::Draw) == Framebuffer::Status::Complete);
-        CORRADE_INTERNAL_ASSERT(fb.checkStatus(FramebufferTarget::Read) == Framebuffer::Status::Complete);
+        CORRADE_INTERNAL_ASSERT(fb.checkStatus(GL::FramebufferTarget::Draw) == GL::Framebuffer::Status::Complete);
+        CORRADE_INTERNAL_ASSERT(fb.checkStatus(GL::FramebufferTarget::Read) == GL::Framebuffer::Status::Complete);
 
         FloatReinterpretShader shader;
         shader.setTexture(texture, level);
 
-        Mesh mesh;
+        GL::Mesh mesh;
         mesh.setCount(3)
             .draw(shader);
 
         /* release() needs to be called after querying the size to avoid zeroing it out */
-        {
-            Vector2i imageSize = image.size();
-            image = Image2D{image.storage(), reinterpretFormat, PixelType::UnsignedInt, imageSize, image.release()};
-        }
-
-        fb.read(range, image);
-
-        /* release() needs to be called after querying the size to avoid zeroing it out */
-        {
-            Vector2i imageSize = image.size();
-            image = Image2D{image.storage(), imageFormat, PixelType::Float, imageSize, image.release()};
-        }
+        const Vector2i imageSize = image.size();
+        Image2D temp{image.storage(), reinterpretFormat, GL::PixelType::UnsignedInt, imageSize, image.release()};
+        fb.read(range, temp);
+        image = Image2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), imageSize, temp.release()};
         return;
     }
     #endif
@@ -176,7 +169,7 @@ Image2D textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di&
 #ifndef MAGNUM_TARGET_GLES2
 void textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& range, GL::BufferImage2D& image, const GL::BufferUsage usage) {
     #ifndef MAGNUM_TARGET_GLES
-    if(Context::current().isExtensionSupported<GL::Extensions::ARB::get_texture_sub_image>()) {
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::get_texture_sub_image>()) {
         texture.subImage(level, range, image, usage);
         return;
     }

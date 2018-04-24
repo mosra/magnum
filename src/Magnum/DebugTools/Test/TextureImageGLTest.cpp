@@ -26,6 +26,7 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/Image.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/TextureImage.h"
 #include "Magnum/GL/CubeMapTexture.h"
 #include "Magnum/GL/OpenGLTester.h"
@@ -48,6 +49,7 @@ struct TextureImageGLTest: GL::OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES2
     void subImage2DBuffer();
     #endif
+    void subImage2DGeneric();
 
     void subImageCube();
     #ifndef MAGNUM_TARGET_GLES2
@@ -57,6 +59,7 @@ struct TextureImageGLTest: GL::OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES2
     void subImage2DUInt();
     void subImage2DFloat();
+    void subImage2DFloatGeneric();
     #endif
 };
 
@@ -65,6 +68,7 @@ TextureImageGLTest::TextureImageGLTest() {
               #ifndef MAGNUM_TARGET_GLES2
               &TextureImageGLTest::subImage2DBuffer,
               #endif
+              &TextureImageGLTest::subImage2DGeneric,
 
               &TextureImageGLTest::subImageCube,
               #ifndef MAGNUM_TARGET_GLES2
@@ -74,6 +78,7 @@ TextureImageGLTest::TextureImageGLTest() {
               #ifndef MAGNUM_TARGET_GLES2
               &TextureImageGLTest::subImage2DUInt,
               &TextureImageGLTest::subImage2DFloat,
+              &TextureImageGLTest::subImage2DFloatGeneric,
               #endif
               });
 }
@@ -98,6 +103,9 @@ void TextureImageGLTest::subImage2D() {
     Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte});
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE(image.format(), pixelFormatWrap(GL::PixelFormat::RGBA));
+    CORRADE_COMPARE(GL::PixelType(image.formatExtra()), GL::PixelType::UnsignedByte);
+    CORRADE_COMPARE(image.pixelSize(), 4);
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
         Containers::arrayView(Data2D), TestSuite::Compare::Container);
 }
@@ -111,10 +119,33 @@ void TextureImageGLTest::subImage2DBuffer() {
     Containers::Array<UnsignedByte> data = bufferData<UnsignedByte>(image.buffer());
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE(image.format(), GL::PixelFormat::RGBA);
+    CORRADE_COMPARE(image.type(), GL::PixelType::UnsignedByte);
+    CORRADE_COMPARE(image.pixelSize(), 4);
     CORRADE_COMPARE_AS(data, Containers::arrayView(Data2D),
         TestSuite::Compare::Container);
 }
 #endif
+
+void TextureImageGLTest::subImage2DGeneric() {
+    GL::Texture2D texture;
+    texture.setImage(0,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        GL::TextureFormat::RGBA8,
+        #else
+        GL::TextureFormat::RGBA,
+        #endif
+        ImageView2D{PixelFormat::RGBA8Unorm, Vector2i{2}, Data2D});
+
+    Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {PixelFormat::RGBA8Unorm});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE(image.format(), PixelFormat::RGBA8Unorm);
+    CORRADE_COMPARE(image.formatExtra(), 0);
+    CORRADE_COMPARE(image.pixelSize(), 4);
+    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
+        Containers::arrayView(Data2D), TestSuite::Compare::Container);
+}
 
 void TextureImageGLTest::subImageCube() {
     ImageView2D view{GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, Vector2i{2}, Data2D};
@@ -136,6 +167,9 @@ void TextureImageGLTest::subImageCube() {
     Image2D image = textureSubImage(texture, GL::CubeMapCoordinate::PositiveX, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte});
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE(image.format(), pixelFormatWrap(GL::PixelFormat::RGBA));
+    CORRADE_COMPARE(GL::PixelType(image.formatExtra()), GL::PixelType::UnsignedByte);
+    CORRADE_COMPARE(image.pixelSize(), 4);
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
         Containers::arrayView(Data2D), TestSuite::Compare::Container);
 }
@@ -156,6 +190,9 @@ void TextureImageGLTest::subImageCubeBuffer() {
     Containers::Array<UnsignedByte> data = bufferData<UnsignedByte>(image.buffer());
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE(image.format(), GL::PixelFormat::RGBA);
+    CORRADE_COMPARE(image.type(), GL::PixelType::UnsignedByte);
+    CORRADE_COMPARE(image.pixelSize(), 4);
     CORRADE_COMPARE_AS(data, Containers::arrayView(Data2D),
         TestSuite::Compare::Container);
 }
@@ -176,6 +213,9 @@ void TextureImageGLTest::subImage2DUInt() {
     Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {GL::PixelFormat::RedInteger, GL::PixelType::UnsignedInt});
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE(image.format(), pixelFormatWrap(GL::PixelFormat::RedInteger));
+    CORRADE_COMPARE(GL::PixelType(image.formatExtra()), GL::PixelType::UnsignedInt);
+    CORRADE_COMPARE(image.pixelSize(), 4);
     CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedInt>(image.data()),
         Containers::arrayView(Data2DUInt),
         TestSuite::Compare::Container);
@@ -196,6 +236,25 @@ void TextureImageGLTest::subImage2DFloat() {
     Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {GL::PixelFormat::Red, GL::PixelType::Float});
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE(image.format(), pixelFormatWrap(GL::PixelFormat::Red));
+    CORRADE_COMPARE(GL::PixelType(image.formatExtra()), GL::PixelType::Float);
+    CORRADE_COMPARE(image.pixelSize(), 4);
+    CORRADE_COMPARE_AS(Containers::arrayCast<Float>(image.data()),
+        Containers::arrayView(Data2DFloat),
+        TestSuite::Compare::Container);
+}
+
+void TextureImageGLTest::subImage2DFloatGeneric() {
+    GL::Texture2D texture;
+    texture.setStorage(1, GL::TextureFormat::R32F, Vector2i{2})
+        .setSubImage(0, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::Float, Vector2i{2}, Data2DFloat});
+
+    Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {PixelFormat::R32F});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(image.size(), Vector2i{2});
+    CORRADE_COMPARE(image.format(), PixelFormat::R32F);
+    CORRADE_COMPARE(image.formatExtra(), 0);
+    CORRADE_COMPARE(image.pixelSize(), 4);
     CORRADE_COMPARE_AS(Containers::arrayCast<Float>(image.data()),
         Containers::arrayView(Data2DFloat),
         TestSuite::Compare::Container);

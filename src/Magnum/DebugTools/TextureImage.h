@@ -25,30 +25,38 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef MAGNUM_TARGET_GL
 /** @file
  * @brief Function @ref Magnum::DebugTools::textureSubImage()
  */
+#endif
 
 #include "Magnum/Magnum.h"
 #include "Magnum/DebugTools/visibility.h"
 #include "Magnum/GL/GL.h"
 
+#ifdef MAGNUM_TARGET_GL
 namespace Magnum { namespace DebugTools {
 
 /**
 @brief Read range of given texture mip level to image
 
-Emulates @ref Texture2D::subImage() call on platforms that don't support it
+Emulates @ref GL::Texture2D::subImage() call on platforms that don't support it
 (such as OpenGL ES) by creating a framebuffer object and using
-@ref Framebuffer::read(). On desktop OpenGL, if @extension{ARB,get_texture_sub_image}
-is available, it's just an alias to @ref Texture2D::subImage().
+@ref GL::Framebuffer::read(). On desktop OpenGL, if @extension{ARB,get_texture_sub_image}
+is available, it's just an alias to @ref GL::Texture2D::subImage().
 
-Note that only @ref Magnum::PixelFormat "PixelFormat" and @ref PixelType values
-that are marked as framebuffer readable are supported. In addition, on OpenGL
-ES 3.0, images with @ref PixelType::Float are supported --- they are
-reinterpreted as @ref PixelType::UnsignedInt using additional shader and
-`floatBitsToUint()` GLSL function and then reinterpreted back to
-@ref PixelType::Float when read to client memory.
+Note that only @ref GL::PixelFormat and @ref GL::PixelType values that are
+marked as framebuffer readable are supported; their generic
+@ref Magnum::PixelFormat "PixelFormat" counterparts are supported as well. In
+addition, on OpenGL ES 3.0, images with @ref GL::PixelType::Float are supported
+--- they are reinterpreted as @ref GL::PixelType::UnsignedInt using an
+additional shader and the @glsl floatBitsToUint() @ce GLSL function and then
+reinterpreted back to @ref GL::PixelType::Float when read to client memory.
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, Image2D& image);
 
@@ -60,18 +68,27 @@ Convenience alternative to the above, example usage:
 @code{.cpp}
 Image2D image = DebugTools::textureSubImage(texture, 0, rect, {PixelFormat::RGBA, PixelType::UnsignedByte});
 @endcode
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, Image2D&& image);
 
 /**
 @brief Read range of given cube map texture coordinate mip level to image
 
-Emulates @ref CubeMapTexture::subImage() call on platforms that don't support
-it (such as OpenGL ES) by creating a framebuffer object and using
-@ref Framebuffer::read().
+Emulates @ref GL::CubeMapTexture::subImage() call on platforms that don't
+support it (such as OpenGL ES) by creating a framebuffer object and using
+@ref GL::Framebuffer::read().
 
-Note that only @ref Magnum::PixelFormat "PixelFormat" and @ref PixelType values
-that are marked as framebuffer readable are supported.
+Note that only @ref GL::PixelFormat and @ref GL::PixelType values that are
+marked as framebuffer readable are supported; their generic
+@ref Magnum::PixelFormat "PixelFormat" counterparts are supported as well.
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, Image2D& image);
 
@@ -83,6 +100,10 @@ Convenience alternative to the above, example usage:
 @code{.cpp}
 Image2D image = DebugTools::textureSubImage(texture, CubeMapCoordinate::PositiveX, 0, rect, {PixelFormat::RGBA, PixelType::UnsignedByte});
 @endcode
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, Image2D&& image);
 
@@ -90,15 +111,21 @@ MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(GL::CubeMapTexture& texture, GL
 /**
 @brief Read range of given texture mip level to buffer image
 
-Emulates @ref Texture2D::subImage() call on platforms that don't support it
+Emulates @ref GL::Texture2D::subImage() call on platforms that don't support it
 (such as OpenGL ES) by creating a framebuffer object and using
-@ref Framebuffer::read(). On desktop OpenGL, if @extension{ARB,get_texture_sub_image}
-is available, it's just an alias to @ref Texture2D::subImage().
+@ref GL::Framebuffer::read(). On desktop OpenGL, if
+@extension{ARB,get_texture_sub_image} is available, it's just an alias to
+@ref GL::Texture2D::subImage().
 
-Note that only @ref Magnum::PixelFormat "PixelFormat" and @ref PixelType values
-that are marked as framebuffer readable are supported.
+Note that only @ref GL::PixelFormat and @ref GL::PixelType values that are
+marked as framebuffer readable are supported; their generic
+@ref Magnum::PixelFormat "PixelFormat" counterparts are supported as well.
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, GL::BufferImage2D& image, GL::BufferUsage usage);
 
@@ -110,20 +137,29 @@ Convenience alternative to the above, example usage:
 @code{.cpp}
 BufferImage2D image = DebugTools::textureSubImage(texture, 0, rect, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
 @endcode
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT GL::BufferImage2D textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, GL::BufferImage2D&& image, GL::BufferUsage usage);
 
 /**
 @brief Read range of given cube map texture coordinate mip level to buffer image
 
-Emulates @ref CubeMapTexture::subImage() call on platforms that don't support
-it (such as OpenGL ES) by creating a framebuffer object and using
-@ref Framebuffer::read().
+Emulates @ref GL::CubeMapTexture::subImage() call on platforms that don't
+support it (such as OpenGL ES) by creating a framebuffer object and using
+@ref GL::Framebuffer::read().
 
-Note that only @ref Magnum::PixelFormat "PixelFormat" and @ref PixelType values
-that are marked as framebuffer readable are supported.
+Note that only @ref GL::PixelFormat and @ref GL::PixelType values that are
+marked as framebuffer readable are supported; their generic
+@ref Magnum::PixelFormat "PixelFormat" counterparts are supported as well.
 @requires_gles30 Pixel buffer objects are not available in OpenGL ES 2.0.
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, GL::BufferImage2D& image, GL::BufferUsage usage);
 
@@ -135,8 +171,15 @@ Convenience alternative to the above, example usage:
 @code{.cpp}
 BufferImage2D image = DebugTools::textureSubImage(texture, CubeMapCoordinate::PositiveX, 0, rect, {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
 @endcode
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT GL::BufferImage2D textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, GL::BufferImage2D&& image, GL::BufferUsage usage);
+#endif
+#else
+#error this header is available only in the OpenGL build
 #endif
 
 }}

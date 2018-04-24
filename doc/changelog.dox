@@ -123,6 +123,12 @@ See also:
     a compatibility code path is implemented, the @ref GL library expects that
     all parameters are at their defaults.
 
+@subsubsection changelog-latest-changes-debugtools DebugTools library
+
+-   @ref DebugTools::textureSubImage() now accepts both GL-specific
+    @ref GL::PixelFormat / @ref GL::PixelType combination and the generic
+    @ref PixelFormat enum
+
 @subsubsection changelog-latest-changes-gl GL library
 
 -   The @ref GL::Mesh::indexTypeSize() and @ref GL::MeshView::setIndexRange()
