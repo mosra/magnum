@@ -36,7 +36,7 @@
 #include <Corrade/PluginManager/AbstractPlugin.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Texture.h"
+#include "Magnum/GL/Texture.h"
 #include "Magnum/Text/Text.h"
 #include "Magnum/Text/visibility.h"
 

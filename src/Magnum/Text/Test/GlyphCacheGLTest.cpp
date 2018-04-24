@@ -25,12 +25,12 @@
 
 #include <tuple>
 
-#include "Magnum/OpenGLTester.h"
+#include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Text/GlyphCache.h"
 
 namespace Magnum { namespace Text { namespace Test {
 
-struct GlyphCacheGLTest: OpenGLTester {
+struct GlyphCacheGLTest: GL::OpenGLTester {
     explicit GlyphCacheGLTest();
 
     void initialize();
@@ -46,7 +46,7 @@ GlyphCacheGLTest::GlyphCacheGLTest() {
 
 void GlyphCacheGLTest::initialize() {
     Text::GlyphCache cache({1024, 2048});
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(cache.texture().imageSize(0), Vector2i(1024, 2048));

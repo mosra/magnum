@@ -33,7 +33,7 @@
 #include <unordered_map>
 
 #include "Magnum/Math/Range.h"
-#include "Magnum/Texture.h"
+#include "Magnum/GL/Texture.h"
 #include "Magnum/Text/visibility.h"
 
 namespace Magnum { namespace Text {
@@ -68,14 +68,14 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * although the actual glyph cache texture has @p size. Glyph
          * @p padding can be used to account for e.g. glyph shadows.
          */
-        explicit GlyphCache(TextureFormat internalFormat, const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding);
+        explicit GlyphCache(GL::TextureFormat internalFormat, const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding);
 
         /**
          * @brief Constructor
          *
          * Same as calling the above with @p originalSize and @p size the same.
          */
-        explicit GlyphCache(TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding = {});
+        explicit GlyphCache(GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding = {});
 
         /**
          * @brief Constructor
@@ -83,7 +83,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * Sets internal texture format to red channel only. On desktop OpenGL
          * requires @extension{ARB,texture_rg} (also part of OpenGL ES 3.0), in
          * ES2 uses @extension{EXT,texture_rg}, if available, or
-         * @ref TextureFormat::Luminance as fallback.
+         * @ref GL::TextureFormat::Luminance as fallback.
          */
         explicit GlyphCache(const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding);
 
@@ -110,7 +110,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
         std::size_t glyphCount() const { return glyphs.size(); }
 
         /** @brief Cache texture */
-        Texture2D& texture() { return _texture; }
+        GL::Texture2D& texture() { return _texture; }
 
         /**
          * @brief Parameters of given glyph
@@ -183,10 +183,10 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
         virtual void setImage(const Vector2i& offset, const ImageView2D& image);
 
     private:
-        void MAGNUM_LOCAL initialize(TextureFormat internalFormat, const Vector2i& size);
+        void MAGNUM_LOCAL initialize(GL::TextureFormat internalFormat, const Vector2i& size);
 
         Vector2i _size, _padding;
-        Texture2D _texture;
+        GL::Texture2D _texture;
 
         std::unordered_map<UnsignedInt, std::pair<Vector2i, Range2Di>> glyphs;
 };

@@ -26,15 +26,15 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/OpenGLTester.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/Renderer.h"
 
 namespace Magnum { namespace Text { namespace Test {
 
-struct RendererGLTest: OpenGLTester {
+struct RendererGLTest: GL::OpenGLTester {
     explicit RendererGLTest();
 
     void renderData();
@@ -177,13 +177,13 @@ void RendererGLTest::renderData() {
 
 void RendererGLTest::renderMesh() {
     TestFont font;
-    Mesh mesh{NoCreate};
-    Buffer vertexBuffer{Buffer::TargetHint::Array},
-        indexBuffer{Buffer::TargetHint::ElementArray};
+    GL::Mesh mesh{NoCreate};
+    GL::Buffer vertexBuffer{GL::Buffer::TargetHint::Array},
+        indexBuffer{GL::Buffer::TargetHint::ElementArray};
     Range2D bounds;
     std::tie(mesh, bounds) = Text::Renderer3D::render(font, nullGlyphCache,
-        0.25f, "abc", vertexBuffer, indexBuffer, BufferUsage::StaticDraw, Alignment::TopCenter);
-    MAGNUM_VERIFY_NO_ERROR();
+        0.25f, "abc", vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw, Alignment::TopCenter);
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* Alignment offset */
     const Vector2 offset{-2.5f, -1.0f};
@@ -226,16 +226,16 @@ void RendererGLTest::renderMesh() {
 void RendererGLTest::renderMeshIndexType() {
     #ifndef MAGNUM_TARGET_GLES
     TestFont font;
-    Mesh mesh{NoCreate};
-    Buffer vertexBuffer, indexBuffer;
+    GL::Mesh mesh{NoCreate};
+    GL::Buffer vertexBuffer, indexBuffer;
 
     /* Sizes: four vertices per glyph, each vertex has 2D position and 2D
        texture coordinates, each float is four bytes; six indices per glyph. */
 
     /* 8-bit indices (exactly 256 vertices) */
     std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, nullGlyphCache,
-        1.0f, std::string(64, 'a'), vertexBuffer, indexBuffer, BufferUsage::StaticDraw);
-    MAGNUM_VERIFY_NO_ERROR();
+        1.0f, std::string(64, 'a'), vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw);
+    MAGNUM_VERIFY_NO_GL_ERROR();
     Containers::Array<char> indicesByte = indexBuffer.data();
     CORRADE_COMPARE(vertexBuffer.size(), 256*(2 + 2)*4);
     CORRADE_COMPARE(indicesByte.size(), 64*6);
@@ -248,8 +248,8 @@ void RendererGLTest::renderMeshIndexType() {
 
     /* 16-bit indices (260 vertices) */
     std::tie(mesh, std::ignore) = Text::Renderer3D::render(font, nullGlyphCache,
-        1.0f, std::string(65, 'a'), vertexBuffer, indexBuffer, BufferUsage::StaticDraw);
-    MAGNUM_VERIFY_NO_ERROR();
+        1.0f, std::string(65, 'a'), vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw);
+    MAGNUM_VERIFY_NO_GL_ERROR();
     Containers::Array<char> indicesShort = indexBuffer.data();
     CORRADE_COMPARE(vertexBuffer.size(), 260*(2 + 2)*4);
     CORRADE_COMPARE(indicesShort.size(), 65*6*2);
@@ -266,23 +266,23 @@ void RendererGLTest::renderMeshIndexType() {
 
 void RendererGLTest::mutableText() {
     #ifndef MAGNUM_TARGET_GLES
-    if(!Context::current().isExtensionSupported<Extensions::GL::ARB::map_buffer_range>())
-        CORRADE_SKIP(Extensions::GL::ARB::map_buffer_range::string() + std::string(" is not supported"));
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::map_buffer_range>())
+        CORRADE_SKIP(GL::Extensions::ARB::map_buffer_range::string() + std::string(" is not supported"));
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    if(!Context::current().isExtensionSupported<Extensions::GL::EXT::map_buffer_range>() &&
-       !Context::current().isExtensionSupported<Extensions::GL::OES::mapbuffer>())
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::map_buffer_range>() &&
+       !GL::Context::current().isExtensionSupported<GL::Extensions::OES::mapbuffer>())
         CORRADE_SKIP("No required extension is supported");
     #endif
 
     TestFont font;
     Text::Renderer2D renderer(font, nullGlyphCache, 0.25f);
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 0);
     CORRADE_COMPARE(renderer.rectangle(), Range2D());
 
     /* Reserve some capacity */
-    renderer.reserve(4, BufferUsage::DynamicDraw, BufferUsage::DynamicDraw);
-    MAGNUM_VERIFY_NO_ERROR();
+    renderer.reserve(4, GL::BufferUsage::DynamicDraw, GL::BufferUsage::DynamicDraw);
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(renderer.capacity(), 4);
     /** @todo How to verify this on ES? */
     #ifndef MAGNUM_TARGET_GLES
@@ -298,7 +298,7 @@ void RendererGLTest::mutableText() {
 
     /* Render text */
     renderer.render("abc");
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* Updated bounds */
     CORRADE_COMPARE(renderer.rectangle(), Range2D({0.0f, -0.5f}, {5.0f, 1.0f}));

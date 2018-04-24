@@ -27,9 +27,10 @@
 
 #include <Corrade/Containers/Array.h>
 
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
 #include "Magnum/Mesh.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Mesh.h"
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Shaders/AbstractVector.h"
 #include "Magnum/Text/AbstractFont.h"
@@ -173,22 +174,22 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
     return std::make_tuple(std::move(vertices), rectangle);
 }
 
-std::pair<Containers::Array<char>, Mesh::IndexType> renderIndicesInternal(const UnsignedInt glyphCount) {
+std::pair<Containers::Array<char>, MeshIndexType> renderIndicesInternal(const UnsignedInt glyphCount) {
     const UnsignedInt vertexCount = glyphCount*4;
     const UnsignedInt indexCount = glyphCount*6;
 
     Containers::Array<char> indices;
-    Mesh::IndexType indexType;
+    MeshIndexType indexType;
     if(vertexCount <= 256) {
-        indexType = Mesh::IndexType::UnsignedByte;
+        indexType = MeshIndexType::UnsignedByte;
         indices = Containers::Array<char>(indexCount*sizeof(UnsignedByte));
         createIndices<UnsignedByte>(indices, glyphCount);
     } else if(vertexCount <= 65536) {
-        indexType = Mesh::IndexType::UnsignedShort;
+        indexType = MeshIndexType::UnsignedShort;
         indices = Containers::Array<char>(indexCount*sizeof(UnsignedShort));
         createIndices<UnsignedShort>(indices, glyphCount);
     } else {
-        indexType = Mesh::IndexType::UnsignedInt;
+        indexType = MeshIndexType::UnsignedInt;
         indices = Containers::Array<char>(indexCount*sizeof(UnsignedInt));
         createIndices<UnsignedInt>(indices, glyphCount);
     }
@@ -196,7 +197,7 @@ std::pair<Containers::Array<char>, Mesh::IndexType> renderIndicesInternal(const 
     return {std::move(indices), indexType};
 }
 
-std::tuple<Mesh, Range2D> renderInternal(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, BufferUsage usage, Alignment alignment) {
+std::tuple<GL::Mesh, Range2D> renderInternal(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, GL::Buffer& vertexBuffer, GL::Buffer& indexBuffer, GL::BufferUsage usage, Alignment alignment) {
     /* Render vertices and upload them */
     std::vector<Vertex> vertices;
     Range2D rectangle;
@@ -208,13 +209,13 @@ std::tuple<Mesh, Range2D> renderInternal(AbstractFont& font, const GlyphCache& c
 
     /* Render indices and upload them */
     Containers::Array<char> indices;
-    Mesh::IndexType indexType;
+    MeshIndexType indexType;
     std::tie(indices, indexType) = renderIndicesInternal(glyphCount);
     indexBuffer.setData(indices, usage);
 
     /* Configure mesh except for vertex buffer (depends on dimension count, done
        in subclass) */
-    Mesh mesh;
+    GL::Mesh mesh;
     mesh.setPrimitive(MeshPrimitive::Triangles)
         .setCount(indexCount)
         .setIndexBuffer(indexBuffer, 0, indexType, 0, vertices.size());
@@ -247,10 +248,10 @@ std::tuple<std::vector<Vector2>, std::vector<Vector2>, std::vector<UnsignedInt>,
     return std::make_tuple(std::move(positions), std::move(textureCoordinates), std::move(indices), rectangle);
 }
 
-template<UnsignedInt dimensions> std::tuple<Mesh, Range2D> Renderer<dimensions>::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, Buffer& vertexBuffer, Buffer& indexBuffer, BufferUsage usage, Alignment alignment) {
+template<UnsignedInt dimensions> std::tuple<GL::Mesh, Range2D> Renderer<dimensions>::render(AbstractFont& font, const GlyphCache& cache, Float size, const std::string& text, GL::Buffer& vertexBuffer, GL::Buffer& indexBuffer, GL::BufferUsage usage, Alignment alignment) {
     /* Finalize mesh configuration and return the result */
     auto r = renderInternal(font, cache, size, text, vertexBuffer, indexBuffer, usage, alignment);
-    Mesh& mesh = std::get<0>(r);
+    GL::Mesh& mesh = std::get<0>(r);
     mesh.addVertexBuffer(vertexBuffer, 0,
             typename Shaders::AbstractVector<dimensions>::Position(
                 Shaders::AbstractVector<dimensions>::Position::Components::Two),
@@ -262,19 +263,19 @@ template<UnsignedInt dimensions> std::tuple<Mesh, Range2D> Renderer<dimensions>:
 AbstractRenderer::BufferMapImplementation AbstractRenderer::bufferMapImplementation = &AbstractRenderer::bufferMapImplementationFull;
 AbstractRenderer::BufferUnmapImplementation AbstractRenderer::bufferUnmapImplementation = &AbstractRenderer::bufferUnmapImplementationDefault;
 
-void* AbstractRenderer::bufferMapImplementationFull(Buffer& buffer, GLsizeiptr) {
-    return buffer.map(Buffer::MapAccess::WriteOnly);
+void* AbstractRenderer::bufferMapImplementationFull(GL::Buffer& buffer, GLsizeiptr) {
+    return buffer.map(GL::Buffer::MapAccess::WriteOnly);
 }
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) || defined(CORRADE_TARGET_EMSCRIPTEN)
-inline void* AbstractRenderer::bufferMapImplementation(Buffer& buffer, GLsizeiptr length)
+inline void* AbstractRenderer::bufferMapImplementation(GL::Buffer& buffer, GLsizeiptr length)
 #else
-void* AbstractRenderer::bufferMapImplementationRange(Buffer& buffer, GLsizeiptr length)
+void* AbstractRenderer::bufferMapImplementationRange(GL::Buffer& buffer, GLsizeiptr length)
 #endif
 {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    return buffer.map(0, length, Buffer::MapFlag::InvalidateBuffer|Buffer::MapFlag::Write);
+    return buffer.map(0, length, GL::Buffer::MapFlag::InvalidateBuffer|GL::Buffer::MapFlag::Write);
     #else
     static_cast<void>(length);
     return &buffer == &_indexBuffer ? _indexBufferData : _vertexBufferData;
@@ -282,9 +283,9 @@ void* AbstractRenderer::bufferMapImplementationRange(Buffer& buffer, GLsizeiptr 
 }
 
 #if !defined(MAGNUM_TARGET_GLES2) || defined(CORRADE_TARGET_EMSCRIPTEN)
-inline void AbstractRenderer::bufferUnmapImplementation(Buffer& buffer)
+inline void AbstractRenderer::bufferUnmapImplementation(GL::Buffer& buffer)
 #else
-void AbstractRenderer::bufferUnmapImplementationDefault(Buffer& buffer)
+void AbstractRenderer::bufferUnmapImplementationDefault(GL::Buffer& buffer)
 #endif
 {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -294,16 +295,16 @@ void AbstractRenderer::bufferUnmapImplementationDefault(Buffer& buffer)
     #endif
 }
 
-AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, const Float size, const Alignment alignment): _vertexBuffer{Buffer::TargetHint::Array}, _indexBuffer{Buffer::TargetHint::ElementArray}, font(font), cache(cache), size(size), _alignment(alignment), _capacity(0) {
+AbstractRenderer::AbstractRenderer(AbstractFont& font, const GlyphCache& cache, const Float size, const Alignment alignment): _vertexBuffer{GL::Buffer::TargetHint::Array}, _indexBuffer{GL::Buffer::TargetHint::ElementArray}, font(font), cache(cache), size(size), _alignment(alignment), _capacity(0) {
     #ifndef MAGNUM_TARGET_GLES
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::map_buffer_range);
+    MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::map_buffer_range);
     #elif defined(MAGNUM_TARGET_GLES2) && !defined(CORRADE_TARGET_EMSCRIPTEN)
-    if(Context::current().isExtensionSupported<Extensions::GL::EXT::map_buffer_range>()) {
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::map_buffer_range>()) {
         bufferMapImplementation = &AbstractRenderer::bufferMapImplementationRange;
     } else {
-        MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::OES::mapbuffer);
-        Warning() << "Text::Renderer:" << Extensions::GL::EXT::map_buffer_range::string()
-                  << "is not supported, using inefficient" << Extensions::GL::OES::mapbuffer::string()
+        MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::OES::mapbuffer);
+        Warning() << "Text::Renderer:" << GL::Extensions::EXT::map_buffer_range::string()
+                  << "is not supported, using inefficient" << GL::Extensions::OES::mapbuffer::string()
                   << "instead";
     }
     #endif
@@ -321,7 +322,7 @@ template<UnsignedInt dimensions> Renderer<dimensions>::Renderer(AbstractFont& fo
             typename Shaders::AbstractVector<dimensions>::TextureCoordinates());
 }
 
-void AbstractRenderer::reserve(const uint32_t glyphCount, const BufferUsage vertexBufferUsage, const BufferUsage indexBufferUsage) {
+void AbstractRenderer::reserve(const uint32_t glyphCount, const GL::BufferUsage vertexBufferUsage, const GL::BufferUsage indexBufferUsage) {
     _capacity = glyphCount;
 
     const UnsignedInt vertexCount = glyphCount*4;
@@ -335,7 +336,7 @@ void AbstractRenderer::reserve(const uint32_t glyphCount, const BufferUsage vert
 
     /* Render indices */
     Containers::Array<char> indexData;
-    Mesh::IndexType indexType;
+    MeshIndexType indexType;
     std::tie(indexData, indexType) = renderIndicesInternal(glyphCount);
 
     /* Allocate index buffer, reset index count and reconfigure buffer binding */

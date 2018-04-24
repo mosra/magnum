@@ -25,17 +25,17 @@
 
 #include "GlyphCache.h"
 
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
 #include "Magnum/Image.h"
-#include "Magnum/TextureFormat.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/TextureFormat.h"
 #include "Magnum/TextureTools/Atlas.h"
 
 namespace Magnum { namespace Text {
 
-GlyphCache::GlyphCache(const TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding): GlyphCache{internalFormat, size, size, padding} {}
+GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding): GlyphCache{internalFormat, size, size, padding} {}
 
-GlyphCache::GlyphCache(const TextureFormat internalFormat, const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding): _size(originalSize), _padding(padding) {
+GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding): _size(originalSize), _padding(padding) {
     initialize(internalFormat, size);
 }
 
@@ -43,20 +43,20 @@ GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& padding): GlyphCach
 
 GlyphCache::GlyphCache(const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding): _size(originalSize), _padding(padding) {
     #ifndef MAGNUM_TARGET_GLES
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
+    MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);
     #endif
 
     /** @todo Is there any better way to select proper sized/unsized format on ES2? */
     #ifndef MAGNUM_TARGET_GLES2
-    const TextureFormat internalFormat = TextureFormat::R8;
+    const GL::TextureFormat internalFormat = GL::TextureFormat::R8;
     #elif !defined(MAGNUM_TARGET_WEBGL)
-    TextureFormat internalFormat;
-    if(Context::current().isExtensionSupported<Extensions::GL::EXT::texture_rg>()) {
-        internalFormat = Context::current().isExtensionSupported<Extensions::GL::EXT::texture_storage>() ?
-            TextureFormat::R8 : TextureFormat::Red;
-    } else internalFormat = TextureFormat::Luminance;
+    GL::TextureFormat internalFormat;
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
+        internalFormat = GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_storage>() ?
+            GL::TextureFormat::R8 : GL::TextureFormat::Red;
+    } else internalFormat = GL::TextureFormat::Luminance;
     #else
-    const TextureFormat internalFormat = TextureFormat::Luminance;
+    const GL::TextureFormat internalFormat = GL::TextureFormat::Luminance;
     #endif
 
     initialize(internalFormat, size);
@@ -64,11 +64,11 @@ GlyphCache::GlyphCache(const Vector2i& originalSize, const Vector2i& size, const
 
 GlyphCache::~GlyphCache() = default;
 
-void GlyphCache::initialize(const TextureFormat internalFormat, const Vector2i& size) {
+void GlyphCache::initialize(const GL::TextureFormat internalFormat, const Vector2i& size) {
     /* Initialize texture */
-    _texture.setWrapping(Sampler::Wrapping::ClampToEdge)
-        .setMinificationFilter(Sampler::Filter::Linear)
-        .setMagnificationFilter(Sampler::Filter::Linear)
+    _texture.setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setStorage(1, internalFormat, size);
 
     /* Default "Not Found" glyph */
