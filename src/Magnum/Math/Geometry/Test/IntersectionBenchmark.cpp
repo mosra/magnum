@@ -24,11 +24,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/TestSuite/Tester.h>
-
 #include <random>
 #include <tuple>
 #include <utility>
+#include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Geometry/Intersection.h"
 #include "Magnum/Math/Angle.h"
@@ -56,15 +55,18 @@ template<class T> bool rangeFrustumNaive(const Math::Range3D<T>& box, const Math
     return true;
 }
 
-/* @brief Ground truth, slow sphere cone intersection - calculating exact distances,
- *        no optimizations, no precomputations
- * @param sphereCenter Sphere center
- * @param radius Sphere radius
- * @param origin Origin of the cone
- * @param normal Cone normal
- * @param angle Cone opening angle (0 < angle < pi).
- *
- * Returns `true` if the sphere intersects with the cone. */
+/*
+    Ground truth, slow sphere cone intersection - calculating exact distances,
+    no optimizations, no precomputations
+
+    sphereCenter     Sphere center
+    radius           Sphere radius
+    origin           Origin of the cone
+    normal           Cone normal
+    angle            Cone opening angle (0 < angle < pi)
+
+    Returns true if the sphere intersects with the cone.
+*/
 template<class T> bool sphereConeGT(
         const Math::Vector3<T>& sphereCenter, const T radius,
         const Math::Vector3<T>& origin, const Math::Vector3<T>& normal, const Math::Rad<T> angle) {
@@ -78,7 +80,8 @@ template<class T> bool sphereConeGT(
     /* Distance from cone surface */
     const T distanceFromCone = Math::sin(actual - halfAngle)*diff.length();
 
-    /* Either the sphere center lies in cone, or cone is max radius away from the cone */
+    /* Either the sphere center lies in cone, or cone is max radius away from
+       the cone */
     return actual <= halfAngle || distanceFromCone <= radius;
 }
 

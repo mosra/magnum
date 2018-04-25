@@ -378,28 +378,33 @@ void IntersectionTest::rangeCone() {
     const Rad angle{72.0_degf};
 
     /* Box fully inside cone */
-    CORRADE_VERIFY(Intersection::rangeCone(Range3D::fromSize(15.0f*normal - Vector3{1.0f}, Vector3{2.0f}),
-                                           center, normal, angle));
+    CORRADE_VERIFY(Intersection::rangeCone(Range3D::fromSize(
+        15.0f*normal - Vector3{1.0f}, Vector3{2.0f}), center, normal, angle));
     /* Box intersecting cone */
-    CORRADE_VERIFY(Intersection::rangeCone(Range3D::fromSize(5.0f*normal - Vector3{10.0f, 10.0f, 0.5f}, Vector3{20.0f, 20.0f, 1.0f}),
-                                           center, normal, angle));
-    CORRADE_VERIFY(Intersection::rangeCone(Range3D{{-1.0f, -2.0f, -3.0f}, {1.0f, 2.0f, 3.0f}},
-                                           center, normal, angle));
+    CORRADE_VERIFY(Intersection::rangeCone(Range3D::fromSize(
+        5.0f*normal - Vector3{10.0f, 10.0f, 0.5f}, Vector3{20.0f, 20.0f, 1.0f}),
+        center, normal, angle));
+    CORRADE_VERIFY(Intersection::rangeCone(
+        Range3D{{-1.0f, -2.0f, -3.0f}, {1.0f, 2.0f, 3.0f}}, center, normal, angle));
     /* Cone inside large box */
-    CORRADE_VERIFY(Intersection::rangeCone(Range3D::fromSize(12.0f*normal - Vector3{20.0f}, Vector3{40.0f}),
-                                           center, normal, angle));
+    CORRADE_VERIFY(Intersection::rangeCone(Range3D::fromSize(
+        12.0f*normal - Vector3{20.0f}, Vector3{40.0f}), center, normal, angle));
     /* Same corner chosen on all intersecting faces */
-    CORRADE_VERIFY(Intersection::rangeCone(Range3D{{2.0f, -0.1f, -1.5f}, {3.0f, 0.1f, 1.5f}},
-                                           center, {0.353553f, 0.707107f, 0.612372f}, angle));
+    CORRADE_VERIFY(Intersection::rangeCone(
+        Range3D{{2.0f, -0.1f, -1.5f}, {3.0f, 0.1f, 1.5f}},
+        center, {0.353553f, 0.707107f, 0.612372f}, angle));
 
     /* Boxes outside cone */
-    CORRADE_VERIFY(!Intersection::rangeCone(Range3D{Vector3{2.0f, 2.0f, -2.0f}, Vector3{8.0f, 7.0f, 2.0f}},
-                                            center, normal, angle));
-    CORRADE_VERIFY(!Intersection::rangeCone(Range3D{Vector3{6.0f, 5.0f, -7.0f}, Vector3{5.0f, 9.0f, -3.0f}},
-                                            center, normal, angle));
+    CORRADE_VERIFY(!Intersection::rangeCone(
+        Range3D{Vector3{2.0f, 2.0f, -2.0f}, Vector3{8.0f, 7.0f, 2.0f}},
+        center, normal, angle));
+    CORRADE_VERIFY(!Intersection::rangeCone(
+        Range3D{Vector3{6.0f, 5.0f, -7.0f}, Vector3{5.0f, 9.0f, -3.0f}},
+        center, normal, angle));
     /* Box fully contained in double cone */
-    CORRADE_VERIFY(!Intersection::rangeCone(Range3D::fromSize(-15.0f*normal - Vector3{1.0f}, Vector3{2.0f}),
-                                            center, normal, angle));
+    CORRADE_VERIFY(!Intersection::rangeCone(
+        Range3D::fromSize(-15.0f*normal - Vector3{1.0f}, Vector3{2.0f}),
+        center, normal, angle));
 }
 
 void IntersectionTest::aabbCone() {

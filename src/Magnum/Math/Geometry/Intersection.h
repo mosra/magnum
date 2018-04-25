@@ -148,8 +148,8 @@ template<class T> inline T planeLine(const Vector3<T>& planePosition, const Vect
 @brief Intersection of a point and a frustum
 @param point    Point
 @param frustum  Frustum planes with normals pointing outwards
-
-Returns @cpp true @ce if the point is on or inside the frustum.
+@return @cpp true @ce if the point is on or inside the frustum, @cpp false @ce
+    otherwise
 
 Checks for each plane of the frustum whether the point is behind the plane (the
 points distance from the plane is negative) using @ref Distance::pointPlaneScaled().
@@ -160,12 +160,12 @@ template<class T> bool pointFrustum(const Vector3<T>& point, const Frustum<T>& f
 @brief Intersection of a range and a frustum
 @param range    Range
 @param frustum  Frustum planes with normals pointing outwards
+@return @cpp true @ce if the box intersects with the frustum, @cpp false @ce
+    otherwise
 
-Returns @cpp true @ce if the box intersects with the frustum.
-
-Uses the "p/n-vertex" approach: First converts the @ref Range3D into a representation
-using center and extent which allows using the following condition for whether the
-plane is intersecting the box: @f[
+Uses the "p/n-vertex" approach: First converts the @ref Range3D into a
+representation using center and extent which allows using the following
+condition for whether the plane is intersecting the box: @f[
      \begin{array}{rcl}
          d & = & \boldsymbol c \cdot \boldsymbol n \\
          r & = & \boldsymbol c \cdot \text{abs}(\boldsymbol n) \\
@@ -181,9 +181,9 @@ template<class T> bool rangeFrustum(const Range3D<T>& range, const Frustum<T>& f
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
-@brief @copybrief rangeFrustum()
-@deprecated Use @ref rangeFrustum() instead.
-*/
+ * @brief @copybrief rangeFrustum()
+ * @deprecated Use @ref rangeFrustum() instead.
+ */
 template<class T> CORRADE_DEPRECATED("use rangeFrustum() instead") bool boxFrustum(const Range3D<T>& box, const Frustum<T>& frustum) {
     return rangeFrustum(box, frustum);
 }
@@ -191,223 +191,246 @@ template<class T> CORRADE_DEPRECATED("use rangeFrustum() instead") bool boxFrust
 
 /**
 @brief Intersection of an axis-aligned box and a frustum
-@param box      Axis-aligned box
-@param frustum  Frustum planes with normals pointing outwards
+@param aabbCenter   Center of the AABB
+@param aabbExtents  (Half-)extents of the AABB
+@param frustum      Frustum planes with normals pointing outwards
+@return @cpp true @ce if the box intersects with the frustum, @cpp false @ce
+    otherwise
 
-Returns @cpp true @ce if the box intersects with the frustum.
-
-Uses the same method as @ref rangeFrustum() "rangeFrustum()", but does not need to
-convert to center/extents representation.
+Uses the same method as @ref rangeFrustum(), but does not need to convert to
+center/extents representation.
 */
-template<class T> bool aabbFrustum(const Vector3<T>& center, const Vector3<T>& extents, const Frustum<T>& frustum);
+template<class T> bool aabbFrustum(const Vector3<T>& aabbCenter, const Vector3<T>& aabbExtents, const Frustum<T>& frustum);
 
 /**
 @brief Intersection of a sphere and a frustum
-@param center   Sphere center
-@param radius   Sphere radius
-@param frustum  Frustum planes with normals pointing outwards
+@param sphereCenter Sphere center
+@param sphereRadius Sphere radius
+@param frustum      Frustum planes with normals pointing outwards
+@return @cpp true @ce if the sphere intersects the frustum, @cpp false @ce
+    otherwise
 
-Returns @cpp true @ce if the sphere intersects the frustum.
-
-Checks for each plane of the frustum whether the sphere is behind the plane (the
-points distance larger than the sphere's radius) using @ref Distance::pointPlaneScaled().
+Checks for each plane of the frustum whether the sphere is behind the plane
+(the points distance larger than the sphere's radius) using
+@ref Distance::pointPlaneScaled().
 */
-template<class T> bool sphereFrustum(const Vector3<T>& center, T radius, const Frustum<T>& frustum);
+template<class T> bool sphereFrustum(const Vector3<T>& sphereCenter, T sphereRadius, const Frustum<T>& frustum);
 
 /**
 @brief Intersection of a point and a cone
-@param p        The point
-@param origin   Cone origin
-@param normal   Cone normal
-@param angle    Apex angle of the cone
-
-Returns @cpp true @ce if the point is inside the cone.
-
-Precomputes a portion of the intersection equation from @p angle and calls
-@ref pointCone(const Vector3&, const Vector3&, const Vector3&, T)
-*/
-template<class T> bool pointCone(const Vector3<T>& p, const Vector3<T>& origin, const Vector3<T>& normal, Rad<T> angle);
-
-/**
-@brief Intersection of a point and a cone using precomputed values
-@param p            The point
-@param coneOrigin   Cone origin
-@param coneNormal   Cone normal
-@param tanAngleSqPlusOne Precomputed portion of the cone intersection equation:
-                         @cpp T(1) + Math::pow(Math::tan(angle/T(2)), T(2)) @ce
-
-Returns @cpp true @ce if the point is inside the cone.
-*/
-template<class T> bool pointCone(const Vector3<T>& p, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, T tanAngleSqPlusOne);
-
-/**
-@brief Intersection of a point and a double cone
-@param p            The point
+@param point        The point
 @param coneOrigin   Cone origin
 @param coneNormal   Cone normal
 @param coneAngle    Apex angle of the cone
+@return @cpp true @ce if the point is inside the cone, @cpp false @ce otherwise
 
-Returns @cpp true @ce if the point is inside the double cone.
-
-Precomputes a portion of the intersection equation from @p angle and calls
-@ref pointDoubleCone(const Vector3&, const Vector3&, const Vector3&, T)
+Precomputes a portion of the intersection equation from @p coneAngle and calls
+@ref pointCone(const Vector3&, const Vector3&, const Vector3&, T).
 */
-template<class T> bool pointDoubleCone(const Vector3<T>& p, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, Rad<T> coneAngle);
+template<class T> bool pointCone(const Vector3<T>& point, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, Rad<T> coneAngle);
+
+/**
+@brief Intersection of a point and a cone using precomputed values
+@param point        The point
+@param coneOrigin   Cone origin
+@param coneNormal   Cone normal
+@param tanAngleSqPlusOne Precomputed portion of the cone intersection equation
+@return @cpp true @ce if the point is inside the cone, @cpp false @ce
+    otherwise
+
+The @p tanAngleSqPlusOne parameter can be calculated as:
+
+@code{.cpp}
+Math::pow<2>(Math::tan(angle*T(0.5))) + T(1)
+@endcode
+*/
+template<class T> bool pointCone(const Vector3<T>& point, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, T tanAngleSqPlusOne);
+
+/**
+@brief Intersection of a point and a double cone
+@param point        The point
+@param coneOrigin   Cone origin
+@param coneNormal   Cone normal
+@param coneAngle    Apex angle of the cone
+@return @cpp true @ce if the point is inside the double cone, @cpp false @ce
+    otherwise
+
+Precomputes a portion of the intersection equation from @p coneAngle and calls
+@ref pointDoubleCone(const Vector3&, const Vector3&, const Vector3&, T).
+*/
+template<class T> bool pointDoubleCone(const Vector3<T>& point, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, Rad<T> coneAngle);
 
 /**
 @brief Intersection of a point and a double cone using precomputed values
-@param p            The point
+@param point        The point
 @param coneOrigin   Cone origin
 @param coneNormal   Cone normal
-@param tanAngleSqPlusOne Precomputed portion of the cone intersection equation:
-                         @cpp T(1) + Math::pow(Math::tan(angle/T(2)), T(2)) @ce
+@param tanAngleSqPlusOne Precomputed portion of the cone intersection equation
+@return @cpp true @ce if the point is inside the double cone, @cpp false @ce
+    otherwise
 
-Returns @cpp true @ce if the point is inside the double cone.
+The @p tanAngleSqPlusOne parameter can be precomputed like this:
 
-Uses the result of precomputing @f$ x = \tan^2{\theta} + 1 @f$.
+@code{.cpp}
+T tanAngleSqPlusOne = Math::pow<2>(Math::tan(angle*T(0.5))) + T(1);
+@endcode
 */
-template<class T> bool pointDoubleCone(const Vector3<T>& p, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, T tanAngleSqPlusOne);
+template<class T> bool pointDoubleCone(const Vector3<T>& point, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, T tanAngleSqPlusOne);
 
 /**
 @brief Intersection of a sphere and a cone view
-@param sphereCenter   Center of the sphere
-@param radius         Radius of the sphere
-@param coneView       View matrix with translation and rotation of the cone
-@param coneAngle      Cone opening angle
+@param sphereCenter Center of the sphere
+@param sphereRadius Radius of the sphere
+@param coneView     View matrix with translation and rotation of the cone
+@param coneAngle    Apex angle of the cone (@f$ 0 < \Theta < \pi @f$)
+@return @cpp true @ce if the sphere intersects the cone, @cpp false @ce
+    otherwise
 
-Returns @cpp true @ce if the sphere intersects the cone.
-
-Transforms the sphere center into cone space (using the cone view matrix) and
-performs sphere-cone intersection with the zero-origin -Z axis-aligned cone.
-
-Precomputes a portion of the intersection equation from @p angle and calls
-@ref sphereConeView(const Vector3<T>&, T, const Matrix4<T>&, T, T, T)
+Precomputes a portion of the intersection equation from @p coneAngle and calls
+@ref sphereConeView(const Vector3<T>&, T, const Matrix4<T>&, T, T, T).
 */
-template<class T> bool sphereConeView(const Vector3<T>& sphereCenter, T radius, const Matrix4<T>& coneView, Rad<T> coneAngle);
+template<class T> bool sphereConeView(const Vector3<T>& sphereCenter, T sphereRadius, const Matrix4<T>& coneView, Rad<T> coneAngle);
 
 /**
 @brief Intersection of a sphere and a cone view
 @param sphereCenter Sphere center
-@param radius   Sphere radius
-@param coneView View matrix with translation and rotation of the cone
-@param sinAngle Precomputed sine of half the cone's opening angle: @cpp Math::sin(angle/T(2)) @ce
-@param cosAngle Precomputed cosine of half the cone's opening angle: @cpp Math::cos(angle/T(2)) @ce
-@param tanAngle Precomputed tangens of half the cone's opening angle: @cpp Math::tan(angle/T(2)) @ce
+@param sphereRadius Sphere radius
+@param coneView     View matrix with translation and rotation of the cone
+@param sinAngle     Precomputed sine of half the cone's opening angle
+@param cosAngle     Precomputed cosine of half the cone's opening angle
+@param tanAngle     Precomputed tangens of half the cone's opening angle
+@return @cpp true @ce if the sphere intersects the cone, @cpp false @ce
+    otherwise
 
-Returns @cpp true @ce if the sphere intersects the cone.
+Transforms the sphere center into cone space (using the cone view matrix) and
+performs sphere-cone intersection with the zero-origin -Z axis-aligned cone.
+The @p sinAngle, @p cosAngle, @p tanAngle can be precomputed like this:
+
+@code{.cpp}
+T sinAngle = Math::sin(angle*T(0.5));
+T cosAngle = Math::cos(angle*T(0.5));
+T tanAngle = Math::tan(angle*T(0.5));
+@endcode
 */
-template<class T> bool sphereConeView(const Vector3<T>& sphereCenter, T radius, const Matrix4<T>& coneView, T sinAngle, T cosAngle, T tanAngle);
+template<class T> bool sphereConeView(const Vector3<T>& sphereCenter, T sphereRadius, const Matrix4<T>& coneView, T sinAngle, T cosAngle, T tanAngle);
 
 /**
 @brief Intersection of a sphere and a cone
-@param sphereCenter   Sphere center
-@param radius Sphere  Sphere radius
-@param coneOrigin     Cone origin
-@param coneNormal     Cone normal
-@param coneAngle      Cone opening angle (@f$ 0 < \text{angle} < \pi @f$).
+@param sphereCenter Sphere center
+@param sphereRadius Sphere radius
+@param coneOrigin   Cone origin
+@param coneNormal   Cone normal
+@param coneAngle    Apex angle of the cone (@f$ 0 < \Theta < \pi @f$)
+@return @cpp true @ce if the sphere intersects with the cone, @cpp false @ce
+    otherwise
 
-Returns @cpp true @ce if the sphere intersects with the cone.
-
-Offsets the cone plane by @f$ -r\sin{\theta} \cdot \boldsymbol n @f$ (with  @f$ \theta @f$
-the cone's half-angle) which separates two half-spaces:
-In front of the plane, in which the sphere cone intersection test is equivalent
-to testing the sphere's center against a similarly offset cone (which is equivalent
-the cone with surface expanded by @f$ r @f$ in surface normal direction), and
-behind the plane, where the test is equivalent to testing whether the origin of
-the original cone intersects the sphere.
-
-Precomputes a portion of the intersection equation from @p angle and calls
-@ref sphereCone(const Vector3<T>& sphereCenter, T, const Vector3<T>&, const Vector3<T>&, T, T)
+Precomputes a portion of the intersection equation from @p coneAngle and calls
+@ref sphereCone(const Vector3<T>& sphereCenter, T, const Vector3<T>&, const Vector3<T>&, T, T).
 */
-template<class T> bool sphereCone(const Vector3<T>& sphereCenter, T radius, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, Rad<T> coneAngle);
+template<class T> bool sphereCone(const Vector3<T>& sphereCenter, T sphereRadius, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, Rad<T> coneAngle);
 
 /**
 @brief Intersection of a sphere and a cone using precomputed values
 @param sphereCenter Sphere center
-@param radius       Sphere radius
+@param sphereRadius Sphere radius
 @param coneOrigin   Cone origin
 @param coneNormal   Cone normal
-@param sinAngle     Precomputed sine of half the cone's opening angle:
-                    @cpp Math::sin(angle/T(2)) @ce
-@param tanAngleSqPlusOne Precomputed portion of the cone intersection equation:
-                         @cpp Math::pow(Math::tan(angle/T(2)), 2) + 1 @ce
+@param sinAngle     Precomputed sine of half the cone's opening angle
+@param tanAngleSqPlusOne Precomputed portion of the cone intersection equation
+@return @cpp true @ce if the sphere intersects with the cone, @cpp false @ce
+    otherwise
 
-Returns @cpp true @ce if the sphere intersects with the cone.
+Offsets the cone plane by @f$ -r\sin{\frac{\Theta}{2}} \cdot \boldsymbol n @f$
+(with @f$ \Theta @f$ being the cone apex angle) which separates two
+half-spaces: In front of the plane, in which the sphere cone intersection test
+is equivalent to testing the sphere's center against a similarly offset cone
+(which is equivalent the cone with surface expanded by @f$ r @f$ in surface
+normal direction), and behind the plane, where the test is equivalent to
+testing whether the origin of the original cone intersects the sphere. The
+@p sinAngle and @p tanAngleSqPlusOne parameters can be precomputed like this:
+
+@code{.cpp}
+T sinAngle = Math::sin(angle*T(0.5));
+T tanAngleSqPlusOne = Math::pow<2>(Math::tan(angle*T(0.5))) + T(1);
+@endcode
 */
-template<class T> bool sphereCone(const Vector3<T>& sphereCenter, T radius, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, T sinAngle, T tanAngleSqPlusOne);
+template<class T> bool sphereCone(const Vector3<T>& sphereCenter, T sphereRadius, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, T sinAngle, T tanAngleSqPlusOne);
 
 /**
 @brief Intersection of an axis aligned bounding box and a cone
-@param center      Center of the AABB
-@param extents     (Half-)extents of the AABB
-@param coneOrigin  Cone origin
-@param coneNormal  Cone normal
-@param coneAngle   Cone opening angle
+@param aabbCenter   Center of the AABB
+@param aabbExtents  (Half-)extents of the AABB
+@param coneOrigin   Cone origin
+@param coneNormal   Cone normal
+@param coneAngle    Apex angle of the cone (@f$ 0 < \Theta < \pi @f$)
+@return @cpp true @ce if the box intersects the cone, @cpp false @ce otherwise
 
-Returns @cpp true @ce if the axis aligned bounding box intersects the cone.
-
-On each axis finds the intersection points of the cone's axis with infinite planes
-obtained by extending the two faces of the box that are perpendicular to that axis.
-
-The intersection points on the planes perpendicular to axis @f$ a \in {0, 1, 2} @f$
-are given by @f[
-    \boldsymbol i = \boldsymbol n \cdot \frac{(\boldsymbol c_a - \boldsymbol o_a) \pm \boldsymbol e_a}{\boldsymbol n_a}
-@f]
-
-with normal @f$ n @f$, cone origin @f$ o @f$, box center @f$ x @f$ and box extents @f$ e @f$.
-
-The points on the faces that are closest to this intersection point are the closest
-to the cone's axis and are tested for intersection with the cone using
-@ref pointCone(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, const T) "pointCone()".
-
-As soon as an intersecting point is found, the function returns @cpp true @ce.
-If all points lie outside of the cone, it will return @cpp false @ce.
-
-Precomputes a portion of the intersection equation from @p angle and calls
-@ref aabbCone(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, T)
+Precomputes a portion of the intersection equation from @p coneAngle and calls
+@ref aabbCone(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, T).
 */
-template<class T> bool aabbCone(const Vector3<T>& center, const Vector3<T>& extents, const Vector3<T>& origin, const Vector3<T>& normal, Rad<T> angle);
+template<class T> bool aabbCone(const Vector3<T>& aabbCenter, const Vector3<T>& aabbExtents, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, Rad<T> coneAngle);
 
 /**
 @brief Intersection of an axis aligned bounding box and a cone using precomputed values
-@param center Center of the AABB
-@param extents (Half-)extents of the AABB
-@param origin Cone origin
-@param normal Cone normal
-@param tanAngleSqPlusOne Precomputed portion of the cone intersection equation:
-                         @cpp T(1) + Math::pow(Math::tan(angle/T(2)), T(2)) @ce
+@param aabbCenter   Center of the AABB
+@param aabbExtents  (Half-)extents of the AABB
+@param coneOrigin   Cone origin
+@param coneNormal   Cone normal
+@param tanAngleSqPlusOne Precomputed portion of the cone intersection equation
+@return @cpp true @ce if the box intersects the cone, @cpp false @ce otherwise
 
-Returns @cpp true @ce if the axis aligned bounding box intersects the cone.
+On each axis finds the intersection points of the cone's axis with infinite
+planes obtained by extending the two faces of the box that are perpendicular to
+that axis. The intersection points on the planes perpendicular to axis
+@f$ a \in \{ 0, 1, 2 \} @f$ are given by @f[
+    \boldsymbol i = \boldsymbol n \cdot \frac{(\boldsymbol c_a - \boldsymbol o_a) \pm \boldsymbol e_a}{\boldsymbol n_a}
+@f]
+
+with normal @f$ \boldsymbol n @f$, cone origin @f$ \boldsymbol o @f$, box
+center @f$ \boldsymbol c @f$ and box extents @f$ \boldsymbol e @f$. The points
+on the faces that are closest to this intersection point are the closest to the
+cone's axis and are tested for intersection with the cone using
+@ref pointCone(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, const T) "pointCone()". As soon as an intersecting point is found, the function returns
+@cpp true @ce. If all points lie outside of the cone, it will return
+@cpp false @ce.
+
+The @p tanAngleSqPlusOne parameter can be precomputed like this:
+
+@code{.cpp}
+T tanAngleSqPlusOne = Math::pow<2>(Math::tan(angle*T(0.5))) + T(1);
+@endcode
 */
-template<class T> bool aabbCone(const Vector3<T>& center, const Vector3<T>& extents, const Vector3<T>& origin, const Vector3<T>& normal, T tanAngleSqPlusOne);
+template<class T> bool aabbCone(const Vector3<T>& aabbCenter, const Vector3<T>& aabbExtents, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, T tanAngleSqPlusOne);
 
 /**
 @brief Intersection of a range and a cone
-
 @param range        Range
 @param coneOrigin   Cone origin
 @param coneNormal   Cone normal
-@param coneAngle    Cone opening angle
+@param coneAngle    Apex angle of the cone (@f$ 0 < \Theta < \pi @f$)
+@return @cpp true @ce if the range intersects the cone, @cpp false @ce
+    otherwise
 
-Returns @cpp true @ce if the range intersects the cone.
-
-Converts the range into center/extents representation and passes it on to
-@ref aabbCone(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, T) "aabbCone()".
+Precomputes a portion of the intersection equation from @p coneAngle and calls
+@ref rangeCone(const Range3D<T>&, const Vector3<T>&, const Vector3<T>&, T).
 */
-template<class T> bool rangeCone(const Range3D<T>& range, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const Rad<T> angle);
+template<class T> bool rangeCone(const Range3D<T>& range, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const Rad<T> coneAngle);
 
 /**
 @brief Intersection of a range and a cone using precomputed values
 @param range        Range
 @param coneOrigin   Cone origin
 @param coneNormal   Cone normal
-@param tanAngleSqPlusOne Precomputed portion of the cone intersection equation:
-                         @cpp T(1) + Math::pow(Math::tan(angle/T(2)), T(2)) @ce
-
-Returns @cpp true @ce if the range intersects the cone.
+@param tanAngleSqPlusOne Precomputed portion of the cone intersection equation
+@return @cpp true @ce if the range intersects the cone, @cpp false @ce
+    otherwise
 
 Converts the range into center/extents representation and passes it on to
-@ref aabbCone(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, T) "aabbCone()".
+@ref aabbCone(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, T) "aabbCone()". The @p tanAngleSqPlusOne parameter can be precomputed like this:
+
+@code{.cpp}
+T tanAngleSqPlusOne = Math::pow<2>(Math::tan(angle*T(0.5))) + T(1);
+@endcode
 */
 template<class T> bool rangeCone(const Range3D<T>& range, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const T tanAngleSqPlusOne);
 
@@ -422,48 +445,42 @@ template<class T> bool pointFrustum(const Vector3<T>& point, const Frustum<T>& f
     return true;
 }
 
-template<class T> bool rangeFrustum(const Range3D<T>& box, const Frustum<T>& frustum) {
+template<class T> bool rangeFrustum(const Range3D<T>& range, const Frustum<T>& frustum) {
     /* Convert to center/extent, avoiding division by 2 and instead comparing
        to 2*-plane.w() later */
-    const Vector3<T> center = box.min() + box.max();
-    const Vector3<T> extent = box.max() - box.min();
+    const Vector3<T> center = range.min() + range.max();
+    const Vector3<T> extent = range.max() - range.min();
 
     for(const Vector4<T>& plane: frustum.planes()) {
         const Vector3<T> absPlaneNormal = Math::abs(plane.xyz());
 
         const Float d = Math::dot(center, plane.xyz());
         const Float r = Math::dot(extent, absPlaneNormal);
-        if(d + r < -T(2)*plane.w()) {
-            return false;
-        }
+        if(d + r < -T(2)*plane.w()) return false;
     }
 
     return true;
 }
 
-template<class T> bool aabbFrustum(
-    const Vector3<T>& center, const Vector3<T>& extents, const Frustum<T>& frustum)
-{
+template<class T> bool aabbFrustum(const Vector3<T>& aabbCenter, const Vector3<T>& aabbExtents, const Frustum<T>& frustum) {
     for(const Vector4<T>& plane: frustum.planes()) {
         const Vector3<T> absPlaneNormal = Math::abs(plane.xyz());
 
-        const Float d = Math::dot(center, plane.xyz());
-        const Float r = Math::dot(extents, absPlaneNormal);
-        if(d + r < -plane.w()) {
-            return false;
-        }
+        const Float d = Math::dot(aabbCenter, plane.xyz());
+        const Float r = Math::dot(aabbExtents, absPlaneNormal);
+        if(d + r < -plane.w()) return false;
     }
 
     return true;
 }
 
-template<class T> bool sphereFrustum(const Vector3<T>& center, const T radius, const Frustum<T>& frustum) {
-    const T radiusSq = radius*radius;
+template<class T> bool sphereFrustum(const Vector3<T>& sphereCenter, const T sphereRadius, const Frustum<T>& frustum) {
+    const T radiusSq = sphereRadius*sphereRadius;
 
     for(const Vector4<T>& plane: frustum.planes()) {
         /* The sphere is in front of one of the frustum planes (normals point
            outwards) */
-        if(Distance::pointPlaneScaled<T>(center, plane) < -radiusSq)
+        if(Distance::pointPlaneScaled<T>(sphereCenter, plane) < -radiusSq)
             return false;
     }
 
@@ -471,112 +488,114 @@ template<class T> bool sphereFrustum(const Vector3<T>& center, const T radius, c
 }
 
 
-template<class T> bool pointCone(const Vector3<T>& p, const Vector3<T>& origin, const Vector3<T>& normal, const Rad<T> angle) {
-    const T x = T(1) + Math::pow(Math::tan(angle/T(2)), T(2));
-
-    return pointCone(p, origin, normal, x);
+template<class T> bool pointCone(const Vector3<T>& point, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const Rad<T> coneAngle) {
+    const T tanAngleSqPlusOne = Math::pow<2>(Math::tan(coneAngle*T(0.5))) + T(1);
+    return pointCone(point, coneOrigin, coneNormal, tanAngleSqPlusOne);
 }
 
-template<class T> bool pointCone(const Vector3<T>& p, const Vector3<T>& origin, const Vector3<T>& normal, const T tanAngleSqPlusOne) {
-    const Vector3<T> c = p - origin;
-    const T lenA = dot(c, normal);
+template<class T> bool pointCone(const Vector3<T>& point, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const T tanAngleSqPlusOne) {
+    const Vector3<T> c = point - coneOrigin;
+    const T lenA = dot(c, coneNormal);
 
     return lenA >= 0 && c.dot() <= lenA*lenA*tanAngleSqPlusOne;
 }
 
-template<class T> bool pointDoubleCone(const Vector3<T>& p, const Vector3<T>& origin, const Vector3<T>& normal, const Rad<T> angle) {
-    const T x = T(1) + Math::pow(Math::tan(angle/T(2)), T(2));
-
-    return pointDoubleCone(p, origin, normal, x);
+template<class T> bool pointDoubleCone(const Vector3<T>& point, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const Rad<T> coneAngle) {
+    const T tanAngleSqPlusOne = Math::pow<2>(Math::tan(coneAngle*T(0.5))) + T(1);
+    return pointDoubleCone(point, coneOrigin, coneNormal, tanAngleSqPlusOne);
 }
 
-template<class T> bool pointDoubleCone(const Vector3<T>& p, const Vector3<T>& origin, const Vector3<T>& normal, const T tanAngleSqPlusOne) {
-    const Vector3<T> c = p - origin;
-    const T lenA = dot(c, normal);
+template<class T> bool pointDoubleCone(const Vector3<T>& point, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const T tanAngleSqPlusOne) {
+    const Vector3<T> c = point - coneOrigin;
+    const T lenA = dot(c, coneNormal);
 
     return c.dot() <= lenA*lenA*tanAngleSqPlusOne;
 }
 
-template<class T> bool sphereConeView(const Vector3<T>& sphereCenter, const T radius, const Matrix4<T>& coneView, const Rad<T> angle) {
-    const T sinAngle = Math::sin(angle/T(2));
-    const T cosAngle = Math::cos(angle/T(2));
-    const T tanAngle = Math::tan(angle/T(2));
+template<class T> bool sphereConeView(const Vector3<T>& sphereCenter, const T sphereRadius, const Matrix4<T>& coneView, const Rad<T> coneAngle) {
+    const Rad<T> halfAngle = coneAngle*T(0.5);
+    const T sinAngle = Math::sin(halfAngle);
+    const T cosAngle = Math::cos(halfAngle);
+    const T tanAngle = Math::tan(halfAngle);
 
-    return sphereConeView(sphereCenter, radius, coneView, sinAngle, cosAngle, tanAngle);
+    return sphereConeView(sphereCenter, sphereRadius, coneView, sinAngle, cosAngle, tanAngle);
 }
 
 template<class T> bool sphereConeView(
-    const Vector3<T>& sphereCenter, const T radius, const Matrix4<T>& coneView,
+    const Vector3<T>& sphereCenter, const T sphereRadius, const Matrix4<T>& coneView,
     const T sinAngle, const T cosAngle, const T tanAngle)
 {
     CORRADE_ASSERT(coneView.isRigidTransformation(), "Math::Geometry::Intersection::sphereConeView(): coneView must be rigid", false);
 
-    /* Transform the sphere so that we can test against Z axis aligned origin cone instead */
+    /* Transform the sphere so that we can test against Z axis aligned origin
+       cone instead */
     const Vector3<T> center = coneView.transformPoint(sphereCenter);
 
-    /* Test against plane which determines whether to test against shifted cone or center-sphere */
-    if (-center.z() > -radius*sinAngle) {
-        /* Point - axis aligned cone test, shifted so that the cone's surface is extended by the radius of the sphere */
-        const T coneRadius = tanAngle*(center.z() - radius/sinAngle);
+    /* Test against plane which determines whether to test against shifted cone
+       or center-sphere */
+    if (-center.z() > -sphereRadius*sinAngle) {
+        /* Point - axis aligned cone test, shifted so that the cone's surface
+           is extended by the radius of the sphere */
+        const T coneRadius = tanAngle*(center.z() - sphereRadius/sinAngle);
         return center.xy().dot() <= coneRadius*coneRadius;
     } else {
         /* Simple sphere point check */
-        return center.dot() <= radius*radius;
+        return center.dot() <= sphereRadius*sphereRadius;
     }
 
     return false;
 }
 
 template<class T> bool sphereCone(
-    const Vector3<T>& sCenter, const T radius,
-    const Vector3<T>& origin, const Vector3<T>& normal, const Rad<T> angle)
+    const Vector3<T>& sphereCenter, const T sphereRadius,
+    const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const Rad<T> coneAngle)
 {
-    const T sinAngle = Math::sin(angle/T(2));
-    const T tanAngleSqPlusOne = T(1) + Math::pow<T>(Math::tan<T>(angle/T(2)), T(2));
+    const Rad<T> halfAngle = coneAngle*T(0.5);
+    const T sinAngle = Math::sin(halfAngle);
+    const T tanAngleSqPlusOne = T(1) + Math::pow<T>(Math::tan<T>(halfAngle), T(2));
 
-    return sphereCone(sCenter, radius, origin, normal, sinAngle, tanAngleSqPlusOne);
+    return sphereCone(sphereCenter, sphereRadius, coneOrigin, coneNormal, sinAngle, tanAngleSqPlusOne);
 }
 
 template<class T> bool sphereCone(
-    const Vector3<T>& sCenter, const T radius,
-    const Vector3<T>& origin, const Vector3<T>& normal,
+    const Vector3<T>& sphereCenter, const T sphereRadius,
+    const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal,
     const T sinAngle, const T tanAngleSqPlusOne)
 {
-    const Vector3<T> diff = sCenter - origin;
+    const Vector3<T> diff = sphereCenter - coneOrigin;
 
-    if (dot(diff - radius*sinAngle*normal, normal) > T(0)) {
-        /* point - cone test */
-        const Vector3<T> c = sinAngle*diff + normal*radius;
-        const T lenA = dot(c, normal);
+    /* Point - cone test */
+    if(Math::dot(diff - sphereRadius*sinAngle*coneNormal, coneNormal) > T(0)) {
+        const Vector3<T> c = sinAngle*diff + coneNormal*sphereRadius;
+        const T lenA = Math::dot(c, coneNormal);
 
-        return c.dot() <= lenA*lenA*(tanAngleSqPlusOne);
-    } else {
-        /* Simple sphere point check */
-        return diff.dot() <= radius*radius;
-    }
+        return c.dot() <= lenA*lenA*tanAngleSqPlusOne;
+
+    /* Simple sphere point check */
+    } else return diff.dot() <= sphereRadius*sphereRadius;
 }
 
 template<class T> bool aabbCone(
-    const Vector3<T>& center, const Vector3<T>& extents, const Vector3<T>& origin,
-    const Vector3<T>& normal, const Rad<T> angle)
+    const Vector3<T>& aabbCenter, const Vector3<T>& aabbExtents,
+    const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const Rad<T> coneAngle)
 {
-    const T x = T(1) + Math::pow<T>(Math::tan<T>(angle/T(2)), T(2));
-    return aabbCone(center, extents, origin, normal, x);
+    const T tanAngleSqPlusOne = Math::pow<T>(Math::tan<T>(coneAngle*T(0.5)), T(2)) + T(1);
+    return aabbCone(aabbCenter, aabbExtents, coneOrigin, coneNormal, tanAngleSqPlusOne);
 }
 
 template<class T> bool aabbCone(
-    const Vector3<T>& center, const Vector3<T>& extents,
+    const Vector3<T>& aabbCenter, const Vector3<T>& aabbExtents,
     const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const T tanAngleSqPlusOne)
 {
-    const Vector3<T> c = center - coneOrigin;
+    const Vector3<T> c = aabbCenter - coneOrigin;
 
-    for (const Int axis: {0, 1, 2}) {
+    for(const Int axis: {0, 1, 2}) {
         const Int z = axis;
         const Int x = (axis + 1) % 3;
         const Int y = (axis + 2) % 3;
         if(coneNormal[z] != T(0)) {
-            Float t0 = ((c[z] - extents[z])/coneNormal[z]);
-            Float t1 = ((c[z] + extents[z])/coneNormal[z]);
+            const Float t0 = ((c[z] - aabbExtents[z])/coneNormal[z]);
+            const Float t1 = ((c[z] + aabbExtents[z])/coneNormal[z]);
 
             const Vector3<T> i0 = coneNormal*t0;
             const Vector3<T> i1 = coneNormal*t1;
@@ -584,42 +603,36 @@ template<class T> bool aabbCone(
             for(const auto& i : {i0, i1}) {
                 Vector3<T> closestPoint = i;
 
-                if(i[x] - c[x] > extents[x]) {
-                    closestPoint[x] = c[x] + extents[x];
-                } else if(i[x] - c[x] < -extents[x]) {
-                    closestPoint[x] = c[x] - extents[x];
-                }
-                /* Else: normal intersects within x bounds */
+                if(i[x] - c[x] > aabbExtents[x]) {
+                    closestPoint[x] = c[x] + aabbExtents[x];
+                } else if(i[x] - c[x] < -aabbExtents[x]) {
+                    closestPoint[x] = c[x] - aabbExtents[x];
+                } /* Else: normal intersects within x bounds */
 
-                if(i[y] - c[y] > extents[y]) {
-                    closestPoint[y] = c[y] + extents[y];
-                } else if(i[y] - c[y] < -extents[y]) {
-                    closestPoint[y] = c[y] - extents[y];
-                }
-                /* Else: normal intersects within Y bounds */
+                if(i[y] - c[y] > aabbExtents[y]) {
+                    closestPoint[y] = c[y] + aabbExtents[y];
+                } else if(i[y] - c[y] < -aabbExtents[y]) {
+                    closestPoint[y] = c[y] - aabbExtents[y];
+                } /* Else: normal intersects within Y bounds */
 
-                if (pointCone<T>(closestPoint, {}, coneNormal, tanAngleSqPlusOne)) {
-                    /* Found a point in cone and aabb */
+                /* Found a point in cone and aabb */
+                if(pointCone<T>(closestPoint, {}, coneNormal, tanAngleSqPlusOne))
                     return true;
-                }
             }
-        }
-        /* else: normal will intersect one of the other planes */
+        } /* Else: normal will intersect one of the other planes */
     }
 
     return false;
 }
 
-template<class T> bool rangeCone(const Range3D<T>& range, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const Rad<T> angle) {
-    const Vector3<T> center = (range.min() + range.max())/T(2);
-    const Vector3<T> extents = (range.max() - range.min())/T(2);
-    const T x = T(1) + Math::pow<T>(Math::tan<T>(angle/T(2)), T(2));
-    return aabbCone(center, extents, coneOrigin, coneNormal, x);
+template<class T> bool rangeCone(const Range3D<T>& range, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const Rad<T> coneAngle) {
+    const T tanAngleSqPlusOne = Math::pow<2>(Math::tan(coneAngle*T(0.5))) + T(1);
+    return rangeCone(range, coneOrigin, coneNormal, tanAngleSqPlusOne);
 }
 
 template<class T> bool rangeCone(const Range3D<T>& range, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const T tanAngleSqPlusOne) {
-    const Vector3<T> center = (range.min() + range.max())/T(2);
-    const Vector3<T> extents = (range.max() - range.min())/T(2);
+    const Vector3<T> center = (range.min() + range.max())*T(0.5);
+    const Vector3<T> extents = (range.max() - range.min())*T(0.5);
     return aabbCone(center, extents, coneOrigin, coneNormal, tanAngleSqPlusOne);
 }
 
