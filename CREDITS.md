@@ -32,8 +32,8 @@ Contributors to Magnum library
 -   [@wivlaro](https://github.com/wivlaro) -- numerous bug reports, macOS
     fixes, feature improvements
 -   Jonathan Hale ([@Squareys](https://github.com/Squareys)) -- Audio library
-    enhancements, GlfwApplication implementation, frustum culling, bug reports,
-    documentation improvements
+    enhancements, GlfwApplication implementation, frustum and cone culling, bug
+    reports, documentation improvements
 -   Gerhard de Clercq -- Windows RT (Store/Phone) port
 -   Ashwin Ravichandran ([@](ashrko619)[https://github.com/ashrko619]) --
     Bézier curve implementation

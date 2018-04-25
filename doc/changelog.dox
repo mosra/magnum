@@ -42,6 +42,15 @@ See also:
 
 @subsubsection changelog-lates-new-math Math library
 
+-   Added @ref Math::Geometry::Intersection::rangeFrustum(),
+    @ref Math::Geometry::Intersection::aabbFrustum(),
+    @ref Math::Geometry::Intersection::sphereFrustum(),
+    @ref Math::Geometry::Intersection::pointCone(),
+    @ref Math::Geometry::Intersection::pointDoubleCone(),
+    @ref Math::Geometry::Intersection::sphereConeView(),
+    @ref Math::Geometry::Intersection::sphereCone(),
+    @ref Math::Geometry::Intersection::aabbCone(),
+    @ref Math::Geometry::Intersection::rangeCone()
 -   Added @ref Math::Constants::piQuarter()
 -   Ability to convert @ref Math::BoolVector from and to external
     representation
@@ -68,6 +77,11 @@ See also:
     due to a pointer not being properly initialized after the
     @ref Platform::GlfwApplication::GLConfiguration "GLConfiguration" rework in
     2018.04 (see [mosra/magnum#246](https://github.com/mosra/magnum/pull/246))
+
+@subsection changelog-latest-deprecated Deprecated APIs
+
+-   `Math::Geometry::Intersection::boxFrustum()` is deprecated, use
+    @ref Math::Geometry::Intersection::rangeFrustum() instead
 
 @section changelog-2018-04 2018.04
 
@@ -711,7 +725,7 @@ a high-level overview.
 -   New @ref Math::Bezier class for handling N-dimensional M-order Bézier
     curves (see [mosra/magnum#165](https://github.com/mosra/magnum/pull/165))
 -   New @ref Math::Frustum class and @ref Math::Geometry::Intersection::pointFrustum(),
-    @ref Math::Geometry::Intersection::boxFrustum() functions (see
+    `Math::Geometry::Intersection::boxFrustum()` functions (see
     [mosra/magnum#185](https://github.com/mosra/magnum/pull/185)
 -   New @ref Math::Half class, @link Math::Literals::operator""_h @endlink
     literal and @ref Math::packHalf() and @ref Math::unpackHalf() functions
