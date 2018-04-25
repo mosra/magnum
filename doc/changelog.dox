@@ -101,6 +101,8 @@ See also:
     See @ref building and @ref cmake for more information.
 -   The @ref Trade namespace is now a separate library, allowing to use core
     Magnum functionality without @ref Corrade::PluginManager
+-   Fixed the Debian package to not include a revision. While just a warning on
+    Ubuntu, it's a hard error on Debian.
 
 @subsection changelog-latest-bugfixes Bug fixes
 
