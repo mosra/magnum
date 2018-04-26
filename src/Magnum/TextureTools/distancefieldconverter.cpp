@@ -90,8 +90,8 @@ Arguments:
 -   `--magnum-...` --- engine-specific options (see
     @ref GL-Context-command-line for details)
 
-Images with @ref PixelFormat::Red, @ref PixelFormat::RGB or @ref PixelFormat::RGBA
-are accepted on input.
+Images with @ref PixelFormat::R8Unorm, @ref PixelFormat::RGB8Unorm or
+@ref PixelFormat::RGBA8Unorm are accepted on input.
 
 The resulting image can be then used with @ref Shaders::DistanceFieldVector
 shader. See also @ref TextureTools::distanceField() for more information about
@@ -160,9 +160,12 @@ int DistanceFieldConverter::exec() {
 
     /* Decide about internal format */
     GL::TextureFormat internalFormat;
-    if(image->format() == PixelFormat::Red) internalFormat = TextureFormat::R8;
-    else if(image->format() == PixelFormat::RGB) internalFormat = TextureFormat::RGB8;
-    else if(image->format() == PixelFormat::RGBA) internalFormat = TextureFormat::RGBA8;
+    if(image->format() == PixelFormat::R8Unorm)
+        internalFormat = GL::TextureFormat::R8;
+    else if(image->format() == PixelFormat::RGB8Unorm)
+        internalFormat = GL::TextureFormat::RGB8;
+    else if(image->format() == PixelFormat::RGBA8Unorm)
+        internalFormat = GL::TextureFormat::RGBA8;
     else {
         Error() << "Unsupported image format" << image->format();
         return 4;
@@ -170,15 +173,15 @@ int DistanceFieldConverter::exec() {
 
     /* Input texture */
     GL::Texture2D input;
-    input.setMinificationFilter(Sampler::Filter::Linear)
-        .setMagnificationFilter(Sampler::Filter::Linear)
-        .setWrapping(Sampler::Wrapping::ClampToEdge)
+    input.setMinificationFilter(SamplerFilter::Linear)
+        .setMagnificationFilter(SamplerFilter::Linear)
+        .setWrapping(SamplerWrapping::ClampToEdge)
         .setStorage(1, internalFormat, image->size())
         .setSubImage(0, {}, *image);
 
     /* Output texture */
     GL::Texture2D output;
-    output.setStorage(1, TextureFormat::R8, args.value<Vector2i>("output-size"));
+    output.setStorage(1, GL::TextureFormat::R8, args.value<Vector2i>("output-size"));
 
     CORRADE_INTERNAL_ASSERT(GL::Renderer::error() == GL::Renderer::Error::NoError);
 
@@ -187,7 +190,7 @@ int DistanceFieldConverter::exec() {
     TextureTools::distanceField(input, output, {{}, args.value<Vector2i>("output-size")}, args.value<Int>("radius"), image->size());
 
     /* Save image */
-    Image2D result(PixelFormat::Red, PixelType::UnsignedByte);
+    Image2D result{PixelFormat::R8Unorm};
     output.image(0, result);
     if(!converter->exportToFile(result, args.value("output"))) {
         Error() << "Cannot save file" << args.value("output");
