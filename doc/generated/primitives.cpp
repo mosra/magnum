@@ -72,8 +72,6 @@
 #include <Magnum/Trade/MeshData3D.h>
 #include <Magnum/Trade/AbstractImporter.h>
 
-#include "configure.h"
-
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
@@ -130,7 +128,7 @@ namespace {
 }
 
 int PrimitiveVisualizer::exec() {
-    PluginManager::Manager<Trade::AbstractImageConverter> converterManager{MAGNUM_PLUGINS_IMAGECONVERTER_DIR};
+    PluginManager::Manager<Trade::AbstractImageConverter> converterManager;
     std::unique_ptr<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate("PngImageConverter");
     if(!converter) {
         Error() << "Cannot load image converter plugin";

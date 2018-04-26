@@ -46,11 +46,7 @@ else()
     message(FATAL_ERROR "No windowless application available on this platform")
 endif()
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-               ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
-
 add_executable(shaders shaders.cpp)
-target_include_directories(shaders PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(shaders
     Magnum::Magnum
     Magnum::MeshTools
@@ -59,7 +55,6 @@ target_link_libraries(shaders
     Magnum::WindowlessApplication)
 
 add_executable(primitives primitives.cpp)
-target_include_directories(primitives PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 target_link_libraries(primitives
     Magnum::Magnum
     Magnum::MeshTools
