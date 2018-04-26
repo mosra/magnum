@@ -77,7 +77,7 @@ if(NOT BUILD_STATIC)
 elseif(BUILD_STATIC_PIC)
     set_target_properties(MagnumShapes PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_link_libraries(MagnumShapes Magnum MagnumSceneGraph)
+target_link_libraries(MagnumShapes PUBLIC Magnum MagnumSceneGraph)
 
 install(TARGETS MagnumShapes
     RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
