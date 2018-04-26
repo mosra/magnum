@@ -128,6 +128,8 @@ See also:
 -   @ref DebugTools::textureSubImage() now accepts both GL-specific
     @ref GL::PixelFormat / @ref GL::PixelType combination and the generic
     @ref PixelFormat enum
+-   @ref DebugTools::CompareImage now accepts generic @ref PixelFormat on input
+    instead of GL-specific @ref GL::PixelFormat / @ref GL::PixelType
 
 @subsubsection changelog-latest-changes-gl GL library
 
@@ -328,6 +330,8 @@ See also:
 -   Configuration value reader/writers are now for only
     @ref Magnum::MeshPrimitive and @ref Magnum::MeshIndexType, not for
     @ref GL::MeshPrimitive or @ref GL::MeshIndexType
+-   @ref DebugTools::CompareImage no longer accepts GL-specific pixel formats,
+    only the non-deprecated values from the generic @ref PixelFormat enum
 -   The @ref Trade::TgaImageConverter "TgaImageConverter" plugin no longer
     accepts GL-specific pixel formats, only the non-deprecated values from the
     generic @ref PixelFormat enum

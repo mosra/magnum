@@ -102,17 +102,18 @@ give for example the following result:
 
 Supports the following formats:
 
--   @ref PixelFormat::Red, @ref PixelFormat::RedInteger, @ref PixelFormat::RG,
-    @ref PixelFormat::RGInteger, @ref PixelFormat::RGB, @ref PixelFormat::RGBInteger,
-    @ref PixelFormat::RGBA and @ref PixelFormat::RGBAInteger with
-    @ref PixelType::UnsignedByte, @ref PixelType::Byte, @ref PixelType::UnsignedShort,
-    @ref PixelType::Short, @ref PixelType::UnsignedInt and @ref PixelType::Int
--   @ref PixelFormat::Red, @ref PixelFormat::RG, @ref PixelFormat::RGB and
-    @ref PixelFormat::RGBA with @ref PixelType::Float
+-   @ref PixelFormat::RGBA8Unorm, @ref PixelFormat::RGBA16Unorm and their
+    one-/two-/three-component versions
+-   @ref PixelFormat::RGBA8Snorm, @ref PixelFormat::RGBA16Snorm and their
+    one-/two-/three-component versions
+-   @ref PixelFormat::RGBA8UI, @ref PixelFormat::RGBA16UI,
+    @ref PixelFormat::RGBA32UI and their one-/two-/three-component versions
+-   @ref PixelFormat::RGBA8I, @ref PixelFormat::RGBA16I,
+    @ref PixelFormat::RGBA32I and their one-/two-/three-component versions
+-   @ref PixelFormat::RGBA32F and its one-/two-/three-component versions
 
-In OpenGL ES 2.0 and WebGL 1.0, @ref PixelFormat::Luminance and
-@ref PixelFormat::LuminanceAlpha are also accepted in place of
-@ref PixelFormat::Red and @ref PixelFormat::RG.
+@ref PixelFormat::RGBA16F and other half-float formats are not supported at the
+moment. Implementation-specific pixel formats can't be supported.
 
 Supports all @ref PixelStorage parameters. The images don't need to have the
 same pixel storage parameters, meaning you are able to compare different

@@ -29,8 +29,8 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/ImageView.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/CompareImage.h"
-#include "Magnum/GL/PixelFormat.h"
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Color.h"
 
@@ -38,6 +38,13 @@ namespace Magnum { namespace DebugTools { namespace Test {
 
 struct CompareImageTest: TestSuite::Tester {
     explicit CompareImageTest();
+
+    void formatUnknown();
+    void formatHalf();
+    void formatImplementationSpecific();
+    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+    void formatDeprecated();
+    #endif
 
     void calculateDelta();
     void calculateDeltaStorage();
@@ -51,7 +58,6 @@ struct CompareImageTest: TestSuite::Tester {
 
     void compareDifferentSize();
     void compareDifferentFormat();
-    void compareDifferentType();
     void compareSameZeroThreshold();
     void compareAboveThresholds();
     void compareAboveMaxThreshold();
@@ -59,7 +65,14 @@ struct CompareImageTest: TestSuite::Tester {
 };
 
 CompareImageTest::CompareImageTest() {
-    addTests({&CompareImageTest::calculateDelta,
+    addTests({&CompareImageTest::formatUnknown,
+              &CompareImageTest::formatHalf,
+              &CompareImageTest::formatImplementationSpecific,
+              #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+              &CompareImageTest::formatDeprecated,
+              #endif
+
+              &CompareImageTest::calculateDelta,
               &CompareImageTest::calculateDeltaStorage,
 
               &CompareImageTest::deltaImage,
@@ -71,7 +84,6 @@ CompareImageTest::CompareImageTest() {
 
               &CompareImageTest::compareDifferentSize,
               &CompareImageTest::compareDifferentFormat,
-              &CompareImageTest::compareDifferentType,
               &CompareImageTest::compareSameZeroThreshold,
               &CompareImageTest::compareAboveThresholds,
               &CompareImageTest::compareAboveMaxThreshold,
@@ -96,21 +108,53 @@ namespace {
         0.01f, 0.0f, 0.1f,
         0.12f, 1.0f, 0.0f};
 
-    const ImageView2D ActualRed{
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        PixelFormat::Red
-        #else
-        PixelFormat::Luminance
-        #endif
-        , PixelType::Float, {3, 3}, ActualRedData};
-    const ImageView2D ExpectedRed{
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        PixelFormat::Red
-        #else
-        PixelFormat::Luminance
-        #endif
-        , PixelType::Float, {3, 3}, ExpectedRedData};
+    const ImageView2D ActualRed{PixelFormat::R32F, {3, 3}, ActualRedData};
+    const ImageView2D ExpectedRed{PixelFormat::R32F, {3, 3}, ExpectedRedData};
 }
+
+void CompareImageTest::formatUnknown() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    ImageView2D image{PixelStorage{}, PixelFormat(0xdead), 0, 0, {}};
+    Implementation::calculateImageDelta(image, image);
+
+    CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: unknown format PixelFormat(0xdead)\n");
+}
+
+void CompareImageTest::formatHalf() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    ImageView2D image{PixelFormat::RG16F, {}};
+    Implementation::calculateImageDelta(image, image);
+
+    CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: half-float formats are not supported yet\n");
+}
+
+void CompareImageTest::formatImplementationSpecific() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    ImageView2D image{PixelStorage{}, pixelFormatWrap(0xdead), 0, 0, {}};
+    Implementation::calculateImageDelta(image, image);
+
+    CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: can't compare implementation-specific pixel formats\n");
+}
+
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+void CompareImageTest::formatDeprecated() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    ImageView2D image{PixelFormat::RGB, PixelType::UnsignedByte, {}};
+    CORRADE_IGNORE_DEPRECATED_POP
+    Implementation::calculateImageDelta(image, image);
+
+    CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: deprecated GL-specific formats are not supported\n");
+}
+#endif
 
 void CompareImageTest::calculateDelta() {
     std::vector<Float> delta;
@@ -131,22 +175,15 @@ namespace {
     };
 
     const UnsignedByte ExpectedRgbData[] = {
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         0, 0, 0, 0x55, 0xf8, 0x3a, 0x56, 0x10, 0xed, 0, 0, 0,
         0, 0, 0, 0x23, 0x27, 0x10, 0xab, 0xcd, 0xfa, 0, 0, 0
-        #else
-        0x55, 0xf8, 0x3a, 0x56, 0x10, 0xed, 0, 0,
-        0x23, 0x27, 0x10, 0xab, 0xcd, 0xfa, 0, 0,
-        #endif
     };
 
     const ImageView2D ActualRgb{PixelStorage{}.setSkip({0, 1, 0}),
-        PixelFormat::RGB, PixelType::UnsignedByte, {2, 2}, ActualRgbData};
+        PixelFormat::RGB8Unorm, {2, 2}, ActualRgbData};
     const ImageView2D ExpectedRgb{
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         PixelStorage{}.setSkip({1, 0, 0}).setRowLength(3),
-        #endif
-        PixelFormat::RGB, PixelType::UnsignedByte, {2, 2}, ExpectedRgbData};
+        PixelFormat::RGB8Unorm, {2, 2}, ExpectedRgbData};
 }
 
 void CompareImageTest::calculateDeltaStorage() {
@@ -267,20 +304,8 @@ void CompareImageTest::pixelDeltaOverflow() {
 void CompareImageTest::compareDifferentSize() {
     std::stringstream out;
 
-    ImageView2D a{
-        #ifndef MAGNUM_TARGET_GLES2
-        PixelFormat::RGInteger,
-        #else
-        PixelFormat::LuminanceAlpha,
-        #endif
-        PixelType::UnsignedByte, {3, 4}, nullptr};
-    ImageView2D b{
-        #ifndef MAGNUM_TARGET_GLES2
-        PixelFormat::RGInteger,
-        #else
-        PixelFormat::LuminanceAlpha,
-        #endif
-        PixelType::UnsignedByte, {3, 5}, nullptr};
+    ImageView2D a{PixelFormat::RG8UI, {3, 4}, nullptr};
+    ImageView2D b{PixelFormat::RG8UI, {3, 5}, nullptr};
 
     {
         Error e(&out);
@@ -295,8 +320,8 @@ void CompareImageTest::compareDifferentSize() {
 void CompareImageTest::compareDifferentFormat() {
     std::stringstream out;
 
-    ImageView2D a{PixelFormat::RGBA, PixelType::Float, {3, 4}, nullptr};
-    ImageView2D b{PixelFormat::RGB, PixelType::Float, {3, 4}, nullptr};
+    ImageView2D a{PixelFormat::RGBA32F, {3, 4}, nullptr};
+    ImageView2D b{PixelFormat::RGB32F, {3, 4}, nullptr};
 
     {
         Error e(&out);
@@ -305,23 +330,7 @@ void CompareImageTest::compareDifferentFormat() {
         compare.printErrorMessage(e, "a", "b");
     }
 
-    CORRADE_COMPARE(out.str(), "Images a and b have different format, actual GL::PixelFormat::RGBA/GL::PixelType::Float but GL::PixelFormat::RGB/GL::PixelType::Float expected.\n");
-}
-
-void CompareImageTest::compareDifferentType() {
-    std::stringstream out;
-
-    ImageView2D a{PixelFormat::RGB, PixelType::UnsignedByte, {3, 4}, nullptr};
-    ImageView2D b{PixelFormat::RGB, PixelType::UnsignedShort, {3, 4}, nullptr};
-
-    {
-        Error e(&out);
-        TestSuite::Comparator<CompareImage> compare;
-        CORRADE_VERIFY(!compare(a, b));
-        compare.printErrorMessage(e, "a", "b");
-    }
-
-    CORRADE_COMPARE(out.str(), "Images a and b have different format, actual GL::PixelFormat::RGB/GL::PixelType::UnsignedByte but GL::PixelFormat::RGB/GL::PixelType::UnsignedShort expected.\n");
+    CORRADE_COMPARE(out.str(), "Images a and b have different format, actual PixelFormat::RGBA32F but PixelFormat::RGB32F expected.\n");
 }
 
 void CompareImageTest::compareSameZeroThreshold() {
@@ -332,7 +341,7 @@ void CompareImageTest::compareSameZeroThreshold() {
         0xbadc0d_rgbf, 0xbeefe0_rgbf
     };
 
-    const ImageView2D image{PixelFormat::RGB, PixelType::Float, {2, 2}, data};
+    const ImageView2D image{PixelFormat::RGB32F, {2, 2}, data};
     CORRADE_VERIFY((TestSuite::Comparator<CompareImage>{0.0f, 0.0f}(image, image)));
 }
 

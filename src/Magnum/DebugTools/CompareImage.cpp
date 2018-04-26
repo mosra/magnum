@@ -73,108 +73,122 @@ template<std::size_t size, class T> Float calculateImageDelta(const ImageView2D&
     return max;
 }
 
-template<class T> Float calculateIntegerImageDelta(const ImageView2D& actual, const ImageView2D& expected, std::vector<Float>& output) {
-    if(
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        expected.format() == PixelFormat::Red
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        || expected.format() == PixelFormat::RedInteger
-        #else
-        #ifndef MAGNUM_TARGET_WEBGL
-        ||
-        #endif
-        expected.format() == PixelFormat::Luminance
-        #endif
-        )
-        return calculateImageDelta<1, T>(actual, expected, output);
-    else if(
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        expected.format() == PixelFormat::RG
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        || expected.format() == PixelFormat::RGInteger
-        #else
-        #ifndef MAGNUM_TARGET_WEBGL
-        ||
-        #endif
-        expected.format() == PixelFormat::LuminanceAlpha
-        #endif
-        )
-        return calculateImageDelta<2, T>(actual, expected, output);
-    else if(expected.format() == PixelFormat::RGB
-        #ifndef MAGNUM_TARGET_GLES2
-        || expected.format() == PixelFormat::RGBInteger
-        #endif
-        )
-        return calculateImageDelta<3, T>(actual, expected, output);
-    else if(expected.format() == PixelFormat::RGBA
-        #ifndef MAGNUM_TARGET_GLES2
-        || expected.format() == PixelFormat::RGBAInteger
-        #endif
-        )
-        return calculateImageDelta<4, T>(actual, expected, output);
-
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-}
-
-template<class T> Float calculateImageDelta(const ImageView2D& actual, const ImageView2D& expected, std::vector<Float>& output) {
-    if(
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        expected.format() == PixelFormat::Red
-        #endif
-        #ifdef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_WEBGL
-        ||
-        #endif
-        expected.format() == PixelFormat::Luminance
-        #endif
-        )
-        return calculateImageDelta<1, T>(actual, expected, output);
-    else if(
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        expected.format() == PixelFormat::RG
-        #endif
-        #ifdef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_WEBGL
-        ||
-        #endif
-        expected.format() == PixelFormat::LuminanceAlpha
-        #endif
-        )
-        return calculateImageDelta<2, T>(actual, expected, output);
-    else if(expected.format() == PixelFormat::RGB)
-        return calculateImageDelta<3, T>(actual, expected, output);
-    else if(expected.format() == PixelFormat::RGBA)
-        return calculateImageDelta<4, T>(actual, expected, output);
-
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-}
-
 }
 
 std::tuple<std::vector<Float>, Float, Float> calculateImageDelta(const ImageView2D& actual, const ImageView2D& expected) {
     /* Calculate a delta image */
     std::vector<Float> delta(expected.size().product());
 
-    Float max;
-    if(expected.type() == PixelType::UnsignedByte)
-        max = calculateIntegerImageDelta<UnsignedByte>(actual, expected, delta);
-    else if(expected.type() == PixelType::UnsignedShort)
-        max = calculateIntegerImageDelta<UnsignedShort>(actual, expected, delta);
-    else if(expected.type() == PixelType::UnsignedInt)
-        max = calculateIntegerImageDelta<UnsignedInt>(actual, expected, delta);
-    #ifndef MAGNUM_TARGET_GLES2
-    else if(expected.type() == PixelType::Byte)
-        max = calculateIntegerImageDelta<Byte>(actual, expected, delta);
-    else if(expected.type() == PixelType::Short)
-        max = calculateIntegerImageDelta<Short>(actual, expected, delta);
-    else if(expected.type() == PixelType::Int)
-        max = calculateIntegerImageDelta<Int>(actual, expected, delta);
-    #endif
-    else if(expected.type() == PixelType::Float)
-        max = calculateImageDelta<Float>(actual, expected, delta);
-    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    CORRADE_ASSERT(!isPixelFormatImplementationSpecific(expected.format()),
+        "DebugTools::CompareImage: can't compare implementation-specific pixel formats", {});
+
+    Float max{Constants::nan()};
+    switch(expected.format()) {
+        #define _c(format, size, T)                                         \
+            case PixelFormat::format:                                       \
+                max = calculateImageDelta<size, T>(actual, expected, delta); \
+                break;
+        #define _d(first, second, size, T)                                  \
+            case PixelFormat::first:                                        \
+            case PixelFormat::second:                                       \
+                max = calculateImageDelta<size, T>(actual, expected, delta); \
+                break;
+        _d(R8Unorm, R8UI, 1, UnsignedByte)
+        _d(RG8Unorm, RG8UI, 2, UnsignedByte)
+        _d(RGB8Unorm, RGB8UI, 3, UnsignedByte)
+        _d(RGBA8Unorm, RGBA8UI, 4, UnsignedByte)
+        _d(R8Snorm, R8I, 1, Byte)
+        _d(RG8Snorm, RG8I, 2, Byte)
+        _d(RGB8Snorm, RGB8I, 3, Byte)
+        _d(RGBA8Snorm, RGBA8I, 4, Byte)
+        _d(R16Unorm, R16UI, 1, UnsignedShort)
+        _d(RG16Unorm, RG16UI, 2, UnsignedShort)
+        _d(RGB16Unorm, RGB16UI, 3, UnsignedShort)
+        _d(RGBA16Unorm, RGBA16UI, 4, UnsignedShort)
+        _d(R16Snorm, R16I, 1, Short)
+        _d(RG16Snorm, RG16I, 2, Short)
+        _d(RGB16Snorm, RGB16I, 3, Short)
+        _d(RGBA16Snorm, RGBA16I, 4, Short)
+        _c(R32UI, 1, UnsignedInt)
+        _c(RG32UI, 2, UnsignedInt)
+        _c(RGB32UI, 3, UnsignedInt)
+        _c(RGBA32UI, 4, UnsignedInt)
+        _c(R32I, 1, Int)
+        _c(RG32I, 2, Int)
+        _c(RGB32I, 3, Int)
+        _c(RGBA32I, 4, Int)
+        _c(R32F, 1, Float)
+        _c(RG32F, 2, Float)
+        _c(RGB32F, 3, Float)
+        _c(RGBA32F, 4, Float)
+        #undef _d
+        #undef _c
+
+        case PixelFormat::R16F:
+        case PixelFormat::RG16F:
+        case PixelFormat::RGB16F:
+        case PixelFormat::RGBA16F:
+            CORRADE_ASSERT(false,
+                "DebugTools::CompareImage: half-float formats are not supported yet", {});
+
+        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        case PixelFormat::Red:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case PixelFormat::Green:
+        case PixelFormat::Blue:
+        #endif
+        #ifdef MAGNUM_TARGET_GLES2
+        case PixelFormat::Luminance:
+        #endif
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        case PixelFormat::RG:
+        #endif
+        #ifdef MAGNUM_TARGET_GLES2
+        case PixelFormat::LuminanceAlpha:
+        #endif
+        case PixelFormat::RGB:
+        case PixelFormat::RGBA:
+        #ifndef MAGNUM_TARGET_GLES
+        case PixelFormat::BGR:
+        #endif
+        #ifndef MAGNUM_TARGET_WEBGL
+        case PixelFormat::BGRA:
+        #endif
+        #ifdef MAGNUM_TARGET_GLES2
+        case PixelFormat::SRGB:
+        case PixelFormat::SRGBAlpha:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case PixelFormat::RedInteger:
+        #ifndef MAGNUM_TARGET_GLES
+        case PixelFormat::GreenInteger:
+        case PixelFormat::BlueInteger:
+        #endif
+        case PixelFormat::RGInteger:
+        case PixelFormat::RGBInteger:
+        case PixelFormat::RGBAInteger:
+        #ifndef MAGNUM_TARGET_GLES
+        case PixelFormat::BGRInteger:
+        case PixelFormat::BGRAInteger:
+        #endif
+        #endif
+        case PixelFormat::DepthComponent:
+        #ifndef MAGNUM_TARGET_WEBGL
+        case PixelFormat::StencilIndex:
+        #endif
+        case PixelFormat::DepthStencil:
+            /** @todo CORRADE_ASSERT_UNREACHABLE() with message here */
+            CORRADE_ASSERT(false,
+                "DebugTools::CompareImage: deprecated GL-specific formats are not supported", {});
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
+    }
+
+    CORRADE_ASSERT(max == max,
+        "DebugTools::CompareImage: unknown format" << expected.format(), {});
 
     /* Calculate mean delta. Do it the special way so we don't lose
        precision -- that would result in having false negatives! */
@@ -225,101 +239,115 @@ void printDeltaImage(Debug& out, const std::vector<Float>& deltas, const Vector2
 
 namespace {
 
-template<class T> void printIntegerPixelAt(Debug& out, const char* const pixels, const std::size_t stride, const Vector2i& pos, const PixelFormat format) {
-    if(
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        format == PixelFormat::Red
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        || format == PixelFormat::RedInteger
-        #else
-        #ifndef MAGNUM_TARGET_WEBGL
-        ||
-        #endif
-        format == PixelFormat::Luminance
-        #endif
-        )
-        out << pixelAt<1, T>(pixels, stride, pos);
-    else if(
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        format == PixelFormat::RG
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        || format == PixelFormat::RGInteger
-        #else
-        #ifndef MAGNUM_TARGET_WEBGL
-        ||
-        #endif
-        format == PixelFormat::LuminanceAlpha
-        #endif
-        )
-        out << pixelAt<2, T>(pixels, stride, pos);
-    /* Take the opportunity and print 8-bit colors in hex */
-    else if(format == PixelFormat::RGB
-        #ifndef MAGNUM_TARGET_GLES2
-        || format == PixelFormat::RGBInteger
-        #endif
-        )
-        out << Math::Color3<T>{pixelAt<3, T>(pixels, stride, pos)};
-    else if(format == PixelFormat::RGBA
-        #ifndef MAGNUM_TARGET_GLES2
-        || format == PixelFormat::RGBAInteger
-        #endif
-        )
-        out << Math::Color4<T>{pixelAt<4, T>(pixels, stride, pos)};
-    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-}
+void printPixelAt(Debug& out, const char* const pixels, const std::size_t stride, const Vector2i& pos, const PixelFormat format) {
+    switch(format) {
+        #define _c(format, size, T)                                         \
+            case PixelFormat::format:                                       \
+                out << pixelAt<size, T>(pixels, stride, pos);               \
+                break;
+        #define _d(first, second, size, T)                                  \
+            case PixelFormat::first:                                        \
+            case PixelFormat::second:                                       \
+                out << pixelAt<size, T>(pixels, stride, pos);               \
+                break;
+        _d(R8Unorm, R8UI, 1, UnsignedByte)
+        _d(RG8Unorm, RG8UI, 2, UnsignedByte)
+        _c(RGB8UI, 3, UnsignedByte)
+        _c(RGBA8UI, 4, UnsignedByte)
+        /* RGB8Unorm, RGBA8Unorm handled below */
+        _d(R8Snorm, R8I, 1, Byte)
+        _d(RG8Snorm, RG8I, 2, Byte)
+        _d(RGB8Snorm, RGB8I, 3, Byte)
+        _d(RGBA8Snorm, RGBA8I, 4, Byte)
+        _d(R16Unorm, R16UI, 1, UnsignedShort)
+        _d(RG16Unorm, RG16UI, 2, UnsignedShort)
+        _d(RGB16Unorm, RGB16UI, 3, UnsignedShort)
+        _d(RGBA16Unorm, RGBA16UI, 4, UnsignedShort)
+        _d(R16Snorm, R16I, 1, Short)
+        _d(RG16Snorm, RG16I, 2, Short)
+        _d(RGB16Snorm, RGB16I, 3, Short)
+        _d(RGBA16Snorm, RGBA16I, 4, Short)
+        _c(R32UI, 1, UnsignedInt)
+        _c(RG32UI, 2, UnsignedInt)
+        _c(RGB32UI, 3, UnsignedInt)
+        _c(RGBA32UI, 4, UnsignedInt)
+        _c(R32I, 1, Int)
+        _c(RG32I, 2, Int)
+        _c(RGB32I, 3, Int)
+        _c(RGBA32I, 4, Int)
+        _c(R32F, 1, Float)
+        _c(RG32F, 2, Float)
+        _c(RGB32F, 3, Float)
+        _c(RGBA32F, 4, Float)
+        #undef _d
+        #undef _c
 
-template<class T> void printPixelAt(Debug& out, const char* const pixels, const std::size_t stride, const Vector2i& pos, const PixelFormat format) {
-    if(
+        /* Take the opportunity and print 8-bit colors in hex */
+        case PixelFormat::RGB8Unorm:
+            out << Color3ub{pixelAt<3, UnsignedByte>(pixels, stride, pos)};
+            break;
+        case PixelFormat::RGBA8Unorm:
+            out << Color4ub{pixelAt<4, UnsignedByte>(pixels, stride, pos)};
+            break;
+
+        case PixelFormat::R16F:
+        case PixelFormat::RG16F:
+        case PixelFormat::RGB16F:
+        case PixelFormat::RGBA16F:
+        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+        CORRADE_IGNORE_DEPRECATED_PUSH
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        format == PixelFormat::Red
+        case PixelFormat::Red:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        case PixelFormat::Green:
+        case PixelFormat::Blue:
         #endif
         #ifdef MAGNUM_TARGET_GLES2
-        #ifndef MAGNUM_TARGET_WEBGL
-        ||
+        case PixelFormat::Luminance:
         #endif
-        format == PixelFormat::Luminance
-        #endif
-        )
-        out << pixelAt<1, T>(pixels, stride, pos);
-    else if(
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        format == PixelFormat::RG
+        case PixelFormat::RG:
         #endif
         #ifdef MAGNUM_TARGET_GLES2
+        case PixelFormat::LuminanceAlpha:
+        #endif
+        case PixelFormat::RGB:
+        case PixelFormat::RGBA:
+        #ifndef MAGNUM_TARGET_GLES
+        case PixelFormat::BGR:
+        #endif
         #ifndef MAGNUM_TARGET_WEBGL
-        ||
+        case PixelFormat::BGRA:
         #endif
-        format == PixelFormat::LuminanceAlpha
+        #ifdef MAGNUM_TARGET_GLES2
+        case PixelFormat::SRGB:
+        case PixelFormat::SRGBAlpha:
         #endif
-        )
-        out << pixelAt<2, T>(pixels, stride, pos);
-    else if(format == PixelFormat::RGB)
-        out << pixelAt<3, T>(pixels, stride, pos);
-    else if(format == PixelFormat::RGBA)
-        out << pixelAt<4, T>(pixels, stride, pos);
-    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
-}
-
-void printPixelAt(Debug& out, const char* const pixels, const std::size_t stride, const Vector2i& pos, const PixelFormat format, const PixelType type) {
-    if(type == PixelType::UnsignedByte)
-        printIntegerPixelAt<UnsignedByte>(out, pixels, stride, pos, format);
-    else if(type == PixelType::UnsignedShort)
-        printIntegerPixelAt<UnsignedShort>(out, pixels, stride, pos, format);
-    else if(type == PixelType::UnsignedInt)
-        printIntegerPixelAt<UnsignedInt>(out, pixels, stride, pos, format);
-    #ifndef MAGNUM_TARGET_GLES2
-    else if(type == PixelType::Byte)
-        printIntegerPixelAt<Byte>(out, pixels, stride, pos, format);
-    else if(type == PixelType::Short)
-        printIntegerPixelAt<Short>(out, pixels, stride, pos, format);
-    else if(type == PixelType::Int)
-        printIntegerPixelAt<Int>(out, pixels, stride, pos, format);
-    #endif
-    else if(type == PixelType::Float)
-        printPixelAt<Float>(out, pixels, stride, pos, format);
-    else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        #ifndef MAGNUM_TARGET_GLES2
+        case PixelFormat::RedInteger:
+        #ifndef MAGNUM_TARGET_GLES
+        case PixelFormat::GreenInteger:
+        case PixelFormat::BlueInteger:
+        #endif
+        case PixelFormat::RGInteger:
+        case PixelFormat::RGBInteger:
+        case PixelFormat::RGBAInteger:
+        #ifndef MAGNUM_TARGET_GLES
+        case PixelFormat::BGRInteger:
+        case PixelFormat::BGRAInteger:
+        #endif
+        #endif
+        case PixelFormat::DepthComponent:
+        #ifndef MAGNUM_TARGET_WEBGL
+        case PixelFormat::StencilIndex:
+        #endif
+        case PixelFormat::DepthStencil:
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
+            /* Already handled by a printing assert before */
+            CORRADE_ASSERT_UNREACHABLE();
+    }
 }
 
 }
@@ -363,11 +391,11 @@ void printPixelDeltas(Debug& out, const std::vector<Float>& delta, const ImageVi
             << Debug::nospace << "," << Debug::nospace << pos.y()
             << Debug::nospace << "]";
 
-        printPixelAt(out, actualPixels, actualStride, pos, expected.format(), expected.type());
+        printPixelAt(out, actualPixels, actualStride, pos, expected.format());
 
         out << Debug::nospace << ", expected";
 
-        printPixelAt(out, expectedPixels, expectedStride, pos, expected.format(), expected.type());
+        printPixelAt(out, expectedPixels, expectedStride, pos, expected.format());
 
         out << "(Δ =" << Debug::boldColor(delta[it->second] > maxThreshold ?
             Debug::Color::Red : Debug::Color::Yellow) << delta[it->second]
@@ -398,55 +426,10 @@ bool Comparator<DebugTools::CompareImage>::operator()(const ImageView2D& actual,
         _state = State::DifferentSize;
         return false;
     }
-    if(actual.format() != expected.format() || actual.type() != expected.type()) {
+    if(actual.format() != expected.format()) {
         _state = State::DifferentFormat;
         return false;
     }
-
-    /* Assert on unsupported format/storage */
-    #ifndef CORRADE_NO_DEBUG
-    const bool formatSupported = (
-        (
-            #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-            expected.format() == PixelFormat::Red ||
-            expected.format() == PixelFormat::RG ||
-            #endif
-            #ifndef MAGNUM_TARGET_GLES2
-            expected.format() == PixelFormat::RedInteger ||
-            expected.format() == PixelFormat::RGInteger ||
-            expected.format() == PixelFormat::RGBInteger ||
-            expected.format() == PixelFormat::RGBAInteger ||
-            #else
-            expected.format() == PixelFormat::Luminance ||
-            expected.format() == PixelFormat::LuminanceAlpha ||
-            #endif
-            expected.format() == PixelFormat::RGB ||
-            expected.format() == PixelFormat::RGBA
-        ) && (
-            #ifndef MAGNUM_TARGET_GLES2
-            expected.type() == PixelType::Byte ||
-            expected.type() == PixelType::Short ||
-            expected.type() == PixelType::Int ||
-            #endif
-            expected.type() == PixelType::UnsignedByte ||
-            expected.type() == PixelType::UnsignedShort ||
-            expected.type() == PixelType::UnsignedInt
-        )) || ((
-            #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-            expected.format() == PixelFormat::Red ||
-            expected.format() == PixelFormat::RG ||
-            #endif
-            #ifdef MAGNUM_TARGET_GLES2
-            expected.format() == PixelFormat::Luminance ||
-            expected.format() == PixelFormat::LuminanceAlpha ||
-            #endif
-            expected.format() == PixelFormat::RGB ||
-            expected.format() == PixelFormat::RGBA
-        ) && expected.type() == PixelType::Float);
-    CORRADE_ASSERT(
-        formatSupported,
-        "DebugTools::CompareImage: format" << expected.format() << Debug::nospace << "/" << expected.type() << "is not supported", {});
-    #endif
 
     std::vector<Float> delta;
     std::tie(delta, _max, _mean) = DebugTools::Implementation::calculateImageDelta(actual, expected);
@@ -471,10 +454,8 @@ void Comparator<DebugTools::CompareImage>::printErrorMessage(Debug& out, const s
         out << "different size, actual" << _actualImage->size() << "but"
             << _expectedImage->size() << "expected.";
     else if(_state == State::DifferentFormat)
-        out << "different format, actual" << _actualImage->format()
-            << Debug::nospace << "/" << Debug::nospace << _actualImage->type()
-            << "but" << _expectedImage->format() << Debug::nospace << "/"
-            << Debug::nospace << _expectedImage->type() << "expected.";
+        out << "different format, actual" << _actualImage->format() << "but"
+            << _expectedImage->format() << "expected.";
     else {
         if(_state == State::AboveThresholds)
             out << "both max and mean delta above threshold, actual"

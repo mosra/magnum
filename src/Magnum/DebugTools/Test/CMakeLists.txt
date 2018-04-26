@@ -24,7 +24,7 @@
 #
 
 if(Corrade_TestSuite_FOUND)
-    corrade_add_test(DebugToolsCompareImageTest CompareImageTest.cpp LIBRARIES MagnumDebugTools)
+    corrade_add_test(DebugToolsCompareImageTest CompareImageTest.cpp LIBRARIES MagnumDebugToolsTestLib)
     set_target_properties(DebugToolsCompareImageTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
 endif()
 

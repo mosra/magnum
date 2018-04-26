@@ -44,7 +44,7 @@ Image2D doProcessing() {
     importer->openFile(Utility::Directory::join(SNIPPETS_DIR, "image2.tga"));
     auto image = importer->image2D(0);
     CORRADE_INTERNAL_ASSERT(image);
-    return Image2D{image->storage(), image->format(), image->type(), image->size(), image->release()};
+    return Image2D{image->storage(), image->format(), image->size(), image->release()};
 }
 
 Image2D loadExpectedImage() {
@@ -53,7 +53,7 @@ Image2D loadExpectedImage() {
     importer->openFile(Utility::Directory::join(SNIPPETS_DIR, "image1.tga"));
     auto image = importer->image2D(0);
     CORRADE_INTERNAL_ASSERT(image);
-    return Image2D{image->storage(), image->format(), image->type(), image->size(), image->release()};
+    return Image2D{image->storage(), image->format(), image->size(), image->release()};
 }
 
 }
