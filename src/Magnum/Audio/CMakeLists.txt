@@ -29,7 +29,7 @@ find_package(OpenAL REQUIRED)
 set(MagnumAudio_SRCS
     AbstractImporter.cpp
     Audio.cpp
-    Buffer.cpp
+    BufferFormat.cpp
     Context.cpp
     Renderer.cpp
     Source.cpp)
@@ -38,6 +38,7 @@ set(MagnumAudio_HEADERS
     AbstractImporter.h
     Audio.h
     Buffer.h
+    BufferFormat.h
     Context.h
     Extensions.h
     Renderer.h

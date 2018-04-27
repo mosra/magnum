@@ -32,7 +32,7 @@
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/Audio/Buffer.h"
+#include "Magnum/Audio/BufferFormat.h"
 
 namespace Magnum { namespace Audio {
 
@@ -151,7 +151,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /** @{ @name Data access */
 
         /** @brief Sample format */
-        Buffer::Format format() const;
+        BufferFormat format() const;
 
         /** @brief Sample frequency */
         UnsignedInt frequency() const;
@@ -187,7 +187,7 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         virtual void doClose() = 0;
 
         /** @brief Implementation for @ref format() */
-        virtual Buffer::Format doFormat() const = 0;
+        virtual BufferFormat doFormat() const = 0;
 
         /** @brief Implementation for @ref frequency() */
         virtual UnsignedInt doFrequency() const = 0;

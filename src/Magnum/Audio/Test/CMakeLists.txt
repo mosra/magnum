@@ -37,14 +37,14 @@ corrade_add_test(AudioAbstractImporterTest AbstractImporterTest.cpp
     LIBRARIES MagnumAudio
     FILES file.bin)
 target_include_directories(AudioAbstractImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-corrade_add_test(AudioBufferTest BufferTest.cpp LIBRARIES MagnumAudio)
+corrade_add_test(AudioBufferFormatTest BufferFormatTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioContextTest ContextTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioRendererTest RendererTest.cpp LIBRARIES MagnumAudio)
 corrade_add_test(AudioSourceTest SourceTest.cpp LIBRARIES MagnumAudio)
 
 set_target_properties(
     AudioAbstractImporterTest
-    AudioBufferTest
+    AudioBufferFormatTest
     AudioContextTest
     AudioRendererTest
     AudioSourceTest

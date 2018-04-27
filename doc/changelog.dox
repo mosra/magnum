@@ -120,6 +120,7 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
+-   `Audio::Buffer::Format` is deprecated, use `Audio::BufferFormat` instead
 -   `setData()` functions in the @ref Image and @ref CompressedImage classes
     are deprecated because they don't offer anything extra over simple
     move-assignment of a new instance.

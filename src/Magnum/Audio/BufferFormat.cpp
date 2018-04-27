@@ -23,29 +23,57 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <sstream>
-#include <Corrade/TestSuite/Tester.h>
+#include "BufferFormat.h"
 
-#include "Magnum/Audio/Buffer.h"
+#include <Corrade/Utility/Debug.h>
 
-namespace Magnum { namespace Audio { namespace Test {
+namespace Magnum { namespace Audio {
 
-struct BufferTest: TestSuite::Tester {
-    explicit BufferTest();
+Debug& operator<<(Debug& debug, const BufferFormat value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case BufferFormat::value: return debug << "Audio::BufferFormat::" #value;
+        _c(Mono8)
+        _c(Mono16)
+        _c(Stereo8)
+        _c(Stereo16)
 
-    void debugFormat();
-};
+        _c(MonoALaw)
+        _c(StereoALaw)
 
-BufferTest::BufferTest() {
-    addTests({&BufferTest::debugFormat});
+        _c(MonoMuLaw)
+        _c(StereoMuLaw)
+
+        _c(MonoFloat)
+        _c(StereoFloat)
+        _c(MonoDouble)
+        _c(StereoDouble)
+
+         _c(Quad8)
+         _c(Quad16)
+         _c(Quad32)
+
+         _c(Rear8)
+         _c(Rear16)
+         _c(Rear32)
+
+         _c(Surround51Channel8)
+         _c(Surround51Channel16)
+         _c(Surround51Channel32)
+
+         _c(Surround61Channel8)
+         _c(Surround61Channel16)
+         _c(Surround61Channel32)
+
+         _c(Surround71Channel8)
+         _c(Surround71Channel16)
+         _c(Surround71Channel32)
+
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Audio::BufferFormat(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
 }
 
-void BufferTest::debugFormat() {
-    std::ostringstream out;
-    Debug(&out) << Buffer::Format::Stereo16 << Buffer::Format(0xdead);
-    CORRADE_COMPARE(out.str(), "Audio::Buffer::Format::Stereo16 Audio::Buffer::Format(0xdead)\n");
-}
-
-}}}
-
-CORRADE_TEST_MAIN(Magnum::Audio::Test::BufferTest)
+}}

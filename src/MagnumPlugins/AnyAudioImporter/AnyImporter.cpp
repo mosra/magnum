@@ -75,7 +75,7 @@ void AnyImporter::doOpenFile(const std::string& filename) {
     _in = std::move(importer);
 }
 
-Buffer::Format AnyImporter::doFormat() const { return _in->format(); }
+BufferFormat AnyImporter::doFormat() const { return _in->format(); }
 
 UnsignedInt AnyImporter::doFrequency() const { return _in->frequency(); }
 

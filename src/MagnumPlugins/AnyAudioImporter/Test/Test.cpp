@@ -68,7 +68,7 @@ void AnyImporterTest::wav() {
     CORRADE_VERIFY(importer->openFile(WAV_FILE));
 
     /* Check only parameters, as it is good enough proof that it is working */
-    CORRADE_COMPARE(importer->format(), Buffer::Format::Stereo8);
+    CORRADE_COMPARE(importer->format(), BufferFormat::Stereo8);
     CORRADE_COMPARE(importer->frequency(), 96000);
 }
 

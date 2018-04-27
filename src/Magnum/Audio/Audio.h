@@ -31,10 +31,17 @@
 
 #include <Magnum/Magnum.h>
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+typedef int ALenum;
+#endif
+
 namespace Magnum { namespace Audio {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 class AbstractImporter;
+
+enum class BufferFormat: ALenum;
+
 class Buffer;
 class Context;
 class Source;

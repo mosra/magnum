@@ -57,7 +57,7 @@ void AbstractImporterTest::openFile() {
                 opened = (data.size() == 1 && data[0] == '\xa5');
             }
 
-            Buffer::Format doFormat() const override { return {}; }
+            BufferFormat doFormat() const override { return {}; }
             UnsignedInt doFrequency() const override { return {}; }
             Corrade::Containers::Array<char> doData() override { return nullptr; }
 

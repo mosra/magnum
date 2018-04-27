@@ -59,12 +59,16 @@ namespace Magnum { namespace Audio {
 
 Supports mono and stereo files of the following formats:
 
--   8 bit per channel PCM, imported as @ref Buffer::Format::Mono8 and @ref Buffer::Format::Stereo8
--   16 bit per channel PCM, imported as @ref Buffer::Format::Mono16 and @ref Buffer::Format::Stereo16
--   32-bit IEEE Float, imported as @ref Buffer::Format::MonoFloat / @ref Buffer::Format::StereoFloat
--   64-bit IEEE Float, imported as @ref Buffer::Format::MonoDouble / @ref Buffer::Format::StereoDouble
--   A-Law, imported as @ref Buffer::Format::MonoALaw / @ref Buffer::Format::StereoALaw
--   μ-Law, imported as @ref Buffer::Format::MonoMuLaw / @ref Buffer::Format::StereoMuLaw
+-   8 bit per channel PCM, imported as @ref BufferFormat::Mono8 and
+    @ref BufferFormat::Stereo8
+-   16 bit per channel PCM, imported as @ref BufferFormat::Mono16 and
+    @ref BufferFormat::Stereo16
+-   32-bit IEEE Float, imported as @ref BufferFormat::MonoFloat /
+    @ref BufferFormat::StereoFloat
+-   64-bit IEEE Float, imported as @ref BufferFormat::MonoDouble /
+    @ref BufferFormat::StereoDouble
+-   A-Law, imported as @ref BufferFormat::MonoALaw / @ref BufferFormat::StereoALaw
+-   μ-Law, imported as @ref BufferFormat::MonoMuLaw / @ref BufferFormat::StereoMuLaw
 
 This plugin is built if `WITH_WAVAUDIOIMPORTER` is enabled when building
 Magnum. To use dynamic plugin, you need to load the @cpp "WavAudioImporter" @ce
@@ -92,12 +96,12 @@ class MAGNUM_WAVAUDIOIMPORTER_EXPORT WavImporter: public AbstractImporter {
         MAGNUM_WAVAUDIOIMPORTER_LOCAL void doOpenData(Containers::ArrayView<const char> data) override;
         MAGNUM_WAVAUDIOIMPORTER_LOCAL void doClose() override;
 
-        MAGNUM_WAVAUDIOIMPORTER_LOCAL Buffer::Format doFormat() const override;
+        MAGNUM_WAVAUDIOIMPORTER_LOCAL BufferFormat doFormat() const override;
         MAGNUM_WAVAUDIOIMPORTER_LOCAL UnsignedInt doFrequency() const override;
         MAGNUM_WAVAUDIOIMPORTER_LOCAL Containers::Array<char> doData() override;
 
         Containers::Array<char> _data;
-        Buffer::Format _format;
+        BufferFormat _format;
         UnsignedInt _frequency;
 };
 

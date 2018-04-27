@@ -128,13 +128,13 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
     if(formatChunk->audioFormat == WavAudioFormat::Pcm) {
         /* Decide about format */
         if(formatChunk->numChannels == 1 && formatChunk->bitsPerSample == 8)
-            _format = Buffer::Format::Mono8;
+            _format = BufferFormat::Mono8;
         else if(formatChunk->numChannels == 1 && formatChunk->bitsPerSample == 16)
-            _format = Buffer::Format::Mono16;
+            _format = BufferFormat::Mono16;
         else if(formatChunk->numChannels == 2 && formatChunk->bitsPerSample == 8)
-            _format = Buffer::Format::Stereo8;
+            _format = BufferFormat::Stereo8;
         else if(formatChunk->numChannels == 2 && formatChunk->bitsPerSample == 16)
-             _format = Buffer::Format::Stereo16;
+             _format = BufferFormat::Stereo16;
         else {
             Error() << "Audio::WavImporter::openData(): PCM with unsupported channel count"
                     << formatChunk->numChannels << "with" << formatChunk->bitsPerSample
@@ -145,13 +145,13 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
     /* Check IEEE Float format */
     } else if(formatChunk->audioFormat == WavAudioFormat::IeeeFloat) {
         if(formatChunk->numChannels == 1 && formatChunk->bitsPerSample == 32)
-            _format = Buffer::Format::MonoFloat;
+            _format = BufferFormat::MonoFloat;
         else if(formatChunk->numChannels == 2 && formatChunk->bitsPerSample == 32)
-            _format = Buffer::Format::StereoFloat;
+            _format = BufferFormat::StereoFloat;
         else if(formatChunk->numChannels == 1 && formatChunk->bitsPerSample == 64)
-            _format = Buffer::Format::MonoDouble;
+            _format = BufferFormat::MonoDouble;
         else if(formatChunk->numChannels == 2 && formatChunk->bitsPerSample == 64)
-            _format = Buffer::Format::StereoDouble;
+            _format = BufferFormat::StereoDouble;
         else {
             Error() << "Audio::WavImporter::openData(): IEEE with unsupported channel count"
                     << formatChunk->numChannels << "with" << formatChunk->bitsPerSample
@@ -162,9 +162,9 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
     /* Check A-Law format */
     } else if(formatChunk->audioFormat == WavAudioFormat::ALaw) {
         if(formatChunk->numChannels == 1)
-            _format = Buffer::Format::MonoALaw;
+            _format = BufferFormat::MonoALaw;
         else if(formatChunk->numChannels == 2)
-            _format = Buffer::Format::StereoALaw;
+            _format = BufferFormat::StereoALaw;
         else {
             Error() << "Audio::WavImporter::openData(): ALaw with unsupported channel count"
                     << formatChunk->numChannels << "with" << formatChunk->bitsPerSample
@@ -175,9 +175,9 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
     /* Check μ-Law format */
     } else if(formatChunk->audioFormat == WavAudioFormat::MuLaw) {
         if(formatChunk->numChannels == 1)
-            _format = Buffer::Format::MonoMuLaw;
+            _format = BufferFormat::MonoMuLaw;
         else if(formatChunk->numChannels == 2)
-            _format = Buffer::Format::StereoMuLaw;
+            _format = BufferFormat::StereoMuLaw;
         else {
             Error() << "Audio::WavImporter::openData(): MuLaw with unsupported channel count"
                     << formatChunk->numChannels << "with" << formatChunk->bitsPerSample
@@ -219,7 +219,7 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
 
 void WavImporter::doClose() { _data = nullptr; }
 
-Buffer::Format WavImporter::doFormat() const { return _format; }
+BufferFormat WavImporter::doFormat() const { return _format; }
 
 UnsignedInt WavImporter::doFrequency() const { return _frequency; }
 

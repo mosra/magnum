@@ -97,7 +97,7 @@ void AbstractImporter::close() {
     }
 }
 
-Buffer::Format AbstractImporter::format() const {
+BufferFormat AbstractImporter::format() const {
     CORRADE_ASSERT(isOpened(), "Audio::AbstractImporter::format(): no file opened", {});
     return doFormat();
 }

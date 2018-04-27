@@ -92,7 +92,7 @@ class MAGNUM_ANYAUDIOIMPORTER_EXPORT AnyImporter: public AbstractImporter {
         MAGNUM_ANYAUDIOIMPORTER_LOCAL void doClose() override;
         MAGNUM_ANYAUDIOIMPORTER_LOCAL void doOpenFile(const std::string& filename) override;
 
-        MAGNUM_ANYAUDIOIMPORTER_LOCAL Buffer::Format doFormat() const override;
+        MAGNUM_ANYAUDIOIMPORTER_LOCAL BufferFormat doFormat() const override;
         MAGNUM_ANYAUDIOIMPORTER_LOCAL UnsignedInt doFrequency() const override;
         MAGNUM_ANYAUDIOIMPORTER_LOCAL Containers::Array<char> doData() override;
 
