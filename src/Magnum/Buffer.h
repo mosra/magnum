@@ -1361,10 +1361,7 @@ inline GLuint Buffer::release() {
 }
 
 #if !defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_BUILD_DEPRECATED)
-#ifdef __GNUC__
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-#endif
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<class T> Containers::Array<T> inline Buffer::data() {
     const Int bufferSize = size();
     CORRADE_ASSERT(bufferSize%sizeof(T) == 0, "Buffer::data(): the buffer size is" << bufferSize << "bytes, which can't be expressed as array of types with size" << sizeof(T), nullptr);
@@ -1376,9 +1373,7 @@ template<class T> Containers::Array<T> inline Buffer::subData(const GLintptr off
     if(size) subDataInternal(offset, size*sizeof(T), data);
     return data;
 }
-#ifdef __GNUC__
-#pragma GCC diagnostic pop
-#endif
+CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
 }
