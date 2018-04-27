@@ -236,7 +236,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * Has effect only if @ref Flag::SpecularTexture is set.
-         * @see @ref setTextures(), @ref setSpecularColor()
+         * @see @ref bindTextures(), @ref setSpecularColor()
          */
         Phong& bindSpecularTexture(Texture2D& texture);
 

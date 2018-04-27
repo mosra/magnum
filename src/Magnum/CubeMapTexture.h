@@ -646,9 +646,9 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /**
          * @brief Read given mip level and coordinate of texture to buffer image
          *
-         * See @ref image(Coordinate, Int, Image2D&) for more information. The
-         * storage is not reallocated if it is large enough to contain the new
-         * data, which means that @p usage might get ignored.
+         * See @ref image(CubeMapCoordinate, Int, Image2D&) for more
+         * information. The storage is not reallocated if it is large enough to
+         * contain the new data, which means that @p usage might get ignored.
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -706,8 +706,8 @@ class MAGNUM_EXPORT CubeMapTexture: public AbstractTexture {
         /**
          * @brief Read given mip level and coordinate of compressed texture to buffer image
          *
-         * See @ref compressedImage(Coordinate, Int, CompressedImage2D&) for
-         * more information. The storage is not reallocated if it is large
+         * See @ref compressedImage(CubeMapCoordinate, Int, CompressedImage2D&)
+         * for more information. The storage is not reallocated if it is large
          * enough to contain the new data, which means that @p usage might get
          * ignored.
          * @requires_gl Texture image queries are not available in OpenGL ES or
