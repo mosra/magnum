@@ -59,21 +59,7 @@ given key doesn't exist, default fallback is used.
 Example usage: visualizing object position, rotation and scaling using
 @ref DebugTools::ObjectRenderer :
 
-@code{.cpp}
-// Global instance of debug resource manager, drawable group for the renderers
-DebugTools::ResourceManager manager;
-SceneGraph::DrawableGroup3D debugDrawables;
-
-// Create renderer options which will be referenced later by "my" resource key
-DebugTools::ResourceManager::instance().set("my",
-    DebugTools::ObjectRendererOptions().setSize(0.3f));
-
-// Create debug renderer for given object, use "my" options for it. The
-// renderer is automatically added to the object features and also to
-// specified drawable group.
-Object3D* object;
-new DebugTools::ObjectRenderer2D(*object, "my", debugDrawables);
-@endcode
+@snippet MagnumDebugTools.cpp debug-tools-renderers
 
 See @ref DebugTools::ObjectRenderer and @ref DebugTools::ShapeRenderer for more
 information.
