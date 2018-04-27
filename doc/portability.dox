@@ -48,14 +48,7 @@ If you include @ref Magnum.h, you get these predefined macros:
 
 Example usage:
 
-@code{.cpp}
-#ifndef MAGNUM_TARGET_GLES
-Renderer::setPolygonMode(Renderer::PolygonMode::Lines);
-// draw mesh as wireframe...
-#else
-// use different mesh, as polygon mode is not supported in OpenGL ES...
-#endif
-@endcode
+@snippet Magnum.cpp portability-targets
 
 Each feature is marked accordingly if it is not available in some targets. See
 also @ref requires-gl, @ref requires-gles20 and @ref requires-gles30.
@@ -85,15 +78,7 @@ thus the decision cannot be made at compile time. Header @ref Extensions.h
 contains list of extensions, which you can pass to
 @ref Context::isExtensionSupported() and decide based on that:
 
-@code{.cpp}
-if(Context::current().isExtensionSupported<GL::ARB::geometry_shader4>()) {
-    // draw mesh with wireframe on top in one pass using geometry shader...
-} else {
-    // draw underlying mesh...
-    Renderer::setPolygonMode(Renderer::PolygonMode::Lines);
-    // draw mesh as wirefreame in second pass...
-}
-@endcode
+@snippet Magnum.cpp portability-extensions
 
 You can also decide on particular OpenGL version using @ref Context::isVersionSupported(),
 but remember that some features from that version might be available even if
@@ -104,10 +89,7 @@ extensions, you can use macros @ref MAGNUM_ASSERT_EXTENSION_SUPPORTED() or
 @ref MAGNUM_ASSERT_VERSION_SUPPORTED() to add mandatory requirement of given
 extension or version:
 
-@code{.cpp}
-MAGNUM_ASSERT_EXTENSION_SUPPORTED(GL::ARB::geometry_shader4);
-// just use geometry shader and don't care about old hardware
-@endcode
+@snippet Magnum.cpp portability-extension-assert
 
 Each class, function or enum value is marked accordingly if it needs specific
 extension or specific OpenGL version. Various classes in Magnum are taking
@@ -130,13 +112,9 @@ you can decide on the syntax in your shader code. You can also use
 @ref Context::supportedVersion() to conveniently select the first supported
 version from a list:
 
-@code{.cpp}
-// MyShader.cpp
-Version version = Context::current().supportedVersion({Version::GL430,
-                                                       Version::GL330,
-                                                       Version::GL210});
-attachShader(Shader::fromFile(version, "MyShader.vert"));
-@endcode
+<p>
+@snippet Magnum.cpp portability-shaders
+</p>
 
 @code{.vert}
 // MyShader.vert
@@ -161,12 +139,7 @@ be available in given GLSL version (e.g. causing compilation errors). You can
 use @ref Context::isExtensionSupported(Version) const to check that the
 extension is present in given version:
 
-@code{.cpp}
-if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version)) {
-    bindAttributeLocation(Position::Location, "position");
-    // ...
-}
-@endcode
+@snippet Magnum.cpp portability-shaders-bind
 
 See also @ref AbstractShaderProgram class documentation for information about
 specifying attribute location, uniform location and texture binding unit in
@@ -198,27 +171,7 @@ and desktop (using SDL2 toolkit). Thanks to static polymorphism most of the
 functions will work on both without changes, the main difference might (or
 might not, depending what you use) be in particular event handlers:
 
-@code{.cpp}
-#ifndef MAGNUM_TARGET_GLES
-#include <Platform/Sdl2Application.h>
-#else
-#include <Platform/XEglApplication.h>
-#endif
-
-class MyApplication: public Platform::Application {
-    public:
-        MyApplication(const Arguments& arguments);
-
-    protected:
-        void viewportEvent(const Vector2i& size) override;
-        void drawEvent() override;
-        void keyPressEvent(KeyEvent& event) override;
-};
-
-// ...
-
-MAGNUM_APPLICATION_MAIN(MyApplication)
-@endcode
+@snippet MagnumPlatform-portability.cpp application
 
 And corresponding CMake code. Note that we need to call @cmake find_package() @ce
 twice, first to get the @ref MAGNUM_TARGET_GLES variable and then again to find

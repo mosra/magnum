@@ -207,6 +207,49 @@ texture.setStorage(4, TextureFormat::RGBA8, {256, 256});
 }
 #endif
 
+{
+/* [portability-targets] */
+#ifndef MAGNUM_TARGET_GLES
+Renderer::setPolygonMode(Renderer::PolygonMode::Line);
+// draw mesh as wireframe...
+#else
+// use different mesh, as polygon mode is not supported in OpenGL ES...
+#endif
+/* [portability-targets] */
+}
+
+#ifndef MAGNUM_TARGET_GLES
+{
+/* [portability-extensions] */
+if(Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>()) {
+    // draw mesh with wireframe on top in one pass using geometry shader...
+} else {
+    // draw underlying mesh...
+    Renderer::setPolygonMode(Renderer::PolygonMode::Line);
+    // draw mesh as wirefreame in second pass...
+}
+/* [portability-extensions] */
+}
+
+{
+/* [portability-extension-assert] */
+MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
+// just use geometry shader and don't care about old hardware
+/* [portability-extension-assert] */
+}
+
+{
+/* [portability-shaders] */
+// MyShader.cpp
+Version version = Context::current().supportedVersion({Version::GL430,
+                                                       Version::GL330,
+                                                       Version::GL210});
+Shader vert{version, Shader::Type::Vertex};
+vert.addFile("MyShader.vert");
+/* [portability-shaders] */
+}
+#endif
+
 #ifndef MAGNUM_TARGET_GLES
 struct MyShader: AbstractShaderProgram {
 /* [AbstractShaderProgram-input-attributes] */
@@ -282,6 +325,16 @@ MyShader& setTransformFeedback(TransformFeedback& feedback, Int totalCount, Buff
 /* [AbstractShaderProgram-xfb] */
 
 void foo() {
+{
+Version version{};
+/* [portability-shaders-bind] */
+if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version)) {
+    bindAttributeLocation(Position::Location, "position");
+    // ...
+}
+/* [portability-shaders-bind] */
+}
+
 /* [AbstractShaderProgram-binding] */
 // Shaders attached...
 
