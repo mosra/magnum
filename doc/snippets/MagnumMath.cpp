@@ -27,6 +27,7 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/DualComplex.h"
 #include "Magnum/Math/DualQuaternion.h"
+#include "Magnum/Math/Half.h"
 #include "Magnum/Math/Algorithms/GramSchmidt.h"
 
 using namespace Magnum;
@@ -507,6 +508,89 @@ Math::Algorithms::gramSchmidtOrthonormalizeInPlace(transformation);
 DualQuaternion transformation;
 transformation = transformation.normalized();
 /* [transformations-normalization-quat] */
+}
+
+{
+/* [types-literals-colors] */
+using namespace Math::Literals;
+
+Color3 a = 0x33b27f_srgbf;      // {0.0331048f, 0.445201f, 0.212231f}
+Color4ub b = 0x33b27fcc_rgba;   // {0x33, 0xb2, 0x7f, 0xcc}
+/* [types-literals-colors] */
+static_cast<void>(a);
+static_cast<void>(b);
+}
+
+{
+/* [types-literals-angles] */
+using namespace Math::Literals;
+
+//Deg a = 60.0f         // error, no implicit conversion from Float
+Deg a = 60.0_degf;      // okay
+
+Float b = 3.2831853f;
+auto tau = Rad{b} + 3.0_radf;
+Radd pi = 3.141592653589793_rad;
+
+//Double c = pi;        // error, no implicit conversion to Double
+auto c = Double(pi);    // okay
+/* [types-literals-angles] */
+static_cast<void>(a);
+static_cast<void>(tau);
+static_cast<void>(c);
+
+/* [types-literals-angle-conversion] */
+Rad d = 60.0_degf;      // 1.0471976f
+auto e = Degd{pi};      // 180.0
+
+//Rad f = pi;           // error, no implicit conversion of underlying types
+auto f = Rad{pi};       // 3.141592654f
+/* [types-literals-angle-conversion] */
+static_cast<void>(d);
+static_cast<void>(e);
+static_cast<void>(f);
+}
+
+{
+/* [types-literals-usage] */
+Float a = Math::sin(1.32457_radf);
+Complex b = Complex::rotation(60.0_degf);
+/* [types-literals-usage] */
+static_cast<void>(a);
+static_cast<void>(b);
+}
+
+{
+/* [types-literals-half] */
+using namespace Math::Literals;
+
+Half a = 3.5_h;         // 0x4300 internally
+/* [types-literals-half] */
+static_cast<void>(a);
+}
+
+{
+bool orthographic = false;
+/* [types-literals-init] */
+/* These are equivalent */
+Vector3 a1;
+Vector3 a2{Math::ZeroInit};
+
+/* These too */
+Quaternion q1;
+Quaternion q2{Math::IdentityInit};
+
+/* Avoid unnecessary initialization if is overwritten anyway */
+Matrix4 projection{Math::NoInit};
+if(orthographic)
+    projection = Matrix4::orthographicProjection({4.0f, 3.0f}, 0.1f, 100.0f);
+else
+    projection = Matrix4::perspectiveProjection(35.0_degf, 1.33f, 0.1f, 100.0f);
+/* [types-literals-init] */
+static_cast<void>(a1);
+static_cast<void>(a2);
+static_cast<void>(q1);
+static_cast<void>(q2);
 }
 
 }

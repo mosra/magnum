@@ -102,12 +102,7 @@ For easier entering of (s)RGB colors in hexadecimal format there are
 @ref Math::Literals namespace. See their documentation for more information
 about the differences.
 
-@code{.cpp}
-using namespace Math::Literals;
-
-Color3 a = 0x33b27f_srgbf;      // {0.0331048f, 0.445201f, 0.212231f}
-Color4ub a = 0x33b27fcc_rgba;   // {0x33, 0xb2, 0x7f, 0xcc}
-@endcode
+@snippet MagnumMath.cpp types-literals-colors
 
 @section types-binary Binary representation
 
@@ -141,41 +136,20 @@ or use custom @link Math::Literals::operator""_degf() _degf @endlink /
 / @link Math::Literals::operator""_rad() _rad @endlink literals that are
 provided in the @ref Math::Literals namespace:
 
-@code{.cpp}
-using namespace Math::Literals;
-
-//Deg a = 60.0f         // error, no implicit conversion from Float
-Deg a = 60.0_degf;      // okay
-
-Float b = 3.2831853f;
-auto tau = Rad{b} + 3.0_radf;
-Radd pi = 3.141592653589793_rad;
-
-//Double c = pi;        // error, no implicit conversion to Double
-auto c = Double{pi};    // okay
-@endcode
+@snippet MagnumMath.cpp types-literals-angles
 
 They can be implicitly converted to each other, but conversion to different
 underlying type is *explicit* to avoid precision loss (or, on the other hand,
 unnecessarily high precision) during computations:
 
-@code{.cpp}
-Rad d = 60.0_degf;      // 1.0471976f
-auto e = Degd{pi};      // 180.0
-
-//Rad f = pi;           // error, no implicit conversion of underlying types
-auto f = Rad{pi};       // 3.141592654f
-@endcode
+@snippet MagnumMath.cpp types-literals-angle-conversion
 
 These classes are used exclusively in all functions taking and returning angles
 --- trigonometry, angle computation, rotating transformation etc. Thanks to
 implicit conversion you can seamlessly use either radians or degrees without
 any need to care about what input the function expects:
 
-@code{.cpp}
-Float a = Math::sin(1.32457_radf);
-Complex b = Complex::rotation(60.0_degf);
-@endcode
+@snippet MagnumMath.cpp types-literals-usage
 
 There is also a @ref Half type for handling half-precision floating point
 values. By design it doesn't support any arithmetic operations as they would be
@@ -185,11 +159,7 @@ conversion operators from/to @ref Float and @ref UnsignedShort and you can also
 use the @link Math::Literals::operator""_h() _h @endlink literal that is
 provided in the @ref Math::Literals namespace:
 
-@code{.cpp}
-using namespace Math::Literals;
-
-Half a = 3.5_h;         // 0x4300 internally
-@endcode
+@snippet MagnumMath.cpp types-literals-half
 
 @section types-other Other types
 
@@ -229,21 +199,6 @@ explicit:
 
 Example:
 
-@code{.cpp}
-// These are equivalent
-Vector3 a1;
-Vector3 a1{Math::ZeroInit};
-
-// These too
-Quaternion q;
-Quaternion q{Math::IdentityInit};
-
-// Avoid unnecessary initialization if is overwritten anyway
-Matrix4 projection{Math::NoInit};
-if(orthographic)
-    projection = Matrix4::orthographicProjection(...);
-else
-    projection = Matrix4::perspectiveProjection(...);
-@endcode
+@snippet MagnumMath.cpp types-literals-init
 */
 }
