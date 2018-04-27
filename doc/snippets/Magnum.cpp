@@ -82,6 +82,39 @@ using namespace Magnum::Math::Literals;
 
 int main() {
 
+#ifndef MAGNUM_TARGET_GLES2
+{
+ImageView2D diffuse{PixelFormat::RGBA, PixelType::UnsignedByte, {}};
+ImageView2D specular{PixelFormat::RGBA, PixelType::UnsignedByte, {}};
+ImageView2D bump{PixelFormat::RGBA, PixelType::UnsignedByte, {}};
+/* [method-chaining-texture] */
+Texture2D carDiffuseTexture, carSpecularTexture, carBumpTexture;
+
+carDiffuseTexture.setStorage(5, TextureFormat::SRGB8, {256, 256});
+carSpecularTexture.setStorage(3, TextureFormat::R8, {256, 256});
+carBumpTexture.setStorage(5, TextureFormat::RGB8, {256, 256});
+carDiffuseTexture.setSubImage(0, {}, diffuse);
+carSpecularTexture.setSubImage(0, {}, specular);
+carBumpTexture.setSubImage(0, {}, bump);
+carDiffuseTexture.generateMipmap();
+carSpecularTexture.generateMipmap();
+carBumpTexture.generateMipmap();
+/* [method-chaining-texture] */
+
+/* [method-chaining-texture-chained] */
+carDiffuseTexture.setStorage(5, TextureFormat::SRGB8, {256, 256})
+    .setSubImage(0, {}, diffuse)
+    .generateMipmap();
+carSpecularTexture.setStorage(3, TextureFormat::R8, {256, 256})
+    .setSubImage(0, {}, diffuse)
+    .generateMipmap();
+carBumpTexture.setStorage(5, TextureFormat::RGB8, {256, 256})
+    .setSubImage(0, {}, bump)
+    .generateMipmap();
+/* [method-chaining-texture-chained] */
+}
+#endif
+
 {
 auto importSomeMesh() -> std::tuple<Mesh, Buffer, Buffer>;
 /* [opengl-wrapping-nocreate] */

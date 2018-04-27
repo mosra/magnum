@@ -44,19 +44,7 @@ bound somewhere. Method chaining encourages you to configure whole object in
 one run, effectively reducing the number of needed bindings. Consider the
 following example:
 
-@code{.cpp}
-Texture2D carDiffuseTexture, carSpecularTexture, carBumpTexture;
-
-carDiffuseTexture.setStorage(5, TextureFormat::SRGB8);
-carSpecularTexture.setStorage(3, TextureFormat::R8);
-carBumpTexture.setStorage(5, TextureFormat::RGB8);
-carDiffuseTexture.setSubImage(0, {}, diffuse);
-carSpecularTexture.setSubImage(0, {}, specular;
-carBumpTexture.setSubImage(0, {}, bump);
-carDiffuseTexture.generateMipmap();
-carSpecularTexture.generateMipmap();
-carBumpTexture.generateMipmap();
-@endcode
+@snippet Magnum.cpp method-chaining-texture
 
 This code is written that similar configuration steps are grouped together,
 which might be good when somebody needs to change something for all three
@@ -65,17 +53,7 @@ names and after each configuration step the texture must be rebound to another.
 With method chaining used the code looks much lighter and each object is
 configured in one run, reducing count of bind calls from 9 to 3.
 
-@code{.cpp}
-carDiffuseTexture.setStorage(5, TextureFormat::SRGB8)
-    .setSubImage(0, {}, diffuse)
-    .generateMipmap();
-carSpecularTexture.setStorage(3, TextureFormat::R8)
-    .setSubImage(0, {}, diffuse)
-    .generateMipmap();
-carBumpTexture.setStorage(5, TextureFormat::RGB8)
-    .setSubImage(0, {}, bump)
-    .generateMipmap();
-@endcode
+@snippet Magnum.cpp method-chaining-texture-chained
 
 Method chaining is not used on non-configuring functions, such as
 @ref Framebuffer::clear() or @ref Mesh::draw(), as these won't be commonly used
