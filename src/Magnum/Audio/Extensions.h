@@ -41,12 +41,10 @@ Each extension is a @cpp struct @ce named hierarchically by prefix, vendor and
 extension name taken from list at @ref openal-support, for example
 @cpp ALC::SOFTX::HRTF @ce.
 
-Each struct has the same public methods as @ref Extension class
-(@ref Extension::requiredVersion() "requiredVersion()",
-@ref Extension::coreVersion() "coreVersion()" and @ref Extension::string() "string()"),
-but these structs are better suited for compile-time decisions rather than
-@ref Extension instances. See @ref Context::isExtensionSupported() for example
-usage.
+Each struct has the same public methods as @ref Extension class (currently just
+@ref Extension::string() "string()"), but these structs are better suited for
+compile-time decisions rather than @ref Extension instances. See
+@ref Context::isExtensionSupported() for example usage.
 
 This namespace is built if `WITH_AUDIO` is enabled when building Magnum. To use
 this library with CMake, you need to request the `Audio` component of the
