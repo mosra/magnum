@@ -39,7 +39,6 @@ class Buffer;
 class Context;
 class Source;
 /* Renderer used only statically */
-#endif
 
 template<UnsignedInt> class Playable;
 typedef Playable<2> Playable2D;
@@ -52,6 +51,7 @@ typedef PlayableGroup<3> PlayableGroup3D;
 template<UnsignedInt> class Listener;
 typedef Listener<2> Listener2D;
 typedef Listener<3> Listener3D;
+#endif
 
 }}
 
