@@ -25,7 +25,7 @@
 
 #include <thread>
 #include <Magnum/Platform/WindowlessEglApplication.h>
-#include <Magnum/Platform/Context.h>
+#include <Magnum/Platform/GLContext.h>
 
 using namespace Magnum;
 
@@ -35,7 +35,7 @@ int main() {
 
     std::thread worker{[&glContext]{
         glContext.makeCurrent();
-        Platform::Context context;
+        Platform::GLContext context;
 
         // Use Magnum here ...
     }};

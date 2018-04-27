@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/Platform/Context.h>
+#include "Magnum/Platform/GLContext.h"
 
 using namespace Magnum;
 
@@ -33,7 +33,7 @@ int main() {
 
     {
         /* Initialize Magnum */
-        Platform::Context context;
+        Platform::GLContext context;
 
         // Main loop ...
 

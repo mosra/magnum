@@ -36,16 +36,16 @@
 #error no windowless application available on this platform
 #endif
 
-#include <Magnum/Buffer.h>
-#include <Magnum/Framebuffer.h>
 #include <Magnum/Image.h>
-#include <Magnum/Mesh.h>
 #include <Magnum/PixelFormat.h>
-#include <Magnum/Renderbuffer.h>
-#include <Magnum/RenderbufferFormat.h>
-#include <Magnum/Renderer.h>
-#include <Magnum/Texture.h>
-#include <Magnum/TextureFormat.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/Framebuffer.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Renderbuffer.h>
+#include <Magnum/GL/RenderbufferFormat.h>
+#include <Magnum/GL/Renderer.h>
+#include <Magnum/GL/Texture.h>
+#include <Magnum/GL/TextureFormat.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/MeshTools/Transform.h>
@@ -135,56 +135,56 @@ int PrimitiveVisualizer::exec() {
         std::exit(1);
     }
 
-    Renderbuffer multisampleColor, multisampleDepth;
-    multisampleColor.setStorageMultisample(16, RenderbufferFormat::RGBA8, ImageSize);
-    multisampleDepth.setStorageMultisample(16, RenderbufferFormat::DepthComponent24, ImageSize);
+    GL::Renderbuffer multisampleColor, multisampleDepth;
+    multisampleColor.setStorageMultisample(16, GL::RenderbufferFormat::RGBA8, ImageSize);
+    multisampleDepth.setStorageMultisample(16, GL::RenderbufferFormat::DepthComponent24, ImageSize);
 
-    Framebuffer multisampleFramebuffer{{{}, ImageSize}};
-    multisampleFramebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, multisampleColor)
-        .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, multisampleDepth)
+    GL::Framebuffer multisampleFramebuffer{{{}, ImageSize}};
+    multisampleFramebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, multisampleColor)
+        .attachRenderbuffer(GL::Framebuffer::BufferAttachment::Depth, multisampleDepth)
         .bind();
-    CORRADE_INTERNAL_ASSERT(multisampleFramebuffer.checkStatus(FramebufferTarget::Draw) == Framebuffer::Status::Complete);
+    CORRADE_INTERNAL_ASSERT(multisampleFramebuffer.checkStatus(GL::FramebufferTarget::Draw) == GL::Framebuffer::Status::Complete);
 
-    Renderbuffer color;
-    color.setStorage(RenderbufferFormat::RGBA8, ImageSize);
-    Framebuffer framebuffer{{{}, ImageSize}};
-    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color);
+    GL::Renderbuffer color;
+    color.setStorage(GL::RenderbufferFormat::RGBA8, ImageSize);
+    GL::Framebuffer framebuffer{{{}, ImageSize}};
+    framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, color);
 
     /* Cheating a bit and enabling only face culling instead of depth test in
        order to draw the wireframe over. I couldn't get polygon offset to work
        on the first try so I gave up. This will of course break with things
        like torus later. */
-    Renderer::enable(Renderer::Feature::FaceCulling);
-    Renderer::enable(Renderer::Feature::Blending);
-    Renderer::setBlendFunction(Renderer::BlendFunction::One, Renderer::BlendFunction::One);
-    Renderer::setClearColor(0x000000_rgbaf);
-    Renderer::setLineWidth(1.5f);
+    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
+    GL::Renderer::enable(GL::Renderer::Feature::Blending);
+    GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::One);
+    GL::Renderer::setClearColor(0x000000_rgbaf);
+    GL::Renderer::setLineWidth(1.5f);
 
     {
         Shaders::VertexColor2D shader;
         shader.setTransformationProjectionMatrix(Projection2D*Transformation2D);
 
         for(auto fun: {&PrimitiveVisualizer::axis2D}) {
-            multisampleFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
+            multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
             std::string filename;
             Containers::Optional<Trade::MeshData2D> data;
             std::tie(data, filename) = (this->*fun)();
 
             /* TODO: use MeshTools::compile() once it can handle colors */
-            Buffer vertices, indices;
-            vertices.setData(MeshTools::interleave(data->positions(0), data->colors(0)), BufferUsage::StaticDraw);
-            indices.setData(data->indices(), BufferUsage::StaticDraw);
-            Mesh mesh;
+            GL::Buffer vertices, indices;
+            vertices.setData(MeshTools::interleave(data->positions(0), data->colors(0)), GL::BufferUsage::StaticDraw);
+            indices.setData(data->indices(), GL::BufferUsage::StaticDraw);
+            GL::Mesh mesh;
             mesh.addVertexBuffer(vertices, 0, Shaders::VertexColor2D::Position{}, Shaders::VertexColor2D::Color{Shaders::VertexColor2D::Color::Components::Four})
-                .setIndexBuffer(indices, 0, Mesh::IndexType::UnsignedInt)
+                .setIndexBuffer(indices, 0, GL::MeshIndexType::UnsignedInt)
                 .setCount(data->indices().size())
                 .setPrimitive(data->primitive());
 
             mesh.draw(shader);
 
-            AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), FramebufferBlit::Color);
-            Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA, PixelType::UnsignedByte});
+            GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
+            Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
             converter->exportToFile(result, Utility::Directory::join("../", "primitives-" + filename));
         }
     }
@@ -194,26 +194,26 @@ int PrimitiveVisualizer::exec() {
         shader.setTransformationProjectionMatrix(Projection3D*Transformation3D);
 
         for(auto fun: {&PrimitiveVisualizer::axis3D}) {
-            multisampleFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
+            multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
             std::string filename;
             Containers::Optional<Trade::MeshData3D> data;
             std::tie(data, filename) = (this->*fun)();
 
             /* TODO: use MeshTools::compile() once it can handle colors */
-            Buffer vertices, indices;
-            vertices.setData(MeshTools::interleave(data->positions(0), data->colors(0)), BufferUsage::StaticDraw);
-            indices.setData(data->indices(), BufferUsage::StaticDraw);
-            Mesh mesh;
+            GL::Buffer vertices, indices;
+            vertices.setData(MeshTools::interleave(data->positions(0), data->colors(0)), GL::BufferUsage::StaticDraw);
+            indices.setData(data->indices(), GL::BufferUsage::StaticDraw);
+            GL::Mesh mesh;
             mesh.addVertexBuffer(vertices, 0, Shaders::VertexColor3D::Position{}, Shaders::VertexColor3D::Color{Shaders::VertexColor3D::Color::Components::Four})
-                .setIndexBuffer(indices, 0, Mesh::IndexType::UnsignedInt)
+                .setIndexBuffer(indices, 0, GL::MeshIndexType::UnsignedInt)
                 .setCount(data->indices().size())
                 .setPrimitive(data->primitive());
 
             mesh.draw(shader);
 
-            AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), FramebufferBlit::Color);
-            Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA, PixelType::UnsignedByte});
+            GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
+            Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
             converter->exportToFile(result, Utility::Directory::join("../", "primitives-" + filename));
         }
     }
@@ -229,20 +229,20 @@ int PrimitiveVisualizer::exec() {
                        &PrimitiveVisualizer::line2D,
                        &PrimitiveVisualizer::squareWireframe})
         {
-            multisampleFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
+            multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
             std::string filename;
             Containers::Optional<Trade::MeshData2D> data;
             std::tie(data, filename) = (this->*fun)();
 
-            std::unique_ptr<Buffer> vertices, indices;
-            Mesh mesh{NoCreate};
-            std::tie(mesh, vertices, indices) = MeshTools::compile(*data, BufferUsage::StaticDraw);
+            std::unique_ptr<GL::Buffer> vertices, indices;
+            GL::Mesh mesh{NoCreate};
+            std::tie(mesh, vertices, indices) = MeshTools::compile(*data, GL::BufferUsage::StaticDraw);
 
             mesh.draw(shader);
 
-            AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), FramebufferBlit::Color);
-            Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA, PixelType::UnsignedByte});
+            GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
+            Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
             converter->exportToFile(result, Utility::Directory::join("../", "primitives-" + filename));
         }
     }
@@ -263,20 +263,20 @@ int PrimitiveVisualizer::exec() {
                        &PrimitiveVisualizer::planeWireframe,
                        &PrimitiveVisualizer::uvSphereWireframe})
         {
-            multisampleFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
+            multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
             std::string filename;
             Containers::Optional<Trade::MeshData3D> data;
             std::tie(data, filename) = (this->*fun)();
 
-            std::unique_ptr<Buffer> vertices, indices;
-            Mesh mesh{NoCreate};
-            std::tie(mesh, vertices, indices) = MeshTools::compile(*data, BufferUsage::StaticDraw);
+            std::unique_ptr<GL::Buffer> vertices, indices;
+            GL::Mesh mesh{NoCreate};
+            std::tie(mesh, vertices, indices) = MeshTools::compile(*data, GL::BufferUsage::StaticDraw);
 
             mesh.draw(shader);
 
-            AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), FramebufferBlit::Color);
-            Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA, PixelType::UnsignedByte});
+            GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
+            Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
             converter->exportToFile(result, Utility::Directory::join("../", "primitives-" + filename));
         }
     }
@@ -296,24 +296,24 @@ int PrimitiveVisualizer::exec() {
         for(auto fun: {&PrimitiveVisualizer::circle2DSolid,
                        &PrimitiveVisualizer::squareSolid})
         {
-            multisampleFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
+            multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
             std::string filename;
             Containers::Optional<Trade::MeshData2D> data;
             std::tie(data, filename) = (this->*fun)();
 
             /* TODO: use MeshTools::compile() and MeshVisualizer2D once it exists */
-            Buffer vertices;
-            vertices.setData(data->positions(0), BufferUsage::StaticDraw);
-            Mesh mesh;
+            GL::Buffer vertices;
+            vertices.setData(data->positions(0), GL::BufferUsage::StaticDraw);
+            GL::Mesh mesh;
             mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizer::Position{Shaders::MeshVisualizer::Position::Components::Two})
                 .setCount(data->positions(0).size())
                 .setPrimitive(data->primitive());
 
             mesh.draw(shader);
 
-            AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), FramebufferBlit::Color);
-            Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA, PixelType::UnsignedByte});
+            GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
+            Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
             converter->exportToFile(result, Utility::Directory::join("../", "primitives-" + filename));
         }
     }
@@ -344,21 +344,21 @@ int PrimitiveVisualizer::exec() {
                        &PrimitiveVisualizer::planeSolid,
                        &PrimitiveVisualizer::uvSphereSolid})
         {
-            multisampleFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
+            multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
             std::string filename;
             Containers::Optional<Trade::MeshData3D> data;
             std::tie(data, filename) = (this->*fun)();
 
-            std::unique_ptr<Buffer> vertices, indices;
-            Mesh mesh{NoCreate};
-            std::tie(mesh, vertices, indices) = MeshTools::compile(*data, BufferUsage::StaticDraw);
+            std::unique_ptr<GL::Buffer> vertices, indices;
+            GL::Mesh mesh{NoCreate};
+            std::tie(mesh, vertices, indices) = MeshTools::compile(*data, GL::BufferUsage::StaticDraw);
 
             mesh.draw(phong);
             mesh.draw(wireframe);
 
-            AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), FramebufferBlit::Color);
-            Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA, PixelType::UnsignedByte});
+            GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
+            Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
             converter->exportToFile(result, Utility::Directory::join("../", "primitives-" + filename));
         }
     }

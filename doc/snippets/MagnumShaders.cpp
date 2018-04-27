@@ -25,10 +25,10 @@
 
 #include <numeric>
 
-#include "Magnum/Buffer.h"
-#include "Magnum/DefaultFramebuffer.h"
-#include "Magnum/Mesh.h"
-#include "Magnum/Texture.h"
+#include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/DefaultFramebuffer.h"
+#include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/Texture.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/Shaders/DistanceFieldVector.h"
@@ -55,10 +55,10 @@ Vertex data[60]{
     // ...
 };
 
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
+GL::Buffer vertices;
+vertices.setData(data, GL::BufferUsage::StaticDraw);
 
-Mesh mesh;
+GL::Mesh mesh;
 mesh.addVertexBuffer(vertices, 0,
     Shaders::Phong::Position{},
     Shaders::Phong::Normal{},
@@ -69,7 +69,7 @@ mesh.addVertexBuffer(vertices, 0,
 
 /* [shaders-rendering] */
 Matrix4 transformationMatrix, projectionMatrix;
-Texture2D diffuseTexture, specularTexture;
+GL::Texture2D diffuseTexture, specularTexture;
 
 Shaders::Phong shader{Shaders::Phong::Flag::DiffuseTexture};
 shader.bindDiffuseTexture(diffuseTexture)
@@ -93,7 +93,7 @@ Shaders::MeshVisualizer visualizerShader{Shaders::MeshVisualizer::Flag::Wirefram
 visualizerShader
     .setColor(0x2f83cc_rgbf)
     .setWireframeColor(0xdcdcdc_rgbf)
-    .setViewportSize(Vector2{defaultFramebuffer.viewport().size()})
+    .setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
     .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
 
 mesh.draw(visualizerShader);
@@ -110,10 +110,10 @@ Vertex data[60]{
     // ...
 };
 
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
+GL::Buffer vertices;
+vertices.setData(data, GL::BufferUsage::StaticDraw);
 
-Mesh mesh;
+GL::Mesh mesh;
 mesh.addVertexBuffer(vertices, 0,
     Shaders::DistanceFieldVector2D::Position{},
     Shaders::DistanceFieldVector2D::TextureCoordinates{})
@@ -123,10 +123,10 @@ mesh.addVertexBuffer(vertices, 0,
 }
 
 {
-Mesh mesh;
+GL::Mesh mesh;
 /* [DistanceFieldVector-usage2] */
 Matrix3 transformationMatrix, projectionMatrix;
-Texture2D texture;
+GL::Texture2D texture;
 
 Shaders::DistanceFieldVector2D shader;
 shader.setColor(0x2f83cc_rgbf)
@@ -148,10 +148,10 @@ Vertex data[60]{
     //...
 };
 
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
+GL::Buffer vertices;
+vertices.setData(data, GL::BufferUsage::StaticDraw);
 
-Mesh mesh;
+GL::Mesh mesh;
 mesh.addVertexBuffer(vertices, 0, Shaders::Flat3D::Position{})
     // ...
     ;
@@ -179,10 +179,10 @@ Vertex data[60]{
     // ...
 };
 
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
+GL::Buffer vertices;
+vertices.setData(data, GL::BufferUsage::StaticDraw);
 
-Mesh mesh;
+GL::Mesh mesh;
 mesh.addVertexBuffer(vertices, 0,
     Shaders::Flat3D::Position{},
     Shaders::Flat3D::TextureCoordinates{})
@@ -192,7 +192,7 @@ mesh.addVertexBuffer(vertices, 0,
 
 /* [Flat-usage-textured2] */
 Matrix4 transformationMatrix, projectionMatrix;
-Texture2D texture;
+GL::Texture2D texture;
 
 Shaders::Flat3D shader{Shaders::Flat3D::Flag::Textured};
 shader.setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
@@ -211,10 +211,10 @@ Vertex data[60]{
     // ...
 };
 
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
+GL::Buffer vertices;
+vertices.setData(data, GL::BufferUsage::StaticDraw);
 
-Mesh mesh;
+GL::Mesh mesh;
 mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizer::Position{});
 /* [MeshVisualizer-usage-geom1] */
 
@@ -225,7 +225,7 @@ Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001
 Shaders::MeshVisualizer shader{Shaders::MeshVisualizer::Flag::Wireframe};
 shader.setColor(0x2f83cc_rgbf)
     .setWireframeColor(0xdcdcdc_rgbf)
-    .setViewportSize(Vector2{defaultFramebuffer.viewport().size()})
+    .setViewportSize(Vector2{GL::defaultFramebuffer.viewport().size()})
     .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
 
 mesh.draw(shader);
@@ -236,8 +236,8 @@ constexpr std::size_t vertexCount = Containers::arraySize(data);
 Float vertexIndex[vertexCount];
 std::iota(vertexIndex, vertexIndex + vertexCount, 0.0f);
 
-Buffer vertexIndices;
-vertexIndices.setData(vertexIndex, BufferUsage::StaticDraw);
+GL::Buffer vertexIndices;
+vertexIndices.setData(vertexIndex, GL::BufferUsage::StaticDraw);
 
 mesh.addVertexBuffer(vertexIndices, 0, Shaders::MeshVisualizer::VertexIndex{});
 /* [MeshVisualizer-usage-no-geom-old1] */
@@ -245,7 +245,7 @@ mesh.addVertexBuffer(vertexIndices, 0, Shaders::MeshVisualizer::VertexIndex{});
 #endif
 
 {
-Mesh mesh;
+GL::Mesh mesh;
 /* [MeshVisualizer-usage-no-geom-old2] */
 Matrix4 transformationMatrix, projectionMatrix;
 
@@ -269,11 +269,11 @@ std::vector<Vector3> indexedPositions{
 };
 
 /* De-indexing the position array */
-Buffer vertices;
+GL::Buffer vertices;
 vertices.setData(MeshTools::duplicate(indices, indexedPositions),
-                 BufferUsage::StaticDraw);
+                 GL::BufferUsage::StaticDraw);
 
-Mesh mesh;
+GL::Mesh mesh;
 mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizer::Position{});
 /* [MeshVisualizer-usage-no-geom] */
 }
@@ -289,10 +289,10 @@ Vertex data[60]{
     // ...
 };
 
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
+GL::Buffer vertices;
+vertices.setData(data, GL::BufferUsage::StaticDraw);
 
-Mesh mesh;
+GL::Mesh mesh;
 mesh.addVertexBuffer(vertices, 0,
     Shaders::Phong::Position{},
     Shaders::Phong::Normal{});
@@ -325,10 +325,10 @@ Vertex data[60]{
     // ...
 };
 
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
+GL::Buffer vertices;
+vertices.setData(data, GL::BufferUsage::StaticDraw);
 
-Mesh mesh;
+GL::Mesh mesh;
 mesh.addVertexBuffer(vertices, 0,
     Shaders::Phong::Position{},
     Shaders::Phong::Normal{},
@@ -337,7 +337,7 @@ mesh.addVertexBuffer(vertices, 0,
 
 /* [Phong-usage-texture2] */
 Matrix4 transformationMatrix, projectionMatrix;
-Texture2D diffuseTexture, specularTexture;
+GL::Texture2D diffuseTexture, specularTexture;
 
 Shaders::Phong shader{Shaders::Phong::Flag::DiffuseTexture|
                       Shaders::Phong::Flag::SpecularTexture};
@@ -353,7 +353,7 @@ mesh.draw(shader);
 #endif
 
 {
-Texture2D ambientAlphaTexture, diffuseAlphaTexture;
+GL::Texture2D ambientAlphaTexture, diffuseAlphaTexture;
 Color3 diffuseRgb, specularRgb;
 /* [Phong-usage-alpha] */
 Shaders::Phong shader{Shaders::Phong::Flag::AmbientTexture|
@@ -376,10 +376,10 @@ Vertex data[60]{
     // ...
 };
 
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
+GL::Buffer vertices;
+vertices.setData(data, GL::BufferUsage::StaticDraw);
 
-Mesh mesh;
+GL::Mesh mesh;
 mesh.addVertexBuffer(vertices, 0,
     Shaders::Vector2D::Position{},
     Shaders::Vector2D::TextureCoordinates{});
@@ -387,7 +387,7 @@ mesh.addVertexBuffer(vertices, 0,
 
 /* [Vector-usage2] */
 Matrix3 transformationMatrix, projectionMatrix;
-Texture2D texture;
+GL::Texture2D texture;
 
 Shaders::Vector2D shader;
 shader.setColor(0x2f83cc_rgbf)
@@ -408,10 +408,10 @@ Vertex data[60]{
     // ...
 };
 
-Buffer vertices;
-vertices.setData(data, BufferUsage::StaticDraw);
+GL::Buffer vertices;
+vertices.setData(data, GL::BufferUsage::StaticDraw);
 
-Mesh mesh;
+GL::Mesh mesh;
 mesh.addVertexBuffer(vertices, 0,
     Shaders::VertexColor3D::Position{},
     Shaders::VertexColor3D::Color{Shaders::VertexColor3D::Color::Components::Three});

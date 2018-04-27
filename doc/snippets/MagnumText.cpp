@@ -66,12 +66,12 @@ font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "0123456789?!:;,. ");
 
 Shaders::Vector2D shader;
-Buffer vertexBuffer, indexBuffer;
-Mesh mesh;
+GL::Buffer vertexBuffer, indexBuffer;
+GL::Mesh mesh;
 
 /* Render the text, centered */
 std::tie(mesh, std::ignore) = Text::Renderer2D::render(*font, cache, 0.15f,
-    "Hello World!", vertexBuffer, indexBuffer, BufferUsage::StaticDraw,
+    "Hello World!", vertexBuffer, indexBuffer, GL::BufferUsage::StaticDraw,
     Text::Alignment::LineCenter);
 
 /* Draw the text on the screen */
@@ -84,7 +84,7 @@ mesh.draw(shader);
 /* [Renderer-usage2] */
 /* Initialize the renderer and reserve memory for enough glyphs */
 Text::Renderer2D renderer{*font, cache, 0.15f, Text::Alignment::LineCenter};
-renderer.reserve(32, BufferUsage::DynamicDraw, BufferUsage::StaticDraw);
+renderer.reserve(32, GL::BufferUsage::DynamicDraw, GL::BufferUsage::StaticDraw);
 
 /* Update the text occasionally */
 renderer.render("Hello World Countdown: 10");

@@ -24,7 +24,7 @@
 */
 
 /** [0] */
-#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/Platform/Sdl2Application.h>
 
 using namespace Magnum;
@@ -42,7 +42,7 @@ MyApplication::MyApplication(const Arguments& arguments): Platform::Application{
 }
 
 void MyApplication::drawEvent() {
-    defaultFramebuffer.clear(FramebufferClear::Color);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     // TODO: Add your drawing code here
 

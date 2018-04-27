@@ -23,8 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/DefaultFramebuffer.h"
-#include "Magnum/Framebuffer.h"
+#include "Magnum/GL/DefaultFramebuffer.h"
+#include "Magnum/GL/Framebuffer.h"
 #include "Magnum/Platform/Sdl2Application.h"
 
 using namespace Magnum;
@@ -32,7 +32,7 @@ using namespace Magnum;
 struct A: Platform::Sdl2Application {
 /* [DefaultFramebuffer-usage-viewport] */
 void viewportEvent(const Vector2i& size) override {
-    defaultFramebuffer.setViewport({{}, size});
+    GL::defaultFramebuffer.setViewport({{}, size});
 
     // ...
 }
@@ -40,7 +40,7 @@ void viewportEvent(const Vector2i& size) override {
 
 /* [DefaultFramebuffer-usage-clear] */
 void drawEvent() override {
-    defaultFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
     // ...
 }
@@ -49,17 +49,17 @@ void drawEvent() override {
 
 struct B: Platform::Sdl2Application {
 
-Framebuffer framebuffer;
+GL::Framebuffer framebuffer;
 
 /* [Framebuffer-usage-draw] */
 void drawEvent() override {
-    defaultFramebuffer.clear(FramebufferClear::Color);
-    framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
+    framebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth|GL::FramebufferClear::Stencil);
 
     framebuffer.bind();
     // ...
 
-    defaultFramebuffer.bind();
+    GL::defaultFramebuffer.bind();
     // ...
 
     swapBuffers();

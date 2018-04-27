@@ -24,7 +24,7 @@
 */
 
 #include <Magnum/Platform/WindowlessEglApplication.h>
-#include <Magnum/Platform/Context.h>
+#include <Magnum/Platform/GLContext.h>
 
 using namespace Magnum;
 
@@ -36,7 +36,7 @@ EGLContext anotherContext{};
 int main(int argc, char** argv) {
     Platform::WindowlessGLContext glContext{{}};
     glContext.makeCurrent();
-    Platform::Context context{argc, argv};
+    Platform::GLContext context{argc, argv};
 
     // Your GL code ...
 

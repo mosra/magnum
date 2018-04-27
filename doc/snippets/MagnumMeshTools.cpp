@@ -23,7 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Buffer.h"
+#include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/Mesh.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/MeshTools/CombineIndexedArrays.h"
 #include "Magnum/MeshTools/CompressIndices.h"
@@ -59,15 +60,15 @@ std::vector<UnsignedInt> indices = MeshTools::combineIndexedArrays(
 std::vector<UnsignedInt> indices;
 
 Containers::Array<char> indexData;
-Mesh::IndexType indexType;
+MeshIndexType indexType;
 UnsignedInt indexStart, indexEnd;
 std::tie(indexData, indexType, indexStart, indexEnd) =
     MeshTools::compressIndices(indices);
 
-Buffer indexBuffer;
-indexBuffer.setData(indexData, BufferUsage::StaticDraw);
+GL::Buffer indexBuffer;
+indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
 
-Mesh mesh;
+GL::Mesh mesh;
 mesh.setCount(indices.size())
     .setIndexBuffer(indexBuffer, 0, indexType, indexStart, indexEnd);
 /* [compressIndices] */
@@ -95,17 +96,17 @@ std::tie(normalIndices, normals) =
 
 {
 struct MyShader {
-    typedef Attribute<0, Vector3> Position;
-    typedef Attribute<0, Vector2> TextureCoordinates;
+    typedef GL::Attribute<0, Vector3> Position;
+    typedef GL::Attribute<0, Vector2> TextureCoordinates;
 };
 /* [interleave1] */
 std::vector<Vector3> positions;
 std::vector<Vector2> textureCoordinates;
 
-Buffer vertexBuffer;
-vertexBuffer.setData(MeshTools::interleave(positions, textureCoordinates), BufferUsage::StaticDraw);
+GL::Buffer vertexBuffer;
+vertexBuffer.setData(MeshTools::interleave(positions, textureCoordinates), GL::BufferUsage::StaticDraw);
 
-Mesh mesh;
+GL::Mesh mesh;
 mesh.setCount(positions.size())
     .addVertexBuffer(vertexBuffer, 0, MyShader::Position{}, MyShader::TextureCoordinates{});
 /* [interleave1] */

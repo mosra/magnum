@@ -23,12 +23,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Magnum/DefaultFramebuffer.h>
+#include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/Platform/Sdl2Application.h>
 /** [0] */
-#include <Magnum/Context.h>
-#include <Magnum/Renderer.h>
-#include <Magnum/Version.h>
+#include <Magnum/GL/Context.h>
+#include <Magnum/GL/Renderer.h>
+#include <Magnum/GL/Version.h>
 #include <Magnum/Math/Color.h>
 /** [0] */
 
@@ -46,15 +46,16 @@ class MyApplication: public Platform::Application {
 MyApplication::MyApplication(const Arguments& arguments): Platform::Application{arguments} {
     using namespace Magnum::Math::Literals;
 
-    Renderer::setClearColor(0xa5c9ea_rgbf);
+    GL::Renderer::setClearColor(0xa5c9ea_rgbf);
 
-    Debug{} << "Hello! This application is running on" << Context::current().version()
-            << "using" << Context::current().rendererString();
+    Debug{} << "Hello! This application is running on"
+            << GL::Context::current().version() << "using"
+            << GL::Context::current().rendererString();
 }
 /** [1] */
 
 void MyApplication::drawEvent() {
-    defaultFramebuffer.clear(FramebufferClear::Color);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     // TODO: Add your drawing code here
 

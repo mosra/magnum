@@ -28,7 +28,7 @@
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Color.h>
 #include <Magnum/Platform/Sdl2Application.h>
-#include <Magnum/Platform/Context.h>
+#include <Magnum/Platform/GLContext.h>
 
 using namespace Magnum;
 
@@ -43,12 +43,12 @@ class MyApplication: public Platform::Application {
 MyApplication::MyApplication(const Arguments& arguments): Platform::Application{arguments} {
     using namespace Math::Literals;
     /* Set clear color to dark blue */
-    Renderer::setClearColor(0x000066_rgbf);
+    GL::Renderer::setClearColor(0x000066_rgbf);
 }
 
 void MyApplication::drawEvent() {
     /* Clear the window */
-    defaultFramebuffer.clear(FramebufferClear::Color);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
     /* The context is double-buffered, swap buffers */
     swapBuffers();
@@ -71,7 +71,7 @@ class MyApplication: public Platform::Application {
 // ...
 
 void MyApplication::viewportEvent(const Vector2i& size) {
-    defaultFramebuffer.setViewport({{}, size});
+    GL::defaultFramebuffer.setViewport({{}, size});
 }
 /* [size] */
 

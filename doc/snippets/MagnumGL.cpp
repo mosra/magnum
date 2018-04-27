@@ -23,22 +23,23 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/AbstractShaderProgram.h"
-#include "Magnum/Buffer.h"
-#include "Magnum/Context.h"
-#include "Magnum/CubeMapTexture.h"
-#include "Magnum/DefaultFramebuffer.h"
-#include "Magnum/Extensions.h"
-#include "Magnum/Framebuffer.h"
 #include "Magnum/Image.h"
-#include "Magnum/Mesh.h"
 #include "Magnum/PixelFormat.h"
-#include "Magnum/Renderer.h"
-#include "Magnum/Renderbuffer.h"
-#include "Magnum/Shader.h"
-#include "Magnum/Texture.h"
-#include "Magnum/TextureFormat.h"
-#include "Magnum/Version.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Buffer.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/CubeMapTexture.h"
+#include "Magnum/GL/DefaultFramebuffer.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/Framebuffer.h"
+#include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/PixelFormat.h"
+#include "Magnum/GL/Renderer.h"
+#include "Magnum/GL/Renderbuffer.h"
+#include "Magnum/GL/Shader.h"
+#include "Magnum/GL/Texture.h"
+#include "Magnum/GL/TextureFormat.h"
+#include "Magnum/GL/Version.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/MeshTools/CompressIndices.h"
@@ -48,33 +49,33 @@
 #include "Magnum/Trade/MeshData3D.h"
 
 #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-#include "Magnum/SampleQuery.h"
+#include "Magnum/GL/SampleQuery.h"
 #endif
 
 #ifndef MAGNUM_TARGET_WEBGL
-#include "Magnum/DebugOutput.h"
+#include "Magnum/GL/DebugOutput.h"
 #ifndef CORRADE_TARGET_ANDROID
-#include "Magnum/OpenGLTester.h"
+#include "Magnum/GL/OpenGLTester.h"
 #endif
-#include "Magnum/TimeQuery.h"
+#include "Magnum/GL/TimeQuery.h"
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
-#include "Magnum/BufferImage.h"
-#include "Magnum/PrimitiveQuery.h"
-#include "Magnum/TextureArray.h"
-#include "Magnum/TransformFeedback.h"
+#include "Magnum/GL/BufferImage.h"
+#include "Magnum/GL/PrimitiveQuery.h"
+#include "Magnum/GL/TextureArray.h"
+#include "Magnum/GL/TransformFeedback.h"
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-#include "Magnum/BufferTexture.h"
-#include "Magnum/BufferTextureFormat.h"
-#include "Magnum/CubeMapTextureArray.h"
-#include "Magnum/MultisampleTexture.h"
+#include "Magnum/GL/BufferTexture.h"
+#include "Magnum/GL/BufferTextureFormat.h"
+#include "Magnum/GL/CubeMapTextureArray.h"
+#include "Magnum/GL/MultisampleTexture.h"
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-#include "Magnum/RectangleTexture.h"
+#include "Magnum/GL/RectangleTexture.h"
 #endif
 
 using namespace Magnum;
@@ -84,15 +85,15 @@ int main() {
 
 #ifndef MAGNUM_TARGET_GLES2
 {
-ImageView2D diffuse{PixelFormat::RGBA, PixelType::UnsignedByte, {}};
-ImageView2D specular{PixelFormat::RGBA, PixelType::UnsignedByte, {}};
-ImageView2D bump{PixelFormat::RGBA, PixelType::UnsignedByte, {}};
+ImageView2D diffuse{PixelFormat::RGBA8Unorm, {}};
+ImageView2D specular{PixelFormat::RGBA8Unorm, {}};
+ImageView2D bump{PixelFormat::RGBA8Unorm, {}};
 /* [method-chaining-texture] */
-Texture2D carDiffuseTexture, carSpecularTexture, carBumpTexture;
+GL::Texture2D carDiffuseTexture, carSpecularTexture, carBumpTexture;
 
-carDiffuseTexture.setStorage(5, TextureFormat::SRGB8, {256, 256});
-carSpecularTexture.setStorage(3, TextureFormat::R8, {256, 256});
-carBumpTexture.setStorage(5, TextureFormat::RGB8, {256, 256});
+carDiffuseTexture.setStorage(5, GL::TextureFormat::SRGB8, {256, 256});
+carSpecularTexture.setStorage(3, GL::TextureFormat::R8, {256, 256});
+carBumpTexture.setStorage(5, GL::TextureFormat::RGB8, {256, 256});
 carDiffuseTexture.setSubImage(0, {}, diffuse);
 carSpecularTexture.setSubImage(0, {}, specular);
 carBumpTexture.setSubImage(0, {}, bump);
@@ -102,13 +103,13 @@ carBumpTexture.generateMipmap();
 /* [method-chaining-texture] */
 
 /* [method-chaining-texture-chained] */
-carDiffuseTexture.setStorage(5, TextureFormat::SRGB8, {256, 256})
+carDiffuseTexture.setStorage(5, GL::TextureFormat::SRGB8, {256, 256})
     .setSubImage(0, {}, diffuse)
     .generateMipmap();
-carSpecularTexture.setStorage(3, TextureFormat::R8, {256, 256})
+carSpecularTexture.setStorage(3, GL::TextureFormat::R8, {256, 256})
     .setSubImage(0, {}, diffuse)
     .generateMipmap();
-carBumpTexture.setStorage(5, TextureFormat::RGB8, {256, 256})
+carBumpTexture.setStorage(5, GL::TextureFormat::RGB8, {256, 256})
     .setSubImage(0, {}, bump)
     .generateMipmap();
 /* [method-chaining-texture-chained] */
@@ -116,10 +117,10 @@ carBumpTexture.setStorage(5, TextureFormat::RGB8, {256, 256})
 #endif
 
 {
-auto importSomeMesh() -> std::tuple<Mesh, Buffer, Buffer>;
+auto importSomeMesh() -> std::tuple<GL::Mesh, GL::Buffer, GL::Buffer>;
 /* [opengl-wrapping-nocreate] */
-Mesh mesh{NoCreate};
-Buffer vertices{NoCreate}, indices{NoCreate};
+GL::Mesh mesh{NoCreate};
+GL::Buffer vertices{NoCreate}, indices{NoCreate};
 std::tie(mesh, vertices, indices) = importSomeMesh();
 /* [opengl-wrapping-nocreate] */
 }
@@ -133,8 +134,8 @@ char someData[1];
 /* [opengl-wrapping-transfer] */
 /* Transferring the instance to external library */
 {
-    Buffer buffer;
-    buffer.setData(someData, BufferUsage::StaticDraw);
+    GL::Buffer buffer;
+    buffer.setData(someData, GL::BufferUsage::StaticDraw);
     GLuint id = buffer.release();
     externalLib.setSomeBuffer(id); /* The library is responsible for deletion */
 }
@@ -142,7 +143,7 @@ char someData[1];
 /* Acquiring an instance from external library */
 {
     GLuint id = externalLib.someBuffer();
-    Buffer buffer = Buffer::wrap(id, ObjectFlag::DeleteOnDestruction);
+    GL::Buffer buffer = GL::Buffer::wrap(id, GL::ObjectFlag::DeleteOnDestruction);
     /* The buffer instance now handles deletion */
 }
 /* [opengl-wrapping-transfer] */
@@ -150,17 +151,17 @@ char someData[1];
 
 #ifndef MAGNUM_TARGET_GLES
 {
-struct: AbstractShaderProgram {} someShader;
+struct: GL::AbstractShaderProgram {} someShader;
 /* [opengl-wrapping-state] */
-Buffer buffer;
-Mesh mesh;
+GL::Buffer buffer;
+GL::Mesh mesh;
 // ...
 mesh.draw(someShader);
 
 {
     /* Entering a section with 3rd-party OpenGL code -- clean up all state that
        could cause accidental modifications of our objects from outside */
-    Context::current().resetState(Context::State::EnterExternal);
+    GL::Context::current().resetState(GL::Context::State::EnterExternal);
 
     /* Raw OpenGL calls */
     glBindBuffer(GL_ARRAY_BUFFER, buffer.id());
@@ -168,11 +169,11 @@ mesh.draw(someShader);
     // ...
 
     /* Exiting a section with 3rd-party OpenGL code -- reset our state tracker */
-    Context::current().resetState(Context::State::ExitExternal);
+    GL::Context::current().resetState(GL::Context::State::ExitExternal);
 }
 
 /* Use the buffer through Magnum again */
-auto data = buffer.map(0, 32768, Buffer::MapFlag::Read|Buffer::MapFlag::Write);
+auto data = buffer.map(0, 32768, GL::Buffer::MapFlag::Read|GL::Buffer::MapFlag::Write);
 // ...
 /* [opengl-wrapping-state] */
 static_cast<void>(data);
@@ -182,11 +183,11 @@ static_cast<void>(data);
 #ifndef MAGNUM_TARGET_GLES
 {
 /* [opengl-wrapping-extensions] */
-TextureFormat format;
-if(Context::current().isExtensionSupported<Extensions::GL::ARB::depth_buffer_float>())
-    format = TextureFormat::DepthComponent32F;
+GL::TextureFormat format;
+if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::depth_buffer_float>())
+    format = GL::TextureFormat::DepthComponent32F;
 else
-    format = TextureFormat::DepthComponent24;
+    format = GL::TextureFormat::DepthComponent24;
 /* [opengl-wrapping-extensions] */
 static_cast<void>(format);
 }
@@ -195,14 +196,14 @@ static_cast<void>(format);
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 {
 /* [opengl-wrapping-dsa] */
-Texture2D texture;
+GL::Texture2D texture;
 
 /* - on OpenGL 4.5+/ARB_direct_state_access this calls glTextureStorage2D()
    - if EXT_direct_state_access is available, calls glTextureStorage2DEXT()
    - on OpenGL 4.2+/ARB_texture_storage and OpenGL ES 3.0+ calls glTexStorage2D()
    - on OpenGL ES 2.0 with EXT_texture_storage calls glTexStorage2DEXT()
    - otherwise emulated using a sequence of four glTexImage2D() calls */
-texture.setStorage(4, TextureFormat::RGBA8, {256, 256});
+texture.setStorage(4, GL::TextureFormat::RGBA8, {256, 256});
 /* [opengl-wrapping-dsa] */
 }
 #endif
@@ -210,7 +211,7 @@ texture.setStorage(4, TextureFormat::RGBA8, {256, 256});
 {
 /* [portability-targets] */
 #ifndef MAGNUM_TARGET_GLES
-Renderer::setPolygonMode(Renderer::PolygonMode::Line);
+GL::Renderer::setPolygonMode(GL::Renderer::PolygonMode::Line);
 // draw mesh as wireframe...
 #else
 // use different mesh, as polygon mode is not supported in OpenGL ES...
@@ -221,11 +222,11 @@ Renderer::setPolygonMode(Renderer::PolygonMode::Line);
 #ifndef MAGNUM_TARGET_GLES
 {
 /* [portability-extensions] */
-if(Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4>()) {
+if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>()) {
     // draw mesh with wireframe on top in one pass using geometry shader...
 } else {
     // draw underlying mesh...
-    Renderer::setPolygonMode(Renderer::PolygonMode::Line);
+    GL::Renderer::setPolygonMode(GL::Renderer::PolygonMode::Line);
     // draw mesh as wirefreame in second pass...
 }
 /* [portability-extensions] */
@@ -233,7 +234,7 @@ if(Context::current().isExtensionSupported<Extensions::GL::ARB::geometry_shader4
 
 {
 /* [portability-extension-assert] */
-MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
+MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::geometry_shader4);
 // just use geometry shader and don't care about old hardware
 /* [portability-extension-assert] */
 }
@@ -241,21 +242,20 @@ MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
 {
 /* [portability-shaders] */
 // MyShader.cpp
-Version version = Context::current().supportedVersion({Version::GL430,
-                                                       Version::GL330,
-                                                       Version::GL210});
-Shader vert{version, Shader::Type::Vertex};
+GL::Version version = GL::Context::current().supportedVersion({
+    GL::Version::GL430, GL::Version::GL330, GL::Version::GL210});
+GL::Shader vert{version, GL::Shader::Type::Vertex};
 vert.addFile("MyShader.vert");
 /* [portability-shaders] */
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-struct MyShader: AbstractShaderProgram {
+struct MyShader: GL::AbstractShaderProgram {
 /* [AbstractShaderProgram-input-attributes] */
-typedef Attribute<0, Vector3> Position;
-typedef Attribute<1, Vector3> Normal;
-typedef Attribute<2, Vector2> TextureCoordinates;
+typedef GL::Attribute<0, Vector3> Position;
+typedef GL::Attribute<1, Vector3> Normal;
+typedef GL::Attribute<2, Vector2> TextureCoordinates;
 /* [AbstractShaderProgram-input-attributes] */
 
 /* [AbstractShaderProgram-output-attributes] */
@@ -268,13 +268,13 @@ enum: UnsignedInt {
 /* [AbstractShaderProgram-constructor] */
 explicit MyShader() {
     /* Load shader sources */
-    Shader vert{Version::GL430, Shader::Type::Vertex};
-    Shader frag{Version::GL430, Shader::Type::Fragment};
+    GL::Shader vert{GL::Version::GL430, GL::Shader::Type::Vertex};
+    GL::Shader frag{GL::Version::GL430, GL::Shader::Type::Fragment};
     vert.addFile("MyShader.vert");
     frag.addFile("MyShader.frag");
 
     /* Invoke parallel compilation for best performance */
-    CORRADE_INTERNAL_ASSERT_OUTPUT(Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 
     /* Attach the shaders */
     attachShaders({vert, frag});
@@ -300,22 +300,22 @@ MyShader& setNormalMatrix(const Matrix3x3& matrix) {
 /* [AbstractShaderProgram-uniforms] */
 
 /* [AbstractShaderProgram-textures] */
-MyShader& bindDiffuseTexture(Texture2D& texture) {
+MyShader& bindDiffuseTexture(GL::Texture2D& texture) {
     texture.bind(0);
     return *this;
 }
-MyShader& bindSpecularTexture(Texture2D& texture) {
+MyShader& bindSpecularTexture(GL::Texture2D& texture) {
     texture.bind(1);
     return *this;
 }
 /* [AbstractShaderProgram-textures] */
 
 /* [AbstractShaderProgram-xfb] */
-MyShader& setTransformFeedback(TransformFeedback& feedback, Buffer& positions, Buffer& data) {
+MyShader& setTransformFeedback(GL::TransformFeedback& feedback, GL::Buffer& positions, GL::Buffer& data) {
     feedback.attachBuffers(0, {&positions, &data});
     return *this;
 }
-MyShader& setTransformFeedback(TransformFeedback& feedback, Int totalCount, Buffer& positions, GLintptr positionsOffset, Buffer& data, GLintptr dataOffset) {
+MyShader& setTransformFeedback(GL::TransformFeedback& feedback, Int totalCount, GL::Buffer& positions, GLintptr positionsOffset, GL::Buffer& data, GLintptr dataOffset) {
     feedback.attachBuffers(0, {
         std::make_tuple(&positions, positionsOffset, totalCount*sizeof(Vector3)),
         std::make_tuple(&data, dataOffset, totalCount*sizeof(Vector2ui))
@@ -326,9 +326,9 @@ MyShader& setTransformFeedback(TransformFeedback& feedback, Int totalCount, Buff
 
 void foo() {
 {
-Version version{};
+GL::Version version{};
 /* [portability-shaders-bind] */
-if(!Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version)) {
+if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version)) {
     bindAttributeLocation(Position::Location, "position");
     // ...
 }
@@ -382,9 +382,9 @@ setTransformFeedbackOutputs({
 #ifndef MAGNUM_TARGET_GLES
 {
 MyShader shader;
-Mesh mesh;
+GL::Mesh mesh;
 Matrix4 transformation, projection;
-Texture2D diffuseTexture, specularTexture;
+GL::Texture2D diffuseTexture, specularTexture;
 /* [AbstractShaderProgram-rendering] */
 shader.setTransformationMatrix(transformation)
     .setProjectionMatrix(projection)
@@ -397,49 +397,49 @@ mesh.draw(shader);
 #endif
 
 {
-Framebuffer framebuffer{{}};
+GL::Framebuffer framebuffer{{}};
 /* [AbstractFramebuffer-read1] */
 Image2D image = framebuffer.read(framebuffer.viewport(),
-    {PixelFormat::RGBA, PixelType::UnsignedByte});
+    {PixelFormat::RGBA8Unorm});
 /* [AbstractFramebuffer-read1] */
 }
 
 #ifndef MAGNUM_TARGET_GLES2
 {
-Framebuffer framebuffer{{}};
+GL::Framebuffer framebuffer{{}};
 /* [AbstractFramebuffer-read2] */
-BufferImage2D image = framebuffer.read(framebuffer.viewport(),
-    {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+GL::BufferImage2D image = framebuffer.read(framebuffer.viewport(),
+    {PixelFormat::RGBA8Unorm}, GL::BufferUsage::StaticRead);
 /* [AbstractFramebuffer-read2] */
 }
 #endif
 
 {
-Buffer buffer;
+GL::Buffer buffer;
 /* [Buffer-setdata] */
 Containers::ArrayView<Vector3> data;
-buffer.setData(data, BufferUsage::StaticDraw);
+buffer.setData(data, GL::BufferUsage::StaticDraw);
 /* [Buffer-setdata] */
 }
 
 {
-Buffer buffer;
+GL::Buffer buffer;
 /* [Buffer-setdata-stl] */
 std::vector<Vector3> data;
-buffer.setData(data, BufferUsage::StaticDraw);
+buffer.setData(data, GL::BufferUsage::StaticDraw);
 /* [Buffer-setdata-stl] */
 
 /* [Buffer-setdata-allocate] */
-buffer.setData({nullptr, 200*sizeof(Vector3)}, BufferUsage::StaticDraw);
+buffer.setData({nullptr, 200*sizeof(Vector3)}, GL::BufferUsage::StaticDraw);
 /* [Buffer-setdata-allocate] */
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
 {
-Buffer buffer;
+GL::Buffer buffer;
 /* [Buffer-map] */
 Containers::ArrayView<Vector3> data = Containers::arrayCast<Vector3>(buffer.map(0,
-    200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::InvalidateBuffer));
+    200*sizeof(Vector3), GL::Buffer::MapFlag::Write|GL::Buffer::MapFlag::InvalidateBuffer));
 CORRADE_INTERNAL_ASSERT(data);
 for(Vector3& d: data)
     d = {/*...*/};
@@ -448,10 +448,10 @@ CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
 }
 
 {
-Buffer buffer;
+GL::Buffer buffer;
 /* [Buffer-flush] */
 Containers::ArrayView<Vector3> data = Containers::arrayCast<Vector3>(buffer.map(0,
-    200*sizeof(Vector3), Buffer::MapFlag::Write|Buffer::MapFlag::FlushExplicit));
+    200*sizeof(Vector3), GL::Buffer::MapFlag::Write|GL::Buffer::MapFlag::FlushExplicit));
 CORRADE_INTERNAL_ASSERT(data);
 for(std::size_t i: {7, 27, 56, 128}) {
     data[i] = {/*...*/};
@@ -464,14 +464,14 @@ CORRADE_INTERNAL_ASSERT_OUTPUT(buffer.unmap());
 
 {
 /* [Buffer-webgl-nope] */
-Buffer vertices, indices;
+GL::Buffer vertices, indices;
 /* [Buffer-webgl-nope] */
 }
 
 {
 /* [Buffer-webgl] */
-Buffer vertices{Buffer::TargetHint::Array},
-    indices{Buffer::TargetHint::ElementArray};
+GL::Buffer vertices{GL::Buffer::TargetHint::Array},
+    indices{GL::Buffer::TargetHint::ElementArray};
 /* [Buffer-webgl] */
 }
 
@@ -532,14 +532,14 @@ GL::CompressedBufferImage2D image = texture.compressedImage(0, {},
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 {
 /* [BufferTexture-usage] */
-Buffer buffer;
-BufferTexture texture;
-texture.setBuffer(BufferTextureFormat::RGB32F, buffer);
+GL::Buffer buffer;
+GL::BufferTexture texture;
+texture.setBuffer(GL::BufferTextureFormat::RGB32F, buffer);
 
 Vector3 data[200]{
     // ...
 };
-buffer.setData(data, BufferUsage::StaticDraw);
+buffer.setData(data, GL::BufferUsage::StaticDraw);
 /* [BufferTexture-usage] */
 }
 #endif
@@ -547,15 +547,16 @@ buffer.setData(data, BufferUsage::StaticDraw);
 #ifndef MAGNUM_TARGET_GLES
 {
 /* [Context-supportedVersion] */
-Version v1 = Context::current().isVersionSupported(Version::GL330) ?
-    Version::GL330 : Version::GL210;
-Version v2 = Context::current().supportedVersion({Version::GL330, Version::GL210});
+GL::Version v1 = GL::Context::current().isVersionSupported(GL::Version::GL330) ?
+    GL::Version::GL330 : GL::Version::GL210;
+GL::Version v2 = GL::Context::current().supportedVersion({
+    GL::Version::GL330, GL::Version::GL210});
 /* [Context-supportedVersion] */
 static_cast<void>(v1);
 static_cast<void>(v2);
 
 /* [Context-isExtensionSupported] */
-if(Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_shader>()) {
+if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::tessellation_shader>()) {
     // draw fancy detailed model
 } else {
     // texture fallback
@@ -563,20 +564,20 @@ if(Context::current().isExtensionSupported<Extensions::GL::ARB::tessellation_sha
 /* [Context-isExtensionSupported] */
 
 /* [Context-isExtensionSupported-version] */
-const Version version = Context::current().supportedVersion({
-    Version::GL320, Version::GL300, Version::GL210});
-if(Context::current().isExtensionSupported<Extensions::GL::ARB::explicit_attrib_location>(version)) {
+const GL::Version version = GL::Context::current().supportedVersion({
+    GL::Version::GL320, GL::Version::GL300, GL::Version::GL210});
+if(GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version)) {
     // Called only if ARB_explicit_attrib_location is supported
     // *and* version is higher than GL 3.1
 }
 /* [Context-isExtensionSupported-version] */
 
 /* [Context-MAGNUM_ASSERT_GL_VERSION_SUPPORTED] */
-MAGNUM_ASSERT_VERSION_SUPPORTED(Version::GL330);
+MAGNUM_ASSERT_GL_VERSION_SUPPORTED(GL::Version::GL330);
 /* [Context-MAGNUM_ASSERT_GL_VERSION_SUPPORTED] */
 
 /* [Context-MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED] */
-MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
+MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::geometry_shader4);
 /* [Context-MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED] */
 }
 #endif
@@ -584,17 +585,17 @@ MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::geometry_shader4);
 #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 {
 char data[1]{};
-ImageView2D negativeX(PixelFormat::RGBA, PixelType::UnsignedByte, {256, 256}, data);
+ImageView2D negativeX(GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, {256, 256}, data);
 /* [CubeMapTexture-usage] */
-ImageView2D positiveX(PixelFormat::RGBA, PixelType::UnsignedByte, {256, 256}, data);
+ImageView2D positiveX(GL::PixelFormat::RGBA, GL::PixelType::UnsignedByte, {256, 256}, data);
 // ...
 
-CubeMapTexture texture;
-texture.setMagnificationFilter(Sampler::Filter::Linear)
+GL::CubeMapTexture texture;
+texture.setMagnificationFilter(GL::SamplerFilter::Linear)
     // ...
-    .setStorage(Math::log2(256)+1, TextureFormat::RGBA8, {256, 256})
-    .setSubImage(CubeMapCoordinate::PositiveX, 0, {}, positiveX)
-    .setSubImage(CubeMapCoordinate::NegativeX, 0, {}, negativeX)
+    .setStorage(Math::log2(256)+1, GL::TextureFormat::RGBA8, {256, 256})
+    .setSubImage(GL::CubeMapCoordinate::PositiveX, 0, {}, positiveX)
+    .setSubImage(GL::CubeMapCoordinate::NegativeX, 0, {}, negativeX)
     // ...
 /* [CubeMapTexture-usage] */
     ;
@@ -603,87 +604,86 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
 
 #ifndef MAGNUM_TARGET_GLES
 {
-CubeMapTexture texture;
+GL::CubeMapTexture texture;
 /* [CubeMapTexture-image1] */
-Image3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
+Image3D image = texture.image(0, {PixelFormat::RGBA8Unorm});
 /* [CubeMapTexture-image1] */
 }
 
 {
-CubeMapTexture texture;
+GL::CubeMapTexture texture;
 /* [CubeMapTexture-image2] */
-BufferImage3D image = texture.image(0,
-    {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+GL::BufferImage3D image = texture.image(0,
+    {PixelFormat::RGBA8Unorm}, GL::BufferUsage::StaticRead);
 /* [CubeMapTexture-image2] */
 }
 
 {
-CubeMapTexture texture;
+GL::CubeMapTexture texture;
 /* [CubeMapTexture-compressedImage1] */
 CompressedImage3D image = texture.compressedImage(0, {});
 /* [CubeMapTexture-compressedImage1] */
 }
 
 {
-CubeMapTexture texture;
+GL::CubeMapTexture texture;
 /* [CubeMapTexture-compressedImage2] */
-CompressedBufferImage3D image = texture.compressedImage(0, {},
-    BufferUsage::StaticRead);
+GL::CompressedBufferImage3D image = texture.compressedImage(0, {},
+    GL::BufferUsage::StaticRead);
 /* [CubeMapTexture-compressedImage2] */
 }
 
 {
-CubeMapTexture texture;
+GL::CubeMapTexture texture;
 /* [CubeMapTexture-image3] */
-Image2D image = texture.image(CubeMapCoordinate::PositiveX, 0,
-    {PixelFormat::RGBA, PixelType::UnsignedByte});
+Image2D image = texture.image(GL::CubeMapCoordinate::PositiveX, 0,
+    {PixelFormat::RGBA8Unorm});
 /* [CubeMapTexture-image3] */
 }
 
 {
-CubeMapTexture texture;
+GL::CubeMapTexture texture;
 /* [CubeMapTexture-image4] */
-BufferImage2D image = texture.image(CubeMapCoordinate::PositiveX, 0,
-    {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+GL::BufferImage2D image = texture.image(GL::CubeMapCoordinate::PositiveX, 0,
+    {PixelFormat::RGBA8Unorm}, GL::BufferUsage::StaticRead);
 /* [CubeMapTexture-image4] */
 }
 
 {
-CubeMapTexture texture;
+GL::CubeMapTexture texture;
 /* [CubeMapTexture-compressedImage3] */
-CompressedImage2D image = texture.compressedImage(CubeMapCoordinate::PositiveX,
+CompressedImage2D image = texture.compressedImage(GL::CubeMapCoordinate::PositiveX,
     0, {});
 /* [CubeMapTexture-compressedImage3] */
 }
 
 {
-CubeMapTexture texture;
+GL::CubeMapTexture texture;
 /* [CubeMapTexture-compressedImage4] */
-CompressedBufferImage2D image = texture.compressedImage(CubeMapCoordinate::PositiveX,
-    0, {}, BufferUsage::StaticRead);
+GL::CompressedBufferImage2D image = texture.compressedImage(GL::CubeMapCoordinate::PositiveX,
+    0, {}, GL::BufferUsage::StaticRead);
 /* [CubeMapTexture-compressedImage4] */
 }
 
 {
-CubeMapTexture texture;
+GL::CubeMapTexture texture;
 Range3Di range;
 /* [CubeMapTexture-subImage1] */
-Image3D image = texture.subImage(0, range,
-    {PixelFormat::RGBA, PixelType::UnsignedByte});
+Image3D image = texture.subImage(0, range, {PixelFormat::RGBA8Unorm});
 /* [CubeMapTexture-subImage1] */
 }
 
 {
-CubeMapTexture texture;
+GL::CubeMapTexture texture;
 Range3Di range;
 /* [CubeMapTexture-subImage2] */
-BufferImage3D image = texture.subImage(0, range,
-    {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+GL::BufferImage3D image = texture.subImage(0, range,
+    {PixelFormat::RGBA8Unorm}, GL::BufferUsage::StaticRead);
 /* [CubeMapTexture-subImage2] */
 }
 
 {
-CubeMapTexture texture;
+GL::CubeMapTexture texture;
 Range3Di range;
 /* [CubeMapTexture-compressedSubImage1] */
 CompressedImage3D image = texture.compressedSubImage(0, range, {});
@@ -691,11 +691,11 @@ CompressedImage3D image = texture.compressedSubImage(0, range, {});
 }
 
 {
-CubeMapTexture texture;
+GL::CubeMapTexture texture;
 Range3Di range;
 /* [CubeMapTexture-compressedSubImage2] */
-CompressedBufferImage3D image = texture.compressedSubImage(0, range, {},
-    BufferUsage::StaticRead);
+GL::CompressedBufferImage3D image = texture.compressedSubImage(0, range, {},
+    GL::BufferUsage::StaticRead);
 /* [CubeMapTexture-compressedSubImage2] */
 }
 #endif
@@ -703,16 +703,16 @@ CompressedBufferImage3D image = texture.compressedSubImage(0, range, {},
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 {
 char data[1]{};
-ImageView3D imageNegativeX(PixelFormat::RGBA, PixelType::UnsignedByte, {64, 64, 1}, data);
-ImageView3D imagePositiveY(PixelFormat::RGBA, PixelType::UnsignedByte, {64, 64, 1}, data);
+ImageView3D imageNegativeX(PixelFormat::RGBA8Unorm, {64, 64, 1}, data);
+ImageView3D imagePositiveY(PixelFormat::RGBA8Unorm, {64, 64, 1}, data);
 /* [CubeMapTextureArray-usage] */
-CubeMapTextureArray texture;
-texture.setMagnificationFilter(Sampler::Filter::Linear)
+GL::CubeMapTextureArray texture;
+texture.setMagnificationFilter(GL::SamplerFilter::Linear)
     // ...
-    .setStorage(Math::log2(64)+1, TextureFormat::RGBA8, {64, 64, 24});
+    .setStorage(Math::log2(64)+1, GL::TextureFormat::RGBA8, {64, 64, 24});
 
 for(std::size_t i = 0; i != 4; i += 6) {
-    ImageView3D imagePositiveX(PixelFormat::RGBA, PixelType::UnsignedByte, {64, 64, 1}, data);
+    ImageView3D imagePositiveX(PixelFormat::RGBA8Unorm, {64, 64, 1}, data);
     // ...
     texture.setSubImage(0, Vector3i::zAxis(i+0), imagePositiveX);
     texture.setSubImage(0, Vector3i::zAxis(i+1), imageNegativeX);
@@ -726,54 +726,54 @@ texture.generateMipmap();
 
 #ifndef MAGNUM_TARGET_GLES
 {
-CubeMapTextureArray texture;
+GL::CubeMapTextureArray texture;
 /* [CubeMapTextureArray-image1] */
-Image3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
+Image3D image = texture.image(0, {PixelFormat::RGBA8Unorm});
 /* [CubeMapTextureArray-image1] */
 }
 
 {
-CubeMapTextureArray texture;
+GL::CubeMapTextureArray texture;
 /* [CubeMapTextureArray-image2] */
-BufferImage3D image = texture.image(0,
-    {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+GL::BufferImage3D image = texture.image(0,
+    {PixelFormat::RGBA8Unorm}, GL::BufferUsage::StaticRead);
 /* [CubeMapTextureArray-image2] */
 }
 
 {
-CubeMapTextureArray texture;
+GL::CubeMapTextureArray texture;
 /* [CubeMapTextureArray-compressedImage1] */
 CompressedImage3D image = texture.compressedImage(0, {});
 /* [CubeMapTextureArray-compressedImage1] */
 }
 
 {
-CubeMapTextureArray texture;
+GL::CubeMapTextureArray texture;
 /* [CubeMapTextureArray-compressedImage2] */
-CompressedBufferImage3D image = texture.compressedImage(0, {}, BufferUsage::StaticRead);
+GL::CompressedBufferImage3D image = texture.compressedImage(0, {},
+    GL::BufferUsage::StaticRead);
 /* [CubeMapTextureArray-compressedImage2] */
 }
 
 {
-CubeMapTextureArray texture;
+GL::CubeMapTextureArray texture;
 Range3Di range;
 /* [CubeMapTextureArray-subImage1] */
-Image3D image = texture.subImage(0, range,
-    {PixelFormat::RGBA, PixelType::UnsignedByte});
+Image3D image = texture.subImage(0, range, {PixelFormat::RGBA8Unorm});
 /* [CubeMapTextureArray-subImage1] */
 }
 
 {
-CubeMapTextureArray texture;
+GL::CubeMapTextureArray texture;
 Range3Di range;
 /* [CubeMapTextureArray-subImage2] */
-BufferImage3D image = texture.subImage(0, range,
-    {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+GL::BufferImage3D image = texture.subImage(0, range,
+    {PixelFormat::RGBA8Unorm}, GL::BufferUsage::StaticRead);
 /* [CubeMapTextureArray-subImage2] */
 }
 
 {
-CubeMapTextureArray texture;
+GL::CubeMapTextureArray texture;
 Range3Di range;
 /* [CubeMapTextureArray-compressedSubImage1] */
 CompressedImage3D image = texture.compressedSubImage(0, range, {});
@@ -781,11 +781,11 @@ CompressedImage3D image = texture.compressedSubImage(0, range, {});
 }
 
 {
-CubeMapTextureArray texture;
+GL::CubeMapTextureArray texture;
 Range3Di range;
 /* [CubeMapTextureArray-compressedSubImage2] */
-CompressedBufferImage3D image = texture.compressedSubImage(0, range, {},
-    BufferUsage::StaticRead);
+GL::CompressedBufferImage3D image = texture.compressedSubImage(0, range, {},
+    GL::BufferUsage::StaticRead);
 /* [CubeMapTextureArray-compressedSubImage2] */
 }
 #endif
@@ -793,25 +793,26 @@ CompressedBufferImage3D image = texture.compressedSubImage(0, range, {},
 
 #ifndef MAGNUM_TARGET_WEBGL
 {
-Mesh mesh;
-struct: AbstractShaderProgram {} shader;
+GL::Mesh mesh;
+struct: GL::AbstractShaderProgram {} shader;
 /* [DebugOutput-usage] */
-Renderer::enable(Renderer::Feature::DebugOutput);
-Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
-DebugOutput::setDefaultCallback();
+GL::Renderer::enable(GL::Renderer::Feature::DebugOutput);
+GL::Renderer::enable(GL::Renderer::Feature::DebugOutputSynchronous);
+GL::DebugOutput::setDefaultCallback();
 
 /* Disable rather spammy "Buffer detailed info" debug messages on NVidia drivers */
-DebugOutput::setEnabled(DebugOutput::Source::Api, DebugOutput::Type::Other, {131185}, false);
+GL::DebugOutput::setEnabled(
+    GL::DebugOutput::Source::Api, GL::DebugOutput::Type::Other, {131185}, false);
 
 {
-    DebugGroup group{DebugGroup::Source::Application, 42, "Scene rendering"};
+    GL::DebugGroup group{GL::DebugGroup::Source::Application, 42, "Scene rendering"};
 
-    DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::Marker,
-        1337, DebugOutput::Severity::Notification, "Rendering transparent mesh");
+    GL::DebugMessage::insert(GL::DebugMessage::Source::Application, GL::DebugMessage::Type::Marker,
+        1337, GL::DebugOutput::Severity::Notification, "Rendering transparent mesh");
 
-    Renderer::enable(Renderer::Feature::Blending);
+    GL::Renderer::enable(GL::Renderer::Feature::Blending);
     mesh.draw(shader);
-    Renderer::disable(Renderer::Feature::Blending);
+    GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
     // ...
 }
@@ -820,31 +821,31 @@ DebugOutput::setEnabled(DebugOutput::Source::Api, DebugOutput::Type::Other, {131
 
 {
 /* [DebugOutput-setDefaultCallback] */
-DebugMessage::insert(DebugMessage::Source::Application,
-    DebugMessage::Type::Marker, 1337, DebugOutput::Severity::Notification,
+GL::DebugMessage::insert(GL::DebugMessage::Source::Application,
+    GL::DebugMessage::Type::Marker, 1337, GL::DebugOutput::Severity::Notification,
     "Hello from OpenGL command stream!");
 /* [DebugOutput-setDefaultCallback] */
 }
 
 {
 /* [DebugMessage-usage] */
-DebugMessage::insert(DebugMessage::Source::Application,
-    DebugMessage::Type::Marker, 1337, DebugOutput::Severity::Notification,
+GL::DebugMessage::insert(GL::DebugMessage::Source::Application,
+    GL::DebugMessage::Type::Marker, 1337, GL::DebugOutput::Severity::Notification,
     "Hello from OpenGL command stream!");
 /* [DebugMessage-usage] */
 }
 
 {
-Mesh mesh;
-struct: AbstractShaderProgram {} shader;
+GL::Mesh mesh;
+struct: GL::AbstractShaderProgram {} shader;
 /* [DebugGroup-usage1] */
 {
     /* Push debug group */
-    DebugGroup group{DebugGroup::Source::Application, 42, "Scene rendering"};
+    GL::DebugGroup group{GL::DebugGroup::Source::Application, 42, "Scene rendering"};
 
-    Renderer::enable(Renderer::Feature::Blending);
+    GL::Renderer::enable(GL::Renderer::Feature::Blending);
     mesh.draw(shader);
-    Renderer::disable(Renderer::Feature::Blending);
+    GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
     /* The debug group is popped automatically at the end of the scope */
 }
@@ -852,16 +853,16 @@ struct: AbstractShaderProgram {} shader;
 }
 
 {
-Mesh mesh;
-struct: AbstractShaderProgram {} shader;
+GL::Mesh mesh;
+struct: GL::AbstractShaderProgram {} shader;
 /* [DebugGroup-usage2] */
-DebugGroup group;
+GL::DebugGroup group;
 
-group.push(DebugGroup::Source::Application, 42, "Scene rendering");
+group.push(GL::DebugGroup::Source::Application, 42, "Scene rendering");
 
-Renderer::enable(Renderer::Feature::Blending);
+GL::Renderer::enable(GL::Renderer::Feature::Blending);
 mesh.draw(shader);
-Renderer::disable(Renderer::Feature::Blending);
+GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
 group.pop();
 /* [DebugGroup-usage2] */
@@ -876,24 +877,24 @@ struct MyShader {
     };
 };
 /* [DefaultFramebuffer-usage-map] */
-defaultFramebuffer.mapForDraw({
-    {MyShader::ColorOutput, DefaultFramebuffer::DrawAttachment::Back},
-    {MyShader::NormalOutput, DefaultFramebuffer::DrawAttachment::None}});
+GL::defaultFramebuffer.mapForDraw({
+    {MyShader::ColorOutput, GL::DefaultFramebuffer::DrawAttachment::Back},
+    {MyShader::NormalOutput, GL::DefaultFramebuffer::DrawAttachment::None}});
 /* [DefaultFramebuffer-usage-map] */
 }
 
 #ifndef MAGNUM_TARGET_GLES2
 {
 /* [Framebuffer-usage-attach] */
-Framebuffer framebuffer{defaultFramebuffer.viewport()};
-Texture2D color, normal;
-Renderbuffer depthStencil;
+GL::Framebuffer framebuffer{GL::defaultFramebuffer.viewport()};
+GL::Texture2D color, normal;
+GL::Renderbuffer depthStencil;
 
 // configure the textures and allocate texture memory...
 
-framebuffer.attachTexture(Framebuffer::ColorAttachment{0}, color, 0);
-framebuffer.attachTexture(Framebuffer::ColorAttachment{1}, normal, 0);
-framebuffer.attachRenderbuffer(Framebuffer::BufferAttachment::DepthStencil, depthStencil);
+framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{0}, color, 0);
+framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{1}, normal, 0);
+framebuffer.attachRenderbuffer(GL::Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 /* [Framebuffer-usage-attach] */
 }
 #endif
@@ -905,19 +906,19 @@ struct MyShader {
         NormalOutput = 1
     };
 };
-Framebuffer framebuffer{{}};
+GL::Framebuffer framebuffer{{}};
 /* [Framebuffer-usage-map] */
-framebuffer.mapForDraw({{MyShader::ColorOutput, Framebuffer::ColorAttachment(0)},
-                        {MyShader::NormalOutput, Framebuffer::ColorAttachment(1)}});
+framebuffer.mapForDraw({{MyShader::ColorOutput, GL::Framebuffer::ColorAttachment(0)},
+                        {MyShader::NormalOutput, GL::Framebuffer::ColorAttachment(1)}});
 /* [Framebuffer-usage-map] */
 }
 
 {
 /* [Mesh-nonindexed] */
 /* Custom shader, needing only position data */
-class MyShader: public AbstractShaderProgram {
+class MyShader: public GL::AbstractShaderProgram {
     public:
-        typedef Attribute<0, Vector3> Position;
+        typedef GL::Attribute<0, Vector3> Position;
 
     // ...
 };
@@ -926,11 +927,11 @@ class MyShader: public AbstractShaderProgram {
 Vector3 positions[30]{
     // ...
 };
-Buffer vertexBuffer;
-vertexBuffer.setData(positions, BufferUsage::StaticDraw);
+GL::Buffer vertexBuffer;
+vertexBuffer.setData(positions, GL::BufferUsage::StaticDraw);
 
 /* Configure the mesh, add vertex buffer */
-Mesh mesh;
+GL::Mesh mesh;
 mesh.setPrimitive(MeshPrimitive::Triangles)
     .addVertexBuffer(vertexBuffer, 0, MyShader::Position{})
     .setCount(30);
@@ -943,11 +944,11 @@ mesh.setPrimitive(MeshPrimitive::Triangles)
 Trade::MeshData3D plane = Primitives::planeSolid();
 
 /* Fill a vertex buffer with interleaved position and normal data */
-Buffer buffer;
-buffer.setData(MeshTools::interleave(plane.positions(0), plane.normals(0)), BufferUsage::StaticDraw);
+GL::Buffer buffer;
+buffer.setData(MeshTools::interleave(plane.positions(0), plane.normals(0)), GL::BufferUsage::StaticDraw);
 
 /* Configure the mesh, add the vertex buffer */
-Mesh mesh;
+GL::Mesh mesh;
 mesh.setPrimitive(plane.primitive())
     .setCount(plane.positions(0).size())
     .addVertexBuffer(buffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{});
@@ -957,9 +958,9 @@ mesh.setPrimitive(plane.primitive())
 {
 /* [Mesh-indexed] */
 /* Custom shader */
-class MyShader: public AbstractShaderProgram {
+class MyShader: public GL::AbstractShaderProgram {
     public:
-        typedef Attribute<0, Vector3> Position;
+        typedef GL::Attribute<0, Vector3> Position;
 
     // ...
 };
@@ -968,22 +969,22 @@ class MyShader: public AbstractShaderProgram {
 Vector3 positions[240]{
     // ...
 };
-Buffer vertexBuffer;
-vertexBuffer.setData(positions, BufferUsage::StaticDraw);
+GL::Buffer vertexBuffer;
+vertexBuffer.setData(positions, GL::BufferUsage::StaticDraw);
 
 /* Fill index buffer with index data */
 UnsignedByte indices[75]{
     // ...
 };
-Buffer indexBuffer;
-indexBuffer.setData(indices, BufferUsage::StaticDraw);
+GL::Buffer indexBuffer;
+indexBuffer.setData(indices, GL::BufferUsage::StaticDraw);
 
 /* Configure the mesh, add both vertex and index buffer */
-Mesh mesh;
+GL::Mesh mesh;
 mesh.setPrimitive(MeshPrimitive::Triangles)
     .setCount(75)
     .addVertexBuffer(vertexBuffer, 0, MyShader::Position{})
-    .setIndexBuffer(indexBuffer, 0, Mesh::IndexType::UnsignedByte, 176, 229);
+    .setIndexBuffer(indexBuffer, 0, GL::MeshIndexType::UnsignedByte, 176, 229);
 /* [Mesh-indexed] */
 }
 
@@ -993,21 +994,21 @@ mesh.setPrimitive(MeshPrimitive::Triangles)
 Trade::MeshData3D cube = Primitives::cubeSolid();
 
 // Fill vertex buffer with interleaved position and normal data
-Buffer vertexBuffer;
-vertexBuffer.setData(MeshTools::interleave(cube.positions(0), cube.normals(0)), BufferUsage::StaticDraw);
+GL::Buffer vertexBuffer;
+vertexBuffer.setData(MeshTools::interleave(cube.positions(0), cube.normals(0)), GL::BufferUsage::StaticDraw);
 
 // Compress index data
 Containers::Array<char> indexData;
-Mesh::IndexType indexType;
+MeshIndexType indexType;
 UnsignedInt indexStart, indexEnd;
 std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(cube.indices());
 
 // Fill index buffer
-Buffer indexBuffer;
-indexBuffer.setData(indexData, BufferUsage::StaticDraw);
+GL::Buffer indexBuffer;
+indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
 
 // Configure the mesh, add both vertex and index buffer
-Mesh mesh;
+GL::Mesh mesh;
 mesh.setPrimitive(cube.primitive())
     .setCount(cube.indices().size())
     .addVertexBuffer(vertexBuffer, 0, Shaders::Phong::Position{}, Shaders::Phong::Normal{})
@@ -1019,16 +1020,16 @@ mesh.setPrimitive(cube.primitive())
 {
 /* [Mesh-formats] */
 // Custom shader with colors specified as four floating-point values
-class MyShader: public AbstractShaderProgram {
+class MyShader: public GL::AbstractShaderProgram {
     public:
-        typedef Attribute<0, Vector3> Position;
-        typedef Attribute<1, Color4> Color;
+        typedef GL::Attribute<0, Vector3> Position;
+        typedef GL::Attribute<1, Color4> Color;
 
     // ...
 };
 
 /* Initial mesh configuration */
-Mesh mesh;
+GL::Mesh mesh;
 mesh.setPrimitive(MeshPrimitive::Triangles)
     .setCount(30);
 
@@ -1037,8 +1038,8 @@ mesh.setPrimitive(MeshPrimitive::Triangles)
 Vector2 positions[30]{
     // ...
 };
-Buffer positionBuffer;
-positionBuffer.setData(positions, BufferUsage::StaticDraw);
+GL::Buffer positionBuffer;
+positionBuffer.setData(positions, GL::BufferUsage::StaticDraw);
 
 /* Specify layout of positions buffer -- only two components, unspecified Z
    component will be automatically set to 0 */
@@ -1050,8 +1051,8 @@ mesh.addVertexBuffer(positionBuffer, 0,
 UnsignedByte colors[4*30]{
     // ...
 };
-Buffer colorBuffer;
-colorBuffer.setData(colors, BufferUsage::StaticDraw);
+GL::Buffer colorBuffer;
+colorBuffer.setData(colors, GL::BufferUsage::StaticDraw);
 
 /* Specify color buffer layout -- BGRA, each component unsigned byte and we
    want to normalize them from [0, 255] to [0.0f, 1.0f] */
@@ -1064,20 +1065,20 @@ mesh.addVertexBuffer(colorBuffer, 0, MyShader::Color{
 #endif
 
 {
-Mesh mesh;
-Buffer colorBuffer;
+GL::Mesh mesh;
+GL::Buffer colorBuffer;
 /* [Mesh-dynamic] */
-mesh.addVertexBuffer(colorBuffer, 0, 4, DynamicAttribute{
-    DynamicAttribute::Kind::GenericNormalized, 3,
-    DynamicAttribute::Components::Three,
-    DynamicAttribute::DataType::UnsignedByte});
+mesh.addVertexBuffer(colorBuffer, 0, 4, GL::DynamicAttribute{
+    GL::DynamicAttribute::Kind::GenericNormalized, 3,
+    GL::DynamicAttribute::Components::Three,
+    GL::DynamicAttribute::DataType::UnsignedByte});
 /* [Mesh-dynamic] */
 }
 
 {
 /* [Mesh-addVertexBuffer1] */
-Buffer buffer;
-Mesh mesh;
+GL::Buffer buffer;
+GL::Mesh mesh;
 mesh.addVertexBuffer(buffer, 76,    /* initial array offset */
     4,                              /* skip vertex weight (Float) */
     Shaders::Phong::Position(),     /* vertex position */
@@ -1100,8 +1101,8 @@ mesh.addVertexBuffer(buffer, 76 + 4*vertexCount, Shaders::Phong::Position{})
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 {
 /* [MultisampleTexture-usage] */
-MultisampleTexture2D texture;
-texture.setStorage(16, TextureFormat::RGBA8, {1024, 1024});
+GL::MultisampleTexture2D texture;
+texture.setStorage(16, GL::TextureFormat::RGBA8, {1024, 1024});
 /* [MultisampleTexture-usage] */
 }
 #endif
@@ -1110,7 +1111,7 @@ texture.setStorage(16, TextureFormat::RGBA8, {1024, 1024});
 struct A: TestSuite::Tester {
 void foo() {
 /* [OpenGLTester-MAGNUM_VERIFY_NO_GL_ERROR] */
-CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError);
+CORRADE_COMPARE(Magnum::GL::Renderer::error(), Magnum::GL::Renderer::Error::NoError);
 /* [OpenGLTester-MAGNUM_VERIFY_NO_GL_ERROR] */
 }
 };
@@ -1119,7 +1120,7 @@ CORRADE_COMPARE(Magnum::Renderer::error(), Magnum::Renderer::Error::NoError);
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 {
 /* [PrimitiveQuery-usage] */
-PrimitiveQuery q{PrimitiveQuery::Target::PrimitivesGenerated};
+GL::PrimitiveQuery q{GL::PrimitiveQuery::Target::PrimitivesGenerated};
 
 q.begin();
 // rendering...
@@ -1140,68 +1141,67 @@ static_cast<void>(primitiveCount);
 {
 char data[1]{};
 /* [RectangleTexture-usage] */
-ImageView2D image{PixelFormat::RGBA, PixelType::UnsignedByte, {526, 137}, data};
+ImageView2D image{PixelFormat::RGBA8Unorm, {526, 137}, data};
 
-RectangleTexture texture;
-texture.setMagnificationFilter(Sampler::Filter::Linear)
-    .setMinificationFilter(Sampler::Filter::Linear)
-    .setWrapping(Sampler::Wrapping::ClampToEdge)
-    .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
-    .setStorage(TextureFormat::RGBA8, {526, 137})
+GL::RectangleTexture texture;
+texture.setMagnificationFilter(GL::SamplerFilter::Linear)
+    .setMinificationFilter(GL::SamplerFilter::Linear)
+    .setWrapping(GL::SamplerWrapping::ClampToEdge)
+    .setMaxAnisotropy(GL::Sampler::maxMaxAnisotropy())
+    .setStorage(GL::TextureFormat::RGBA8, {526, 137})
     .setSubImage({}, image);
 /* [RectangleTexture-usage] */
 }
 
 {
-RectangleTexture texture;
+GL::RectangleTexture texture;
 /* [RectangleTexture-image1] */
-Image2D image = texture.image({PixelFormat::RGBA, PixelType::UnsignedByte});
+Image2D image = texture.image({PixelFormat::RGBA8Unorm});
 /* [RectangleTexture-image1] */
 }
 
 {
-RectangleTexture texture;
+GL::RectangleTexture texture;
 /* [RectangleTexture-image2] */
-BufferImage2D image = texture.image(
-    {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+GL::BufferImage2D image = texture.image(
+    {PixelFormat::RGBA8Unorm}, GL::BufferUsage::StaticRead);
 /* [RectangleTexture-image2] */
 }
 
 {
-RectangleTexture texture;
+GL::RectangleTexture texture;
 /* [RectangleTexture-compressedImage1] */
 CompressedImage2D image = texture.compressedImage({});
 /* [RectangleTexture-compressedImage1] */
 }
 
 {
-RectangleTexture texture;
+GL::RectangleTexture texture;
 /* [RectangleTexture-compressedImage2] */
-CompressedBufferImage2D image = texture.compressedImage({},
-    BufferUsage::StaticRead);
+GL::CompressedBufferImage2D image = texture.compressedImage({},
+    GL::BufferUsage::StaticRead);
 /* [RectangleTexture-compressedImage2] */
 }
 
 {
-RectangleTexture texture;
+GL::RectangleTexture texture;
 Range2Di range;
 /* [RectangleTexture-subImage1] */
-Image2D image = texture.subImage(range,
-    {PixelFormat::RGBA, PixelType::UnsignedByte});
+Image2D image = texture.subImage(range, {PixelFormat::RGBA8Unorm});
 /* [RectangleTexture-subImage1] */
 }
 
 {
-RectangleTexture texture;
+GL::RectangleTexture texture;
 Range2Di range;
 /* [RectangleTexture-subImage2] */
-BufferImage2D image = texture.subImage(range,
-    {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+GL::BufferImage2D image = texture.subImage(range,
+    {PixelFormat::RGBA8Unorm}, GL::BufferUsage::StaticRead);
 /* [RectangleTexture-subImage2] */
 }
 
 {
-RectangleTexture texture;
+GL::RectangleTexture texture;
 Range2Di range;
 /* [RectangleTexture-compressedSubImage1] */
 CompressedImage2D image = texture.compressedSubImage(range, {});
@@ -1209,11 +1209,11 @@ CompressedImage2D image = texture.compressedSubImage(range, {});
 }
 
 {
-RectangleTexture texture;
+GL::RectangleTexture texture;
 Range2Di range;
 /* [RectangleTexture-compressedSubImage2] */
-CompressedBufferImage2D image = texture.compressedSubImage(range, {},
-    BufferUsage::StaticRead);
+GL::CompressedBufferImage2D image = texture.compressedSubImage(range, {},
+    GL::BufferUsage::StaticRead);
 /* [RectangleTexture-compressedSubImage2] */
 }
 #endif
@@ -1221,7 +1221,7 @@ CompressedBufferImage2D image = texture.compressedSubImage(range, {},
 #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 {
 /* [SampleQuery-usage] */
-SampleQuery q{SampleQuery::Target::AnySamplesPassed};
+GL::SampleQuery q{GL::SampleQuery::Target::AnySamplesPassed};
 
 q.begin();
 /* Render simplified object to test whether it is visible at all */
@@ -1238,14 +1238,14 @@ if(q.result<bool>()) {
 #ifndef MAGNUM_TARGET_GLES
 {
 /* [SampleQuery-conditional-render] */
-SampleQuery q{SampleQuery::Target::AnySamplesPassed};
+GL::SampleQuery q{GL::SampleQuery::Target::AnySamplesPassed};
 
 q.begin();
 /* Render simplified object to test whether it is visible at all */
 // ...
 q.end();
 
-q.beginConditionalRender(SampleQuery::ConditionalRenderMode::Wait);
+q.beginConditionalRender(GL::SampleQuery::ConditionalRenderMode::Wait);
 /* Render full version of the object only if the query returns nonzero result */
 // ...
 q.endConditionalRender();
@@ -1258,14 +1258,14 @@ q.endConditionalRender();
 {
 char data[1]{};
 /* [Texture-usage] */
-ImageView2D image(PixelFormat::RGBA, PixelType::UnsignedByte, {4096, 4096}, data);
+ImageView2D image(PixelFormat::RGBA8Unorm, {4096, 4096}, data);
 
-Texture2D texture;
-texture.setMagnificationFilter(Sampler::Filter::Linear)
-    .setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
-    .setWrapping(Sampler::Wrapping::ClampToEdge)
-    .setMaxAnisotropy(Sampler::maxMaxAnisotropy())
-    .setStorage(Math::log2(4096)+1, TextureFormat::RGBA8, {4096, 4096})
+GL::Texture2D texture;
+texture.setMagnificationFilter(GL::SamplerFilter::Linear)
+    .setMinificationFilter(GL::SamplerFilter::Linear, GL::SamplerMipmap::Linear)
+    .setWrapping(GL::SamplerWrapping::ClampToEdge)
+    .setMaxAnisotropy(GL::Sampler::maxMaxAnisotropy())
+    .setStorage(Math::log2(4096)+1, GL::TextureFormat::RGBA8, {4096, 4096})
     .setSubImage(0, {}, image)
     .generateMipmap();
 /* [Texture-usage] */
@@ -1274,7 +1274,7 @@ texture.setMagnificationFilter(Sampler::Filter::Linear)
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 {
-Texture2D texture;
+GL::Texture2D texture;
 /* [Texture-setSwizzle] */
 texture.setSwizzle<'b', 'g', 'r', '0'>();
 /* [Texture-setSwizzle] */
@@ -1283,55 +1283,54 @@ texture.setSwizzle<'b', 'g', 'r', '0'>();
 
 #ifndef MAGNUM_TARGET_GLES
 {
-Texture2D texture;
+GL::Texture2D texture;
 /* [Texture-image1] */
-Image2D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
+Image2D image = texture.image(0, {PixelFormat::RGBA8Unorm});
 /* [Texture-image1] */
 }
 
 {
-Texture2D texture;
+GL::Texture2D texture;
 /* [Texture-image2] */
-BufferImage2D image = texture.image(0,
-    {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+GL::BufferImage2D image = texture.image(0,
+    {PixelFormat::RGBA8Unorm}, GL::BufferUsage::StaticRead);
 /* [Texture-image2] */
 }
 
 {
-Texture2D texture;
+GL::Texture2D texture;
 /* [Texture-compressedImage1] */
 CompressedImage2D image = texture.compressedImage(0, {});
 /* [Texture-compressedImage1] */
 }
 
 {
-Texture2D texture;
+GL::Texture2D texture;
 /* [Texture-compressedImage2] */
-CompressedBufferImage2D image = texture.compressedImage(0, {},
-    BufferUsage::StaticRead);
+GL::CompressedBufferImage2D image = texture.compressedImage(0, {},
+    GL::BufferUsage::StaticRead);
 /* [Texture-compressedImage2] */
 }
 
 {
-Texture2D texture;
+GL::Texture2D texture;
 Range2Di range;
 /* [Texture-subImage1] */
-Image2D image = texture.subImage(0, range,
-    {PixelFormat::RGBA, PixelType::UnsignedByte});
+Image2D image = texture.subImage(0, range, {PixelFormat::RGBA8Unorm});
 /* [Texture-subImage1] */
 }
 
 {
-Texture2D texture;
+GL::Texture2D texture;
 Range2Di range;
 /* [Texture-subImage2] */
-BufferImage2D image = texture.subImage(0, range,
-    {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+GL::BufferImage2D image = texture.subImage(0, range,
+    {PixelFormat::RGBA8Unorm}, GL::BufferUsage::StaticRead);
 /* [Texture-subImage2] */
 }
 
 {
-Texture2D texture;
+GL::Texture2D texture;
 Range2Di range;
 /* [Texture-compressedSubImage1] */
 CompressedImage2D image = texture.compressedSubImage(0, range, {});
@@ -1339,11 +1338,11 @@ CompressedImage2D image = texture.compressedSubImage(0, range, {});
 }
 
 {
-Texture2D texture;
+GL::Texture2D texture;
 Range2Di range;
 /* [Texture-compressedSubImage2] */
-CompressedBufferImage2D image = texture.compressedSubImage(0, range, {},
-    BufferUsage::StaticRead);
+GL::CompressedBufferImage2D image = texture.compressedSubImage(0, range, {},
+    GL::BufferUsage::StaticRead);
 /* [Texture-compressedSubImage2] */
 }
 #endif
@@ -1351,20 +1350,20 @@ CompressedBufferImage2D image = texture.compressedSubImage(0, range, {},
 #ifndef MAGNUM_TARGET_GLES2
 {
 /* [TextureArray-usage1] */
-Texture2DArray texture;
-texture.setMagnificationFilter(Sampler::Filter::Linear)
-    .setMinificationFilter(Sampler::Filter::Linear, Sampler::Mipmap::Linear)
-    .setWrapping(Sampler::Wrapping::ClampToEdge)
-    .setMaxAnisotropy(Sampler::maxMaxAnisotropy());;
+GL::Texture2DArray texture;
+texture.setMagnificationFilter(GL::SamplerFilter::Linear)
+    .setMinificationFilter(GL::SamplerFilter::Linear, GL::SamplerMipmap::Linear)
+    .setWrapping(GL::SamplerWrapping::ClampToEdge)
+    .setMaxAnisotropy(GL::Sampler::maxMaxAnisotropy());;
 /* [TextureArray-usage1] */
 
 Int levels{};
 char data[1]{};
 /* [TextureArray-usage2] */
-texture.setStorage(levels, TextureFormat::RGBA8, {64, 64, 16});
+texture.setStorage(levels, GL::TextureFormat::RGBA8, {64, 64, 16});
 
 for(std::size_t i = 0; i != 16; ++i) {
-    ImageView3D image(PixelFormat::RGBA, PixelType::UnsignedByte, {64, 64, 1}, data);
+    ImageView3D image(PixelFormat::RGBA8Unorm, {64, 64, 1}, data);
     texture.setSubImage(0, Vector3i::zAxis(i), image);
 }
 /* [TextureArray-usage2] */
@@ -1372,55 +1371,54 @@ for(std::size_t i = 0; i != 16; ++i) {
 
 #ifndef MAGNUM_TARGET_GLES
 {
-Texture2DArray texture;
+GL::Texture2DArray texture;
 /* [TextureArray-image1] */
-Image3D image = texture.image(0, {PixelFormat::RGBA, PixelType::UnsignedByte});
+Image3D image = texture.image(0, {PixelFormat::RGBA8Unorm});
 /* [TextureArray-image1] */
 }
 
 {
-Texture2DArray texture;
+GL::Texture2DArray texture;
 /* [TextureArray-image2] */
-BufferImage3D image = texture.image(0,
-    {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+GL::BufferImage3D image = texture.image(0,
+    {PixelFormat::RGBA8Unorm}, GL::BufferUsage::StaticRead);
 /* [TextureArray-image2] */
 }
 
 {
-Texture2DArray texture;
+GL::Texture2DArray texture;
 /* [TextureArray-compressedImage1] */
 CompressedImage3D image = texture.compressedImage(0, {});
 /* [TextureArray-compressedImage1] */
 }
 
 {
-Texture2DArray texture;
+GL::Texture2DArray texture;
 /* [TextureArray-compressedImage2] */
-CompressedBufferImage3D image = texture.compressedImage(0, {},
-    BufferUsage::StaticRead);
+GL::CompressedBufferImage3D image = texture.compressedImage(0, {},
+    GL::BufferUsage::StaticRead);
 /* [TextureArray-compressedImage2] */
 }
 
 {
-Texture2DArray texture;
+GL::Texture2DArray texture;
 Range3Di range;
 /* [TextureArray-subImage1] */
-Image3D image = texture.subImage(0, range,
-    {PixelFormat::RGBA, PixelType::UnsignedByte});
+Image3D image = texture.subImage(0, range, {PixelFormat::RGBA8Unorm});
 /* [TextureArray-subImage1] */
 }
 
 {
-Texture2DArray texture;
+GL::Texture2DArray texture;
 Range3Di range;
 /* [TextureArray-subImage2] */
-BufferImage3D image = texture.subImage(0, range,
-    {PixelFormat::RGBA, PixelType::UnsignedByte}, BufferUsage::StaticRead);
+GL::BufferImage3D image = texture.subImage(0, range,
+    {PixelFormat::RGBA8Unorm}, GL::BufferUsage::StaticRead);
 /* [TextureArray-subImage2] */
 }
 
 {
-Texture2DArray texture;
+GL::Texture2DArray texture;
 Range3Di range;
 /* [TextureArray-compressedSubImage1] */
 CompressedImage3D image = texture.compressedSubImage(0, range, {});
@@ -1428,11 +1426,11 @@ CompressedImage3D image = texture.compressedSubImage(0, range, {});
 }
 
 {
-Texture2DArray texture;
+GL::Texture2DArray texture;
 Range3Di range;
 /* [TextureArray-compressedSubImage2] */
-CompressedBufferImage3D image = texture.compressedSubImage(0, range, {},
-    BufferUsage::StaticRead);
+GL::CompressedBufferImage3D image = texture.compressedSubImage(0, range, {},
+    GL::BufferUsage::StaticRead);
 /* [TextureArray-compressedSubImage2] */
 }
 #endif
@@ -1441,8 +1439,8 @@ CompressedBufferImage3D image = texture.compressedSubImage(0, range, {},
 #ifndef MAGNUM_TARGET_WEBGL
 {
 /* [TimeQuery-usage1] */
-TimeQuery q1{TimeQuery::Target::TimeElapsed},
-          q2{TimeQuery::Target::TimeElapsed};
+GL::TimeQuery q1{GL::TimeQuery::Target::TimeElapsed},
+              q2{GL::TimeQuery::Target::TimeElapsed};
 
 q1.begin();
 // rendering...
@@ -1461,9 +1459,9 @@ static_cast<void>(timeElapsed2);
 
 {
 /* [TimeQuery-usage2] */
-TimeQuery q1{TimeQuery::Target::Timestamp},
-          q2{TimeQuery::Target::Timestamp},
-          q3{TimeQuery::Target::Timestamp};
+GL::TimeQuery q1{GL::TimeQuery::Target::Timestamp},
+              q2{GL::TimeQuery::Target::Timestamp},
+              q3{GL::TimeQuery::Target::Timestamp};
 
 q1.timestamp();
 // rendering...

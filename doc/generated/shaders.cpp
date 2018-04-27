@@ -36,16 +36,16 @@
 #error no windowless application available on this platform
 #endif
 
-#include <Magnum/Buffer.h>
-#include <Magnum/Framebuffer.h>
 #include <Magnum/Image.h>
-#include <Magnum/Mesh.h>
 #include <Magnum/PixelFormat.h>
-#include <Magnum/Renderbuffer.h>
-#include <Magnum/RenderbufferFormat.h>
-#include <Magnum/Renderer.h>
-#include <Magnum/Texture.h>
-#include <Magnum/TextureFormat.h>
+#include <Magnum/GL/Buffer.h>
+#include <Magnum/GL/Framebuffer.h>
+#include <Magnum/GL/Mesh.h>
+#include <Magnum/GL/Renderbuffer.h>
+#include <Magnum/GL/RenderbufferFormat.h>
+#include <Magnum/GL/Renderer.h>
+#include <Magnum/GL/Texture.h>
+#include <Magnum/GL/TextureFormat.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/Primitives/Square.h>
@@ -102,23 +102,23 @@ int ShaderVisualizer::exec() {
         std::exit(1);
     }
 
-    Renderbuffer multisampleColor, multisampleDepth;
-    multisampleColor.setStorageMultisample(16, RenderbufferFormat::RGBA8, ImageSize);
-    multisampleDepth.setStorageMultisample(16, RenderbufferFormat::DepthComponent24, ImageSize);
+    GL::Renderbuffer multisampleColor, multisampleDepth;
+    multisampleColor.setStorageMultisample(16, GL::RenderbufferFormat::RGBA8, ImageSize);
+    multisampleDepth.setStorageMultisample(16, GL::RenderbufferFormat::DepthComponent24, ImageSize);
 
-    Framebuffer multisampleFramebuffer{{{}, ImageSize}};
-    multisampleFramebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, multisampleColor)
-        .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, multisampleDepth)
+    GL::Framebuffer multisampleFramebuffer{{{}, ImageSize}};
+    multisampleFramebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, multisampleColor)
+        .attachRenderbuffer(GL::Framebuffer::BufferAttachment::Depth, multisampleDepth)
         .bind();
-    CORRADE_INTERNAL_ASSERT(multisampleFramebuffer.checkStatus(FramebufferTarget::Draw) == Framebuffer::Status::Complete);
+    CORRADE_INTERNAL_ASSERT(multisampleFramebuffer.checkStatus(GL::FramebufferTarget::Draw) == GL::Framebuffer::Status::Complete);
 
-    Renderbuffer color;
-    color.setStorage(RenderbufferFormat::RGBA8, ImageSize);
-    Framebuffer framebuffer{{{}, ImageSize}};
-    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color);
+    GL::Renderbuffer color;
+    color.setStorage(GL::RenderbufferFormat::RGBA8, ImageSize);
+    GL::Framebuffer framebuffer{{{}, ImageSize}};
+    framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, color);
 
-    Renderer::enable(Renderer::Feature::DepthTest);
-    Renderer::setClearColor(0x000000_rgbaf);
+    GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
+    GL::Renderer::setClearColor(0x000000_rgbaf);
 
     for(auto fun: {&ShaderVisualizer::phong,
                    &ShaderVisualizer::meshVisualizer,
@@ -126,12 +126,12 @@ int ShaderVisualizer::exec() {
                    &ShaderVisualizer::vertexColor,
                    &ShaderVisualizer::vector,
                    &ShaderVisualizer::distanceFieldVector}) {
-        multisampleFramebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth);
+        multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
 
         std::string filename = (this->*fun)();
 
-        AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), FramebufferBlit::Color);
-        Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA, PixelType::UnsignedByte});
+        GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
+        Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
         converter->exportToFile(result, Utility::Directory::join("../", "shaders-" + filename));
     }
 
@@ -148,9 +148,9 @@ namespace {
 }
 
 std::string ShaderVisualizer::phong() {
-    std::unique_ptr<Buffer> vertices, indices;
-    Mesh mesh{NoCreate};
-    std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::uvSphereSolid(16, 32), BufferUsage::StaticDraw);
+    std::unique_ptr<GL::Buffer> vertices, indices;
+    GL::Mesh mesh{NoCreate};
+    std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::uvSphereSolid(16, 32), GL::BufferUsage::StaticDraw);
 
     Shaders::Phong shader;
     shader.setAmbientColor(0x22272e_rgbf)
@@ -167,9 +167,9 @@ std::string ShaderVisualizer::phong() {
 }
 
 std::string ShaderVisualizer::meshVisualizer() {
-    std::unique_ptr<Buffer> vertices, indices;
-    Mesh mesh{NoCreate};
-    std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::icosphereSolid(1), BufferUsage::StaticDraw);
+    std::unique_ptr<GL::Buffer> vertices, indices;
+    GL::Mesh mesh{NoCreate};
+    std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::icosphereSolid(1), GL::BufferUsage::StaticDraw);
 
     const Matrix4 projection = Projection*Transformation*
         Matrix4::rotationZ(13.7_degf)*
@@ -187,9 +187,9 @@ std::string ShaderVisualizer::meshVisualizer() {
 }
 
 std::string ShaderVisualizer::flat() {
-    std::unique_ptr<Buffer> vertices, indices;
-    Mesh mesh{NoCreate};
-    std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::uvSphereSolid(16, 32), BufferUsage::StaticDraw);
+    std::unique_ptr<GL::Buffer> vertices, indices;
+    GL::Mesh mesh{NoCreate};
+    std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::uvSphereSolid(16, 32), GL::BufferUsage::StaticDraw);
 
     Shaders::Flat3D shader;
     shader.setColor(BaseColor)
@@ -210,17 +210,17 @@ std::string ShaderVisualizer::vertexColor() {
     for(Vector3 position: sphere.positions(0))
         colors.push_back(Color3::fromHsv(Math::lerp(240.0_degf, 420.0_degf, Math::max(1.0f - (position - target).length(), 0.0f)), 0.75f, 0.75f));
 
-    Buffer vertices, indices;
-    vertices.setData(MeshTools::interleave(sphere.positions(0), colors), BufferUsage::StaticDraw);
-    indices.setData(sphere.indices(), BufferUsage::StaticDraw);
+    GL::Buffer vertices, indices;
+    vertices.setData(MeshTools::interleave(sphere.positions(0), colors), GL::BufferUsage::StaticDraw);
+    indices.setData(sphere.indices(), GL::BufferUsage::StaticDraw);
 
-    Mesh mesh;
-    mesh.setPrimitive(MeshPrimitive::Triangles)
+    GL::Mesh mesh;
+    mesh.setPrimitive(GL::MeshPrimitive::Triangles)
         .setCount(sphere.indices().size())
         .addVertexBuffer(vertices, 0,
             Shaders::VertexColor3D::Position{},
             Shaders::VertexColor3D::Color{Shaders::VertexColor3D::Color::Components::Three})
-        .setIndexBuffer(indices, 0, Mesh::IndexType::UnsignedInt);
+        .setIndexBuffer(indices, 0, GL::MeshIndexType::UnsignedInt);
 
     Shaders::VertexColor3D shader;
     shader.setTransformationProjectionMatrix(Projection*Transformation);
@@ -237,29 +237,29 @@ std::string ShaderVisualizer::vector() {
         return "vector.png";
     }
 
-    Texture2D texture;
-    texture.setMinificationFilter(Sampler::Filter::Linear)
-        .setMagnificationFilter(Sampler::Filter::Linear)
-        .setWrapping(Sampler::Wrapping::ClampToEdge)
-        .setStorage(1, TextureFormat::RGBA8, image->size())
+    GL::Texture2D texture;
+    texture.setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setStorage(1, GL::TextureFormat::RGBA8, image->size())
         .setSubImage(0, {}, *image);
 
-    Mesh mesh{NoCreate};
-    std::unique_ptr<Buffer> vertices;
-    std::tie(mesh, vertices, std::ignore) = MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate), BufferUsage::StaticDraw);
+    GL::Mesh mesh{NoCreate};
+    std::unique_ptr<GL::Buffer> vertices;
+    std::tie(mesh, vertices, std::ignore) = MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate), GL::BufferUsage::StaticDraw);
 
     Shaders::Vector2D shader;
     shader.setColor(BaseColor)
         .bindVectorTexture(texture)
         .setTransformationProjectionMatrix({});
 
-    Renderer::enable(Renderer::Feature::Blending);
-    Renderer::setBlendFunction(Renderer::BlendFunction::One, Renderer::BlendFunction::OneMinusSourceAlpha);
-    Renderer::setBlendEquation(Renderer::BlendEquation::Add, Renderer::BlendEquation::Add);
+    GL::Renderer::enable(GL::Renderer::Feature::Blending);
+    GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
+    GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add, GL::Renderer::BlendEquation::Add);
 
     mesh.draw(shader);
 
-    Renderer::disable(Renderer::Feature::Blending);
+    GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
     return "vector.png";
 }
@@ -271,16 +271,16 @@ std::string ShaderVisualizer::distanceFieldVector() {
         return "distancefieldvector.png";
     }
 
-    Texture2D texture;
-    texture.setMinificationFilter(Sampler::Filter::Linear)
-        .setMagnificationFilter(Sampler::Filter::Linear)
-        .setWrapping(Sampler::Wrapping::ClampToEdge)
-        .setStorage(1, TextureFormat::RGBA8, image->size())
+    GL::Texture2D texture;
+    texture.setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setStorage(1, GL::TextureFormat::RGBA8, image->size())
         .setSubImage(0, {}, *image);
 
-    Mesh mesh{NoCreate};
-    std::unique_ptr<Buffer> vertices;
-    std::tie(mesh, vertices, std::ignore) = MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate), BufferUsage::StaticDraw);
+    GL::Mesh mesh{NoCreate};
+    std::unique_ptr<GL::Buffer> vertices;
+    std::tie(mesh, vertices, std::ignore) = MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate), GL::BufferUsage::StaticDraw);
 
     Shaders::DistanceFieldVector2D shader;
     shader.setColor(BaseColor)
@@ -289,13 +289,13 @@ std::string ShaderVisualizer::distanceFieldVector() {
         .bindVectorTexture(texture)
         .setTransformationProjectionMatrix({});
 
-    Renderer::enable(Renderer::Feature::Blending);
-    Renderer::setBlendFunction(Renderer::BlendFunction::One, Renderer::BlendFunction::OneMinusSourceAlpha);
-    Renderer::setBlendEquation(Renderer::BlendEquation::Add, Renderer::BlendEquation::Add);
+    GL::Renderer::enable(GL::Renderer::Feature::Blending);
+    GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
+    GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add, GL::Renderer::BlendEquation::Add);
 
     mesh.draw(shader);
 
-    Renderer::disable(Renderer::Feature::Blending);
+    GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
     return "distancefieldvector.png";
 }
