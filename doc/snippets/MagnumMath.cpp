@@ -24,6 +24,7 @@
 */
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Math/DualComplex.h"
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/Algorithms/GramSchmidt.h"
@@ -32,6 +33,306 @@ using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
 int main() {
+{
+/* [matrix-vector-construct] */
+Matrix2x3 a;                    // zero-filled
+Vector3i b;                     // zero-filled
+
+Matrix3 identity;               // diagonal set to 1
+Matrix3 zero{Math::ZeroInit};   // zero-filled
+/* [matrix-vector-construct] */
+static_cast<void>(a);
+static_cast<void>(b);
+static_cast<void>(identity);
+static_cast<void>(zero);
+}
+
+{
+/* [matrix-vector-construct-value] */
+Vector3i vec{0, 1, 2};
+
+Matrix3 mat{{0.0f, 1.9f, 2.2f},
+            {3.5f, 4.0f, 5.1f},
+            {6.0f, 7.3f, 8.0f}};
+/* [matrix-vector-construct-value] */
+static_cast<void>(vec);
+static_cast<void>(mat);
+}
+
+{
+/* [matrix-vector-construct-diagonal] */
+Matrix3 diag{Math::IdentityInit, 2.0f}; // diagonal is 2.0f, zeros elsewhere
+Vector3i fill(10);                      // {10, 10, 10}
+auto diag2 = Matrix3::fromDiagonal({3.0f, 2.0f, 1.0f});
+/* [matrix-vector-construct-diagonal] */
+static_cast<void>(diag);
+static_cast<void>(fill);
+static_cast<void>(diag2);
+}
+
+{
+/* [matrix-vector-construct-axis] */
+auto x = Vector3::xAxis();              // {1.0f, 0.0f, 0.0f}
+auto y = Vector2::yAxis(3.0f);          // {0.0f, 3.0f}
+auto z = Vector3::zScale(3.0f);         // {1.0f, 1.0f, 3.0f}
+/* [matrix-vector-construct-axis] */
+static_cast<void>(x);
+static_cast<void>(y);
+static_cast<void>(z);
+}
+
+{
+/* [matrix-vector-construct-from] */
+Int mat[]{ 2, 4, 6,
+           1, 3, 5 };
+Math::Matrix2x3<Int>::from(mat) *= 2;   // { 4, 8, 12, 2, 6, 10 }
+/* [matrix-vector-construct-from] */
+}
+
+{
+/* [matrix-vector-construct-color] */
+Color4 a = Color3{0.2f, 0.7f, 0.5f};     // {0.2f, 0.7f, 0.5f, 1.0f}
+Color4ub b = Color3ub{0x33, 0xb2, 0x7f}; // {0x33, 0xb2, 0x7f, 0xff}
+/* [matrix-vector-construct-color] */
+static_cast<void>(a);
+static_cast<void>(b);
+}
+
+{
+/* [matrix-vector-construct-color-hue] */
+auto green = Color3::green();           // {0.0f, 1.0f, 0.0f}
+auto cyan = Color4::cyan(0.5f, 0.95f);  // {0.5f, 1.0f, 1.0f, 0.95f}
+auto fadedRed = Color3::fromHsv(219.0_degf, 0.50f, 0.57f);
+/* [matrix-vector-construct-color-hue] */
+static_cast<void>(green);
+static_cast<void>(cyan);
+static_cast<void>(fadedRed);
+}
+
+{
+/* [matrix-vector-construct-color-literal] */
+Color3ub a = 0x33b27f_rgb;      // {0x33, 0xb2, 0x7f}
+Color4 b = 0x33b27fcc_rgbaf;    // {0.2f, 0.7f, 0.5f, 0.8f}
+Color4 c = 0x33b27fcc_srgbaf;   // {0.0331048f, 0.445201f, 0.212231f, 0.8f}
+/* [matrix-vector-construct-color-literal] */
+static_cast<void>(a);
+static_cast<void>(b);
+static_cast<void>(c);
+}
+
+{
+/* [matrix-vector-access] */
+Matrix3x2 a;
+a[2] /= 2.0f;   // third column (column major indexing, see explanation below)
+a[0][1] = 5.3f; // first column, second element
+
+Vector3i b;
+b[1] = 1;       // second element
+/* [matrix-vector-access] */
+
+/* [matrix-vector-access-row] */
+Vector3 c = a.row(1); // second row
+/* [matrix-vector-access-row] */
+static_cast<void>(c);
+}
+
+{
+/* [matrix-vector-access-named] */
+Vector4i a;
+Int x = a.x();
+a.y() += 5;
+
+Vector3i xyz = a.xyz();
+xyz.xy() *= 5;
+/* [matrix-vector-access-named] */
+static_cast<void>(x);
+}
+
+{
+/* [matrix-vector-access-swizzle] */
+Vector4i orig{-1, 2, 3, 4};
+Vector4i bgra = Math::swizzle<'b', 'g', 'r', 'a'>(orig); // { 3, 2, -1, 4 }
+Math::Vector<6, Int> w10xyz = Math::swizzle<'w', '1', '0', 'x', 'y', 'z'>(orig);
+    // { 4, 1, 0, -1, 2, 3 }
+/* [matrix-vector-access-swizzle] */
+static_cast<void>(bgra);
+static_cast<void>(w10xyz);
+}
+
+{
+/* [matrix-vector-convert] */
+Vector3 a{2.2f, 0.25f, -5.1f};
+//Vector3i b = a;                   // error, implicit conversion not allowed
+auto c = Vector3i{a};               // {2, 0, -5}
+auto d = Vector3d{a};               // {2.2, 0.25, -5.1}
+/* [matrix-vector-convert] */
+static_cast<void>(c);
+static_cast<void>(d);
+}
+
+{
+/* [matrix-vector-convert-pack] */
+Color3 a{0.8f, 1.0f, 0.3f};
+auto b = Math::pack<Color3ub>(a);   // {204, 255, 76}
+
+Color3ub c{64, 127, 89};
+auto d = Math::unpack<Color3>(c);   // {0.251f, 0.498f, 0.349}
+/* [matrix-vector-convert-pack] */
+static_cast<void>(b);
+static_cast<void>(d);
+}
+
+{
+/* [matrix-vector-operations-vector] */
+Vector3 a{1.0f, 2.0f, 3.0f};
+Vector3 b = a*5.0f - Vector3{3.0f, -0.5f, -7.5f}; // {5.0f, 9.5f, 7.5f}
+Vector3 c = 1.0f/a;                             // {1.0f, 0.5f, 0.333f}
+/* [matrix-vector-operations-vector] */
+static_cast<void>(b);
+static_cast<void>(c);
+}
+
+{
+/* [matrix-vector-operations-multiply] */
+Vector3 a{1.0f, 2.0f, 3.0f};
+Vector3 b = a*Vector3{-0.5f, 2.0f, -7.0f};      // {-0.5f, 4.0f, -21.0f}
+/* [matrix-vector-operations-multiply] */
+static_cast<void>(b);
+}
+
+{
+/* [matrix-vector-operations-integer] */
+Color3ub color{80, 116, 34};
+Color3ub lighter = color*1.5f;                  // {120, 174, 51}
+
+Vector3i a{4, 18, -90};
+Vector3 multiplier{2.2f, 0.25f, 0.1f};
+Vector3i b = a*multiplier;                      // {8, 4, -9}
+Vector3 c = Vector3(a)*multiplier;              // {8.0f, 4.5f, -9.0f}
+/* [matrix-vector-operations-integer] */
+static_cast<void>(lighter);
+static_cast<void>(b);
+static_cast<void>(c);
+}
+
+{
+/* [matrix-vector-operations-bitwise] */
+Vector2i size{256, 256};
+Vector2i mipLevel3Size = size >> 3;             // {32, 32}
+/* [matrix-vector-operations-bitwise] */
+static_cast<void>(mipLevel3Size);
+}
+
+{
+/* [matrix-vector-operations-matrix] */
+Matrix3x2 a;
+Matrix3x2 b;
+Matrix3x2 c = a + (-b);
+
+Matrix2x3 d;
+Matrix2x2 e = b*d;
+Matrix3x3 f = d*b;
+/* [matrix-vector-operations-matrix] */
+static_cast<void>(c);
+static_cast<void>(e);
+static_cast<void>(f);
+}
+
+{
+/* [matrix-vector-operations-multiply-matrix] */
+Matrix3x4 a;
+Vector3 b;
+Vector4 c = a*b;
+
+Math::RectangularMatrix<4, 1, Float> d;
+Matrix4x3 e = b*d;
+/* [matrix-vector-operations-multiply-matrix] */
+static_cast<void>(c);
+static_cast<void>(e);
+}
+
+{
+/* [matrix-vector-operations-componentwise] */
+Float a = Vector3{1.5f, 0.3f, 8.0f}.sum();      // 8.8f
+Int b = Vector3i{32, -5, 7}.product();          // 1120
+/* [matrix-vector-operations-componentwise] */
+static_cast<void>(a);
+static_cast<void>(b);
+}
+
+{
+/* [matrix-vector-operations-minmax] */
+Vector3i a{-5, 7, 24};
+Vector3i b{8, -2, 12};
+
+Vector3i min = Math::min(a, b);                 // {-5, -2, 12}
+Int max = a.max();                              // 24
+/* [matrix-vector-operations-minmax] */
+static_cast<void>(min);
+static_cast<void>(max);
+
+/* [matrix-vector-operations-compare] */
+Math::BoolVector<3> largerOrEqual = a >= b;     // {false, true, true}
+bool anySmaller = (a < b).any();                // true
+bool allLarger = (a > b).all();                 // false
+/* [matrix-vector-operations-compare] */
+static_cast<void>(largerOrEqual);
+static_cast<void>(anySmaller);
+static_cast<void>(allLarger);
+}
+
+{
+/* [matrix-vector-operations-functions] */
+Vector3 a{5.5f, -0.3f, 75.0f};
+Vector3 b = Math::round(a);                     // {5.0f,  0.0f, 75.0f}
+Vector3 c = Math::abs(a);                       // {5.5f, -0.3f, 75.0f}
+Vector3 d = Math::clamp(a, -0.2f, 55.0f);       // {5.5f, -0.2f, 55.0f}
+/* [matrix-vector-operations-functions] */
+static_cast<void>(b);
+static_cast<void>(c);
+static_cast<void>(d);
+}
+
+{
+/* [matrix-vector-operations-functions-componentwise] */
+Matrix3x2 mat;
+Math::Vector<6, Float> vec = mat.toVector();
+// ...
+mat = Matrix3x2::fromVector(vec);
+/* [matrix-vector-operations-functions-componentwise] */
+}
+
+{
+/* [matrix-vector-operations-functions-scalar] */
+std::pair<Int, Int> minmax = Math::minmax(24, -5);  // -5, 24
+Int a = Math::lerp(0, 360, 0.75f);                  // 270
+auto b = Math::pack<UnsignedByte>(0.89f);           // 226
+/* [matrix-vector-operations-functions-scalar] */
+static_cast<void>(minmax);
+static_cast<void>(a);
+static_cast<void>(b);
+}
+
+{
+/* [matrix-vector-column-major-template] */
+Math::RectangularMatrix<2, 5, Int> mat; // two columns, five rows
+/* [matrix-vector-column-major-template] */
+static_cast<void>(mat);
+}
+
+{
+/* [matrix-vector-column-major-construct] */
+Math::Matrix3<Int> mat{{0, 1, 2},
+                       {3, 4, 5},
+                       {6, 7, 8}};      // first column is {0, 1, 2}
+/* [matrix-vector-column-major-construct] */
+
+/* [matrix-vector-column-major-access] */
+mat[0] *= 2;                            // first column
+mat[2][0] = 5;                          // first element of third column
+/* [matrix-vector-column-major-access] */
+}
+
 {
 /* [transformations-rotation2D] */
 auto a = Matrix3::rotation(23.0_degf);

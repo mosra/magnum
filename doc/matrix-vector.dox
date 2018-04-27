@@ -70,54 +70,30 @@ Default constructors of @ref Math::RectangularMatrix and @ref Math::Vector (and
 @ref Math::Matrix3, @ref Math::Matrix4) is by default constructed as identity
 matrix.
 
-@code{.cpp}
-Matrix2x3 a;                    // zero-filled
-Vector3i b;                     // zero-filled
-
-Matrix3 identity;               // diagonal set to 1
-Matrix3 zero{Math::ZeroInit};   // zero-filled
-@endcode
+@snippet MagnumMath.cpp matrix-vector-construct
 
 Most common and most efficient way to create vector is to pass all values to
 constructor, matrix is created by passing all column vectors to the
 constructor. All constructors check number of passed arguments and the errors
 are catched at compile time.
 
-@code{.cpp}
-Vector3i vec(0, 1, 2);
-
-Matrix3 mat({0.0f, 1.9f, 2.2f},
-            {3.5f, 4.0f, 5.1f},
-            {6.0f, 7.3f, 8.0f});
-@endcode
+@snippet MagnumMath.cpp matrix-vector-construct-value
 
 You can specify all components of vector or whole diagonal of square matrix
 with single value or create diagonal matrix from vector:
 
-@code{.cpp}
-Matrix3 diag(Matrix3::Identity, 2.0f);  // diagonal is 2.0f, zeros elsewhere
-Vector3i fill(10);                      // {10, 10, 10}
-auto diag2 = Matrix3::fromDiagonal({3.0f, 2.0f, 1.0f});
-@endcode
+@snippet MagnumMath.cpp matrix-vector-construct-diagonal
 
 There are also shortcuts to create a vector with all but one component set to
 zero or one, useful for transformations:
 
-@code{.cpp}
-auto x = Vector3::xAxis();              // {1.0f, 0.0f, 0.0f}
-auto y = Vector2::yAxis(3.0f);          // {0.0f, 3.0f}
-auto z = Vector3::zScale(3.0f);         // {1.0f, 1.0f, 3.0f}
-@endcode
+@snippet MagnumMath.cpp matrix-vector-construct-axis
 
 It is also possible to create matrices and vectors from an C-style array. The
 function does simple type cast without any copying, so it's possible to
 conveniently operate on the array itself:
 
-@code{.cpp}
-Int[] mat = { 2, 4, 6,
-              1, 3, 5 };
-Math::Matrix2x3<Int>::from(mat) *= 2;   // { 4, 8, 12, 2, 6, 10 }
-@endcode
+@snippet MagnumMath.cpp matrix-vector-construct-from
 
 @attention Note that, unlike constructors, this function has no way to check
     whether the array is long enough to contain all elements, so use with
@@ -128,19 +104,12 @@ richer feature set. Implicit construction of @ref Color4 from @ref Color3 will
 set the alpha to full value (thus @cpp 1.0f @ce for @ref Color4 and @cpp 255 @ce
 for @ref Color4ub):
 
-@code{.cpp}
-Color4 a = Color3{0.2f, 0.7f, 0.5f};     // {0.2f, 0.7f, 0.5f, 1.0f}
-Color4ub b = Color3ub{0x33, 0xb2, 0x7f}; // {0x33, 0xb2, 0x7f, 0xff}
-@endcode
+@snippet MagnumMath.cpp matrix-vector-construct-color
 
 Similarly to axes in vectors, you can create single color shades too, or create
 a RGB color from HSV representation:
 
-@code{.cpp}
-auto green = Color3::green();          // {0.0f, 1.0f, 0.0f}
-auto cyan = Color4::cyan(0.5f, 0.95f); // {0.5f, 1.0f, 1.0f, 0.95f}
-auto fadedRed = Color3::fromHSV(219.0_degf, 0.50f, 0.57f)
-@endcode
+@snippet MagnumMath.cpp matrix-vector-construct-color-hue
 
 Lastly, namespace @ref Math::Literals provides convenient
 @link Literals::operator""_rgb() operator""_rgb() @endlink /
@@ -155,55 +124,31 @@ and don't do any gamma correction on it. For sRGB input, there is
 @link Literals::operator""_srgbaf() operator""_srgbaf() @endlink, see their
 documentation for more information.
 
-@code{.cpp}
-Color3ub a = 0x33b27f_rgb;      // {0x33, 0xb2, 0x7f}
-Color4 b = 0x33b27fcc_rgbaf;    // {0.2f, 0.7f, 0.5f, 0.8f}
-Color4 c = 0x33b27fcc_srgbaf;   // {0.0331048f, 0.445201f, 0.212231f, 0.8f}
-@endcode
+@snippet MagnumMath.cpp matrix-vector-construct-color-literal
 
 @section matrix-vector-component-access Accessing matrix and vector components
 
 Column vectors of matrices and vector components can be accessed using square
 brackets:
 
-@code{.cpp}
-Matrix3x2 a;
-a[2] /= 2.0f;   // third column (column major indexing, see explanation below)
-a[0][1] = 5.3f; // first column, second element
-
-Vector3i b;
-b[1] = 1;       // second element
-@endcode
+@snippet MagnumMath.cpp matrix-vector-access
 
 Row vectors can be accessed too, but only for reading, and the access is slower
 due to the way the matrix is stored (see @ref matrix-vector-column-major "explanation below"):
 
-@code{.cpp}
-Vector2i c = a.row(2); // third row
-@endcode
+@snippet MagnumMath.cpp matrix-vector-access-row
 
 Fixed-size vector subclasses have functions for accessing named components
 and subparts:
 
-@code{.cpp}
-Vector4i a;
-Int x = a.x();
-a.y() += 5;
-
-Vector3i xyz = a.xyz();
-xyz.xy() *= 5;
-@endcode
+@snippet MagnumMath.cpp matrix-vector-access-named
 
 @ref Color3 and @ref Color4 name their components `rgba` instead of `xyzw`.
 
 For more involved operations with components there is the @ref Math::swizzle()
 function:
 
-@code{.cpp}
-Vector4i original(-1, 2, 3, 4);
-Vector4i bgra = Math::swizzle<'b', 'g', 'r', 'a'>(original); // { 3, 2, -1, 4 }
-Math::Vector<6, Int> w10xyz = Math::swizzle<'w', '1', '0', 'x', 'y', 'z'>(original); // { 4, 1, 0, -1, 2, 3 }
-@endcode
+@snippet MagnumMath.cpp matrix-vector-access-swizzle
 
 @section matrix-vector-conversion Converting between different underlying types
 
@@ -219,23 +164,12 @@ To further emphasise the intent of conversion (so it doesn't look like accident
 or typo), you are encouraged to use @cpp auto b = Type{a} @ce instead of
 @cpp Type b{a} @ce.
 
-@code{.cpp}
-Vector3 a{2.2f, 0.25f, -5.1f};
-//Vector3i b = a;                   // error, implicit conversion not allowed
-auto c = Vector3i{a};               // {2, 0, -5}
-auto d = Vector3d{a};               // {2.2, 0.25, -5.1}
-@endcode
+@snippet MagnumMath.cpp matrix-vector-convert
 
 For packing and unpacking there are @ref Math::pack() and @ref Math::unpack()
 functions:
 
-@code{.cpp}
-Color3 a{0.8f, 1.0f, 0.3f};
-auto b = Math::pack<Color3ub>(a);   // {204, 255, 76}
-
-Color3ub c{64, 127, 89};
-auto d = Math::unpack<Color3>(c);   // {0.251f, 0.498f, 0.349}
-@endcode
+@snippet MagnumMath.cpp matrix-vector-convert-pack
 
 See @ref matrix-vector-componentwise "below" for more information about other
 available component-wise operations.
@@ -246,18 +180,11 @@ Vectors can be added, subtracted, negated and multiplied or divided with
 scalars, as is common in mathematics, Magnum also adds the ability to divide
 scalar with vector:
 
-@code{.cpp}
-Vector3 a{1.0f, 2.0f, 3.0f};
-Vector3 b = a*5.0f - Vector3{3.0f, -0.5f, -7.5f}; // {5.0f, 9.5f, 7.5f}
-Vector3 c = 1.0f/a;                             // {1.0f, 0.5f, 0.333f}
-@endcode
+@snippet MagnumMath.cpp matrix-vector-operations-vector
 
 As in GLSL, vectors can be also multiplied or divided component-wise:
 
-@code{.cpp}
-Vector3 a{1.0f, 2.0f, 3.0f};
-Vector3 b = a*Vector3{-0.5f, 2.0f, -7.0f};      // {-0.5f, 4.0f, -21.0f}
-@endcode
+@snippet MagnumMath.cpp matrix-vector-operations-multiply
 
 When working with integral vectors (i.e. 24bit RGB values), it is often
 desirable to multiply them with floating-point values but with integral result.
@@ -265,46 +192,20 @@ In Magnum, all multiplication/division operations involving integral vectors
 will have integral result, you need to convert both arguments to the same
 floating-point type to have floating-point result.
 
-@code{.cpp}
-Color3ub color{80, 116, 34};
-Color3ub lighter = color*1.5f;                  // {120, 174, 51}
-
-Vector3i a{4, 18, -90};
-Vector3 multiplier{2.2f, 0.25f, 0.1f};
-Vector3i b = a*multiplier;                      // {8, 4, -9}
-Vector3 c = Vector3(a)*multiplier;              // {8.0f, 4.5f, -9.0f}
-@endcode
+@snippet MagnumMath.cpp matrix-vector-operations-integer
 
 You can also use all bitwise operations on integral vectors:
 
-@code{.cpp}
-Vector2i size{256, 256};
-Vector2i mipLevel3Size = size >> 3;             // {32, 32}
-@endcode
+@snippet MagnumMath.cpp matrix-vector-operations-bitwise
 
 Matrices can be added, subtracted and multiplied with matrix multiplication.
 
-@code{.cpp}
-Matrix3x2 a;
-Matrix3x2 b;
-Matrix3x2 c = a + (-b);
-
-Matrix2x3 d;
-Matrix2x2 e = d*b;
-Matrix3x3 f = b*d;
-@endcode
+@snippet MagnumMath.cpp matrix-vector-operations-matrix
 
 You can also multiply (properly sized) vectors with matrices. These operations
 are just convenience shortcuts for multiplying with single-column matrices:
 
-@code{.cpp}
-Matrix3x4 a;
-Vector3 b;
-Vector4 c = a*b;
-
-Math::RectangularMatrix<4, 1, Float> d;
-Matrix4x3 e = b*d;
-@endcode
+@snippet MagnumMath.cpp matrix-vector-operations-multiply-matrix
 
 @section matrix-vector-componentwise Component-wise and inter-vector operations
 
@@ -313,62 +214,35 @@ As shown above, vectors can be added and multiplied component-wise using the
 and @ref Math::Vector::product() "product()" for sum or product of components
 in one vector:
 
-@code{.cpp}
-Float a = Vector3{1.5f, 0.3f, 8.0f}.sum();      // 8.8f
-Int b = Vector3i{32, -5, 7}.product()           // 1120
-@endcode
+@snippet MagnumMath.cpp matrix-vector-operations-componentwise
 
 Component-wise minimum and maximum of two vectors can be done using
 @ref Math::min(), @ref Math::max() or @ref Math::minmax(), similarly with
 @ref Vector::min() "min()", @ref Vector::max() "max()" and
 @ref Vector2::minmax() "minmax()" for components in one vector.
 
-@code{.cpp}
-Vector3i a{-5, 7, 24};
-Vector3i b{8, -2, 12};
-
-Vector3i min = Math::min(a, b);                 // {-5, -2, 12}
-Int max = a.max();                              // 24
-@endcode
+@snippet MagnumMath.cpp matrix-vector-operations-minmax
 
 The vectors can be also compared component-wise, the result is returned in
 @ref Math::BoolVector class:
 
-@code{.cpp}
-BoolVector<3> largerOrEqual = a >= b;           // {false, true, true}
-bool anySmaller = (a < b).any();                // true
-bool allLarger = (a > b).all();                 // false
-@endcode
+@snippet MagnumMath.cpp matrix-vector-operations-compare
 
 There are also function for component-wise rounding, sign operations, square
 root, various interpolation and (de)normalization functionality:
 
-@code{.cpp}
-Vector3 a{5.5f, -0.3f, 75.0f};
-Vector3 b = Math::round(a);                     // {5.0f,  0.0f, 75.0f}
-Vector3 c = Math::abs(a);                       // {5.5f, -0.3f, 75.0f}
-Vector3 d = Math::clamp(a, -0.2f, 55.0f);       // {5.5f, -0.2f, 55.0f}
-@endcode
+@snippet MagnumMath.cpp matrix-vector-operations-functions
 
 Component-wise functions are implemented only for vectors and not for matrices
 to keep the math library in sane and maintainable size. Instead, you can
 reinterpret the matrix as vector and do the operation on it (and vice versa):
 
-@code{.cpp}
-Matrix3x2 mat;
-Math::Vector<6, Float> vec = mat.toVector();
-// ...
-mat = Matrix3x2::fromVector(vec);
-@endcode
+@snippet MagnumMath.cpp matrix-vector-operations-functions-componentwise
 
 Note that all component-wise functions in @ref Math namespace work also for
 scalars:
 
-@code{.cpp}
-std::pair<Int, Int> minmax = Math::minmax(24, -5);  // -5, 24
-Int a = Math::lerp(0, 360, 0.75f);                  // 270
-auto b = Math::denormalize<UnsignedByte>(0.89f);    // 226
-@endcode
+@snippet MagnumMath.cpp matrix-vector-operations-functions-scalar
 
 @section matrix-vector-column-major Matrices are column-major and vectors are columns
 
@@ -380,27 +254,18 @@ implications and it may differ from what is common in mathematics:
     Order of template arguments in specification of @ref Math::RectangularMatrix
     is also column-major:
 
-    @code{.cpp}
-    Math::RectangularMatrix<2, 5, Int> mat; // two columns, five rows
-    @endcode
+    @snippet MagnumMath.cpp matrix-vector-column-major-template
 </li><li>
     Order of components in matrix constructors is also column-major, further
     emphasized by requirement that you have to pass directly column vectors:
 
-    @code{.cpp}
-    Math::Matrix3<Int> mat({0, 1, 2},
-                           {3, 4, 5},
-                           {6, 7, 8});      // first column is {0, 1, 2}
-    @endcode
+    @snippet MagnumMath.cpp matrix-vector-column-major-construct
 </li><li>
     Element accessing order is also column-major, thus the bracket operator is
     accessing columns. Returned vector has also its own bracket operator, which
     is then indexing rows.
 
-    @code{.cpp}
-    mat[0] *= 2;                            // first column
-    mat[2][0] = 5;                          // first element of third column
-    @endcode
+    @snippet MagnumMath.cpp matrix-vector-column-major-access
 </li><li>
     Various algorithms which commonly operate on matrix rows (such as
     @ref Algorithms::gaussJordanInPlace() "Gauss-Jordan elimination") have
