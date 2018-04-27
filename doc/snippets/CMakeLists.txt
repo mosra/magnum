@@ -36,6 +36,7 @@ endif()
 add_library(snippets STATIC
     plugins.cpp
     Magnum.cpp
+    MagnumMath.cpp
     MagnumMeshTools.cpp
     MagnumShaders.cpp
     MagnumText.cpp)

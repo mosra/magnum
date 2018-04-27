@@ -87,11 +87,7 @@ you don't need to worry about them in initialization.
 and rotation transformation can be created by calling @ref Matrix3::rotation(),
 @ref Complex::rotation() or @ref DualComplex::rotation(), for example:
 
-@code{.cpp}
-auto a = Matrix3::rotation(23.0_degf);
-auto b = Complex::rotation(Rad(Constants::piHalf()));
-auto c = DualComplex::rotation(-1.57_radf);
-@endcode
+@snippet MagnumMath.cpp transformations-rotation2D
 
 3D rotation is represented by angle and (three-dimensional) axis. The rotation
 can be created by calling @ref Matrix4::rotation(), @ref Quaternion::rotation()
@@ -102,11 +98,7 @@ Matrix representation has also @ref Matrix4::rotationX(),
 @ref Matrix4::rotationY() and @ref Matrix4::rotationZ() which are faster than
 using the generic function for rotation around primary axes. Examples:
 
-@code{.cpp}
-auto a = Quaternion::rotation(60.0_degf, Vector3::xAxis());
-auto b = DualQuaternion::rotation(-1.0_degf, Vector3(1.0f, 0.5f, 3.0f).normalized());
-auto c = Matrix4::rotationZ(angle);
-@endcode
+@snippet MagnumMath.cpp transformations-rotation3D
 
 Rotations are always around origin. Rotation about arbitrary point can be done
 by applying translation to have the point at origin, performing the rotation and
@@ -120,19 +112,13 @@ then translating back. Read below for more information.
 @ref Vector2::xAxis() or @ref Vector2::yAxis() to translate only along given
 axis. Examples:
 
-@code{.cpp}
-auto a = Matrix3::translation(Vector2::xAxis(-5.0f));
-auto b = DualComplex::translation({-1.0f, 0.5f});
-@endcode
+@snippet MagnumMath.cpp transformations-translation2D
 
 3D translation is defined by three-dimensional vector and can be created with
 @ref Matrix4::translation() or @ref DualQuaternion::translation(). You can use
 @ref Vector3::xAxis() and friends also here. Examples:
 
-@code{.cpp}
-auto a = Matrix4::translation(vector);
-auto b = DualQuaternion::translation(Vector3::zAxis(1.3f));
-@endcode
+@snippet MagnumMath.cpp transformations-translation3D
 
 @subsection transformations-scaling Scaling and reflection
 
@@ -143,11 +129,7 @@ or their 2D counterparts to scale along one axis and leave the rest unchanged
 or call explicit one-parameter vector constructor to scale uniformly on all
 axes. Examples:
 
-@code{.cpp}
-auto a = Matrix3::scaling(Vector2::xScale(2.0f));
-auto b = Matrix4::scaling({2.0f, -2.0f, 1.5f});
-auto c = Matrix4::scaling(Vector3(10.0f));
-@endcode
+@snippet MagnumMath.cpp transformations-scaling
 
 Reflections are defined by normal along which to reflect (i.e., two- or
 three-dimensional vector of unit length) and they are also represented by
@@ -155,10 +137,7 @@ matrices. Reflection is created with @ref Matrix3::reflection() or
 @ref Matrix4::reflection(). You can use @ref Vector3::xAxis() and friends also
 here. Examples:
 
-@code{.cpp}
-auto a = Matrix3::reflection(Vector2::yAxis());
-auto b = Matrix4::reflection(axis.normalized());
-@endcode
+@snippet MagnumMath.cpp transformations-reflection
 
 Scaling and reflection is also done relative to origin, you can use method
 mentioned above to scale or reflect around arbitrary point.
@@ -179,11 +158,7 @@ unit cube, and perspective projection. Perspective projection is created with
 aspect ratio and distance to near and far plane of view frustum or by size of
 near plane, its distance and distance to far plane. Some examples:
 
-@code{.cpp}
-auto a = Matrix3::projection({4.0f, 3.0f});
-auto b = Matrix4::orthographicProjection({4.0f, 3.0f, 100.0f});
-auto c = Matrix4::perspectiveProjection(35.0_degf, 1.333f, 0.001f, 100.0f);
-@endcode
+@snippet MagnumMath.cpp transformations-projection
 
 @section transformations-composing Composing and inverting transformations
 
@@ -194,12 +169,7 @@ transformation on the right-hand side of multiplication is applied first, the
 transformation on the left-hand side is applied second. For example, rotation
 followed by translation is done like this:
 
-@code{.cpp}
-auto a = DualComplex::translation(Vector2::yAxis(2.0f))*
-         DualComplex::rotation(25.0_degf);
-auto b = Matrix4::translation(Vector3::yAxis(5.0f))*
-         Matrix4::rotationY(25.0_degf);
-@endcode
+@snippet MagnumMath.cpp transformations-composing
 
 Inverse transformation can be computed using @ref Matrix3::inverted(),
 @ref Matrix4::inverted(), @ref Complex::inverted(), @ref Quaternion::inverted(),
@@ -221,21 +191,14 @@ using @ref Matrix4::transformVector() and @ref Quaternion::transformVector().
 For transformation with normalized quaternion you can use faster alternative
 @ref Quaternion::transformVectorNormalized(). Example:
 
-@code{.cpp}
-auto transformation = Matrix3::rotation(-30.0_degf)*Matrix3::scaling(Vector2(3.0f));
-Vector2 transformed = transformation.transformVector({1.5f, -7.9f});
-@endcode
+@snippet MagnumMath.cpp transformations-transform2D
 
 Point transformation involves also translation, in 2D is done with
 @ref Matrix3::transformPoint() and @ref DualComplex::transformPoint(), in 3D
 with @ref Matrix4::transformPoint() and @ref DualQuaternion::transformPoint().
 Also here you can use faster alternative @ref DualQuaternion::transformPointNormalized():
 
-@code{.cpp}
-auto transformation = DualQuaternion::rotation(-30.0_degf, Vector3::xAxis())*
-                      DualQuaternion::translation(Vector3::yAxis(3.0f));
-Vector3 transformed = transformation.transformPointNormalized({1.5f, 3.0f, -7.9f});
-@endcode
+@snippet MagnumMath.cpp transformations-transform3D
 
 @section transformations-properties Transformation properties and conversion
 
@@ -243,16 +206,7 @@ It is possible to extract some transformation properties from transformation
 matrices, particularly translation vector, rotation/scaling part of the matrix
 (or pure rotation if the matrix has uniform scaling) and also base vectors:
 
-@code{.cpp}
-Matrix4 a;
-auto rotationScaling = transformation.rotationScaling();
-Vector3 up = transformation.up();
-Vector3 right = transformation.right();
-
-Matrix3 b;
-auto rotation = b.rotation();
-Float xTranslation = b.translation().x();
-@endcode
+@snippet MagnumMath.cpp transformations-properties
 
 Extracting scaling and rotation from arbitrary transformation matrices is
 harder and can be done using @ref Math::Algorithms::svd(). Extracting rotation
@@ -262,9 +216,7 @@ complex number or quaternion, see below.
 You can also recreate transformation matrix from rotation and translation
 parts:
 
-@code{.cpp}
-Matrix3 c = Matrix3::from(rotation, {1.0f, 3.0f});
-@endcode
+@snippet MagnumMath.cpp transformations-recreate
 
 Complex numbers and quaternions are far better in this regard and they allow
 you to extract rotation angle using @ref Complex::angle() or
@@ -273,40 +225,21 @@ Their dual versions allow to extract both rotation and translation part using
 @ref DualComplex::rotation() const, @ref DualQuaternion::rotation() const,
 @ref DualComplex::translation() const and @ref DualQuaternion::translation() const.
 
-@code{.cpp}
-DualComplex a;
-Rad rotationAngle = a.rotation().angle();
-Vector2 translation = a.translation();
-
-Quaternion b;
-Vector3 rotationAxis = b.axis();
-@endcode
+@snippet MagnumMath.cpp transformations-properties-complex-quat
 
 You can convert Complex and Quaternion to rotation matrix using
 @ref Complex::toMatrix() and @ref Quaternion::toMatrix() or their dual version
 to rotation and  translation matrix using @ref DualComplex::toMatrix() and
 @ref DualQuaternion::toMatrix():
 
-@code{.cpp}
-Quaternion a;
-auto rotation = Matrix4::from(a.toMatrix(), {});
-
-DualComplex b;
-Matrix3 transformation = b.toMatrix();
-@endcode
+@snippet MagnumMath.cpp transformations-properties-complex-quat-to-matrix
 
 Conversion the other way around is possible only from rotation matrices using
 @ref Complex::fromMatrix() or @ref Quaternion::fromMatrix() and from rotation
 and translation matrices using @ref DualComplex::fromMatrix() and
 @ref DualQuaternion::fromMatrix():
 
-@code{.cpp}
-Matrix3 rotation;
-auto a = Complex::fromMatrix(rotation.rotationScaling());
-
-Matrix4 transformation;
-auto b = DualQuaternion::fromMatrix(transformation);
-@endcode
+@snippet MagnumMath.cpp transformations-properties-complex-quat-from-matrix
 
 @section transformations-interpolation Transformation interpolation
 
@@ -326,10 +259,7 @@ can be reorthogonalized using @ref Math::Algorithms::gramSchmidtOrthogonalize()
 scaling). You can also use @ref Math::Algorithms::svd() to more precisely (but
 way more slowly) account for the drift. Example:
 
-@code{.cpp}
-Matrix4 transformation;
-Math::Algorithms::gramSchmidtOrthonormalizeInPlace(transformation);
-@endcode
+@snippet MagnumMath.cpp transformations-normalization-matrix
 
 For quaternions and complex number this problem can be solved far more easily
 using @ref Complex::normalized(), @ref Quaternion::normalized(),
@@ -337,9 +267,7 @@ using @ref Complex::normalized(), @ref Quaternion::normalized(),
 Transformation quaternions and complex numbers are always of unit length, thus
 normalizing them reduces the drift.
 
-@code{.cpp}
-DualQuaternion transformation;
-transformation = transformation.normalized();
-@endcode
+@snippet MagnumMath.cpp transformations-normalization-quat
+
 */
 }
