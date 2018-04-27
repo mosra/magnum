@@ -26,7 +26,7 @@
 #include <sstream>
 #include <Corrade/Utility/Directory.h>
 
-#include "Magnum/OpenGLTester.h"
+#include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/GlyphCache.h"
 #include "Magnum/Trade/AbstractImporter.h"
@@ -35,7 +35,7 @@
 
 namespace Magnum { namespace Text { namespace Test {
 
-struct MagnumFontGLTest: OpenGLTester {
+struct MagnumFontGLTest: GL::OpenGLTester {
     explicit MagnumFontGLTest();
 
     void nonexistent();
@@ -134,7 +134,7 @@ void MagnumFontGLTest::createGlyphCache() {
     /* Just testing that nothing crashes, asserts or errors */
     std::unique_ptr<GlyphCache> cache = font->createGlyphCache();
 
-    MAGNUM_VERIFY_NO_ERROR();
+    MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(cache);
     CORRADE_COMPARE(cache->glyphCount(), 3);
 

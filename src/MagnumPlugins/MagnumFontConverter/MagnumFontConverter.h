@@ -57,7 +57,7 @@ namespace Magnum { namespace Text {
 Expects filename prefix, creates two files, `prefix.conf` and `prefix.tga`. See
 @ref MagnumFont for more information about the font.
 
-This plugin is available only on desktop OpenGL, as it uses @ref Texture::image()
+This plugin is available only on desktop OpenGL, as it uses @ref GL::Texture::image()
 to read back the generated data. It depends on the @ref Text library and the
 @ref Trade::TgaImageConverter "TgaImageConverter" plugin. It is built if
 `WITH_MAGNUMFONTCONVERTER` is enabled when building Magnum. To use as a

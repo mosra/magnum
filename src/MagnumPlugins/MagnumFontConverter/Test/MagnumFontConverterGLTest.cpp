@@ -26,11 +26,11 @@
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/TestSuite/Compare/File.h>
 
-#include "Magnum/Context.h"
-#include "Magnum/Extensions.h"
 #include "Magnum/PixelFormat.h"
-#include "Magnum/TextureFormat.h"
-#include "Magnum/OpenGLTester.h"
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#include "Magnum/GL/TextureFormat.h"
+#include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Text/GlyphCache.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractFontConverter.h"
@@ -42,7 +42,7 @@
 
 namespace Magnum { namespace Text { namespace Test {
 
-struct MagnumFontConverterGLTest: OpenGLTester {
+struct MagnumFontConverterGLTest: GL::OpenGLTester {
     explicit MagnumFontConverterGLTest();
 
     void exportFont();
@@ -112,8 +112,8 @@ void MagnumFontConverterGLTest::exportFont() {
     font.openFile({}, {});
 
     /* Create fake cache */
-    MAGNUM_ASSERT_EXTENSION_SUPPORTED(Extensions::GL::ARB::texture_rg);
-    GlyphCache cache(TextureFormat::R8, Vector2i(1536), Vector2i(256), Vector2i(24));
+    MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);
+    GlyphCache cache(GL::TextureFormat::R8, Vector2i(1536), Vector2i(256), Vector2i(24));
     cache.insert(font.glyphId(U'W'), {25, 34}, {{0, 8}, {16, 128}});
     cache.insert(font.glyphId(U'e'), {25, 12}, {{16, 4}, {64, 32}});
 
