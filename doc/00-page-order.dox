@@ -37,10 +37,7 @@
 @page openal OpenAL
 
 @page changelog Changelog
-@page changelog-plugins Plugins changelog
-@page changelog-integration Integration changelog
-@page changelog-extras Extras changelog
-@page changelog-examples Examples changelog
+@page changelog-old Archived changelogs
 
 @page developers Developers guide
 @page coding-style Coding style
