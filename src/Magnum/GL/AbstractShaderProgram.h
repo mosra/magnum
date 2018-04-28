@@ -368,15 +368,15 @@ See also @ref Attribute::DataType enum for additional type options.
     @ref Vector4i) or unsigned integer uniforms (i.e. @ref UnsignedInt,
     @ref Vector2ui, @ref Vector3ui and @ref Vector4ui).
 @requires_gl40 Extension @extension{ARB,gpu_shader_fp64} is required when
-    using double uniforms (i.e. @ref Double, @ref Vector2d, @ref Vector3d,
-    @ref Vector4d, @ref Matrix2x2d, @ref Matrix3x3d, @ref Matrix4x4d,
-    @ref Matrix2x3d, @ref Matrix3x2d, @ref Matrix2x4d, @ref Matrix4x2d,
-    @ref Matrix3x4d and @ref Matrix4x3d).
+    using double uniforms (i.e. @ref Magnum::Double "Double", @ref Vector2d,
+    @ref Vector3d, @ref Vector4d, @ref Matrix2x2d, @ref Matrix3x3d,
+    @ref Matrix4x4d, @ref Matrix2x3d, @ref Matrix3x2d, @ref Matrix2x4d,
+    @ref Matrix4x2d, @ref Matrix3x4d and @ref Matrix4x3d).
 @requires_gl41 Extension @extension{ARB,vertex_attrib_64bit} is required when
-    using double attributes (i.e. @ref Double, @ref Vector2d, @ref Vector3d,
-    @ref Vector4d, @ref Matrix2x2d, @ref Matrix3x3d, @ref Matrix4x4d,
-    @ref Matrix2x3d, @ref Matrix3x2d, @ref Matrix2x4d, @ref Matrix4x2d,
-    @ref Matrix3x4d and @ref Matrix4x3d).
+    using double attributes (i.e. @ref Magnum::Double "Double", @ref Vector2d,
+    @ref Vector3d, @ref Vector4d, @ref Matrix2x2d, @ref Matrix3x3d,
+    @ref Matrix4x4d, @ref Matrix2x3d, @ref Matrix3x2d, @ref Matrix2x4d,
+    @ref Matrix4x2d, @ref Matrix3x4d and @ref Matrix4x3d).
 @requires_gles30 Integer attributes, unsigned integer uniforms and non-square
     matrix attributes and uniforms (i.e. @ref Matrix2x3, @ref Matrix3x2,
     @ref Matrix2x4, @ref Matrix4x2, @ref Matrix3x4 and @ref Matrix4x3) are not

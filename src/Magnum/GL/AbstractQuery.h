@@ -131,8 +131,10 @@ class MAGNUM_GL_EXPORT AbstractQuery: public AbstractObject {
 
         /**
          * @brief Result
-         * @tparam T Result type. Can be either `bool`, @ref UnsignedInt,
-         *      @ref Int, @ref UnsignedLong or @ref Long.
+         * @tparam T Result type. Can be either `bool`,
+         *      @ref Magnum::UnsignedInt "UnsignedInt", @ref Magnum::Int "Int",
+         *      @ref Magnum::UnsignedLong "UnsignedLong" or
+         *      @ref Magnum::Long "Long".
          *
          * Note that this function is blocking until the result is available.
          * See @ref resultAvailable().
