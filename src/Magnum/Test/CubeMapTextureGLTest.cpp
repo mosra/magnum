@@ -616,6 +616,10 @@ void CubeMapTextureGLTest::storage() {
     #endif
 }
 
+namespace {
+    constexpr UnsignedByte Zero[4*4*4]{};
+}
+
 void CubeMapTextureGLTest::image() {
     setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
 
@@ -629,16 +633,26 @@ void CubeMapTextureGLTest::image() {
     #endif
     #endif
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    constexpr TextureFormat format = TextureFormat::RGBA8;
+    #else
+    constexpr TextureFormat format = TextureFormat::RGBA;
+    #endif
+
     CubeMapTexture texture;
-    texture.setImage(CubeMapCoordinate::PositiveX, 0,
-        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-        TextureFormat::RGBA8,
-        #else
-        TextureFormat::RGBA,
-        #endif
-        ImageView2D{PixelStorageData[testCaseInstanceId()].storage,
+    texture.setImage(CubeMapCoordinate::PositiveX, 0, format, ImageView2D{PixelStorageData[testCaseInstanceId()].storage,
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
         PixelStorageData[testCaseInstanceId()].dataSparse});
+    texture.setImage(CubeMapCoordinate::NegativeX, 0, format,
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setImage(CubeMapCoordinate::PositiveY, 0, format,
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setImage(CubeMapCoordinate::NegativeY, 0, format,
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setImage(CubeMapCoordinate::PositiveZ, 0, format,
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setImage(CubeMapCoordinate::NegativeZ, 0, format,
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -667,6 +681,16 @@ void CubeMapTextureGLTest::imageBuffer() {
         PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
         PixelStorageData[testCaseInstanceId()].dataSparse,
         BufferUsage::StaticDraw});
+    texture.setImage(CubeMapCoordinate::NegativeX, 0, TextureFormat::RGBA8,
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setImage(CubeMapCoordinate::PositiveY, 0, TextureFormat::RGBA8,
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setImage(CubeMapCoordinate::NegativeY, 0, TextureFormat::RGBA8,
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setImage(CubeMapCoordinate::PositiveZ, 0, TextureFormat::RGBA8,
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setImage(CubeMapCoordinate::NegativeZ, 0, TextureFormat::RGBA8,
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
 
     MAGNUM_VERIFY_NO_ERROR();
 
@@ -687,8 +711,6 @@ void CubeMapTextureGLTest::imageBuffer() {
 #endif
 
 namespace {
-    constexpr UnsignedByte Zero[4*4*4]{};
-
     #ifndef MAGNUM_TARGET_GLES
     constexpr UnsignedByte SubDataComplete[]{
         0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,

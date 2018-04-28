@@ -1680,7 +1680,22 @@ void FramebufferGLTest::copyImageCubeMapTexture() {
     Framebuffer fb{{{}, Vector2i{4}}};
     fb.attachTexture(Framebuffer::ColorAttachment{0}, storage, 0);
 
+    constexpr UnsignedByte Zero[2*2*4]{};
+
     CubeMapTexture texture;
+    texture.setImage(CubeMapCoordinate::PositiveX, 0, TextureFormat::RGBA8,
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setImage(CubeMapCoordinate::NegativeX, 0, TextureFormat::RGBA8,
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setImage(CubeMapCoordinate::PositiveY, 0, TextureFormat::RGBA8,
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setImage(CubeMapCoordinate::NegativeY, 0, TextureFormat::RGBA8,
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setImage(CubeMapCoordinate::PositiveZ, 0, TextureFormat::RGBA8,
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setImage(CubeMapCoordinate::NegativeZ, 0, TextureFormat::RGBA8,
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+
     fb.copyImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, CubeMapCoordinate::PositiveX, 0,
         #ifndef MAGNUM_TARGET_GLES2
         TextureFormat::RGBA8
