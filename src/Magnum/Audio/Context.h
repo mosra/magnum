@@ -380,8 +380,9 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
          * @brief Set HRTF configuration
          * @return Reference to self (for method chaining)
          *
-         * If set to @ref Hrtf::Default (the default), system OpenAL
+         * If set to @ref Hrtf "Hrtf::Default" (the default), system OpenAL
          * configuration is used.
+         * @todoc the fuck doxygen why can't you link to Hrtf::Default?!
          * @requires_al_extension Extension @alc_extension{SOFTX,HRTF} or
          *      @alc_extension{SOFT,HRTF}, otherwise the setting will be simply
          *      ignored

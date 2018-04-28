@@ -258,8 +258,9 @@ class Renderer {
         /**
          * @brief Set distance model
          *
-         * Default is @ref DistanceModel::InverseClamped.
+         * Default is @ref DistanceModel "DistanceModel::InverseClamped".
          * @see @fn_al_keyword{DistanceModel}
+         * @todoc why doxygen can't link to DistanceModel::InverseClamped?!
          */
         static void setDistanceModel(DistanceModel model) {
             alDistanceModel(ALenum(model));
