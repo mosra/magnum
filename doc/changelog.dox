@@ -73,13 +73,14 @@ See also:
     @ref GL::hasCompressedPixelFormat(), @ref compressedPixelFormat() utilities
     for converting generic @ref PixelFormat / @ref CompressedPixelFormat to
     GL-specific @ref GL::PixelFormat, @ref GL::PixelType and
-    @ref GL::CompressedPixelFormat values. The @ref BufferImage and
-    @ref CompressedBufferImage classes now have overloads accepting both types.
+    @ref GL::CompressedPixelFormat values. The @ref GL::BufferImage and
+    @ref GL::CompressedBufferImage classes now have overloads accepting both
+    types.
 -   New @ref GL::meshPrimitive() and @ref GL::meshIndexType() utilities for
     converting generic @ref MeshPrimitive and @ref MeshIndexType to GL-specific
-    @ref GL::MeshPrimitive and @ref GL::MeshIndexType values. The @ref Mesh
+    @ref GL::MeshPrimitive and @ref GL::MeshIndexType values. The @ref GL::Mesh
     class now has overloads accepting both types.
--   New @ref Mesh::indexType() and @ref MeshView::mesh() getters
+-   New @ref GL::Mesh::indexType() and @ref GL::MeshView::mesh() getters
 -   New @ref GL::samplerFilter(), @ref GL::samplerMipmap() and
     @ref GL::samplerWrapping() utilities for converting generic
     @ref SamplerFilter, @ref SamplerMipmap and @ref SamplerWrapping to G
@@ -96,7 +97,7 @@ See also:
         their WebGL counterparts @webgl_extension{EXT,color_buffer_half_float},
         @webgl_extension{WEBGL,color_buffer_float},
         @webgl_extension{EXT,color_buffer_float}
--   Ported @ref OpenGLTester to WebGL
+-   Ported @ref GL::OpenGLTester to WebGL
 
 @subsubsection changelog-latest-new-platform Platform libraries
 
@@ -179,16 +180,17 @@ See also:
     shader sources containing Unicode characters to be truncated to empty
     strings. See the @cpp "emscripten-pthreads-broken-unicode-shader-sources" @ce
     workaround description for details.
--   @ref Attribute::DataType::HalfFloat was not available on WebGL 2 by mistake
--   A wrong code path for @ref Framebuffer::checkStatus() was selected on WebGL
-    1 by mistake
+-   @ref GL::Attribute::DataType::HalfFloat was not available on WebGL 2 by
+    mistake
+-   A wrong code path for @ref GL::Framebuffer::checkStatus() was selected on
+    WebGL 1 by mistake
 -   Fixed `MAGNUM_PLUGINS_DIR` variables to contain proper absolute location by
     default again.
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
--   All GL-related headers and APIs from the root @ref Magnum/ directory and
-    @ref Magnum namespace were moved to @ref Magnum/GL directory and
+-   All GL-related headers and APIs from the root `Magnum/` directory and
+    @ref Magnum namespace were moved to the `Magnum/GL/` directory and
     @ref Magnum::GL namespace. See their documentation for information about
     particular files, classes, enums, typedefs, values and functions.
 -   The `MAGNUM_ASSERT_VERSION_SUPPORTED()`, `MAGNUM_ASSERT_EXTENSION_SUPPORTED()`
@@ -205,8 +207,8 @@ See also:
     but marked as deprecated. Use either the generic values or
     @ref GL::PixelFormat (together with @ref GL::PixelType) and
     @ref GL::CompressedPixelFormat instead.
--   @ref PixelStorage::pixelSize() was deprecated, use @ref GL::pixelSize()
-    or @ref Magnum::pixelSize() instead
+-   `PixelStorage::pixelSize()` was deprecated, use @ref GL::pixelSize() or
+    @ref Magnum::pixelSize() instead
 -   `PixelStorage::dataProperties(GL::PixelFormat, GL::PixelSize, const Vector3i&)`
     was deprecated for being too GL-specific, use
     @ref PixelStorage::dataProperties(std::size_t, const Vector3i&) const
@@ -336,19 +338,19 @@ See also:
     accepts GL-specific pixel formats, only the non-deprecated values from the
     generic @ref PixelFormat enum
 -   The @ref Image::pixelSize(), @ref ImageView::pixelSize(),
-    @ref Trade::ImageData::pixelSize() and @ref BufferImage::pixelSize()
+    @ref Trade::ImageData::pixelSize() and @ref GL::BufferImage::pixelSize()
     functions now return @ref UnsignedInt instead of @cpp std::size_t @ce.
 -   Removed `PixelStorage::setSwapBytes()`, as every Magnum API dealing with
     images basically only asserted that it's not set. Use
     @ref Corrade::Utility::Endianness instead.
 -   Removed the @cpp Buffer::Usage @ce enum that was deprecated in 2014.01, use
-    the global @ref BufferUsage enum instead
+    the global @ref GL::BufferUsage enum instead
 -   Removed the `Magnum/Query.h` header that was deprecated in 2015.05, use one
     of @ref Magnum/PrimitiveQuery.h, @ref Magnum/SampleQuery.h or
     @ref Magnum/TimeQuery.h instead
--   Removed ability to use @ref Buffer::Target as constructor or
-    @ref Buffer::setTargetHint() parameter that was deprecated in 2015.05, use
-    @ref Buffer::TargetHint instead
+-   Removed ability to use @ref GL::Buffer::Target as constructor or
+    @ref GL::Buffer::setTargetHint() parameter that was deprecated in 2015.05,
+    use @ref GL::Buffer::TargetHint instead
 -   Removed the @cpp SceneGraph::TransformationType @ce enum that was
     deprecated in 2015.05, use separate `<transform>()` and `<transform>Local()`
     variants instead
@@ -367,7 +369,7 @@ See also:
     vectors that was deprecated in 2015.05, use overload taking @ref Range2Di
     instead
 -   Removed the @cpp Mesh::maxVertexAttributes() @ce function that was
-    deprecated in 2015.05, use @ref AbstractShaderProgram::maxVertexAttributes()
+    deprecated in 2015.05, use @ref GL::AbstractShaderProgram::maxVertexAttributes()
     instead
 -   Removed @cpp Math::Vector::dot() @ce, @cpp Math::Complex::dot() @ce,
     @cpp Math::Quaternion::dot() @ce, @cpp Math::Vector::angle() @ce,
@@ -377,35 +379,35 @@ See also:
     were deprecated in 2015.05, use @ref Math::dot(), @ref Math::angle(),
     @ref Math::lerp(), @ref Math::slerp() and @ref Math::cross() instead
 -   Removed @cpp *Framebuffer::bind(FramebufferTarget) @ce function that was
-    deprecated in 2%15.05, use parameter-less @ref Framebuffer::bind() "*Framebuffer::bind()"
+    deprecated in 2%15.05, use parameter-less @ref GL::Framebuffer::bind() "*Framebuffer::bind()"
     instead
 -   Removed @cpp FramebufferTarget::ReadDraw @ce enum value that was deprecated
     in 2015.05, use separate @cpp FramebufferTarget::Read @ce and
     @cpp FramebufferTarget::Draw @ce values instead
--   Removed @ref CubeMapTexture::imageSize() with explicit face parameter that
-    was deprecated in 2015.05, use overload that returns one value for all
+-   Removed @ref GL::CubeMapTexture::imageSize() with explicit face parameter
+    that was deprecated in 2015.05, use overload that returns one value for all
     faces instead
 -   Removed the `Magnum/DebugMessage.h` header that was deprecated in 2015.05,
-    use @ref Magnum/DebugOutput.h instead
+    use @ref Magnum/GL/DebugOutput.h instead
 -   Removed the @cpp DebugMessage::Severity @ce enum that was deprecated in
-    2015.05, use @ref DebugOutput::Severity instead
+    2015.05, use @ref GL::DebugOutput::Severity instead
 -   Removed @cpp DebugMessage::Callback @ce typedef, @cpp DebugMessage::setCallback() @ce
     and @cpp DebugMessage::setDefaultCallback() @ce function that were
-    deprecated in 2015.05, use @ref DebugOutput::Callback,
-    @ref DebugOutput::setCallback() and @ref DebugOutput::setDefaultCallback()
-    instead
+    deprecated in 2015.05, use @ref GL::DebugOutput::Callback,
+    @ref GL::DebugOutput::setCallback() and
+    @ref GL::DebugOutput::setDefaultCallback() instead
 -   Removed @cpp DebugMessage::maxLoggedMessages() @ce and
     @cpp DebugMessage::maxMessageLength() @ce functions that were deprecated in
-    2015.05, use @ref DebugOutput::maxLoggedMessages() and
-    @ref DebugOutput::maxMessageLength() instead
+    2015.05, use @ref GL::DebugOutput::maxLoggedMessages() and
+    @ref GL::DebugOutput::maxMessageLength() instead
 -   Removed @cpp DebugMessage::setEnabled() @ce function and related values
     from @cpp DebugMessage::Source @ce enum that were deprecated in 2015.05,
-    use @ref DebugOutput::setEnabled() along with @ref DebugOutput::Source,
-    @ref DebugOutput::Type and @ref DebugOutput::Severity instead
+    use @ref GL::DebugOutput::setEnabled() along with @ref GL::DebugOutput::Source,
+    @ref GL::DebugOutput::Type and @ref GL::DebugOutput::Severity instead
 -   Removed parameter-less @cpp *Query @ce constructor and parametrized
     @cpp *Query::begin() @ce function that were deprecated in 2015.05, use
-    constructor with parameter and parameter-less @ref Query::begin() "*Query::begin()"
-    instead
+    constructor with parameter and parameter-less
+    @ref GL::SampleQuery::begin() "GL::*Query::begin()" instead
 -   Removed `Timeline::setMinimalFrameTime()` that was deprecated since June
     2015, use @ref Platform::Sdl2Application::setSwapInterval() "Platform::*Application::setSwapInterval()"
     and/or @ref Platform::Sdl2Application::setMinimalLoopPeriod() "Platform::*Application::setMinimalLoopPeriod()"
@@ -434,10 +436,11 @@ See also:
     @ref Math::Color3 and @ref Math::Color4 instead
 -   Removed `Magnum/ColorFormat.h` header and `ColorFormat` and `ColorType`
     enums that were deprecated since August 2015, use
-    @ref Magnum/PixelFormat.h, @ref PixelFormat and @ref PixelType instead
+    @ref Magnum/GL/PixelFormat.h, @ref GL::PixelFormat and @ref GL::PixelType
+    instead
 -   Removed @ref Image, @ref ImageView, @ref Trade::ImageData constructors,
-    @ref Image::setData() and @ref ImageView::setData() taking `void*` that
-    were deprecated since August 2015, use constructors and functions taking
+    `Image::setData()` and `ImageView::setData()` taking `void*` that were
+    deprecated since August 2015, use constructors and functions taking
     @ref Corrade::Containers::Array / @ref Corrade::Containers::ArrayView
     instead
 
@@ -527,46 +530,54 @@ a high-level overview.
         (see [mosra/magnum#53](https://github.com/mosra/magnum/issues/53))
 -   Compressed image support:
     -   Added @ref CompressedPixelFormat enum, @ref CompressedImage,
-        @ref CompressedImageView and @ref CompressedBufferImage classes
-    -   Added @ref Texture::setCompressedImage() "*Texture::setCompressedImage()",
-        @ref Texture::setCompressedSubImage() "*Texture::setCompressedSubImage()"
-        and @ref Texture::compressedImage() "Texture::compressedImage()"
+        @ref CompressedImageView and
+        @ref GL::CompressedBufferImage "CompressedBufferImage" classes
+    -   Added @ref GL::Texture::setCompressedImage() "*Texture::setCompressedImage()",
+        @ref GL::Texture::setCompressedSubImage() "*Texture::setCompressedSubImage()"
+        and @ref GL::Texture::compressedImage() "Texture::compressedImage()"
         functions
-    -   Added @ref Renderer::Hint::TextureCompression enum value
+    -   Added @ref GL::Renderer::Hint::TextureCompression "Renderer::Hint::TextureCompression"
+        enum value
 -   Ability to pass arguments to engine startup via
-    @ref Context "command-line and environment variables":
+    @ref GL::Context "command-line and environment variables":
     -   The engine now prints what driver workarounds are enabled and gives the
         user an ability to disable them via `--magnum-disable-workarounds`
     -   It's possible to disable OpenGL extensions to work around driver bugs
         using `--magnum-disable-extensions`
     -   It's possible to control amount of log output on engine startup via
         `--magnum-log`
--   Published OpenGL test setup code to a new @ref OpenGLTester library and
-    added GPU time benchmarking to it
+-   Published OpenGL test setup code to a new @ref GL::OpenGLTester "OpenGLTester"
+    library and added GPU time benchmarking to it
 -   Added @ref PixelStorage class, tracking OpenGL pixel storage state and
     applying it prior to read and upload of image data (see
     [mosra/magnum#104](https://github.com/mosra/magnum/issues/104))
 -   Added @ref NoCreate tag to control initialization of GL object classes
--   Added templated version of @ref Buffer::map() "Buffer::map*()" functions
+-   Added templated version of @ref GL::Buffer::map() "Buffer::map*()"
+    functions
 -   New `BUILD_MULTITHREADED` @ref cmake "CMake option" and a corresponding
     @ref MAGNUM_BUILD_MULTITHREADED CMake variable and preprocessor define
--   Added @ref Framebuffer::detach() as a conunterpart to all the
-    @ref Framebuffer::attachTexture() "attach*()" functions
--   Added @ref Framebuffer::attachLayeredTexture() for layered texture
-    attachments
--   Added @ref AbstractFramebuffer::clearDepth(), @ref AbstractFramebuffer::clearStencil(),
-    @ref AbstractFramebuffer::clearDepthStencil(), @ref DefaultFramebuffer::clearColor(),
-    @ref Framebuffer::clearColor()
--   Added @ref BufferImage::release() "{Compressed,}BufferImage::release()" and
-    an ability to create @ref BufferImage "{Compressed,}BufferImage" from an
-    existing @ref Buffer
--   New @ref Buffer::mapRead() convenience alternatives to @ref Buffer::map()
-    that return @cpp const @ce pointer and implicitly map as read-only
--   Implemented @ref Renderer::setMemoryBarrier() and
-    @ref Renderer::setMemoryBarrierByRegion()
--   Added @ref isVersionES() utility
--   Added @ref Context::isCoreProfile()
--   Added @ref TransformFeedback::maxVertexStreams() limit query
+-   Added @ref GL::Framebuffer::detach() "Framebuffer::detach()" as a
+    conunterpart to all the @ref GL::Framebuffer::attachTexture() "attach*()"
+    functions
+-   Added @ref GL::Framebuffer::attachLayeredTexture() "Framebuffer::attachLayeredTexture()"
+    for layered texture attachments
+-   Added @ref GL::AbstractFramebuffer::clearDepth() "AbstractFramebuffer::clearDepth()",
+    @ref GL::AbstractFramebuffer::clearStencil() "AbstractFramebuffer::clearStencil()",
+    @ref GL::AbstractFramebuffer::clearDepthStencil() "AbstractFramebuffer::clearStencil()",
+    @ref GL::DefaultFramebuffer::clearColor() "DefaultFramebuffer::clearColor()",
+    @ref GL::Framebuffer::clearColor() "Framebuffer::clearColor()"
+-   Added @ref GL::BufferImage::release() "{Compressed,}BufferImage::release()"
+    and an ability to create @ref GL::BufferImage "{Compressed,}BufferImage"
+    from an existing @ref GL::Buffer "Buffer"
+-   New @ref GL::Buffer::mapRead() "Buffer::mapRead()" convenience alternatives
+    to @ref GL::Buffer::map() "Buffer::map()" that return @cpp const @ce
+    pointer and implicitly map as read-only
+-   Implemented @ref GL::Renderer::setMemoryBarrier() "Renderer::setMemoryBarrier()"
+    and @ref GL::Renderer::setMemoryBarrierByRegion() "Renderer::setMemoryBarrierByRegion()"
+-   Added @ref GL::isVersionES() "isVersionES()" utility
+-   Added @ref GL::Context::isCoreProfile() "Context::isCoreProfile()"
+-   Added @ref GL::TransformFeedback::maxVertexStreams() "TransformFeedback::maxVertexStreams()"
+    limit query
 
 @subsubsection changelog-2018-02-new-audio Audio library
 
@@ -590,7 +601,8 @@ a high-level overview.
     [mosra/magnum#110](https://github.com/mosra/magnum/pull/110),
     [mosra/magnum#116](https://github.com/mosra/magnum/pull/116))
 -   New namespace @ref Audio::Extensions for OpenAL extensions, similar to
-    @ref Extensions for OpenGL (see [mosra/magnum#111](https://github.com/mosra/magnum/pull/111))
+    @ref GL::Extensions "Extensions" for OpenGL (see
+    [mosra/magnum#111](https://github.com/mosra/magnum/pull/111))
 -   HRTF support through @ref Audio::Context::Configuration::setHrtf(),
     @ref Audio::Context::isHrtfEnabled(), @ref Audio::Context::hrtfStatus()
     (see [mosra/magnum#121](https://github.com/mosra/magnum/pull/121))
@@ -703,10 +715,10 @@ a high-level overview.
     @ref Platform::GlfwApplication::window() to access the underlying window
     handle
 -   Added @ref Platform::Sdl2Application::tickEvent()
--   Added @ref Platform::Context::tryCreate(), which allows the context to be
-    destructed and created again in case the version is not what the
-    application wants (as opposed to just aborting the application) (see
-    [mosra/magnum#105](https://github.com/mosra/magnum/issues/105))
+-   Added @ref Platform::GLContext::tryCreate() "Platform::Context::tryCreate()",
+    which allows the context to be destructed and created again in case the
+    version is not what the application wants (as opposed to just aborting the
+    application) (see [mosra/magnum#105](https://github.com/mosra/magnum/issues/105))
 -   Added @ref Platform::Sdl2Application::Configuration::setSRGBCapable()
 -   Added @ref Platform::Sdl2Application::Configuration::WindowFlag::Borderless
     and @ref Platform::Sdl2Application::Configuration::WindowFlag::AllowHighDpi
@@ -737,7 +749,7 @@ a high-level overview.
 
 @subsubsection changelog-2018-02-new-shaders Shaders library
 
--   Ability to construct all @ref Shader classes without an OpenGL context
+-   Ability to construct all @ref Shaders classes without an OpenGL context
     present using @ref NoCreate
 
 @subsubsection changelog-2018-02-new-text Text library
@@ -780,39 +792,46 @@ a high-level overview.
 
 -   Functionality that is not available on WebGL (like debug output etc.) is
     not present in WebGL builds to reduce compiled code size
--   The @ref Mesh class now stores a copy of @ref Buffer instance instead of
-    reference, meaning that you can move your buffers freely after assigning
-    them to a mesh
--   @ref Texture::setStorage() "*Texture::setStorage()" fallback implementation
-    on OpenGL ES 2.0 and WebGL 1.0 now properly translates sized texture
-    formats to what the drivers expect (see [mosra/magnum#214](https://github.com/mosra/magnum/issues/214))
+-   The @ref GL::Mesh "Mesh" class now stores a copy of @ref GL::Buffer "Buffer"
+    instance instead of reference, meaning that you can move your buffers
+    freely after assigning them to a mesh
+-   @ref GL::Texture::setStorage() "*Texture::setStorage()" fallback
+    implementation on OpenGL ES 2.0 and WebGL 1.0 now properly translates sized
+    texture formats to what the drivers expect (see
+    [mosra/magnum#214](https://github.com/mosra/magnum/issues/214))
 -   @ref Trade::TgaImporter "TgaImporter" and @ref Trade::TgaImageConverter "TgaImageConverter"
     now consistently use RGB(A) on all platforms and don't require BGR(A) on
     desktop
 -   Ignoring @cpp "No errors." @ce message produced by GLSL compiler/linker on
     Intel Windows drivers.
--   @ref Texture::image() "*Texture::image()" and @ref Framebuffer::read() "*Framebuffer::read()"
+-   @ref GL::Texture::image() "*Texture::image()" and
+    @ref GL::Framebuffer::read() "*Framebuffer::read()"
     now reallocate image data only if needed, for both @ref Image and
-    @ref BufferImage types
+    @ref GL::BufferImage "BufferImage" types
 -   R-value @ref Image "Image*" no longer restricts conversion to
     @ref ImageView as it is a valid use case (for example passing output from
-    @ref Framebuffer::read() directly to @ref Trade::AbstractImageConverter::exportToFile())
+    @ref GL::Framebuffer::read() "Framebuffer::read()" directly to
+    @ref Trade::AbstractImageConverter::exportToFile())
 -   It's no longer possible to call @ref Image::data() "Image*::data()" on
     r-value instances as that would cause accessing freed data. Use
     @ref Image::release() instead.
--   @ref Buffer::map() now returns @ref Corrade::Containers::ArrayView instead
-    of a plain pointer for better security
--   Improved @ref Context::resetState() to better handle corner cases with VAOs
+-   @ref GL::Buffer::map() "Buffer::map()" now returns
+    @ref Corrade::Containers::ArrayView instead of a plain pointer for better
+    security
+-   Improved @ref GL::Context::resetState() "Context::resetState()" to better
+    handle corner cases with VAOs
 -   Graceful handling of broken GL contexts
--   Behavior of @ref Version::GLES200 and upwards on desktop OpenGL is changed
-    to request an ES dialect of GLSL when used in @ref Shader (instead of a
-    particular desktop GL version that supports given ES version), looks for
-    @extension{ARB,ES2_compatibility} and others (instead of checking for a
-    particular desktop GL version that supports given ES version)
+-   Behavior of @ref GL::Version::GLES200 "Version::GLES200" and upwards on
+    desktop OpenGL is changed to request an ES dialect of GLSL when used in
+    @ref GL::Shader "Shader" (instead of a particular desktop GL version that
+    supports given ES version), looks for @extension{ARB,ES2_compatibility} and
+    others (instead of checking for a particular desktop GL version that
+    supports given ES version)
 -   Binding some default VAO in case the engine is running on core profile with
     @extension{ARB,vertex_array_object} disabled
 -   It's now possible to create @ref ImageView with @cpp nullptr @ce data (for
-    example for old-style texture allocation using @ref Texture::setImage())
+    example for old-style texture allocation using
+    @ref GL::Texture::setImage() "Texture::setImage()")
 -   Various workarounds to make the engine working better on SVGA3D drivers
     (VMWare guest)
 -   Various updates and code modernization (see
@@ -904,9 +923,10 @@ a high-level overview.
 
 @subsection changelog-2018-02-bugfixes Bug fixes
 
--   Wrapping mode for @ref CubeMapTexture is now correctly two-dimensional
-    instead of three-dimensional, wrapping mode for @ref Texture2DArray "TextureNDArray"
-    is now correctly N-dimensional instead of N+1
+-   Wrapping mode for @ref GL::CubeMapTexture "CubeMapTexture" is now correctly
+    two-dimensional instead of three-dimensional, wrapping mode for
+    @ref GL::Texture2DArray "TextureNDArray" is now correctly N-dimensional
+    instead of N+1
 -   Fixed WebGL context creation on Internet Explorer, it claims to have
     version 0.94
 -   Fixed random browser-specific issues by avoiding the use of XHTML in
@@ -918,17 +938,19 @@ a high-level overview.
 -   Various fixes for OpenGL object label queries on AMD drivers
 -   Fixed @ref TextureTools::distanceField() on 3.0 &lt;= GL < 3.2
 -   Fixed driver crash on AMD with @ref TextureTools::distanceField()
--   @ref Framebuffer::attachCubeMapTexture() incorrectly behaved as a layered
-    attachment (see [mosra/magnum#123](https://github.com/mosra/magnum/issues/123))
+-   @ref GL::Framebuffer::attachCubeMapTexture() "Framebuffer::attachCubeMapTexture()"
+    incorrectly behaved as a layered attachment (see
+    [mosra/magnum#123](https://github.com/mosra/magnum/issues/123))
 -   Fixed object label queries using the @extension{EXT,debug_label}
     extension
 -   @extension{EXT,direct_state_access} function was accidentally used in
     @extension{ARB,direct_state_access} code path, causing crashes on Mesa
--   Properly export @ref Framebuffer::DrawAttachment to avoid linker failures
-    on Windows
--   Fixed @ref Framebuffer attachments on GLES2 drivers w/o separate read/draw
-    bindings (see [mosra/magnum#204](https://github.com/mosra/magnum/issues/204))
--   Fixed @ref Framebuffer binding on WebGL (see
+-   Properly export @ref GL::Framebuffer::DrawAttachment "Framebuffer::DrawAttachment"
+    to avoid linker failures on Windows
+-   Fixed @ref GL::Framebuffer "Framebuffer" attachments on GLES2 drivers w/o
+    separate read/draw bindings (see
+    [mosra/magnum#204](https://github.com/mosra/magnum/issues/204))
+-   Fixed @ref GL::Framebuffer "Framebuffer" binding on WebGL (see
     [mosra/magnum#134](https://github.com/mosra/magnum/pull/134))
 -   On Emscripten, @ref Platform::Sdl2Application was by default rendering a
     800x600 canvas to an area of 640x480 pixels, causing severe aliasing.
@@ -941,8 +963,8 @@ a high-level overview.
     its subclasses
 -   Fixed @ref Trade::ObjImporter on Android
 -   Fixed assertion when using @ref DebugTools::ObjectRenderer
--   Fixed appearance of @ref Primitives::Cylinder::solid() and
-    @ref Primitives::Circle::solid() (see [mosra/magnum#197](https://github.com/mosra/magnum/pull/197),
+-   Fixed appearance of `Primitives::Cylinder::solid()` and
+    `Primitives::Circle::solid()` (see [mosra/magnum#197](https://github.com/mosra/magnum/pull/197),
     [mosra/magnum#220](https://github.com/mosra/magnum/pull/220))
 -   Fixed a possible OOB access when reading @ref Math::Vector /
     @ref Math::RectangularMatrix from @ref Corrade::Utility::Configuration
@@ -981,13 +1003,12 @@ a high-level overview.
 -   `SceneGraph::AbstractCamera`, `SceneGraph::AbstractBasicCamera2D`,
     `SceneGraph::AbstractBasicCamera3D`, `SceneGraph::AbstractCamera2D` and
     `SceneGraph::AbstractCamera3D` are deprecated, use @ref SceneGraph::Camera,
-    @ref SceneGraph::BasicCamera2D, @ref SceneGraph::BasicCamera3D,
-    @ref SceneGraph::Camera2D and @ref SceneGraph::Camera3D instead
+    @ref SceneGraph::BasicCamera2D, @ref SceneGraph::BasicCamera3D,     @ref SceneGraph::Camera2D and @ref SceneGraph::Camera3D instead
 -   `Math::Matrix::IdentityType`, `Math::Matrix::ZeroType`,
     `Math::Matrix::Identity` and `Math::Matrix::Zero` are deprecated, use the
     new @ref Math::IdentityInit and @ref Math::ZeroInit tags instead
 -   `AbstractShaderProgram::setUniform(Int, UnsignedInt, const T*)` is
-    deprecated, use @ref AbstractShaderProgram::setUniform(Int, Containers::ArrayView<const Float>) "AbstractShaderProgram::setUniform(Int, Containers::ArrayView<const T>)"
+    deprecated, use @ref GL::AbstractShaderProgram::setUniform(Int, Containers::ArrayView<const Float>) "AbstractShaderProgram::setUniform(Int, Containers::ArrayView<const T>)"
     instead
 -   `Magnum/ImageReference.h` header and `ImageReference` type is deprecated,
     use @ref Magnum/ImageView.h and @ref ImageView instead
@@ -995,22 +1016,26 @@ a high-level overview.
     deprecated, use @ref Magnum/Math/Color.h, @ref Math::Color3 and
     @ref Math::Color4 instead
 -   `Magnum/ColorFormat.h` header and `ColorFormat` and `ColorType` enums are
-    deprecated, use @ref Magnum/PixelFormat.h, @ref PixelFormat and @ref PixelType
+    deprecated, use @ref Magnum/GL/PixelFormat.h "Magnum/PixelFormat.h",
+    @ref GL::PixelFormat "PixelFormat"  and @ref GL::PixelType "PixelType"
     instead
--   @ref Image, @ref ImageView, @ref Trade::ImageData constructors, @ref Image::setData()
-    and @ref ImageView::setData() taking `void*` are deprecated, use
-    constructors and functions taking @ref Corrade::Containers::Array /
-    @ref Corrade::Containers::ArrayView instead
--   Templated @ref Buffer::data(), @ref Buffer::subData() and
-    @ref Buffer::map() are deprecated, use the non-templated versions in
-    combination with @ref Corrade::Containers::arrayCast() instead (see
-    [mosra/magnum#213](https://github.com/mosra/magnum/issues/213))
--   `CubeMapTexture::Coordinate` enum is deprecated, use @ref CubeMapCoordinate
+-   @ref Image, @ref ImageView, @ref Trade::ImageData constructors,
+    `Image::setData()` and `ImageView::setData()` taking `void*` are
+    deprecated, use constructors and functions taking
+    @ref Corrade::Containers::Array / @ref Corrade::Containers::ArrayView
     instead
--   @ref Context::current() and @ref Audio::Context::current() returning a
-    pointer is deprecated, it's returning a reference now and asserts that a
-    context exists. Use @ref Context::hasCurrent() and @ref Audio::Context::hasCurrent()
-    to check for context presence.
+-   Templated @ref GL::Buffer::data() "Buffer:.data()",
+    @ref GL::Buffer::subData() "Buffer::subData()" and
+    @ref GL::Buffer::map() "Buffer::map()" are  deprecated, use the
+    non-templated versions in combination with @ref Corrade::Containers::arrayCast()
+    instead (see [mosra/magnum#213](https://github.com/mosra/magnum/issues/213))
+-   `CubeMapTexture::Coordinate` enum is deprecated, use
+    @ref GL::CubeMapCoordinate "CubeMapCoordinate" instead
+-   @ref GL::Context::current() "Context::current()" and
+    @ref Audio::Context::current() returning a pointer is deprecated, it's
+    returning a reference now and asserts that a context exists. Use
+    @ref GL::Context::hasCurrent() "Context::hasCurrent()" and
+    @ref Audio::Context::hasCurrent() to check for context presence.
 -   Angle literals available directly in the @ref Magnum namespace are
     deprecated, import the @ref Math::Literals namespace instead
 -   `Platform::Sdl2Application::MouseEvent::Button::WheelUp`,
@@ -1052,32 +1077,37 @@ a high-level overview.
 -   Removed `Context::majorVersion()` and `Context::minorVersion()` functions,
     use @ref Context::version() instead
 -   Removed deprecated `Magnum/DebugMarker.h` header, use
-    @ref Magnum/DebugOutput.h and @ref DebugMessage class instead
--   Removed deprecated `*Buffer` values from @ref FramebufferBlit, use values
-    without the `Buffer` suffix
+    @ref Magnum/DebugOutput.h and @ref GL::DebugMessage "DebugMessage" class
+    instead
+-   Removed deprecated `*Buffer` values from
+    @ref GL::FramebufferBlit "FramebufferBlit", use values without the `Buffer`
+    suffix
 -   Removed deprecated list-argument functions taking pointers from @ref Audio
     and @ref SceneGraph libraries, use lists of references instead
 -   Removed deprecated texture unit enums from @ref Shaders library, use
     dedicated texture setters instead
 -   Removed deprecated `*Texture::maxLayers()` functions, use
-    @ref Shader::maxCombinedTextureImageUnits() instead
+    @ref GL::Shader::maxCombinedTextureImageUnits() "Shader::maxCombinedTextureImageUnits()"
+    instead
 -   Removed deprecated @ref MeshTools::combineIndexedArrays(),
     @ref MeshTools::compressIndices(), @ref MeshTools::interleave() and
     @ref MeshTools::removeDuplicates() overloads, use the general ones instead
 -   Removed deprecated `Mesh*::set*{Range,Count}()` functions, use
-    @ref Mesh::setCount() "Mesh*::setCount()" and @ref MeshView::setIndexRange()
-    instead
--   Removed deprecated parameterless @ref Mesh::draw() "Mesh*::draw()"
+    @ref GL::Mesh::setCount() "Mesh*::setCount()" and
+    @ref GL::MeshView::setIndexRange() "MeshView::setIndexRange()" instead
+-   Removed deprecated parameterless @ref GL::Mesh::draw() "Mesh*::draw()"
     overload, use the one with explicit shader parameter instead
 -   Removed deprecated `Context::Flag::Robustness` enum value, use
-    @ref Context::Flag::RobustAccess instead
--   Removed deprecated `Texture::Target` enum, use dedicated @ref Texture,
-    @ref TextureArray, @ref RectangleTexture and @ref MultisampleTexture
-    classes instead
+    @ref GL::Context::Flag::RobustAccess "Context::Flag::RobustAccess" instead
+-   Removed deprecated `Texture::Target` enum, use dedicated
+    @ref GL::Texture "Texture", @ref GL::TextureArray "TextureArray",
+    @ref GL::RectangleTexture "RectangleTexture" and
+    @ref GL::MultisampleTexture "MultisampleTexture" classes instead
 -   Removed deprecated @ref Resource conversion operator, use explicit
     conversion instead
 -   Removed deprecated `Framebuffer::attachTexture*D()` overloads, use one of
-    @ref Framebuffer::attachTexture() or @ref Framebuffer::attachTextureLayer()
+    @ref GL::Framebuffer::attachTexture() "Framebuffer::attachTexture()" or
+    @ref GL::Framebuffer::attachTextureLayer() "Framebuffer::attachTextureLayer()"
     overloads instead.
 -   Removed `SceneGraph::Camera3D::near()` and `SceneGraph::Camera3D::far()`
     getters, because they can't be provided anymore with current more general
@@ -1094,7 +1124,7 @@ a high-level overview.
 
 @subsection changelog-2018-02-performance Performance improvements
 
--   Reduced size of and number of allocations in @ref Mesh class.
+-   Reduced size of and number of allocations in @ref GL::Mesh "Mesh" class.
 
 @subsection changelog-2018-02-docs Documentation
 

@@ -51,29 +51,29 @@ for a high-level overview.
     -   Support for @extension{ARB,direct_state_acccess} (OpenGL 4.5)
         everywhere except in Mesh.
     -   Support for @extension{ARB,conditional_render_inverted} (OpenGL
-        4.5) in @ref SampleQuery.
+        4.5) in @cpp SampleQuery @ce.
     -   Support for @extension{ARB,get_texture_sub_image} (OpenGL 4.5) in
-        @ref Texture::subImage() "*Texture::subImage()".
+        @cpp *Texture::subImage() @ce.
     -   Support for @extension{EXT,transform_feedback},
         @extension{ARB,transform_feedback2} (OpenGL 3.0, 4.0, OpenGL ES 3.0) in
-        new @ref TransformFeedback class, added
-        @ref Renderer::Feature::RasterizerDiscard.
+        new @cpp TransformFeedback @ce class, added
+        @cpp Renderer::Feature::RasterizerDiscard @ce.
     -   Support for @extension{ARB,robustness_isolation} in
-        @ref Renderer::graphicsResetStatus().
+        @cpp Renderer::graphicsResetStatus() @ce.
     -   Support for @extension{ARB,framebuffer_sRGB} (OpenGL 3.0) in
-        @ref Renderer::Feature::FramebufferSRGB.
+        @cpp Renderer::Feature::FramebufferSRGB @ce
     -   Support for @extension{OES,texture_npot} ES extension.
     -   Support for debug groups from @extension{KHR,debug} (OpenGL 4.5) and
-        @extension{EXT,debug_marker} extensions in @ref DebugGroup class.
+        @extension{EXT,debug_marker} extensions in @cpp DebugGroup @ce class.
 
--   Added @ref CubeMapTexture::image() "CubeMapTexture::*image()" that
-    returns all six faces together.
--   Added @ref Primitives::Cube::solidStrip().
--   Added @ref AbstractShaderProgram::attachShaders() as a list-based
-    complement to @ref Shader::compile() and
-    @ref AbstractShaderProgram::link().
+-   Added @cpp CubeMapTexture::*image() @ce that returns all six faces
+    together.
+-   Added @cpp Primitives::Cube::solidStrip() @ce.
+-   Added @cpp AbstractShaderProgram::attachShaders() @ce as a list-based
+    complement to @cpp Shader::compile() @ce and
+    @cpp AbstractShaderProgram::link() @ce.
 -   Separated @cpp Renderer::setFeature() @ce into shorter
-    @ref Renderer::enable() and @ref Renderer::disable().
+    @cpp Renderer::enable() @ce and @cpp Renderer::disable() @ce.
 -   Added @cpp tau() @ce, @cpp piHalf() @ce, @cpp e() @ce, @cpp nan() @ce and
     @cpp inf() @ce to @ref Math::Constants.
 -   Added @ref Math::Matrix4::shearingXY() "Math::Matrix[34]::shearing*()".
@@ -82,12 +82,12 @@ for a high-level overview.
 -   Added @ref Math::div().
 -   Using range-based-for to traverse object children and features in
     @ref SceneGraph and screens in @ref Platform::BasicScreenedApplication "Platform::ScreenedApplication".
--   Convenience overload for @ref Framebuffer::read() "*Framebuffer::read()"
-    and @ref Texture::image() "*Texture::image()" that returns the queried
-    image by value instead of as parameter.
--   Added @ref Buffer::uniformOffsetAlignment() and
-    @ref Mesh::maxElementIndex() limit queries.
--   Added @ref AbstractTexture::unbind() for unbinding range of texture
+-   Convenience overload for @cpp *Framebuffer::read() @ce and
+    @cpp *Texture::image() @ce that returns the queried image by value instead
+    of as parameter.
+-   Added @cpp Buffer::uniformOffsetAlignment() @ce and @cpp Mesh::maxElementIndex() @ce
+    limit queries.
+-   Added @cpp AbstractTexture::unbind() @ce for unbinding range of texture
     units.
 -   Added @ref SceneGraph::AbstractObject::addFeature() and
     @ref SceneGraph::Object::addChild() functions (see [mosra/magnum#86](https://github.com/mosra/magnum/issues/86)).
@@ -103,8 +103,8 @@ for a high-level overview.
     for OpenGL extension loading
 -   @ref Platform::Sdl2Application now tries to create core context on all
     platforms, not just OSX (see [mosra/magnum#80](https://github.com/mosra/magnum/issues/80)).
--   @ref Buffer::bind(), @ref Buffer::unbind() and @ref Buffer::Target is
-    now used for indexed buffer binding only.
+-   @cpp Buffer::bind() @ce, @cpp Buffer::unbind() @ce and @cpp Buffer::Target @ce
+    is now used for indexed buffer binding only.
 -   Moved static binary operations from @ref Math classes into free functions
     for more convenient usage (see [mosra/magnum#74](https://github.com/mosra/magnum/issues/74)).
 -   Better algorithm for comparing floating-point values.
@@ -148,9 +148,9 @@ for a high-level overview.
 -   Properly handle case where
     @fn_gl_extension{VertexArrayVertexAttribDivisor,EXT,direct_state_access} is
     not available in the driver (see [mosra/magnum#77](https://github.com/mosra/magnum/issues/77)).
--   Removed superfluous level argument from @ref Framebuffer::attachTexture() "Framebuffer::attachTexture*()"
+-   Removed superfluous level argument from @cpp Framebuffer::attachTexture*() @ce
     overloads for texture types that don't support mipmapping.
--   Proper no-op fallback for @ref Framebuffer::invalidate() "*Framebuffer::invalidate()"
+-   Proper no-op fallback for @cpp *Framebuffer::invalidate() @ce
     on platforms where the extensions is not supported (see
     [mosra/magnum#63](https://github.com/mosra/magnum/issues/63)).
 -   Fixed garbage characters in shader compilation output (see
@@ -165,18 +165,18 @@ for a high-level overview.
 -   Fixed bogus version check in @ref Platform::WindowlessCglApplication (see
     [mosra/magnum#92](https://github.com/mosra/magnum/issues/92))
 -   Fixed matrix to quaternion conversion algorithm.
--   Two different headers in @ref Magnum::Primitives had the same include guard
-    by accident (see [mosra/magnum#72](https://github.com/mosra/magnum/issues/53))
+-   Two different headers in @ref Primitives had the same include guard by
+    accident (see [mosra/magnum#72](https://github.com/mosra/magnum/issues/53))
 -   Various compilation fixes on various platforms (see
     [mosra/magnum#71](https://github.com/mosra/magnum/pull/71))
 
 @subsection changelog-2015-05-deprecated Deprecated APIs
 
 -   The `Magnum/Query.h` header is deprecated, use one of
-    @ref Magnum/PrimitiveQuery.h, @ref Magnum/SampleQuery.h or
-    @ref Magnum/TimeQuery.h instead.
--   Using @ref Buffer::Target as constructor or @ref Buffer::setTargetHint()
-    parameter is deprecated, use @ref Buffer::TargetHint instead.
+    `Magnum/PrimitiveQuery.h`, `Magnum/SampleQuery.h` or
+    `Magnum/TimeQuery.h` instead.
+-   Using @cpp Buffer::Target @ce as constructor or @cpp Buffer::setTargetHint() @ce
+    parameter is deprecated, use @cpp Buffer::TargetHint @ce instead.
 -   The @cpp SceneGraph::TransformationType @ce enum is depracted, use separate
     `<transform>()` and `<transform>Local()` variants instead.
 -   @cpp SceneGraph::AbstractObject::hasFeatures() @ce, @cpp firstFeature() @ce,
@@ -189,10 +189,10 @@ for a high-level overview.
     methods on linked list returned by
     @ref Platform::BasicScreenedApplication::screens() "Platform::ScreenedApplication::screens()"
     instead.
--   @ref Framebuffer::read() "*Framebuffer::read()" functions taking two
-    vectors are deprecated, use overload taking @ref Range2Di instead.
+-   @cpp *Framebuffer::read() @ce functions taking two vectors are deprecated,
+    use overload taking @ref Range2Di instead.
 -   The @cpp Mesh::maxVertexAttributes() @ce function is deprecated, use
-    @ref AbstractShaderProgram::maxVertexAttributes() instead.
+    @cpp AbstractShaderProgram::maxVertexAttributes() @ce instead.
 -   @cpp Math::Vector::dot() @ce, @cpp Math::Complex::dot() @ce,
     @cpp Math::Quaternion::dot() @ce, @cpp Math::Vector::angle() @ce,
     @cpp Math::Complex::angle() @ce, @cpp Math::Quaternion::angle() @ce,
@@ -202,33 +202,32 @@ for a high-level overview.
     @ref Math::lerp(), @ref Math::slerp() and @ref Math::cross() instead (see
     [mosra/magnum#74](https://github.com/mosra/magnum/issues/74))
 -   The @cpp *Framebuffer::bind(FramebufferTarget) @ce function is deprecated,
-    use parameter-less @ref Framebuffer::bind() "*Framebuffer::bind()"
-    instead.
+    use parameter-less @cpp *Framebuffer::bind() @ce instead.
 -   The @cpp FramebufferTarget::ReadDraw @ce enum value is deprecated, use
     separate @cpp FramebufferTarget::Read @ce and @cpp FramebufferTarget::Draw @ce
     values instead.
--   @ref CubeMapTexture::imageSize() with explicit face parameter is
+-   @cpp CubeMapTexture::imageSize() @ce with explicit face parameter is
     deprecated, use overload that returns one value for all faces instead.
 -   The `Magnum/DebugMessage.h` header is deprecated, use
-    @ref Magnum/DebugOutput.h instead (see [mosra/magnum#89](https://github.com/mosra/magnum/pull/89))
+    `Magnum/DebugOutput.h` instead (see
+    [mosra/magnum#89](https://github.com/mosra/magnum/pull/89))
 -   The @cpp DebugMessage::Severity @ce enum is deprecated, use
-    @ref DebugOutput::Severity instead.
+    @cpp DebugOutput::Severity @ce instead.
 -   The @cpp DebugMessage::Callback @ce typedef, @cpp DebugMessage::setCallback() @ce
     and @cpp DebugMessage::setDefaultCallback() @ce function is deprecated, use
-    @ref DebugOutput::Callback, @ref DebugOutput::setCallback() and
-    @ref DebugOutput::setDefaultCallback() instead.
+    @cpp DebugOutput::Callback @ce, @cpp DebugOutput::setCallback() @ce and
+    @cpp DebugOutput::setDefaultCallback() @ce instead.
 -   The @cpp DebugMessage::maxLoggedMessages() @ce and
     @cpp DebugMessage::maxMessageLength() @ce functions are deprecated, use
-    @ref DebugOutput::maxLoggedMessages() and
-    @ref DebugOutput::maxMessageLength() instead.
+    @cpp DebugOutput::maxLoggedMessages() @ce and
+    @cpp DebugOutput::maxMessageLength() @ce instead.
 -   The @cpp DebugMessage::setEnabled() @ce function and related values from
     @cpp DebugMessage::Source @ce enum are deprecated, use
-    @ref DebugOutput::setEnabled() along with @ref DebugOutput::Source,
-    @ref DebugOutput::Type and @ref DebugOutput::Severity instead.
+    @cpp DebugOutput::setEnabled() @ce along with @cpp DebugOutput::Source @ce,
+    @cpp DebugOutput::Type @ce and @cpp DebugOutput::Severity @ce instead.
 -   Parameter-less @cpp *Query @ce constructor and parametrized
     @cpp *Query::begin() @ce function are deprecated, use constructor with
-    parameter and parameter-less @ref Query::begin() "*Query::begin()"
-    instead.
+    parameter and parameter-less @cpp *Query::begin() @ce instead.
 
 @subsection changelog-2015-05-compatibility Potential compatibility breakages, removed APIs
 
@@ -237,10 +236,10 @@ for a high-level overview.
     -   Removed deprecated ability to use relative includes (e.g.
         @cpp #include <Mesh.h> @ce), use absolute paths (@cpp #include <Magnum/Mesh.h> @ce)
         instead.
-    -   Removed deprecated @cpp Mesh::Primitive @ce enum, use @ref MeshPrimitive
+    -   Removed deprecated @cpp Mesh::Primitive @ce enum, use @cpp MeshPrimitive @ce
         instead.
     -   Removed deprecated @cpp Sampler::maxAnisotropy() @ce function, use
-        @ref Sampler::maxMaxAnisotropy() instead.
+        @cpp Sampler::maxMaxAnisotropy() @ce instead.
     -   Removed deprecated @cpp Math::Geometry::Rectangle @ce class, use
         @ref Math::Range instead.
     -   Removed deprecated @cpp SceneGraph::Animable::group() @ce function, use
@@ -249,8 +248,8 @@ for a high-level overview.
         `Shaders/resourceImport.hpp` instead.
     -   Removed deprecated @cpp Text::TextRenderer @ce alias, use
         @ref Text::Renderer instead.
-    -   Removed long-deprecated @ref BufferImage::setData() overload, use the
-        other one instead.
+    -   Removed long-deprecated @cpp BufferImage::setData() @ce overload, use
+        the other one instead.
 
 @subsection changelog-2015-05-performance Performance improvements
 
@@ -277,7 +276,7 @@ for a high-level overview.
     for more information
 -   Initial implementation of @ref Platform::AndroidApplication class
 -   @ref Platform::WindowlessWglApplication and @ref Platform::WindowlessCglApplication,
-    which enable @ref magnum-info "magnum-info", @ref magnum-distancefieldconverter
+    which enable @ref magnum-gl-info "magnum-info", @ref magnum-distancefieldconverter
     and @ref magnum-fontconverter utilities on OS X and Windows. See
     [mosra/magnum#40](https://github.com/mosra/magnum/issues/40) and
     [mosra/magnum#59](https://github.com/mosra/magnum/pull/59).
@@ -287,21 +286,21 @@ for a high-level overview.
     @extension{ARB,stencil_texturing}, @extension{ARB,texture_rectangle},
     @extension{ARB,texture_buffer_object}, @extension{ARB,texture_swizzle},
     @extension{EXT,texture_sRGB_decode} extensions (and related ES extensions) and
-    other missing parameters in @ref Texture "*Texture" classes
+    other missing parameters in @cpp *Texture @ce classes
 -   Basic support for @extension{ARB,texture_multisample} and
-    @extension{ARB,texture_storage_multisample} in new @ref MultisampleTexture
+    @extension{ARB,texture_storage_multisample} in new @cpp MultisampleTexture @ce
     class
 -   Instanced rendering, base vertex and base instance specification in
-    @ref Mesh and @ref MeshView classes; @ref Mesh::addVertexBufferInstanced()
+    @cpp Mesh @ce and @cpp MeshView @ce classes; @cpp Mesh::addVertexBufferInstanced() @ce
     function for adding buffers with per-instance data (see
     [mosra/magnum#47](https://github.com/mosra/magnum/issues/47))
--   Mesh multi-draw using @ref MeshView::draw()
--   Initial @extension{ARB,multi_bind} support with @ref AbstractTexture::bind()
+-   Mesh multi-draw using @cpp MeshView::draw() @ce
+-   Initial @extension{ARB,multi_bind} support with @cpp AbstractTexture::bind() @ce
 -   Support for @extension{ARB,vertex_type_10f_11f_11f_rev} in
     @cpp AbstractShaderProgram::Attribute::DataType @ce
--   New variants of @ref Shader::compile() and @ref AbstractShaderProgram::link(),
+-   New variants of @cpp Shader::compile() @ce and @cpp AbstractShaderProgram::link() @ce,
     allowing the driver to perform paralell compilation in multiple threads.
--   Added @ref Texture::maxSize() "*Texture::maxSize()" queries
+-   Added @cpp *Texture::maxSize() @ce queries
 -   @ref MeshTools::compile() for automagic creation of 2D and 3D meshes from
     imported data
 -   @ref MeshTools::interleaveInto() for interleaving data into existing
@@ -314,15 +313,15 @@ for a high-level overview.
     GL
 -   Support for specifying context flags using
     @ref Platform::Sdl2Application::Configuration::setFlags() "Platform::*Application::Configuration::setFlags()",
-    they are now also shown in @ref magnum-info "magnum-info"
+    they are now also shown in @ref magnum-gl-info "magnum-info"
 -   More robust support for driver detection and driver bug workarounds. Driver
-    can be detected using @ref Context::detectedDriver(), problematic
-    extension disabled, which is then shown in @ref magnum-info "magnum-info"
-    and can be also queried using @ref Context::isExtensionDisabled()
--   @ref Context::extensionStrings() for getting list of all extension
+    can be detected using @cpp Context::detectedDriver() @ce, problematic
+    extension disabled, which is then shown in @ref magnum-gl-info "magnum-info"
+    and can be also queried using @cpp Context::isExtensionDisabled() @ce
+-   @cpp Context::extensionStrings() @ce for getting list of all extension
     strings exposed by the driver
--   @ref Context::resetState() for resetting internal state tracker, allowing
-    to use Magnum along with third-party OpenGL code (see
+-   @cpp Context::resetState() @ce for resetting internal state tracker,
+    allowing to use Magnum along with third-party OpenGL code (see
     [mosra/magnum#48](https://github.com/mosra/magnum/issues/48))
 -   @ref MAGNUM_TARGET_WEBGL CMake and preprocessor variable
 
@@ -339,11 +338,11 @@ for a high-level overview.
     [mosra/magnum#39](https://github.com/mosra/magnum/issues/39).
 -   The need for compiler compatibility mode is now automatically detected by
     CMake to avoid strange compilation errors later
--   Split out @ref Texture functionality into dedicated @ref TextureArray,
-    @ref MultisampleTexture and @ref RectangleTexture classes to make their
-    usage less error-prone
--   @ref Buffer::invalidateData(), @ref Buffer::invalidateSubData() and
-    @ref Renderer::resetNotificationStrategy() functions are enabled on
+-   Split out @cpp Texture @ce functionality into dedicated @cpp TextureArray @ce,
+    @cpp MultisampleTexture @ce and @cpp RectangleTexture @ce classes to make
+    their usage less error-prone
+-   @cpp Buffer::invalidateData() @ce, @cpp Buffer::invalidateSubData() @ce and
+    @cpp Renderer::resetNotificationStrategy() @ce functions are enabled on
     OpenGL ES as a no-op
 -   Added @ref std::vector overload of @ref MeshTools::combineIndexArrays()
     for greater runtime-usage flexibility
@@ -372,51 +371,51 @@ for a high-level overview.
 
 -   @cpp Mesh::setVertexCount() @ce and @cpp Mesh::setIndexCount() @ce had
     nonintuitive behavior in some corner cases and are deprecated, use general
-    @ref Mesh::setCount() function instead
+    @cpp Mesh::setCount() @ce function instead
 -   @cpp MeshView::setVertexRange() @ce and four-/two-argument
     @cpp MeshView::setIndexRange() @ce are deprecated for similar reason as
-    above, use @ref MeshView::setCount(), @ref MeshView::setBaseVertex()
-    and three-/one-argument @ref MeshView::setIndexRange() instead
+    above, use @cpp MeshView::setCount() @ce, @cpp MeshView::setBaseVertex() @ce
+    and three-/one-argument @cpp MeshView::setIndexRange() @ce instead
 -   @cpp Texture::Target @ce enum is deprecated as the API was too error-prone,
-    use dedicated @ref TextureArray, @ref MultisampleTexture and
-    @ref RectangleTexture classes instead
+    use dedicated @cpp TextureArray @ce, @cpp MultisampleTexture @ce and
+    @cpp RectangleTexture @ce classes instead
 -   @cpp Framebuffer::attachTexture*D() @ce is deprecated, use more generic
-    @ref Framebuffer::attachTexture() and
-    @ref Framebuffer::attachTextureLayer() instead
+    @cpp Framebuffer::attachTexture() @ce and
+    @cpp Framebuffer::attachTextureLayer() @ce instead
 -   @cpp FramebufferBlit::*Buffer @ce enum values are deprecated, use shorter
-    @ref FramebufferBlit::Color and similar instead
+    @cpp FramebufferBlit::Color @ce and similar instead
 -   @ref Audio::Source::play(), @ref SceneGraph::AbstractObject::setClean(),
     @ref SceneGraph::AbstractObject::transformationMatrices() and similar
     taking @ref std::initializer_list of pointers are deprecated, use versions
     taking list of references instead
 -   @ref MeshTools::compressIndices() and @ref MeshTools::interleave()
-    which filled @ref Mesh and @ref Buffer directly are deprecated as they
-    had undesired side-effects in some cases, use the data-returning versions
-    instead and then configure mesh and buffer manually
+    which filled @cpp Mesh @ce and @cpp Buffer @ce directly are deprecated as
+    they had undesired side-effects in some cases, use the data-returning
+    versions instead and then configure mesh and buffer manually
 -   @ref MeshTools::combineIndexedArrays() taking @ref std::tuple is
     deprecated, use version taking @ref std::pair instead
 -   @ref MeshTools::removeDuplicates() taking also list of indices is
     deprecated, use the function in conjunction with @ref MeshTools::duplicate().
     See function documentation for more information.
--   Parameter-less @ref Mesh::draw() and @ref MeshView::draw() are
+-   Parameter-less @cpp Mesh::draw() @ce and @cpp MeshView::draw() @ce are
     deprecated, use versions with explicit shader parameter instead
 -   Deprecated implicit conversion of @ref Resource "Resource<T, U>" to
     @cpp U& @ce, as it is not safe. Use explicit dereference operator instead.
--   Texture binding using @ref Texture::bind() "*Texture::bind()" is
-    deprecated, use setup functions of particular shaders instead (e.g.
-    @ref Shaders::Phong::setDiffuseTexture())
+-   Texture binding using @cpp *Texture::bind() @ce is deprecated, use setup
+    functions of particular shaders instead (e.g.
+    @cpp Shaders::Phong::setDiffuseTexture() @ce)
 -   @cpp Context::Flag::Robustness @ce is deprecated, use
-    @ref Context::Flag::RobustAccess which reflects OpenGL naming better
+    @cpp Context::Flag::RobustAccess @ce which reflects OpenGL naming better
     instead
 -   @cpp Texture::maxLayers() @ce has misleading naming and is deprecated, use
-    @ref Shader::maxCombinedTextureImageUnits() instead
+    @cpp Shader::maxCombinedTextureImageUnits() @ce instead
 
 @subsection changelog-2014-06-compatibility Potential compatibility breakages, removed APIs
 
 -   All functionality @ref changelog-2013-10-deprecated "deprecated in 2013.10"
     has been removed, namely:
-    -   Removed deprecated raw-pointer versions of @ref Buffer::setData() and
-        @ref Buffer::setSubData(), use overloads taking
+    -   Removed deprecated raw-pointer versions of @cpp Buffer::setData() @ce
+        and @cpp Buffer::setSubData() @ce, use overloads taking
         @cpp Containers::ArrayReference @ce instead
     -   Removed deprecated `Magnum/ImageFormat.h` header and
         @cpp ImageFormat @ce/@cpp ImageType @ce enums, use `Magnum/ColorFormat.h`
@@ -482,8 +481,8 @@ No dependency changes in this release.
     @cpp magenta() @ce and @cpp yellow() @ce convenience functions to @ref Color3
     and @ref Color4 classes
 -   Convenience @ref Color3ub and @ref Color4ub typedefs
--   New @ref version() utility functions for converting @ref Version enum
-    value to major/minor version number and back
+-   New @cpp version() @ce utility functions for converting @cpp Version @ce
+    enum value to major/minor version number and back
 -   Added @cpp release() @ce function to @ref Image and @ref Trade::ImageData
     for releasing ownership of the data, similar to @ref std::unique_ptr::release()
     (see [mosra/magnum#29](https://github.com/mosra/magnum/issues/29))
@@ -492,8 +491,8 @@ No dependency changes in this release.
 -   Disallowing conversion of rvalue @ref Image and @ref Trade::ImageData
     to ImageReference as it would result in access to deleted memory (GCC
     4.8.1/Clang only)
--   No-op fallback for @ref Texture::setMaxAnisotropy() "*Texture::setMaxAnisotropy()"
-    in case @extension{EXT,texture_filter_anisotropic extension} is not supported
+-   No-op fallback for @cpp *Texture::setMaxAnisotropy() @ce in case
+    @extension{EXT,texture_filter_anisotropic extension} is not supported
 -   Added @cpp round() @ce, @cpp floor() @ce and @cpp ceil() @ce scalar/vector
     functions to @ref Math namespace
 -   @ref Math::minmax() and @ref Math::Vector2::minmax() functions
@@ -516,7 +515,7 @@ No dependency changes in this release.
     @ref Trade::MeshData2D and @ref Trade::MeshData3D
 -   OpenGL ES 3.0 build now shares list of vendor extensions with OpenGL ES 2.0
     build (i.e. only those extensions that aren't part of ES 3.0 are present in
-    @ref Magnum::Extensions)
+    @cpp Extensions @ce)
 -   All classes in documentation are now shown with corresponding @cpp #include @ce
     path
 
@@ -528,7 +527,7 @@ No dependency changes in this release.
 -   @cpp ImageReference @ce class now stores const data pointer instead of
     mutable one, modifying the data through the class interface isn't valid use
     case anyway
--   Added default template parameter to @ref Buffer::data() and made
+-   Added default template parameter to @cpp Buffer::data() @ce and made
     @ref Image::data() "*Image::data()" templated to have them consistent.
     Note that this is source-compatible change.
 -   @cpp Query::result<bool>() @ce returns @cpp true @ce if value is nonzero
@@ -549,15 +548,15 @@ No dependency changes in this release.
 
 @subsection changelog-2014-01-bugfixes Bug fixes
 
--   Fixed @ref CubeMapTextureArray::image() function (more precisely it
+-   Fixed @cpp CubeMapTextureArray::image() @ce function (more precisely it
     wasn't working at all). See also [mosra/magnum#31](https://github.com/mosra/magnum/issues/31).
--   Fixed wrong assertion in @ref Texture::setWrapping() for rectangle
+-   Fixed wrong assertion in @cpp Texture::setWrapping() @ce for rectangle
     textures
 -   Fixed wrong assertion in @cpp AbstractImage::pixelSize() @ce when computing
     size of separate depth and stencil formats
--   @ref Mesh::addVertexBuffer() now properly computes offsets for matrix
+-   @cpp Mesh::addVertexBuffer() @ce now properly computes offsets for matrix
     attributes
--   Taking index buffer offset into account in @ref MeshView class
+-   Taking index buffer offset into account in @cpp MeshView @ce class
 -   Fixed various issues with textured @ref Shaders::Flat shader (actually
     the textured version was not working at all)
 -   Various OS X-related fixes in @ref Shaders library. See also
@@ -578,13 +577,13 @@ No dependency changes in this release.
 
 @subsection changelog-2014-01-deprecated Deprecated APIs
 
--   @cpp Buffer::Usage @ce enum is deprecated to reduce header dependencies, use
-    global @ref BufferUsage enum instead
+-   @cpp Buffer::Usage @ce enum is deprecated to reduce header dependencies,
+    use global @cpp BufferUsage @ce enum instead
 -   @cpp Mesh::Primitive @ce enum is deprecated to reduce header dependencies,
-    use global @ref MeshPrimitive enum instead
+    use global @cpp MeshPrimitive @ce enum instead
 -   @cpp Sampler::maxAnisotropy() @ce is deprecated to avoid naming conflict with
-    @ref Texture::setMaxAnisotropy() "*Texture::setMaxAnisotropy()", use
-    @ref Sampler::maxMaxAnisotropy() instead
+    @cpp *Texture::setMaxAnisotropy() @ce, use
+    @cpp Sampler::maxMaxAnisotropy() @ce instead
 -   @cpp Magnum::Geometry::Rectangle @ce class (and @cpp Rectangle* @ce typedefs)
     is deprecated, use more generic and feature-rich @ref Math::Range
     instead.
@@ -664,8 +663,8 @@ for a high-level overview.
     Magnum namespace. Note that template aliases are not present in GCC 4.6
     builds.
 -   Limit queries for all OpenGL objects, the information is now printed also
-    by @ref magnum-info "magnum-info" utility.
--   @ref Context::isExtensionSupported() is now able to query extension
+    by @ref magnum-gl-info "magnum-info" utility.
+-   @cpp Context::isExtensionSupported() @ce is now able to query extension
     availability on particular GLSL version
 -   Using @ref std::unique_ptr and C++1y @cpp std::optional @ce for resources
     returned from @ref Trade::AbstractImporter for better usability and to
@@ -679,8 +678,8 @@ for a high-level overview.
 
 @subsection changelog-2013-10-changes Changes
 
--   @ref Buffer::setData() and @ref Buffer::setSubData() are now accepting
-    @ref Containers::ArrayReference for more convenient usage
+-   @cpp Buffer::setData() @ce and @cpp Buffer::setSubData() @ce are now
+    accepting @cpp Containers::ArrayReference @ce for more convenient usage
 -   @ref Platform::Sdl2Application::viewportEvent() "Platform::*Application::viewportEvent()"
     is not called at all if window size doesn't change, allowing for less
     cumbersome ofscreen rendering setups
@@ -711,8 +710,8 @@ for a high-level overview.
     into @ref Math::swizzle()
 -   @cpp Buffer::setData() @ce and @cpp Buffer::setSubData() @ce overloads
     taking pair of data pointer and size are deprecated, use
-    @cpp Containers::ArrayReference @ce-based @ref Buffer::setData() and
-    @ref Buffer::setSubData()
+    @cpp Containers::ArrayReference @ce-based @cpp Buffer::setData() @ce and
+    @cpp Buffer::setSubData() @ce
 -   `ImageFormat.h` header, @cpp ImageFormat @ce and @cpp ImageType @ce enums
     are deprecated, use `ColorFormat.h` header, `ColorFormat` and `ColorType`
     enums which reflect OpenGL naming better instead
@@ -724,7 +723,7 @@ for a high-level overview.
 -   @cpp AbstractShaderProgram::maxSupportedVertexAttributeCount() @ce,
     @cpp AbstractTexture::maxSupportedLayerCount() @ce and
     @cpp Sampler::maxSupportedAnisotropy() @ce are deprecated in favor of less
-    verbose @ref AbstractShaderProgram::maxVertexAttributes(),
+    verbose @cpp AbstractShaderProgram::maxVertexAttributes() @ce,
     @cpp AbstractTexture::maxLayers() @ce and @cpp Sampler::maxAnisotropy() @ce
 
 @subsection changelog-2013-10-compatibility Potential compatibility breakages, removed APIs
