@@ -113,7 +113,9 @@ Context& Context::current() {
     return *_current;
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 Context::Context(): Context{Configuration{}} {}
+#endif
 
 Context::Context(const Configuration& config) {
     CORRADE_ASSERT(!_current, "Audio::Context: context already created", );
