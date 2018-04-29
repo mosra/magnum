@@ -46,15 +46,8 @@ GlyphCache::GlyphCache(const Vector2i& originalSize, const Vector2i& size, const
     MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);
     #endif
 
-    /** @todo Is there any better way to select proper sized/unsized format on ES2? */
     #ifndef MAGNUM_TARGET_GLES2
     const GL::TextureFormat internalFormat = GL::TextureFormat::R8;
-    #elif !defined(MAGNUM_TARGET_WEBGL)
-    GL::TextureFormat internalFormat;
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
-        internalFormat = GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_storage>() ?
-            GL::TextureFormat::R8 : GL::TextureFormat::Red;
-    } else internalFormat = GL::TextureFormat::Luminance;
     #else
     const GL::TextureFormat internalFormat = GL::TextureFormat::Luminance;
     #endif

@@ -138,6 +138,14 @@ See also:
     now expect that the mesh is indexed (instead of silently not doing
     anything)
 
+@subsubsection changelog-latest-changes-text Text library
+
+-   The @ref Text::GlyphCache now unconditionally uses
+    @ref GL::TextureFormat::Luminance on ES2 and WebGL 1, instead of trying
+    @ref GL::TextureFormat::Red there first. That's done for consistency with
+    @ref GL::pixelFormat(), which unconditionally returns
+    @ref GL::PixelFormat::Luminance for @ref PixelFormat::R8Unorm.
+
 @subsubsection changelog-latest-changes-plugins Plugins
 
 -   @ref Trade::TgaImporter "TgaImporter" and
