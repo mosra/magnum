@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Magnum/configure.h"
 /* [application] */
 #ifndef MAGNUM_TARGET_GLES
 #include <Magnum/Platform/Sdl2Application.h>
