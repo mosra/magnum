@@ -45,8 +45,8 @@ required to follow them to the point.
 2.  Update `FindMagnum.cmake` (or similar in other repos):
     -   mention the new lib in the list of components in the docs
     -   if it has some inter-library dependencies, add a corresponding
-        `_MAGNUM_${_COMPONENT}_DEPENDENCIES` entry
-    -   add its name to the  `_MAGNUM_LIBRARY_COMPONENTS` regex
+        `_MAGNUM_Component_DEPENDENCIES` entry
+    -   add its name to the  `_MAGNUM_LIBRARY_COMPONENT_LIST` list
     -   add a new @cmake elseif(_component STREQUAL LibraryName) @ce section
         with special setup of includes or dependencies or explicitly say
         @cmake # No special setup for LibraryName library @ce
@@ -178,16 +178,12 @@ Similarly to @ref developers-library except points 2 and 5, with:
 1.  Update `FindMagnumPlugins.cmake` (or `FindMagnum.cmake` in the core repo)
     (replaces point 2 in @ref developers-library):
     -   mention the new plugin in the list of components in the docs
-    -   add its name to the  `_MAGNUMPLUGINS_PLUGIN_COMPONENTS` regex
+    -   add its name to the  `_MAGNUMPLUGINS_PLUGIN_COMPONENT_LIST` list
     -   add a new @cmake elseif(_component STREQUAL PluginName) @ce section
         with special setup of includes or dependencies or explicitly say
         @cmake # PluginName has no dependencies @ce
 2.  Create `PluginName.conf` and list all plugin dependencies (if any). The
     file has to be present even if empty.
-3.  Create `pluginRegistration.cpp` by copypasting it from another plugin and
-    adapting plugin name and plugin interface string. It's needed to be in a
-    separate file that gets compiled only to the plugin library, not to the
-    test library.
 4.  Create `importStaticPlugin.cpp` by copypasting it from another plugin and
     adapting plugin name. This will get installed along with plugin headers to
     aid with automatic import.
@@ -199,11 +195,6 @@ Similarly to @ref developers-library except points 2 and 5, with:
     -   add source files to `PluginName_SRCS` variable
     -   add installable headers to `PluginName_HEADERS` variable
     -   add private headers to `PluginName_PRIVATE_HEADERS` variable (if any)
-    -   create a `PluginNameObjects` library that contains all files that are
-        common for the plugin library and test library (usually everything
-        except `pluginRegistration.cpp`), add a
-        @cmake target_compile_definitions(PluginNameObjects PRIVATE "PluginNameObjects_EXPORTS") @ce
-        for it
     -   use @cmake add_plugin() @ce command (which is aliased to either
         @ref corrade-cmake-add-plugin "corrade_add_plugin()" or
         @ref corrade-cmake-add-static-plugin "corrade_add_static_plugin()") to
@@ -215,9 +206,9 @@ Similarly to @ref developers-library except points 2 and 5, with:
     -   verify that both @cmake add_library() @ce and @cmake add_plugin() @ce
         commands reference all input files (needed so QtCreator lists all
         project files properly)
-    -   verify that folder is set for the `OBJECT` library and the test library
-        to avoid cluttering project tree view in IDEs
-        (@cmake set_target_properties(PluginNameObjects PROPERTIES FOLDER "MagnumPlugins/PluginName") @ce)
+    -   verify that folder is set for all other targets to avoid cluttering
+        project tree view in IDEs
+        (@cmake set_target_properties(PluginExtraTarget PROPERTIES FOLDER "MagnumPlugins/PluginName") @ce)
         --- for the plugin library it's done automatically inside
         @cmake add_plugin() @ce
     -   verify that @cmake set_target_properties(PluginName PROPERTIES POSITION_INDEPENDENT_CODE ON) @ce
@@ -484,14 +475,14 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
     to `Doxyfile`, `Doxyfile-mcss` and `Doxyfile-public`, copypaste it from
     existing and change the numbers
 11. Add new version enum value:
-    -   to `src/Magnum/Version.h`
-    -   to debug output in `src/Magnum/Version.cpp`
-    -   to @ref GL::Extension::extensions() in `src/Magnum/Context.cpp`
-    -   to @cpp Context::tryCreate() @ce in `src/Magnum/Context.cpp`
-    -   to specify GLSL version in `src/Magnum/Shader.cpp`
+    -   to `src/Magnum/GL/Version.h`
+    -   to debug output in `src/Magnum/GL/Version.cpp`
+    -   to @ref GL::Extension::extensions() in `src/Magnum/GL/Context.cpp`
+    -   to @cpp GL::Context::tryCreate() @ce in `src/Magnum/GL/Context.cpp`
+    -   to specify GLSL version in `src/Magnum/GL/Shader.cpp`
     -   to the list in `src/Magnum/Platform/magnum-gl-info.cpp`
-    -   to the test in `src/Magnum/Test/ContextTest.cpp`
-12. Add new extensions to `src/Magnum/Extensions.h`
+    -   to the test in `src/Magnum/GL/Test/ContextTest.cpp`
+12. Add new extensions to `src/Magnum/GL/Extensions.h`
     -   order them by extension ID that is mentioned in every extension spec
         file
     -   update the numbering to stay monotonic and unique, round up start index
@@ -501,8 +492,8 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
     -   run `ContextTest` to verify everything is still okay
 13. Update existing extensions with version in which they become core (last
     parameter of the `_extension()` macro)
-14. Update extension list in `src/magnum/Context.cpp` according to changes in
-    `src/Magnum/Extensions.h`
+14. Update extension list in `src/magnum/GL/Context.cpp` according to changes
+    in `src/Magnum/GL/Extensions.h`
 
 In order to remove GL functionality, be sure to touch all places mentioned
 above, only in inverse --- but usually @ref developers-deprecation "deprecate first",
@@ -525,8 +516,8 @@ unless it doesn't affect public API at all.
     -   new private and `MAGNUM_LOCAL` `thingImplementation*()` functions, each
         implementing one code path, preferrably @cpp static @ce
     -   a `thingImplementation` (member) function pointer in `src/Magnum/Implementation/SomeState.h`
-        that gets populated in `src/Magnum/Implementation/SomeState.cpp` based
-        on extension / version availability
+        that gets populated in `src/Magnum/GL/Implementation/SomeState.cpp`
+        based on extension / version availability
     -   a public function, dispatching to
         @cpp Context::current().state().some->thingImplementation @ce in the
         implementation
@@ -569,7 +560,7 @@ unless it doesn't affect public API at all.
 @section developers-driver-workaround Checklist for adding / removing a driver workaround
 
 1.  Put a descriptive string with even more descriptive comment into the
-    `KnownWorkarounds` array in `src/Magnum/Implementation/driverSpecific.cpp`,
+    `KnownWorkarounds` array in `src/Magnum/GL/Implementation/driverSpecific.cpp`,
     ideally reuse some of the already existing vendor prefixes
 2.  If the workaround can be tied down to a particular platform / target, add
     apropriate @cpp #ifdef @ce around it
@@ -577,10 +568,10 @@ unless it doesn't affect public API at all.
     `*Implementation*()` functions in the affected class, `*ImplementationDefault()`
     having the optimistic default behavior, the other having the workaround.
     Add the appropriate @cpp #ifdef @ce around, if any.
-4.  Add a new (member) function pointer in `src/Implementation/SomeState.h` and
-    call it from the affected class instead of executing the implementation
+4.  Add a new (member) function pointer in `src/GL/Implementation/SomeState.h`
+    and call it from the affected class instead of executing the implementation
     directly. Add the appropriate @cpp #ifdef @ce around, if any.
-5.  Add a branch into `src/Implementation/SomeState.cpp` (with appropriate
+5.  Add a branch into `src/GL/Implementation/SomeState.cpp` (with appropriate
     @cpp #ifdef @ce around, if any). First check for driver and other
     circumstances and call the @cpp !context.isDriverWorkaroundDisabled("the-workaround-string") @ce
     <em>last</em> after you are really sure you need to use it --- calling this
