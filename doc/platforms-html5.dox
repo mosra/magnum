@@ -84,10 +84,14 @@ initial CMake compiler checks for various reasons such as
 
 The CMake toolchain might interfere with the bootstrap operation, causing it to
 fail. Solution is to wipe all Emscripten caches and trigger a rebuild of all
-needed libraries by compiling a minimal project. The @cb{.sh} -s WASM=1 @ce
-flag is needed in order to enable a rebuild of the `binaryen` tool as well:
+needed libraries by compiling a minimal project, as shown in the shell snippet
+below --- enter it into the console prior to building anything else. It will
+take a while to download and build various system libraries and random tools.
+The @cb{.sh} -s WASM=1 @ce flag is needed in order to enable a rebuild of the
+`binaryen` tool as well:
 
 @code{.sh}
+cd /tmp
 emcc --clear-cache
 emcc --clear-ports
 echo "int main() {}" > main.cpp
