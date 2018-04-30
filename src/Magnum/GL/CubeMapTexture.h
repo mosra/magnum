@@ -1120,6 +1120,22 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
 };
 
-}}
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
+
+/** @brief @copybrief GL::CubeMapCoordinate
+ * @deprecated Use @ref GL::CubeMapCoordinate instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::CubeMapCoordinate instead") Magnum::GL::CubeMapCoordinate CubeMapCoordinate;
+
+/** @brief @copybrief GL::CubeMapTexture
+ * @deprecated Use @ref GL::CubeMapTexture instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::CubeMapTexture instead") Magnum::GL::CubeMapTexture CubeMapTexture;
+#endif
+
+}
 
 #endif

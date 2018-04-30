@@ -747,6 +747,22 @@ Example usage:
     } while(0)
 #endif
 
-}}
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
+
+/** @brief @copybrief GL::Extension
+ * @deprecated Use @ref GL::Extension instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::Extension instead") Magnum::GL::Extension Extension;
+
+/** @brief @copybrief GL::Context
+ * @deprecated Use @ref GL::Context instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::Context instead") Magnum::GL::Context Context;
+#endif
+
+}
 
 #endif

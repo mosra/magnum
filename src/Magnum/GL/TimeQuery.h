@@ -161,7 +161,18 @@ class TimeQuery: public AbstractQuery {
         explicit TimeQuery(GLuint id, Target target, ObjectFlags flags) noexcept: AbstractQuery{id, GLenum(target), flags} {}
 };
 
-}}
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
+
+/** @brief @copybrief GL::TimeQuery
+ * @deprecated Use @ref GL::TimeQuery instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::TimeQuery instead") Magnum::GL::TimeQuery TimeQuery;
+#endif
+
+}
 #else
 #error this header is not available in WebGL 1.0 build
 #endif

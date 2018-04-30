@@ -47,6 +47,78 @@ set(Magnum_HEADERS
     Types.h
     visibility.h)
 
+# Compatibility headers for GL library
+if(WITH_GL AND BUILD_DEPRECATED)
+    list(APPEND Magnum_HEADERS
+        AbstractFramebuffer.h
+        AbstractObject.h
+        AbstractShaderProgram.h
+        AbstractTexture.h
+        Attribute.h
+        Buffer.h
+        Context.h
+        CubeMapTexture.h
+        DefaultFramebuffer.h
+        Extensions.h
+        Framebuffer.h
+        Mesh.h
+        MeshView.h
+        OpenGL.h
+        PixelFormat.h
+        Renderbuffer.h
+        RenderbufferFormat.h
+        Renderer.h
+        Sampler.h
+        Shader.h
+        Tags.h
+        Texture.h
+        TextureFormat.h
+        Version.h)
+
+    # Desktop-only stuff
+    if(NOT TARGET_GLES)
+        list(APPEND Magnum_HEADERS RectangleTexture.h)
+    endif()
+
+    # OpenGL ES 3.0 and WebGL 2.0 stuff
+    if(NOT TARGET_GLES2)
+        list(APPEND Magnum_HEADERS
+            BufferImage.h
+            PrimitiveQuery.h
+            TextureArray.h
+            TransformFeedback.h)
+    endif()
+
+    # Desktop and OpenGL ES stuff that is not available in WebGL
+    if(NOT TARGET_WEBGL)
+        list(APPEND Magnum_HEADERS
+            DebugOutput.h
+            TimeQuery.h)
+
+        # Desktop and OpenGL ES 3.0 stuff that is not available in ES2 and WebGL
+        if(NOT TARGET_GLES2)
+            list(APPEND Magnum_HEADERS
+                BufferTexture.h
+                BufferTextureFormat.h
+                CubeMapTextureArray.h
+                ImageFormat.h
+                MultisampleTexture.h)
+        endif()
+    endif()
+
+    # Desktop, OpenGL ES and WebGL 2.0 stuff that is not available in WebGL 1.0
+    if(NOT (TARGET_WEBGL AND TARGET_GLES2))
+        list(APPEND Magnum_HEADERS
+            AbstractQuery.h
+            SampleQuery.h)
+    endif()
+endif()
+
+# Compatibility headers for OpenGLTester
+if(WITH_OPENGLTESTER AND BUILD_DEPRECATED)
+    list(APPEND Magnum_HEADERS OpenGLTester.h)
+endif()
+
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS
     Math/Color.cpp

@@ -36,9 +36,9 @@
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/Math/Vector4.h"
 
+#ifndef MAGNUM_TARGET_GLES2
 namespace Magnum { namespace GL {
 
-#ifndef MAGNUM_TARGET_GLES2
 /**
 @brief Buffer image
 
@@ -485,10 +485,60 @@ template<UnsignedInt dimensions> inline void CompressedBufferImage<dimensions>::
     setData({}, format, size, data, usage);
 }
 #endif
+
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
+
+/** @brief @copybrief GL::BufferImage
+ * @deprecated Use @ref GL::BufferImage instead.
+ */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<UnsignedInt dimensions> using BufferImage CORRADE_DEPRECATED_ALIAS("use GL::BufferImage instead") = Magnum::GL::BufferImage<dimensions>;
+#endif
+
+/** @brief @copybrief GL::BufferImage1D
+ * @deprecated Use @ref GL::BufferImage1D instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::BufferImage1D instead") Magnum::GL::BufferImage1D BufferImage1D;
+
+/** @brief @copybrief GL::BufferImage2D
+ * @deprecated Use @ref GL::BufferImage2D instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::BufferImage2D instead") Magnum::GL::BufferImage2D BufferImage2D;
+
+/** @brief @copybrief GL::BufferImage3D
+ * @deprecated Use @ref GL::BufferImage3D instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::BufferImage3D instead") Magnum::GL::BufferImage3D BufferImage3D;
+
+/** @brief @copybrief GL::CompressedBufferImage
+ * @deprecated Use @ref GL::CompressedBufferImage instead.
+ */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<UnsignedInt dimensions> using CompressedBufferImage CORRADE_DEPRECATED_ALIAS("use GL::CompressedBufferImage instead") = Magnum::GL::BufferImage<dimensions>;
+#endif
+
+/** @brief @copybrief GL::CompressedBufferImage1D
+ * @deprecated Use @ref GL::CompressedBufferImage1D instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::CompressedBufferImage1D instead") Magnum::GL::CompressedBufferImage1D CompressedBufferImage1D;
+
+/** @brief @copybrief GL::CompressedBufferImage2D
+ * @deprecated Use @ref GL::CompressedBufferImage2D instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::CompressedBufferImage2D instead") Magnum::GL::CompressedBufferImage2D CompressedBufferImage2D;
+
+/** @brief @copybrief GL::CompressedBufferImage3D
+ * @deprecated Use @ref GL::CompressedBufferImage3D instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::CompressedBufferImage3D instead") Magnum::GL::CompressedBufferImage3D CompressedBufferImage3D;
+#endif
+
+}
 #else
 #error this header is not available in OpenGL ES 2.0 build
 #endif
-
-}}
 
 #endif

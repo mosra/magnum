@@ -822,6 +822,49 @@ CORRADE_ENUMSET_OPERATORS(FramebufferClearMask)
 CORRADE_ENUMSET_OPERATORS(FramebufferBlitMask)
 #endif
 
-}}
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
+
+/** @brief @copybrief GL::FramebufferClear
+ * @deprecated Use @ref GL::FramebufferClear instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::FramebufferClear instead") Magnum::GL::FramebufferClear FramebufferClear;
+
+/** @brief @copybrief GL::FramebufferClearMask
+ * @deprecated Use @ref GL::FramebufferClearMask instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::FramebufferClearMask instead") Magnum::GL::FramebufferClearMask FramebufferClearMask;
+
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+/** @brief @copybrief GL::FramebufferBlit
+ * @deprecated Use @ref GL::FramebufferBlit instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::FramebufferBlit instead") Magnum::GL::FramebufferBlit FramebufferBlit;
+
+/** @brief @copybrief GL::FramebufferBlitMask
+ * @deprecated Use @ref GL::FramebufferBlitMask instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::FramebufferBlitMask instead") Magnum::GL::FramebufferBlitMask FramebufferBlitMask;
+
+/** @brief @copybrief GL::FramebufferBlitFilter
+ * @deprecated Use @ref GL::FramebufferBlitFilter instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::FramebufferBlitFilter instead") Magnum::GL::FramebufferBlitFilter FramebufferBlitFilter;
+#endif
+
+/** @brief @copybrief GL::FramebufferTarget
+ * @deprecated Use @ref GL::FramebufferTarget instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::FramebufferTarget instead") Magnum::GL::FramebufferTarget FramebufferTarget;
+
+/** @brief @copybrief GL::AbstractFramebuffer
+ * @deprecated Use @ref GL::AbstractFramebuffer instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::AbstractFramebuffer instead") Magnum::GL::AbstractFramebuffer AbstractFramebuffer;
+#endif
+
+}
 
 #endif

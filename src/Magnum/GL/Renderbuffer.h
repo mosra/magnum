@@ -302,6 +302,17 @@ inline GLuint Renderbuffer::release() {
     return id;
 }
 
-}}
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
+
+/** @brief @copybrief GL::Renderbuffer
+ * @deprecated Use @ref GL::Renderbuffer instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::Renderbuffer instead") Magnum::GL::Renderbuffer Renderbuffer;
+#endif
+
+}
 
 #endif

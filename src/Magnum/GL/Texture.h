@@ -1300,6 +1300,38 @@ typedef Texture<2> Texture2D;
 typedef Texture<3> Texture3D;
 #endif
 
-}}
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
+
+/** @brief @copybrief GL::Texture
+ * @deprecated Use @ref GL::Texture instead.
+ */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<UnsignedInt dimensions> using Texture CORRADE_DEPRECATED_ALIAS("use GL::Texture instead") = Magnum::GL::Texture<dimensions>;
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+/** @brief @copybrief GL::Texture1D
+ * @deprecated Use @ref GL::Texture1D instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::Texture1D instead") Magnum::GL::Texture1D Texture1D;
+#endif
+
+/** @brief @copybrief GL::Texture2D
+ * @deprecated Use @ref GL::Texture2D instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::Texture2D instead") Magnum::GL::Texture2D Texture2D;
+
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+/** @brief @copybrief GL::Texture3D
+ * @deprecated Use @ref GL::Texture3D instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::Texture3D instead") Magnum::GL::Texture3D Texture3D;
+#endif
+#endif
+
+}
 
 #endif

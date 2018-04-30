@@ -297,6 +297,15 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Sampler::CompareFunction value)
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Sampler::DepthStencilMode value);
 #endif
 
-}}
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/** @brief @copybrief GL::Sampler
+ * @deprecated Use @ref GL::Sampler instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::Sampler instead") GL::Sampler Sampler;
+#endif
+
+}
 
 #endif

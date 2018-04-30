@@ -206,7 +206,18 @@ class MAGNUM_GL_EXPORT PrimitiveQuery: public AbstractQuery {
         #endif
 };
 
-}}
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
+
+/** @brief @copybrief GL::PrimitiveQuery
+ * @deprecated Use @ref GL::PrimitiveQuery instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::PrimitiveQuery instead") Magnum::GL::PrimitiveQuery PrimitiveQuery;
+#endif
+
+}
 #else
 #error this header is not available in OpenGL ES 2.0 build
 #endif

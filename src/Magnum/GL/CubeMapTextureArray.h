@@ -779,7 +779,18 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
         explicit CubeMapTextureArray(GLuint id, ObjectFlags flags) noexcept: AbstractTexture{id, GL_TEXTURE_CUBE_MAP_ARRAY, flags} {}
 };
 
-}}
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
+
+/** @brief @copybrief GL::CubeMapTextureArray
+ * @deprecated Use @ref GL::CubeMapTextureArray instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::CubeMapTextureArray instead") Magnum::GL::CubeMapTextureArray CubeMapTextureArray;
+#endif
+
+}
 #else
 #error this header is not available in OpenGL ES 2.0 and WebGL build
 #endif

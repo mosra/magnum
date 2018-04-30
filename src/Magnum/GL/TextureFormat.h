@@ -1757,6 +1757,17 @@ enum class TextureFormat: GLenum {
     #endif
 };
 
-}}
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
+
+/** @brief @copybrief GL::TextureFormat
+ * @deprecated Use @ref GL::TextureFormat instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::TextureFormat instead") Magnum::GL::TextureFormat TextureFormat;
+#endif
+
+}
 
 #endif

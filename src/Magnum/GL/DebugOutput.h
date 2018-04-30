@@ -805,7 +805,28 @@ class MAGNUM_GL_EXPORT DebugGroup {
 /** @debugoperatorclassenum{DebugGroup,DebugGroup::Source} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DebugGroup::Source value);
 
-}}
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
+
+/** @brief @copybrief GL::DebugOutput
+ * @deprecated Use @ref GL::DebugOutput instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::DebugOutput instead") Magnum::GL::DebugOutput DebugOutput;
+
+/** @brief @copybrief GL::DebugMessage
+ * @deprecated Use @ref GL::DebugMessage instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::DebugMessage instead") Magnum::GL::DebugMessage DebugMessage;
+
+/** @brief @copybrief GL::DebugGroup
+ * @deprecated Use @ref GL::DebugGroup instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::DebugGroup instead") Magnum::GL::DebugGroup DebugGroup;
+#endif
+
+}
 #else
 #error this header is not available in WebGL build
 #endif

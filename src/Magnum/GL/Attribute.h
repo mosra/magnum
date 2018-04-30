@@ -796,6 +796,24 @@ template<class T> struct Attribute<Math::Matrix4<T>>: Attribute<Math::Matrix<4, 
 
 }
 
-}}
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
+
+/** @brief @copybrief GL::Attribute
+ * @deprecated Use @ref GL::Attribute instead.
+ */
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<UnsignedInt location, class T> using Attribute CORRADE_DEPRECATED_ALIAS("use GL::Attribute instead") = Magnum::GL::Attribute<location, T>;
+#endif
+
+/** @brief @copybrief GL::DynamicAttribute
+ * @deprecated Use @ref GL::DynamicAttribute instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::DynamicAttribute instead") Magnum::GL::DynamicAttribute DynamicAttribute;
+#endif
+
+}
 
 #endif

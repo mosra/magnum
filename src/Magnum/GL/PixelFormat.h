@@ -1243,6 +1243,27 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, PixelType value);
 /** @debugoperatorenum{CompressedPixelFormat} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, CompressedPixelFormat value);
 
-}}
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
+
+/** @brief @copybrief GL::PixelFormat
+ * @deprecated Use @ref GL::PixelFormat instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::PixelFormat instead") Magnum::GL::PixelFormat PixelFormat;
+
+/** @brief @copybrief GL::PixelType
+ * @deprecated Use @ref GL::PixelType instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::PixelType instead") Magnum::GL::PixelType PixelType;
+
+/** @brief @copybrief GL::CompressedPixelFormat
+ * @deprecated Use @ref GL::CompressedPixelFormat instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::CompressedPixelFormat instead") Magnum::GL::CompressedPixelFormat CompressedPixelFormat;
+#endif
+
+}
 
 #endif

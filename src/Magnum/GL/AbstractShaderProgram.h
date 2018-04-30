@@ -1300,6 +1300,17 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         #endif
 };
 
-}}
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
+
+/** @brief @copybrief GL::AbstractShaderProgram
+ * @deprecated Use @ref GL::AbstractShaderProgram instead.
+ */
+typedef CORRADE_DEPRECATED("use GL::AbstractShaderProgram instead") Magnum::GL::AbstractShaderProgram AbstractShaderProgram;
+#endif
+
+}
 
 #endif
