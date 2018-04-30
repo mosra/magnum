@@ -120,21 +120,48 @@ class GlutApplication {
         };
 
         class Configuration;
+        class GLConfiguration;
         class InputEvent;
         class KeyEvent;
         class MouseEvent;
         class MouseMoveEvent;
 
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, const Configuration&) */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        explicit GlutApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
-        #else
-        /* To avoid "invalid use of incomplete type" */
-        explicit GlutApplication(const Arguments& arguments, const Configuration& configuration);
-        explicit GlutApplication(const Arguments& arguments);
-        #endif
+        /**
+         * @brief Construct with given configuration for OpenGL context
+         * @param arguments         Application arguments
+         * @param configuration     Application configuration
+         * @param glConfiguration   OpenGL context configuration
+         *
+         * Creates application with default or user-specified configuration.
+         * See @ref Configuration for more information. The program exits if
+         * the context cannot be created, see @ref tryCreate() for an
+         * alternative.
+         */
+        explicit GlutApplication(const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration);
 
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, NoCreateT) */
+        /**
+         * @brief Construct with given configuration
+         *
+         * Equivalent to calling @ref GlutApplication(const Arguments&, const Configuration&, const GLConfiguration&)
+         * with default-constructed @ref GLConfiguration.
+         */
+        explicit GlutApplication(const Arguments& arguments, const Configuration& configuration);
+
+        /**
+         * @brief Construct with default configuration
+         *
+         * Equivalent to calling @ref GlutApplication(const Arguments&, const Configuration&)
+         * with default-constructed @ref Configuration.
+         */
+        explicit GlutApplication(const Arguments& arguments);
+
+        /**
+         * @brief Construct without creating a window
+         * @param arguments     Application arguments
+         *
+         * Unlike above, the window is not created and must be created later
+         * with @ref create() or @ref tryCreate().
+         */
         explicit GlutApplication(const Arguments& arguments, NoCreateT);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
@@ -173,17 +200,75 @@ class GlutApplication {
            faster than public pure virtual destructor */
         ~GlutApplication();
 
-        /** @copydoc Sdl2Application::createContext() */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        void createContext(const Configuration& configuration = Configuration());
-        #else
-        /* To avoid "invalid use of incomplete type" */
-        void createContext(const Configuration& configuration);
-        void createContext();
+        /**
+         * @brief Create a window with given configuration for OpenGL context
+         * @param configuration     Application configuration
+         * @param glConfiguration   OpenGL context configuration
+         *
+         * Must be called only if the context wasn't created by the constructor
+         * itself, i.e. when passing @ref NoCreate to it. Error message is
+         * printed and the program exits if the context cannot be created, see
+         * @ref tryCreate() for an alternative.
+         */
+        void create(const Configuration& configuration, const GLConfiguration& glConfiguration);
+
+        /**
+         * @brief Create a window with given configuration and OpenGL context
+         *
+         * Equivalent to calling @ref create(const Configuration&, const GLConfiguration&)
+         * with default-constructed @ref GLConfiguration.
+         */
+        void create(const Configuration& configuration);
+
+        /**
+         * @brief Create a window with default configuration and OpenGL context
+         *
+         * Equivalent to calling @ref create(const Configuration&) with
+         * default-constructed @ref Configuration.
+         */
+        void create();
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief create(const Configuration&, const GLConfiguration&)
+         * @deprecated Use @ref create(const Configuration&, const GLConfiguration&) instead.
+         */
+        CORRADE_DEPRECATED("use create(const Configuration&, const GLConfiguration&) instead") void createContext(const Configuration& configuration) {
+            create(configuration);
+        }
+
+        /** @brief @copybrief create()
+         * @deprecated Use @ref create() instead.
+         */
+        CORRADE_DEPRECATED("use create() instead") void createContext() {
+            create();
+        }
         #endif
 
-        /** @copydoc Sdl2Application::tryCreateContext() */
-        bool tryCreateContext(const Configuration& configuration);
+        /**
+         * @brief Try to create context with given configuration for OpenGL context
+         *
+         * Unlike @ref create(const Configuration&, const GLConfiguration&)
+         * returns @cpp false @ce if the context cannot be created,
+         * @cpp true @ce otherwise.
+         */
+        bool tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration);
+
+        /**
+         * @brief Try to create context with given configuration and OpenGL context
+         *
+         * Unlike @ref create(const Configuration&) returns @cpp false @ce if
+         * the context cannot be created, @cpp true @ce otherwise.
+         */
+        bool tryCreate(const Configuration& configuration);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief tryCreate(const Configuration&, const GLConfiguration&)
+         * @deprecated Use @ref tryCreate(const Configuration&, const GLConfiguration&) instead.
+         */
+        CORRADE_DEPRECATED("use tryCreate(const Configuration&) instead") bool tryCreateContext(const Configuration& configuration) {
+            return tryCreate(configuration);
+        }
+        #endif
 
         /** @{ @name Screen handling */
 
@@ -300,12 +385,13 @@ class GlutApplication {
 };
 
 /**
-@brief Configuration
+@brief OpenGL context configuration
 
 Double-buffered RGBA window with depth and stencil buffers.
-@see @ref GlutApplication(), @ref createContext(), @ref tryCreateContext()
+@see @ref GlutApplication(), @ref Configuration, @ref create(),
+    @ref tryCreate()
 */
-class GlutApplication::Configuration {
+class GlutApplication::GLConfiguration {
     public:
         /**
          * @brief Context flag
@@ -325,6 +411,85 @@ class GlutApplication::Configuration {
         typedef Containers::EnumSet<Flag, GLUT_DEBUG> Flags;
         #else
         typedef Containers::EnumSet<Flag> Flags;
+        #endif
+
+        /*implicit*/ GLConfiguration();
+        ~GLConfiguration();
+
+        /** @brief Context flags */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Default is no flag.
+         */
+        GLConfiguration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+        /** @brief Context version */
+        GL::Version version() const { return _version; }
+
+        /**
+         * @brief Set context version
+         *
+         * If requesting version greater or equal to OpenGL 3.1, core profile
+         * is used. The created context will then have any version which is
+         * backwards-compatible with requested one. Default is
+         * @ref GL::Version::None, i.e. any provided version is used.
+         */
+        GLConfiguration& setVersion(GL::Version version) {
+            _version = version;
+            return *this;
+        }
+
+        /** @brief Sample count */
+        Int sampleCount() const { return _sampleCount; }
+
+        /**
+         * @brief Set sample count
+         * @return Reference to self (for method chaining)
+         *
+         * Default is @cpp 0 @ce, thus no multisampling. The actual sample
+         * count is ignored, GLUT either enables it or disables. See also
+         * @ref GL::Renderer::Feature::Multisampling.
+         */
+        GLConfiguration& setSampleCount(Int count) {
+            _sampleCount = count;
+            return *this;
+        }
+
+    private:
+        std::string _title;
+        Vector2i _size;
+        Int _sampleCount;
+        GL::Version _version;
+        Flags _flags;
+};
+
+CORRADE_ENUMSET_OPERATORS(GlutApplication::GLConfiguration::Flags)
+
+/**
+@brief Configuration
+
+@see @ref GlutApplication(), @ref GLConfiguration, @ref create(),
+    @ref tryCreate()
+*/
+class GlutApplication::Configuration {
+    public:
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief GLConfiguration::Flag
+         * @deprecated Use @ref GLConfiguration::Flag instead.
+         */
+        typedef GLConfiguration::Flag Flag;
+
+        /** @brief @copybrief GLConfiguration::Flags
+         * @deprecated Use @ref GLConfiguration::Flags instead.
+         */
+        typedef GLConfiguration::Flags Flags;
         #endif
 
         /*implicit*/ Configuration();
@@ -358,61 +523,56 @@ class GlutApplication::Configuration {
             return *this;
         }
 
-        /** @brief Context flags */
-        Flags flags() const { return _flags; }
-
-        /**
-         * @brief Set context flags
-         * @return Reference to self (for method chaining)
-         *
-         * Default is no flag.
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief GLConfiguration::flags()
+         * @deprecated Use @ref GLConfiguration::flags() instead.
          */
-        Configuration& setFlags(Flags flags) {
+        CORRADE_DEPRECATED("use GLConfiguration::flags() instead") GLConfiguration::Flags flags() const { return _flags; }
+
+        /** @brief @copybrief GLConfiguration::setFlags()
+         * @deprecated Use @ref GLConfiguration::setFlags() instead.
+         */
+        CORRADE_DEPRECATED("use GLConfiguration::setFlags() instead") Configuration& setFlags(GLConfiguration::Flags flags) {
             _flags = flags;
             return *this;
         }
 
-        /** @brief Context version */
-        GL::Version version() const { return _version; }
-
-        /**
-         * @brief Set context version
-         *
-         * If requesting version greater or equal to OpenGL 3.1, core profile
-         * is used. The created context will then have any version which is
-         * backwards-compatible with requested one. Default is
-         * @ref GL::Version::None, i.e. any provided version is used.
+        /** @brief @copybrief GLConfiguration::version()
+         * @deprecated Use @ref GLConfiguration::version() instead.
          */
-        Configuration& setVersion(GL::Version version) {
+        CORRADE_DEPRECATED("use GLConfiguration::version() instead") GL::Version version() const { return _version; }
+
+        /** @brief @copybrief GLConfiguration::setVersion()
+         * @deprecated Use @ref GLConfiguration::setVersion() instead.
+         */
+        CORRADE_DEPRECATED("use GLConfiguration::setVersion() instead") Configuration& setVersion(GL::Version version) {
             _version = version;
             return *this;
         }
 
-        /** @brief Sample count */
-        Int sampleCount() const { return _sampleCount; }
-
-        /**
-         * @brief Set sample count
-         * @return Reference to self (for method chaining)
-         *
-         * Default is @cpp 0 @ce, thus no multisampling. The actual sample
-         * count is ignored, GLUT either enables it or disables. See also
-         * @ref GL::Renderer::Feature::Multisampling.
+        /** @brief @copybrief GLConfiguration::sampleCount()
+         * @deprecated Use @ref GLConfiguration::sampleCount() instead.
          */
-        Configuration& setSampleCount(Int count) {
+        CORRADE_DEPRECATED("use GLConfiguration::sampleCount() instead") Int sampleCount() const { return _sampleCount; }
+
+        /** @brief @copybrief GLConfiguration::setSampleCount()
+         * @deprecated Use @ref GLConfiguration::setSampleCount() instead.
+         */
+        CORRADE_DEPRECATED("use GLConfiguration::setSampleCount() instead") Configuration& setSampleCount(Int count) {
             _sampleCount = count;
             return *this;
         }
+        #endif
 
     private:
         std::string _title;
         Vector2i _size;
+        #ifdef MAGNUM_BUILD_DEPRECATED
         Int _sampleCount;
         GL::Version _version;
         Flags _flags;
+        #endif
 };
-
-CORRADE_ENUMSET_OPERATORS(GlutApplication::Configuration::Flags)
 
 /**
 @brief Base for input events

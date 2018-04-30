@@ -312,8 +312,8 @@ for a high-level overview.
 -   @ref Math::Range::data() function, useful when querying range values from
     GL
 -   Support for specifying context flags using
-    @ref Platform::Sdl2Application::Configuration::setFlags() "Platform::*Application::Configuration::setFlags()",
-    they are now also shown in @ref magnum-gl-info "magnum-info"
+    @cpp Platform::*Application::Configuration::setFlags() @ce, they are now
+    also shown in @ref magnum-gl-info "magnum-info"
 -   More robust support for driver detection and driver bug workarounds. Driver
     can be detected using @cpp Context::detectedDriver() @ce, problematic
     extension disabled, which is then shown in @ref magnum-gl-info "magnum-info"

@@ -109,7 +109,7 @@ MyApplication::MyApplication(const Arguments& arguments):
 {
     // ...
 
-    createContext(Configuration{}
+    create(Configuration{}
         .setTitle("My Application")
         .setSize(size));
 
@@ -132,11 +132,12 @@ MyApplication::MyApplication(const Arguments& arguments):
     // ...
 
     Configuration conf;
-    conf.setTitle("My Application")
-        .setSampleCount(16);
+    conf.setTitle("My Application");
+    GLConfiguration glConf;
+    glConf.setSampleCount(16);
 
-    if(!tryCreateContext(conf))
-        createContext(conf.setSampleCount(0));
+    if(!tryCreate(conf, glConf))
+        create(conf, glConf.setSampleCount(0));
 
     // ...
 }

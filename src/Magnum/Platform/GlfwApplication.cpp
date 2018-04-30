@@ -43,12 +43,14 @@ GlfwApplication* GlfwApplication::_instance = nullptr;
 static_assert(GLFW_TRUE == true && GLFW_FALSE == false, "GLFW does not have sane bool values");
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
 GlfwApplication::GlfwApplication(const Arguments& arguments): GlfwApplication{arguments, Configuration{}} {}
-#endif
 
 GlfwApplication::GlfwApplication(const Arguments& arguments, const Configuration& configuration): GlfwApplication{arguments, NoCreate} {
-    createContext(configuration);
+    create(configuration);
+}
+
+GlfwApplication::GlfwApplication(const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration): GlfwApplication{arguments, NoCreate} {
+    create(configuration, glConfiguration);
 }
 
 GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
@@ -67,14 +69,44 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
     }
 }
 
-void GlfwApplication::createContext() { createContext({}); }
-
-void GlfwApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) std::exit(1);
+void GlfwApplication::create() {
+    create(Configuration{});
 }
 
-bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::GlfwApplication::tryCreateContext(): context already created", false);
+void GlfwApplication::create(const Configuration& configuration) {
+    if(!tryCreate(configuration)) std::exit(1);
+}
+
+void GlfwApplication::create(const Configuration& configuration, const GLConfiguration& glConfiguration) {
+    if(!tryCreate(configuration, glConfiguration)) std::exit(1);
+}
+
+bool GlfwApplication::tryCreate(const Configuration& configuration) {
+    return tryCreate(configuration, GLConfiguration{});
+}
+
+bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConfiguration&
+    #ifndef MAGNUM_BUILD_DEPRECATED
+    glConfiguration
+    #else
+    _glConfiguration
+    #endif
+) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    GLConfiguration glConfiguration{_glConfiguration};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    if(configuration.flags() && !glConfiguration.flags())
+        glConfiguration.setFlags(configuration.flags());
+    if(configuration.version() != GL::Version::None && glConfiguration.version() == GL::Version::None)
+        glConfiguration.setVersion(configuration.version());
+    if(configuration.sampleCount() && !glConfiguration.sampleCount())
+        glConfiguration.setSampleCount(configuration.sampleCount());
+    if(configuration.isSRGBCapable() && !glConfiguration.isSRGBCapable())
+        glConfiguration.setSRGBCapable(configuration.isSRGBCapable());
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
+
+    CORRADE_ASSERT(!_window && _context->version() == GL::Version::None, "Platform::GlfwApplication::tryCreate(): context already created", false);
 
     /* Window flags */
     GLFWmonitor* monitor = nullptr; /* Needed for setting fullscreen */
@@ -93,24 +125,24 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
     glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
 
     /* Context window hints */
-    glfwWindowHint(GLFW_SAMPLES, configuration.sampleCount());
-    glfwWindowHint(GLFW_SRGB_CAPABLE, configuration.isSRGBCapable());
+    glfwWindowHint(GLFW_SAMPLES, glConfiguration.sampleCount());
+    glfwWindowHint(GLFW_SRGB_CAPABLE, glConfiguration.isSRGBCapable());
 
-    const Configuration::Flags& flags = configuration.flags();
+    const GLConfiguration::Flags& flags = glConfiguration.flags();
     #ifdef GLFW_CONTEXT_NO_ERROR
-    glfwWindowHint(GLFW_CONTEXT_NO_ERROR, flags >= Configuration::Flag::NoError);
+    glfwWindowHint(GLFW_CONTEXT_NO_ERROR, flags >= GLConfiguration::Flag::NoError);
     #endif
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, flags >= Configuration::Flag::Debug);
-    glfwWindowHint(GLFW_STEREO, flags >= Configuration::Flag::Stereo);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, flags >= GLConfiguration::Flag::Debug);
+    glfwWindowHint(GLFW_STEREO, flags >= GLConfiguration::Flag::Stereo);
 
     /* Set context version, if requested */
-    if(configuration.version() != GL::Version::None) {
+    if(glConfiguration.version() != GL::Version::None) {
         Int major, minor;
-        std::tie(major, minor) = version(configuration.version());
+        std::tie(major, minor) = version(glConfiguration.version());
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, major);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, minor);
         #ifndef MAGNUM_TARGET_GLES
-        if(configuration.version() >= GL::Version::GL310) {
+        if(glConfiguration.version() >= GL::Version::GL310) {
             glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, true);
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
         }
@@ -122,7 +154,7 @@ bool GlfwApplication::tryCreateContext(const Configuration& configuration) {
     /* Set context flags */
     _window = glfwCreateWindow(configuration.size().x(), configuration.size().y(), configuration.title().c_str(), monitor, nullptr);
     if(!_window) {
-        Error() << "Platform::GlfwApplication::tryCreateContext(): cannot create context";
+        Error() << "Platform::GlfwApplication::tryCreate(): cannot create context";
         glfwTerminate();
         return false;
     }
@@ -262,10 +294,13 @@ void GlfwApplication::textInputEvent(TextInputEvent&) {}
 
 GlfwApplication::Configuration::Configuration():
     _title{"Magnum GLFW Application"},
-    _size{800, 600}, _sampleCount{0},
-    _version{GL::Version::None},
+    _size{800, 600},
     _windowFlags{WindowFlag::Focused},
-    _cursorMode{CursorMode::Normal} {}
+    _cursorMode{CursorMode::Normal}
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    , _sampleCount{0}, _version{GL::Version::None}
+    #endif
+    {}
 
 GlfwApplication::Configuration::~Configuration() = default;
 

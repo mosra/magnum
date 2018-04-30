@@ -72,6 +72,7 @@ class AbstractXApplication {
         };
 
         class Configuration;
+        class GLConfiguration;
         class InputEvent;
         class KeyEvent;
         class MouseEvent;
@@ -106,17 +107,75 @@ class AbstractXApplication {
            this is faster than public pure virtual destructor */
         ~AbstractXApplication();
 
-        /** @copydoc Sdl2Application::createContext() */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        void createContext(const Configuration& configuration = Configuration());
-        #else
-        /* To avoid "invalid use of incomplete type" */
-        void createContext(const Configuration& configuration);
-        void createContext();
+        /**
+         * @brief Create a window with given configuration for OpenGL context
+         * @param configuration     Application configuration
+         * @param glConfiguration   OpenGL context configuration
+         *
+         * Must be called only if the context wasn't created by the constructor
+         * itself, i.e. when passing @ref NoCreate to it. Error message is
+         * printed and the program exits if the context cannot be created, see
+         * @ref tryCreate() for an alternative.
+         */
+        void create(const Configuration& configuration, const GLConfiguration& glConfiguration);
+
+        /**
+         * @brief Create a window with given configuration and OpenGL context
+         *
+         * Equivalent to calling @ref create(const Configuration&, const GLConfiguration&)
+         * with default-constructed @ref GLConfiguration.
+         */
+        void create(const Configuration& configuration);
+
+        /**
+         * @brief Create a window with default configuration and OpenGL context
+         *
+         * Equivalent to calling @ref create(const Configuration&) with
+         * default-constructed @ref Configuration.
+         */
+        void create();
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief create(const Configuration&, const GLConfiguration&)
+         * @deprecated Use @ref create(const Configuration&, const GLConfiguration&) instead.
+         */
+        CORRADE_DEPRECATED("use create(const Configuration&, const GLConfiguration&) instead") void createContext(const Configuration& configuration) {
+            create(configuration);
+        }
+
+        /** @brief @copybrief create()
+         * @deprecated Use @ref create() instead.
+         */
+        CORRADE_DEPRECATED("use create() instead") void createContext() {
+            create();
+        }
         #endif
 
-        /** @copydoc Sdl2Application::tryCreateContext() */
-        bool tryCreateContext(const Configuration& configuration);
+        /**
+         * @brief Try to create context with given configuration for OpenGL context
+         *
+         * Unlike @ref create(const Configuration&, const GLConfiguration&)
+         * returns @cpp false @ce if the context cannot be created,
+         * @cpp true @ce otherwise.
+         */
+        bool tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration);
+
+        /**
+         * @brief Try to create context with given configuration and OpenGL context
+         *
+         * Unlike @ref create(const Configuration&) returns @cpp false @ce if
+         * the context cannot be created, @cpp true @ce otherwise.
+         */
+        bool tryCreate(const Configuration& configuration);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief tryCreate(const Configuration&, const GLConfiguration&)
+         * @deprecated Use @ref tryCreate(const Configuration&, const GLConfiguration&) instead.
+         */
+        CORRADE_DEPRECATED("use tryCreate(const Configuration&) instead") bool tryCreateContext(const Configuration& configuration) {
+            return tryCreate(configuration);
+        }
+        #endif
 
         /** @{ @name Screen handling */
 
@@ -171,9 +230,9 @@ class AbstractXApplication {
     #else
     protected:
     #endif
-        explicit AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration);
+        explicit AbstractXApplication(Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration);
 
-        explicit AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, NoCreateT);
+        explicit AbstractXApplication(Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, NoCreateT);
 
     private:
         enum class Flag: unsigned int {
@@ -188,7 +247,7 @@ class AbstractXApplication {
         Window _window;
         Atom _deleteWindow;
 
-        std::unique_ptr<Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>> _contextHandler;
+        std::unique_ptr<Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>> _contextHandler;
         std::unique_ptr<Platform::GLContext> _context;
 
         /** @todo Get this from the created window */
@@ -200,12 +259,36 @@ class AbstractXApplication {
 CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)
 
 /**
-@brief Configuration
+@brief OpenGL context configuration
 
 Double-buffered OpenGL context.
 @see @ref GlxApplication::GlxApplication(), @ref XEglApplication::XEglApplication(),
-    @ref createContext(), @ref tryCreateContext()
+    @ref Configuration, @ref create(), @ref tryCreate()
 @todo GLX_ARB_create_context_robustness/EGL_EXT_create_context_robustness
+*/
+class AbstractXApplication::GLConfiguration {
+    public:
+        explicit GLConfiguration();
+        ~GLConfiguration();
+
+        /** @copydoc Sdl2Application::GLConfiguration::version() */
+        GL::Version version() const { return _version; }
+
+        /** @copydoc Sdl2Application::GLConfiguration::setVersion() */
+        GLConfiguration& setVersion(GL::Version version) {
+            _version = version;
+            return *this;
+        }
+
+    private:
+        GL::Version _version;
+};
+
+/**
+@brief Configuration
+
+@see @ref GlxApplication::GlxApplication(), @ref XEglApplication::XEglApplication(),
+    @ref GLConfiguration, @ref create(), @ref tryCreate()
 */
 class AbstractXApplication::Configuration {
     public:
@@ -240,19 +323,27 @@ class AbstractXApplication::Configuration {
             return *this;
         }
 
-        /** @copydoc Sdl2Application::Configuration::version() */
-        GL::Version version() const { return _version; }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief GLConfiguration::version()
+         * @deprecated Use @ref GLConfiguration::version() instead.
+         */
+        CORRADE_DEPRECATED("use GLConfiguration::version() instead") GL::Version version() const { return _version; }
 
-        /** @copydoc Sdl2Application::Configuration::setVersion() */
-        Configuration& setVersion(GL::Version version) {
+        /** @brief @copybrief GLConfiguration::setVersion()
+         * @deprecated Use @ref GLConfiguration::setVersion() instead.
+         */
+        CORRADE_DEPRECATED("use GLConfiguration::setVersion() instead") Configuration& setVersion(GL::Version version) {
             _version = version;
             return *this;
         }
+        #endif
 
     private:
         std::string _title;
         Vector2i _size;
+        #ifdef MAGNUM_BUILD_DEPRECATED
         GL::Version _version;
+        #endif
 };
 
 /**

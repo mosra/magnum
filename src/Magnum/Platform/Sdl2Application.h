@@ -363,6 +363,7 @@ class Sdl2Application {
         };
 
         class Configuration;
+        class GLConfiguration;
         class InputEvent;
         class KeyEvent;
         class MouseEvent;
@@ -373,29 +374,40 @@ class Sdl2Application {
         class TextEditingEvent;
 
         /**
-         * @brief Default constructor
-         * @param arguments     Application arguments
-         * @param configuration Configuration
+         * @brief Construct with given configuration for OpenGL context
+         * @param arguments         Application arguments
+         * @param configuration     Application configuration
+         * @param glConfiguration   OpenGL context configuration
          *
          * Creates application with default or user-specified configuration.
          * See @ref Configuration for more information. The program exits if
-         * the context cannot be created, see @ref tryCreateContext() for an
+         * the context cannot be created, see @ref tryCreate() for an
          * alternative.
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        explicit Sdl2Application(const Arguments& arguments, const Configuration& configuration = Configuration());
-        #else
-        /* To avoid "invalid use of incomplete type" */
-        explicit Sdl2Application(const Arguments& arguments, const Configuration& configuration);
-        explicit Sdl2Application(const Arguments& arguments);
-        #endif
+        explicit Sdl2Application(const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration);
 
         /**
-         * @brief Constructor
+         * @brief Construct with given configuration and default OpenGL context
+         *
+         * Equivalent to calling @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&)
+         * with default-constructed @ref GLConfiguration.
+         */
+        explicit Sdl2Application(const Arguments& arguments, const Configuration& configuration);
+
+        /**
+         * @brief Construct with default configuration
+         *
+         * Equivalent to calling @ref Sdl2Application(const Arguments&, const Configuration&)
+         * with default-constructed @ref Configuration.
+         */
+        explicit Sdl2Application(const Arguments& arguments);
+
+        /**
+         * @brief Construct without creating a window
          * @param arguments     Application arguments
          *
-         * Unlike above, the context is not created and must be created later
-         * with @ref createContext() or @ref tryCreateContext().
+         * Unlike above, the window is not created and must be created later
+         * with @ref create() or @ref tryCreate().
          */
         explicit Sdl2Application(const Arguments& arguments, NoCreateT);
 
@@ -462,33 +474,78 @@ class Sdl2Application {
         ~Sdl2Application();
 
         /**
-         * @brief Create context with given configuration
+         * @brief Create a window with given configuration for OpenGL context
+         * @param configuration     Application configuration
+         * @param glConfiguration   OpenGL context configuration
          *
-         * Must be called if and only if the context wasn't created by the
-         * constructor itself. Error message is printed and the program exits
-         * if the context cannot be created, see @ref tryCreateContext() for an
-         * alternative.
+         * Must be called only if the context wasn't created by the constructor
+         * itself, i.e. when passing @ref NoCreate to it. Error message is
+         * printed and the program exits if the context cannot be created, see
+         * @ref tryCreate() for an alternative.
          *
-         * On desktop GL, if version is not specified in @p configuration, the
-         * application first tries to create core context (OpenGL 3.2+ on
+         * On desktop GL, if version is not specified in @p glConfiguration,
+         * the application first tries to create core context (OpenGL 3.2+ on
          * macOS, OpenGL 3.1+ elsewhere) and if that fails, falls back to
          * compatibility OpenGL 2.1 context.
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        void createContext(const Configuration& configuration = Configuration());
-        #else
-        /* To avoid "invalid use of incomplete type" */
-        void createContext(const Configuration& configuration);
-        void createContext();
+        void create(const Configuration& configuration, const GLConfiguration& glConfiguration);
+
+        /**
+         * @brief Create a window with given configuration and default OpenGL context
+         *
+         * Equivalent to calling @ref create(const Configuration&, const GLConfiguration&)
+         * with default-constructed @ref GLConfiguration.
+         */
+        void create(const Configuration& configuration);
+
+        /**
+         * @brief Create a window with default configuration and OpenGL context
+         *
+         * Equivalent to calling @ref create(const Configuration&) with
+         * default-constructed @ref Configuration.
+         */
+        void create();
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief create(const Configuration&, const GLConfiguration&)
+         * @deprecated Use @ref create(const Configuration&, const GLConfiguration&) instead.
+         */
+        CORRADE_DEPRECATED("use create(const Configuration&, const GLConfiguration&) instead") void createContext(const Configuration& configuration) {
+            create(configuration);
+        }
+
+        /** @brief @copybrief create()
+         * @deprecated Use @ref create() instead.
+         */
+        CORRADE_DEPRECATED("use create() instead") void createContext() {
+            create();
+        }
         #endif
+
+        /**
+         * @brief Try to create context with given configuration for OpenGL context
+         *
+         * Unlike @ref create() returns @cpp false @ce if the context cannot be
+         * created, @cpp true @ce otherwise.
+         */
+        bool tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration);
 
         /**
          * @brief Try to create context with given configuration
          *
-         * Unlike @ref createContext() returns @cpp false @ce if the context
-         * cannot be created, @cpp true @ce otherwise.
+         * Unlike @ref create(const Configuration&) returns @cpp false @ce if
+         * the context cannot be created, @cpp true @ce otherwise.
          */
-        bool tryCreateContext(const Configuration& configuration);
+        bool tryCreate(const Configuration& configuration);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief tryCreate(const Configuration&, const GLConfiguration&)
+         * @deprecated Use @ref tryCreate(const Configuration&, const GLConfiguration&) instead.
+         */
+        CORRADE_DEPRECATED("use tryCreate(const Configuration&, const GLConfiguration&) instead") bool tryCreateContext(const Configuration& configuration) {
+            return tryCreate(configuration);
+        }
+        #endif
 
         /** @{ @name Screen handling */
 
@@ -773,13 +830,13 @@ class Sdl2Application {
 };
 
 /**
-@brief Configuration
+@brief OpenGL context configuration
 
 The created window is always with double-buffered OpenGL context and 24bit
 depth buffer.
-@see @ref Sdl2Application(), @ref createContext(), @ref tryCreateContext()
+@see @ref Sdl2Application(), @ref create(), @ref tryCreate()
 */
-class Sdl2Application::Configuration {
+class Sdl2Application::GLConfiguration {
     public:
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
@@ -811,6 +868,124 @@ class Sdl2Application::Configuration {
         #else
         typedef Containers::EnumSet<Flag> Flags;
         #endif
+        #endif
+
+        explicit GLConfiguration();
+        ~GLConfiguration();
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Context flags
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        Flags flags() const { return _flags; }
+
+        /**
+         * @brief Set context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Default is no flag. See also @ref GL::Context::flags().
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        GLConfiguration& setFlags(Flags flags) {
+            _flags = flags;
+            return *this;
+        }
+
+        /**
+         * @brief Context version
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        GL::Version version() const { return _version; }
+        #endif
+
+        /**
+         * @brief Set context version
+         *
+         * If requesting version greater or equal to OpenGL 3.1, core profile
+         * is used. The created context will then have any version which is
+         * backwards-compatible with requested one. Default is
+         * @ref GL::Version::None, i.e. any provided version is used.
+         * @note In @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" this function
+         *      does nothing (@ref GL::Version::GLES200 or
+         *      @ref GL::Version::GLES300 is used implicitly based on the
+         *      target).
+         */
+        GLConfiguration& setVersion(GL::Version version) {
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            _version = version;
+            #else
+            static_cast<void>(version);
+            #endif
+            return *this;
+        }
+
+        /** @brief Sample count */
+        Int sampleCount() const { return _sampleCount; }
+
+        /**
+         * @brief Set sample count
+         * @return Reference to self (for method chaining)
+         *
+         * Default is @cpp 0 @ce, thus no multisampling. See also
+         * @ref GL::Renderer::Feature::Multisampling.
+         */
+        GLConfiguration& setSampleCount(Int count) {
+            _sampleCount = count;
+            return *this;
+        }
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief sRGB-capable default framebuffer
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        bool isSRGBCapable() const { return _sRGBCapable; }
+
+        /**
+         * @brief Set sRGB-capable default framebuffer
+         * @return Reference to self (for method chaining)
+         *
+         * Default is @cpp false @ce. See also
+         * @ref GL::Renderer::Feature::FramebufferSRGB.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        GLConfiguration& setSRGBCapable(bool enabled) {
+            _sRGBCapable = enabled;
+            return *this;
+        }
+        #endif
+
+    private:
+        Int _sampleCount;
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        GL::Version _version;
+        Flags _flags;
+        bool _sRGBCapable;
+        #endif
+};
+
+/**
+@brief Configuration
+
+@see @ref Sdl2Application(), @ref GLConfiguration, @ref create(),
+    @ref tryCreate()
+*/
+class Sdl2Application::Configuration {
+    public:
+        #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(CORRADE_TARGET_EMSCRIPTEN)
+        /** @brief @copybrief GLConfiguration::Flag
+         * @deprecated Use @ref GLConfiguration::Flag instead.
+         */
+        typedef GLConfiguration::Flag Flag;
+
+        /** @brief @copybrief GLConfiguration::Flags
+         * @deprecated Use @ref GLConfiguration::Flags instead.
+         */
+        typedef GLConfiguration::Flags Flags;
         #endif
 
         /**
@@ -924,47 +1099,31 @@ class Sdl2Application::Configuration {
             return *this;
         }
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        /**
-         * @brief Context flags
-         *
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+        /** @brief @copybrief GLConfiguration::flags()
+         * @deprecated Use @ref GLConfiguration::flags() instead.
          */
-        Flags flags() const { return _flags; }
+        CORRADE_DEPRECATED("use GLConfiguration::flags() instead") GLConfiguration::Flags flags() const { return _flags; }
 
-        /**
-         * @brief Set context flags
-         * @return Reference to self (for method chaining)
-         *
-         * Default is no flag. See also @ref GL::Context::flags().
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+        /** @brief @copybrief GLConfiguration::setFlags()
+         * @deprecated Use @ref GLConfiguration::setFlags() instead.
          */
-        Configuration& setFlags(Flags flags) {
+        CORRADE_DEPRECATED("use GLConfiguration::setFlags() instead") Configuration& setFlags(GLConfiguration::Flags flags) {
             _flags = flags;
             return *this;
         }
 
-        /**
-         * @brief Context version
-         *
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+        /** @brief @copybrief GLConfiguration::version()
+         * @deprecated Use @ref GLConfiguration::version() instead.
          */
-        GL::Version version() const { return _version; }
+        CORRADE_DEPRECATED("use GLConfiguration::version() instead") GL::Version version() const { return _version; }
         #endif
 
-        /**
-         * @brief Set context version
-         *
-         * If requesting version greater or equal to OpenGL 3.1, core profile
-         * is used. The created context will then have any version which is
-         * backwards-compatible with requested one. Default is
-         * @ref GL::Version::None, i.e. any provided version is used.
-         * @note In @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" this function
-         *      does nothing (@ref GL::Version::GLES200 or
-         *      @ref GL::Version::GLES300 is used implicitly based on the
-         *      target).
+        /** @brief @copybrief GLConfiguration::setVersion()
+         * @deprecated Use @ref GLConfiguration::setVersion() instead.
          */
-        Configuration& setVersion(GL::Version version) {
+        CORRADE_DEPRECATED("use GLConfiguration::setVersion() instead") Configuration& setVersion(GL::Version version) {
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             _version = version;
             #else
@@ -973,41 +1132,33 @@ class Sdl2Application::Configuration {
             return *this;
         }
 
-        /** @brief Sample count */
-        Int sampleCount() const { return _sampleCount; }
-
-        /**
-         * @brief Set sample count
-         * @return Reference to self (for method chaining)
-         *
-         * Default is @cpp 0 @ce, thus no multisampling. See also
-         * @ref GL::Renderer::Feature::Multisampling.
+        /** @brief @copybrief GLConfiguration::sampleCount()
+         * @deprecated Use @ref GLConfiguration::sampleCount() instead.
          */
-        Configuration& setSampleCount(Int count) {
+        CORRADE_DEPRECATED("use GLConfiguration::sampleCount() instead") Int sampleCount() const { return _sampleCount; }
+
+        /** @brief @copybrief GLConfiguration::setSampleCount()
+         * @deprecated Use @ref GLConfiguration::setSampleCount() instead.
+         */
+        CORRADE_DEPRECATED("use GLConfiguration::setSampleCount() instead") Configuration& setSampleCount(Int count) {
             _sampleCount = count;
             return *this;
         }
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        /**
-         * @brief sRGB-capable default framebuffer
-         *
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+        /** @brief @copybrief GLConfiguration::isSRGBCapable()
+         * @deprecated Use @ref GLConfiguration::isSRGBCapable() instead.
          */
-        bool isSRGBCapable() const { return _sRGBCapable; }
+        CORRADE_DEPRECATED("use GLConfiguration::isSRGBCapable() instead") bool isSRGBCapable() const { return _sRGBCapable; }
 
-        /**
-         * @brief Set sRGB-capable default framebuffer
-         * @return Reference to self (for method chaining)
-         *
-         * Default is @cpp false @ce. See also
-         * @ref GL::Renderer::Feature::FramebufferSRGB.
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+        /** @brief @copybrief GLConfiguration::setSRGBCapable()
+         * @deprecated Use @ref GLConfiguration::setSRGBCapable() instead.
          */
-        Configuration& setSRGBCapable(bool enabled) {
+        CORRADE_DEPRECATED("use GLConfiguration::setSRGBCapable() instead") Configuration& setSRGBCapable(bool enabled) {
             _sRGBCapable = enabled;
             return *this;
         }
+        #endif
         #endif
 
     private:
@@ -1016,11 +1167,13 @@ class Sdl2Application::Configuration {
         #endif
         Vector2i _size;
         WindowFlags _windowFlags;
+        #ifdef MAGNUM_BUILD_DEPRECATED
         Int _sampleCount;
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         GL::Version _version;
         Flags _flags;
         bool _sRGBCapable;
+        #endif
         #endif
 };
 
@@ -1719,7 +1872,7 @@ typedef BasicScreenedApplication<Sdl2Application> ScreenedApplication;
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
 #ifndef CORRADE_TARGET_EMSCRIPTEN
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::Flags)
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::GLConfiguration::Flags)
 #endif
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::InputEvent::Modifiers)

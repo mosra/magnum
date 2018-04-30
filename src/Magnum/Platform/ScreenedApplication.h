@@ -100,23 +100,24 @@ template<class Application> class BasicScreenedApplication: public Application, 
     public:
         /**
          * @brief Default constructor
-         * @param arguments     Application arguments
-         * @param configuration Configuration
+         * @param arguments         Application arguments
+         * @param configuration     Application configuration
+         * @param glConfiguration   OpenGL context configuration
          *
          * Creates application with default or user-specified configuration.
          * See @ref Sdl2Application::Configuration "Configuration" for more
          * information. The program exits if the context cannot be created, see
          * below for an alternative.
          */
-        explicit BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration = Application::Configuration());
+        explicit BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration = typename Application::Configuration{}, const typename Application::GLConfiguration& glConfiguration = typename Application::GLConfiguration{});
 
         /**
          * @brief Constructor
-         * @param arguments     Application arguments
+         * @param arguments         Application arguments
          *
          * Unlike above, the context is not created and must be created later
-         * with @ref Sdl2Application::createContext() "createContext()" or
-         * @ref Sdl2Application::tryCreateContext() "tryCreateContext()".
+         * with @ref Sdl2Application::create() "create()" or
+         * @ref Sdl2Application::tryCreate() "tryCreate()".
          */
         explicit BasicScreenedApplication(const typename Application::Arguments& arguments, NoCreateT);
 

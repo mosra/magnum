@@ -30,7 +30,7 @@
 
 namespace Magnum { namespace Platform {
 
-XEglApplication::XEglApplication(const Arguments& arguments, const Configuration& configuration): AbstractXApplication(new Implementation::EglContextHandler, arguments, configuration) {}
+XEglApplication::XEglApplication(const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration): AbstractXApplication{new Implementation::EglContextHandler, arguments, configuration, glConfiguration} {}
 
 XEglApplication::XEglApplication(const Arguments& arguments, NoCreateT): AbstractXApplication{new Implementation::EglContextHandler, arguments, NoCreate} {}
 

@@ -43,7 +43,7 @@ template<class Application> void BasicScreen<Application>::mousePressEvent(Mouse
 template<class Application> void BasicScreen<Application>::mouseReleaseEvent(MouseEvent&) {}
 template<class Application> void BasicScreen<Application>::mouseMoveEvent(MouseMoveEvent&) {}
 
-template<class Application> BasicScreenedApplication<Application>::BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration): Application(arguments, configuration) {}
+template<class Application> BasicScreenedApplication<Application>::BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration, const typename Application::GLConfiguration& glConfiguration): Application(arguments, configuration, glConfiguration) {}
 
 template<class Application> BasicScreenedApplication<Application>::BasicScreenedApplication(const typename Application::Arguments& arguments, NoCreateT): Application(arguments, NoCreate) {}
 

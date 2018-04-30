@@ -141,6 +141,7 @@ class AndroidApplication {
         typedef android_app* Arguments;
 
         class Configuration;
+        class GLConfiguration;
         class InputEvent;
         class MouseEvent;
         class MouseMoveEvent;
@@ -158,16 +159,42 @@ class AndroidApplication {
         }
         #endif
 
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, const Configuration&) */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        explicit AndroidApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
-        #else
-        /* To avoid "invalid use of incomplete type" */
-        explicit AndroidApplication(const Arguments& arguments, const Configuration& configuration);
-        explicit AndroidApplication(const Arguments& arguments);
-        #endif
+        /**
+         * @brief Construct with given configuration for OpenGL context
+         * @param arguments         Application arguments
+         * @param configuration     Application configuration
+         * @param glConfiguration   OpenGL context configuration
+         *
+         * Creates application with default or user-specified configuration.
+         * See @ref Configuration for more information. The program exits if
+         * the context cannot be created, see @ref tryCreate() for an
+         * alternative.
+         */
+        explicit AndroidApplication(const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration);
 
-        /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, NoCreateT) */
+        /**
+         * @brief Construct with given configuration
+         *
+         * Equivalent to calling @ref AndroidApplication(const Arguments&, const Configuration&, const GLConfiguration&)
+         * with default-constructed @ref GLConfiguration.
+         */
+        explicit AndroidApplication(const Arguments& arguments, const Configuration& configuration);
+
+        /**
+         * @brief Construct with default configuration
+         *
+         * Equivalent to calling @ref AndroidApplication(const Arguments&, const Configuration&)
+         * with default-constructed @ref Configuration.
+         */
+        explicit AndroidApplication(const Arguments& arguments);
+
+        /**
+         * @brief Construct without creating a window
+         * @param arguments     Application arguments
+         *
+         * Unlike above, the window is not created and must be created later
+         * with @ref create() or @ref tryCreate().
+         */
         explicit AndroidApplication(const Arguments& arguments, NoCreateT);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
@@ -200,17 +227,75 @@ class AndroidApplication {
         ANativeActivity* nativeActivity();
 
     protected:
-        /** @copydoc Sdl2Application::createContext() */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        void createContext(const Configuration& configuration = Configuration());
-        #else
-        /* To avoid "invalid use of incomplete type" */
-        void createContext(const Configuration& configuration);
-        void createContext();
+        /**
+         * @brief Create a window with given configuration for OpenGL context
+         * @param configuration     Application configuration
+         * @param glConfiguration   OpenGL context configuration
+         *
+         * Must be called only if the context wasn't created by the constructor
+         * itself, i.e. when passing @ref NoCreate to it. Error message is
+         * printed and the program exits if the context cannot be created, see
+         * @ref tryCreate() for an alternative.
+         */
+        void create(const Configuration& configuration, const GLConfiguration& glConfiguration);
+
+        /**
+         * @brief Create a window with given configuration and OpenGL context
+         *
+         * Equivalent to calling @ref create(const Configuration&, const GLConfiguration&)
+         * with default-constructed @ref GLConfiguration.
+         */
+        void create(const Configuration& configuration);
+
+        /**
+         * @brief Create a window with default configuration and OpenGL context
+         *
+         * Equivalent to calling @ref create(const Configuration&) with
+         * default-constructed @ref Configuration.
+         */
+        void create();
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief create(const Configuration&, const GLConfiguration&)
+         * @deprecated Use @ref create(const Configuration&, const GLConfiguration&) instead.
+         */
+        CORRADE_DEPRECATED("use create(const Configuration&, const GLConfiguration&) instead") void createContext(const Configuration& configuration) {
+            create(configuration);
+        }
+
+        /** @brief @copybrief create()
+         * @deprecated Use @ref create() instead.
+         */
+        CORRADE_DEPRECATED("use create() instead") void createContext() {
+            create();
+        }
         #endif
 
-        /** @copydoc Sdl2Application::tryCreateContext() */
-        bool tryCreateContext(const Configuration& configuration);
+        /**
+         * @brief Try to create context with given configuration for OpenGL context
+         *
+         * Unlike @ref create(const Configuration&, const GLConfiguration&)
+         * returns @cpp false @ce if the context cannot be created,
+         * @cpp true @ce otherwise.
+         */
+        bool tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration);
+
+        /**
+         * @brief Try to create context with given configuration and OpenGL context
+         *
+         * Unlike @ref create(const Configuration&) returns @cpp false @ce if
+         * the context cannot be created, @cpp true @ce otherwise.
+         */
+        bool tryCreate(const Configuration& configuration);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief tryCreate(const Configuration&, const GLConfiguration&)
+         * @deprecated Use @ref tryCreate(const Configuration&, const GLConfiguration&) instead.
+         */
+        CORRADE_DEPRECATED("use tryCreate(const Configuration&) instead") bool tryCreateContext(const Configuration& configuration) {
+            return tryCreate(configuration);
+        }
+        #endif
 
         /** @{ @name Screen handling */
 
@@ -290,7 +375,7 @@ class AndroidApplication {
         EGLSurface _surface;
         EGLContext _glContext;
 
-        std::unique_ptr<Platform::Context> _context;
+        std::unique_ptr<Platform::GLContext> _context;
         std::unique_ptr<LogOutput> _logOutput;
 
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
@@ -299,10 +384,33 @@ class AndroidApplication {
 CORRADE_ENUMSET_OPERATORS(AndroidApplication::Flags)
 
 /**
+@brief OpenGL context configuration
+
+Double-buffered RGBA canvas with depth and stencil buffers.
+@see @ref AndroidApplication(), @ref Configuration, @ref create(),
+    @ref tryCreate()
+*/
+class AndroidApplication::GLConfiguration {
+    public:
+        constexpr /*implicit*/ GLConfiguration() {}
+
+        /**
+         * @brief Set context version
+         *
+         * @note This function does nothing and is included only for
+         *      compatibility with other toolkits. @ref GL::Version::GLES200 or
+         *      @ref GL::Version::GLES300 is used based on engine compile-time
+         *      settings.
+         */
+        GLConfiguration& setVersion(GL::Version) { return *this; }
+};
+
+/**
 @brief Configuration
 
 Double-buffered RGBA canvas with depth and stencil buffers.
-@see @ref AndroidApplication(), @ref createContext(), @ref tryCreateContext()
+@see @ref AndroidApplication(), @ref GLConfiguration, @ref create(),
+    @ref tryCreate()
 */
 class AndroidApplication::Configuration {
     public:
@@ -334,15 +442,12 @@ class AndroidApplication::Configuration {
             return *this;
         }
 
-        /**
-         * @brief Set context version
-         *
-         * @note This function does nothing and is included only for
-         *      compatibility with other toolkits. @ref GL::Version::GLES200 or
-         *      @ref GL::Version::GLES300 is used based on engine compile-time
-         *      settings.
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief GLConfiguration::setVersion()
+         * @deprecated Use @ref GLConfiguration::setVersion() instead.
          */
-        Configuration& setVersion(Version) { return *this; }
+        CORRADE_DEPRECATED("use GLConfiguration::setVersion() instead") Configuration& setVersion(GL::Version) { return *this; }
+        #endif
 
     private:
         Vector2i _size;

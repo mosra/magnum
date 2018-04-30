@@ -53,13 +53,13 @@ typedef EGLInt VisualId;
 
 Used in XEglApplication.
 */
-class EglContextHandler: public AbstractContextHandler<AbstractXApplication::Configuration, EGLNativeDisplayType, VisualId, EGLNativeWindowType> {
+class EglContextHandler: public AbstractContextHandler<AbstractXApplication::GLConfiguration, EGLNativeDisplayType, VisualId, EGLNativeWindowType> {
     public:
         explicit EglContextHandler() = default;
         ~EglContextHandler();
 
         VisualId getVisualId(EGLNativeDisplayType nativeDisplay) override;
-        void createContext(const AbstractXApplication::Configuration& configuration, EGLNativeWindowType nativeWindow) override;
+        void createContext(const AbstractXApplication::GLConfiguration& glConfiguration, EGLNativeWindowType nativeWindow) override;
 
         void makeCurrent() override {
             eglMakeCurrent(display, surface, surface, context);

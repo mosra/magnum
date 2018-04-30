@@ -146,16 +146,16 @@ this:
 However, sometimes you would need to configure the application based on some
 configuration file or system introspection. In that case you can pass `nullptr`
 instead of @ref Platform::Sdl2Application::Configuration "Configuration"
-instance and then specify it later with @ref Platform::Sdl2Application::createContext() "createContext()":
+instance and then specify it later with @ref Platform::Sdl2Application::create() "create()":
 
 @snippet MagnumPlatform.cpp createcontext
 
-If the context creation in constructor or @ref Platform::Sdl2Application::createContext() "createContext()"
+If the context creation in constructor or @ref Platform::Sdl2Application::create() "create()"
 fails, the application exits. However, it is also possible to negotiate the
-context using @ref Platform::Sdl2Application::tryCreateContext() "tryCreateContext()".
-The only difference is that this function returns `false` instead of exiting.
-You can for example try enabling MSAA and if the context creation fails, fall
-back to no-AA rendering:
+context using @ref Platform::Sdl2Application::tryCreate() "tryCreate()". The
+only difference is that this function returns `false` instead of exiting. You
+can for example try enabling MSAA and if the context creation fails, fall back
+to no-AA rendering:
 
 @snippet MagnumPlatform.cpp trycreatecontext
 

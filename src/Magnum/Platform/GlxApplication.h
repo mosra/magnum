@@ -86,18 +86,18 @@ If no other application header is included, this class is also aliased to
 class GlxApplication: public AbstractXApplication {
     public:
         /**
-         * @brief Default constructor
-         * @param arguments     Application arguments
-         * @param configuration Configuration
+         * @brief Construct with given configuration for OpenGL context
+         * @param arguments         Application arguments
+         * @param configuration     Application configuration
+         * @param glConfiguration   OpenGL context configuration
          *
          * Creates application with default or user-specified configuration.
-         * See @ref AbstractXApplication::Configuration "Configuration" for
+         * See @ref AbstractXApplication::Configuration "Configuration" and
+         * @ref AbstractXApplication::GLConfiguration "GLConfiguration" for
          * more information. The program exits if the context cannot be
-         * created, see below for an alternative.
-         * @todoc make this copydoc from Sdl2Application when Doxygen is able
-         *      to find Configuration subclass
+         * created, see @ref tryCreate() for an alternative.
          */
-        explicit GlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration());
+        explicit GlxApplication(const Arguments& arguments, const Configuration& configuration = Configuration{}, const GLConfiguration& glConfiguration = GLConfiguration{});
 
         /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, NoCreateT) */
         explicit GlxApplication(const Arguments& arguments, NoCreateT);

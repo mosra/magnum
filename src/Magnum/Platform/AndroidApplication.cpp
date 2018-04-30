@@ -58,12 +58,12 @@ AndroidApplication::LogOutput::LogOutput():
     redirectDebug{&debugStream}, redirectWarning{&warningStream}, redirectError{&errorStream}
 {}
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-AndroidApplication::AndroidApplication(const Arguments& arguments): AndroidApplication{arguments, Configuration{}} {}
-#endif
+AndroidApplication::AndroidApplication(const Arguments& arguments): AndroidApplication{arguments, Configuration{}, GLConfiguration{}} {}
 
-AndroidApplication::AndroidApplication(const Arguments& arguments, const Configuration& configuration): AndroidApplication{arguments, NoCreate} {
-    createContext(configuration);
+AndroidApplication::AndroidApplication(const Arguments& arguments, const Configuration& configuration): AndroidApplication{arguments, configuration, GLConfiguration{}} {}
+
+AndroidApplication::AndroidApplication(const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration): AndroidApplication{arguments, NoCreate} {
+    create(configuration, glConfiguration);
 }
 
 AndroidApplication::AndroidApplication(const Arguments& arguments, NoCreateT): _state{arguments}, _context{new GLContext{NoCreate, 0, nullptr}} {
@@ -82,19 +82,29 @@ ANativeActivity* AndroidApplication::nativeActivity() {
     return _state->activity;
 }
 
-void AndroidApplication::createContext() { createContext({}); }
-
-void AndroidApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) std::exit(32);
+void AndroidApplication::create() {
+    create(Configuration{}, GLConfiguration{});
 }
 
-bool AndroidApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == Version::None, "Platform::AndroidApplication::tryCreateContext(): context already created", false);
+void AndroidApplication::create(const Configuration& configuration) {
+    create(configuration, GLConfiguration{});
+}
+
+void AndroidApplication::create(const Configuration& configuration, const GLConfiguration& glConfiguration) {
+    if(!tryCreate(configuration, glConfiguration)) std::exit(32);
+}
+
+bool AndroidApplication::tryCreate(const Configuration& configuration) {
+    return tryCreate(configuration, GLConfiguration{});
+}
+
+bool AndroidApplication::tryCreate(const Configuration& configuration, const GLConfiguration&) {
+    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::AndroidApplication::tryCreate(): context already created", false);
 
     /* Initialize EGL */
     _display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if(!eglInitialize(_display, nullptr, nullptr)) {
-        Error() << "Platform::AndroidApplication::tryCreateContext(): cannot initialize EGL:"
+        Error() << "Platform::AndroidApplication::tryCreate(): cannot initialize EGL:"
                 << Implementation::eglErrorString(eglGetError());
         return false;
     }
@@ -111,7 +121,7 @@ bool AndroidApplication::tryCreateContext(const Configuration& configuration) {
     EGLint configCount;
     EGLConfig config;
     if(!eglChooseConfig(_display, configAttributes, &config, 1, &configCount)) {
-        Error() << "Platform::AndroidApplication::tryCreateContext(): cannot choose EGL config:"
+        Error() << "Platform::AndroidApplication::tryCreate(): cannot choose EGL config:"
                 << Implementation::eglErrorString(eglGetError());
         return false;
     }
@@ -125,7 +135,7 @@ bool AndroidApplication::tryCreateContext(const Configuration& configuration) {
 
     /* Create surface and context */
     if(!(_surface = eglCreateWindowSurface(_display, config, _state->window, nullptr))) {
-        Error() << "Platform::AndroidApplication::tryCreateContext(): cannot create EGL window surface:"
+        Error() << "Platform::AndroidApplication::tryCreate(): cannot create EGL window surface:"
                 << Implementation::eglErrorString(eglGetError());
         return false;
     }
@@ -140,7 +150,7 @@ bool AndroidApplication::tryCreateContext(const Configuration& configuration) {
         EGL_NONE
     };
     if(!(_glContext = eglCreateContext(_display, config, EGL_NO_CONTEXT, contextAttributes))) {
-        Error() << "Platform::AndroidApplication::tryCreateContext(): cannot create EGL context:"
+        Error() << "Platform::AndroidApplication::tryCreate(): cannot create EGL context:"
                 << Implementation::eglErrorString(eglGetError());
         return false;
     }

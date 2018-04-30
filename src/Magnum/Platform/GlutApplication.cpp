@@ -35,12 +35,12 @@ namespace Magnum { namespace Platform {
 
 GlutApplication* GlutApplication::_instance = nullptr;
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-GlutApplication::GlutApplication(const Arguments& arguments): GlutApplication{arguments, Configuration{}} {}
-#endif
+GlutApplication::GlutApplication(const Arguments& arguments): GlutApplication{arguments, Configuration{}, GLConfiguration{}} {}
 
-GlutApplication::GlutApplication(const Arguments& arguments, const Configuration& configuration): GlutApplication{arguments, NoCreate} {
-    createContext(configuration);
+GlutApplication::GlutApplication(const Arguments& arguments, const Configuration& configuration): GlutApplication{arguments, configuration, GLConfiguration{}} {}
+
+GlutApplication::GlutApplication(const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration): GlutApplication{arguments, NoCreate} {
+    create(configuration, glConfiguration);
 }
 
 GlutApplication::GlutApplication(const Arguments& arguments, NoCreateT): _context{new GLContext{NoCreate, arguments.argc, arguments.argv}} {
@@ -52,39 +52,67 @@ GlutApplication::GlutApplication(const Arguments& arguments, NoCreateT): _contex
     glutSetOption(GLUT_ACTION_ON_WINDOW_CLOSE, GLUT_ACTION_CONTINUE_EXECUTION);
 }
 
-void GlutApplication::createContext() { createContext({}); }
-
-void GlutApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) std::exit(1);
+void GlutApplication::create() {
+    create(Configuration{}, GLConfiguration{});
 }
 
-bool GlutApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::GlutApplication::tryCreateContext(): context already created", false);
+void GlutApplication::create(const Configuration& configuration) {
+    create(configuration, GLConfiguration{});
+}
+
+void GlutApplication::create(const Configuration& configuration, const GLConfiguration& glConfiguration) {
+    if(!tryCreate(configuration, glConfiguration)) std::exit(1);
+}
+
+bool GlutApplication::tryCreate(const Configuration& configuration) {
+    return tryCreate(configuration, GLConfiguration{});
+}
+
+bool GlutApplication::tryCreate(const Configuration& configuration, const GLConfiguration&
+    #ifndef MAGNUM_BUILD_DEPRECATED
+    glConfiguration
+    #else
+    _glConfiguration
+    #endif
+) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    GLConfiguration glConfiguration{_glConfiguration};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    if(configuration.flags() && !glConfiguration.flags())
+        glConfiguration.setFlags(configuration.flags());
+    if(configuration.version() != GL::Version::None && glConfiguration.version() == GL::Version::None)
+        glConfiguration.setVersion(configuration.version());
+    if(configuration.sampleCount() && !glConfiguration.sampleCount())
+        glConfiguration.setSampleCount(configuration.sampleCount());
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
+
+    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::GlutApplication::tryCreate(): context already created", false);
 
     unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
 
     /* Multisampling */
-    if(configuration.sampleCount()) flags |= GLUT_MULTISAMPLE;
+    if(glConfiguration.sampleCount()) flags |= GLUT_MULTISAMPLE;
 
     glutInitDisplayMode(flags);
     glutInitWindowSize(configuration.size().x(), configuration.size().y());
 
     /* Set context version, if requested */
-    if(configuration.version() != GL::Version::None) {
+    if(glConfiguration.version() != GL::Version::None) {
         Int major, minor;
-        std::tie(major, minor) = version(configuration.version());
+        std::tie(major, minor) = version(glConfiguration.version());
         glutInitContextVersion(major, minor);
         #ifndef MAGNUM_TARGET_GLES
-        if(configuration.version() >= GL::Version::GL310)
+        if(glConfiguration.version() >= GL::Version::GL310)
             glutInitContextProfile(GLUT_CORE_PROFILE);
         #endif
     }
 
     /* Set context flags */
-    glutInitContextFlags(int(configuration.flags()));
+    glutInitContextFlags(int(glConfiguration.flags()));
 
     if(!glutCreateWindow(configuration.title().data())) {
-        Error() << "Platform::GlutApplication::tryCreateContext(): cannot create context";
+        Error() << "Platform::GlutApplication::tryCreate(): cannot create context";
         return false;
     }
     glutReshapeFunc(staticViewportEvent);
@@ -142,7 +170,12 @@ void GlutApplication::mousePressEvent(MouseEvent&) {}
 void GlutApplication::mouseReleaseEvent(MouseEvent&) {}
 void GlutApplication::mouseMoveEvent(MouseMoveEvent&) {}
 
-GlutApplication::Configuration::Configuration(): _title("Magnum GLUT Application"), _size(800, 600), _sampleCount(0), _version(GL::Version::None) {}
+GlutApplication::Configuration::Configuration():
+    _title("Magnum GLUT Application"), _size(800, 600)
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    , _sampleCount(0), _version(GL::Version::None)
+    #endif
+    {}
 GlutApplication::Configuration::~Configuration() = default;
 
 template class BasicScreen<GlutApplication>;

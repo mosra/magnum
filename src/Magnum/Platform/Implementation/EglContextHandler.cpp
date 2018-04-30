@@ -98,7 +98,7 @@ VisualId EglContextHandler::getVisualId(EGLNativeDisplayType nativeDisplay) {
     return visualId;
 }
 
-void EglContextHandler::createContext(const AbstractXApplication::Configuration& configuration, EGLNativeWindowType window) {
+void EglContextHandler::createContext(const AbstractXApplication::GLConfiguration& glConfiguration, EGLNativeWindowType window) {
     EGLint attributes[] = {
         /* Leave some space for optional attributes below */
         EGL_NONE, EGL_NONE,
@@ -111,9 +111,9 @@ void EglContextHandler::createContext(const AbstractXApplication::Configuration&
     /* Set context version, if requested. On desktop needs
        EGL_KHR_create_context. */
     /** @todo Test for presence of EGL_KHR_create_context extension */
-    if(configuration.version() != GL::Version::None) {
+    if(glConfiguration.version() != GL::Version::None) {
         Int major, minor;
-        std::tie(major, minor) = version(configuration.version());
+        std::tie(major, minor) = version(glConfiguration.version());
 
         attributes[0] = EGL_CONTEXT_MAJOR_VERSION_KHR;
         attributes[1] = major;
@@ -121,7 +121,7 @@ void EglContextHandler::createContext(const AbstractXApplication::Configuration&
         attributes[3] = minor;
 
         #ifndef MAGNUM_TARGET_GLES
-        if(configuration.version() >= GL::Version::GL310) {
+        if(glConfiguration.version() >= GL::Version::GL310) {
             attributes[4] = EGL_CONTEXT_OPENGL_PROFILE_MASK_KHR;
             attributes[5] = EGL_CONTEXT_OPENGL_CORE_PROFILE_BIT_KHR;
         }

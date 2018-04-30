@@ -72,7 +72,7 @@ VisualID GlxContextHandler::getVisualId(Display* nativeDisplay) {
     return visualId;
 }
 
-void GlxContextHandler::createContext(const AbstractXApplication::Configuration& configuration, Window nativeWindow) {
+void GlxContextHandler::createContext(const AbstractXApplication::GLConfiguration& glConfiguration, Window nativeWindow) {
     window = nativeWindow;
 
     GLint attributes[] = {
@@ -85,9 +85,9 @@ void GlxContextHandler::createContext(const AbstractXApplication::Configuration&
     };
 
     /* Set context version, if requested */
-    if(configuration.version() != GL::Version::None) {
+    if(glConfiguration.version() != GL::Version::None) {
         Int major, minor;
-        std::tie(major, minor) = version(configuration.version());
+        std::tie(major, minor) = version(glConfiguration.version());
 
         attributes[0] = GLX_CONTEXT_MAJOR_VERSION_ARB;
         attributes[1] = major;
@@ -95,7 +95,7 @@ void GlxContextHandler::createContext(const AbstractXApplication::Configuration&
         attributes[3] = minor;
 
         #ifndef MAGNUM_TARGET_GLES
-        if(configuration.version() >= GL::Version::GL310) {
+        if(glConfiguration.version() >= GL::Version::GL310) {
             attributes[4] = GLX_CONTEXT_PROFILE_MASK_ARB;
             attributes[5] = GLX_CONTEXT_CORE_PROFILE_BIT_ARB;
         }

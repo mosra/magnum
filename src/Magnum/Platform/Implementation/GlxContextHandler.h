@@ -46,13 +46,13 @@ namespace Magnum { namespace Platform { namespace Implementation {
 Creates OpenGL or OpenGL ES 2.0 context, if targeting OpenGL ES. Used in
 GlxApplication.
 */
-class GlxContextHandler: public AbstractContextHandler<AbstractXApplication::Configuration, Display*, VisualID, Window> {
+class GlxContextHandler: public AbstractContextHandler<AbstractXApplication::GLConfiguration, Display*, VisualID, Window> {
     public:
         explicit GlxContextHandler() = default;
         ~GlxContextHandler();
 
         VisualID getVisualId(Display* nativeDisplay) override;
-        void createContext(const AbstractXApplication::Configuration& configuration, Window nativeWindow) override;
+        void createContext(const AbstractXApplication::GLConfiguration& glConfiguration, Window nativeWindow) override;
 
         void makeCurrent() override {
             glXMakeCurrent(display, window, context);

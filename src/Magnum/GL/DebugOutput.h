@@ -62,7 +62,7 @@ provided also by @extension{EXT,debug_marker} (desktop/ES extensions) or
 
 With OpenGL 4.3 / OpenGL ES 3.2 or @extension{KHR,debug} desktop/ES extension,
 the debug output needs to be enabled first. It can be enabled globally using
-@ref Platform::Sdl2Application::Configuration::Flag::Debug "Platform::*Application::Configuration::Flag::Debug"
+@ref Platform::Sdl2Application::GLConfiguration::Flag::Debug "Platform::*Application::Configuration::Flag::Debug"
 when creating context or only for some portions of the code using
 @ref Renderer::Feature::DebugOutput. If enabled globally, some OpenGL drivers
 may provide additional debugging information. In addition to that you can

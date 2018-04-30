@@ -105,7 +105,7 @@ class MAGNUM_GL_EXPORT Renderer {
              * Debug output. Disabled by default unless the GL context was
              * created with debug output enabled.
              * @see @ref DebugOutput, @ref Feature::DebugOutputSynchronous,
-             *      @ref Platform::Sdl2Application::Configuration::Flag::Debug "Platform::*Application::Configuration::Flag::Debug"
+             *      @ref Platform::Sdl2Application::GLConfiguration::Flag::Debug "Platform::*Application::GLConfiguration::Flag::Debug"
              * @requires_gl43 Extension @extension{KHR,debug}
              * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
              *      @extension2{KHR,debug,debug}
@@ -189,7 +189,7 @@ class MAGNUM_GL_EXPORT Renderer {
             /**
              * Multisampling. Enabled by default. Note that the actual presence
              * of this feature in default framebuffer depends on context
-             * configuration, see for example @ref Platform::Sdl2Application::Configuration::setSampleCount().
+             * configuration, see for example @ref Platform::Sdl2Application::GLConfiguration::setSampleCount().
              * @requires_gl Always enabled in OpenGL ES and WebGL.
              */
             Multisampling = GL_MULTISAMPLE,
@@ -1531,7 +1531,7 @@ class MAGNUM_GL_EXPORT Renderer {
          *
          * For the reset notification to work, additionally to the extension
          * support the context must be created with
-         * @ref Platform::Sdl2Application::Configuration::Flag::RobustAccess "Platform::*Application::Configuration::Flag::RobustAccess"
+         * @ref Platform::Sdl2Application::GLConfiguration::Flag::RobustAccess "Platform::*Application::GLConfiguration::Flag::RobustAccess"
          * flag.
          *
          * @see @ref graphicsResetStatus(), @fn_gl_keyword{Get} with
@@ -1596,12 +1596,12 @@ class MAGNUM_GL_EXPORT Renderer {
          *
          * For the reset notification to work, additionally to the extension
          * support the context must be created with
-         * @ref Platform::Sdl2Application::Configuration::Flag::RobustAccess "Platform::*Application::Configuration::Flag::RobustAccess"
+         * @ref Platform::Sdl2Application::GLConfiguration::Flag::RobustAccess "Platform::*Application::GLConfiguration::Flag::RobustAccess"
          * flag.
          *
          * If the reset occurs, @extension{ARB,robustness_isolation}
          * extension is supported and context is created with
-         * @ref Platform::Sdl2Application::Configuration::Flag::ResetIsolation "Platform::*Application::Configuration::Flag::ResetIsolation",
+         * @ref Platform::Sdl2Application::GLConfiguration::Flag::ResetIsolation "Platform::*Application::GLConfiguration::Flag::ResetIsolation",
          * advertised support for @extension{ARB,robustness_application_isolation}
          * indicates that no other application on the system will be affected
          * by the graphics reset. Advertised support for

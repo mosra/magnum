@@ -146,6 +146,13 @@ See also:
     @ref GL::pixelFormat(), which unconditionally returns
     @ref GL::PixelFormat::Luminance for @ref PixelFormat::R8Unorm.
 
+@subsubsection changelog-latest-changes-platform Platform libraries
+
+-   Separated @ref Platform::Sdl2Application::Configuration "Platform::*Application::Configuration"
+    into @ref Platform::Sdl2Application::Configuration "Configuration" and
+    @ref Platform::Sdl2Application::GLConfiguration "GLConfiguration" to allow
+    creation of non-GL application instances in the future
+
 @subsubsection changelog-latest-changes-plugins Plugins
 
 -   @ref Trade::TgaImporter "TgaImporter" and
@@ -208,6 +215,10 @@ See also:
     @ref MAGNUM_VERIFY_NO_GL_ERROR() instead
 -   The `Platform::Context` class is deprecated, use @ref Platform::GLContext
     instead
+-   `Platform::*Application::createContext()` and
+    `Platform::*Application::tryCreateContext()` functions are deprecated for
+    being too GL-specific, use @ref Platform::Sdl2Application::create() "create()"
+    and @ref Platform::Sdl2Application::tryCreate() "tryCreate()" instead
 -   The `Extensions::GL` namespace is deprecated, use @ref GL::Extensions
     instead
 -   The @ref PixelFormat and @ref CompressedPixelFormat enum now contains
@@ -729,7 +740,7 @@ a high-level overview.
     which allows the context to be destructed and created again in case the
     version is not what the application wants (as opposed to just aborting the
     application) (see [mosra/magnum#105](https://github.com/mosra/magnum/issues/105))
--   Added @ref Platform::Sdl2Application::Configuration::setSRGBCapable()
+-   Added @ref Platform::Sdl2Application::GLConfiguration::setSRGBCapable() "Platform::Sdl2Application::Configuration::setSRGBCapable()"
 -   Added @ref Platform::Sdl2Application::Configuration::WindowFlag::Borderless
     and @ref Platform::Sdl2Application::Configuration::WindowFlag::AllowHighDpi
     for iOS and macOS

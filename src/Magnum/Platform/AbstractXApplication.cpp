@@ -37,20 +37,42 @@
 
 namespace Magnum { namespace Platform {
 
-AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration): AbstractXApplication{contextHandler, arguments, NoCreate} {
-    createContext(configuration);
+AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration): AbstractXApplication{contextHandler, arguments, NoCreate} {
+    create(configuration, glConfiguration);
 }
 
-AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<Configuration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, NoCreateT): _contextHandler{contextHandler}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}}, _flags{Flag::Redraw} {}
+AbstractXApplication::AbstractXApplication(Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>* contextHandler, const Arguments& arguments, NoCreateT): _contextHandler{contextHandler}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}}, _flags{Flag::Redraw} {}
 
-void AbstractXApplication::createContext() { createContext({}); }
+void AbstractXApplication::create() { create({}); }
 
-void AbstractXApplication::createContext(const Configuration& configuration) {
-    if(!tryCreateContext(configuration)) std::exit(1);
+void AbstractXApplication::create(const Configuration& configuration) {
+    create(configuration, GLConfiguration{});
 }
 
-bool AbstractXApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::AbstractXApplication::tryCreateContext(): context already created", false);
+void AbstractXApplication::create(const Configuration& configuration, const GLConfiguration& glConfiguration) {
+    if(!tryCreate(configuration, glConfiguration)) std::exit(1);
+}
+
+bool AbstractXApplication::tryCreate(const Configuration& configuration) {
+    return tryCreate(configuration, GLConfiguration{});
+}
+
+bool AbstractXApplication::tryCreate(const Configuration& configuration, const GLConfiguration&
+    #ifndef MAGNUM_BUILD_DEPRECATED
+    glConfiguration
+    #else
+    _glConfiguration
+    #endif
+) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    GLConfiguration glConfiguration{_glConfiguration};
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    if(configuration.version() != GL::Version::None && glConfiguration.version() == GL::Version::None)
+        glConfiguration.setVersion(configuration.version());
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
+
+    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::AbstractXApplication::tryCreate(): context already created", false);
 
     _viewportSize = configuration.size();
 
@@ -66,7 +88,7 @@ bool AbstractXApplication::tryCreateContext(const Configuration& configuration) 
     visTemplate.visualid = visualId;
     visInfo = XGetVisualInfo(_display, VisualIDMask, &visTemplate, &visualCount);
     if(!visInfo) {
-        Error() << "Platform::WindowlessGlxApplication::tryCreateContext(): cannot get X visual";
+        Error() << "Platform::WindowlessGlxApplication::tryCreate(): cannot get X visual";
         return false;
     }
 
@@ -87,7 +109,7 @@ bool AbstractXApplication::tryCreateContext(const Configuration& configuration) 
     XSetWMProtocols(_display, _window, &_deleteWindow, 1);
 
     /* Create context */
-    _contextHandler->createContext(configuration, _window);
+    _contextHandler->createContext(glConfiguration, _window);
 
     /* Capture exposure, keyboard and mouse button events */
     XSelectInput(_display, _window, INPUT_MASK);
@@ -175,7 +197,12 @@ void AbstractXApplication::mousePressEvent(MouseEvent&) {}
 void AbstractXApplication::mouseReleaseEvent(MouseEvent&) {}
 void AbstractXApplication::mouseMoveEvent(MouseMoveEvent&) {}
 
-AbstractXApplication::Configuration::Configuration(): _title("Magnum X Application"), _size(800, 600), _version(GL::Version::None) {}
+AbstractXApplication::Configuration::Configuration():
+    _title("Magnum X Application"), _size(800, 600)
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    , _version(GL::Version::None)
+    #endif
+    {}
 AbstractXApplication::Configuration::~Configuration() = default;
 
 }}
