@@ -163,6 +163,9 @@ See also:
     @ref Trade::TgaImageConverter "TgaImageConverter" plugins now operate on
     the generic @ref PixelFormat instead of GL-specific @ref GL::PixelFormat /
     @ref GL::PixelType
+-   @ref Trade::AnySceneImporter "AnySceneImporter" now uses `GlbImporter` for
+    loading binary glTF files instead of proxying them to `GltfImporter`
+    plugins
 
 @subsection changelog-latest-buildsystem Build system
 
