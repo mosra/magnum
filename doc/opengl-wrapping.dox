@@ -30,10 +30,10 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-OpenGL wrapper classes are core part of Magnum. Their purpose is to simplify
-interaction with the OpenGL API using type-safe C++11 features, abstracting
-away extension and platform differences, tracking the state for optimum
-performance and selecting the best available code path for given system.
+The purpose of the @ref GL library is to simplify interaction with the OpenGL
+API using type-safe C++11 features, abstracting away extension and platform
+differences, tracking the state for optimum performance and selecting the best
+available code path for given system.
 
 Magnum provides wrappers for most native OpenGL objects like buffers, textures,
 meshes, queries, transform feedback objects, shaders etc., but makes it
