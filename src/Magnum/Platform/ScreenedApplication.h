@@ -98,18 +98,27 @@ The following specialization are explicitly compiled into each particular
 */
 template<class Application> class BasicScreenedApplication: public Application, private Containers::LinkedList<BasicScreen<Application>> {
     public:
+        #ifdef MAGNUM_TARGET_GL
         /**
-         * @brief Default constructor
-         * @param arguments         Application arguments
-         * @param configuration     Application configuration
-         * @param glConfiguration   OpenGL context configuration
+         * @brief Construct with given configuration for OpenGL context
          *
-         * Creates application with default or user-specified configuration.
-         * See @ref Sdl2Application::Configuration "Configuration" for more
-         * information. The program exits if the context cannot be created, see
-         * below for an alternative.
+         * Passes the arguments through to a particular application
+         * constructor.
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
          */
-        explicit BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration = typename Application::Configuration{}, const typename Application::GLConfiguration& glConfiguration = typename Application::GLConfiguration{});
+        explicit BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration, const typename Application::GLConfiguration& glConfiguration);
+        #endif
+
+        /**
+         * @brief Construct with given configuration
+         *
+         * Passes the arguments through to a particular application
+         * constructor.
+         */
+        explicit BasicScreenedApplication(const typename Application::Arguments& arguments, const typename Application::Configuration& configuration = typename Application::Configuration{});
 
         /**
          * @brief Constructor

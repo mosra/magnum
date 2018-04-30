@@ -32,10 +32,13 @@
 #include <emscripten/emscripten.h>
 #endif
 
-#include "Magnum/GL/Version.h"
 #include "Magnum/Math/Range.h"
-#include "Magnum/Platform/GLContext.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
+
+#ifdef MAGNUM_TARGET_GL
+#include "Magnum/GL/Version.h"
+#include "Magnum/Platform/GLContext.h"
+#endif
 
 namespace Magnum { namespace Platform {
 
@@ -58,26 +61,35 @@ Sdl2Application::InputEvent::Modifiers fixedModifiers(Uint16 mod) {
 
 }
 
-Sdl2Application::Sdl2Application(const Arguments& arguments): Sdl2Application{arguments, Configuration{}, GLConfiguration{}} {}
+Sdl2Application::Sdl2Application(const Arguments& arguments): Sdl2Application{arguments, Configuration{}} {}
 
 Sdl2Application::Sdl2Application(const Arguments& arguments, const Configuration& configuration): Sdl2Application{arguments, NoCreate} {
     create(configuration);
 }
 
+#ifdef MAGNUM_TARGET_GL
 Sdl2Application::Sdl2Application(const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration): Sdl2Application{arguments, NoCreate} {
     create(configuration, glConfiguration);
 }
+#endif
 
-Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT): _glContext{nullptr},
+Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     _minimalLoopPeriod{0},
     #endif
-    _context{new GLContext{NoCreate, arguments.argc, arguments.argv}}, _flags{Flag::Redraw}
+    #ifdef MAGNUM_TARGET_GL
+    _glContext{nullptr}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}},
+    #endif
+    _flags{Flag::Redraw}
 {
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         Error() << "Cannot initialize SDL.";
         std::exit(1);
     }
+
+    #ifndef MAGNUM_TARGET_GL
+    static_cast<void>(arguments);
+    #endif
 }
 
 void Sdl2Application::create() {
@@ -88,14 +100,45 @@ void Sdl2Application::create(const Configuration& configuration) {
     if(!tryCreate(configuration)) std::exit(1);
 }
 
+#ifdef MAGNUM_TARGET_GL
 void Sdl2Application::create(const Configuration& configuration, const GLConfiguration& glConfiguration) {
     if(!tryCreate(configuration, glConfiguration)) std::exit(1);
 }
+#endif
 
 bool Sdl2Application::tryCreate(const Configuration& configuration) {
-    return tryCreate(configuration, GLConfiguration{});
+    #ifdef MAGNUM_TARGET_GL
+    if(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless))
+        return tryCreate(configuration, GLConfiguration{});
+    #endif
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    /* Create window */
+    if(!(_window = SDL_CreateWindow(
+        #ifndef CORRADE_TARGET_IOS
+        configuration.title().data(),
+        #else
+        nullptr,
+        #endif
+        SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+        configuration.size().x(), configuration.size().y(),
+        Uint32(configuration.windowFlags()&~Configuration::WindowFlag::Contextless))))
+    {
+        Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
+        return false;
+    }
+    #else
+    /* Emscripten-specific initialization */
+    if(!(_glContext = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF))) {
+        Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
+        return false;
+    }
+    #endif
+
+    return true;
 }
 
+#ifdef MAGNUM_TARGET_GL
 bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConfiguration&
     #ifndef MAGNUM_BUILD_DEPRECATED
     glConfiguration
@@ -246,7 +289,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         if(!(_window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
             configuration.size().x(), configuration.size().y(),
-            SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN|Uint32(configuration.windowFlags()))))
+            SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN|Uint32(configuration.windowFlags()&~Configuration::WindowFlag::Contextless))))
         {
             Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
             return false;
@@ -303,6 +346,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     /* Return true if the initialization succeeds */
     return true;
 }
+#endif
 
 Vector2i Sdl2Application::windowSize() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -344,13 +388,18 @@ bool Sdl2Application::setSwapInterval(const Int interval) {
 }
 
 Sdl2Application::~Sdl2Application() {
+    #ifdef MAGNUM_TARGET_GL
     _context.reset();
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     SDL_GL_DeleteContext(_glContext);
-    SDL_DestroyWindow(_window);
     #else
     SDL_FreeSurface(_glContext);
+    #endif
+    #endif
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    SDL_DestroyWindow(_window);
     #endif
     SDL_Quit();
 }
@@ -561,6 +610,7 @@ void Sdl2Application::multiGestureEvent(MultiGestureEvent&) {}
 void Sdl2Application::textInputEvent(TextInputEvent&) {}
 void Sdl2Application::textEditingEvent(TextEditingEvent&) {}
 
+#ifdef MAGNUM_TARGET_GL
 Sdl2Application::GLConfiguration::GLConfiguration():
     _sampleCount(0)
     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -569,6 +619,7 @@ Sdl2Application::GLConfiguration::GLConfiguration():
     {}
 
 Sdl2Application::GLConfiguration::~GLConfiguration() = default;
+#endif
 
 Sdl2Application::Configuration::Configuration():
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
@@ -581,7 +632,7 @@ Sdl2Application::Configuration::Configuration():
     #else
     _size{} /* SDL2 detects someting for us */
     #endif
-    #ifdef MAGNUM_BUILD_DEPRECATED
+    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
     , _sampleCount(0)
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     , _version(GL::Version::None), _sRGBCapable{false}

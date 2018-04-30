@@ -30,9 +30,12 @@
 #include <Corrade/Utility/String.h>
 #include <Corrade/Utility/Unicode.h>
 
+#include "Magnum/Platform/ScreenedApplication.hpp"
+
+#ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Version.h"
 #include "Magnum/Platform/GLContext.h"
-#include "Magnum/Platform/ScreenedApplication.hpp"
+#endif
 
 namespace Magnum { namespace Platform {
 
@@ -49,13 +52,17 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, const Configuration
     create(configuration);
 }
 
+#ifdef MAGNUM_TARGET_GL
 GlfwApplication::GlfwApplication(const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration): GlfwApplication{arguments, NoCreate} {
     create(configuration, glConfiguration);
 }
+#endif
 
 GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
-    _context{new GLContext{NoCreate, arguments.argc, arguments.argv}},
     _flags{Flag::Redraw}
+    #ifdef MAGNUM_TARGET_GL
+    , _context{new GLContext{NoCreate, arguments.argc, arguments.argv}}
+    #endif
 {
     /* Save global instance */
     _instance = this;
@@ -67,6 +74,10 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
         Error() << "Could not initialize GLFW";
         std::exit(8);
     }
+
+    #ifndef MAGNUM_TARGET_GL
+    static_cast<void>(arguments);
+    #endif
 }
 
 void GlfwApplication::create() {
@@ -77,14 +88,71 @@ void GlfwApplication::create(const Configuration& configuration) {
     if(!tryCreate(configuration)) std::exit(1);
 }
 
+#ifdef MAGNUM_TARGET_GL
 void GlfwApplication::create(const Configuration& configuration, const GLConfiguration& glConfiguration) {
     if(!tryCreate(configuration, glConfiguration)) std::exit(1);
 }
+#endif
 
 bool GlfwApplication::tryCreate(const Configuration& configuration) {
-    return tryCreate(configuration, GLConfiguration{});
+    #ifdef MAGNUM_TARGET_GL
+    #ifdef GLFW_NO_API
+    if(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless))
+    #endif
+    {
+        return tryCreate(configuration, GLConfiguration{});
+    }
+    #endif
+
+    CORRADE_ASSERT(!_window, "Platform::GlfwApplication::tryCreate(): window already created", false);
+
+    /* Window flags */
+    GLFWmonitor* monitor = nullptr; /* Needed for setting fullscreen */
+    if (configuration.windowFlags() >= Configuration::WindowFlag::Fullscreen) {
+        monitor = glfwGetPrimaryMonitor();
+        glfwWindowHint(GLFW_AUTO_ICONIFY, configuration.windowFlags() >= Configuration::WindowFlag::AutoIconify);
+    } else {
+        const Configuration::WindowFlags& flags = configuration.windowFlags();
+        glfwWindowHint(GLFW_RESIZABLE, flags >= Configuration::WindowFlag::Resizable);
+        glfwWindowHint(GLFW_VISIBLE, !(flags >= Configuration::WindowFlag::Hidden));
+        #ifdef GLFW_MAXIMIZED
+        glfwWindowHint(GLFW_MAXIMIZED, flags >= Configuration::WindowFlag::Maximized);
+        #endif
+        glfwWindowHint(GLFW_FLOATING, flags >= Configuration::WindowFlag::Floating);
+    }
+    glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
+
+    #ifdef GLFW_NO_API
+    /* Disable implicit GL context c/reation */
+    glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NO_API);
+    #endif
+
+    /* Create the window */
+    _window = glfwCreateWindow(configuration.size().x(), configuration.size().y(), configuration.title().c_str(), monitor, nullptr);
+    if(!_window) {
+        Error() << "Platform::GlfwApplication::tryCreate(): cannot create window";
+        glfwTerminate();
+        return false;
+    }
+
+    /* Proceed with configuring other stuff that couldn't be done with window
+       hints */
+    if(configuration.windowFlags() >= Configuration::WindowFlag::Minimized)
+        glfwIconifyWindow(_window);
+    glfwSetInputMode(_window, GLFW_CURSOR, Int(configuration.cursorMode()));
+
+    /* Set callbacks */
+    glfwSetFramebufferSizeCallback(_window, staticViewportEvent);
+    glfwSetKeyCallback(_window, staticKeyEvent);
+    glfwSetCursorPosCallback(_window, staticMouseMoveEvent);
+    glfwSetMouseButtonCallback(_window, staticMouseEvent);
+    glfwSetScrollCallback(_window, staticMouseScrollEvent);
+    glfwSetCharCallback(_window, staticTextInputEvent);
+
+    return true;
 }
 
+#ifdef MAGNUM_TARGET_GL
 bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConfiguration&
     #ifndef MAGNUM_BUILD_DEPRECATED
     glConfiguration
@@ -178,6 +246,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     /* Return true if the initialization succeeds */
     return _context->tryCreate();
 }
+#endif
 
 GlfwApplication::~GlfwApplication() {
     glfwDestroyWindow(_window);
@@ -292,12 +361,18 @@ void GlfwApplication::mouseMoveEvent(MouseMoveEvent&) {}
 void GlfwApplication::mouseScrollEvent(MouseScrollEvent&) {}
 void GlfwApplication::textInputEvent(TextInputEvent&) {}
 
+#ifdef MAGNUM_TARGET_GL
+GlfwApplication::GLConfiguration::GLConfiguration(): _sampleCount{0}, _version{GL::Version::None} {}
+
+GlfwApplication::GLConfiguration::~GLConfiguration() = default;
+#endif
+
 GlfwApplication::Configuration::Configuration():
     _title{"Magnum GLFW Application"},
     _size{800, 600},
     _windowFlags{WindowFlag::Focused},
     _cursorMode{CursorMode::Normal}
-    #ifdef MAGNUM_BUILD_DEPRECATED
+    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
     , _sampleCount{0}, _version{GL::Version::None}
     #endif
     {}

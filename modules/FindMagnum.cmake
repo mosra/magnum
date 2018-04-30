@@ -395,10 +395,20 @@ endif()
 
 set(_MAGNUM_Trade_DEPENDENCIES )
 set(_MAGNUM_AndroidApplication_DEPENDENCIES GL)
-set(_MAGNUM_GlfwApplication_DEPENDENCIES GL)
+
+set(_MAGNUM_GlfwApplication_DEPENDENCIES )
+if(MAGNUM_TARGET_GL)
+    list(APPEND _MAGNUM_GlfwApplication_DEPENDENCIES GL)
+endif()
+
 set(_MAGNUM_GlutApplication_DEPENDENCIES GL)
 set(_MAGNUM_GlxApplication_DEPENDENCIES GL)
-set(_MAGNUM_Sdl2Application_DEPENDENCIES GL)
+
+set(_MAGNUM_Sdl2Application_DEPENDENCIES )
+if(MAGNUM_TARGET_GL)
+    list(APPEND _MAGNUM_Sdl2Application_DEPENDENCIES GL)
+endif()
+
 set(_MAGNUM_WindowlessCglApplication_DEPENDENCIES GL)
 set(_MAGNUM_WindowlessEglApplication_DEPENDENCIES GL)
 set(_MAGNUM_WindowlessGlxApplication_DEPENDENCIES GL)

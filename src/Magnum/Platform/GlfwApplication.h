@@ -36,12 +36,14 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/GL.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Platform/Platform.h"
 
+#ifdef MAGNUM_TARGET_GL
+#include "Magnum/GL/GL.h"
 /* We must include our own GL headers first to avoid conflicts */
 #include "Magnum/GL/OpenGL.h"
+#endif
 
 #include <GLFW/glfw3.h>
 
@@ -123,7 +125,9 @@ class GlfwApplication {
         };
 
         class Configuration;
+        #ifdef MAGNUM_TARGET_GL
         class GLConfiguration;
+        #endif
         class InputEvent;
         class KeyEvent;
         class MouseEvent;
@@ -131,6 +135,7 @@ class GlfwApplication {
         class MouseScrollEvent;
         class TextInputEvent;
 
+        #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Construct with given configuration for OpenGL context
          * @param arguments         Application arguments
@@ -141,13 +146,23 @@ class GlfwApplication {
          * See @ref Configuration for more information. The program exits if
          * the context cannot be created, see @ref tryCreate() for an
          * alternative.
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
          */
         explicit GlfwApplication(const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration);
+        #endif
 
         /**
-         * @brief Construct with given configuration and OpenGL context
+         * @brief Construct with given configuration
          *
-         * Equivalent to calling
+         * If @ref Configuration::WindowFlag::Contextless is present or Magnum
+         * was not built with @ref MAGNUM_TARGET_GL, this creates a window
+         * without any GPU context attached, leaving that part on the user.
+         *
+         * If none of the flags is present and Magnum was built with
+         * @ref MAGNUM_TARGET_GL, this is equivalent to calling
          * @ref GlfwApplication(const Arguments&, const Configuration&, const GLConfiguration&)
          * with default-constructed @ref GLConfiguration.
          *
@@ -217,6 +232,7 @@ class GlfwApplication {
            faster than public pure virtual destructor */
         ~GlfwApplication();
 
+        #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Create a window with given configuration for OpenGL context
          * @param configuration     Application configuration
@@ -226,13 +242,23 @@ class GlfwApplication {
          * itself, i.e. when passing @ref NoCreate to it. Error message is
          * printed and the program exits if the context cannot be created, see
          * @ref tryCreate() for an alternative.
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
          */
         void create(const Configuration& configuration, const GLConfiguration& glConfiguration);
+        #endif
 
         /**
          * @brief Create a window with given configuration
          *
-         * Equivalent to calling
+         * If @ref Configuration::WindowFlag::Contextless is present or Magnum
+         * was not built with @ref MAGNUM_TARGET_GL, this creates a window
+         * without any GPU context attached, leaving that part on the user.
+         *
+         * If none of the flags is present and Magnum was built with
+         * @ref MAGNUM_TARGET_GL, this is equivalent to calling
          * @ref create(const Configuration&, const GLConfiguration&) with
          * default-constructed @ref GLConfiguration.
          *
@@ -264,14 +290,20 @@ class GlfwApplication {
         }
         #endif
 
+        #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Try to create context with given configuration for OpenGL context
          *
          * Unlike @ref create(const Configuration&, const GLConfiguration&)
          * returns @cpp false @ce if the context cannot be created,
          * @cpp true @ce otherwise.
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
          */
         bool tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration);
+        #endif
 
         /**
          * @brief Try to create context with given configuration
@@ -448,12 +480,15 @@ class GlfwApplication {
         static GlfwApplication* _instance;
 
         GLFWwindow* _window;
-        std::unique_ptr<Platform::GLContext> _context;
         Flags _flags;
+        #ifdef MAGNUM_TARGET_GL
+        std::unique_ptr<Platform::GLContext> _context;
+        #endif
 };
 
 CORRADE_ENUMSET_OPERATORS(GlfwApplication::Flags)
 
+#ifdef MAGNUM_TARGET_GL
 /**
 @brief OpenGL context configuration
 
@@ -561,6 +596,7 @@ class GlfwApplication::GLConfiguration {
 };
 
 CORRADE_ENUMSET_OPERATORS(GlfwApplication::GLConfiguration::Flags)
+#endif
 
 /**
 @brief Configuration
@@ -570,7 +606,7 @@ Double-buffered RGBA window with depth and stencil buffers.
 */
 class GlfwApplication::Configuration {
     public:
-        #ifdef MAGNUM_BUILD_DEPRECATED
+        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
         /** @brief @copybrief GLConfiguration::Flag
          * @deprecated Use @ref GLConfiguration::Flag instead.
          */
@@ -618,7 +654,21 @@ class GlfwApplication::Configuration {
              */
             AutoIconify = 1 << 6,
 
-            Focused = 1 << 7       /**< Window has input focus */
+            Focused = 1 << 7,      /**< Window has input focus */
+
+            #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(GLFW_NO_API)
+            /**
+             * Do not create any GPU context. Use together with
+             * @ref GlfwApplication(const Arguments&),
+             * @ref GlfwApplication(const Arguments&, const Configuration&),
+             * @ref create(const Configuration&) or
+             * @ref tryCreate(const Configuration&) to prevent implicit
+             * creation of an OpenGL context.
+             *
+             * @note Supported since GLFW 3.2.
+             */
+            Contextless = 1 << 8
+            #endif
         };
 
         /**
@@ -703,7 +753,7 @@ class GlfwApplication::Configuration {
             return *this;
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
+        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
         /** @brief @copybrief GLConfiguration::flags()
          * @deprecated Use @ref GLConfiguration::flags() instead.
          */
@@ -764,7 +814,7 @@ class GlfwApplication::Configuration {
         Vector2i _size;
         WindowFlags _windowFlags;
         CursorMode _cursorMode;
-        #ifdef MAGNUM_BUILD_DEPRECATED
+        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
         Int _sampleCount;
         GL::Version _version;
         Flags _flags;

@@ -456,7 +456,7 @@ your platform best:
     GL library.
 -   `WITH_GLFWAPPLICATION` --- Build the
     @ref Platform::GlfwApplication "GlfwApplication" library. Depends on
-    [GLFW](http://glfw.org). Enables also building of the GL library.
+    [GLFW](http://glfw.org).
 -   `WITH_GLUTAPPLICATION` --- Build the
     @ref Platform::GlutApplication "GlutApplication" library. Depends on
     [GLUT](http://freeglut.sourceforge.net/). Enables also building of the GL
@@ -466,7 +466,7 @@ your platform best:
     Enables also building of the GL library.
 -   `WITH_SDL2APPLICATION` --- Build the
     @ref Platform::Sdl2Application "Sdl2Application" library. Depends on
-    [SDL2](http://www.libsdl.org). Enables also building of the GL library.
+    [SDL2](http://www.libsdl.org).
 -   `WITH_XEGLAPPLICATION` --- Build the
     @ref Platform::XEglApplication "XEglApplication" library. Enables also
     building of the GL library.

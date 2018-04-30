@@ -41,7 +41,7 @@ set(MagnumPlatform_FILES )
 install(FILES ${MagnumPlatform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 
 # Decide about platform-specific context for cross-platform toolkits
-if(WITH_GLFWAPPLICATION OR WITH_GLUTAPPLICATION OR WITH_SDL2APPLICATION)
+if((WITH_GLFWAPPLICATION OR WITH_GLUTAPPLICATION OR WITH_SDL2APPLICATION) AND TARGET_GL)
     if(CORRADE_TARGET_APPLE AND NOT MAGNUM_TARGET_GLES)
         set(NEED_CGLCONTEXT 1)
         set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumCglContextObjects>)
@@ -111,10 +111,11 @@ if(WITH_GLFWAPPLICATION)
         message(FATAL_ERROR "GLFW library, required by GlfwApplication, was not found. Set WITH_GLFWAPPLICATION to OFF to skip building it.")
     endif()
 
-    set(MagnumGlfwApplication_SRCS
-        GlfwApplication.cpp
-        ${MagnumSomeContext_OBJECTS})
+    set(MagnumGlfwApplication_SRCS GlfwApplication.cpp)
     set(MagnumGlfwApplication_HEADERS GlfwApplication.h)
+    if(TARGET_GL)
+        list(APPEND MagnumGlfwApplication_SRCS ${MagnumSomeContext_OBJECTS})
+    endif()
 
     add_library(MagnumGlfwApplication STATIC
         ${MagnumGlfwApplication_SRCS}
@@ -124,7 +125,10 @@ if(WITH_GLFWAPPLICATION)
         FOLDER "Magnum/Platform")
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
-    target_link_libraries(MagnumGlfwApplication PUBLIC MagnumGL GLFW::GLFW)
+    target_link_libraries(MagnumGlfwApplication PUBLIC Magnum GLFW::GLFW)
+    if(TARGET_GL)
+        target_link_libraries(MagnumGlfwApplication PUBLIC MagnumGL)
+    endif()
 
     install(FILES ${MagnumGlfwApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumGlfwApplication
@@ -176,10 +180,11 @@ if(WITH_SDL2APPLICATION)
         message(FATAL_ERROR "SDL2 library, required by Sdl2Application, was not found. Set WITH_SDL2APPLICATION to OFF to skip building it.")
     endif()
 
-    set(MagnumSdl2Application_SRCS
-        Sdl2Application.cpp
-        ${MagnumSomeContext_OBJECTS})
+    set(MagnumSdl2Application_SRCS Sdl2Application.cpp)
     set(MagnumSdl2Application_HEADERS Sdl2Application.h)
+    if(TARGET_GL)
+        list(APPEND MagnumSdl2Application_SRCS ${MagnumSomeContext_OBJECTS})
+    endif()
 
     add_library(MagnumSdl2Application STATIC
         ${MagnumSdl2Application_SRCS}
@@ -189,7 +194,10 @@ if(WITH_SDL2APPLICATION)
         FOLDER "Magnum/Platform")
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
-    target_link_libraries(MagnumSdl2Application PUBLIC MagnumGL SDL2::SDL2)
+    target_link_libraries(MagnumSdl2Application PUBLIC Magnum SDL2::SDL2)
+    if(TARGET_GL)
+        target_link_libraries(MagnumSdl2Application PUBLIC MagnumGL)
+    endif()
 
     install(FILES ${MagnumSdl2Application_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumSdl2Application

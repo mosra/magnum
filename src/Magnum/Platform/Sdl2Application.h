@@ -36,9 +36,12 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/GL/GL.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Platform/Platform.h"
+
+#ifdef MAGNUM_TARGET_GL
+#include "Magnum/GL/GL.h"
+#endif
 
 #ifdef CORRADE_TARGET_WINDOWS /* Windows version of SDL2 redefines main(), we don't want that */
 #define SDL_MAIN_HANDLED
@@ -363,7 +366,9 @@ class Sdl2Application {
         };
 
         class Configuration;
+        #ifdef MAGNUM_TARGET_GL
         class GLConfiguration;
+        #endif
         class InputEvent;
         class KeyEvent;
         class MouseEvent;
@@ -373,6 +378,7 @@ class Sdl2Application {
         class TextInputEvent;
         class TextEditingEvent;
 
+        #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Construct with given configuration for OpenGL context
          * @param arguments         Application arguments
@@ -383,14 +389,27 @@ class Sdl2Application {
          * See @ref Configuration for more information. The program exits if
          * the context cannot be created, see @ref tryCreate() for an
          * alternative.
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
          */
         explicit Sdl2Application(const Arguments& arguments, const Configuration& configuration, const GLConfiguration& glConfiguration);
+        #endif
 
         /**
-         * @brief Construct with given configuration and default OpenGL context
+         * @brief Construct with given configuration
          *
-         * Equivalent to calling @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&)
+         * If @ref Configuration::WindowFlag::Contextless is present or Magnum
+         * was not built with @ref MAGNUM_TARGET_GL, this creates a window
+         * without any GPU context attached, leaving that part on the user.
+         *
+         * If none of the flags is present and Magnum was built with
+         * @ref MAGNUM_TARGET_GL, this is equivalent to calling
+         * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&)
          * with default-constructed @ref GLConfiguration.
+         *
+         * See also @ref building-features for more information.
          */
         explicit Sdl2Application(const Arguments& arguments, const Configuration& configuration);
 
@@ -473,6 +492,7 @@ class Sdl2Application {
            faster than public pure virtual destructor */
         ~Sdl2Application();
 
+        #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Create a window with given configuration for OpenGL context
          * @param configuration     Application configuration
@@ -487,14 +507,27 @@ class Sdl2Application {
          * the application first tries to create core context (OpenGL 3.2+ on
          * macOS, OpenGL 3.1+ elsewhere) and if that fails, falls back to
          * compatibility OpenGL 2.1 context.
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
          */
         void create(const Configuration& configuration, const GLConfiguration& glConfiguration);
+        #endif
 
         /**
-         * @brief Create a window with given configuration and default OpenGL context
+         * @brief Create a window with given configuration
          *
-         * Equivalent to calling @ref create(const Configuration&, const GLConfiguration&)
-         * with default-constructed @ref GLConfiguration.
+         * If @ref Configuration::WindowFlag::Contextless is present or Magnum
+         * was not built with @ref MAGNUM_TARGET_GL, this creates a window
+         * without any GPU context attached, leaving that part on the user.
+         *
+         * If none of the flags is present and Magnum was built with
+         * @ref MAGNUM_TARGET_GL, this is equivalent to calling
+         * @ref create(const Configuration&, const GLConfiguration&) with
+         * default-constructed @ref GLConfiguration.
+         *
+         * See also @ref building-features for more information.
          */
         void create(const Configuration& configuration);
 
@@ -506,7 +539,7 @@ class Sdl2Application {
          */
         void create();
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
+        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
         /** @brief @copybrief create(const Configuration&, const GLConfiguration&)
          * @deprecated Use @ref create(const Configuration&, const GLConfiguration&) instead.
          */
@@ -522,13 +555,20 @@ class Sdl2Application {
         }
         #endif
 
+        #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Try to create context with given configuration for OpenGL context
          *
-         * Unlike @ref create() returns @cpp false @ce if the context cannot be
-         * created, @cpp true @ce otherwise.
+         * Unlike @ref create(const Configuration&, const GLConfiguration&)
+         * returns @cpp false @ce if the context cannot be created,
+         * @cpp true @ce otherwise.
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
          */
         bool tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration);
+        #endif
 
         /**
          * @brief Try to create context with given configuration
@@ -538,7 +578,7 @@ class Sdl2Application {
          */
         bool tryCreate(const Configuration& configuration);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
+        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
         /** @brief @copybrief tryCreate(const Configuration&, const GLConfiguration&)
          * @deprecated Use @ref tryCreate(const Configuration&, const GLConfiguration&) instead.
          */
@@ -818,22 +858,32 @@ class Sdl2Application {
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_Window* _window;
-        SDL_GLContext _glContext;
         UnsignedInt _minimalLoopPeriod;
+        #endif
+
+        #ifdef MAGNUM_TARGET_GL
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        SDL_GLContext _glContext;
         #else
         SDL_Surface* _glContext;
         #endif
-
         std::unique_ptr<Platform::GLContext> _context;
+        #endif
 
         Flags _flags;
 };
 
+#ifdef MAGNUM_TARGET_GL
 /**
 @brief OpenGL context configuration
 
 The created window is always with double-buffered OpenGL context and 24bit
 depth buffer.
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+
 @see @ref Sdl2Application(), @ref create(), @ref tryCreate()
 */
 class Sdl2Application::GLConfiguration {
@@ -968,6 +1018,11 @@ class Sdl2Application::GLConfiguration {
         #endif
 };
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+CORRADE_ENUMSET_OPERATORS(Sdl2Application::GLConfiguration::Flags)
+#endif
+#endif
+
 /**
 @brief Configuration
 
@@ -976,7 +1031,7 @@ class Sdl2Application::GLConfiguration {
 */
 class Sdl2Application::Configuration {
     public:
-        #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(CORRADE_TARGET_EMSCRIPTEN)
+        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL) && !defined(CORRADE_TARGET_EMSCRIPTEN)
         /** @brief @copybrief GLConfiguration::Flag
          * @deprecated Use @ref GLConfiguration::Flag instead.
          */
@@ -1019,7 +1074,16 @@ class Sdl2Application::Configuration {
             Hidden = SDL_WINDOW_HIDDEN,             /**< Hidden window */
             Maximized = SDL_WINDOW_MAXIMIZED,       /**< Maximized window */
             Minimized = SDL_WINDOW_MINIMIZED,       /**< Minimized window */
-            MouseLocked = SDL_WINDOW_INPUT_GRABBED  /**< Window with mouse locked */
+            MouseLocked = SDL_WINDOW_INPUT_GRABBED, /**< Window with mouse locked */
+
+            /**
+             * Do not create any GPU context. Use together with
+             * @ref Sdl2Application(const Arguments&, const Configuration&),
+             * @ref create(const Configuration&) or
+             * @ref tryCreate(const Configuration&) to prevent implicit
+             * creation of an OpenGL context.
+             */
+            Contextless = 1u << 31 /* Hope this won't ever conflict with anything */
         };
 
         /**
@@ -1099,7 +1163,7 @@ class Sdl2Application::Configuration {
             return *this;
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
+        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /** @brief @copybrief GLConfiguration::flags()
          * @deprecated Use @ref GLConfiguration::flags() instead.
@@ -1167,7 +1231,7 @@ class Sdl2Application::Configuration {
         #endif
         Vector2i _size;
         WindowFlags _windowFlags;
-        #ifdef MAGNUM_BUILD_DEPRECATED
+        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
         Int _sampleCount;
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         GL::Version _version;
@@ -1871,9 +1935,6 @@ typedef BasicScreenedApplication<Sdl2Application> ScreenedApplication;
 #endif
 
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Flags)
-#ifndef CORRADE_TARGET_EMSCRIPTEN
-CORRADE_ENUMSET_OPERATORS(Sdl2Application::GLConfiguration::Flags)
-#endif
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::Configuration::WindowFlags)
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::InputEvent::Modifiers)
 CORRADE_ENUMSET_OPERATORS(Sdl2Application::MouseMoveEvent::Buttons)
