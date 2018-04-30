@@ -1665,16 +1665,16 @@ void FramebufferGLTest::copyImageCubeMapTexture() {
         CORRADE_SKIP(Extensions::GL::ARB::framebuffer_object::string() + std::string(" is not available."));
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    constexpr TextureFormat format = TextureFormat::RGBA8;
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    const TextureFormat format = rgbaFormatES2;
+    #else
+    constexpr TextureFormat format = TextureFormat::RGBA;
+    #endif
+
     Texture2D storage;
-    storage.setStorage(1,
-        #ifndef MAGNUM_TARGET_GLES2
-        TextureFormat::RGBA8,
-        #elif !defined(MAGNUM_TARGET_WEBGL)
-        rgbaFormatES2,
-        #else
-        TextureFormat::RGBA,
-        #endif
-        Vector2i{4})
+    storage.setStorage(1, format, Vector2i{4})
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i{4}, StorageData});
 
     Framebuffer fb{{{}, Vector2i{4}}};
@@ -1683,28 +1683,20 @@ void FramebufferGLTest::copyImageCubeMapTexture() {
     constexpr UnsignedByte Zero[2*2*4]{};
 
     CubeMapTexture texture;
-    texture.setImage(CubeMapCoordinate::PositiveX, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::PositiveX, 0, format,
         ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
-    texture.setImage(CubeMapCoordinate::NegativeX, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::NegativeX, 0, format,
         ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
-    texture.setImage(CubeMapCoordinate::PositiveY, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::PositiveY, 0, format,
         ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
-    texture.setImage(CubeMapCoordinate::NegativeY, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::NegativeY, 0, format,
         ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
-    texture.setImage(CubeMapCoordinate::PositiveZ, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::PositiveZ, 0, format,
         ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
-    texture.setImage(CubeMapCoordinate::NegativeZ, 0, TextureFormat::RGBA8,
+    texture.setImage(CubeMapCoordinate::NegativeZ, 0, format,
         ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
 
-    fb.copyImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, CubeMapCoordinate::PositiveX, 0,
-        #ifndef MAGNUM_TARGET_GLES2
-        TextureFormat::RGBA8
-        #elif !defined(MAGNUM_TARGET_WEBGL)
-        rgbaFormatES2
-        #else
-        TextureFormat::RGBA
-        #endif
-        );
+    fb.copyImage(Range2Di::fromSize(Vector2i{1}, Vector2i{2}), texture, CubeMapCoordinate::PositiveX, 0, format);
 
     MAGNUM_VERIFY_NO_ERROR();
 
