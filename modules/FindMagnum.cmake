@@ -100,7 +100,7 @@
 # component is requested and found, its target is available in convenience
 # alias ``Magnum::Application`` / ``Magnum::WindowlessApplication`` to simplify
 # porting. Similarly, if exactly one ``*Context`` component is requested and
-# found, its target is available in convenience alias ``Magnum::Context``.
+# found, its target is available in convenience alias ``Magnum::GLContext``.
 #
 # The package is found if either debug or release version of each requested
 # library (or plugin) is found. If both debug and release libraries (or
@@ -789,10 +789,10 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             unset(_MAGNUM_APPLICATION_ALIAS)
         endif()
     elseif(_component MATCHES ".+Context")
-        if(NOT DEFINED _MAGNUM_CONTEXT_ALIAS)
-            set(_MAGNUM_CONTEXT_ALIAS Magnum::${_component})
+        if(NOT DEFINED _MAGNUM_GLCONTEXT_ALIAS)
+            set(_MAGNUM_GLCONTEXT_ALIAS Magnum::${_component})
         else()
-            unset(_MAGNUM_CONTEXT_ALIAS)
+            unset(_MAGNUM_GLCONTEXT_ALIAS)
         endif()
     endif()
 
@@ -870,35 +870,32 @@ if(_MAGNUM_APPLICATION_ALIAS AND NOT TARGET Magnum::Application)
     # Prevent creating the alias again
     unset(_MAGNUM_APPLICATION_ALIAS)
 endif()
-if(_MAGNUM_CONTEXT_ALIAS AND NOT TARGET Magnum::Context)
-    get_target_property(_MAGNUM_CONTEXT_ALIASED_TARGET ${_MAGNUM_CONTEXT_ALIAS} ALIASED_TARGET)
-    if(_MAGNUM_CONTEXT_ALIASED_TARGET)
-        add_library(Magnum::Context ALIAS ${_MAGNUM_CONTEXT_ALIASED_TARGET})
+if(_MAGNUM_GLCONTEXT_ALIAS AND NOT TARGET Magnum::GLContext)
+    get_target_property(_MAGNUM_GLCONTEXT_ALIASED_TARGET ${_MAGNUM_GLCONTEXT_ALIAS} ALIASED_TARGET)
+    if(_MAGNUM_GLCONTEXT_ALIASED_TARGET)
+        add_library(Magnum::GLContext ALIAS ${_MAGNUM_GLCONTEXT_ALIASED_TARGET})
     else()
-        add_library(Magnum::Context UNKNOWN IMPORTED)
-        get_target_property(_MAGNUM_CONTEXT_IMPORTED_CONFIGURATIONS ${_MAGNUM_CONTEXT_ALIAS} IMPORTED_CONFIGURATIONS)
-        get_target_property(_MAGNUM_CONTEXT_IMPORTED_LOCATION_RELEASE ${_MAGNUM_CONTEXT_ALIAS} IMPORTED_LOCATION_RELEASE)
-        get_target_property(_MAGNUM_CONTEXT_IMPORTED_LOCATION_DEBUG ${_MAGNUM_CONTEXT_ALIAS} IMPORTED_LOCATION_DEBUG)
-        set_target_properties(Magnum::Context PROPERTIES
-            INTERFACE_INCLUDE_DIRECTORIES $<TARGET_PROPERTY:${_MAGNUM_CONTEXT_ALIAS},INTERFACE_INCLUDE_DIRECTORIES>
-            INTERFACE_COMPILE_DEFINITIONS $<TARGET_PROPERTY:${_MAGNUM_CONTEXT_ALIAS},INTERFACE_COMPILE_DEFINITIONS>
-            INTERFACE_COMPILE_OPTIONS $<TARGET_PROPERTY:${_MAGNUM_CONTEXT_ALIAS},INTERFACE_COMPILE_OPTIONS>
-            INTERFACE_LINK_LIBRARIES $<TARGET_PROPERTY:${_MAGNUM_CONTEXT_ALIAS},INTERFACE_LINK_LIBRARIES>
-            IMPORTED_CONFIGURATIONS "${_MAGNUM_CONTEXT_IMPORTED_CONFIGURATIONS}")
-        if(_MAGNUM_CONTEXT_IMPORTED_LOCATION_RELEASE)
-            set_target_properties(Magnum::Context PROPERTIES
-                IMPORTED_LOCATION_RELEASE ${_MAGNUM_CONTEXT_IMPORTED_LOCATION_RELEASE})
+        add_library(Magnum::GLContext UNKNOWN IMPORTED)
+        get_target_property(_MAGNUM_GLCONTEXT_IMPORTED_CONFIGURATIONS ${_MAGNUM_GLCONTEXT_ALIAS} IMPORTED_CONFIGURATIONS)
+        get_target_property(_MAGNUM_GLCONTEXT_IMPORTED_LOCATION_RELEASE ${_MAGNUM_GLCONTEXT_ALIAS} IMPORTED_LOCATION_RELEASE)
+        get_target_property(_MAGNUM_GLCONTEXT_IMPORTED_LOCATION_DEBUG ${_MAGNUM_GLCONTEXT_ALIAS} IMPORTED_LOCATION_DEBUG)
+        set_target_properties(Magnum::GLContext PROPERTIES
+            INTERFACE_INCLUDE_DIRECTORIES $<TARGET_PROPERTY:${_MAGNUM_GLCONTEXT_ALIAS},INTERFACE_INCLUDE_DIRECTORIES>
+            INTERFACE_COMPILE_DEFINITIONS $<TARGET_PROPERTY:${_MAGNUM_GLCONTEXT_ALIAS},INTERFACE_COMPILE_DEFINITIONS>
+            INTERFACE_COMPILE_OPTIONS $<TARGET_PROPERTY:${_MAGNUM_GLCONTEXT_ALIAS},INTERFACE_COMPILE_OPTIONS>
+            INTERFACE_LINK_LIBRARIES $<TARGET_PROPERTY:${_MAGNUM_GLCONTEXT_ALIAS},INTERFACE_LINK_LIBRARIES>
+            IMPORTED_CONFIGURATIONS "${_MAGNUM_GLCONTEXT_IMPORTED_CONFIGURATIONS}")
+        if(_MAGNUM_GLCONTEXT_IMPORTED_LOCATION_RELEASE)
+            set_target_properties(Magnum::GLContext PROPERTIES
+                IMPORTED_LOCATION_RELEASE ${_MAGNUM_GLCONTEXT_IMPORTED_LOCATION_RELEASE})
         endif()
-        if(_MAGNUM_CONTEXT_IMPORTED_LOCATION_DEBUG)
-            set_target_properties(Magnum::Context PROPERTIES
-                IMPORTED_LOCATION_DEBUG ${_MAGNUM_CONTEXT_IMPORTED_LOCATION_DEBUG})
+        if(_MAGNUM_GLCONTEXT_IMPORTED_LOCATION_DEBUG)
+            set_target_properties(Magnum::GLContext PROPERTIES
+                IMPORTED_LOCATION_DEBUG ${_MAGNUM_GLCONTEXT_IMPORTED_LOCATION_DEBUG})
         endif()
-    endif()
-    if(MAGNUM_BUILD_DEPRECATED)
-        set(MAGNUM_CONTEXT_LIBRARIES Magnum::Context)
     endif()
     # Prevent creating the alias again
-    unset(_MAGNUM_CONTEXT_ALIAS)
+    unset(_MAGNUM_GLCONTEXT_ALIAS)
 endif()
 
 # Installation and deploy dirs

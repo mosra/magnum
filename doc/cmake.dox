@@ -187,7 +187,7 @@ If exactly one `*Application` or exactly one `Windowless*Application` component
 is requested and found, its target is available in convenience alias
 `Magnum::Application` / `Magnum::WindowlessApplication` to simplify porting.
 Similarly, if exactly one `*Context` component is requested and found, its
-target is available in convenience alias `Magnum::Context`.
+target is available in convenience alias `Magnum::GLContext`.
 
 The package is found if either debug or release version of each requested
 library (or plugin) is found. If both debug and release libraries (or plugins)

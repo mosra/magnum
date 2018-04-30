@@ -290,6 +290,8 @@ See also:
     to the complexity of this change, no backwards compatibility is provided.
 -   The `magnum-info` utility was renamed to @ref magnum-gl-info. No backwards
     compatibility symlinks or aliases are provided.
+-   The `Magnum::Context` target alias was renamed to `Magnum::GLContext`. No
+    backwards compatibility aliases are provided.
 -   @ref PixelStorage::dataProperties(), @ref Image::dataProperties(),
     @ref ImageView::dataProperties(), @ref Trade::ImageData::dataProperties(), and @ref GL::BufferImage::dataProperties() now return just a pair of two
     values, as the third value is now accessible directly through
