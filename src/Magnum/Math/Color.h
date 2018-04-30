@@ -149,8 +149,8 @@ template<class T, class Integral> inline Color4<T> fromSrgbAlphaIntegral(const V
 
 /* RGB -> sRGB conversion */
 template<class T> Vector3<typename Color3<T>::FloatingPointType> toSrgb(typename std::enable_if<std::is_floating_point<T>::value, const Color3<T>&>::type rgb) {
-    constexpr const T a(0.055);
-    return lerp(rgb*T(12.92), (T(1.0) + a)*pow(rgb, T(1.0)/T(2.4)) - Vector3<T>{a}, rgb > Vector3<T>(0.0031308));
+    constexpr const T a = T(0.055);
+    return lerp(rgb*T(12.92), (T(1.0) + a)*pow(rgb, T(1.0)/T(2.4)) - Vector3<T>{a}, rgb > Vector3<T>(T(0.0031308)));
 }
 template<class T> Vector4<typename Color4<T>::FloatingPointType> toSrgbAlpha(typename std::enable_if<std::is_floating_point<T>::value, const Color4<T>&>::type rgba) {
     return {toSrgb<T>(rgba.rgb()), rgba.a()};
