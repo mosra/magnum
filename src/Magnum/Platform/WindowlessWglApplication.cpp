@@ -251,7 +251,7 @@ void WindowlessWglApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessWglApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::WindowlessWglApplication::tryCreateContext(): context already created", false);
 
     WindowlessWglContext glContext{configuration, _context.get()};
     if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
