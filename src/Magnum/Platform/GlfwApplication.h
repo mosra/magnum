@@ -41,10 +41,9 @@
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/GL.h"
-/* We must include our own GL headers first to avoid conflicts */
-#include "Magnum/GL/OpenGL.h"
 #endif
 
+#define GLFW_INCLUDE_NONE
 #include <GLFW/glfw3.h>
 
 namespace Magnum { namespace Platform {
