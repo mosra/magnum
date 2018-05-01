@@ -23,9 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Tags.h"
+#include <Corrade/TestSuite/Tester.h>
+
 #include "Magnum/Magnum.h"
-#include "Corrade/TestSuite/Tester.h"
+#include "Magnum/Tags.h"
 
 namespace Magnum { namespace Test {
 
