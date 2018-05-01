@@ -266,7 +266,6 @@ class OpenGLTester: public TestSuite::Tester {
 };
 
 /** @hideinitializer
-@relatesalso Magnum::GL::OpenGLTester
 @brief Verify that no OpenGL error occurred
 
 Equivalent to
