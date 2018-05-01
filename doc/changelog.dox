@@ -68,7 +68,8 @@ See also:
 @subsubsection changelog-latest-new-gl GL library
 
 -   A new library that now contains wrappers for the OpenGL family of graphics
-    APIs, separated from the core Magnum library
+    APIs, separated from the core Magnum library (see
+    [mosra/magnum#233](https://github.com/mosra/magnum/pull/233))
 -   New @ref GL::hasPixelFormat(), @ref GL::pixelFormat(), @ref GL::pixelType(),
     @ref GL::hasCompressedPixelFormat(), @ref compressedPixelFormat() utilities
     for converting generic @ref PixelFormat / @ref CompressedPixelFormat to
@@ -87,7 +88,9 @@ See also:
     L-specific @ref GL::SamplerFilter, @ref GL::SamplerMipmap and
     @ref GL::SamplerWrapping values. All texture classes now have overloads
     accepting both types.
--   Initial support for OpenGL ES 3.2 and OpenGL 4.6
+-   Initial support for OpenGL ES 3.2 and OpenGL 4.6 (see
+    [mosra/magnum#224](https://github.com/mosra/magnum/issues/224),
+    [mosra/magnum#231](https://github.com/mosra/magnum/pull/231))
 -   New OpenGL extension support:
     -   @gl_extension{ARB,texture_filter_anisotropic}
     -   @gl_extension{OES,texture_float}, @gl_extension2{OES,texture_half_float,OES_texture_float}
@@ -178,7 +181,7 @@ See also:
     @ref Corrade::PluginManager::AbstractPlugin::pluginSearchPaths() "pluginSearchPaths()"
     for plugin directory autodetection --- you no longer need to specify the
     plugin directory explicitly when loading plugins. See @ref plugins-loading
-    for more information.
+    for more information. See also [mosra/magnum#235](https://github.com/mosra/magnum/issues/235).
 -   Plugins now provide an automatic means of static plugin import via CMake
     targets, no need to call @ref CORRADE_PLUGIN_IMPORT() implicitly anymore.
     For this to work, you just need to update local copies of all Find modules.
@@ -191,17 +194,26 @@ See also:
     See @ref building and @ref cmake for more information.
 -   The @ref Trade namespace is now a separate library, allowing to use core
     Magnum functionality without @ref Corrade::PluginManager
+-   Suppressed a MSVC warning in @ref MeshTools::interleave() (see
+    [mosra/magnum#238](https://github.com/mosra/magnum/issues/238))
+-   Fixed Vcpkg packages to properly copy all plugin and their dependencies
+    along the executable (see [mosra/magnum#235](https://github.com/mosra/magnum/issues/235))
+-   Fixed the Debian package after introducing `SOVERSION` to all libraries
+    (see [mosra/magnum#237](https://github.com/mosra/magnum/issues/237))
 -   Fixed the Debian package to not include a revision. While just a warning on
-    Ubuntu, it's a hard error on Debian.
+    Ubuntu, it's a hard error on Debian. (See [mosra/corrade#44](https://github.com/mosra/corrade/issues/44).)
 
 @subsection changelog-latest-bugfixes Bug fixes
 
 -   Engine startup info was not properly printed to Android log since
     introducing the `--magnum-log` option in version 2018.02
+-   Dropped Google Closure Compiler from Emscripten toolchains, it was bringing
+    more harm than good (see [mosra/magnum#211](https://github.com/mosra/magnum/issues/211))
 -   Working around Emscripten issue where `-s USE_PTHREADS=1` would cause all
     shader sources containing Unicode characters to be truncated to empty
     strings. See the @cpp "emscripten-pthreads-broken-unicode-shader-sources" @ce
-    workaround description for details.
+    workaround description and [mosra/magnum#239](https://github.com/mosra/magnum/issues/239)
+    for details.
 -   @ref GL::Attribute::DataType::HalfFloat was not available on WebGL 2 by
     mistake
 -   A wrong code path for @ref GL::Framebuffer::checkStatus() was selected on
