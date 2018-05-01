@@ -44,9 +44,9 @@ namespace Magnum { namespace GL {
 /**
 @brief Compile-time information about OpenGL extensions
 
-Each extension is a `struct` named hierarchically by prefix, vendor and
+Each extension is a @cpp struct @ce named hierarchically by prefix, vendor and
 extension name taken from list at @ref opengl-support, for example
-`Extensions::GL::ARB::texture_storage`. Note that desktop extensions are
+`GL::Extensions::ARB::texture_storage`. Note that desktop extensions are
 available only on desktop build, OpenGL ES 2.0 extensions which are part of ES
 3.0 are available only on @ref MAGNUM_TARGET_GLES2 "OpenGL ES 2.0 build",
 vendor OpenGL ES extensions are available only on
