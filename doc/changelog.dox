@@ -36,9 +36,12 @@ See also:
 -   @subpage changelog-extras "Extras changelog"
 -   @subpage changelog-examples "Examples changelog"
 
-@section changelog-latest Changes since 2018.02
+@section changelog-2018-04 2018.04
 
-@subsection changelog-latest-dependencies Dependency changes
+Released 2018-05-01, tagged as
+[v2018.04](https://github.com/mosra/magnum/releases/tag/v2018.04).
+
+@subsection changelog-2018-04-dependencies Dependency changes
 
 -   Building for Android now requires CMake 3.7 with builtin Android
     crosscompilation support, the old toolchains were removed. Only the Clang
@@ -46,7 +49,7 @@ See also:
     dropped, as it was still missing some important C++11 functionality. See
     @ref building-cross-android for more information.
 
-@subsection changelog-latest-new New features
+@subsection changelog-2018-04-new New features
 
 -   New @ref PixelFormat / @ref CompressedPixelFormat enums containing generic
     API-independent pixel formats, together with @ref pixelSize(),
@@ -61,11 +64,11 @@ See also:
 -   New @ref SamplerFilter, @ref SamplerMipmap and @ref SamplerWrapping enums
     containing generic API-independent texture sampler modes
 
-@subsubsection changelog-latest-new-math Math library
+@subsubsection changelog-2018-04-new-math Math library
 
 -   Added @ref Math::isInf(), @ref Math::isNan()
 
-@subsubsection changelog-latest-new-gl GL library
+@subsubsection changelog-2018-04-new-gl GL library
 
 -   A new library that now contains wrappers for the OpenGL family of graphics
     APIs, separated from the core Magnum library (see
@@ -102,7 +105,7 @@ See also:
         @webgl_extension{EXT,color_buffer_float}
 -   Ported @ref GL::OpenGLTester to WebGL
 
-@subsubsection changelog-latest-new-platform Platform libraries
+@subsubsection changelog-2018-04-new-platform Platform libraries
 
 -   Ability to create @ref Platform::Sdl2Application and
     @ref Platform::GlfwApplication classes without implicitly created OpenGL
@@ -112,26 +115,26 @@ See also:
 -   Added @ref Platform::AndroidApplication::nativeActivity() to access
     underlying `ANativeActivity` structure for calling various Android APIs
 
-@subsubsection changelog-latest-new-primitives Primitives library
+@subsubsection changelog-2018-04-new-primitives Primitives library
 
 -   New @ref Primitives::circle3DSolid(), @ref Primitives::circle3DWireframe(),
     @ref Primitives::coneSolid(), @ref Primitives::coneWireframe(),
     @ref Primitives::grid3DSolid() and @ref Primitives::grid3DWireframe()
     primitives
 
-@subsubsection changelog-latest-new-trade Trade library
+@subsubsection changelog-2018-04-new-trade Trade library
 
 -   Debug output operator for @ref Trade::PhongMaterialData::Flag and
     @ref Trade::PhongMaterialData::Flags
 
-@subsection changelog-latest-changes Changes and improvements
+@subsection changelog-2018-04-changes Changes and improvements
 
 -   The @ref CompressedPixelStorage class and related APIs are now available
     on all targets including OpenGL ES and WebGL, however at the moment, until
     a compatibility code path is implemented, the @ref GL library expects that
     all parameters are at their defaults.
 
-@subsubsection changelog-latest-changes-debugtools DebugTools library
+@subsubsection changelog-2018-04-changes-debugtools DebugTools library
 
 -   @ref DebugTools::textureSubImage() now accepts both GL-specific
     @ref GL::PixelFormat / @ref GL::PixelType combination and the generic
@@ -139,13 +142,13 @@ See also:
 -   @ref DebugTools::CompareImage now accepts generic @ref PixelFormat on input
     instead of GL-specific @ref GL::PixelFormat / @ref GL::PixelType
 
-@subsubsection changelog-latest-changes-gl GL library
+@subsubsection changelog-2018-04-changes-gl GL library
 
 -   The @ref GL::Mesh::indexTypeSize() and @ref GL::MeshView::setIndexRange()
     now expect that the mesh is indexed (instead of silently not doing
     anything)
 
-@subsubsection changelog-latest-changes-text Text library
+@subsubsection changelog-2018-04-changes-text Text library
 
 -   The @ref Text::GlyphCache now unconditionally uses
     @ref GL::TextureFormat::Luminance on ES2 and WebGL 1, instead of trying
@@ -153,14 +156,14 @@ See also:
     @ref GL::pixelFormat(), which unconditionally returns
     @ref GL::PixelFormat::Luminance for @ref PixelFormat::R8Unorm.
 
-@subsubsection changelog-latest-changes-platform Platform libraries
+@subsubsection changelog-2018-04-changes-platform Platform libraries
 
 -   Separated @ref Platform::Sdl2Application::Configuration "Platform::*Application::Configuration"
     into @ref Platform::Sdl2Application::Configuration "Configuration" and
     @ref Platform::Sdl2Application::GLConfiguration "GLConfiguration" to allow
     creation of non-GL application instances in the future
 
-@subsubsection changelog-latest-changes-plugins Plugins
+@subsubsection changelog-2018-04-changes-plugins Plugins
 
 -   @ref Trade::TgaImporter "TgaImporter" and
     @ref Trade::TgaImageConverter "TgaImageConverter" plugins now operate on
@@ -170,7 +173,7 @@ See also:
     loading binary glTF files instead of proxying them to `GltfImporter`
     plugins
 
-@subsection changelog-latest-buildsystem Build system
+@subsection changelog-2018-04-buildsystem Build system
 
 -   The core @ref Magnum library is not depending on OpenGL anymore, all
     GL-related APIs are now part of a new @ref GL library
@@ -203,7 +206,7 @@ See also:
 -   Fixed the Debian package to not include a revision. While just a warning on
     Ubuntu, it's a hard error on Debian. (See [mosra/corrade#44](https://github.com/mosra/corrade/issues/44).)
 
-@subsection changelog-latest-bugfixes Bug fixes
+@subsection changelog-2018-04-bugfixes Bug fixes
 
 -   Engine startup info was not properly printed to Android log since
     introducing the `--magnum-log` option in version 2018.02
@@ -221,7 +224,7 @@ See also:
 -   Fixed `MAGNUM_PLUGINS_DIR` variables to contain proper absolute location by
     default again.
 
-@subsection changelog-latest-deprecated Deprecated APIs
+@subsection changelog-2018-04-deprecated Deprecated APIs
 
 -   All GL-related headers and APIs from the root `Magnum/` directory and
     @ref Magnum namespace were moved to the `Magnum/GL/` directory and
@@ -311,7 +314,7 @@ See also:
     @ref Shaders::Phong::bindDiffuseTexture(), @ref Shaders::Phong::bindSpecularTexture()
     and @ref Shaders::Phong::bindTextures() instead.
 
-@subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
+@subsection changelog-2018-04-compatibility Potential compatibility breakages, removed APIs
 
 -   Code that was previously linking just to the core @ref Magnum library may
     now need to explicitly link to the @ref Magnum::Trade and @ref Magnum::GL
@@ -484,7 +487,7 @@ See also:
     @ref Corrade::Containers::Array / @ref Corrade::Containers::ArrayView
     instead
 
-@subsection changelog-latest-docs Documentation
+@subsection changelog-2018-04-docs Documentation
 
 -   A new @ref developers page containing step-by-step checklists for
     maintainers and core developers
