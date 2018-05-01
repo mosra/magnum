@@ -197,6 +197,9 @@ void AbstractXApplication::mousePressEvent(MouseEvent&) {}
 void AbstractXApplication::mouseReleaseEvent(MouseEvent&) {}
 void AbstractXApplication::mouseMoveEvent(MouseMoveEvent&) {}
 
+AbstractXApplication::GLConfiguration::GLConfiguration(): _version(GL::Version::None) {}
+AbstractXApplication::GLConfiguration::~GLConfiguration() = default;
+
 AbstractXApplication::Configuration::Configuration():
     _title("Magnum X Application"), _size(800, 600)
     #ifdef MAGNUM_BUILD_DEPRECATED

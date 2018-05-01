@@ -170,6 +170,9 @@ void GlutApplication::mousePressEvent(MouseEvent&) {}
 void GlutApplication::mouseReleaseEvent(MouseEvent&) {}
 void GlutApplication::mouseMoveEvent(MouseMoveEvent&) {}
 
+GlutApplication::GLConfiguration::GLConfiguration(): _sampleCount(0), _version(GL::Version::None) {}
+GlutApplication::GLConfiguration::~GLConfiguration() = default;
+
 GlutApplication::Configuration::Configuration():
     _title("Magnum GLUT Application"), _size(800, 600)
     #ifdef MAGNUM_BUILD_DEPRECATED
