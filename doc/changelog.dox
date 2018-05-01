@@ -201,6 +201,10 @@ Released 2018-05-01, tagged as
     [mosra/magnum#238](https://github.com/mosra/magnum/issues/238))
 -   Fixed Vcpkg packages to properly copy all plugin and their dependencies
     along the executable (see [mosra/magnum#235](https://github.com/mosra/magnum/issues/235))
+-   Stable version of Magnum is now available as a binary package in the
+    ArchLinux `[community]` repo
+-   Homebrew macOS packages were updated to install the stable version by
+    default
 -   Fixed the Debian package after introducing `SOVERSION` to all libraries
     (see [mosra/magnum#237](https://github.com/mosra/magnum/issues/237))
 -   Fixed the Debian package to not include a revision. While just a warning on

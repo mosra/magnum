@@ -210,17 +210,24 @@ There are also Gentoo packages for @ref building-plugins-packages-gentoo "Magnum
 
 macOS [Homebrew](https://brew.sh) formulas building the latest Git revision are
 in the `package/homebrew` directory. Either use the `*.rb` files directly or
-use the tap at https://github.com/mosra/homebrew-magnum. When installing from
-the `*.rb` files you need to install the
-@ref building-corrade-packages-brew "Corrade Homebrew package" first, otherwise
-you can do just this:
+use the tap at https://github.com/mosra/homebrew-magnum. This will install the
+latest stable version of Magnum with all its dependencies:
+
+@code{.sh}
+brew install mosra/magnum/magnum
+@endcode
+
+But often you may want to install the latest Git revision of all Magnum
+projects instead:
 
 @code{.sh}
 brew install --HEAD mosra/magnum/corrade
 brew install --HEAD mosra/magnum/magnum
 @endcode
 
-If you want to pass additional flags to CMake or
+When installing from the `*.rb` files you need to install the
+@ref building-corrade-packages-brew "Corrade Homebrew package" first. If you
+want to pass additional flags to CMake or
 @ref building-features "enable / disable additional features", edit the `*.rb`
 file.
 
