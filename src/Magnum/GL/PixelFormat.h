@@ -61,9 +61,9 @@ enum class PixelFormat: GLenum {
     /**
      * Floating-point red channel.
      * @requires_gles30 For texture data only, extension
-     *      @extension{EXT,texture_rg} in OpenGL ES 2.0.
+     *      @gl_extension{EXT,texture_rg} in OpenGL ES 2.0.
      * @requires_es_extension For framebuffer reading, extension
-     *      @extension{EXT,texture_rg}
+     *      @gl_extension{EXT,texture_rg}
      * @requires_webgl20 For texture data only. Not available in WebGL 1.0, see
      *      @ref PixelFormat::Luminance for an alternative.
      */
@@ -105,11 +105,11 @@ enum class PixelFormat: GLenum {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     /**
      * Floating-point red and green channel.
-     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{ARB,texture_rg} and @gl_extension{EXT,texture_integer}
      * @requires_gles30 For texture data only, extension
-     *      @extension{EXT,texture_rg} in OpenGL ES 2.0.
+     *      @gl_extension{EXT,texture_rg} in OpenGL ES 2.0.
      * @requires_es_extension For framebuffer reading, extension
-     *      @extension{EXT,texture_rg}
+     *      @gl_extension{EXT,texture_rg}
      * @requires_webgl20 For texture data only. Not available in WebGL 1.0, see
      *      @ref PixelFormat::LuminanceAlpha for and alternative.
      */
@@ -153,9 +153,9 @@ enum class PixelFormat: GLenum {
     #ifndef MAGNUM_TARGET_WEBGL
     /**
      * Floating-point BGRA.
-     * @requires_es_extension Extension @extension{EXT,read_format_bgra}
-     *      for framebuffer reading, extension @extension{APPLE,texture_format_BGRA8888}
-     *      or @extension{EXT,texture_format_BGRA8888} for texture data.
+     * @requires_es_extension Extension @gl_extension{EXT,read_format_bgra}
+     *      for framebuffer reading, extension @gl_extension{APPLE,texture_format_BGRA8888}
+     *      or @gl_extension{EXT,texture_format_BGRA8888} for texture data.
      * @requires_gles Only RGBA component ordering is available in WebGL.
      */
     #ifndef MAGNUM_TARGET_GLES
@@ -171,7 +171,7 @@ enum class PixelFormat: GLenum {
      * @requires_gles20 Not available in ES 3.0, WebGL 2.0 or desktop OpenGL.
      *      Use @ref PixelFormat::RGB instead.
      * @deprecated_gl Included only in order to make it possible to upload
-     *      sRGB image data with the @extension{EXT,sRGB} ES2 extension, use
+     *      sRGB image data with the @gl_extension{EXT,sRGB} ES2 extension, use
      *      @ref PixelFormat::RGB elsewhere instead.
      */
     SRGB = GL_SRGB_EXT,
@@ -181,7 +181,7 @@ enum class PixelFormat: GLenum {
      * @requires_gles20 Not available in ES 3.0, WebGL 2.0 or desktop OpenGL.
      *      Use @ref PixelFormat::RGBA instead.
      * @deprecated_gl Included only in order to make it possible to upload
-     *      sRGB image data with the @extension{EXT,sRGB} ES2 extension, use
+     *      sRGB image data with the @gl_extension{EXT,sRGB} ES2 extension, use
      *      @ref PixelFormat::RGBA elsewhere instead.
      */
     SRGBAlpha = GL_SRGB_ALPHA_EXT,
@@ -190,7 +190,7 @@ enum class PixelFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * Integer red channel.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only floating-point image data are available in OpenGL
      *      ES 2.0.
      * @requires_webgl20 Only floating-point image data are available in WebGL
@@ -201,7 +201,7 @@ enum class PixelFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * Integer green channel.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gl Only @ref PixelFormat::RedInteger is available in OpenGL ES
      *      3.0 and WebGL 2.0, only floating-point image data are available in
      *      OpenGL ES 2.0 and WebGL 1.0.
@@ -210,7 +210,7 @@ enum class PixelFormat: GLenum {
 
     /**
      * Integer blue channel.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gl Only @ref PixelFormat::RedInteger is available in OpenGL ES
      *      3.0 and WebGL 2.0, only floating-point image data are available in
      *      OpenGL ES 2.0 and WebGL 1.0.
@@ -220,7 +220,7 @@ enum class PixelFormat: GLenum {
 
     /**
      * Integer red and green channel.
-     * @requires_gl30 Extension @extension{ARB,texture_rg} and @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{ARB,texture_rg} and @gl_extension{EXT,texture_integer}
      * @requires_gl Can't be used for framebuffer reading in OpenGL ES or
      *      WebGL.
      * @requires_gles30 For texture data only, only floating-point image data
@@ -232,7 +232,7 @@ enum class PixelFormat: GLenum {
 
     /**
      * Integer RGB.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gl Can't be used for framebuffer reading in OpenGL ES or
      *      WebGL.
      * @requires_gles30 For texture data only, only floating-point image data
@@ -244,7 +244,7 @@ enum class PixelFormat: GLenum {
 
     /**
      * Integer RGBA.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only floating-point image data are available in OpenGL
      *      ES 2.0.
      * @requires_webgl20 Only floating-point image data are available in WebGL
@@ -255,7 +255,7 @@ enum class PixelFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * Integer BGR.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gl Only @ref PixelFormat::RGBInteger is available in OpenGL ES
      *      3.0 and WebGL 2.0, only floating-point image data are available in
      *      OpenGL ES 2.0 and WebGL 1.0.
@@ -264,7 +264,7 @@ enum class PixelFormat: GLenum {
 
     /**
      * Integer BGRA.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gl Only @ref PixelFormat::RGBAInteger is available in OpenGL
      *      ES 3.0 and WebGL 2.0, only floating-point image data are available
      *      in OpenGL ES 2.0 and WebGL 1.0.
@@ -275,10 +275,10 @@ enum class PixelFormat: GLenum {
 
     /**
      * Depth component.
-     * @requires_gles30 For texture data only, extension @extension{OES,depth_texture}
-     *      or @extension{ANGLE,depth_texture} in OpenGL ES 2.0.
+     * @requires_gles30 For texture data only, extension @gl_extension{OES,depth_texture}
+     *      or @gl_extension{ANGLE,depth_texture} in OpenGL ES 2.0.
      * @requires_es_extension For framebuffer reading only, extension
-     *      @extension2{NV,read_depth,GL_NV_read_depth_stencil}.
+     *      @gl_extension2{NV,read_depth,GL_NV_read_depth_stencil}.
      * @requires_webgl20 For texture data only, extension
      *      @webgl_extension{WEBGL,depth_texture} in WebGL 1.0.
      */
@@ -287,12 +287,12 @@ enum class PixelFormat: GLenum {
     #ifndef MAGNUM_TARGET_WEBGL
     /**
      * Stencil index.
-     * @requires_gl44 Extension @extension{ARB,texture_stencil8} for texture
+     * @requires_gl44 Extension @gl_extension{ARB,texture_stencil8} for texture
      *      data, otherwise for framebuffer reading only.
-     * @requires_es_extension Extension @extension2{NV,read_stencil,GL_NV_read_depth_stencil},
+     * @requires_es_extension Extension @gl_extension2{NV,read_stencil,GL_NV_read_depth_stencil},
      *      for framebuffer reading only.
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension{OES,texture_stencil8}, for texture data only.
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension{OES,texture_stencil8}, for texture data only.
      * @requires_gles Stencil index is not available in WebGL.
      */
     #ifndef MAGNUM_TARGET_GLES
@@ -304,11 +304,11 @@ enum class PixelFormat: GLenum {
 
     /**
      * Depth and stencil.
-     * @requires_gl30 Extension @extension{ARB,framebuffer_object}
-     * @requires_gles30 For texture data only, extension @extension{OES,packed_depth_stencil}
+     * @requires_gl30 Extension @gl_extension{ARB,framebuffer_object}
+     * @requires_gles30 For texture data only, extension @gl_extension{OES,packed_depth_stencil}
      *      in OpenGL ES 2.0.
      * @requires_es_extension For framebuffer reading only, extension
-     *      @extension2{NV,read_depth_stencil,GL_NV_read_depth_stencil}
+     *      @gl_extension2{NV,read_depth_stencil,GL_NV_read_depth_stencil}
      * @requires_webgl20 For texture data only, extension
      *      @webgl_extension{WEBGL,depth_texture} in WebGL 1.0.
      */
@@ -359,8 +359,8 @@ enum class PixelType: GLenum {
 
     /**
      * Each component unsigned short.
-     * @requires_gles30 For texture data only, extension @extension{OES,depth_texture}
-     *      or @extension{ANGLE,depth_texture} in OpenGL ES 2.0.
+     * @requires_gles30 For texture data only, extension @gl_extension{OES,depth_texture}
+     *      or @gl_extension{ANGLE,depth_texture} in OpenGL ES 2.0.
      * @requires_gl Can't be used for framebuffer reading in OpenGL ES or
      *      WebGL.
      * @requires_webgl20 For texture data only, extension
@@ -384,7 +384,7 @@ enum class PixelType: GLenum {
     /**
      * Each component unsigned int.
      * @requires_gles30 In OpenGL ES 2.0 for texture data only, using extension
-     *      @extension{OES,depth_texture} or @extension{ANGLE,depth_texture}
+     *      @gl_extension{OES,depth_texture} or @gl_extension{ANGLE,depth_texture}
      * @requires_webgl20 In WebGL 1.0 for texture data only, using extension
      *      @webgl_extension{WEBGL,depth_texture}
      */
@@ -404,12 +404,12 @@ enum class PixelType: GLenum {
     /**
      * Each component half float.
      * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
-     * @requires_gl30 Extension @extension{ARB,half_float_pixel}
-     * @requires_gles30 Extension @extension2{OES,texture_half_float,OES_texture_float}
+     * @requires_gl30 Extension @gl_extension{ARB,half_float_pixel}
+     * @requires_gles30 Extension @gl_extension2{OES,texture_half_float,OES_texture_float}
      *      to use for texture reading in OpenGL ES 2.0.
-     * @requires_gles30 Extension @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
+     * @requires_gles30 Extension @gl_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
      *      for filtering the texture using @ref SamplerFilter::Linear.
-     * @requires_gles32 Extension @extension{EXT,color_buffer_half_float}
+     * @requires_gles32 Extension @gl_extension{EXT,color_buffer_half_float}
      *      to use the texture as a render target.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float} to
      *      use for texture reading in WebGL 1.0.
@@ -426,11 +426,11 @@ enum class PixelType: GLenum {
 
     /**
      * Each component float.
-     * @requires_gles30 Extension @extension{OES,texture_float} to use for
+     * @requires_gles30 Extension @gl_extension{OES,texture_float} to use for
      *      texture reading in OpenGL ES 2.0.
-     * @requires_gles32 Extension @extension{EXT,color_half_float} to use the
+     * @requires_gles32 Extension @gl_extension{EXT,color_half_float} to use the
      *      texture as a render target.
-     * @requires_es_extension Extension @extension{OES,texture_float_linear}
+     * @requires_es_extension Extension @gl_extension{OES,texture_float_linear}
      *      for filtering the texture using @ref SamplerFilter::Linear.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_float} to use
      *      for texture reading in WebGL 1.0.
@@ -481,7 +481,7 @@ enum class PixelType: GLenum {
     /**
      * ABGR, unsigned short, each component 4bit.
      * @requires_es_extension For framebuffer reading only, extension
-     *      @extension{EXT,read_format_bgra}
+     *      @gl_extension{EXT,read_format_bgra}
      * @requires_gles Only RGBA component ordering is available in WebGL.
      */
     #ifndef MAGNUM_TARGET_GLES
@@ -501,7 +501,7 @@ enum class PixelType: GLenum {
     /**
      * ABGR, unsigned short, each RGB component 5bit, alpha component 1bit.
      * @requires_es_extension For framebuffer reading only, extension
-     *      @extension{EXT,read_format_bgra}
+     *      @gl_extension{EXT,read_format_bgra}
      * @requires_gles Not available in WebGL.
      */
     #ifndef MAGNUM_TARGET_GLES
@@ -539,7 +539,7 @@ enum class PixelType: GLenum {
      * ABGR, unsigned int, each RGB component 10bit, alpha component 2bit.
      * @requires_gles30 Can't be used for framebuffer reading in OpenGL ES 2.0.
      * @requires_gles30 For texture data only, extension
-     *      @extension{EXT,texture_type_2_10_10_10_REV} in OpenGL ES 2.0.
+     *      @gl_extension{EXT,texture_type_2_10_10_10_REV} in OpenGL ES 2.0.
      *      Not available in WebGL 1.0.
      * @requires_webgl20 Only RGBA component ordering is available in WebGL
      *      1.0.
@@ -554,7 +554,7 @@ enum class PixelType: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * BGR, unsigned int, red and green 11bit float, blue 10bit float.
-     * @requires_gl30 Extension @extension{EXT,packed_float}
+     * @requires_gl30 Extension @gl_extension{EXT,packed_float}
      * @requires_gles30 Floating-point types are not available in OpenGL ES
      *      2.0.
      * @requires_webgl20 Floating-point types are not available in WebGL 1.0.
@@ -563,7 +563,7 @@ enum class PixelType: GLenum {
 
     /**
      * BGR, unsigned int, each component 9bit + 5bit exponent.
-     * @requires_gl30 Extension @extension{EXT,texture_shared_exponent}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_shared_exponent}
      * @requires_gles30 Only 8bit and 16bit types are available in OpenGL ES
      *      2.0.
      * @requires_webgl20 Only 8bit and 16bit types are available in WebGL 1.0.
@@ -573,9 +573,9 @@ enum class PixelType: GLenum {
 
     /**
      * Unsigned int, depth component 24bit, stencil index 8bit.
-     * @requires_gl30 Extension @extension{ARB,framebuffer_object}
+     * @requires_gl30 Extension @gl_extension{ARB,framebuffer_object}
      * @requires_gles30 For texture data only, extension
-     *      @extension{OES,packed_depth_stencil} in OpenGL ES 2.0.
+     *      @gl_extension{OES,packed_depth_stencil} in OpenGL ES 2.0.
      * @requires_webgl20 For texture data only, extension
      *      @webgl_extension{WEBGL,depth_texture} in WebGL 1.0.
      */
@@ -589,7 +589,7 @@ enum class PixelType: GLenum {
     /**
      * Float + unsigned int, depth component 32bit float, 24bit gap, stencil
      * index 8bit.
-     * @requires_gl30 Extension @extension{ARB,depth_buffer_float}
+     * @requires_gl30 Extension @gl_extension{ARB,depth_buffer_float}
      * @requires_gles30 For texture data only, only @ref PixelType::UnsignedInt248
      *      is available in OpenGL ES 2.0.
      * @requires_webgl20 For texture data only, only @ref PixelType::UnsignedInt248
@@ -633,7 +633,7 @@ to query availability of given format.
 @note On OpenGL ES 2.0 and WebGL 1.0, one- and two-channel texture formats are
     always translated to @ref PixelFormat::Luminance and
     @ref PixelFormat::LuminanceAlpha, independently on the
-    @extension{EXT,texture_rg} being present or not. If you wish to use @ref PixelFormat::Red and @ref PixelFormat::RG instead, specify the GL-specific
+    @gl_extension{EXT,texture_rg} being present or not. If you wish to use @ref PixelFormat::Red and @ref PixelFormat::RG instead, specify the GL-specific
     pixel format directly instead of using the generic enum.
 
 @see @ref pixelType()
@@ -693,7 +693,7 @@ enum class CompressedPixelFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * Compressed red channel, normalized unsigned.
-     * @requires_gl30 Extension @extension{ARB,texture_rg}
+     * @requires_gl30 Extension @gl_extension{ARB,texture_rg}
      * @requires_gl Generic texture compression is not available in OpenGL ES
      *      or WebGL.
      */
@@ -701,7 +701,7 @@ enum class CompressedPixelFormat: GLenum {
 
     /**
      * Compressed red and green channel, normalized unsigned.
-     * @requires_gl30 Extension @extension{ARB,texture_rg}
+     * @requires_gl30 Extension @gl_extension{ARB,texture_rg}
      * @requires_gl Generic texture compression is not available in OpenGL ES
      *      or WebGL.
      */
@@ -724,7 +724,7 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * RGTC compressed red channel, normalized unsigned. **Available only for
      * 2D, 2D array, cube map and cube map array textures.**
-     * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES or
      *      WebGL.
      */
@@ -733,7 +733,7 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * RGTC compressed red and green channel, normalized unsigned. **Available
      * only for 2D, 2D array, cube map and cube map array textures.**
-     * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES or
      *      WebGL.
      */
@@ -742,7 +742,7 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * RGTC compressed red channel, normalized signed. **Available only for 2D,
      * 2D array, cube map and cube map array textures.**
-     * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES or
      *      WebGL.
      */
@@ -751,7 +751,7 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * RGTC compressed red and green channel, normalized signed. **Available
      * only for 2D, 2D array, cube map and cube map array textures.**
-     * @requires_gl30 Extension @extension{EXT,texture_compression_rgtc}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_compression_rgtc}
      * @requires_gl RGTC texture compression is not available in OpenGL ES or
      *      WebGL.
      */
@@ -760,7 +760,7 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * BPTC compressed RGB, unsigned float. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
+     * @requires_gl42 Extension @gl_extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES or
      *      WebGL.
      */
@@ -769,7 +769,7 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * BPTC compressed RGB, signed float. **Available only on 2D, 3D, 2D array,
      * cube map and cube map array textures.**
-     * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
+     * @requires_gl42 Extension @gl_extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES or
      *      WebGL.
      */
@@ -778,7 +778,7 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * BPTC compressed RGBA, normalized unsigned. **Available only on 2D, 3D,
      * 2D array, cube map and cube map array textures.**
-     * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
+     * @requires_gl42 Extension @gl_extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES or
      *      WebGL.
      */
@@ -787,7 +787,7 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * BPTC compressed sRGBA, normalized unsigned. **Available only on 2D, 3D,
      * 2D array, cube map and cube map array textures.**
-     * @requires_gl42 Extension @extension{ARB,texture_compression_bptc}
+     * @requires_gl42 Extension @gl_extension{ARB,texture_compression_bptc}
      * @requires_gl BPTC texture compression is not available in OpenGL ES or
      *      WebGL.
      */
@@ -798,7 +798,7 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ETC2 compressed RGB, normalized unsigned. **Available only on 2D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
      * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
      *      2.0.
      */
@@ -807,7 +807,7 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ETC2 compressed sRGB, normalized unsigned. **Available only on 2D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
      * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
      *      2.0.
      */
@@ -817,7 +817,7 @@ enum class CompressedPixelFormat: GLenum {
      * ETC2 compressed RGB with punchthrough (single-bit) alpha, normalized
      * unsigned. **Available only on 2D, 2D array, cube map and cube map array
      * textures.**
-     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
      * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
      *      2.0.
      */
@@ -827,7 +827,7 @@ enum class CompressedPixelFormat: GLenum {
      * ETC2 compressed sRGB with punchthrough (single-bit) alpha, normalized
      * unsigned. **Available only on 2D, 2D array, cube map and cube map array
      * textures.**
-     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
      * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
      *      2.0.
      */
@@ -836,7 +836,7 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ETC2/EAC compressed RGBA, normalized unsigned. **Available only on 2D,
      * 2D array, cube map and cube map array textures.**
-     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
      * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
      *      2.0.
      */
@@ -845,7 +845,7 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ETC2/EAC compressed sRGB with alpha, normalized unsigned. **Available
      * only on 2D, 2D array, cube map and cube map array textures.**
-     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
      * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
      *      2.0.
      */
@@ -854,7 +854,7 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * EAC compressed red channel, normalized unsigned. **Available only on 2D,
      * 2D array, cube map and cube map array textures.**
-     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
      * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
      *      2.0.
      */
@@ -863,7 +863,7 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * EAC compressed red channel, normalized signed. **Available only on 2D,
      * 2D array, cube map and cube map array textures.**
-     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
      * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
      *      2.0.
      */
@@ -872,7 +872,7 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * EAC compressed red and green channel, normalized unsigned. **Available
      * only on 2D, 2D array, cube map and cube map array textures.**
-     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
      * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
      *      2.0.
      */
@@ -881,7 +881,7 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * EAC compressed red and green channel, normalized signed. **Available
      * only on 2D, 2D array, cube map and cube map array textures.**
-     * @requires_gl43 Extension @extension{ARB,ES3_compatibility}
+     * @requires_gl43 Extension @gl_extension{ARB,ES3_compatibility}
      * @requires_gles30 ETC2 texture compression is not available in OpenGL ES
      *      2.0.
      */
@@ -891,8 +891,8 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * S3TC DXT1 compressed RGB. **Available only for 2D, 2D array, cube map
      * and cube map array textures.**
-     * @requires_extension Extension @extension{EXT,texture_compression_s3tc}
-     * @requires_es_extension Extension @extension2{EXT,texture_compression_s3tc,texture_compression_s3tc}
+     * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
+     * @requires_es_extension Extension @gl_extension2{EXT,texture_compression_s3tc,texture_compression_s3tc}
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc}
      */
     RGBS3tcDxt1 = GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
@@ -900,8 +900,8 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * S3TC DXT1 compressed RGBA. **Available only for 2D, 2D array, cube map
      * and cube map array textures.**
-     * @requires_extension Extension @extension{EXT,texture_compression_s3tc}
-     * @requires_es_extension Extension @extension2{EXT,texture_compression_s3tc,texture_compression_s3tc}
+     * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
+     * @requires_es_extension Extension @gl_extension2{EXT,texture_compression_s3tc,texture_compression_s3tc}
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc}
      */
     RGBAS3tcDxt1 = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
@@ -909,8 +909,8 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * S3TC DXT3 compressed RGBA. **Available only for 2D, 2D array, cube map
      * and cube map array textures.**
-     * @requires_extension Extension @extension{EXT,texture_compression_s3tc}
-     * @requires_es_extension Extension @extension2{EXT,texture_compression_s3tc,texture_compression_s3tc}
+     * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
+     * @requires_es_extension Extension @gl_extension2{EXT,texture_compression_s3tc,texture_compression_s3tc}
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc}
      */
     RGBAS3tcDxt3 = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
@@ -918,8 +918,8 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * S3TC DXT5 compressed RGBA. **Available only for 2D, 2D array, cube map
      * and cube map array textures.**
-     * @requires_extension Extension @extension{EXT,texture_compression_s3tc}
-     * @requires_es_extension Extension @extension2{EXT,texture_compression_s3tc,texture_compression_s3tc}
+     * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
+     * @requires_es_extension Extension @gl_extension2{EXT,texture_compression_s3tc,texture_compression_s3tc}
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc}
      */
     RGBAS3tcDxt5 = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
@@ -928,12 +928,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed RGBA with 4x4 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -942,12 +942,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed sRGB with alpha with 4x4 blocks. **Available only on 2D,
      * 3D, 2D array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -956,12 +956,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed RGBA with 5x4 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -970,12 +970,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed sRGB with alpha with 5x4 blocks. **Available only on 2D,
      * 3D, 2D array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -984,12 +984,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed RGBA with 5x5 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -998,12 +998,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed sRGB with alpha with 5x5 blocks. **Available only on 2D,
      * 3D, 2D array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1012,12 +1012,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed RGBA with 6x5 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1026,12 +1026,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed sRGB with alpha with 6x5 blocks. **Available only on 2D,
      * 3D, 2D array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1040,12 +1040,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed RGBA with 6x6 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1054,12 +1054,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed sRGB with alpha with 6x6 blocks. **Available only on 2D,
      * 3D, 2D array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1068,12 +1068,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed RGBA with 8x5 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1082,12 +1082,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed sRGB with alpha with 8x5 blocks. **Available only on 2D,
      * 3D, 2D array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1096,12 +1096,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed RGBA with 8x6 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1110,12 +1110,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed sRGB with alpha with 8x6 blocks. **Available only on 2D,
      * 3D, 2D array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1124,12 +1124,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed RGBA with 8x8 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1138,12 +1138,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed sRGB with alpha with 8x8 blocks. **Available only on 2D,
      * 3D, 2D array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1152,12 +1152,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed RGBA with 10x5 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1166,12 +1166,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed sRGB with alpha with 10x5 blocks. **Available only on
      * 2D, 3D, 2D array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1180,12 +1180,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed RGBA with 10x6 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1194,12 +1194,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed sRGB with alpha with 10x6 blocks. **Available only on
      * 2D, 3D, 2D array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1208,12 +1208,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed RGBA with 10x8 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1222,12 +1222,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed sRGB with alpha with 10x8 blocks. **Available only on
      * 2D, 3D, 2D array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1236,12 +1236,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed RGBA with 10x10 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1250,12 +1250,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed sRGB with alpha with 10x10 blocks. **Available only on
      * 2D, 3D, 2D array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1264,12 +1264,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed RGBA with 12x10 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1278,12 +1278,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed sRGB with alpha with 12x10 blocks. **Available only on
      * 2D, 3D, 2D array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1292,12 +1292,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed RGBA with 12x12 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */
@@ -1306,12 +1306,12 @@ enum class CompressedPixelFormat: GLenum {
     /**
      * ASTC compressed sRGB with alpha with 12x12 blocks. **Available only on
      * 2D, 3D, 2D array, cube map and cube map array textures.**
-     * @requires_extension Extension @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_extension Extension @extension{KHR,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
-     * @requires_es_extension Extension @extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles ASTC texture compression is not available in WebGL.
      */

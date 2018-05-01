@@ -66,9 +66,9 @@ typedef Containers::EnumSet<FramebufferClear> FramebufferClearMask;
 
 @see @ref AbstractFramebuffer, @ref FramebufferBlitMask
 @m_enum_values_as_keywords
-@requires_gl30 Extension @extension{ARB,framebuffer_object}
-@requires_gles30 Extension @extension{ANGLE,framebuffer_blit} or
-    @extension{NV,framebuffer_blit} in OpenGL ES 2.0.
+@requires_gl30 Extension @gl_extension{ARB,framebuffer_object}
+@requires_gles30 Extension @gl_extension{ANGLE,framebuffer_blit} or
+    @gl_extension{NV,framebuffer_blit} in OpenGL ES 2.0.
 @requires_webgl20 Framebuffer blit is not available in WebGL 1.0.
 */
 enum class FramebufferBlit: GLbitfield {
@@ -81,9 +81,9 @@ enum class FramebufferBlit: GLbitfield {
 @brief Mask for framebuffer blitting
 
 @see @ref AbstractFramebuffer::blit()
-@requires_gl30 Extension @extension{ARB,framebuffer_object}
-@requires_gles30 Extension @extension{ANGLE,framebuffer_blit} or
-    @extension{NV,framebuffer_blit} in OpenGL ES 2.0.
+@requires_gl30 Extension @gl_extension{ARB,framebuffer_object}
+@requires_gles30 Extension @gl_extension{ANGLE,framebuffer_blit} or
+    @gl_extension{NV,framebuffer_blit} in OpenGL ES 2.0.
 @requires_webgl20 Framebuffer blit is not available in WebGL 1.0.
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -98,9 +98,9 @@ typedef Containers::EnumSet<FramebufferBlit> FramebufferBlitMask;
 
 @see @ref AbstractFramebuffer::blit()
 @m_enum_values_as_keywords
-@requires_gl30 Extension @extension{ARB,framebuffer_object}
-@requires_gles30 Extension @extension{ANGLE,framebuffer_blit} or
-    @extension{NV,framebuffer_blit} in OpenGL ES 2.0.
+@requires_gl30 Extension @gl_extension{ARB,framebuffer_object}
+@requires_gles30 Extension @gl_extension{ANGLE,framebuffer_blit} or
+    @gl_extension{NV,framebuffer_blit} in OpenGL ES 2.0.
 @requires_webgl20 Framebuffer blit is not available in WebGL 1.0.
 */
 enum class FramebufferBlitFilter: GLenum {
@@ -114,7 +114,7 @@ enum class FramebufferBlitFilter: GLenum {
 
 @see @ref DefaultFramebuffer::checkStatus(), @ref Framebuffer::checkStatus()
 @m_enum_values_as_keywords
-@requires_gl30 Extension @extension{ARB,framebuffer_object}
+@requires_gl30 Extension @gl_extension{ARB,framebuffer_object}
 */
 enum class FramebufferTarget: GLenum {
     /** Frambebuffer reading target */
@@ -158,19 +158,19 @@ doing image download via @ref read() using @fn_gl{PixelStore} with
 avoid unnecessary calls to @fn_gl{PixelStore}. See also @ref Context::resetState()
 and @ref Context::State::PixelStorage.
 
-If extension @extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+If extension @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
 available, @ref blit(), @ref clearDepth(), @ref clearStencil() and
 @ref clearDepthStencil() functions use DSA to avoid unnecessary call to
 @fn_gl{BindFramebuffer}. See their documentation for more information.
 
-If @extension{ARB,robustness} is available, @ref read() operations are
+If @gl_extension{ARB,robustness} is available, @ref read() operations are
 protected from buffer overflow.
 */
 class MAGNUM_GL_EXPORT AbstractFramebuffer {
     friend Implementation::FramebufferState;
 
     public:
-        /** @todo `GL_IMPLEMENTATION_COLOR_READ_FORMAT`, `GL_IMPLEMENTATION_COLOR_READ_TYPE`, seems to be depending on currently bound FB (aargh) (@extension{ARB,ES2_compatibility}). */
+        /** @todo `GL_IMPLEMENTATION_COLOR_READ_FORMAT`, `GL_IMPLEMENTATION_COLOR_READ_TYPE`, seems to be depending on currently bound FB (aargh) (@gl_extension{ARB,ES2_compatibility}). */
 
         /**
          * @brief Max supported viewport size
@@ -186,8 +186,8 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * @brief Max supported draw buffer count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If neither @extension{EXT,draw_buffers} nor
-         * @extension{NV,draw_buffers} is available in OpenGL ES 2.0 and
+         * OpenGL calls. If neither @gl_extension{EXT,draw_buffers} nor
+         * @gl_extension{NV,draw_buffers} is available in OpenGL ES 2.0 and
          * @webgl_extension{WEBGL,draw_buffers} is not available in WebGL 1.0,
          * returns `0`.
          * @see @ref DefaultFramebuffer::mapForDraw(), @ref Framebuffer::mapForDraw(),
@@ -200,7 +200,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * @brief Max supported dual-source draw buffer count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,blend_func_extended} (part
+         * OpenGL calls. If extension @gl_extension{ARB,blend_func_extended} (part
          * of OpenGL 3.3) is not available, returns `0`.
          * @see @ref DefaultFramebuffer::mapForDraw(), @ref Framebuffer::mapForDraw(),
          *      @fn_gl{Get} with @def_gl_keyword{MAX_DUAL_SOURCE_DRAW_BUFFERS}
@@ -223,14 +223,14 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * See @ref DefaultFramebuffer::mapForRead(), @ref Framebuffer::mapForRead(),
          * @ref DefaultFramebuffer::mapForDraw() and @ref Framebuffer::mapForDraw()
          * for specifying particular buffers for blitting operation. If
-         * @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, @p source framebuffer is bound to @ref FramebufferTarget::Read
          * and @p destination framebuffer to @ref FramebufferTarget::Draw
          * before the operation (if not already).
          * @see @fn_gl2_keyword{BlitNamedFramebuffer,BlitFramebuffer}, eventually
          *      @fn_gl_keyword{BlitFramebuffer}
-         * @requires_gles30 Extension @extension{ANGLE,framebuffer_blit} or
-         *      @extension{NV,framebuffer_blit} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @gl_extension{ANGLE,framebuffer_blit} or
+         *      @gl_extension{NV,framebuffer_blit} in OpenGL ES 2.0.
          * @requires_webgl20 Framebuffer blit is not available in WebGL 1.0.
          */
         static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
@@ -352,13 +352,13 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * @ref PixelStorage::skip() is set, the functionality is emulated by
          * adjusting the data pointer.
          *
-         * If @extension{ARB,robustness} is available, the operation is
+         * If @gl_extension{ARB,robustness} is available, the operation is
          * protected from buffer overflow.
          * @see @fn_gl{BindFramebuffer}, then @fn_gl{PixelStore} and
          *      @fn_gl_keyword{ReadPixels} or
          *      @fn_gl_extension_keyword{ReadnPixels,ARB,robustness}
-         * @requires_gles30 Extension @extension{EXT,unpack_subimage}/
-         *      @extension{NV,pack_subimage} in OpenGL ES 2.0 if
+         * @requires_gles30 Extension @gl_extension{EXT,unpack_subimage}/
+         *      @gl_extension{NV,pack_subimage} in OpenGL ES 2.0 if
          *      @ref PixelStorage::rowLength() is set to a non-zero value.
          * @requires_webgl20 Non-zero @ref PixelStorage::rowLength() is not
          *      supported in WebGL 1.0.
@@ -388,7 +388,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * @requires_webgl20 Pixel buffer objects are not available in WebGL
          *      1.0.
          * @todo Make it more flexible (usable with
-         *      @extension{ARB,buffer_storage}, avoiding relocations...)
+         *      @gl_extension{ARB,buffer_storage}, avoiding relocations...)
          */
         void read(const Range2Di& rectangle, BufferImage2D& image, BufferUsage usage);
 
@@ -413,7 +413,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * On platforms that support it prefer to use @ref Texture1D::setStorage()
          * and @ref copySubImage() instead, as it avoids unnecessary
          * reallocations and has better performance characteristics. This call
-         * also has no equivalent in @extension{ARB,direct_state_access}, thus
+         * also has no equivalent in @gl_extension{ARB,direct_state_access}, thus
          * the texture needs to be bound to some texture unit before the
          * operation.
          * @see @ref Texture1D::maxSize(), @fn_gl{BindFramebuffer}, then
@@ -436,7 +436,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * On platforms that support it prefer to use @ref Texture2D::setStorage()
          * and @ref copySubImage() instead, as it avoids unnecessary
          * reallocations and has better performance characteristics. This call
-         * also has no equivalent in @extension{ARB,direct_state_access}, thus
+         * also has no equivalent in @gl_extension{ARB,direct_state_access}, thus
          * the texture needs to be bound to some texture unit before the
          * operation.
          * @see @ref Texture2D::maxSize(), @fn_gl{BindFramebuffer}, then
@@ -457,13 +457,13 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * On platforms that support it prefer to use @ref RectangleTexture::setStorage()
          * and @ref copySubImage() instead, as it avoids unnecessary
          * reallocations and has better performance characteristics. This call
-         * also has no equivalent in @extension{ARB,direct_state_access}, thus
+         * also has no equivalent in @gl_extension{ARB,direct_state_access}, thus
          * the texture needs to be bound to some texture unit before the
          * operation.
          * @see @ref Texture2D::maxSize(), @fn_gl{BindFramebuffer}, then
          *      @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{CopyTexImage2D}
-         * @requires_gl31 Extension @extension{ARB,texture_rectangle}
+         * @requires_gl31 Extension @gl_extension{ARB,texture_rectangle}
          * @requires_gl Rectangle textures are not available in OpenGL ES and
          *      WebGL.
          * @deprecated_gl Prefer to use @ref RectangleTexture::setStorage() and
@@ -483,7 +483,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * On platforms that support it prefer to use @ref CubeMapTexture::setStorage()
          * and @ref copySubImage() instead, as it avoids unnecessary
          * reallocations and has better performance characteristics. This call
-         * also has no equivalent in @extension{ARB,direct_state_access}, thus
+         * also has no equivalent in @gl_extension{ARB,direct_state_access}, thus
          * the texture needs to be bound to some texture unit before the
          * operation.
          * @see @ref Texture2D::maxSize(), @fn_gl{BindFramebuffer}, then
@@ -505,7 +505,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * On platforms that support it prefer to use @ref Texture2D::setStorage()
          * and @ref copySubImage() instead, as it avoids unnecessary
          * reallocations and has better performance characteristics. This call
-         * also has no equivalent in @extension{ARB,direct_state_access}, thus
+         * also has no equivalent in @gl_extension{ARB,direct_state_access}, thus
          * the texture needs to be bound to some texture unit before the
          * operation.
          * @see @ref Texture2D::maxSize(), @fn_gl{BindFramebuffer}, then
@@ -528,8 +528,8 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * @param level             Texture mip level
          * @param offset            Offset inside the texture
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already).
          * @see @ref Texture1D::setStorage(), @fn_gl{BindFramebuffer}, then
@@ -549,8 +549,8 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * @param level             Texture mip level
          * @param offset            Offset inside the texture
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already).
          * @see @ref Texture2D::setStorage(), @fn_gl{BindFramebuffer}, then
@@ -568,8 +568,8 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * @param texture           Texture where to put the data
          * @param offset            Offset inside the texture
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already).
          * @see @ref RectangleTexture::setStorage(), @fn_gl{BindFramebuffer},
@@ -592,8 +592,8 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          *
          * Z coordinate of the offset is equivalent to number of texture face,
          * i.e. +X is `0` and so on, in order of (+X, -X, +Y, -Y, +Z, -Z). If
-         * neither @extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @extension{EXT,direct_state_access} desktop extension is available,
+         * neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
+         * @gl_extension{EXT,direct_state_access} desktop extension is available,
          * the texture is bound before the operation (if not already).
          * @see @ref CubeMapTexture::setStorage(), @fn_gl{BindFramebuffer},
          *      then @fn_gl2_keyword{CopyTextureSubImage3D,CopyTexSubImage3D},
@@ -611,8 +611,8 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * @param level             Texture mip level
          * @param offset            Offset inside the texture
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already).
          * @see @ref Texture3D::setStorage(), @fn_gl{BindFramebuffer}, then
@@ -620,7 +620,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          *      @fn_gl_extension_keyword{CopyTextureSubImage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{CopyTexSubImage3D}
-         * @requires_gles30 Extension @extension{OES,texture_3D} in OpenGL
+         * @requires_gles30 Extension @gl_extension{OES,texture_3D} in OpenGL
          *      ES 2.0.
          * @requires_webgl20 Only 2D textures are available in WebGL 1.0.
          */
@@ -635,8 +635,8 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * @param level             Texture mip level
          * @param offset            Offset inside the texture
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already).
          * @see @ref Texture1DArray::setStorage(), @fn_gl{BindFramebuffer},
@@ -658,8 +658,8 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * @param level             Texture mip level
          * @param offset            Offset inside the texture
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already).
          * @see @ref Texture2DArray::setStorage(), @fn_gl{BindFramebuffer},
@@ -667,7 +667,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          *      @fn_gl_extension_keyword{CopyTextureSubImage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{CopyTexSubImage3D}
-         * @requires_gl30 Extension @extension{EXT,texture_array}
+         * @requires_gl30 Extension @gl_extension{EXT,texture_array}
          * @requires_gles30 Array textures are not available in OpenGL ES 2.0.
          * @requires_webgl20 Array textures are not available in WebGL 1.0.
          */
@@ -684,8 +684,8 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          *
          * Z coordinate of the offset is equivalent to layer * 6 + number of
          * texture face, i.e. +X is `0` and so on, in order of (+X, -X, +Y, -Y,
-         * +Z, -Z). If neither @extension{ARB,direct_state_access} (part of
-         * OpenGL 4.5) nor @extension{EXT,direct_state_access} desktop
+         * +Z, -Z). If neither @gl_extension{ARB,direct_state_access} (part of
+         * OpenGL 4.5) nor @gl_extension{EXT,direct_state_access} desktop
          * available, the texture is bound before the operation (if not
          * already).
          * @see @ref CubeMapTextureArray::setStorage(), @fn_gl{BindFramebuffer},
@@ -693,10 +693,10 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          *      @fn_gl_extension_keyword{CopyTextureSubImage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{CopyTexSubImage3D}
-         * @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
+         * @requires_gl40 Extension @gl_extension{ARB,texture_cube_map_array}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension{EXT,texture_cube_map_array}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,texture_cube_map_array}
          * @requires_gles Cube map texture arrays are not available in WebGL.
          */
         void copySubImage(const Range2Di& rectangle, CubeMapTextureArray& texture, Int level, const Vector3i& offset);

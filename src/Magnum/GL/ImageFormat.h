@@ -42,7 +42,7 @@ namespace Magnum { namespace GL {
 @see @ref Texture::bindImage() "*Texture::bindImage()",
     @ref Texture::bindImageLayered() "*Texture::bindImageLayered()"
 @m_enum_values_as_keywords
-@requires_gl42 Extension @extension{ARB,shader_image_load_store}
+@requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
 @requires_gles31 Shader image load/store is not available in OpenGL ES 3.0 and
     older.
 @requires_gles Shader image load/store is not available in WebGL.
@@ -59,7 +59,7 @@ enum class ImageAccess: GLenum {
 @see @ref Texture::bindImage() "*Texture::bindImage()",
     @ref Texture::bindImageLayered() "*Texture::bindImageLayered()"
 @m_enum_values_as_keywords
-@requires_gl42 Extension @extension{ARB,shader_image_load_store}
+@requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
 @requires_gles31 Shader image load/store is not available in OpenGL ES 3.0 and
     older.
 @requires_gles Shader image load/store is not available in WebGL.
@@ -302,7 +302,7 @@ enum class ImageFormat: GLenum {
 
     /**
      * RGBA, non-normalized unsigned, each RGB component 10bit, alpha 2bit.
-     * @requires_gl33 Extension @extension{ARB,texture_rgb10_a2ui}
+     * @requires_gl33 Extension @gl_extension{ARB,texture_rgb10_a2ui}
      * @requires_gl Packed image formats are not available in OpenGL ES.
      */
     RGB10A2UI = GL_RGB10_A2UI,

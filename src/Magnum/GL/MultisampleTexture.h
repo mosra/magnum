@@ -90,13 +90,13 @@ Note that multisample textures don't support compressed formats.
     @ref TextureArray, @ref CubeMapTexture, @ref CubeMapTextureArray,
     @ref RectangleTexture, @ref BufferTexture
 @m_keywords{GL_TEXTURE_2D_MULTISAMPLE GL_TEXTURE_2D_MULTISAMPLE_ARRAY}
-@requires_gl32 Extension @extension{ARB,texture_multisample}
+@requires_gl32 Extension @gl_extension{ARB,texture_multisample}
 @requires_gles31 Multisample 2D textures are not available in OpenGL ES 3.0 and
     older.
 @requires_gles30 Multisample 2D array textures are not defined in OpenGL ES
     2.0.
-@requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-    @extension{OES,texture_storage_multisample_2d_array} for multisample 2D
+@requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+    @gl_extension{OES,texture_storage_multisample_2d_array} for multisample 2D
     array textures.
 @requires_gles Multisample textures are not available in WebGL.
  */
@@ -110,7 +110,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * @brief Max supported multisample texture size
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
+         * OpenGL calls. If neither extension @gl_extension{ARB,texture_multisample}
          * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns zero
          * vector.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_TEXTURE_SIZE} and
@@ -140,7 +140,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
         /**
          * @brief Constructor
          *
-         * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
+         * Creates new OpenGL texture object. If @gl_extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
          * @see @ref MultisampleTexture(NoCreateT), @ref wrap(),
@@ -177,7 +177,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
          *      @fn_gl_keyword{BindImageTexture}
-         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         template<UnsignedInt d = dimensions, class = typename std::enable_if<d == 2>::type>
@@ -201,9 +201,9 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
          *      @fn_gl_keyword{BindImageTexture}
-         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension{OES,texture_storage_multisample_2d_array} for
+         * @requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{OES,texture_storage_multisample_2d_array} for
          *      multisample 2D array textures.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -227,9 +227,9 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          *      @ref bindImage(), @ref unbindImages(), @ref unbindImage(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
          *      @fn_gl_keyword{BindImageTexture}
-         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension{OES,texture_storage_multisample_2d_array} for
+         * @requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{OES,texture_storage_multisample_2d_array} for
          *      multisample 2D array textures.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -250,12 +250,12 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
          * After calling this function the texture is immutable and calling
          * @ref setStorage() again is not allowed.
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
-         * already). If @extension{ARB,texture_storage_multisample} (part of
+         * already). If @gl_extension{ARB,texture_storage_multisample} (part of
          * OpenGL 4.3) is not available, the texture is bound and the feature
-         * is emulated using plain @extension{ARB,texture_multisample}
+         * is emulated using plain @gl_extension{ARB,texture_multisample}
          * functionality.
          * @see @ref maxSize(), @ref maxColorSamples(), @ref maxDepthSamples(),
          *      @ref maxIntegerSamples(), @fn_gl2_keyword{TextureStorage2DMultisample,TexStorage2DMultisample} /
@@ -320,7 +320,7 @@ template<UnsignedInt dimensions> class MultisampleTexture: public AbstractTextur
 /**
 @brief Two-dimensional multisample texture
 
-@requires_gl32 Extension @extension{ARB,texture_multisample}
+@requires_gl32 Extension @gl_extension{ARB,texture_multisample}
 @requires_gles31 Multisample textures are not available in OpenGL ES 3.0 and
     older.
 @requires_gles Multisample textures are not available in WebGL.
@@ -330,10 +330,10 @@ typedef MultisampleTexture<2> MultisampleTexture2D;
 /**
 @brief Two-dimensional multisample texture array
 
-@requires_gl32 Extension @extension{ARB,texture_multisample}
+@requires_gl32 Extension @gl_extension{ARB,texture_multisample}
 @requires_gles30 Not defined in OpenGL ES 2.0.
-@requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-    @extension{OES,texture_storage_multisample_2d_array}
+@requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+    @gl_extension{OES,texture_storage_multisample_2d_array}
 @requires_gles Multisample textures are not available in WebGL.
 */
 typedef MultisampleTexture<3> MultisampleTexture2DArray;

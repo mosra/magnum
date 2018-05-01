@@ -49,13 +49,13 @@ usage of both methods:
 
 Using the latter results in fewer OpenGL calls when doing more measures.
 
-@requires_gl33 Extension @extension{ARB,timer_query}
-@requires_es_extension Extension @extension{EXT,disjoint_timer_query}
+@requires_gl33 Extension @gl_extension{ARB,timer_query}
+@requires_es_extension Extension @gl_extension{EXT,disjoint_timer_query}
 @requires_gles Time query is not available in WebGL.
 
 @see @ref PrimitiveQuery, @ref SampleQuery
 @todo timestamp with glGet + example usage
-@todo @extension{EXT,disjoint_timer_query} --- GL_GPU_DISJOINT_EXT support? where?
+@todo @gl_extension{EXT,disjoint_timer_query} --- GL_GPU_DISJOINT_EXT support? where?
 */
 class TimeQuery: public AbstractQuery {
     public:
@@ -107,7 +107,7 @@ class TimeQuery: public AbstractQuery {
         /**
          * @brief Constructor
          *
-         * Creates new OpenGL query object. If @extension{ARB,direct_state_access}
+         * Creates new OpenGL query object. If @gl_extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the query is created on first
          * use.
          * @see @ref TimeQuery(NoCreateT), @ref wrap(), @fn_gl_keyword{CreateQueries},

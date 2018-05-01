@@ -73,15 +73,15 @@ framebuffer, then bind the default and render the textures on screen:
 
 See also @ref GL-AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
 
-If either @extension{ARB,direct_state_access} (part of OpenGL 4.5) or
-@extension{EXT,direct_state_access} desktop extension is available, functions
+If either @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) or
+@gl_extension{EXT,direct_state_access} desktop extension is available, functions
 @ref checkStatus(), @ref mapForDraw(), @ref mapForRead(), @ref invalidate(),
 @ref attachRenderbuffer(), @ref attachTexture(), @ref attachCubeMapTexture(),
 @ref attachTextureLayer() and @ref detach() use DSA to avoid unnecessary calls
 to @fn_gl{BindFramebuffer}. See their respective documentation for more
 information.
 
-@requires_gl30 Extension @extension{ARB,framebuffer_object}
+@requires_gl30 Extension @gl_extension{ARB,framebuffer_object}
 */
 class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractObject {
     friend Implementation::FramebufferState;
@@ -94,9 +94,9 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          *      @ref attachTexture(), @ref attachCubeMapTexture(),
          *      @ref attachTextureLayer()
          * @m_keywords{GL_COLOR_ATTACHMENTn}
-         * @requires_gles30 Extension @extension{EXT,draw_buffers} or
-         *      @extension{NV,draw_buffers} for @ref mapForDraw() and
-         *      extension @extension{NV,fbo_color_attachments} for `attach*()`
+         * @requires_gles30 Extension @gl_extension{EXT,draw_buffers} or
+         *      @gl_extension{NV,draw_buffers} for @ref mapForDraw() and
+         *      extension @gl_extension{NV,fbo_color_attachments} for `attach*()`
          *      in OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
          *      WebGL 1.0.
@@ -123,8 +123,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @brief Draw attachment
          *
          * @see @ref mapForDraw()
-         * @requires_gles30 Extension @extension{EXT,draw_buffers} or
-         *      @extension{NV,draw_buffers} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @gl_extension{EXT,draw_buffers} or
+         *      @gl_extension{NV,draw_buffers} in OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
          *      WebGL 1.0.
          */
@@ -155,8 +155,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          *
          * @see @ref attachRenderbuffer(), @ref attachTexture(),
          *      @ref attachCubeMapTexture(), @ref attachTextureLayer()
-         * @requires_gles30 Extension @extension{EXT,draw_buffers} or
-         *      @extension{NV,fbo_color_attachments} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @gl_extension{EXT,draw_buffers} or
+         *      @gl_extension{NV,fbo_color_attachments} in OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
          *      WebGL 1.0.
          */
@@ -208,8 +208,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @brief Invalidation attachment
          *
          * @see @ref invalidate()
-         * @requires_gl43 Extension @extension{ARB,invalidate_subdata}
-         * @requires_gles30 Extension @extension{EXT,discard_framebuffer} in
+         * @requires_gl43 Extension @gl_extension{ARB,invalidate_subdata}
+         * @requires_gles30 Extension @gl_extension{EXT,discard_framebuffer} in
          *      OpenGL ES 2.0.
          * @requires_webgl20 Framebuffer invalidation is not available in WebGL
          *      1.0.
@@ -284,10 +284,10 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
             /**
              * Sample count or locations are not the same for all attached
              * images.
-             * @requires_gles30 Extension @extension{ANGLE,framebuffer_multisample},
-             *      @extension{APPLE,framebuffer_multisample},
-             *      @extension{EXT,multisampled_render_to_texture} or
-             *      @extension{NV,framebuffer_multisample} in OpenGL ES 2.0.
+             * @requires_gles30 Extension @gl_extension{ANGLE,framebuffer_multisample},
+             *      @gl_extension{APPLE,framebuffer_multisample},
+             *      @gl_extension{EXT,multisampled_render_to_texture} or
+             *      @gl_extension{NV,framebuffer_multisample} in OpenGL ES 2.0.
              * @requires_webgl20 Multisample framebuffers are not available in
              *      WebGL 1.0.
              */
@@ -307,14 +307,14 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
             #endif
         };
 
-        /** @todo `GL_MAX_FRAMEBUFFER_WIDTH` etc. when @extension{ARB,framebuffer_no_attachments} is done */
+        /** @todo `GL_MAX_FRAMEBUFFER_WIDTH` etc. when @gl_extension{ARB,framebuffer_no_attachments} is done */
 
         /**
          * @brief Max supported color attachment count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If neither @extension{EXT,draw_buffers} nor
-         * @extension{NV,fbo_color_attachments} extension is available in
+         * OpenGL calls. If neither @gl_extension{EXT,draw_buffers} nor
+         * @gl_extension{NV,fbo_color_attachments} extension is available in
          * OpenGL ES 2.0 and @webgl_extension{WEBGL,draw_buffers} is not
          * available in WebGL 1.0, returns `0`.
          * @see @ref mapForDraw(), @fn_gl{Get} with
@@ -341,7 +341,7 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
         /**
          * @brief Constructor
          *
-         * Generates new OpenGL framebuffer object. If @extension{ARB,direct_state_access}
+         * Generates new OpenGL framebuffer object. If @gl_extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the framebuffer is created on
          * first use.
          * @see @ref Framebuffer(NoCreateT), @ref wrap(), @ref setViewport(),
@@ -405,8 +405,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 / OpenGL ES 3.2 is not supported and
-         * neither @extension{KHR,debug} (covered also by
-         * @extension{ANDROID,extension_pack_es31a}) nor @extension{EXT,debug_label}
+         * neither @gl_extension{KHR,debug} (covered also by
+         * @gl_extension{ANDROID,extension_pack_es31a}) nor @gl_extension{EXT,debug_label}
          * desktop or ES extension is available, this function returns empty
          * string.
          * @see @fn_gl_keyword{GetObjectLabel} or
@@ -421,8 +421,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @return Reference to self (for method chaining)
          *
          * Default is empty string. If OpenGL 4.3 / OpenGL ES 3.2 is not
-         * supported and neither @extension{KHR,debug} (covered also by
-         * @extension{ANDROID,extension_pack_es31a}) nor @extension{EXT,debug_label}
+         * supported and neither @gl_extension{KHR,debug} (covered also by
+         * @gl_extension{ANDROID,extension_pack_es31a}) nor @gl_extension{EXT,debug_label}
          * desktop or ES extension is available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl_keyword{ObjectLabel} or
          *      @fn_gl_extension_keyword{LabelObject,EXT,debug_label} with
@@ -443,14 +443,14 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @brief Check framebuffer status
          * @param target    Target for which check the status
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the framebuffer is bound before the operation (if not
          * already).
          *
          * The @p target parameter is ignored on OpenGL ES 2.0 if none of
-         * @extension{APPLE,framebuffer_multisample}, @extension{ANGLE,framebuffer_blit}
-         * or @extension{NV,framebuffer_blit} is available and also on WebGL
+         * @gl_extension{APPLE,framebuffer_multisample}, @gl_extension{ANGLE,framebuffer_blit}
+         * or @gl_extension{NV,framebuffer_blit} is available and also on WebGL
          * 1.0.
          * @see @fn_gl2_keyword{CheckNamedFramebufferStatus,CheckFramebufferStatus},
          *      @fn_gl_extension_keyword{CheckNamedFramebufferStatus,EXT,direct_state_access},
@@ -495,8 +495,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          *                         {MyShader::NormalOutput, Framebuffer::DrawAttachment::None}});
          * @endcode
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref maxDrawBuffers(), @ref maxDualSourceDrawBuffers(),
@@ -504,8 +504,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          *      @fn_gl2_keyword{NamedFramebufferDrawBuffers,DrawBuffers},
          *      @fn_gl_extension_keyword{FramebufferDrawBuffers,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{DrawBuffers}
-         * @requires_gles30 Extension @extension{EXT,draw_buffers} or
-         *      @extension{NV,draw_buffers} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @gl_extension{EXT,draw_buffers} or
+         *      @gl_extension{NV,draw_buffers} in OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
          *      WebGL 1.0.
          */
@@ -519,8 +519,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * Similar to above function, can be used in cases when shader has
          * only one (unnamed) output.
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref maxColorAttachments(), @ref mapForRead(),
@@ -528,8 +528,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          *      @fn_gl_extension_keyword{FramebufferDrawBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{DrawBuffer}
          *      (or @fn_gl_keyword{DrawBuffers} in OpenGL ES)
-         * @requires_gles30 Extension @extension{EXT,draw_buffers} or
-         *      @extension{NV,draw_buffers} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @gl_extension{EXT,draw_buffers} or
+         *      @gl_extension{NV,draw_buffers} in OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{WEBGL,draw_buffers} in
          *      WebGL 1.0.
          */
@@ -541,14 +541,14 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @param attachment        Color attachment
          * @return Reference to self (for method chaining)
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref mapForDraw(), @fn_gl2_keyword{NamedFramebufferReadBuffer,ReadBuffer},
          *      @fn_gl_extension_keyword{FramebufferReadBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{ReadBuffer}
-         * @requires_gles30 Extension @extension2{NV,read_buffer,GL_NV_read_buffer}
+         * @requires_gles30 Extension @gl_extension2{NV,read_buffer,GL_NV_read_buffer}
          *      in OpenGL ES 2.0.
          * @requires_webgl20 Framebuffer read mapping is not available in WebGL
          *      1.0.
@@ -559,10 +559,10 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @brief Invalidate framebuffer
          * @param attachments       Attachments to invalidate
          *
-         * If extension @extension{ARB,invalidate_subdata} (part of OpenGL
-         * 4.3), extension @extension{EXT,discard_framebuffer} in OpenGL ES
+         * If extension @gl_extension{ARB,invalidate_subdata} (part of OpenGL
+         * 4.3), extension @gl_extension{EXT,discard_framebuffer} in OpenGL ES
          * 2.0 or OpenGL ES 3.0 is not available, this function does nothing.
-         * If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @fn_gl2_keyword{InvalidateNamedFramebufferData,InvalidateFramebuffer},
@@ -581,9 +581,9 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @param attachments       Attachments to invalidate
          * @param rectangle         Rectangle to invalidate
          *
-         * If extension @extension{ARB,invalidate_subdata} (part of OpenGL
+         * If extension @gl_extension{ARB,invalidate_subdata} (part of OpenGL
          * 4.3) is not available, this function does nothing. If
-         * @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref invalidate(std::initializer_list<InvalidationAttachment>),
@@ -603,8 +603,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @param renderbuffer      Renderbuffer
          * @return Reference to self (for method chaining)
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref detach(), @fn_gl2_keyword{NamedFramebufferRenderbuffer,FramebufferRenderbuffer},
@@ -621,8 +621,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @param level             Mip level
          * @return Reference to self (for method chaining)
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref detach(), @ref attachCubeMapTexture(),
@@ -643,8 +643,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @param level             Mip level
          * @return Reference to self (for method chaining)
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref detach(), @ref attachCubeMapTexture(),
@@ -652,7 +652,7 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          *      @fn_gl_extension_keyword{NamedFramebufferTexture2D,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and
          *      @fn_gl2_keyword{FramebufferTexture2D,FramebufferTexture}
-         * @requires_gles30 Extension @extension{OES,fbo_render_mipmap} to
+         * @requires_gles30 Extension @gl_extension{OES,fbo_render_mipmap} to
          *      render to @p level different than `0` in OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{OES,fbo_render_mipmap}
          *      to render to @p level different than `0` in WebGL 1.0.
@@ -661,7 +661,7 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
 
         #ifndef MAGNUM_TARGET_GLES
         /** @overload
-         * @requires_gl31 Extension @extension{ARB,texture_rectangle}
+         * @requires_gl31 Extension @gl_extension{ARB,texture_rectangle}
          * @requires_gl Rectangle textures are not available in OpenGL ES and
          *      WebGL.
          */
@@ -670,7 +670,7 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /** @overload
-         * @requires_gl32 Extension @extension{ARB,texture_multisample}
+         * @requires_gl32 Extension @gl_extension{ARB,texture_multisample}
          * @requires_gles31 Multisample textures are not available in OpenGL ES
          *      3.0 and older.
          * @requires_gles Multisample textures are not available in WebGL.
@@ -686,8 +686,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @param level             Mip level
          * @return Reference to self (for method chaining)
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref detach(), @ref attachTexture(),
@@ -695,7 +695,7 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          *      @fn_gl_extension_keyword{NamedFramebufferTexture2D,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and
          *      @fn_gl2_keyword{FramebufferTexture2D,FramebufferTexture}
-         * @requires_gles30 Extension @extension{OES,fbo_render_mipmap} to
+         * @requires_gles30 Extension @gl_extension{OES,fbo_render_mipmap} to
          *      render to @p level different than `0` in OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{OES,fbo_render_mipmap}
          *      to render to @p level different than `0` in WebGL 1.0.
@@ -711,8 +711,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @param layer             Layer
          * @return Reference to self (for method chaining)
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref detach(), @fn_gl2_keyword{NamedFramebufferTextureLayer,FramebufferTextureLayer},
@@ -721,9 +721,9 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          *      @fn_gl2_keyword{FramebufferTextureLayer,FramebufferTexture}
          *      or @fn_gl_extension_keyword{FramebufferTexture3D,OES,texture_3D}
          *      in OpenGL ES 2.0
-         * @requires_gles30 Extension @extension{OES,texture_3D} in OpenGL
+         * @requires_gles30 Extension @gl_extension{OES,texture_3D} in OpenGL
          *      ES 2.0.
-         * @requires_gles30 Extension @extension{OES,fbo_render_mipmap} to
+         * @requires_gles30 Extension @gl_extension{OES,fbo_render_mipmap} to
          *      render to @p level different than `0` in OpenGL ES 2.0.
          * @requires_webgl20 Only 2D textures are available in WebGL 1.0.
          */
@@ -732,7 +732,7 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
 
         #ifndef MAGNUM_TARGET_GLES
         /** @overload
-         * @requires_gl30 Extension @extension{EXT,texture_array}
+         * @requires_gl30 Extension @gl_extension{EXT,texture_array}
          * @requires_gl Only 2D array textures are available in OpenGL ES and
          *      WebGL.
          */
@@ -741,7 +741,7 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload
-         * @requires_gl30 Extension @extension{EXT,texture_array}
+         * @requires_gl30 Extension @gl_extension{EXT,texture_array}
          * @requires_gles30 Array textures are not available in OpenGL ES 2.0.
          * @requires_webgl20 Array textures are not available in WebGL 1.0.
          */
@@ -750,20 +750,20 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /** @overload
-         * @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
+         * @requires_gl40 Extension @gl_extension{ARB,texture_cube_map_array}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension{EXT,texture_cube_map_array}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,texture_cube_map_array}
          * @requires_gles Cube map texture arrays are not available in WebGL.
          */
         Framebuffer& attachTextureLayer(BufferAttachment attachment, CubeMapTextureArray& texture, Int level, Int layer);
 
         /** @overload
-         * @requires_gl32 Extension @extension{ARB,texture_multisample}
+         * @requires_gl32 Extension @gl_extension{ARB,texture_multisample}
          * @requires_gles30 Multisample 2D array textures are not defined in
          *      OpenGL ES 2.0.
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension{OES,texture_storage_multisample_2d_array}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{OES,texture_storage_multisample_2d_array}
          * @requires_gles Multisample textures are not available in WebGL.
          */
         Framebuffer& attachTextureLayer(BufferAttachment attachment, MultisampleTexture2DArray& texture, Int layer);
@@ -778,8 +778,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @return Reference to self (for method chaining)
          *
          * Attaches whole texture with all layers addressable using `gl_Layer`
-         * in geometry shader. If neither @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) nor @extension{EXT,direct_state_access} desktop
+         * in geometry shader. If neither @gl_extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) nor @gl_extension{EXT,direct_state_access} desktop
          * extension is available, the framebuffer is bound before the
          * operation (if not already).
          * @see @ref detach(), @ref attachTexture(),
@@ -787,17 +787,17 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          *      @fn_gl_extension_keyword{NamedFramebufferTexture,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and
          *      @fn_gl_keyword{FramebufferTexture}
-         * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+         * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension{EXT,geometry_shader}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,geometry_shader}
          * @requires_gles Geometry shaders are not available in WebGL.
          */
         Framebuffer& attachLayeredTexture(BufferAttachment attachment, Texture3D& texture, Int level);
 
         #ifndef MAGNUM_TARGET_GLES
         /** @overload
-         * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+         * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4}
          * @requires_gl Only 2D array textures are available in OpenGL ES and
          *      WebGL.
          */
@@ -805,41 +805,41 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
         #endif
 
         /** @overload
-         * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+         * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension{EXT,geometry_shader}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,geometry_shader}
          * @requires_gles Geometry shaders are not available in WebGL.
          */
         Framebuffer& attachLayeredTexture(BufferAttachment attachment, Texture2DArray& texture, Int level);
 
         /**
          * @overload
-         * @requires_gl32 Extension @extension{ARB,geometry_shader4}
+         * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension{EXT,geometry_shader}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,geometry_shader}
          * @requires_gles Geometry shaders are not available in WebGL.
          */
         Framebuffer& attachLayeredTexture(BufferAttachment attachment, CubeMapTexture& texture, Int level);
 
         /** @overload
-         * @requires_gl40 Extension @extension{ARB,texture_cube_map_array}
+         * @requires_gl40 Extension @gl_extension{ARB,texture_cube_map_array}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension{EXT,geometry_shader} and
-         *      @extension{EXT,texture_cube_map_array}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,geometry_shader} and
+         *      @gl_extension{EXT,texture_cube_map_array}
          * @requires_gles Geometry shaders are not available in WebGL.
          */
         Framebuffer& attachLayeredTexture(BufferAttachment attachment, CubeMapTextureArray& texture, Int level);
 
         /** @overload
-         * @requires_gl32 Extension @extension{ARB,geometry_shader4} and
-         *      @extension{ARB,texture_multisample}
+         * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4} and
+         *      @gl_extension{ARB,texture_multisample}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension{EXT,geometry_shader} and
-         *      @extension{OES,texture_storage_multisample_2d_array}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,geometry_shader} and
+         *      @gl_extension{OES,texture_storage_multisample_2d_array}
          * @requires_gles Geometry shaders are not available in WebGL.
          */
         Framebuffer& attachLayeredTexture(BufferAttachment attachment, MultisampleTexture2DArray& texture);
@@ -850,8 +850,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @param attachment        Buffer attachment
          * @return Reference to self (for method chaining)
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref attachRenderbuffer(), @ref attachTexture(),

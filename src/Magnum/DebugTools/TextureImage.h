@@ -43,7 +43,7 @@ namespace Magnum { namespace DebugTools {
 
 Emulates @ref GL::Texture2D::subImage() call on platforms that don't support it
 (such as OpenGL ES) by creating a framebuffer object and using
-@ref GL::Framebuffer::read(). On desktop OpenGL, if @extension{ARB,get_texture_sub_image}
+@ref GL::Framebuffer::read(). On desktop OpenGL, if @gl_extension{ARB,get_texture_sub_image}
 is available, it's just an alias to @ref GL::Texture2D::subImage().
 
 Note that only @ref GL::PixelFormat and @ref GL::PixelType values that are
@@ -114,7 +114,7 @@ MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(GL::CubeMapTexture& texture, GL
 Emulates @ref GL::Texture2D::subImage() call on platforms that don't support it
 (such as OpenGL ES) by creating a framebuffer object and using
 @ref GL::Framebuffer::read(). On desktop OpenGL, if
-@extension{ARB,get_texture_sub_image} is available, it's just an alias to
+@gl_extension{ARB,get_texture_sub_image} is available, it's just an alias to
 @ref GL::Texture2D::subImage().
 
 Note that only @ref GL::PixelFormat and @ref GL::PixelType values that are

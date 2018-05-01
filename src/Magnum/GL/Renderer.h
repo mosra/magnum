@@ -43,7 +43,7 @@ namespace Implementation { struct RendererState; }
 /** @nosubgrouping
 @brief Global renderer configuration.
 
-@todo @extension{ARB,viewport_array}
+@todo @gl_extension{ARB,viewport_array}
 @todo `GL_POINT_SIZE_GRANULARITY`, `GL_POINT_SIZE_RANGE` (?)
 @todo `GL_STEREO`, `GL_DOUBLEBUFFER` (?)
 @todo `GL_MAX_CLIP_DISTANCES`...
@@ -83,11 +83,11 @@ class MAGNUM_GL_EXPORT Renderer {
             #ifndef MAGNUM_TARGET_WEBGL
             /**
              * Coherent advanced blending. Enabled by default if desktop/ES
-             * extension @extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced}
+             * extension @gl_extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced}
              * is available. See @ref blendBarrier() for more information.
-             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in WebGL.
              */
             BlendAdvancedCoherent = GL_BLEND_ADVANCED_COHERENT_KHR,
@@ -106,9 +106,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * created with debug output enabled.
              * @see @ref DebugOutput, @ref Feature::DebugOutputSynchronous,
              *      @ref Platform::Sdl2Application::GLConfiguration::Flag::Debug "Platform::*Application::GLConfiguration::Flag::Debug"
-             * @requires_gl43 Extension @extension{KHR,debug}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,debug,debug}
+             * @requires_gl43 Extension @gl_extension{KHR,debug}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,debug,debug}
              * @requires_gles Debug output is not available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES2
@@ -121,9 +121,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * Synchronous debug output. Has effect only if
              * @ref Feature::DebugOutput is enabled.
              * @see @ref DebugMessage
-             * @requires_gl43 Extension @extension{KHR,debug}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,debug,debug}
+             * @requires_gl43 Extension @gl_extension{KHR,debug}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,debug,debug}
              * @requires_gles Debug output is not available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES2
@@ -136,7 +136,7 @@ class MAGNUM_GL_EXPORT Renderer {
             #ifndef MAGNUM_TARGET_GLES
             /**
              * Depth clamping. If enabled, ignores near and far clipping plane.
-             * @requires_gl32 Extension @extension{ARB,depth_clamp}
+             * @requires_gl32 Extension @gl_extension{ARB,depth_clamp}
              * @requires_gl Depth clamping is not available in OpenGL ES and
              *      WebGL.
              */
@@ -163,8 +163,8 @@ class MAGNUM_GL_EXPORT Renderer {
              * Perform sRGB conversion of values written to sRGB framebuffers.
              * Disabled by default on desktop GL, enabled by default on OpenGL
              * ES.
-             * @requires_gl30 Extension @extension{ARB,framebuffer_sRGB}
-             * @requires_es_extension @extension{EXT,sRGB_write_control}. If
+             * @requires_gl30 Extension @gl_extension{ARB,framebuffer_sRGB}
+             * @requires_es_extension @gl_extension{EXT,sRGB_write_control}. If
              *      the extension is not present, there's no ability to turn
              *      the sRGB conversion off.
              * @requires_gles WebGL has no ability to turn the sRGB conversion
@@ -207,7 +207,7 @@ class MAGNUM_GL_EXPORT Renderer {
              * Offset lines
              * @see @ref Feature::PolygonOffsetFill, @ref Feature::PolygonOffsetPoint,
              *      @ref setPolygonOffset()
-             * @requires_es_extension Extension @extension{NV,polygon_offset}
+             * @requires_es_extension Extension @gl_extension{NV,polygon_offset}
              * @requires_gles Only @ref Feature::PolygonOffsetFill is available
              *      in WebGL.
              */
@@ -221,7 +221,7 @@ class MAGNUM_GL_EXPORT Renderer {
              * Offset points
              * @see @ref Feature::PolygonOffsetFill, @ref Feature::PolygonOffsetLine,
              *      @ref setPolygonOffset()
-             * @requires_es_extension Extension @extension{NV,polygon_offset}
+             * @requires_es_extension Extension @gl_extension{NV,polygon_offset}
              * @requires_gles Only @ref Feature::PolygonOffsetFill is available
              *      in WebGL.
              */
@@ -245,7 +245,7 @@ class MAGNUM_GL_EXPORT Renderer {
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * Discard primitives before rasterization.
-             * @requires_gl30 Extension @extension{EXT,transform_feedback}
+             * @requires_gl30 Extension @gl_extension{EXT,transform_feedback}
              * @requires_gles30 Transform feedback is not available in OpenGL
              *      ES 2.0.
              * @requires_webgl20 Transform feedback is not available in WebGL
@@ -264,7 +264,7 @@ class MAGNUM_GL_EXPORT Renderer {
             /**
              * Seamless cube map texture.
              * @see @ref CubeMapTexture, @ref CubeMapTextureArray
-             * @requires_gl32 Extension @extension{ARB,seamless_cube_map}
+             * @requires_gl32 Extension @gl_extension{ARB,seamless_cube_map}
              * @requires_gl Not available in OpenGL ES 2.0 and WebGL 1.0,
              *      always enabled in OpenGL ES 3.0 and WebGL 2.0.
              */
@@ -317,7 +317,7 @@ class MAGNUM_GL_EXPORT Renderer {
         enum class Hint: GLenum {
             /**
              * Accuracy of derivative calculation in fragment shader.
-             * @requires_gles30 Extension @extension{OES,standard_derivatives}
+             * @requires_gles30 Extension @gl_extension{OES,standard_derivatives}
              *      in OpenGL ES 2.0.
              * @requires_webgl20 Extension @webgl_extension{OES,standard_derivatives}
              *      in WebGL 1.0.
@@ -396,7 +396,7 @@ class MAGNUM_GL_EXPORT Renderer {
         /**
          * @overload
          *
-         * If OpenGL ES, OpenGL 4.1 or extension @extension{ARB,ES2_compatibility}
+         * If OpenGL ES, OpenGL 4.1 or extension @gl_extension{ARB,ES2_compatibility}
          * is not available, this function behaves exactly as
          * @ref setClearDepth(Double).
          * @see @ref Feature::DepthTest, @ref AbstractFramebuffer::clearDepth(),
@@ -465,7 +465,7 @@ class MAGNUM_GL_EXPORT Renderer {
          *
          * @see @ref setProvokingVertex()
          * @m_enum_values_as_keywords
-         * @requires_gl32 Extension @extension{ARB,provoking_vertex}. Older
+         * @requires_gl32 Extension @gl_extension{ARB,provoking_vertex}. Older
          *      versions behave always like @ref ProvokingVertex::LastVertexConvention.
          * @requires_gl OpenGL ES and WebGL behave always like
          *      @ref ProvokingVertex::LastVertexConvention.
@@ -483,7 +483,7 @@ class MAGNUM_GL_EXPORT Renderer {
          *
          * Initial value is @ref ProvokingVertex::LastVertexConvention.
          * @see @fn_gl_keyword{ProvokingVertex}
-         * @requires_gl32 Extension @extension{ARB,provoking_vertex}. Older
+         * @requires_gl32 Extension @gl_extension{ARB,provoking_vertex}. Older
          *      versions behave always like the default.
          * @requires_gl OpenGL ES and WebGL behave always like the default.
          */
@@ -496,7 +496,7 @@ class MAGNUM_GL_EXPORT Renderer {
          *
          * @see @ref setPolygonMode()
          * @m_enum_values_as_keywords
-         * @requires_es_extension Extension @extension{NV,polygon_mode}.
+         * @requires_es_extension Extension @gl_extension{NV,polygon_mode}.
          *      Otherwise behaves always like @ref PolygonMode::Fill. See
          *      @ref Mesh::setPrimitive() for possible workaround.
          * @requires_gles WebGL behaves always like @ref PolygonMode::Fill. See
@@ -537,7 +537,7 @@ class MAGNUM_GL_EXPORT Renderer {
          *
          * Initial value is @ref PolygonMode::Fill.
          * @see @fn_gl_keyword{PolygonMode}
-         * @requires_es_extension Extension @extension{NV,polygon_mode}.
+         * @requires_es_extension Extension @gl_extension{NV,polygon_mode}.
          *      Otherwise behaves always like the default. See
          *      @ref Mesh::setPrimitive() for possible workaround.
          * @requires_gles WebGL behaves always like the default. See
@@ -794,7 +794,7 @@ class MAGNUM_GL_EXPORT Renderer {
 
             /**
              * `min(source, destination)`
-             * @requires_gles30 Extension @extension2{EXT,blend_minmax,blend_minmax}
+             * @requires_gles30 Extension @gl_extension2{EXT,blend_minmax,blend_minmax}
              *      in OpenGL ES 2.0.
              * @requires_webgl20 Extension @webgl_extension{EXT,blend_minmax}
              *      in WebGL 1.0.
@@ -807,7 +807,7 @@ class MAGNUM_GL_EXPORT Renderer {
 
             /**
              * `max(source, destination)`
-             * @requires_gles30 Extension @extension2{EXT,blend_minmax,blend_minmax}
+             * @requires_gles30 Extension @gl_extension2{EXT,blend_minmax,blend_minmax}
              *      in OpenGL ES 2.0.
              * @requires_webgl20 Extension @webgl_extension{EXT,blend_minmax}
              *      in WebGL 1.0.
@@ -824,9 +824,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation, BlendEquation), only in
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
-             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -837,9 +837,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation, BlendEquation), only in
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
-             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -850,9 +850,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation, BlendEquation), only in
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
-             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -863,9 +863,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation, BlendEquation), only in
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
-             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -876,9 +876,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation, BlendEquation), only in
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
-             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -889,9 +889,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation, BlendEquation), only in
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
-             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -902,9 +902,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation, BlendEquation), only in
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
-             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -915,9 +915,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation, BlendEquation), only in
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
-             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -928,9 +928,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation, BlendEquation), only in
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
-             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -941,9 +941,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation, BlendEquation), only in
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
-             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -954,9 +954,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation, BlendEquation), only in
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
-             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -967,9 +967,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation, BlendEquation), only in
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
-             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -980,9 +980,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation, BlendEquation), only in
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
-             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -993,9 +993,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation, BlendEquation), only in
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
-             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -1006,9 +1006,9 @@ class MAGNUM_GL_EXPORT Renderer {
              * @ref setBlendEquation(BlendEquation, BlendEquation), only in
              * @ref setBlendEquation(BlendEquation).
              * @see @ref blendBarrier()
-             * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+             * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
              * @requires_gles Advanced blend equations are not available in
              *      WebGL.
              */
@@ -1065,7 +1065,7 @@ class MAGNUM_GL_EXPORT Renderer {
              * Second source color (@f$ RGB = (R_{s1}, G_{s1}, B_{s1}); A = A_{s1} @f$)
              *
              * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+             * @requires_gl33 Extension @gl_extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
              *      OpenGL ES and WebGL.
              */
@@ -1082,7 +1082,7 @@ class MAGNUM_GL_EXPORT Renderer {
              * One minus second source color (@f$ RGB = (1.0 - R_{s1}, 1.0 - G_{s1}, 1.0 - B_{s1}); A = 1.0 - A_{s1} @f$)
              *
              * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+             * @requires_gl33 Extension @gl_extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
              *      OpenGL ES and WebGL.
              */
@@ -1104,7 +1104,7 @@ class MAGNUM_GL_EXPORT Renderer {
              * Second source alpha (@f$ RGB = (A_{s1}, A_{s1}, A_{s1}); A = A_{s1} @f$)
              *
              * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+             * @requires_gl33 Extension @gl_extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
              *      OpenGL ES and WebGL.
              */
@@ -1121,7 +1121,7 @@ class MAGNUM_GL_EXPORT Renderer {
              * One minus second source alpha (@f$ RGB = (1.0 - A_{s1}, 1.0 - A_{s1}, 1.0 - A_{s1}); A = 1.0 - A_{s1} @f$)
              *
              * @see @ref AbstractShaderProgram::bindFragmentDataLocationIndexed()
-             * @requires_gl33 Extension @extension{ARB,blend_func_extended}
+             * @requires_gl33 Extension @gl_extension{ARB,blend_func_extended}
              * @requires_gl Multiple blending inputs are not available in
              *      OpenGL ES and WebGL.
              */
@@ -1210,13 +1210,13 @@ class MAGNUM_GL_EXPORT Renderer {
          * touched more than once.
          *
          * This is needed either when desktop/ES extension
-         * @extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced}
-         * is not available or when @extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced}
+         * @gl_extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced}
+         * is not available or when @gl_extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced}
          * is available and @ref Feature::BlendAdvancedCoherent is turned off.
          * @see @ref BlendEquation, @fn_gl_extension_keyword{BlendBarrier,KHR,blend_equation_advanced}
-         * @requires_extension Extension @extension{KHR,blend_equation_advanced}
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension2{KHR,blend_equation_advanced,blend_equation_advanced}
+         * @requires_extension Extension @gl_extension{KHR,blend_equation_advanced}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}
          * @requires_gles Advanced blend equations are not available in WebGL.
          */
         static void blendBarrier() { glBlendBarrierKHR(); }
@@ -1290,7 +1290,7 @@ class MAGNUM_GL_EXPORT Renderer {
          * @see @ref MemoryBarriers, @ref setMemoryBarrier(),
          *      @ref setMemoryBarrierByRegion()
          * @m_enum_values_as_keywords
-         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader image load/store is not available in OpenGL
          *      ES 3.0 and older.
          * @requires_gles Shader image load/store is not available in WebGL.
@@ -1334,7 +1334,7 @@ class MAGNUM_GL_EXPORT Renderer {
 
             /**
              * Shader storage data
-             * @requires_gl43 Extension @extension{ARB,shader_storage_buffer_object}
+             * @requires_gl43 Extension @gl_extension{ARB,shader_storage_buffer_object}
              * @requires_gles31 Shader storage is not available in OpenGL ES
              *      3.0 and older.
              * @requires_gles Shader storage is not available in WebGL.
@@ -1346,7 +1346,7 @@ class MAGNUM_GL_EXPORT Renderer {
          * @brief Memory barriers
          *
          * @see @ref setMemoryBarrier(), @ref setMemoryBarrierByRegion()
-         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader image load/store is not available in OpenGL
          *      ES 3.0 and older.
          * @requires_gles Shader image load/store is not available in WebGL.
@@ -1364,7 +1364,7 @@ class MAGNUM_GL_EXPORT Renderer {
          * after the barrier will reflect all data modifications before the
          * barrier.
          * @see @ref setMemoryBarrierByRegion(), @fn_gl_keyword{MemoryBarrier}
-         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader load/store is not available in OpenGL ES 3.0 and older.
          * @requires_gles Shader load/store is not available in WebGL.
          */
@@ -1387,7 +1387,7 @@ class MAGNUM_GL_EXPORT Renderer {
          * - @ref MemoryBarrier::Uniform
          *
          * @see @fn_gl_keyword{MemoryBarrierByRegion}
-         * @requires_gl45 Extension @extension{ARB,ES3_1_compatibility}
+         * @requires_gl45 Extension @gl_extension{ARB,ES3_1_compatibility}
          * @requires_gles31 Shader load/store is not available in OpenGL ES 3.0
          *      and older.
          * @requires_gles Shader load/store is not available in WebGL.
@@ -1405,7 +1405,7 @@ class MAGNUM_GL_EXPORT Renderer {
          * operations after the barrier will reflect texel writes before the
          * barrier.
          * @see @fn_gl_keyword{TextureBarrier}
-         * @requires_gl45 Extension @extension{ARB,texture_barrier}
+         * @requires_gl45 Extension @gl_extension{ARB,texture_barrier}
          * @requires_gl Texture barrier is not available in OpenGL ES or WebGL.
          */
         static void setTextureBarrier() {
@@ -1440,7 +1440,7 @@ class MAGNUM_GL_EXPORT Renderer {
              * The framebuffer object is not complete.
              * @see @ref DefaultFramebuffer::checkStatus(),
              *      @ref Framebuffer::checkStatus()
-             * @requires_gl30 Extension @extension{ARB,framebuffer_object}
+             * @requires_gl30 Extension @gl_extension{ARB,framebuffer_object}
              */
             InvalidFramebufferOperation = GL_INVALID_FRAMEBUFFER_OPERATION,
 
@@ -1451,9 +1451,9 @@ class MAGNUM_GL_EXPORT Renderer {
             /**
              * Given operation would cause an internal stack to underflow.
              * @see @ref DebugGroup
-             * @requires_gl43 Extension @extension{KHR,debug}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,debug,debug}
+             * @requires_gl43 Extension @gl_extension{KHR,debug}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,debug,debug}
              * @requires_gles Debug output is not available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES2
@@ -1465,9 +1465,9 @@ class MAGNUM_GL_EXPORT Renderer {
             /**
              * Given operation would cause an internal stack to overflow.
              * @see @ref DebugGroup
-             * @requires_gl43 Extension @extension{KHR,debug}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,debug,debug}
+             * @requires_gl43 Extension @gl_extension{KHR,debug}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,debug,debug}
              * @requires_gles Debug output is not available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES2
@@ -1511,8 +1511,8 @@ class MAGNUM_GL_EXPORT Renderer {
             /**
              * Graphics reset will result in context loss, cause of the reset
              * can be queried with @ref graphicsResetStatus().
-             * @requires_extension Extension @extension{ARB,robustness}
-             * @requires_es_extension Extension @extension{EXT,robustness}
+             * @requires_extension Extension @gl_extension{ARB,robustness}
+             * @requires_es_extension Extension @gl_extension{EXT,robustness}
              */
             #ifndef MAGNUM_TARGET_GLES
             LoseContextOnReset = GL_LOSE_CONTEXT_ON_RESET_ARB
@@ -1525,8 +1525,8 @@ class MAGNUM_GL_EXPORT Renderer {
          * @brief Graphics reset notification strategy
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If OpenGL extension @extension{ARB,robustness} or ES
-         * extension @extension{EXT,robustness} is not available, this
+         * OpenGL calls. If OpenGL extension @gl_extension{ARB,robustness} or ES
+         * extension @gl_extension{EXT,robustness} is not available, this
          * function always returns @ref ResetNotificationStrategy::NoResetNotification.
          *
          * For the reset notification to work, additionally to the extension
@@ -1555,8 +1555,8 @@ class MAGNUM_GL_EXPORT Renderer {
 
             /**
              * Reset attributable to the current context has been detected.
-             * @requires_extension Extension @extension{ARB,robustness}
-             * @requires_es_extension Extension @extension{EXT,robustness}
+             * @requires_extension Extension @gl_extension{ARB,robustness}
+             * @requires_es_extension Extension @gl_extension{EXT,robustness}
              */
             #ifndef MAGNUM_TARGET_GLES
             GuiltyContextReset = GL_GUILTY_CONTEXT_RESET_ARB,
@@ -1566,8 +1566,8 @@ class MAGNUM_GL_EXPORT Renderer {
 
             /**
              * Reset not attributable to the current context has been detected.
-             * @requires_extension Extension @extension{ARB,robustness}
-             * @requires_es_extension Extension @extension{EXT,robustness}
+             * @requires_extension Extension @gl_extension{ARB,robustness}
+             * @requires_es_extension Extension @gl_extension{EXT,robustness}
              */
             #ifndef MAGNUM_TARGET_GLES
             InnocentContextReset = GL_INNOCENT_CONTEXT_RESET_ARB,
@@ -1577,8 +1577,8 @@ class MAGNUM_GL_EXPORT Renderer {
 
             /**
              * Reset with unknown cause has been detected.
-             * @requires_extension Extension @extension{ARB,robustness}
-             * @requires_es_extension Extension @extension{EXT,robustness}
+             * @requires_extension Extension @gl_extension{ARB,robustness}
+             * @requires_es_extension Extension @gl_extension{EXT,robustness}
              */
             #ifndef MAGNUM_TARGET_GLES
             UnknownContextReset = GL_UNKNOWN_CONTEXT_RESET_ARB
@@ -1591,7 +1591,7 @@ class MAGNUM_GL_EXPORT Renderer {
          * @brief Check graphics reset status
          *
          * Reset causes all context state to be lost. If OpenGL extension
-         * @extension{ARB,robustness} or ES extension @extension{EXT,robustness}
+         * @gl_extension{ARB,robustness} or ES extension @gl_extension{EXT,robustness}
          * is not available, this function always returns @ref GraphicsResetStatus::NoError.
          *
          * For the reset notification to work, additionally to the extension
@@ -1599,13 +1599,13 @@ class MAGNUM_GL_EXPORT Renderer {
          * @ref Platform::Sdl2Application::GLConfiguration::Flag::RobustAccess "Platform::*Application::GLConfiguration::Flag::RobustAccess"
          * flag.
          *
-         * If the reset occurs, @extension{ARB,robustness_isolation}
+         * If the reset occurs, @gl_extension{ARB,robustness_isolation}
          * extension is supported and context is created with
          * @ref Platform::Sdl2Application::GLConfiguration::Flag::ResetIsolation "Platform::*Application::GLConfiguration::Flag::ResetIsolation",
-         * advertised support for @extension{ARB,robustness_application_isolation}
+         * advertised support for @gl_extension{ARB,robustness_application_isolation}
          * indicates that no other application on the system will be affected
          * by the graphics reset. Advertised support for
-         * @extension{ARB,robustness_share_group_isolation} indicates that no
+         * @gl_extension{ARB,robustness_share_group_isolation} indicates that no
          * other share group will be affected by the graphics reset.
          * @see @ref resetNotificationStrategy(),
          *      @fn_gl_extension_keyword{GetGraphicsResetStatus,ARB,robustness}

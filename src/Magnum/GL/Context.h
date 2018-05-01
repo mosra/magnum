@@ -151,9 +151,9 @@ class MAGNUM_GL_EXPORT Context {
         enum class Flag: GLint {
             /**
              * Debug context
-             * @requires_gl43 Extension @extension{KHR,debug}
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension2{KHR,debug,debug}
+             * @requires_gl43 Extension @gl_extension{KHR,debug}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension2{KHR,debug,debug}
              */
             #ifndef MAGNUM_TARGET_GLES2
             Debug = GL_CONTEXT_FLAG_DEBUG_BIT,
@@ -163,8 +163,8 @@ class MAGNUM_GL_EXPORT Context {
 
             /**
              * Context without error reporting
-             * @requires_gl46 Extension @extension{KHR,no_error}
-             * @requires_es_extension Extension @extension2{KHR,no_error,no_error}
+             * @requires_gl46 Extension @gl_extension{KHR,no_error}
+             * @requires_es_extension Extension @gl_extension2{KHR,no_error,no_error}
              */
             #ifndef MAGNUM_TARGET_GLES
             NoError = GL_CONTEXT_FLAG_NO_ERROR_BIT,
@@ -175,10 +175,10 @@ class MAGNUM_GL_EXPORT Context {
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * Context with robust access
-             * @requires_gl45 Extension @extension{KHR,robustness} or
-             *      @extension{ARB,robustness}
-             * @requires_gles32 Extension @extension{KHR,robustness} or
-             *      @extension{EXT,robustness}
+             * @requires_gl45 Extension @gl_extension{KHR,robustness} or
+             *      @gl_extension{ARB,robustness}
+             * @requires_gles32 Extension @gl_extension{KHR,robustness} or
+             *      @gl_extension{EXT,robustness}
              * @todo In ES2 available under glGetIntegerv(CONTEXT_ROBUST_ACCESS_EXT),
              *      how to make it compatible?
              */

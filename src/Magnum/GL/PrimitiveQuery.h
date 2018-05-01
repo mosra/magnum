@@ -45,7 +45,7 @@ transform feedback. Example usage:
 @snippet MagnumGL.cpp PrimitiveQuery-usage
 
 @see @ref SampleQuery, @ref TimeQuery, @ref TransformFeedback
-@requires_gl30 Extension @extension{EXT,transform_feedback}
+@requires_gl30 Extension @gl_extension{EXT,transform_feedback}
 @requires_gles30 Only sample queries are available in OpenGL ES 2.0.
 @requires_webgl20 Queries are not available in WebGL 1.0.
 */
@@ -66,8 +66,8 @@ class MAGNUM_GL_EXPORT PrimitiveQuery: public AbstractQuery {
              * @ref result<UnsignedInt>() or @ref result<Int>() to retrieve the
              * result.
              * @requires_gles30 Not defined in OpenGL ES 2.0.
-             * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-             *      @extension{EXT,geometry_shader}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+             *      @gl_extension{EXT,geometry_shader}
              * @requires_gles Geometry shaders are not available in WebGL.
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -91,7 +91,7 @@ class MAGNUM_GL_EXPORT PrimitiveQuery: public AbstractQuery {
              * Transform feedback overflow. When used with @ref begin(UnsignedInt),
              * the index must be `0`. Use @ref result<bool>() to retrieve the
              * result.
-             * @requires_gl46 Extension @extension{ARB,transform_feedback_overflow_query}
+             * @requires_gl46 Extension @gl_extension{ARB,transform_feedback_overflow_query}
              * @requires_gl Transform feedback overflow query is not available
              *      in OpenGL ES or WebGL.
              */
@@ -102,7 +102,7 @@ class MAGNUM_GL_EXPORT PrimitiveQuery: public AbstractQuery {
              * @ref begin(UnsignedInt), the index must be lower than
              * @ref TransformFeedback::maxVertexStreams(). Use @ref result<bool>()
              * to retrieve the result.
-             * @requires_gl46 Extension @extension{ARB,transform_feedback_overflow_query}
+             * @requires_gl46 Extension @gl_extension{ARB,transform_feedback_overflow_query}
              * @requires_gl Transform feedback overflow query is not available
              *      in OpenGL ES or WebGL.
              */
@@ -129,7 +129,7 @@ class MAGNUM_GL_EXPORT PrimitiveQuery: public AbstractQuery {
         /**
          * @brief Constructor
          *
-         * Creates new OpenGL query object. If @extension{ARB,direct_state_access}
+         * Creates new OpenGL query object. If @gl_extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the query is created on first
          * use.
          * @see @ref PrimitiveQuery(NoCreateT), @ref wrap(),
@@ -166,7 +166,7 @@ class MAGNUM_GL_EXPORT PrimitiveQuery: public AbstractQuery {
          *
          * Begins counting until @ref end() is called.
          * @see @fn_gl_keyword{BeginQueryIndexed}
-         * @requires_gl40 Extension @extension{ARB,transform_feedback3}
+         * @requires_gl40 Extension @gl_extension{ARB,transform_feedback3}
          * @requires_gl Indexed queries are not available in OpenGL ES or WebGL.
          */
         void begin(UnsignedInt index);
@@ -179,7 +179,7 @@ class MAGNUM_GL_EXPORT PrimitiveQuery: public AbstractQuery {
          * @ref begin(UnsignedInt). The result can be then retrieved by calling
          * @ref result().
          * @see @fn_gl_keyword{EndQuery}, @fn_gl2_keyword{EndQueryIndexed,BeginQueryIndexed}
-         * @requires_gl40 Extension @extension{ARB,transform_feedback3} for
+         * @requires_gl40 Extension @gl_extension{ARB,transform_feedback3} for
          *      indexed queries
          * @requires_gl Indexed queries are not available in OpenGL ES or
          *      WebGL.

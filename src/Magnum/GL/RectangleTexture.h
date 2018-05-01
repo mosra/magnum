@@ -60,7 +60,7 @@ in shaders.
 @see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
     @ref CubeMapTextureArray, @ref BufferTexture, @ref MultisampleTexture
 @m_keywords{GL_TEXTURE_RECTANGLE}
-@requires_gl31 Extension @extension{ARB,texture_rectangle}
+@requires_gl31 Extension @gl_extension{ARB,texture_rectangle}
 @requires_gl Rectangle textures are not available in OpenGL ES and WebGL.
  */
 class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
@@ -69,7 +69,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * @brief Max supported rectangle texture size
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If @extension{ARB,texture_rectangle} (part of
+         * OpenGL calls. If @gl_extension{ARB,texture_rectangle} (part of
          * OpenGL 3.1) is not available, returns zero vector.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_RECTANGLE_TEXTURE_SIZE}
          */
@@ -79,7 +79,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * @brief @copybrief Texture::compressedBlockSize()
          *
          * See @ref Texture::compressedBlockSize() for more information.
-         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2}
          */
         static Vector2i compressedBlockSize(TextureFormat format) {
             return DataHelper<2>::compressedBlockSize(GL_TEXTURE_RECTANGLE, format);
@@ -89,7 +89,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * @brief @copybrief Texture::compressedBlockDataSize()
          *
          * See @ref Texture::compressedBlockDataSize() for more information.
-         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2}
          * @see @ref compressedBlockSize(), @fn_gl_keyword{GetInternalformat}
          *      with @def_gl{TEXTURE_COMPRESSED_BLOCK_SIZE}
          */
@@ -115,7 +115,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         /**
          * @brief Constructor
          *
-         * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
+         * Creates new OpenGL texture object. If @gl_extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
          * @see @ref RectangleTexture(NoCreateT), @ref wrap(),
@@ -150,7 +150,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          *      @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
          *      @fn_gl_keyword{BindImageTexture}
-         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
          */
         void bindImage(Int imageUnit, ImageAccess access, ImageFormat format) {
             bindImageInternal(imageUnit, 0, false, 0, access, format);
@@ -228,7 +228,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          *
          * See @ref Texture::setBorderColor(const Vector4ui&) for more
          * information.
-         * @requires_gl30 Extension @extension{EXT,texture_integer}
+         * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
          */
         RectangleTexture& setBorderColor(const Vector4ui& color) {
             AbstractTexture::setBorderColor(color);
@@ -236,7 +236,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         }
 
         /** @overload
-         * @requires_gl30 Extension @extension{EXT,texture_integer}
+         * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
          */
         RectangleTexture& setBorderColor(const Vector4i& color) {
             AbstractTexture::setBorderColor(color);
@@ -259,7 +259,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setSRGBDecode() for more information.
-         * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
+         * @requires_extension Extension @gl_extension{EXT,texture_sRGB_decode}
          */
         RectangleTexture& setSRGBDecode(bool decode) {
             AbstractTexture::setSRGBDecode(decode);
@@ -271,7 +271,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setSwizzle() for more information.
-         * @requires_gl33 Extension @extension{ARB,texture_swizzle}
+         * @requires_gl33 Extension @gl_extension{ARB,texture_swizzle}
          */
         template<char r, char g, char b, char a> RectangleTexture& setSwizzle() {
             AbstractTexture::setSwizzle<r, g, b, a>();
@@ -305,7 +305,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setDepthStencilMode() for more information.
-         * @requires_gl43 Extension @extension{ARB,stencil_texturing}
+         * @requires_gl43 Extension @gl_extension{ARB,stencil_texturing}
          */
         RectangleTexture& setDepthStencilMode(SamplerDepthStencilMode mode) {
             AbstractTexture::setDepthStencilMode(mode);
@@ -371,7 +371,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          *
          * See @ref Texture::compressedImage(Int, CompressedImage&) for more
          * information.
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          */
         void compressedImage(CompressedImage2D& image) {
@@ -391,7 +391,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          *
          * See @ref Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
          * for more information.
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          */
         void compressedImage(CompressedBufferImage2D& image, BufferUsage usage) {
@@ -411,7 +411,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
          * for more information.
-         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          */
         void subImage(const Range2Di& range, Image2D& image) {
             AbstractTexture::subImage<2>(0, range, image);
@@ -430,7 +430,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
          * for more information.
-         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          */
         void subImage(const Range2Di& range, BufferImage2D& image, BufferUsage usage) {
             AbstractTexture::subImage<2>(0, range, image, usage);
@@ -449,10 +449,10 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          *
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
          * for more information.
-         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
-         * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
+         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2} if
          *      @ref CompressedPixelStorage::compressedBlockSize() and
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
          *      set to non-zero values
@@ -474,10 +474,10 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          *
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
          * for more information.
-         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
-         * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
+         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2} if
          *      @ref CompressedPixelStorage::compressedBlockSize() and
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
          *      set to non-zero values
@@ -531,7 +531,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          *
          * See @ref Texture::setCompressedImage() for more information.
          * @see @ref maxSize()
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @deprecated_gl Prefer to use @ref setStorage() and
          *      @ref setCompressedSubImage() instead.
@@ -585,7 +585,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompressedSubImage() for more information.
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          */
         RectangleTexture& setCompressedSubImage(const Vector2i& offset, const CompressedImageView2D& image) {

@@ -81,7 +81,7 @@ class MAGNUM_TEXT_EXPORT GlyphCache {
          * @brief Constructor
          *
          * Sets internal texture format to red channel only. On desktop OpenGL
-         * requires @extension{ARB,texture_rg} (also part of OpenGL ES 3.0 and
+         * requires @gl_extension{ARB,texture_rg} (also part of OpenGL ES 3.0 and
          * WebGL 2), on ES2 unconditionally uses @ref GL::TextureFormat::Luminance.
          * This is done for consistency with @ref GL::pixelFormat(), which
          * unconditionally returns @ref GL::PixelFormat::Luminance for

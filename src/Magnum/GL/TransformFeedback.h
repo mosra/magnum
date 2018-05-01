@@ -53,16 +53,16 @@ implementation-defined values (such as @ref maxSeparateComponents()) are
 cached, so repeated queries don't result in repeated @fn_gl{Get} calls. See
 also @ref Context::resetState() and @ref Context::State::TransformFeedback.
 
-If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is available,
+If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is available,
 functions @ref attachBuffer() and @ref attachBuffers() use DSA to avoid
 unnecessary calls to @fn_gl{BindTransformFeedback}. See their respective
 documentation for more information.
 
 @see @ref PrimitiveQuery
-@requires_gl40 Extension @extension{ARB,transform_feedback2}
+@requires_gl40 Extension @gl_extension{ARB,transform_feedback2}
 @requires_gles30 Transform feedback is not available in OpenGL ES 2.0.
 @requires_webgl20 Transform feedback is not available in WebGL 1.0.
-@todo @extension{AMD,transform_feedback3_lines_triangles}?
+@todo @gl_extension{AMD,transform_feedback3_lines_triangles}?
 */
 class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
     friend Implementation::TransformFeedbackState;
@@ -110,7 +110,7 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          * @brief Max supported interleaved component count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{EXT,transform_feedback}
+         * OpenGL calls. If extension @gl_extension{EXT,transform_feedback}
          * (part of OpenGL 3.0) is not available, returns @cpp 0 @ce.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS}
          */
@@ -120,7 +120,7 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          * @brief Max supported separate attribute count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{EXT,transform_feedback}
+         * OpenGL calls. If extension @gl_extension{EXT,transform_feedback}
          * (part of OpenGL 3.0) is not available, returns @cpp 0 @ce.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS}
          */
@@ -130,7 +130,7 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          * @brief Max supported separate component count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{EXT,transform_feedback}
+         * OpenGL calls. If extension @gl_extension{EXT,transform_feedback}
          * (part of OpenGL 3.0) is not available, returns @cpp 0 @ce.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS}
          */
@@ -141,7 +141,7 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          * @brief Max supported buffer count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,transform_feedback3}
+         * OpenGL calls. If extension @gl_extension{ARB,transform_feedback3}
          * (part of OpenGL 4.0) is not available, returns the same value as
          * @ref maxSeparateAttributes().
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_TRANSFORM_FEEDBACK_BUFFERS}
@@ -154,7 +154,7 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          * @brief Max supported vertex stream count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,transform_feedback3} (part
+         * OpenGL calls. If extension @gl_extension{ARB,transform_feedback3} (part
          * of OpenGL 4.0) is not available, returns @cpp 1 @ce.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_VERTEX_STREAMS}
          * @requires_gl Multiple vertex streams are not available in OpenGL ES
@@ -182,7 +182,7 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          * @brief Constructor
          *
          * Creates new OpenGL transform feedback object. If
-         * @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, the transform feedback object is created on first use.
          * @see @ref TransformFeedback(NoCreateT), @ref wrap(),
          *      @fn_gl_keyword{CreateTransformFeedbacks}, eventually
@@ -245,8 +245,8 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 / OpenGL ES 3.2 is not supported and
-         * neither @extension{KHR,debug} (covered also by
-         * @extension{ANDROID,extension_pack_es31a}) nor @extension{EXT,debug_label}
+         * neither @gl_extension{KHR,debug} (covered also by
+         * @gl_extension{ANDROID,extension_pack_es31a}) nor @gl_extension{EXT,debug_label}
          * desktop or ES extension is available, this function returns empty
          * string.
          * @see @fn_gl_keyword{GetObjectLabel} or
@@ -261,8 +261,8 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Default is empty string. If OpenGL 4.3 / OpenGL ES 3.2 is not
-         * supported and neither @extension{KHR,debug} (covered also by
-         * @extension{ANDROID,extension_pack_es31a}) nor @extension{EXT,debug_label}
+         * supported and neither @gl_extension{KHR,debug} (covered also by
+         * @gl_extension{ANDROID,extension_pack_es31a}) nor @gl_extension{EXT,debug_label}
          * desktop or ES extension is available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl_keyword{ObjectLabel} or
          *      @fn_gl_extension_keyword{LabelObject,EXT,debug_label} with
@@ -284,7 +284,7 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * The @p offset parameter must be aligned to 4 bytes. If
-         * @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, the transform feedback object is bound (if not already)
          * and the operation is then done equivalently to
          * @ref Buffer::bind(Buffer::Target, UnsignedInt, GLintptr, GLsizeiptr).
@@ -302,7 +302,7 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          * @brief Attach buffer
          * @return Reference to self (for method chaining)
          *
-         * If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, the transform feedback object is bound (if not already)
          * and the operation is then done equivalently to
          * @ref Buffer::bind(Buffer::Target, UnsignedInt).
@@ -324,10 +324,10 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          * `firstIndex + 1` etc. Second parameter is offset, third is size. If
          * any buffer is @cpp nullptr @ce, given attachment point is detached.
          * The range of indices must respect @ref maxBuffers() (@ref maxSeparateComponents()
-         * in OpenGL ES or if @extension{ARB,transform_feedback3} (part of
+         * in OpenGL ES or if @gl_extension{ARB,transform_feedback3} (part of
          * OpenGL 4.0) is not available). The offsets must be aligned to 4
          * bytes. All the buffers must have allocated data store. If
-         * @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, the transform feedback object is bound (if not already)
          * and the operation is then done equivalently to
          * @ref Buffer::bind(Buffer::Target, UnsignedInt, std::initializer_list<std::tuple<Buffer*, GLintptr, GLsizeiptr>>).
@@ -348,9 +348,9 @@ class MAGNUM_GL_EXPORT TransformFeedback: public AbstractObject {
          * `firstIndex + 1` etc. If any buffer is @cpp nullptr @ce, given index
          * is detached. The range of indices must respect @ref maxBuffers()
          * (@ref maxSeparateComponents() in OpenGL ES or if
-         * @extension{ARB,transform_feedback3} (part of OpenGL 4.0) is not
+         * @gl_extension{ARB,transform_feedback3} (part of OpenGL 4.0) is not
          * available). All the buffers must have allocated data store. If
-         * @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, the transform feedback object is bound (if not already)
          * and the operation then is done equivalently to
          * @ref Buffer::bind(Buffer::Target, UnsignedInt, std::initializer_list<Buffer*>).

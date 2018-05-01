@@ -58,7 +58,7 @@ The engine requires at least OpenGL 2.1 or OpenGL ES 2.0, but some specific
 functionality has greater requirements. Following are lists of features
 requiring specific OpenGL version. In most cases it is also specified which
 extension is required, so if given hardware supports required extension, it
-doesn't need to have required OpenGL version too (e.g. @extension{ARB,vertex_array_object}
+doesn't need to have required OpenGL version too (e.g. @gl_extension{ARB,vertex_array_object}
 is supported on older Intel GPUs even if they are capable of OpenGL 2.1 only).
 
 -   @subpage requires-gl30

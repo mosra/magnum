@@ -505,7 +505,7 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @param data              Image data
          * @param usage             Image buffer usage
          *
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default compressed pixel storage
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.
@@ -560,7 +560,7 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          *
          * If @p dataSize is @cpp 0 @ce, the buffer is unconditionally
          * reallocated on the first call to @ref setData().
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default compressed pixel storage
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.
@@ -611,7 +611,7 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          *
          * Format is undefined, size is zero and buffer is empty, call
          * @ref setData() to fill the image with data.
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default compressed pixel storage
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.
@@ -662,7 +662,7 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          *
          * See @ref CompressedPixelStorage::dataProperties() for more
          * information.
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.
          */
@@ -690,7 +690,7 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          *
          * Updates the image buffer with given data.
          * @see @ref Buffer::setData()
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.
          */

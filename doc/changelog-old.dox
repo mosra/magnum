@@ -48,23 +48,23 @@ for a high-level overview.
 -   Enabled already implemented functionality on OpenGL ES 3.1.
 -   Support for new OpenGL functionality:
 
-    -   Support for @extension{ARB,direct_state_acccess} (OpenGL 4.5)
+    -   Support for @gl_extension{ARB,direct_state_acccess} (OpenGL 4.5)
         everywhere except in Mesh.
-    -   Support for @extension{ARB,conditional_render_inverted} (OpenGL
+    -   Support for @gl_extension{ARB,conditional_render_inverted} (OpenGL
         4.5) in @cpp SampleQuery @ce.
-    -   Support for @extension{ARB,get_texture_sub_image} (OpenGL 4.5) in
+    -   Support for @gl_extension{ARB,get_texture_sub_image} (OpenGL 4.5) in
         @cpp *Texture::subImage() @ce.
-    -   Support for @extension{EXT,transform_feedback},
-        @extension{ARB,transform_feedback2} (OpenGL 3.0, 4.0, OpenGL ES 3.0) in
+    -   Support for @gl_extension{EXT,transform_feedback},
+        @gl_extension{ARB,transform_feedback2} (OpenGL 3.0, 4.0, OpenGL ES 3.0) in
         new @cpp TransformFeedback @ce class, added
         @cpp Renderer::Feature::RasterizerDiscard @ce.
-    -   Support for @extension{ARB,robustness_isolation} in
+    -   Support for @gl_extension{ARB,robustness_isolation} in
         @cpp Renderer::graphicsResetStatus() @ce.
-    -   Support for @extension{ARB,framebuffer_sRGB} (OpenGL 3.0) in
+    -   Support for @gl_extension{ARB,framebuffer_sRGB} (OpenGL 3.0) in
         @cpp Renderer::Feature::FramebufferSRGB @ce
-    -   Support for @extension{OES,texture_npot} ES extension.
-    -   Support for debug groups from @extension{KHR,debug} (OpenGL 4.5) and
-        @extension{EXT,debug_marker} extensions in @cpp DebugGroup @ce class.
+    -   Support for @gl_extension{OES,texture_npot} ES extension.
+    -   Support for debug groups from @gl_extension{KHR,debug} (OpenGL 4.5) and
+        @gl_extension{EXT,debug_marker} extensions in @cpp DebugGroup @ce class.
 
 -   Added @cpp CubeMapTexture::*image() @ce that returns all six faces
     together.
@@ -114,11 +114,11 @@ for a high-level overview.
 -   Removed annoying restriction when adding reference-counted resources to
     @ref ResourceManager.
 -   Extension querying cleanup:
-    -   Removed @extension{APPLE,flush_buffer_range} extension.
-    -   Replaced @extension{APPLE,vertex_array_object} with
-        @extension{ARB,vertex_array_object}.
-    -   Replaced @extension{NV,half_float} with @extension{ARB,half_float_vertex}.
-    -   Replaced @extension{EXT,framebuffer_sRGB} with @extension{ARB,framebuffer_sRGB}.
+    -   Removed @gl_extension{APPLE,flush_buffer_range} extension.
+    -   Replaced @gl_extension{APPLE,vertex_array_object} with
+        @gl_extension{ARB,vertex_array_object}.
+    -   Replaced @gl_extension{NV,half_float} with @gl_extension{ARB,half_float_vertex}.
+    -   Replaced @gl_extension{EXT,framebuffer_sRGB} with @gl_extension{ARB,framebuffer_sRGB}.
 -   Documentation cleanup, fixes and improvements.
 
 @subsection changelog-2015-05-buildsystem Build system
@@ -282,21 +282,21 @@ for a high-level overview.
     [mosra/magnum#59](https://github.com/mosra/magnum/pull/59).
 -   @ref Trade::ObjImporter "ObjImporter" plugin, mesh import only (no
     materials yet)
--   Completed support of @extension{EXT,texture_integer},
-    @extension{ARB,stencil_texturing}, @extension{ARB,texture_rectangle},
-    @extension{ARB,texture_buffer_object}, @extension{ARB,texture_swizzle},
-    @extension{EXT,texture_sRGB_decode} extensions (and related ES extensions) and
+-   Completed support of @gl_extension{EXT,texture_integer},
+    @gl_extension{ARB,stencil_texturing}, @gl_extension{ARB,texture_rectangle},
+    @gl_extension{ARB,texture_buffer_object}, @gl_extension{ARB,texture_swizzle},
+    @gl_extension{EXT,texture_sRGB_decode} extensions (and related ES extensions) and
     other missing parameters in @cpp *Texture @ce classes
--   Basic support for @extension{ARB,texture_multisample} and
-    @extension{ARB,texture_storage_multisample} in new @cpp MultisampleTexture @ce
+-   Basic support for @gl_extension{ARB,texture_multisample} and
+    @gl_extension{ARB,texture_storage_multisample} in new @cpp MultisampleTexture @ce
     class
 -   Instanced rendering, base vertex and base instance specification in
     @cpp Mesh @ce and @cpp MeshView @ce classes; @cpp Mesh::addVertexBufferInstanced() @ce
     function for adding buffers with per-instance data (see
     [mosra/magnum#47](https://github.com/mosra/magnum/issues/47))
 -   Mesh multi-draw using @cpp MeshView::draw() @ce
--   Initial @extension{ARB,multi_bind} support with @cpp AbstractTexture::bind() @ce
--   Support for @extension{ARB,vertex_type_10f_11f_11f_rev} in
+-   Initial @gl_extension{ARB,multi_bind} support with @cpp AbstractTexture::bind() @ce
+-   Support for @gl_extension{ARB,vertex_type_10f_11f_11f_rev} in
     @cpp AbstractShaderProgram::Attribute::DataType @ce
 -   New variants of @cpp Shader::compile() @ce and @cpp AbstractShaderProgram::link() @ce,
     allowing the driver to perform paralell compilation in multiple threads.
@@ -471,7 +471,7 @@ No dependency changes in this release.
     `WITH_FONTCONVERTER` CMake option (currently Linux only), see
     `magnum-fontconverter --help` for more information.
 -   Support for OpenGL object labels, debug message insertion and retrieval
-    (@extension{KHR,debug}, @extension{EXT,debug_label} and @extension{EXT,debug_marker}
+    (@gl_extension{KHR,debug}, @gl_extension{EXT,debug_label} and @gl_extension{EXT,debug_marker}
     extensions) (see [mosra/magnum#42](https://github.com/mosra/magnum/issues/42))
 -   @ref Platform::BasicScreenedApplication "Platform::ScreenedApplication"
     class allowing the users to easily use multiple independent screens in the
@@ -492,7 +492,7 @@ No dependency changes in this release.
     to ImageReference as it would result in access to deleted memory (GCC
     4.8.1/Clang only)
 -   No-op fallback for @cpp *Texture::setMaxAnisotropy() @ce in case
-    @extension{EXT,texture_filter_anisotropic extension} is not supported
+    @gl_extension{EXT,texture_filter_anisotropic extension} is not supported
 -   Added @cpp round() @ce, @cpp floor() @ce and @cpp ceil() @ce scalar/vector
     functions to @ref Math namespace
 -   @ref Math::minmax() and @ref Math::Vector2::minmax() functions

@@ -87,8 +87,8 @@ namespace {
             /**
              * @todo Shouldn't ES2's KHR_debug have `GL_TRANSFORM_FEEDBACK_KHR`
              *      instead of `GL_TRANSFORM_FEEDBACK`? (it's a new enum in 2.0)
-             *      Also the original @extension{EXT,debug_label} mentions it
-             *      only for ES3 (i.e. no mention of @extension{EXT,transform_feedback})
+             *      Also the original @gl_extension{EXT,debug_label} mentions it
+             *      only for ES3 (i.e. no mention of @gl_extension{EXT,transform_feedback})
              */
             case GL_TRANSFORM_FEEDBACK:
             #ifndef MAGNUM_TARGET_GLES2

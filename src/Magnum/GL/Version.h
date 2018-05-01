@@ -68,7 +68,7 @@ enum class Version: Int {
      * OpenGL ES 2.0 or WebGL 1.0, GLSL ES 1.00.
      *
      * On desktop OpenGL, all related functionality is present in extension
-     * @extension{ARB,ES2_compatibility} (OpenGL 4.1), so testing for this
+     * @gl_extension{ARB,ES2_compatibility} (OpenGL 4.1), so testing for this
      * version using @ref Context::isVersionSupported() is equivalent to
      * testing for availability of that extension.
      */
@@ -82,7 +82,7 @@ enum class Version: Int {
      * OpenGL ES 3.0 or WebGL 2.0, GLSL ES 3.00.
      *
      * On desktop OpenGL, all related functionality is present in extension
-     * @extension{ARB,ES3_compatibility} (OpenGL 4.3), so testing for this
+     * @gl_extension{ARB,ES3_compatibility} (OpenGL 4.3), so testing for this
      * version using @ref Context::isVersionSupported() is equivalent to
      * testing for availability of that extension.
      */
@@ -97,7 +97,7 @@ enum class Version: Int {
      * OpenGL ES 3.1, GLSL ES 3.10.
      *
      * On desktop OpenGL, all related functionality is present in extension
-     * @extension{ARB,ES3_1_compatibility} (OpenGL 4.5), so testing for this
+     * @gl_extension{ARB,ES3_1_compatibility} (OpenGL 4.5), so testing for this
      * version using @ref Context::isVersionSupported() is equivalent to
      * testing for availability of that extension.
      */
@@ -113,7 +113,7 @@ enum class Version: Int {
      * OpenGL ES 3.2, GLSL ES 3.20.
      *
      * On desktop OpenGL, all related functionality is present in extension
-     * @extension{ARB,ES3_2_compatibility}, so testing for this version using
+     * @gl_extension{ARB,ES3_2_compatibility}, so testing for this version using
      * @ref Context::isVersionSupported() is equivalent to testing for
      * availability of that extension.
      */

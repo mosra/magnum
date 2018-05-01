@@ -89,10 +89,10 @@ See also:
     accepting both types.
 -   Initial support for OpenGL ES 3.2 and OpenGL 4.6
 -   New OpenGL extension support:
-    -   @extension{ARB,texture_filter_anisotropic}
-    -   @extension{OES,texture_float}, @extension2{OES,texture_half_float,OES_texture_float}
-    -   @extension{EXT,color_buffer_float},
-        @extension2{EXT,color_buffer_half_float,EXT_color_buffer_half_float}
+    -   @gl_extension{ARB,texture_filter_anisotropic}
+    -   @gl_extension{OES,texture_float}, @gl_extension2{OES,texture_half_float,OES_texture_float}
+    -   @gl_extension{EXT,color_buffer_float},
+        @gl_extension2{EXT,color_buffer_half_float,EXT_color_buffer_half_float}
         and
         their WebGL counterparts @webgl_extension{EXT,color_buffer_half_float},
         @webgl_extension{WEBGL,color_buffer_float},
@@ -516,44 +516,44 @@ a high-level overview.
 -   WebAssembly support when building for Emscripten
 -   WebGL 2.0 support
 -   New OpenGL extension support:
-    -   @extension{EXT,draw_buffers} ES2 extension
-    -   @extension{EXT,sRGB_write_control} ES extension
-    -   @extension{NV,polygon_mode} ES extension
-    -   @extension{KHR,blend_equation_advanced},
-        @extension2{KHR,blend_equation_advanced_coherent,KHR_blend_equation_advanced}
+    -   @gl_extension{EXT,draw_buffers} ES2 extension
+    -   @gl_extension{EXT,sRGB_write_control} ES extension
+    -   @gl_extension{NV,polygon_mode} ES extension
+    -   @gl_extension{KHR,blend_equation_advanced},
+        @gl_extension2{KHR,blend_equation_advanced_coherent,KHR_blend_equation_advanced}
         desktop and ES extensions
-    -   @extension{ANDROID,extension_pack_es31a} ES3 extension, which
+    -   @gl_extension{ANDROID,extension_pack_es31a} ES3 extension, which
         includes:
-        -   @extension{OES,texture_storage_multisample_2d_array}
-        -   @extension{OES,texture_stencil8}
-        -   @extension{EXT,texture_border_clamp}
-        -   @extension{EXT,texture_cube_map_array}
-        -   @extension{EXT,texture_buffer}
-        -   @extension{EXT,geometry_shader}
-        -   @extension{EXT,tessellation_shader}
-    -   @extension{NV,shader_noperspective_interpolation} ES3 extension
-    -   @extension{EXT,texture_compression_s3tc} desktop and ES extension,
+        -   @gl_extension{OES,texture_storage_multisample_2d_array}
+        -   @gl_extension{OES,texture_stencil8}
+        -   @gl_extension{EXT,texture_border_clamp}
+        -   @gl_extension{EXT,texture_cube_map_array}
+        -   @gl_extension{EXT,texture_buffer}
+        -   @gl_extension{EXT,geometry_shader}
+        -   @gl_extension{EXT,tessellation_shader}
+    -   @gl_extension{NV,shader_noperspective_interpolation} ES3 extension
+    -   @gl_extension{EXT,texture_compression_s3tc} desktop and ES extension,
         @webgl_extension{WEBGL,compressed_texture_s3tc} WebGL extension
-    -   @extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr},
-        @extension{KHR,texture_compression_astc_hdr} desktop and ES
+    -   @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr},
+        @gl_extension{KHR,texture_compression_astc_hdr} desktop and ES
         extension
-    -   @extension{EXT,unpack_subimage} and @extension{NV,pack_subimage}
+    -   @gl_extension{EXT,unpack_subimage} and @gl_extension{NV,pack_subimage}
         ES2 extensions
-    -   @extension{ARB,uniform_buffer_object} and its ES3/WebGL2
+    -   @gl_extension{ARB,uniform_buffer_object} and its ES3/WebGL2
         counterpart, except for data layout queries
-    -   @extension{ARB,texture_barrier}
-    -   @extension{ARB,shader_storage_buffer_object} and its ES3.1
+    -   @gl_extension{ARB,texture_barrier}
+    -   @gl_extension{ARB,shader_storage_buffer_object} and its ES3.1
         counterpart
-    -   @extension{ARB,compute_shader} and its ES3.1 counterpart
-    -   @extension{ARB,shader_image_load_store} and its ES3.1 counterpart
-    -   @extension{KHR,no_error} desktop and ES extension
-    -   @extension{EXT,shader_framebuffer_fetch}, @extension{ARM,shader_framebuffer_fetch}
-        and @extension{ARM,shader_framebuffer_fetch_depth_stencil} (partial
+    -   @gl_extension{ARB,compute_shader} and its ES3.1 counterpart
+    -   @gl_extension{ARB,shader_image_load_store} and its ES3.1 counterpart
+    -   @gl_extension{KHR,no_error} desktop and ES extension
+    -   @gl_extension{EXT,shader_framebuffer_fetch}, @gl_extension{ARM,shader_framebuffer_fetch}
+        and @gl_extension{ARM,shader_framebuffer_fetch_depth_stencil} (partial
         support)
-    -   @extension{ARB,transform_feedback2},
-        @extension{ARB,transform_feedback3},
-        @extension{AMD,transform_feedback3_lines_triangles},
-        @extension{ARB,transform_feedback_overflow_query} desktop extension
+    -   @gl_extension{ARB,transform_feedback2},
+        @gl_extension{ARB,transform_feedback3},
+        @gl_extension{AMD,transform_feedback3_lines_triangles},
+        @gl_extension{ARB,transform_feedback_overflow_query} desktop extension
         and their ES3 counterparts, if applicable
         (see [mosra/magnum#53](https://github.com/mosra/magnum/issues/53))
 -   Compressed image support:
@@ -852,11 +852,11 @@ a high-level overview.
 -   Behavior of @ref GL::Version::GLES200 "Version::GLES200" and upwards on
     desktop OpenGL is changed to request an ES dialect of GLSL when used in
     @ref GL::Shader "Shader" (instead of a particular desktop GL version that
-    supports given ES version), looks for @extension{ARB,ES2_compatibility} and
+    supports given ES version), looks for @gl_extension{ARB,ES2_compatibility} and
     others (instead of checking for a particular desktop GL version that
     supports given ES version)
 -   Binding some default VAO in case the engine is running on core profile with
-    @extension{ARB,vertex_array_object} disabled
+    @gl_extension{ARB,vertex_array_object} disabled
 -   It's now possible to create @ref ImageView with @cpp nullptr @ce data (for
     example for old-style texture allocation using
     @ref GL::Texture::setImage() "Texture::setImage()")
@@ -969,10 +969,10 @@ a high-level overview.
 -   @ref GL::Framebuffer::attachCubeMapTexture() "Framebuffer::attachCubeMapTexture()"
     incorrectly behaved as a layered attachment (see
     [mosra/magnum#123](https://github.com/mosra/magnum/issues/123))
--   Fixed object label queries using the @extension{EXT,debug_label}
+-   Fixed object label queries using the @gl_extension{EXT,debug_label}
     extension
--   @extension{EXT,direct_state_access} function was accidentally used in
-    @extension{ARB,direct_state_access} code path, causing crashes on Mesa
+-   @gl_extension{EXT,direct_state_access} function was accidentally used in
+    @gl_extension{ARB,direct_state_access} code path, causing crashes on Mesa
 -   Properly export @ref GL::Framebuffer::DrawAttachment "Framebuffer::DrawAttachment"
     to avoid linker failures on Windows
 -   Fixed @ref GL::Framebuffer "Framebuffer" attachments on GLES2 drivers w/o

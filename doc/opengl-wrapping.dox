@@ -123,8 +123,8 @@ GL version/extension is required. The information is also aggregated on
 Some functionality can be emulated by Magnum --- it detects available extensions
 and selects best possible code path for optimal performance. On startup, the
 application prints list of extensions that were used to improve the default
-functionality. The most prominent feature is @extension{ARB,direct_state_access}
-(part of OpenGL 4.3) and its predecessor @extension{EXT,direct_state_access}.
+functionality. The most prominent feature is @gl_extension{ARB,direct_state_access}
+(part of OpenGL 4.3) and its predecessor @gl_extension{EXT,direct_state_access}.
 These extensions make it possible to modify OpenGL objects without explicitly
 binding them, reducing the amount of needed API calls. Magnum API is designed
 around direct state access as it is far easier to use and less error-prone, but

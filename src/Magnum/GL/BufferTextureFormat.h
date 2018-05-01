@@ -41,10 +41,10 @@ namespace Magnum { namespace GL {
 
 @see @ref BufferTexture
 @m_enum_values_as_keywords
-@requires_gl31 Extension @extension{ARB,texture_buffer_object}
+@requires_gl31 Extension @gl_extension{ARB,texture_buffer_object}
 @requires_gles30 Not defined in OpenGL ES 2.0.
-@requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-    @extension{EXT,texture_buffer}
+@requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+    @gl_extension{EXT,texture_buffer}
 @requires_gles Texture buffers are not available in WebGL.
 */
 enum class BufferTextureFormat: GLenum {
@@ -124,7 +124,7 @@ enum class BufferTextureFormat: GLenum {
 
     /**
      * RGB, each component non-normalized unsigned int.
-     * @requires_gl40 Extension @extension{ARB,texture_buffer_object_rgb32}
+     * @requires_gl40 Extension @gl_extension{ARB,texture_buffer_object_rgb32}
      */
     RGB32UI = GL_RGB32UI,
 
@@ -139,7 +139,7 @@ enum class BufferTextureFormat: GLenum {
 
     /**
      * RGB, each component non-normalized signed int.
-     * @requires_gl40 Extension @extension{ARB,texture_buffer_object_rgb32}
+     * @requires_gl40 Extension @gl_extension{ARB,texture_buffer_object_rgb32}
      */
     RGB32I = GL_RGB32I,
 
@@ -163,7 +163,7 @@ enum class BufferTextureFormat: GLenum {
 
     /**
      * RGB, each component float.
-     * @requires_gl40 Extension @extension{ARB,texture_buffer_object_rgb32}
+     * @requires_gl40 Extension @gl_extension{ARB,texture_buffer_object_rgb32}
      */
     RGB32F = GL_RGB32F,
 

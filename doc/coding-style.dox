@@ -116,17 +116,17 @@ documentation.
 @subsubsection coding-style-documentation-commands-extension Links to OpenGL and OpenAL extensions
 
 If an OpenGL extension is referenced in the documentation, it should be done
-with @c \@extension command:
+with @c \@gl_extension command:
 
 @snippet coding-style.h extension
 
 It produces a link to the specification of the extension in OpenGL registry:
 
 <blockquote>
-@extension{ARB,timer_query}
+@gl_extension{ARB,timer_query}
 </blockquote>
 
-With command @c \@extension2 you can specify extension filename, if the
+With command @c \@gl_extension2 you can specify extension filename, if the
 previous command gives 404 error. For example
 
 @snippet coding-style.h extension2
@@ -134,7 +134,7 @@ previous command gives 404 error. For example
 produces this link:
 
 <blockquote>
-@extension2{NV,read_buffer_front,GL_NV_read_buffer}
+@gl_extension2{NV,read_buffer_front,GL_NV_read_buffer}
 </blockquote>
 
 OpenAL extensions can be referenced using @c \@al_extension, OpenAL context
@@ -178,7 +178,7 @@ extensions, use @c \@fn_gl_extension command, e.g.
 @snippet coding-style.h fn_gl_extension
 
 First parameter is function name without the suffix, the second two parameters
-are the same as in @c \@extension command. It produced link to extension
+are the same as in @c \@gl_extension command. It produced link to extension
 specification, with function name as link text:
 
 <blockquote>
@@ -210,7 +210,7 @@ If any class or function requires specific OpenGL version above 2.1, it should
 be marked with appropriate command @c \@requires_glXX, where `XX` is version
 number (e.g. `42` for OpenGL 4.2) or @c \@requires_extension for specific
 extension which is not in any core OpenGL version. It should be used in
-conjunction with @c \@extension command, if there is an extension providing
+conjunction with @c \@gl_extension command, if there is an extension providing
 the same functionality. For example:
 
 @snippet coding-style.h requires_gl

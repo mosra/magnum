@@ -38,7 +38,7 @@ Magnum uses this feature mainly for configuring OpenGL objects (such as
 various mesh and framebuffer options, shader uniforms etc.). Because OpenGL was
 designed with "bind-to-modify" approach, most configuration calls internally
 need to bind the object first and only after that change the parameters (unless
-@extension{EXT,direct_state_access} extension is available to avoid this). To
+@gl_extension{EXT,direct_state_access} extension is available to avoid this). To
 reduce unneeded bind calls, Magnum binds the object only if it is not already
 bound somewhere. Method chaining encourages you to configure whole object in
 one run, effectively reducing the number of needed bindings. Consider the

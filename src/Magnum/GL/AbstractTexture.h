@@ -77,31 +77,31 @@ values (such as @ref maxColorSamples()) are cached, so repeated queries don't
 result in repeated @fn_gl{Get} calls. See also @ref Context::resetState() and
 @ref Context::State::Textures.
 
-If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is available,
+If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is available,
 @ref bind(Int) and @ref unbind(Int) use @fn_gl{BindTextureUnit}. Otherwise, if
-@extension{ARB,multi_bind} (part of OpenGL 4.4) is available, @ref bind(Int)
+@gl_extension{ARB,multi_bind} (part of OpenGL 4.4) is available, @ref bind(Int)
 and @ref unbind() uses @fn_gl{BindTextures}. Lastly, if
-@extension{EXT,direct_state_access} desktop extension is available,
+@gl_extension{EXT,direct_state_access} desktop extension is available,
 @fn_gl_extension{BindNamedTexture,EXT,direct_state_access} function is used to
 avoid unnecessary calls to @fn_gl{ActiveTexture}.
 
-In addition, if either @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-or @extension{EXT,direct_state_access} desktop extension is available, also all
+In addition, if either @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+or @gl_extension{EXT,direct_state_access} desktop extension is available, also all
 texture configuration and data updating functions use DSA functions to avoid
 unnecessary calls to @fn_gl{ActiveTexture} and @fn_gl{BindTexture}. See
 respective function documentation for more information.
 
-If @extension{ARB,multi_bind} (part of OpenGL 4.5) is available,
+If @gl_extension{ARB,multi_bind} (part of OpenGL 4.5) is available,
 @ref bind(Int, std::initializer_list<AbstractTexture*>) and @ref unbind(Int, std::size_t)
 use @fn_gl{BindTextures} to avoid unnecessary calls to @fn_gl{ActiveTexture}.
 Otherwise the feature is emulated with sequence of @ref bind(Int)/@ref unbind(Int)
 calls.
 
-If either @extension{ARB,direct_state_access} (part of OpenGL 4.5) or
-@extension{ARB,robustness} desktop extension is available, image reading
+If either @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) or
+@gl_extension{ARB,robustness} desktop extension is available, image reading
 operations (such as @ref Texture::image()) are protected from buffer overflow.
-However, if @extension{ARB,direct_state_access} is not available and both
-@extension{EXT,direct_state_access} and @extension{ARB,robustness} are
+However, if @gl_extension{ARB,direct_state_access} is not available and both
+@gl_extension{EXT,direct_state_access} and @gl_extension{ARB,robustness} are
 available, the robust version is preferred over DSA.
 
 Pixel storage mode defined by @ref PixelStorage and @ref CompressedPixelStorage
@@ -127,8 +127,8 @@ and then set data using @ref Texture::setSubImage() "setSubImage()".
 
 Function @ref Texture::setStorage() "setStorage()" creates immutable texture
 storage, removing the need for additional consistency checks and memory
-reallocations when updating the data later. If OpenGL 4.2, @extension{ARB,texture_storage},
-OpenGL ES 3.0 or @extension{EXT,texture_storage} in OpenGL ES 2.0 is not
+reallocations when updating the data later. If OpenGL 4.2, @gl_extension{ARB,texture_storage},
+OpenGL ES 3.0 or @gl_extension{EXT,texture_storage} in OpenGL ES 2.0 is not
 available, the feature is emulated with sequence of @ref Texture::setImage() "setImage()"
 calls.
 
@@ -136,13 +136,13 @@ You can use functions @ref Texture::invalidateImage() "invalidateImage()" and
 @ref Texture::invalidateSubImage() "invalidateSubImage()" if you don't need
 texture data anymore to avoid unnecessary memory operations performed by OpenGL
 in order to preserve the data. If running on OpenGL ES or extension
-@extension{ARB,invalidate_subdata} (part of OpenGL 4.3) is not available, these
+@gl_extension{ARB,invalidate_subdata} (part of OpenGL 4.3) is not available, these
 functions do nothing.
 
 @todo all texture [level] parameters, global texture parameters
 @todo Texture copying
-@todo `GL_MAX_SAMPLE_MASK_WORDS` when @extension{ARB,texture_multisample} is done
-@todo Query for immutable levels (@extension{ARB,ES3_compatibility})
+@todo `GL_MAX_SAMPLE_MASK_WORDS` when @gl_extension{ARB,texture_multisample} is done
+@todo Query for immutable levels (@gl_extension{ARB,ES3_compatibility})
 */
 class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
     friend Implementation::TextureState;
@@ -170,7 +170,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          * @brief Max supported color sample count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
+         * OpenGL calls. If neither extension @gl_extension{ARB,texture_multisample}
          * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns
          * @cpp 0 @ce.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_COLOR_TEXTURE_SAMPLES}
@@ -183,7 +183,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          * @brief Max supported depth sample count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
+         * OpenGL calls. If neither extension @gl_extension{ARB,texture_multisample}
          * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns
          * @cpp 0 @ce.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_DEPTH_TEXTURE_SAMPLES}
@@ -196,7 +196,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          * @brief Max supported integer sample count
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If neither extension @extension{ARB,texture_multisample}
+         * OpenGL calls. If neither extension @gl_extension{ARB,texture_multisample}
          * (part of OpenGL 3.2) nor OpenGL ES 3.1 is available, returns
          * @cpp 0 @ce.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_INTEGER_SAMPLES}
@@ -209,9 +209,9 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         /**
          * @brief Unbind any texture from given texture unit
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5),
-         * @extension{ARB,multi_bind} (part of OpenGL 4.4) nor
-         * @extension{EXT,direct_state_access} desktop extension is available,
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5),
+         * @gl_extension{ARB,multi_bind} (part of OpenGL 4.4) nor
+         * @gl_extension{EXT,direct_state_access} desktop extension is available,
          * the texture unit is made active before unbinding the texture.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
@@ -228,7 +228,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          * @brief Unbind textures in given range of texture units
          *
          * Unbinds all textures in the range @f$ [ firstTextureUnit ; firstTextureUnit + count ) @f$.
-         * If @extension{ARB,multi_bind} (part of OpenGL 4.4) is not available,
+         * If @gl_extension{ARB,multi_bind} (part of OpenGL 4.4) is not available,
          * the feature is emulated with sequence of @ref unbind(Int) calls.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
@@ -243,7 +243,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          *
          * Binds first texture in the list to @p firstTextureUnit, second to
          * `firstTextureUnit + 1` etc. If any texture is @cpp nullptr @ce,
-         * given texture unit is unbound. If @extension{ARB,multi_bind} (part
+         * given texture unit is unbound. If @gl_extension{ARB,multi_bind} (part
          * of OpenGL 4.4) is not available, the feature is emulated with
          * sequence of @ref bind(Int) / @ref unbind(Int) calls.
          * @note This function is meant to be used only internally from
@@ -266,7 +266,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          *      @ref unbindImages(), @ref bindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
          *      @fn_gl_keyword{BindImageTexture}
-         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader image load/store is not available in OpenGL
          *      ES 3.0 and older.
          * @requires_gles Shader image load/store is not available in WebGL.
@@ -287,8 +287,8 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          *      @ref unbindImage(), @ref bindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
          *      @fn_gl_keyword{BindImageTextures}
-         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
-         * @requires_gl44 Extension @extension{ARB,multi_bind}
+         * @requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
+         * @requires_gl44 Extension @gl_extension{ARB,multi_bind}
          * @requires_gl Multi bind is not available in OpenGL ES and WebGL.
          */
         static void unbindImages(Int firstImageUnit, std::size_t count) {
@@ -310,8 +310,8 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          *      @ref unbindImages(), @ref unbindImage(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
          *      @fn_gl_keyword{BindImageTextures}
-         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
-         * @requires_gl44 Extension @extension{ARB,multi_bind}
+         * @requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
+         * @requires_gl44 Extension @gl_extension{ARB,multi_bind}
          * @requires_gl Multi bind is not available in OpenGL ES and WebGL.
          */
         static void bindImages(Int firstImageUnit, std::initializer_list<AbstractTexture*> textures) {
@@ -365,8 +365,8 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 / OpenGL ES 3.2 is not supported and
-         * neither @extension{KHR,debug} (covered also by
-         * @extension{ANDROID,extension_pack_es31a}) nor @extension{EXT,debug_label}
+         * neither @gl_extension{KHR,debug} (covered also by
+         * @gl_extension{ANDROID,extension_pack_es31a}) nor @gl_extension{EXT,debug_label}
          * desktop or ES extension is available, this function returns empty
          * string.
          * @see @fn_gl_keyword{GetObjectLabel} or
@@ -381,8 +381,8 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Default is empty string. If OpenGL 4.3 / OpenGL ES 3.2 is not
-         * supported and neither @extension{KHR,debug} (covered also by
-         * @extension{ANDROID,extension_pack_es31a}) nor @extension{EXT,debug_label}
+         * supported and neither @gl_extension{KHR,debug} (covered also by
+         * @gl_extension{ANDROID,extension_pack_es31a}) nor @gl_extension{EXT,debug_label}
          * desktop or ES extension is available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl_keyword{ObjectLabel} or
          *      @fn_gl_extension_keyword{LabelObject,EXT,debug_label} with
@@ -402,9 +402,9 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         /**
          * @brief Bind texture to given texture unit
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5),
-         * @extension{ARB,multi_bind} (part of OpenGL 4.4) nor
-         * @extension{EXT,direct_state_access} desktop extension is available,
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5),
+         * @gl_extension{ARB,multi_bind} (part of OpenGL 4.4) nor
+         * @gl_extension{EXT,direct_state_access} desktop extension is available,
          * the texture unit is made active before binding the texture.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation

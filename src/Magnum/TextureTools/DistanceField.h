@@ -90,7 +90,7 @@ http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnifica
     prints message to error output and does nothing. In desktop OpenGL and
     OpenGL ES 3.0 it's common to render to @ref GL::TextureFormat::R8. In
     OpenGL ES 2.0 you can use @ref GL::TextureFormat::Red if
-    @extension{EXT,texture_rg} is available, if not, the smallest but still
+    @gl_extension{EXT,texture_rg} is available, if not, the smallest but still
     inefficient supported format is in most cases @ref GL::TextureFormat::RGB,
     rendering to @ref GL::TextureFormat::Luminance is not supported in most
     cases.

@@ -113,7 +113,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief @copybrief Texture::compressedBlockSize()
          *
          * See @ref Texture::compressedBlockSize() for more information.
-         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2}
          * @requires_gl Compressed texture queries are not available in OpenGL
          *      ES.
          */
@@ -125,7 +125,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @brief @copybrief Texture::compressedBlockDataSize()
          *
          * See @ref Texture::compressedBlockDataSize() for more information.
-         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2}
          * @requires_gl Compressed texture queries are not available in OpenGL
          *      ES.
          * @see @ref compressedBlockSize(), @fn_gl_keyword{GetInternalformat}
@@ -154,7 +154,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         /**
          * @brief Constructor
          *
-         * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
+         * Creates new OpenGL texture object. If @gl_extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
          * @see @ref CubeMapTexture(NoCreateT), @ref wrap(),
@@ -192,7 +192,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
          *      @fn_gl_keyword{BindImageTexture}
-         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader image load/store is not available in OpenGL
          *      ES 3.0 and older.
          * @requires_gles Shader image load/store is not available in WebGL.
@@ -215,7 +215,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *      @ref bindImage(), @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
          *      @fn_gl_keyword{BindImageTexture}
-         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader image load/store is not available in OpenGL
          *      ES 3.0 and older.
          * @requires_gles Shader image load/store is not available in WebGL.
@@ -246,7 +246,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setMaxLevel() for more information.
-         * @requires_gles30 Extension @extension{APPLE,texture_max_level},
+         * @requires_gles30 Extension @gl_extension{APPLE,texture_max_level},
          *      otherwise the max level is always set to largest possible value
          *      in OpenGL ES 2.0.
          * @requires_webgl20 Always set to largest possible value in WebGL 1.0.
@@ -359,9 +359,9 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setBorderColor(const Color4&) for more
          * information.
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension{EXT,texture_border_clamp} or
-         *      @extension{NV,texture_border_clamp}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,texture_border_clamp} or
+         *      @gl_extension{NV,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         CubeMapTexture& setBorderColor(const Color4& color) {
@@ -376,10 +376,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setBorderColor(const Vector4ui&) for more
          * information.
-         * @requires_gl30 Extension @extension{EXT,texture_integer}
+         * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension{EXT,texture_border_clamp}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         CubeMapTexture& setBorderColor(const Vector4ui& color) {
@@ -388,10 +388,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         }
 
         /** @overload
-         * @requires_gl30 Extension @extension{EXT,texture_integer}
+         * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
          * @requires_gles30 Not defined in OpenGL ES 2.0.
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension{EXT,texture_border_clamp}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         CubeMapTexture& setBorderColor(const Vector4i& color) {
@@ -418,11 +418,11 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setSRGBDecode() for more information.
-         * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
+         * @requires_extension Extension @gl_extension{EXT,texture_sRGB_decode}
          * @requires_es_extension OpenGL ES 3.0 or extension
-         *      @extension{EXT,sRGB} and
-         *      @extension{ANDROID,extension_pack_es31a} /
-         *      @extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
+         *      @gl_extension{EXT,sRGB} and
+         *      @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
          * @requires_gles SRGB decode is not available in WebGL.
          */
         CubeMapTexture& setSRGBDecode(bool decode) {
@@ -437,7 +437,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setSwizzle() for more information.
-         * @requires_gl33 Extension @extension{ARB,texture_swizzle}
+         * @requires_gl33 Extension @gl_extension{ARB,texture_swizzle}
          * @requires_gles30 Texture swizzle is not available in OpenGL ES 2.0.
          * @requires_gles Texture swizzle is not available in WebGL.
          */
@@ -453,8 +453,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompareMode() for more information.
-         * @requires_gles30 Extension @extension{EXT,shadow_samplers} and
-         *      @extension{NV,shadow_samplers_cube} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @gl_extension{EXT,shadow_samplers} and
+         *      @gl_extension{NV,shadow_samplers_cube} in OpenGL ES 2.0.
          * @requires_webgl20 Depth texture comparison is not available in WebGL
          *      1.0.
          */
@@ -468,8 +468,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompareFunction() for more information.
-         * @requires_gles30 Extension @extension{EXT,shadow_samplers} and
-         *      @extension{NV,shadow_samplers_cube} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @gl_extension{EXT,shadow_samplers} and
+         *      @gl_extension{NV,shadow_samplers_cube} in OpenGL ES 2.0.
          * @requires_webgl20 Depth texture comparison is not available in WebGL
          *      1.0.
          */
@@ -485,7 +485,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setDepthStencilMode() for more information.
-         * @requires_gl43 Extension @extension{ARB,stencil_texturing}
+         * @requires_gl43 Extension @gl_extension{ARB,stencil_texturing}
          * @requires_gles31 Stencil texturing is not available in OpenGL ES 3.0
          *      and older.
          * @requires_gles Stencil texturing is not available in WebGL.
@@ -512,7 +512,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         /**
          * @brief @copybrief Texture::imageSize()
          *
-         * If @extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
          * available, it is assumed that faces have the same size and just the
          * size of @ref Coordinate::PositiveX face is queried. See
          * @ref Texture::imageSize() for more information.
@@ -537,7 +537,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter} with
          *      @def_gl{TEXTURE_WIDTH}, @def_gl{TEXTURE_HEIGHT}, then
          *      @fn_gl{PixelStore}, then @fn_gl2_keyword{GetTextureImage,GetTexImage}
-         * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl45 Extension @gl_extension{ARB,direct_state_access}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -558,7 +558,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * See @ref image(Int, Image3D&) for more information. The storage is
          * not reallocated if it is large enough to contain the new data, which
          * means that @p usage might get ignored.
-         * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl45 Extension @gl_extension{ARB,direct_state_access}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -584,9 +584,9 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *      @def_gl{TEXTURE_INTERNAL_FORMAT}, @def_gl{TEXTURE_WIDTH},
          *      @def_gl{TEXTURE_HEIGHT}, then
          *      @fn_gl2_keyword{GetCompressedTextureImage,GetCompressedTexImage}
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
-         * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl45 Extension @gl_extension{ARB,direct_state_access}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -607,8 +607,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * See @ref compressedImage(Int, CompressedImage3D&) for more
          * information. The storage is not reallocated if it is large enough to
          * contain the new data, which means that @p usage might get ignored.
-         * @requires_gl45 Extension @extension{ARB,direct_state_access}
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl45 Extension @gl_extension{ARB,direct_state_access}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
@@ -632,14 +632,14 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @ref imageSize(). The storage is not reallocated if it is large
          * enough to contain the new data.
          *
-         * If neither @extension{ARB,get_texture_sub_image} (part of OpenGL
-         * 4.5) nor @extension{EXT,direct_state_access} is available, the
+         * If neither @gl_extension{ARB,get_texture_sub_image} (part of OpenGL
+         * 4.5) nor @gl_extension{EXT,direct_state_access} is available, the
          * texture is bound before the operation (if not already). If either
-         * @extension{ARB,get_texture_sub_image} or @extension{ARB,robustness}
+         * @gl_extension{ARB,get_texture_sub_image} or @gl_extension{ARB,robustness}
          * is available, the operation is protected from buffer overflow.
-         * However, if @extension{ARB,get_texture_sub_image} is not available
-         * and both @extension{EXT,direct_state_access} and
-         * @extension{ARB,robustness} are available, the robust operation is
+         * However, if @gl_extension{ARB,get_texture_sub_image} is not available
+         * and both @gl_extension{EXT,direct_state_access} and
+         * @gl_extension{ARB,robustness} are available, the robust operation is
          * preferred over DSA.
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
          *      @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access},
@@ -691,14 +691,14 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * size is taken using @ref imageSize(). The storage is not reallocated
          * if it is large enough to contain the new data.
          *
-         * If neither @extension{ARB,get_texture_sub_image} (part of OpenGL
-         * 4.5) nor @extension{EXT,direct_state_access} is available, the
+         * If neither @gl_extension{ARB,get_texture_sub_image} (part of OpenGL
+         * 4.5) nor @gl_extension{EXT,direct_state_access} is available, the
          * texture is bound before the operation (if not already). If either
-         * @extension{ARB,get_texture_sub_image} or @extension{ARB,robustness}
+         * @gl_extension{ARB,get_texture_sub_image} or @gl_extension{ARB,robustness}
          * is available, the operation is protected from buffer overflow.
-         * However, if @extension{ARB,get_texture_sub_image} is not available
-         * and both @extension{EXT,direct_state_access} and
-         * @extension{ARB,robustness} are available, the robust operation is
+         * However, if @gl_extension{ARB,get_texture_sub_image} is not available
+         * and both @gl_extension{EXT,direct_state_access} and
+         * @gl_extension{ARB,robustness} are available, the robust operation is
          * preferred over DSA.
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
          *      @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access},
@@ -710,7 +710,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *      @fn_gl_extension_keyword{GetnCompressedTexImage,ARB,robustness},
          *      @fn_gl_extension_keyword{GetCompressedTextureImage,EXT,direct_state_access},
          *      eventually @fn_gl_keyword{GetCompressedTexImage}
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
@@ -733,7 +733,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * for more information. The storage is not reallocated if it is large
          * enough to contain the new data, which means that @p usage might get
          * ignored.
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
@@ -754,7 +754,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
          * for more information.
-         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -776,7 +776,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
          * for more information.
-         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -798,10 +798,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
          * for more information.
-         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
-         * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
+         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2} if
          *      @ref CompressedPixelStorage::compressedBlockSize() and
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
          *      set to non-zero values
@@ -826,10 +826,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
          * for more information.
-         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
-         * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
+         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2} if
          *      @ref CompressedPixelStorage::compressedBlockSize() and
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
          *      set to non-zero values
@@ -856,8 +856,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setImage() for more information.
          * @see @ref maxSize()
-         * @requires_gles30 Extension @extension{EXT,unpack_subimage}/
-         *      @extension{NV,pack_subimage} in OpenGL ES 2.0 if
+         * @requires_gles30 Extension @gl_extension{EXT,unpack_subimage}/
+         *      @gl_extension{NV,pack_subimage} in OpenGL ES 2.0 if
          *      @ref PixelStorage::rowLength() is set to a non-zero value.
          * @requires_webgl20 Non-zero @ref PixelStorage::rowLength() is not
          *      supported in WebGL 1.0.
@@ -902,7 +902,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *
          * See @ref Texture::setCompressedImage() for more information.
          * @see @ref maxSize()
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Non-default @ref CompressedPixelStorage is not
          *      available in OpenGL ES and WebGL.
@@ -916,7 +916,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Non-default @ref CompressedPixelStorage is not
          *      available in OpenGL ES and WebGL.
@@ -933,7 +933,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         }
 
         /** @overload
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Non-default @ref CompressedPixelStorage is not
          *      available in OpenGL ES and WebGL.
@@ -959,21 +959,21 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * @see @ref setStorage(), @fn_gl2{TextureSubImage3D,TexSubImage3D}
-         * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl45 Extension @gl_extension{ARB,direct_state_access}
          * @requires_gl In OpenGL ES and WebGL you need to set image for each
          *      face separately.
          */
         CubeMapTexture& setSubImage(Int level, const Vector3i& offset, const ImageView3D& image);
 
         /** @overload
-         * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl45 Extension @gl_extension{ARB,direct_state_access}
          * @requires_gl In OpenGL ES and WebGL you need to set image for each
          *      face separately.
          */
         CubeMapTexture& setSubImage(Int level, const Vector3i& offset, BufferImage3D& image);
 
         /** @overload
-         * @requires_gl45 Extension @extension{ARB,direct_state_access}
+         * @requires_gl45 Extension @gl_extension{ARB,direct_state_access}
          * @requires_gl In OpenGL ES and WebGL you need to set image for each
          *      face separately.
          */
@@ -990,8 +990,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * @see @ref setStorage(), @fn_gl2{CompressedTextureSubImage3D,CompressedTexSubImage3D}
-         * @requires_gl45 Extension @extension{ARB,direct_state_access}
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl45 Extension @gl_extension{ARB,direct_state_access}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl In OpenGL ES and WebGL you need to set image for each
          *      face separately.
@@ -999,8 +999,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         CubeMapTexture& setCompressedSubImage(Int level, const Vector3i& offset, const CompressedImageView3D& image);
 
         /** @overload
-         * @requires_gl45 Extension @extension{ARB,direct_state_access}
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl45 Extension @gl_extension{ARB,direct_state_access}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl In OpenGL ES and WebGL you need to set image for each
          *      face separately.
@@ -1008,8 +1008,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         CubeMapTexture& setCompressedSubImage(Int level, const Vector3i& offset, CompressedBufferImage3D& image);
 
         /** @overload
-         * @requires_gl45 Extension @extension{ARB,direct_state_access}
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl45 Extension @gl_extension{ARB,direct_state_access}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl In OpenGL ES and WebGL you need to set image for each
          *      face separately.
@@ -1024,8 +1024,8 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setSubImage() for more information.
-         * @requires_gles30 Extension @extension{EXT,unpack_subimage}/
-         *      @extension{NV,pack_subimage} in OpenGL ES 2.0 if
+         * @requires_gles30 Extension @gl_extension{EXT,unpack_subimage}/
+         *      @gl_extension{NV,pack_subimage} in OpenGL ES 2.0 if
          *      @ref PixelStorage::rowLength() is set to a non-zero value.
          * @requires_webgl20 Non-zero @ref PixelStorage::rowLength() is not
          *      supported in WebGL 1.0.
@@ -1057,7 +1057,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setCompressedSubImage() for more information.
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Non-default @ref CompressedPixelStorage is not
          *      available in OpenGL ES and WebGL.
@@ -1066,7 +1066,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES2
         /** @overload
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Non-default @ref CompressedPixelStorage is not
          *      available in OpenGL ES and WebGL.
@@ -1078,7 +1078,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         CubeMapTexture& setCompressedSubImage(CubeMapCoordinate coordinate, Int level, const Vector2i& offset, CompressedBufferImage2D& image);
 
         /** @overload
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Non-default @ref CompressedPixelStorage is not
          *      available in OpenGL ES and WebGL.
@@ -1097,7 +1097,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::generateMipmap() for more information.
-         * @requires_gl30 Extension @extension{ARB,framebuffer_object}
+         * @requires_gl30 Extension @gl_extension{ARB,framebuffer_object}
          */
         CubeMapTexture& generateMipmap() {
             AbstractTexture::generateMipmap();

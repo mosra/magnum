@@ -18,11 +18,11 @@ inline Collision operator/(const Point& a, const Sphere& b) { return (b/a).rever
 /* [collisionoperator] */
 
 /* [extension] */
-/** @extension{ARB,timer_query} */
+/** @gl_extension{ARB,timer_query} */
 /* [extension] */
 
 /* [extension2] */
-/** @extension2{NV,read_buffer_front,GL_NV_read_buffer} */
+/** @gl_extension2{NV,read_buffer_front,GL_NV_read_buffer} */
 /* [extension2] */
 
 /* [al_extension] */
@@ -60,7 +60,7 @@ static void setListenerVelocity(const Vector3& velocity) {
 /* [fn_al] */
 
 /* [requires_gl] */
-/** @requires_gl33 Extension @extension{ARB,timer_query} */
+/** @requires_gl33 Extension @gl_extension{ARB,timer_query} */
 /* [requires_gl] */
 
 /* [requires_al_extension] */

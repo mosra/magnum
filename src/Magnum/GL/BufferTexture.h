@@ -65,8 +65,8 @@ information about usage in shaders.
 
 @section GL-BufferTexture-performance-optimizations Performance optimizations
 
-If either @extension{ARB,direct_state_access} (part of OpenGL 4.5) or
-@extension{EXT,direct_state_access} is available, @ref setBuffer() functions
+If either @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) or
+@gl_extension{EXT,direct_state_access} is available, @ref setBuffer() functions
 use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and
 @fn_gl{BindTexture}. See
 @ref GL-AbstractTexture-performance-optimization "relevant section in AbstractTexture documentation"
@@ -75,10 +75,10 @@ and respective function documentation for more information.
 @see @ref Texture, @ref TextureArray, @ref CubeMapTexture,
     @ref CubeMapTextureArray, @ref RectangleTexture, @ref MultisampleTexture
 @m_keywords{GL_TEXTURE_BUFFER}
-@requires_gl31 Extension @extension{ARB,texture_buffer_object}
+@requires_gl31 Extension @gl_extension{ARB,texture_buffer_object}
 @requires_gles30 Not defined in OpenGL ES 2.0.
-@requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-    @extension{EXT,texture_buffer}
+@requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+    @gl_extension{EXT,texture_buffer}
 @requires_gles Texture buffers are not available in WebGL.
 */
 class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
@@ -89,7 +89,7 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
          * @brief Max supported buffer texture size
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If @extension{ARB,texture_buffer_object} (part of
+         * OpenGL calls. If @gl_extension{ARB,texture_buffer_object} (part of
          * OpenGL 3.1) is not available, returns @cpp 0 @ce.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_TEXTURE_BUFFER_SIZE}
          */
@@ -99,7 +99,7 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
          * @brief Minimum required alignment for texture buffer offsets
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,texture_buffer_range}
+         * OpenGL calls. If extension @gl_extension{ARB,texture_buffer_range}
          * (part of OpenGL 4.3) is not available, returns @cpp 1 @ce.
          * @see @fn_gl{Get} with @def_gl_keyword{TEXTURE_BUFFER_OFFSET_ALIGNMENT}
          */
@@ -123,7 +123,7 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
         /**
          * @brief Constructor
          *
-         * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
+         * Creates new OpenGL texture object. If @gl_extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
          * @see @ref BufferTexture(NoCreateT), @ref wrap(),
@@ -158,7 +158,7 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
          *      @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
          *      @fn_gl_keyword{BindImageTexture}
-         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader image load/store is not available in OpenGL
          *      ES 3.0 and older.
          * @requires_gles Shader image load/store is not available in WebGL.
@@ -175,8 +175,8 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
          *
          * Binds given buffer to this texture. The buffer itself can be then
          * filled with data of proper format at any time using @ref Buffer "Buffer"'s
-         * own data setting functions. If neither @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) nor @extension{EXT,direct_state_access} is
+         * own data setting functions. If neither @gl_extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) nor @gl_extension{EXT,direct_state_access} is
          * available, the texture is bound before the operation (if not
          * already).
          * @see @ref maxSize(), @fn_gl2_keyword{TextureBuffer,TexBuffer},
@@ -196,15 +196,15 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
          *
          * Binds range of given buffer to this texture. The buffer itself can
          * be then filled with data of proper format at any time using @ref Buffer "Buffer"'s
-         * own data setting functions. If neither @extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) nor @extension{EXT,direct_state_access} is
+         * own data setting functions. If neither @gl_extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) nor @gl_extension{EXT,direct_state_access} is
          * available, the texture is bound before the operation (if not
          * already).
          * @see @ref maxSize(), @fn_gl2_keyword{TextureBufferRange,TexBufferRange},
          *      @fn_gl_extension_keyword{TextureBufferRange,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexBufferRange}
-         * @requires_gl43 Extension @extension{ARB,texture_buffer_range}
+         * @requires_gl43 Extension @gl_extension{ARB,texture_buffer_range}
          */
         BufferTexture& setBuffer(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
 

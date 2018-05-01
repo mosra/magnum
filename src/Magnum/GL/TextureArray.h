@@ -80,12 +80,12 @@ in shaders.
     @ref CubeMapTexture, @ref CubeMapTextureArray, @ref RectangleTexture,
     @ref BufferTexture, @ref MultisampleTexture
 @m_keywords{GL_TEXTURE_1D_ARRAY GL_TEXTURE_2D_ARRAY}
-@requires_gl30 Extension @extension{EXT,texture_array}
+@requires_gl30 Extension @gl_extension{EXT,texture_array}
 @requires_gles30 Array textures are not available in OpenGL ES 2.0.
 @requires_webgl20 Array textures are not available in WebGL 1.0.
 @requires_gl 1D array textures are not available in OpenGL ES or WebGL, only
     2D ones.
-@todo Fix this when @extension{NV,texture_array} is in ES2 extension headers
+@todo Fix this when @gl_extension{NV,texture_array} is in ES2 extension headers
  */
 template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
     public:
@@ -97,7 +97,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @brief Max supported texture array size
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{EXT,texture_array} (part of
+         * OpenGL calls. If extension @gl_extension{EXT,texture_array} (part of
          * OpenGL 3.0) is not available, returns zero vector.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_TEXTURE_SIZE} and
          *      @def_gl_keyword{MAX_ARRAY_TEXTURE_LAYERS}
@@ -109,7 +109,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @brief @copybrief Texture::compressedBlockSize()
          *
          * See @ref Texture::compressedBlockSize() for more information.
-         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2}
          * @requires_gl Compressed texture queries are not available in OpenGL
          *      ES.
          */
@@ -121,7 +121,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @brief @copybrief Texture::compressedBlockDataSize()
          *
          * See @ref Texture::compressedBlockDataSize() for more information.
-         * @requires_gl43 Extension @extension{ARB,internalformat_query2}
+         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2}
          * @requires_gl Compressed texture queries are not available in OpenGL
          *      ES.
          * @see @ref compressedBlockSize(), @fn_gl{Getinternalformat} with
@@ -151,7 +151,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         /**
          * @brief Constructor
          *
-         * Creates new OpenGL texture object. If @extension{ARB,direct_state_access}
+         * Creates new OpenGL texture object. If @gl_extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the texture is created on
          * first use.
          * @see @ref TextureArray(NoCreateT), @ref wrap(), @fn_gl_keyword{CreateTextures}
@@ -189,7 +189,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      @ref bindImageLayered(), @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
          *      @fn_gl_keyword{BindImageTexture}
-         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader image load/store is not available in OpenGL
          *      ES 3.0 and older.
          * @requires_gles Shader image load/store is not available in WebGL.
@@ -212,7 +212,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      @ref bindImage(), @ref unbindImage(), @ref unbindImages(),
          *      @ref AbstractShaderProgram::maxImageUnits(),
          *      @fn_gl_keyword{BindImageTexture}
-         * @requires_gl42 Extension @extension{ARB,shader_image_load_store}
+         * @requires_gl42 Extension @gl_extension{ARB,shader_image_load_store}
          * @requires_gles31 Shader image load/store is not available in OpenGL
          *      ES 3.0 and older.
          * @requires_gles Shader image load/store is not available in WebGL.
@@ -336,9 +336,9 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::setBorderColor(const Color4&) for more
          * information.
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension{EXT,texture_border_clamp} or
-         *      @extension{NV,texture_border_clamp}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,texture_border_clamp} or
+         *      @gl_extension{NV,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         TextureArray<dimensions>& setBorderColor(const Color4& color) {
@@ -352,9 +352,9 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::setBorderColor(const Vector4ui&) for more
          * information.
-         * @requires_gl30 Extension @extension{EXT,texture_integer}
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension{EXT,texture_border_clamp}
+         * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         TextureArray<dimensions>& setBorderColor(const Vector4ui& color) {
@@ -363,9 +363,9 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /** @overload
-         * @requires_gl30 Extension @extension{EXT,texture_integer}
-         * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension{EXT,texture_border_clamp}
+         * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{EXT,texture_border_clamp}
          * @requires_gles Border clamp is not available in WebGL.
          */
         TextureArray<dimensions>& setBorderColor(const Vector4i& color) {
@@ -391,9 +391,9 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setSRGBDecode() for more information.
-         * @requires_extension Extension @extension{EXT,texture_sRGB_decode}
-         * @requires_es_extension Extension @extension{ANDROID,extension_pack_es31a} /
-         *      @extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
+         * @requires_extension Extension @gl_extension{EXT,texture_sRGB_decode}
+         * @requires_es_extension Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
          * @requires_gles SRGB decode is not available in WebGL.
          */
         TextureArray<dimensions>& setSRGBDecode(bool decode) {
@@ -406,7 +406,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setSwizzle() for more information.
-         * @requires_gl33 Extension @extension{ARB,texture_swizzle}
+         * @requires_gl33 Extension @gl_extension{ARB,texture_swizzle}
          */
         template<char r, char g, char b, char a> TextureArray<dimensions>& setSwizzle() {
             AbstractTexture::setSwizzle<r, g, b, a>();
@@ -442,7 +442,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::setDepthStencilMode() for more information.
-         * @requires_gl43 Extension @extension{ARB,stencil_texturing}
+         * @requires_gl43 Extension @gl_extension{ARB,stencil_texturing}
          * @requires_gles31 Stencil texturing is not available in OpenGL ES 3.0
          *      and older.
          * @requires_gles Stencil texturing is not available in WebGL.
@@ -527,7 +527,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::compressedImage(Int, CompressedImage&) for more
          * information.
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
@@ -550,7 +550,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
          * for more information.
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
@@ -573,7 +573,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
          * for more information.
-         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -595,7 +595,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
          * for more information.
-         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
+         * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
@@ -617,10 +617,10 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
          * for more information.
-         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
-         * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
+         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2} if
          *      @ref CompressedPixelStorage::compressedBlockSize() and
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
          *      set to non-zero values
@@ -645,10 +645,10 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
          * for more information.
-         * @requires_gl45 Extension @extension{ARB,get_texture_sub_image}
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl45 Extension @gl_extension{ARB,get_texture_sub_image}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
-         * @requires_gl43 Extension @extension{ARB,internalformat_query2} if
+         * @requires_gl43 Extension @gl_extension{ARB,internalformat_query2} if
          *      @ref CompressedPixelStorage::compressedBlockSize() and
          *      @ref CompressedPixelStorage::compressedBlockDataSize() are not
          *      set to non-zero values
@@ -706,7 +706,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *
          * See @ref Texture::setCompressedImage() for more information.
          * @see @ref maxSize()
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Non-default @ref CompressedPixelStorage is not
          *      available in OpenGL ES and WebGL.
@@ -719,7 +719,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /** @overload
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Non-default @ref CompressedPixelStorage is not
          *      available in OpenGL ES and WebGL.
@@ -732,7 +732,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /** @overload
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Non-default @ref CompressedPixelStorage is not
          *      available in OpenGL ES and WebGL.
@@ -751,8 +751,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already).
          * @see @ref setStorage(), @fn_gl{PixelStore}, then
@@ -787,8 +787,8 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      or compressed @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the texture is bound before the operation (if not
          * already).
          * @see @ref setStorage(), @fn_gl{PixelStore}, then
@@ -798,7 +798,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      @fn_gl_extension_keyword{CompressedTextureSubImage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{CompressedTexSubImage2D} / @fn_gl_keyword{CompressedTexSubImage3D}
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Non-default @ref CompressedPixelStorage is not
          *      available in OpenGL ES and WebGL.
@@ -809,7 +809,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /** @overload
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Non-default @ref CompressedPixelStorage is not
          *      available in OpenGL ES and WebGL.
@@ -820,7 +820,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         }
 
         /** @overload
-         * @requires_gl42 Extension @extension{ARB,compressed_texture_pixel_storage}
+         * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
          * @requires_gl Non-default @ref CompressedPixelStorage is not
          *      available in OpenGL ES and WebGL.
@@ -834,7 +834,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * See @ref Texture::generateMipmap() for more information.
-         * @requires_gl30 Extension @extension{ARB,framebuffer_object}
+         * @requires_gl30 Extension @gl_extension{ARB,framebuffer_object}
          */
         TextureArray<dimensions>& generateMipmap() {
             AbstractTexture::generateMipmap();
@@ -877,7 +877,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 /**
 @brief One-dimensional texture array
 
-@requires_gl30 Extension @extension{EXT,texture_array}
+@requires_gl30 Extension @gl_extension{EXT,texture_array}
 @requires_gl Only @ref Texture2DArray is available in OpenGL ES and WebGL.
 */
 typedef TextureArray<1> Texture1DArray;
@@ -886,7 +886,7 @@ typedef TextureArray<1> Texture1DArray;
 /**
 @brief Two-dimensional texture array
 
-@requires_gl30 Extension @extension{EXT,texture_array}
+@requires_gl30 Extension @gl_extension{EXT,texture_array}
 @requires_gles30 Array textures are not available in OpenGL ES 2.0.
 @requires_webgl20 Array textures are not available in WebGL 1.0.
 */

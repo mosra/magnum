@@ -89,9 +89,9 @@ class MAGNUM_GL_EXPORT AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If OpenGL 4.3 / OpenGL ES 3.2 is not supported and
-         * @extension{KHR,debug} desktop or ES extension (covered also by
-         * @extension{ANDROID,extension_pack_es31a}) is not available,
-         * returns `0`. Note that @extension{EXT,debug_label} has no such
+         * @gl_extension{KHR,debug} desktop or ES extension (covered also by
+         * @gl_extension{ANDROID,extension_pack_es31a}) is not available,
+         * returns `0`. Note that @gl_extension{EXT,debug_label} has no such
          * limit.
          * @see @ref AbstractQuery::setLabel(), @ref AbstractShaderProgram::setLabel(),
          *      @ref AbstractTexture::setLabel(), @ref Buffer::setLabel(),

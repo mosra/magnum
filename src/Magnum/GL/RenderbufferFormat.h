@@ -38,14 +38,14 @@ namespace Magnum { namespace GL {
 
 @see @ref Renderbuffer
 @m_enum_values_as_keywords
-@requires_gl30 Extension @extension{ARB,framebuffer_object}
-@todo RGB, RGB8 ES only (ES3 + @extension{OES,rgb8_rgba8})
+@requires_gl30 Extension @gl_extension{ARB,framebuffer_object}
+@todo RGB, RGB8 ES only (ES3 + @gl_extension{OES,rgb8_rgba8})
  */
 enum class RenderbufferFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * Red component, normalized unsigned, size implementation-dependent.
-     * @requires_gl30 Extension @extension{ARB,texture_rg}
+     * @requires_gl30 Extension @gl_extension{ARB,texture_rg}
      * @requires_gl Use exactly specified format in OpenGL ES or WebGL instead.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref RenderbufferFormat::R8.
@@ -56,8 +56,8 @@ enum class RenderbufferFormat: GLenum {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     /**
      * Red component, normalized unsigned byte.
-     * @requires_gl30 Extension @extension{ARB,texture_rg}
-     * @requires_gles30 Extension @extension{EXT,texture_rg} in OpenGL ES
+     * @requires_gl30 Extension @gl_extension{ARB,texture_rg}
+     * @requires_gles30 Extension @gl_extension{EXT,texture_rg} in OpenGL ES
      *      2.0.
      * @requires_webgl20 Not available in WebGL 1.0.
      */
@@ -72,7 +72,7 @@ enum class RenderbufferFormat: GLenum {
     /**
      * Red and green component, normalized unsigned, size
      * implementation-dependent.
-     * @requires_gl30 Extension @extension{ARB,texture_rg}
+     * @requires_gl30 Extension @gl_extension{ARB,texture_rg}
      * @requires_gl Use exactly specified format in OpenGL ES or WebGL instead.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref RenderbufferFormat::RG8.
@@ -83,8 +83,8 @@ enum class RenderbufferFormat: GLenum {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     /**
      * Red and green component, each normalized unsigned byte.
-     * @requires_gl30 Extension @extension{ARB,texture_rg}
-     * @requires_gles30 Extension @extension{EXT,texture_rg} in OpenGL ES
+     * @requires_gl30 Extension @gl_extension{ARB,texture_rg}
+     * @requires_gles30 Extension @gl_extension{EXT,texture_rg} in OpenGL ES
      *      2.0.
      * @requires_webgl20 Not available in WebGL 1.0.
      */
@@ -108,7 +108,7 @@ enum class RenderbufferFormat: GLenum {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     /**
      * RGBA, each component normalized unsigned byte.
-     * @requires_gles30 Extension @extension{ARM,rgba8} or @extension{OES,rgb8_rgba8}
+     * @requires_gles30 Extension @gl_extension{ARM,rgba8} or @gl_extension{OES,rgb8_rgba8}
      *      in OpenGL ES 2.0.
      * @requires_webgl20 Not available in WebGL 1.0.
      */
@@ -122,7 +122,7 @@ enum class RenderbufferFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * Red component, normalized unsigned short.
-     * @requires_gl30 Extension @extension{ARB,texture_rg}
+     * @requires_gl30 Extension @gl_extension{ARB,texture_rg}
      * @requires_gl Only byte-sized normalized formats are available in OpenGL
      *      ES and WebGL.
      */
@@ -130,7 +130,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * Red and green component, each normalized unsigned short.
-     * @requires_gl30 Extension @extension{ARB,texture_rg}
+     * @requires_gl30 Extension @gl_extension{ARB,texture_rg}
      * @requires_gl Only byte-sized normalized formats are available in OpenGL
      *      ES and WebGL.
      */
@@ -154,7 +154,7 @@ enum class RenderbufferFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * Red component, non-normalized unsigned byte.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -164,7 +164,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized unsigned byte.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -174,7 +174,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized unsigned byte.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -184,7 +184,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * Red component, non-normalized signed byte.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -194,7 +194,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized signed byte.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -204,7 +204,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized signed byte.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -214,7 +214,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * Red component, non-normalized unsigned short.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -224,7 +224,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized unsigned short.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -234,7 +234,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized unsigned short.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -244,7 +244,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * Red component, non-normalized signed short.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -254,7 +254,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized signed short.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -264,7 +264,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized signed short.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -274,7 +274,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * Red component, non-normalized unsigned int.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -284,7 +284,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized unsigned int.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -294,7 +294,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized unsigned int.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -304,7 +304,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * Red component, non-normalized signed int.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -314,7 +314,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * Red and green component, each non-normalized signed int.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -324,7 +324,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * RGBA, each component non-normalized signed int.
-     * @requires_gl30 Extension @extension{EXT,texture_integer}
+     * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -336,8 +336,8 @@ enum class RenderbufferFormat: GLenum {
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /**
      * Red component, half float.
-     * @requires_gl30 Extension @extension{ARB,texture_float}
-     * @requires_gles32 Extension @extension{EXT,color_buffer_half_float}. Use
+     * @requires_gl30 Extension @gl_extension{ARB,texture_float}
+     * @requires_gles32 Extension @gl_extension{EXT,color_buffer_half_float}. Use
      *      @ref RenderbufferFormat::R16UI or @ref RenderbufferFormat::R16I
      *      instead if not available.
      * @requires_webgl20 Not defined in WebGL 1.0 builds. Only four-component
@@ -355,8 +355,8 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * Red and green component, each half float.
-     * @requires_gl30 Extension @extension{ARB,texture_float}
-     * @requires_gles32 Extension @extension{EXT,color_buffer_half_float}. Use
+     * @requires_gl30 Extension @gl_extension{ARB,texture_float}
+     * @requires_gles32 Extension @gl_extension{EXT,color_buffer_half_float}. Use
      *      @ref RenderbufferFormat::RG16UI or @ref RenderbufferFormat::RG16I
      *      instead if not available.
      * @requires_webgl20 Not defined in WebGL 1.0 builds. Only four-component
@@ -375,8 +375,8 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * RGBA, each component half float.
-     * @requires_gl30 Extension @extension{ARB,texture_float}
-     * @requires_gles32 Extension @extension{EXT,color_buffer_half_float}. Use
+     * @requires_gl30 Extension @gl_extension{ARB,texture_float}
+     * @requires_gles32 Extension @gl_extension{EXT,color_buffer_half_float}. Use
      *      @ref RenderbufferFormat::RGBA16UI or @ref RenderbufferFormat::RGBA16I
      *      instead if not available.
      * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_half_float}
@@ -393,9 +393,9 @@ enum class RenderbufferFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * Red component, float.
-     * @requires_gl30 Extension @extension{ARB,texture_float}
+     * @requires_gl30 Extension @gl_extension{ARB,texture_float}
      * @requires_gles30 Not defined in OpenGL ES 2.0 builds.
-     * @requires_gles32 Extension @extension{EXT,color_buffer_float} in OpenGL
+     * @requires_gles32 Extension @gl_extension{EXT,color_buffer_float} in OpenGL
      *      ES 3.0. Use @ref RenderbufferFormat::R32UI or @ref RenderbufferFormat::R32I
      *      instead if not available.
      * @requires_webgl20 Not defined in WebGL 1.0 builds. Only four-component
@@ -409,9 +409,9 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * Red and green component, each float.
-     * @requires_gl30 Extension @extension{ARB,texture_float}
+     * @requires_gl30 Extension @gl_extension{ARB,texture_float}
      * @requires_gles30 Not defined in OpenGL ES 2.0 builds.
-     * @requires_gles32 Extension @extension{EXT,color_buffer_float} in OpenGL
+     * @requires_gles32 Extension @gl_extension{EXT,color_buffer_float} in OpenGL
      *      ES 3.0. Use @ref RenderbufferFormat::RG32UI or @ref RenderbufferFormat::RG32I
      *      instead if not available.
      * @requires_webgl20 Not defined in WebGL 1.0 builds. Only four-component
@@ -427,9 +427,9 @@ enum class RenderbufferFormat: GLenum {
     #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     /**
      * RGBA, each component float.
-     * @requires_gl30 Extension @extension{ARB,texture_float}
+     * @requires_gl30 Extension @gl_extension{ARB,texture_float}
      * @requires_gles30 Not defined in OpenGL ES 2.0.
-     * @requires_gles32 Extension @extension{EXT,color_buffer_float}. Use
+     * @requires_gles32 Extension @gl_extension{EXT,color_buffer_float}. Use
      *      @ref RenderbufferFormat::RGBA32UI or @ref RenderbufferFormat::RGBA32I
      *      instead if not available.
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,color_buffer_float}
@@ -457,7 +457,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * RGBA, non-normalized unsigned, each RGB component 10bit, alpha 2bit.
-     * @requires_gl33 Extension @extension{ARB,texture_rgb10_a2ui}
+     * @requires_gl33 Extension @gl_extension{ARB,texture_rgb10_a2ui}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Only normalized integral formats are available in
@@ -475,7 +475,7 @@ enum class RenderbufferFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES
     /**
      * RGB, float, red and green 11bit, blue 10bit.
-     * @requires_gl30 Extension @extension{EXT,packed_float}
+     * @requires_gl30 Extension @gl_extension{EXT,packed_float}
      * @requires_gl Usable only as internal texture format in OpenGL ES and
      *      WebGL, see @ref TextureFormat::R11FG11FB10F.
      */
@@ -487,7 +487,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * sRGBA, each component normalized unsigned byte.
-     * @requires_gles30 Extension @extension{EXT,sRGB} in OpenGL ES 2.0.
+     * @requires_gles30 Extension @gl_extension{EXT,sRGB} in OpenGL ES 2.0.
      * @requires_webgl20 Extension @webgl_extension{EXT,sRGB} in WebGL 1.0.
      */
     #ifndef MAGNUM_TARGET_GLES2
@@ -514,7 +514,7 @@ enum class RenderbufferFormat: GLenum {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     /**
      * Depth component, 24bit.
-     * @requires_gles30 Extension @extension{OES,depth24} in OpenGL ES 2.0.
+     * @requires_gles30 Extension @gl_extension{OES,depth24} in OpenGL ES 2.0.
      * @requires_webgl20 Only 16bit depth component is available in WebGL.
      */
     #ifndef MAGNUM_TARGET_GLES2
@@ -527,7 +527,7 @@ enum class RenderbufferFormat: GLenum {
     #ifndef MAGNUM_TARGET_WEBGL
     /**
      * Depth component, 32bit.
-     * @requires_es_extension Extension @extension{OES,depth32}
+     * @requires_es_extension Extension @gl_extension{OES,depth32}
      * @requires_gles At most 24bit depth component is available in WebGL.
      */
     #ifndef MAGNUM_TARGET_GLES
@@ -540,7 +540,7 @@ enum class RenderbufferFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * Depth component, 32bit float.
-     * @requires_gl30 Extension @extension{ARB,depth_buffer_float}
+     * @requires_gl30 Extension @gl_extension{ARB,depth_buffer_float}
      * @requires_gles30 Only integral depth textures are available in OpenGL ES
      *      2.0.
      * @requires_webgl20 Only integral depth textures are available in WebGL
@@ -563,7 +563,7 @@ enum class RenderbufferFormat: GLenum {
     #ifndef MAGNUM_TARGET_WEBGL
     /**
      * 1-bit stencil index.
-     * @requires_es_extension Extension @extension{OES,stencil1}
+     * @requires_es_extension Extension @gl_extension{OES,stencil1}
      * @requires_gles Only 8bit stencil index is available in WebGL.
      */
     #ifndef MAGNUM_TARGET_GLES
@@ -574,7 +574,7 @@ enum class RenderbufferFormat: GLenum {
 
     /**
      * 4-bit stencil index.
-     * @requires_es_extension Extension @extension{OES,stencil4}
+     * @requires_es_extension Extension @gl_extension{OES,stencil4}
      * @requires_gles Only 8bit stencil index is available in WebGL.
      */
     #ifndef MAGNUM_TARGET_GLES
@@ -614,7 +614,7 @@ enum class RenderbufferFormat: GLenum {
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     /**
      * 24bit depth and 8bit stencil component.
-     * @requires_gles30 Extension @extension{OES,packed_depth_stencil} in
+     * @requires_gles30 Extension @gl_extension{OES,packed_depth_stencil} in
      *      OpenGL ES 2.0.
      * @requires_webgl20 Use @ref RenderbufferFormat::DepthStencil in WebGL
      *      1.0 instead.
@@ -629,7 +629,7 @@ enum class RenderbufferFormat: GLenum {
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * 32bit float depth component and 8bit stencil component.
-     * @requires_gl30 Extension @extension{ARB,depth_buffer_float}
+     * @requires_gl30 Extension @gl_extension{ARB,depth_buffer_float}
      * @requires_gles30 Only integral depth textures are available in OpenGL ES
      *      2.0.
      * @requires_webgl20 Only integral depth textures are available in WebGL

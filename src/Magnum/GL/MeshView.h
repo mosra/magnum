@@ -67,12 +67,12 @@ class MAGNUM_GL_EXPORT MeshView {
         /**
          * @brief Draw multiple meshes at once
          *
-         * In OpenGL ES, if @extension2{EXT,multi_draw_arrays,multi_draw_arrays}
+         * In OpenGL ES, if @gl_extension2{EXT,multi_draw_arrays,multi_draw_arrays}
          * is not present, the functionality is emulated using sequence of
          * @ref draw(AbstractShaderProgram&) calls.
          *
-         * If @extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
-         * ES 3.0, WebGL 2.0, @extension{OES,vertex_array_object} in OpenGL
+         * If @gl_extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL
+         * ES 3.0, WebGL 2.0, @gl_extension{OES,vertex_array_object} in OpenGL
          * ES 2.0 or @webgl_extension{OES,vertex_array_object} in WebGL 1.0 is
          * available, the associated vertex array object is bound instead of
          * setting up the mesh from scratch.
@@ -83,7 +83,7 @@ class MAGNUM_GL_EXPORT MeshView {
          *      @fn_gl_keyword{VertexAttribPointer}, @fn_gl_keyword{DisableVertexAttribArray}
          *      or @fn_gl{BindVertexArray}, @fn_gl_keyword{MultiDrawArrays} or
          *      @fn_gl_keyword{MultiDrawElements}/@fn_gl_keyword{MultiDrawElementsBaseVertex}
-         * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
+         * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
          *      if the mesh is indexed and @ref baseVertex() is not `0`.
          * @requires_gl Specifying base vertex for indexed meshes is not
          *      available in OpenGL ES or WebGL.
@@ -142,7 +142,7 @@ class MAGNUM_GL_EXPORT MeshView {
          * Sets number of vertices of which the vertex buffer will be offset
          * when drawing. Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
          * Default is @cpp 0 @ce.
-         * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
+         * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
          *      for indexed meshes
          * @requires_gles32 Base vertex cannot be specified for indexed meshes
          *      in OpenGL ES 3.1 or WebGL.
@@ -194,13 +194,13 @@ class MAGNUM_GL_EXPORT MeshView {
          * @return Reference to self (for method chaining)
          *
          * Default is @cpp 1 @ce.
-         * @requires_gl31 Extension @extension{ARB,draw_instanced} if using
+         * @requires_gl31 Extension @gl_extension{ARB,draw_instanced} if using
          *      @ref draw(AbstractShaderProgram&)
-         * @requires_gl42 Extension @extension{ARB,transform_feedback_instanced}
+         * @requires_gl42 Extension @gl_extension{ARB,transform_feedback_instanced}
          *      if using @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
-         * @requires_gles30 Extension @extension{ANGLE,instanced_arrays},
-         *      @extension2{EXT,draw_instanced,draw_instanced} or
-         *      @extension{NV,draw_instanced} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+         *      @gl_extension2{EXT,draw_instanced,draw_instanced} or
+         *      @gl_extension{NV,draw_instanced} in OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
          *      in WebGL 1.0.
          */
@@ -219,7 +219,7 @@ class MAGNUM_GL_EXPORT MeshView {
          *
          * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
          * Default is @cpp 0 @ce.
-         * @requires_gl42 Extension @extension{ARB,base_instance}
+         * @requires_gl42 Extension @gl_extension{ARB,base_instance}
          * @requires_gl Base instance cannot be specified in OpenGL ES or
          *      WebGL.
          */
@@ -235,15 +235,15 @@ class MAGNUM_GL_EXPORT MeshView {
          * See @ref Mesh::draw(AbstractShaderProgram&) for more information.
          * @see @ref draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>),
          *      @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
-         * @requires_gl32 Extension @extension{ARB,draw_elements_base_vertex}
+         * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
          *      if the mesh is indexed and @ref baseVertex() is not `0`.
-         * @requires_gl33 Extension @extension{ARB,instanced_arrays} if
+         * @requires_gl33 Extension @gl_extension{ARB,instanced_arrays} if
          *      @ref instanceCount() is more than `1`.
-         * @requires_gl42 Extension @extension{ARB,base_instance} if
+         * @requires_gl42 Extension @gl_extension{ARB,base_instance} if
          *      @ref baseInstance() is not `0`.
-         * @requires_gles30 Extension @extension{ANGLE,instanced_arrays},
-         *      @extension{EXT,instanced_arrays} or
-         *      @extension{NV,instanced_arrays} in OpenGL ES 2.0 if
+         * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
+         *      @gl_extension{EXT,instanced_arrays} or
+         *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0 if
          *      @ref instanceCount() is more than `1`.
          * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
          *      in WebGL 1.0 if @ref instanceCount() is more than `1`.
@@ -264,10 +264,10 @@ class MAGNUM_GL_EXPORT MeshView {
          * @ref Mesh::draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
          * for more information.
          * @see @ref draw(AbstractShaderProgram&)
-         * @requires_gl40 Extension @extension{ARB,transform_feedback2}
-         * @requires_gl40 Extension @extension{ARB,transform_feedback3} if
+         * @requires_gl40 Extension @gl_extension{ARB,transform_feedback2}
+         * @requires_gl40 Extension @gl_extension{ARB,transform_feedback3} if
          *      @p stream is not `0`
-         * @requires_gl42 Extension @extension{ARB,transform_feedback_instanced}
+         * @requires_gl42 Extension @gl_extension{ARB,transform_feedback_instanced}
          *      if @ref instanceCount() is more than `1`.
          */
         void draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream = 0);

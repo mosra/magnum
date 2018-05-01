@@ -61,12 +61,12 @@ Various links gathered around the web:
     with RGBA internal format, on mobile devices usually nothing happens. Be
     sure to match the component count.
 -   Rendering to 16- and 32-bit float textures is only possible with OpenGL ES
-    3.2 or with the @extension{EXT,color_buffer_half_float} and
-    @extension{EXT,color_buffer_float} extensions. You can work around that
+    3.2 or with the @gl_extension{EXT,color_buffer_half_float} and
+    @gl_extension{EXT,color_buffer_float} extensions. You can work around that
     issue by rendering to 32-bit unsigned integer textures and using the
     @glsl floatBitsToUInt() @ce GLSL function instead.
 -   Linear filtering on 32-bit float textures is only possible with
-    @extension{OES,texture_float_linear} (it's not even on ES 3.2 yet). You can
+    @gl_extension{OES,texture_float_linear} (it's not even on ES 3.2 yet). You can
     work around that issue by using half-float texture formats or doing the
     interpolation manually in a shader.
 

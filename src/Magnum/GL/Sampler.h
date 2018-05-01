@@ -49,13 +49,13 @@ enum class SamplerFilter: GLint {
     /**
      * Linear interpolation filtering. Can't be used with integer
      * texture formats.
-     * @requires_es_extension Extension @extension{OES,texture_float_linear}
+     * @requires_es_extension Extension @gl_extension{OES,texture_float_linear}
      *      for linear interpolation of textures with
      *      @ref TextureFormat::Float
      * @requires_webgl_extension Extensiion @webgl_extension{OES,texture_float_linear}
      *      for linear interpolation of textures with
      *      @ref TextureFormat::Float
-     * @requires_gles30 Extension @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
+     * @requires_gles30 Extension @gl_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
      *      for linear interpolation of textures with
      *      @ref TextureFormat::HalfFloat in OpenGL ES 2.0.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
@@ -98,13 +98,13 @@ enum class SamplerMipmap: GLint {
      * Linear interpolation of nearest mip levels. **Unavailable on
      * rectangle textures.**
      * @m_keywords{GL_NEAREST_MIPMAP_LINEAR GL_LINEAR_MIPMAP_LINEAR}
-     * @requires_es_extension Extension @extension{OES,texture_float_linear}
+     * @requires_es_extension Extension @gl_extension{OES,texture_float_linear}
      *      for linear interpolation of textures with
      *      @ref TextureFormat::Float
      * @requires_webgl_extension Extensiion @webgl_extension{OES,texture_float_linear}
      *      for linear interpolation of textures with
      *      @ref TextureFormat::Float
-     * @requires_gles30 Extension @extension2{OES,texture_half_float_linear,OES_texture_float_linear}
+     * @requires_gles30 Extension @gl_extension2{OES,texture_half_float_linear,OES_texture_float_linear}
      *      for linear interpolation of textures with
      *      @ref TextureFormat::HalfFloat in OpenGL ES 2.0.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
@@ -151,9 +151,9 @@ enum class SamplerWrapping: GLint {
      * Clamp to border color. Coordinates out of range will be clamped
      * to border color (set with
      * @ref Texture::setBorderColor() "*Texture::setBorderColor()").
-     * @requires_gles32 Extension @extension{ANDROID,extension_pack_es31a} /
-     *      @extension{EXT,texture_border_clamp} or
-     *      @extension{NV,texture_border_clamp}
+     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+     *      @gl_extension{EXT,texture_border_clamp} or
+     *      @gl_extension{NV,texture_border_clamp}
      * @requires_gles Border clamp is not available in WebGL.
      */
     #ifndef MAGNUM_TARGET_GLES
@@ -167,8 +167,8 @@ enum class SamplerWrapping: GLint {
     /**
      * Mirror the texture once in negative coordinates and clamp to
      * edge after that. **Unavailable on rectangle textures.**
-     * @requires_gl44 Extension @extension{ARB,texture_mirror_clamp_to_edge},
-     *      @extension{ATI,texture_mirror_once} or @extension{EXT,texture_mirror_clamp}
+     * @requires_gl44 Extension @gl_extension{ARB,texture_mirror_clamp_to_edge},
+     *      @gl_extension{ATI,texture_mirror_once} or @gl_extension{EXT,texture_mirror_clamp}
      * @requires_gl Only separate @ref Wrapping::MirroredRepeat or
      *      @ref Wrapping::ClampToEdge is available in OpenGL ES and
      *      WebGL.
@@ -221,7 +221,7 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, SamplerWrapping value);
 @see @ref SamplerCompareFunction,
     @ref Texture::setCompareMode() "*Texture::setCompareMode()"
 @m_enum_values_as_keywords
-@requires_gles30 Extension @extension{EXT,shadow_samplers} in
+@requires_gles30 Extension @gl_extension{EXT,shadow_samplers} in
     OpenGL ES 2.0.
 @requires_webgl20 Depth texture comparison is not available in WebGL
     1.0.
@@ -250,7 +250,7 @@ Comparison operator used when comparison mode is set to
 @see @ref Texture::setCompareFunction() "*Texture::setCompareFunction()",
     @ref Texture::setCompareMode() "*Texture::setCompareMode()"
 @m_enum_values_as_keywords
-@requires_gles30 Extension @extension{EXT,shadow_samplers} in
+@requires_gles30 Extension @gl_extension{EXT,shadow_samplers} in
     OpenGL ES 2.0.
 @requires_webgl20 Depth texture comparison is not available in WebGL
     1.0.
@@ -306,7 +306,7 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, SamplerCompareFunction value);
 
 @see @ref Texture::setDepthStencilMode() "*Texture::setDepthStencilMode()"
 @m_enum_values_as_keywords
-@requires_gl43 Extension @extension{ARB,stencil_texturing}
+@requires_gl43 Extension @gl_extension{ARB,stencil_texturing}
 @requires_gles31 Stencil texturing is not available in OpenGL ES 3.0
     and older.
 @requires_gles Stencil texturing is not available in WebGL.
@@ -335,8 +335,8 @@ class MAGNUM_GL_EXPORT Sampler {
          * @brief Max supported max anisotropy
          *
          * The result is cached, repeated queries don't result in repeated
-         * OpenGL calls. If extension @extension{ARB,texture_filter_anisotropic}
-         * (part of OpenGL 4.6) or @extension{EXT,texture_filter_anisotropic}
+         * OpenGL calls. If extension @gl_extension{ARB,texture_filter_anisotropic}
+         * (part of OpenGL 4.6) or @gl_extension{EXT,texture_filter_anisotropic}
          * (desktop or ES) is not available, returns @cpp 0.0f @ce.
          * @see @fn_gl{Get} with @def_gl_keyword{MAX_TEXTURE_MAX_ANISOTROPY}
          * @m_keywords{GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT}

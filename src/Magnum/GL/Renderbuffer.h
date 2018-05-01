@@ -52,13 +52,13 @@ The engine tracks currently bound renderbuffer to avoid unnecessary calls to
 implementation-defined values (such as @ref maxSize()) are cached, so repeated
 queries don't result in repeated @fn_gl{Get} calls.
 
-If either @extension{ARB,direct_state_access} (part of OpenGL 4.5) or
-@extension{EXT,direct_state_access} desktop extension is available, functions
+If either @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) or
+@gl_extension{EXT,direct_state_access} desktop extension is available, functions
 @ref setStorage() and @ref setStorageMultisample() use DSA to avoid unnecessary
 calls to @fn_gl{BindRenderbuffer}. See their respective documentation for more
 information.
 
-@requires_gl30 Extension @extension{ARB,framebuffer_object}
+@requires_gl30 Extension @gl_extension{ARB,framebuffer_object}
 */
 class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
     friend Implementation::FramebufferState;
@@ -80,8 +80,8 @@ class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls. If neither OpenGL ES 3.0 nor ES extension
-         * @extension{ANGLE,framebuffer_multisample} /
-         * @extension{NV,framebuffer_multisample} is available, returns
+         * @gl_extension{ANGLE,framebuffer_multisample} /
+         * @gl_extension{NV,framebuffer_multisample} is available, returns
          * @cpp 0 @ce.
          * @see @ref setStorageMultisample(), @fn_gl{Get} with
          *      @def_gl_keyword{MAX_SAMPLES}
@@ -109,7 +109,7 @@ class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
         /**
          * @brief Constructor
          *
-         * Generates new OpenGL renderbuffer object. If @extension{ARB,direct_state_access}
+         * Generates new OpenGL renderbuffer object. If @gl_extension{ARB,direct_state_access}
          * (part of OpenGL 4.5) is not available, the renderbuffer is created
          * on first use.
          * @see @ref Renderbuffer(NoCreateT), @ref wrap(),
@@ -173,8 +173,8 @@ class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
          *
          * The result is *not* cached, repeated queries will result in repeated
          * OpenGL calls. If OpenGL 4.3 / OpenGL ES 3.2 is not supported and
-         * neither @extension{KHR,debug} (covered also by
-         * @extension{ANDROID,extension_pack_es31a}) nor @extension{EXT,debug_label}
+         * neither @gl_extension{KHR,debug} (covered also by
+         * @gl_extension{ANDROID,extension_pack_es31a}) nor @gl_extension{EXT,debug_label}
          * desktop or ES extension is available, this function returns empty
          * string.
          * @see @fn_gl_keyword{GetObjectLabel} or
@@ -189,8 +189,8 @@ class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
          * @return Reference to self (for method chaining)
          *
          * Default is empty string. If OpenGL 4.3 / OpenGL ES 3.2 is not
-         * supported and neither @extension{KHR,debug} (covered also by
-         * @extension{ANDROID,extension_pack_es31a}) nor @extension{EXT,debug_label}
+         * supported and neither @gl_extension{KHR,debug} (covered also by
+         * @gl_extension{ANDROID,extension_pack_es31a}) nor @gl_extension{EXT,debug_label}
          * desktop or ES extension is available, this function does nothing.
          * @see @ref maxLabelLength(), @fn_gl_keyword{ObjectLabel} or
          *      @fn_gl_extension_keyword{LabelObject,EXT,debug_label} with
@@ -212,8 +212,8 @@ class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
          * @param internalFormat    Internal format
          * @param size              Renderbuffer size
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the renderbuffer is bound before the operation (if not
          * already).
          * @see @ref maxSize(), @fn_gl2_keyword{NamedRenderbufferStorage,RenderbufferStorage},
@@ -230,8 +230,8 @@ class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
          * @param internalFormat    Internal format
          * @param size              Renderbuffer size
          *
-         * If neither @extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @extension{EXT,direct_state_access} desktop extension is
+         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
+         * nor @gl_extension{EXT,direct_state_access} desktop extension is
          * available, the renderbuffer is bound before the operation (if not
          * already).
          * @see @ref maxSize(), @ref maxSamples(),
@@ -239,11 +239,11 @@ class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
          *      @fn_gl_extension_keyword{NamedRenderbufferStorageMultisample,EXT,direct_state_access},
          *      eventually @fn_gl{BindRenderbuffer} and
          *      @fn_gl_keyword{RenderbufferStorageMultisample}
-         * @requires_gles30 Extension @extension{ANGLE,framebuffer_multisample}
-         *      or @extension{NV,framebuffer_multisample} in OpenGL ES 2.0.
+         * @requires_gles30 Extension @gl_extension{ANGLE,framebuffer_multisample}
+         *      or @gl_extension{NV,framebuffer_multisample} in OpenGL ES 2.0.
          * @requires_webgl20 Multisample framebuffers are not available in
          *      WebGL 1.0.
-         * @todo How about @extension{APPLE,framebuffer_multisample}, @fn_gl_extension{RenderbufferStorageMultisample,EXT,multisampled_render_to_texture}?
+         * @todo How about @gl_extension{APPLE,framebuffer_multisample}, @fn_gl_extension{RenderbufferStorageMultisample,EXT,multisampled_render_to_texture}?
          */
         void setStorageMultisample(Int samples, RenderbufferFormat internalFormat, const Vector2i& size);
         #endif

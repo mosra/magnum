@@ -52,9 +52,9 @@ either using geometry shaders or with help of additional vertex information.
 
 If you have geometry shaders available, you don't need to do anything else.
 
-@requires_gl32 Extension @extension{ARB,geometry_shader4} for wireframe
+@requires_gl32 Extension @gl_extension{ARB,geometry_shader4} for wireframe
     rendering using geometry shaders.
-@requires_es_extension Extension @extension{EXT,geometry_shader} for
+@requires_es_extension Extension @gl_extension{EXT,geometry_shader} for
     wireframe rendering using geometry shaders.
 
 If you don't have geometry shaders, you need to set @ref Flag::NoGeometryShader
@@ -63,10 +63,10 @@ meshes (see @ref MeshTools::duplicate() for possible solution). Additionaly, if
 you have OpenGL < 3.1 or OpenGL ES 2.0, you need to provide also
 @ref VertexIndex attribute.
 
-@requires_gles30 Extension @extension{OES,standard_derivatives} for
+@requires_gles30 Extension @gl_extension{OES,standard_derivatives} for
     wireframe rendering without geometry shaders.
 
-If using geometry shaders on OpenGL ES, @extension{NV,shader_noperspective_interpolation}
+If using geometry shaders on OpenGL ES, @gl_extension{NV,shader_noperspective_interpolation}
 is optionally used for improving line appearance.
 
 @section Shaders-MeshVisualizer-usage Example usage
