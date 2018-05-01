@@ -43,7 +43,9 @@
 #include "Magnum/GL/GL.h"
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 #define GLFW_INCLUDE_NONE
+#endif
 #include <GLFW/glfw3.h>
 
 namespace Magnum { namespace Platform {
