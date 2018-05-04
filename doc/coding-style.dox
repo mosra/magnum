@@ -137,6 +137,16 @@ produces this link:
 @gl_extension2{NV,read_buffer_front,GL_NV_read_buffer}
 </blockquote>
 
+WebGL extensions can be specified using @c \@webgl_extension. For example
+
+@snippet coding-style.h webgl_extension
+
+produces this:
+
+<blockquote>
+@webgl_extension{EXT,color_buffer_float}
+</blockquote>
+
 OpenAL extensions can be referenced using @c \@al_extension, OpenAL context
 extension using @c \@alc_extension. For example
 
@@ -222,12 +232,14 @@ for some functionality (not related to any member function), it should be
 noted in the description.
 
 Similarly for OpenGL ES there is command @c \@requires_gl for functionality
-not available in OpenGL ES at all, @c \@requires_gles30 for functionality
-requiring OpenGL ES 3.0 (i.e. not part of OpenGL 2.0) and
-@c \@requires_es_extension for specific extensions not part of OpenGL ES
-specification. When there is both required desktop OpenGL version/extension
-and OpenGL ES version/extension, first come desktop requirements, then ES
-requirements.
+not available in OpenGL ES at all, @c \@requires_glesXX for functionality
+requiring OpenGL ES X.X, @c \@requires_gles for functionality requiring OpenGL
+ES and not available in WebGL, @c \@requires_webgl20 for functionality
+requiring WebGL 2.0 (i.e., not part of WebGL 1.0), @c \@requires_es_extension
+for specific extensions not part of the core OpenGL ES specification and
+@c \@requires_webgl_extension for specific extensions not part of the core
+WebGL specification. When there is more than just a single platform, first come
+desktop requirements, then ES requirements and WebGL requirements last.
 
 All classes and functions using those commands are cross-referenced in page
 @ref opengl-required-extensions.
