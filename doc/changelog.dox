@@ -200,7 +200,8 @@ Released 2018-05-01, tagged as
 -   Suppressed a MSVC warning in @ref MeshTools::interleave() (see
     [mosra/magnum#238](https://github.com/mosra/magnum/issues/238))
 -   Fixed Vcpkg packages to properly copy all plugin and their dependencies
-    along the executable (see [mosra/magnum#235](https://github.com/mosra/magnum/issues/235))
+    along the executable (see [mosra/magnum#235](https://github.com/mosra/magnum/issues/235),
+    [mosra/magnum-examples#41](https://github.com/mosra/magnum-examples/issues/41))
 -   Stable version of Magnum is now available as a binary package in the
     ArchLinux `[community]` repo
 -   Homebrew macOS packages were updated to install the stable version by
