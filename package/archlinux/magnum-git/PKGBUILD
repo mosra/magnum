@@ -1,6 +1,6 @@
 # Author: mosra <mosra@centrum.cz>
 pkgname=magnum-git
-pkgver=2018.02.r248.g920db7aa
+pkgver=2018.04.r0.g9457cfc3
 pkgrel=1
 pkgdesc="C++11/C++14 graphics middleware for games and data visualization (Git version)"
 arch=('i686' 'x86_64')
