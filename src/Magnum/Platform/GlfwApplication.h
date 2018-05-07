@@ -544,7 +544,7 @@ class GlfwApplication::GLConfiguration {
         /**
          * @brief Set context version
          *
-         * If requesting version greater or equal to OpenGL 3.1, core profile
+         * If requesting version greater or equal to OpenGL 3.2, core profile
          * is used. The created context will then have any version which is
          * backwards-compatible with requested one. Default is
          * @ref GL::Version::None, i.e. any provided version is used.
