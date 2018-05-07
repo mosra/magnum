@@ -36,6 +36,15 @@ See also:
 -   @subpage changelog-extras "Extras changelog"
 -   @subpage changelog-examples "Examples changelog"
 
+@section changelog-latest Changes since 2018.04
+
+@subsection changelog-latest-bugfixes Bug fixes
+
+-   An assert was firing during @ref Platform::GlfwApplication initialization
+    due to a pointer not being properly initialized after the
+    @ref Platform::GlfwApplication::GLConfiguration "GLConfiguration" rework in
+    2018.04 (see [mosra/magnum#246](https://github.com/mosra/magnum/pull/246))
+
 @section changelog-2018-04 2018.04
 
 Released 2018-05-01, tagged as
