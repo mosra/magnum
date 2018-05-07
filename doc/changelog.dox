@@ -40,6 +40,12 @@ See also:
 
 @subsection changelog-latest-changes Changes and improvements
 
+-   @ref Platform::GlfwApplication now behaves the same as
+    @ref Platform::Sdl2Application when creating an OpenGL context: first it
+    attempts to create a forward-compatible core OpenGL 3.2+ context and if
+    that fails, falls back to 2.1+ compatibility context. The
+    @cpp "no-forward-compatible-core-context" @ce workaround is implemented as
+    well, see @ref opengl-workarounds for more information.
 -   @ref Platform::GlfwApplication no longer stores a needless global window
     pointer
 

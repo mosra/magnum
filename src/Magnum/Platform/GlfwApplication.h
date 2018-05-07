@@ -244,6 +244,10 @@ class GlfwApplication {
          * printed and the program exits if the context cannot be created, see
          * @ref tryCreate() for an alternative.
          *
+         * On desktop GL, if version is not specified in @p glConfiguration,
+         * the application first tries to create core context (OpenGL 3.2+) and
+         * if that fails, falls back to compatibility OpenGL 2.1 context.
+         *
          * @note This function is available only if Magnum is compiled with
          *      @ref MAGNUM_TARGET_GL enabled (done by default). See
          *      @ref building-features for more information.

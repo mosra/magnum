@@ -26,6 +26,7 @@
 
 #include "GlfwApplication.h"
 
+#include <cstring>
 #include <tuple>
 #include <Corrade/Utility/String.h>
 #include <Corrade/Utility/Unicode.h>
@@ -169,7 +170,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     CORRADE_IGNORE_DEPRECATED_POP
     #endif
 
-    CORRADE_ASSERT(!_window && _context->version() == GL::Version::None, "Platform::GlfwApplication::tryCreate(): context already created", false);
+    CORRADE_ASSERT(!_window && _context->version() == GL::Version::None, "Platform::GlfwApplication::tryCreate(): window with OpenGL context already created", false);
 
     /* Window flags */
     GLFWmonitor* monitor = nullptr; /* Needed for setting fullscreen */
@@ -212,13 +213,83 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         #else
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
         #endif
+
+    /* Request usable version otherwise */
+    } else {
+        #ifndef MAGNUM_TARGET_GLES
+        /* First try to create core context. This is needed mainly on macOS and
+           Mesa, as support for recent OpenGL versions isn't implemented in
+           compatibility contexts (which are the default). Unlike SDL2, GLFW
+           requires at least version 3.2 to be able to request a core profile. */
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, true);
+        #else
+        /* For ES the major context version is compile-time constant */
+        #ifdef MAGNUM_TARGET_GLES3
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        #elif defined(MAGNUM_TARGET_GLES2)
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+        #else
+        #error unsupported OpenGL ES version
+        #endif
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 0);
+        glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
+        #endif
     }
 
-    /* Set context flags */
-    _window = glfwCreateWindow(configuration.size().x(), configuration.size().y(), configuration.title().c_str(), monitor, nullptr);
+    /* Create window. Hide it by default so we don't have distracting window
+       blinking in case we have to destroy it again right away. If the creation
+       succeeds, make the context current so we can query GL_VENDOR below. */
+    glfwWindowHint(GLFW_VISIBLE, false);
+    if((_window = glfwCreateWindow(configuration.size().x(), configuration.size().y(), configuration.title().c_str(), monitor, nullptr)))
+        glfwMakeContextCurrent(_window);
+
+    #ifndef MAGNUM_TARGET_GLES
+   /* Fall back to (forward compatible) GL 2.1, if version is not
+       user-specified and either core context creation fails or we are on
+       binary NVidia/AMD drivers on Linux/Windows or Intel Windows drivers.
+       Instead of creating forward-compatible context with highest available
+       version, they force the version to the one specified, which is
+       completely useless behavior. */
+    #ifndef CORRADE_TARGET_APPLE
+    constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
+    #ifdef CORRADE_TARGET_WINDOWS
+    constexpr static const char intelVendorString[] = "Intel";
+    #endif
+    constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
+    const char* vendorString;
+    #endif
+    if(glConfiguration.version() == GL::Version::None && (!_window
+        #ifndef CORRADE_TARGET_APPLE
+        /* Sorry about the UGLY code, HOPEFULLY THERE WON'T BE MORE WORKAROUNDS */
+        || (vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR)),
+        (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
+         #ifdef CORRADE_TARGET_WINDOWS
+         std::strncmp(vendorString, intelVendorString, sizeof(intelVendorString)) == 0 ||
+         #endif
+         std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0)
+         && !_context->isDriverWorkaroundDisabled("no-forward-compatible-core-context"))
+         #endif
+    )) {
+        /* Don't print any warning when doing the workaround, because the bug
+           will be there probably forever */
+        if(!_window) Warning{}
+            << "Platform::GlfwApplication::tryCreate(): cannot create a window with core OpenGL context, falling back to compatibility context";
+        else glfwDestroyWindow(_window);
+
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, false);
+
+        _window = glfwCreateWindow(configuration.size().x(), configuration.size().y(), configuration.title().c_str(), monitor, nullptr);
+    }
+    #endif
+
     if(!_window) {
-        Error() << "Platform::GlfwApplication::tryCreate(): cannot create context";
-        glfwTerminate();
+        Error() << "Platform::GlfwApplication::tryCreate(): cannot create a window with OpenGL context";
         return false;
     }
 
@@ -237,10 +308,21 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     glfwSetScrollCallback(_window, staticMouseScrollEvent);
     glfwSetCharCallback(_window, staticTextInputEvent);
 
+    /* Make the final context current */
     glfwMakeContextCurrent(_window);
 
+    /* Destroy everything when the Magnum context creation fails */
+    if(!_context->tryCreate()) {
+        glfwDestroyWindow(_window);
+        _window = nullptr;
+    }
+
+    /* Show the window once we are sure that everything is okay */
+    if(!(configuration.windowFlags() & Configuration::WindowFlag::Hidden))
+        glfwShowWindow(_window);
+
     /* Return true if the initialization succeeds */
-    return _context->tryCreate();
+    return true;
 }
 #endif
 
