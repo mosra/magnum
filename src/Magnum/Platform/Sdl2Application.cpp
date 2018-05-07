@@ -249,9 +249,10 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     #ifndef MAGNUM_TARGET_GLES
     /* Fall back to (forward compatible) GL 2.1, if version is not
        user-specified and either core context creation fails or we are on
-       binary NVidia/AMD drivers on Linux/Windows. Instead of creating forward-
-       compatible context with highest available version, they force the
-       version to the one specified, which is completely useless behavior. */
+       binary NVidia/AMD drivers on Linux/Windows or Intel Windows drivers.
+       Instead of creating forward-compatible context with highest available
+       version, they force the version to the one specified, which is
+       completely useless behavior. */
     #ifndef CORRADE_TARGET_APPLE
     constexpr static const char nvidiaVendorString[] = "NVIDIA Corporation";
     #ifdef CORRADE_TARGET_WINDOWS
@@ -272,8 +273,8 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
          && !_context->isDriverWorkaroundDisabled("no-forward-compatible-core-context"))
         #endif
     )) {
-        /* Don't print any warning when doing the NV workaround, because the
-           bug will be there probably forever */
+        /* Don't print any warning when doing the workaround, because the bug
+           will be there probably forever */
         if(!_glContext) Warning()
             << "Platform::Sdl2Application::tryCreate(): cannot create core context:"
             << SDL_GetError() << "(falling back to compatibility context)";
