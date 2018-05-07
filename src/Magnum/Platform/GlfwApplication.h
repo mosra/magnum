@@ -480,7 +480,7 @@ class GlfwApplication {
 
         static GlfwApplication* _instance;
 
-        GLFWwindow* _window{ nullptr };
+        GLFWwindow* _window{nullptr};
         Flags _flags;
         #ifdef MAGNUM_TARGET_GL
         std::unique_ptr<Platform::GLContext> _context;

@@ -123,7 +123,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
     glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
 
     #ifdef GLFW_NO_API
-    /* Disable implicit GL context c/reation */
+    /* Disable implicit GL context creation */
     glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NO_API);
     #endif
 
