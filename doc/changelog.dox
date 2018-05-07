@@ -38,6 +38,11 @@ See also:
 
 @section changelog-latest Changes since 2018.04
 
+@subsection changelog-latest-changes Changes and improvements
+
+-   @ref Platform::GlfwApplication no longer stores a needless global window
+    pointer
+
 @subsection changelog-latest-bugfixes Bug fixes
 
 -   An assert was firing during @ref Platform::GlfwApplication initialization

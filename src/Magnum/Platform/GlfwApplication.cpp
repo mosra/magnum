@@ -39,8 +39,6 @@
 
 namespace Magnum { namespace Platform {
 
-GlfwApplication* GlfwApplication::_instance = nullptr;
-
 #ifdef GLFW_TRUE
 /* The docs say that it's the same, verify that just in case */
 static_assert(GLFW_TRUE == true && GLFW_FALSE == false, "GLFW does not have sane bool values");
@@ -64,9 +62,6 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
     , _context{new GLContext{NoCreate, arguments.argc, arguments.argv}}
     #endif
 {
-    /* Save global instance */
-    _instance = this;
-
     /* Init GLFW */
     glfwSetErrorCallback(staticErrorCallback);
 
@@ -234,6 +229,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     glfwSetInputMode(_window, GLFW_CURSOR, Int(configuration.cursorMode()));
 
     /* Set callbacks */
+    glfwSetWindowUserPointer(_window, this);
     glfwSetFramebufferSizeCallback(_window, staticViewportEvent);
     glfwSetKeyCallback(_window, staticKeyEvent);
     glfwSetCursorPosCallback(_window, staticMouseMoveEvent);
@@ -274,38 +270,48 @@ int GlfwApplication::exec() {
     return 0;
 }
 
-void GlfwApplication::staticKeyEvent(GLFWwindow*, int key, int, int action, int mods) {
+void GlfwApplication::staticViewportEvent(GLFWwindow* const window, const int w, const int h) {
+    static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->viewportEvent({w, h});
+}
+
+void GlfwApplication::staticKeyEvent(GLFWwindow* const window, const int key, int, const int action, const int mods) {
+    const auto instance = static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
+
     KeyEvent e(static_cast<KeyEvent::Key>(key), {static_cast<InputEvent::Modifier>(mods)}, action == GLFW_REPEAT);
 
     if(action == GLFW_PRESS) {
-        _instance->keyPressEvent(e);
+        instance->keyPressEvent(e);
     } else if(action == GLFW_RELEASE) {
-        _instance->keyReleaseEvent(e);
+        instance->keyReleaseEvent(e);
     } else if(action == GLFW_REPEAT) {
-        _instance->keyPressEvent(e);
+        instance->keyPressEvent(e);
     }
 }
 
 void GlfwApplication::staticMouseMoveEvent(GLFWwindow* window, double x, double y) {
     MouseMoveEvent e{Vector2i{Int(x), Int(y)}, KeyEvent::getCurrentGlfwModifiers(window)};
-    _instance->mouseMoveEvent(e);
+    static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->mouseMoveEvent(e);
 }
 
-void GlfwApplication::staticMouseEvent(GLFWwindow*, int button, int action, int mods) {
+void GlfwApplication::staticMouseEvent(GLFWwindow* window, int button, int action, int mods) {
+    const auto instance = static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
+
     double x, y;
-    glfwGetCursorPos(_instance->_window, &x, &y);
+    glfwGetCursorPos(window, &x, &y);
     MouseEvent e(static_cast<MouseEvent::Button>(button), {Int(x), Int(y)}, {static_cast<InputEvent::Modifier>(mods)});
 
     if(action == GLFW_PRESS) {
-        _instance->mousePressEvent(e);
+        instance->mousePressEvent(e);
     } else if(action == GLFW_RELEASE) {
-        _instance->mouseReleaseEvent(e);
+        instance->mouseReleaseEvent(e);
     } /* we don't handle GLFW_REPEAT */
 }
 
 void GlfwApplication::staticMouseScrollEvent(GLFWwindow* window, double xoffset, double yoffset) {
+    const auto instance = static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
+
     MouseScrollEvent e(Vector2{Float(xoffset), Float(yoffset)}, KeyEvent::getCurrentGlfwModifiers(window));
-    _instance->mouseScrollEvent(e);
+    instance->mouseScrollEvent(e);
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     if(yoffset != 0.0) {
@@ -317,18 +323,20 @@ void GlfwApplication::staticMouseScrollEvent(GLFWwindow* window, double xoffset,
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
         #endif
-        _instance->mousePressEvent(e1);
+        instance->mousePressEvent(e1);
     }
     #endif
 }
 
-void GlfwApplication::staticTextInputEvent(GLFWwindow*, unsigned int codepoint) {
-    if(!(_instance->_flags & Flag::TextInputActive)) return;
+void GlfwApplication::staticTextInputEvent(GLFWwindow* window, unsigned int codepoint) {
+    const auto instance = static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
+
+    if(!(instance->_flags & Flag::TextInputActive)) return;
 
     char utf8[4];
     const std::size_t size = Utility::Unicode::utf8(codepoint, utf8);
     TextInputEvent e{{utf8, size}};
-    _instance->textInputEvent(e);
+    instance->textInputEvent(e);
 }
 
 void GlfwApplication::staticErrorCallback(int, const char* description) {

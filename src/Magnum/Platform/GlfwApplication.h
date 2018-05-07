@@ -462,23 +462,14 @@ class GlfwApplication {
         typedef Containers::EnumSet<Flag> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
-        static void staticViewportEvent(GLFWwindow*, int w, int h) {
-            _instance->viewportEvent({w, h});
-        }
-
-        static void staticKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mod);
-
-        static void staticMouseEvent(GLFWwindow* window, int button, int action, int mods);
-
-        static void staticMouseMoveEvent(GLFWwindow* window, double x, double y);
-
-        static void staticMouseScrollEvent(GLFWwindow* window, double xoffset, double yoffset);
-
         static void staticErrorCallback(int error, const char* description);
 
+        static void staticViewportEvent(GLFWwindow* window, int w, int h);
+        static void staticKeyEvent(GLFWwindow* window, int key, int scancode, int action, int mod);
+        static void staticMouseEvent(GLFWwindow* window, int button, int action, int mods);
+        static void staticMouseMoveEvent(GLFWwindow* window, double x, double y);
+        static void staticMouseScrollEvent(GLFWwindow* window, double xoffset, double yoffset);
         static void staticTextInputEvent(GLFWwindow* window, unsigned int codepoint);
-
-        static GlfwApplication* _instance;
 
         GLFWwindow* _window{nullptr};
         Flags _flags;
