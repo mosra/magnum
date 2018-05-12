@@ -48,22 +48,29 @@ template<class T> struct Constants {
     /**
      * @brief Pi
      *
-     * @see @ref piHalf(), @ref tau(), @ref Deg, @ref Rad
+     * @see @ref piHalf(), @ref piQuarter(), @ref tau(), @ref Deg, @ref Rad
      */
     static constexpr T pi();
 
     /**
-     * @brief Half pi
+     * @brief Half of a pi
      *
-     * @see @ref pi(), @ref tau(), @ref Deg, @ref Rad
+     * @see @ref pi(), @ref piQuarter(), @ref tau(), @ref Deg, @ref Rad
      */
     static constexpr T piHalf();
+
+    /**
+     * @brief Quarter of a pi
+     *
+     * @see @ref pi(), @ref piHalf(), @ref tau(), @ref Deg, @ref Rad
+     */
+    static constexpr T piQuarter();
 
     /**
      * @brief Tau
      *
      * Or two pi. See the [Tau manifesto](https://www.tauday.com/tau-manifesto).
-     * @see @ref pi(), @ref piHalf(), @ref Deg, @ref Rad
+     * @see @ref pi(), @ref piHalf(), @ref piQuarter(), @ref Deg, @ref Rad
      */
     static constexpr T tau();
 
@@ -93,6 +100,7 @@ template<> struct Constants<Double> {
 
     static constexpr Double pi()        { return 3.141592653589793; }
     static constexpr Double piHalf()    { return 1.570796326794897; }
+    static constexpr Double piQuarter() { return 0.785398163397448; }
     static constexpr Double tau()       { return 6.283185307179586; }
     static constexpr Double e()         { return 2.718281828459045; }
     static constexpr Double sqrt2()     { return 1.414213562373095; }
@@ -106,6 +114,7 @@ template<> struct Constants<Float> {
 
     static constexpr Float pi()         { return 3.141592654f; }
     static constexpr Float piHalf()     { return 1.570796327f; }
+    static constexpr Float piQuarter()  { return 0.785398163f; }
     static constexpr Float tau()        { return 6.283185307f; }
     static constexpr Float e()          { return 2.718281828f; }
     static constexpr Float sqrt2()      { return 1.414213562f; }

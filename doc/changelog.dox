@@ -38,6 +38,12 @@ See also:
 
 @section changelog-latest Changes since 2018.04
 
+@subsection changelog-latest-new New features
+
+@subsubsection changelog-lates-new-math Math library
+
+-   Added @ref Math::piQuarter()
+
 @subsection changelog-latest-changes Changes and improvements
 
 -   @ref Platform::GlfwApplication now behaves the same as

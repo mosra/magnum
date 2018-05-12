@@ -48,19 +48,23 @@ ConstantsTest::ConstantsTest() {
 template<class T> void ConstantsTest::constants() {
     setTestCaseName(std::is_same<T, Double>::value ? "constants<Double>" : "constants<Float>");
 
-    constexpr T a = Constants<T>::sqrt2();
-    constexpr T b = Constants<T>::sqrt3();
-    CORRADE_COMPARE(Math::pow<2>(a), T(2));
-    CORRADE_COMPARE(Math::pow<2>(b), T(3));
-
-    constexpr T c = Constants<T>::pi();
-    constexpr T d = Constants<T>::piHalf();
-    constexpr T e = Constants<T>::tau();
-    CORRADE_COMPARE(T(0.5)*c, d);
-    CORRADE_COMPARE(T(2.0)*c, e);
-
-    constexpr T f = Constants<T>::e();
-    CORRADE_COMPARE(std::log(f), T(1));
+    {
+        constexpr T a = Constants<T>::sqrt2();
+        constexpr T b = Constants<T>::sqrt3();
+        CORRADE_COMPARE(Math::pow<2>(a), T(2));
+        CORRADE_COMPARE(Math::pow<2>(b), T(3));
+    } {
+        constexpr T a = Constants<T>::pi();
+        constexpr T b = Constants<T>::piHalf();
+        constexpr T c = Constants<T>::piQuarter();
+        constexpr T d = Constants<T>::tau();
+        CORRADE_COMPARE(T(0.50)*a, b);
+        CORRADE_COMPARE(T(0.25)*a, c);
+        CORRADE_COMPARE(T(2.00)*a, d);
+    } {
+        constexpr T e = Constants<T>::e();
+        CORRADE_COMPARE(std::log(e), T(1));
+    }
 }
 
 template<class T> void ConstantsTest::specials() {
