@@ -143,6 +143,7 @@ Example usage:
 @snippet MagnumMath.cpp _deg
 
 @see @link operator""_degf() @endlink, @link operator""_rad() @endlink
+@m_keywords{_deg deg}
 */
 constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(Double(value)); }
 
@@ -154,6 +155,7 @@ Example usage:
 @snippet MagnumMath.cpp _degf
 
 @see @link operator""_deg() @endlink, @link operator""_radf() @endlink
+@m_keywords{_degf degf}
 */
 constexpr Deg<Float> operator "" _degf(long double value) { return Deg<Float>(Float(value)); }
 
@@ -210,6 +212,7 @@ namespace Literals {
 
 See @link operator""_deg() @endlink for more information.
 @see @link operator""_radf() @endlink
+@m_keywords{_rad rad}
 */
 constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(Double(value)); }
 
@@ -218,6 +221,7 @@ constexpr Rad<Double> operator "" _rad(long double value) { return Rad<Double>(D
 
 See @link operator""_degf() @endlink for more information.
 @see @link operator""_rad() @endlink
+@m_keywords{_radf radf}
 */
 constexpr Rad<Float> operator "" _radf(long double value) { return Rad<Float>(Float(value)); }
 

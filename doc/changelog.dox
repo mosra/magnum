@@ -42,7 +42,7 @@ See also:
 
 @subsubsection changelog-lates-new-math Math library
 
--   Added @ref Math::piQuarter()
+-   Added @ref Math::Constants::piQuarter()
 
 @subsection changelog-latest-changes Changes and improvements
 

@@ -994,6 +994,7 @@ Unpacks the literal into three 8-bit values. Example usage:
     literal instead.
 
 @see @link operator""_rgba() @endlink, @link operator""_rgbf() @endlink
+@m_keywords{_rgb rgb}
 */
 constexpr Color3<UnsignedByte> operator "" _rgb(unsigned long long value) {
     return {UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
@@ -1016,6 +1017,7 @@ RGB. Use this literal to document that given value is in sRGB. Example usage:
     representation directly or convert the value using @ref Color3::fromSrgb().
 
 @see @link operator""_srgba() @endlink, @link operator""_rgb() @endlink
+@m_keywords{_srgb srgb}
 */
 /* Output is a Vector3 to hint that it doesn't have any (additive,
    multiplicative) semantics of a linear RGB color */
@@ -1036,6 +1038,7 @@ Unpacks the literal into four 8-bit values. Example usage:
     literal instead.
 
 @see @link operator""_rgb() @endlink, @link operator""_rgbaf() @endlink
+@m_keywords{_rgba rgba}
 */
 constexpr Color4<UnsignedByte> operator "" _rgba(unsigned long long value) {
     return {UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)};
@@ -1059,6 +1062,7 @@ usage:
     representation directly or convert the value using @ref Color4::fromSrgbAlpha().
 
 @see @link operator""_srgb() @endlink, @link operator""_rgba() @endlink
+@m_keywords{_srgba srgba}
 */
 /* Output is a Vector3 to hint that it doesn't have any (additive,
    multiplicative) semantics of a linear RGB color */
@@ -1079,6 +1083,7 @@ Unpacks the 8-bit values into three floats. Example usage:
     literal instead.
 
 @see @link operator""_rgbaf() @endlink, @link operator""_rgb() @endlink
+@m_keywords{_rgbf rgbf}
 */
 inline Color3<Float> operator "" _rgbf(unsigned long long value) {
     return Math::unpack<Color3<Float>>(Color3<UnsignedByte>{UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
@@ -1095,6 +1100,7 @@ usage:
 
 @see @link operator""_srgbaf() @endlink, @link operator""_srgb() @endlink,
     @link operator""_rgbf() @endlink
+@m_keywords{_srgbf srgbf}
 */
 inline Color3<Float> operator "" _srgbf(unsigned long long value) {
     return Color3<Float>::fromSrgb<UnsignedByte>({UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
@@ -1113,6 +1119,7 @@ Unpacks the 8-bit values into four floats. Example usage:
     literal instead.
 
 @see @link operator""_rgbf() @endlink, @link operator""_rgba() @endlink
+@m_keywords{_rgbaf rgbaf}
 */
 inline Color4<Float> operator "" _rgbaf(unsigned long long value) {
     return Math::unpack<Color4<Float>>(Color4<UnsignedByte>{UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
@@ -1129,6 +1136,7 @@ information. Example usage:
 
 @see @link operator""_srgbf() @endlink, @link operator""_srgba() @endlink,
     @link operator""_rgbaf() @endlink
+@m_keywords{_srgbaf srgbaf}
 */
 inline Color4<Float> operator "" _srgbaf(unsigned long long value) {
     return Color4<Float>::fromSrgbAlpha<UnsignedByte>({UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
