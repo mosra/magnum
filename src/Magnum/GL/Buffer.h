@@ -79,7 +79,10 @@ enum class BufferUsage: GLenum {
     StreamCopy = GL_STREAM_COPY,
     #endif
 
-    /** Set once by the application and used frequently for drawing. */
+    /**
+     * Set once by the application and used frequently for drawing. A good
+     * default choice if you are not sure.
+     */
     StaticDraw = GL_STATIC_DRAW,
 
     #ifndef MAGNUM_TARGET_GLES2
