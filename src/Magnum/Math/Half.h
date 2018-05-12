@@ -49,25 +49,13 @@ negation operator, an @link Literals::operator""_h() operator""_h() @endlink
 literal and an @ref operator<<(Debug&, Half) debug operator. Internally the class uses
 @ref packHalf() and @ref unpackHalf(). Example usage:
 
-@code{.cpp}
-using namespace Math::Literals;
-
-Half a = 3.14159_h;
-Debug{} << a;                   // Prints 3.14159
-Debug{} << Float(a);            // Prints 3.14159
-Debug{} << UnsignedShort(a);    // Prints 25675
-@endcode
+@snippet MagnumMath.cpp Half-usage
 
 Note that it is also possible to use this type inside @ref Vector classes,
 though, again, only for passing data around and converting them, without any
 arithmetic operations:
 
-@code{.cpp}
-Math::Vector3<Half> a{3.14159_h, -1.4142_h, 1.618_h};
-Vector3 b{a};                                // converts to 32-bit floats
-Debug{} << a;                                // prints {3.14159, -1.4142, 1.618}
-Debug{} << Math::Vector3<UnsignedShort>{a};  // prints {16968, 48552, 15993}
-@endcode
+@snippet MagnumMath.cpp Half-usage-vector
 
 @see @ref Magnum::Half
 */

@@ -593,4 +593,244 @@ static_cast<void>(q1);
 static_cast<void>(q2);
 }
 
+{
+/* [Deg-usage] */
+using namespace Math::Literals;
+
+auto degrees = 60.0_degf;       // type is Deg<Float>
+auto radians = 1.047_rad;       // type is Rad<Double>
+/* [Deg-usage] */
+static_cast<void>(degrees);
+static_cast<void>(radians);
+}
+
+{
+/* [Deg-usage-convert] */
+Double foo();
+
+Deg degrees{35.0f};
+Radd radians{foo()};
+//degrees = 60.0f;              // error, no implicit conversion
+/* [Deg-usage-convert] */
+static_cast<void>(degrees);
+static_cast<void>(radians);
+}
+
+{
+/* [Deg-usage-operations] */
+auto a = 60.0_degf + 17.35_degf;
+auto b = -a + 23.0_degf*4;
+//auto c = 60.0_degf*45.0_degf; // error, undefined resulting unit
+/* [Deg-usage-operations] */
+static_cast<void>(b);
+}
+
+{
+Double foo();
+/* [Deg-usage-comparison] */
+Rad angle();
+
+Deg x = angle();                // convert to degrees for easier comparison
+if(x < 30.0_degf) foo();
+//if(x > 1.57_radf) bar();      // error, both need to be of the same type
+/* [Deg-usage-comparison] */
+}
+
+{
+/* [Deg-usage-conversion] */
+Float sine(Rad angle);
+Float a = sine(60.0_degf);      // the same as sine(1.047_radf)
+Degd b = 1.047_rad;             // the same as 60.0_deg
+Double c = Double(b);           // 60.0
+//Float d = a;                  // error, no implicit conversion
+/* [Deg-usage-conversion] */
+static_cast<void>(a);
+static_cast<void>(c);
+}
+
+{
+Float sine(Rad angle);
+Float a = 60.0f;
+Deg b;
+/* [Deg-usage-explicit-conversion] */
+//sine(a);                      // compilation error
+sine(Deg{a});                   // explicitly specifying unit
+
+//std::sin(b);                  // compilation error
+std::sin(Float(Rad{b}));        // required explicit conversion hints to user
+                                // that this case needs special attention
+                                // (i.e., conversion to radians)
+/* [Deg-usage-explicit-conversion] */
+}
+
+{
+/* [_deg] */
+using namespace Math::Literals;
+Double cos1 = Math::cos(60.0_deg);  // cos1 = 0.5
+Double cos2 = Math::cos(1.047_rad); // cos2 = 0.5
+/* [_deg] */
+static_cast<void>(cos1);
+static_cast<void>(cos2);
+}
+
+{
+/* [_degf] */
+using namespace Math::Literals;
+Float tan1 = Math::tan(60.0_degf);  // tan1 = 1.732f
+Float tan2 = Math::tan(1.047_radf); // tan2 = 1.732f
+/* [_degf] */
+static_cast<void>(tan1);
+static_cast<void>(tan2);
+}
+
+{
+/* [Color3-pack] */
+Color3 a{1.0f, 0.5f, 0.75f};
+auto b = Math::pack<Color3ub>(a); // b == {255, 127, 191}
+/* [Color3-pack] */
+static_cast<void>(b);
+}
+
+{
+/* [Color3-fromSrgb] */
+Math::Vector3<UnsignedByte> srgb;
+auto rgb = Color3::fromSrgb(srgb);
+/* [Color3-fromSrgb] */
+static_cast<void>(rgb);
+}
+
+{
+Color3 color;
+/* [Color3-toHsv] */
+Deg hue;
+Float saturation, value;
+std::tie(hue, saturation, value) = color.toHsv();
+/* [Color3-toHsv] */
+}
+
+{
+/* [Color3-toSrgb] */
+Color3 color;
+Math::Vector3<UnsignedByte> srgb = color.toSrgb<UnsignedByte>();
+/* [Color3-toSrgb] */
+static_cast<void>(srgb);
+}
+
+{
+/* [Color4-fromSrgbAlpha] */
+Math::Vector4<UnsignedByte> srgbAlpha;
+auto rgba = Color4::fromSrgbAlpha(srgbAlpha);
+/* [Color4-fromSrgbAlpha] */
+static_cast<void>(rgba);
+}
+
+{
+/* [Color4-fromSrgb] */
+Math::Vector3<UnsignedByte> srgb;
+auto rgba = Color4::fromSrgb(srgb);
+/* [Color4-fromSrgb] */
+static_cast<void>(rgba);
+}
+
+{
+Color4 color;
+/* [Color4-toHsv] */
+Deg hue;
+Float saturation, value;
+std::tie(hue, saturation, value) = color.toHsv();
+/* [Color4-toHsv] */
+}
+
+{
+/* [Color4-toSrgbAlpha] */
+Color4 color;
+Math::Vector4<UnsignedByte> srgbAlpha = color.toSrgbAlpha<UnsignedByte>();
+/* [Color4-toSrgbAlpha] */
+static_cast<void>(srgbAlpha);
+}
+
+{
+/* [_rgb] */
+using namespace Math::Literals;
+Color3ub a = 0x33b27f_rgb;      // {0x33, 0xb2, 0x7f}
+/* [_rgb] */
+static_cast<void>(a);
+}
+
+{
+/* [_srgb] */
+using namespace Math::Literals;
+Math::Vector3<UnsignedByte> a = 0x33b27f_srgb; // {0x33, 0xb2, 0x7f}
+/* [_srgb] */
+static_cast<void>(a);
+}
+
+{
+/* [_rgba] */
+using namespace Math::Literals;
+Color4ub a = 0x33b27fcc_rgba;   // {0x33, 0xb2, 0x7f, 0xcc}
+/* [_rgba] */
+static_cast<void>(a);
+}
+
+{
+/* [_srgba] */
+using namespace Math::Literals;
+Math::Vector4<UnsignedByte> a = 0x33b27fcc_srgba; // {0x33, 0xb2, 0x7f, 0xcc}
+/* [_srgba] */
+static_cast<void>(a);
+}
+
+{
+/* [_rgbf] */
+using namespace Math::Literals;
+Color3 a = 0x33b27f_rgbf;       // {0.2f, 0.698039f, 0.498039f}
+/* [_rgbf] */
+static_cast<void>(a);
+}
+
+{
+/* [_srgbf] */
+using namespace Math::Literals;
+Color3 a = 0x33b27f_srgbf;      // {0.0331048f, 0.445201f, 0.212231f}
+/* [_srgbf] */
+static_cast<void>(a);
+}
+
+{
+/* [_rgbaf] */
+using namespace Math::Literals;
+Color4 a = 0x33b27fcc_rgbaf;    // {0.2f, 0.698039f, 0.498039f, 0.8f}
+/* [_rgbaf] */
+static_cast<void>(a);
+}
+
+{
+/* [_srgbaf] */
+using namespace Math::Literals;
+Color4 a = 0x33b27fcc_srgbaf;   // {0.0331048f, 0.445201f, 0.212231f, 0.8f}
+/* [_srgbaf] */
+static_cast<void>(a);
+}
+
+{
+/* [Half-usage] */
+using namespace Math::Literals;
+
+Half a = 3.14159_h;
+Debug{} << a;                   // Prints 3.14159
+Debug{} << Float(a);            // Prints 3.14159
+Debug{} << UnsignedShort(a);    // Prints 25675
+/* [Half-usage] */
+}
+
+{
+/* [Half-usage-vector] */
+Math::Vector3<Half> a{3.14159_h, -1.4142_h, 1.618_h};
+Vector3 b{a};                                // converts to 32-bit floats
+Debug{} << a;                                // prints {3.14159, -1.4142, 1.618}
+Debug{} << Math::Vector3<UnsignedShort>{a};  // prints {16968, 48552, 15993}
+/* [Half-usage-vector] */
+}
+
 }

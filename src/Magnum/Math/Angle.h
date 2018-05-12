@@ -49,65 +49,38 @@ and conversion less error-prone.
 
 You can enter the value either by using a literal:
 
-@code{.cpp}
-using namespace Literals;
-
-auto degrees = 60.0_degf;       // type is Deg<Float>
-auto radians = 1.047_rad;       // type is Rad<Double>
-@endcode
+@snippet MagnumMath.cpp Deg-usage
 
 Or explicitly convert a unitless value (such as output from some function) to
 either degrees or radians:
 
-@code{.cpp}
-Double foo();
-
-Deg<Float> degrees(35.0f);
-Rad<Double> radians(foo());
-//degrees = 60.0f;              // error, no implicit conversion
-@endcode
+@snippet MagnumMath.cpp Deg-usage-convert
 
 The classes support all arithmetic operations, such as addition, subtraction
 or multiplication/division by a unitless number:
 
-@code{.cpp}
-auto a = 60.0_degf + 17.35_degf;
-auto b = -a + 23.0_degf*4;
-//auto c = 60.0_degf*45.0_degf; // error, undefined resulting unit
-@endcode
+@snippet MagnumMath.cpp Deg-usage-operations
 
 It is also possible to compare angles with all comparison operators, but
 comparison of degrees and radians is not possible without explicit conversion
 to common type:
 
-@code{.cpp}
-Rad<Float> angle();
-
-Deg<Float> x = angle();         // convert to degrees for easier comparison
-if(x < 30.0_degf) foo();
-//if(x > 1.57_radf) bar();      // error, both need to be of the same type
-@endcode
+@snippet MagnumMath.cpp Deg-usage-comparison
 
 It is possible to seamlessly convert between degrees and radians and explicitly
 convert the value back to the underlying type:
 
-@code{.cpp}
-Float sine(Rad<Float> angle);
-Float a = sine(60.0_degf);      // the same as sine(1.047_radf)
-Deg<Double> b = 1.047_rad;      // the same as 60.0_deg
-Float d = Double(b);            // 60.0
-//Float e = b;                  // error, no implicit conversion
-@endcode
+@snippet MagnumMath.cpp Deg-usage-conversion
 
 @section Math-Angle-explicit-conversion Requirement of explicit conversion
 
 The requirement of explicit conversions from and to unitless types helps to
-reduce unit-based errors. Consider following example with implicit conversions
-allowed:
+reduce unit-based errors. Consider the following example that would compile
+only if implicit conversions were allowed:
 
 @code{.cpp}
 namespace std { float sin(float angle); }
-Float sine(Rad<Float> angle);
+Float sine(Rad angle);
 
 Float a = 60.0f;                // degrees
 sine(a);                        // silent error, sine() expected radians
@@ -118,15 +91,7 @@ std::sin(b);                    // silent error, std::sin() expected radians
 
 These silent errors are easily avoided by requiring explicit conversions:
 
-@code{.cpp}
-//sine(a);                      // compilation error
-sine(Deg<Float>{a});            // explicitly specifying unit
-
-//std::sin(b);                  // compilation error
-std::sin(Float(Rad<Float>(b));  // required explicit conversion hints to user
-                                // that this case needs special attention
-                                // (i.e., conversion to radians)
-@endcode
+@snippet MagnumMath.cpp Deg-usage-explicit-conversion
 
 @see @ref Magnum::Deg, @ref Magnum::Degd
 */
@@ -175,10 +140,7 @@ namespace Literals {
 
 Example usage:
 
-@code{.cpp}
-Double cosine = Math::cos(60.0_deg);  // cosine = 0.5
-Double cosine = Math::cos(1.047_rad); // cosine = 0.5
-@endcode
+@snippet MagnumMath.cpp _deg
 
 @see @link operator""_degf() @endlink, @link operator""_rad() @endlink
 */
@@ -189,10 +151,7 @@ constexpr Deg<Double> operator "" _deg(long double value) { return Deg<Double>(D
 
 Example usage:
 
-@code{.cpp}
-Float tangent = Math::tan(60.0_degf);  // tangent = 1.732f
-Float tangent = Math::tan(1.047_radf); // tangent = 1.732f
-@endcode
+@snippet MagnumMath.cpp _degf
 
 @see @link operator""_deg() @endlink, @link operator""_radf() @endlink
 */
