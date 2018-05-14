@@ -39,7 +39,6 @@ if(CORRADE_TARGET_EMSCRIPTEN AND NOT TARGET_GLES2)
 endif()
 
 add_library(snippets-Magnum STATIC
-    plugins.cpp
     Magnum.cpp
     MagnumMath.cpp)
 target_link_libraries(snippets-Magnum PRIVATE Magnum)
@@ -57,6 +56,7 @@ endif()
 
 if(WITH_TRADE)
     add_library(snippets-MagnumTrade STATIC
+        plugins.cpp
         MagnumTrade.cpp)
     target_link_libraries(snippets-MagnumTrade PRIVATE MagnumTrade)
     set_target_properties(snippets-MagnumTrade PROPERTIES FOLDER "Magnum/doc/snippets")
