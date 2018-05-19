@@ -221,7 +221,6 @@ void BezierTest::valueQuadratic() {
 }
 
 void BezierTest::valueCubic() {
-    Vector2 p0(0.0f, 0.0f), p1(10.0f, 15.0f), p2(20.0f, 4.0f), p3(5.0f, -20.0f);
     CubicBezier2D bezier{Vector2{0.0f, 0.0f}, Vector2{10.0f, 15.0f}, Vector2{20.0f, 4.0f}, Vector2{5.0f, -20.0f}};
 
     CORRADE_COMPARE(bezier.value(0.2f), (Vector2{5.8f, 5.984f}));
