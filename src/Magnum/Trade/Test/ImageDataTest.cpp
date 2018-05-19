@@ -94,6 +94,9 @@ namespace {
 namespace GL {
     enum class PixelFormat { RGB = 666 };
     enum class PixelType { UnsignedShort = 1337 };
+    /* Clang -Wmissing-prototypes warns otherwise, even though this is in an
+       anonymous namespace */
+    UnsignedInt pixelSize(PixelFormat, PixelType);
     UnsignedInt pixelSize(PixelFormat format, PixelType type) {
         CORRADE_INTERNAL_ASSERT(format == PixelFormat::RGB);
         CORRADE_INTERNAL_ASSERT(type == PixelType::UnsignedShort);
@@ -105,6 +108,9 @@ namespace GL {
 
 namespace Vk {
     enum class PixelFormat { R32G32B32F = 42 };
+    /* Clang -Wmissing-prototypes warns otherwise, even though this is in an
+       anonymous namespace */
+    UnsignedInt pixelSize(PixelFormat);
     UnsignedInt pixelSize(PixelFormat format) {
         CORRADE_INTERNAL_ASSERT(format == PixelFormat::R32G32B32F);
         return 12;
