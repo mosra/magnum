@@ -264,6 +264,10 @@ if(WITH_XEGLAPPLICATION)
     set(NEED_ABSTRACTXAPPLICATION 1)
     set(NEED_EGLCONTEXTHANDLER 1)
     set(NEED_EGLCONTEXT 1)
+    find_package(EGL)
+    if(NOT EGL_FOUND)
+        message(FATAL_ERROR "EGL library, required by some applications, was not found. Set WITH_*EGL*APPLICATION to OFF to skip building them.")
+    endif()
 
     set(MagnumXEglApplication_SRCS
         XEglApplication.cpp
@@ -281,7 +285,7 @@ if(WITH_XEGLAPPLICATION)
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
     target_include_directories(MagnumXEglApplication PUBLIC ${X11_INCLUDE_DIR})
-    target_link_libraries(MagnumXEglApplication PUBLIC MagnumGL ${X11_LIBRARIES})
+    target_link_libraries(MagnumXEglApplication PUBLIC MagnumGL ${X11_LIBRARIES} EGL::EGL)
 
     install(FILES ${MagnumXEglApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumXEglApplication
