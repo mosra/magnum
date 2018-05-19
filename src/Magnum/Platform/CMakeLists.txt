@@ -791,3 +791,7 @@ endif()
 # Force IDEs display also all header files and additional files in project view
 add_custom_target(MagnumPlatform SOURCES ${MagnumPlatform_HEADERS} ${MagnumPlatform_FILES})
 set_target_properties(MagnumPlatform PROPERTIES FOLDER "Magnum/Platform")
+
+if(BUILD_TESTS)
+    add_subdirectory(Test)
+endif()
