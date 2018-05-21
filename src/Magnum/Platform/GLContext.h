@@ -108,6 +108,18 @@ class GLContext: public GL::Context {
         /** @overload */
         explicit GLContext(NoCreateT, Int argc, std::nullptr_t argv): GLContext{NoCreate, argc, static_cast<const char**>(argv)} {}
 
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* Used privately to inject additional command-line arguments */
+        explicit GLContext(NoCreateT, Utility::Arguments& args, Int argc, char** argv): GLContext{NoCreate, args, argc, const_cast<const char**>(argv)} {}
+        explicit GLContext(NoCreateT, Utility::Arguments& args, Int argc, std::nullptr_t argv): GLContext{NoCreate, args, argc, static_cast<const char**>(argv)} {}
+        explicit GLContext(NoCreateT, Utility::Arguments& args, Int argc, const char** argv):
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            GL::Context{NoCreate, args, argc, argv, flextGLInit} {}
+            #else
+            GL::Context{NoCreate, args, argc, argv, nullptr} {}
+            #endif
+        #endif
+
         /**
          * @brief Construct the class without doing complete setup
          *

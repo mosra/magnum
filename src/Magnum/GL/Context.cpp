@@ -449,9 +449,11 @@ Context& Context::current() {
     return *currentContext;
 }
 
-Context::Context(NoCreateT, Int argc, const char** argv, void functionLoader()): _functionLoader{functionLoader}, _version{Version::None} {
+Context::Context(NoCreateT, Int argc, const char** argv, void functionLoader()): Context{NoCreate, Utility::Arguments{"magnum"}, argc, argv, functionLoader} {}
+
+Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader()): _functionLoader{functionLoader}, _version{Version::None} {
     /* Parse arguments */
-    Utility::Arguments args{"magnum"};
+    CORRADE_INTERNAL_ASSERT(args.prefix() == "magnum");
     args.addOption("disable-workarounds")
         .setHelp("disable-workarounds", "driver workarounds to disable\n      (see http://doc.magnum.graphics/magnum/opengl-workarounds.html for detailed info)", "LIST")
         .addOption("disable-extensions").setHelp("disable-extensions", "OpenGL extensions to disable", "LIST")

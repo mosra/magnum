@@ -638,6 +638,8 @@ class MAGNUM_GL_EXPORT Context {
         #endif
 
         explicit Context(NoCreateT, Int argc, const char** argv, void functionLoader());
+        explicit Context(NoCreateT, Utility::Arguments&& args, Int argc, const char** argv, void functionLoader()): Context{NoCreate, args, argc, argv, functionLoader} {}
+        explicit Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader());
 
         bool tryCreate();
         void create();
