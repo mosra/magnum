@@ -57,7 +57,7 @@ Gradle requires Android SDK version of CMake, which is currently at version
 3.6. See below for an experimental way to @ref platforms-android-system-cmake "use the system CMake"
 instead.
 
-@section platforms-android-command-line Building and running console applications
+@section platforms-android-console Building and running console applications
 
 Android allows to run arbitrary console utilities and tests via ADB. Assuming
 you have Magnum installed in the NDK path as described in @ref building-cross-android,

@@ -25,22 +25,255 @@
 
 namespace Magnum {
 
-/** @page platforms-html5 HTML5 and WebGL
+/** @page platforms-html5 JavaScript, HTML5 and WebGL
 @brief Building, testing and deploying HTML5 and WebGL projects
 
 @tableofcontents
 @m_footernavigation
+@m_keywords{HTML5 Emscripten}
 
-@todoc move stuff from Sdl2App and WindowlessEglApp
-@todoc explain the css and js file, command-line args
 @todoc testing, gl tests, coverage, travis setup
 @todoc static plugins
+@todoc speeding up compilation
 
 The following guide explains basic workflow of using
 [Emscripten](http://kripken.github.io/emscripten-site/) for deploying HTML5
 apps using WebGL.
 
-See also @ref Platform::Sdl2Application for more information.
+At the very least you need to have Emscripten installed. Running console
+applications requires Node.js, running browser apps require a webserver that's
+able to serve static content (for example Apache, if you have Python installed,
+it has a builtin webserver too).
+
+@note On ArchLinux it's the `emscripten` and `nodejs` packages, both in the
+    `[extras]` repository.
+
+Cross-compilation to Emscripten is done using a CMake toolchain that's part of
+the toolchains repository at https://github.com/mosra/toolchains. Add it as a
+submodule to your project or fetch the contents any other way that suits your project. The following guide will assume the contents of the repository are
+placed in a `toolchains/` subdirectory.
+
+@code{.sh}
+git submodule add git://github.com/mosra/toolchains
+@endcode
+
+There are two toolchain files. The `generic/Emscripten.cmake` is for the
+classical (asm.js) build, the `generic/Emscripten-wasm.cmake` is for
+WebAssembly build. The following guide will work with the WASM toolchain. Don't
+forget to adapt `EMSCRIPTEN_PREFIX` variable in
+`toolchains/generic/Emscripten*.cmake` to path where Emscripten is installed;
+you can also pass it explicitly on command-line using `-DEMSCRIPTEN_PREFIX`.
+Default is `/usr/emscripten`.
+
+@section platforms-html5-console Building and running console applications
+
+Emscripten allows you to run arbitrary console utilities and tests via Node.js,
+except for all code that accesses browsers APIs such as WebGL or audio.
+Assuming you have Magnum installed in the Emscripten path as described in
+@ref building-cross-emscripten, build your project simply as this, using one
+of the toolchain files from above:
+
+@code{.sh}
+mkdir build-emscripten-wasm && cd build-emscripten-wasm
+cmake .. \
+    -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten-wasm.cmake" \
+    -DCMAKE_BUILD_TYPE=Release
+cmake --build .
+@endcode
+
+After that you can run the generated JavaScript file using Node.js. Note that
+it looks for the corresponding `*.wasm` file in the current directory, so you
+need to @cb{.sh} cd @ce there first:
+
+@code{.sh}
+cd build-emscripten-wasm/src
+node my-application.js
+@endcode
+
+@section platforms-html5-apps Building and deploying graphics apps
+
+In case you don't have an OpenGL ES build set up yet, you need to copy
+`FindOpenGLES2.cmake` (or `FindOpenGLES3.cmake`) from the
+[modules/](https://github.com/mosra/magnum/tree/master/modules) directory in
+Magnum source to the `modules/` dir in your project so it is able to find the
+WebGL libraries.
+
+Magnum provides an Emscripten application wrapper in
+@ref Platform::Sdl2Application. See its documentation for more information
+about general usage. You can also use the Emscripten APIs directly or any other
+way.
+
+@note The @ref Platform::Sdl2Application also contains a fully configured
+    bootstrap project that's ready to build and deploy. Check its documentation
+    for details.
+
+To target the web browser, you need to provide a HTML markup for your
+application. Template one is below. The markup references two files,
+`EmscriptenApplication.js` and `WebApplication.css`, both are in the
+[src/Magnum/Platform/](https://github.com/mosra/magnum/tree/master/src/Magnum/Platform)
+directory in the source tree and are also put into `share/magnum/` inside your
+install prefix.
+
+@code{.html-jinja}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Magnum Emscripten Application</title>
+    <link rel="stylesheet" href="WebApplication.css" />
+  </head>
+  <body>
+    <h1>Magnum Emscripten Application</h1>
+    <div id="listener">
+      <canvas id="module"></canvas>
+      <div id="status">Initialization...</div>
+      <div id="statusDescription"></div>
+      <script src="EmscriptenApplication.js"></script>
+      <script async="async" src="{{ application }}.js"></script>
+    </div>
+  </body>
+</html>
+@endcode
+
+Replace @cb{.jinja} {{ application }} @ce with the name of your application
+executable. You can modify all the files to your liking, but the HTML file must
+contain at least the @cb{.html} <canvas> @ce enclosed in listener
+@cb{.html} <div> @ce. The JavaScript file contains event listeners which print
+loading status on the page. The status displayed in the remaining two
+@cb{.html} <div> @ce s, if they are available. The CSS file contains
+a rudimentary style.
+
+In order to deploy the app, you need to install the JS driver code, the
+WebAssembly binary (or the asm.js memory image, in case you are compiling
+with the classic asm.js toolchain), the HTML markup and the JS/CSS modules to a
+common location. The following CMake snippet handles all of that:
+
+@code{.cmake}
+if(CORRADE_TARGET_EMSCRIPTEN)
+    install(TARGETS my-application DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(FILES
+        my-application.html
+        EmscriptenApplication.js
+        WebApplication.css
+        DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/my-application.js.mem
+        ${CMAKE_CURRENT_BINARY_DIR}/my-application.wasm
+        DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)
+endif()
+@endcode
+
+To deploy, you can either point `CMAKE_INSTALL_PREFIX` to a location inside
+your system webserver or you can point it to an arbitrary directory and use
+Python's builtin webserver to serve its contents:
+
+@code{.sh}
+cd build-emscripten-wasm
+cmake -DCMAKE_INSTALL_PREFIX=/path/to/my/emscripten/deploy ..
+cmake --build . --target install
+
+cd /path/to/my/emscripten/deploy
+python -m http.server
+@endcode
+
+After that, you can open http://localhost:8000 to see the files. Stop the
+webserver again by pressing @m_class{m-label m-warning} **Ctrl**
+@m_class{m-label m-default} **C**.
+
+@section platforms-html5-windowless-apps Building and deploying windowless apps
+
+In case you don't have an EGL + OpenGL ES build set up yet, you need to copy
+`FindEGL.cmake` and `FindOpenGLES2.cmake` (or `FindOpenGLES3.cmake`) from the
+[modules/](https://github.com/mosra/magnum/tree/master/modules) directory in
+Magnum source to the `modules/` dir in your project so it is able to find the
+EGL and WebGL libraries.
+
+Windowless Magnum apps (i.e. apps that use the OpenGL context without a window)
+can be run in the browser as well using the @ref Platform::WindowlessEglApplication
+class. See its documentation for more information
+about general usage. You can also use the Emscripten APIs directly or any other
+way.
+
+@note The @ref Platform::WindowlessEglApplication also contains a fully
+    configured bootstrap project that's ready to build and deploy. Check its
+    documentation for details.
+
+Similarly to graphics apps, you need to provide a HTML markup for your
+application. Template one is below, its main difference from the one above is
+that it shows the console output instead of the canvas. The markup references
+two files, `WindowlessEmscriptenApplication.js` and `WebApplication.css`, both
+are in the [src/Magnum/Platform/](https://github.com/mosra/magnum/tree/master/src/Magnum/Platform)
+directory in the source tree and are also put into `share/magnum/` inside your
+install prefix.
+
+@code{.html-jinja}
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Magnum Windowless Emscripten Application</title>
+    <link rel="stylesheet" href="WebApplication.css" />
+  </head>
+  <body>
+    <h1>Magnum Windowless Emscripten Application</h1>
+    <div id="listener">
+      <canvas id="module" class="hidden"></canvas>
+      <pre id="log"></pre>
+      <div id="status">Initialization...</div>
+      <div id="statusDescription"></div>
+      <script src="WindowlessEmscriptenApplication.js"></script>
+      <script async="async" src="{{ application }}.js"></script>
+    </div>
+  </body>
+</html>
+@endcode
+
+Replace @cb{.jinja} {{ application }} @ce with the name of your application
+executable. You can modify all the files to your liking, but the HTML file must
+contain at least the @cb{.html} <canvas> @ce enclosed in listener @cb{.html} <div> @ce
+and the @cb{.html} <pre id="log"> @ce for displaying the output. The JavaScript
+file contains event listeners which print loading status on the page. The
+status displayed in the remaining two @cb{.html} <div> @ce s, if they are
+available. The CSS file contains a rudimentary style.
+
+Deployment is similar to @ref platforms-html5-apps "graphics apps", only
+referencing a different JS file:
+
+@code{.cmake}
+if(CORRADE_TARGET_EMSCRIPTEN)
+    install(TARGETS my-application DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(FILES
+        my-application.html
+        WindowlessEmscriptenApplication.js
+        WebApplication.css
+        DESTINATION ${CMAKE_INSTALL_PREFIX})
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/my-application.js.mem
+        ${CMAKE_CURRENT_BINARY_DIR}/my-application.wasm
+        DESTINATION ${CMAKE_INSTALL_PREFIX} OPTIONAL)
+endif()
+@endcode
+
+@section platforms-html5-environment Terminal output, environment and command-line arguments
+
+When running console apps using Node.js, command-line arguments and terminal
+output work like usual.
+
+For graphics apps in the browser, `EmscriptenApplication.js` redirects all
+output (thus also @ref Corrade::Utility::Debug "Debug",
+@ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error")
+to JavaScript console. For windowless apps, `WindowlessEmscriptenApplication.js`
+redirects output to the @cb{.html} <pre id="log"> @ce element on the page.
+
+It's possible to pass command-line arguments to @cpp main() @ce using GET URL
+parameters. For example, `/app/?foo=bar&fizz&buzz=3` will go to the app as
+@cb{.py} ['--foo', 'bar', '--fizz', '--buzz', '3'] @ce.
+
+Emscripten provides its own set of environment variables through
+@ref std::getenv() and doesn't expose system environment when running through
+Node.js. In order to access system environment, you can use the
+@ref Corrade::Utility::Arguments class, especially
+@ref Corrade::Utility::Arguments::environment().
 
 @section platforms-html5-webgl Differences between WebGL and OpenGL ES
 

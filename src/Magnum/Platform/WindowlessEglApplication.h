@@ -242,8 +242,11 @@ cmake --build .
 cmake --build . --target install
 @endcode
 
-You can then open `MyApplication.html` in your browser (through webserver, e.g.
-http://localhost/emscripten/MyApplication.html).
+You can then open `MyApplication.html` in your browser (through a webserver,
+e.g. http://localhost/emscripten/MyApplication.html).
+
+Detailed information about deployment for Emscripten and all needed boilerplate
+together with a troubleshooting guide is available in @ref platforms-html5.
 
 @section Platform-WindowlessEglApplication-usage General usage
 
@@ -278,51 +281,6 @@ MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN(MyApplication)
 If no other application header is included, this class is also aliased to
 @cpp Platform::WindowlessApplication @ce and the macro is aliased to
 @cpp MAGNUM_WINDOWLESSAPPLICATION_MAIN() @ce to simplify porting.
-
-@section Platform-WindowlessEglApplication-usage-emscripten Usage with Emscripten
-
-If you are targetting Emscripten, you need to provide HTML markup for your
-application. Template one is below or in the bootstrap application, you can
-modify it to your liking. The markup references two files,
-`WindowlessEmscriptenApplication.js` and `WebApplication.css`, both are in
-`Platform/` directory in the source tree and are also installed into
-`share/magnum/` inside your Emscripten toolchain. Change `{{application}}`
-to name of your executable.
-
-@code{.html}
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml">
-  <head>
-    <title>Magnum Windowless Emscripten Application</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="WebApplication.css" />
-  </head>
-  <body>
-    <h1>Magnum Windowless Emscripten Application</h1>
-    <div id="listener">
-      <canvas id="module" class="hidden"></canvas>
-      <pre id="log"></pre>
-      <div id="status">Initialization...</div>
-      <div id="statusDescription"></div>
-      <script src="WindowlessEmscriptenApplication.js"></script>
-      <script async="async" src="{{application}}.js"></script>
-    </div>
-  </body>
-</html>
-@endcode
-
-You can modify all the files to your liking, but the HTML file must contain at
-least the @cb{.html} <canvas> @ce enclosed in listener @cb{.html} <div> @ce.
-The JavaScript file contains event listeners which print loading status on the
-page. The status displayed in the remaining two @cb{.html} <div> @ce s, if they
-are available. The CSS file contains rudimentary style to avoid eye bleeding.
-
-The application prints all output (thus also @ref Corrade::Utility::Debug "Debug",
-@ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error")
-to the @cb{.html} <pre> @ce on the page. It's possible to pass command-line
-arguments to @cpp main() @ce using GET URL parameters. For example,
-`/app/?foo=bar&fizz&buzz=3` will go to the app as
-@cb{.py} ['--foo', 'bar', '--fizz', '--buzz', '3'] @ce.
 */
 class WindowlessEglApplication {
     public:

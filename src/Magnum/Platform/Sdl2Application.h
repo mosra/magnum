@@ -120,8 +120,11 @@ cmake --build .
 cmake --build . --target install
 @endcode
 
-You can then open `MyApplication.html` in your browser (through webserver, e.g.
-http://localhost/emscripten/MyApplication.html).
+You can then open `MyApplication.html` in your browser (through a webserver,
+e.g. http://localhost/emscripten/MyApplication.html).
+
+Detailed information about deployment for Emscripten and all needed boilerplate
+together with a troubleshooting guide is available in @ref platforms-html5.
 
 @section Platform-Sdl2Application-bootstrap-ios Bootstrap application for iOS
 
@@ -220,50 +223,6 @@ MAGNUM_SDL2APPLICATION_MAIN(MyApplication)
 If no other application header is included, this class is also aliased to
 @cpp Platform::Application @ce and the macro is aliased to @cpp MAGNUM_APPLICATION_MAIN() @ce
 to simplify porting.
-
-@section Platform-Sdl2Application-usage-emscripten Usage with Emscripten
-
-If you are targetting Emscripten, you need to provide HTML markup for your
-application. Template one is below or in the bootstrap application, you can
-modify it to your liking. The markup references two files,
-`EmscriptenApplication.js` and `WebApplication.css`, both are in `Platform/`
-directory in the source tree and are also installed into `share/magnum/` inside
-your Emscripten toolchain. Change `{{application}}` to name of your
-executable.
-
-@code{.html}
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>Magnum Emscripten Application</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="WebApplication.css" />
-  </head>
-  <body>
-    <h1>Magnum Emscripten Application</h1>
-    <div id="listener">
-      <canvas id="module"></canvas>
-      <div id="status">Initialization...</div>
-      <div id="statusDescription"></div>
-      <script src="EmscriptenApplication.js"></script>
-      <script async="async" src="{{application}}.js"></script>
-    </div>
-  </body>
-</html>
-@endcode
-
-You can modify all the files to your liking, but the HTML file must contain at
-least the @cb{.html} <canvas> @ce enclosed in listener @cb{.html} <div> @ce.
-The JavaScript file contains event listeners which print loading status on the
-page. The status displayed in the remaining two @cb{.html} <div> @ce s, if they
-are available. The CSS file contains rudimentary style to avoid eye bleeding.
-
-The application redirects all output (thus also @ref Corrade::Utility::Debug "Debug",
-@ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error")
-to JavaScript console. It's possible to pass command-line arguments to
-@cpp main() @ce using GET URL parameters. For example,
-`/app/?foo=bar&fizz&buzz=3` will go to the app as
-@cb{.py} ['--foo', 'bar', '--fizz', '--buzz', '3'] @ce.
 
 @section Platform-Sdl2Application-usage-ios Usage with iOS
 
