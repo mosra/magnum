@@ -120,7 +120,8 @@ either from the `Platform::*Application` classes or from the
 
 @code{.sh}
 <application> [--magnum-help] [--magnum-disable-workarounds LIST]
-              [--magnum-disable-extensions LIST] ...
+              [--magnum-disable-extensions LIST]
+              [--magnum-log default|quiet|verbose] ...
 @endcode
 
 Arguments:
@@ -131,6 +132,8 @@ Arguments:
     @ref opengl-workarounds for detailed info) (environment: `MAGNUM_DISABLE_WORKAROUNDS`)
 -   `--magnum-disable-extensions LIST` --- OpenGL extensions to disable
     (environment: `MAGNUM_DISABLE_EXTENSIONS`)
+-   `--magnum-log default|quiet|verbose` --- console logging
+    (environment: `MAGNUM_LOG`) (default: `default`)
 
 Note that all options are prefixed with `--magnum-` to avoid conflicts with
 options passed to the application itself. Options that don't have this prefix
