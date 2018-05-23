@@ -340,8 +340,14 @@ void Matrix3Test::projection() {
 }
 
 void Matrix3Test::fromParts() {
+    #ifndef CORRADE_MSVC2017_COMPATIBILITY
     constexpr Matrix2x2 rotationScaling(Vector2(3.0f, 5.0f),
                                         Vector2(4.0f, 4.0f));
+    #else
+    /* https://developercommunity.visualstudio.com/content/problem/259204/1572-regression-ice-in-constexpr-code-involving-de.html */
+    constexpr Matrix2x2 rotationScaling{Vector<2, Float>{3.0f, 5.0f},
+                                        Vector<2, Float>{4.0f, 4.0f}};
+    #endif
     constexpr Vector2 translation(7.0f, -1.0f);
     #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
     constexpr

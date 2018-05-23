@@ -479,9 +479,16 @@ void Matrix4Test::perspectiveProjectionFovInfiniteFar() {
 }
 
 void Matrix4Test::fromParts() {
+    #ifndef CORRADE_MSVC2017_COMPATIBILITY
     constexpr Matrix3x3 rotationScaling(Vector3(3.0f,  5.0f, 8.0f),
                                         Vector3(4.0f,  4.0f, 7.0f),
                                         Vector3(7.0f, -1.0f, 8.0f));
+    #else
+    /* https://developercommunity.visualstudio.com/content/problem/259204/1572-regression-ice-in-constexpr-code-involving-de.html */
+    constexpr Matrix3x3 rotationScaling{Vector<3, Float>{3.0f,  5.0f, 8.0f},
+                                        Vector<3, Float>{4.0f,  4.0f, 7.0f},
+                                        Vector<3, Float>{7.0f, -1.0f, 8.0f}};
+    #endif
     constexpr Vector3 translation(9.0f, 4.0f, 5.0f);
     #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Probably because copy is not constexpr */
     constexpr

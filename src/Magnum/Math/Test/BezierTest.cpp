@@ -144,7 +144,12 @@ void BezierTest::constructNoInit() {
 }
 
 void BezierTest::constructConversion() {
+    #ifndef CORRADE_MSVC2017_COMPATIBILITY
     constexpr QuadraticBezier2Dd a{Vector2d{0.5, 1.0}, Vector2d{1.1, 0.3}, Vector2d{0.1, 1.2}};
+    #else
+    /* https://developercommunity.visualstudio.com/content/problem/259204/1572-regression-ice-in-constexpr-code-involving-de.html */
+    constexpr QuadraticBezier2Dd a{Vector<2, Double>{0.5, 1.0}, Vector<2, Double>{1.1, 0.3}, Vector<2, Double>{0.1, 1.2}};
+    #endif
     constexpr QuadraticBezier2D b{a};
 
     CORRADE_COMPARE(b, (QuadraticBezier2D{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}}));
@@ -166,7 +171,12 @@ void BezierTest::constructCopy() {
 
 void BezierTest::convert() {
     constexpr QBezier2D a{0.5f, 1.1f, 0.1f, 1.0f, 0.3f, 1.2f};
+    #ifndef CORRADE_MSVC2017_COMPATIBILITY
     constexpr QuadraticBezier2D b{Vector2{0.5f, 1.0f}, Vector2{1.1f, 0.3f}, Vector2{0.1f, 1.2f}};
+    #else
+    /* https://developercommunity.visualstudio.com/content/problem/259204/1572-regression-ice-in-constexpr-code-involving-de.html */
+    constexpr QuadraticBezier2D b{Vector<2, Float>{0.5f, 1.0f}, Vector<2, Float>{1.1f, 0.3f}, Vector<2, Float>{0.1f, 1.2f}};
+    #endif
 
     constexpr QuadraticBezier2D c{a};
     CORRADE_COMPARE(c, b);
