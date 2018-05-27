@@ -156,6 +156,30 @@ There are also ArchLinux packages for @ref building-plugins-packages-arch "Magnu
 @ref building-extras-packages-arch "Magnum Extras" and
 @ref building-examples-packages-arch "Magnum Examples".
 
+@subsection ppa-packages-ubuntu Prebuilt packages for Ubuntu.
+
+Packages for Ubuntu are available through a PPA. To install packages related
+to Magnum and Corrade, you can add the repository and then install the packages
+with the following commands:
+
+@code{.sh}
+sudo add-apt-repository ppa:chrome/magnum.graphics
+sudo apt-get update
+sudo apt-get install magnum \
+                     magnum-dev \
+                     corrade \
+                     corrade-dev \
+                     magnum-extras \
+                     magnum-extras-dev \
+                     magnum-plugins \
+                     magnum-plugins-dev \
+                     magnum-integration \
+                     magnum-integration-dev \
+                     magnum-examples
+@endcode                    
+
+For more information about these packages, please visit [the PPA page](https://launchpad.net/~chrome/+archive/ubuntu/magnum.graphics).
+
 @subsection building-packages-deb Packages for Debian, Ubuntu and derivatives
 
 The `package/debian/` directory contains all files needed for building Debian
