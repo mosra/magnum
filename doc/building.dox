@@ -158,11 +158,26 @@ There are also ArchLinux packages for @ref building-plugins-packages-arch "Magnu
 
 @subsection building-packages-deb Packages for Debian, Ubuntu and derivatives
 
-The `package/debian/` directory contains all files needed for building Debian
-packages. You need the @ref building-corrade-packages-deb "Corrade Debian package"
-installed and in addition also the `dpkg-dev` and `debhelper` packages.
-Building is easy, just change directory to package root, link or copy
-`package/debian` directory there and run `dpkg-buildpackage`:
+Prebuilt packages of the latest stable version for Ubuntu 14.04, 16.04 and
+18.04 are available through a PPA. To install packages related to Magnum and
+Corrade, you can add the repository and then install the packages with the
+following commands:
+
+@code{.sh}
+sudo add-apt-repository ppa:chrome/magnum.graphics
+sudo apt-get update
+sudo apt-get install magnum magnum-dev
+@endcode
+
+For more information about these packages, please visit
+[the PPA page](https://launchpad.net/~chrome/+archive/ubuntu/magnum.graphics).
+
+To build your own package, the `package/debian/` directory contains all files
+needed for building Debian packages. You need the
+@ref building-corrade-packages-deb "Corrade Debian package" installed and in
+addition also the `dpkg-dev` and `debhelper` packages. Building is easy, just
+change directory to package root, link or copy `package/debian` directory there
+and run `dpkg-buildpackage`:
 
 @code{.sh}
 git clone git://github.com/mosra/magnum && cd magnum
