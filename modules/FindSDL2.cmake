@@ -126,6 +126,15 @@ if(NOT TARGET SDL2::SDL2)
             set_property(TARGET SDL2::SDL2 PROPERTY IMPORTED_LOCATION ${SDL2_LIBRARY})
         endif()
 
+        # Link additional `dl` and `pthread` libraries required by a static
+        # build of SDL on Unixy platforms (except Apple, where it is most
+        # probably some frameworks instead)
+        if(CORRADE_TARGET_UNIX AND NOT CORRADE_TARGET_APPLE AND SDL2_LIBRARY MATCHES "${CMAKE_STATIC_LIBRARY_SUFFIX}$")
+            find_package(Threads)
+            set_property(TARGET SDL2::SDL2 APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES ${CMAKE_THREAD_LIBS_INIT} ${CMAKE_DL_LIBS})
+        endif()
+
         # Link frameworks on iOS
         if(CORRADE_TARGET_IOS)
             set_property(TARGET SDL2::SDL2 APPEND PROPERTY
