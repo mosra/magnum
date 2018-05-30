@@ -44,5 +44,7 @@ Contributors to Magnum library
     packages
 -   Alexander F Rødseth ([@xyproto](https://github.com/xyproto)) -- packages in
     the ArchLinux community repository
+-   Nathan Ollerenshaw ([@matjam](https://github.com/matjam)) --- Ubuntu
+    packages in a PPA repository
 
 Big thanks to everyone involved!

@@ -55,6 +55,11 @@ See also:
 -   @ref Platform::GlfwApplication no longer stores a needless global window
     pointer
 
+@subsection changelog-latest-buildsystem Build system
+
+-   There's now a PPA for Ubuntu packages. See @ref building-packages-deb
+    for more information.
+
 @subsection changelog-latest-bugfixes Bug fixes
 
 -   An assert was firing during @ref Platform::GlfwApplication initialization
