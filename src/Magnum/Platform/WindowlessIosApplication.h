@@ -33,8 +33,8 @@
 #include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
-#include "Magnum/OpenGL.h"
 #include "Magnum/Tags.h"
+#include "Magnum/GL/OpenGL.h"
 #include "Magnum/Platform/Platform.h"
 
 #ifdef __OBJC__
@@ -72,7 +72,7 @@ class WindowlessIosContext {
          * be able to use Magnum.
          * @see @ref isCreated()
          */
-        explicit WindowlessIosContext(const Configuration& configuration, Context* context = nullptr);
+        explicit WindowlessIosContext(const Configuration& configuration, GLContext* context = nullptr);
 
         /**
          * @brief Construct without creating the context

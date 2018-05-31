@@ -28,8 +28,8 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
-#include "Magnum/Version.h"
-#include "Magnum/Platform/Context.h"
+#include "Magnum/GL/Version.h"
+#include "Magnum/Platform/GLContext.h"
 
 #import "EAGL.h"
 
@@ -39,7 +39,7 @@
 
 namespace Magnum { namespace Platform {
 
-WindowlessIosContext::WindowlessIosContext(const Configuration&, Context*) {
+WindowlessIosContext::WindowlessIosContext(const Configuration&, GLContext*) {
     if(!(_context = [[EAGLContext alloc]
         #ifdef MAGNUM_TARGET_GLES2
         initWithAPI:kEAGLRenderingAPIOpenGLES2
@@ -82,7 +82,7 @@ WindowlessIosApplication::WindowlessIosApplication(const Arguments& arguments, c
     createContext(configuration);
 }
 
-WindowlessIosApplication::WindowlessIosApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new Context{NoCreate, arguments.argc, arguments.argv}} {}
+WindowlessIosApplication::WindowlessIosApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}} {}
 
 void WindowlessIosApplication::createContext() { createContext({}); }
 
@@ -91,7 +91,7 @@ void WindowlessIosApplication::createContext(const Configuration& configuration)
 }
 
 bool WindowlessIosApplication::tryCreateContext(const Configuration& configuration) {
-    CORRADE_ASSERT(_context->version() == Version::None, "Platform::WindowlessIosApplication::tryCreateContext(): context already created", false);
+    CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::WindowlessIosApplication::tryCreateContext(): context already created", false);
 
     WindowlessIosContext glContext{configuration, _context.get()};
     if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
