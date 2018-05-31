@@ -62,6 +62,10 @@ Result of component-wise comparison from @ref Vector. The boolean values are
 stored as bits in array of unsigned bytes, unused bits have undefined value
 which doesn't affect comparison or @ref all() / @ref none() / @ref any()
 functions. See also @ref matrix-vector for brief introduction.
+
+@m_keyword{bvec2,GLSL bvec2,}
+@m_keyword{bvec3,GLSL bvec3,}
+@m_keyword{bvec4,GLSL bvec4,}
 */
 template<std::size_t size> class BoolVector {
     static_assert(size != 0, "BoolVector cannot have zero elements");
