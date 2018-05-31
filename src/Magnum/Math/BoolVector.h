@@ -38,6 +38,8 @@
 namespace Magnum { namespace Math {
 
 namespace Implementation {
+    template<std::size_t, class> struct BoolVectorConverter;
+
     /** @todo C++14: use std::make_index_sequence and std::integer_sequence */
     template<std::size_t ...> struct Sequence {};
 
@@ -100,8 +102,16 @@ template<std::size_t size> class BoolVector {
         template<class T, class U = typename std::enable_if<std::is_same<bool, T>::value && size != 1, bool>::type> constexpr explicit BoolVector(T value) noexcept: BoolVector(typename Implementation::GenerateSequence<DataSize>::Type(), value ? FullSegmentMask : 0) {}
         #endif
 
+        /** @brief Construct boolean vector from external representation */
+        template<class U, class V = decltype(Implementation::BoolVectorConverter<size, U>::from(std::declval<U>()))> constexpr explicit BoolVector(const U& other) noexcept: BoolVector{Implementation::BoolVectorConverter<size, U>::from(other)} {}
+
         /** @brief Copy constructor */
         constexpr /*implicit*/ BoolVector(const BoolVector<size>&) noexcept = default;
+
+        /** @brief Convert boolean vector to external representation */
+        template<class U, class V = decltype(Implementation::BoolVectorConverter<size, U>::to(std::declval<BoolVector<size>>()))> constexpr explicit operator U() const {
+            return Implementation::BoolVectorConverter<size, U>::to(*this);
+        }
 
         /**
          * @brief Raw data

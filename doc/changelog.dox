@@ -43,6 +43,8 @@ See also:
 @subsubsection changelog-lates-new-math Math library
 
 -   Added @ref Math::Constants::piQuarter()
+-   Ability to convert @ref Math::BoolVector from and to external
+    representation
 
 @subsection changelog-latest-changes Changes and improvements
 

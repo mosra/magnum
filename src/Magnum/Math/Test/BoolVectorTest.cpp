@@ -28,7 +28,27 @@
 
 #include "Magnum/Math/BoolVector.h"
 
-namespace Magnum { namespace Math { namespace Test {
+struct BVec3 {
+    bool x, y, z;
+};
+
+namespace Magnum { namespace Math {
+
+namespace Implementation {
+
+template<> struct BoolVectorConverter<3, BVec3> {
+    constexpr static BoolVector<3> from(const BVec3& other) {
+        return (other.x << 0)|(other.y << 1)|(other.z << 2);
+    }
+
+    constexpr static BVec3 to(const BoolVector<3>& other) {
+        return {other[0], other[1], other[2]};
+    }
+};
+
+}
+
+namespace Test {
 
 struct BoolVectorTest: Corrade::TestSuite::Tester {
     explicit BoolVectorTest();
@@ -39,6 +59,8 @@ struct BoolVectorTest: Corrade::TestSuite::Tester {
     void constructOneValue();
     void constructOneElement();
     void constructCopy();
+    void convert();
+
     void data();
 
     void compare();
@@ -67,6 +89,8 @@ BoolVectorTest::BoolVectorTest() {
               &BoolVectorTest::constructOneValue,
               &BoolVectorTest::constructOneElement,
               &BoolVectorTest::constructCopy,
+              &BoolVectorTest::convert,
+
               &BoolVectorTest::data,
 
               &BoolVectorTest::compare,
@@ -143,6 +167,23 @@ void BoolVectorTest::constructCopy() {
 
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<BoolVector19>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<BoolVector19>::value);
+}
+
+void BoolVectorTest::convert() {
+    constexpr BVec3 a{false, true, true};
+    constexpr BoolVector<3> b{0x6};
+
+    constexpr BoolVector<3> c{a};
+    CORRADE_COMPARE(c, b);
+
+    constexpr BVec3 d(b);
+    CORRADE_COMPARE(d.x, a.x);
+    CORRADE_COMPARE(d.y, a.y);
+    CORRADE_COMPARE(d.z, a.z);
+
+    /* Implicit conversion is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<BVec3, BoolVector<3>>::value));
+    CORRADE_VERIFY(!(std::is_convertible<BoolVector<3>, BVec3>::value));
 }
 
 void BoolVectorTest::data() {
