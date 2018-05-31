@@ -231,6 +231,11 @@ if(WITH_GLXAPPLICATION)
     set(NEED_GLXCONTEXTHANDLER 1)
     set(NEED_GLXCONTEXT 1)
 
+    find_package(X11)
+    if(NOT X11_FOUND)
+        message(FATAL_ERROR "X11 library, required by some applications, was not found. Set WITH_*X*APPLICATION to OFF to skip building them.")
+    endif()
+
     set(MagnumGlxApplication_SRCS
         GlxApplication.cpp
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
@@ -269,6 +274,11 @@ if(WITH_XEGLAPPLICATION)
         message(FATAL_ERROR "EGL library, required by some applications, was not found. Set WITH_*EGL*APPLICATION to OFF to skip building them.")
     endif()
 
+    find_package(X11)
+    if(NOT X11_FOUND)
+        message(FATAL_ERROR "X11 library, required by some applications, was not found. Set WITH_*X*APPLICATION to OFF to skip building them.")
+    endif()
+
     set(MagnumXEglApplication_SRCS
         XEglApplication.cpp
         $<TARGET_OBJECTS:MagnumAbstractXApplication>
@@ -295,13 +305,6 @@ if(WITH_XEGLAPPLICATION)
 
     # Magnum XEglApplication target alias for superprojects
     add_library(Magnum::XEglApplication ALIAS MagnumXEglApplication)
-endif()
-
-if(WITH_WINDOWLESSGLXAPPLICATION OR NEED_ABSTRACTXAPPLICATION)
-    find_package(X11)
-    if(NOT X11_FOUND)
-        message(FATAL_ERROR "X11 library, required by some contexts, was not found. Set WITH_*X*APPLICATION to OFF to skip building them.")
-    endif()
 endif()
 
 # Windowless EGL application
@@ -342,6 +345,11 @@ endif()
 # Windowless GLX application
 if(WITH_WINDOWLESSGLXAPPLICATION)
     set(NEED_GLXCONTEXT 1)
+
+    find_package(X11)
+    if(NOT X11_FOUND)
+        message(FATAL_ERROR "X11 library, required by some applications, was not found. Set WITH_*X*APPLICATION to OFF to skip building them.")
+    endif()
 
     set(MagnumWindowlessGlxApplication_SRCS
         WindowlessGlxApplication.cpp
