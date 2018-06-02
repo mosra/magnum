@@ -65,7 +65,7 @@ MAGNUM_SCENEGRAPH_EXPORT Debug& operator<<(Debug& debug, AnimationState value);
 Adds animation feature to object. Each Animable is part of some
 @ref AnimableGroup, which takes care of running the animations.
 
-@section SceneGraph-Animable Usage
+@section SceneGraph-Animable-usage Usage
 
 First thing is to add @ref Animable feature to some object and implement
 @ref animationStep(). You can do it conveniently using multiple inheritance
@@ -73,23 +73,7 @@ First thing is to add @ref Animable feature to some object and implement
 to implement your animation, the function provides both absolute animation
 time and time delta. Example:
 
-@code{.cpp}
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
-
-class AnimableObject: public Object3D, SceneGraph::Animable3D {
-    public:
-        AnimableObject(Object3D* parent = nullptr, SceneGraph::AnimableGroup3D* group = nullptr): Object3D{parent}, SceneGraph::Animable3D{*this, group} {
-            setDuration(10.0f);
-            // ...
-        }
-
-    private:
-        void animationStep(Float time, Float delta) override {
-            rotateX(15.0_degf*delta); // rotate at 15 degrees per second
-        }
-}
-@endcode
+@snippet MagnumSceneGraph.cpp Animable-usage-definition
 
 Similarly to @ref Drawable feature, there is no way to just animate all the
 objects in the scene. You need to create animable group and use it to control
@@ -99,32 +83,14 @@ The animation is initially in stopped state and without repeat, see
 @ref setState(), @ref setRepeated() and @ref setRepeatCount() for more
 information.
 
-@code{.cpp}
-Scene3D scene;
-SceneGraph::AnimableGroup3D animables;
-
-(new AnimableObject(&scene, &animables))
-    ->setState(SceneGraph::AnimationState::Running);
-// ...
-@endcode
+@snippet MagnumSceneGraph.cpp Animable-usage
 
 Animation step is performed by calling @ref AnimableGroup::step() in your draw
 event implementation. The function expects absolute time from relative to some
 fixed point in the past and time delta (i.e. duration of the frame). You can
 use @ref Timeline for that, see its documentation for more information.
 
-@code{.cpp}
-Timeline timeline;
-timeline.start();
-
-void MyApplication::drawEvent() {
-    animables.step(timeline.lastFrameTime(), timeline.lastFrameDuration());
-
-    // ...
-
-    timeline.nextFrame();
-}
-@endcode
+@snippet MagnumSceneGraph-gl.cpp Animable-usage-timeline
 
 @section SceneGraph-Animable-multiple-groups Using multiple animable groups to improve performance
 

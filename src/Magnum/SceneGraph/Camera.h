@@ -65,19 +65,11 @@ ratio correction.
 
 Common setup example for 2D scenes:
 
-@code{.cpp}
-SceneGraph::Camera2D camera{&cameraObject};
-camera.setProjectionMatrix(Matrix3::projection({4.0f/3.0f, 1.0f}))
-      .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
-@endcode
+@snippet MagnumSceneGraph.cpp Camera-2D
 
 Common setup example for 3D scenes:
 
-@code{.cpp}
-SceneGraph::Camera3D camera{&cameraObject};
-camera.setProjectionMatrix(Matrix3::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f))
-      .setAspectRatioPolicy(SceneGraph::AspectRatioPolicy::Extend);
-@endcode
+@snippet MagnumSceneGraph.cpp Camera-3D
 
 @section SceneGraph-Camera-explicit-specializations Explicit template specializations
 
@@ -107,7 +99,7 @@ template<UnsignedInt dimensions, class T> class Camera: public AbstractFeature<d
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* This is here to avoid ambiguity with deleted copy constructor when
            passing `*this` from class subclassing both Camera and AbstractObject */
-        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<dimensions, T>, U>::value>::type> Camera(U& object): Camera<dimensions, T>{static_cast<AbstractObject<dimensions, T>&>(object)} {}
+        template<class U, class = typename std::enable_if<std::is_base_of<AbstractObject<dimensions, T>, U>::value>::type> explicit Camera(U& object): Camera<dimensions, T>{static_cast<AbstractObject<dimensions, T>&>(object)} {}
         #endif
 
         ~Camera();
@@ -168,17 +160,13 @@ template<UnsignedInt dimensions, class T> class Camera: public AbstractFeature<d
          * to floating-point coordinates on near XY plane with origin at camera
          * position and Y up can be done using the following snippet:
          *
-         * @code{.cpp}
-         * Vector2 position = (Vector2{event.position()}/defaultFramebuffer.viewport().size() - Vector2{0.5f})*Vector2::yScale(-1.0f)*camera.projectionSize();
-         * @endcode
+         * @snippet MagnumSceneGraph-gl.cpp Camera-projectionSize
          *
          * This is position relative to camera transformation, getting absolute
          * transformation in 2D scene can be done for example using
          * @ref SceneGraph::Object::absoluteTransformation():
          *
-         * @code{.cpp}
-         * Vector2 absolutePosition = cameraObject->absoluteTransformation().transformPoint(position);
-         * @endcode
+         * @snippet MagnumSceneGraph-gl.cpp Camera-projectionSize-absolute
          *
          * @see @ref projectionMatrix()
          */

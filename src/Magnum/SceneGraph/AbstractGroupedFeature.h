@@ -44,15 +44,9 @@ Used together with @ref FeatureGroup.
 @section SceneGraph-AbstractGroupedFeature-subclassing Subclassing
 
 Usage is via subclassing the feature using [CRTP](http://en.wikipedia.org/wiki/Curiously_recurring_template_pattern)
-and typedef'ing @ref FeatureGroup to accept only given type, e.g.:
+and @cpp typedef @ce'ing @ref FeatureGroup to accept only given type, e.g.:
 
-@code{.cpp}
-class Drawable: public SceneGraph::AbstractGroupedFeature3D<Drawable> {
-    // ...
-};
-
-typedef SceneGraph::FeatureGroup3D<Drawable> DrawableGroup;
-@endcode
+@snippet MagnumSceneGraph.cpp AbstractGroupedFeature-subclassing
 
 @section SceneGraph-AbstractGroupedFeature-explicit-specializations Explicit template specializations
 

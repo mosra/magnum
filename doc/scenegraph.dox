@@ -96,10 +96,7 @@ class for more detailed information:
 Common usage of transformation classes is to typedef Scene and Object with
 desired transformation type to save unnecessary typing later:
 
-@code{.cpp}
-typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
-typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
-@endcode
+@snippet MagnumSceneGraph.cpp typedef
 
 @attention Note that you have to include both @ref Magnum/SceneGraph/Object.h
     and desired transformation class (e.g. @ref Magnum/SceneGraph/MatrixTransformation3D.h)
@@ -110,14 +107,7 @@ The object type is subclassed from the transformation type and so the
 and @ref SceneGraph::MatrixTransformation3D. For convenience you can use method
 chaining:
 
-@code{.cpp}
-Scene3D scene;
-
-Object3D object;
-object.setParent(&scene)
-    .rotateY(15.0_degf)
-    .translate(Vector3::xAxis(5.0f));
-@endcode
+@snippet MagnumSceneGraph.cpp method-chaining
 
 @section scenegraph-hierarchy Scene hierarchy
 
@@ -134,26 +124,16 @@ naturally cannot have parent object. Parent and children relationships can be
 observed through @ref SceneGraph::Object::parent() and
 @ref SceneGraph::Object::children().
 
-@code{.cpp}
-Scene3D scene;
-
-Object3D* first = new Object3D{&scene};
-Object3D* second = new Object3D{first};
-@endcode
+@snippet MagnumSceneGraph.cpp hierarchy
 
 The hierarchy takes care of memory management --- when an object is destroyed,
 all its children are destroyed too. See detailed explanation of
 @ref scenegraph-object-construction-order "construction and destruction order"
 below for information about possible issues. To reflect the implicit memory
 management in the code better, you can use @ref SceneGraph::Object::addChild()
-instead of the naked `new` call in the code above:
+instead of the naked @cpp new @ce call in the code above:
 
-@code{.cpp}
-Scene3D scene;
-
-Object3D& first = scene.addChild<Object3D>();
-Object3D& second = first.addChild<Object3D>();
-@endcode
+@snippet MagnumSceneGraph.cpp hierarchy-addChild
 
 @section scenegraph-features Object features
 
@@ -187,10 +167,7 @@ feature to an object might look just like the following, as in some cases you
 don't even need to keep the pointer to it. List of object features is
 accessible through @ref SceneGraph::Object::features().
 
-@code{.cpp}
-Object3D& o;
-new MyFeature{o, ...};
-@endcode
+@snippet MagnumSceneGraph.cpp feature
 
 Some features are passive, some active. Passive features can be just added to
 an object, with no additional work except for possible configuration (for
@@ -202,19 +179,7 @@ features you want and implement needed functions in your own @ref SceneGraph::Ob
 subclass without having to subclass each feature individually (and making the
 code overly verbose). Simplified example:
 
-@code{.cpp}
-class BouncingBall: public Object3D, SceneGraph::Drawable3D, SceneGraph::Animable3D {
-    public:
-        explicit BouncingBall(Object3D* parent): Object3D{parent}, SceneGraph::Drawable3D{*this}, SceneGraph::Animable3D{*this} {}
-
-    private:
-        // drawing implementation for Drawable feature
-        void draw(...) override;
-
-        // animation step for Animable feature
-        void animationStep(...) override;
-};
-@endcode
+@snippet MagnumSceneGraph.cpp feature-inherit
 
 From the outside there is no difference between features added "at runtime" and
 features added using multiple inheritance, they can be both accessed from
@@ -227,10 +192,7 @@ for information about possible issues. Also, there is a
 @ref SceneGraph::AbstractObject::addFeature() counterpart to
 @ref SceneGraph::Object::addChild():
 
-@code{.cpp}
-Object3D& o;
-o.addFeature<MyFeature>(...);
-@endcode
+@snippet MagnumSceneGraph.cpp feature-addFeature
 
 @subsection scenegraph-features-caching Transformation caching in features
 
@@ -258,22 +220,7 @@ to have caching, you must enable it first, because by default the caching is
 disabled. You can enable it using @ref SceneGraph::AbstractFeature::setCachedTransformations()
 and then implement corresponding cleaning function(s):
 
-@code{.cpp}
-class CachingObject: public Object3D, SceneGraph::AbstractFeature3D {
-    public:
-        explicit CachingObject(Object3D* parent): Object3D{parent}, SceneGraph::AbstractFeature3D{*this} {
-            setCachedTransformations(SceneGraph::CachedTransformation::Absolute);
-        }
-
-    protected:
-        void clean(const Matrix4& absoluteTransformation) override {
-            _absolutePosition = absoluteTransformation.translation();
-        }
-
-    private:
-        Vector3 _absolutePosition;
-};
-@endcode
+@snippet MagnumSceneGraph.cpp caching
 
 When you need to use the cached value, you can explicitly request the cleanup
 by calling @ref SceneGraph::Object::setClean(). @ref SceneGraph::Camera3D "Camera",
@@ -316,16 +263,7 @@ In the following example we are able to get pointer to both
 @ref SceneGraph::AbstractObject and needed transformation from one
 constructor parameter using small trick:
 
-@code{.cpp}
-class TransformingFeature: public SceneGraph::AbstractFeature3D {
-    public:
-        template<class T> TransformingFeature(SceneGraph::Object<T>& object):
-            SceneGraph::AbstractFeature3D(object), transformation(object) {}
-
-    private:
-        SceneGraph::AbstractTranslationRotation3D& transformation;
-};
-@endcode
+@snippet MagnumSceneGraph.cpp transformation
 
 If we take for example @ref SceneGraph::Object "SceneGraph::Object<MatrixTransformation3D>",
 it is derived from @ref SceneGraph::AbstractObject "SceneGraph::AbstractObject3D"
@@ -347,25 +285,13 @@ parent is destroyed. When creating them on the stack, however, they will be
 destroyed when they go out of scope. Normally, the natural order of creation is
 not a problem:
 
-@code{.cpp}
-{
-    Scene3D scene;
-    Object3D object(&scene);
-}
-@endcode
+@snippet MagnumSceneGraph.cpp construction-order
 
 The object is created last, so it will be destroyed first, removing itself
 from `scene`'s children list, causing no problems when destroying `scene`
 object later. However, if their order is swapped, it will cause problems:
 
-@code{.cpp}
-{
-    Object3D object;
-    Scene3D scene;
-
-    object.setParent(&scene);
-} // crash!
-@endcode
+@snippet MagnumSceneGraph.cpp construction-order-crash
 
 The scene will be destroyed first, deleting all its children, which is wrong,
 because `object` is created on stack. If this doesn't already crash, the
@@ -377,12 +303,7 @@ When destroying the object, all its features are destroyed. For features added
 as member it's no issue, features added using multiple inheritance must be
 inherited after the Object class:
 
-@code{.cpp}
-class MyObject: public Object3D, MyFeature {
-    public:
-        MyObject(Object3D* parent): Object3D(parent), MyFeature(*this) {}
-};
-@endcode
+@snippet MagnumSceneGraph.cpp feature-construction-order
 
 When constructing `MyObject`, `Object3D` constructor is called first and then
 `MyFeature` constructor adds itself to `Object3D`'s list of features. When
@@ -392,12 +313,7 @@ from `Object3D`'s list, then `Object3D` destructor.
 
 However, if we would inherit `MyFeature` first, it will cause problems:
 
-@code{.cpp}
-class MyObject: MyFeature, public Object3D {
-    public:
-        MyObject(Object3D* parent): MyFeature(*this), Object3D(parent) {} // crash!
-};
-@endcode
+@snippet MagnumSceneGraph.cpp feature-construction-order-crash
 
 `MyFeature` tries to add itself to feature list in not-yet-constructed
 `Object3D`, causing undefined behavior. Then, if this doesn't already crash,
@@ -407,14 +323,7 @@ invisible.
 If we would construct them in swapped order (if it is even possible), it
 wouldn't help either:
 
-@code{.cpp}
-class MyObject: MyFeature, public Object3D {
-    public:
-        MyObject(Object3D* parent): Object3D(parent), MyFeature(*this) {}
-
-        // crash on destruction!
-};
-@endcode
+@snippet MagnumSceneGraph.cpp feature-construction-order-crash-destruction
 
 On destruction, `Object3D` destructor is called first, deleting `MyFeature`,
 which is wrong, because `MyFeature` is in the same object. After that (if the
