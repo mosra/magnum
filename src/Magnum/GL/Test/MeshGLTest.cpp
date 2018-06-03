@@ -285,8 +285,19 @@ void MeshGLTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_assignable<Mesh, const Mesh&>{}));
 }
 
+namespace {
+    struct FloatShader: AbstractShaderProgram {
+        explicit FloatShader(const std::string& type, const std::string& conversion);
+    };
+}
+
 void MeshGLTest::constructMove() {
+    const Float data = Math::unpack<Float, UnsignedByte>(96);
+    Buffer buffer1, buffer2;
+    buffer1.setData({&data, 1}, BufferUsage::StaticDraw);
+
     Mesh a;
+    a.addVertexBuffer(buffer1, 0, Attribute<0, Float>{});
     const Int id = a.id();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -306,6 +317,7 @@ void MeshGLTest::constructMove() {
     CORRADE_COMPARE(b.id(), id);
 
     Mesh c;
+    c.addVertexBuffer(buffer2, 1, Attribute<1, Float>{});
     const Int cId = c.id();
     c = std::move(b);
 
@@ -322,6 +334,32 @@ void MeshGLTest::constructMove() {
 
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
+
+    /* Test that drawing still works properly */
+    {
+        MAGNUM_VERIFY_NO_GL_ERROR();
+
+        Renderbuffer renderbuffer;
+        renderbuffer.setStorage(
+            #ifndef MAGNUM_TARGET_GLES2
+            RenderbufferFormat::RGBA8,
+            #else
+            RenderbufferFormat::RGBA4,
+            #endif
+            Vector2i(1));
+        Framebuffer framebuffer{{{}, Vector2i(1)}};
+        framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer)
+                   .bind();
+
+        FloatShader shader{"float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"};
+        c.setPrimitive(MeshPrimitive::Points)
+         .setCount(1)
+         .draw(shader);
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+
+        CORRADE_COMPARE(framebuffer.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data<UnsignedByte>()[0], 96);
+    }
 }
 
 void MeshGLTest::wrap() {
@@ -390,10 +428,6 @@ void MeshGLTest::label() {
 #endif
 
 namespace {
-    struct FloatShader: AbstractShaderProgram {
-        explicit FloatShader(const std::string& type, const std::string& conversion);
-    };
-
     #ifndef MAGNUM_TARGET_GLES2
     struct IntegerShader: AbstractShaderProgram {
         explicit IntegerShader(const std::string& type);

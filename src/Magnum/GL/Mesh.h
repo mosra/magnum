@@ -29,7 +29,6 @@
  * @brief Class @ref Magnum::GL::Mesh, enum @ref Magnum::GL::MeshPrimitive, @ref Magnum::GL::MeshIndexType, function @ref Magnum::GL::meshPrimitive(), @ref Magnum::GL::meshIndexType()
  */
 
-#include <vector>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/ConfigurationValue.h>
 
@@ -981,6 +980,11 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         void MAGNUM_GL_LOCAL createImplementationVAODSA();
         #endif
 
+        void MAGNUM_GL_LOCAL moveConstructImplementationDefault(Mesh&& other);
+        void MAGNUM_GL_LOCAL moveConstructImplementationVAO(Mesh&& other);
+        void MAGNUM_GL_LOCAL moveAssignImplementationDefault(Mesh&& other);
+        void MAGNUM_GL_LOCAL moveAssignImplementationVAO(Mesh&& other);
+
         void MAGNUM_GL_LOCAL destroyImplementationDefault();
         void MAGNUM_GL_LOCAL destroyImplementationVAO();
 
@@ -1041,7 +1045,9 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         MeshIndexType _indexType;
         Buffer* _indexBuffer;
 
-        std::vector<AttributeLayout> _attributes;
+        /* Storage for std::vector with attribute layout / attribute buffer
+           instances. 4 pointers should be one pointer more than enough. */
+        struct { std::intptr_t data[4]; } _attributes;
 };
 
 /** @debugoperatorenum{MeshPrimitive} */

@@ -41,6 +41,8 @@ struct MeshState {
     void reset();
 
     void(Mesh::*createImplementation)();
+    void(Mesh::*moveConstructImplementation)(Mesh&&);
+    void(Mesh::*moveAssignImplementation)(Mesh&&);
     void(Mesh::*destroyImplementation)();
     void(Mesh::*attributePointerImplementation)(Mesh::AttributeLayout&);
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)

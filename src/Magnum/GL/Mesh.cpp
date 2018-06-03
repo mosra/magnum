@@ -25,6 +25,7 @@
 
 #include "Mesh.h"
 
+#include <vector>
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Mesh.h"
@@ -242,8 +243,9 @@ Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive),
     #ifndef MAGNUM_TARGET_GLES2
     _indexStart(other._indexStart), _indexEnd(other._indexEnd),
     #endif
-    _indexOffset(other._indexOffset), _indexType(other._indexType), _indexBuffer(other._indexBuffer), _attributes(std::move(other._attributes))
+    _indexOffset(other._indexOffset), _indexType(other._indexType), _indexBuffer(other._indexBuffer)
 {
+    (this->*Context::current().state().mesh->moveConstructImplementation)(std::move(other));
     other._id = 0;
 }
 
@@ -265,7 +267,7 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
     swap(_indexOffset, other._indexOffset);
     swap(_indexType, other._indexType);
     swap(_indexBuffer, other._indexBuffer);
-    swap(_attributes, other._attributes);
+    (this->*Context::current().state().mesh->moveAssignImplementation)(std::move(other));
 
     return *this;
 }
@@ -540,6 +542,10 @@ void Mesh::bindVAO() {
 void Mesh::createImplementationDefault() {
     _id = 0;
     _flags |= ObjectFlag::Created;
+
+    static_assert(sizeof(_attributes) >= sizeof(std::vector<AttributeLayout>),
+        "attribute storage buffer size too small");
+    new(&_attributes) std::vector<AttributeLayout>;
 }
 
 void Mesh::createImplementationVAO() {
@@ -558,7 +564,22 @@ void Mesh::createImplementationVAODSA() {
 }
 #endif
 
-void Mesh::destroyImplementationDefault() {}
+void Mesh::moveConstructImplementationDefault(Mesh&& other) {
+    new(&_attributes) std::vector<AttributeLayout>{std::move(*reinterpret_cast<std::vector<AttributeLayout>*>(&other._attributes))};
+}
+
+void Mesh::moveConstructImplementationVAO(Mesh&&) {}
+
+void Mesh::moveAssignImplementationDefault(Mesh&& other) {
+    std::swap(*reinterpret_cast<std::vector<AttributeLayout>*>(&_attributes),
+        *reinterpret_cast<std::vector<AttributeLayout>*>(&other._attributes));
+}
+
+void Mesh::moveAssignImplementationVAO(Mesh&&) {}
+
+void Mesh::destroyImplementationDefault() {
+    reinterpret_cast<std::vector<AttributeLayout>*>(&_attributes)->~vector();
+}
 
 void Mesh::destroyImplementationVAO() {
     #ifndef MAGNUM_TARGET_GLES2
@@ -583,7 +604,7 @@ void Mesh::attributePointerImplementationDefault(AttributeLayout& attribute) {
         "GL::Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer.targetHint(), );
     #endif
 
-    _attributes.push_back(attribute);
+    reinterpret_cast<std::vector<AttributeLayout>*>(&_attributes)->push_back(attribute);
 }
 
 void Mesh::attributePointerImplementationVAO(AttributeLayout& attribute) {
@@ -681,7 +702,7 @@ void Mesh::bindIndexBufferImplementationVAO(Buffer& buffer) {
 
 void Mesh::bindImplementationDefault() {
     /* Specify vertex attributes */
-    for(AttributeLayout& attribute: _attributes)
+    for(AttributeLayout& attribute: *reinterpret_cast<std::vector<AttributeLayout>*>(&_attributes))
         vertexAttribPointer(attribute);
 
     /* Bind index buffer, if the mesh is indexed */
@@ -693,7 +714,7 @@ void Mesh::bindImplementationVAO() {
 }
 
 void Mesh::unbindImplementationDefault() {
-    for(const AttributeLayout& attribute: _attributes)
+    for(const AttributeLayout& attribute: *reinterpret_cast<std::vector<AttributeLayout>*>(&_attributes))
         glDisableVertexAttribArray(attribute.location);
 }
 

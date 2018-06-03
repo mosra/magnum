@@ -54,6 +54,8 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
         #endif
 
         createImplementation = &Mesh::createImplementationVAO;
+        moveConstructImplementation = &Mesh::moveConstructImplementationVAO;
+        moveAssignImplementation = &Mesh::moveAssignImplementationVAO;
         destroyImplementation = &Mesh::destroyImplementationVAO;
 
         #ifndef MAGNUM_TARGET_GLES
@@ -75,6 +77,8 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     else {
         createImplementation = &Mesh::createImplementationDefault;
+        moveConstructImplementation = &Mesh::moveConstructImplementationDefault;
+        moveAssignImplementation = &Mesh::moveAssignImplementationDefault;
         destroyImplementation = &Mesh::destroyImplementationDefault;
         attributePointerImplementation = &Mesh::attributePointerImplementationDefault;
         bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationDefault;
