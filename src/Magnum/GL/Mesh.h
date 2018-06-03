@@ -1031,19 +1031,20 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         #endif
         #endif
 
+        /* _id, _primitive, _flags set from constructors */
         GLuint _id;
         MeshPrimitive _primitive;
         ObjectFlags _flags;
-        Int _count, _baseVertex, _instanceCount;
+        Int _count{}, _baseVertex{}, _instanceCount{1};
         #ifndef MAGNUM_TARGET_GLES
-        UnsignedInt _baseInstance;
+        UnsignedInt _baseInstance{};
         #endif
         #ifndef MAGNUM_TARGET_GLES2
-        UnsignedInt _indexStart, _indexEnd;
+        UnsignedInt _indexStart{}, _indexEnd{};
         #endif
-        GLintptr _indexOffset;
-        MeshIndexType _indexType;
-        Buffer* _indexBuffer;
+        GLintptr _indexOffset{};
+        MeshIndexType _indexType{};
+        Buffer* _indexBuffer{};
 
         /* Storage for std::vector with attribute layout / attribute buffer
            instances. 4 pointers should be one pointer more than enough. */

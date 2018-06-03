@@ -204,26 +204,11 @@ std::size_t Mesh::indexSize(Magnum::MeshIndexType type) {
 }
 #endif
 
-Mesh::Mesh(const MeshPrimitive primitive): _primitive{primitive}, _flags{ObjectFlag::DeleteOnDestruction}, _count{0}, _baseVertex{0}, _instanceCount{1},
-    #ifndef MAGNUM_TARGET_GLES
-    _baseInstance{0},
-    #endif
-    #ifndef MAGNUM_TARGET_GLES2
-    _indexStart(0), _indexEnd(0),
-    #endif
-    _indexOffset(0), _indexType(MeshIndexType::UnsignedInt), _indexBuffer(nullptr)
-{
+Mesh::Mesh(const MeshPrimitive primitive): _primitive{primitive}, _flags{ObjectFlag::DeleteOnDestruction} {
     (this->*Context::current().state().mesh->createImplementation)();
 }
 
-Mesh::Mesh(NoCreateT) noexcept: _id{0}, _primitive{MeshPrimitive::Triangles}, _flags{ObjectFlag::DeleteOnDestruction}, _count{0}, _baseVertex{0}, _instanceCount{1},
-    #ifndef MAGNUM_TARGET_GLES
-    _baseInstance{0},
-    #endif
-    #ifndef MAGNUM_TARGET_GLES2
-    _indexStart(0), _indexEnd(0),
-    #endif
-    _indexOffset(0), _indexType(MeshIndexType::UnsignedInt), _indexBuffer(nullptr) {}
+Mesh::Mesh(NoCreateT) noexcept: _id{0}, _primitive{MeshPrimitive::Triangles}, _flags{ObjectFlag::DeleteOnDestruction} {}
 
 Mesh::~Mesh() {
     /* Moved out or not deleting on destruction, nothing to do */

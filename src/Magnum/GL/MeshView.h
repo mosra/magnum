@@ -286,25 +286,17 @@ class MAGNUM_GL_EXPORT MeshView {
 
         std::reference_wrapper<Mesh> _original;
 
-        Int _count, _baseVertex, _instanceCount;
+        Int _count{}, _baseVertex{}, _instanceCount{1};
         #ifndef MAGNUM_TARGET_GLES
-        UnsignedInt _baseInstance;
+        UnsignedInt _baseInstance{};
         #endif
-        GLintptr _indexOffset;
+        GLintptr _indexOffset{};
         #ifndef MAGNUM_TARGET_GLES2
-        UnsignedInt _indexStart, _indexEnd;
+        UnsignedInt _indexStart{}, _indexEnd{};
         #endif
 };
 
-inline MeshView::MeshView(Mesh& original): _original(original), _count(0), _baseVertex(0), _instanceCount{1},
-    #ifndef MAGNUM_TARGET_GLES
-    _baseInstance{0},
-    #endif
-    _indexOffset(0)
-    #ifndef MAGNUM_TARGET_GLES2
-    , _indexStart(0), _indexEnd(0)
-    #endif
-    {}
+inline MeshView::MeshView(Mesh& original): _original{original} {}
 
 inline MeshView& MeshView::setIndexRange(Int first, UnsignedInt start, UnsignedInt end) {
     setIndexRange(first);
