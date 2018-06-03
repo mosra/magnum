@@ -201,17 +201,17 @@ different usage) or store data for more meshes in one buffer.
 If vertex/index count or instance count is zero, the mesh is empty and no draw
 commands are issued when calling @ref draw().
 
-@subsection Mesh-configuration-example Example mesh configuration
+@subsection GL-Mesh-configuration-example Example mesh configuration
 
-@subsubsection Mesh-configuration-example-basic Basic non-indexed mesh
+@subsubsection GL-Mesh-configuration-example-basic Basic non-indexed mesh
 
 @snippet MagnumGL.cpp Mesh-nonindexed
 
-@subsubsection Mesh-configuration-interleaved Interleaved vertex data
+@subsubsection GL-Mesh-configuration-interleaved Interleaved vertex data
 
 @snippet MagnumGL.cpp Mesh-interleaved
 
-@subsubsection Mesh-configuration-indexed Indexed mesh
+@subsubsection GL-Mesh-configuration-indexed Indexed mesh
 
 @snippet MagnumGL.cpp Mesh-indexed
 
@@ -222,11 +222,11 @@ Or using @ref MeshTools::interleave() and @ref MeshTools::compressIndices():
 Or, if you plan to use the mesh with stock shaders, you can just use
 @ref MeshTools::compile().
 
-@subsubsection Mesh-configuration-formats Specific formats of vertex data
+@subsubsection GL-Mesh-configuration-formats Specific formats of vertex data
 
 @snippet MagnumGL.cpp Mesh-formats
 
-@subsubsection Mesh-configuration-dynamic Dynamically specified attributes
+@subsubsection GL-Mesh-configuration-dynamic Dynamically specified attributes
 
 In some cases, for example when the shader code is fully generated at runtime,
 it's not possible to know attribute locations and types at compile time. In
@@ -733,7 +733,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * Equivalent to @ref addVertexBuffer(Buffer&, GLintptr, const T&... attributes)
          * but with the possibility to fully specify the attribute properties
          * at runtime, including base type and location. See
-         * @ref Mesh-configuration-dynamic "class documentation" for usage
+         * @ref GL-Mesh-configuration-dynamic "class documentation" for usage
          * example.
          */
         Mesh& addVertexBuffer(Buffer& buffer, GLintptr offset, GLsizei stride, const DynamicAttribute& attribute) {
@@ -747,7 +747,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * Equivalent to @ref addVertexBufferInstanced(Buffer&, UnsignedInt, GLintptr, const T&... attributes)
          * but with the possibility to fully specify the attribute properties
          * at runtime, including base type and location. See
-         * @ref Mesh-configuration-dynamic "class documentation" for usage
+         * @ref GL-Mesh-configuration-dynamic "class documentation" for usage
          * example.
          */
         Mesh& addVertexBufferInstanced(Buffer& buffer, UnsignedInt divisor, GLintptr offset, GLsizei stride, const DynamicAttribute& attribute);
