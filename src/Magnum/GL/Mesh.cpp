@@ -228,7 +228,7 @@ Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive),
     #ifndef MAGNUM_TARGET_GLES2
     _indexStart(other._indexStart), _indexEnd(other._indexEnd),
     #endif
-    _indexOffset(other._indexOffset), _indexType(other._indexType), _indexBuffer(other._indexBuffer)
+    _indexOffset(other._indexOffset), _indexType(other._indexType), _indexBuffer{std::move(other._indexBuffer)}
 {
     (this->*Context::current().state().mesh->moveConstructImplementation)(std::move(other));
     other._id = 0;
@@ -294,12 +294,12 @@ Mesh& Mesh::setLabelInternal(const Containers::ArrayView<const char> label) {
 #endif
 
 MeshIndexType Mesh::indexType() const {
-    CORRADE_ASSERT(_indexBuffer, "Mesh::indexType(): mesh is not indexed", {});
+    CORRADE_ASSERT(_indexBuffer.id(), "Mesh::indexType(): mesh is not indexed", {});
     return _indexType;
 }
 
 UnsignedInt Mesh::indexTypeSize() const {
-    CORRADE_ASSERT(_indexBuffer, "Mesh::indexTypeSize(): mesh is not indexed", {});
+    CORRADE_ASSERT(_indexBuffer.id(), "Mesh::indexTypeSize(): mesh is not indexed", {});
 
     switch(_indexType) {
         case MeshIndexType::UnsignedByte: return 1;
@@ -331,7 +331,7 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, MeshIndexType type, 
         "GL::Mesh::setIndexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::ElementArray << "but got" << buffer.targetHint(), *this);
     #endif
 
-    _indexBuffer = &buffer;
+    _indexBuffer = Buffer::wrap(buffer.id());
     _indexOffset = offset;
     _indexType = type;
     #ifndef MAGNUM_TARGET_GLES2
@@ -377,7 +377,7 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
     /* Non-instanced mesh */
     if(instanceCount == 1) {
         /* Non-indexed mesh */
-        if(!_indexBuffer) {
+        if(!_indexBuffer.id()) {
             glDrawArrays(GLenum(_primitive), baseVertex, count);
 
         /* Indexed mesh with base vertex */
@@ -415,7 +415,7 @@ void Mesh::drawInternal(Int count, Int baseVertex, Int instanceCount, GLintptr i
     /* Instanced mesh */
     } else {
         /* Non-indexed mesh */
-        if(!_indexBuffer) {
+        if(!_indexBuffer.id()) {
             #ifndef MAGNUM_TARGET_GLES
             /* Non-indexed mesh with base instance */
             if(baseInstance) {
@@ -698,7 +698,7 @@ void Mesh::bindImplementationDefault() {
         vertexAttribPointer(attribute);
 
     /* Bind index buffer, if the mesh is indexed */
-    if(_indexBuffer) _indexBuffer->bindInternal(Buffer::TargetHint::ElementArray);
+    if(_indexBuffer.id()) _indexBuffer.bindInternal(Buffer::TargetHint::ElementArray);
 }
 
 void Mesh::bindImplementationVAO() {

@@ -82,7 +82,7 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
             #ifndef MAGNUM_TARGET_GLES
             hasBaseVertex = true;
             #else
-            CORRADE_ASSERT(!original._indexBuffer, "GL::MeshView::draw(): desktop OpenGL is required for base vertex specification in indexed meshes", );
+            CORRADE_ASSERT(!original._indexBuffer.id(), "GL::MeshView::draw(): desktop OpenGL is required for base vertex specification in indexed meshes", );
             #endif
         }
 
@@ -92,7 +92,7 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
     (original.*state.bindImplementation)();
 
     /* Non-indexed meshes */
-    if(!original._indexBuffer) {
+    if(!original._indexBuffer.id()) {
         #ifndef MAGNUM_TARGET_GLES
         glMultiDrawArrays(GLenum(original._primitive), baseVertex, count, meshes.size());
         #else
@@ -140,7 +140,7 @@ void MeshView::multiDrawImplementationFallback(std::initializer_list<std::refere
 #endif
 
 MeshView& MeshView::setIndexRange(Int first) {
-     CORRADE_ASSERT(_original.get()._indexBuffer, "MeshView::setIndexRange(): mesh is not indexed", *this);
+     CORRADE_ASSERT(_original.get()._indexBuffer.id(), "MeshView::setIndexRange(): mesh is not indexed", *this);
     _indexOffset = _original.get()._indexOffset + first*_original.get().indexTypeSize();
     return *this;
 }

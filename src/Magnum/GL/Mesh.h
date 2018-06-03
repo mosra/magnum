@@ -35,6 +35,7 @@
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
 #include "Magnum/GL/Attribute.h"
+#include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/GL.h"
 
 namespace Magnum { namespace GL {
@@ -489,7 +490,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          *
          * @see @ref setIndexBuffer(), @ref setCount()
          */
-        bool isIndexed() const { return _indexBuffer; }
+        bool isIndexed() const { return _indexBuffer.id(); }
 
         /**
          * @brief Index type
@@ -1052,7 +1053,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         #endif
         GLintptr _indexOffset{};
         MeshIndexType _indexType{};
-        Buffer* _indexBuffer{};
+        Buffer _indexBuffer{NoCreate};
 
         /* Storage for std::vector with attribute layout / attribute buffer
            instances. 4 pointers should be one pointer more than enough. */
