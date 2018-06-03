@@ -39,7 +39,7 @@
 
 namespace Magnum { namespace MeshTools {
 
-std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData2D& meshData, const GL::BufferUsage usage) {
+GL::Mesh compile(const Trade::MeshData2D& meshData) {
     GL::Mesh mesh;
     mesh.setPrimitive(meshData.primitive());
 
@@ -50,13 +50,15 @@ std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> c
         stride += sizeof(Shaders::Generic2D::TextureCoordinates::Type);
 
     /* Create vertex buffer */
-    std::unique_ptr<GL::Buffer> vertexBuffer{new GL::Buffer{GL::Buffer::TargetHint::Array}};
+    GL::Buffer vertexBuffer{GL::Buffer::TargetHint::Array};
+    GL::Buffer vertexBufferRef = GL::Buffer::wrap(vertexBuffer.id());
 
-    /* Interleave positions */
+    /* Interleave positions and put them in with ownership transfer, use the
+       ref for the rest */
     Containers::Array<char> data = MeshTools::interleave(
         meshData.positions(0),
         stride - sizeof(Shaders::Generic2D::Position::Type));
-    mesh.addVertexBuffer(*vertexBuffer, 0,
+    mesh.addVertexBuffer(std::move(vertexBuffer), 0,
         Shaders::Generic2D::Position(),
         stride - sizeof(Shaders::Generic2D::Position::Type));
 
@@ -66,35 +68,42 @@ std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> c
             normalOffset,
             meshData.textureCoords2D(0),
             stride - normalOffset - sizeof(Shaders::Generic2D::TextureCoordinates::Type));
-        mesh.addVertexBuffer(*vertexBuffer, 0,
+        mesh.addVertexBuffer(vertexBufferRef, 0,
             normalOffset,
             Shaders::Generic2D::TextureCoordinates(),
             stride - normalOffset - sizeof(Shaders::Generic2D::TextureCoordinates::Type));
     }
 
     /* Fill vertex buffer with interleaved data */
-    vertexBuffer->setData(data, usage);
+    vertexBufferRef.setData(data, GL::BufferUsage::StaticDraw);
 
     /* If indexed, fill index buffer and configure indexed mesh */
-    std::unique_ptr<GL::Buffer> indexBuffer;
     if(meshData.isIndexed()) {
         Containers::Array<char> indexData;
         MeshIndexType indexType;
         UnsignedInt indexStart, indexEnd;
         std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(meshData.indices());
 
-        indexBuffer.reset(new GL::Buffer{GL::Buffer::TargetHint::ElementArray});
-        indexBuffer->setData(indexData, usage);
+        GL::Buffer indexBuffer{GL::Buffer::TargetHint::ElementArray};
+        indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
         mesh.setCount(meshData.indices().size())
-            .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
+            .setIndexBuffer(std::move(indexBuffer), 0, indexType, indexStart, indexEnd);
 
     /* Else set vertex count */
     } else mesh.setCount(meshData.positions(0).size());
 
-    return std::make_tuple(std::move(mesh), std::move(vertexBuffer), std::move(indexBuffer));
+    return mesh;
 }
 
-std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData3D& meshData, const GL::BufferUsage usage) {
+#ifdef MAGNUM_BUILD_DEPRECATED
+std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData2D& meshData, GL::BufferUsage) {
+    return std::make_tuple(compile(meshData),
+        std::unique_ptr<GL::Buffer>{new GL::Buffer{NoCreate}},
+        std::unique_ptr<GL::Buffer>{meshData.isIndexed() ? new GL::Buffer{NoCreate} : nullptr});
+}
+#endif
+
+GL::Mesh compile(const Trade::MeshData3D& meshData) {
     GL::Mesh mesh;
     mesh.setPrimitive(meshData.primitive());
 
@@ -110,13 +119,15 @@ std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> c
         stride += sizeof(Shaders::Generic3D::TextureCoordinates::Type);
 
     /* Create vertex buffer */
-    std::unique_ptr<GL::Buffer> vertexBuffer{new GL::Buffer{GL::Buffer::TargetHint::Array}};
+    GL::Buffer vertexBuffer{GL::Buffer::TargetHint::Array};
+    GL::Buffer vertexBufferRef = GL::Buffer::wrap(vertexBuffer.id());
 
-    /* Interleave positions */
+    /* Interleave positions and put them in with ownership transfer, use the
+       ref for the rest */
     Containers::Array<char> data = MeshTools::interleave(
         meshData.positions(0),
         stride - sizeof(Shaders::Generic3D::Position::Type));
-    mesh.addVertexBuffer(*vertexBuffer, 0,
+    mesh.addVertexBuffer(std::move(vertexBuffer), 0,
         Shaders::Generic3D::Position(),
         stride - sizeof(Shaders::Generic3D::Position::Type));
 
@@ -126,7 +137,7 @@ std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> c
             normalOffset,
             meshData.normals(0),
             stride - normalOffset - sizeof(Shaders::Generic3D::Normal::Type));
-        mesh.addVertexBuffer(*vertexBuffer, 0,
+        mesh.addVertexBuffer(vertexBufferRef, 0,
             normalOffset,
             Shaders::Generic3D::Normal(),
             stride - normalOffset - sizeof(Shaders::Generic3D::Normal::Type));
@@ -138,32 +149,39 @@ std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> c
             textureCoordsOffset,
             meshData.textureCoords2D(0),
             stride - textureCoordsOffset - sizeof(Shaders::Generic3D::TextureCoordinates::Type));
-        mesh.addVertexBuffer(*vertexBuffer, 0,
+        mesh.addVertexBuffer(vertexBufferRef, 0,
             textureCoordsOffset,
             Shaders::Generic3D::TextureCoordinates(),
             stride - textureCoordsOffset - sizeof(Shaders::Generic3D::TextureCoordinates::Type));
     }
 
     /* Fill vertex buffer with interleaved data */
-    vertexBuffer->setData(data, usage);
+    vertexBufferRef.setData(data, GL::BufferUsage::StaticDraw);
 
     /* If indexed, fill index buffer and configure indexed mesh */
-    std::unique_ptr<GL::Buffer> indexBuffer;
     if(meshData.isIndexed()) {
         Containers::Array<char> indexData;
         MeshIndexType indexType;
         UnsignedInt indexStart, indexEnd;
         std::tie(indexData, indexType, indexStart, indexEnd) = MeshTools::compressIndices(meshData.indices());
 
-        indexBuffer.reset(new GL::Buffer{GL::Buffer::TargetHint::ElementArray});
-        indexBuffer->setData(indexData, usage);
+        GL::Buffer indexBuffer{GL::Buffer::TargetHint::ElementArray};
+        indexBuffer.setData(indexData, GL::BufferUsage::StaticDraw);
         mesh.setCount(meshData.indices().size())
-            .setIndexBuffer(*indexBuffer, 0, indexType, indexStart, indexEnd);
+            .setIndexBuffer(std::move(indexBuffer), 0, indexType, indexStart, indexEnd);
 
     /* Else set vertex count */
     } else mesh.setCount(meshData.positions(0).size());
 
-    return std::make_tuple(std::move(mesh), std::move(vertexBuffer), std::move(indexBuffer));
+    return mesh;
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData3D& meshData, GL::BufferUsage) {
+    return std::make_tuple(compile(meshData),
+        std::unique_ptr<GL::Buffer>{new GL::Buffer{NoCreate}},
+        std::unique_ptr<GL::Buffer>{meshData.isIndexed() ? new GL::Buffer{NoCreate} : nullptr});
+}
+#endif
 
 }}

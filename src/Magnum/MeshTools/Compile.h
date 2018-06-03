@@ -32,30 +32,33 @@
 #include "Magnum/configure.h"
 
 #ifdef MAGNUM_TARGET_GL
-#include <tuple>
-#include <memory>
-
 #include "Magnum/GL/GL.h"
 #include "Magnum/Trade/Trade.h"
 #include "Magnum/MeshTools/visibility.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <tuple>
+#include <memory>
+#include <Corrade/Utility/Macros.h>
+#endif
 
 namespace Magnum { namespace MeshTools {
 
 /**
 @brief Compile 2D mesh data
 
-Configures mesh for @ref Shaders::Generic2D shader with vertex buffer and
-possibly also index buffer, if the mesh is indexed. Positions are bound to
+Configures a mesh for @ref Shaders::Generic2D shader with vertex buffer and
+possibly also an index buffer, if the mesh is indexed. Positions are bound to
 @ref Shaders::Generic2D::Position attribute. If the mesh contains texture
-coordinates, they are bound to @ref Shaders::Generic2D::TextureCoordinates
+coordinates, these are bound to @ref Shaders::Generic2D::TextureCoordinates
 attribute. No data compression or index optimization (except for index buffer
-packing) is done. The @p usage parameter is used for both vertex and index
-buffer.
-
-The second returned buffer may be @cpp nullptr @ce if the mesh is not indexed.
+packing) is done, both the vertex buffer and the index buffer (if any) is owned
+by the mesh, both created with @ref GL::BufferUsage::StaticDraw.
 
 This is just a convenience function for creating generic meshes, you might want
-to use @ref interleave() and @ref compressIndices() functions instead for
+to use @ref interleave() and @ref compressIndices() functions together with
+@ref GL::Mesh::setPrimitive(), @ref GL::Mesh::setCount(),
+@ref GL::Mesh::addVertexBuffer(), @ref GL::Mesh::setIndexBuffer() instead for
 greater flexibility.
 
 @note This function is available only if Magnum is compiled with
@@ -64,7 +67,15 @@ greater flexibility.
 
 @see @ref shaders-generic
 */
-MAGNUM_MESHTOOLS_EXPORT std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData2D& meshData, GL::BufferUsage usage);
+MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData2D& meshData);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/** @brief @copybrief compile(const Trade::MeshData2D&)
+ * @deprecated Use @ref compile(const Trade::MeshData2D&) instead. The @p usage
+ *      parameter is ignored and returned buffer instances are empty.
+ */
+CORRADE_DEPRECATED("use compile(const Trade::MeshData2D&) instead") MAGNUM_MESHTOOLS_EXPORT std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData2D& meshData, GL::BufferUsage usage);
+#endif
 
 /**
 @brief Compile 3D mesh data
@@ -74,13 +85,14 @@ possibly also index buffer, if the mesh is indexed. Positions are bound to
 @ref Shaders::Generic3D::Position attribute. If the mesh contains normals, they
 are bound to @ref Shaders::Generic3D::Normal attribute, texture coordinates are
 bound to @ref Shaders::Generic2D::TextureCoordinates attribute. No data
-compression or index optimization (except for index buffer packing) is done.
-The @p usage parameter is used for both vertex and index buffer.
-
-The second returned buffer may be @cpp nullptr @ce if the mesh is not indexed.
+compression or index optimization (except for index buffer packing) is done,
+both the vertex buffer and the index buffer (if any) is owned by the mesh, both
+created with @ref GL::BufferUsage::StaticDraw.
 
 This is just a convenience function for creating generic meshes, you might want
-to use @ref interleave() and @ref compressIndices() functions instead for
+to use @ref interleave() and @ref compressIndices() functions together with
+@ref GL::Mesh::setPrimitive(), @ref GL::Mesh::setCount(),
+@ref GL::Mesh::addVertexBuffer(), @ref GL::Mesh::setIndexBuffer() instead for
 greater flexibility.
 
 @note This function is available only if Magnum is compiled with
@@ -89,7 +101,15 @@ greater flexibility.
 
 @see @ref shaders-generic
 */
-MAGNUM_MESHTOOLS_EXPORT std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData3D& meshData, GL::BufferUsage usage);
+MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData3D& meshData);
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/** @brief @copybrief compile(const Trade::MeshData3D&)
+ * @deprecated Use @ref compile(const Trade::MeshData3D&) instead. The @p usage
+ *      parameter is ignored and returned buffer instances are empty.
+ */
+CORRADE_DEPRECATED("use compile(const Trade::MeshData3D&) instead") MAGNUM_MESHTOOLS_EXPORT std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData3D& meshData, GL::BufferUsage usage);
+#endif
 
 }}
 #else
