@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
+
 #include "Magnum/Image.h"
 #include "Magnum/Mesh.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
@@ -115,9 +117,13 @@ struct MeshGLTest: OpenGLTester {
     void addVertexBufferMultiple();
     void addVertexBufferMultipleGaps();
 
+    void addVertexBufferMovedOutInstance();
+
     template<class T> void setIndexBuffer();
     template<class T> void setIndexBufferRange();
     void setIndexBufferUnsignedInt();
+
+    void setIndexBufferMovedOutInstance();
 
     void unbindVAOWhenSettingIndexBufferData();
     void unbindVAOBeforeEnteringExternalSection();
@@ -220,11 +226,15 @@ MeshGLTest::MeshGLTest() {
     addTests({&MeshGLTest::addVertexBufferMultiple,
               &MeshGLTest::addVertexBufferMultipleGaps,
 
+              &MeshGLTest::addVertexBufferMovedOutInstance,
+
               &MeshGLTest::setIndexBuffer<GL::MeshIndexType>,
               &MeshGLTest::setIndexBuffer<Magnum::MeshIndexType>,
               &MeshGLTest::setIndexBufferRange<GL::MeshIndexType>,
               &MeshGLTest::setIndexBufferRange<Magnum::MeshIndexType>,
               &MeshGLTest::setIndexBufferUnsignedInt,
+
+              &MeshGLTest::setIndexBufferMovedOutInstance,
 
               &MeshGLTest::unbindVAOWhenSettingIndexBufferData,
               &MeshGLTest::unbindVAOBeforeEnteringExternalSection,
@@ -1641,6 +1651,18 @@ void MeshGLTest::addVertexBufferMultipleGaps() {
     CORRADE_COMPARE(value, Color4ub(64 + 15 + 97, 17 + 164 + 28, 56 + 17, 255));
 }
 
+void MeshGLTest::addVertexBufferMovedOutInstance() {
+    Buffer buffer{NoCreate};
+    Mesh mesh;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    mesh.addVertexBuffer(buffer, 0, Attribute<0, Float>{});
+
+    CORRADE_COMPARE(out.str(), "GL::Mesh::addVertexBuffer(): empty or moved-out Buffer instance was passed\n");
+}
+
 namespace {
     const Float indexedVertexData[] = {
         0.0f, /* Offset */
@@ -1793,6 +1815,18 @@ void MeshGLTest::setIndexBufferUnsignedInt() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, indexedResult);
+}
+
+void MeshGLTest::setIndexBufferMovedOutInstance() {
+    Buffer buffer{NoCreate};
+    Mesh mesh;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    mesh.setIndexBuffer(buffer, 0, MeshIndexType::UnsignedByte);
+
+    CORRADE_COMPARE(out.str(), "GL::Mesh::setIndexBuffer(): empty or moved-out Buffer instance was passed\n");
 }
 
 void MeshGLTest::unbindVAOWhenSettingIndexBufferData() {

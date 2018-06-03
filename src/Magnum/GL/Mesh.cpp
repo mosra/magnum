@@ -338,6 +338,8 @@ Mesh& Mesh::addVertexBufferInstanced(Buffer& buffer, const UnsignedInt divisor, 
 }
 
 Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, MeshIndexType type, UnsignedInt start, UnsignedInt end) {
+    CORRADE_ASSERT(buffer.id(),
+        "GL::Mesh::setIndexBuffer(): empty or moved-out Buffer instance was passed", *this);
     #ifdef MAGNUM_TARGET_WEBGL
     CORRADE_ASSERT(buffer.targetHint() == Buffer::TargetHint::ElementArray,
         "GL::Mesh::setIndexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::ElementArray << "but got" << buffer.targetHint(), *this);
@@ -595,6 +597,8 @@ void Mesh::attributePointerInternal(const Buffer& buffer, const GLuint location,
 }
 
 void Mesh::attributePointerInternal(AttributeLayout& attribute) {
+    CORRADE_ASSERT(attribute.buffer.id(),
+        "GL::Mesh::addVertexBuffer(): empty or moved-out Buffer instance was passed", );
     (this->*Context::current().state().mesh->attributePointerImplementation)(attribute);
 }
 
