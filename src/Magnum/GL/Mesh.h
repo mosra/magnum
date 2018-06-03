@@ -803,7 +803,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
 
         /** @overload */
         Mesh& setIndexBuffer(Buffer& buffer, GLintptr offset, Magnum::MeshIndexType type) {
-            return setIndexBuffer(buffer, offset, meshIndexType(type));
+            return setIndexBuffer(buffer, offset, meshIndexType(type), 0, 0);
         }
 
         /**
