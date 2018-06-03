@@ -69,6 +69,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
             attributePointerImplementation = &Mesh::attributePointerImplementationVAO;
         }
 
+        acquireVertexBufferImplementation = &Mesh::acquireVertexBufferImplementationVAO;
         bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationVAO;
         bindVAOImplementation = &Mesh::bindVAOImplementationVAO;
         bindImplementation = &Mesh::bindImplementationVAO;
@@ -81,6 +82,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
         moveAssignImplementation = &Mesh::moveAssignImplementationDefault;
         destroyImplementation = &Mesh::destroyImplementationDefault;
         attributePointerImplementation = &Mesh::attributePointerImplementationDefault;
+        acquireVertexBufferImplementation = &Mesh::acquireVertexBufferImplementationDefault;
         bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationDefault;
         bindVAOImplementation = &Mesh::bindVAOImplementationDefault;
         bindImplementation = &Mesh::bindImplementationDefault;

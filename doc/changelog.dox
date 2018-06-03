@@ -62,6 +62,10 @@ See also:
 -   To prevent nothing being rendered by accident, @ref GL::Mesh::setCount()
     and @ref GL::MeshView::setCount() now has always to be called, even just to
     set the count to @cpp 0 @ce.
+-   @ref GL::Mesh::addVertexBuffer(), @ref GL::Mesh::addVertexBufferInstanced()
+    @ref GL::Mesh::setIndexBuffer() can now take ownership of a passed
+    @ref GL::Buffer to simplify resource management on user side. See
+    @ref GL-Mesh-buffer-ownership for more information.
 
 @subsubsection changelog-latest-changes-platform Platform libraries
 

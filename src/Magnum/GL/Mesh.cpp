@@ -134,7 +134,10 @@ Debug& operator<<(Debug& debug, MeshIndexType value) {
 struct Mesh::AttributeLayout {
     explicit AttributeLayout(const Buffer& buffer, GLuint location, GLint size, GLenum type, DynamicAttribute::Kind kind, GLintptr offset, GLsizei stride, GLuint divisor) noexcept: buffer{Buffer::wrap(buffer.id())}, location{location}, size{size}, type{type}, kind{kind}, offset{offset}, stride{stride}, divisor{divisor} {}
 
-    explicit AttributeLayout(const AttributeLayout& other): buffer{Buffer::wrap(other.buffer.id())}, location{other.location}, size{other.size}, type{other.type}, kind{other.kind}, offset{other.offset}, stride{other.stride}, divisor{other.divisor} {}
+    AttributeLayout(AttributeLayout&&) noexcept = default;
+    AttributeLayout(const AttributeLayout&) noexcept = delete;
+    AttributeLayout& operator=(AttributeLayout&&) noexcept = default;
+    AttributeLayout& operator=(const AttributeLayout&) noexcept = delete;
 
     Buffer buffer;
     GLuint location;
@@ -311,19 +314,18 @@ UnsignedInt Mesh::indexTypeSize() const {
 }
 
 Mesh& Mesh::addVertexBufferInstanced(Buffer& buffer, const UnsignedInt divisor, const GLintptr offset, const GLsizei stride, const DynamicAttribute& attribute) {
-    AttributeLayout l{buffer,
+    attributePointerInternal(AttributeLayout{buffer,
         attribute.location(),
         GLint(attribute.components()),
         GLenum(attribute.dataType()),
         attribute.kind(),
         offset,
         stride,
-        divisor};
-    attributePointerInternal(l);
+        divisor});
     return *this;
 }
 
-Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, MeshIndexType type, UnsignedInt start, UnsignedInt end) {
+Mesh& Mesh::setIndexBuffer(Buffer&& buffer, GLintptr offset, MeshIndexType type, UnsignedInt start, UnsignedInt end) {
     CORRADE_ASSERT(buffer.id(),
         "GL::Mesh::setIndexBuffer(): empty or moved-out Buffer instance was passed", *this);
     #ifdef MAGNUM_TARGET_WEBGL
@@ -331,7 +333,7 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, MeshIndexType type, 
         "GL::Mesh::setIndexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::ElementArray << "but got" << buffer.targetHint(), *this);
     #endif
 
-    _indexBuffer = Buffer::wrap(buffer.id());
+    _indexBuffer = std::move(buffer);
     _indexOffset = offset;
     _indexType = type;
     #ifndef MAGNUM_TARGET_GLES2
@@ -341,7 +343,12 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, MeshIndexType type, 
     static_cast<void>(start);
     static_cast<void>(end);
     #endif
-    (this->*Context::current().state().mesh->bindIndexBufferImplementation)(buffer);
+    (this->*Context::current().state().mesh->bindIndexBufferImplementation)(_indexBuffer);
+    return *this;
+}
+
+Mesh& Mesh::setIndexBuffer(Buffer& buffer, const GLintptr offset, const MeshIndexType type, const UnsignedInt start, const UnsignedInt end) {
+    setIndexBuffer(Buffer::wrap(buffer.id()), offset, type, start, end);
     return *this;
 }
 
@@ -545,12 +552,20 @@ void Mesh::createImplementationVAO() {
     glGenVertexArraysOES(1, &_id);
     #endif
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
+
+    static_assert(sizeof(_attributes) >= sizeof(std::vector<Buffer>),
+        "attribute storage buffer size too small");
+    new(&_attributes) std::vector<Buffer>;
 }
 
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::createImplementationVAODSA() {
     glCreateVertexArrays(1, &_id);
     _flags |= ObjectFlag::Created;
+
+    static_assert(sizeof(_attributes) >= sizeof(std::vector<Buffer>),
+        "attribute storage buffer size too small");
+    new(&_attributes) std::vector<Buffer>;
 }
 #endif
 
@@ -558,14 +573,19 @@ void Mesh::moveConstructImplementationDefault(Mesh&& other) {
     new(&_attributes) std::vector<AttributeLayout>{std::move(*reinterpret_cast<std::vector<AttributeLayout>*>(&other._attributes))};
 }
 
-void Mesh::moveConstructImplementationVAO(Mesh&&) {}
+void Mesh::moveConstructImplementationVAO(Mesh&& other) {
+    new(&_attributes) std::vector<Buffer>{std::move(*reinterpret_cast<std::vector<Buffer>*>(&other._attributes))};
+}
 
 void Mesh::moveAssignImplementationDefault(Mesh&& other) {
     std::swap(*reinterpret_cast<std::vector<AttributeLayout>*>(&_attributes),
         *reinterpret_cast<std::vector<AttributeLayout>*>(&other._attributes));
 }
 
-void Mesh::moveAssignImplementationVAO(Mesh&&) {}
+void Mesh::moveAssignImplementationVAO(Mesh&& other) {
+    std::swap(*reinterpret_cast<std::vector<Buffer>*>(&_attributes),
+        *reinterpret_cast<std::vector<Buffer>*>(&other._attributes));
+}
 
 void Mesh::destroyImplementationDefault() {
     reinterpret_cast<std::vector<AttributeLayout>*>(&_attributes)->~vector();
@@ -577,29 +597,30 @@ void Mesh::destroyImplementationVAO() {
     #else
     glDeleteVertexArraysOES(1, &_id);
     #endif
+
+    reinterpret_cast<std::vector<Buffer>*>(&_attributes)->~vector();
 }
 
 void Mesh::attributePointerInternal(const Buffer& buffer, const GLuint location, const GLint size, const GLenum type, const DynamicAttribute::Kind kind, const GLintptr offset, const GLsizei stride, const GLuint divisor) {
-    AttributeLayout l{buffer, location, size, type, kind, offset, stride, divisor};
-    attributePointerInternal(l);
+    attributePointerInternal(AttributeLayout{buffer, location, size, type, kind, offset, stride, divisor});
 }
 
-void Mesh::attributePointerInternal(AttributeLayout& attribute) {
+void Mesh::attributePointerInternal(AttributeLayout&& attribute) {
     CORRADE_ASSERT(attribute.buffer.id(),
         "GL::Mesh::addVertexBuffer(): empty or moved-out Buffer instance was passed", );
-    (this->*Context::current().state().mesh->attributePointerImplementation)(attribute);
+    (this->*Context::current().state().mesh->attributePointerImplementation)(std::move(attribute));
 }
 
-void Mesh::attributePointerImplementationDefault(AttributeLayout& attribute) {
+void Mesh::attributePointerImplementationDefault(AttributeLayout&& attribute) {
     #ifdef MAGNUM_TARGET_WEBGL
     CORRADE_ASSERT(attribute.buffer.targetHint() == Buffer::TargetHint::Array,
         "GL::Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer.targetHint(), );
     #endif
 
-    reinterpret_cast<std::vector<AttributeLayout>*>(&_attributes)->push_back(attribute);
+    reinterpret_cast<std::vector<AttributeLayout>*>(&_attributes)->push_back(std::move(attribute));
 }
 
-void Mesh::attributePointerImplementationVAO(AttributeLayout& attribute) {
+void Mesh::attributePointerImplementationVAO(AttributeLayout&& attribute) {
     #ifdef MAGNUM_TARGET_WEBGL
     CORRADE_ASSERT(attribute.buffer.targetHint() == Buffer::TargetHint::Array,
         "GL::Mesh::addVertexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::Array << "but got" << attribute.buffer.targetHint(), );
@@ -610,7 +631,7 @@ void Mesh::attributePointerImplementationVAO(AttributeLayout& attribute) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Mesh::attributePointerImplementationDSAEXT(AttributeLayout& attribute) {
+void Mesh::attributePointerImplementationDSAEXT(AttributeLayout&& attribute) {
     _flags |= ObjectFlag::Created;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
 
@@ -679,6 +700,25 @@ void Mesh::vertexAttribDivisorImplementationNV(const GLuint index, const GLuint 
 }
 #endif
 #endif
+
+void Mesh::acquireVertexBuffer(Buffer&& buffer) {
+    (this->*Context::current().state().mesh->acquireVertexBufferImplementation)(std::move(buffer));
+}
+
+void Mesh::acquireVertexBufferImplementationDefault(Buffer&& buffer) {
+    /* The last added buffer should be this one, replace it with a owning one */
+    auto& attributes = *reinterpret_cast<std::vector<AttributeLayout>*>(&_attributes);
+    CORRADE_INTERNAL_ASSERT(!attributes.empty() && attributes.back().buffer.id() == buffer.id() && buffer.id());
+    attributes.back().buffer.release(); /* so we swap back a zero ID */
+    attributes.back().buffer = std::move(buffer);
+}
+
+void Mesh::acquireVertexBufferImplementationVAO(Buffer&& buffer) {
+    CORRADE_INTERNAL_ASSERT(buffer.id());
+    /* With VAOs we are not maintaining the attribute list, so just store the
+       buffer directly */
+    reinterpret_cast<std::vector<Buffer>*>(&_attributes)->emplace_back(std::move(buffer));
+}
 
 void Mesh::bindIndexBufferImplementationDefault(Buffer&) {}
 

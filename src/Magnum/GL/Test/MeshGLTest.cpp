@@ -118,12 +118,18 @@ struct MeshGLTest: OpenGLTester {
     void addVertexBufferMultipleGaps();
 
     void addVertexBufferMovedOutInstance();
+    void addVertexBufferTransferOwnwership();
+    void addVertexBufferInstancedTransferOwnwership();
+    void addVertexBufferDynamicTransferOwnwership();
+    void addVertexBufferInstancedDynamicTransferOwnwership();
 
     template<class T> void setIndexBuffer();
     template<class T> void setIndexBufferRange();
     void setIndexBufferUnsignedInt();
 
     void setIndexBufferMovedOutInstance();
+    template<class T> void setIndexBufferTransferOwnership();
+    template<class T> void setIndexBufferRangeTransferOwnership();
 
     void unbindVAOWhenSettingIndexBufferData();
     void unbindVAOBeforeEnteringExternalSection();
@@ -227,6 +233,10 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::addVertexBufferMultipleGaps,
 
               &MeshGLTest::addVertexBufferMovedOutInstance,
+              &MeshGLTest::addVertexBufferTransferOwnwership,
+              &MeshGLTest::addVertexBufferInstancedTransferOwnwership,
+              &MeshGLTest::addVertexBufferDynamicTransferOwnwership,
+              &MeshGLTest::addVertexBufferInstancedDynamicTransferOwnwership,
 
               &MeshGLTest::setIndexBuffer<GL::MeshIndexType>,
               &MeshGLTest::setIndexBuffer<Magnum::MeshIndexType>,
@@ -235,6 +245,10 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::setIndexBufferUnsignedInt,
 
               &MeshGLTest::setIndexBufferMovedOutInstance,
+              &MeshGLTest::setIndexBufferTransferOwnership<GL::MeshIndexType>,
+              &MeshGLTest::setIndexBufferTransferOwnership<Magnum::MeshIndexType>,
+              &MeshGLTest::setIndexBufferRangeTransferOwnership<GL::MeshIndexType>,
+              &MeshGLTest::setIndexBufferRangeTransferOwnership<Magnum::MeshIndexType>,
 
               &MeshGLTest::unbindVAOWhenSettingIndexBufferData,
               &MeshGLTest::unbindVAOBeforeEnteringExternalSection,
@@ -1663,6 +1677,126 @@ void MeshGLTest::addVertexBufferMovedOutInstance() {
     CORRADE_COMPARE(out.str(), "GL::Mesh::addVertexBuffer(): empty or moved-out Buffer instance was passed\n");
 }
 
+void MeshGLTest::addVertexBufferTransferOwnwership() {
+    const Float data = 1.0f;
+    Buffer buffer;
+    buffer.setData({&data, 1}, BufferUsage::StaticDraw);
+
+    const GLuint id = buffer.id();
+    CORRADE_VERIFY(glIsBuffer(id));
+
+    {
+        Mesh mesh;
+        mesh.addVertexBuffer(buffer, 0, Attribute<0, Float>{});
+        CORRADE_VERIFY(buffer.id());
+        CORRADE_VERIFY(glIsBuffer(id));
+    }
+
+    CORRADE_VERIFY(glIsBuffer(id));
+
+    {
+        Mesh mesh;
+        mesh.addVertexBuffer(std::move(buffer), 0, Attribute<0, Float>{});
+        CORRADE_VERIFY(!buffer.id());
+        CORRADE_VERIFY(glIsBuffer(id));
+    }
+
+    CORRADE_VERIFY(!glIsBuffer(id));
+}
+
+void MeshGLTest::addVertexBufferInstancedTransferOwnwership() {
+    const Float data = 1.0f;
+    Buffer buffer;
+    buffer.setData({&data, 1}, BufferUsage::StaticDraw);
+
+    const GLuint id = buffer.id();
+    CORRADE_VERIFY(glIsBuffer(id));
+
+    {
+        Mesh mesh;
+        mesh.addVertexBufferInstanced(buffer, 1, 0, Attribute<0, Float>{});
+        CORRADE_VERIFY(buffer.id());
+        CORRADE_VERIFY(glIsBuffer(id));
+    }
+
+    CORRADE_VERIFY(glIsBuffer(id));
+
+    {
+        Mesh mesh;
+        mesh.addVertexBufferInstanced(std::move(buffer), 1, 0, Attribute<0, Float>{});
+        CORRADE_VERIFY(!buffer.id());
+        CORRADE_VERIFY(glIsBuffer(id));
+    }
+
+    CORRADE_VERIFY(!glIsBuffer(id));
+}
+
+void MeshGLTest::addVertexBufferDynamicTransferOwnwership() {
+    const Float data = 1.0f;
+    Buffer buffer;
+    buffer.setData({&data, 1}, BufferUsage::StaticDraw);
+
+    const GLuint id = buffer.id();
+    CORRADE_VERIFY(glIsBuffer(id));
+
+    {
+        Mesh mesh;
+        mesh.addVertexBuffer(buffer, 0, 4, DynamicAttribute{
+            DynamicAttribute::Kind::GenericNormalized, 0,
+            DynamicAttribute::Components::One,
+            DynamicAttribute::DataType::Float});
+        CORRADE_VERIFY(buffer.id());
+        CORRADE_VERIFY(glIsBuffer(id));
+    }
+
+    CORRADE_VERIFY(glIsBuffer(id));
+
+    {
+        Mesh mesh;
+        mesh.addVertexBuffer(std::move(buffer), 0, 4, DynamicAttribute{
+            DynamicAttribute::Kind::GenericNormalized, 0,
+            DynamicAttribute::Components::One,
+            DynamicAttribute::DataType::Float});
+        CORRADE_VERIFY(!buffer.id());
+        CORRADE_VERIFY(glIsBuffer(id));
+    }
+
+    CORRADE_VERIFY(!glIsBuffer(id));
+}
+
+void MeshGLTest::addVertexBufferInstancedDynamicTransferOwnwership() {
+    const Float data = 1.0f;
+    Buffer buffer;
+    buffer.setData({&data, 1}, BufferUsage::StaticDraw);
+
+    const GLuint id = buffer.id();
+    CORRADE_VERIFY(glIsBuffer(id));
+
+    {
+        Mesh mesh;
+        mesh.addVertexBufferInstanced(buffer, 1, 0, 4, DynamicAttribute{
+            DynamicAttribute::Kind::GenericNormalized, 0,
+            DynamicAttribute::Components::One,
+            DynamicAttribute::DataType::Float});
+        CORRADE_VERIFY(buffer.id());
+        CORRADE_VERIFY(glIsBuffer(id));
+    }
+
+    CORRADE_VERIFY(glIsBuffer(id));
+
+    {
+        Mesh mesh;
+        mesh.addVertexBufferInstanced(std::move(buffer), 1, 0, 4, DynamicAttribute{
+            DynamicAttribute::Kind::GenericNormalized, 0,
+            DynamicAttribute::Components::One,
+            DynamicAttribute::DataType::Float});
+        CORRADE_VERIFY(!buffer.id());
+        CORRADE_VERIFY(glIsBuffer(id));
+    }
+
+    CORRADE_VERIFY(!glIsBuffer(id));
+}
+
 namespace {
     const Float indexedVertexData[] = {
         0.0f, /* Offset */
@@ -1827,6 +1961,70 @@ void MeshGLTest::setIndexBufferMovedOutInstance() {
     mesh.setIndexBuffer(buffer, 0, MeshIndexType::UnsignedByte);
 
     CORRADE_COMPARE(out.str(), "GL::Mesh::setIndexBuffer(): empty or moved-out Buffer instance was passed\n");
+}
+
+template<class T> void MeshGLTest::setIndexBufferTransferOwnership() {
+    setTestCaseName(std::is_same<T, MeshIndexType>::value ?
+        "setIndexBufferTransferOwnership<GL::MeshIndexType>" :
+        "setIndexBufferTransferOwnership<Magnum::MeshIndexType>");
+
+    const UnsignedShort data = 0;
+    Buffer buffer;
+    buffer.setData({&data, 1}, BufferUsage::StaticDraw);
+
+    const GLuint id = buffer.id();
+    CORRADE_VERIFY(glIsBuffer(id));
+
+    {
+
+        Mesh mesh;
+        mesh.setIndexBuffer(buffer, 0, T::UnsignedShort);
+        CORRADE_VERIFY(buffer.id());
+        CORRADE_VERIFY(glIsBuffer(id));
+    }
+
+    CORRADE_VERIFY(glIsBuffer(id));
+
+    {
+
+        Mesh mesh;
+        mesh.setIndexBuffer(std::move(buffer), 0, T::UnsignedShort);
+        CORRADE_VERIFY(!buffer.id());
+        CORRADE_VERIFY(glIsBuffer(id));
+    }
+
+    CORRADE_VERIFY(!glIsBuffer(id));
+}
+
+template<class T> void MeshGLTest::setIndexBufferRangeTransferOwnership() {
+    setTestCaseName(std::is_same<T, MeshIndexType>::value ?
+        "setIndexBufferRangeTransferOwnership<GL::MeshIndexType>" :
+        "setIndexBufferRangeTransferOwnership<Magnum::MeshIndexType>");
+
+    const UnsignedShort data = 0;
+    Buffer buffer;
+    buffer.setData({&data, 1}, BufferUsage::StaticDraw);
+
+    const GLuint id = buffer.id();
+    CORRADE_VERIFY(glIsBuffer(id));
+
+    {
+        Mesh mesh;
+        mesh.setIndexBuffer(buffer, 0, T::UnsignedShort, 0, 1);
+        CORRADE_VERIFY(buffer.id());
+        CORRADE_VERIFY(glIsBuffer(id));
+    }
+
+    CORRADE_VERIFY(glIsBuffer(id));
+
+    {
+        Mesh mesh;
+        mesh.setIndexBuffer(std::move(buffer), 0, T::UnsignedShort, 0, 1);
+        CORRADE_VERIFY(!buffer.id());
+        CORRADE_VERIFY(glIsBuffer(id));
+    }
+
+    CORRADE_VERIFY(!glIsBuffer(id));
 }
 
 void MeshGLTest::unbindVAOWhenSettingIndexBufferData() {

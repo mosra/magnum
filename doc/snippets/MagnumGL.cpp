@@ -1076,6 +1076,23 @@ mesh.addVertexBuffer(colorBuffer, 0, 4, GL::DynamicAttribute{
 }
 
 {
+GL::Mesh mesh;
+/* [Mesh-buffer-ownership] */
+GL::Buffer vertices, indices;
+// ...
+mesh.addVertexBuffer(std::move(vertices), 0,
+        Shaders::Phong::Position{},
+        Shaders::Phong::Normal{})
+    .setIndexBuffer(std::move(indices), 0, MeshIndexType::UnsignedInt);
+/* [Mesh-buffer-ownership] */
+
+/* [Mesh-buffer-ownership-multiple] */
+mesh.addVertexBuffer(vertices, 0, Shaders::Phong::Position{}, 20)
+    .addVertexBuffer(std::move(vertices), 0, 20, Shaders::Phong::Normal{});
+/* [Mesh-buffer-ownership-multiple] */
+}
+
+{
 /* [Mesh-addVertexBuffer1] */
 GL::Buffer buffer;
 GL::Mesh mesh;
