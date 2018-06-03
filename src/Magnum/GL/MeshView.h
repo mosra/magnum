@@ -125,9 +125,13 @@ class MAGNUM_GL_EXPORT MeshView {
          * @return Reference to self (for method chaining)
          *
          * Ignored when calling @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt).
-         * Default is @cpp 0 @ce.
+         *
+         * @attention To prevent nothing being rendered by accident, this
+         *      function has to be always called, even to just set the count to
+         *      @cpp 0 @ce.
          */
         MeshView& setCount(Int count) {
+            _countSet = true;
             _count = count;
             return *this;
         }
@@ -286,6 +290,7 @@ class MAGNUM_GL_EXPORT MeshView {
 
         std::reference_wrapper<Mesh> _original;
 
+        bool _countSet{};
         Int _count{}, _baseVertex{}, _instanceCount{1};
         #ifndef MAGNUM_TARGET_GLES
         UnsignedInt _baseInstance{};

@@ -146,6 +146,8 @@ MeshView& MeshView::setIndexRange(Int first) {
 }
 
 void MeshView::draw(AbstractShaderProgram& shader) {
+    CORRADE_ASSERT(_countSet, "GL::MeshView::draw(): setCount() was never called, probably a mistake?", );
+
     /* Nothing to draw, exit without touching any state */
     if(!_count || !_instanceCount) return;
 

@@ -57,6 +57,14 @@ See also:
 
 @subsection changelog-latest-changes Changes and improvements
 
+@subsubsection changelog-latest-changes-gl GL library
+
+-   To prevent nothing being rendered by accident, @ref GL::Mesh::setCount()
+    and @ref GL::MeshView::setCount() now has always to be called, even just to
+    set the count to @cpp 0 @ce.
+
+@subsubsection changelog-latest-changes-platform Platform libraries
+
 -   @ref Platform::GlfwApplication now behaves the same as
     @ref Platform::Sdl2Application when creating an OpenGL context: first it
     attempts to create a forward-compatible core OpenGL 3.2+ context and if

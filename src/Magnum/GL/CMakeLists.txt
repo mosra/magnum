@@ -34,7 +34,6 @@ set(MagnumGL_SRCS
     Context.cpp
     DefaultFramebuffer.cpp
     Framebuffer.cpp
-    MeshView.cpp
     OpenGL.cpp
     Renderbuffer.cpp
     Renderer.cpp
@@ -56,6 +55,7 @@ set(MagnumGL_SRCS
 
 set(MagnumGL_GracefulAssert_SRCS
     Mesh.cpp
+    MeshView.cpp
     PixelFormat.cpp
     Sampler.cpp)
 

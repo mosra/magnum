@@ -28,14 +28,21 @@
 #include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Mesh.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/MeshView.h"
 
 namespace Magnum { namespace GL { namespace Test {
+
+/* Tests MeshView as well */
 
 struct MeshTest: TestSuite::Tester {
     explicit MeshTest();
 
     void constructNoCreate();
+
+    void drawCountNotSet();
+    void drawViewCountNotSet();
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     void indexSizeDeprecated();
@@ -55,6 +62,9 @@ struct MeshTest: TestSuite::Tester {
 
 MeshTest::MeshTest() {
     addTests({&MeshTest::constructNoCreate,
+
+              &MeshTest::drawCountNotSet,
+              &MeshTest::drawViewCountNotSet,
 
               #ifdef MAGNUM_BUILD_DEPRECATED
               &MeshTest::indexSizeDeprecated,
@@ -79,6 +89,35 @@ void MeshTest::constructNoCreate() {
     }
 
     CORRADE_VERIFY(true);
+}
+
+namespace {
+    struct Shader: AbstractShaderProgram {
+        explicit Shader(NoCreateT): AbstractShaderProgram{NoCreate} {}
+    };
+}
+
+void MeshTest::drawCountNotSet() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Mesh mesh{NoCreate};
+    mesh.draw(Shader{NoCreate});
+
+    CORRADE_COMPARE(out.str(),
+        "GL::Mesh::draw(): setCount() was never called, probably a mistake?\n");
+}
+
+void MeshTest::drawViewCountNotSet() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Mesh mesh{NoCreate};
+    MeshView view{mesh};
+    view.draw(Shader{NoCreate});
+
+    CORRADE_COMPARE(out.str(),
+        "GL::MeshView::draw(): setCount() was never called, probably a mistake?\n");
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED

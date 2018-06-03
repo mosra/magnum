@@ -221,7 +221,7 @@ Mesh::~Mesh() {
     (this->*Context::current().state().mesh->destroyImplementation)();
 }
 
-Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive), _flags{other._flags}, _count(other._count), _baseVertex{other._baseVertex}, _instanceCount{other._instanceCount},
+Mesh::Mesh(Mesh&& other) noexcept: _id(other._id), _primitive(other._primitive), _flags{other._flags}, _countSet{other._countSet}, _count(other._count), _baseVertex{other._baseVertex}, _instanceCount{other._instanceCount},
     #ifndef MAGNUM_TARGET_GLES
     _baseInstance{other._baseInstance},
     #endif
@@ -239,6 +239,7 @@ Mesh& Mesh::operator=(Mesh&& other) noexcept {
     swap(_id, other._id);
     swap(_flags, other._flags);
     swap(_primitive, other._primitive);
+    swap(_countSet, other._countSet);
     swap(_count, other._count);
     swap(_baseVertex, other._baseVertex);
     swap(_instanceCount, other._instanceCount);
@@ -345,6 +346,8 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, GLintptr offset, MeshIndexType type, 
 }
 
 void Mesh::draw(AbstractShaderProgram& shader) {
+    CORRADE_ASSERT(_countSet, "GL::Mesh::draw(): setCount() was never called, probably a mistake?", );
+
     /* Nothing to draw, exit without touching any state */
     if(!_count || !_instanceCount) return;
 
