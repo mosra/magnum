@@ -40,6 +40,7 @@ struct MeshTest: TestSuite::Tester {
     explicit MeshTest();
 
     void constructNoCreate();
+    void constructViewNoCreate();
 
     void drawCountNotSet();
     void drawViewCountNotSet();
@@ -62,6 +63,7 @@ struct MeshTest: TestSuite::Tester {
 
 MeshTest::MeshTest() {
     addTests({&MeshTest::constructNoCreate,
+              &MeshTest::constructViewNoCreate,
 
               &MeshTest::drawCountNotSet,
               &MeshTest::drawViewCountNotSet,
@@ -86,6 +88,16 @@ void MeshTest::constructNoCreate() {
     {
         Mesh mesh{NoCreate};
         CORRADE_COMPARE(mesh.id(), 0);
+    }
+
+    CORRADE_VERIFY(true);
+}
+
+void MeshTest::constructViewNoCreate() {
+    {
+        Mesh mesh{NoCreate};
+        MeshView view{mesh};
+        CORRADE_COMPARE(&view.mesh(), &mesh);
     }
 
     CORRADE_VERIFY(true);
