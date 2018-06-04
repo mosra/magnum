@@ -70,6 +70,9 @@ See also:
     @ref GL::Mesh::setIndexBuffer() can now take ownership of a passed
     @ref GL::Buffer to simplify resource management on user side. See
     @ref GL-Mesh-buffer-ownership for more information.
+-   @ref GL::Mesh::draw() and @ref GL::MeshView::draw() now return a reference
+    to self to make method-chained draws (for example using a different shader)
+    possible as well
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 

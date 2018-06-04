@@ -905,15 +905,14 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         Mesh& setIndexBuffer(Buffer&& buffer, GLintptr offset, MeshIndexType type) {
             return setIndexBuffer(std::move(buffer), offset, type, 0, 0);
         }
-
-        /** @overload */
         Mesh& setIndexBuffer(Buffer&& buffer, GLintptr offset, Magnum::MeshIndexType type) {
             return setIndexBuffer(std::move(buffer), offset, meshIndexType(type), 0, 0);
-        }
+        } /**< @overload */
 
         /**
          * @brief Draw the mesh
          * @param shader    Shader to use for drawing
+         * @return Reference to self (for method chaining)
          *
          * Expects that the shader is compatible with this mesh and is fully
          * set up. If vertex/index count or instance count is `0`, no draw
@@ -953,8 +952,10 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @requires_gl Specifying base vertex for indexed meshes is not
          *      available in OpenGL ES or WebGL.
          */
-        void draw(AbstractShaderProgram& shader);
-        void draw(AbstractShaderProgram&& shader) { draw(shader); } /**< @overload */
+        Mesh& draw(AbstractShaderProgram& shader);
+        Mesh& draw(AbstractShaderProgram&& shader) {
+            return draw(shader);
+        } /**< @overload */
 
         #ifndef MAGNUM_TARGET_GLES
         /**
@@ -962,6 +963,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @param shader    Shader to use for drawing
          * @param xfb       Transform feedback to use for vertex count
          * @param stream    Transform feedback stream ID
+         * @return Reference to self (for method chaining)
          *
          * Expects that the @p shader is compatible with this mesh, is fully
          * set up and that the output buffer(s) from @p xfb are used as vertex
@@ -985,12 +987,10 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @requires_gl42 Extension @gl_extension{ARB,transform_feedback_instanced}
          *      if @ref instanceCount() is more than `1`.
          */
-        void draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream = 0);
-
-        /** @overload */
-        void draw(AbstractShaderProgram&& shader, TransformFeedback& xfb, UnsignedInt stream = 0) {
-            draw(shader, xfb, stream);
-        }
+        Mesh& draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream = 0);
+        Mesh& draw(AbstractShaderProgram&& shader, TransformFeedback& xfb, UnsignedInt stream = 0) {
+            return draw(shader, xfb, stream);
+        } /**< @overload */
         #endif
 
     private:

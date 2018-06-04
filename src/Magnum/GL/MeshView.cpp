@@ -145,11 +145,11 @@ MeshView& MeshView::setIndexRange(Int first) {
     return *this;
 }
 
-void MeshView::draw(AbstractShaderProgram& shader) {
-    CORRADE_ASSERT(_countSet, "GL::MeshView::draw(): setCount() was never called, probably a mistake?", );
+MeshView& MeshView::draw(AbstractShaderProgram& shader) {
+    CORRADE_ASSERT(_countSet, "GL::MeshView::draw(): setCount() was never called, probably a mistake?", *this);
 
     /* Nothing to draw, exit without touching any state */
-    if(!_count || !_instanceCount) return;
+    if(!_count || !_instanceCount) return *this;
 
     shader.use();
 
@@ -160,16 +160,18 @@ void MeshView::draw(AbstractShaderProgram& shader) {
     #else
     _original.get().drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
     #endif
+
+    return *this;
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void MeshView::draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream) {
+MeshView& MeshView::draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream) {
     /* Nothing to draw, exit without touching any state */
-    if(!_instanceCount) return;
+    if(!_instanceCount) return *this;
 
     shader.use();
-
     _original.get().drawInternal(xfb, stream, _instanceCount);
+    return *this;
 }
 #endif
 

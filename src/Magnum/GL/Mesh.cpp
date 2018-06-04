@@ -352,11 +352,11 @@ Mesh& Mesh::setIndexBuffer(Buffer& buffer, const GLintptr offset, const MeshInde
     return *this;
 }
 
-void Mesh::draw(AbstractShaderProgram& shader) {
-    CORRADE_ASSERT(_countSet, "GL::Mesh::draw(): setCount() was never called, probably a mistake?", );
+Mesh& Mesh::draw(AbstractShaderProgram& shader) {
+    CORRADE_ASSERT(_countSet, "GL::Mesh::draw(): setCount() was never called, probably a mistake?", *this);
 
     /* Nothing to draw, exit without touching any state */
-    if(!_count || !_instanceCount) return;
+    if(!_count || !_instanceCount) return *this;
 
     shader.use();
 
@@ -367,6 +367,8 @@ void Mesh::draw(AbstractShaderProgram& shader) {
     #else
     drawInternal(_count, _baseVertex, _instanceCount, _indexOffset);
     #endif
+
+    return *this;
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -506,13 +508,13 @@ void Mesh::drawInternal(TransformFeedback& xfb, const UnsignedInt stream, const 
     (this->*state.unbindImplementation)();
 }
 
-void Mesh::draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream) {
+Mesh& Mesh::draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream) {
     /* Nothing to draw, exit without touching any state */
-    if(!_instanceCount) return;
+    if(!_instanceCount) return *this;
 
     shader.use();
-
     drawInternal(xfb, stream, _instanceCount);
+    return *this;
 }
 #endif
 

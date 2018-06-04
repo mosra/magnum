@@ -235,6 +235,7 @@ class MAGNUM_GL_EXPORT MeshView {
 
         /**
          * @brief Draw the mesh
+         * @return Reference to self (for method chaining)
          *
          * See @ref Mesh::draw(AbstractShaderProgram&) for more information.
          * @see @ref draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>),
@@ -254,12 +255,15 @@ class MAGNUM_GL_EXPORT MeshView {
          * @requires_gl Specifying base vertex for indexed meshes is not
          *      available in OpenGL ES or WebGL.
          */
-        void draw(AbstractShaderProgram& shader);
-        void draw(AbstractShaderProgram&& shader) { draw(shader); } /**< @overload */
+        MeshView& draw(AbstractShaderProgram& shader);
+        MeshView& draw(AbstractShaderProgram&& shader) {
+            return draw(shader);
+        } /**< @overload */
 
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Draw the mesh with vertices coming out of transform feedback
+         * @return Reference to self (for method chaining)
          *
          * Everything set by @ref setCount(), @ref setBaseInstance(),
          * @ref setBaseVertex(), @ref setIndexRange() and @ref Mesh::setIndexBuffer()
@@ -274,12 +278,10 @@ class MAGNUM_GL_EXPORT MeshView {
          * @requires_gl42 Extension @gl_extension{ARB,transform_feedback_instanced}
          *      if @ref instanceCount() is more than `1`.
          */
-        void draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream = 0);
-
-        /** @overload */
-        void draw(AbstractShaderProgram&& shader, TransformFeedback& xfb, UnsignedInt stream = 0) {
-            draw(shader, xfb, stream);
-        }
+        MeshView& draw(AbstractShaderProgram& shader, TransformFeedback& xfb, UnsignedInt stream = 0);
+        MeshView& draw(AbstractShaderProgram&& shader, TransformFeedback& xfb, UnsignedInt stream = 0) {
+            return draw(shader, xfb, stream);
+        } /**< @overload */
         #endif
 
     private:
