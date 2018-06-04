@@ -2148,9 +2148,13 @@ void TextureGLTest::compressedImage3D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{4});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(CompressedPixelStorage3DData[testCaseInstanceId()].offset),
-        CompressedPixelStorage3DData[testCaseInstanceId()].data,
-        TestSuite::Compare::Container);
+    {
+        CORRADE_EXPECT_FAIL_IF((Context::current().detectedDriver() & Context::DetectedDriver::Mesa) && CompressedPixelStorage3DData[testCaseInstanceId()].storage != CompressedPixelStorage{},
+            "Mesa drivers can't handle non-default compressed 3D pixel storage.");
+        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(CompressedPixelStorage3DData[testCaseInstanceId()].offset),
+            CompressedPixelStorage3DData[testCaseInstanceId()].data,
+            TestSuite::Compare::Container);
+    }
     #endif
 }
 
@@ -2182,9 +2186,13 @@ void TextureGLTest::compressedImage3DBuffer() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(image.size(), Vector3i{4});
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(CompressedPixelStorage3DData[testCaseInstanceId()].offset),
-        CompressedPixelStorage3DData[testCaseInstanceId()].data,
-        TestSuite::Compare::Container);
+    {
+        CORRADE_EXPECT_FAIL_IF((Context::current().detectedDriver() & Context::DetectedDriver::Mesa) && CompressedPixelStorage3DData[testCaseInstanceId()].storage != CompressedPixelStorage{},
+            "Mesa drivers can't handle non-default compressed 3D pixel storage.");
+        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(CompressedPixelStorage3DData[testCaseInstanceId()].offset),
+            CompressedPixelStorage3DData[testCaseInstanceId()].data,
+            TestSuite::Compare::Container);
+    }
     #endif
 }
 #endif
@@ -2265,7 +2273,8 @@ void TextureGLTest::compressedSubImage3D() {
     {
         CORRADE_EXPECT_FAIL_IF(CompressedPixelStorage3DData[testCaseInstanceId()].storage == CompressedPixelStorage{} && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
             "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia.");
-
+        CORRADE_EXPECT_FAIL_IF((Context::current().detectedDriver() & Context::DetectedDriver::Mesa),
+            "Mesa drivers can't handle compressed 3D pixel storage for subimages.");
         CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()),
             Containers::arrayView(CompressedSubData3DComplete),
             TestSuite::Compare::Container);
@@ -2305,7 +2314,8 @@ void TextureGLTest::compressedSubImage3DBuffer() {
     {
         CORRADE_EXPECT_FAIL_IF(CompressedPixelStorage3DData[testCaseInstanceId()].storage == CompressedPixelStorage{} && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
             "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia.");
-
+        CORRADE_EXPECT_FAIL_IF((Context::current().detectedDriver() & Context::DetectedDriver::Mesa),
+            "Mesa drivers can't handle compressed 3D pixel storage for subimages.");
         CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData),
             Containers::arrayView(CompressedSubData3DComplete),
             TestSuite::Compare::Container);
@@ -2343,7 +2353,8 @@ void TextureGLTest::compressedSubImage3DQuery() {
     {
         CORRADE_EXPECT_FAIL_IF(CompressedPixelStorage3DData[testCaseInstanceId()].storage == CompressedPixelStorage{} && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
             "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia.");
-
+        CORRADE_EXPECT_FAIL_IF((Context::current().detectedDriver() & Context::DetectedDriver::Mesa),
+            "Mesa drivers can't handle compressed 3D pixel storage for subimages.");
         CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(CompressedPixelStorage3DData[testCaseInstanceId()].offset),
             CompressedPixelStorage3DData[testCaseInstanceId()].data,
             TestSuite::Compare::Container);
@@ -2379,7 +2390,8 @@ void TextureGLTest::compressedSubImage3DQueryBuffer() {
     {
         CORRADE_EXPECT_FAIL_IF(CompressedPixelStorage3DData[testCaseInstanceId()].storage == CompressedPixelStorage{} && (Context::current().detectedDriver() & Context::DetectedDriver::NVidia),
             "Default compressed pixel storage behaves weirdly with BPTC compression on NVidia.");
-
+        CORRADE_EXPECT_FAIL_IF((Context::current().detectedDriver() & Context::DetectedDriver::Mesa),
+            "Mesa drivers can't handle compressed 3D pixel storage for subimages.");
         CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(imageData).suffix(CompressedPixelStorage3DData[testCaseInstanceId()].offset),
             CompressedPixelStorage3DData[testCaseInstanceId()].data,
             TestSuite::Compare::Container);
