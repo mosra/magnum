@@ -315,13 +315,7 @@ class MAGNUM_AUDIO_EXPORT Context {
          * Extensions usable with this function are listed in @ref Extensions
          * namespace in header @ref Extensions.h. Example usage:
          *
-         * @code{.cpp}
-         * if(Context::current().isExtensionSupported<Extensions::ALC::SOFTX::HRTF>()) {
-         *     // amazing binaural audio
-         * } else {
-         *     // probably left/right stereo only
-         * }
-         * @endcode
+         * @snippet MagnumAudio.cpp Context-isExtensionSupported
          *
          * @see @ref isExtensionSupported(const Extension&) const,
          *      @ref MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED()
@@ -396,7 +390,8 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
          * @brief Set sampling rate
          * @return Reference to self (for method chaining)
          *
-         * If set to `-1` (the default), system OpenAL configuration is used.
+         * If set to @cpp -1 @ce (the default), system OpenAL configuration is
+         * used.
          */
         Configuration& setFrequency(Int hz) {
             _frequency = hz;
@@ -429,7 +424,8 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
          * @brief Set hint for how many mono sources to support
          * @return Reference to self (for method chaining)
          *
-         * If set to `-1` (the default), no hint will be given to OpenAL.
+         * If set to @cpp -1 @ce (the default), no hint will be given to
+         * OpenAL.
          */
         Configuration& setMonoSourceCount(Int count) {
             _monoSources = count;
@@ -443,7 +439,8 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
          * @brief Set hint for how many stereo sources to support
          * @return Reference to self (for method chaining)
          *
-         * If set to `-1` (the default), no hint will be given to OpenAL.
+         * If set to @cpp -1 @ce (the default), no hint will be given to
+         * OpenAL.
          */
         Configuration& setStereoSourceCount(Int count) {
             _stereoSources = count;
@@ -457,7 +454,8 @@ class MAGNUM_AUDIO_EXPORT Context::Configuration {
          * @brief Set refresh rate
          * @return Reference to self (for method chaining)
          *
-         * If set to `-1` (the default), system OpenAL configuration is used.
+         * If set to @cpp -1 @ce (the default), system OpenAL configuration is
+         * used.
          */
         Configuration& setRefreshRate(Int hz) {
             _refreshRate = hz;
@@ -488,9 +486,7 @@ By default, if assertion fails, an message is printed to error output and the
 application aborts. If `CORRADE_NO_ASSERT` is defined, this macro does nothing.
 Example usage:
 
-@code{.cpp}
-MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED(Extensions::ALC::SOFTX::HRTF);
-@endcode
+@snippet MagnumAudio.cpp MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED
 
 @see @ref Magnum::Audio::Context::isExtensionSupported() "Audio::Context::isExtensionSupported()",
     @ref CORRADE_ASSERT(), @ref CORRADE_INTERNAL_ASSERT()

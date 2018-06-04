@@ -41,34 +41,10 @@ namespace Magnum { namespace Audio {
 /**
 @brief PlayableGroup
 
-Manages @ref Audio::Playable features and provides means of setting gain or
-transformation of a group of Playables, aswell as the ability of playing,
-pausing, stopping or cleaning all sources of all Playables.
-
-@section Audio-PlayableGroup-usage Usage
-
-@code{.cpp}
-Object3D object;
-Source source;
-PlayableGroup3D group;
-Playable3D playable{object, source, &group};
-
-// ...
-
-object.translate(offset);
-
-// ... and every frame, update the sources positions:
-group.setClean();
-@endcode
-
-For two dimensional scenes simply replace `3D` with `2D`. When using a
-@ref Listener, prefer @ref Listener::update() over
-@ref PlayableGroup::setClean().
-
--   @ref PlayableGroup2D
--   @ref PlayableGroup3D
-
-@see @ref Playable, @ref SceneGraph::FeatureGroup, @ref Listener
+Manages a group of @ref Playable instances with an ability to control gain,
+transformation or state for all of them at once. See @ref Playable and
+@ref Listener documentation for more information.
+@see @ref PlayableGroup2D, @ref PlayableGroup3D
 */
 template<UnsignedInt dimensions> class PlayableGroup: public SceneGraph::FeatureGroup<dimensions, Playable<dimensions>, Float> {
     public:
@@ -79,6 +55,7 @@ template<UnsignedInt dimensions> class PlayableGroup: public SceneGraph::Feature
         /**
          * @brief Play all sound sources in this group
          * @return Reference to self (for method chaining)
+         *
          * @see @ref Source::play()
          */
         PlayableGroup<dimensions>& play();
@@ -86,6 +63,7 @@ template<UnsignedInt dimensions> class PlayableGroup: public SceneGraph::Feature
         /**
          * @brief Pause all sound sources in this group
          * @return Reference to self (for method chaining)
+         *
          * @see @ref Source::pause()
          */
         PlayableGroup<dimensions>& pause();
@@ -93,6 +71,7 @@ template<UnsignedInt dimensions> class PlayableGroup: public SceneGraph::Feature
         /**
          * @brief Stop all sound sources in this group
          * @return Reference to self (for method chaining)
+         *
          * @see @ref Source::stop()
          */
         PlayableGroup<dimensions>& stop();
@@ -101,14 +80,13 @@ template<UnsignedInt dimensions> class PlayableGroup: public SceneGraph::Feature
         Float gain() const { return _gain; }
 
         /**
-         * @brief Set gain for all sound sources of Playables in this group
-         * @param gain Gain
+         * @brief Set gain for all sound sources in this group
          * @return Reference to self (for method chaining)
          *
-         * Will calculate the sound sources gain relative to the gain of the
-         * Playable and this playable group. The sources gain is computed as
-         * @cpp sourceGain = playableGain*groupGain @ce. Default of the groups
-         * gain is @cpp 1.0f @ce.
+         * Will calculate source gain for each source relative to the gain of
+         * given @ref Playable and this playable group. The source gain is
+         * calculated as @cpp sourceGain = playableGain*groupGain @ce. Default
+         * group gain is @cpp 1.0f @ce.
          */
         PlayableGroup<dimensions>& setGain(const Float gain);
 
@@ -116,7 +94,7 @@ template<UnsignedInt dimensions> class PlayableGroup: public SceneGraph::Feature
         const Matrix4& soundTransformation() const { return _soundTransform; }
 
         /**
-         * @brief Set transformation of the sounds in this group
+         * @brief Set transformation of all sound sources in this group
          * @return Reference to self (for method chaining)
          */
         PlayableGroup& setSoundTransformation(const Matrix4& matrix);

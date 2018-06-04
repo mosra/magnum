@@ -44,6 +44,21 @@ add_library(snippets-Magnum STATIC
 target_link_libraries(snippets-Magnum PRIVATE Magnum)
 set_target_properties(snippets-Magnum PROPERTIES FOLDER "Magnum/doc/snippets")
 
+if(WITH_AUDIO)
+    add_library(snippets-MagnumAudio STATIC MagnumAudio.cpp)
+    target_link_libraries(snippets-MagnumAudio PRIVATE MagnumAudio)
+    set_target_properties(snippets-MagnumAudio PROPERTIES FOLDER "Magnum/doc/snippets")
+
+    if(WITH_SCENEGRAPH)
+        add_library(snippets-MagnumAudio-scenegraph STATIC
+            MagnumAudio-scenegraph.cpp)
+        target_link_libraries(snippets-MagnumAudio-scenegraph PRIVATE
+            MagnumAudio
+            MagnumSceneGraph)
+        set_target_properties(snippets-MagnumAudio-scenegraph PROPERTIES FOLDER "Magnum/doc/snippets")
+    endif()
+endif()
+
 if(WITH_GL)
     add_library(snippets-MagnumGL STATIC
         MagnumGL.cpp
