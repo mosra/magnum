@@ -155,11 +155,16 @@ Context::Context(const Configuration& config) {
     Debug() << "OpenAL version:" << versionString();
 }
 
-Context::~Context() {
-    CORRADE_INTERNAL_ASSERT(_current == this);
+Context::Context(Context&& other) noexcept: _device{other._device}, _context{other._context}, _extensionStatus{std::move(other._extensionStatus)}, _supportedExtensions{std::move(other._supportedExtensions)} {
+    other._device = nullptr;
+    other._context = nullptr;
+    if(_current == &other) _current = this;
+}
 
-    alcDestroyContext(_context);
-    alcCloseDevice(_device);
+Context::~Context() {
+    if(_context) alcDestroyContext(_context);
+    if(_device) alcCloseDevice(_device);
+    if(_current == this) _current = nullptr;
 }
 
 std::vector<std::string> Context::extensionStrings() const {

@@ -34,13 +34,43 @@ namespace Magnum { namespace Audio { namespace Test {
 struct ContextALTest: TestSuite::Tester {
     explicit ContextALTest();
 
+    void construct();
+    void constructMove();
+
     void extensionsString();
     void isExtensionEnabled();
 };
 
 ContextALTest::ContextALTest() {
-    addTests({&ContextALTest::extensionsString,
+    addTests({&ContextALTest::construct,
+              &ContextALTest::constructMove,
+
+              &ContextALTest::extensionsString,
               &ContextALTest::isExtensionEnabled});
+}
+
+void ContextALTest::construct() {
+    CORRADE_VERIFY(!Context::hasCurrent());
+
+    {
+        Context context;
+        CORRADE_VERIFY(Context::hasCurrent());
+        CORRADE_COMPARE(&Context::current(), &context);
+    }
+
+    CORRADE_VERIFY(!Context::hasCurrent());
+}
+
+void ContextALTest::constructMove() {
+    Context context;
+    CORRADE_COMPARE(&Context::current(), &context);
+
+    {
+        Context second{std::move(context)};
+        CORRADE_COMPARE(&Context::current(), &second);
+    }
+
+    CORRADE_VERIFY(!Context::hasCurrent());
 }
 
 void ContextALTest::extensionsString() {

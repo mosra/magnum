@@ -169,12 +169,24 @@ class MAGNUM_AUDIO_EXPORT Context {
         explicit Context();
         #endif
 
+        /** @brief Copying is not allowed */
+        Context(const Context&) = delete;
+
+        /** @brief Move constructor */
+        Context(Context&& other) noexcept;
+
         /**
          * @brief Destructor
          *
          * Destroys OpenAL context.
          */
         ~Context();
+
+        /** @brief Copying is not allowed */
+        Context& operator=(const Context&) = delete;
+
+        /** @brief Move assignment is not allowed */
+        Context& operator=(Context&& other) = delete;
 
         #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(DOXYGEN_GENERATING_OUTPUT)
         CORRADE_DEPRECATED("Audio::Context::current() returns reference now") Context* operator->() { return this; }
