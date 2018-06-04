@@ -1447,7 +1447,7 @@ void CubeMapTextureGLTest::invalidateSubImage() {
            only single layer instead of 6, so the above invalidation call
            fails. Relevant source code (scroll up to see imageDepth = 1):
            https://github.com/mesa3d/mesa/blob/051fddb4a9e6abb6f2cf9c892e34c8739983c794/src/mesa/main/texobj.c#L2293 */
-        CORRADE_EXPECT_FAIL_IF((Context::current().detectedDriver() & Context::DetectedDriver::Mesa),
+        CORRADE_EXPECT_FAIL_IF((Context::current().detectedDriver() & Context::DetectedDriver::Mesa) && Context::current().isExtensionSupported<Extensions::ARB::invalidate_subdata>(),
             "Broken on Mesa.");
         #endif
 
