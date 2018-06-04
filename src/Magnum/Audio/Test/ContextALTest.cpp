@@ -36,8 +36,6 @@ struct ContextALTest: TestSuite::Tester {
 
     void extensionsString();
     void isExtensionEnabled();
-
-    Context _context;
 };
 
 ContextALTest::ContextALTest() {
@@ -46,12 +44,16 @@ ContextALTest::ContextALTest() {
 }
 
 void ContextALTest::extensionsString() {
-    std::vector<std::string> extensions = _context.extensionStrings();
+    Context context;
+
+    std::vector<std::string> extensions = context.extensionStrings();
 
     CORRADE_VERIFY(!extensions.empty());
 }
 
 void ContextALTest::isExtensionEnabled() {
+    Context context;
+
     CORRADE_VERIFY(Context::current().isExtensionSupported<Extensions::ALC::EXT::ENUMERATION>());
 }
 
