@@ -102,6 +102,9 @@ See also:
     deeply nested, use @ref Math::Distance and @ref Math::Intersection instead
 -   `Math::Geometry::Intersection::boxFrustum()` is deprecated, use
     @ref Math::Intersection::rangeFrustum() instead
+-   @ref Audio::PlayableGroup::setClean() is deprecated in favor of
+    @ref Audio::Listener::update(), as that one is a feature superset with
+    clearer naming
 -   @ref MeshTools::compile() taking a @ref GL::BufferUsage and returning a
     tuple was deprecated, use the simpler version taking just
     @ref Trade::MeshData2D / @ref Trade::MeshData3D and directly returning a

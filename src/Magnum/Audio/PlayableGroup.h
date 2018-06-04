@@ -99,11 +99,13 @@ template<UnsignedInt dimensions> class PlayableGroup: public SceneGraph::Feature
          */
         PlayableGroup& setSoundTransformation(const Matrix4& matrix);
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Set all contained Playables clean
-         * @see @ref AbstractObject::setClean()
+         * @deprecated Use @ref Listener::update() instead.
          */
-        void setClean();
+        CORRADE_DEPRECATED("use Listener::update() instead") void setClean();
+        #endif
 
     private:
         friend Playable<dimensions>;
