@@ -58,7 +58,9 @@ if(WITH_SCENEGRAPH)
         PlayableGroup.h)
 
     list(APPEND MagnumAudio_SRCS
-        Listener.cpp)
+        Listener.cpp
+        Playable.cpp
+        PlayableGroup.cpp)
 endif()
 
 # Audio library

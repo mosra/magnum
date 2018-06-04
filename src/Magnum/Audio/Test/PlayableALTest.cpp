@@ -28,6 +28,7 @@
 
 #include "Magnum/Audio/Context.h"
 #include "Magnum/Audio/Playable.h"
+#include "Magnum/Audio/PlayableGroup.h"
 #include "Magnum/SceneGraph/Scene.h"
 #include "Magnum/SceneGraph/Object.h"
 #include "Magnum/SceneGraph/MatrixTransformation3D.h"

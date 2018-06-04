@@ -30,18 +30,11 @@
  * @brief Class @ref Magnum::Audio::PlayableGroup, typedef @ref Magnum::Audio::PlayableGroup2D, @ref Magnum::Audio::PlayableGroup3D
  */
 
-#include <functional>
-#include <string>
-#include <vector>
-
-#include <Magnum/SceneGraph/AbstractObject.h>
-#include <Magnum/SceneGraph/SceneGraph.h>
-#include <Magnum/SceneGraph/FeatureGroup.h>
-
+#include "Magnum/Magnum.h"
 #include "Magnum/Audio/Audio.h"
-#include "Magnum/Audio/Playable.h"
-#include "Magnum/Audio/Source.h"
 #include "Magnum/Audio/visibility.h"
+#include "Magnum/Math/Matrix4.h"
+#include "Magnum/SceneGraph/FeatureGroup.h"
 
 namespace Magnum { namespace Audio {
 
@@ -78,50 +71,34 @@ For two dimensional scenes simply replace `3D` with `2D`. When using a
 @see @ref Playable, @ref SceneGraph::FeatureGroup, @ref Listener
 */
 template<UnsignedInt dimensions> class PlayableGroup: public SceneGraph::FeatureGroup<dimensions, Playable<dimensions>, Float> {
-    friend Playable<dimensions>;
-
     public:
+        explicit PlayableGroup();
 
-        /** @brief Constructor */
-        explicit PlayableGroup():
-            SceneGraph::FeatureGroup<dimensions, Playable<dimensions>, Float>(),
-            _gain{1.0f}
-        {}
+        ~PlayableGroup();
 
         /**
          * @brief Play all sound sources in this group
          * @return Reference to self (for method chaining)
          * @see @ref Source::play()
          */
-        PlayableGroup<dimensions>& play() {
-            Source::play(sources());
-            return *this;
-        }
+        PlayableGroup<dimensions>& play();
 
         /**
          * @brief Pause all sound sources in this group
          * @return Reference to self (for method chaining)
          * @see @ref Source::pause()
          */
-        PlayableGroup& pause() {
-            Source::stop(sources());
-            return *this;
-        }
+        PlayableGroup<dimensions>& pause();
 
         /**
          * @brief Stop all sound sources in this group
          * @return Reference to self (for method chaining)
          * @see @ref Source::stop()
          */
-        PlayableGroup& stop() {
-            Source::stop(sources());
-            return *this;
-        }
+        PlayableGroup<dimensions>& stop();
 
         /** @brief Gain */
-        Float gain() const {
-            return _gain;
-        }
+        Float gain() const { return _gain; }
 
         /**
          * @brief Set gain for all sound sources of Playables in this group
@@ -133,18 +110,10 @@ template<UnsignedInt dimensions> class PlayableGroup: public SceneGraph::Feature
          * @cpp sourceGain = playableGain*groupGain @ce. Default of the groups
          * gain is @cpp 1.0f @ce.
          */
-        PlayableGroup& setGain(const Float gain) {
-            _gain = gain;
-            for(UnsignedInt i = 0; i < this->size(); ++i)
-                (*this)[i].cleanGain();
-
-            return *this;
-        }
+        PlayableGroup<dimensions>& setGain(const Float gain);
 
         /** @brief Sound transformation */
-        const Matrix4& soundTransformation() const {
-            return _soundTransform;
-        }
+        const Matrix4& soundTransformation() const { return _soundTransform; }
 
         /**
          * @brief Set transformation of the sounds in this group
@@ -159,41 +128,11 @@ template<UnsignedInt dimensions> class PlayableGroup: public SceneGraph::Feature
         void setClean();
 
     private:
-
-        /* @brief Sources of all Playables in this group */
-        std::vector<std::reference_wrapper<Source>> sources() {
-            std::vector<std::reference_wrapper<Source>> srcs;
-            srcs.reserve(this->size());
-            for(UnsignedInt i = 0; i < this->size(); ++i)
-                srcs.push_back((*this)[i].source());
-            return srcs;
-        }
+        friend Playable<dimensions>;
 
         Matrix4 _soundTransform;
         Float _gain;
 };
-
-template<UnsignedInt dimensions> inline PlayableGroup<dimensions>& PlayableGroup<dimensions>::setSoundTransformation(const Matrix4& matrix) {
-    _soundTransform = matrix;
-
-    /* I cannot come up with a use case for which the sound
-       transformation would be set frequently, so we are setting
-       objects dirty whether the matrix changed or not. */
-    for(UnsignedInt i = 0; i < this->size(); ++i)
-        (*this)[i].object().setDirty();
-
-    return *this;
-}
-
-template<UnsignedInt dimensions> inline void PlayableGroup<dimensions>::setClean() {
-    std::vector<std::reference_wrapper<SceneGraph::AbstractObject<dimensions, Float>>> objects;
-    objects.reserve(this->size());
-
-    for(UnsignedInt i = 0; i < this->size(); ++i)
-        objects.push_back((*this)[i].object());
-
-    SceneGraph::AbstractObject<dimensions, Float>::setClean(objects);
-}
 
 /**
  * @brief Playable group for two dimensional float scenes
@@ -208,6 +147,11 @@ typedef PlayableGroup<2> PlayableGroup2D;
  * @see @ref PlayableGroup2D
  */
 typedef PlayableGroup<3> PlayableGroup3D;
+
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
+extern template class MAGNUM_AUDIO_EXPORT PlayableGroup<2>;
+extern template class MAGNUM_AUDIO_EXPORT PlayableGroup<3>;
+#endif
 
 }}
 

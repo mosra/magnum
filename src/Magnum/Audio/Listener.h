@@ -30,25 +30,12 @@
  * @brief Class @ref Magnum::Audio::Listener, @ref Magnum::Audio::Listener2D, @ref Magnum::Audio::Listener3D
  */
 
-#include <string>
-#include <al.h>
-
-#include <Magnum/Math/Matrix3.h>
-#include <Magnum/Math/Matrix4.h>
-#include <Magnum/Math/Quaternion.h>
-#include <Magnum/SceneGraph/AbstractFeature.h>
-#include <Magnum/SceneGraph/AbstractObject.h>
-
-#include "Magnum/Audio/Renderer.h"
-#include "Magnum/Audio/PlayableGroup.h"
+#include "Magnum/Audio/Audio.h"
+#include "Magnum/Audio/visibility.h"
+#include "Magnum/Math/Matrix4.h"
+#include "Magnum/SceneGraph/AbstractFeature.h"
 
 namespace Magnum { namespace Audio {
-
-namespace Implementation {
-    /* Pointer to the currently active listener. Should never be dereferenced,
-       since may be null at any given time. */
-    extern MAGNUM_AUDIO_EXPORT void* activeListener;
-}
 
 /**
 @brief Listener
@@ -109,11 +96,8 @@ a certain world scale. In the later case you might want to instead consider
 
 @see @ref Audio::Renderer, @ref Playable, @ref PlayableGroup
 */
-template <UnsignedInt dimensions> class Listener: public SceneGraph::AbstractFeature<dimensions, Float> {
-        friend class ActiveListenerHolder;
-
+template<UnsignedInt dimensions> class Listener: public SceneGraph::AbstractFeature<dimensions, Float> {
     public:
-
         /**
          * @brief Constructor
          * @param object    Object this listener belongs to
@@ -124,12 +108,9 @@ template <UnsignedInt dimensions> class Listener: public SceneGraph::AbstractFea
          * affected by @p object or via @ref Listener::setSoundTransformation().
          * @see @ref setGain()
          */
-        explicit Listener(SceneGraph::AbstractObject<dimensions, Float>& object):
-            SceneGraph::AbstractFeature<dimensions, Float>(object),
-            _gain{1.0f}
-        {
-            SceneGraph::AbstractFeature<dimensions, Float>::setCachedTransformations(SceneGraph::CachedTransformation::Absolute);
-        }
+        explicit Listener(SceneGraph::AbstractObject<dimensions, Float>& object);
+
+        ~Listener();
 
         /** @brief Sound transformation */
         const Matrix4& soundTransformation() const {
@@ -160,35 +141,24 @@ template <UnsignedInt dimensions> class Listener: public SceneGraph::AbstractFea
         void update(std::initializer_list<std::reference_wrapper<PlayableGroup<dimensions>>> groups);
 
         /** @brief Listener gain */
-        Float gain() const {
-            return _gain;
-        }
+        Float gain() const { return _gain; }
 
         /**
          * @brief Set listener gain
          * @param gain Gain
          * @return Reference to self (for method chaining)
          */
-        Listener<dimensions>& setGain(Float gain) {
-            _gain = gain;
-            if(isActive()) {
-                Renderer::setListenerGain(_gain);
-            }
-            return *this;
-        }
+        Listener<dimensions>& setGain(Float gain);
 
         /** @brief Whether this listener is the active listener */
-        bool isActive() const {
-            return this == Implementation::activeListener;
-        }
+        bool isActive() const;
 
     private:
-        virtual void clean(const MatrixTypeFor<dimensions, Float>& absoluteTransformationMatrix) override;
+        MAGNUM_AUDIO_LOCAL void clean(const MatrixTypeFor<dimensions, Float>& absoluteTransformationMatrix) override;
 
         Matrix4 _soundTransformation;
         Float _gain;
 };
-
 
 /**
  * @brief Listener for two dimensional float scenes

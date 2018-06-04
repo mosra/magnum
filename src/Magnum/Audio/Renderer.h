@@ -30,7 +30,6 @@
  */
 
 #include <array>
-
 #include <al.h>
 
 #include "Magnum/Magnum.h"

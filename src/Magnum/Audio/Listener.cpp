@@ -24,20 +24,18 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Audio/Listener.h"
+#include "Listener.h"
+
 #include "Magnum/Audio/Playable.h"
 #include "Magnum/Audio/PlayableGroup.h"
-
+#include "Magnum/Audio/Renderer.h"
+#include "Magnum/Math/Matrix3.h"
 
 namespace Magnum { namespace Audio {
 
-using namespace SceneGraph;
-
-namespace Implementation {
-    void* activeListener = nullptr;
-}
-
 namespace {
+
+void* activeListener = nullptr;
 
 /* Create a Matrix4 from a Matrix3/Matrix4 */
 inline Matrix4 padMatrix4(const Matrix3& m) {
@@ -50,31 +48,33 @@ inline Matrix4 padMatrix4(const Matrix4& m) {
 
 }
 
+template<UnsignedInt dimensions> Listener<dimensions>::Listener(SceneGraph::AbstractObject<dimensions, Float>& object): SceneGraph::AbstractFeature<dimensions, Float>(object), _gain{1.0f} {
+    SceneGraph::AbstractFeature<dimensions, Float>::setCachedTransformations(SceneGraph::CachedTransformation::Absolute);
+}
+
+template<UnsignedInt dimensions> Listener<dimensions>::~Listener() = default;
+
 template<UnsignedInt dimensions> void Listener<dimensions>::clean(const MatrixTypeFor<dimensions, Float>& absoluteTransformationMatrix) {
-    if(!isActive()) {
-        /* Only clean if this Listener is active */
-        return;
-    }
+    /* Only clean if this Listener is active */
+    if(!isActive()) return;
 
-    Renderer::setListenerPosition(soundTransformation().transformVector(Vector3::pad(absoluteTransformationMatrix.translation())));
+    Renderer::setListenerPosition(_soundTransformation.transformVector(Vector3::pad(absoluteTransformationMatrix.translation())));
 
-    const Vector3 fwd = soundTransformation().transformVector(-padMatrix4(absoluteTransformationMatrix).backward());
-    const Vector3 up = soundTransformation().transformVector(padMatrix4(absoluteTransformationMatrix).up());
+    const Vector3 fwd = _soundTransformation.transformVector(-padMatrix4(absoluteTransformationMatrix).backward());
+    const Vector3 up = _soundTransformation.transformVector(padMatrix4(absoluteTransformationMatrix).up());
 
     Renderer::setListenerOrientation(fwd, up);
-
     Renderer::setListenerGain(_gain);
 
     /** @todo velocity */
 }
 
 template<UnsignedInt dimensions> void Listener<dimensions>::update(std::initializer_list<std::reference_wrapper<PlayableGroup<dimensions>>> groups) {
-
     /* Check if active listener just changed to this */
-    if(this != Implementation::activeListener) {
+    if(this != activeListener) {
         /* Ensure that clean() is called also when switching between (clean)
            listeners */
-        Implementation::activeListener = this;
+        activeListener = this;
         this->object().setDirty();
 
         /* Listener gain needs to be updated only when active listener changed
@@ -84,17 +84,27 @@ template<UnsignedInt dimensions> void Listener<dimensions>::update(std::initiali
 
     /* Add all objects of the Playables in the PlayableGroups to a vector to
        later setClean() */
-    std::vector<std::reference_wrapper<AbstractObject<dimensions, Float>>> objects;
+    std::vector<std::reference_wrapper<SceneGraph::AbstractObject<dimensions, Float>>> objects;
 
     objects.push_back(this->object());
-    for(PlayableGroup<dimensions>& group : groups) {
-        for(UnsignedInt i = 0; i < group.size(); ++i) {
+    for(PlayableGroup<dimensions>& group: groups) {
+        for(std::size_t i = 0; i != group.size(); ++i) {
             objects.push_back(group[i].object());
         }
     }
 
     /* Use the more performant way to set multiple objects clean */
-    AbstractObject<dimensions, Float>::setClean(objects);
+    SceneGraph::AbstractObject<dimensions, Float>::setClean(objects);
+}
+
+template<UnsignedInt dimensions> Listener<dimensions>& Listener<dimensions>::setGain(const Float gain) {
+    _gain = gain;
+    if(isActive()) Renderer::setListenerGain(_gain);
+    return *this;
+}
+
+template<UnsignedInt dimensions> bool Listener<dimensions>::isActive() const {
+    return this == activeListener;
 }
 
 /* On non-MinGW Windows the instantiations are already marked with extern

@@ -26,10 +26,11 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Audio/Playable.h"
 #include "Magnum/Audio/Context.h"
 #include "Magnum/Audio/Listener.h"
+#include "Magnum/Audio/Playable.h"
 #include "Magnum/Audio/PlayableGroup.h"
+#include "Magnum/Audio/Renderer.h"
 #include "Magnum/SceneGraph/Scene.h"
 #include "Magnum/SceneGraph/Object.h"
 #include "Magnum/SceneGraph/MatrixTransformation2D.h"

@@ -30,16 +30,9 @@
  * @brief Class @ref Magnum::Audio::Playable, typedef @ref Magnum::Audio::Playable2D, @ref Magnum::Audio::Playable3D
  */
 
-#include <string>
-#include <al.h>
-
-#include <Magnum/SceneGraph/AbstractGroupedFeature.h>
-#include <Magnum/Math/Matrix3.h>
-#include <Magnum/Math/Matrix4.h>
-
-#include "Magnum/Audio/PlayableGroup.h"
 #include "Magnum/Audio/Source.h"
-#include "Magnum/Audio/visibility.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/SceneGraph/AbstractGroupedFeature.h"
 
 namespace Magnum { namespace Audio {
 
@@ -76,10 +69,7 @@ To manage multiple Playables at once, use @ref PlayableGroup.
 @see @ref Source, @ref PlayableGroup, @ref Listener
 */
 template<UnsignedInt dimensions> class Playable: public SceneGraph::AbstractGroupedFeature<dimensions, Playable<dimensions>, Float> {
-    friend PlayableGroup<dimensions>;
-
     public:
-
         /**
          * @brief Constructor
          * @param object    Object this playable belongs to
@@ -92,25 +82,15 @@ template<UnsignedInt dimensions> class Playable: public SceneGraph::AbstractGrou
          * @ref PlayableGroup::setSoundTransformation().
          * @see @ref setGain(), @ref PlayableGroup::add()
          */
-        explicit Playable(SceneGraph::AbstractObject<dimensions, Float>& object, PlayableGroup<dimensions>* group = nullptr):
-            SceneGraph::AbstractGroupedFeature<dimensions, Playable<dimensions>, Float>(object, group),
-            _fwd(0.0f),
-            _gain(1.0f),
-            _source()
-        {
-            SceneGraph::AbstractFeature<dimensions, Float>::setCachedTransformations(SceneGraph::CachedTransformation::Absolute);
-            _fwd[dimensions - 1] = -1;
-        }
+        explicit Playable(SceneGraph::AbstractObject<dimensions, Float>& object, PlayableGroup<dimensions>* group = nullptr);
+
+        ~Playable();
 
         /** @brief Source which is managed by this feature */
-        Source& source() {
-            return _source;
-        }
+        Source& source() { return _source; }
 
         /** @brief Gain */
-        Float gain() const {
-            return _gain;
-        }
+        Float gain() const { return _gain; }
 
         /**
          * @brief Set gain of the playable and source respecting the PlayableGroups gain
@@ -120,46 +100,26 @@ template<UnsignedInt dimensions> class Playable: public SceneGraph::AbstractGrou
          * Default for the playables gain is @cpp 1.0f @ce.
          * @see @ref PlayableGroup::setGain(), @ref Source::setGain()
          */
-        Playable& setGain(const Float gain) {
-            _gain = gain;
-            cleanGain();
-            return *this;
-        }
+        Playable& setGain(const Float gain);
 
         /**
          * @brief Group containing this playable
          *
          * If the playable doesn't belong to any group, returns @cpp nullptr @ce.
          */
-        PlayableGroup<dimensions>* playables() {
-            return static_cast<PlayableGroup<dimensions>*>(this->group());
-        }
+        PlayableGroup<dimensions>* playables();
 
-        const PlayableGroup<dimensions>* playables() const { /**< @overload */
-            return static_cast<const PlayableGroup<dimensions>*>(this->group());
-        }
+        const PlayableGroup<dimensions>* playables() const; /**< @overload */
 
     private:
-        void clean(const MatrixTypeFor<dimensions, Float>& absoluteTransformationMatrix) override {
-            Vector3 position = Vector3::pad(absoluteTransformationMatrix.translation(), 0);
-            if(playables()) {
-                position = playables()->soundTransformation().transformVector(position);
-            }
-            _source.setPosition(position);
-            _source.setDirection(Vector3::pad(absoluteTransformationMatrix.rotation()*_fwd));
+        friend PlayableGroup<dimensions>;
 
-            /** @todo velocity */
-        }
+        MAGNUM_AUDIO_LOCAL void clean(const MatrixTypeFor<dimensions, Float>& absoluteTransformationMatrix) override;
 
-        /* Update the gain of the underlying source to reflect changes in _group and/or _gain.
-           Called in Playable::setGain() and PlayableGroup::setGain() */
-        void cleanGain() {
-            if(playables()) {
-                _source.setGain(_gain*playables()->gain());
-            } else {
-                _source.setGain(_gain);
-            }
-        }
+        /* Updates the gain of the underlying source to reflect changes in
+           _group and/or _gain. Called from setGain() and
+           PlayableGroup::setGain() */
+        MAGNUM_AUDIO_LOCAL void cleanGain();
 
         VectorTypeFor<dimensions, Float> _fwd;
         Float _gain;
@@ -179,6 +139,11 @@ typedef Playable<2> Playable2D;
  * @see @ref Playable2D
  */
 typedef Playable<3> Playable3D;
+
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
+extern template class MAGNUM_AUDIO_EXPORT Playable<2>;
+extern template class MAGNUM_AUDIO_EXPORT Playable<3>;
+#endif
 
 }}
 
