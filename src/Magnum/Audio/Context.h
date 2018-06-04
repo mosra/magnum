@@ -30,6 +30,7 @@
  * @brief Class @ref Magnum::Audio::Context, macro @ref MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED()
  */
 
+#include <cstdlib>
 #include <string>
 #include <vector>
 #include <bitset>
