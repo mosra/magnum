@@ -153,6 +153,7 @@ struct MeshGLTest: OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES
     void addVertexBufferInstancedDouble();
     #endif
+    void resetDivisorAfterInstancedDraw();
 
     void multiDraw();
     void multiDrawIndexed();
@@ -274,6 +275,7 @@ MeshGLTest::MeshGLTest() {
               #ifndef MAGNUM_TARGET_GLES
               &MeshGLTest::addVertexBufferInstancedDouble,
               #endif
+              &MeshGLTest::resetDivisorAfterInstancedDraw,
 
               &MeshGLTest::multiDraw,
               &MeshGLTest::multiDrawIndexed,
@@ -2500,6 +2502,95 @@ void MeshGLTest::addVertexBufferInstancedDouble() {
     CORRADE_COMPARE(value, 45828);
 }
 #endif
+
+void MeshGLTest::resetDivisorAfterInstancedDraw() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::draw_instanced>())
+        CORRADE_SKIP(Extensions::ARB::draw_instanced::string() + std::string(" is not available."));
+    if(!Context::current().isExtensionSupported<Extensions::ARB::instanced_arrays>())
+        CORRADE_SKIP(Extensions::ARB::instanced_arrays::string() + std::string(" is not available."));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::instanced_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::instanced_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::NV::instanced_arrays>())
+        CORRADE_SKIP("Required instancing extension is not available.");
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::instanced_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::draw_instanced>() &&
+       !Context::current().isExtensionSupported<Extensions::NV::draw_instanced>())
+        CORRADE_SKIP("Required drawing extension is not available.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::instanced_arrays>())
+        CORRADE_SKIP(Extensions::ANGLE::instanced_arrays::string() + std::string(" is not available."));
+    #endif
+    #endif
+
+    /* This doesn't affect VAOs, because they encapsulate the state */
+    #ifndef MAGNUM_TARGET_GLES
+    if(Context::current().isExtensionSupported<Extensions::ARB::vertex_array_object>())
+        CORRADE_SKIP(Extensions::ARB::vertex_array_object::string() + std::string(" is enabled, can't test."));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(Context::current().isExtensionSupported<Extensions::OES::vertex_array_object>())
+        CORRADE_SKIP(Extensions::OES::vertex_array_object::string() + std::string(" is enabled, can't test."));
+    #endif
+
+    typedef Attribute<0, Float> Attribute;
+
+    const Float data[]{
+        0,
+        Math::unpack<Float, UnsignedByte>(96),
+        Math::unpack<Float, UnsignedByte>(48),
+    };
+    Buffer buffer;
+    buffer.setData(data, BufferUsage::StaticDraw);
+
+    Renderbuffer renderbuffer;
+    renderbuffer.setStorage(
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        Vector2i(1));
+    Framebuffer framebuffer{{{}, Vector2i(1)}};
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), renderbuffer)
+                .bind();
+
+    FloatShader shader{"float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"};
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Draw instanced first. Two single-vertex instances of an attribute with
+       divisor 1, first draws 0, second draws 96 */
+    {
+        Mesh mesh;
+        mesh.setInstanceCount(2)
+            .addVertexBufferInstanced(buffer, 1, 0, Attribute{})
+            .setPrimitive(MeshPrimitive::Points)
+            .setCount(1)
+            .draw(shader);
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+
+        CORRADE_COMPARE(framebuffer.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data<UnsignedByte>()[0], 96);
+    }
+
+    /* Draw normal after. One two-vertex instance of an attribute with divisor
+       0, first draws 96, second 48. In case divisor is not properly reset,
+       I'll get 96 on both. */
+    {
+        Mesh mesh;
+        mesh.setInstanceCount(1)
+            .addVertexBuffer(buffer, 4, Attribute{})
+            .setPrimitive(MeshPrimitive::Points)
+            .setCount(2)
+            .draw(shader);
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+
+        CORRADE_COMPARE(framebuffer.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data<UnsignedByte>()[0], 48);
+    }
+}
 
 namespace {
     struct MultiChecker {
