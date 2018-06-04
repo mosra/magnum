@@ -169,7 +169,10 @@ void PrimitiveQueryGLTest::primitivesGenerated() {
     const bool availableAfter = q.resultAvailable();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_VERIFY(!availableBefore);
+    {
+        CORRADE_EXPECT_FAIL_IF(availableBefore, "GPU faster than light?");
+        CORRADE_VERIFY(!availableBefore);
+    }
     CORRADE_VERIFY(availableAfter);
     CORRADE_COMPARE(count, 3);
 }
