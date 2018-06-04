@@ -117,19 +117,73 @@ Context& Context::current() {
 Context::Context(): Context{Configuration{}} {}
 #endif
 
-Context::Context(const Configuration& config) {
-    CORRADE_ASSERT(!_current, "Audio::Context: context already created", );
+Context::Context(const Configuration& configuration) {
+    create(configuration);
+}
+
+Context::Context(NoCreateT) noexcept: _device{}, _context{} {}
+
+void Context::create(const Configuration& configuration) {
+    if(!tryCreate(configuration)) std::exit(1);
+}
+
+bool Context::tryCreate(const Configuration& configuration) {
+    CORRADE_ASSERT(!_current, "Audio::Context: context already created", false);
 
     /* Open the device */
-    const ALCchar* const deviceSpecifier = config.deviceSpecifier().empty() ? alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER) : config.deviceSpecifier().data();
+    const ALCchar* const deviceSpecifier = configuration.deviceSpecifier().empty() ? alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER) : configuration.deviceSpecifier().data();
     if(!(_device = alcOpenDevice(deviceSpecifier))) {
         Error() << "Audio::Context: cannot open sound device" << deviceSpecifier;
-        std::exit(1);
+        return false;
     }
 
-    if(!tryCreateContext(config)) {
+    /* The following parameters are order dependent!
+       Make sure to always add sufficient space at end of the attributes
+       array.*/
+    Int attributes[]{
+      0, 0,
+      0, 0,
+      0, 0,
+      0, 0,
+      0, 0,
+      0 /* sentinel */
+    };
+
+    /* last valid index in the attributes array */
+    Int last = 0;
+
+    if(configuration.frequency() != -1) {
+        attributes[last++] = ALC_FREQUENCY;
+        attributes[last++] = configuration.frequency();
+    }
+    if(configuration.hrtf() != Configuration::Hrtf::Default) {
+        attributes[last++] = ALC_HRTF_SOFT;
+        attributes[last++] = (configuration.hrtf() == Configuration::Hrtf::Enabled)
+                             ? ALC_TRUE : ALC_FALSE;
+    }
+    if(configuration.monoSourceCount() != -1) {
+        attributes[last++] = ALC_MONO_SOURCES;
+        attributes[last++] = configuration.monoSourceCount();
+    }
+    if(configuration.stereoSourceCount() != -1) {
+        attributes[last++] = ALC_STEREO_SOURCES;
+        attributes[last++] = configuration.stereoSourceCount();
+    }
+    if(configuration.refreshRate() != -1) {
+        attributes[last++] = ALC_REFRESH;
+        attributes[last++] = configuration.refreshRate();
+    }
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    _context = alcCreateContext(_device, attributes);
+    #else
+    if(last != 0)
+        Warning() << "Audio::Context::tryCreateContext(): specifying attributes is not supported with Emscripten, ignoring";
+    _context = alcCreateContext(_device, nullptr);
+    #endif
+    if(!_context) {
         Error() << "Audio::Context: cannot create context:" << alcErrorString(alcGetError(_device));
-        std::exit(1);
+        return false;
     }
 
     alcMakeContextCurrent(_context);
@@ -153,6 +207,8 @@ Context::Context(const Configuration& config) {
     /* Print some info */
     Debug() << "Audio Renderer:" << rendererString() << "by" << vendorString();
     Debug() << "OpenAL version:" << versionString();
+
+    return true;
 }
 
 Context::Context(Context&& other) noexcept: _device{other._device}, _context{other._context}, _extensionStatus{std::move(other._extensionStatus)}, _supportedExtensions{std::move(other._supportedExtensions)} {
@@ -218,54 +274,6 @@ std::string Context::rendererString() const {
 
 std::string Context::versionString() const {
     return alGetString(AL_VERSION);
-}
-
-bool Context::tryCreateContext(const Configuration& config) {
-    /* The following parameters are order dependent!
-       Make sure to always add sufficient space at end of the attributes
-       array.*/
-    Int attributes[]{
-      0, 0,
-      0, 0,
-      0, 0,
-      0, 0,
-      0, 0,
-      0 /* sentinel */
-    };
-
-    /* last valid index in the attributes array */
-    Int last = 0;
-
-    if(config.frequency() != -1) {
-        attributes[last++] = ALC_FREQUENCY;
-        attributes[last++] = config.frequency();
-    }
-    if(config.hrtf() != Configuration::Hrtf::Default) {
-        attributes[last++] = ALC_HRTF_SOFT;
-        attributes[last++] = (config.hrtf() == Configuration::Hrtf::Enabled)
-                             ? ALC_TRUE : ALC_FALSE;
-    }
-    if(config.monoSourceCount() != -1) {
-        attributes[last++] = ALC_MONO_SOURCES;
-        attributes[last++] = config.monoSourceCount();
-    }
-    if(config.stereoSourceCount() != -1) {
-        attributes[last++] = ALC_STEREO_SOURCES;
-        attributes[last++] = config.stereoSourceCount();
-    }
-    if(config.refreshRate() != -1) {
-        attributes[last++] = ALC_REFRESH;
-        attributes[last++] = config.refreshRate();
-    }
-
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
-    _context = alcCreateContext(_device, attributes);
-    #else
-    if(last != 0)
-        Warning() << "Audio::Context::tryCreateContext(): specifying attributes is not supported with Emscripten, ignoring";
-    _context = alcCreateContext(_device, nullptr);
-    #endif
-    return !!_context;
 }
 
 Context::Configuration::Configuration() = default;

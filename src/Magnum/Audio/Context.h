@@ -39,6 +39,7 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Tags.h"
 #include "Magnum/Audio/visibility.h"
 #include "MagnumExternal/OpenAL/extensions.h"
 
@@ -163,6 +164,15 @@ class MAGNUM_AUDIO_EXPORT Context {
         explicit Context();
         #endif
 
+        /**
+         * @brief Construct without creating the underlying OpenAL context
+         *
+         * Useful in cases where you need to defer context creation to a later
+         * time, for example to do a more involved configuration. Call
+         * @ref create() or @ref tryCreate() to create the actual context.
+         */
+        explicit Context(NoCreateT) noexcept;
+
         /** @brief Copying is not allowed */
         Context(const Context&) = delete;
 
@@ -186,6 +196,24 @@ class MAGNUM_AUDIO_EXPORT Context {
         CORRADE_DEPRECATED("Audio::Context::current() returns reference now") Context* operator->() { return this; }
         CORRADE_DEPRECATED("Audio::Context::current() returns reference now") operator Context*() { return this; }
         #endif
+
+        /**
+         * @brief Complete the context setup and exit on failure
+         *
+         * Finalizes the setup after the class was created using
+         * @ref Context(NoCreateT). If any error occurs, a message is printed
+         * to error output and the application exits. See @ref tryCreate() for
+         * an alternative.
+         */
+        void create(const Configuration& configuration);
+
+        /**
+         * @brief Complete the context setup
+         *
+         * Unlike @ref create() just prints a message to error output and
+         * returns `false` on error.
+         */
+        bool tryCreate(const Configuration& configuration);
 
         /**
          * @brief Whether HRTFs (Head Related Transfer Functions) are enabled
@@ -317,10 +345,6 @@ class MAGNUM_AUDIO_EXPORT Context {
 
     private:
         MAGNUM_AUDIO_LOCAL static Context* _current;
-
-        /* Create a context with given configuration. Returns `true` on success.
-         * @ref alcCreateContext(). */
-        MAGNUM_AUDIO_LOCAL bool tryCreateContext(const Configuration& config);
 
         ALCdevice* _device;
         ALCcontext* _context;

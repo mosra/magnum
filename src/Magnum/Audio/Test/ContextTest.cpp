@@ -34,6 +34,7 @@ namespace Magnum { namespace Audio { namespace Test {
 struct ContextTest: TestSuite::Tester {
     explicit ContextTest();
 
+    void constructNoCreate();
     void constructCopyMove();
 
     void extensions();
@@ -42,11 +43,18 @@ struct ContextTest: TestSuite::Tester {
 };
 
 ContextTest::ContextTest() {
-    addTests({&ContextTest::constructCopyMove,
+    addTests({&ContextTest::constructNoCreate,
+              &ContextTest::constructCopyMove,
 
               &ContextTest::extensions,
 
               &ContextTest::debugHrtfStatus});
+}
+
+void ContextTest::constructNoCreate() {
+    Context context{NoCreate};
+
+    CORRADE_VERIFY(!Context::hasCurrent());
 }
 
 void ContextTest::constructCopyMove() {
