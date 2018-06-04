@@ -98,6 +98,9 @@ See also:
     due to a pointer not being properly initialized after the
     @ref Platform::GlfwApplication::GLConfiguration "GLConfiguration" rework in
     2018.04 (see [mosra/magnum#246](https://github.com/mosra/magnum/pull/246))
+-   Vertex attribute divisor in @ref GL::Mesh::addVertexBufferInstanced() was
+    not properly cleaned up after when @gl_extension{ARB,vertex_array_object}
+    was disabled, causing subsequent draws to misbehave
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

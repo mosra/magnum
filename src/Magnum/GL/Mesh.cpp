@@ -746,8 +746,18 @@ void Mesh::bindImplementationVAO() {
 }
 
 void Mesh::unbindImplementationDefault() {
-    for(const AttributeLayout& attribute: *reinterpret_cast<std::vector<AttributeLayout>*>(&_attributes))
+    for(const AttributeLayout& attribute: *reinterpret_cast<std::vector<AttributeLayout>*>(&_attributes)) {
         glDisableVertexAttribArray(attribute.location);
+
+        /* Reset also the divisor back so it doesn't affect  */
+        if(attribute.divisor) {
+            #ifndef MAGNUM_TARGET_GLES2
+            glVertexAttribDivisor(attribute.location, 0);
+            #else
+            (this->*Context::current().state().mesh->vertexAttribDivisorImplementation)(attribute.location, 0);
+            #endif
+        }
+    }
 }
 
 void Mesh::unbindImplementationVAO() {}
