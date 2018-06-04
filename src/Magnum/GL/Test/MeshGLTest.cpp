@@ -267,9 +267,7 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::setInstanceCountBaseVertexBaseInstance,
               #endif
 
-              #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
               &MeshGLTest::addVertexBufferInstancedFloat,
-              #endif
               #ifndef MAGNUM_TARGET_GLES2
               &MeshGLTest::addVertexBufferInstancedInteger,
               #endif
@@ -2379,7 +2377,6 @@ void MeshGLTest::setInstanceCountBaseVertexBaseInstance() {
 }
 #endif
 
-#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void MeshGLTest::addVertexBufferInstancedFloat() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::draw_instanced>())
@@ -2431,7 +2428,6 @@ void MeshGLTest::addVertexBufferInstancedFloat() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, 96);
 }
-#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void MeshGLTest::addVertexBufferInstancedInteger() {
