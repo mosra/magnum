@@ -25,7 +25,6 @@
 
 #include <Corrade/Utility/Arguments.h>
 
-#include "Magnum/Magnum.h"
 #include "Magnum/Audio/Context.h"
 
 namespace Magnum {

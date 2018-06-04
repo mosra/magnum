@@ -29,7 +29,7 @@
  * @brief Forward declarations for the @ref Magnum::Audio namespace
  */
 
-#include <Magnum/Magnum.h>
+#include "Magnum/Types.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 typedef int ALenum;

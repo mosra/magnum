@@ -27,26 +27,20 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Audio::Context
+ * @brief Class @ref Magnum::Audio::Context, macro @ref MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED()
  */
 
 #include <string>
 #include <vector>
-#include <array>
 #include <bitset>
 #include <al.h>
-
+#include <alc.h>
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Utility/Debug.h>
 
-#include "Magnum/Audio/Audio.h"
-#include "Magnum/Audio/Buffer.h"
-#include "Magnum/Audio/Extensions.h"
+#include "Magnum/Magnum.h"
 #include "Magnum/Audio/visibility.h"
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-typedef struct ALCdevice_struct ALCdevice;
-typedef struct ALCcontext_struct ALCcontext;
-#endif
+#include "MagnumExternal/OpenAL/extensions.h"
 
 namespace Magnum { namespace Audio {
 
