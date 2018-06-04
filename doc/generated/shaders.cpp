@@ -148,54 +148,37 @@ namespace {
 }
 
 std::string ShaderVisualizer::phong() {
-    std::unique_ptr<GL::Buffer> vertices, indices;
-    GL::Mesh mesh{NoCreate};
-    std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::uvSphereSolid(16, 32), GL::BufferUsage::StaticDraw);
-
-    Shaders::Phong shader;
-    shader.setAmbientColor(0x22272e_rgbf)
+    MeshTools::compile(Primitives::uvSphereSolid(16, 32)).draw(Shaders::Phong{}
+        .setAmbientColor(0x22272e_rgbf)
         .setDiffuseColor(BaseColor)
         .setShininess(200.0f)
         .setLightPosition({5.0f, 5.0f, 7.0f})
         .setProjectionMatrix(Projection)
         .setTransformationMatrix(Transformation)
-        .setNormalMatrix(Transformation.rotationScaling());
-
-    mesh.draw(shader);
+        .setNormalMatrix(Transformation.rotationScaling()));
 
     return "phong.png";
 }
 
 std::string ShaderVisualizer::meshVisualizer() {
-    std::unique_ptr<GL::Buffer> vertices, indices;
-    GL::Mesh mesh{NoCreate};
-    std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::icosphereSolid(1), GL::BufferUsage::StaticDraw);
-
     const Matrix4 projection = Projection*Transformation*
         Matrix4::rotationZ(13.7_degf)*
         Matrix4::rotationX(-12.6_degf);
 
-    Shaders::MeshVisualizer shader{Shaders::MeshVisualizer::Flag::Wireframe};
-    shader.setColor(BaseColor)
-        .setWireframeColor(OutlineColor)
-        .setViewportSize(Vector2{ImageSize})
-        .setTransformationProjectionMatrix(projection);
-
-    mesh.draw(shader);
+    MeshTools::compile(Primitives::icosphereSolid(1))
+        .draw(Shaders::MeshVisualizer{Shaders::MeshVisualizer::Flag::Wireframe}
+            .setColor(BaseColor)
+            .setWireframeColor(OutlineColor)
+            .setViewportSize(Vector2{ImageSize})
+            .setTransformationProjectionMatrix(projection));
 
     return "meshvisualizer.png";
 }
 
 std::string ShaderVisualizer::flat() {
-    std::unique_ptr<GL::Buffer> vertices, indices;
-    GL::Mesh mesh{NoCreate};
-    std::tie(mesh, vertices, indices) = MeshTools::compile(Primitives::uvSphereSolid(16, 32), GL::BufferUsage::StaticDraw);
-
-    Shaders::Flat3D shader;
-    shader.setColor(BaseColor)
-        .setTransformationProjectionMatrix(Projection*Transformation);
-
-    mesh.draw(shader);
+    MeshTools::compile(Primitives::uvSphereSolid(16, 32)).draw(Shaders::Flat3D{}
+        .setColor(BaseColor)
+        .setTransformationProjectionMatrix(Projection*Transformation));
 
     return "flat.png";
 }
@@ -244,20 +227,15 @@ std::string ShaderVisualizer::vector() {
         .setStorage(1, GL::TextureFormat::RGBA8, image->size())
         .setSubImage(0, {}, *image);
 
-    GL::Mesh mesh{NoCreate};
-    std::unique_ptr<GL::Buffer> vertices;
-    std::tie(mesh, vertices, std::ignore) = MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate), GL::BufferUsage::StaticDraw);
-
-    Shaders::Vector2D shader;
-    shader.setColor(BaseColor)
-        .bindVectorTexture(texture)
-        .setTransformationProjectionMatrix({});
-
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
     GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add, GL::Renderer::BlendEquation::Add);
 
-    mesh.draw(shader);
+    MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate))
+        .draw(Shaders::Vector2D{}
+            .setColor(BaseColor)
+            .bindVectorTexture(texture)
+            .setTransformationProjectionMatrix({}));
 
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
 
@@ -278,22 +256,17 @@ std::string ShaderVisualizer::distanceFieldVector() {
         .setStorage(1, GL::TextureFormat::RGBA8, image->size())
         .setSubImage(0, {}, *image);
 
-    GL::Mesh mesh{NoCreate};
-    std::unique_ptr<GL::Buffer> vertices;
-    std::tie(mesh, vertices, std::ignore) = MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate), GL::BufferUsage::StaticDraw);
-
-    Shaders::DistanceFieldVector2D shader;
-    shader.setColor(BaseColor)
-        .setOutlineColor(OutlineColor)
-        .setOutlineRange(0.6f, 0.4f)
-        .bindVectorTexture(texture)
-        .setTransformationProjectionMatrix({});
-
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::OneMinusSourceAlpha);
     GL::Renderer::setBlendEquation(GL::Renderer::BlendEquation::Add, GL::Renderer::BlendEquation::Add);
 
-    mesh.draw(shader);
+    MeshTools::compile(Primitives::squareSolid(Primitives::SquareTextureCoords::Generate))
+        .draw(Shaders::DistanceFieldVector2D{}
+            .setColor(BaseColor)
+            .setOutlineColor(OutlineColor)
+            .setOutlineRange(0.6f, 0.4f)
+            .bindVectorTexture(texture)
+            .setTransformationProjectionMatrix({}));
 
     GL::Renderer::disable(GL::Renderer::Feature::Blending);
 

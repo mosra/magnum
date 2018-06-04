@@ -235,11 +235,7 @@ int PrimitiveVisualizer::exec() {
             Containers::Optional<Trade::MeshData2D> data;
             std::tie(data, filename) = (this->*fun)();
 
-            std::unique_ptr<GL::Buffer> vertices, indices;
-            GL::Mesh mesh{NoCreate};
-            std::tie(mesh, vertices, indices) = MeshTools::compile(*data, GL::BufferUsage::StaticDraw);
-
-            mesh.draw(shader);
+            MeshTools::compile(*data).draw(shader);
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
@@ -269,11 +265,7 @@ int PrimitiveVisualizer::exec() {
             Containers::Optional<Trade::MeshData3D> data;
             std::tie(data, filename) = (this->*fun)();
 
-            std::unique_ptr<GL::Buffer> vertices, indices;
-            GL::Mesh mesh{NoCreate};
-            std::tie(mesh, vertices, indices) = MeshTools::compile(*data, GL::BufferUsage::StaticDraw);
-
-            mesh.draw(shader);
+            MeshTools::compile(*data).draw(shader);
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
@@ -350,12 +342,9 @@ int PrimitiveVisualizer::exec() {
             Containers::Optional<Trade::MeshData3D> data;
             std::tie(data, filename) = (this->*fun)();
 
-            std::unique_ptr<GL::Buffer> vertices, indices;
-            GL::Mesh mesh{NoCreate};
-            std::tie(mesh, vertices, indices) = MeshTools::compile(*data, GL::BufferUsage::StaticDraw);
-
-            mesh.draw(phong);
-            mesh.draw(wireframe);
+            MeshTools::compile(*data)
+                .draw(phong)
+                .draw(wireframe);
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
