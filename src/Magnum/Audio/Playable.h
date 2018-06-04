@@ -47,27 +47,57 @@ an @ref SceneGraph::Object.
 Attach the instance to an existing object and set a filled buffer to it. In
 order to reflect transformation changes from the scene in the spatial audio,
 the playable should be added to some @ref PlayableGroup, which is periodically
-updated from a currently active @link Listener @endlink:
+updated from a currently active @ref Listener using @ref Listener::update():
 
 @snippet MagnumAudio-scenegraph.cpp Playable-usage
 
-@see @ref Playable2D, @ref Playable3D, @ref Source
+Note that @ref Source::setPosition(), @ref Source::setDirection() and
+@ref Source::setGain() called on @ref source() will be overwritten on next call
+to @ref Listener::update() / @ref PlayableGroup::setGain() / @ref setGain() and
+you have to use other means to update them:
+
+-   Transformation of the source is inherited from the scene. If you want to
+    transform it, transform the @ref SceneGraph::Object the playable is
+    attached to. It's also possible to affect the global listener
+    and group transformation using @ref Listener::setSoundTransformation() and
+    @ref PlayableGroup::setSoundTransformation()
+-   The source is by default omnidirectional (i.e., passing a zero vector to
+    @ref Source::setDirection()). You can set the initial direction using the
+    @ref Playable(SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, PlayableGroup<dimensions>*)
+    constructor, the direction will be automatically rotated based on playable
+    transformation.
+-   Source gain is set as a combination of @ref PlayableGroup gain and
+    @ref Playable gain and updated on every call to @ref setGain() or
+    @ref PlayableGroup::setGain().
+
+@see @ref Playable2D, @ref Playable3D
 */
 template<UnsignedInt dimensions> class Playable: public SceneGraph::AbstractGroupedFeature<dimensions, Playable<dimensions>, Float> {
     public:
         /**
-         * @brief Constructor
+         * @brief Construct a playable with omnidirectional source.
          * @param object    Object this playable belongs to
          * @param group     Group this playable belongs to
          *
-         * Creates playable with a source and a forward vector of
-         * @cpp {0.0f, -1.0f} @ce for 2D and @cpp {0.0f, 0.0f, -1.0f} @ce for
-         * 3D scenes. This forward vector cannot be changed, the sources
-         * orientation and translation can be instead affected by @p object or
-         * via @ref PlayableGroup::setSoundTransformation().
+         * Creates a source with a zero direction vector. See
+         * @ref Playable(SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, PlayableGroup<dimensions>*)
+         * for an alternative.
          * @see @ref setGain(), @ref PlayableGroup::add()
          */
-        explicit Playable(SceneGraph::AbstractObject<dimensions, Float>& object, PlayableGroup<dimensions>* group = nullptr);
+        explicit Playable(SceneGraph::AbstractObject<dimensions, Float>& object, PlayableGroup<dimensions>* group = nullptr): Playable<dimensions>{object, {}, group} {}
+
+        /**
+         * @brief Construct a playable with directional source.
+         * @param object    Object this playable belongs to
+         * @param direction Source direction
+         * @param group     Group this playable belongs to
+         *
+         * Uses @p direction as a base for @ref Source::setDirection(). Passing
+         * a zero vector is equivalent to calling
+         * @ref Playable(SceneGraph::AbstractObject<dimensions, Float>&, PlayableGroup<dimensions>*).
+         * @see @ref setGain(), @ref PlayableGroup::add()
+         */
+        explicit Playable(SceneGraph::AbstractObject<dimensions, Float>& object, const VectorTypeFor<dimensions, Float>& direction, PlayableGroup<dimensions>* group = nullptr);
 
         ~Playable();
 
@@ -81,8 +111,8 @@ template<UnsignedInt dimensions> class Playable: public SceneGraph::AbstractGrou
          * @brief Set gain of the playable and source respecting the PlayableGroups gain
          * @return Reference to self (for method chaining)
          *
-         * The sources gain is computed as @cpp sourceGain = playableGain*groupGain @ce.
-         * Default for the playables gain is @cpp 1.0f @ce.
+         * The source gain is calculated as
+         * @cpp sourceGain = playableGain*groupGain @ce. Default is @cpp 1.0f @ce.
          * @see @ref PlayableGroup::setGain(), @ref Source::setGain()
          */
         Playable& setGain(const Float gain);
@@ -106,7 +136,7 @@ template<UnsignedInt dimensions> class Playable: public SceneGraph::AbstractGrou
            PlayableGroup::setGain() */
         MAGNUM_AUDIO_LOCAL void cleanGain();
 
-        VectorTypeFor<dimensions, Float> _fwd;
+        VectorTypeFor<dimensions, Float> _direction;
         Float _gain;
         Source _source;
 };

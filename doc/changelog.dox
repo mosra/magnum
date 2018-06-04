@@ -57,6 +57,10 @@ See also:
 
 @subsection changelog-latest-changes Changes and improvements
 
+@subsubsection changelog-latest-changes-audio Audio library
+
+-   Ability to specify initial source direction using @ref Audio::Playable::Playable(SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, PlayableGroup<dimensions>*)
+
 @subsubsection changelog-latest-changes-gl GL library
 
 -   To prevent nothing being rendered by accident, @ref GL::Mesh::setCount()
@@ -109,6 +113,12 @@ See also:
     tuple was deprecated, use the simpler version taking just
     @ref Trade::MeshData2D / @ref Trade::MeshData3D and directly returning a
     @ref GL::Mesh instead
+
+@subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
+
+-   @ref Audio::Playable is now by default omnidirectional instead of having
+    source in direction of negative Z axis (the direction has effect only when
+    setting inner and outer cone properties of @ref Audio::Source).
 
 @section changelog-2018-04 2018.04
 

@@ -32,9 +32,8 @@
 
 namespace Magnum { namespace Audio {
 
-template<UnsignedInt dimensions> Playable<dimensions>::Playable(SceneGraph::AbstractObject<dimensions, Float>& object, PlayableGroup<dimensions>* group): SceneGraph::AbstractGroupedFeature<dimensions, Playable<dimensions>, Float>(object, group), _fwd{}, _gain{1.0f} {
+template<UnsignedInt dimensions> Playable<dimensions>::Playable(SceneGraph::AbstractObject<dimensions, Float>& object, const VectorTypeFor<dimensions, Float>& direction, PlayableGroup<dimensions>* group): SceneGraph::AbstractGroupedFeature<dimensions, Playable<dimensions>, Float>(object, group), _direction{direction}, _gain{1.0f} {
     SceneGraph::AbstractFeature<dimensions, Float>::setCachedTransformations(SceneGraph::CachedTransformation::Absolute);
-    _fwd[dimensions - 1] = -1;
 }
 
 template<UnsignedInt dimensions> Playable<dimensions>::~Playable() = default;
@@ -51,7 +50,7 @@ template<UnsignedInt dimensions> void Playable<dimensions>::clean(const MatrixTy
         position = playables()->soundTransformation().transformVector(position);
 
     _source.setPosition(position);
-    _source.setDirection(Vector3::pad(absoluteTransformationMatrix.rotation()*_fwd));
+    _source.setDirection(Vector3::pad(absoluteTransformationMatrix.rotation()*_direction));
 
     /** @todo velocity */
 }
