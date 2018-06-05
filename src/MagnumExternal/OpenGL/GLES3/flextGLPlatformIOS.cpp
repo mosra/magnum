@@ -251,7 +251,7 @@
 #undef glMinSampleShadingOES
 #undef glTexStorage3DMultisampleOES
 
-#include <ES3/glext.h>
+#include <OpenGLES/ES3/glext.h>
 
 void flextGLInit() {
 

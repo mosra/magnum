@@ -150,7 +150,7 @@
 #undef glGenVertexArraysOES
 #undef glIsVertexArrayOES
 
-#include <ES2/glext.h>
+#include <OpenGLES/ES2/glext.h>
 
 void flextGLInit() {
     /* Work around missing glTexStorage3D (can't be used anyway because GLES2
