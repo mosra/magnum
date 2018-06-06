@@ -369,7 +369,7 @@ void IntersectionTest::sphereConeView() {
     Error redirectError{&out};
 
     CORRADE_VERIFY(!Intersection::sphereConeView(center, 1.0f, Matrix4{ZeroInit}, angle));
-    CORRADE_COMPARE(out.str(), "Math::Geometry::Intersection::sphereConeView(): coneView must be rigid\n");
+    CORRADE_COMPARE(out.str(), "Math::Geometry::Intersection::sphereConeView(): coneView does not represent a rigid transformation\n");
 }
 
 void IntersectionTest::rangeCone() {

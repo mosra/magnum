@@ -525,7 +525,7 @@ template<class T> bool sphereConeView(
     const Vector3<T>& sphereCenter, const T sphereRadius, const Matrix4<T>& coneView,
     const T sinAngle, const T cosAngle, const T tanAngle)
 {
-    CORRADE_ASSERT(coneView.isRigidTransformation(), "Math::Geometry::Intersection::sphereConeView(): coneView must be rigid", false);
+    CORRADE_ASSERT(coneView.isRigidTransformation(), "Math::Geometry::Intersection::sphereConeView(): coneView does not represent a rigid transformation", false);
 
     /* Transform the sphere so that we can test against Z axis aligned origin
        cone instead */
