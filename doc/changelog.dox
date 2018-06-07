@@ -125,6 +125,10 @@ See also:
 -   @ref Audio::Playable is now by default omnidirectional instead of having
     source in direction of negative Z axis (the direction has effect only when
     setting inner and outer cone properties of @ref Audio::Source).
+-   @ref Trade::PhongMaterialData::ambientColor(),
+    @ref Trade::PhongMaterialData::diffuseColor() "diffuseColor()" and
+    @ref Trade::PhongMaterialData::specularColor() "specularColor()" now return
+    @ref Color4 instead of @ref Color3
 
 @section changelog-2018-04 2018.04
 

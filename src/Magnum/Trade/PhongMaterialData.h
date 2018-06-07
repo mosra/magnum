@@ -96,8 +96,8 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * Available only if the material doesn't have @ref Flag::AmbientTexture.
          * @see @ref flags()
          */
-        Color3& ambientColor();
-        Color3 ambientColor() const; /**< @overload */
+        Color4& ambientColor();
+        Color4 ambientColor() const; /**< @overload */
 
         /**
          * @brief Ambient texture ID
@@ -114,8 +114,8 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * Available only if the material doesn't have @ref Flag::DiffuseTexture.
          * @see @ref flags()
          */
-        Color3& diffuseColor();
-        Color3 diffuseColor() const; /**< @overload */
+        Color4& diffuseColor();
+        Color4 diffuseColor() const; /**< @overload */
 
         /**
          * @brief Diffuse texture ID
@@ -132,8 +132,8 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * Available only if the material doesn't have @ref Flag::SpecularTexture.
          * @see @ref flags()
          */
-        Color3& specularColor();
-        Color3 specularColor() const; /**< @overload */
+        Color4& specularColor();
+        Color4 specularColor() const; /**< @overload */
 
         /**
          * @brief Specular texture ID
@@ -151,7 +151,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
         union Source {
             Source() {}
 
-            Color3 color;
+            Color4 color;
             UnsignedInt texture;
         };
 
@@ -172,7 +172,7 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, PhongMaterialData::Flags val
 
 /* Ugly as hell. */
 
-inline Color3 PhongMaterialData::ambientColor() const {
+inline Color4 PhongMaterialData::ambientColor() const {
     return const_cast<PhongMaterialData*>(this)->ambientColor();
 }
 
@@ -180,7 +180,7 @@ inline UnsignedInt PhongMaterialData::ambientTexture() const {
     return const_cast<PhongMaterialData*>(this)->ambientTexture();
 }
 
-inline Color3 PhongMaterialData::diffuseColor() const {
+inline Color4 PhongMaterialData::diffuseColor() const {
     return const_cast<PhongMaterialData*>(this)->diffuseColor();
 }
 
@@ -188,7 +188,7 @@ inline UnsignedInt PhongMaterialData::diffuseTexture() const {
     return const_cast<PhongMaterialData*>(this)->diffuseTexture();
 }
 
-inline Color3 PhongMaterialData::specularColor() const {
+inline Color4 PhongMaterialData::specularColor() const {
     return const_cast<PhongMaterialData*>(this)->specularColor();
 }
 

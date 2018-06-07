@@ -70,7 +70,7 @@ PhongMaterialData& PhongMaterialData::operator=(PhongMaterialData&& other) noexc
     return *this;
 }
 
-Color3& PhongMaterialData::ambientColor() {
+Color4& PhongMaterialData::ambientColor() {
     CORRADE_ASSERT(!(_flags & Flag::AmbientTexture), "Trade::PhongMaterialData::ambientColor(): the material has ambient texture", _ambient.color);
     return _ambient.color;
 }
@@ -80,7 +80,7 @@ UnsignedInt& PhongMaterialData::ambientTexture() {
     return _ambient.texture;
 }
 
-Color3& PhongMaterialData::diffuseColor() {
+Color4& PhongMaterialData::diffuseColor() {
     CORRADE_ASSERT(!(_flags & Flag::DiffuseTexture), "Trade::PhongMaterialData::diffuseColor(): the material has diffuse texture", _diffuse.color);
     return _diffuse.color;
 }
@@ -90,7 +90,7 @@ UnsignedInt& PhongMaterialData::diffuseTexture() {
     return _diffuse.texture;
 }
 
-Color3& PhongMaterialData::specularColor() {
+Color4& PhongMaterialData::specularColor() {
     CORRADE_ASSERT(!(_flags & Flag::SpecularTexture), "Trade::PhongMaterialData::specularColor(): the material has specular texture", _specular.color);
     return _specular.color;
 }
