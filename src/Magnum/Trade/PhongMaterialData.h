@@ -71,9 +71,12 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @param importerState     Importer-specific state
          *
          * Colors and textures should be specified using member functions based
-         * on what flags are set.
+         * on what flags are set. Ambient color (if set) is by default
+         * @cpp 0x000000ff_rgbaf @ce, diffuse and specular color is by default
+         * @cpp 0xffffffff_rgbaf @ce, all texture IDs (if any) are by default
+         * set to @cpp 0 @ce.
          */
-        explicit PhongMaterialData(Flags flags, Float shininess, const void* importerState = nullptr) noexcept: AbstractMaterialData{MaterialType::Phong, importerState}, _flags{flags}, _shininess{shininess} {}
+        explicit PhongMaterialData(Flags flags, Float shininess, const void* importerState = nullptr) noexcept;
 
         /** @brief Copying is not allowed */
         PhongMaterialData(const PhongMaterialData&) = delete;

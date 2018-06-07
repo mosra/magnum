@@ -29,6 +29,25 @@
 
 namespace Magnum { namespace Trade {
 
+using namespace Math::Literals;
+
+PhongMaterialData::PhongMaterialData(const Flags flags, const Float shininess, const void* const importerState) noexcept: AbstractMaterialData{MaterialType::Phong, importerState}, _flags{flags}, _shininess{shininess} {
+    if(_flags & Flag::AmbientTexture)
+        _ambient.texture = {};
+    else
+        _ambient.color = 0x000000ff_rgbaf;
+
+    if(_flags & Flag::DiffuseTexture)
+        _diffuse.texture = {};
+    else
+        _diffuse.color = 0xffffffff_rgbaf;
+
+    if(_flags & Flag::SpecularTexture)
+        _specular.texture = {};
+    else
+        _specular.color = 0xffffffff_rgbaf;
+}
+
 PhongMaterialData::PhongMaterialData(PhongMaterialData&& other) noexcept: AbstractMaterialData{std::move(other)}, _flags{other._flags}, _shininess{other._shininess} {
     if(_flags & Flag::AmbientTexture)
         _ambient.texture = other._ambient.texture;
