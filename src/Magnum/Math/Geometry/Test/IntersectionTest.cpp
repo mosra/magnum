@@ -308,6 +308,8 @@ void IntersectionTest::sphereCone() {
     {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         CORRADE_EXPECT_FAIL("Cone touching from the outside fails, possibly because of precision.");
+        #else
+        CORRADE_EXPECT_FAIL_IF(!Intersection::sphereCone(centerDouble + 4.0*surfaceDouble + sNormalDouble*0.5, 0.5, centerDouble, normalDouble, angleDouble), "Cone touching from the outside fails on optimized Emscripten builds, possibly because of precision.");
         #endif
         CORRADE_VERIFY(Intersection::sphereCone(centerDouble + 4.0*surfaceDouble + sNormalDouble*0.5, 0.5, centerDouble, normalDouble, angleDouble));
     }
