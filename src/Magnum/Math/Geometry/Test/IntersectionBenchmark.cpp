@@ -131,7 +131,7 @@ IntersectionBenchmark::IntersectionBenchmark() {
 
                    &IntersectionBenchmark::sphereConeNaive,
                    &IntersectionBenchmark::sphereCone,
-                   &IntersectionBenchmark::sphereConeView}, 25);
+                   &IntersectionBenchmark::sphereConeView}, 10);
 
     /* Generate random data for the benchmarks */
     std::random_device rnd;
