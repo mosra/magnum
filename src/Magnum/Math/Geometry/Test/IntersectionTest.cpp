@@ -230,6 +230,9 @@ void IntersectionTest::pointCone() {
     auto surface = Matrix4::rotation(0.5f*angle, axis).transformVector(normal);
     /* Normal on the curved surface */
     auto sNormal = Matrix4::rotation(90.0_degf, axis).transformVector(surface);
+    /* Same for Double precision */
+    auto axisDouble = Math::cross(Vector3d::yAxis(), normalDouble).normalized();
+    auto surfaceDouble = Matrix4d::rotation(0.5*angleDouble, axisDouble).transformVector(normalDouble);
 
     /* Point on edge */
     CORRADE_VERIFY(Intersection::pointCone(center, center, normal, angle));
@@ -240,6 +243,12 @@ void IntersectionTest::pointCone() {
     CORRADE_VERIFY(!Intersection::pointCone(center + 5.0f*surface + 0.01f*sNormal, center, normal, angle));
     /* Point behind the cone plane */
     CORRADE_VERIFY(!Intersection::pointCone(-normal, center, normal, angle));
+
+    /* Point touching cone */
+    {
+        CORRADE_EXPECT_FAIL("Point touching cone fails, possibly because of precision.");
+        CORRADE_VERIFY(Intersection::pointCone(centerDouble, centerDouble + surfaceDouble, normalDouble, angleDouble));
+    }
 }
 
 void IntersectionTest::pointDoubleCone() {
