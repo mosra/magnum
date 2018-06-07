@@ -287,7 +287,7 @@ template<class T> bool pointDoubleCone(const Vector3<T>& point, const Vector3<T>
     otherwise
 
 Precomputes a portion of the intersection equation from @p coneAngle and calls
-@ref sphereConeView(const Vector3<T>&, T, const Matrix4<T>&, T, T, T).
+@ref sphereConeView(const Vector3<T>&, T, const Matrix4<T>&, T, T).
 */
 template<class T> bool sphereConeView(const Vector3<T>& sphereCenter, T sphereRadius, const Matrix4<T>& coneView, Rad<T> coneAngle);
 
@@ -297,8 +297,7 @@ template<class T> bool sphereConeView(const Vector3<T>& sphereCenter, T sphereRa
 @param sphereRadius Sphere radius
 @param coneView     View matrix with translation and rotation of the cone
 @param sinAngle     Precomputed sine of half the cone's opening angle
-@param cosAngle     Precomputed cosine of half the cone's opening angle
-@param tanAngle     Precomputed tangens of half the cone's opening angle
+@param tanAngle     Precomputed tangent of half the cone's opening angle
 @return @cpp true @ce if the sphere intersects the cone, @cpp false @ce
     otherwise
 
@@ -308,11 +307,10 @@ The @p sinAngle, @p cosAngle, @p tanAngle can be precomputed like this:
 
 @code{.cpp}
 T sinAngle = Math::sin(angle*T(0.5));
-T cosAngle = Math::cos(angle*T(0.5));
 T tanAngle = Math::tan(angle*T(0.5));
 @endcode
 */
-template<class T> bool sphereConeView(const Vector3<T>& sphereCenter, T sphereRadius, const Matrix4<T>& coneView, T sinAngle, T cosAngle, T tanAngle);
+template<class T> bool sphereConeView(const Vector3<T>& sphereCenter, T sphereRadius, const Matrix4<T>& coneView, T sinAngle, T tanAngle);
 
 /**
 @brief Intersection of a sphere and a cone
@@ -515,16 +513,12 @@ template<class T> bool pointDoubleCone(const Vector3<T>& point, const Vector3<T>
 template<class T> bool sphereConeView(const Vector3<T>& sphereCenter, const T sphereRadius, const Matrix4<T>& coneView, const Rad<T> coneAngle) {
     const Rad<T> halfAngle = coneAngle*T(0.5);
     const T sinAngle = Math::sin(halfAngle);
-    const T cosAngle = Math::cos(halfAngle);
     const T tanAngle = Math::tan(halfAngle);
 
-    return sphereConeView(sphereCenter, sphereRadius, coneView, sinAngle, cosAngle, tanAngle);
+    return sphereConeView(sphereCenter, sphereRadius, coneView, sinAngle, tanAngle);
 }
 
-template<class T> bool sphereConeView(
-    const Vector3<T>& sphereCenter, const T sphereRadius, const Matrix4<T>& coneView,
-    const T sinAngle, const T cosAngle, const T tanAngle)
-{
+template<class T> bool sphereConeView(const Vector3<T>& sphereCenter, const T sphereRadius, const Matrix4<T>& coneView, const T sinAngle, const T tanAngle) {
     CORRADE_ASSERT(coneView.isRigidTransformation(), "Math::Geometry::Intersection::sphereConeView(): coneView does not represent a rigid transformation", false);
 
     /* Transform the sphere so that we can test against Z axis aligned origin

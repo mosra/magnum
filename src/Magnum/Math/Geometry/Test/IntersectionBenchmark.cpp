@@ -212,10 +212,9 @@ void IntersectionBenchmark::sphereConeView() {
     volatile bool b = false;
     CORRADE_BENCHMARK(50) {
         const Float sinAngle = Math::sin(std::get<2>(_cone));
-        const Float cosAngle = Math::cos(std::get<2>(_cone));
         const Float tanAngle = Math::tan(std::get<2>(_cone));
         for(auto& sphere: _spheres) {
-            b = b ^ Intersection::sphereConeView(sphere.xyz(), sphere.w(), _coneView, sinAngle, cosAngle, tanAngle);
+            b = b ^ Intersection::sphereConeView(sphere.xyz(), sphere.w(), _coneView, sinAngle, tanAngle);
         }
     }
 }
