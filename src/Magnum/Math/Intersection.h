@@ -211,7 +211,7 @@ template<class T> bool sphereFrustum(const Vector3<T>& sphereCenter, T sphereRad
 @param point        The point
 @param coneOrigin   Cone origin
 @param coneNormal   Cone normal
-@param coneAngle    Apex angle of the cone
+@param coneAngle    Apex angle of the cone (@f$ 0 < \Theta < \pi @f$)
 @return @cpp true @ce if the point is inside the cone, @cpp false @ce otherwise
 
 Precomputes a portion of the intersection equation from @p coneAngle and calls
@@ -241,7 +241,7 @@ template<class T> bool pointCone(const Vector3<T>& point, const Vector3<T>& cone
 @param point        The point
 @param coneOrigin   Cone origin
 @param coneNormal   Cone normal
-@param coneAngle    Apex angle of the cone
+@param coneAngle    Apex angle of the cone (@f$ 0 < \Theta < \pi @f$)
 @return @cpp true @ce if the point is inside the double cone, @cpp false @ce
     otherwise
 
