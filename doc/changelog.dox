@@ -40,7 +40,7 @@ See also:
 
 @subsection changelog-latest-new New features
 
-@subsubsection changelog-lates-new-math Math library
+@subsubsection changelog-latest-new-math Math library
 
 -   Added @ref Math::Geometry::Intersection::rangeFrustum(),
     @ref Math::Geometry::Intersection::aabbFrustum(),
