@@ -30,12 +30,14 @@ set(MagnumMath_HEADERS
     Color.h
     Complex.h
     Constants.h
+    Distance.h
     Dual.h
     DualComplex.h
     DualQuaternion.h
     Frustum.h
     Functions.h
     Half.h
+    Intersection.h
     Math.h
     TypeTraits.h
     Matrix.h
@@ -60,7 +62,9 @@ set_target_properties(MagnumMath PROPERTIES FOLDER "Magnum/Math")
 install(FILES ${MagnumMath_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math)
 
 add_subdirectory(Algorithms)
-add_subdirectory(Geometry)
+if(BUILD_DEPRECATED)
+    add_subdirectory(Geometry)
+endif()
 
 if(BUILD_TESTS)
     add_subdirectory(Test)

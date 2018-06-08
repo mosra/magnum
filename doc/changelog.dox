@@ -42,15 +42,15 @@ See also:
 
 @subsubsection changelog-latest-new-math Math library
 
--   Added @ref Math::Geometry::Intersection::rangeFrustum(),
-    @ref Math::Geometry::Intersection::aabbFrustum(),
-    @ref Math::Geometry::Intersection::sphereFrustum(),
-    @ref Math::Geometry::Intersection::pointCone(),
-    @ref Math::Geometry::Intersection::pointDoubleCone(),
-    @ref Math::Geometry::Intersection::sphereConeView(),
-    @ref Math::Geometry::Intersection::sphereCone(),
-    @ref Math::Geometry::Intersection::aabbCone(),
-    @ref Math::Geometry::Intersection::rangeCone()
+-   Added @ref Math::Intersection::rangeFrustum(),
+    @ref Math::Intersection::aabbFrustum(),
+    @ref Math::Intersection::sphereFrustum(),
+    @ref Math::Intersection::pointCone(),
+    @ref Math::Intersection::pointDoubleCone(),
+    @ref Math::Intersection::sphereConeView(),
+    @ref Math::Intersection::sphereCone(),
+    @ref Math::Intersection::aabbCone(),
+    @ref Math::Intersection::rangeCone()
 -   Added @ref Math::Constants::piQuarter()
 -   Ability to convert @ref Math::BoolVector from and to external
     representation
@@ -80,8 +80,11 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
+-   `Math::Geometry`, `Math::Geometry::Distance` and
+    `Math::Geometry::Intersection` namespaces are deprecated for being too
+    deeply nested, use @ref Math::Distance and @ref Math::Intersection instead
 -   `Math::Geometry::Intersection::boxFrustum()` is deprecated, use
-    @ref Math::Geometry::Intersection::rangeFrustum() instead
+    @ref Math::Intersection::rangeFrustum() instead
 
 @section changelog-2018-04 2018.04
 
@@ -751,9 +754,9 @@ a high-level overview.
 -   Added @ref Math::pow(), @ref Math::log() and @ref Math::exp()
 -   Added @ref Math::Algorithms::qr(), @ref Math::Algorithms::gaussJordanInverted(),
     @ref Math::Algorithms::kahanSum()
--   Added @ref Math::Geometry::Distance::pointPlane(),
-    @ref Math::Geometry::Distance::pointPlaneScaled(),
-    @ref Math::Geometry::Distance::pointPlaneNormalized() functions
+-   Added `Math::Geometry::Distance::pointPlane()`,
+    `Math::Geometry::Distance::pointPlaneScaled()`,
+    `Math::Geometry::Distance::pointPlaneNormalized()` functions
 -   Added @ref Math::Range::contains() and @ref Math::join() to join two ranges
 -   Ability to convert @ref Math::Complex, @ref Math::DualComplex,
     @ref Math::Quaternion, @ref Math::DualQuaternion, @ref Math::Color3,
@@ -1166,9 +1169,9 @@ a high-level overview.
 
 @subsection changelog-2018-02-compatibility Potential compatibility breakages, removed APIs
 
--   The @ref Math::Geometry::Distance and @ref Math::Geometry::Intersection
-    classes are now a namespace (might break `using` declarations, but
-    otherwise it's fully source-compatible)
+-   The `Math::Geometry::Distance` and `Math::Geometry::Intersection` classes
+    are now a namespace (might break `using` declarations, but otherwise it's
+    fully source-compatible)
 -   Removed `Context::majorVersion()` and `Context::minorVersion()` functions,
     use @ref Context::version() instead
 -   Removed deprecated `Magnum/DebugMarker.h` header, use

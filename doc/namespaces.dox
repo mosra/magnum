@@ -136,25 +136,15 @@ See @ref building and @ref cmake for more information.
 
 /** @dir Magnum/Math/Geometry
  * @brief Namespace @ref Magnum::Math::Geometry
+ * @deprecated Use @ref Magnum/Math/Distance.h and
+        @ref Magnum/Math/Intersection.h instead.
  */
 /** @namespace Magnum::Math::Geometry
-@brief Geometry library
+ * @deprecated Use @ref Magnum::Math::Distance and
+        @ref Magnum::Math::Intersection namespaces instead.
+ */
 
-This library is built as part of Magnum by default. To use this library with
-CMake, you need to find the `Magnum` package and link to the `Magnum::Magnum`
-target:
-
-@code{.cmake}
-find_package(Magnum REQUIRED)
-
-# ...
-target_link_libraries(your-app Magnum::Magnum)
-@endcode
-
-See @ref building and @ref cmake for more information.
-*/
-
-/** @namespace Magnum::Math::Geometry::Distance
+/** @namespace Magnum::Math::Distance
 @brief Functions for calculating distances
 
 This library is built as part of Magnum by default. To use this library with
@@ -171,8 +161,8 @@ target_link_libraries(your-app Magnum::Magnum)
 See @ref building and @ref cmake for more information.
 */
 
-/** @namespace Magnum::Math::Geometry::Intersection
-@brief Function for calculating intersections
+/** @namespace Magnum::Math::Intersection
+@brief Functions for calculating intersections
 
 This library is built as part of Magnum by default. To use this library with
 CMake, you need to find the `Magnum` package and link to the `Magnum::Magnum`

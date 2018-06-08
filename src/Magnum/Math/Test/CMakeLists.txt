@@ -56,6 +56,10 @@ corrade_add_test(MathDualQuaternionTest DualQuaternionTest.cpp LIBRARIES MagnumM
 corrade_add_test(MathBezierTest BezierTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathFrustumTest FrustumTest.cpp LIBRARIES MagnumMathTestLib)
 
+corrade_add_test(MathDistanceTest DistanceTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathIntersectionTest IntersectionTest.cpp LIBRARIES MagnumMathTestLib)
+corrade_add_test(MathIntersectionBenchmark IntersectionBenchmark.cpp LIBRARIES MagnumMathTestLib)
+
 set_property(TARGET
     MathVectorTest
     MathMatrixTest
@@ -65,6 +69,9 @@ set_property(TARGET
     MathDualComplexTest
     MathQuaternionTest
     MathDualQuaternionTest
+
+    MathDistanceTest
+    MathIntersectionTest
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
 
 set_target_properties(
@@ -100,4 +107,8 @@ set_target_properties(
 
     MathBezierTest
     MathFrustumTest
+
+    MathDistanceTest
+    MathIntersectionTest
+    MathIntersectionBenchmark
     PROPERTIES FOLDER "Magnum/Math/Test")

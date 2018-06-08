@@ -27,10 +27,9 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Math/Geometry/Intersection.h"
-#include "Magnum/Math/Angle.h"
+#include "Magnum/Math/Intersection.h"
 
-namespace Magnum { namespace Math { namespace Geometry { namespace Test {
+namespace Magnum { namespace Math { namespace Test {
 
 using namespace Literals;
 
@@ -440,6 +439,6 @@ void IntersectionTest::aabbCone() {
     CORRADE_VERIFY(!Intersection::aabbCone(-15.0f*normal, Vector3{1.0f}, center, normal, angle));
 }
 
-}}}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Math::Geometry::Test::IntersectionTest)
+CORRADE_TEST_MAIN(Magnum::Math::Test::IntersectionTest)

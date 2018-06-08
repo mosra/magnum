@@ -26,14 +26,12 @@
 #include "Capsule.h"
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Math/Distance.h"
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
-#include "Magnum/Math/Geometry/Distance.h"
 #include "Magnum/Shapes/Point.h"
 #include "Magnum/Shapes/Sphere.h"
-
-using namespace Magnum::Math::Geometry;
 
 namespace Magnum { namespace Shapes {
 
@@ -42,12 +40,12 @@ template<UnsignedInt dimensions> Capsule<dimensions> Capsule<dimensions>::transf
 }
 
 template<UnsignedInt dimensions> bool Capsule<dimensions>::operator%(const Point<dimensions>& other) const {
-    return Distance::lineSegmentPointSquared(_a, _b, other.position()) <
+    return Math::Distance::lineSegmentPointSquared(_a, _b, other.position()) <
         Math::pow<2>(_radius);
 }
 
 template<UnsignedInt dimensions> bool Capsule<dimensions>::operator%(const Sphere<dimensions>& other) const {
-    return Distance::lineSegmentPointSquared(_a, _b, other.position()) <
+    return Math::Distance::lineSegmentPointSquared(_a, _b, other.position()) <
         Math::pow<2>(_radius+other.radius());
 }
 

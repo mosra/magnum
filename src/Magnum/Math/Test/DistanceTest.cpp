@@ -28,9 +28,9 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Constants.h"
-#include "Magnum/Math/Geometry/Distance.h"
+#include "Magnum/Math/Distance.h"
 
-namespace Magnum { namespace Math { namespace Geometry { namespace Test {
+namespace Magnum { namespace Math { namespace Test {
 
 struct DistanceTest: Corrade::TestSuite::Tester {
     explicit DistanceTest();
@@ -194,6 +194,6 @@ void DistanceTest::pointPlaneNormalized() {
     CORRADE_COMPARE(o.str(), "Math::Geometry::Distance::pointPlaneNormalized(): plane normal is not an unit vector\n");
 }
 
-}}}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Math::Geometry::Test::DistanceTest)
+CORRADE_TEST_MAIN(Magnum::Math::Test::DistanceTest)

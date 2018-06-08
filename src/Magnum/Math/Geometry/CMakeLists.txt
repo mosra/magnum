@@ -32,7 +32,3 @@ add_custom_target(MagnumMathGeometry SOURCES ${MagnumMathGeometry_HEADERS})
 set_target_properties(MagnumMathGeometry PROPERTIES FOLDER "Magnum/Math/Geometry")
 
 install(FILES ${MagnumMathGeometry_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Math/Geometry)
-
-if(BUILD_TESTS)
-    add_subdirectory(Test)
-endif()

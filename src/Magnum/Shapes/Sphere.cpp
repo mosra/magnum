@@ -26,14 +26,12 @@
 #include "Sphere.h"
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Math/Distance.h"
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
-#include "Magnum/Math/Geometry/Distance.h"
 #include "Magnum/Shapes/LineSegment.h"
 #include "Magnum/Shapes/Point.h"
-
-using namespace Magnum::Math::Geometry;
 
 namespace Magnum { namespace Shapes {
 
@@ -88,11 +86,11 @@ template<UnsignedInt dimensions> Collision<dimensions> InvertedSphere<dimensions
 }
 
 template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const Line<dimensions>& other) const {
-    return Distance::linePointSquared(other.a(), other.b(), _position) < Math::pow<2>(_radius);
+    return Math::Distance::linePointSquared(other.a(), other.b(), _position) < Math::pow<2>(_radius);
 }
 
 template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const LineSegment<dimensions>& other) const {
-    return Distance::lineSegmentPointSquared(other.a(), other.b(), _position) < Math::pow<2>(_radius);
+    return Math::Distance::lineSegmentPointSquared(other.a(), other.b(), _position) < Math::pow<2>(_radius);
 }
 
 template<UnsignedInt dimensions> bool Sphere<dimensions>::operator%(const Sphere<dimensions>& other) const {

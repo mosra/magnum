@@ -29,11 +29,10 @@
 #include <utility>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Math/Geometry/Intersection.h"
 #include "Magnum/Math/Angle.h"
-#include "Magnum/Math/Matrix4.h"
+#include "Magnum/Math/Intersection.h"
 
-namespace Magnum { namespace Math { namespace Geometry { namespace Test {
+namespace Magnum { namespace Math { namespace Test {
 
 template<class T> bool rangeFrustumNaive(const Math::Range3D<T>& box, const Math::Frustum<T>& frustum) {
     for(const Math::Vector4<T>& plane: frustum.planes()) {
@@ -219,6 +218,6 @@ void IntersectionBenchmark::sphereConeView() {
     }
 }
 
-}}}}
+}}}
 
-CORRADE_TEST_MAIN(Magnum::Math::Geometry::Test::IntersectionBenchmark)
+CORRADE_TEST_MAIN(Magnum::Math::Test::IntersectionBenchmark)
