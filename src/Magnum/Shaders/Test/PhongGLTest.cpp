@@ -31,105 +31,134 @@ namespace Magnum { namespace Shaders { namespace Test {
 struct PhongGLTest: GL::OpenGLTester {
     explicit PhongGLTest();
 
-    void compile();
-    void compileAmbientTexture();
-    void compileDiffuseTexture();
-    void compileSpecularTexture();
-    void compileAmbientDiffuseTexture();
-    void compileAmbientSpecularTexture();
-    void compileDiffuseSpecularTexture();
-    void compileAmbientDiffuseSpecularTexture();
+    void construct();
+    void constructAmbientTexture();
+    void constructDiffuseTexture();
+    void constructSpecularTexture();
+    void constructAmbientDiffuseTexture();
+    void constructAmbientSpecularTexture();
+    void constructDiffuseSpecularTexture();
+    void constructAmbientDiffuseSpecularTexture();
+
+    void constructMove();
 };
 
 PhongGLTest::PhongGLTest() {
-    addTests({&PhongGLTest::compile,
-              &PhongGLTest::compileAmbientTexture,
-              &PhongGLTest::compileDiffuseTexture,
-              &PhongGLTest::compileSpecularTexture,
-              &PhongGLTest::compileAmbientDiffuseTexture,
-              &PhongGLTest::compileAmbientSpecularTexture,
-              &PhongGLTest::compileDiffuseSpecularTexture,
-              &PhongGLTest::compileAmbientDiffuseSpecularTexture});
+    addTests({&PhongGLTest::construct,
+              &PhongGLTest::constructAmbientTexture,
+              &PhongGLTest::constructDiffuseTexture,
+              &PhongGLTest::constructSpecularTexture,
+              &PhongGLTest::constructAmbientDiffuseTexture,
+              &PhongGLTest::constructAmbientSpecularTexture,
+              &PhongGLTest::constructDiffuseSpecularTexture,
+              &PhongGLTest::constructAmbientDiffuseSpecularTexture,
+
+              &PhongGLTest::constructMove});
 }
 
-void PhongGLTest::compile() {
-    Shaders::Phong shader;
+void PhongGLTest::construct() {
+    Phong shader;
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }
 
-void PhongGLTest::compileAmbientTexture() {
-    Shaders::Phong shader(Shaders::Phong::Flag::AmbientTexture);
+void PhongGLTest::constructAmbientTexture() {
+    Phong shader(Phong::Flag::AmbientTexture);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }
 
-void PhongGLTest::compileDiffuseTexture() {
-    Shaders::Phong shader(Shaders::Phong::Flag::DiffuseTexture);
+void PhongGLTest::constructDiffuseTexture() {
+    Phong shader(Phong::Flag::DiffuseTexture);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }
 
-void PhongGLTest::compileSpecularTexture() {
-    Shaders::Phong shader(Shaders::Phong::Flag::SpecularTexture);
+void PhongGLTest::constructSpecularTexture() {
+    Phong shader(Phong::Flag::SpecularTexture);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }
 
-void PhongGLTest::compileAmbientDiffuseTexture() {
-    Shaders::Phong shader(Shaders::Phong::Flag::AmbientTexture|Shaders::Phong::Flag::DiffuseTexture);
+void PhongGLTest::constructAmbientDiffuseTexture() {
+    Phong shader(Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }
 
-void PhongGLTest::compileAmbientSpecularTexture() {
-    Shaders::Phong shader(Shaders::Phong::Flag::AmbientTexture|Shaders::Phong::Flag::SpecularTexture);
+void PhongGLTest::constructAmbientSpecularTexture() {
+    Phong shader(Phong::Flag::AmbientTexture|Phong::Flag::SpecularTexture);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }
 
-void PhongGLTest::compileDiffuseSpecularTexture() {
-    Shaders::Phong shader(Shaders::Phong::Flag::DiffuseTexture|Shaders::Phong::Flag::SpecularTexture);
+void PhongGLTest::constructDiffuseSpecularTexture() {
+    Phong shader(Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }
 
-void PhongGLTest::compileAmbientDiffuseSpecularTexture() {
-    Shaders::Phong shader(Shaders::Phong::Flag::AmbientTexture|Shaders::Phong::Flag::DiffuseTexture|Shaders::Phong::Flag::SpecularTexture);
+void PhongGLTest::constructAmbientDiffuseSpecularTexture() {
+    Phong shader(Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
+}
+
+void PhongGLTest::constructMove() {
+    Phong a;
+    const GLuint id = a.id();
+    CORRADE_VERIFY(id);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    Phong b{std::move(a)};
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_VERIFY(!a.id());
+
+    Phong c{NoCreate};
+    c = std::move(b);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_VERIFY(!b.id());
 }
 
 }}}

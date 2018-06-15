@@ -31,33 +31,75 @@ namespace Magnum { namespace Shaders { namespace Test {
 struct VectorGLTest: GL::OpenGLTester {
     explicit VectorGLTest();
 
-    void compile2D();
-    void compile3D();
+    void construct2D();
+    void construct3D();
+
+    void constructMove2D();
+    void constructMove3D();
 };
 
 VectorGLTest::VectorGLTest() {
-    addTests({&VectorGLTest::compile2D,
-              &VectorGLTest::compile3D});
+    addTests({&VectorGLTest::construct2D,
+              &VectorGLTest::construct3D,
+
+              &VectorGLTest::constructMove2D,
+              &VectorGLTest::constructMove3D});
 }
 
-void VectorGLTest::compile2D() {
-    Shaders::Vector2D shader;
+void VectorGLTest::construct2D() {
+    Vector2D shader;
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }
 
-void VectorGLTest::compile3D() {
-    Shaders::Vector3D shader;
+void VectorGLTest::construct3D() {
+    Vector3D shader;
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
+}
+
+void VectorGLTest::constructMove2D() {
+    Vector2D a;
+    const GLuint id = a.id();
+    CORRADE_VERIFY(id);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    Vector2D b{std::move(a)};
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_VERIFY(!a.id());
+
+    Vector2D c{NoCreate};
+    c = std::move(b);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_VERIFY(!b.id());
+}
+
+void VectorGLTest::constructMove3D() {
+    Vector3D a;
+    const GLuint id = a.id();
+    CORRADE_VERIFY(id);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    Vector3D b{std::move(a)};
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_VERIFY(!a.id());
+
+    Vector3D c{NoCreate};
+    c = std::move(b);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_VERIFY(!b.id());
 }
 
 }}}

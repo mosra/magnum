@@ -33,19 +33,26 @@ struct PhongTest: TestSuite::Tester {
     explicit PhongTest();
 
     void constructNoCreate();
+    void constructCopy();
 };
 
 PhongTest::PhongTest() {
-    addTests({&PhongTest::constructNoCreate});
+    addTests({&PhongTest::constructNoCreate,
+              &PhongTest::constructCopy});
 }
 
 void PhongTest::constructNoCreate() {
     {
-        Shaders::Phong shader{NoCreate};
+        Phong shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
     }
 
     CORRADE_VERIFY(true);
+}
+
+void PhongTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<Phong, const Phong&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Phong, const Phong&>{}));
 }
 
 }}}

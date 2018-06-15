@@ -31,33 +31,75 @@ namespace Magnum { namespace Shaders { namespace Test {
 struct DistanceFieldVectorGLTest: GL::OpenGLTester {
     explicit DistanceFieldVectorGLTest();
 
-    void compile2D();
-    void compile3D();
+    void construct2D();
+    void construct3D();
+
+    void constructMove2D();
+    void constructMove3D();
 };
 
 DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
-    addTests({&DistanceFieldVectorGLTest::compile2D,
-              &DistanceFieldVectorGLTest::compile3D});
+    addTests({&DistanceFieldVectorGLTest::construct2D,
+              &DistanceFieldVectorGLTest::construct3D,
+
+              &DistanceFieldVectorGLTest::constructMove2D,
+              &DistanceFieldVectorGLTest::constructMove3D});
 }
 
-void DistanceFieldVectorGLTest::compile2D() {
-    Shaders::DistanceFieldVector2D shader;
+void DistanceFieldVectorGLTest::construct2D() {
+    DistanceFieldVector2D shader;
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }
 
-void DistanceFieldVectorGLTest::compile3D() {
-    Shaders::DistanceFieldVector3D shader;
+void DistanceFieldVectorGLTest::construct3D() {
+    DistanceFieldVector3D shader;
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
+}
+
+void DistanceFieldVectorGLTest::constructMove2D() {
+    DistanceFieldVector2D a;
+    const GLuint id = a.id();
+    CORRADE_VERIFY(id);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    DistanceFieldVector2D b{std::move(a)};
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_VERIFY(!a.id());
+
+    DistanceFieldVector2D c{NoCreate};
+    c = std::move(b);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_VERIFY(!b.id());
+}
+
+void DistanceFieldVectorGLTest::constructMove3D() {
+    DistanceFieldVector3D a;
+    const GLuint id = a.id();
+    CORRADE_VERIFY(id);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    DistanceFieldVector3D b{std::move(a)};
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_VERIFY(!a.id());
+
+    DistanceFieldVector3D c{NoCreate};
+    c = std::move(b);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_VERIFY(!b.id());
 }
 
 }}}

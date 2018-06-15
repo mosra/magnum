@@ -31,57 +31,101 @@ namespace Magnum { namespace Shaders { namespace Test {
 struct FlatGLTest: GL::OpenGLTester {
     explicit FlatGLTest();
 
-    void compile2D();
-    void compile3D();
-    void compile2DTextured();
-    void compile3DTextured();
+    void construct2D();
+    void construct3D();
+    void construct2DTextured();
+    void construct3DTextured();
+
+    void constructMove2D();
+    void constructMove3D();
 };
 
 FlatGLTest::FlatGLTest() {
-    addTests({&FlatGLTest::compile2D,
-              &FlatGLTest::compile3D,
-              &FlatGLTest::compile2DTextured,
-              &FlatGLTest::compile3DTextured});
+    addTests({&FlatGLTest::construct2D,
+              &FlatGLTest::construct3D,
+              &FlatGLTest::construct2DTextured,
+              &FlatGLTest::construct3DTextured,
+
+              &FlatGLTest::constructMove2D,
+              &FlatGLTest::constructMove3D});
 }
 
-void FlatGLTest::compile2D() {
-    Shaders::Flat2D shader;
+void FlatGLTest::construct2D() {
+    Flat2D shader;
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }
 
-void FlatGLTest::compile3D() {
-    Shaders::Flat3D shader;
+void FlatGLTest::construct3D() {
+    Flat3D shader;
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }
 
-void FlatGLTest::compile2DTextured() {
-    Shaders::Flat2D shader(Shaders::Flat2D::Flag::Textured);
+void FlatGLTest::construct2DTextured() {
+    Flat2D shader(Flat2D::Flag::Textured);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }
 
-void FlatGLTest::compile3DTextured() {
-    Shaders::Flat3D shader(Shaders::Flat3D::Flag::Textured);
+void FlatGLTest::construct3DTextured() {
+    Flat3D shader(Flat3D::Flag::Textured);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
+}
+
+void FlatGLTest::constructMove2D() {
+    Flat2D a;
+    const GLuint id = a.id();
+    CORRADE_VERIFY(id);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    Flat2D b{std::move(a)};
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_VERIFY(!a.id());
+
+    Flat2D c{NoCreate};
+    c = std::move(b);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_VERIFY(!b.id());
+}
+
+void FlatGLTest::constructMove3D() {
+    Flat3D a;
+    const GLuint id = a.id();
+    CORRADE_VERIFY(id);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    Flat3D b{std::move(a)};
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_VERIFY(!a.id());
+
+    Flat3D c{NoCreate};
+    c = std::move(b);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_VERIFY(!b.id());
 }
 
 }}}

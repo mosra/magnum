@@ -31,33 +31,75 @@ namespace Magnum { namespace Shaders { namespace Test {
 struct VertexColorGLTest: GL::OpenGLTester {
     explicit VertexColorGLTest();
 
-    void compile2D();
-    void compile3D();
+    void construct2D();
+    void construct3D();
+
+    void constructMove2D();
+    void constructMove3D();
 };
 
 VertexColorGLTest::VertexColorGLTest() {
-    addTests({&VertexColorGLTest::compile2D,
-              &VertexColorGLTest::compile3D});
+    addTests({&VertexColorGLTest::construct2D,
+              &VertexColorGLTest::construct3D,
+
+              &VertexColorGLTest::constructMove2D,
+              &VertexColorGLTest::constructMove3D});
 }
 
-void VertexColorGLTest::compile2D() {
-    Shaders::VertexColor2D shader;
+void VertexColorGLTest::construct2D() {
+    VertexColor2D shader;
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }
 
-void VertexColorGLTest::compile3D() {
-    Shaders::VertexColor3D shader;
+void VertexColorGLTest::construct3D() {
+    VertexColor3D shader;
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
+}
+
+void VertexColorGLTest::constructMove2D() {
+    VertexColor2D a;
+    const GLuint id = a.id();
+    CORRADE_VERIFY(id);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    VertexColor2D b{std::move(a)};
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_VERIFY(!a.id());
+
+    VertexColor2D c{NoCreate};
+    c = std::move(b);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_VERIFY(!b.id());
+}
+
+void VertexColorGLTest::constructMove3D() {
+    VertexColor3D a;
+    const GLuint id = a.id();
+    CORRADE_VERIFY(id);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    VertexColor3D b{std::move(a)};
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_VERIFY(!a.id());
+
+    VertexColor3D c{NoCreate};
+    c = std::move(b);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_VERIFY(!b.id());
 }
 
 }}}

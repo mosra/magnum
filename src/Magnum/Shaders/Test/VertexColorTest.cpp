@@ -34,16 +34,22 @@ struct VertexColorTest: TestSuite::Tester {
 
     void constructNoCreate2D();
     void constructNoCreate3D();
+
+    void constructCopy2D();
+    void constructCopy3D();
 };
 
 VertexColorTest::VertexColorTest() {
     addTests({&VertexColorTest::constructNoCreate2D,
-              &VertexColorTest::constructNoCreate3D});
+              &VertexColorTest::constructNoCreate3D,
+
+              &VertexColorTest::constructCopy2D,
+              &VertexColorTest::constructCopy3D});
 }
 
 void VertexColorTest::constructNoCreate2D() {
     {
-        Shaders::VertexColor2D shader{NoCreate};
+        VertexColor2D shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
     }
 
@@ -52,11 +58,21 @@ void VertexColorTest::constructNoCreate2D() {
 
 void VertexColorTest::constructNoCreate3D() {
     {
-        Shaders::VertexColor3D shader{NoCreate};
+        VertexColor3D shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
     }
 
     CORRADE_VERIFY(true);
+}
+
+void VertexColorTest::constructCopy2D() {
+    CORRADE_VERIFY(!(std::is_constructible<VertexColor2D, const VertexColor2D&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<VertexColor2D, const VertexColor2D&>{}));
+}
+
+void VertexColorTest::constructCopy3D() {
+    CORRADE_VERIFY(!(std::is_constructible<VertexColor3D, const VertexColor3D&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<VertexColor3D, const VertexColor3D&>{}));
 }
 
 }}}

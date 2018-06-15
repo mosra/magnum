@@ -33,33 +33,38 @@ namespace Magnum { namespace Shaders { namespace Test {
 struct MeshVisualizerGLTest: GL::OpenGLTester {
     explicit MeshVisualizerGLTest();
 
-    void compile();
+    void construct();
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void compileWireframeGeometryShader();
+    void constructWireframeGeometryShader();
     #endif
-    void compileWireframeNoGeometryShader();
+    void constructWireframeNoGeometryShader();
+
+    void constructMove();
 };
 
 MeshVisualizerGLTest::MeshVisualizerGLTest() {
-    addTests({&MeshVisualizerGLTest::compile,
+    addTests({&MeshVisualizerGLTest::construct,
               #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-              &MeshVisualizerGLTest::compileWireframeGeometryShader,
+              &MeshVisualizerGLTest::constructWireframeGeometryShader,
               #endif
-              &MeshVisualizerGLTest::compileWireframeNoGeometryShader});
+              &MeshVisualizerGLTest::constructWireframeNoGeometryShader,
+
+              &MeshVisualizerGLTest::constructMove});
 }
 
-void MeshVisualizerGLTest::compile() {
-    Shaders::MeshVisualizer shader;
+void MeshVisualizerGLTest::construct() {
+    MeshVisualizer shader;
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-void MeshVisualizerGLTest::compileWireframeGeometryShader() {
+void MeshVisualizerGLTest::constructWireframeGeometryShader() {
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::geometry_shader4>())
         CORRADE_SKIP(GL::Extensions::ARB::geometry_shader4::string() + std::string(" is not supported"));
@@ -73,24 +78,43 @@ void MeshVisualizerGLTest::compileWireframeGeometryShader() {
         Debug() << "Using" << GL::Extensions::NV::shader_noperspective_interpolation::string();
     #endif
 
-    Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe);
+    MeshVisualizer shader(MeshVisualizer::Flag::Wireframe);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }
 #endif
 
-void MeshVisualizerGLTest::compileWireframeNoGeometryShader() {
-    Shaders::MeshVisualizer shader(Shaders::MeshVisualizer::Flag::Wireframe|Shaders::MeshVisualizer::Flag::NoGeometryShader);
+void MeshVisualizerGLTest::constructWireframeNoGeometryShader() {
+    MeshVisualizer shader(MeshVisualizer::Flag::Wireframe|MeshVisualizer::Flag::NoGeometryShader);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
+        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
+}
+
+void MeshVisualizerGLTest::constructMove() {
+    MeshVisualizer a;
+    const GLuint id = a.id();
+    CORRADE_VERIFY(id);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    MeshVisualizer b{std::move(a)};
+    CORRADE_COMPARE(b.id(), id);
+    CORRADE_VERIFY(!a.id());
+
+    MeshVisualizer c{NoCreate};
+    c = std::move(b);
+    CORRADE_COMPARE(c.id(), id);
+    CORRADE_VERIFY(!b.id());
 }
 
 }}}

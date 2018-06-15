@@ -33,19 +33,26 @@ struct MeshVisualizerTest: TestSuite::Tester {
     explicit MeshVisualizerTest();
 
     void constructNoCreate();
+    void constructCopy();
 };
 
 MeshVisualizerTest::MeshVisualizerTest() {
-    addTests({&MeshVisualizerTest::constructNoCreate});
+    addTests({&MeshVisualizerTest::constructNoCreate,
+              &MeshVisualizerTest::constructCopy});
 }
 
 void MeshVisualizerTest::constructNoCreate() {
     {
-        Shaders::MeshVisualizer shader{NoCreate};
+        MeshVisualizer shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
     }
 
     CORRADE_VERIFY(true);
+}
+
+void MeshVisualizerTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<MeshVisualizer, const MeshVisualizer&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<MeshVisualizer, const MeshVisualizer&>{}));
 }
 
 }}}

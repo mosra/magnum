@@ -34,16 +34,22 @@ struct DistanceFieldVectorTest: TestSuite::Tester {
 
     void constructNoCreate2D();
     void constructNoCreate3D();
+
+    void constructCopy2D();
+    void constructCopy3D();
 };
 
 DistanceFieldVectorTest::DistanceFieldVectorTest() {
     addTests({&DistanceFieldVectorTest::constructNoCreate2D,
-              &DistanceFieldVectorTest::constructNoCreate3D});
+              &DistanceFieldVectorTest::constructNoCreate3D,
+
+              &DistanceFieldVectorTest::constructCopy2D,
+              &DistanceFieldVectorTest::constructCopy3D});
 }
 
 void DistanceFieldVectorTest::constructNoCreate2D() {
     {
-        Shaders::DistanceFieldVector2D shader{NoCreate};
+        DistanceFieldVector2D shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
     }
 
@@ -52,11 +58,21 @@ void DistanceFieldVectorTest::constructNoCreate2D() {
 
 void DistanceFieldVectorTest::constructNoCreate3D() {
     {
-        Shaders::DistanceFieldVector3D shader{NoCreate};
+        DistanceFieldVector3D shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
     }
 
     CORRADE_VERIFY(true);
+}
+
+void DistanceFieldVectorTest::constructCopy2D() {
+    CORRADE_VERIFY(!(std::is_constructible<DistanceFieldVector2D, const DistanceFieldVector2D&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<DistanceFieldVector2D, const DistanceFieldVector2D&>{}));
+}
+
+void DistanceFieldVectorTest::constructCopy3D() {
+    CORRADE_VERIFY(!(std::is_constructible<DistanceFieldVector3D, const DistanceFieldVector3D&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<DistanceFieldVector3D, const DistanceFieldVector3D&>{}));
 }
 
 }}}

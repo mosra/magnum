@@ -34,16 +34,22 @@ struct VectorTest: TestSuite::Tester {
 
     void constructNoCreate2D();
     void constructNoCreate3D();
+
+    void constructCopy2D();
+    void constructCopy3D();
 };
 
 VectorTest::VectorTest() {
     addTests({&VectorTest::constructNoCreate2D,
-              &VectorTest::constructNoCreate3D});
+              &VectorTest::constructNoCreate3D,
+
+              &VectorTest::constructCopy2D,
+              &VectorTest::constructCopy3D});
 }
 
 void VectorTest::constructNoCreate2D() {
     {
-        Shaders::Vector2D shader{NoCreate};
+        Vector2D shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
     }
 
@@ -52,11 +58,21 @@ void VectorTest::constructNoCreate2D() {
 
 void VectorTest::constructNoCreate3D() {
     {
-        Shaders::Vector3D shader{NoCreate};
+        Vector3D shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
     }
 
     CORRADE_VERIFY(true);
+}
+
+void VectorTest::constructCopy2D() {
+    CORRADE_VERIFY(!(std::is_constructible<Vector2D, const Vector2D&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Vector2D, const Vector2D&>{}));
+}
+
+void VectorTest::constructCopy3D() {
+    CORRADE_VERIFY(!(std::is_constructible<Vector3D, const Vector3D&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Vector3D, const Vector3D&>{}));
 }
 
 }}}

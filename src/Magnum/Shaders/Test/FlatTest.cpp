@@ -34,16 +34,22 @@ struct FlatTest: TestSuite::Tester {
 
     void constructNoCreate2D();
     void constructNoCreate3D();
+
+    void constructCopy2D();
+    void constructCopy3D();
 };
 
 FlatTest::FlatTest() {
     addTests({&FlatTest::constructNoCreate2D,
-              &FlatTest::constructNoCreate3D});
+              &FlatTest::constructNoCreate3D,
+
+              &FlatTest::constructCopy2D,
+              &FlatTest::constructCopy3D});
 }
 
 void FlatTest::constructNoCreate2D() {
     {
-        Shaders::Flat2D shader{NoCreate};
+        Flat2D shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
     }
 
@@ -52,11 +58,21 @@ void FlatTest::constructNoCreate2D() {
 
 void FlatTest::constructNoCreate3D() {
     {
-        Shaders::Flat3D shader{NoCreate};
+        Flat3D shader{NoCreate};
         CORRADE_COMPARE(shader.id(), 0);
     }
 
     CORRADE_VERIFY(true);
+}
+
+void FlatTest::constructCopy2D() {
+    CORRADE_VERIFY(!(std::is_constructible<Flat2D, const Flat2D&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Flat2D, const Flat2D&>{}));
+}
+
+void FlatTest::constructCopy3D() {
+    CORRADE_VERIFY(!(std::is_constructible<Flat3D, const Flat3D&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Flat3D, const Flat3D&>{}));
 }
 
 }}}
