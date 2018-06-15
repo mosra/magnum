@@ -151,6 +151,18 @@ class MAGNUM_GL_EXPORT PrimitiveQuery: public AbstractQuery {
          */
         explicit PrimitiveQuery(NoCreateT) noexcept: AbstractQuery{NoCreate, GLenum(Target::TransformFeedbackPrimitivesWritten)} {}
 
+        /** @brief Copying is not allowed */
+        PrimitiveQuery(const PrimitiveQuery&) = delete;
+
+        /** @brief Move constructor */
+        PrimitiveQuery(PrimitiveQuery&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        PrimitiveQuery& operator=(const PrimitiveQuery&) = delete;
+
+        /** @brief Move assignment */
+        PrimitiveQuery& operator=(PrimitiveQuery&&) noexcept = default;
+
         /**
          * @brief Begin query
          *

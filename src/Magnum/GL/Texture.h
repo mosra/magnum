@@ -189,6 +189,18 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          */
         explicit Texture(NoCreateT) noexcept: AbstractTexture{NoCreate, Implementation::textureTarget<dimensions>()} {}
 
+        /** @brief Copying is not allowed */
+        Texture(const Texture<dimensions>&) = delete;
+
+        /** @brief Move constructor */
+        Texture(Texture<dimensions>&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        Texture<dimensions>& operator=(const Texture<dimensions>&) = delete;
+
+        /** @brief Move assignment */
+        Texture<dimensions>& operator=(Texture<dimensions>&&) noexcept = default;
+
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Bind level of texture to given image unit

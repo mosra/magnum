@@ -173,6 +173,18 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          */
         explicit TextureArray(NoCreateT) noexcept: AbstractTexture{NoCreate, Implementation::textureArrayTarget<dimensions>()} {}
 
+        /** @brief Copying is not allowed */
+        TextureArray(const TextureArray<dimensions>&) = delete;
+
+        /** @brief Move constructor */
+        TextureArray(TextureArray<dimensions>&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        TextureArray<dimensions>& operator=(const TextureArray<dimensions>&) = delete;
+
+        /** @brief Move assignment */
+        TextureArray<dimensions>& operator=(TextureArray<dimensions>&&) noexcept = default;
+
         #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Bind level of given texture layer to given image unit

@@ -155,6 +155,18 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          */
         explicit CubeMapTextureArray(NoCreateT) noexcept: AbstractTexture{NoCreate, GL_TEXTURE_CUBE_MAP_ARRAY} {}
 
+        /** @brief Copying is not allowed */
+        CubeMapTextureArray(const CubeMapTextureArray&) = delete;
+
+        /** @brief Move constructor */
+        CubeMapTextureArray(CubeMapTextureArray&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        CubeMapTextureArray& operator=(const CubeMapTextureArray&) = delete;
+
+        /** @brief Move assignment */
+        CubeMapTextureArray& operator=(CubeMapTextureArray&&) noexcept = default;
+
         /**
          * @brief Bind level of given texture layer to given image unit
          * @param imageUnit Image unit

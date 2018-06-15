@@ -208,6 +208,18 @@ class SampleQuery: public AbstractQuery {
          */
         explicit SampleQuery(NoCreateT) noexcept: AbstractQuery{NoCreate, GLenum(Target::AnySamplesPassed)} {}
 
+        /** @brief Copying is not allowed */
+        SampleQuery(const SampleQuery&) = delete;
+
+        /** @brief Move constructor */
+        SampleQuery(SampleQuery&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        SampleQuery& operator=(const SampleQuery&) = delete;
+
+        /** @brief Move assignment */
+        SampleQuery& operator=(SampleQuery&&) noexcept = default;
+
         #ifndef MAGNUM_TARGET_GLES
         /**
          * @brief Begin conditional rendering based on result value

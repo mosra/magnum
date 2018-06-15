@@ -137,6 +137,18 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          */
         explicit RectangleTexture(NoCreateT) noexcept: AbstractTexture{NoCreate, GL_TEXTURE_RECTANGLE} {}
 
+        /** @brief Copying is not allowed */
+        RectangleTexture(const RectangleTexture&) = delete;
+
+        /** @brief Move constructor */
+        RectangleTexture(RectangleTexture&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        RectangleTexture& operator=(const RectangleTexture&) = delete;
+
+        /** @brief Move assignment */
+        RectangleTexture& operator=(RectangleTexture&&) noexcept = default;
+
         /**
          * @brief Bind texture to given image unit
          * @param imageUnit Image unit

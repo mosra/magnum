@@ -128,6 +128,18 @@ class TimeQuery: public AbstractQuery {
          */
         explicit TimeQuery(NoCreateT) noexcept: AbstractQuery{NoCreate, GLenum(Target::TimeElapsed)} {}
 
+        /** @brief Copying is not allowed */
+        TimeQuery(const TimeQuery&) = delete;
+
+        /** @brief Move constructor */
+        TimeQuery(TimeQuery&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        TimeQuery& operator=(const TimeQuery&) = delete;
+
+        /** @brief Move assignment */
+        TimeQuery& operator=(TimeQuery&&) noexcept = default;
+
         /* Overloads to remove WTF-factor from method chaining order */
         #if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(MAGNUM_TARGET_WEBGL)
         TimeQuery& setLabel(const std::string& label) {

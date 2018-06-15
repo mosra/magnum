@@ -145,6 +145,18 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
          */
         explicit BufferTexture(NoCreateT) noexcept: AbstractTexture{NoCreate, GL_TEXTURE_BUFFER} {}
 
+        /** @brief Copying is not allowed */
+        BufferTexture(const BufferTexture&) = delete;
+
+        /** @brief Move constructor */
+        BufferTexture(BufferTexture&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        BufferTexture& operator=(const BufferTexture&) = delete;
+
+        /** @brief Move assignment */
+        BufferTexture& operator=(BufferTexture&&) noexcept = default;
+
         /**
          * @brief Bind texture to given image unit
          * @param imageUnit Image unit

@@ -176,6 +176,18 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          */
         explicit CubeMapTexture(NoCreateT) noexcept: AbstractTexture{NoCreate, GL_TEXTURE_CUBE_MAP} {}
 
+        /** @brief Copying is not allowed */
+        CubeMapTexture(const CubeMapTexture&) = delete;
+
+        /** @brief Move constructor */
+        CubeMapTexture(CubeMapTexture&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        CubeMapTexture& operator=(const CubeMapTexture&) = delete;
+
+        /** @brief Move assignment */
+        CubeMapTexture& operator=(CubeMapTexture&&) noexcept = default;
+
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Bind level of given cube map texture coordinate to given image unit
