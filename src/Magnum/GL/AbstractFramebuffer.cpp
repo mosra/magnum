@@ -514,22 +514,18 @@ void AbstractFramebuffer::clearImplementationDefault(const GLenum buffer, const 
 
 #ifndef MAGNUM_TARGET_GLES
 void AbstractFramebuffer::clearImplementationDSA(const GLenum buffer, const GLint drawbuffer, const GLint* const value) {
-    bindInternal(FramebufferTarget::Draw);
     glClearNamedFramebufferiv(_id, buffer, drawbuffer, value);
 }
 
 void AbstractFramebuffer::clearImplementationDSA(const GLenum buffer, const GLint drawbuffer, const GLuint* const value) {
-    bindInternal(FramebufferTarget::Draw);
     glClearNamedFramebufferuiv(_id, buffer, drawbuffer, value);
 }
 
 void AbstractFramebuffer::clearImplementationDSA(const GLenum buffer, const GLint drawbuffer, const GLfloat* const value) {
-    bindInternal(FramebufferTarget::Draw);
     glClearNamedFramebufferfv(_id, buffer, drawbuffer, value);
 }
 
 void AbstractFramebuffer::clearImplementationDSA(const GLenum buffer, const GLfloat depth, const GLint stencil) {
-    bindInternal(FramebufferTarget::Draw);
     glClearNamedFramebufferfi(_id, buffer, 0, depth, stencil);
 }
 #endif
