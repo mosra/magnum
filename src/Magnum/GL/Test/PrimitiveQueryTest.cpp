@@ -33,10 +33,12 @@ struct PrimitiveQueryTest: TestSuite::Tester {
     explicit PrimitiveQueryTest();
 
     void constructNoCreate();
+    void constructCopy();
 };
 
 PrimitiveQueryTest::PrimitiveQueryTest() {
-    addTests({&PrimitiveQueryTest::constructNoCreate});
+    addTests({&PrimitiveQueryTest::constructNoCreate,
+              &PrimitiveQueryTest::constructCopy});
 }
 
 void PrimitiveQueryTest::constructNoCreate() {
@@ -46,6 +48,11 @@ void PrimitiveQueryTest::constructNoCreate() {
     }
 
     CORRADE_VERIFY(true);
+}
+
+void PrimitiveQueryTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<PrimitiveQuery, const PrimitiveQuery&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<PrimitiveQuery, const PrimitiveQuery&>{}));
 }
 
 }}}

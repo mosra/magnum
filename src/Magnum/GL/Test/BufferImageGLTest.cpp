@@ -49,8 +49,6 @@ struct BufferImageGLTest: OpenGLTester {
     void constructInvalidSize();
     void constructCompressedInvalidSize();
 
-    void constructCopy();
-    void constructCopyCompressed();
     void constructMove();
     void constructMoveCompressed();
 
@@ -79,8 +77,6 @@ BufferImageGLTest::BufferImageGLTest() {
               &BufferImageGLTest::constructInvalidSize,
               &BufferImageGLTest::constructCompressedInvalidSize,
 
-              &BufferImageGLTest::constructCopy,
-              &BufferImageGLTest::constructCopyCompressed,
               &BufferImageGLTest::constructMove,
               &BufferImageGLTest::constructMoveCompressed,
 
@@ -354,16 +350,6 @@ void BufferImageGLTest::constructCompressedInvalidSize() {
         CompressedBufferImage2D{Magnum::CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, Containers::Array<char>{2}, BufferUsage::StaticDraw};
         CORRADE_COMPARE(out.str(), "GL::CompressedBufferImage::CompressedBufferImage(): data too small, got 2 but expected at least 4 bytes\n");
     }
-}
-
-void BufferImageGLTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<BufferImage2D, const BufferImage2D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<BufferImage2D, const BufferImage2D&>{}));
-}
-
-void BufferImageGLTest::constructCopyCompressed() {
-    CORRADE_VERIFY(!(std::is_constructible<CompressedBufferImage2D, const CompressedBufferImage2D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<CompressedBufferImage2D, const CompressedBufferImage2D&>{}));
 }
 
 void BufferImageGLTest::constructMove() {

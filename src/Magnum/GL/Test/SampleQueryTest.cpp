@@ -33,10 +33,12 @@ struct SampleQueryTest: TestSuite::Tester {
     explicit SampleQueryTest();
 
     void constructNoCreate();
+    void constructCopy();
 };
 
 SampleQueryTest::SampleQueryTest() {
-    addTests({&SampleQueryTest::constructNoCreate});
+    addTests({&SampleQueryTest::constructNoCreate,
+              &SampleQueryTest::constructCopy});
 }
 
 void SampleQueryTest::constructNoCreate() {
@@ -46,6 +48,11 @@ void SampleQueryTest::constructNoCreate() {
     }
 
     CORRADE_VERIFY(true);
+}
+
+void SampleQueryTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<SampleQuery, const SampleQuery&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<SampleQuery, const SampleQuery&>{}));
 }
 
 }}}

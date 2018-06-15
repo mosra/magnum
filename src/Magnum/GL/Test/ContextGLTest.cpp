@@ -34,8 +34,6 @@ namespace Magnum { namespace GL { namespace Test {
 struct ContextGLTest: OpenGLTester {
     explicit ContextGLTest();
 
-    void constructCopyMove();
-
     void isVersionSupported();
     #ifndef MAGNUM_TARGET_GLES
     void isVersionSupportedES();
@@ -46,23 +44,13 @@ struct ContextGLTest: OpenGLTester {
 };
 
 ContextGLTest::ContextGLTest() {
-    addTests({&ContextGLTest::constructCopyMove,
-
-              &ContextGLTest::isVersionSupported,
+    addTests({&ContextGLTest::isVersionSupported,
               #ifndef MAGNUM_TARGET_GLES
               &ContextGLTest::isVersionSupportedES,
               #endif
               &ContextGLTest::supportedVersion,
               &ContextGLTest::isExtensionSupported,
               &ContextGLTest::isExtensionDisabled});
-}
-
-void ContextGLTest::constructCopyMove() {
-    /* Only move-construction allowed */
-    CORRADE_VERIFY(!(std::is_constructible<Context, const Context&>{}));
-    CORRADE_VERIFY((std::is_constructible<Context, Context&&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Context, const Context&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Context, Context&&>{}));
 }
 
 void ContextGLTest::isVersionSupported() {

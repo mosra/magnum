@@ -52,7 +52,6 @@ struct MeshGLTest: OpenGLTester {
     explicit MeshGLTest();
 
     void construct();
-    void constructCopy();
     void constructMove();
     void wrap();
 
@@ -164,7 +163,6 @@ struct MeshGLTest: OpenGLTester {
 
 MeshGLTest::MeshGLTest() {
     addTests({&MeshGLTest::construct,
-              &MeshGLTest::constructCopy,
               &MeshGLTest::constructMove,
               &MeshGLTest::wrap,
 
@@ -302,11 +300,6 @@ void MeshGLTest::construct() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-}
-
-void MeshGLTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Mesh, const Mesh&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Mesh, const Mesh&>{}));
 }
 
 namespace {

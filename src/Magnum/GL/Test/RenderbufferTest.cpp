@@ -33,10 +33,17 @@ struct RenderbufferTest: TestSuite::Tester {
     explicit RenderbufferTest();
 
     void constructNoCreate();
+    void constructCopy();
 };
 
 RenderbufferTest::RenderbufferTest() {
-    addTests({&RenderbufferTest::constructNoCreate});
+    addTests({&RenderbufferTest::constructNoCreate,
+              &RenderbufferTest::constructCopy});
+}
+
+void RenderbufferTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<Renderbuffer, const Renderbuffer&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Renderbuffer, const Renderbuffer&>{}));
 }
 
 void RenderbufferTest::constructNoCreate() {

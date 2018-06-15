@@ -56,7 +56,6 @@ struct FramebufferGLTest: OpenGLTester {
     explicit FramebufferGLTest();
 
     void construct();
-    void constructCopy();
     void constructMove();
     void wrap();
 
@@ -169,7 +168,6 @@ struct FramebufferGLTest: OpenGLTester {
 
 FramebufferGLTest::FramebufferGLTest() {
     addTests({&FramebufferGLTest::construct,
-              &FramebufferGLTest::constructCopy,
               &FramebufferGLTest::constructMove,
               &FramebufferGLTest::wrap,
 
@@ -301,11 +299,6 @@ void FramebufferGLTest::construct() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-}
-
-void FramebufferGLTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Framebuffer, const Framebuffer&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Framebuffer, const Framebuffer&>{}));
 }
 
 void FramebufferGLTest::constructMove() {

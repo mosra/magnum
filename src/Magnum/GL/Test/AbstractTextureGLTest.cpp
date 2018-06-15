@@ -34,7 +34,6 @@ struct AbstractTextureGLTest: OpenGLTester {
     explicit AbstractTextureGLTest();
 
     void construct();
-    void constructCopy();
     void constructMove();
 
     #ifndef MAGNUM_TARGET_WEBGL
@@ -44,7 +43,6 @@ struct AbstractTextureGLTest: OpenGLTester {
 
 AbstractTextureGLTest::AbstractTextureGLTest() {
     addTests({&AbstractTextureGLTest::construct,
-              &AbstractTextureGLTest::constructCopy,
               &AbstractTextureGLTest::constructMove,
 
               #ifndef MAGNUM_TARGET_WEBGL
@@ -62,11 +60,6 @@ void AbstractTextureGLTest::construct() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-}
-
-void AbstractTextureGLTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Texture2D, const Texture2D&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Texture2D, const Texture2D&>{}));
 }
 
 void AbstractTextureGLTest::constructMove() {

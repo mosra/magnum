@@ -33,11 +33,18 @@ namespace Magnum { namespace GL { namespace Test {
 struct ShaderTest: TestSuite::Tester {
     explicit ShaderTest();
 
+    void constructCopy();
     void debugType();
 };
 
 ShaderTest::ShaderTest() {
-    addTests({&ShaderTest::debugType});
+    addTests({&ShaderTest::constructCopy,
+              &ShaderTest::debugType});
+}
+
+void ShaderTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<Shader, const Shader&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Shader, const Shader&>{}));
 }
 
 void ShaderTest::debugType() {

@@ -35,6 +35,7 @@ struct BufferTest: TestSuite::Tester {
     explicit BufferTest();
 
     void constructNoCreate();
+    void constructCopy();
 
     void debugTargetHint();
     #ifndef MAGNUM_TARGET_GLES2
@@ -44,6 +45,7 @@ struct BufferTest: TestSuite::Tester {
 
 BufferTest::BufferTest() {
     addTests({&BufferTest::constructNoCreate,
+              &BufferTest::constructCopy,
 
               &BufferTest::debugTargetHint,
               #ifndef MAGNUM_TARGET_GLES2
@@ -59,6 +61,11 @@ void BufferTest::constructNoCreate() {
     }
 
     CORRADE_VERIFY(true);
+}
+
+void BufferTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<Buffer, const Buffer&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Buffer, const Buffer&>{}));
 }
 
 void BufferTest::debugTargetHint() {

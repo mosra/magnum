@@ -34,7 +34,6 @@ struct AbstractQueryGLTest: OpenGLTester {
     explicit AbstractQueryGLTest();
 
     void construct();
-    void constructCopy();
     void constructMove();
 
     #ifndef MAGNUM_TARGET_WEBGL
@@ -44,7 +43,6 @@ struct AbstractQueryGLTest: OpenGLTester {
 
 AbstractQueryGLTest::AbstractQueryGLTest() {
     addTests({&AbstractQueryGLTest::construct,
-              &AbstractQueryGLTest::constructCopy,
               &AbstractQueryGLTest::constructMove,
 
               #ifndef MAGNUM_TARGET_WEBGL
@@ -71,11 +69,6 @@ void AbstractQueryGLTest::construct() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-}
-
-void AbstractQueryGLTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<SampleQuery, const SampleQuery&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<SampleQuery, const SampleQuery&>{}));
 }
 
 void AbstractQueryGLTest::constructMove() {

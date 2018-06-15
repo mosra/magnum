@@ -33,10 +33,12 @@ struct CubeMapTextureTest: TestSuite::Tester {
     explicit CubeMapTextureTest();
 
     void constructNoCreate();
+    void constructCopy();
 };
 
 CubeMapTextureTest::CubeMapTextureTest() {
-    addTests({&CubeMapTextureTest::constructNoCreate});
+    addTests({&CubeMapTextureTest::constructNoCreate,
+              &CubeMapTextureTest::constructCopy});
 }
 
 void CubeMapTextureTest::constructNoCreate() {
@@ -46,6 +48,11 @@ void CubeMapTextureTest::constructNoCreate() {
     }
 
     CORRADE_VERIFY(true);
+}
+
+void CubeMapTextureTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<CubeMapTexture, const CubeMapTexture&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<CubeMapTexture, const CubeMapTexture&>{}));
 }
 
 }}}

@@ -33,10 +33,12 @@ struct TimeQueryTest: TestSuite::Tester {
     explicit TimeQueryTest();
 
     void constructNoCreate();
+    void constructCopy();
 };
 
 TimeQueryTest::TimeQueryTest() {
-    addTests({&TimeQueryTest::constructNoCreate});
+    addTests({&TimeQueryTest::constructNoCreate,
+              &TimeQueryTest::constructCopy});
 }
 
 void TimeQueryTest::constructNoCreate() {
@@ -46,6 +48,11 @@ void TimeQueryTest::constructNoCreate() {
     }
 
     CORRADE_VERIFY(true);
+}
+
+void TimeQueryTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<TimeQuery, const TimeQuery&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<TimeQuery, const TimeQuery&>{}));
 }
 
 }}}

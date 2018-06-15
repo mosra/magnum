@@ -34,11 +34,17 @@ struct BufferImageTest: TestSuite::Tester {
 
     void constructNoCreate();
     void constructNoCreateCompressed();
+
+    void constructCopy();
+    void constructCopyCompressed();
 };
 
 BufferImageTest::BufferImageTest() {
     addTests({&BufferImageTest::constructNoCreate,
-              &BufferImageTest::constructNoCreateCompressed});
+              &BufferImageTest::constructNoCreateCompressed,
+
+              &BufferImageTest::constructCopy,
+              &BufferImageTest::constructCopyCompressed});
 }
 
 void BufferImageTest::constructNoCreate() {
@@ -57,6 +63,16 @@ void BufferImageTest::constructNoCreateCompressed() {
     }
 
     CORRADE_VERIFY(true);
+}
+
+void BufferImageTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<BufferImage2D, const BufferImage2D&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<BufferImage2D, const BufferImage2D&>{}));
+}
+
+void BufferImageTest::constructCopyCompressed() {
+    CORRADE_VERIFY(!(std::is_constructible<CompressedBufferImage2D, const CompressedBufferImage2D&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<CompressedBufferImage2D, const CompressedBufferImage2D&>{}));
 }
 
 }}}

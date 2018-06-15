@@ -36,6 +36,11 @@ struct TextureArrayTest: TestSuite::Tester {
     void construct1DNoCreate();
     #endif
     void construct2DNoCreate();
+
+    #ifndef MAGNUM_TARGET_GLES
+    void constructCopy1D();
+    #endif
+    void constructCopy2D();
 };
 
 TextureArrayTest::TextureArrayTest() {
@@ -43,7 +48,12 @@ TextureArrayTest::TextureArrayTest() {
         #ifndef MAGNUM_TARGET_GLES
         &TextureArrayTest::construct1DNoCreate,
         #endif
-        &TextureArrayTest::construct2DNoCreate});
+        &TextureArrayTest::construct2DNoCreate,
+
+        #ifndef MAGNUM_TARGET_GLES
+        &TextureArrayTest::constructCopy1D,
+        #endif
+        &TextureArrayTest::constructCopy2D});
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -64,6 +74,18 @@ void TextureArrayTest::construct2DNoCreate() {
     }
 
     CORRADE_VERIFY(true);
+}
+
+#ifndef MAGNUM_TARGET_GLES
+void TextureArrayTest::constructCopy1D() {
+    CORRADE_VERIFY(!(std::is_constructible<Texture1DArray, const Texture1DArray&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Texture1DArray, const Texture1DArray&>{}));
+}
+#endif
+
+void TextureArrayTest::constructCopy2D() {
+    CORRADE_VERIFY(!(std::is_constructible<Texture2DArray, const Texture2DArray&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Texture2DArray, const Texture2DArray&>{}));
 }
 
 }}}

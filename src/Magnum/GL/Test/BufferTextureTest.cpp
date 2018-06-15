@@ -33,10 +33,12 @@ struct BufferTextureTest: TestSuite::Tester {
     explicit BufferTextureTest();
 
     void constructNoCreate();
+    void constructCopy();
 };
 
 BufferTextureTest::BufferTextureTest() {
-    addTests({&BufferTextureTest::constructNoCreate});
+    addTests({&BufferTextureTest::constructNoCreate,
+              &BufferTextureTest::constructCopy});
 }
 
 void BufferTextureTest::constructNoCreate() {
@@ -46,6 +48,11 @@ void BufferTextureTest::constructNoCreate() {
     }
 
     CORRADE_VERIFY(true);
+}
+
+void BufferTextureTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<BufferTexture, const BufferTexture&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<BufferTexture, const BufferTexture&>{}));
 }
 
 }}}

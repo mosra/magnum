@@ -33,10 +33,12 @@ struct RectangleTextureTest: TestSuite::Tester {
     explicit RectangleTextureTest();
 
     void constructNoCreate();
+    void constructCopy();
 };
 
 RectangleTextureTest::RectangleTextureTest() {
-    addTests({&RectangleTextureTest::constructNoCreate});
+    addTests({&RectangleTextureTest::constructNoCreate,
+              &RectangleTextureTest::constructCopy});
 }
 
 void RectangleTextureTest::constructNoCreate() {
@@ -46,6 +48,11 @@ void RectangleTextureTest::constructNoCreate() {
     }
 
     CORRADE_VERIFY(true);
+}
+
+void RectangleTextureTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<RectangleTexture, const RectangleTexture&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<RectangleTexture, const RectangleTexture&>{}));
 }
 
 }}}

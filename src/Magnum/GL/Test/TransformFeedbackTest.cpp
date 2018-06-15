@@ -33,10 +33,12 @@ struct TransformFeedbackTest: TestSuite::Tester {
     explicit TransformFeedbackTest();
 
     void constructNoCreate();
+    void constructCopy();
 };
 
 TransformFeedbackTest::TransformFeedbackTest() {
-    addTests({&TransformFeedbackTest::constructNoCreate});
+    addTests({&TransformFeedbackTest::constructNoCreate,
+              &TransformFeedbackTest::constructCopy});
 }
 
 void TransformFeedbackTest::constructNoCreate() {
@@ -46,6 +48,11 @@ void TransformFeedbackTest::constructNoCreate() {
     }
 
     CORRADE_VERIFY(true);
+}
+
+void TransformFeedbackTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<TransformFeedback, const TransformFeedback&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<TransformFeedback, const TransformFeedback&>{}));
 }
 
 }}}

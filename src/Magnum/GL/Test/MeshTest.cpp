@@ -42,6 +42,9 @@ struct MeshTest: TestSuite::Tester {
     void constructNoCreate();
     void constructViewNoCreate();
 
+    void constructCopy();
+    /* View *is* copyable */
+
     void drawCountNotSet();
     void drawViewCountNotSet();
 
@@ -64,6 +67,8 @@ struct MeshTest: TestSuite::Tester {
 MeshTest::MeshTest() {
     addTests({&MeshTest::constructNoCreate,
               &MeshTest::constructViewNoCreate,
+
+              &MeshTest::constructCopy,
 
               &MeshTest::drawCountNotSet,
               &MeshTest::drawViewCountNotSet,
@@ -101,6 +106,11 @@ void MeshTest::constructViewNoCreate() {
     }
 
     CORRADE_VERIFY(true);
+}
+
+void MeshTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<Mesh, const Mesh&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Mesh, const Mesh&>{}));
 }
 
 namespace {

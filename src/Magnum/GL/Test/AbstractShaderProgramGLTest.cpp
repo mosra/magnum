@@ -49,7 +49,6 @@ struct AbstractShaderProgramGLTest: OpenGLTester {
     explicit AbstractShaderProgramGLTest();
 
     void construct();
-    void constructCopy();
     void constructMove();
 
     #ifndef MAGNUM_TARGET_WEBGL
@@ -79,7 +78,6 @@ struct AbstractShaderProgramGLTest: OpenGLTester {
 
 AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
     addTests({&AbstractShaderProgramGLTest::construct,
-              &AbstractShaderProgramGLTest::constructCopy,
               &AbstractShaderProgramGLTest::constructMove,
 
               #ifndef MAGNUM_TARGET_WEBGL
@@ -124,11 +122,6 @@ void AbstractShaderProgramGLTest::construct() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-}
-
-void AbstractShaderProgramGLTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<DummyShader, const DummyShader&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<DummyShader, const DummyShader&>{}));
 }
 
 void AbstractShaderProgramGLTest::constructMove() {

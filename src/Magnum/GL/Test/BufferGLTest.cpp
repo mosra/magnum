@@ -39,7 +39,6 @@ struct BufferGLTest: OpenGLTester {
     explicit BufferGLTest();
 
     void construct();
-    void constructCopy();
     void constructMove();
     void wrap();
 
@@ -66,7 +65,6 @@ struct BufferGLTest: OpenGLTester {
 
 BufferGLTest::BufferGLTest() {
     addTests({&BufferGLTest::construct,
-              &BufferGLTest::constructCopy,
               &BufferGLTest::constructMove,
               &BufferGLTest::wrap,
 
@@ -102,11 +100,6 @@ void BufferGLTest::construct() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-}
-
-void BufferGLTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Buffer, const Buffer&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Buffer, const Buffer&>{}));
 }
 
 void BufferGLTest::constructMove() {

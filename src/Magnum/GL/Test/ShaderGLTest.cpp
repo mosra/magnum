@@ -39,7 +39,6 @@ struct ShaderGLTest: OpenGLTester {
 
     void construct();
     void constructNoVersion();
-    void constructCopy();
     void constructMove();
 
     #ifndef MAGNUM_TARGET_WEBGL
@@ -57,7 +56,6 @@ struct ShaderGLTest: OpenGLTester {
 ShaderGLTest::ShaderGLTest() {
     addTests({&ShaderGLTest::construct,
               &ShaderGLTest::constructNoVersion,
-              &ShaderGLTest::constructCopy,
               &ShaderGLTest::constructMove,
 
               #ifndef MAGNUM_TARGET_WEBGL
@@ -96,11 +94,6 @@ void ShaderGLTest::construct() {
 void ShaderGLTest::constructNoVersion() {
     const Shader shader(Version::None, Shader::Type::Fragment);
     CORRADE_VERIFY(shader.sources().empty());
-}
-
-void ShaderGLTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<Shader, const Shader&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<Shader, const Shader&>{}));
 }
 
 void ShaderGLTest::constructMove() {

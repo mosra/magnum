@@ -33,10 +33,12 @@ struct AbstractShaderProgramTest: TestSuite::Tester {
     explicit AbstractShaderProgramTest();
 
     void constructNoCreate();
+    void constructCopy();
 };
 
 AbstractShaderProgramTest::AbstractShaderProgramTest() {
-    addTests({&AbstractShaderProgramTest::constructNoCreate});
+    addTests({&AbstractShaderProgramTest::constructNoCreate,
+              &AbstractShaderProgramTest::constructCopy});
 }
 
 void AbstractShaderProgramTest::constructNoCreate() {
@@ -53,6 +55,16 @@ void AbstractShaderProgramTest::constructNoCreate() {
     }
 
     CORRADE_VERIFY(true);
+}
+
+void AbstractShaderProgramTest::constructCopy() {
+    class DummyShader: public AbstractShaderProgram {
+        public:
+            explicit DummyShader() {}
+    };
+
+    CORRADE_VERIFY(!(std::is_constructible<DummyShader, const DummyShader&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<DummyShader, const DummyShader&>{}));
 }
 
 }}}

@@ -34,11 +34,17 @@ struct MultisampleTextureTest: TestSuite::Tester {
 
     void construct2DNoCreate();
     void construct2DArrayNoCreate();
+
+    void constructCopy2D();
+    void constructCopy2DArray();
 };
 
 MultisampleTextureTest::MultisampleTextureTest() {
     addTests({&MultisampleTextureTest::construct2DNoCreate,
-              &MultisampleTextureTest::construct2DArrayNoCreate});
+              &MultisampleTextureTest::construct2DArrayNoCreate,
+
+              &MultisampleTextureTest::constructCopy2D,
+              &MultisampleTextureTest::constructCopy2DArray});
 }
 
 void MultisampleTextureTest::construct2DNoCreate() {
@@ -57,6 +63,16 @@ void MultisampleTextureTest::construct2DArrayNoCreate() {
     }
 
     CORRADE_VERIFY(true);
+}
+
+void MultisampleTextureTest::constructCopy2D() {
+    CORRADE_VERIFY(!(std::is_constructible<MultisampleTexture2D, const MultisampleTexture2D&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<MultisampleTexture2D, const MultisampleTexture2D&>{}));
+}
+
+void MultisampleTextureTest::constructCopy2DArray() {
+    CORRADE_VERIFY(!(std::is_constructible<MultisampleTexture2DArray, const MultisampleTexture2DArray&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<MultisampleTexture2DArray, const MultisampleTexture2DArray&>{}));
 }
 
 }}}

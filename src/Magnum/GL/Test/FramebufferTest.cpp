@@ -34,12 +34,14 @@ struct FramebufferTest: TestSuite::Tester {
     explicit FramebufferTest();
 
     void constructNoCreate();
+    void constructCopy();
 
     void debugStatus();
 };
 
 FramebufferTest::FramebufferTest() {
     addTests({&FramebufferTest::constructNoCreate,
+              &FramebufferTest::constructCopy,
 
               &FramebufferTest::debugStatus});
 }
@@ -51,6 +53,11 @@ void FramebufferTest::constructNoCreate() {
     }
 
     CORRADE_VERIFY(true);
+}
+
+void FramebufferTest::constructCopy() {
+    CORRADE_VERIFY(!(std::is_constructible<Framebuffer, const Framebuffer&>{}));
+    CORRADE_VERIFY(!(std::is_assignable<Framebuffer, const Framebuffer&>{}));
 }
 
 void FramebufferTest::debugStatus() {

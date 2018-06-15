@@ -46,7 +46,6 @@ struct TransformFeedbackGLTest: OpenGLTester {
     explicit TransformFeedbackGLTest();
 
     void construct();
-    void constructCopy();
     void constructMove();
     void wrap();
 
@@ -88,7 +87,6 @@ const struct {
 
 TransformFeedbackGLTest::TransformFeedbackGLTest() {
     addTests({&TransformFeedbackGLTest::construct,
-              &TransformFeedbackGLTest::constructCopy,
               &TransformFeedbackGLTest::constructMove,
               &TransformFeedbackGLTest::wrap,
 
@@ -123,11 +121,6 @@ void TransformFeedbackGLTest::construct() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-}
-
-void TransformFeedbackGLTest::constructCopy() {
-    CORRADE_VERIFY(!(std::is_constructible<TransformFeedback, const TransformFeedback&>{}));
-    CORRADE_VERIFY(!(std::is_assignable<TransformFeedback, const TransformFeedback&>{}));
 }
 
 void TransformFeedbackGLTest::constructMove() {
