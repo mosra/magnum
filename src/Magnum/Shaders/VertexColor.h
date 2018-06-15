@@ -96,6 +96,18 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
          */
         explicit VertexColor(NoCreateT) noexcept: AbstractShaderProgram{NoCreate} {}
 
+        /** @brief Copying is not allowed */
+        VertexColor(const VertexColor<dimensions>&) = delete;
+
+        /** @brief Move constructor */
+        VertexColor(VertexColor<dimensions>&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        VertexColor<dimensions>& operator=(const VertexColor<dimensions>&) = delete;
+
+        /** @brief Move assignment */
+        VertexColor<dimensions>& operator=(VertexColor<dimensions>&&) noexcept = default;
+
         /**
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)

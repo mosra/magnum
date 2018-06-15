@@ -149,6 +149,18 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          */
         explicit Phong(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
 
+        /** @brief Copying is not allowed */
+        Phong(const Phong&) = delete;
+
+        /** @brief Move constructor */
+        Phong(Phong&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        Phong& operator=(const Phong&) = delete;
+
+        /** @brief Move assignment */
+        Phong& operator=(Phong&&) noexcept = default;
+
         /** @brief Flags */
         Flags flags() const { return _flags; }
 

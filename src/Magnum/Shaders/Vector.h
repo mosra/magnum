@@ -84,11 +84,23 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
             #endif
             {}
 
+        /** @brief Copying is not allowed */
+        Vector(const Vector<dimensions>&) = delete;
+
+        /** @brief Move constructor */
+        Vector(Vector<dimensions>&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        Vector<dimensions>& operator=(const Vector<dimensions>&) = delete;
+
+        /** @brief Move assignment */
+        Vector<dimensions>& operator=(Vector<dimensions>&&) noexcept = default;
+
         /**
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
          */
-        Vector& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
+        Vector<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
             GL::AbstractShaderProgram::setUniform(_transformationProjectionMatrixUniform, matrix);
             return *this;
         }
@@ -100,7 +112,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
          * Default is transparent black.
          * @see @ref setColor()
          */
-        Vector& setBackgroundColor(const Color4& color) {
+        Vector<dimensions>& setBackgroundColor(const Color4& color) {
             GL::AbstractShaderProgram::setUniform(_backgroundColorUniform, color);
             return *this;
         }
@@ -111,7 +123,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
          *
          * @see @ref setBackgroundColor()
          */
-        Vector& setColor(const Color4& color) {
+        Vector<dimensions>& setColor(const Color4& color) {
             GL::AbstractShaderProgram::setUniform(_colorUniform, color);
             return *this;
         }

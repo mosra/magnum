@@ -142,6 +142,18 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          */
         explicit Flat(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
 
+        /** @brief Copying is not allowed */
+        Flat(const Flat<dimensions>&) = delete;
+
+        /** @brief Move constructor */
+        Flat(Flat<dimensions>&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        Flat<dimensions>& operator=(const Flat<dimensions>&) = delete;
+
+        /** @brief Move assignment */
+        Flat<dimensions>& operator=(Flat<dimensions>&&) noexcept = default;
+
         /** @brief Flags */
         Flags flags() const { return _flags; }
 

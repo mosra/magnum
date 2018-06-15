@@ -57,6 +57,18 @@ template<UnsignedInt dimensions> class AbstractVector: public GL::AbstractShader
          */
         typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
 
+        /** @brief Copying is not allowed */
+        AbstractVector(const AbstractVector<dimensions>&) = delete;
+
+        /** @brief Move constructor */
+        AbstractVector(AbstractVector<dimensions>&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        AbstractVector<dimensions>& operator=(const AbstractVector<dimensions>&) = delete;
+
+        /** @brief Move assignment */
+        AbstractVector<dimensions>& operator=(AbstractVector<dimensions>&&) noexcept = default;
+
         /**
          * @brief Bind vector texture
          * @return Reference to self (for method chaining)

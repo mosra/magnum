@@ -170,6 +170,18 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
          */
         explicit MeshVisualizer(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
 
+        /** @brief Copying is not allowed */
+        MeshVisualizer(const MeshVisualizer&) = delete;
+
+        /** @brief Move constructor */
+        MeshVisualizer(MeshVisualizer&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        MeshVisualizer& operator=(const MeshVisualizer&) = delete;
+
+        /** @brief Move assignment */
+        MeshVisualizer& operator=(MeshVisualizer&&) noexcept = default;
+
         /**
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)

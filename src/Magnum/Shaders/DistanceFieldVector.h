@@ -87,6 +87,18 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
             #endif
             {}
 
+        /** @brief Copying is not allowed */
+        DistanceFieldVector(const DistanceFieldVector<dimensions>&) = delete;
+
+        /** @brief Move constructor */
+        DistanceFieldVector(DistanceFieldVector<dimensions>&&) noexcept = default;
+
+        /** @brief Copying is not allowed */
+        DistanceFieldVector<dimensions>& operator=(const DistanceFieldVector<dimensions>&) = delete;
+
+        /** @brief Move assignment */
+        DistanceFieldVector<dimensions>& operator=(DistanceFieldVector<dimensions>&&) noexcept = default;
+
         /**
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
