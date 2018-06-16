@@ -217,7 +217,15 @@ target_include_directories(MagnumGL PUBLIC
     ${PROJECT_SOURCE_DIR}/src/MagnumExternal/OpenGL)
 target_link_libraries(MagnumGL PUBLIC Magnum)
 if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
-    target_link_libraries(MagnumGL PUBLIC ${OPENGL_gl_LIBRARY})
+    # If the GLVND library (CMake 3.11+) was found, link to the imported
+    # target. Otherwise (and also on all systems except Linux) link to the
+    # classic libGL. Can't use OpenGL_OpenGL_FOUND, because that one is set
+    # also if GLVND is *not* found. WTF.
+    if(OPENGL_opengl_LIBRARY)
+        target_link_libraries(MagnumGL PUBLIC OpenGL::OpenGL)
+    else()
+        target_link_libraries(MagnumGL PUBLIC ${OPENGL_gl_LIBRARY})
+    endif()
 elseif(TARGET_GLES2)
     target_link_libraries(MagnumGL PUBLIC OpenGLES2::OpenGLES2)
 else()
@@ -286,7 +294,15 @@ if(BUILD_TESTS)
     target_link_libraries(MagnumGLTestLib PUBLIC
         Magnum)
     if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
-        target_link_libraries(MagnumGLTestLib PUBLIC ${OPENGL_gl_LIBRARY})
+        # If the GLVND library (CMake 3.11+) was found, link to the imported
+        # target. Otherwise (and also on all systems except Linux) link to the
+        # classic libGL. Can't use OpenGL_OpenGL_FOUND, because that one is set
+        # also if GLVND is *not* found. WTF.
+        if(OPENGL_opengl_LIBRARY)
+            target_link_libraries(MagnumGLTestLib PUBLIC OpenGL::OpenGL)
+        else()
+            target_link_libraries(MagnumGLTestLib PUBLIC ${OPENGL_gl_LIBRARY})
+        endif()
     elseif(TARGET_GLES2)
         target_link_libraries(MagnumGLTestLib PUBLIC OpenGLES2::OpenGLES2)
     else()

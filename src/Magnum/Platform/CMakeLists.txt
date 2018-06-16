@@ -51,9 +51,18 @@ if((WITH_GLFWAPPLICATION OR WITH_GLUTAPPLICATION OR WITH_SDL2APPLICATION) AND TA
     elseif(CORRADE_TARGET_UNIX AND (NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES))
         set(NEED_GLXCONTEXT 1)
         set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumGlxContextObjects>)
+        # If the GLVND library (CMake 3.11+) was found and linked to, we need
+        # to link to GLX explicitly. Otherwise (and also on all systems except
+        # Linux) the transitive dependency to classic GL lib from MagnumGL is
+        # enough. Can't use OpenGL_OpenGL_FOUND, because that one is set also
+        # if GLVND is *not* found. WTF.
+        if(OPENGL_opengl_LIBRARY)
+            set(MagnumSomeContext_LIBRARY OpenGL::GLX)
+        endif()
     elseif(MAGNUM_TARGET_GLES AND NOT CORRADE_TARGET_EMSCRIPTEN)
         set(NEED_EGLCONTEXT 1)
         set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumEglContextObjects>)
+        # We're linking to EGL explicitly, no need to bother with GLVND there
     endif()
 endif()
 
@@ -127,7 +136,10 @@ if(WITH_GLFWAPPLICATION)
     # linked to the executable and not to any intermediate shared lib
     target_link_libraries(MagnumGlfwApplication PUBLIC Magnum GLFW::GLFW)
     if(TARGET_GL)
-        target_link_libraries(MagnumGlfwApplication PUBLIC MagnumGL)
+        target_link_libraries(MagnumGlfwApplication PUBLIC
+            MagnumGL
+            # need to link to GLX explicitly if using GLVND (CMake 3.11+)
+            ${MagnumSomeContext_LIBRARY})
     endif()
 
     install(FILES ${MagnumGlfwApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
@@ -161,7 +173,11 @@ if(WITH_GLUTAPPLICATION)
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
     target_include_directories(MagnumGlutApplication PUBLIC ${GLUT_INCLUDE_DIR})
-    target_link_libraries(MagnumGlutApplication PUBLIC MagnumGL ${GLUT_glut_LIBRARY})
+    target_link_libraries(MagnumGlutApplication PUBLIC
+        MagnumGL
+        ${GLUT_glut_LIBRARY}
+        # need to link to GLX explicitly if using GLVND (CMake 3.11+)
+        ${MagnumSomeContext_LIBRARY})
 
     install(FILES ${MagnumGlutApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumGlutApplication
@@ -196,7 +212,10 @@ if(WITH_SDL2APPLICATION)
     # linked to the executable and not to any intermediate shared lib
     target_link_libraries(MagnumSdl2Application PUBLIC Magnum SDL2::SDL2)
     if(TARGET_GL)
-        target_link_libraries(MagnumSdl2Application PUBLIC MagnumGL)
+        target_link_libraries(MagnumSdl2Application PUBLIC
+            MagnumGL
+            # need to link to GLX explicitly if using GLVND (CMake 3.11+)
+            ${MagnumSomeContext_LIBRARY})
     endif()
 
     install(FILES ${MagnumSdl2Application_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
@@ -252,7 +271,11 @@ if(WITH_GLXAPPLICATION)
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
     target_include_directories(MagnumGlxApplication PUBLIC ${X11_INCLUDE_DIR})
-    target_link_libraries(MagnumGlxApplication PUBLIC MagnumGL ${X11_LIBRARIES})
+    target_link_libraries(MagnumGlxApplication PUBLIC
+        MagnumGL
+        ${X11_LIBRARIES}
+        # need to link to GLX explicitly if using GLVND (CMake 3.11+)
+        ${MagnumSomeContext_LIBRARY})
 
     install(FILES ${MagnumGlxApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumGlxApplication
@@ -368,7 +391,11 @@ if(WITH_WINDOWLESSGLXAPPLICATION)
         set_target_properties(MagnumWindowlessGlxApplication PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
     target_include_directories(MagnumWindowlessGlxApplication PUBLIC ${X11_INCLUDE_DIR})
-    target_link_libraries(MagnumWindowlessGlxApplication PUBLIC MagnumGL ${X11_LIBRARIES})
+    target_link_libraries(MagnumWindowlessGlxApplication PUBLIC
+        MagnumGL
+        ${X11_LIBRARIES}
+        # need to link to GLX explicitly if using GLVND (CMake 3.11+)
+        ${MagnumSomeContext_LIBRARY})
 
     install(FILES ${MagnumWindowlessGlxApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumWindowlessGlxApplication
@@ -701,7 +728,10 @@ if(NEED_GLXCONTEXT OR WITH_GLXCONTEXT)
             set_target_properties(MagnumGlxContext PROPERTIES POSITION_INDEPENDENT_CODE ON)
         endif()
         target_include_directories(MagnumGlxContext PUBLIC ${X11_INCLUDE_DIR})
-        target_link_libraries(MagnumGlxContext PUBLIC MagnumGL ${X11_LIBRARIES})
+        target_link_libraries(MagnumGlxContext PUBLIC
+            MagnumGL
+            ${X11_LIBRARIES}
+            ${MagnumSomeContext_LIBRARY})
 
         install(TARGETS MagnumGlxContext
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}

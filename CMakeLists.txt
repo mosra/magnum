@@ -214,6 +214,7 @@ endif()
 
 # Check dependencies
 if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
+    set(OpenGL_GL_PREFERENCE GLVND) # since CMake 3.11
     find_package(OpenGL REQUIRED)
 elseif(TARGET_GLES2)
     find_package(OpenGLES2 REQUIRED)
