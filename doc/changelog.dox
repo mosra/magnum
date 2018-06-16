@@ -90,10 +90,21 @@ See also:
 -   @ref Platform::GlfwApplication no longer stores a needless global window
     pointer
 
+@subsubsection changelog-latest-changes-trade Trade library
+
+-   @ref Trade::PhongMaterialData now contains well-defined color values
+    instead of random memory after construction
+
 @subsection changelog-latest-buildsystem Build system
 
 -   There's now a PPA for Ubuntu packages. See @ref building-packages-deb
     for more information.
+-   Magnum now links to GLVND on Linux instead of the old libGL ABI if using
+    CMake 3.11 and newer
+-   `FindSDL2.cmake` now properly links to `dl` and `pthread` libraries when
+    using a static build of SDL2 on Linux
+-   `FindSDL2.cmake` is now able to properly find a debug build of SDL, which
+    enables Vcpkg to properly copy all dependency DLLs on Windows
 
 @subsection changelog-latest-bugfixes Bug fixes
 
@@ -104,6 +115,19 @@ See also:
 -   Vertex attribute divisor in @ref GL::Mesh::addVertexBufferInstanced() was
     not properly cleaned up after when @gl_extension{ARB,vertex_array_object}
     was disabled, causing subsequent draws to misbehave
+-   Fixed @ref Shaders::DistanceFieldVector and @ref Shaders::Vector to be
+    properly movable
+-   @gl_extension{ARB,direct_state_access} versions of
+    @ref GL::Framebuffer::clearColor(), @ref GL::Framebuffer::clearDepth(),
+    @ref GL::Framebuffer::clearStencil() and @ref GL::Framebuffer::clearDepthStencil()
+    were binding the framebuffer for drawing, which was completely unnecessary
+
+@subsection changelog-latest-docs Documentation
+
+-   Compiled code snippets for @ref Audio and @ref SceneGraph libraries, fixing
+    cases where outdated or plain wrong API constructs were mentioned
+-   Explicitly mentioning copy/move constructibility for all classes with
+    non-trivial construction
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
