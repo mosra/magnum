@@ -73,6 +73,8 @@ See also:
 -   @ref GL::Mesh::draw() and @ref GL::MeshView::draw() now return a reference
     to self to make method-chained draws (for example using a different shader)
     possible as well
+-   The @ref GL::BufferUsage parameter in @ref GL::Buffer::setData() is now
+    optional, defaults to @ref GL::BufferUsage::StaticDraw
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 

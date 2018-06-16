@@ -1020,16 +1020,16 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          *      @fn_gl_extension_keyword{NamedBufferData,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl_keyword{BufferData}
          */
-        Buffer& setData(Containers::ArrayView<const void> data, BufferUsage usage);
+        Buffer& setData(Containers::ArrayView<const void> data, BufferUsage usage = BufferUsage::StaticDraw);
 
         /** @overload */
-        template<class T> Buffer& setData(const std::vector<T>& data, BufferUsage usage) {
+        template<class T> Buffer& setData(const std::vector<T>& data, BufferUsage usage = BufferUsage::StaticDraw) {
             setData({data.data(), data.size()}, usage);
             return *this;
         }
 
         /** @overload */
-        template<std::size_t size, class T> Buffer& setData(const std::array<T, size>& data, BufferUsage usage) {
+        template<std::size_t size, class T> Buffer& setData(const std::array<T, size>& data, BufferUsage usage = BufferUsage::StaticDraw) {
             setData({data.data(), data.size()}, usage);
             return *this;
         }
