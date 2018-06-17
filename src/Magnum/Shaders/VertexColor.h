@@ -50,10 +50,8 @@ attributes in your triangle mesh and call at least
 
 @section Shaders-VertexColor-example Example usage
 
-Common mesh setup. Note the explicit specification of components for the color
-attribute --- the shader accepts four-component color attribute but, similarly
-to all other attributes, it's possible to supply also three-component colors if
-alpha is not important.
+Common mesh setup. The shader accepts either three- or four-component color
+attribute, use either @ref Color3 or @ref Color4 to specify which one you use.
 
 @snippet MagnumShaders.cpp VertexColor-usage1
 
@@ -74,13 +72,28 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
         typedef typename Generic<dimensions>::Position Position;
 
         /**
-         * @brief Vertex color
+         * @brief Three-component vertex color.
          *
-         * @ref shaders-generic "Generic attribute", @ref Color4, however
-         * defaults to @ref Color3 if @ref MAGNUM_BUILD_DEPRECATED is defined.
-         * See the @ref Generic::Color for more information.
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Color3. Use
+         * either this or the @ref Color4 attribute.
          */
-        typedef typename Generic<dimensions>::Color Color;
+        typedef typename Generic<dimensions>::Color3 Color3;
+
+        /**
+         * @brief Four-component vertex color.
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Color4. Use
+         * either this or the @ref Color3 attribute.
+         */
+        typedef typename Generic<dimensions>::Color4 Color4;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Vertex color
+         * @deprecated Use @ref Color3 or @ref Color4 instead.
+         */
+        typedef CORRADE_DEPRECATED("use Color3 or Color4 instead") typename Generic<dimensions>::Color Color;
+        #endif
 
         explicit VertexColor();
 

@@ -68,27 +68,41 @@ template<UnsignedInt dimensions> struct Generic {
     typedef GL::Attribute<2, Vector3> Normal;
 
     /**
-     * @brief Vertex color
+     * @brief Three-component vertex color.
      *
-     * @ref Color4, however defaults to @ref Color3 if @ref MAGNUM_BUILD_DEPRECATED
-     * is defined. See the constructor documentation for more information.
+     * @ref Magnum::Color3. Use either this or the @ref Color4 attribute.
      */
-    struct Color: GL::Attribute<3, Color4> {
+    typedef GL::Attribute<3, Magnum::Color3> Color3;
+
+    /**
+     * @brief Four-component vertex color.
+     *
+     * @ref Magnum::Color4. Use either this or the @ref Color3 attribute.
+     */
+    typedef GL::Attribute<3, Magnum::Color4> Color4;
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * @brief Vertex color
+     * @deprecated Use @ref Color3 or @ref Color4 instead.
+     */
+    struct Color: GL::Attribute<3, Magnum::Color4> {
         /**
          * @brief Constructor
          * @param components    Component count
          * @param dataType      Type of passed data
          * @param dataOptions   Data options
+         *
+         * @deprecated Use @ref Color3 or @ref Color4 instead.
          */
-        constexpr explicit Color(Components components, DataType dataType = DataType::Float, DataOptions dataOptions = {});
+        CORRADE_DEPRECATED("use Color3 or Color4 instead") constexpr explicit Color(Components components, DataType dataType = DataType::Float, DataOptions dataOptions = {});
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief Color(Components, DataType, DataOptions)
-         * @deprecated Use @ref Color(Components, DataType, DataOptions) instead.
+         * @deprecated Use @ref Color3 or @ref Color4 instead.
          */
-        CORRADE_DEPRECATED("use Color(Components, DataType, DataOptions) instead") constexpr explicit Color(DataType dataType = DataType::Float, DataOptions dataOptions = {});
-        #endif
+        CORRADE_DEPRECATED("use Color3 or Color4 instead") constexpr explicit Color(DataType dataType = DataType::Float, DataOptions dataOptions = {});
     };
+    #endif
 };
 #endif
 
@@ -101,14 +115,16 @@ typedef Generic<3> Generic3D;
 #ifndef DOXYGEN_GENERATING_OUTPUT
 struct BaseGeneric {
     typedef GL::Attribute<1, Vector2> TextureCoordinates;
+    typedef GL::Attribute<3, Magnum::Color3> Color3;
+    typedef GL::Attribute<3, Magnum::Color4> Color4;
 
-    struct Color: GL::Attribute<3, Color4> {
-        constexpr explicit Color(Components components, DataType dataType = DataType::Float, DataOptions dataOptions = DataOptions()): Attribute<3, Color4>{components, dataType, dataOptions} {}
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    struct Color: GL::Attribute<3, Magnum::Color4> {
+        CORRADE_DEPRECATED("use Color3 or Color4 instead") constexpr explicit Color(Components components, DataType dataType = DataType::Float, DataOptions dataOptions = DataOptions()): Attribute<3, Magnum::Color4>{components, dataType, dataOptions} {}
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        CORRADE_DEPRECATED("use Color(Components, DataType, DataOptions) instead") constexpr explicit Color(DataType dataType = DataType::Float, DataOptions dataOptions = DataOptions()): Attribute<3, Color4>{Components::Three, dataType, dataOptions} {}
-        #endif
+        CORRADE_DEPRECATED("use Color3 or Color4 instead") constexpr explicit Color(DataType dataType = DataType::Float, DataOptions dataOptions = DataOptions()): Attribute<3, Magnum::Color4>{Components::Three, dataType, dataOptions} {}
     };
+    #endif
 };
 
 template<> struct Generic<2>: BaseGeneric {

@@ -92,6 +92,12 @@ See also:
 -   @ref Platform::GlfwApplication no longer stores a needless global window
     pointer
 
+@subsubsection changelog-latest-changes-shaders Shaders library
+
+-   New dedicated @ref Shaders::VertexColor::Color3 and
+    @ref Shaders::VertexColor::Color4 attribute specifiers for more convenient
+    distinction between three- and four-component vertex color attribute.
+
 @subsubsection changelog-latest-changes-trade Trade library
 
 -   @ref Trade::PhongMaterialData now contains well-defined color values
@@ -145,6 +151,9 @@ See also:
     tuple was deprecated, use the simpler version taking just
     @ref Trade::MeshData2D / @ref Trade::MeshData3D and directly returning a
     @ref GL::Mesh instead
+-   `Shaders::VertexColor::Color` is deprecated, use the direct
+    @ref Shaders::VertexColor::Color3 or @ref Shaders::VertexColor::Color4
+    alternatives instead
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

@@ -202,7 +202,7 @@ std::string ShaderVisualizer::vertexColor() {
         .setCount(sphere.indices().size())
         .addVertexBuffer(vertices, 0,
             Shaders::VertexColor3D::Position{},
-            Shaders::VertexColor3D::Color{Shaders::VertexColor3D::Color::Components::Three})
+            Shaders::VertexColor3D::Color3{})
         .setIndexBuffer(indices, 0, GL::MeshIndexType::UnsignedInt);
 
     Shaders::VertexColor3D shader;

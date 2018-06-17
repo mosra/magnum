@@ -414,7 +414,7 @@ vertices.setData(data, GL::BufferUsage::StaticDraw);
 GL::Mesh mesh;
 mesh.addVertexBuffer(vertices, 0,
     Shaders::VertexColor3D::Position{},
-    Shaders::VertexColor3D::Color{Shaders::VertexColor3D::Color::Components::Three});
+    Shaders::VertexColor3D::Color3{});
 /* [VertexColor-usage1] */
 
 /* [VertexColor-usage2] */

@@ -176,7 +176,7 @@ int PrimitiveVisualizer::exec() {
             vertices.setData(MeshTools::interleave(data->positions(0), data->colors(0)), GL::BufferUsage::StaticDraw);
             indices.setData(data->indices(), GL::BufferUsage::StaticDraw);
             GL::Mesh mesh;
-            mesh.addVertexBuffer(vertices, 0, Shaders::VertexColor2D::Position{}, Shaders::VertexColor2D::Color{Shaders::VertexColor2D::Color::Components::Four})
+            mesh.addVertexBuffer(vertices, 0, Shaders::VertexColor2D::Position{}, Shaders::VertexColor2D::Color4{})
                 .setIndexBuffer(indices, 0, GL::MeshIndexType::UnsignedInt)
                 .setCount(data->indices().size())
                 .setPrimitive(data->primitive());
@@ -205,7 +205,7 @@ int PrimitiveVisualizer::exec() {
             vertices.setData(MeshTools::interleave(data->positions(0), data->colors(0)), GL::BufferUsage::StaticDraw);
             indices.setData(data->indices(), GL::BufferUsage::StaticDraw);
             GL::Mesh mesh;
-            mesh.addVertexBuffer(vertices, 0, Shaders::VertexColor3D::Position{}, Shaders::VertexColor3D::Color{Shaders::VertexColor3D::Color::Components::Four})
+            mesh.addVertexBuffer(vertices, 0, Shaders::VertexColor3D::Position{}, Shaders::VertexColor3D::Color4{})
                 .setIndexBuffer(indices, 0, GL::MeshIndexType::UnsignedInt)
                 .setCount(data->indices().size())
                 .setPrimitive(data->primitive());

@@ -73,7 +73,7 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor() {
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
-        bindAttributeLocation(Color::Location, "color");
+        bindAttributeLocation(Color3::Location, "color"); /* Color4 is the same */
     }
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());

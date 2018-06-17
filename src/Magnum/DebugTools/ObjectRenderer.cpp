@@ -89,7 +89,7 @@ template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(Scen
         .setCount(data.indices().size())
         .addVertexBuffer(*vertexBuffer, 0,
             typename Shaders::VertexColor<dimensions>::Position(),
-            typename Shaders::VertexColor<dimensions>::Color{Shaders::VertexColor<dimensions>::Color::Components::Four})
+            typename Shaders::VertexColor<dimensions>::Color4{})
         .setIndexBuffer(*indexBuffer, 0, GL::MeshIndexType::UnsignedByte, 0, data.positions(0).size());
     ResourceManager::instance().set<GL::Mesh>(_mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
 }
