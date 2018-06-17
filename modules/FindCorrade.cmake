@@ -82,6 +82,8 @@
 #  CORRADE_TARGET_WINDOWS_RT    - Defined if compiled for Windows RT
 #  CORRADE_TARGET_EMSCRIPTEN    - Defined if compiled for Emscripten
 #  CORRADE_TARGET_ANDROID       - Defined if compiled for Android
+#  CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT - Defined if PluginManager
+#   doesn't support dynamic plugin loading due to platform limitations
 #  CORRADE_TESTSUITE_TARGET_XCTEST - Defined if TestSuite is targetting Xcode
 #   XCTest
 #  CORRADE_UTILITY_USE_ANSI_COLORS - Defined if ANSI escape sequences are used
@@ -122,12 +124,16 @@
 #  corrade_add_test(<test name>
 #                   <sources>...
 #                   [LIBRARIES <libraries>...]
-#                   [FILES <files>...])
+#                   [FILES <files>...]
+#                   [ARGUMENTS <arguments>...])
 #
-# Test name is also executable name. You can also specify libraries to link
-# with instead of using :command:`target_link_libraries()`.
-# ``Corrade::TestSuite`` target is linked automatically to each test. Note
+# Test name is also executable name. You can use ``LIBRARIES`` to specify
+# libraries to link with instead of using :command:`target_link_libraries()`.
+# The ``Corrade::TestSuite`` target is linked automatically to each test. Note
 # that the :command:`enable_testing()` function must be called explicitly.
+# Arguments passed after ``ARGUMENTS`` will be appended to the test
+# command line. ``ARGUMENTS`` are supported everywhere except when
+# ``CORRADE_TESTSUITE_TARGET_XCTEST`` is enabled.
 #
 # You can list files needed by the test in the ``FILES`` section. If given
 # filename is relative, it is treated relatively to `CMAKE_CURRENT_SOURCE_DIR`.
@@ -292,6 +298,7 @@ set(_corradeFlags
     TARGET_WINDOWS_RT
     TARGET_EMSCRIPTEN
     TARGET_ANDROID
+    PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     TESTSUITE_TARGET_XCTEST
     UTILITY_USE_ANSI_COLORS)
 foreach(_corradeFlag ${_corradeFlags})
