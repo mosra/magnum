@@ -9,9 +9,8 @@
 #
 # Additionally these variables are defined for internal usage:
 #
-#  SDL2_LIBRARY             - SDL2 library
-#  SDL2_LIBRARY_DEBUG       - SDL2 debug library
-#  SDL2_LIBRARY_RELEASE     - SDL2 release library
+#  SDL2_LIBRARY_DEBUG       - SDL2 debug library, if found
+#  SDL2_LIBRARY_RELEASE     - SDL2 release library, if found
 #  SDL2_INCLUDE_DIR         - Root include dir
 #
 
@@ -20,6 +19,7 @@
 #
 #   Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
 #             Vladimír Vondruš <mosra@centrum.cz>
+#   Copyright © 2018 Jonathan Hale <squareys@googlemail.com>
 #
 #   Permission is hereby granted, free of charge, to any person obtaining a
 #   copy of this software and associated documentation files (the "Software"),
