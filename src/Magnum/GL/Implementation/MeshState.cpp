@@ -92,7 +92,7 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
 
     #ifndef MAGNUM_TARGET_GLES
     /* DSA create implementation (other cases handled above) */
-    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>() && context.isExtensionSupported<Extensions::ARB::vertex_array_object>()) {
         extensions.emplace_back(Extensions::ARB::direct_state_access::string());
         createImplementation = &Mesh::createImplementationVAODSA;
     }
