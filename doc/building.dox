@@ -28,6 +28,8 @@ namespace Magnum {
 /** @page building Downloading and building
 @brief Guide how to download and build Magnum on different platforms.
 
+@m_keywords{Building}
+
 @tableofcontents
 @m_footernavigation
 

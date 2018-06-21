@@ -26,6 +26,8 @@
 /** @page opengl-support Support state
 @brief List of (un)supported OpenGL features and extensions.
 
+@m_keyword{OpenGL support state,,}
+
 @tableofcontents
 @m_footernavigation
 

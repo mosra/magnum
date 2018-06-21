@@ -27,6 +27,8 @@ namespace Magnum {
 /** @page cmake Usage with CMake
 @brief Guide how to find and use Magnum with CMake build system
 
+@m_keywords{CMake}
+
 @tableofcontents
 @m_footernavigation
 
