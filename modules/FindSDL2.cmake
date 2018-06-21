@@ -62,6 +62,9 @@ else()
     find_library(SDL2_LIBRARY_DEBUG
         NAMES SDL2d
         PATH_SUFFIXES ${_SDL_LIBRARY_PATH_SUFFIX})
+    # FPHSA needs one of the _DEBUG/_RELEASE variables to check that the
+    # library was found -- using SDL_LIBRARY, which will get populated by
+    # select_library_configurations() below.
     set(SDL2_LIBRARY_NEEDED SDL2_LIBRARY)
     set(_SDL2_PATH_SUFFIXES SDL2)
 endif()
