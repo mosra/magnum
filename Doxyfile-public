@@ -100,10 +100,10 @@ HTML_EXTRA_STYLESHEET = \
     http://static.magnum.graphics/m-dark.compiled.css \
     http://static.magnum.graphics/m-dark.doxygen.compiled.css
 
-M_SEARCH_DOWNLOAD_BINARY = YES
+#! M_SEARCH_DOWNLOAD_BINARY = YES
 
-M_SEARCH_EXTERNAL_URL = "https://google.com/search?q=site:doc.magnum.graphics+Magnum+{query}"
+#! M_SEARCH_EXTERNAL_URL = "https://google.com/search?q=site:doc.magnum.graphics+Magnum+{query}"
 
-M_FAVICON = http://doc.magnum.graphics/favicon.ico
+#! M_FAVICON = http://doc.magnum.graphics/favicon.ico
 
 # kate: hl Doxyfile
