@@ -60,8 +60,12 @@ build() {
 check() {
     cd "$_rootdir/build-coverage"
     CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 || true
-    CORRADE_TEST_COLOR=ON MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access" ctest --output-on-failure -R GLTest || true
-    CORRADE_TEST_COLOR=ON MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access GL_EXT_direct_state_access" ctest --output-on-failure -R GLTest || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_invalidate_subdata GL_ARB_multi_bind GL_ARB_robustness GL_ARB_separate_shader_objects GL_ARB_texture_storage GL_ARB_texture_storage_multisample" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_EXT_direct_state_access" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_get_texture_sub_image" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_vertex_array_object" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest || true
     ./src/Magnum/Platform/magnum-gl-info --limits > /dev/null
 
     rm -rf coverage
