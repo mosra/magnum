@@ -1485,10 +1485,8 @@ void MeshGLTest::addVertexBufferNormalized() {
 
 #ifndef MAGNUM_TARGET_GLES
 void MeshGLTest::addVertexBufferBGRA() {
-    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::vertex_array_bgra>())
         CORRADE_SKIP(Extensions::ARB::vertex_array_bgra::string() + std::string(" is not available."));
-    #endif
 
     constexpr Color4ub data[] = { {}, {0, 128, 64, 161}, {96, 24, 156, 225} };
     Buffer buffer;
