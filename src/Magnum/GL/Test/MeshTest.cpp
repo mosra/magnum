@@ -43,6 +43,7 @@ struct MeshTest: TestSuite::Tester {
     void constructViewNoCreate();
 
     void constructCopy();
+    void constructMoveNoCreate();
     /* View *is* copyable */
 
     void drawCountNotSet();
@@ -69,6 +70,7 @@ MeshTest::MeshTest() {
               &MeshTest::constructViewNoCreate,
 
               &MeshTest::constructCopy,
+              &MeshTest::constructMoveNoCreate,
 
               &MeshTest::drawCountNotSet,
               &MeshTest::drawViewCountNotSet,
@@ -111,6 +113,23 @@ void MeshTest::constructViewNoCreate() {
 void MeshTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_constructible<Mesh, const Mesh&>{}));
     CORRADE_VERIFY(!(std::is_assignable<Mesh, const Mesh&>{}));
+}
+
+void MeshTest::constructMoveNoCreate() {
+    /* Neither of these should be accessing the GL context */
+    {
+        Mesh a{NoCreate};
+        CORRADE_COMPARE(a.id(), 0);
+
+        Mesh b{std::move(a)};
+        CORRADE_COMPARE(b.id(), 0);
+
+        Mesh c{NoCreate};
+        c = std::move(b);
+        CORRADE_COMPARE(c.id(), 0);
+    }
+
+    CORRADE_VERIFY(true);
 }
 
 namespace {

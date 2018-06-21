@@ -328,11 +328,13 @@ void MeshGLTest::constructMove() {
         CORRADE_VERIFY(id > 0);
     }
 
+    /* Move construct */
     Mesh b(std::move(a));
 
     CORRADE_COMPARE(a.id(), 0);
     CORRADE_COMPARE(b.id(), id);
 
+    /* Move assign */
     Mesh c;
     c.addVertexBuffer(buffer2, 1, Attribute<1, Float>{});
     const Int cId = c.id();
@@ -352,6 +354,16 @@ void MeshGLTest::constructMove() {
     CORRADE_COMPARE(b.id(), cId);
     CORRADE_COMPARE(c.id(), id);
 
+    /* Move assign to a NoCreate instance */
+    Mesh d{NoCreate};
+    d = std::move(c);
+
+    CORRADE_COMPARE(c.id(), 0);
+    CORRADE_COMPARE(d.id(), id);
+
+    /* Destroy */
+    b = Mesh{NoCreate};
+
     /* Test that drawing still works properly */
     {
         MAGNUM_VERIFY_NO_GL_ERROR();
@@ -369,7 +381,7 @@ void MeshGLTest::constructMove() {
                    .bind();
 
         FloatShader shader{"float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"};
-        c.setPrimitive(MeshPrimitive::Points)
+        d.setPrimitive(MeshPrimitive::Points)
          .setCount(1)
          .draw(shader);
 

@@ -1084,10 +1084,10 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         void drawInternal(TransformFeedback& xfb, UnsignedInt stream, Int instanceCount);
         #endif
 
-        void MAGNUM_GL_LOCAL createImplementationDefault();
-        void MAGNUM_GL_LOCAL createImplementationVAO();
+        void MAGNUM_GL_LOCAL createImplementationDefault(bool);
+        void MAGNUM_GL_LOCAL createImplementationVAO(bool createObject);
         #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL createImplementationVAODSA();
+        void MAGNUM_GL_LOCAL createImplementationVAODSA(bool createObject);
         #endif
 
         void MAGNUM_GL_LOCAL moveConstructImplementationDefault(Mesh&& other);
@@ -1095,8 +1095,8 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         void MAGNUM_GL_LOCAL moveAssignImplementationDefault(Mesh&& other);
         void MAGNUM_GL_LOCAL moveAssignImplementationVAO(Mesh&& other);
 
-        void MAGNUM_GL_LOCAL destroyImplementationDefault();
-        void MAGNUM_GL_LOCAL destroyImplementationVAO();
+        void MAGNUM_GL_LOCAL destroyImplementationDefault(bool);
+        void MAGNUM_GL_LOCAL destroyImplementationVAO(bool deleteObject);
 
         void attributePointerInternal(const Buffer& buffer, GLuint location, GLint size, GLenum type, DynamicAttribute::Kind kind, GLintptr offset, GLsizei stride, GLuint divisor);
         void MAGNUM_GL_LOCAL attributePointerInternal(AttributeLayout&& attribute);
@@ -1149,9 +1149,12 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         GLuint _id;
         MeshPrimitive _primitive;
         ObjectFlags _flags;
-        /* using a separate bool instead of Optional to make use of the 3-byte
-           gap after _flags */
+        /* using a separate bool for _count instead of Optional to make use of
+           the 3-byte gap after _flags */
         bool _countSet{};
+        /* Whether the _attributes storage was constructed (it's not when the
+           object is constructed using NoCreate). Also fits in the gap. */
+        bool _constructed{};
         Int _count{}, _baseVertex{}, _instanceCount{1};
         #ifndef MAGNUM_TARGET_GLES
         UnsignedInt _baseInstance{};
