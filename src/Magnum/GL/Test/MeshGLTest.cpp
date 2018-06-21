@@ -439,6 +439,14 @@ template<class T> void MeshGLTest::primitive() {
 
 #ifndef MAGNUM_TARGET_WEBGL
 void MeshGLTest::label() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::vertex_array_object>())
+        CORRADE_SKIP(Extensions::ARB::vertex_array_object::string() + std::string(" is not available."));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current().isExtensionSupported<Extensions::OES::vertex_array_object>())
+        CORRADE_SKIP(Extensions::OES::vertex_array_object::string() + std::string(" is not available."));
+    #endif
+
     /* No-Op version is tested in AbstractObjectGLTest */
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>() &&
        !Context::current().isExtensionSupported<Extensions::EXT::debug_label>())
