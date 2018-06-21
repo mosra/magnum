@@ -722,11 +722,22 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
             # GLX context dependencies
             if(_component STREQUAL GlxContext)
-                find_package(X11)
-                set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                    INTERFACE_INCLUDE_DIRECTORIES ${X11_INCLUDE_DIR})
-                set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                    INTERFACE_LINK_LIBRARIES ${X11_LIBRARIES})
+                # With GLVND (since CMake 3.11) we need to explicitly link to
+                # GLX because libOpenGL doesn't provide it. Also can't use
+                # OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
+                # *not* found. If GLVND is not used, link to X11 instead.
+                set(OpenGL_GL_PREFERENCE GLVND)
+                find_package(OpenGL)
+                if(OPENGL_opengl_LIBRARY)
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES OpenGL::GLX)
+                else()
+                    find_package(X11)
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        INTERFACE_INCLUDE_DIRECTORIES ${X11_INCLUDE_DIR})
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES ${X11_LIBRARIES})
+                endif()
 
             # EGL context dependencies
             elseif(_component STREQUAL EglContext)
