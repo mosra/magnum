@@ -892,7 +892,7 @@ class GlfwApplication::InputEvent {
         constexpr bool isAccepted() const { return _accepted; }
 
     protected:
-        constexpr InputEvent(): _accepted(false) {}
+        constexpr explicit InputEvent(): _accepted(false) {}
 
         ~InputEvent() = default;
 
@@ -1117,7 +1117,7 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
         constexpr bool isRepeated() const { return _repeated; }
 
     private:
-        constexpr KeyEvent(Key key, Modifiers modifiers, bool repeated): _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
+        constexpr explicit KeyEvent(Key key, Modifiers modifiers, bool repeated): _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
 
         const Key _key;
         const Modifiers _modifiers;
@@ -1177,7 +1177,7 @@ class GlfwApplication::MouseEvent: public GlfwApplication::InputEvent {
         constexpr Modifiers modifiers() const { return _modifiers; }
 
     private:
-        constexpr MouseEvent(Button button, const Vector2i& position, Modifiers modifiers): _button(button), _position{position}, _modifiers(modifiers) {}
+        constexpr explicit MouseEvent(Button button, const Vector2i& position, Modifiers modifiers): _button{button}, _position{position}, _modifiers{modifiers} {}
 
         const Button _button;
         const Vector2i _position;
@@ -1276,7 +1276,7 @@ class GlfwApplication::TextInputEvent {
         constexpr Containers::ArrayView<const char> text() const { return _text; }
 
     private:
-        constexpr TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
+        constexpr explicit TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
 
         Containers::ArrayView<const char> _text;
         bool _accepted;
