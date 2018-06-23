@@ -91,6 +91,8 @@ See also:
     well, see @ref opengl-workarounds for more information.
 -   @ref Platform::GlfwApplication no longer stores a needless global window
     pointer
+-   @ref Platform::GlfwApplication now loads modifiers for mouse move and mouse
+    scroll events lazily, only when needed
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 
@@ -129,6 +131,9 @@ See also:
     @ref GL::Framebuffer::clearColor(), @ref GL::Framebuffer::clearDepth(),
     @ref GL::Framebuffer::clearStencil() and @ref GL::Framebuffer::clearDepthStencil()
     were binding the framebuffer for drawing, which was completely unnecessary
+-   @ref Platform::GlfwApplication::InputEvent::Modifier::Super is properly
+    reported for both left and right modifier (Windows/⌘) key instead of just
+    the right one
 
 @subsection changelog-latest-docs Documentation
 

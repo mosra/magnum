@@ -33,6 +33,7 @@
 #include <memory>
 #include <string>
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/Optional.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -1116,8 +1117,6 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
         constexpr bool isRepeated() const { return _repeated; }
 
     private:
-        static Modifiers getCurrentGlfwModifiers(GLFWwindow* window);
-
         constexpr KeyEvent(Key key, Modifiers modifiers, bool repeated): _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
 
         const Key _key;
@@ -1195,16 +1194,21 @@ class GlfwApplication::MouseMoveEvent: public GlfwApplication::InputEvent {
 
     public:
         /** @brief Position */
-        constexpr Vector2i position() const { return _position; }
+        Vector2i position() const { return _position; }
 
-        /** @brief Modifiers */
-        constexpr Modifiers modifiers() const { return _modifiers; }
+        /**
+         * @brief Modifiers
+         *
+         * Lazily populated on first request.
+         */
+        Modifiers modifiers();
 
     private:
-        constexpr MouseMoveEvent(const Vector2i& position, Modifiers modifiers): _position(position), _modifiers(modifiers) {}
+        explicit MouseMoveEvent(GLFWwindow* window, const Vector2i& position): _window{window}, _position{position} {}
 
+        GLFWwindow* _window;
         const Vector2i _position;
-        const Modifiers _modifiers;
+        Containers::Optional<Modifiers> _modifiers;
 };
 
 /**
@@ -1217,16 +1221,21 @@ class GlfwApplication::MouseScrollEvent: public GlfwApplication::InputEvent {
 
     public:
         /** @brief Scroll offset */
-        constexpr Vector2 offset() const { return _offset; }
+        Vector2 offset() const { return _offset; }
 
-        /** @brief Modifiers */
-        constexpr Modifiers modifiers() const { return _modifiers; }
+        /**
+         * @brief Modifiers
+         *
+         * Lazily populated on first request.
+         */
+        Modifiers modifiers();
 
     private:
-        constexpr MouseScrollEvent(const Vector2& offset, Modifiers modifiers): _offset(offset), _modifiers(modifiers) {}
+        explicit MouseScrollEvent(GLFWwindow* window, const Vector2& offset): _window{window}, _offset{offset} {}
 
+        GLFWwindow* _window;
         const Vector2 _offset;
-        const Modifiers _modifiers;
+        Containers::Optional<Modifiers> _modifiers;
 };
 
 /**

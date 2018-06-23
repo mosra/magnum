@@ -148,6 +148,31 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
     return true;
 }
 
+namespace {
+
+GlfwApplication::InputEvent::Modifiers currentGlfwModifiers(GLFWwindow* window) {
+    static_assert(GLFW_PRESS == true && GLFW_RELEASE == false,
+        "GLFW press and release constants do not correspond to bool values");
+
+    GlfwApplication::InputEvent::Modifiers mods;
+    if(glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) ||
+       glfwGetKey(window, GLFW_KEY_RIGHT_SHIFT))
+        mods |= GlfwApplication::InputEvent::Modifier::Shift;
+    if(glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) ||
+       glfwGetKey(window, GLFW_KEY_RIGHT_CONTROL))
+        mods |= GlfwApplication::InputEvent::Modifier::Ctrl;
+    if(glfwGetKey(window, GLFW_KEY_LEFT_ALT) ||
+       glfwGetKey(window, GLFW_KEY_RIGHT_ALT))
+        mods |= GlfwApplication::InputEvent::Modifier::Alt;
+    if(glfwGetKey(window, GLFW_KEY_LEFT_SUPER) ||
+       glfwGetKey(window, GLFW_KEY_RIGHT_SUPER))
+        mods |= GlfwApplication::InputEvent::Modifier::Super;
+
+    return mods;
+}
+
+}
+
 #ifdef MAGNUM_TARGET_GL
 bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConfiguration&
     #ifndef MAGNUM_BUILD_DEPRECATED
@@ -370,9 +395,14 @@ void GlfwApplication::staticKeyEvent(GLFWwindow* const window, const int key, in
     }
 }
 
-void GlfwApplication::staticMouseMoveEvent(GLFWwindow* window, double x, double y) {
-    MouseMoveEvent e{Vector2i{Int(x), Int(y)}, KeyEvent::getCurrentGlfwModifiers(window)};
-    static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->mouseMoveEvent(e);
+auto GlfwApplication::MouseMoveEvent::modifiers() -> Modifiers {
+    if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
+    return *_modifiers;
+}
+
+auto GlfwApplication::MouseScrollEvent::modifiers() -> Modifiers {
+    if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
+    return *_modifiers;
 }
 
 void GlfwApplication::staticMouseEvent(GLFWwindow* window, int button, int action, int mods) {
@@ -389,10 +419,15 @@ void GlfwApplication::staticMouseEvent(GLFWwindow* window, int button, int actio
     } /* we don't handle GLFW_REPEAT */
 }
 
+void GlfwApplication::staticMouseMoveEvent(GLFWwindow* window, double x, double y) {
+    MouseMoveEvent e{window, Vector2i{Int(x), Int(y)}};
+    static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->mouseMoveEvent(e);
+}
+
 void GlfwApplication::staticMouseScrollEvent(GLFWwindow* window, double xoffset, double yoffset) {
     const auto instance = static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
 
-    MouseScrollEvent e(Vector2{Float(xoffset), Float(yoffset)}, KeyEvent::getCurrentGlfwModifiers(window));
+    MouseScrollEvent e(window, Vector2{Float(xoffset), Float(yoffset)});
     instance->mouseScrollEvent(e);
 
     #ifdef MAGNUM_BUILD_DEPRECATED
@@ -401,7 +436,7 @@ void GlfwApplication::staticMouseScrollEvent(GLFWwindow* window, double xoffset,
         #pragma GCC diagnostic push
         #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
         #endif
-        MouseEvent e1((yoffset > 0.0) ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {}, KeyEvent::getCurrentGlfwModifiers(window));
+        MouseEvent e1((yoffset > 0.0) ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {}, currentGlfwModifiers(window));
         #ifdef __GNUC__
         #pragma GCC diagnostic pop
         #endif
@@ -423,23 +458,6 @@ void GlfwApplication::staticTextInputEvent(GLFWwindow* window, unsigned int code
 
 void GlfwApplication::staticErrorCallback(int, const char* description) {
     Error() << description;
-}
-
-auto GlfwApplication::KeyEvent::getCurrentGlfwModifiers(GLFWwindow* window) -> Modifiers {
-    static_assert(GLFW_PRESS == true && GLFW_RELEASE == false,
-        "GLFW press and release constants do not correspond to bool values");
-
-    Modifiers mods;
-    if(glfwGetKey(window, Int(Key::LeftShift)) || glfwGetKey(window, Int(Key::RightShift)))
-        mods |= Modifier::Shift;
-    if(glfwGetKey(window, Int(Key::LeftAlt)) || glfwGetKey(window, Int(Key::RightAlt)))
-        mods |= Modifier::Alt;
-    if(glfwGetKey(window, Int(Key::LeftCtrl)) || glfwGetKey(window, Int(Key::RightCtrl)))
-        mods |= Modifier::Ctrl;
-    if(glfwGetKey(window, Int(Key::RightSuper)))
-        mods |= Modifier::Super;
-
-    return mods;
 }
 
 void GlfwApplication::viewportEvent(const Vector2i&) {}
