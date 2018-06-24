@@ -1193,6 +1193,31 @@ class GlfwApplication::MouseMoveEvent: public GlfwApplication::InputEvent {
     friend GlfwApplication;
 
     public:
+        /**
+         * @brief Mouse button
+         *
+         * @see @ref Buttons, @ref buttons()
+         */
+        enum class Button: UnsignedInt {
+            Left = 1 << GLFW_MOUSE_BUTTON_LEFT,     /**< Left button */
+            Middle = 1 << GLFW_MOUSE_BUTTON_MIDDLE, /**< Middle button */
+            Right = 1 << GLFW_MOUSE_BUTTON_RIGHT    /**< Right button */
+        };
+
+        /**
+         * @brief Set of mouse buttons
+         *
+         * @see @ref buttons()
+         */
+        typedef Containers::EnumSet<Button> Buttons;
+
+        /**
+         * @brief Mouse buttons
+         *
+         * Lazily populated on first request.
+         */
+        Buttons buttons();
+
         /** @brief Position */
         Vector2i position() const { return _position; }
 
@@ -1207,6 +1232,7 @@ class GlfwApplication::MouseMoveEvent: public GlfwApplication::InputEvent {
         explicit MouseMoveEvent(GLFWwindow* window, const Vector2i& position): _window{window}, _position{position} {}
 
         GLFWwindow* _window;
+        Containers::Optional<Buttons> _buttons;
         const Vector2i _position;
         Containers::Optional<Modifiers> _modifiers;
 };

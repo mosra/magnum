@@ -395,6 +395,20 @@ void GlfwApplication::staticKeyEvent(GLFWwindow* const window, const int key, in
     }
 }
 
+auto GlfwApplication::MouseMoveEvent::buttons() -> Buttons {
+    if(!_buttons) {
+        _buttons = Buttons{};
+        for(const Int button: {GLFW_MOUSE_BUTTON_LEFT,
+                               GLFW_MOUSE_BUTTON_MIDDLE,
+                               GLFW_MOUSE_BUTTON_RIGHT}) {
+            if(glfwGetMouseButton(_window, button) == GLFW_PRESS)
+                *_buttons |= Button(1 << button);
+        }
+    }
+
+    return *_buttons;
+}
+
 auto GlfwApplication::MouseMoveEvent::modifiers() -> Modifiers {
     if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
     return *_modifiers;

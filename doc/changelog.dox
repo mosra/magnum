@@ -55,6 +55,11 @@ See also:
 -   Ability to convert @ref Math::BoolVector from and to external
     representation
 
+@subsubsection changelog-latest-new-platform Platform libraries
+
+-   Implemented @ref Platform::GlfwApplication::MouseMoveEvent::buttons() for
+    feature parity with @ref Platform::Sdl2Application
+
 @subsection changelog-latest-changes Changes and improvements
 
 @subsubsection changelog-latest-changes-audio Audio library
