@@ -27,6 +27,8 @@ namespace Magnum {
 /** @page matrix-vector Operations with matrices and vectors
 @brief Introduction to essential classes of the graphics pipeline.
 
+@m_keyword{Matrices and vectors,,}
+
 @tableofcontents
 @m_footernavigation
 
