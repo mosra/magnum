@@ -344,6 +344,10 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
 
 void GlfwApplication::setupCallbacks() {
     glfwSetWindowUserPointer(_window, this);
+    glfwSetWindowRefreshCallback(_window, [](GLFWwindow* const window){
+        /* Properly redraw after the window is restored from minimized state */
+        static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->drawEvent();
+    });
     glfwSetFramebufferSizeCallback(_window, [](GLFWwindow* const window, const int w, const int h) {
         static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->viewportEvent({w, h});
     });
