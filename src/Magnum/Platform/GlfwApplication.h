@@ -37,7 +37,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
-#include "Magnum/Math/Vector2.h"
+#include "Magnum/Math/Vector4.h"
 #include "Magnum/Platform/Platform.h"
 
 #ifdef MAGNUM_TARGET_GL
@@ -482,7 +482,7 @@ CORRADE_ENUMSET_OPERATORS(GlfwApplication::Flags)
 /**
 @brief OpenGL context configuration
 
-Double-buffered RGBA window with depth and stencil buffers.
+The created window is always with double-buffered OpenGL context.
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
@@ -553,6 +553,48 @@ class GlfwApplication::GLConfiguration {
             return *this;
         }
 
+        /** @brief Color buffer size */
+        Vector4i colorBufferSize() const { return _colorBufferSize; }
+
+        /**
+         * @brief Set color buffer size
+         *
+         * Default is @cpp {8, 8, 8, 0} @ce (8-bit-per-channel RGB, no alpha).
+         * @see @ref setDepthBufferSize(), @ref setStencilBufferSize()
+         */
+        GLConfiguration& setColorBufferSize(const Vector4i& size) {
+            _colorBufferSize = size;
+            return *this;
+        }
+
+        /** @brief Depth buffer size */
+        Int depthBufferSize() const { return _depthBufferSize; }
+
+        /**
+         * @brief Set depth buffer size
+         *
+         * Default is @cpp 24 @ce bits.
+         * @see @ref setColorBufferSize(), @ref setStencilBufferSize()
+         */
+        GLConfiguration& setDepthBufferSize(Int size) {
+            _depthBufferSize = size;
+            return *this;
+        }
+
+        /** @brief Stencil buffer size */
+        Int stencilBufferSize() const { return _stencilBufferSize; }
+
+        /**
+         * @brief Set stencil buffer size
+         *
+         * Default is @cpp 0 @ce bits (i.e., no stencil buffer).
+         * @see @ref setColorBufferSize(), @ref setDepthBufferSize()
+         */
+        GLConfiguration& setStencilBufferSize(Int size) {
+            _stencilBufferSize = size;
+            return *this;
+        }
+
         /** @brief Sample count */
         Int sampleCount() const { return _sampleCount; }
 
@@ -584,6 +626,8 @@ class GlfwApplication::GLConfiguration {
         }
 
     private:
+        Vector4i _colorBufferSize;
+        Int _depthBufferSize, _stencilBufferSize;
         Int _sampleCount;
         GL::Version _version;
         Flags _flags;

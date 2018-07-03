@@ -37,7 +37,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
 #include "Magnum/GL/GL.h"
-#include "Magnum/Math/Vector2.h"
+#include "Magnum/Math/Vector4.h"
 #include "Magnum/Platform/Platform.h"
 
 #if defined(CORRADE_TARGET_ANDROID) || defined(DOXYGEN_GENERATING_OUTPUT)
@@ -393,7 +393,7 @@ Double-buffered RGBA canvas with depth and stencil buffers.
 */
 class AndroidApplication::GLConfiguration {
     public:
-        constexpr /*implicit*/ GLConfiguration() {}
+        /*implicit*/ GLConfiguration();
 
         /**
          * @brief Set context version
@@ -404,6 +404,52 @@ class AndroidApplication::GLConfiguration {
          *      settings.
          */
         GLConfiguration& setVersion(GL::Version) { return *this; }
+
+        /** @brief Color buffer size */
+        Vector4i colorBufferSize() const { return _colorBufferSize; }
+
+        /**
+         * @brief Set color buffer size
+         *
+         * Default is @cpp {8, 8, 8, 0} @ce (8-bit-per-channel RGB, no alpha).
+         * @see @ref setDepthBufferSize(), @ref setStencilBufferSize()
+         */
+        GLConfiguration& setColorBufferSize(const Vector4i& size) {
+            _colorBufferSize = size;
+            return *this;
+        }
+
+        /** @brief Depth buffer size */
+        Int depthBufferSize() const { return _depthBufferSize; }
+
+        /**
+         * @brief Set depth buffer size
+         *
+         * Default is @cpp 24 @ce bits.
+         * @see @ref setColorBufferSize(), @ref setStencilBufferSize()
+         */
+        GLConfiguration& setDepthBufferSize(Int size) {
+            _depthBufferSize = size;
+            return *this;
+        }
+
+        /** @brief Stencil buffer size */
+        Int stencilBufferSize() const { return _stencilBufferSize; }
+
+        /**
+         * @brief Set stencil buffer size
+         *
+         * Default is @cpp 0 @ce bits (i.e., no stencil buffer).
+         * @see @ref setColorBufferSize(), @ref setDepthBufferSize()
+         */
+        GLConfiguration& setStencilBufferSize(Int size) {
+            _stencilBufferSize = size;
+            return *this;
+        }
+
+    private:
+        Vector4i _colorBufferSize;
+        Int _depthBufferSize, _stencilBufferSize;
 };
 
 /**

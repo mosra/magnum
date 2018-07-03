@@ -166,9 +166,14 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
 
     CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::Sdl2Application::tryCreate(): context already created", false);
 
-    /* Enable double buffering and 24bt depth buffer */
+    /* Enable double buffering, set up buffer sizes */
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
+    SDL_GL_SetAttribute(SDL_GL_RED_SIZE, glConfiguration.colorBufferSize().r());
+    SDL_GL_SetAttribute(SDL_GL_GREEN_SIZE, glConfiguration.colorBufferSize().g());
+    SDL_GL_SetAttribute(SDL_GL_BLUE_SIZE, glConfiguration.colorBufferSize().b());
+    SDL_GL_SetAttribute(SDL_GL_ALPHA_SIZE, glConfiguration.colorBufferSize().a());
+    SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, glConfiguration.depthBufferSize());
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, glConfiguration.stencilBufferSize());
 
     /* Multisampling */
     SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, glConfiguration.sampleCount() > 1 ? 1 : 0);
@@ -613,6 +618,7 @@ void Sdl2Application::textEditingEvent(TextEditingEvent&) {}
 
 #ifdef MAGNUM_TARGET_GL
 Sdl2Application::GLConfiguration::GLConfiguration():
+    _colorBufferSize{8, 8, 8, 0}, _depthBufferSize{24}, _stencilBufferSize{0},
     _sampleCount(0)
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     , _version(GL::Version::None), _sRGBCapable{false}

@@ -98,7 +98,7 @@ bool AndroidApplication::tryCreate(const Configuration& configuration) {
     return tryCreate(configuration, GLConfiguration{});
 }
 
-bool AndroidApplication::tryCreate(const Configuration& configuration, const GLConfiguration&) {
+bool AndroidApplication::tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration) {
     CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::AndroidApplication::tryCreate(): context already created", false);
 
     /* Initialize EGL */
@@ -112,10 +112,12 @@ bool AndroidApplication::tryCreate(const Configuration& configuration, const GLC
     /* Choose config */
     const EGLint configAttributes[] = {
         EGL_SURFACE_TYPE, EGL_WINDOW_BIT,
-        EGL_BLUE_SIZE, 8,
-        EGL_GREEN_SIZE, 8,
-        EGL_RED_SIZE, 8,
-        EGL_DEPTH_SIZE, 24,
+        EGL_RED_SIZE, glConfiguration.colorBufferSize().r(),
+        EGL_GREEN_SIZE, glConfiguration.colorBufferSize().g(),
+        EGL_BLUE_SIZE, glConfiguration.colorBufferSize().b(),
+        EGL_ALPHA_SIZE, glConfiguration.colorBufferSize().a(),
+        EGL_DEPTH_SIZE, glConfiguration.depthBufferSize(),
+        EGL_STENCIL_SIZE, glConfiguration.stencilBufferSize(),
         EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
         EGL_NONE
     };
@@ -241,6 +243,9 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
 
     return 0;
 }
+
+AndroidApplication::GLConfiguration::GLConfiguration():
+    _colorBufferSize{8, 8, 8, 0}, _depthBufferSize{24}, _stencilBufferSize{0} {}
 
 void AndroidApplication::exec(android_app* state, std::unique_ptr<AndroidApplication>(*instancer)(const Arguments&)) {
     state->onAppCmd = commandEvent;

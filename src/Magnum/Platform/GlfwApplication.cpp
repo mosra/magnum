@@ -210,7 +210,13 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     }
     glfwWindowHint(GLFW_FOCUSED, configuration.windowFlags() >= Configuration::WindowFlag::Focused);
 
-    /* Context window hints */
+    /* Framebuffer setup */
+    glfwWindowHint(GLFW_RED_BITS, glConfiguration.colorBufferSize().r());
+    glfwWindowHint(GLFW_GREEN_BITS, glConfiguration.colorBufferSize().g());
+    glfwWindowHint(GLFW_BLUE_BITS, glConfiguration.colorBufferSize().b());
+    glfwWindowHint(GLFW_ALPHA_BITS, glConfiguration.colorBufferSize().a());
+    glfwWindowHint(GLFW_DEPTH_BITS, glConfiguration.depthBufferSize());
+    glfwWindowHint(GLFW_STENCIL_BITS, glConfiguration.stencilBufferSize());
     glfwWindowHint(GLFW_SAMPLES, glConfiguration.sampleCount());
     glfwWindowHint(GLFW_SRGB_CAPABLE, glConfiguration.isSRGBCapable());
 
@@ -473,7 +479,9 @@ void GlfwApplication::mouseScrollEvent(MouseScrollEvent&) {}
 void GlfwApplication::textInputEvent(TextInputEvent&) {}
 
 #ifdef MAGNUM_TARGET_GL
-GlfwApplication::GLConfiguration::GLConfiguration(): _sampleCount{0}, _version{GL::Version::None} {}
+GlfwApplication::GLConfiguration::GLConfiguration():
+    _colorBufferSize{8, 8, 8, 0}, _depthBufferSize{24}, _stencilBufferSize{0},
+    _sampleCount{0}, _version{GL::Version::None} {}
 
 GlfwApplication::GLConfiguration::~GLConfiguration() = default;
 #endif

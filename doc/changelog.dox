@@ -59,6 +59,12 @@ See also:
 
 -   Implemented @ref Platform::GlfwApplication::MouseMoveEvent::buttons() for
     feature parity with @ref Platform::Sdl2Application
+-   Added @ref Platform::Sdl2Application::GLConfiguration::setColorBufferSize() "GLConfiguration::setColorBufferSize()",
+    @ref Platform::Sdl2Application::GLConfiguration::setDepthBufferSize() "GLConfiguration::setDepthBufferSize()",
+    @ref Platform::Sdl2Application::GLConfiguration::setStencilBufferSize() "GLConfiguration::setStencilBufferSize()",
+    to @ref Platform::Sdl2Application, @ref Platform::GlfwApplication and
+    @ref Platform::AndroidApplication. This also makes the default framebuffer
+    parameters consistent across the implementations.
 
 @subsection changelog-latest-changes Changes and improvements
 
