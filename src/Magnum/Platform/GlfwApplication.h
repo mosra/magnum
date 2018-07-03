@@ -483,6 +483,11 @@ CORRADE_ENUMSET_OPERATORS(GlfwApplication::Flags)
 @brief OpenGL context configuration
 
 Double-buffered RGBA window with depth and stencil buffers.
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+
 @see @ref GlfwApplication(), @ref create(), @ref tryCreate()
 */
 class GlfwApplication::GLConfiguration {
@@ -591,7 +596,6 @@ CORRADE_ENUMSET_OPERATORS(GlfwApplication::GLConfiguration::Flags)
 /**
 @brief Configuration
 
-Double-buffered RGBA window with depth and stencil buffers.
 @see @ref GlfwApplication(), @ref create(), @ref tryCreate()
 */
 class GlfwApplication::Configuration {
