@@ -55,6 +55,17 @@ namespace Implementation {
 
     template<class> struct IsBoolVector: std::false_type {};
     template<std::size_t size> struct IsBoolVector<BoolVector<size>>: std::true_type {};
+
+    template<class T> struct IsVectorOrScalar: std::is_arithmetic<T>::type {};
+    template<template<class> class Derived, class T> struct IsVectorOrScalar<Unit<Derived, T>>: std::true_type {};
+    template<class T> struct IsVectorOrScalar<Deg<T>>: std::true_type {};
+    template<class T> struct IsVectorOrScalar<Rad<T>>: std::true_type {};
+    template<std::size_t size, class T> struct IsVectorOrScalar<Vector<size, T>>: std::true_type {};
+    template<class T> struct IsVectorOrScalar<Vector2<T>>: std::true_type {};
+    template<class T> struct IsVectorOrScalar<Vector3<T>>: std::true_type {};
+    template<class T> struct IsVectorOrScalar<Vector4<T>>: std::true_type {};
+    template<class T> struct IsVectorOrScalar<Color3<T>>: std::true_type {};
+    template<class T> struct IsVectorOrScalar<Color4<T>>: std::true_type {};
 }
 
 /**
@@ -549,16 +560,15 @@ See @ref select() for constant interpolation using the same API.
 @see @ref lerpInverted(), @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T)
 @m_keyword{mix(),GLSL mix(),}
 */
-#ifdef DOXYGEN_GENERATING_OUTPUT
-template<class T, class U> inline T lerp(const T& a, const T& b, U t);
-#else
-template<class T, class U> inline typename std::enable_if<!Implementation::IsBoolVector<U>::value, T>::type lerp(T a, T b, U t) {
-    return T(Implementation::lerp(a, b, t));
-}
-template<std::size_t size, class T, class U> inline typename std::enable_if<!Implementation::IsBoolVector<U>::value, Vector<size, T>>::type lerp(const Vector<size, T>& a, const Vector<size, T>& b, U t) {
+template<class T, class U> inline
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    typename std::enable_if<Implementation::IsVectorOrScalar<T>::value && !Implementation::IsBoolVector<U>::value, T>::type
+    #else
+    T
+    #endif
+lerp(const T& a, const T& b, U t) {
     return Implementation::lerp(a, b, t);
 }
-#endif
 
 /** @overload
 Similar to the above, but instead of multiplication and addition it just does
