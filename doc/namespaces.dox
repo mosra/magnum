@@ -178,6 +178,18 @@ target_link_libraries(your-app Magnum::Magnum)
 See @ref building and @ref cmake for more information.
 */
 
+/** @dir Magnum/Animation
+ * @brief Namespace @ref Magnum::Animation
+ */
+/** @namespace Magnum::Animation
+@brief Keyframe-based animation
+
+This library is built as part of Magnum by default. To use it, you need to
+find `Magnum` package and link to `Magnum::Magnum` target. See @ref building
+and @ref cmake for more information.
+@experimental
+*/
+
 /** @dir Magnum/Audio
  * @brief Namespace @ref Magnum::Audio, @ref Magnum::Audio::Extensions
  */

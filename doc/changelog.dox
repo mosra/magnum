@@ -40,6 +40,11 @@ See also:
 
 @subsection changelog-latest-new New features
 
+@subsubsection changelog-latest-new-animation Animation library
+
+-   New experimental @ref Animation library for keyframe-based animation
+    playback
+
 @subsubsection changelog-latest-new-math Math library
 
 -   Added @ref Math::Intersection::rangeFrustum(),

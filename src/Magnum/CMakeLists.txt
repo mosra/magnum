@@ -32,7 +32,9 @@ set(Magnum_SRCS
     PixelStorage.cpp
     Resource.cpp
     Sampler.cpp
-    Timeline.cpp)
+    Timeline.cpp
+
+    Animation/Interpolation.cpp)
 
 set(Magnum_GracefulAssert_SRCS
     Image.cpp
@@ -199,6 +201,7 @@ install(TARGETS Magnum
 install(FILES ${Magnum_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/configure.h DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR})
 
+add_subdirectory(Animation)
 add_subdirectory(Math)
 add_subdirectory(Platform)
 
