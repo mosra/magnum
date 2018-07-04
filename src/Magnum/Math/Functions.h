@@ -542,7 +542,7 @@ template<std::size_t size, class T> Vector<size, T> sqrtInverted(const Vector<si
 @param t     Interpolation phase (from range @f$ [0; 1] @f$)
 
 The interpolation for vectors is done as in following, similarly for scalars: @f[
-    \boldsymbol v_{LERP} = (1 - t) \boldsymbol v_A + t \boldsymbol v_B
+    \boldsymbol{v_{LERP}} = (1 - t) \boldsymbol{v_A} + t \boldsymbol{v_B}
 @f]
 @see @ref lerpInverted(), @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T)
 @m_keyword{mix(),GLSL mix(),}
@@ -589,7 +589,7 @@ template<std::size_t size> inline BoolVector<size> lerp(const BoolVector<size>& 
 @param lerp Interpolated value
 
 Returns interpolation phase *t*: @f[
-    t = \frac{\boldsymbol v_{LERP} - \boldsymbol v_A}{\boldsymbol v_B - \boldsymbol v_A}
+    t = \frac{\boldsymbol{v_{LERP}} - \boldsymbol{v_A}}{\boldsymbol{v_B} - \boldsymbol{v_A}}
 @f]
 @see @ref lerp()
 */
