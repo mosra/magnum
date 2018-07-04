@@ -58,6 +58,7 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void lerp();
     void lerpBool();
     void lerpInverted();
+    void select();
     void fma();
 
     void logIntegral();
@@ -105,6 +106,7 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::lerp,
               &FunctionsTest::lerpBool,
               &FunctionsTest::lerpInverted,
+              &FunctionsTest::select,
               &FunctionsTest::fma,
 
               &FunctionsTest::logIntegral,
@@ -302,6 +304,23 @@ void FunctionsTest::lerpInverted() {
     Vector3 a(-1.0f, 2.0f, 3.0f);
     Vector3 b(3.0f, -2.0f, 11.0f);
     CORRADE_COMPARE(Math::lerpInverted(a, b, Vector3(0.0f, 0.0f, 9.0f)), Vector3(0.25f, 0.5f, 0.75f));
+}
+
+void FunctionsTest::select() {
+    /* Floating-point / integral scalar */
+    CORRADE_COMPARE(Math::select(2.0f, 5.0f, 0.5f), 2.0f);
+    CORRADE_COMPARE(Math::select(2.0f, 5.0f, 1.0f), 5.0f);
+    CORRADE_COMPARE(Math::select(2, 5, -0.5f), 2);
+    CORRADE_COMPARE(Math::select(2, 5, 1.1f), 5);
+
+    /* Floating-point vector */
+    Vector3 a(-1.0f, 2.0f, 3.0f);
+    Vector3 b(3.0f, -2.0f, 11.0f);
+    CORRADE_COMPARE(Math::select(a, b, -0.25f), Vector3(-1.0f, 2.0f, 3.0f));
+    CORRADE_COMPARE(Math::select(a, b, 5.5f), Vector3(3.0f, -2.0f, 11.0f));
+
+    /* Vector as interpolation phase */
+    CORRADE_COMPARE(Math::select(a, b, Vector3(0.25f, 1.5f, 1.0f)), Vector3(-1.0f, -2.0f, 11.0f));
 }
 
 void FunctionsTest::fma() {

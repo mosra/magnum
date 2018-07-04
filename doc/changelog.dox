@@ -52,6 +52,8 @@ See also:
     @ref Math::Intersection::aabbCone(),
     @ref Math::Intersection::rangeCone()
 -   Added @ref Math::Constants::piQuarter()
+-   Added a convenience function @ref Math::select() as a constant
+    interpolation counterpart to @ref Math::lerp()
 -   Ability to convert @ref Math::BoolVector from and to external
     representation
 
