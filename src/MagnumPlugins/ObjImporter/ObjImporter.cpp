@@ -374,7 +374,7 @@ Containers::Optional<MeshData3D> ObjImporter::doMesh3D(UnsignedInt id) {
             return Containers::NullOpt;
         }
 
-    }} catch(std::exception) {
+    }} catch(const std::exception&) {
         Error() << "Trade::ObjImporter::mesh3D(): error while converting numeric data";
         return Containers::NullOpt;
     } catch(...) {
