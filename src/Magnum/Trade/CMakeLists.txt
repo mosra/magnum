@@ -34,14 +34,14 @@ set(MagnumTrade_SRCS
     MeshData3D.cpp
     MeshObjectData2D.cpp
     MeshObjectData3D.cpp
-    PhongMaterialData.cpp
     SceneData.cpp
     TextureData.cpp)
 
 set(MagnumTrade_GracefulAssert_SRCS
     ImageData.cpp
     ObjectData2D.cpp
-    ObjectData3D.cpp)
+    ObjectData3D.cpp
+    PhongMaterialData.cpp)
 
 set(MagnumTrade_HEADERS
     AbstractImporter.h
