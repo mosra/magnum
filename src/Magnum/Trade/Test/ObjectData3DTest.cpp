@@ -80,6 +80,7 @@ void ObjectData3DTest::constructEmpty() {
     CORRADE_COMPARE(data.transformation(), Matrix4::translation(Vector3::xAxis(-4.0f)));
     CORRADE_COMPARE(data.instanceType(), ObjectInstanceType3D::Empty);
     CORRADE_COMPARE(data.instance(), -1);
+    CORRADE_COMPARE(data.importerState(), &a);
 }
 
 void ObjectData3DTest::constructEmptyTransformations() {
@@ -97,6 +98,7 @@ void ObjectData3DTest::constructEmptyTransformations() {
         Matrix4::scaling(Vector3::yScale(1.5f)));
     CORRADE_COMPARE(data.instanceType(), ObjectInstanceType3D::Empty);
     CORRADE_COMPARE(data.instance(), -1);
+    CORRADE_COMPARE(data.importerState(), &a);
 }
 
 void ObjectData3DTest::constructMesh() {
@@ -109,6 +111,7 @@ void ObjectData3DTest::constructMesh() {
     CORRADE_COMPARE(data.instanceType(), ObjectInstanceType3D::Mesh);
     CORRADE_COMPARE(data.instance(), 13);
     CORRADE_COMPARE(data.material(), 42);
+    CORRADE_COMPARE(data.importerState(), &a);
 }
 
 void ObjectData3DTest::constructMeshTransformations() {
@@ -127,6 +130,7 @@ void ObjectData3DTest::constructMeshTransformations() {
     CORRADE_COMPARE(data.instanceType(), ObjectInstanceType3D::Mesh);
     CORRADE_COMPARE(data.instance(), 13);
     CORRADE_COMPARE(data.material(), 42);
+    CORRADE_COMPARE(data.importerState(), &a);
 }
 
 void ObjectData3DTest::constructCamera() {
@@ -138,6 +142,7 @@ void ObjectData3DTest::constructCamera() {
     CORRADE_COMPARE(data.transformation(), Matrix4::translation(Vector3::yAxis(5.0f)));
     CORRADE_COMPARE(data.instanceType(), ObjectInstanceType3D::Camera);
     CORRADE_COMPARE(data.instance(), 42);
+    CORRADE_COMPARE(data.importerState(), &a);
 }
 
 void ObjectData3DTest::constructLight() {
@@ -149,6 +154,7 @@ void ObjectData3DTest::constructLight() {
     CORRADE_COMPARE(data.transformation(), Matrix4::translation(Vector3::yAxis(5.0f)));
     CORRADE_COMPARE(data.instanceType(), ObjectInstanceType3D::Light);
     CORRADE_COMPARE(data.instance(), 42);
+    CORRADE_COMPARE(data.importerState(), &a);
 }
 
 void ObjectData3DTest::constructCopy() {
@@ -175,6 +181,7 @@ void ObjectData3DTest::constructMoveTransformations() {
         Matrix4::scaling(Vector3::yScale(1.5f)));
     CORRADE_COMPARE(b.instanceType(), ObjectInstanceType3D::Light);
     CORRADE_COMPARE(b.instance(), 13);
+    CORRADE_COMPARE(b.importerState(), &a);
 
     const int c{};
     ObjectData3D d{{0, 1}, Matrix4{}, ObjectInstanceType3D::Empty, 27, &c};
@@ -192,6 +199,7 @@ void ObjectData3DTest::constructMoveTransformations() {
         Matrix4::scaling(Vector3::yScale(1.5f)));
     CORRADE_COMPARE(d.instanceType(), ObjectInstanceType3D::Light);
     CORRADE_COMPARE(d.instance(), 13);
+    CORRADE_COMPARE(d.importerState(), &a);
 }
 
 void ObjectData3DTest::constructMoveMesh() {
@@ -206,6 +214,7 @@ void ObjectData3DTest::constructMoveMesh() {
     CORRADE_COMPARE(b.instanceType(), ObjectInstanceType3D::Mesh);
     CORRADE_COMPARE(b.instance(), 13);
     CORRADE_COMPARE(b.material(), 42);
+    CORRADE_COMPARE(b.importerState(), &a);
 
     const int c{};
     MeshObjectData3D d{{0, 1}, {}, 27, -1, &c};
@@ -218,6 +227,7 @@ void ObjectData3DTest::constructMoveMesh() {
     CORRADE_COMPARE(d.instanceType(), ObjectInstanceType3D::Mesh);
     CORRADE_COMPARE(d.instance(), 13);
     CORRADE_COMPARE(d.material(), 42);
+    CORRADE_COMPARE(d.importerState(), &a);
 }
 
 void ObjectData3DTest::accessInvalidTransformations() {

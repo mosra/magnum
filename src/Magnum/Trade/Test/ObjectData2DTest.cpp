@@ -78,6 +78,7 @@ void ObjectData2DTest::constructEmpty() {
     CORRADE_COMPARE(data.transformation(), Matrix3::translation(Vector2::xAxis(-4.0f)));
     CORRADE_COMPARE(data.instanceType(), ObjectInstanceType2D::Empty);
     CORRADE_COMPARE(data.instance(), -1);
+    CORRADE_COMPARE(data.importerState(), &a);
 }
 
 void ObjectData2DTest::constructEmptyTransformations() {
@@ -95,6 +96,7 @@ void ObjectData2DTest::constructEmptyTransformations() {
         Matrix3::scaling(Vector2::yScale(1.5f)));
     CORRADE_COMPARE(data.instanceType(), ObjectInstanceType2D::Empty);
     CORRADE_COMPARE(data.instance(), -1);
+    CORRADE_COMPARE(data.importerState(), &a);
 }
 
 void ObjectData2DTest::constructMesh() {
@@ -107,6 +109,7 @@ void ObjectData2DTest::constructMesh() {
     CORRADE_COMPARE(data.instanceType(), ObjectInstanceType2D::Mesh);
     CORRADE_COMPARE(data.instance(), 13);
     CORRADE_COMPARE(data.material(), 42);
+    CORRADE_COMPARE(data.importerState(), &a);
 }
 
 void ObjectData2DTest::constructMeshTransformations() {
@@ -125,6 +128,7 @@ void ObjectData2DTest::constructMeshTransformations() {
     CORRADE_COMPARE(data.instanceType(), ObjectInstanceType2D::Mesh);
     CORRADE_COMPARE(data.instance(), 13);
     CORRADE_COMPARE(data.material(), 42);
+    CORRADE_COMPARE(data.importerState(), &a);
 }
 
 void ObjectData2DTest::constructCamera() {
@@ -136,6 +140,7 @@ void ObjectData2DTest::constructCamera() {
     CORRADE_COMPARE(data.transformation(), Matrix3::translation(Vector2::yAxis(5.0f)));
     CORRADE_COMPARE(data.instanceType(), ObjectInstanceType2D::Camera);
     CORRADE_COMPARE(data.instance(), 42);
+    CORRADE_COMPARE(data.importerState(), &a);
 }
 
 void ObjectData2DTest::constructCopy() {
@@ -162,6 +167,7 @@ void ObjectData2DTest::constructMoveTransformations() {
         Matrix3::scaling(Vector2::yScale(1.5f)));
     CORRADE_COMPARE(b.instanceType(), ObjectInstanceType2D::Camera);
     CORRADE_COMPARE(b.instance(), 13);
+    CORRADE_COMPARE(b.importerState(), &a);
 
     const int c{};
     ObjectData2D d{{0, 1}, Matrix3{}, ObjectInstanceType2D::Empty, 27, &c};
@@ -179,6 +185,7 @@ void ObjectData2DTest::constructMoveTransformations() {
         Matrix3::scaling(Vector2::yScale(1.5f)));
     CORRADE_COMPARE(d.instanceType(), ObjectInstanceType2D::Camera);
     CORRADE_COMPARE(d.instance(), 13);
+    CORRADE_COMPARE(d.importerState(), &a);
 }
 
 void ObjectData2DTest::constructMoveMesh() {
@@ -193,6 +200,7 @@ void ObjectData2DTest::constructMoveMesh() {
     CORRADE_COMPARE(b.instanceType(), ObjectInstanceType2D::Mesh);
     CORRADE_COMPARE(b.instance(), 13);
     CORRADE_COMPARE(b.material(), 42);
+    CORRADE_COMPARE(b.importerState(), &a);
 
     const int c{};
     MeshObjectData2D d{{0, 1}, {}, 27, -1, &c};
@@ -205,6 +213,7 @@ void ObjectData2DTest::constructMoveMesh() {
     CORRADE_COMPARE(d.instanceType(), ObjectInstanceType2D::Mesh);
     CORRADE_COMPARE(d.instance(), 13);
     CORRADE_COMPARE(d.material(), 42);
+    CORRADE_COMPARE(d.importerState(), &a);
 }
 
 void ObjectData2DTest::accessInvalidTransformations() {
