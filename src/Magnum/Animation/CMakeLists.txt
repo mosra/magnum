@@ -25,7 +25,8 @@
 
 set(MagnumAnimation_HEADERS
     Animation.h
-    Interpolation.h)
+    Interpolation.h
+    Track.h)
 
 # Force IDEs to display all header files in project view
 add_custom_target(MagnumAnimation SOURCES ${MagnumAnimation_HEADERS})

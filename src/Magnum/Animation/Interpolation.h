@@ -63,7 +63,8 @@ template<class V> using ResultOf = typename Implementation::TypeTraits<V>::Resul
 Describes what value is returned for frames outside of keyframe range for given
 track (frame lower than first keyframe or frame larger or equal to last
 keyframe).
-@see @ref interpolate()
+@see @ref interpolate(), @ref Track::before(), @ref Track::after(),
+    @ref TrackView::before(), @ref TrackView::after()
 @experimental
 */
 enum class Extrapolation: UnsignedByte {
@@ -120,6 +121,10 @@ calculated interpolation factor, returning the interpolated value.
 The @p hint parameter hints where to start the linear search and is updated
 with keyframe index matching @p frame. If @p frame is earlier than @p hint, the
 search is restarted from the beginning.
+
+Used internally from @ref Track::at() / @ref TrackView::at(), see @ref Track
+documentation for more information.
+
 @see @ref interpolateStrict(), @ref Math::select(), @ref Math::lerp(),
     @ref Math::slerp(), @ref Math::sclerp()
 @experimental
@@ -139,6 +144,10 @@ restarted from the beginning.
 This is a stricter but more performant version of @ref interpolate() with
 implicit @ref Extrapolation::Extrapolated behavior. Expects that there are
 always at least two keyframes.
+
+Used internally from @ref Track::atStrict() / @ref TrackView::atStrict(), see
+@ref Track documentation for more information.
+
 @see @ref Math::select(), @ref Math::lerp(), @ref Math::slerp(),
     @ref Math::sclerp()
 @experimental

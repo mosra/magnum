@@ -40,6 +40,7 @@ endif()
 
 add_library(snippets-Magnum STATIC
     Magnum.cpp
+    MagnumAnimation.cpp
     MagnumMath.cpp)
 target_link_libraries(snippets-Magnum PRIVATE Magnum)
 set_target_properties(snippets-Magnum PROPERTIES FOLDER "Magnum/doc/snippets")

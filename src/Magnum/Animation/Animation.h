@@ -41,6 +41,9 @@ template<class V> using ResultOf = typename Implementation::TypeTraits<V>::Resul
 
 enum class Extrapolation: UnsignedByte;
 
+template<class, class> class Track;
+template<class, class> class TrackView;
+
 }}
 
 #endif
