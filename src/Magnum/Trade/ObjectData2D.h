@@ -33,6 +33,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Complex.h"
 #include "Magnum/Trade/visibility.h"
 
 namespace Magnum { namespace Trade {
@@ -55,6 +56,31 @@ enum class ObjectInstanceType2D: UnsignedByte {
 };
 
 /**
+@brief 2D object flag
+
+@see @ref ObjectFlags2D, @ref ObjectData2D::flags()
+*/
+enum class ObjectFlag2D: UnsignedByte {
+    /**
+     * The object provides separate translation / rotation / scaling
+     * properties. The @ref ObjectData2D::transformation() matrix returns them
+     * combined, but it's possible to access particular parts of the
+     * transformation using @ref ObjectData2D::translation(),
+     * @ref ObjectData2D::rotation() and @ref ObjectData2D::scaling().
+     */
+    HasTransformationRotationScaling = 1 << 0
+};
+
+/**
+@brief 2D object flags
+
+@see @ref ObjectData2D::flags()
+*/
+typedef Containers::EnumSet<ObjectFlag2D> ObjectFlags2D;
+
+CORRADE_ENUMSET_OPERATORS(ObjectFlags2D)
+
+/**
 @brief Two-dimensional object data
 
 Provides access to object transformation and hierarchy.
@@ -63,7 +89,7 @@ Provides access to object transformation and hierarchy.
 class MAGNUM_TRADE_EXPORT ObjectData2D {
     public:
         /**
-         * @brief Constructor
+         * @brief Construct with combined transformation
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          * @param instanceType      Instance type
@@ -73,12 +99,34 @@ class MAGNUM_TRADE_EXPORT ObjectData2D {
         explicit ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, ObjectInstanceType2D instanceType, UnsignedInt instance, const void* importerState = nullptr);
 
         /**
-         * @brief Constructor for empty instance
+         * @brief Construct with separate transformations
+         * @param children          Child objects
+         * @param translation       Translation (relative to parent)
+         * @param rotation          Rotation (relative to parent)
+         * @param scaling           Scaling (relative to parent)
+         * @param instanceType      Instance type
+         * @param instance          Instance ID
+         * @param importerState     Importer-specific state
+         */
+        explicit ObjectData2D(std::vector<UnsignedInt> children, const Vector2& translation, const Complex& rotation, const Vector2& scaling, ObjectInstanceType2D instanceType, UnsignedInt instance, const void* importerState = nullptr);
+
+        /**
+         * @brief Construct empty instance with combined transformation
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          * @param importerState     Importer-specific state
          */
         explicit ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, const void* importerState = nullptr);
+
+        /**
+         * @brief Construct empty instance with separate transformations
+         * @param children          Child objects
+         * @param translation       Translation (relative to parent)
+         * @param rotation          Rotation (relative to parent)
+         * @param scaling           Scaling (relative to parent)
+         * @param importerState     Importer-specific state
+         */
+        explicit ObjectData2D(std::vector<UnsignedInt> children, const Vector2& translation, const Complex& rotation, const Vector2& scaling, const void* importerState = nullptr);
 
         /** @brief Copying is not allowed */
         ObjectData2D(const ObjectData2D&) = delete;
@@ -113,8 +161,62 @@ class MAGNUM_TRADE_EXPORT ObjectData2D {
         std::vector<UnsignedInt>& children() { return _children; }
         const std::vector<UnsignedInt>& children() const { return _children; } /**< @overload */
 
-        /** @brief Transformation (relative to parent) */
-        Matrix3 transformation() const { return _transformation; }
+        /** @brief Flags */
+        ObjectFlags2D flags() const { return _flags; }
+
+        /**
+         * @brief Translation (relative to parent)
+         *
+         * Available only if @ref ObjectFlag2D::HasTransformationRotationScaling
+         * is set, use @ref transformation() otherwise. Applied as last in the
+         * final transformation, see @ref transformation() for more
+         * information.
+         * @see @ref flags(), @ref rotation(), @ref scaling()
+         */
+        Vector2 translation() const;
+
+        /**
+         * @brief Rotation (relative to parent)
+         *
+         * Available only if @ref ObjectFlag2D::HasTransformationRotationScaling
+         * is set, use @ref transformation() otherwise. Applied second in the
+         * final transformation, see @ref transformation() for more
+         * information.
+         * @see @ref flags(), @ref translation(), @ref scaling()
+         */
+        Complex rotation() const;
+
+        /**
+         * @brief Scaling (relative to parent)
+         *
+         * Available only if @ref ObjectFlag2D::HasTransformationRotationScaling
+         * is set, use @ref transformation() otherwise. Applied as first in the
+         * final transformation, see @ref transformation() for more
+         * information.
+         * @see @ref flags(), @ref translation(), @ref rotation()
+         */
+        Vector2 scaling() const;
+
+        /**
+         * @brief Transformation (relative to parent)
+         *
+         * If @ref ObjectFlag2D::HasTransformationRotationScaling is not set,
+         * returns the imported object transformation matrix. Otherwise
+         * calculates the final transformation matrix @f$ \boldsymbol{M} @f$
+         * from translation, rotation and scaling matrices @f$ \boldsymbol{T} @f$,
+         * @f$ \boldsymbol{R} @f$, @f$ \boldsymbol{S} @f$ created from
+         * @ref translation(), @ref rotation() and @ref scaling() in the
+         * following order: @f[
+         *      \boldsymbol{M} = \boldsymbol{T} \boldsymbol{R} \boldsymbol{S}
+         * @f]
+         *
+         * The corresponding code is as follows:
+         *
+         * @snippet MagnumTrade.cpp ObjectData2D-transformation
+         *
+         * @see @ref flags()
+         */
+        Matrix3 transformation() const;
 
         /**
          * @brief Instance type
@@ -141,14 +243,32 @@ class MAGNUM_TRADE_EXPORT ObjectData2D {
 
     private:
         std::vector<UnsignedInt> _children;
-        Matrix3 _transformation;
+        union Transformation {
+            Transformation(const Matrix3& matrix): matrix{matrix} {}
+            Transformation(const Vector2& translation, const Complex& rotation, const Vector2& scaling): trs{translation, rotation, scaling} {}
+            ~Transformation() {}
+
+            Matrix3 matrix;
+            struct {
+                Vector2 translation;
+                Complex rotation;
+                Vector2 scaling;
+            } trs;
+        } _transformation;
         ObjectInstanceType2D _instanceType;
+        ObjectFlags2D _flags;
         Int _instance;
         const void* _importerState;
 };
 
 /** @debugoperatorenum{ObjectInstanceType2D} */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ObjectInstanceType2D value);
+
+/** @debugoperatorenum{ObjectFlag2D} */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ObjectFlag2D value);
+
+/** @debugoperatorenum{ObjectFlags2D} */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ObjectFlags2D value);
 
 }}
 

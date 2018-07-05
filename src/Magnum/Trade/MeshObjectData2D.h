@@ -42,7 +42,7 @@ Provides access to material information for given mesh instance.
 class MAGNUM_TRADE_EXPORT MeshObjectData2D: public ObjectData2D {
     public:
         /**
-         * @brief Constructor
+         * @brief Construct with combined transformation
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          * @param instance          Instance ID
@@ -52,6 +52,20 @@ class MAGNUM_TRADE_EXPORT MeshObjectData2D: public ObjectData2D {
          * Creates object with mesh instance type.
          */
         explicit MeshObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, UnsignedInt instance, Int material, const void* importerState = nullptr);
+
+        /**
+         * @brief Construct with separate transformations
+         * @param children          Child objects
+         * @param translation       Translation (relative to parent)
+         * @param rotation          Rotation (relative to parent)
+         * @param scaling           Scaling (relative to parent)
+         * @param instance          Instance ID
+         * @param material          Material ID or `-1`
+         * @param importerState     Importer-specific state
+         *
+         * Creates object with mesh instance type.
+         */
+        explicit MeshObjectData2D(std::vector<UnsignedInt> children, const Vector2& translation, const Complex& rotation, const Vector2& scaling, UnsignedInt instance, Int material, const void* importerState = nullptr);
 
         /** @brief Copying is not allowed */
         MeshObjectData2D(const MeshObjectData2D&) = delete;

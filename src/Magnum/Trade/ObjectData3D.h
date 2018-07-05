@@ -33,6 +33,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Matrix4.h"
+#include "Magnum/Math/Quaternion.h"
 #include "Magnum/Trade/visibility.h"
 
 namespace Magnum { namespace Trade {
@@ -56,6 +57,31 @@ enum class ObjectInstanceType3D: UnsignedByte {
 };
 
 /**
+@brief 3D object flag
+
+@see @ref ObjectFlags3D, @ref ObjectData3D::flags()
+*/
+enum class ObjectFlag3D: UnsignedByte {
+    /**
+     * The object provides separate translation / rotation / scaling
+     * properties. The @ref ObjectData3D::transformation() matrix returns them
+     * combined, but it's possible to access particular parts of the
+     * transformation using @ref ObjectData3D::translation(),
+     * @ref ObjectData3D::rotation() and @ref ObjectData3D::scaling().
+     */
+    HasTransformationRotationScaling = 1 << 0
+};
+
+/**
+@brief 3D object flags
+
+@see @ref ObjectData3D::flags()
+*/
+typedef Containers::EnumSet<ObjectFlag3D> ObjectFlags3D;
+
+CORRADE_ENUMSET_OPERATORS(ObjectFlags3D)
+
+/**
 @brief Three-dimensional object data
 
 Provides access to object transformation and hierarchy.
@@ -64,7 +90,7 @@ Provides access to object transformation and hierarchy.
 class MAGNUM_TRADE_EXPORT ObjectData3D {
     public:
         /**
-         * @brief Constructor
+         * @brief Construct with combined transformation
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          * @param instanceType      Instance type
@@ -74,12 +100,34 @@ class MAGNUM_TRADE_EXPORT ObjectData3D {
         explicit ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, ObjectInstanceType3D instanceType, UnsignedInt instance, const void* importerState = nullptr);
 
         /**
-         * @brief Constructor for empty instance
+         * @brief Construct with separate transformations
+         * @param children          Child objects
+         * @param translation       Translation (relative to parent)
+         * @param rotation          Rotation (relative to parent)
+         * @param scaling           Scaling (relative to parent)
+         * @param instanceType      Instance type
+         * @param instance          Instance ID
+         * @param importerState     Importer-specific state
+         */
+        explicit ObjectData3D(std::vector<UnsignedInt> children, const Vector3& translation, const Quaternion& rotation, const Vector3& scaling, ObjectInstanceType3D instanceType, UnsignedInt instance, const void* importerState = nullptr);
+
+        /**
+         * @brief Construct empty instance with combined transformation
          * @param children          Child objects
          * @param transformation    Transformation (relative to parent)
          * @param importerState     Importer-specific state
          */
         explicit ObjectData3D(std::vector<UnsignedInt> children, const Matrix4& transformation, const void* importerState = nullptr);
+
+        /**
+         * @brief Construct empty instance with separate transformations
+         * @param children          Child objects
+         * @param translation       Translation (relative to parent)
+         * @param rotation          Rotation (relative to parent)
+         * @param scaling           Scaling (relative to parent)
+         * @param importerState     Importer-specific state
+         */
+        explicit ObjectData3D(std::vector<UnsignedInt> children, const Vector3& translation, const Quaternion& rotation, const Vector3& scaling, const void* importerState = nullptr);
 
         /** @brief Copying is not allowed */
         ObjectData3D(const ObjectData3D&) = delete;
@@ -114,8 +162,62 @@ class MAGNUM_TRADE_EXPORT ObjectData3D {
         std::vector<UnsignedInt>& children() { return _children; }
         const std::vector<UnsignedInt>& children() const { return _children; } /**< @overload */
 
-        /** @brief Transformation (relative to parent) */
-        Matrix4 transformation() const { return _transformation; }
+        /** @brief Flags */
+        ObjectFlags3D flags() const { return _flags; }
+
+        /**
+         * @brief Translation (relative to parent)
+         *
+         * Available only if @ref ObjectFlag3D::HasTransformationRotationScaling
+         * is set, use @ref transformation() otherwise. Applied as last in the
+         * final transformation, see @ref transformation() for more
+         * information.
+         * @see @ref flags(), @ref rotation(), @ref scaling()
+         */
+        Vector3 translation() const;
+
+        /**
+         * @brief Rotation (relative to parent)
+         *
+         * Available only if @ref ObjectFlag3D::HasTransformationRotationScaling
+         * is set, use @ref transformation() otherwise. Applied second in the
+         * final transformation, see @ref transformation() for more
+         * information.
+         * @see @ref flags(), @ref translation(), @ref scaling()
+         */
+        Quaternion rotation() const;
+
+        /**
+         * @brief Scaling (relative to parent)
+         *
+         * Available only if @ref ObjectFlag3D::HasTransformationRotationScaling
+         * is set, use @ref transformation() otherwise. Applied as first in the
+         * final transformation, see @ref transformation() for more
+         * information.
+         * @see @ref flags(), @ref translation(), @ref rotation()
+         */
+        Vector3 scaling() const;
+
+        /**
+         * @brief Transformation (relative to parent)
+         *
+         * If @ref ObjectFlag3D::HasTransformationRotationScaling is not set,
+         * returns the imported object transformation matrix. Otherwise
+         * calculates the final transformation matrix @f$ \boldsymbol{M} @f$
+         * from translation, rotation and scaling matrices @f$ \boldsymbol{T} @f$,
+         * @f$ \boldsymbol{R} @f$, @f$ \boldsymbol{S} @f$ created from
+         * @ref translation(), @ref rotation() and @ref scaling() in the
+         * following order: @f[
+         *      \boldsymbol{M} = \boldsymbol{T} \boldsymbol{R} \boldsymbol{S}
+         * @f]
+         *
+         * The corresponding code is as follows:
+         *
+         * @snippet MagnumTrade.cpp ObjectData3D-transformation
+         *
+         * @see @ref flags()
+         */
+        Matrix4 transformation() const;
 
         /**
          * @brief Instance type
@@ -140,14 +242,32 @@ class MAGNUM_TRADE_EXPORT ObjectData3D {
 
     private:
         std::vector<UnsignedInt> _children;
-        Matrix4 _transformation;
+        union Transformation {
+            Transformation(const Matrix4& matrix): matrix{matrix} {}
+            Transformation(const Vector3& translation, const Quaternion& rotation, const Vector3& scaling): trs{translation, rotation, scaling} {}
+            ~Transformation() {}
+
+            Matrix4 matrix;
+            struct {
+                Vector3 translation;
+                Quaternion rotation;
+                Vector3 scaling;
+            } trs;
+        } _transformation;
         ObjectInstanceType3D _instanceType;
+        ObjectFlags3D _flags;
         Int _instance;
         const void* _importerState;
 };
 
 /** @debugoperatorenum{ObjectInstanceType3D} */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ObjectInstanceType3D value);
+
+/** @debugoperatorenum{ObjectFlag3D} */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ObjectFlag3D value);
+
+/** @debugoperatorenum{ObjectFlags3D} */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ObjectFlags3D value);
 
 }}
 

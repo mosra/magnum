@@ -26,6 +26,8 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
+#include "Magnum/Trade/ObjectData2D.h"
+#include "Magnum/Trade/ObjectData3D.h"
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Texture.h"
 #endif
@@ -66,5 +68,27 @@ else
 /* [ImageData-usage] */
 }
 #endif
+
+{
+Trade::ObjectData2D& foo();
+Trade::ObjectData2D& data = foo();
+/* [ObjectData2D-transformation] */
+Matrix3 transformation =
+    Matrix3::from(data.rotation().toMatrix(), data.translation())*
+    Matrix3::scaling(data.scaling());
+/* [ObjectData2D-transformation] */
+static_cast<void>(transformation);
+}
+
+{
+Trade::ObjectData3D& bar();
+Trade::ObjectData3D& data = bar();
+/* [ObjectData3D-transformation] */
+Matrix4 transformation =
+    Matrix4::from(data.rotation().toMatrix(), data.translation())*
+    Matrix4::scaling(data.scaling());
+/* [ObjectData3D-transformation] */
+static_cast<void>(transformation);
+}
 
 }
