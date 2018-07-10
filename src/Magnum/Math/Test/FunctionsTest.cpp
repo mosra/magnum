@@ -27,7 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Functions.h"
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Vector4.h"
 
 namespace Magnum { namespace Math { namespace Test {
 
@@ -59,6 +59,7 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void lerpBool();
     void lerpInverted();
     void select();
+    void selectBool();
     void fma();
 
     void logIntegral();
@@ -77,6 +78,7 @@ typedef Math::Deg<Float> Deg;
 typedef Math::Rad<Float> Rad;
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector3<Float> Vector3;
+typedef Math::Vector4<Float> Vector4;
 typedef Math::Vector3<UnsignedByte> Vector3ub;
 typedef Math::Vector3<Byte> Vector3b;
 typedef Math::Vector3<Int> Vector3i;
@@ -107,6 +109,7 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::lerpBool,
               &FunctionsTest::lerpInverted,
               &FunctionsTest::select,
+              &FunctionsTest::selectBool,
               &FunctionsTest::fma,
 
               &FunctionsTest::logIntegral,
@@ -292,6 +295,11 @@ void FunctionsTest::lerp() {
 }
 
 void FunctionsTest::lerpBool() {
+    /* Scalar interpolation phase */
+    CORRADE_COMPARE(Math::lerp(Vector3i{1, 2, 3}, Vector3i{5, 6, 7}, true), (Vector3i{5, 6, 7}));
+    CORRADE_COMPARE(Math::lerp(BoolVector<3>{5}, BoolVector<3>{true}, false), BoolVector<3>{5});
+
+    /* Vector interpolation phase */
     CORRADE_COMPARE(Math::lerp(Vector3i{1, 2, 3}, Vector3i{5, 6, 7}, BoolVector<3>(5)), (Vector3i{5, 2, 7}));
     CORRADE_COMPARE(Math::lerp(BoolVector<3>{false}, BoolVector<3>{true}, BoolVector<3>(5)), BoolVector<3>{5});
 }
@@ -321,6 +329,12 @@ void FunctionsTest::select() {
 
     /* Vector as interpolation phase */
     CORRADE_COMPARE(Math::select(a, b, Vector3(0.25f, 1.5f, 1.0f)), Vector3(-1.0f, -2.0f, 11.0f));
+}
+
+void FunctionsTest::selectBool() {
+    CORRADE_COMPARE(Math::select(true, false, 0.5f), true);
+    CORRADE_COMPARE(Math::select(Math::BoolVector<4>{0xa}, Math::BoolVector<4>{0x5}, 1.1f), Math::BoolVector<4>{0x5});
+    CORRADE_COMPARE(Math::select(Math::BoolVector<4>{0xa}, Math::BoolVector<4>{0x5}, Vector4{1.1f, -1.0f, 1.3f, 0.5f}), Math::BoolVector<4>{0xf});
 }
 
 void FunctionsTest::fma() {

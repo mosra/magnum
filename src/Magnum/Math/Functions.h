@@ -53,8 +53,9 @@ namespace Implementation {
         template<class T> constexpr static T pow(T) { return T(1); }
     };
 
-    template<class> struct IsBoolVector: std::false_type {};
-    template<std::size_t size> struct IsBoolVector<BoolVector<size>>: std::true_type {};
+    template<class> struct IsBoolVectorOrScalar: std::false_type {};
+    template<> struct IsBoolVectorOrScalar<bool>: std::true_type {};
+    template<std::size_t size> struct IsBoolVectorOrScalar<BoolVector<size>>: std::true_type {};
 
     template<class T> struct IsVectorOrScalar: std::is_arithmetic<T>::type {};
     template<template<class> class Derived, class T> struct IsVectorOrScalar<Unit<Derived, T>>: std::true_type {};
@@ -562,12 +563,19 @@ See @ref select() for constant interpolation using the same API.
 */
 template<class T, class U> inline
     #ifndef DOXYGEN_GENERATING_OUTPUT
-    typename std::enable_if<Implementation::IsVectorOrScalar<T>::value && !Implementation::IsBoolVector<U>::value, T>::type
+    typename std::enable_if<Implementation::IsVectorOrScalar<T>::value && !Implementation::IsBoolVectorOrScalar<U>::value, T>::type
     #else
     T
     #endif
 lerp(const T& a, const T& b, U t) {
     return Implementation::lerp(a, b, t);
+}
+
+/** @overload
+@m_keyword{mix(),GLSL mix(),}
+*/
+template<class T> inline T lerp(const T& a, const T& b, bool t) {
+    return t ? b : a;
 }
 
 /** @overload
