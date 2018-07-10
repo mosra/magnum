@@ -39,6 +39,8 @@ namespace Magnum { namespace Math {
 /** @todo Denormals to zero */
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+template<std::size_t> class BoolVector;
+
 /* Class Constants used only statically */
 
 template<UnsignedInt, UnsignedInt, class> class Bezier;
