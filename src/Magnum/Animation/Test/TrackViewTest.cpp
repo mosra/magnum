@@ -39,6 +39,8 @@ struct TrackViewTest: TestSuite::Tester {
     void constructSingleArray();
     void constructSingleArrayDefaults();
 
+    void constructCopyStorage();
+
     void at();
     void atStrict();
     void atDifferentResultType();
@@ -88,7 +90,9 @@ TrackViewTest::TrackViewTest() {
     addTests({&TrackViewTest::construct,
               &TrackViewTest::constructDefaults,
               &TrackViewTest::constructSingleArray,
-              &TrackViewTest::constructSingleArrayDefaults});
+              &TrackViewTest::constructSingleArrayDefaults,
+
+              &TrackViewTest::constructCopyStorage});
 
     addInstancedTests({&TrackViewTest::at,
                        &TrackViewTest::atStrict}, Containers::arraySize(AtData));
@@ -159,6 +163,26 @@ void TrackViewTest::constructSingleArrayDefaults() {
     CORRADE_COMPARE(a.keys().size(), 2);
     CORRADE_COMPARE(a.values().size(), 2);
     CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
+}
+
+void TrackViewTest::constructCopyStorage() {
+    const std::pair<Float, Vector3> data[]{
+        {0.0f, {3.0f, 1.0f, 0.1f}},
+        {5.0f, {0.3f, 0.6f, 1.0f}}};
+
+    const TrackView<Float, Vector3> a{data, Math::lerp,
+        Extrapolation::Extrapolated, Extrapolation::DefaultConstructed};
+
+    const TrackViewStorage b = a;
+
+    auto& bv = *static_cast<const TrackView<Float, Vector3>*>(&b);
+
+    CORRADE_COMPARE(bv.interpolator(), Math::lerp);
+    CORRADE_COMPARE(bv.before(), Extrapolation::Extrapolated);
+    CORRADE_COMPARE(bv.after(), Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(bv.keys().size(), 2);
+    CORRADE_COMPARE(bv.values().size(), 2);
+    CORRADE_COMPARE(bv[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
 }
 
 namespace {
