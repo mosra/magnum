@@ -40,6 +40,7 @@ namespace Magnum { namespace Animation {
 @brief Animation track
 @tparam K       Key type
 @tparam V       Value type
+@tparam R       Result type
 
 Immutable storage of keyframe + value pairs.
 
@@ -106,7 +107,11 @@ instead of having data duplicated scattered across disjoint allocations of
 
 @experimental
 */
-template<class K, class V> class Track {
+template<class K, class V, class R
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    = ResultOf<V>
+    #endif
+> class Track {
     public:
         /** @brief Key type */
         typedef K KeyType;
@@ -115,7 +120,7 @@ template<class K, class V> class Track {
         typedef V ValueType;
 
         /** @brief Animation result type */
-        typedef ResultOf<V> ResultType;
+        typedef R ResultType;
 
         /** @brief Interpolation function */
         typedef ResultType(*Interpolator)(const ValueType&, const ValueType&, Float);
@@ -133,32 +138,32 @@ template<class K, class V> class Track {
         explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: _data{std::move(data)}, _interpolator{interpolator}, _before{before}, _after{after} {}
 
         /** @overload */
-        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolator interpolator, Extrapolation before, Extrapolation after): Track<K, V>{Containers::Array<std::pair<K, V>>{Containers::InPlaceInit, data}, interpolator, before, after} {}
+        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolator interpolator, Extrapolation before, Extrapolation after): Track<K, V, R>{Containers::Array<std::pair<K, V>>{Containers::InPlaceInit, data}, interpolator, before, after} {}
 
         /** @overload
          * Equivalent to calling @ref Track(Containers::Array<std::pair<K, V>>&&, Interpolator, Extrapolation, Extrapolation)
          * with both @p before and @p after set to @p extrapolation.
          */
-        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant) noexcept: Track<K, V>{std::move(data), interpolator, extrapolation, extrapolation} {}
+        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant) noexcept: Track<K, V, R>{std::move(data), interpolator, extrapolation, extrapolation} {}
 
         /** @overload */
-        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant): Track<K, V>{Containers::Array<std::pair<K, V>>{Containers::InPlaceInit, data}, interpolator, extrapolation} {}
+        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant): Track<K, V, R>{Containers::Array<std::pair<K, V>>{Containers::InPlaceInit, data}, interpolator, extrapolation, extrapolation} {}
 
         /** @brief Copying is not allowed */
-        Track(const Track<K, V>&) = delete;
+        Track(const Track<K, V, R>&) = delete;
 
         /** @brief Move constructor */
-        Track(Track<K, V>&&) = default;
+        Track(Track<K, V, R>&&) = default;
 
         /** @brief Copying is not allowed */
-        Track<K, V>& operator=(const Track<K, V>&) = delete;
+        Track<K, V, R>& operator=(const Track<K, V, R>&) = delete;
 
         /** @brief Move constructor */
-        Track<K, V>& operator=(Track<K, V>&&) = default;
+        Track<K, V, R>& operator=(Track<K, V, R>&&) = default;
 
         /** @brief Conversion to a view */
-        operator TrackView<K, V>() const noexcept {
-            return TrackView<K, V>{_data, _interpolator, _before, _after};
+        operator TrackView<K, V, R>() const noexcept {
+            return TrackView<K, V, R>{_data, _interpolator, _before, _after};
         }
 
         /** @brief Interpolation function */
@@ -214,7 +219,7 @@ template<class K, class V> class Track {
          * time, use @ref at(K, std::size_t&) const to supply a search hint.
          * @see @ref atStrict()
          */
-        ResultOf<V> at(K frame) const {
+        R at(K frame) const {
             std::size_t hint{};
             return at(frame, hint);
         }
@@ -226,7 +231,7 @@ template<class K, class V> class Track {
          * information.
          * @see @ref at(K) const, @ref atStrict(K, std::size_t&) const
          */
-        ResultOf<V> at(K frame, std::size_t& hint) const {
+        R at(K frame, std::size_t& hint) const {
             return interpolate(keys(), values(), _before, _after, _interpolator, frame, hint);
         }
 
@@ -237,7 +242,7 @@ template<class K, class V> class Track {
          * restrictions. Calls @ref interpolateStrict(), see its documentation
          * for more information.
          */
-        ResultOf<V> atStrict(K frame, std::size_t& hint) const {
+        R atStrict(K frame, std::size_t& hint) const {
             return interpolateStrict(keys(), values(), _interpolator, frame, hint);
         }
 
@@ -251,12 +256,17 @@ template<class K, class V> class Track {
 @brief Animation track view
 @tparam K       Key type
 @tparam V       Value type
+@tparam R       Result type
 
 Unlike @ref Track this is a non-owning view onto keyframe + value pairs. See
 its documentation for more information.
 @experimental
 */
-template<class K, class V> class TrackView {
+template<class K, class V, class R
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    = ResultOf<V>
+    #endif
+> class TrackView {
     public:
         /** @brief Key type */
         typedef K KeyType;
@@ -265,7 +275,7 @@ template<class K, class V> class TrackView {
         typedef V ValueType;
 
         /** @brief Animation result type */
-        typedef ResultOf<V> ResultType;
+        typedef R ResultType;
 
         /** @brief Interpolation function */
         typedef ResultType(*Interpolator)(const ValueType&, const ValueType&, Float);
@@ -287,7 +297,7 @@ template<class K, class V> class TrackView {
          * Equivalent to calling @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolator, Extrapolation, Extrapolation)
          * with both @p before and @p after set to @p extrapolation.
          */
-        constexpr explicit TrackView(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Extrapolated) noexcept: TrackView<K, V>{keys, values, interpolator, extrapolation, extrapolation} {}
+        constexpr explicit TrackView(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Extrapolated) noexcept: TrackView<K, V, R>{keys, values, interpolator, extrapolation, extrapolation} {}
 
         /**
          * @brief Construct from an interleaved array
@@ -305,7 +315,7 @@ template<class K, class V> class TrackView {
          * Equivalent to calling @ref TrackView(Containers::ArrayView<const std::pair<K, V>>, Interpolator, Extrapolation, Extrapolation)
          * with both @p before and @p after set to @p extrapolation.
          */
-        constexpr explicit TrackView(Containers::ArrayView<const std::pair<K, V>> data, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Extrapolated) noexcept: TrackView<K, V>{data, interpolator, extrapolation, extrapolation} {}
+        constexpr explicit TrackView(Containers::ArrayView<const std::pair<K, V>> data, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Extrapolated) noexcept: TrackView<K, V, R>{data, interpolator, extrapolation, extrapolation} {}
 
         /**
          * @brief Extrapolation behavior before first keyframe
@@ -351,7 +361,7 @@ template<class K, class V> class TrackView {
          * time, use @ref at(K, std::size_t&) const to supply a search hint.
          * @see @ref atStrict(K, std::size_t&) const
          */
-        ResultOf<V> at(K frame) const {
+        R at(K frame) const {
             std::size_t hint{};
             return at(frame, hint);
         }
@@ -363,7 +373,7 @@ template<class K, class V> class TrackView {
          * information.
          * @see @ref at(K) const, @ref atStrict(K, std::size_t&) const
          */
-        ResultOf<V> at(K frame, std::size_t& hint) const {
+        R at(K frame, std::size_t& hint) const {
             return interpolate(_keys, _values, _before, _after, _interpolator, frame, hint);
         }
 
@@ -374,7 +384,7 @@ template<class K, class V> class TrackView {
          * restrictions. Calls @ref interpolateStrict(), see its documentation
          * for more information.
          */
-        ResultOf<V> atStrict(K frame, std::size_t& hint) const {
+        R atStrict(K frame, std::size_t& hint) const {
             return interpolateStrict(_keys, _values, _interpolator, frame, hint);
         }
 

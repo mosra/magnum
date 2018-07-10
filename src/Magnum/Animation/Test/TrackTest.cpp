@@ -26,6 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Animation/Track.h"
+#include "Magnum/Math/Half.h"
 #include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace Animation { namespace Test {
@@ -42,6 +43,8 @@ struct TrackTest: TestSuite::Tester {
 
     void at();
     void atStrict();
+    void atDifferentResultType();
+    void atDifferentResultTypeStrict();
 };
 
 namespace {
@@ -93,6 +96,9 @@ TrackTest::TrackTest() {
 
     addInstancedTests({&TrackTest::at,
                        &TrackTest::atStrict}, Containers::arraySize(AtData));
+
+    addTests({&TrackTest::atDifferentResultType,
+              &TrackTest::atDifferentResultTypeStrict});
 }
 
 using namespace Math::Literals;
@@ -216,6 +222,41 @@ void TrackTest::atStrict() {
     std::size_t hint{};
     CORRADE_COMPARE(a.atStrict(data.time, hint), data.expectedValueStrict);
     CORRADE_COMPARE(hint, data.expectedHint);
+}
+
+namespace {
+    Float lerpHalf(const Half& a, const Half& b, Float t) {
+        return Math::lerp(Float(a), Float(b), t);
+    }
+}
+
+void TrackTest::atDifferentResultType() {
+    using namespace Math::Literals;
+
+    const Track<Float, Half, Float> a{
+        {{0.0f, 3.0_h},
+         {2.0f, 1.0_h},
+         {4.0f, 2.5_h},
+         {5.0f, 0.5_h}}, lerpHalf};
+
+    std::size_t hint{};
+    CORRADE_COMPARE(a.at(4.75f, hint), 1.0f);
+    CORRADE_COMPARE(a.at(4.75f), 1.0f);
+    CORRADE_COMPARE(hint, 2);
+}
+
+void TrackTest::atDifferentResultTypeStrict() {
+    using namespace Math::Literals;
+
+    const Track<Float, Half, Float> a{
+        {{0.0f, 3.0_h},
+         {2.0f, 1.0_h},
+         {4.0f, 2.5_h},
+         {5.0f, 0.5_h}}, lerpHalf};
+
+    std::size_t hint{};
+    CORRADE_COMPARE(a.atStrict(4.75f, hint), 1.0f);
+    CORRADE_COMPARE(hint, 2);
 }
 
 }}}

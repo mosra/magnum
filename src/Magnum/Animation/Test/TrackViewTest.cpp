@@ -26,6 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Animation/Track.h"
+#include "Magnum/Math/Half.h"
 #include "Magnum/Math/Vector3.h"
 
 namespace Magnum { namespace Animation { namespace Test {
@@ -40,6 +41,8 @@ struct TrackViewTest: TestSuite::Tester {
 
     void at();
     void atStrict();
+    void atDifferentResultType();
+    void atDifferentResultTypeStrict();
 };
 
 namespace {
@@ -89,6 +92,9 @@ TrackViewTest::TrackViewTest() {
 
     addInstancedTests({&TrackViewTest::at,
                        &TrackViewTest::atStrict}, Containers::arraySize(AtData));
+
+    addTests({&TrackViewTest::atDifferentResultType,
+              &TrackViewTest::atDifferentResultTypeStrict});
 }
 
 using namespace Math::Literals;
@@ -186,6 +192,37 @@ void TrackViewTest::atStrict() {
     std::size_t hint{};
     CORRADE_COMPARE(a.atStrict(data.time, hint), data.expectedValueStrict);
     CORRADE_COMPARE(hint, data.expectedHint);
+}
+
+namespace {
+    using namespace Math::Literals;
+
+    const Half HalfValues[]{3.0_h, 1.0_h, 2.5_h, 0.5_h};
+
+    Float lerpHalf(const Half& a, const Half& b, Float t) {
+        return Math::lerp(Float(a), Float(b), t);
+    }
+}
+
+void TrackViewTest::atDifferentResultType() {
+    const TrackView<Float, Half, Float> a{
+        {&Keyframes[0].first, Containers::arraySize(Keyframes), sizeof(Keyframes[0])},
+        HalfValues, lerpHalf};
+
+    std::size_t hint{};
+    CORRADE_COMPARE(a.at(4.75f, hint), 1.0f);
+    CORRADE_COMPARE(a.at(4.75f), 1.0f);
+    CORRADE_COMPARE(hint, 2);
+}
+
+void TrackViewTest::atDifferentResultTypeStrict() {
+    const TrackView<Float, Half, Float> a{
+        {&Keyframes[0].first, Containers::arraySize(Keyframes), sizeof(Keyframes[0])},
+        HalfValues, lerpHalf};
+
+    std::size_t hint{};
+    CORRADE_COMPARE(a.atStrict(4.75f, hint), 1.0f);
+    CORRADE_COMPARE(hint, 2);
 }
 
 }}}

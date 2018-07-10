@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Animation/Interpolation.h"
+#include "Magnum/Math/Half.h"
 
 namespace Magnum { namespace Animation { namespace Test {
 
@@ -40,6 +41,9 @@ struct InterpolationTest: TestSuite::Tester {
 
     void interpolateHint();
     void interpolateStrictHint();
+
+    void interpolateDifferentResultType();
+    void interpolateStrictDifferentResultType();
 
     void interpolateError();
     void interpolateStrictError();
@@ -131,7 +135,10 @@ InterpolationTest::InterpolationTest() {
                        &InterpolationTest::interpolateStrictHint},
                        Containers::arraySize(HintData));
 
-    addTests({&InterpolationTest::interpolateError,
+    addTests({&InterpolationTest::interpolateDifferentResultType,
+              &InterpolationTest::interpolateStrictDifferentResultType,
+
+              &InterpolationTest::interpolateError,
               &InterpolationTest::interpolateStrictError,
 
               &InterpolationTest::debugExtrapolation});
@@ -202,6 +209,30 @@ void InterpolationTest::interpolateStrictHint() {
     std::size_t hint = data.hint;
     CORRADE_COMPARE((Animation::interpolateStrict<Float, Float>(
         Keys, Values, Math::lerp, 4.75f, hint)), 1.0f);
+    CORRADE_COMPARE(hint, 2);
+}
+
+namespace {
+    using namespace Math::Literals;
+
+    const Half HalfValues[]{3.0_h, 1.0_h, 2.5_h, 0.5_h};
+
+    Float lerpHalf(const Half& a, const Half& b, Float t) {
+        return Math::lerp(Float(a), Float(b), t);
+    }
+}
+
+void InterpolationTest::interpolateDifferentResultType() {
+    std::size_t hint{};
+    CORRADE_COMPARE((Animation::interpolate<Float, Half, Float>(
+        Keys, HalfValues, Extrapolation::Extrapolated, Extrapolation::Extrapolated, lerpHalf, 4.75f, hint)), 1.0f);
+    CORRADE_COMPARE(hint, 2);
+}
+
+void InterpolationTest::interpolateStrictDifferentResultType() {
+    std::size_t hint{};
+    CORRADE_COMPARE((Animation::interpolateStrict<Float, Half, Float>(
+        Keys, HalfValues, lerpHalf, 4.75f, hint)), 1.0f);
     CORRADE_COMPARE(hint, 2);
 }
 

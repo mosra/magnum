@@ -98,6 +98,7 @@ MAGNUM_EXPORT Debug& operator<<(Debug& debug, Extrapolation value);
 @brief Interpolate animation value
 @tparam K           Key type
 @tparam V           Value type
+@tparam R           Result type
 @param keys         Keys
 @param values       Values
 @param before       Extrapolation mode before first keyframe
@@ -129,7 +130,7 @@ documentation for more information.
     @ref Math::slerp(), @ref Math::sclerp()
 @experimental
 */
-template<class K, class V> ResultOf<V> interpolate(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Extrapolation before, Extrapolation after, ResultOf<V>(*interpolator)(const V&, const V&, Float), K frame, std::size_t& hint);
+template<class K, class V, class R = ResultOf<V>> R interpolate(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Extrapolation before, Extrapolation after, R(*interpolator)(const V&, const V&, Float), K frame, std::size_t& hint);
 
 /**
 @brief Interpolate animation value with strict constraints
@@ -152,9 +153,9 @@ Used internally from @ref Track::atStrict() / @ref TrackView::atStrict(), see
     @ref Math::sclerp()
 @experimental
 */
-template<class K, class V> ResultOf<V> interpolateStrict(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, ResultOf<V>(*interpolator)(const V&, const V&, Float), K frame, std::size_t& hint);
+template<class K, class V, class R = ResultOf<V>> R interpolateStrict(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, R(*interpolator)(const V&, const V&, Float), K frame, std::size_t& hint);
 
-template<class K, class V> ResultOf<V> interpolate(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, const Extrapolation before, const Extrapolation after, ResultOf<V>(*const interpolator)(const V&, const V&, Float), K frame, std::size_t& hint) {
+template<class K, class V, class R> R interpolate(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, const Extrapolation before, const Extrapolation after, R(*const interpolator)(const V&, const V&, Float), K frame, std::size_t& hint) {
     CORRADE_ASSERT(keys.size() == values.size(), "Animation::interpolate(): keys and values don't have the same size", {});
 
     /* No data, return default-constructed value */
@@ -190,7 +191,7 @@ template<class K, class V> ResultOf<V> interpolate(const Containers::StridedArra
         Math::lerpInverted(keys[hint], keys[hint + 1], frame));
 }
 
-template<class K, class V> ResultOf<V> interpolateStrict(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, ResultOf<V>(*const interpolator)(const V&, const V&, Float), const K frame, std::size_t& hint) {
+template<class K, class V, class R> R interpolateStrict(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, R(*const interpolator)(const V&, const V&, Float), const K frame, std::size_t& hint) {
     CORRADE_ASSERT(keys.size() >= 2, "Animation::interpolateStrict(): at least two keyframes required", {});
     CORRADE_ASSERT(keys.size() == values.size(), "Animation::interpolateStrict(): keys and values don't have the same size", {});
 
