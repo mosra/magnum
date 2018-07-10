@@ -27,12 +27,19 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Animation/Interpolation.h"
+#include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/Half.h"
 
 namespace Magnum { namespace Animation { namespace Test {
 
 struct InterpolationTest: TestSuite::Tester {
     explicit InterpolationTest();
+
+    void interpolatorFor();
+    void interpolatorForBool();
+    void interpolatorForBoolVector();
+    void interpolatorForQuaternion();
+    void interpolatorForDualQuaternion();
 
     void interpolate();
     void interpolateStrict();
@@ -51,10 +58,13 @@ struct InterpolationTest: TestSuite::Tester {
     void interpolateIntegerKey();
     void interpolateStrictIntegerKey();
 
+    void debugInterpolation();
     void debugExtrapolation();
 };
 
 namespace {
+
+using namespace Math::Literals;
 
 const struct {
     const char* name;
@@ -125,6 +135,12 @@ const struct {
 }
 
 InterpolationTest::InterpolationTest() {
+    addTests({&InterpolationTest::interpolatorFor,
+              &InterpolationTest::interpolatorForBool,
+              &InterpolationTest::interpolatorForBoolVector,
+              &InterpolationTest::interpolatorForQuaternion,
+              &InterpolationTest::interpolatorForDualQuaternion});
+
     addInstancedTests({&InterpolationTest::interpolate,
                        &InterpolationTest::interpolateStrict},
                        Containers::arraySize(Data));
@@ -147,7 +163,96 @@ InterpolationTest::InterpolationTest() {
               &InterpolationTest::interpolateIntegerKey,
               &InterpolationTest::interpolateStrictIntegerKey,
 
+              &InterpolationTest::debugInterpolation,
               &InterpolationTest::debugExtrapolation});
+}
+
+void InterpolationTest::interpolatorFor() {
+    CORRADE_COMPARE(Animation::interpolatorFor<Vector2>(Interpolation::Constant)(
+        Vector2{0.3f, 0.5f}, Vector2{-0.3f, -1.5f}, 0.5f), (Vector2{0.3f, 0.5f}));
+    CORRADE_COMPARE(Animation::interpolatorFor<Vector2>(Interpolation::Linear)(
+        Vector2{0.3f, 0.5f}, Vector2{-0.3f, -1.5f}, 0.5f), (Vector2{0.0f, -0.5f}));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Animation::interpolatorFor<Float>(Interpolation::Custom);
+    Animation::interpolatorFor<Float>(Interpolation(0xde));
+
+    CORRADE_COMPARE(out.str(),
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
+}
+
+void InterpolationTest::interpolatorForBool() {
+    CORRADE_COMPARE(Animation::interpolatorFor<bool>(Interpolation::Constant)(
+        true, false, 0.5f), true);
+    CORRADE_COMPARE(Animation::interpolatorFor<bool>(Interpolation::Linear)(
+        true, false, 0.5f), true);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Animation::interpolatorFor<bool>(Interpolation::Custom);
+    Animation::interpolatorFor<bool>(Interpolation(0xde));
+
+    CORRADE_COMPARE(out.str(),
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
+}
+
+void InterpolationTest::interpolatorForBoolVector() {
+    CORRADE_COMPARE(Animation::interpolatorFor<Math::BoolVector<4>>(Interpolation::Constant)(
+        Math::BoolVector<4>{0xa}, Math::BoolVector<4>{0x5}, 0.5f), (Math::BoolVector<4>{0xa}));
+    CORRADE_COMPARE(Animation::interpolatorFor<Math::BoolVector<4>>(Interpolation::Linear)(
+        Math::BoolVector<4>{0xa}, Math::BoolVector<4>{0x5}, 0.5f), (Math::BoolVector<4>{0xa}));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Animation::interpolatorFor<Math::BoolVector<4>>(Interpolation::Custom);
+    Animation::interpolatorFor<Math::BoolVector<4>>(Interpolation(0xde));
+
+    CORRADE_COMPARE(out.str(),
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
+}
+
+void InterpolationTest::interpolatorForQuaternion() {
+    CORRADE_COMPARE(Animation::interpolatorFor<Quaternion>(Interpolation::Constant)(
+        Quaternion::rotation(25.0_degf, Vector3::xAxis()),
+        Quaternion::rotation(75.0_degf, Vector3::xAxis()), 0.5f),
+        Quaternion::rotation(25.0_degf, Vector3::xAxis()));
+    CORRADE_COMPARE(Animation::interpolatorFor<Quaternion>(Interpolation::Linear)(
+        Quaternion::rotation(25.0_degf, Vector3::xAxis()),
+        Quaternion::rotation(75.0_degf, Vector3::xAxis()), 0.5f),
+        Quaternion::rotation(50.0_degf, Vector3::xAxis()));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Animation::interpolatorFor<Quaternion>(Interpolation::Custom);
+    Animation::interpolatorFor<Quaternion>(Interpolation(0xde));
+
+    CORRADE_COMPARE(out.str(),
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
+}
+
+void InterpolationTest::interpolatorForDualQuaternion() {
+    CORRADE_COMPARE(Animation::interpolatorFor<DualQuaternion>(Interpolation::Constant)(
+        DualQuaternion::translation(Vector3::xAxis(2.5f)),
+        DualQuaternion::translation(Vector3::xAxis(7.5f)), 0.5f),
+        DualQuaternion::translation(Vector3::xAxis(2.5f)));
+    CORRADE_COMPARE(Animation::interpolatorFor<DualQuaternion>(Interpolation::Linear)(
+        DualQuaternion::translation(Vector3::xAxis(2.5f)),
+        DualQuaternion::translation(Vector3::xAxis(7.5f)), 0.5f),
+        DualQuaternion::translation(Vector3::xAxis(5.0f)));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Animation::interpolatorFor<DualQuaternion>(Interpolation::Custom);
+    Animation::interpolatorFor<DualQuaternion>(Interpolation(0xde));
+
+    CORRADE_COMPARE(out.str(),
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
 }
 
 namespace {
@@ -293,6 +398,13 @@ void InterpolationTest::interpolateStrictError() {
     CORRADE_COMPARE(out.str(),
         "Animation::interpolateStrict(): at least two keyframes required\n"
         "Animation::interpolateStrict(): keys and values don't have the same size\n");
+}
+
+void InterpolationTest::debugInterpolation() {
+    std::ostringstream out;
+
+    Debug{&out} << Interpolation::Custom << Interpolation(0xde);
+    CORRADE_COMPARE(out.str(), "Animation::Interpolation::Custom Animation::Interpolation(0xde)\n");
 }
 
 void InterpolationTest::debugExtrapolation() {

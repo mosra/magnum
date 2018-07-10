@@ -32,14 +32,14 @@ set(Magnum_SRCS
     PixelStorage.cpp
     Resource.cpp
     Sampler.cpp
-    Timeline.cpp
-
-    Animation/Interpolation.cpp)
+    Timeline.cpp)
 
 set(Magnum_GracefulAssert_SRCS
     Image.cpp
     ImageView.cpp
-    PixelFormat.cpp)
+    PixelFormat.cpp
+
+    Animation/Interpolation.cpp)
 
 set(Magnum_HEADERS
     AbstractResourceLoader.h

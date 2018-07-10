@@ -25,9 +25,25 @@
 
 #include "Interpolation.h"
 
+#include "Magnum/Math/DualQuaternion.h"
+
 namespace Magnum { namespace Animation {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+Debug& operator<<(Debug& debug, const Interpolation value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Interpolation::value: return debug << "Animation::Interpolation::" #value;
+        _c(Constant)
+        _c(Linear)
+        _c(Custom)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Animation::Interpolation(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
 Debug& operator<<(Debug& debug, const Extrapolation value) {
     switch(value) {
         /* LCOV_EXCL_START */
@@ -42,5 +58,34 @@ Debug& operator<<(Debug& debug, const Extrapolation value) {
     return debug << "Animation::Extrapolation(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 #endif
+
+namespace Implementation {
+
+template<class T> auto TypeTraits<Math::Quaternion<T>, Math::Quaternion<T>>::interpolator(Interpolation interpolation) -> Interpolator {
+    switch(interpolation) {
+        case Interpolation::Constant: return Math::select;
+        case Interpolation::Linear: return Math::slerp;
+
+        case Interpolation::Custom: ; /* nope */
+    }
+
+    CORRADE_ASSERT(false, "Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
+}
+
+template<class T> auto TypeTraits<Math::DualQuaternion<T>, Math::DualQuaternion<T>>::interpolator(Interpolation interpolation) -> Interpolator {
+    switch(interpolation) {
+        case Interpolation::Constant: return Math::select;
+        case Interpolation::Linear: return Math::sclerp;
+
+        case Interpolation::Custom: ; /* nope */
+    }
+
+    CORRADE_ASSERT(false, "Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
+}
+
+template struct MAGNUM_EXPORT TypeTraits<Math::Quaternion<Float>, Math::Quaternion<Float>>;
+template struct MAGNUM_EXPORT TypeTraits<Math::DualQuaternion<Float>, Math::DualQuaternion<Float>>;
+
+}
 
 }}

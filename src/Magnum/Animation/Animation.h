@@ -34,11 +34,13 @@
 namespace Magnum { namespace Animation {
 
 namespace Implementation {
-    template<class> struct TypeTraits;
+    template<class V> struct ResultTraits;
+    template<class, class> struct TypeTraits;
 }
 
-template<class V> using ResultOf = typename Implementation::TypeTraits<V>::ResultType;
+template<class V> using ResultOf = typename Implementation::ResultTraits<V>::Type;
 
+enum class Interpolation: UnsignedByte;
 enum class Extrapolation: UnsignedByte;
 
 template<class K, class V, class R = ResultOf<V>> class Track;
