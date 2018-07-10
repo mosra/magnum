@@ -34,6 +34,7 @@ namespace Magnum { namespace Animation { namespace Test {
 struct TrackViewTest: TestSuite::Tester {
     explicit TrackViewTest();
 
+    void constructEmpty();
     void construct();
     void constructDefaults();
     void constructSingleArray();
@@ -87,7 +88,8 @@ const struct {
 }
 
 TrackViewTest::TrackViewTest() {
-    addTests({&TrackViewTest::construct,
+    addTests({&TrackViewTest::constructEmpty,
+              &TrackViewTest::construct,
               &TrackViewTest::constructDefaults,
               &TrackViewTest::constructSingleArray,
               &TrackViewTest::constructSingleArrayDefaults,
@@ -102,6 +104,15 @@ TrackViewTest::TrackViewTest() {
 }
 
 using namespace Math::Literals;
+
+void TrackViewTest::constructEmpty() {
+    const TrackView<Float, Vector3> a;
+
+    CORRADE_VERIFY(!a.interpolator());
+    CORRADE_VERIFY(a.keys().empty());
+    CORRADE_VERIFY(a.values().empty());
+    CORRADE_COMPARE(a.at(42.0f), Vector3{});
+}
 
 void TrackViewTest::construct() {
     constexpr Float keys[]{0.0f, 5.0f};
