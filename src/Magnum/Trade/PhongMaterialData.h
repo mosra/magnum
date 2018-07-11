@@ -37,6 +37,8 @@ namespace Magnum { namespace Trade {
 
 /**
 @brief Phong material data
+
+@see @ref AbstractImporter::material()
 */
 class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
     public:

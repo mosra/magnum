@@ -42,7 +42,7 @@ namespace Magnum { namespace Trade {
 
 Provides access to mesh data and additional information, such as primitive
 type.
-@see @ref MeshData3D
+@see @ref AbstractImporter::mesh2D(), @ref MeshData3D
 */
 class MAGNUM_TRADE_EXPORT MeshData2D {
     public:

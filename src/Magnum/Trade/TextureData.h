@@ -37,6 +37,8 @@ namespace Magnum { namespace Trade {
 
 /**
 @brief Texture data
+
+@see @ref AbstractImporter::texture()
 */
 class TextureData {
     public:

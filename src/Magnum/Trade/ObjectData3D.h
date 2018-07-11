@@ -85,7 +85,8 @@ CORRADE_ENUMSET_OPERATORS(ObjectFlags3D)
 @brief Three-dimensional object data
 
 Provides access to object transformation and hierarchy.
-@see @ref MeshObjectData3D, @ref ObjectData2D
+@see @ref AbstractImporter::object3D(), @ref MeshObjectData3D,
+    @ref ObjectData2D
 */
 class MAGNUM_TRADE_EXPORT ObjectData3D {
     public:

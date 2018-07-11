@@ -74,7 +74,9 @@ compressed properties through @ref compressedStorage() and
 
 @snippet MagnumTrade.cpp ImageData-usage
 
-@see @ref ImageData1D, @ref ImageData2D, @ref ImageData3D
+@see @ref ImageData1D, @ref ImageData2D, @ref ImageData3D,
+    @ref AbstractImporter::image1D(), @ref AbstractImporter::image2D(),
+    @ref AbstractImporter::image3D()
 */
 template<UnsignedInt dimensions> class ImageData {
     public:

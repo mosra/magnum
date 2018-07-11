@@ -39,6 +39,8 @@ namespace Magnum { namespace Trade {
 
 /**
 @brief Scene data
+
+@see @ref AbstractImporter::scene()
 */
 class MAGNUM_TRADE_EXPORT SceneData {
     public:

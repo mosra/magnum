@@ -37,7 +37,7 @@ namespace Magnum { namespace Trade {
 @brief Two-dimensional mesh object data
 
 Provides access to material information for given mesh instance.
-@see @ref MeshObjectData3D
+@see @ref AbstractImporter::object2D(), @ref MeshObjectData3D
 */
 class MAGNUM_TRADE_EXPORT MeshObjectData2D: public ObjectData2D {
     public:

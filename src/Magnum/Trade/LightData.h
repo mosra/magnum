@@ -37,6 +37,8 @@ namespace Magnum { namespace Trade {
 
 /**
 @brief Light data
+
+@see @ref AbstractImporter::light()
 */
 class LightData {
     public:

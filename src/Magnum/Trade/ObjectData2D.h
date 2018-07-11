@@ -84,7 +84,8 @@ CORRADE_ENUMSET_OPERATORS(ObjectFlags2D)
 @brief Two-dimensional object data
 
 Provides access to object transformation and hierarchy.
-@see @ref MeshObjectData2D, @ref ObjectData3D
+@see @ref AbstractImporter::object2D(), @ref MeshObjectData2D,
+    @ref ObjectData3D
 */
 class MAGNUM_TRADE_EXPORT ObjectData2D {
     public:
