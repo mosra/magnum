@@ -139,6 +139,8 @@ expose internal state through various accessors:
     state for currently opened file
 -   @ref AbstractMaterialData::importerState() can expose importer state for
     given material imported by @ref material()
+-   @ref AnimationData::importerState() can expose importer state for given
+    animation imported by @ref animation()
 -   @ref CameraData::importerState() can expose importer state for a camera
     importer by @ref camera()
 -   @ref ImageData::importerState() can expose importer state for an image
@@ -204,10 +206,19 @@ checked by the implementation:
 -   All `do*()` implementations taking data ID as parameter are called only if
     the ID is from valid range.
 
-@attention @ref Corrade::Containers::Array instances returned from the plugin
+@attention
+    @ref Corrade::Containers::Array instances returned from the plugin
     should *not* use anything else than the default deleter, otherwise this can
     cause dangling function pointer call on array destruction if the plugin
     gets unloaded before the array is destroyed.
+@attention
+    Similarly for interpolator functions passed through
+    @ref Animation::TrackView instances to @ref AnimationData --- to avoid
+    dangling pointers, be sure to always include an interpolator returned from
+    @ref animationInterpolatorFor(), which guarantees the function is *not*
+    instantiated in the plugin binary. Avoid using
+    @ref Animation::interpolatorFor() (or indirectly it by specifying
+    just @ref Animation::Interpolation), as it doesn't have such guarantee.
 */
 class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlugin<AbstractImporter> {
     public:
@@ -445,6 +456,34 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * Returns given scene or @ref Containers::NullOpt if import failed.
          */
         Containers::Optional<SceneData> scene(UnsignedInt id);
+
+        /** @brief Animation count */
+        UnsignedInt animationCount() const;
+
+        /**
+         * @brief Animation ID for given name
+         *
+         * If no animation for given name exists, returns @cpp -1 @ce.
+         * @see @ref animationName()
+         */
+        Int animationForName(const std::string& name);
+
+        /**
+         * @brief Animation name
+         * @param id    Animation ID, from range [0, @ref animationCount()).
+         *
+         * @see @ref animationForName()
+         */
+        std::string animationName(UnsignedInt id);
+
+        /**
+         * @brief Animation
+         * @param id    Animation ID, from range [0, @ref animationCount()).
+         *
+         * Returns given animation or @ref Containers::NullOpt if importing
+         * failed.
+         */
+        Containers::Optional<AnimationData> animation(UnsignedInt id);
 
         /** @brief Light count */
         UnsignedInt lightCount() const;
@@ -753,7 +792,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * documentation of a particular plugin for more information about
          * returned type and contents. Returns `nullptr` by default.
          * @see @ref AbstractMaterialData::importerState(),
-         *      @ref CameraData::importerState(), @ref ImageData::importerState(),
+         *      @ref AnimationData::importerState(), @ref CameraData::importerState(),
+         *      @ref ImageData::importerState(), @ref LightData::importerState(),
          *      @ref MeshData2D::importerState(), @ref MeshData3D::importerState(),
          *      @ref ObjectData2D::importerState(), @ref ObjectData3D::importerState(),
          *      @ref SceneData::importerState(), @ref TextureData::importerState()
@@ -833,6 +873,30 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
         /** @brief Implementation for @ref scene() */
         virtual Containers::Optional<SceneData> doScene(UnsignedInt id);
+
+        /**
+         * @brief Implementation for @ref animationCount()
+         *
+         * Default implementation returns @cpp 0 @ce.
+         */
+        virtual UnsignedInt doAnimationCount() const;
+
+        /**
+         * @brief Implementation for @ref animationForName()
+         *
+         * Default implementation returns @cpp -1 @ce.
+         */
+        virtual Int doAnimationForName(const std::string& name);
+
+        /**
+         * @brief Implementation for @ref animationName()
+         *
+         * Default implementation returns empty string.
+         */
+        virtual std::string doAnimationName(UnsignedInt id);
+
+        /** @brief Implementation for @ref animation() */
+        virtual Containers::Optional<AnimationData> doAnimation(UnsignedInt id);
 
         /**
          * @brief Implementation for @ref lightCount()

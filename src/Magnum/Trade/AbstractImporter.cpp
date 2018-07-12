@@ -32,6 +32,7 @@
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/Trade/AbstractMaterialData.h"
+#include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/CameraData.h"
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/LightData.h"
@@ -184,6 +185,38 @@ Containers::Optional<SceneData> AbstractImporter::scene(const UnsignedInt id) {
 
 Containers::Optional<SceneData> AbstractImporter::doScene(UnsignedInt) {
     CORRADE_ASSERT(false, "Trade::AbstractImporter::scene(): not implemented", {});
+}
+
+UnsignedInt AbstractImporter::animationCount() const {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animationCount(): no file opened", {});
+    return doAnimationCount();
+}
+
+UnsignedInt AbstractImporter::doAnimationCount() const { return 0; }
+
+Int AbstractImporter::animationForName(const std::string& name) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animationForName(): no file opened", {});
+    return doAnimationForName(name);
+}
+
+Int AbstractImporter::doAnimationForName(const std::string&) { return -1; }
+
+std::string AbstractImporter::animationName(const UnsignedInt id) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animationName(): no file opened", {});
+    CORRADE_ASSERT(id < doAnimationCount(), "Trade::AbstractImporter::animationName(): index out of range", {});
+    return doAnimationName(id);
+}
+
+std::string AbstractImporter::doAnimationName(UnsignedInt) { return {}; }
+
+Containers::Optional<AnimationData> AbstractImporter::animation(const UnsignedInt id) {
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animation(): no file opened", {});
+    CORRADE_ASSERT(id < doAnimationCount(), "Trade::AbstractImporter::animation(): index out of range", {});
+    return doAnimation(id);
+}
+
+Containers::Optional<AnimationData> AbstractImporter::doAnimation(UnsignedInt) {
+    CORRADE_ASSERT(false, "Trade::AbstractImporter::animation(): not implemented", {});
 }
 
 UnsignedInt AbstractImporter::lightCount() const {

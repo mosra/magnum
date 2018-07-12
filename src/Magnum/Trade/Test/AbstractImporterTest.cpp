@@ -29,6 +29,7 @@
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/CameraData.h"
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/LightData.h"
@@ -84,6 +85,18 @@ class AbstractImporterTest: public TestSuite::Tester {
         void sceneNotImplemented();
         void sceneNoFile();
         void sceneOutOfRange();
+
+        void animation();
+        void animationCountNotImplemented();
+        void animationCountNoFile();
+        void animationForNameNotImplemented();
+        void animationForNameNoFile();
+        void animationNameNotImplemented();
+        void animationNameNoFile();
+        void animationNameOutOfRange();
+        void animationNotImplemented();
+        void animationNoFile();
+        void animationOutOfRange();
 
         void light();
         void lightCountNotImplemented();
@@ -263,6 +276,18 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::sceneNotImplemented,
               &AbstractImporterTest::sceneNoFile,
               &AbstractImporterTest::sceneOutOfRange,
+
+              &AbstractImporterTest::animation,
+              &AbstractImporterTest::animationCountNotImplemented,
+              &AbstractImporterTest::animationCountNoFile,
+              &AbstractImporterTest::animationForNameNotImplemented,
+              &AbstractImporterTest::animationForNameNoFile,
+              &AbstractImporterTest::animationNameNotImplemented,
+              &AbstractImporterTest::animationNameNoFile,
+              &AbstractImporterTest::animationNameOutOfRange,
+              &AbstractImporterTest::animationNotImplemented,
+              &AbstractImporterTest::animationNoFile,
+              &AbstractImporterTest::animationOutOfRange,
 
               &AbstractImporterTest::light,
               &AbstractImporterTest::lightCountNotImplemented,
@@ -961,6 +986,182 @@ void AbstractImporterTest::sceneOutOfRange() {
     Importer importer;
     importer.scene(0);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::scene(): index out of range\n");
+}
+
+void AbstractImporterTest::animation() {
+    class Importer: public Trade::AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doAnimationCount() const override { return 8; }
+        Int doAnimationForName(const std::string& name) override {
+            if(name == "eighth") return 7;
+            else return -1;
+        }
+        std::string doAnimationName(UnsignedInt id) override {
+            if(id == 7) return "eighth";
+            else return {};
+        }
+        Containers::Optional<AnimationData> doAnimation(UnsignedInt id) override {
+            if(id == 7) return AnimationData{{}, {}, &state};
+            else return AnimationData{{}, {}};
+        }
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Importer importer;
+    CORRADE_COMPARE(importer.animationCount(), 8);
+    CORRADE_COMPARE(importer.animationForName("eighth"), 7);
+    CORRADE_COMPARE(importer.animationName(7), "eighth");
+
+    auto data = importer.animation(7);
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE(data->importerState(), &state);
+}
+
+void AbstractImporterTest::animationCountNotImplemented() {
+    class Importer: public Trade::AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+    };
+
+    Importer importer;
+    CORRADE_COMPARE(importer.animationCount(), 0);
+}
+
+void AbstractImporterTest::animationCountNoFile() {
+    class Importer: public Trade::AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Importer importer;
+    importer.animationCount();
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animationCount(): no file opened\n");
+}
+
+void AbstractImporterTest::animationForNameNotImplemented() {
+    class Importer: public Trade::AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+    };
+
+    Importer importer;
+    CORRADE_COMPARE(importer.animationForName(""), -1);
+}
+
+void AbstractImporterTest::animationForNameNoFile() {
+    class Importer: public Trade::AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Importer importer;
+    importer.animationForName("");
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animationForName(): no file opened\n");
+}
+
+void AbstractImporterTest::animationNameNotImplemented() {
+    class Importer: public Trade::AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doAnimationCount() const override { return 8; }
+    };
+
+    Importer importer;
+    CORRADE_COMPARE(importer.animationName(7), "");
+}
+
+void AbstractImporterTest::animationNameNoFile() {
+    class Importer: public Trade::AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Importer importer;
+    importer.animationName(42);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animationName(): no file opened\n");
+}
+
+void AbstractImporterTest::animationNameOutOfRange() {
+    class Importer: public Trade::AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Importer importer;
+    importer.animationName(0);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animationName(): index out of range\n");
+}
+
+void AbstractImporterTest::animationNotImplemented() {
+    class Importer: public Trade::AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doAnimationCount() const override { return 8; }
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Importer importer;
+    importer.animation(7);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animation(): not implemented\n");
+}
+
+void AbstractImporterTest::animationNoFile() {
+    class Importer: public Trade::AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Importer importer;
+    importer.animation(42);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animation(): no file opened\n");
+}
+
+void AbstractImporterTest::animationOutOfRange() {
+    class Importer: public Trade::AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Importer importer;
+    importer.animation(0);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animation(): index out of range\n");
 }
 
 void AbstractImporterTest::light() {
