@@ -38,6 +38,7 @@ set(MagnumTrade_SRCS
 set(MagnumTrade_GracefulAssert_SRCS
     AbstractImageConverter.cpp
     AbstractImporter.cpp
+    AnimationData.cpp
     ImageData.cpp
     ObjectData2D.cpp
     ObjectData3D.cpp
@@ -47,6 +48,7 @@ set(MagnumTrade_HEADERS
     AbstractImporter.h
     AbstractImageConverter.h
     AbstractMaterialData.h
+    AnimationData.h
     CameraData.h
     ImageData.h
     LightData.h
