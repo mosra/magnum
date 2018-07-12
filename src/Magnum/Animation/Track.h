@@ -69,6 +69,13 @@ Linear              | @ref Math::Quaternion | @ref Math::Quaternion | @ref Math:
 Spherical linear    | @ref Math::Quaternion | @ref Math::Quaternion | @ref Math::slerp(const Quaternion<T>&, const Quaternion<T>&, T) "Math::slerp()"
 Screw linear        | @ref Math::DualQuaternion | @ref Math::DualQuaternion | @ref Math::sclerp(const DualQuaternion<T>&, const DualQuaternion<T>&, T) "Math::sclerp()"
 
+It's also possible to supply a generic interpolation behavior by passing the
+@ref Interpolation enum to the constructor. In case the interpolator function
+is not passed in as well, it's autodetected using @ref interpolatorFor(). See
+its documentation for more information. The @ref Interpolation enum is then
+stored in @ref interpolation() and acts as a hint for desired interpolation
+behavior for users who might want to use their own interpolator.
+
 @section Animation-Track-performance Performance tuning
 
 The snippet shown above is convenience-oriented at a cost of sacrificing some
@@ -105,6 +112,20 @@ instead of having data duplicated scattered across disjoint allocations of
 
 @snippet MagnumAnimation.cpp Track-performance-cache
 
+@subsection Animation-Track-performance-interpolator Interpolator function choice
+
+The interpolator function has a direct effect on animation performance. You can
+choose a less complex interpolator (constant instead of linear or linear
+instead of spheric linear, for example) either during construction or passing
+it directly to @ref at() / @ref atStrict(). The @ref interpolator() can act as
+a hint on what kind of function should be chosen. Depending on how the track
+was constructed, passing the interpolator directly to @ref at() / @ref atStrict()
+usually also results in it being inlined by the compiler and thus faster than
+an indirect function call.
+
+Note that when constructing the track by just passing @ref Interpolator to the
+constructor, the function is chosen by @ref interpolatorFor(), which favors
+correctness over performance. See its documentation for more information.
 @experimental
 */
 template<class K, class V, class R
@@ -135,7 +156,7 @@ template<class K, class V, class R
         explicit Track() noexcept: _data{}, _interpolator{}, _before{}, _after{} {}
 
         /**
-         * @brief Constructor
+         * @brief Construct with custom interpolator
          * @param data          Keyframe data
          * @param interpolator  Interpolator function
          * @param before        Extrapolation behavior
@@ -143,8 +164,12 @@ template<class K, class V, class R
          *
          * The keyframe data are assumed to be stored in sorted order. It's not
          * an error to have two successive keyframes with the same frame value.
+         * The @ref interpolation() field is set to @ref Interpolation::Custom.
+         * See @ref Track(Containers::Array<std::pair<K, V>>&&, Interpolation, Interpolator, Extrapolation, Extrapolation) or
+         * @ref Track(Containers::Array<std::pair<K, V>>&&, Interpolation, Extrapolation, Extrapolation)
+         * for an alternative.
          */
-        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: _data{std::move(data)}, _interpolator{interpolator}, _before{before}, _after{after} {}
+        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: _data{std::move(data)}, _interpolator{interpolator}, _interpolation{Interpolation::Custom}, _before{before}, _after{after} {}
 
         /** @overload */
         explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolator interpolator, Extrapolation before, Extrapolation after): Track<K, V, R>{Containers::Array<std::pair<K, V>>{Containers::InPlaceInit, data}, interpolator, before, after} {}
@@ -157,6 +182,61 @@ template<class K, class V, class R
 
         /** @overload */
         explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant): Track<K, V, R>{Containers::Array<std::pair<K, V>>{Containers::InPlaceInit, data}, interpolator, extrapolation, extrapolation} {}
+
+        /**
+         * @brief Construct with both generic and custom interpolator
+         * @param data          Keyframe data
+         * @param interpolation Interpolation behavior
+         * @param interpolator  Interpolator function
+         * @param before        Extrapolation behavior
+         * @param after         Extrapolation behavior after
+         *
+         * The keyframe data are assumed to be stored in sorted order. It's not
+         * an error to have two successive keyframes with the same frame value.
+         * @p interpolation acts as a behavior hint to users that might want to
+         * supply their own interpolator function to @ref at() or
+         * @ref atStrict().
+         */
+        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolation interpolation, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: _data{std::move(data)}, _interpolator{interpolator}, _interpolation{interpolation}, _before{before}, _after{after} {}
+
+        /** @overload */
+        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolation interpolation, Interpolator interpolator, Extrapolation before, Extrapolation after): Track<K, V, R>{Containers::Array<std::pair<K, V>>{Containers::InPlaceInit, data}, interpolation, interpolator, before, after} {}
+
+        /** @overload
+         * Equivalent to calling @ref Track(Containers::Array<std::pair<K, V>>&&, Interpolation, Interpolator, Extrapolation, Extrapolation)
+         * with both @p before and @p after set to @p extrapolation.
+         */
+        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolation interpolation, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant) noexcept: Track<K, V, R>{std::move(data), interpolation, interpolator, extrapolation, extrapolation} {}
+
+        /** @overload */
+        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolation interpolation, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant): Track<K, V, R>{Containers::Array<std::pair<K, V>>{Containers::InPlaceInit, data}, interpolation, interpolator, extrapolation} {}
+
+        /**
+         * @brief Construct with generic interpolation behavior
+         * @param data          Keyframe data
+         * @param interpolation Interpolation behavior
+         * @param before        Extrapolation behavior
+         * @param after         Extrapolation behavior after
+         *
+         * The keyframe data are assumed to be stored in sorted order. It's not
+         * an error to have two successive keyframes with the same frame value.
+         * The @ref interpolator() function is autodetected from
+         * @p interpolation using @ref interpolatorFor(). See its documentation
+         * for more information.
+         */
+        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolation interpolation, Extrapolation before, Extrapolation after) noexcept: _data{std::move(data)}, _interpolator{interpolatorFor<V, R>(interpolation)}, _interpolation{interpolation}, _before{before}, _after{after} {}
+
+        /** @overload */
+        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolation interpolation, Extrapolation before, Extrapolation after): Track<K, V, R>{Containers::Array<std::pair<K, V>>{Containers::InPlaceInit, data}, interpolation, before, after} {}
+
+        /** @overload
+         * Equivalent to calling @ref Track(Containers::Array<std::pair<K, V>>&&, Interpolation, Extrapolation, Extrapolation)
+         * with both @p before and @p after set to @p extrapolation.
+         */
+        explicit Track(Containers::Array<std::pair<K, V>>&& data, Interpolation interpolation, Extrapolation extrapolation = Extrapolation::Constant) noexcept: Track<K, V, R>{std::move(data), interpolation, extrapolation, extrapolation} {}
+
+        /** @overload */
+        explicit Track(std::initializer_list<std::pair<K, V>> data, Interpolation interpolation, Extrapolation extrapolation = Extrapolation::Constant): Track<K, V, R>{Containers::Array<std::pair<K, V>>{Containers::InPlaceInit, data}, interpolation, extrapolation, extrapolation} {}
 
         /** @brief Copying is not allowed */
         Track(const Track<K, V, R>&) = delete;
@@ -172,10 +252,23 @@ template<class K, class V, class R
 
         /** @brief Conversion to a view */
         operator TrackView<K, V, R>() const noexcept {
-            return TrackView<K, V, R>{_data, _interpolator, _before, _after};
+            return TrackView<K, V, R>{_data, _interpolation, _interpolator, _before, _after};
         }
 
-        /** @brief Interpolation function */
+        /**
+         * @brief Interpolation behavior
+         *
+         * Acts as a behavior hint to users that might want to supply their own
+         * interpolator function to @ref at() or @ref atStrict().
+         * @see @ref interpolator()
+         */
+        Interpolation interpolation() const { return _interpolation; }
+
+        /**
+         * @brief Interpolation function
+         *
+         * @see @ref interpolation()
+         */
         Interpolator interpolator() const { return _interpolator; }
 
         /**
@@ -226,11 +319,12 @@ template<class K, class V, class R
          * Calls @ref interpolate(), see its documentation for more
          * information. Note that this function performs a linear search every
          * time, use @ref at(K, std::size_t&) const to supply a search hint.
-         * @see @ref atStrict()
+         * @see @ref atStrict(K, std::size_t&) const,
+         *      @ref at(Interpolator, K) const
          */
         R at(K frame) const {
             std::size_t hint{};
-            return at(frame, hint);
+            return at(_interpolator, frame, hint);
         }
 
         /**
@@ -238,10 +332,37 @@ template<class K, class V, class R
          *
          * Calls @ref interpolate(), see its documentation for more
          * information.
-         * @see @ref at(K) const, @ref atStrict(K, std::size_t&) const
+         * @see @ref at(K) const, @ref atStrict(K, std::size_t&) const,
+         *      @ref at(Interpolator, K, std::size_t&) const
          */
         R at(K frame, std::size_t& hint) const {
-            return interpolate(keys(), values(), _before, _after, _interpolator, frame, hint);
+            return at(_interpolator, frame, hint);
+        }
+
+        /**
+         * @brief Animated value at a given time
+         *
+         * Unlike @ref at(K) const calls @ref interpolate() with
+         * @p interpolator, overriding the interpolator function set in
+         * constructor. See its documentation for more information.
+         * @see @ref at(K, std::size_t&) const,
+         *      @ref atStrict(Interpolator, K, std::size_t&) const
+         */
+        R at(Interpolator interpolator, K frame) const {
+            std::size_t hint{};
+            return at(interpolator, frame, hint);
+        }
+
+        /**
+         * @brief Animated value at a given time
+         *
+         * Unlike @ref at(K, std::size_t&) const calls @ref interpolate() with
+         * @p interpolator, overriding the interpolator function set in
+         * constructor. See its documentation for more information.
+         * @see @ref atStrict(Interpolator, K, std::size_t&) const
+         */
+        R at(Interpolator interpolator, K frame, std::size_t& hint) const {
+            return interpolate(keys(), values(), _before, _after, interpolator, frame, hint);
         }
 
         /**
@@ -250,14 +371,28 @@ template<class K, class V, class R
          * A faster version of @ref at(K, std::size_t&) const with some
          * restrictions. Calls @ref interpolateStrict(), see its documentation
          * for more information.
+         * @see @ref atStrict(Interpolator, K, std::size_t&) const
          */
         R atStrict(K frame, std::size_t& hint) const {
-            return interpolateStrict(keys(), values(), _interpolator, frame, hint);
+            return atStrict(_interpolator, frame, hint);
+        }
+
+        /**
+         * @brief Animated value at a given time
+         *
+         * Unlike @ref atStrict(K, std::size_t&) const calls @ref interpolate()
+         * with @p interpolator, overriding the interpolator function set in
+         * constructor. See its documentation for more information.
+         * @see @ref at(K, std::size_t&) const
+         */
+        R atStrict(Interpolator interpolator, K frame, std::size_t& hint) const {
+            return interpolateStrict(keys(), values(), interpolator, frame, hint);
         }
 
     private:
         Containers::Array<std::pair<K, V>> _data;
         Interpolator _interpolator;
+        Interpolation _interpolation;
         Extrapolation _before, _after;
 };
 
@@ -269,16 +404,17 @@ Cast to @ref TrackView of correct type to use.
 */
 class TrackViewStorage {
     public:
-        constexpr /*implicit*/ TrackViewStorage() noexcept: _keys{}, _values{}, _interpolator{}, _before{}, _after{} {}
+        constexpr /*implicit*/ TrackViewStorage() noexcept: _keys{}, _values{}, _interpolator{}, _interpolation{}, _before{}, _after{} {}
 
     private:
         template<class, class, class> friend class TrackView;
 
-        template<class K, class V, class R> explicit TrackViewStorage(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, R(*interpolator)(const V&, const V&, Float), Extrapolation before, Extrapolation after) noexcept: _keys{reinterpret_cast<const Containers::StridedArrayView<const char>&>(keys)}, _values{reinterpret_cast<const Containers::StridedArrayView<const char>&>(values)}, _interpolator{reinterpret_cast<void(*)()>(interpolator)}, _before{before}, _after{after} {}
+        template<class K, class V, class R> explicit TrackViewStorage(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolation interpolation, R(*interpolator)(const V&, const V&, Float), Extrapolation before, Extrapolation after) noexcept: _keys{reinterpret_cast<const Containers::StridedArrayView<const char>&>(keys)}, _values{reinterpret_cast<const Containers::StridedArrayView<const char>&>(values)}, _interpolator{reinterpret_cast<void(*)()>(interpolator)}, _interpolation{interpolation}, _before{before}, _after{after} {}
 
         Containers::StridedArrayView<const char> _keys;
         Containers::StridedArrayView<const char> _values;
         void(*_interpolator)(void);
+        Interpolation _interpolation;
         Extrapolation _before, _after;
 };
 
@@ -320,7 +456,7 @@ template<class K, class V, class R
         explicit TrackView() noexcept {}
 
         /**
-         * @brief Constructor
+         * @brief Construct with custom interpolator
          * @param keys          Frame keys
          * @param values        Frame values
          * @param interpolator  Interpolation function
@@ -329,8 +465,12 @@ template<class K, class V, class R
          *
          * The keyframe data are assumed to be stored in sorted order. It's not
          * an error to have two successive keyframes with the same frame value.
+         * The @ref interpolation() field is set to @ref Interpolation::Custom.
+         * See @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolation, Interpolator, Extrapolation, Extrapolation) or
+         * @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolation, Extrapolation, Extrapolation)
+         * for an alternative.
          */
-        explicit TrackView(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: TrackViewStorage{keys, values, interpolator, before, after} {}
+        explicit TrackView(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: TrackViewStorage{keys, values, Interpolation::Custom, interpolator, before, after} {}
 
         /** @overload
          * Equivalent to calling @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolator, Extrapolation, Extrapolation)
@@ -339,7 +479,7 @@ template<class K, class V, class R
         explicit TrackView(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Extrapolated) noexcept: TrackView<K, V, R>{keys, values, interpolator, extrapolation, extrapolation} {}
 
         /**
-         * @brief Construct from an interleaved array
+         * @brief Construct with custom interpolator from an interleaved array
          * @param data          Keyframe data
          * @param interpolator  Interpolation function
          * @param before        Extrapolation behavior before
@@ -348,13 +488,113 @@ template<class K, class V, class R
          * Converts @p data to a pair of strided array views and calls
          * @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolator, Extrapolation, Extrapolation).
          */
-        explicit TrackView(Containers::ArrayView<const std::pair<K, V>> data, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: TrackViewStorage{Containers::StridedArrayView<const K>{data ? &data[0].first : nullptr, data.size(), sizeof(std::pair<K, V>)}, Containers::StridedArrayView<const V>{data ? &data[0].second : nullptr, data.size(), sizeof(std::pair<K, V>)}, interpolator, before, after} {}
+        explicit TrackView(Containers::ArrayView<const std::pair<K, V>> data, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: TrackView<K, V, R>{Containers::StridedArrayView<const K>{data ? &data[0].first : nullptr, data.size(), sizeof(std::pair<K, V>)}, Containers::StridedArrayView<const V>{data ? &data[0].second : nullptr, data.size(), sizeof(std::pair<K, V>)}, interpolator, before, after} {}
 
         /** @overload
          * Equivalent to calling @ref TrackView(Containers::ArrayView<const std::pair<K, V>>, Interpolator, Extrapolation, Extrapolation)
          * with both @p before and @p after set to @p extrapolation.
          */
         explicit TrackView(Containers::ArrayView<const std::pair<K, V>> data, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Extrapolated) noexcept: TrackView<K, V, R>{data, interpolator, extrapolation, extrapolation} {}
+
+        /**
+         * @brief Construct with both generic and custom interpolator
+         * @param keys          Frame keys
+         * @param values        Frame values
+         * @param interpolation Interpolation behavior
+         * @param interpolator  Interpolator function
+         * @param before        Extrapolation behavior before
+         * @param after         Extrapolation behavior after
+         *
+         * The keyframe data are assumed to be stored in sorted order. It's not
+         * an error to have two successive keyframes with the same frame value.
+         * @p interpolation acts as a behavior hint to users that might want to
+         * supply their own interpolator function to @ref at() or
+         * @ref atStrict().
+         */
+        explicit TrackView(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolation interpolation, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: TrackViewStorage{keys, values, interpolation, interpolator, before, after} {}
+
+        /** @overload
+         * Equivalent to calling @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolation, Interpolator, Extrapolation, Extrapolation)
+         * with both @p before and @p after set to @p extrapolation.
+         */
+        explicit TrackView(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolation interpolation, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Extrapolated) noexcept: TrackView<K, V, R>{keys, values, interpolation, interpolator, extrapolation, extrapolation} {}
+
+        /**
+         * @brief Construct with both generic and custom interpolator from an interleaved array
+         * @param data          Keyframe data
+         * @param interpolation Interpolation behavior
+         * @param interpolator  Interpolator function
+         * @param before        Extrapolation behavior before
+         * @param after         Extrapolation behavior after
+         *
+         * Converts @p data to a pair of strided array views and calls
+         * @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolator, Extrapolation, Extrapolation).
+         */
+        explicit TrackView(Containers::ArrayView<const std::pair<K, V>> data, Interpolation interpolation, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: TrackViewStorage{Containers::StridedArrayView<const K>{data ? &data[0].first : nullptr, data.size(), sizeof(std::pair<K, V>)}, Containers::StridedArrayView<const V>{data ? &data[0].second : nullptr, data.size(), sizeof(std::pair<K, V>)}, interpolation, interpolator, before, after} {}
+
+        /** @overload
+         * Equivalent to calling @ref TrackView(Containers::ArrayView<const std::pair<K, V>>, Interpolation, Interpolator, Extrapolation, Extrapolation)
+         * with both @p before and @p after set to @p extrapolation.
+         */
+        explicit TrackView(Containers::ArrayView<const std::pair<K, V>> data, Interpolation interpolation, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Extrapolated) noexcept: TrackView<K, V, R>{data, interpolation, interpolator, extrapolation, extrapolation} {}
+
+        /**
+         * @brief Construct with generic interpolation behavior
+         * @param keys          Frame keys
+         * @param values        Frame values
+         * @param interpolation Interpolation behavior
+         * @param before        Extrapolation behavior before
+         * @param after         Extrapolation behavior after
+         *
+         * The keyframe data are assumed to be stored in sorted order. It's not
+         * an error to have two successive keyframes with the same frame value.
+         * The @ref interpolator() function is autodetected from
+         * @p interpolation using @ref interpolatorFor(). See its documentation
+         * for more information.
+         */
+        explicit TrackView(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolation interpolation, Extrapolation before, Extrapolation after) noexcept: TrackViewStorage{keys, values, interpolation, interpolatorFor<V, R>(interpolation), before, after} {}
+
+        /** @overload
+         * Equivalent to calling @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolation, Extrapolation, Extrapolation)
+         * with both @p before and @p after set to @p extrapolation.
+         */
+        explicit TrackView(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolation interpolation, Extrapolation extrapolation = Extrapolation::Extrapolated) noexcept: TrackView<K, V, R>{keys, values, interpolation, extrapolation, extrapolation} {}
+
+        /**
+         * @brief Construct with generic interpolation behavior from an interleaved array
+         * @param data          Keyframe data
+         * @param interpolation Interpolation behavior
+         * @param before        Extrapolation behavior before
+         * @param after         Extrapolation behavior after
+         *
+         * Converts @p data to a pair of strided array views and calls
+         * @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolator, Extrapolation, Extrapolation).
+         */
+        explicit TrackView(Containers::ArrayView<const std::pair<K, V>> data, Interpolation interpolation, Extrapolation before, Extrapolation after) noexcept: TrackView<K, V, R>{Containers::StridedArrayView<const K>{data ? &data[0].first : nullptr, data.size(), sizeof(std::pair<K, V>)}, Containers::StridedArrayView<const V>{data ? &data[0].second : nullptr, data.size(), sizeof(std::pair<K, V>)}, interpolation, before, after} {}
+
+        /** @overload
+         * Equivalent to calling @ref TrackView(Containers::ArrayView<const std::pair<K, V>>, Interpolation, Extrapolation, Extrapolation)
+         * with both @p before and @p after set to @p extrapolation.
+         */
+        explicit TrackView(Containers::ArrayView<const std::pair<K, V>> data, Interpolation interpolation, Extrapolation extrapolation = Extrapolation::Extrapolated) noexcept: TrackView<K, V, R>{data, interpolation, extrapolation, extrapolation} {}
+
+        /**
+         * @brief Interpolation behavior
+         *
+         * Acts as a behavior hint to users that might want to supply their own
+         * interpolator function to @ref at() or @ref atStrict().
+         * @see @ref interpolator()
+         */
+        Interpolation interpolation() const { return _interpolation; }
+
+        /**
+         * @brief Interpolation function
+         *
+         * @see @ref interpolation()
+         */
+        Interpolator interpolator() const {
+            return reinterpret_cast<Interpolator>(_interpolator);
+        }
 
         /**
          * @brief Extrapolation behavior before first keyframe
@@ -369,11 +609,6 @@ template<class K, class V, class R
          * @see @ref before(), @ref at(), @ref atStrict()
          */
         Extrapolation after() const { return _after; }
-
-        /** @brief Interpolation function */
-        Interpolator interpolator() const {
-            return reinterpret_cast<Interpolator>(_interpolator);
-        }
 
         /**
          * @brief Key data
@@ -404,11 +639,12 @@ template<class K, class V, class R
          * Calls @ref interpolate(), see its documentation for more
          * information. Note that this function performs a linear search every
          * time, use @ref at(K, std::size_t&) const to supply a search hint.
-         * @see @ref atStrict(K, std::size_t&) const
+         * @see @ref atStrict(K, std::size_t&) const,
+         *      @ref at(Interpolator, K) const
          */
         R at(K frame) const {
             std::size_t hint{};
-            return at(frame, hint);
+            return at(interpolator(), frame, hint);
         }
 
         /**
@@ -416,10 +652,37 @@ template<class K, class V, class R
          *
          * Calls @ref interpolate(), see its documentation for more
          * information.
-         * @see @ref at(K) const, @ref atStrict(K, std::size_t&) const
+         * @see @ref at(K) const, @ref atStrict(K, std::size_t&) const,
+         *      @ref at(Interpolator, K, std::size_t&) const
          */
         R at(K frame, std::size_t& hint) const {
-            return interpolate(keys(), values(), _before, _after, interpolator(), frame, hint);
+            return at(interpolator(), frame, hint);
+        }
+
+        /**
+         * @brief Animated value at a given time
+         *
+         * Unlike @ref at(K) const calls @ref interpolate() with
+         * @p interpolator, overriding the interpolator function set in
+         * constructor. See its documentation for more information.
+         * @see @ref at(K, std::size_t&) const,
+         *      @ref atStrict(Interpolator, K, std::size_t&) const
+         */
+        R at(Interpolator interpolator, K frame) const {
+            std::size_t hint{};
+            return at(interpolator, frame, hint);
+        }
+
+        /**
+         * @brief Animated value at a given time
+         *
+         * Unlike @ref at(K, std::size_t&) const calls @ref interpolate() with
+         * @p interpolator, overriding the interpolator function set in
+         * constructor. See its documentation for more information.
+         * @see @ref atStrict(Interpolator, K, std::size_t&) const
+         */
+        R at(Interpolator interpolator, K frame, std::size_t& hint) const {
+            return interpolate(keys(), values(), _before, _after, interpolator, frame, hint);
         }
 
         /**
@@ -428,9 +691,22 @@ template<class K, class V, class R
          * A faster version of @ref at(K, std::size_t&) const with some
          * restrictions. Calls @ref interpolateStrict(), see its documentation
          * for more information.
+         * @see @ref atStrict(Interpolator, K, std::size_t&) const
          */
         R atStrict(K frame, std::size_t& hint) const {
-            return interpolateStrict(keys(), values(), interpolator(), frame, hint);
+            return atStrict(interpolator(), frame, hint);
+        }
+
+        /**
+         * @brief Animated value at a given time
+         *
+         * Unlike @ref atStrict(K, std::size_t&) const calls @ref interpolate()
+         * with @p interpolator, overriding the interpolator function set in
+         * constructor. See its documentation for more information.
+         * @see @ref at(K, std::size_t&) const
+         */
+        R atStrict(Interpolator interpolator, K frame, std::size_t& hint) const {
+            return interpolateStrict(keys(), values(), interpolator, frame, hint);
         }
 };
 

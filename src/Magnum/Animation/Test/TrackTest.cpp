@@ -35,10 +35,18 @@ struct TrackTest: TestSuite::Tester {
     explicit TrackTest();
 
     void constructEmpty();
-    void constructArray();
-    void constructArrayDefaults();
-    void constructInitializerList();
-    void constructInitializerListDefaults();
+    void constructArrayInterpolator();
+    void constructArrayInterpolatorDefaults();
+    void constructArrayInterpolation();
+    void constructArrayInterpolationDefaults();
+    void constructArrayInterpolationInterpolator();
+    void constructArrayInterpolationInterpolationDefaults();
+    void constructInitializerListInterpolation();
+    void constructInitializerListInterpolationDefaults();
+    void constructInitializerListInterpolator();
+    void constructInitializerListInterpolatorDefaults();
+    void constructInitializerListInterpolationInterpolator();
+    void constructInitializerListInterpolationInterpolatorDefaults();
 
     void convertView();
 
@@ -89,10 +97,18 @@ const struct {
 
 TrackTest::TrackTest() {
     addTests({&TrackTest::constructEmpty,
-              &TrackTest::constructArray,
-              &TrackTest::constructArrayDefaults,
-              &TrackTest::constructInitializerList,
-              &TrackTest::constructInitializerListDefaults,
+              &TrackTest::constructArrayInterpolator,
+              &TrackTest::constructArrayInterpolatorDefaults,
+              &TrackTest::constructArrayInterpolation,
+              &TrackTest::constructArrayInterpolationDefaults,
+              &TrackTest::constructArrayInterpolationInterpolator,
+              &TrackTest::constructArrayInterpolationInterpolationDefaults,
+              &TrackTest::constructInitializerListInterpolator,
+              &TrackTest::constructInitializerListInterpolatorDefaults,
+              &TrackTest::constructInitializerListInterpolation,
+              &TrackTest::constructInitializerListInterpolationDefaults,
+              &TrackTest::constructInitializerListInterpolationInterpolator,
+              &TrackTest::constructInitializerListInterpolationInterpolatorDefaults,
 
               &TrackTest::convertView});
 
@@ -114,13 +130,14 @@ void TrackTest::constructEmpty() {
     CORRADE_COMPARE(a.at(42.0f), Vector3{});
 }
 
-void TrackTest::constructArray() {
+void TrackTest::constructArrayInterpolator() {
     const Track<Float, Vector3> a{
         Containers::Array<std::pair<Float, Vector3>>{Containers::InPlaceInit,
             {{0.0f, {3.0f, 1.0f, 0.1f}},
              {5.0f, {0.3f, 0.6f, 1.0f}}}},
         Math::select, Extrapolation::Extrapolated, Extrapolation::Constant};
 
+    CORRADE_COMPARE(a.interpolation(), Interpolation::Custom);
     CORRADE_COMPARE(a.interpolator(), Math::select);
     CORRADE_COMPARE(a.before(), Extrapolation::Extrapolated);
     CORRADE_COMPARE(a.after(), Extrapolation::Constant);
@@ -133,12 +150,13 @@ void TrackTest::constructArray() {
     CORRADE_COMPARE(a.values()[0], (Vector3{3.0f, 1.0f, 0.1f}));
 }
 
-void TrackTest::constructArrayDefaults() {
+void TrackTest::constructArrayInterpolatorDefaults() {
     const Track<Float, Vector3> a{
         Containers::Array<std::pair<Float, Vector3>>{Containers::InPlaceInit,
             {{0.0f, {3.0f, 1.0f, 0.1f}}}},
         Math::lerp, Extrapolation::DefaultConstructed};
 
+    CORRADE_COMPARE(a.interpolation(), Interpolation::Custom);
     CORRADE_COMPARE(a.interpolator(), Math::lerp);
     CORRADE_COMPARE(a.before(), Extrapolation::DefaultConstructed);
     CORRADE_COMPARE(a.after(), Extrapolation::DefaultConstructed);
@@ -151,12 +169,95 @@ void TrackTest::constructArrayDefaults() {
     CORRADE_COMPARE(a.values()[0], (Vector3{3.0f, 1.0f, 0.1f}));
 }
 
-void TrackTest::constructInitializerList() {
+void TrackTest::constructArrayInterpolation() {
+    const Track<Float, Vector3> a{
+        Containers::Array<std::pair<Float, Vector3>>{Containers::InPlaceInit,
+            {{0.0f, {3.0f, 1.0f, 0.1f}},
+             {5.0f, {0.3f, 0.6f, 1.0f}}}},
+        Interpolation::Linear, Extrapolation::Extrapolated, Extrapolation::Constant};
+
+    CORRADE_COMPARE(a.interpolation(), Interpolation::Linear);
+    CORRADE_COMPARE(a.interpolator(), Math::lerp);
+    CORRADE_COMPARE(a.before(), Extrapolation::Extrapolated);
+    CORRADE_COMPARE(a.after(), Extrapolation::Constant);
+    CORRADE_COMPARE(a.data().size(), 2);
+    CORRADE_COMPARE(a.keys().size(), 2);
+    CORRADE_COMPARE(a.values().size(), 2);
+    CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
+    CORRADE_COMPARE(a.data()[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
+    CORRADE_COMPARE(a.keys()[1], 5.0f);
+    CORRADE_COMPARE(a.values()[0], (Vector3{3.0f, 1.0f, 0.1f}));
+}
+
+void TrackTest::constructArrayInterpolationDefaults() {
+    const Track<Float, Vector3> a{
+        Containers::Array<std::pair<Float, Vector3>>{Containers::InPlaceInit,
+            {{0.0f, {3.0f, 1.0f, 0.1f}}}},
+        Interpolation::Constant, Extrapolation::DefaultConstructed};
+
+    CORRADE_COMPARE(a.interpolation(), Interpolation::Constant);
+    CORRADE_COMPARE(a.interpolator(), Math::select);
+    CORRADE_COMPARE(a.before(), Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(a.after(), Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(a.data().size(), 1);
+    CORRADE_COMPARE(a.keys().size(), 1);
+    CORRADE_COMPARE(a.values().size(), 1);
+    CORRADE_COMPARE(a[0], (std::pair<Float, Vector3>{0.0f, {3.0f, 1.0f, 0.1f}}));
+    CORRADE_COMPARE(a.data()[0], (std::pair<Float, Vector3>{0.0f, {3.0f, 1.0f, 0.1f}}));
+    CORRADE_COMPARE(a.keys()[0], 0.0f);
+    CORRADE_COMPARE(a.values()[0], (Vector3{3.0f, 1.0f, 0.1f}));
+}
+
+namespace {
+    Vector3 customLerp(const Vector3&, const Vector3&, Float) { return {}; }
+}
+
+void TrackTest::constructArrayInterpolationInterpolator() {
+    const Track<Float, Vector3> a{
+        Containers::Array<std::pair<Float, Vector3>>{Containers::InPlaceInit,
+            {{0.0f, {3.0f, 1.0f, 0.1f}},
+             {5.0f, {0.3f, 0.6f, 1.0f}}}},
+        Interpolation::Linear, customLerp, Extrapolation::Extrapolated, Extrapolation::Constant};
+
+    CORRADE_COMPARE(a.interpolation(), Interpolation::Linear);
+    CORRADE_COMPARE(a.interpolator(), customLerp);
+    CORRADE_COMPARE(a.before(), Extrapolation::Extrapolated);
+    CORRADE_COMPARE(a.after(), Extrapolation::Constant);
+    CORRADE_COMPARE(a.data().size(), 2);
+    CORRADE_COMPARE(a.keys().size(), 2);
+    CORRADE_COMPARE(a.values().size(), 2);
+    CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
+    CORRADE_COMPARE(a.data()[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
+    CORRADE_COMPARE(a.keys()[1], 5.0f);
+    CORRADE_COMPARE(a.values()[0], (Vector3{3.0f, 1.0f, 0.1f}));
+}
+
+void TrackTest::constructArrayInterpolationInterpolationDefaults() {
+    const Track<Float, Vector3> a{
+        Containers::Array<std::pair<Float, Vector3>>{Containers::InPlaceInit,
+            {{0.0f, {3.0f, 1.0f, 0.1f}}}},
+        Interpolation::Constant, customLerp, Extrapolation::DefaultConstructed};
+
+    CORRADE_COMPARE(a.interpolation(), Interpolation::Constant);
+    CORRADE_COMPARE(a.interpolator(), customLerp);
+    CORRADE_COMPARE(a.before(), Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(a.after(), Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(a.data().size(), 1);
+    CORRADE_COMPARE(a.keys().size(), 1);
+    CORRADE_COMPARE(a.values().size(), 1);
+    CORRADE_COMPARE(a[0], (std::pair<Float, Vector3>{0.0f, {3.0f, 1.0f, 0.1f}}));
+    CORRADE_COMPARE(a.data()[0], (std::pair<Float, Vector3>{0.0f, {3.0f, 1.0f, 0.1f}}));
+    CORRADE_COMPARE(a.keys()[0], 0.0f);
+    CORRADE_COMPARE(a.values()[0], (Vector3{3.0f, 1.0f, 0.1f}));
+}
+
+void TrackTest::constructInitializerListInterpolator() {
     const Track<Float, Vector3> a{
             {{0.0f, {3.0f, 1.0f, 0.1f}},
              {5.0f, {0.3f, 0.6f, 1.0f}}},
         Math::select, Extrapolation::Extrapolated, Extrapolation::DefaultConstructed};
 
+    CORRADE_COMPARE(a.interpolation(), Interpolation::Custom);
     CORRADE_COMPARE(a.interpolator(), Math::select);
     CORRADE_COMPARE(a.before(), Extrapolation::Extrapolated);
     CORRADE_COMPARE(a.after(), Extrapolation::DefaultConstructed);
@@ -169,11 +270,84 @@ void TrackTest::constructInitializerList() {
     CORRADE_COMPARE(a.values()[0], (Vector3{3.0f, 1.0f, 0.1f}));
 }
 
-void TrackTest::constructInitializerListDefaults() {
+void TrackTest::constructInitializerListInterpolatorDefaults() {
     const Track<Float, Vector3> a{{{0.0f, {3.0f, 1.0f, 0.1f}}},
         Math::lerp, Extrapolation::Constant};
 
+    CORRADE_COMPARE(a.interpolation(), Interpolation::Custom);
     CORRADE_COMPARE(a.interpolator(), Math::lerp);
+    CORRADE_COMPARE(a.before(), Extrapolation::Constant);
+    CORRADE_COMPARE(a.after(), Extrapolation::Constant);
+    CORRADE_COMPARE(a.data().size(), 1);
+    CORRADE_COMPARE(a.keys().size(), 1);
+    CORRADE_COMPARE(a.values().size(), 1);
+    CORRADE_COMPARE(a[0], (std::pair<Float, Vector3>{0.0f, {3.0f, 1.0f, 0.1f}}));
+    CORRADE_COMPARE(a.data()[0], (std::pair<Float, Vector3>{0.0f, {3.0f, 1.0f, 0.1f}}));
+    CORRADE_COMPARE(a.keys()[0], 0.0f);
+    CORRADE_COMPARE(a.values()[0], (Vector3{3.0f, 1.0f, 0.1f}));
+}
+
+void TrackTest::constructInitializerListInterpolation() {
+    const Track<Float, Vector3> a{
+            {{0.0f, {3.0f, 1.0f, 0.1f}},
+             {5.0f, {0.3f, 0.6f, 1.0f}}},
+        Interpolation::Linear, Extrapolation::Extrapolated, Extrapolation::DefaultConstructed};
+
+    CORRADE_COMPARE(a.interpolation(), Interpolation::Linear);
+    CORRADE_COMPARE(a.interpolator(), Math::lerp);
+    CORRADE_COMPARE(a.before(), Extrapolation::Extrapolated);
+    CORRADE_COMPARE(a.after(), Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(a.data().size(), 2);
+    CORRADE_COMPARE(a.keys().size(), 2);
+    CORRADE_COMPARE(a.values().size(), 2);
+    CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
+    CORRADE_COMPARE(a.data()[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
+    CORRADE_COMPARE(a.keys()[1], 5.0f);
+    CORRADE_COMPARE(a.values()[0], (Vector3{3.0f, 1.0f, 0.1f}));
+}
+
+void TrackTest::constructInitializerListInterpolationDefaults() {
+    const Track<Float, Vector3> a{{{0.0f, {3.0f, 1.0f, 0.1f}}},
+        Interpolation::Constant, Extrapolation::Constant};
+
+    CORRADE_COMPARE(a.interpolation(), Interpolation::Constant);
+    CORRADE_COMPARE(a.interpolator(), Math::select);
+    CORRADE_COMPARE(a.before(), Extrapolation::Constant);
+    CORRADE_COMPARE(a.after(), Extrapolation::Constant);
+    CORRADE_COMPARE(a.data().size(), 1);
+    CORRADE_COMPARE(a.keys().size(), 1);
+    CORRADE_COMPARE(a.values().size(), 1);
+    CORRADE_COMPARE(a[0], (std::pair<Float, Vector3>{0.0f, {3.0f, 1.0f, 0.1f}}));
+    CORRADE_COMPARE(a.data()[0], (std::pair<Float, Vector3>{0.0f, {3.0f, 1.0f, 0.1f}}));
+    CORRADE_COMPARE(a.keys()[0], 0.0f);
+    CORRADE_COMPARE(a.values()[0], (Vector3{3.0f, 1.0f, 0.1f}));
+}
+
+void TrackTest::constructInitializerListInterpolationInterpolator() {
+    const Track<Float, Vector3> a{
+            {{0.0f, {3.0f, 1.0f, 0.1f}},
+             {5.0f, {0.3f, 0.6f, 1.0f}}},
+        Interpolation::Linear, customLerp, Extrapolation::Extrapolated, Extrapolation::DefaultConstructed};
+
+    CORRADE_COMPARE(a.interpolation(), Interpolation::Linear);
+    CORRADE_COMPARE(a.interpolator(), customLerp);
+    CORRADE_COMPARE(a.before(), Extrapolation::Extrapolated);
+    CORRADE_COMPARE(a.after(), Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(a.data().size(), 2);
+    CORRADE_COMPARE(a.keys().size(), 2);
+    CORRADE_COMPARE(a.values().size(), 2);
+    CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
+    CORRADE_COMPARE(a.data()[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
+    CORRADE_COMPARE(a.keys()[1], 5.0f);
+    CORRADE_COMPARE(a.values()[0], (Vector3{3.0f, 1.0f, 0.1f}));
+}
+
+void TrackTest::constructInitializerListInterpolationInterpolatorDefaults() {
+    const Track<Float, Vector3> a{{{0.0f, {3.0f, 1.0f, 0.1f}}},
+        Interpolation::Constant, customLerp, Extrapolation::Constant};
+
+    CORRADE_COMPARE(a.interpolation(), Interpolation::Constant);
+    CORRADE_COMPARE(a.interpolator(), customLerp);
     CORRADE_COMPARE(a.before(), Extrapolation::Constant);
     CORRADE_COMPARE(a.after(), Extrapolation::Constant);
     CORRADE_COMPARE(a.data().size(), 1);
@@ -189,10 +363,11 @@ void TrackTest::convertView() {
     const Track<Float, Vector3> a{
         {{0.0f, {3.0f, 1.0f, 0.1f}},
          {5.0f, {0.3f, 0.6f, 1.0f}}},
-        Math::select, Extrapolation::Extrapolated, Extrapolation::DefaultConstructed};
+        Interpolation::Linear, customLerp, Extrapolation::Extrapolated, Extrapolation::DefaultConstructed};
     const TrackView<Float, Vector3> av = a;
 
-    CORRADE_COMPARE(av.interpolator(), Math::select);
+    CORRADE_COMPARE(av.interpolation(), Interpolation::Linear);
+    CORRADE_COMPARE(av.interpolator(), customLerp);
     CORRADE_COMPARE(av.before(), Extrapolation::Extrapolated);
     CORRADE_COMPARE(av.after(), Extrapolation::DefaultConstructed);
     CORRADE_COMPARE(av.keys().size(), 2);
