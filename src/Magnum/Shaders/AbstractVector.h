@@ -45,15 +45,17 @@ template<UnsignedInt dimensions> class AbstractVector: public GL::AbstractShader
         /**
          * @brief Vertex position
          *
-         * @ref shaders-generic "Generic attribute", @ref Vector2 in 2D,
-         * @ref Vector3 in 3D.
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector2 "Vector2" in 2D, @ref Magnum::Vector3 "Vector3"
+         * in 3D.
          */
         typedef typename Generic<dimensions>::Position Position;
 
         /**
          * @brief 2D texture coordinates
          *
-         * @ref shaders-generic "Generic attribute", @ref Vector2.
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector2 "Vector2".
          */
         typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
 

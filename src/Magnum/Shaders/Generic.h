@@ -49,21 +49,22 @@ template<UnsignedInt dimensions> struct Generic {
     /**
      * @brief Vertex position
      *
-     * @ref Vector2 in 2D and @ref Vector3 in 3D.
+     * @ref Magnum::Vector2 "Vector2" in 2D and @ref Magnum::Vector3 "Vector3"
+     * in 3D.
      */
     typedef GL::Attribute<0, T> Position;
 
     /**
      * @brief 2D texture coordinates
      *
-     * @ref Vector2.
+     * @ref Magnum::Vector2 "Vector2".
      */
     typedef GL::Attribute<1, Vector2> TextureCoordinates;
 
     /**
      * @brief Vertex normal
      *
-     * @ref Vector3, defined only in 3D.
+     * @ref Magnum::Vector3 "Vector3", defined only in 3D.
      */
     typedef GL::Attribute<2, Vector3> Normal;
 

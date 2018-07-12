@@ -48,12 +48,13 @@ is vertex attribute location, number between @cpp 0 @ce and
 should always have vertex attribute with location @cpp 0 @ce.
 
 Template parameter @p T is the type which is used for shader attribute, e.g.
-@ref Vector4i for @glsl ivec4 @ce. DataType is type of passed data when adding
-vertex buffers to mesh. By default it is the same as type used in shader (e.g.
-@ref DataType::Int for @ref Vector4i). It's also possible to pass integer data
-to floating-point shader inputs. In this case you may want to normalize the
-values (e.g. color components from @cpp 0 @ce -- @cpp 255 @ce to @cpp 0.0f @ce
--- @cpp 1.0f @ce) --- see @ref DataOption::Normalized.
+@ref Magnum::Vector4i "Vector4i" for @glsl ivec4 @ce. DataType is type of
+passed data when adding vertex buffers to mesh. By default it is the same as
+type used in shader (e.g. @ref DataType::Int for @ref Magnum::Vector4i "Vector4i").
+It's also possible to pass integer data to floating-point shader inputs. In
+this case you may want to normalize the values (e.g. color components from
+@cpp 0 @ce -- @cpp 255 @ce to @cpp 0.0f @ce -- @cpp 1.0f @ce) --- see
+@ref DataOption::Normalized.
 
 Only some types are allowed as attribute types, see @ref GL-AbstractShaderProgram-types
 for more information.
@@ -265,7 +266,8 @@ template<UnsignedInt location, class T> class Attribute {
          * @brief Constructor
          * @param components    Component count
          * @param dataType      Type of passed data. Default is the same as
-         *      type used in shader (e.g. @ref DataType::Int for @ref Vector4i).
+         *      type used in shader (e.g. @ref DataType::Int for
+         *      @ref Magnum::Vector4i "Vector4i").
          * @param dataOptions   Data options. Default is no options.
          */
         constexpr Attribute(Components components, DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(components), _dataType(dataType), _dataOptions(dataOptions) {}
@@ -273,11 +275,12 @@ template<UnsignedInt location, class T> class Attribute {
         /**
          * @brief Constructor
          * @param dataType      Type of passed data. Default is the same as
-         *      type used in shader (e.g. @ref DataType::Int for @ref Vector4i).
+         *      type used in shader (e.g. @ref DataType::Int for
+         *      @ref Magnum::Vector4i "Vector4i").
          * @param dataOptions   Data options. Default is no options.
          *
          * Component count is set to the same value as in type used in shader
-         * (e.g. @ref Components::Three for @ref Vector3).
+         * (e.g. @ref Components::Three for @ref Magnum::Vector3 "Vector3").
          */
         constexpr Attribute(DataType dataType = Implementation::Attribute<T>::DefaultDataType, DataOptions dataOptions = DataOptions()): _components(Implementation::Attribute<T>::DefaultComponents), _dataType(dataType), _dataOptions(dataOptions) {}
 

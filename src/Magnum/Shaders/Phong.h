@@ -93,23 +93,26 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         /**
          * @brief Vertex position
          *
-         * @ref shaders-generic "Generic attribute", @ref Vector3.
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector3 "Vector3".
          */
         typedef Generic3D::Position Position;
 
         /**
          * @brief Normal direction
          *
-         * @ref shaders-generic "Generic attribute", @ref Vector3.
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector3 "Vector3".
          */
         typedef Generic3D::Normal Normal;
 
         /**
          * @brief 2D texture coordinates
          *
-         * @ref shaders-generic "Generic attribute", @ref Vector2, used only if
-         * at least one of @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture
-         * and @ref Flag::SpecularTexture is set.
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector2 "Vector2", used only if at least one of
+         * @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture and
+         * @ref Flag::SpecularTexture is set.
          */
         typedef Generic3D::TextureCoordinates TextureCoordinates;
 

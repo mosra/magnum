@@ -66,8 +66,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
         /**
          * @brief Vertex position
          *
-         * @ref shaders-generic "Generic attribute", @ref Vector2 in 2D,
-         * @ref Vector3 in 3D.
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector2 "Vector2" in 2D @ref Magnum::Vector3 "Vector3"
+         * in 3D.
          */
         typedef typename Generic<dimensions>::Position Position;
 

@@ -363,30 +363,41 @@ used (and their super- or subclasses with the same size and underlying type).
 See also @ref Attribute::DataType enum for additional type options.
 
 @requires_gl30 Extension @gl_extension{EXT,gpu_shader4} is required when using
-    integer attributes (i.e. @ref UnsignedInt, @ref Int, @ref Vector2ui,
-    @ref Vector2i, @ref Vector3ui, @ref Vector3i, @ref Vector4ui and
-    @ref Vector4i) or unsigned integer uniforms (i.e. @ref UnsignedInt,
-    @ref Vector2ui, @ref Vector3ui and @ref Vector4ui).
+    integer attributes (i.e. @ref Magnum::UnsignedInt "UnsignedInt",
+    @ref Magnum::Int "Int", @ref Magnum::Vector2ui "Vector2ui",
+    @ref Magnum::Vector2i "Vector2i", @ref Magnum::Vector3ui "Vector3ui",
+    @ref Magnum::Vector3i "Vector3i", @ref Magnum::Vector4ui "Vector4ui" and
+    @ref Magnum::Vector4i "Vector4i") or unsigned integer uniforms (i.e.
+    @ref Magnum::UnsignedInt "UnsignedInt", @ref Magnum::Vector2ui "Vector2ui",
+    @ref Magnum::Vector3ui "Vector3ui" and @ref Magnum::Vector4ui "Vector4ui").
 @requires_gl40 Extension @gl_extension{ARB,gpu_shader_fp64} is required when
-    using double uniforms (i.e. @ref Magnum::Double "Double", @ref Vector2d,
-    @ref Vector3d, @ref Vector4d, @ref Matrix2x2d, @ref Matrix3x3d,
-    @ref Matrix4x4d, @ref Matrix2x3d, @ref Matrix3x2d, @ref Matrix2x4d,
-    @ref Matrix4x2d, @ref Matrix3x4d and @ref Matrix4x3d).
+    using double uniforms (i.e. @ref Magnum::Double "Double",
+    @ref Magnum::Vector2d "Vector2d", @ref Magnum::Vector3d "Vector3d",
+    @ref Magnum::Vector4d "Vector4d", @ref Magnum::Matrix2x2d "Matrix2x2d",
+    @ref Magnum::Matrix3x3d "Matrix3x3d", @ref Magnum::Matrix4x4d "Matrix4x4d",
+    @ref Magnum::Matrix2x3d "Matrix2x3d", @ref Magnum::Matrix3x2d "Matrix3x2d",
+    @ref  Magnum::Matrix2x4d "Matrix2x4d", @ref Magnum::Matrix4x2d "Matrix4x2d",
+    @ref Magnum::Matrix3x4d "Matrix3x4d" and @ref Magnum::Matrix4x3d "Matrix4x3d").
 @requires_gl41 Extension @gl_extension{ARB,vertex_attrib_64bit} is required when
-    using double attributes (i.e. @ref Magnum::Double "Double", @ref Vector2d,
-    @ref Vector3d, @ref Vector4d, @ref Matrix2x2d, @ref Matrix3x3d,
-    @ref Matrix4x4d, @ref Matrix2x3d, @ref Matrix3x2d, @ref Matrix2x4d,
-    @ref Matrix4x2d, @ref Matrix3x4d and @ref Matrix4x3d).
+    using double attributes (i.e. @ref Magnum::Double "Double",
+    @ref Magnum::Vector2d "Vector2d", @ref Magnum::Vector3d "Vector3d",
+    @ref Magnum::Vector4d "Vector4d", @ref Magnum::Matrix2x2d "Matrix2x2d",
+    @ref Magnum::Matrix3x3d "Matrix3x3d", @ref Magnum::Matrix4x4d "Matrix4x4d",
+    @ref Magnum::Matrix2x3d "Matrix2x3d", @ref Magnum::Matrix3x2d "Matrix3x2d",
+    @ref Magnum::Matrix2x4d "Matrix2x4d", @ref Magnum::Matrix4x2d "Matrix4x2d",
+    @ref Magnum::Matrix3x4d "Matrix3x4d" and @ref Magnum::Matrix4x3d "Matrix4x3d").
 @requires_gles30 Integer attributes, unsigned integer uniforms and non-square
-    matrix attributes and uniforms (i.e. @ref Matrix2x3, @ref Matrix3x2,
-    @ref Matrix2x4, @ref Matrix4x2, @ref Matrix3x4 and @ref Matrix4x3) are not
-    available in OpenGL ES 2.0.
+    matrix attributes and uniforms (i.e. @ref Magnum::Matrix2x3 "Matrix2x3",
+    @ref Magnum::Matrix3x2 "Matrix3x2", @ref Magnum::Matrix2x4 "Matrix2x4",
+    @ref Magnum::Matrix4x2 "Matrix4x2", @ref Magnum::Matrix3x4 "Matrix3x4" and
+    @ref Magnum::Matrix4x3 "Matrix4x3") are not available in OpenGL ES 2.0.
 @requires_gl Double attributes and uniforms are not available in OpenGL ES or
     WebGL.
 @requires_webgl20 Integer attributes, unsigned integer uniforms and non-square
-    matrix attributes and uniforms (i.e. @ref Matrix2x3, @ref Matrix3x2,
-    @ref Matrix2x4, @ref Matrix4x2, @ref Matrix3x4 and @ref Matrix4x3) are not
-    available in WebGL 1.0.
+    matrix attributes and uniforms (i.e. @ref Magnum::Matrix2x3 "Matrix2x3",
+    @ref Magnum::Matrix3x2 "Matrix3x2", @ref Magnum::Matrix2x4 "Matrix2x4",
+    @ref Magnum::Matrix4x2 "Matrix4x2", @ref Magnum::Matrix3x4 "Matrix3x4" and
+    @ref Magnum::Matrix4x3 "Matrix4x3") are not available in WebGL 1.0.
 
 @section GL-AbstractShaderProgram-performance-optimization Performance optimizations
 

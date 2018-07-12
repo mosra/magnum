@@ -108,7 +108,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
         /**
          * @brief Vertex position
          *
-         * @ref shaders-generic "Generic attribute", @ref Vector3.
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector3 "Vector3".
          */
         typedef GL::Attribute<0, Vector3> Position;
 
