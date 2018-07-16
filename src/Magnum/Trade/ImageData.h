@@ -294,7 +294,7 @@ template<UnsignedInt dimensions> class ImageData {
          *
          * @deprecated Cast @ref formatExtra() to @ref GL::PixelType instead.
          */
-        CORRADE_DEPRECATED("cast formatExtra() to GL::PixelType instead") GL::PixelType type() const { return GL::PixelType(formatExtra()); }
+        CORRADE_DEPRECATED("cast formatExtra() to GL::PixelType instead") GL::PixelType type() const { return GL::PixelType(formatExtra()); } /* LCOV_EXCL_LINE */
         #endif
 
         /**
