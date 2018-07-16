@@ -60,4 +60,4 @@ if(BUILD_TESTS)
 endif()
 
 # Magnum ObjImporter library for superprojects
-add_library(Magnum:::ObjImporter ALIAS ObjImporter)
+add_library(Magnum::ObjImporter ALIAS ObjImporter)
