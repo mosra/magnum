@@ -26,6 +26,7 @@
 #include "AbstractImporter.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Directory.h>
@@ -495,5 +496,22 @@ const void* AbstractImporter::importerState() const {
 }
 
 const void* AbstractImporter::doImporterState() const { return nullptr; }
+
+Debug& operator<<(Debug& debug, const AbstractImporter::Feature value) {
+    switch(value) {
+        #define _c(v) case AbstractImporter::Feature::v: return debug << "Trade::AbstractImporter::Feature::" #v;
+        _c(OpenData)
+        _c(OpenState)
+        #undef _c
+    }
+
+    return debug << "Trade::AbstractImporter::Feature(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const AbstractImporter::Features value) {
+    return Containers::enumSetDebugOutput(debug, value, "Trade::AbstractImporter::Features{}", {
+        AbstractImporter::Feature::OpenData,
+        AbstractImporter::Feature::OpenState});
+}
 
 }}

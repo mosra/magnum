@@ -872,6 +872,12 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
 CORRADE_ENUMSET_OPERATORS(AbstractImporter::Features)
 
+/** @debugoperatorclassenum{AbstractImporter,AbstractImporter::Feature} */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, AbstractImporter::Feature value);
+
+/** @debugoperatorclassenum{AbstractImporter,AbstractImporter::Features} */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, AbstractImporter::Features value);
+
 }}
 
 #endif

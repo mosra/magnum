@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
@@ -38,10 +39,16 @@ class AbstractImporterTest: public TestSuite::Tester {
         explicit AbstractImporterTest();
 
         void openFile();
+
+        void debugFeature();
+        void debugFeatures();
 };
 
 AbstractImporterTest::AbstractImporterTest() {
-    addTests({&AbstractImporterTest::openFile});
+    addTests({&AbstractImporterTest::openFile,
+
+              &AbstractImporterTest::debugFeature,
+              &AbstractImporterTest::debugFeatures});
 }
 
 void AbstractImporterTest::openFile() {
@@ -66,6 +73,20 @@ void AbstractImporterTest::openFile() {
     CORRADE_VERIFY(!importer.isOpened());
     importer.openFile(Utility::Directory::join(TRADE_TEST_DIR, "file.bin"));
     CORRADE_VERIFY(importer.isOpened());
+}
+
+void AbstractImporterTest::debugFeature() {
+    std::ostringstream out;
+
+    Debug{&out} << AbstractImporter::Feature::OpenData << AbstractImporter::Feature(0xf0);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::Feature::OpenData Trade::AbstractImporter::Feature(0xf0)\n");
+}
+
+void AbstractImporterTest::debugFeatures() {
+    std::ostringstream out;
+
+    Debug{&out} << (AbstractImporter::Feature::OpenData|AbstractImporter::Feature::OpenState) << AbstractImporter::Features{};
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::Feature::OpenData|Trade::AbstractImporter::Feature::OpenState Trade::AbstractImporter::Features{}\n");
 }
 
 }}}
