@@ -154,6 +154,11 @@ See also:
     cases where outdated or plain wrong API constructs were mentioned
 -   Explicitly mentioning copy/move constructibility for all classes with
     non-trivial construction
+-   Website styling got out of sync with generated Doxygen documentation,
+    causing search icon to either disappear on some browsers or be extremely
+    oversized on others (see
+    [mosra/magnum#260](https://github.com/mosra/magnum/issues/260),
+    [mosra/magnum#261](https://github.com/mosra/magnum/issues/261))
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
