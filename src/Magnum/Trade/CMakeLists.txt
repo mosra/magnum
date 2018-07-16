@@ -27,7 +27,6 @@ find_package(Corrade REQUIRED PluginManager)
 
 set(MagnumTrade_SRCS
     AbstractImageConverter.cpp
-    AbstractImporter.cpp
     AbstractMaterialData.cpp
     LightData.cpp
     MeshData2D.cpp
@@ -38,6 +37,7 @@ set(MagnumTrade_SRCS
     TextureData.cpp)
 
 set(MagnumTrade_GracefulAssert_SRCS
+    AbstractImporter.cpp
     ImageData.cpp
     ObjectData2D.cpp
     ObjectData3D.cpp

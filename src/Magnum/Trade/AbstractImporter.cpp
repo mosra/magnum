@@ -87,7 +87,7 @@ void AbstractImporter::doOpenData(Containers::ArrayView<const char>) {
 
 bool AbstractImporter::openState(const void* state, const std::string& filePath) {
     CORRADE_ASSERT(features() & Feature::OpenState,
-        "Trade::AbstractImporter::OpenState(): feature not supported", {});
+        "Trade::AbstractImporter::openState(): feature not supported", {});
 
     close();
     doOpenState(state, filePath);
@@ -158,7 +158,9 @@ Containers::Optional<SceneData> AbstractImporter::scene(const UnsignedInt id) {
     return doScene(id);
 }
 
-Containers::Optional<SceneData> AbstractImporter::doScene(UnsignedInt) { return Containers::NullOpt; }
+Containers::Optional<SceneData> AbstractImporter::doScene(UnsignedInt) {
+    CORRADE_ASSERT(false, "Trade::AbstractImporter::scene(): not implemented", {});
+}
 
 UnsignedInt AbstractImporter::lightCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::lightCount(): no file opened", {});
@@ -188,7 +190,9 @@ Containers::Optional<LightData> AbstractImporter::light(const UnsignedInt id) {
     return doLight(id);
 }
 
-Containers::Optional<LightData> AbstractImporter::doLight(UnsignedInt) { return Containers::NullOpt; }
+Containers::Optional<LightData> AbstractImporter::doLight(UnsignedInt) {
+    CORRADE_ASSERT(false, "Trade::AbstractImporter::light(): not implemented", {});
+}
 
 UnsignedInt AbstractImporter::cameraCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::cameraCount(): no file opened", {});
@@ -218,7 +222,9 @@ Containers::Optional<CameraData> AbstractImporter::camera(const UnsignedInt id) 
     return doCamera(id);
 }
 
-Containers::Optional<CameraData> AbstractImporter::doCamera(UnsignedInt) { return Containers::NullOpt; }
+Containers::Optional<CameraData> AbstractImporter::doCamera(UnsignedInt) {
+    CORRADE_ASSERT(false, "Trade::AbstractImporter::camera(): not implemented", {});
+}
 
 UnsignedInt AbstractImporter::object2DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object2DCount(): no file opened", {});
@@ -248,7 +254,9 @@ std::unique_ptr<ObjectData2D> AbstractImporter::object2D(const UnsignedInt id) {
     return doObject2D(id);
 }
 
-std::unique_ptr<ObjectData2D> AbstractImporter::doObject2D(UnsignedInt) { return nullptr; }
+std::unique_ptr<ObjectData2D> AbstractImporter::doObject2D(UnsignedInt) {
+    CORRADE_ASSERT(false, "Trade::AbstractImporter::object2D(): not implemented", {});
+}
 
 UnsignedInt AbstractImporter::object3DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object3DCount(): no file opened", {});
@@ -278,7 +286,9 @@ std::unique_ptr<ObjectData3D> AbstractImporter::object3D(const UnsignedInt id) {
     return doObject3D(id);
 }
 
-std::unique_ptr<ObjectData3D> AbstractImporter::doObject3D(UnsignedInt) { return nullptr; }
+std::unique_ptr<ObjectData3D> AbstractImporter::doObject3D(UnsignedInt) {
+    CORRADE_ASSERT(false, "Trade::AbstractImporter::object3D(): not implemented", {});
+}
 
 UnsignedInt AbstractImporter::mesh2DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh2DCount(): no file opened", {});
@@ -296,7 +306,7 @@ Int AbstractImporter::doMesh2DForName(const std::string&) { return -1; }
 
 std::string AbstractImporter::mesh2DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh2DName(): no file opened", {});
-    CORRADE_ASSERT(id < doMesh2DCount(), "Trade::AbstractImporter::object2DName(): index out of range", {});
+    CORRADE_ASSERT(id < doMesh2DCount(), "Trade::AbstractImporter::mesh2DName(): index out of range", {});
     return doMesh2DName(id);
 }
 
@@ -304,11 +314,13 @@ std::string AbstractImporter::doMesh2DName(UnsignedInt) { return {}; }
 
 Containers::Optional<MeshData2D> AbstractImporter::mesh2D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh2D(): no file opened", {});
-    CORRADE_ASSERT(id < doMesh2DCount(), "Trade::AbstractImporter::object2D(): index out of range", {});
+    CORRADE_ASSERT(id < doMesh2DCount(), "Trade::AbstractImporter::mesh2D(): index out of range", {});
     return doMesh2D(id);
 }
 
-Containers::Optional<MeshData2D> AbstractImporter::doMesh2D(UnsignedInt) { return Containers::NullOpt; }
+Containers::Optional<MeshData2D> AbstractImporter::doMesh2D(UnsignedInt) {
+    CORRADE_ASSERT(false, "Trade::AbstractImporter::mesh2D(): not implemented", {});
+}
 
 UnsignedInt AbstractImporter::mesh3DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh3DCount(): no file opened", {});
@@ -326,7 +338,7 @@ Int AbstractImporter::doMesh3DForName(const std::string&) { return -1; }
 
 std::string AbstractImporter::mesh3DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh3DName(): no file opened", {});
-    CORRADE_ASSERT(id < doMesh3DCount(), "Trade::AbstractImporter::object3DName(): index out of range", {});
+    CORRADE_ASSERT(id < doMesh3DCount(), "Trade::AbstractImporter::mesh3DName(): index out of range", {});
     return doMesh3DName(id);
 }
 
@@ -338,7 +350,9 @@ Containers::Optional<MeshData3D> AbstractImporter::mesh3D(const UnsignedInt id) 
     return doMesh3D(id);
 }
 
-Containers::Optional<MeshData3D> AbstractImporter::doMesh3D(UnsignedInt) { return Containers::NullOpt; }
+Containers::Optional<MeshData3D> AbstractImporter::doMesh3D(UnsignedInt) {
+    CORRADE_ASSERT(false, "Trade::AbstractImporter::mesh3D(): not implemented", {});
+}
 
 UnsignedInt AbstractImporter::materialCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::materialCount(): no file opened", {});
@@ -368,7 +382,9 @@ std::unique_ptr<AbstractMaterialData> AbstractImporter::material(const UnsignedI
     return doMaterial(id);
 }
 
-std::unique_ptr<AbstractMaterialData> AbstractImporter::doMaterial(UnsignedInt) { return nullptr; }
+std::unique_ptr<AbstractMaterialData> AbstractImporter::doMaterial(UnsignedInt) {
+    CORRADE_ASSERT(false, "Trade::AbstractImporter::material(): not implemented", {});
+}
 
 UnsignedInt AbstractImporter::textureCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::textureCount(): no file opened", {});
@@ -398,7 +414,9 @@ Containers::Optional<TextureData> AbstractImporter::texture(const UnsignedInt id
     return doTexture(id);
 }
 
-Containers::Optional<TextureData> AbstractImporter::doTexture(UnsignedInt) { return Containers::NullOpt; }
+Containers::Optional<TextureData> AbstractImporter::doTexture(UnsignedInt) {
+    CORRADE_ASSERT(false, "Trade::AbstractImporter::texture(): not implemented", {});
+}
 
 UnsignedInt AbstractImporter::image1DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image1DCount(): no file opened", {});
@@ -428,7 +446,9 @@ Containers::Optional<ImageData1D> AbstractImporter::image1D(const UnsignedInt id
     return doImage1D(id);
 }
 
-Containers::Optional<ImageData1D> AbstractImporter::doImage1D(UnsignedInt) { return Containers::NullOpt; }
+Containers::Optional<ImageData1D> AbstractImporter::doImage1D(UnsignedInt) {
+    CORRADE_ASSERT(false, "Trade::AbstractImporter::image1D(): not implemented", {});
+}
 
 UnsignedInt AbstractImporter::image2DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image2DCount(): no file opened", {});
@@ -438,7 +458,7 @@ UnsignedInt AbstractImporter::image2DCount() const {
 UnsignedInt AbstractImporter::doImage2DCount() const { return 0; }
 
 Int AbstractImporter::image2DForName(const std::string& name) {
-    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image1DForName(): no file opened", {});
+    CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image2DForName(): no file opened", {});
     return doImage2DForName(name);
 }
 
@@ -458,7 +478,9 @@ Containers::Optional<ImageData2D> AbstractImporter::image2D(const UnsignedInt id
     return doImage2D(id);
 }
 
-Containers::Optional<ImageData2D> AbstractImporter::doImage2D(UnsignedInt) { return Containers::NullOpt; }
+Containers::Optional<ImageData2D> AbstractImporter::doImage2D(UnsignedInt) {
+    CORRADE_ASSERT(false, "Trade::AbstractImporter::image2D(): not implemented", {});
+}
 
 UnsignedInt AbstractImporter::image3DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image3DCount(): no file opened", {});
@@ -488,7 +510,9 @@ Containers::Optional<ImageData3D> AbstractImporter::image3D(const UnsignedInt id
     return doImage3D(id);
 }
 
-Containers::Optional<ImageData3D> AbstractImporter::doImage3D(UnsignedInt) { return Containers::NullOpt; }
+Containers::Optional<ImageData3D> AbstractImporter::doImage3D(UnsignedInt) {
+    CORRADE_ASSERT(false, "Trade::AbstractImporter::image3D(): not implemented", {});
+}
 
 const void* AbstractImporter::importerState() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::importerState(): no file opened", {});

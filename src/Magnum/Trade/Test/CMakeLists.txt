@@ -37,7 +37,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 corrade_add_test(TradeAbstractImageConverterTest AbstractImageConverterTest.cpp LIBRARIES MagnumTrade)
 target_include_directories(TradeAbstractImageConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(TradeAbstractImporterTest AbstractImporterTest.cpp
-    LIBRARIES MagnumTrade
+    LIBRARIES MagnumTradeTestLib
     FILES file.bin)
 target_include_directories(TradeAbstractImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(TradeCameraDataTest CameraDataTest.cpp LIBRARIES MagnumTrade)
