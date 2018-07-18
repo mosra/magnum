@@ -164,6 +164,15 @@ API.
 class AnimationTrackData {
     public:
         /**
+         * @brief Default constructor
+         *
+         * Leaves contents at unspecified values. Provided as a convenience for
+         * initialization of @ref AnimationData structure, expected to be
+         * replaced with concrete values later.
+         */
+        /*implicit*/ AnimationTrackData() noexcept: _type{}, _resultType{}, _target{}, _targetId{}, _view{} {}
+
+        /**
          * @brief Constructor
          * @param type          Value type
          * @param resultType    Result type
