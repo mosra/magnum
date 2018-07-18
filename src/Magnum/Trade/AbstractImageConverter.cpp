@@ -71,7 +71,6 @@ Containers::Optional<Image2D> AbstractImageConverter::exportToImage(const ImageV
 
 Containers::Optional<Image2D> AbstractImageConverter::doExportToImage(const ImageView2D&) {
     CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToImage(): feature advertised but not implemented", {});
-    return Containers::NullOpt;
 }
 
 Containers::Optional<CompressedImage2D> AbstractImageConverter::exportToCompressedImage(const ImageView2D& image) {
@@ -83,7 +82,6 @@ Containers::Optional<CompressedImage2D> AbstractImageConverter::exportToCompress
 
 Containers::Optional<CompressedImage2D> AbstractImageConverter::doExportToCompressedImage(const ImageView2D&) {
     CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToCompressedImage(): feature advertised but not implemented", {});
-    return Containers::NullOpt;
 }
 
 Containers::Array<char> AbstractImageConverter::exportToData(const ImageView2D& image) {
@@ -95,7 +93,6 @@ Containers::Array<char> AbstractImageConverter::exportToData(const ImageView2D& 
 
 Containers::Array<char> AbstractImageConverter::doExportToData(const ImageView2D&) {
     CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToData(): feature advertised but not implemented", nullptr);
-    return nullptr;
 }
 
 Containers::Array<char> AbstractImageConverter::exportToData(const CompressedImageView2D& image) {
@@ -107,7 +104,6 @@ Containers::Array<char> AbstractImageConverter::exportToData(const CompressedIma
 
 Containers::Array<char> AbstractImageConverter::doExportToData(const CompressedImageView2D&) {
     CORRADE_ASSERT(false, "Trade::AbstractImageConverter::exportToData(): feature advertised but not implemented", nullptr);
-    return nullptr;
 }
 
 Containers::Array<char> AbstractImageConverter::exportToData(const ImageData2D& image) {
