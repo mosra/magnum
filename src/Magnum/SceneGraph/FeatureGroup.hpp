@@ -39,11 +39,11 @@ template<UnsignedInt dimensions, class T> AbstractFeatureGroup<dimensions, T>::A
 template<UnsignedInt dimensions, class T> AbstractFeatureGroup<dimensions, T>::~AbstractFeatureGroup() = default;
 
 template<UnsignedInt dimensions, class T> void AbstractFeatureGroup<dimensions, T>::add(AbstractFeature<dimensions, T>& feature) {
-    features.push_back(feature);
+    _features.push_back(feature);
 }
 
 template<UnsignedInt dimensions, class T> void AbstractFeatureGroup<dimensions, T>::remove(AbstractFeature<dimensions, T>& feature) {
-    features.erase(std::find_if(features.begin(), features.end(),
+    _features.erase(std::find_if(_features.begin(), _features.end(),
         [&feature](AbstractFeature<dimensions, T>& f) { return &f == &feature; }));
 }
 
