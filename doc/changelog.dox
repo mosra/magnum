@@ -122,6 +122,12 @@ See also:
     @ref Shaders::VertexColor::Color4 attribute specifiers for more convenient
     distinction between three- and four-component vertex color attribute.
 
+@subsubsection changelog-latest-changes-texturetools TextureTools library
+
+-   Fixed @ref TextureTools::distanceField() to not require more than 8 texture
+    units, which is the limit on all iOS ES2 contexts, independently on the
+    device (ES3 contexts have 16).
+
 @subsubsection changelog-latest-changes-trade Trade library
 
 -   @ref Trade::PhongMaterialData now contains well-defined color values

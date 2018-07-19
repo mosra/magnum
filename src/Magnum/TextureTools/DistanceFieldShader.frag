@@ -46,7 +46,7 @@ uniform mediump vec2 scaling;
 #endif
 
 #ifdef EXPLICIT_TEXTURE_LAYER
-layout(binding = 8) uniform sampler2D textureData;
+layout(binding = 7) uniform sampler2D textureData;
 #else
 uniform lowp sampler2D textureData;
 #endif
