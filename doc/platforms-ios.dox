@@ -37,6 +37,37 @@ version 3.0 (i.e., a version before compute shaders are available).
 See also @ref Platform::Sdl2Application for more information. Some of the
 @ref platforms-macos "macOS platform-specific info" applies here as well.
 
+@section platforms-ios-deploying Deploying iOS apps
+
+@subsection platform-ios-deploying-signing Application signing
+
+Apps have to be signed in order to run on iPhone. After generating the CMake
+project, you'll have no code signing set up. In the Xcode go to the *General*
+properties for given app target and enable automatic signing. First time you do
+this for an account, you'll need to set up a certificate. Also note that in
+case of free developer accounts, you have only a low limit of different bundle
+IDs to install & launch in a day (usually just 10). Once you reach the limit
+(for example when running a lot of test executables), you'll be prevented from
+using new ones. A possible workaround is to reuse a bundle ID from an existing
+app.
+
+@subsection platform-ios-deploying-certificate Certificate trusting
+
+When deploying with a developer account for given device for a first time,
+you'll be prompted to verify your Developer Account. In the iPhone Settings,
+go to *General* -> *Profiles & Device Management* and *trust* your certificate
+there.
+
+@subsection platform-ios-deploying-target Deplyoyment target
+
+Generated Xcode projects by default require the iOS version to be matching the
+iPhone SDK version. If you need to make the app running on older devices, set
+the `CMAKE_OSX_DEPLOYMENT_TARGET` to desired version:
+
+@code{.sh}
+cmake . -DCMAKE_OSX_DEPLOYMENT_TARGET=10.1 # iOS 10.1 at least
+@endcode
+
 @section platforms-ios-best-practices Best practices
 
 Official Apple documentation:
