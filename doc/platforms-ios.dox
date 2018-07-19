@@ -37,6 +37,21 @@ version 3.0 (i.e., a version before compute shaders are available).
 See also @ref Platform::Sdl2Application for more information. Some of the
 @ref platforms-macos "macOS platform-specific info" applies here as well.
 
+@section platforms-ios-xcode Xcode
+
+@subsection platforms-ios-xcode-cmake CMake can't find a compiler
+
+Right after installing Xcode for the first time, CMake might fail with a
+message saying
+
+> No CMAKE_CXX_COMPILER could be found.
+
+In order to fix this, you need to run this command:
+
+@code{.sh}
+sudo xcode-select -s /Applications/Xcode.app/Contents/Developer
+@endcode
+
 @section platforms-ios-deploying Deploying iOS apps
 
 @subsection platform-ios-deploying-signing Application signing
