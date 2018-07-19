@@ -160,13 +160,13 @@ class CompareImage {
         explicit CompareImage(): CompareImage{0.0f, 0.0f} {}
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        Corrade::TestSuite::Comparator<CompareImage>& comparator() {
+        TestSuite::Comparator<CompareImage>& comparator() {
             return _c;
         }
         #endif
 
     private:
-        Corrade::TestSuite::Comparator<CompareImage> _c;
+        TestSuite::Comparator<CompareImage> _c;
 };
 
 }}
