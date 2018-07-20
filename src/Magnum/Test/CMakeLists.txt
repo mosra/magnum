@@ -53,5 +53,6 @@ set_target_properties(
     ResourceManagerTest
     ResourceManagerLocalInstanceTestLib
     ResourceManagerLocalInstanceTest
+    SamplerTest
     TagsTest
     PROPERTIES FOLDER "Magnum/Test")

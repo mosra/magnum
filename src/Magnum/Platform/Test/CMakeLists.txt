@@ -26,26 +26,31 @@
 if(WITH_ANDROIDAPPLICATION)
     add_library(PlatformAndroidApplicationTest SHARED AndroidApplicationTest.cpp)
     target_link_libraries(PlatformAndroidApplicationTest PRIVATE MagnumAndroidApplication)
+    set_target_properties(PlatformAndroidApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
 if(WITH_GLFWAPPLICATION)
     add_executable(PlatformGlfwApplicationTest GlfwApplicationTest.cpp)
     target_link_libraries(PlatformGlfwApplicationTest PRIVATE MagnumGlfwApplication)
+    set_target_properties(PlatformGlfwApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
 if(WITH_GLUTAPPLICATION)
     add_executable(PlatformGlutApplicationTest GlutApplicationTest.cpp)
     target_link_libraries(PlatformGlutApplicationTest PRIVATE MagnumGlutApplication)
+    set_target_properties(PlatformGlutApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
 if(WITH_GLXAPPLICATION)
     add_executable(PlatformGlxApplicationTest GlxApplicationTest.cpp)
     target_link_libraries(PlatformGlxApplicationTest PRIVATE MagnumGlxApplication)
+    set_target_properties(PlatformGlxApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
 if(WITH_SDL2APPLICATION)
     add_executable(PlatformSdl2ApplicationTest Sdl2ApplicationTest.cpp)
     target_link_libraries(PlatformSdl2ApplicationTest PRIVATE MagnumSdl2Application)
+    set_target_properties(PlatformSdl2ApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
     if(CORRADE_TARGET_IOS)
         set_target_properties(PlatformSdl2ApplicationTest PROPERTIES
             MACOSX_BUNDLE ON
@@ -56,21 +61,25 @@ endif()
 if(WITH_XEGLAPPLICATION)
     add_executable(PlatformXEglApplicationTest XEglApplicationTest.cpp)
     target_link_libraries(PlatformXEglApplicationTest PRIVATE MagnumXEglApplication)
+    set_target_properties(PlatformXEglApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
 if(WITH_WINDOWLESSCGLAPPLICATION)
     add_executable(PlatformWindowlessCglApplicationTest WindowlessCglApplicationTest.cpp)
     target_link_libraries(PlatformWindowlessCglApplicationTest PRIVATE MagnumWindowlessCglApplication)
+    set_target_properties(PlatformWindowlessCglApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
 if(WITH_WINDOWLESSEGLAPPLICATION)
     add_executable(PlatformWindowlessEglApplicationTest WindowlessEglApplicationTest.cpp)
     target_link_libraries(PlatformWindowlessEglApplicationTest PRIVATE MagnumWindowlessEglApplication)
+    set_target_properties(PlatformWindowlessEglApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
 if(WITH_WINDOWLESSGLXAPPLICATION)
     add_executable(PlatformWindowlessGlxApplicationTest WindowlessGlxApplicationTest.cpp)
     target_link_libraries(PlatformWindowlessGlxApplicationTest PRIVATE MagnumWindowlessGlxApplication)
+    set_target_properties(PlatformWindowlessGlxApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
 if(WITH_WINDOWLESSIOSAPPLICATION)
@@ -78,15 +87,18 @@ if(WITH_WINDOWLESSIOSAPPLICATION)
     target_link_libraries(PlatformWindowlessIosApplicationTest PRIVATE MagnumWindowlessIosApplication)
     set_target_properties(PlatformWindowlessIosApplicationTest PROPERTIES
         MACOSX_BUNDLE ON
-        XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
+        XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES"
+        FOLDER "Magnum/Platform/Test")
 endif()
 
 if(WITH_WINDOWLESSWGLAPPLICATION)
     add_executable(PlatformWindowlessWglApplicationTest WindowlessWglApplicationTest.cpp)
     target_link_libraries(PlatformWindowlessWglApplicationTest PRIVATE MagnumWindowlessWglApplication)
+    set_target_properties(PlatformWindowlessWglApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
 if(WITH_WINDOWLESSWINDOWSEGLAPPLICATION)
     add_executable(PlatformWindowlessWindowsEglApplicationTest WindowlessWindowsEglApplicationTest.cpp)
     target_link_libraries(PlatformWindowlessWindowsEglApplicationTest PRIVATE MagnumWindowlessWindowsEglApplication)
+    set_target_properties(PlatformWindowlessWindowsEglApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()

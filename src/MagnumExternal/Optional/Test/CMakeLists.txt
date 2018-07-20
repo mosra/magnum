@@ -27,6 +27,7 @@ corrade_add_test(StdOptionalTest StdOptionalTest.cpp)
 target_include_directories(StdOptionalTest PRIVATE
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_BINARY_DIR}/src)
+set_target_properties(StdOptionalTest PROPERTIES FOLDER "MagnumExternal/Optional/Test")
 
 # Try using C++17 on newer compilers. Can't use VERSION_GREATER_EQUAL because
 # older CMake doesn't support these. No idea how to detect libc++ presence on

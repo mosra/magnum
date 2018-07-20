@@ -45,6 +45,7 @@ set_target_properties(
     PrimitivesCubeTest
     PrimitivesConeTest
     PrimitivesCylinderTest
+    PrimitivesGridTest
     PrimitivesIcosphereTest
     PrimitivesLineTest
     PrimitivesPlaneTest
