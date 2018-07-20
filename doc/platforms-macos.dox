@@ -31,12 +31,91 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
-@todoc homebrew
 @todoc code coverage
-@todoc bundling, dmg cpack
 
 With Apple decision to focus on Metal, macOS OpenGL support is stuck on version
 4.2 (i.e., a version before compute shaders are available).
+
+@section platforms-macos-bundle Bundle creation
+
+While graphical applications *can* run "as is", directly from the compiled
+executable, it's not possible to set various crucial properties of the app
+such as @ref platforms-macos-hidpi "HiDPI" support --- for that you need to
+create a bundle, specifying its options through a `*.plist` file. If you use
+CMake, it provides [a builtin file](https://cmake.org/cmake/help/latest/prop_tgt/MACOSX_BUNDLE_INFO_PLIST.html)
+with a few options and you can use it like this:
+
+@code{.cmake}
+add_executable(my-application main.cpp)
+# ...
+if(CORRADE_TARGET_APPLE)
+    set_target_properties(my-application PROPERTIES
+        MACOSX_BUNDLE ON
+        MACOSX_BUNDLE_BUNDLE_NAME "My Application"
+        MACOSX_BUNDLE_BUNDLE_IDENTIFIER "cz.mosra.magnum.my-application")
+endif()
+@endcode
+
+The builtin file doesn't include all possible properties, however it's possible
+to supply your own. A minimal file can look like this:
+
+@code{.xml}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleDevelopmentRegion</key>
+  <string>en-US</string>
+  <key>CFBundleExecutable</key>
+  <string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
+  <key>CFBundleIdentifier</key>
+  <string>cz.mosra.magnum.my-application</string>
+  <key>CFBundleInfoDictionaryVersion</key>
+  <string>6.0</string>
+  <key>CFBundleName</key>
+  <string>Magnum Triangle</string>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+</dict>
+</plist>
+@endcode
+
+If you name it `MacOSXBundleInfo.plist.in`, it can be supplied to the bundle
+like below. The @cb{.cmake} ${MACOSX_BUNDLE_EXECUTABLE_NAME} @ce will get
+automatically replaced with the target executable name.
+
+@code{.cmake}
+if(CORRADE_TARGET_APPLE)
+    set_target_properties(my-application PROPERTIES
+        MACOSX_BUNDLE ON
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in)
+endif()
+@endcode
+
+See [the official Apple Property List file documentation](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/AboutInformationPropertyListFiles.html)
+for information about all options.
+
+If you don't use CMake, these options can be set directly through Xcode UI, for
+example.
+
+@section platforms-macos-hidpi HiDPI (Retina) support
+
+macOS and iOS is the only platform where HiDPI support of an app can't be
+advertised programmatically. In case of CMake, you have to supply a custom
+`*.plist` file with `NSHighResolutionCapable` enabled
+(@ref platforms-macos-bundle "see above for details about creating bundles"):
+
+@code{.xml}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  ...
+  <key>NSHighResolutionCapable</key>
+  <true/>
+</dict>
+</plist>
+@endcode
 
 @section platforms-macos-opengl-best-practices Best practices
 
