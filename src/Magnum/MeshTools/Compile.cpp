@@ -51,7 +51,7 @@ GL::Mesh compile(const Trade::MeshData2D& meshData) {
 
     /* Create vertex buffer */
     GL::Buffer vertexBuffer{GL::Buffer::TargetHint::Array};
-    GL::Buffer vertexBufferRef = GL::Buffer::wrap(vertexBuffer.id());
+    GL::Buffer vertexBufferRef = GL::Buffer::wrap(vertexBuffer.id(), GL::Buffer::TargetHint::Array);
 
     /* Interleave positions and put them in with ownership transfer, use the
        ref for the rest */
@@ -120,7 +120,7 @@ GL::Mesh compile(const Trade::MeshData3D& meshData) {
 
     /* Create vertex buffer */
     GL::Buffer vertexBuffer{GL::Buffer::TargetHint::Array};
-    GL::Buffer vertexBufferRef = GL::Buffer::wrap(vertexBuffer.id());
+    GL::Buffer vertexBufferRef = GL::Buffer::wrap(vertexBuffer.id(), GL::Buffer::TargetHint::Array);
 
     /* Interleave positions and put them in with ownership transfer, use the
        ref for the rest */
