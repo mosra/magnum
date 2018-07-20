@@ -355,7 +355,7 @@ Mesh& Mesh::setIndexBuffer(Buffer&& buffer, GLintptr offset, MeshIndexType type,
 }
 
 Mesh& Mesh::setIndexBuffer(Buffer& buffer, const GLintptr offset, const MeshIndexType type, const UnsignedInt start, const UnsignedInt end) {
-    setIndexBuffer(Buffer::wrap(buffer.id()), offset, type, start, end);
+    setIndexBuffer(Buffer::wrap(buffer.id(), buffer.targetHint()), offset, type, start, end);
     return *this;
 }
 
