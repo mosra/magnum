@@ -146,6 +146,12 @@ See also:
 -   @ref Trade::ObjImporter "ObjImporter" didn't work with CMake subprojects
     due to an embarrassing typo (see
     [mosra/magnum#259](https://github.com/mosra/magnum/issues/259))
+-   @ref Audio::AnyImporter "AnyAudioImporter",
+    @ref Trade::AnyImageConverter "AnyImageConverter",
+    @ref Trade::AnyImageImporter "AnyImageImporter" and
+    @ref Trade::AnySceneImporter "AnySceneImporter" plugins were not correctly
+    updated for subproject support after moving them out of the `magnum-plugins`
+    repository
 
 @subsection changelog-latest-bugfixes Bug fixes
 

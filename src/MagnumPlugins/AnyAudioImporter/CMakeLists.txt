@@ -59,5 +59,5 @@ if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 
-# MagnumPlugins AnyAudioImporter target alias for superprojects
-add_library(MagnumPlugins::AnyAudioImporter ALIAS AnyAudioImporter)
+# Magnum AnyAudioImporter target alias for superprojects
+add_library(Magnum::AnyAudioImporter ALIAS AnyAudioImporter)

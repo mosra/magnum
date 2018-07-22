@@ -59,5 +59,5 @@ if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 
-# MagnumPlugins AnyImageImporter target alias for superprojects
-add_library(MagnumPlugins::AnyImageImporter ALIAS AnyImageImporter)
+# Magnum AnyImageImporter target alias for superprojects
+add_library(Magnum::AnyImageImporter ALIAS AnyImageImporter)

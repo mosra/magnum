@@ -59,5 +59,5 @@ if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 
-# MagnumPlugins AnySceneImporter target alias for superprojects
-add_library(MagnumPlugins::AnySceneImporter ALIAS AnySceneImporter)
+# Magnum AnySceneImporter target alias for superprojects
+add_library(Magnum::AnySceneImporter ALIAS AnySceneImporter)
