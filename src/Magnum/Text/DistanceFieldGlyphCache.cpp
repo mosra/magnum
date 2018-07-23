@@ -60,35 +60,33 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, c
 }
 
 void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageView2D& image) {
-    const GL::PixelFormat format = GL::pixelFormat(image.format());
-    #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
-    const GL::TextureFormat internalFormat = GL::TextureFormat::R8;
-    CORRADE_ASSERT(format == GL::PixelFormat::Red,
-        "Text::DistanceFieldGlyphCache::setImage(): expected"
-        << GL::PixelFormat::Red << "but got" << format, );
-    #else
-    GL::TextureFormat internalFormat;
-    #ifndef MAGNUM_TARGET_WEBGL
-    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
-        internalFormat = GL::TextureFormat::Red;
-        CORRADE_ASSERT(format == GL::PixelFormat::Red,
-            "Text::DistanceFieldGlyphCache::setImage(): expected"
-            << GL::PixelFormat::Red << "but got" << format, );
-    } else
-    #endif
-    {
-        internalFormat = GL::TextureFormat::Luminance;
-        CORRADE_ASSERT(format == GL::PixelFormat::Luminance,
-            "Text::DistanceFieldGlyphCache::setImage(): expected"
-            << GL::PixelFormat::Luminance << "but got" << format, );
-    }
-    #endif
-
     GL::Texture2D input;
     input.setWrapping(GL::SamplerWrapping::ClampToEdge)
         .setMinificationFilter(GL::SamplerFilter::Linear)
-        .setMagnificationFilter(GL::SamplerFilter::Linear)
-        .setImage(0, internalFormat, image);
+        .setMagnificationFilter(GL::SamplerFilter::Linear);
+
+    const GL::PixelFormat format = GL::pixelFormat(image.format());
+    #if !(defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_TARGET_GLES2))
+    CORRADE_ASSERT(format == GL::PixelFormat::Red,
+        "Text::DistanceFieldGlyphCache::setImage(): expected"
+        << GL::PixelFormat::Red << "but got" << format, );
+    input.setImage(0, GL::TextureFormat::R8, image);
+    #else
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>()) {
+        CORRADE_ASSERT(format == GL::PixelFormat::Red || format == GL::PixelFormat::Luminance,
+            "Text::DistanceFieldGlyphCache::setImage(): expected"
+            << GL::PixelFormat::Red << "but got" << format, );
+        input.setImage(0, GL::TextureFormat::Red, ImageView2D{image.storage(), GL::PixelFormat::Red, GL::PixelType::UnsignedByte, image.size(), image.data()});
+    } else
+    #endif
+    {
+        CORRADE_ASSERT(format == GL::PixelFormat::Luminance,
+            "Text::DistanceFieldGlyphCache::setImage(): expected"
+            << GL::PixelFormat::Luminance << "but got" << format, );
+        input.setImage(0, GL::TextureFormat::Luminance, image);
+    }
+    #endif
 
     /* Create distance field from input texture */
     TextureTools::distanceField(input, texture(), Range2Di::fromSize(offset*scale, image.size()*scale), radius, image.size());
