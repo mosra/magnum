@@ -35,7 +35,10 @@ namespace Magnum { namespace Trade {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 class AbstractImageConverter;
+
+enum class ImporterFileCallbackPolicy: UnsignedByte;
 class AbstractImporter;
+
 class AbstractMaterialData;
 class CameraData;
 

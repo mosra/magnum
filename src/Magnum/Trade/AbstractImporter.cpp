@@ -72,6 +72,20 @@ AbstractImporter::AbstractImporter(PluginManager::Manager<AbstractImporter>& man
 
 AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager, plugin} {}
 
+void AbstractImporter::setFileCallback(Containers::ArrayView<const char>(*callback)(const std::string&, ImporterFileCallbackPolicy, void*), void* const userData) {
+    CORRADE_ASSERT(!isOpened(), "Trade::AbstractImporter::setFileCallback(): can't be set while a file is opened", );
+    if(!(features() & (Feature::FileCallback|Feature::OpenData))) {
+        Warning{} << "Trade::AbstractImporter::setFileCallback(): importer supports neither loading from data nor via callbacks, ignoring";
+        return;
+    }
+
+    _fileCallback = callback;
+    _fileCallbackUserData = userData;
+    doSetFileCallback(callback, userData);
+}
+
+void AbstractImporter::doSetFileCallback(Containers::ArrayView<const char>(*)(const std::string&, ImporterFileCallbackPolicy, void*), void*) {}
+
 bool AbstractImporter::openData(Containers::ArrayView<const char> data) {
     CORRADE_ASSERT(features() & Feature::OpenData,
         "Trade::AbstractImporter::openData(): feature not supported", {});
@@ -100,7 +114,17 @@ void AbstractImporter::doOpenState(const void*, const std::string&) {
 
 bool AbstractImporter::openFile(const std::string& filename) {
     close();
-    doOpenFile(filename);
+
+    /* If file loading callbacks are set and the importer can open data, do
+       that. Mark the file as ready to be closed once opening is finished. */
+    if((doFeatures() & Feature::OpenData) && _fileCallback) {
+        doOpenData(_fileCallback(filename, ImporterFileCallbackPolicy::LoadTemporary, _fileCallbackUserData));
+        _fileCallback(filename, ImporterFileCallbackPolicy::Close, _fileCallbackUserData);
+
+    /* Otherwise (either no callbacks set or opening data is not supported)
+       just call the default implementation */
+    } else doOpenFile(filename);
+
     return isOpened();
 }
 
@@ -527,6 +551,7 @@ Debug& operator<<(Debug& debug, const AbstractImporter::Feature value) {
         #define _c(v) case AbstractImporter::Feature::v: return debug << "Trade::AbstractImporter::Feature::" #v;
         _c(OpenData)
         _c(OpenState)
+        _c(FileCallback)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -537,7 +562,22 @@ Debug& operator<<(Debug& debug, const AbstractImporter::Feature value) {
 Debug& operator<<(Debug& debug, const AbstractImporter::Features value) {
     return Containers::enumSetDebugOutput(debug, value, "Trade::AbstractImporter::Features{}", {
         AbstractImporter::Feature::OpenData,
-        AbstractImporter::Feature::OpenState});
+        AbstractImporter::Feature::OpenState,
+        AbstractImporter::Feature::FileCallback});
+}
+
+Debug& operator<<(Debug& debug, const ImporterFileCallbackPolicy value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case ImporterFileCallbackPolicy::v: return debug << "Trade::ImporterFileCallbackPolicy::" #v;
+        _c(LoadTemporary)
+        _c(LoadPernament)
+        _c(Close)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Trade::ImporterFileCallbackPolicy(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 }}

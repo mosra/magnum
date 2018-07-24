@@ -23,6 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <unordered_map>
+#include <Corrade/Utility/Directory.h>
+
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
@@ -36,6 +39,34 @@ using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
 int main() {
+
+{
+std::unique_ptr<Trade::AbstractImporter> importer;
+/* [AbstractImporter-setFileCallback] */
+importer->setFileCallback([](const std::string& filename,
+    Trade::ImporterFileCallbackPolicy, void*) {
+        Utility::Resource rs("data");
+        return rs.getRaw(filename);
+    });
+/* [AbstractImporter-setFileCallback] */
+}
+
+{
+std::unique_ptr<Trade::AbstractImporter> importer;
+/* [AbstractImporter-setFileCallback-template] */
+struct Data {
+    std::unordered_map<std::string, Containers::Array<char>> files;
+} data;
+
+importer->setFileCallback([](const std::string& filename,
+    Trade::ImporterFileCallbackPolicy, Data& data) {
+        auto found = data.files.find(filename);
+        if(found == data.files.end()) found = data.files.emplace(
+            filename, Utility::Directory::read(filename)).first;
+        return Containers::ArrayView<const char>{found->second};
+    }, data);
+/* [AbstractImporter-setFileCallback-template] */
+}
 
 {
 /* [ImageData-construction] */
