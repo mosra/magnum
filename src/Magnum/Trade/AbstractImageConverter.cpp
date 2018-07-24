@@ -119,7 +119,7 @@ bool AbstractImageConverter::exportToFile(const ImageView2D& image, const std::s
 }
 
 bool AbstractImageConverter::doExportToFile(const ImageView2D& image, const std::string& filename) {
-    CORRADE_ASSERT(features() & Feature::ConvertData, "Trade::AbstractImageConverter::exportToFile(): not implemented", false);
+    CORRADE_ASSERT(features() >= Feature::ConvertData, "Trade::AbstractImageConverter::exportToFile(): feature advertised but not implemented", false);
 
     const auto data = doExportToData(image);
     if(!data) return false;
@@ -141,7 +141,7 @@ bool AbstractImageConverter::exportToFile(const CompressedImageView2D& image, co
 }
 
 bool AbstractImageConverter::doExportToFile(const CompressedImageView2D& image, const std::string& filename) {
-    CORRADE_ASSERT(features() & Feature::ConvertCompressedData, "Trade::AbstractImageConverter::exportToFile(): not implemented", false);
+    CORRADE_ASSERT(features() >= Feature::ConvertCompressedData, "Trade::AbstractImageConverter::exportToFile(): feature advertised but not implemented", false);
 
     const auto data = doExportToData(image);
     if(!data) return false;
