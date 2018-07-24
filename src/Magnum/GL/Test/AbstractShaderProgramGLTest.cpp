@@ -61,7 +61,9 @@ struct AbstractShaderProgramGLTest: OpenGLTester {
     void createMultipleOutputsIndexed();
     #endif
 
+    void linkFailure();
     void uniformNotFound();
+
     void uniform();
     void uniformVector();
     void uniformMatrix();
@@ -90,7 +92,9 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
               &AbstractShaderProgramGLTest::createMultipleOutputsIndexed,
               #endif
 
+              &AbstractShaderProgramGLTest::linkFailure,
               &AbstractShaderProgramGLTest::uniformNotFound,
+
               &AbstractShaderProgramGLTest::uniform,
               &AbstractShaderProgramGLTest::uniformVector,
               &AbstractShaderProgramGLTest::uniformMatrix,
@@ -347,6 +351,26 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
     }
 }
 #endif
+
+void AbstractShaderProgramGLTest::linkFailure() {
+    Shader shader(
+        #ifndef CORRADE_TARGET_APPLE
+        Version::GL300
+        #else
+        Version::GL310
+        #endif
+        , Shader::Type::Fragment);
+    shader.addSource("[fu] bleh error #:! stuff\n");
+
+    {
+        Error redirectError{nullptr};
+        CORRADE_VERIFY(!shader.compile());
+    }
+
+    MyPublicShader program;
+    program.attachShaders({shader});
+    CORRADE_VERIFY(!program.link());
+}
 
 void AbstractShaderProgramGLTest::uniformNotFound() {
     MyPublicShader program;
