@@ -275,6 +275,12 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
 
 CORRADE_ENUMSET_OPERATORS(AbstractImageConverter::Features)
 
+/** @debugoperatorclassenum{AbstractImageConverter,AbstractImageConverter::Feature} */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, AbstractImageConverter::Feature value);
+
+/** @debugoperatorclassenum{AbstractImageConverter,AbstractImageConverter::Features} */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, AbstractImageConverter::Features value);
+
 }}
 
 #endif

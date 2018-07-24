@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
@@ -46,13 +47,19 @@ class AbstractImageConverterTest: public TestSuite::Tester {
 
         void exportToDataImageData();
         void exportToFileImageData();
+
+        void debugFeature();
+        void debugFeatures();
 };
 
 AbstractImageConverterTest::AbstractImageConverterTest() {
     addTests({&AbstractImageConverterTest::exportToFile,
 
               &AbstractImageConverterTest::exportToDataImageData,
-              &AbstractImageConverterTest::exportToFileImageData});
+              &AbstractImageConverterTest::exportToFileImageData,
+
+              &AbstractImageConverterTest::debugFeature,
+              &AbstractImageConverterTest::debugFeatures});
 
     /* Create testing dir */
     Utility::Directory::mkpath(TRADE_TEST_OUTPUT_DIR);
@@ -131,6 +138,20 @@ void AbstractImageConverterTest::exportToFileImageData() {
         CORRADE_COMPARE_AS(Utility::Directory::join(TRADE_TEST_OUTPUT_DIR, "image.out"),
             "C", TestSuite::Compare::FileToString);
     }
+}
+
+void AbstractImageConverterTest::debugFeature() {
+    std::ostringstream out;
+
+    Debug{&out} << AbstractImageConverter::Feature::ConvertCompressedImage << AbstractImageConverter::Feature(0xf0);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::Feature::ConvertCompressedImage Trade::AbstractImageConverter::Feature(0xf0)\n");
+}
+
+void AbstractImageConverterTest::debugFeatures() {
+    std::ostringstream out;
+
+    Debug{&out} << (AbstractImageConverter::Feature::ConvertData|AbstractImageConverter::Feature::ConvertCompressedFile) << AbstractImageConverter::Features{};
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::Feature::ConvertData|Trade::AbstractImageConverter::Feature::ConvertCompressedFile Trade::AbstractImageConverter::Features{}\n");
 }
 
 }}}

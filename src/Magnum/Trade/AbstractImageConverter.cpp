@@ -26,6 +26,7 @@
 #include "AbstractImageConverter.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Directory.h>
 
@@ -156,6 +157,34 @@ bool AbstractImageConverter::doExportToFile(const CompressedImageView2D& image, 
 
 bool AbstractImageConverter::exportToFile(const ImageData2D& image, const std::string& filename) {
     return image.isCompressed() ? exportToFile(CompressedImageView2D(image), filename) : exportToFile(ImageView2D(image), filename);
+}
+
+Debug& operator<<(Debug& debug, const AbstractImageConverter::Feature value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case AbstractImageConverter::Feature::v: return debug << "Trade::AbstractImageConverter::Feature::" #v;
+        _c(ConvertImage)
+        _c(ConvertCompressedImage)
+        _c(ConvertFile)
+        _c(ConvertCompressedFile)
+        _c(ConvertData)
+        _c(ConvertCompressedData)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Trade::AbstractImageConverter::Feature(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const AbstractImageConverter::Features value) {
+    return Containers::enumSetDebugOutput(debug, value, "Trade::AbstractImageConverter::Features{}", {
+        AbstractImageConverter::Feature::ConvertImage,
+        AbstractImageConverter::Feature::ConvertCompressedImage,
+        AbstractImageConverter::Feature::ConvertData,
+        AbstractImageConverter::Feature::ConvertCompressedData,
+        /* These are implied by Convert[Compressed]Data, so have to be last */
+        AbstractImageConverter::Feature::ConvertFile,
+        AbstractImageConverter::Feature::ConvertCompressedFile});
 }
 
 }}

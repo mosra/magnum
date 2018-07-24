@@ -74,8 +74,10 @@ See also:
     separate translation / rotation / scaling specification instead of a
     combined transformation matrix. See @ref Trade::ObjectData2D::transformation()
     and @ref Trade::ObjectData3D::transformation() for more information.
--   Debug output for @ref Trade::AbstractImporter::Feature enum and
-    @ref Trade::AbstractImporter::Features enum set
+-   Debug output for @ref Trade::AbstractImporter::Feature,
+    @ref Trade::AbstractImageConverter::Feature enums and
+    @ref Trade::AbstractImporter::Features,
+    @ref Trade::AbstractImageConverter::Features enum sets
 
 @subsection changelog-latest-changes Changes and improvements
 
