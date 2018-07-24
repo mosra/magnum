@@ -41,6 +41,10 @@ template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const Compress
 
 template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, compressedPixelFormatWrap(format), size, std::move(data), importerState} {}
 
+template<UnsignedInt dimensions> ImageData<dimensions>::ImageData(ImageData<dimensions>&& other, const void* const importerState) noexcept: ImageData{std::move(other)} {
+    _importerState = importerState;
+}
+
 template<UnsignedInt dimensions> PixelStorage ImageData<dimensions>::storage() const {
     CORRADE_ASSERT(!_compressed, "Trade::ImageData::storage(): the image is compressed", {});
     return _storage;

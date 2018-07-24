@@ -49,6 +49,9 @@ struct ImageDataTest: TestSuite::Tester {
     void constructMoveCompressedGeneric();
     void constructMoveCompressedImplementationSpecific();
 
+    void constructMoveAttachState();
+    void constructMoveCompressedAttachState();
+
     void toViewGeneric();
     void toViewImplementationSpecific();
     void toViewCompressedGeneric();
@@ -76,6 +79,9 @@ ImageDataTest::ImageDataTest() {
               &ImageDataTest::constructMoveImplementationSpecific,
               &ImageDataTest::constructMoveCompressedGeneric,
               &ImageDataTest::constructMoveCompressedImplementationSpecific,
+
+              &ImageDataTest::constructMoveAttachState,
+              &ImageDataTest::constructMoveCompressedAttachState,
 
               &ImageDataTest::toViewGeneric,
               &ImageDataTest::toViewImplementationSpecific,
@@ -438,6 +444,47 @@ void ImageDataTest::constructMoveCompressedImplementationSpecific() {
     CORRADE_COMPARE(c.data(), data);
     CORRADE_COMPARE(c.data().size(), 8);
     CORRADE_COMPARE(c.importerState(), &state);
+}
+
+void ImageDataTest::constructMoveAttachState() {
+    auto data = new char[3*6];
+    int stateOld, stateNew;
+    ImageData2D a{PixelStorage{}.setAlignment(1),
+        GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}, &stateOld};
+    ImageData2D b{std::move(a), &stateNew};
+
+    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.size(), Vector2i{});
+
+    CORRADE_VERIFY(!b.isCompressed());
+    CORRADE_COMPARE(b.storage().alignment(), 1);
+    CORRADE_COMPARE(b.format(), pixelFormatWrap(GL::PixelFormat::RGB));
+    CORRADE_COMPARE(b.formatExtra(), 1337);
+    CORRADE_COMPARE(b.pixelSize(), 6);
+    CORRADE_COMPARE(b.size(), (Vector2i{1, 3}));
+    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data().size(), 3*6);
+    CORRADE_COMPARE(b.importerState(), &stateNew);
+}
+
+void ImageDataTest::constructMoveCompressedAttachState() {
+    auto data = new char[8];
+    int stateOld, stateNew;
+    ImageData2D a{
+        CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
+        GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}, &stateOld};
+    ImageData2D b{std::move(a), &stateNew};
+
+    CORRADE_COMPARE(a.data(), nullptr);
+    CORRADE_COMPARE(a.size(), Vector2i{});
+
+    CORRADE_VERIFY(b.isCompressed());
+    CORRADE_COMPARE(b.compressedStorage().compressedBlockSize(), Vector3i{4});
+    CORRADE_COMPARE(b.compressedFormat(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
+    CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
+    CORRADE_COMPARE(b.data(), data);
+    CORRADE_COMPARE(b.data().size(), 8);
+    CORRADE_COMPARE(b.importerState(), &stateNew);
 }
 
 void ImageDataTest::toViewGeneric() {

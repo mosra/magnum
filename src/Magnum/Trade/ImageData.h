@@ -218,6 +218,17 @@ template<UnsignedInt dimensions> class ImageData {
          */
         template<class T> explicit ImageData(CompressedPixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
 
+        /**
+         * @brief Construct from existing data with attached importer state
+         *
+         * Useful in cases where importer plugins proxy image loading through
+         * other importers but want to attach its own importer state to the
+         * imported data. Importer state from the @p other object is replaced
+         * with @p importerState, data ownership is transferred and everything
+         * else stays the same.
+         */
+        explicit ImageData(ImageData<dimensions>&& other, const void* importerState) noexcept;
+
         /** @brief Copying is not allowed */
         ImageData(const ImageData<dimensions>&) = delete;
 
