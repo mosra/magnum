@@ -167,6 +167,13 @@ void UnitTest::addSubtract() {
     constexpr Sec e = c - a;
     CORRADE_COMPARE(d, c);
     CORRADE_COMPARE(e, b);
+
+    Sec f = a;
+    f += b;
+    Sec g = c;
+    g -= a;
+    CORRADE_COMPARE(f, c);
+    CORRADE_COMPARE(g, b);
 }
 
 void UnitTest::multiplyDivide() {
@@ -182,6 +189,13 @@ void UnitTest::multiplyDivide() {
 
     constexpr Float f = b/a;
     CORRADE_COMPARE(f, -1.5f);
+
+    Sec g = a;
+    g *= -1.5f;
+    Sec h = b;
+    h /= -1.5f;
+    CORRADE_COMPARE(g, b);
+    CORRADE_COMPARE(h, a);
 }
 
 }}}
