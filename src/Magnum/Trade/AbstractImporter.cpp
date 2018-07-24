@@ -523,10 +523,12 @@ const void* AbstractImporter::doImporterState() const { return nullptr; }
 
 Debug& operator<<(Debug& debug, const AbstractImporter::Feature value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(v) case AbstractImporter::Feature::v: return debug << "Trade::AbstractImporter::Feature::" #v;
         _c(OpenData)
         _c(OpenState)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Trade::AbstractImporter::Feature(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
