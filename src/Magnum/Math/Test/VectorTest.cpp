@@ -155,6 +155,7 @@ VectorTest::VectorTest() {
               &VectorTest::product,
               &VectorTest::min,
               &VectorTest::max,
+              &VectorTest::minmax,
 
               &VectorTest::projected,
               &VectorTest::projectedOntoNormalized,
