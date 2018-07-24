@@ -68,6 +68,12 @@ struct AbstractShaderProgramGLTest: OpenGLTester {
     void uniformVector();
     void uniformMatrix();
     void uniformArray();
+    #ifndef MAGNUM_TARGET_GLES
+    void uniformDouble();
+    void uniformDoubleVector();
+    void uniformDoubleMatrix();
+    void uniformDoubleArray();
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES2
     void createUniformBlocks();
@@ -99,6 +105,12 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
               &AbstractShaderProgramGLTest::uniformVector,
               &AbstractShaderProgramGLTest::uniformMatrix,
               &AbstractShaderProgramGLTest::uniformArray,
+              #ifndef MAGNUM_TARGET_GLES
+              &AbstractShaderProgramGLTest::uniformDouble,
+              &AbstractShaderProgramGLTest::uniformDoubleVector,
+              &AbstractShaderProgramGLTest::uniformDoubleMatrix,
+              &AbstractShaderProgramGLTest::uniformDoubleArray,
+              #endif
 
               #ifndef MAGNUM_TARGET_GLES2
               &AbstractShaderProgramGLTest::createUniformBlocks,
@@ -354,10 +366,14 @@ void AbstractShaderProgramGLTest::createMultipleOutputsIndexed() {
 
 void AbstractShaderProgramGLTest::linkFailure() {
     Shader shader(
+        #ifndef MAGNUM_TARGET_GLES
         #ifndef CORRADE_TARGET_APPLE
-        Version::GL300
+        Version::GL210
         #else
         Version::GL310
+        #endif
+        #else
+        Version::GLES200
         #endif
         , Shader::Type::Fragment);
     shader.addSource("[fu] bleh error #:! stuff\n");
@@ -524,6 +540,94 @@ void AbstractShaderProgramGLTest::uniformArray() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
+
+#ifndef MAGNUM_TARGET_GLES
+
+namespace {
+    struct MyDoubleShader: AbstractShaderProgram {
+        explicit MyDoubleShader();
+
+        using AbstractShaderProgram::setUniform;
+
+        Int matrixUniform,
+            multiplierUniform,
+            colorUniform,
+            additionsUniform;
+    };
+}
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+MyDoubleShader::MyDoubleShader() {
+    Utility::Resource rs("AbstractShaderProgramGLTest");
+
+    Shader vert(Version::GL400, Shader::Type::Vertex);
+    Shader frag(Version::GL400, Shader::Type::Fragment);
+    vert.addSource(rs.get("MyDoubleShader.vert"));
+    frag.addSource(rs.get("MyDoubleShader.frag"));
+
+    Shader::compile({vert, frag});
+
+    attachShaders({vert, frag});
+
+    bindAttributeLocation(0, "position");
+    link();
+
+    matrixUniform = uniformLocation("matrix");
+    multiplierUniform = uniformLocation("multiplier");
+    colorUniform = uniformLocation("color");
+    additionsUniform = uniformLocation("additions");
+}
+#endif
+
+void AbstractShaderProgramGLTest::uniformDouble() {
+    MyDoubleShader shader;
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    shader.setUniform(shader.multiplierUniform, 0.35);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void AbstractShaderProgramGLTest::uniformDoubleVector() {
+    MyDoubleShader shader;
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    shader.setUniform(shader.colorUniform, Vector4d{0.3, 0.7, 1.0, 0.25});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void AbstractShaderProgramGLTest::uniformDoubleMatrix() {
+    MyDoubleShader shader;
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    shader.setUniform(shader.matrixUniform, Matrix4x4d::fromDiagonal({0.3, 0.7, 1.0f, 0.25}));
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void AbstractShaderProgramGLTest::uniformDoubleArray() {
+    MyDoubleShader shader;
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Testing also implicit conversion to base type (Vector4d[] -> Math::Vector<4, Double>[]) */
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Causes ICE */
+    constexpr
+    #endif
+    const Vector4d values[] = {
+        {0.5, 1.0, 0.4, 0.0},
+        {0.0, 0.1, 0.7, 0.3},
+        {0.9, 0.8, 0.3, 0.1}
+    };
+    shader.setUniform(shader.additionsUniform, values);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+#endif
 
 #ifndef MAGNUM_TARGET_GLES2
 void AbstractShaderProgramGLTest::createUniformBlocks() {
