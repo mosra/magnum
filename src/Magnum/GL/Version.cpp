@@ -62,7 +62,7 @@ Debug& operator<<(Debug& debug, Version value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Invalid";
+    return debug << "Invalid(" << Debug::nospace << reinterpret_cast<void*>(Int(value)) << Debug::nospace << ")";
 }
 #endif
 

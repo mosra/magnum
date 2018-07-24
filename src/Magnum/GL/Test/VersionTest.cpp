@@ -103,17 +103,17 @@ void VersionTest::debug() {
     std::ostringstream out;
 
     #ifndef MAGNUM_TARGET_GLES
-    Debug(&out) << Version::GL210;
+    Debug(&out) << Version::GL210 << Version(0xdead);
     #else
-    Debug(&out) << Version::GLES200;
+    Debug(&out) << Version::GLES200 << Version(0xdead);
     #endif
 
     #ifdef MAGNUM_TARGET_WEBGL
-    CORRADE_COMPARE(out.str(), "WebGL 1.0\n");
+    CORRADE_COMPARE(out.str(), "WebGL 1.0 Invalid(0xdead)\n");
     #elif defined(MAGNUM_TARGET_GLES)
-    CORRADE_COMPARE(out.str(), "OpenGL ES 2.0\n");
+    CORRADE_COMPARE(out.str(), "OpenGL ES 2.0 Invalid(0xdead)\n");
     #else
-    CORRADE_COMPARE(out.str(), "OpenGL 2.1\n");
+    CORRADE_COMPARE(out.str(), "OpenGL 2.1 Invalid(0xdead)\n");
     #endif
 }
 
