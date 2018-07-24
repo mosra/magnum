@@ -31,6 +31,7 @@
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/ObjectData2D.h"
 #include "Magnum/Trade/ObjectData3D.h"
+#include "Magnum/Trade/PhongMaterialData.h"
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Texture.h"
 #endif
@@ -39,6 +40,67 @@ using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
 int main() {
+
+{
+/* [AbstractImporter-usage] */
+PluginManager::Manager<Trade::AbstractImporter> manager;
+std::unique_ptr<Trade::AbstractImporter> importer =
+    manager.loadAndInstantiate("AnyImageImporter");
+if(!importer || !importer->openFile("image.png"))
+    Fatal{} << "Can't open image.png with AnyImageImporter";
+
+Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
+if(!image) Fatal{} << "Importing the image failed";
+
+// use the image ...
+/* [AbstractImporter-usage] */
+}
+
+#if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
+{
+std::unique_ptr<Trade::AbstractImporter> importer;
+/* [AbstractImporter-usage-callbacks] */
+struct Data {
+    std::unordered_map<std::string,
+        Containers::Array<const char, Utility::Directory::MapDeleter>> files;
+} data;
+
+importer->setFileCallback([](const std::string& filename,
+    Trade::ImporterFileCallbackPolicy policy, Data& data) {
+        auto found = data.files.find(filename);
+
+        /* Discard the memory mapping, if not needed anymore */
+        if(policy == Trade::ImporterFileCallbackPolicy::Close) {
+            if(found != data.files.end()) data.files.erase(found);
+            return Containers::ArrayView<const char>{};
+        }
+
+        /* Load if not there yet */
+        if(found == data.files.end()) found = data.files.emplace(
+            filename, Utility::Directory::mapRead(filename)).first;
+
+        return Containers::ArrayView<const char>{found->second};
+    }, data);
+
+importer->openFile("scene.gltf"); // memory-maps all files
+/* [AbstractImporter-usage-callbacks] */
+}
+#endif
+
+{
+std::unique_ptr<Trade::AbstractImporter> importer;
+Float shininess;
+/* [AbstractImporter-usage-cast] */
+std::unique_ptr<Trade::AbstractMaterialData> data = importer->material(12);
+if(data && data->type() == Trade::MaterialType::Phong) {
+    auto& phong = static_cast<Trade::PhongMaterialData&>(*data);
+
+    shininess = phong.shininess();
+    // ...
+}
+/* [AbstractImporter-usage-cast] */
+static_cast<void>(shininess);
+}
 
 {
 std::unique_ptr<Trade::AbstractImporter> importer;

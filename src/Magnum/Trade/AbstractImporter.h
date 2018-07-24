@@ -98,8 +98,79 @@ enum class ImporterFileCallbackPolicy: UnsignedByte {
 @brief Base for importer plugins
 
 Provides interface for importing 2D/3D scene, mesh, material, texture and image
-data. See @ref plugins for more information and `*Importer` classes in
-@ref Trade namespace for available importer plugins.
+data.
+
+@section Trade-AbstractImporter-usage Usage
+
+Importers are most commonly implemented as plugins. For example, loading an
+image from the filesystem using the @ref AnyImageImporter plugin can be done
+like this, completely with all error handling:
+
+@snippet MagnumTrade.cpp AbstractImporter-usage
+
+See @ref plugins for more information about general plugin usage and
+`*Importer` classes in the @ref Trade namespace for available importer plugins.
+
+@subsection Trade-AbstractImporter-usage-callbacks Loading data from memory
+
+Besides loading data directly from the filesystem using @ref openFile() like
+shown above, it's possible to use @ref openData() to import data from memory.
+Note that the particular importer implementation must support
+@ref Feature::OpenData for this method to work.
+
+Complex scene files often reference other files such as images and in that case
+you may want to intercept those references and load them in a custom way as
+well. For importers that advertise support for this with @ref Feature::FileCallback
+this is done by specifying a file loading callback using @ref setFileCallback().
+The callback gets a filename, @ref ImporterFileCallbackPolicy and an user
+pointer as parameters. For example, loading a scene from memory-mapped files
+could look like this. Note that the file loading callback affects @ref openFile()
+as well --- you don't have to load the top-level file manually and pass it to
+@ref openData(), it's done implicitly by the importer:
+
+@snippet MagnumTrade.cpp AbstractImporter-usage-callbacks
+
+@subsection Trade-AbstractImporter-usage-state Internal importer state
+
+Some importers, especially ones that make use of well-known external libraries,
+expose internal state through various accessors:
+
+-   @ref importerState() can expose a pointer to the global importer
+    state for currently opened file
+-   @ref AbstractMaterialData::importerState() can expose importer state for
+    given material imported by @ref material()
+-   @ref CameraData::importerState() can expose importer state for a camera
+    importer by @ref camera()
+-   @ref ImageData::importerState() can expose importer state for an image
+    imported by @ref image1D(), @ref image2D() or @ref image3D()
+-   @ref LightData::importerState() can expose importer state for a light
+    imported by @ref light()
+-   @ref MeshData3D::importerState() can expose importer state for a mesh
+    imported by @ref mesh2D() or @ref mesh3D()
+-   @ref ObjectData3D::importerState() can expose importer state for an object
+    imported by @ref object2D() or @ref object3D()
+-   @ref SceneData::importerState() can expose importer state for a scene
+    imported by @ref scene()
+-   @ref TextureData::importerState() can expose importer state for a texture
+    imported by @ref texture()
+
+Besides exposing internal state, importers that support the
+@ref Feature::OpenState feature can also attach to existing importer state
+using @ref openState(). See documentation of a particular importer for details
+about concrete types returned and accepted by these functions.
+
+@subsection Trade-AbstractImporter-usage-casting Polymorphic imported data types
+
+Some data access functions return @ref std::unique_ptr instead of
+@ref Corrade::Containers::Optional because the result might be a particular
+subclass of given type. Those functions are @ref material(), @ref object2D()
+and @ref object3D(). You can cast the abstract base to a concrete type
+depending on its reported type, for example:
+
+@snippet MagnumTrade.cpp AbstractImporter-usage-cast
+
+Another option is making use of the @ref std::static_pointer_cast() family of utilities, but note that in that case your @ref std::unique_ptr will be *moved
+into* a @ref std::shared_ptr instance and that might not be desirable.
 
 @section Trade-AbstractImporter-subclassing Subclassing
 
@@ -137,8 +208,6 @@ checked by the implementation:
     should *not* use anything else than the default deleter, otherwise this can
     cause dangling function pointer call on array destruction if the plugin
     gets unloaded before the array is destroyed.
-
-@todo How to handle casting from std::unique_ptr<> in more convenient way?
 */
 class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlugin<AbstractImporter> {
     public:
@@ -166,7 +235,11 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
             FileCallback = 1 << 2
         };
 
-        /** @brief Set of features supported by this importer */
+        /**
+         * @brief Set of features supported by this importer
+         *
+         * @see @ref features()
+         */
         typedef Containers::EnumSet<Feature> Features;
 
         /**
@@ -292,8 +365,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Open raw data
          *
-         * Closes previous file, if it was opened, and tries to open given
-         * file. Available only if @ref Feature::OpenData is supported. Returns
+         * Closes previous file, if it was opened, and tries to open given raw
+         * data. Available only if @ref Feature::OpenData is supported. Returns
          * @cpp true @ce on success, @cpp false @ce otherwise.
          * @see @ref features(), @ref openFile()
          */
