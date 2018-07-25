@@ -259,7 +259,14 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         /**
          * @brief 2D rotation and scaling part of the matrix
          *
-         * Upper-left 2x2 part of the matrix.
+         * Upper-left 2x2 part of the matrix. @f[
+         *      \begin{pmatrix}
+         *          \color{m-danger} a_x & \color{m-success} b_x & t_x \\
+         *          \color{m-danger} a_y & \color{m-success} b_y & t_y \\
+         *          \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 1
+         *      \end{pmatrix}
+         * @f]
+         *
          * @see @ref from(const Matrix2x2<T>&, const Vector2<T>&),
          *      @ref rotation() const, @ref rotationNormalized(),
          *      @ref uniformScaling(), @ref rotation(Rad<T>),
@@ -274,7 +281,14 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @brief 2D rotation part of the matrix assuming there is no scaling
          *
          * Similar to @ref rotationScaling(), but additionally checks that the
-         * base vectors are normalized.
+         * base vectors are normalized. Check its documentation for caveats. @f[
+         *      \begin{pmatrix}
+         *          \color{m-danger} a_x & \color{m-success} b_x & t_x \\
+         *          \color{m-danger} a_y & \color{m-success} b_y & t_y \\
+         *          \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 1
+         *      \end{pmatrix}
+         * @f]
+         *
          * @see @ref rotation() const, @ref uniformScaling(),
          *      @ref Matrix4::rotationNormalized()
          * @todo assert also orthogonality or this is good enough?
@@ -290,7 +304,26 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * @brief 2D rotation part of the matrix
          *
          * Normalized upper-left 2x2 part of the matrix. Expects uniform
-         * scaling.
+         * scaling. @f[
+         *      \begin{pmatrix}
+         *          \color{m-danger} a_x & \color{m-success} b_x & t_x \\
+         *          \color{m-danger} a_y & \color{m-success} b_y & t_y \\
+         *          \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 1
+         *      \end{pmatrix}
+         * @f]
+         *
+         * @note Extracting rotation part of a matrix this way will cause
+         *      assertions in case you have unsanitized input (for example a
+         *      model transformation loaded from an external source) or when
+         *      you accumulate many transformations together (for example when
+         *      controlling a FPS camera). To mitigate this, either renormalize
+         *      the matrix using @ref Algorithms::gramSchmidtOrthogonalize() or
+         *      @ref Algorithms::svd() first, use a different transformation
+         *      representation that suffers less floating point error and can
+         *      be easier renormalized such as @ref DualComplex, or, ignore the
+         *      error and extract combined non-uniform rotation and scaling
+         *      with @ref rotationScaling().
+         *
          * @see @ref rotationNormalized(), @ref rotationScaling(),
          *      @ref uniformScaling(), @ref rotation(Rad<T>),
          *      @ref Matrix4::rotation() const
@@ -308,7 +341,14 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * Squared length of vectors in upper-left 2x2 part of the matrix.
          * Expects that the scaling is the same in all axes. Faster alternative
          * to @ref uniformScaling(), because it doesn't compute the square
-         * root.
+         * root. See its documentation for caveats. @f[
+         *      \begin{pmatrix}
+         *          \color{m-warning} a_x & \color{m-warning} b_x & t_x \\
+         *          \color{m-warning} a_y & \color{m-warning} b_y & t_y \\
+         *          \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 1
+         *      \end{pmatrix}
+         * @f]
+         *
          * @see @ref rotationScaling(), @ref rotation() const,
          *      @ref rotationNormalized(), @ref scaling(const Vector2<T>&),
          *      @ref Matrix4::uniformScaling()
@@ -325,7 +365,23 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *
          * Length of vectors in upper-left 2x2 part of the matrix. Expects that
          * the scaling is the same in all axes. Use faster alternative
-         * @ref uniformScalingSquared() where possible.
+         * @ref uniformScalingSquared() where possible. @f[
+         *      \begin{pmatrix}
+         *          \color{m-warning} a_x & \color{m-warning} b_x & t_x \\
+         *          \color{m-warning} a_y & \color{m-warning} b_y & t_y \\
+         *          \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 1
+         *      \end{pmatrix}
+         * @f]
+         *
+         * @note Extracting uniform scaling of a matrix this way will cause
+         *      assertions in case you have unsanitized input (for example a
+         *      model transformation loaded from an external source) or when
+         *      you accumulate many transformations together (for example when
+         *      controlling a FPS camera). To mitigate this, either renormalize
+         *      the matrix using @ref Algorithms::gramSchmidtOrthogonalize() or
+         *      @ref Algorithms::svd() first or extract the scaling manually by
+         *      calculating lengths of @ref right() and @ref up() vectors.
+         *
          * @see @ref rotationScaling(), @ref rotation() const,
          *      @ref rotationNormalized(), @ref scaling(const Vector2<T>&),
          *      @ref Matrix4::uniformScaling()
@@ -335,7 +391,14 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         /**
          * @brief Right-pointing 2D vector
          *
-         * First two elements of first column.
+         * First two elements of first column. @f[
+         *      \begin{pmatrix}
+         *          \color{m-danger} a_x & b_x & t_x \\
+         *          \color{m-danger} a_y & b_y & t_y \\
+         *          \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 1
+         *      \end{pmatrix}
+         * @f]
+         *
          * @see @ref up(), @ref Vector2::xAxis(), @ref Matrix4::right()
          */
         Vector2<T>& right() { return (*this)[0].xy(); }
@@ -344,7 +407,14 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         /**
          * @brief Up-pointing 2D vector
          *
-         * First two elements of second column.
+         * First two elements of second column. @f[
+         *      \begin{pmatrix}
+         *          a_x & \color{m-success} b_x & t_x \\
+         *          a_y & \color{m-success} b_y & t_y \\
+         *          \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 1
+         *      \end{pmatrix}
+         * @f]
+         *
          * @see @ref right(), @ref Vector2::yAxis(), @ref Matrix4::up()
          */
         Vector2<T>& up() { return (*this)[1].xy(); }
@@ -353,7 +423,14 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         /**
          * @brief 2D translation part of the matrix
          *
-         * First two elements of third column.
+         * First two elements of third column. @f[
+         *      \begin{pmatrix}
+         *          a_x & b_x & \color{m-warning} t_x \\
+         *          a_y & b_y & \color{m-warning} t_y \\
+         *          \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 1
+         *      \end{pmatrix}
+         * @f]
+         *
          * @see @ref from(const Matrix2x2<T>&, const Vector2<T>&),
          *      @ref translation(const Vector2<T>&),
          *      @ref Matrix4::translation()
