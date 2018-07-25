@@ -49,7 +49,7 @@ else()
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 endif()
 
-corrade_add_test(AnyAudioImporterTest Test.cpp
+corrade_add_test(AnyAudioImporterTest AnyAudioImporterTest.cpp
     LIBRARIES MagnumAudio
     FILES
         ../../WavAudioImporter/Test/stereo8.wav)

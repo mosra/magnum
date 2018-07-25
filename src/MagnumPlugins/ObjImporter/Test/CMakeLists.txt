@@ -46,7 +46,7 @@ else()
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 endif()
 
-corrade_add_test(ObjImporterTest Test.cpp
+corrade_add_test(ObjImporterTest ObjImporterTest.cpp
     LIBRARIES MagnumTrade
     FILES
         emptyFile.obj

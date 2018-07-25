@@ -49,7 +49,7 @@ else()
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 endif()
 
-corrade_add_test(AnyImageImporterTest Test.cpp
+corrade_add_test(AnyImageImporterTest AnyImageImporterTest.cpp
     LIBRARIES MagnumTrade
     FILES
         ../../TgaImporter/Test/file.tga)
