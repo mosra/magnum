@@ -86,7 +86,7 @@ AbstractImageConverter::AbstractImageConverter(PluginManager::Manager<AbstractIm
 AbstractImageConverter::AbstractImageConverter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractImageConverter>{manager, plugin} {}
 
 Containers::Optional<Image2D> AbstractImageConverter::exportToImage(const ImageView2D& image) {
-    CORRADE_ASSERT(features() & Feature::ConvertImage,
+    CORRADE_ASSERT(features() & ImageConverterFeature::ConvertImage,
         "Trade::AbstractImageConverter::exportToImage(): feature not supported", {});
 
     Containers::Optional<Image2D> out = doExportToImage(image);
@@ -99,7 +99,7 @@ Containers::Optional<Image2D> AbstractImageConverter::doExportToImage(const Imag
 }
 
 Containers::Optional<CompressedImage2D> AbstractImageConverter::exportToCompressedImage(const ImageView2D& image) {
-    CORRADE_ASSERT(features() & Feature::ConvertCompressedImage,
+    CORRADE_ASSERT(features() & ImageConverterFeature::ConvertCompressedImage,
         "Trade::AbstractImageConverter::exportToCompressedImage(): feature not supported", {});
 
     Containers::Optional<CompressedImage2D> out = doExportToCompressedImage(image);
@@ -112,7 +112,7 @@ Containers::Optional<CompressedImage2D> AbstractImageConverter::doExportToCompre
 }
 
 Containers::Array<char> AbstractImageConverter::exportToData(const ImageView2D& image) {
-    CORRADE_ASSERT(features() & Feature::ConvertData,
+    CORRADE_ASSERT(features() & ImageConverterFeature::ConvertData,
         "Trade::AbstractImageConverter::exportToData(): feature not supported", nullptr);
 
     Containers::Array<char> out = doExportToData(image);
@@ -125,7 +125,7 @@ Containers::Array<char> AbstractImageConverter::doExportToData(const ImageView2D
 }
 
 Containers::Array<char> AbstractImageConverter::exportToData(const CompressedImageView2D& image) {
-    CORRADE_ASSERT(features() & Feature::ConvertCompressedData,
+    CORRADE_ASSERT(features() & ImageConverterFeature::ConvertCompressedData,
         "Trade::AbstractImageConverter::exportToData(): feature not supported", nullptr);
 
     Containers::Array<char> out = doExportToData(image);
@@ -142,14 +142,14 @@ Containers::Array<char> AbstractImageConverter::exportToData(const ImageData2D& 
 }
 
 bool AbstractImageConverter::exportToFile(const ImageView2D& image, const std::string& filename) {
-    CORRADE_ASSERT(features() & Feature::ConvertFile,
+    CORRADE_ASSERT(features() & ImageConverterFeature::ConvertFile,
         "Trade::AbstractImageConverter::exportToFile(): feature not supported", {});
 
     return doExportToFile(image, filename);
 }
 
 bool AbstractImageConverter::doExportToFile(const ImageView2D& image, const std::string& filename) {
-    CORRADE_ASSERT(features() >= Feature::ConvertData, "Trade::AbstractImageConverter::exportToFile(): feature advertised but not implemented", false);
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertData, "Trade::AbstractImageConverter::exportToFile(): feature advertised but not implemented", false);
 
     const auto data = doExportToData(image);
     if(!data) return false;
@@ -164,14 +164,14 @@ bool AbstractImageConverter::doExportToFile(const ImageView2D& image, const std:
 }
 
 bool AbstractImageConverter::exportToFile(const CompressedImageView2D& image, const std::string& filename) {
-    CORRADE_ASSERT(features() & Feature::ConvertCompressedFile,
+    CORRADE_ASSERT(features() & ImageConverterFeature::ConvertCompressedFile,
         "Trade::AbstractImageConverter::exportToFile(): feature not supported", {});
 
     return doExportToFile(image, filename);
 }
 
 bool AbstractImageConverter::doExportToFile(const CompressedImageView2D& image, const std::string& filename) {
-    CORRADE_ASSERT(features() >= Feature::ConvertCompressedData, "Trade::AbstractImageConverter::exportToFile(): feature advertised but not implemented", false);
+    CORRADE_ASSERT(features() >= ImageConverterFeature::ConvertCompressedData, "Trade::AbstractImageConverter::exportToFile(): feature advertised but not implemented", false);
 
     const auto data = doExportToData(image);
     if(!data) return false;
@@ -189,12 +189,12 @@ bool AbstractImageConverter::exportToFile(const ImageData2D& image, const std::s
     return image.isCompressed() ? exportToFile(CompressedImageView2D(image), filename) : exportToFile(ImageView2D(image), filename);
 }
 
-Debug& operator<<(Debug& debug, const AbstractImageConverter::Feature value) {
-    debug << "Trade::AbstractImageConverter::Feature" << Debug::nospace;
+Debug& operator<<(Debug& debug, const ImageConverterFeature value) {
+    debug << "Trade::ImageConverterFeature" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case AbstractImageConverter::Feature::v: return debug << "::" #v;
+        #define _c(v) case ImageConverterFeature::v: return debug << "::" #v;
         _c(ConvertImage)
         _c(ConvertCompressedImage)
         _c(ConvertFile)
@@ -208,15 +208,15 @@ Debug& operator<<(Debug& debug, const AbstractImageConverter::Feature value) {
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, const AbstractImageConverter::Features value) {
-    return Containers::enumSetDebugOutput(debug, value, "Trade::AbstractImageConverter::Features{}", {
-        AbstractImageConverter::Feature::ConvertImage,
-        AbstractImageConverter::Feature::ConvertCompressedImage,
-        AbstractImageConverter::Feature::ConvertData,
-        AbstractImageConverter::Feature::ConvertCompressedData,
+Debug& operator<<(Debug& debug, const ImageConverterFeatures value) {
+    return Containers::enumSetDebugOutput(debug, value, "Trade::ImageConverterFeatures{}", {
+        ImageConverterFeature::ConvertImage,
+        ImageConverterFeature::ConvertCompressedImage,
+        ImageConverterFeature::ConvertData,
+        ImageConverterFeature::ConvertCompressedData,
         /* These are implied by Convert[Compressed]Data, so have to be last */
-        AbstractImageConverter::Feature::ConvertFile,
-        AbstractImageConverter::Feature::ConvertCompressedFile});
+        ImageConverterFeature::ConvertFile,
+        ImageConverterFeature::ConvertCompressedFile});
 }
 
 }}

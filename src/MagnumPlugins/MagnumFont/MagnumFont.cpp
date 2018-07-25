@@ -74,7 +74,7 @@ MagnumFont::MagnumFont(PluginManager::AbstractManager& manager, const std::strin
 
 MagnumFont::~MagnumFont() { close(); }
 
-auto MagnumFont::doFeatures() const -> Features { return Feature::OpenData|Feature::FileCallback|Feature::PreparedGlyphCache; }
+FontFeatures MagnumFont::doFeatures() const { return FontFeature::OpenData|FontFeature::FileCallback|FontFeature::PreparedGlyphCache; }
 
 bool MagnumFont::doIsOpened() const { return _opened && _opened->image; }
 

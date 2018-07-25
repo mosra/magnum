@@ -88,7 +88,7 @@ void MagnumFontConverterTest::exportFont() {
                 _opened = true;
                 return {16.0f, 25.0f, -10.0f, 39.7333f};
             }
-            Features doFeatures() const { return {}; }
+            FontFeatures doFeatures() const { return {}; }
             Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) { return nullptr; }
 
             UnsignedInt doGlyphId(const char32_t character) {
@@ -152,7 +152,7 @@ void MagnumFontConverterTest::exportFont() {
 void MagnumFontConverterTest::exportFontNoGlyphCacheImageDownload() {
     struct MyFont: AbstractFont {
         /* Supports neither file nor data opening */
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 

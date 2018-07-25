@@ -96,7 +96,7 @@ ObjImporter::ObjImporter(PluginManager::AbstractManager& manager, const std::str
 
 ObjImporter::~ObjImporter() = default;
 
-auto ObjImporter::doFeatures() const -> Features { return Feature::OpenData; }
+ImporterFeatures ObjImporter::doFeatures() const { return ImporterFeature::OpenData; }
 
 void ObjImporter::doClose() { _file.reset(); }
 

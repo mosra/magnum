@@ -44,6 +44,47 @@
 
 namespace Magnum { namespace Trade {
 
+/**
+@brief Features supported by an importer
+@m_since_latest
+
+@see @ref ImporterFeatures, @ref AbstractImporter::features()
+*/
+enum class ImporterFeature: UnsignedByte {
+    /** Opening files from raw data using @ref AbstractImporter::openData() */
+    OpenData = 1 << 0,
+
+    /** Opening already loaded state using @ref AbstractImporter::openState() */
+    OpenState = 1 << 1,
+
+    /**
+     * Specifying callbacks for loading additional files referenced
+     * from the main file using @ref AbstractImporter::setFileCallback(). If
+     * the importer * doesn't expose this feature, the format is either
+     * single-file or loading via callbacks is not supported.
+     *
+     * See @ref Trade-AbstractImporter-usage-callbacks and particular importer
+     * documentation for more information.
+     */
+    FileCallback = 1 << 2
+};
+
+/**
+@brief Set of features supported by an importer
+@m_since_latest
+
+@see @ref AbstractImporter::features()
+*/
+typedef Containers::EnumSet<ImporterFeature> ImporterFeatures;
+
+CORRADE_ENUMSET_OPERATORS(ImporterFeatures)
+
+/** @debugoperatorenum{ImporterFeatures} */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImporterFeature value);
+
+/** @debugoperatorenum{ImporterFeatures} */
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, ImporterFeatures value);
+
 #ifdef MAGNUM_BUILD_DEPRECATED
 /** @brief @copybrief InputFileCallbackPolicy
  * @m_deprecated_since{2019,10} Use @ref InputFileCallbackPolicy instead.
@@ -73,14 +114,15 @@ See @ref plugins for more information about general plugin usage and
 Besides loading data directly from the filesystem using @ref openFile() like
 shown above, it's possible to use @ref openData() to import data from memory.
 Note that the particular importer implementation must support
-@ref Feature::OpenData for this method to work.
+@ref ImporterFeature::OpenData for this method to work.
 
 Complex scene files often reference other files such as images and in that case
 you may want to intercept those references and load them in a custom way as
-well. For importers that advertise support for this with @ref Feature::FileCallback
-this is done by specifying a file loading callback using @ref setFileCallback().
-The callback gets a filename, @ref InputFileCallbackPolicy and an user
-pointer as parameters; returns a non-owning view on the loaded data or a
+well. For importers that advertise support for this with
+@ref ImporterFeature::FileCallback this is done by specifying a file loading
+callback using @ref setFileCallback(). The callback gets a filename,
+@ref InputFileCallbackPolicy and an user pointer as parameters; returns a
+non-owning view on the loaded data or a
 @ref Corrade::Containers::NullOpt "Containers::NullOpt" to indicate the file
 loading failed. For example, loading a scene from memory-mapped files could
 look like below. Note that the file loading callback affects @ref openFile() as
@@ -90,12 +132,12 @@ correctly.
 
 @snippet MagnumTrade.cpp AbstractImporter-usage-callbacks
 
-For importers that don't support @ref Feature::FileCallback directly, the base
-@ref openFile() implementation will use the file callback to pass the loaded
-data through to @ref openData(), in case the importer supports at least
-@ref Feature::OpenData. If the importer supports neither @ref Feature::FileCallback
-nor @ref Feature::OpenData, @ref setFileCallback() doesn't allow the callbacks
-to be set.
+For importers that don't support @ref ImporterFeature::FileCallback directly,
+the base @ref openFile() implementation will use the file callback to pass the
+loaded data through to @ref openData(), in case the importer supports at least
+@ref ImporterFeature::OpenData. If the importer supports neither
+@ref ImporterFeature::FileCallback nor @ref ImporterFeature::OpenData,
+@ref setFileCallback() doesn't allow the callbacks to be set.
 
 The input file callback signature is the same for @ref Trade::AbstractImporter
 and @ref Text::AbstractFont to allow code reuse.
@@ -127,9 +169,9 @@ expose internal state through various accessors:
     imported by @ref texture()
 
 Besides exposing internal state, importers that support the
-@ref Feature::OpenState feature can also attach to existing importer state
-using @ref openState(). See documentation of a particular importer for details
-about concrete types returned and accepted by these functions.
+@ref ImporterFeature::OpenState feature can also attach to existing importer
+state using @ref openState(). See documentation of a particular importer for
+details about concrete types returned and accepted by these functions.
 
 @subsection Trade-AbstractImporter-usage-casting Polymorphic imported data types
 
@@ -170,11 +212,11 @@ functions, at least one of @ref doOpenData() / @ref doOpenFile() /
 @ref doOpenState() functions, function @ref doClose() and one or more tuples of
 data access functions, based on what features are supported in given format.
 
-In order to support @ref Feature::FileCallback, the importer needs to properly
-use the callbacks to both load the top-level file in @ref doOpenFile() and also
-load any external files when needed. The @ref doOpenFile() can delegate back
-into the base implementation, but it should remember at least the base file
-path to pass correct paths to subsequent file callbacks. The
+In order to support @ref ImporterFeature::FileCallback, the importer needs to
+properly use the callbacks to both load the top-level file in @ref doOpenFile()
+and also load any external files when needed. The @ref doOpenFile() can
+delegate back into the base implementation, but it should remember at least the
+base file path to pass correct paths to subsequent file callbacks. The
 @ref doSetFileCallback() can be overriden in case it's desired to respond to
 file loading callback setup, but doesn't have to be.
 
@@ -190,12 +232,13 @@ checked by the implementation:
 -   The @ref doOpenData(), @ref doOpenFile() and @ref doOpenState() functions
     are called after the previous file was closed, function @ref doClose() is
     called only if there is any file opened.
--   The @ref doOpenData() function is called only if @ref Feature::OpenData is
-    supported.
--   The @ref doOpenState() function is called only if @ref Feature::OpenState
-    is supported.
+-   The @ref doOpenData() function is called only if
+    @ref ImporterFeature::OpenData is supported.
+-   The @ref doOpenState() function is called only if
+    @ref ImporterFeature::OpenState is supported.
 -   The @ref doSetFileCallback() function is called only if
-    @ref Feature::FileCallback is supported and there is no file opened.
+    @ref ImporterFeature::FileCallback is supported and there is no file
+    opened.
 -   All `do*()` implementations working on an opened file are called only if
     there is any file opened.
 -   All `do*()` implementations taking data ID as parameter are called only if
@@ -223,36 +266,17 @@ checked by the implementation:
 */
 class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlugin<AbstractImporter> {
     public:
-        /**
-         * @brief Features supported by this importer
-         *
-         * @see @ref Features, @ref features()
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief ImporterFeature
+         * @m_deprecated_since_latest Use @ref ImporterFeature instead.
          */
-        enum class Feature: UnsignedByte {
-            /** Opening files from raw data using @ref openData() */
-            OpenData = 1 << 0,
+        typedef CORRADE_DEPRECATED("use ImporterFeature instead") ImporterFeature Feature;
 
-            /** Opening already loaded state using @ref openState() */
-            OpenState = 1 << 1,
-
-            /**
-             * Specifying callbacks for loading additional files referenced
-             * from the main file using @ref setFileCallback(). If the importer
-             * doesn't expose this feature, the format is either single-file or
-             * loading via callbacks is not supported.
-             *
-             * See @ref Trade-AbstractImporter-usage-callbacks and particular
-             * importer documentation for more information.
-             */
-            FileCallback = 1 << 2
-        };
-
-        /**
-         * @brief Set of features supported by this importer
-         *
-         * @see @ref features()
+        /** @brief @copybrief ImporterFeatures
+         * @m_deprecated_since_latest Use @ref ImporterFeatures instead.
          */
-        typedef Containers::EnumSet<Feature> Features;
+        typedef CORRADE_DEPRECATED("use ImporterFeature instead") ImporterFeatures Features;
+        #endif
 
         /**
          * @brief Plugin interface
@@ -292,7 +316,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         explicit AbstractImporter(PluginManager::AbstractManager& manager, const std::string& plugin);
 
         /** @brief Features supported by this importer */
-        Features features() const { return doFeatures(); }
+        ImporterFeatures features() const { return doFeatures(); }
 
         /**
          * @brief File opening callback function
@@ -311,22 +335,22 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Set file opening callback
          *
-         * In case the importer supports @ref Feature::FileCallback, files
-         * opened through @ref openFile() will be loaded through the provided
-         * callback. Besides that, all external files referenced by the
-         * top-level file will be loaded through the callback function as well,
-         * usually on demand. The callback function gets a filename,
+         * In case the importer supports @ref ImporterFeature::FileCallback,
+         * files opened through @ref openFile() will be loaded through the
+         * provided callback. Besides that, all external files referenced by
+         * the top-level file will be loaded through the callback function as
+         * well, usually on demand. The callback function gets a filename,
          * @ref InputFileCallbackPolicy and the @p userData pointer as input
          * and returns a non-owning view on the loaded data as output or a
          * @ref Corrade::Containers::NullOpt if loading failed --- because
          * empty files might also be valid in some circumstances, @cpp nullptr @ce
          * can't be used to indicate a failure.
          *
-         * In case the importer doesn't support @ref Feature::FileCallback but
-         * supports at least @ref Feature::OpenData, a file opened through
-         * @ref openFile() will be internally loaded through the provided
-         * callback and then passed to @ref openData(). First the file is
-         * loaded with @ref InputFileCallbackPolicy::LoadTemporary passed to
+         * In case the importer doesn't support @ref ImporterFeature::FileCallback
+         * but supports at least @ref ImporterFeature::OpenData, a file opened
+         * through @ref openFile() will be internally loaded through the
+         * provided callback and then passed to @ref openData(). First the file
+         * is loaded with @ref InputFileCallbackPolicy::LoadTemporary passed to
          * the callback, then the returned memory view is passed to
          * @ref openData() (sidestepping the potential @ref openFile()
          * implementation of that particular importer) and after that the
@@ -337,8 +361,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * In case @p callback is @cpp nullptr @ce, the current callback (if
          * any) is reset. This function expects that the importer supports
-         * either @ref Feature::FileCallback or @ref Feature::OpenData. If an
-         * importer supports neither, callbacks can't be used.
+         * either @ref ImporterFeature::FileCallback or
+         * @ref ImporterFeature::OpenData. If an importer supports neither,
+         * callbacks can't be used.
          *
          * It's expected that this function is called *before* a file is
          * opened. It's also expected that the loaded data are kept in scope
@@ -385,9 +410,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Open raw data
          *
          * Closes previous file, if it was opened, and tries to open given raw
-         * data. Available only if @ref Feature::OpenData is supported. Returns
-         * @cpp true @ce on success, @cpp false @ce otherwise. The @p data is
-         * not expected to be alive after the function exits.
+         * data. Available only if @ref ImporterFeature::OpenData is supported.
+         * Returns @cpp true @ce on success, @cpp false @ce otherwise. The
+         * @p data is not expected to be alive after the function exits.
          * @see @ref features(), @ref openFile()
          */
         bool openData(Containers::ArrayView<const char> data);
@@ -399,8 +424,9 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *      textures and materials.
          *
          * Closes previous file, if it was opened, and tries to open given
-         * state. Available only if @ref Feature::OpenState is supported. Returns
-         * @cpp true @ce on success, @cpp false @ce otherwise.
+         * state. Available only if @ref ImporterFeature::OpenState is
+         * supported. Returns @cpp true @ce on success, @cpp false @ce
+         * otherwise.
          *
          * See documentation of a particular plugin for more information about
          * type and contents of the @p state parameter.
@@ -414,9 +440,10 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * Closes previous file, if it was opened, and tries to open given
          * file. Returns @cpp true @ce on success, @cpp false @ce otherwise.
          * If file loading callbacks are set via @ref setFileCallback() and
-         * @ref Feature::OpenData is supported, this function uses the callback
-         * to load the file and passes the memory view to @ref openData()
-         * instead. See @ref setFileCallback() for more information.
+         * @ref ImporterFeature::OpenData is supported, this function uses the
+         * callback to load the file and passes the memory view to
+         * @ref openData() instead. See @ref setFileCallback() for more
+         * information.
          * @see @ref features(), @ref openData()
          */
         bool openFile(const std::string& filename);
@@ -906,14 +933,15 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Implementation for @ref openFile()
          *
-         * If @ref Feature::OpenData is supported, default implementation opens
-         * the file and calls @ref doOpenData() with its contents. It is
-         * allowed to call this function from your @ref doOpenFile()
-         * implementation --- in particular, this implementation will also
-         * correctly handle callbacks set through @ref setFileCallback().
+         * If @ref ImporterFeature::OpenData is supported, default
+         * implementation opens the file and calls @ref doOpenData() with its
+         * contents. It is allowed to call this function from your
+         * @ref doOpenFile() implementation --- in particular, this
+         * implementation will also correctly handle callbacks set through
+         * @ref setFileCallback().
          *
          * This function is not called when file callbacks are set through
-         * @ref setFileCallback() and @ref Feature::FileCallback is not
+         * @ref setFileCallback() and @ref ImporterFeature::FileCallback is not
          * supported --- instead, file is loaded though the callback and data
          * passed through to @ref doOpenData().
          */
@@ -921,7 +949,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
     private:
         /** @brief Implementation for @ref features() */
-        virtual Features doFeatures() const = 0;
+        virtual ImporterFeatures doFeatures() const = 0;
 
         /**
          * @brief Implementation for @ref setFileCallback()
@@ -1293,14 +1321,6 @@ template<class Callback, class T> void AbstractImporter::setFileCallback(Callbac
     }, &_fileCallbackTemplate);
 }
 #endif
-
-CORRADE_ENUMSET_OPERATORS(AbstractImporter::Features)
-
-/** @debugoperatorclassenum{AbstractImporter,AbstractImporter::Feature} */
-MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, AbstractImporter::Feature value);
-
-/** @debugoperatorclassenum{AbstractImporter,AbstractImporter::Features} */
-MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, AbstractImporter::Features value);
 
 }}
 

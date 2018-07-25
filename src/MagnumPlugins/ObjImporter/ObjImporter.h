@@ -107,7 +107,7 @@ class MAGNUM_OBJIMPORTER_EXPORT ObjImporter: public AbstractImporter {
     private:
         struct File;
 
-        MAGNUM_OBJIMPORTER_LOCAL Features doFeatures() const override;
+        MAGNUM_OBJIMPORTER_LOCAL ImporterFeatures doFeatures() const override;
 
         MAGNUM_OBJIMPORTER_LOCAL bool doIsOpened() const override;
         MAGNUM_OBJIMPORTER_LOCAL void doOpenData(Containers::ArrayView<const char> data) override;

@@ -41,7 +41,7 @@ AnyImageImporter::AnyImageImporter(PluginManager::AbstractManager& manager, cons
 
 AnyImageImporter::~AnyImageImporter() = default;
 
-auto AnyImageImporter::doFeatures() const -> Features { return Feature::OpenData; }
+ImporterFeatures AnyImageImporter::doFeatures() const { return ImporterFeature::OpenData; }
 
 bool AnyImageImporter::doIsOpened() const { return !!_in; }
 

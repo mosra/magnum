@@ -111,7 +111,7 @@ class MAGNUM_ANYAUDIOIMPORTER_EXPORT AnyImporter: public AbstractImporter {
         ~AnyImporter();
 
     private:
-        MAGNUM_ANYAUDIOIMPORTER_LOCAL Features doFeatures() const override;
+        MAGNUM_ANYAUDIOIMPORTER_LOCAL ImporterFeatures doFeatures() const override;
         MAGNUM_ANYAUDIOIMPORTER_LOCAL bool doIsOpened() const override;
         MAGNUM_ANYAUDIOIMPORTER_LOCAL void doClose() override;
         MAGNUM_ANYAUDIOIMPORTER_LOCAL void doOpenFile(const std::string& filename) override;

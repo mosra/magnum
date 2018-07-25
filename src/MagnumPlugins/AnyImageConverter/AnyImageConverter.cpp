@@ -40,8 +40,8 @@ AnyImageConverter::AnyImageConverter(PluginManager::AbstractManager& manager, co
 
 AnyImageConverter::~AnyImageConverter() = default;
 
-auto AnyImageConverter::doFeatures() const -> Features {
-    return Feature::ConvertFile|Feature::ConvertCompressedFile;
+ImageConverterFeatures AnyImageConverter::doFeatures() const {
+    return ImageConverterFeature::ConvertFile|ImageConverterFeature::ConvertCompressedFile;
 }
 
 bool AnyImageConverter::doExportToFile(const ImageView2D& image, const std::string& filename) {

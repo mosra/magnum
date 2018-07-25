@@ -291,6 +291,16 @@ See also:
     @cpp Platform::Sdl2Application::Configuration::isMouseLocked() @ce is
     deprecated in favor of the new @ref Platform::Sdl2Application::setCursor()
     together with @ref Platform::Sdl2Application::Cursor::HiddenLocked
+-   @cpp Audio::AbstractImporter::Features @ce,
+    @cpp Text::AbstractFont::Features @ce,
+    @cpp Text::AbstractFontConverter::Features @ce,
+    @cpp Trade::AbstractImporter::Features @ce,
+    @cpp Trade::AbstractImageConverter::Features @ce enum sets and their
+    corresponding `Feature` enums are deprecated in favor of
+    @ref Audio::ImporterFeatures, @ref Text::FontFeatures,
+    @ref Text::FontConverterFeatures, @ref Trade::ImporterFeatures,
+    @ref Trade::ImageConverterFeatures enum sets and their corresponding enums
+    placed directly in the namespace to have them shorter and unambiguous
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

@@ -39,7 +39,7 @@ AnyImporter::AnyImporter(PluginManager::AbstractManager& manager, const std::str
 
 AnyImporter::~AnyImporter() = default;
 
-auto AnyImporter::doFeatures() const -> Features { return {}; }
+ImporterFeatures AnyImporter::doFeatures() const { return {}; }
 
 bool AnyImporter::doIsOpened() const { return !!_in; }
 

@@ -138,7 +138,7 @@ class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
         ~AnySceneImporter();
 
     private:
-        MAGNUM_ANYSCENEIMPORTER_LOCAL Features doFeatures() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL ImporterFeatures doFeatures() const override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL bool doIsOpened() const override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL void doClose() override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL void doOpenFile(const std::string& filename) override;

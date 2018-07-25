@@ -50,6 +50,76 @@
 namespace Magnum { namespace Text {
 
 /**
+@brief Features supported by a font converter
+@m_since_latest
+
+@see @ref FontConverterFeatures, @ref AbstractFontConverter::features()
+*/
+enum class FontConverterFeature: UnsignedByte {
+    /**
+     * Exporting font using @ref AbstractFontConverter::exportFontToFile(),
+     * @ref AbstractFontConverter::exportFontToData() or
+     * @ref AbstractFontConverter::exportFontToSingleData()
+     * @see @ref FontConverterFeature::ConvertData
+     */
+    ExportFont = 1 << 0,
+
+    /**
+     * Export glyph cache using
+     * @ref AbstractFontConverter::exportGlyphCacheToFile(),
+     * @ref AbstractFontConverter::exportGlyphCacheToData() or
+     * @ref AbstractFontConverter::exportGlyphCacheToSingleData()
+     * @see @ref FontConverterFeature::ConvertData
+     */
+    ExportGlyphCache = 1 << 1,
+
+    /**
+     * Import glyph cache using
+     * @ref AbstractFontConverter::importGlyphCacheFromFile(),
+     * @ref AbstractFontConverter::importGlyphCacheFromData() or
+     * @ref AbstractFontConverter::importGlyphCacheFromSingleData()
+     * @see @ref FontConverterFeature::ConvertData
+     */
+    ImportGlyphCache = 1 << 2,
+
+    /**
+     * Convert from/to data using
+     * @ref AbstractFontConverter::exportFontToData(),
+     * @ref AbstractFontConverter::exportFontToSingleData(),
+     * @ref AbstractFontConverter::exportGlyphCacheToData(),
+     * @ref AbstractFontConverter::exportGlyphCacheToSingleData(),
+     * @ref AbstractFontConverter::importGlyphCacheFromData() or
+     * @ref AbstractFontConverter::importGlyphCacheFromSingleData()
+     */
+    ConvertData = 1 << 4,
+
+    /**
+     * The format is multi-file, thus
+     * @ref AbstractFontConverter::exportFontToSingleData(),
+     * @ref AbstractFontConverter::exportGlyphCacheToSingleData() and
+     * @ref AbstractFontConverter::importGlyphCacheFromSingleData() convenience
+     * functions cannot be used.
+     */
+    MultiFile = 1 << 5
+};
+
+/**
+@brief Features supported by a font converter
+@m_since_latest
+
+@see @ref AbstractFontConverter::features()
+*/
+typedef Containers::EnumSet<FontConverterFeature> FontConverterFeatures;
+
+CORRADE_ENUMSET_OPERATORS(FontConverterFeatures)
+
+/** @debugoperatorenum{FontConverterFeature} */
+MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, FontConverterFeature value);
+
+/** @debugoperatorenum{FontConverterFeatures} */
+MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, FontConverterFeatures value);
+
+/**
 @brief Base for font converter plugins
 
 Provides functionality for converting arbitrary font to different format. See
@@ -69,13 +139,14 @@ characters.
 You don't need to do most of the redundant sanity checks, these things are
 checked by the implementation:
 
--   Functions `doExportFontTo*()` are called only if @ref Feature::ExportFont
-    is supported, functions `doExportGlyphCacheTo*()` are called only if
-    @ref Feature::ExportGlyphCache is supported.
+-   Functions `doExportFontTo*()` are called only if
+    @ref FontConverterFeature::ExportFont is supported, functions
+    `doExportGlyphCacheTo*()` are called only if
+    @ref FontConverterFeature::ExportGlyphCache is supported.
 -   Functions `doImportGlyphCacheFrom*()` are called only if
-    @ref Feature::ImportGlyphCache is supported.
+    @ref FontConverterFeature::ImportGlyphCache is supported.
 -   Functions `doExport*To*Data()` and `doImport*From*Data()` are called only
-    if @ref Feature::ConvertData is supported.
+    if @ref FontConverterFeature::ConvertData is supported.
 -   Function `doImport*FromData()` is called only if there is at least one data
     array passed.
 
@@ -86,55 +157,17 @@ checked by the implementation:
 */
 class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPlugin {
     public:
-        /**
-         * @brief Features supported by this converter
-         *
-         * @see @ref Features, @ref features()
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief FontConverterFeature
+         * @m_deprecated_since_latest Use @ref FontConverterFeature instead.
          */
-        enum class Feature: UnsignedByte {
-            /**
-             * Exporting font using @ref exportFontToFile(), @ref exportFontToData()
-             * or @ref exportFontToSingleData()
-             * @see @ref Feature::ConvertData
-             */
-            ExportFont = 1 << 0,
+        typedef CORRADE_DEPRECATED("use FontConverterFeature instead") FontConverterFeature Feature;
 
-            /**
-             * Export glyph cache using @ref exportGlyphCacheToFile(),
-             * @ref exportGlyphCacheToData() or @ref exportGlyphCacheToSingleData()
-             * @see @ref Feature::ConvertData
-             */
-            ExportGlyphCache = 1 << 1,
-
-            /**
-             * Import glyph cache using @ref importGlyphCacheFromFile(),
-             * @ref importGlyphCacheFromData() or @ref importGlyphCacheFromSingleData()
-             * @see @ref Feature::ConvertData
-             */
-            ImportGlyphCache = 1 << 2,
-
-            /**
-             * Convert from/to data using @ref exportFontToData(),
-             * @ref exportFontToSingleData(), @ref exportGlyphCacheToData(),
-             * @ref exportGlyphCacheToSingleData(), @ref importGlyphCacheFromData()
-             * or @ref importGlyphCacheFromSingleData()
-             */
-            ConvertData = 1 << 4,
-
-            /**
-             * The format is multi-file, thus @ref exportFontToSingleData(),
-             * @ref exportGlyphCacheToSingleData() and @ref importGlyphCacheFromSingleData()
-             * convenience functions cannot be used.
-             */
-            MultiFile = 1 << 5
-        };
-
-        /**
-         * @brief Features supported by this converter
-         *
-         * @see @ref features()
+        /** @brief @copybrief FontConverterFeatures
+         * @m_deprecated_since_latest Use @ref FontConverterFeatures instead.
          */
-        typedef Containers::EnumSet<Feature> Features;
+        typedef CORRADE_DEPRECATED("use FontConverterFeatures instead") FontConverterFeatures Features;
+        #endif
 
         /**
          * @brief Plugin interface
@@ -171,7 +204,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
         explicit AbstractFontConverter(PluginManager::AbstractManager& manager, const std::string& plugin);
 
         /** @brief Features supported by this converter */
-        Features features() const { return doFeatures(); }
+        FontConverterFeatures features() const { return doFeatures(); }
 
         /**
          * @brief Export font to raw data
@@ -180,12 +213,13 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * @param filename      Output filename
          * @param characters    Characters to export
          *
-         * Available only if @ref Feature::ConvertData and @ref Feature::ExportFont
-         * is supported. Returns pairs of filename and data on success, empty
-         * vector otherwise. All data will be sharing common basename derived
-         * from @p filename. If the plugin doesn't have @ref Feature::MultiFile,
-         * only one pair is returned, thus using @ref exportFontToSingleData()
-         * might be more convenient in that case.
+         * Available only if @ref FontConverterFeature::ConvertData and
+         * @ref FontConverterFeature::ExportFont is supported. Returns pairs of
+         * filename and data on success, empty vector otherwise. All data will
+         * be sharing common basename derived from @p filename. If the plugin
+         * doesn't have @ref FontConverterFeature::MultiFile, only one pair is
+         * returned, thus using @ref exportFontToSingleData() might be more
+         * convenient in that case.
          * @see @ref features(), @ref exportFontToFile(),
          *      @ref exportGlyphCacheToData()
          */
@@ -194,10 +228,11 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
         /**
          * @brief Export font to single raw data
          *
-         * Available only if @ref Feature::ConvertData and @ref Feature::ExportFont
-         * is supported and the plugin doesn't have @ref Feature::MultiFile.
-         * Returns data on success, zero-sized array otherwise. See
-         * @ref exportFontToData() for more information.
+         * Available only if @ref FontConverterFeature::ConvertData and
+         * @ref FontConverterFeature::ExportFont is supported and the plugin
+         * doesn't have @ref FontConverterFeature::MultiFile. Returns data on
+         * success, zero-sized array otherwise. See @ref exportFontToData() for
+         * more information.
          * @see @ref features(), @ref exportFontToFile(),
          *      @ref exportGlyphCacheToSingleData()
          */
@@ -206,11 +241,12 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
         /**
          * @brief Export font to file
          *
-         * Available only if @ref Feature::ExportFont is supported. If the
-         * plugin has @ref Feature::MultiFile, the function will create more
-         * than one file in given path, all sharing common basename derived
-         * from @p filename. Returns @cpp true @ce on success, @cpp false @ce
-         * otherwise. See @ref exportFontToData() for more information.
+         * Available only if @ref FontConverterFeature::ExportFont is
+         * supported. If the plugin has @ref FontConverterFeature::MultiFile,
+         * the function will create more than one file in given path, all
+         * sharing common basename derived from @p filename. Returns
+         * @cpp true @ce on success, @cpp false @ce otherwise. See
+         * @ref exportFontToData() for more information.
          * @see @ref features(), @ref exportFontToData(),
          *      @ref exportGlyphCacheToFile()
          */
@@ -221,11 +257,12 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * @param cache         Populated glyph cache
          * @param filename      Output filename
          *
-         * Available only if @ref Feature::ConvertData and @ref Feature::ExportGlyphCache
-         * is supported. Returns pairs of filename and data on success, empty
-         * vector otherwise. All data will be sharing common basename derived
-         * from @p filename. If the plugin doesn't have @ref Feature::MultiFile,
-         * only one pair is returned, thus using @ref exportGlyphCacheToSingleData()
+         * Available only if @ref FontConverterFeature::ConvertData and
+         * @ref FontConverterFeature::ExportGlyphCache is supported. Returns
+         * pairs of filename and data on success, empty vector otherwise. All
+         * data will be sharing common basename derived from @p filename. If
+         * the plugin doesn't have @ref FontConverterFeature::MultiFile, only
+         * one pair is returned, thus using @ref exportGlyphCacheToSingleData()
          * might be more convenient in that case.
          *
          * All glyphs from given cache will be exported. If you want to export
@@ -238,9 +275,10 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
         /**
          * @brief Export glyph cache to single raw data
          *
-         * Available only if @ref Feature::ConvertData and @ref Feature::ExportGlyphCache
-         * is supported and the plugin doesn't have @ref Feature::MultiFile.
-         * Returns data on success, zero-sized array otherwise. See
+         * Available only if @ref FontConverterFeature::ConvertData and
+         * @ref FontConverterFeature::ExportGlyphCache is supported and the
+         * plugin doesn't have @ref FontConverterFeature::MultiFile. Returns
+         * data on success, zero-sized array otherwise. See
          * @ref exportGlyphCacheToData() for more information.
          * @see @ref features(), @ref exportGlyphCacheToFile(),
          *      @ref importGlyphCacheFromSingleData()
@@ -250,11 +288,11 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
         /**
          * @brief Export glyph cache to file
          *
-         * Available only if @ref Feature::ExportGlyphCache is supported. If
-         * the plugin has @ref Feature::MultiFile, the function will create
-         * more than one file in given path, all sharing common basename
-         * derived from @p filename. Returns @cpp true @ce on success,
-         * @cpp false @ce otherwise.
+         * Available only if @ref FontConverterFeature::ExportGlyphCache is
+         * supported. If the plugin has @ref FontConverterFeature::MultiFile,
+         * the function will create more than one file in given path, all
+         * sharing common basename derived from @p filename. Returns
+         * @cpp true @ce on success, @cpp false @ce otherwise.
          * @see @ref features(), @ref exportGlyphCacheToData(),
          *      @ref exportFontToFile()
          */
@@ -264,11 +302,12 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * @brief Import glyph cache from raw data
          * @param data      Pairs of filename and file data
          *
-         * Available only if @ref Feature::ConvertData and @ref Feature::ImportGlyphCache
-         * is supported. Returns imported cache on success, @cpp nullptr @ce
-         * otherwise. If the plugin doesn't have @ref Feature::MultiFile, only
-         * one file is needed, thus using @ref importGlyphCacheFromSingleData()
-         * might be more convenient in that case.
+         * Available only if @ref FontConverterFeature::ConvertData and
+         * @ref FontConverterFeature::ImportGlyphCache is supported. Returns
+         * imported cache on success, @cpp nullptr @ce otherwise. If the plugin
+         * doesn't have @ref FontConverterFeature::MultiFile, only one file is
+         * needed, thus using @ref importGlyphCacheFromSingleData() might be
+         * more convenient in that case.
          * @see @ref features(), @ref importGlyphCacheFromFile(),
          *      @ref exportGlyphCacheToData()
          */
@@ -277,9 +316,10 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
         /**
          * @brief Import glyph cache from single raw data
          *
-         * Available only if @ref Feature::ConvertData and @ref Feature::ImportGlyphCache
-         * is supported and the plugin doesn't have @ref Feature::MultiFile.
-         * Returns imported cache on success, @cpp nullptr @ce otherwise. See
+         * Available only if @ref FontConverterFeature::ConvertData and
+         * @ref FontConverterFeature::ImportGlyphCache is supported and the
+         * plugin doesn't have @ref FontConverterFeature::MultiFile. Returns
+         * imported cache on success, @cpp nullptr @ce otherwise. See
          * @ref importGlyphCacheFromData() for multi-file conversion.
          * @see @ref features(), @ref importGlyphCacheFromFile(),
          *      @ref exportFontToSingleData()
@@ -289,11 +329,11 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
         /**
          * @brief Import glyph cache from file
          *
-         * Available only if @ref Feature::ImportGlyphCache is supported. If
-         * the plugin has @ref Feature::MultiFile, the function will use
-         * additional files in given path, all sharing common basename derived
-         * from @p filename. Returns imported cache on success, @cpp nullptr @ce
-         * otherwise.
+         * Available only if @ref FontConverterFeature::ImportGlyphCache is
+         * supported. If the plugin has @ref FontConverterFeature::MultiFile,
+         * the function will use additional files in given path, all sharing
+         * common basename derived from @p filename. Returns imported cache on
+         * success, @cpp nullptr @ce otherwise.
          * @see @ref features(), @ref importGlyphCacheFromData(),
          *      @ref exportGlyphCacheToFile()
          */
@@ -301,13 +341,13 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
 
     private:
         /** @brief Implementation for @ref features() */
-        virtual Features doFeatures() const = 0;
+        virtual FontConverterFeatures doFeatures() const = 0;
 
         /**
          * @brief Implementation for @ref exportFontToData()
          *
-         * If the plugin doesn't have @ref Feature::MultiFile, default
-         * implementation calls @ref doExportFontToSingleData().
+         * If the plugin doesn't have @ref FontConverterFeature::MultiFile,
+         * default implementation calls @ref doExportFontToSingleData().
          */
         virtual std::vector<std::pair<std::string, Containers::Array<char>>> doExportFontToData(AbstractFont& font, AbstractGlyphCache& cache, const std::string& filename, const std::u32string& characters) const;
 
@@ -317,17 +357,17 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
         /**
          * @brief Implementation for @ref exportFontToFile()
          *
-         * If @ref Feature::ConvertData is supported, default implementation
-         * calls @ref doExportFontToData() and saves the result to given
-         * file(s).
+         * If @ref FontConverterFeature::ConvertData is supported, default
+         * implementation calls @ref doExportFontToData() and saves the result
+         * to given file(s).
          */
         virtual bool doExportFontToFile(AbstractFont& font, AbstractGlyphCache& cache, const std::string& filename, const std::u32string& characters) const;
 
         /**
          * @brief Implementation for @ref exportGlyphCacheToData()
          *
-         * If the plugin doesn't have @ref Feature::MultiFile, default
-         * implementation calls @ref doExportGlyphCacheToSingleData().
+         * If the plugin doesn't have @ref FontConverterFeature::MultiFile,
+         * default implementation calls @ref doExportGlyphCacheToSingleData().
          */
         virtual std::vector<std::pair<std::string, Containers::Array<char>>> doExportGlyphCacheToData(AbstractGlyphCache& cache, const std::string& filename) const;
 
@@ -337,17 +377,17 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
         /**
          * @brief Implementation for @ref exportGlyphCacheToFile()
          *
-         * If @ref Feature::ConvertData is supported, default implementation
-         * calls @ref doExportGlyphCacheToData() and saves the result to given
-         * file(s).
+         * If @ref FontConverterFeature::ConvertData is supported, default
+         * implementation calls @ref doExportGlyphCacheToData() and saves the
+         * result to given file(s).
          */
         virtual bool doExportGlyphCacheToFile(AbstractGlyphCache& cache, const std::string& filename) const;
 
         /**
          * @brief Implementation for @ref importGlyphCacheFromData()
          *
-         * If the plugin doesn't have @ref Feature::MultiFile, default
-         * implementation calls @ref doImportGlyphCacheFromSingleData().
+         * If the plugin doesn't have @ref FontConverterFeature::MultiFile,
+         * default implementation calls @ref doImportGlyphCacheFromSingleData().
          */
         virtual Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data) const;
 
@@ -357,14 +397,13 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
         /**
          * @brief Implementation for @ref importGlyphCacheFromFile()
          *
-         * If @ref Feature::ConvertData is supported and the plugin doesn't
-         * have @ref Feature::MultiFile, default implementation opens the file
-         * and calls @ref doImportGlyphCacheFromSingleData() with its contents.
+         * If @ref FontConverterFeature::ConvertData is supported and the
+         * plugin doesn't have @ref FontConverterFeature::MultiFile, default
+         * implementation opens the file and calls
+         * @ref doImportGlyphCacheFromSingleData() with its contents.
          */
         virtual Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromFile(const std::string& filename) const;
 };
-
-CORRADE_ENUMSET_OPERATORS(AbstractFontConverter::Features)
 
 }}
 

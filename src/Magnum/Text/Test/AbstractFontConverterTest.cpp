@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/FileToString.h>
@@ -53,6 +54,9 @@ struct AbstractFontConverterTest: TestSuite::Tester {
 
     void importGlyphCacheFromSingleData();
     void importGlyphCacheFromFile();
+
+    void debugFeature();
+    void debugFeatures();
 };
 
 AbstractFontConverterTest::AbstractFontConverterTest() {
@@ -67,14 +71,17 @@ AbstractFontConverterTest::AbstractFontConverterTest() {
               &AbstractFontConverterTest::exportGlyphCacheToFileFailed,
 
               &AbstractFontConverterTest::importGlyphCacheFromSingleData,
-              &AbstractFontConverterTest::importGlyphCacheFromFile});
+              &AbstractFontConverterTest::importGlyphCacheFromFile,
+
+              &AbstractFontConverterTest::debugFeature,
+              &AbstractFontConverterTest::debugFeatures});
 
     /* Create testing dir */
     Utility::Directory::mkpath(TEXT_TEST_OUTPUT_DIR);
 }
 
 struct DummyFont: AbstractFont {
-    Features doFeatures() const override { return {}; }
+    FontFeatures doFeatures() const override { return {}; }
     bool doIsOpened() const override { return false; }
     void doClose() override {}
 
@@ -99,7 +106,7 @@ void AbstractFontConverterTest::convertGlyphs() {
             GlyphExporter(std::u32string& characters): _characters(characters) {}
 
         private:
-            Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont; }
+            FontConverterFeatures doFeatures() const override { return FontConverterFeature::ConvertData|FontConverterFeature::ExportFont; }
 
             Containers::Array<char> doExportFontToSingleData(AbstractFont&, AbstractGlyphCache&, const std::u32string& characters) const override {
                 _characters = characters;
@@ -118,7 +125,7 @@ void AbstractFontConverterTest::convertGlyphs() {
 void AbstractFontConverterTest::exportFontToSingleData() {
     class SingleDataExporter: public Text::AbstractFontConverter {
         private:
-            Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont; }
+            FontConverterFeatures doFeatures() const override { return FontConverterFeature::ConvertData|FontConverterFeature::ExportFont; }
 
             Containers::Array<char> doExportFontToSingleData(AbstractFont&, AbstractGlyphCache&, const std::u32string&) const override {
                 Containers::Array<char> data(1);
@@ -139,7 +146,7 @@ void AbstractFontConverterTest::exportFontToSingleData() {
 void AbstractFontConverterTest::exportFontToFile() {
     class DataExporter: public Text::AbstractFontConverter {
         private:
-            Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont|Feature::MultiFile; }
+            FontConverterFeatures doFeatures() const override { return FontConverterFeature::ConvertData|FontConverterFeature::ExportFont|FontConverterFeature::MultiFile; }
 
             std::vector<std::pair<std::string, Containers::Array<char>>> doExportFontToData(AbstractFont&, AbstractGlyphCache&, const std::string& filename, const std::u32string&) const override {
                 /* Why the hell GCC 4.9 fails to do proper move so I need to
@@ -167,7 +174,7 @@ void AbstractFontConverterTest::exportFontToFile() {
 
 void AbstractFontConverterTest::exportFontToFileFailed() {
     struct: AbstractFontConverter {
-        Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont|Feature::MultiFile; }
+        FontConverterFeatures doFeatures() const override { return FontConverterFeature::ConvertData|FontConverterFeature::ExportFont|FontConverterFeature::MultiFile; }
 
         std::vector<std::pair<std::string, Containers::Array<char>>> doExportFontToData(AbstractFont&, AbstractGlyphCache&, const std::string&, const std::u32string&) const override { return {}; }
     } exporter;
@@ -177,7 +184,7 @@ void AbstractFontConverterTest::exportFontToFileFailed() {
 
 void AbstractFontConverterTest::exportGlyphCacheToSingleData() {
     struct: Text::AbstractFontConverter {
-        Features doFeatures() const override { return Feature::ConvertData|Feature::ExportGlyphCache; }
+        FontConverterFeatures doFeatures() const override { return FontConverterFeature::ConvertData|FontConverterFeature::ExportGlyphCache; }
 
         Containers::Array<char> doExportGlyphCacheToSingleData(AbstractGlyphCache&) const override {
             return Containers::Array<char>{Containers::InPlaceInit, {'\xee'}};
@@ -196,7 +203,7 @@ void AbstractFontConverterTest::exportGlyphCacheToSingleData() {
 void AbstractFontConverterTest::exportGlyphCacheToFile() {
     class DataExporter: public Text::AbstractFontConverter {
         private:
-            Features doFeatures() const override { return Feature::ConvertData|Feature::ExportGlyphCache|Feature::MultiFile; }
+            FontConverterFeatures doFeatures() const override { return FontConverterFeature::ConvertData|FontConverterFeature::ExportGlyphCache|FontConverterFeature::MultiFile; }
 
             std::vector<std::pair<std::string, Containers::Array<char>>> doExportGlyphCacheToData(AbstractGlyphCache&, const std::string& filename) const override {
                 /* Why the hell GCC 4.9 fails to do proper move so I need to
@@ -224,7 +231,7 @@ void AbstractFontConverterTest::exportGlyphCacheToFile() {
 
 void AbstractFontConverterTest::exportGlyphCacheToFileFailed() {
     struct: Text::AbstractFontConverter {
-        Features doFeatures() const override { return Feature::ConvertData|Feature::ExportGlyphCache|Feature::MultiFile; }
+        FontConverterFeatures doFeatures() const override { return FontConverterFeature::ConvertData|FontConverterFeature::ExportGlyphCache|FontConverterFeature::MultiFile; }
 
         std::vector<std::pair<std::string, Containers::Array<char>>> doExportGlyphCacheToData(AbstractGlyphCache&, const std::string&) const override { return {}; }
     } exporter;
@@ -235,7 +242,7 @@ void AbstractFontConverterTest::exportGlyphCacheToFileFailed() {
 
 class SingleGlyphCacheDataImporter: public Text::AbstractFontConverter {
     private:
-        Features doFeatures() const override { return Feature::ConvertData|Feature::ImportGlyphCache; }
+        FontConverterFeatures doFeatures() const override { return FontConverterFeature::ConvertData|FontConverterFeature::ImportGlyphCache; }
 
         Containers::Pointer<AbstractGlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayView<const char> data) const override {
             if(data.size() == 1 && data[0] == '\xa5')
@@ -257,6 +264,20 @@ void AbstractFontConverterTest::importGlyphCacheFromFile() {
     SingleGlyphCacheDataImporter importer;
     Containers::Pointer<AbstractGlyphCache> cache = importer.importGlyphCacheFromFile(Utility::Directory::join(TEXT_TEST_DIR, "data.bin"));
     CORRADE_COMPARE(cache->textureSize(), (Vector2i{123, 345}));
+}
+
+void AbstractFontConverterTest::debugFeature() {
+    std::ostringstream out;
+
+    Debug{&out} << FontConverterFeature::ExportFont << FontConverterFeature(0xf0);
+    CORRADE_COMPARE(out.str(), "Text::FontConverterFeature::ExportFont Text::FontConverterFeature(0xf0)\n");
+}
+
+void AbstractFontConverterTest::debugFeatures() {
+    std::ostringstream out;
+
+    Debug{&out} << (FontConverterFeature::ExportFont|FontConverterFeature::ImportGlyphCache) << FontConverterFeatures{};
+    CORRADE_COMPARE(out.str(), "Text::FontConverterFeature::ExportFont|Text::FontConverterFeature::ImportGlyphCache Text::FontConverterFeatures{}\n");
 }
 
 }}}}

@@ -43,7 +43,7 @@ TgaImageConverter::TgaImageConverter() = default;
 
 TgaImageConverter::TgaImageConverter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImageConverter{manager, plugin} {}
 
-auto TgaImageConverter::doFeatures() const -> Features { return Feature::ConvertData; }
+ImageConverterFeatures TgaImageConverter::doFeatures() const { return ImageConverterFeature::ConvertData; }
 
 Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& image) {
     /* Initialize data buffer */

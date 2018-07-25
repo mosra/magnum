@@ -94,7 +94,7 @@ AbstractImporterTest::AbstractImporterTest() {
 
 void AbstractImporterTest::construct() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -103,7 +103,7 @@ void AbstractImporterTest::construct() {
         Containers::Array<char> doData() override { return nullptr; }
     } importer;
 
-    CORRADE_COMPARE(importer.features(), AbstractImporter::Features{});
+    CORRADE_COMPARE(importer.features(), ImporterFeatures{});
     CORRADE_VERIFY(!importer.isOpened());
 
     importer.close();
@@ -112,7 +112,7 @@ void AbstractImporterTest::construct() {
 
 void AbstractImporterTest::openData() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::OpenData; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
@@ -138,7 +138,7 @@ void AbstractImporterTest::openData() {
 
 void AbstractImporterTest::openFileAsData() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::OpenData; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
@@ -164,7 +164,7 @@ void AbstractImporterTest::openFileAsData() {
 
 void AbstractImporterTest::openFileAsDataNotFound() {
     struct Importer: AbstractImporter {
-        Features doFeatures() const override { return Feature::OpenData; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
@@ -189,7 +189,7 @@ void AbstractImporterTest::openFileAsDataNotFound() {
 
 void AbstractImporterTest::openFileNotImplemented() {
     struct Importer: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -207,7 +207,7 @@ void AbstractImporterTest::openFileNotImplemented() {
 
 void AbstractImporterTest::openDataNotSupported() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -225,7 +225,7 @@ void AbstractImporterTest::openDataNotSupported() {
 
 void AbstractImporterTest::openDataNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::OpenData; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -243,7 +243,7 @@ void AbstractImporterTest::openDataNotImplemented() {
 
 void AbstractImporterTest::format() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -257,7 +257,7 @@ void AbstractImporterTest::format() {
 
 void AbstractImporterTest::formatNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -275,7 +275,7 @@ void AbstractImporterTest::formatNoFile() {
 
 void AbstractImporterTest::frequency() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -289,7 +289,7 @@ void AbstractImporterTest::frequency() {
 
 void AbstractImporterTest::frequencyNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -307,7 +307,7 @@ void AbstractImporterTest::frequencyNoFile() {
 
 void AbstractImporterTest::data() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -325,7 +325,7 @@ void AbstractImporterTest::data() {
 
 void AbstractImporterTest::dataNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -343,7 +343,7 @@ void AbstractImporterTest::dataNoFile() {
 
 void AbstractImporterTest::dataCustomDeleter() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -364,15 +364,15 @@ void AbstractImporterTest::dataCustomDeleter() {
 void AbstractImporterTest::debugFeature() {
     std::ostringstream out;
 
-    Debug{&out} << AbstractImporter::Feature::OpenData << AbstractImporter::Feature(0xf0);
-    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::Feature::OpenData Audio::AbstractImporter::Feature(0xf0)\n");
+    Debug{&out} << ImporterFeature::OpenData << ImporterFeature(0xf0);
+    CORRADE_COMPARE(out.str(), "Audio::ImporterFeature::OpenData Audio::ImporterFeature(0xf0)\n");
 }
 
 void AbstractImporterTest::debugFeatures() {
     std::ostringstream out;
 
-    Debug{&out} << AbstractImporter::Feature::OpenData << AbstractImporter::Features{};
-    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::Feature::OpenData Audio::AbstractImporter::Features{}\n");
+    Debug{&out} << ImporterFeature::OpenData << ImporterFeatures{};
+    CORRADE_COMPARE(out.str(), "Audio::ImporterFeature::OpenData Audio::ImporterFeatures{}\n");
 }
 
 }}}}

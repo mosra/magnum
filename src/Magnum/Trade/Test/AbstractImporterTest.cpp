@@ -453,12 +453,12 @@ AbstractImporterTest::AbstractImporterTest() {
 
 void AbstractImporterTest::construct() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
 
-    CORRADE_COMPARE(importer.features(), AbstractImporter::Features{});
+    CORRADE_COMPARE(importer.features(), ImporterFeatures{});
     CORRADE_VERIFY(!importer.isOpened());
 
     importer.close();
@@ -471,7 +471,7 @@ void AbstractImporterTest::constructWithPluginManagerReference() {
     struct Importer: AbstractImporter {
         explicit Importer(PluginManager::Manager<AbstractImporter>& manager): AbstractImporter{manager} {}
 
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer{manager};
@@ -481,7 +481,7 @@ void AbstractImporterTest::constructWithPluginManagerReference() {
 
 void AbstractImporterTest::openData() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::OpenData; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
@@ -503,7 +503,7 @@ void AbstractImporterTest::openData() {
 
 void AbstractImporterTest::openFileAsData() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::OpenData; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
@@ -525,7 +525,7 @@ void AbstractImporterTest::openFileAsData() {
 
 void AbstractImporterTest::openFileAsDataNotFound() {
     struct Importer: AbstractImporter {
-        Features doFeatures() const override { return Feature::OpenData; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
@@ -546,7 +546,7 @@ void AbstractImporterTest::openFileAsDataNotFound() {
 
 void AbstractImporterTest::openFileNotImplemented() {
     struct Importer: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -560,7 +560,7 @@ void AbstractImporterTest::openFileNotImplemented() {
 
 void AbstractImporterTest::openDataNotSupported() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -574,7 +574,7 @@ void AbstractImporterTest::openDataNotSupported() {
 
 void AbstractImporterTest::openDataNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::OpenData; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -588,7 +588,7 @@ void AbstractImporterTest::openDataNotImplemented() {
 
 void AbstractImporterTest::openStateNotSupported() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -602,7 +602,7 @@ void AbstractImporterTest::openStateNotSupported() {
 
 void AbstractImporterTest::openStateNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::OpenState; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenState; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -616,7 +616,7 @@ void AbstractImporterTest::openStateNotImplemented() {
 
 void AbstractImporterTest::setFileCallback() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::OpenData|Feature::FileCallback; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData|ImporterFeature::FileCallback; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
         void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void* userData) override {
@@ -636,7 +636,7 @@ void AbstractImporterTest::setFileCallback() {
 
 void AbstractImporterTest::setFileCallbackTemplate() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::OpenData|Feature::FileCallback; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData|ImporterFeature::FileCallback; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
         void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) override {
@@ -662,7 +662,7 @@ void AbstractImporterTest::setFileCallbackTemplate() {
 
 void AbstractImporterTest::setFileCallbackTemplateNull() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::OpenData|Feature::FileCallback; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData|ImporterFeature::FileCallback; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
         void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* userData) override {
@@ -681,7 +681,7 @@ void AbstractImporterTest::setFileCallbackTemplateNull() {
 
 void AbstractImporterTest::setFileCallbackTemplateConst() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::OpenData|Feature::FileCallback; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData|ImporterFeature::FileCallback; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
         void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) override {
@@ -704,7 +704,7 @@ void AbstractImporterTest::setFileCallbackTemplateConst() {
 
 void AbstractImporterTest::setFileCallbackFileOpened() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -720,7 +720,7 @@ void AbstractImporterTest::setFileCallbackFileOpened() {
 
 void AbstractImporterTest::setFileCallbackNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::FileCallback; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::FileCallback; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -737,7 +737,7 @@ void AbstractImporterTest::setFileCallbackNotImplemented() {
 
 void AbstractImporterTest::setFileCallbackNotSupported() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -754,7 +754,7 @@ void AbstractImporterTest::setFileCallbackNotSupported() {
 
 void AbstractImporterTest::setFileCallbackOpenFileDirectly() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::FileCallback|Feature::OpenData; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::FileCallback|ImporterFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
@@ -785,7 +785,7 @@ void AbstractImporterTest::setFileCallbackOpenFileDirectly() {
 
 void AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementation() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::FileCallback|Feature::OpenData; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::FileCallback|ImporterFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
@@ -833,7 +833,7 @@ void AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementation() {
 
 void AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementationFailed() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::FileCallback|Feature::OpenData; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::FileCallback|ImporterFeature::OpenData; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -859,7 +859,7 @@ void AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementationFaile
 
 void AbstractImporterTest::setFileCallbackOpenFileAsData() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::OpenData; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
@@ -906,7 +906,7 @@ void AbstractImporterTest::setFileCallbackOpenFileAsData() {
 
 void AbstractImporterTest::setFileCallbackOpenFileAsDataFailed() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return Feature::OpenData; }
+        ImporterFeatures doFeatures() const override { return ImporterFeature::OpenData; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -931,7 +931,7 @@ void AbstractImporterTest::setFileCallbackOpenFileAsDataFailed() {
 
 void AbstractImporterTest::defaultScene() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -943,7 +943,7 @@ void AbstractImporterTest::defaultScene() {
 
 void AbstractImporterTest::defaultSceneNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -953,7 +953,7 @@ void AbstractImporterTest::defaultSceneNotImplemented() {
 
 void AbstractImporterTest::defaultSceneNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -969,7 +969,7 @@ int state;
 
 void AbstractImporterTest::scene() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -999,7 +999,7 @@ void AbstractImporterTest::scene() {
 
 void AbstractImporterTest::sceneCountNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -1009,7 +1009,7 @@ void AbstractImporterTest::sceneCountNotImplemented() {
 
 void AbstractImporterTest::sceneCountNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1023,7 +1023,7 @@ void AbstractImporterTest::sceneCountNoFile() {
 
 void AbstractImporterTest::sceneForNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -1033,7 +1033,7 @@ void AbstractImporterTest::sceneForNameNotImplemented() {
 
 void AbstractImporterTest::sceneForNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1047,7 +1047,7 @@ void AbstractImporterTest::sceneForNameNoFile() {
 
 void AbstractImporterTest::sceneNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1059,7 +1059,7 @@ void AbstractImporterTest::sceneNameNotImplemented() {
 
 void AbstractImporterTest::sceneNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1073,7 +1073,7 @@ void AbstractImporterTest::sceneNameNoFile() {
 
 void AbstractImporterTest::sceneNameOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1089,7 +1089,7 @@ void AbstractImporterTest::sceneNameOutOfRange() {
 
 void AbstractImporterTest::sceneNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1105,7 +1105,7 @@ void AbstractImporterTest::sceneNotImplemented() {
 
 void AbstractImporterTest::sceneNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1119,7 +1119,7 @@ void AbstractImporterTest::sceneNoFile() {
 
 void AbstractImporterTest::sceneOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1135,7 +1135,7 @@ void AbstractImporterTest::sceneOutOfRange() {
 
 void AbstractImporterTest::animation() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1165,7 +1165,7 @@ void AbstractImporterTest::animation() {
 
 void AbstractImporterTest::animationCountNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -1175,7 +1175,7 @@ void AbstractImporterTest::animationCountNotImplemented() {
 
 void AbstractImporterTest::animationCountNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1189,7 +1189,7 @@ void AbstractImporterTest::animationCountNoFile() {
 
 void AbstractImporterTest::animationForNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -1199,7 +1199,7 @@ void AbstractImporterTest::animationForNameNotImplemented() {
 
 void AbstractImporterTest::animationForNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1213,7 +1213,7 @@ void AbstractImporterTest::animationForNameNoFile() {
 
 void AbstractImporterTest::animationNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1225,7 +1225,7 @@ void AbstractImporterTest::animationNameNotImplemented() {
 
 void AbstractImporterTest::animationNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1239,7 +1239,7 @@ void AbstractImporterTest::animationNameNoFile() {
 
 void AbstractImporterTest::animationNameOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1255,7 +1255,7 @@ void AbstractImporterTest::animationNameOutOfRange() {
 
 void AbstractImporterTest::animationNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1271,7 +1271,7 @@ void AbstractImporterTest::animationNotImplemented() {
 
 void AbstractImporterTest::animationNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1285,7 +1285,7 @@ void AbstractImporterTest::animationNoFile() {
 
 void AbstractImporterTest::animationOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1301,7 +1301,7 @@ void AbstractImporterTest::animationOutOfRange() {
 
 void AbstractImporterTest::animationCustomDataDeleter() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1320,7 +1320,7 @@ void AbstractImporterTest::animationCustomDataDeleter() {
 
 void AbstractImporterTest::animationCustomTrackDeleter() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1339,7 +1339,7 @@ void AbstractImporterTest::animationCustomTrackDeleter() {
 
 void AbstractImporterTest::light() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1369,7 +1369,7 @@ void AbstractImporterTest::light() {
 
 void AbstractImporterTest::lightCountNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -1379,7 +1379,7 @@ void AbstractImporterTest::lightCountNotImplemented() {
 
 void AbstractImporterTest::lightCountNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1393,7 +1393,7 @@ void AbstractImporterTest::lightCountNoFile() {
 
 void AbstractImporterTest::lightForNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -1403,7 +1403,7 @@ void AbstractImporterTest::lightForNameNotImplemented() {
 
 void AbstractImporterTest::lightForNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1417,7 +1417,7 @@ void AbstractImporterTest::lightForNameNoFile() {
 
 void AbstractImporterTest::lightNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1429,7 +1429,7 @@ void AbstractImporterTest::lightNameNotImplemented() {
 
 void AbstractImporterTest::lightNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1443,7 +1443,7 @@ void AbstractImporterTest::lightNameNoFile() {
 
 void AbstractImporterTest::lightNameOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1459,7 +1459,7 @@ void AbstractImporterTest::lightNameOutOfRange() {
 
 void AbstractImporterTest::lightNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1475,7 +1475,7 @@ void AbstractImporterTest::lightNotImplemented() {
 
 void AbstractImporterTest::lightNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1489,7 +1489,7 @@ void AbstractImporterTest::lightNoFile() {
 
 void AbstractImporterTest::lightOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1505,7 +1505,7 @@ void AbstractImporterTest::lightOutOfRange() {
 
 void AbstractImporterTest::camera() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1535,7 +1535,7 @@ void AbstractImporterTest::camera() {
 
 void AbstractImporterTest::cameraCountNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -1545,7 +1545,7 @@ void AbstractImporterTest::cameraCountNotImplemented() {
 
 void AbstractImporterTest::cameraCountNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1559,7 +1559,7 @@ void AbstractImporterTest::cameraCountNoFile() {
 
 void AbstractImporterTest::cameraForNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -1569,7 +1569,7 @@ void AbstractImporterTest::cameraForNameNotImplemented() {
 
 void AbstractImporterTest::cameraForNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1583,7 +1583,7 @@ void AbstractImporterTest::cameraForNameNoFile() {
 
 void AbstractImporterTest::cameraNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1595,7 +1595,7 @@ void AbstractImporterTest::cameraNameNotImplemented() {
 
 void AbstractImporterTest::cameraNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1609,7 +1609,7 @@ void AbstractImporterTest::cameraNameNoFile() {
 
 void AbstractImporterTest::cameraNameOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1625,7 +1625,7 @@ void AbstractImporterTest::cameraNameOutOfRange() {
 
 void AbstractImporterTest::cameraNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1641,7 +1641,7 @@ void AbstractImporterTest::cameraNotImplemented() {
 
 void AbstractImporterTest::cameraNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1655,7 +1655,7 @@ void AbstractImporterTest::cameraNoFile() {
 
 void AbstractImporterTest::cameraOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1671,7 +1671,7 @@ void AbstractImporterTest::cameraOutOfRange() {
 
 void AbstractImporterTest::object2D() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1701,7 +1701,7 @@ void AbstractImporterTest::object2D() {
 
 void AbstractImporterTest::object2DCountNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -1711,7 +1711,7 @@ void AbstractImporterTest::object2DCountNotImplemented() {
 
 void AbstractImporterTest::object2DCountNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1725,7 +1725,7 @@ void AbstractImporterTest::object2DCountNoFile() {
 
 void AbstractImporterTest::object2DForNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -1735,7 +1735,7 @@ void AbstractImporterTest::object2DForNameNotImplemented() {
 
 void AbstractImporterTest::object2DForNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1749,7 +1749,7 @@ void AbstractImporterTest::object2DForNameNoFile() {
 
 void AbstractImporterTest::object2DNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1761,7 +1761,7 @@ void AbstractImporterTest::object2DNameNotImplemented() {
 
 void AbstractImporterTest::object2DNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1775,7 +1775,7 @@ void AbstractImporterTest::object2DNameNoFile() {
 
 void AbstractImporterTest::object2DNameOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1791,7 +1791,7 @@ void AbstractImporterTest::object2DNameOutOfRange() {
 
 void AbstractImporterTest::object2DNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1807,7 +1807,7 @@ void AbstractImporterTest::object2DNotImplemented() {
 
 void AbstractImporterTest::object2DNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1821,7 +1821,7 @@ void AbstractImporterTest::object2DNoFile() {
 
 void AbstractImporterTest::object2DOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1837,7 +1837,7 @@ void AbstractImporterTest::object2DOutOfRange() {
 
 void AbstractImporterTest::object3D() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1867,7 +1867,7 @@ void AbstractImporterTest::object3D() {
 
 void AbstractImporterTest::object3DCountNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -1877,7 +1877,7 @@ void AbstractImporterTest::object3DCountNotImplemented() {
 
 void AbstractImporterTest::object3DCountNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1891,7 +1891,7 @@ void AbstractImporterTest::object3DCountNoFile() {
 
 void AbstractImporterTest::object3DForNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -1901,7 +1901,7 @@ void AbstractImporterTest::object3DForNameNotImplemented() {
 
 void AbstractImporterTest::object3DForNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1915,7 +1915,7 @@ void AbstractImporterTest::object3DForNameNoFile() {
 
 void AbstractImporterTest::object3DNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1927,7 +1927,7 @@ void AbstractImporterTest::object3DNameNotImplemented() {
 
 void AbstractImporterTest::object3DNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1941,7 +1941,7 @@ void AbstractImporterTest::object3DNameNoFile() {
 
 void AbstractImporterTest::object3DNameOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1957,7 +1957,7 @@ void AbstractImporterTest::object3DNameOutOfRange() {
 
 void AbstractImporterTest::object3DNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1973,7 +1973,7 @@ void AbstractImporterTest::object3DNotImplemented() {
 
 void AbstractImporterTest::object3DNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -1987,7 +1987,7 @@ void AbstractImporterTest::object3DNoFile() {
 
 void AbstractImporterTest::object3DOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2003,7 +2003,7 @@ void AbstractImporterTest::object3DOutOfRange() {
 
 void AbstractImporterTest::mesh2D() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2033,7 +2033,7 @@ void AbstractImporterTest::mesh2D() {
 
 void AbstractImporterTest::mesh2DCountNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -2043,7 +2043,7 @@ void AbstractImporterTest::mesh2DCountNotImplemented() {
 
 void AbstractImporterTest::mesh2DCountNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2057,7 +2057,7 @@ void AbstractImporterTest::mesh2DCountNoFile() {
 
 void AbstractImporterTest::mesh2DForNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -2067,7 +2067,7 @@ void AbstractImporterTest::mesh2DForNameNotImplemented() {
 
 void AbstractImporterTest::mesh2DForNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2081,7 +2081,7 @@ void AbstractImporterTest::mesh2DForNameNoFile() {
 
 void AbstractImporterTest::mesh2DNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2093,7 +2093,7 @@ void AbstractImporterTest::mesh2DNameNotImplemented() {
 
 void AbstractImporterTest::mesh2DNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2107,7 +2107,7 @@ void AbstractImporterTest::mesh2DNameNoFile() {
 
 void AbstractImporterTest::mesh2DNameOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2123,7 +2123,7 @@ void AbstractImporterTest::mesh2DNameOutOfRange() {
 
 void AbstractImporterTest::mesh2DNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2139,7 +2139,7 @@ void AbstractImporterTest::mesh2DNotImplemented() {
 
 void AbstractImporterTest::mesh2DNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2153,7 +2153,7 @@ void AbstractImporterTest::mesh2DNoFile() {
 
 void AbstractImporterTest::mesh2DOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2169,7 +2169,7 @@ void AbstractImporterTest::mesh2DOutOfRange() {
 
 void AbstractImporterTest::mesh3D() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2199,7 +2199,7 @@ void AbstractImporterTest::mesh3D() {
 
 void AbstractImporterTest::mesh3DCountNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -2209,7 +2209,7 @@ void AbstractImporterTest::mesh3DCountNotImplemented() {
 
 void AbstractImporterTest::mesh3DCountNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2223,7 +2223,7 @@ void AbstractImporterTest::mesh3DCountNoFile() {
 
 void AbstractImporterTest::mesh3DForNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -2233,7 +2233,7 @@ void AbstractImporterTest::mesh3DForNameNotImplemented() {
 
 void AbstractImporterTest::mesh3DForNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2247,7 +2247,7 @@ void AbstractImporterTest::mesh3DForNameNoFile() {
 
 void AbstractImporterTest::mesh3DNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2259,7 +2259,7 @@ void AbstractImporterTest::mesh3DNameNotImplemented() {
 
 void AbstractImporterTest::mesh3DNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2273,7 +2273,7 @@ void AbstractImporterTest::mesh3DNameNoFile() {
 
 void AbstractImporterTest::mesh3DNameOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2289,7 +2289,7 @@ void AbstractImporterTest::mesh3DNameOutOfRange() {
 
 void AbstractImporterTest::mesh3DNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2305,7 +2305,7 @@ void AbstractImporterTest::mesh3DNotImplemented() {
 
 void AbstractImporterTest::mesh3DNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2319,7 +2319,7 @@ void AbstractImporterTest::mesh3DNoFile() {
 
 void AbstractImporterTest::mesh3DOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2335,7 +2335,7 @@ void AbstractImporterTest::mesh3DOutOfRange() {
 
 void AbstractImporterTest::material() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2365,7 +2365,7 @@ void AbstractImporterTest::material() {
 
 void AbstractImporterTest::materialCountNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -2375,7 +2375,7 @@ void AbstractImporterTest::materialCountNotImplemented() {
 
 void AbstractImporterTest::materialCountNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2389,7 +2389,7 @@ void AbstractImporterTest::materialCountNoFile() {
 
 void AbstractImporterTest::materialForNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -2399,7 +2399,7 @@ void AbstractImporterTest::materialForNameNotImplemented() {
 
 void AbstractImporterTest::materialForNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2413,7 +2413,7 @@ void AbstractImporterTest::materialForNameNoFile() {
 
 void AbstractImporterTest::materialNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2425,7 +2425,7 @@ void AbstractImporterTest::materialNameNotImplemented() {
 
 void AbstractImporterTest::materialNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2439,7 +2439,7 @@ void AbstractImporterTest::materialNameNoFile() {
 
 void AbstractImporterTest::materialNameOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2455,7 +2455,7 @@ void AbstractImporterTest::materialNameOutOfRange() {
 
 void AbstractImporterTest::materialNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2471,7 +2471,7 @@ void AbstractImporterTest::materialNotImplemented() {
 
 void AbstractImporterTest::materialNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2485,7 +2485,7 @@ void AbstractImporterTest::materialNoFile() {
 
 void AbstractImporterTest::materialOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2501,7 +2501,7 @@ void AbstractImporterTest::materialOutOfRange() {
 
 void AbstractImporterTest::texture() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2531,7 +2531,7 @@ void AbstractImporterTest::texture() {
 
 void AbstractImporterTest::textureCountNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -2541,7 +2541,7 @@ void AbstractImporterTest::textureCountNotImplemented() {
 
 void AbstractImporterTest::textureCountNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2555,7 +2555,7 @@ void AbstractImporterTest::textureCountNoFile() {
 
 void AbstractImporterTest::textureForNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -2565,7 +2565,7 @@ void AbstractImporterTest::textureForNameNotImplemented() {
 
 void AbstractImporterTest::textureForNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2579,7 +2579,7 @@ void AbstractImporterTest::textureForNameNoFile() {
 
 void AbstractImporterTest::textureNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2591,7 +2591,7 @@ void AbstractImporterTest::textureNameNotImplemented() {
 
 void AbstractImporterTest::textureNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2605,7 +2605,7 @@ void AbstractImporterTest::textureNameNoFile() {
 
 void AbstractImporterTest::textureNameOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2621,7 +2621,7 @@ void AbstractImporterTest::textureNameOutOfRange() {
 
 void AbstractImporterTest::textureNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2637,7 +2637,7 @@ void AbstractImporterTest::textureNotImplemented() {
 
 void AbstractImporterTest::textureNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2651,7 +2651,7 @@ void AbstractImporterTest::textureNoFile() {
 
 void AbstractImporterTest::textureOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2667,7 +2667,7 @@ void AbstractImporterTest::textureOutOfRange() {
 
 void AbstractImporterTest::image1D() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2697,7 +2697,7 @@ void AbstractImporterTest::image1D() {
 
 void AbstractImporterTest::image1DCountNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -2707,7 +2707,7 @@ void AbstractImporterTest::image1DCountNotImplemented() {
 
 void AbstractImporterTest::image1DCountNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2721,7 +2721,7 @@ void AbstractImporterTest::image1DCountNoFile() {
 
 void AbstractImporterTest::image1DForNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -2731,7 +2731,7 @@ void AbstractImporterTest::image1DForNameNotImplemented() {
 
 void AbstractImporterTest::image1DForNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2745,7 +2745,7 @@ void AbstractImporterTest::image1DForNameNoFile() {
 
 void AbstractImporterTest::image1DNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2757,7 +2757,7 @@ void AbstractImporterTest::image1DNameNotImplemented() {
 
 void AbstractImporterTest::image1DNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2771,7 +2771,7 @@ void AbstractImporterTest::image1DNameNoFile() {
 
 void AbstractImporterTest::image1DNameOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2787,7 +2787,7 @@ void AbstractImporterTest::image1DNameOutOfRange() {
 
 void AbstractImporterTest::image1DNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2803,7 +2803,7 @@ void AbstractImporterTest::image1DNotImplemented() {
 
 void AbstractImporterTest::image1DNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2817,7 +2817,7 @@ void AbstractImporterTest::image1DNoFile() {
 
 void AbstractImporterTest::image1DOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2833,7 +2833,7 @@ void AbstractImporterTest::image1DOutOfRange() {
 
 void AbstractImporterTest::image1DCustomDeleter() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2852,7 +2852,7 @@ void AbstractImporterTest::image1DCustomDeleter() {
 
 void AbstractImporterTest::image2D() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2882,7 +2882,7 @@ void AbstractImporterTest::image2D() {
 
 void AbstractImporterTest::image2DCountNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -2892,7 +2892,7 @@ void AbstractImporterTest::image2DCountNotImplemented() {
 
 void AbstractImporterTest::image2DCountNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2906,7 +2906,7 @@ void AbstractImporterTest::image2DCountNoFile() {
 
 void AbstractImporterTest::image2DForNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -2916,7 +2916,7 @@ void AbstractImporterTest::image2DForNameNotImplemented() {
 
 void AbstractImporterTest::image2DForNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2930,7 +2930,7 @@ void AbstractImporterTest::image2DForNameNoFile() {
 
 void AbstractImporterTest::image2DNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2942,7 +2942,7 @@ void AbstractImporterTest::image2DNameNotImplemented() {
 
 void AbstractImporterTest::image2DNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -2956,7 +2956,7 @@ void AbstractImporterTest::image2DNameNoFile() {
 
 void AbstractImporterTest::image2DNameOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2972,7 +2972,7 @@ void AbstractImporterTest::image2DNameOutOfRange() {
 
 void AbstractImporterTest::image2DNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -2988,7 +2988,7 @@ void AbstractImporterTest::image2DNotImplemented() {
 
 void AbstractImporterTest::image2DNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -3002,7 +3002,7 @@ void AbstractImporterTest::image2DNoFile() {
 
 void AbstractImporterTest::image2DOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -3018,7 +3018,7 @@ void AbstractImporterTest::image2DOutOfRange() {
 
 void AbstractImporterTest::image2DCustomDeleter() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -3037,7 +3037,7 @@ void AbstractImporterTest::image2DCustomDeleter() {
 
 void AbstractImporterTest::image3D() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -3067,7 +3067,7 @@ void AbstractImporterTest::image3D() {
 
 void AbstractImporterTest::image3DCountNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -3077,7 +3077,7 @@ void AbstractImporterTest::image3DCountNotImplemented() {
 
 void AbstractImporterTest::image3DCountNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -3091,7 +3091,7 @@ void AbstractImporterTest::image3DCountNoFile() {
 
 void AbstractImporterTest::image3DForNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -3101,7 +3101,7 @@ void AbstractImporterTest::image3DForNameNotImplemented() {
 
 void AbstractImporterTest::image3DForNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -3115,7 +3115,7 @@ void AbstractImporterTest::image3DForNameNoFile() {
 
 void AbstractImporterTest::image3DNameNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -3127,7 +3127,7 @@ void AbstractImporterTest::image3DNameNotImplemented() {
 
 void AbstractImporterTest::image3DNameNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -3141,7 +3141,7 @@ void AbstractImporterTest::image3DNameNoFile() {
 
 void AbstractImporterTest::image3DNameOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -3157,7 +3157,7 @@ void AbstractImporterTest::image3DNameOutOfRange() {
 
 void AbstractImporterTest::image3DNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -3173,7 +3173,7 @@ void AbstractImporterTest::image3DNotImplemented() {
 
 void AbstractImporterTest::image3DNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -3187,7 +3187,7 @@ void AbstractImporterTest::image3DNoFile() {
 
 void AbstractImporterTest::image3DOutOfRange() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -3203,7 +3203,7 @@ void AbstractImporterTest::image3DOutOfRange() {
 
 void AbstractImporterTest::image3DCustomDeleter() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -3222,7 +3222,7 @@ void AbstractImporterTest::image3DCustomDeleter() {
 
 void AbstractImporterTest::importerState() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -3234,7 +3234,7 @@ void AbstractImporterTest::importerState() {
 
 void AbstractImporterTest::importerStateNotImplemented() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
     } importer;
@@ -3244,7 +3244,7 @@ void AbstractImporterTest::importerStateNotImplemented() {
 
 void AbstractImporterTest::importerStateNoFile() {
     struct: AbstractImporter {
-        Features doFeatures() const override { return {}; }
+        ImporterFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
     } importer;
@@ -3259,15 +3259,15 @@ void AbstractImporterTest::importerStateNoFile() {
 void AbstractImporterTest::debugFeature() {
     std::ostringstream out;
 
-    Debug{&out} << AbstractImporter::Feature::OpenData << AbstractImporter::Feature(0xf0);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::Feature::OpenData Trade::AbstractImporter::Feature(0xf0)\n");
+    Debug{&out} << ImporterFeature::OpenData << ImporterFeature(0xf0);
+    CORRADE_COMPARE(out.str(), "Trade::ImporterFeature::OpenData Trade::ImporterFeature(0xf0)\n");
 }
 
 void AbstractImporterTest::debugFeatures() {
     std::ostringstream out;
 
-    Debug{&out} << (AbstractImporter::Feature::OpenData|AbstractImporter::Feature::OpenState) << AbstractImporter::Features{};
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::Feature::OpenData|Trade::AbstractImporter::Feature::OpenState Trade::AbstractImporter::Features{}\n");
+    Debug{&out} << (ImporterFeature::OpenData|ImporterFeature::OpenState) << ImporterFeatures{};
+    CORRADE_COMPARE(out.str(), "Trade::ImporterFeature::OpenData|Trade::ImporterFeature::OpenState Trade::ImporterFeatures{}\n");
 }
 
 }}}}

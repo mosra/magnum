@@ -98,7 +98,7 @@ class MAGNUM_MAGNUMFONTCONVERTER_EXPORT MagnumFontConverter: public Text::Abstra
         explicit MagnumFontConverter(PluginManager::AbstractManager& manager, const std::string& plugin);
 
     private:
-        MAGNUM_MAGNUMFONTCONVERTER_LOCAL Features doFeatures() const override;
+        MAGNUM_MAGNUMFONTCONVERTER_LOCAL FontConverterFeatures doFeatures() const override;
         MAGNUM_MAGNUMFONTCONVERTER_LOCAL std::vector<std::pair<std::string, Containers::Array<char>>> doExportFontToData(AbstractFont& font, AbstractGlyphCache& cache, const std::string& filename, const std::u32string& characters) const override;
 };
 

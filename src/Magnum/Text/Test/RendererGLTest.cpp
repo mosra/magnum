@@ -71,7 +71,7 @@ class TestLayouter: public Text::AbstractLayouter {
 };
 
 class TestFont: public Text::AbstractFont {
-    Features doFeatures() const override { return Feature::OpenData; }
+    FontFeatures doFeatures() const override { return FontFeature::OpenData; }
 
     bool doIsOpened() const override { return true; }
     void doClose() override {}
@@ -340,7 +340,7 @@ void RendererGLTest::multiline() {
             explicit Font(): _opened(false) {}
 
         private:
-            Features doFeatures() const override { return {};  }
+            FontFeatures doFeatures() const override { return {};  }
 
             bool doIsOpened() const override { return _opened; }
             void doClose() override { _opened = false; }

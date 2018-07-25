@@ -45,8 +45,8 @@ MagnumFontConverter::MagnumFontConverter() = default;
 
 MagnumFontConverter::MagnumFontConverter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractFontConverter{manager, plugin} {}
 
-auto MagnumFontConverter::doFeatures() const -> Features {
-    return Feature::ExportFont|Feature::ConvertData|Feature::MultiFile;
+FontConverterFeatures MagnumFontConverter::doFeatures() const {
+    return FontConverterFeature::ExportFont|FontConverterFeature::ConvertData|FontConverterFeature::MultiFile;
 }
 
 std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter::doExportFontToData(AbstractFont& font, AbstractGlyphCache& cache, const std::string& filename, const std::u32string& characters) const {

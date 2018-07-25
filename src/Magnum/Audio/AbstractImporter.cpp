@@ -81,7 +81,7 @@ AbstractImporter::AbstractImporter(PluginManager::Manager<AbstractImporter>& man
 AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager, plugin} {}
 
 bool AbstractImporter::openData(Containers::ArrayView<const char> data) {
-    CORRADE_ASSERT(features() & Feature::OpenData,
+    CORRADE_ASSERT(features() & ImporterFeature::OpenData,
         "Audio::AbstractImporter::openData(): feature not supported", {});
 
     close();
@@ -100,7 +100,7 @@ bool AbstractImporter::openFile(const std::string& filename) {
 }
 
 void AbstractImporter::doOpenFile(const std::string& filename) {
-    CORRADE_ASSERT(features() & Feature::OpenData, "Audio::AbstractImporter::openFile(): not implemented", );
+    CORRADE_ASSERT(features() & ImporterFeature::OpenData, "Audio::AbstractImporter::openFile(): not implemented", );
 
     /* Open file */
     if(!Utility::Directory::exists(filename)) {
@@ -136,12 +136,12 @@ Containers::Array<char> AbstractImporter::data() {
     return out;
 }
 
-Debug& operator<<(Debug& debug, const AbstractImporter::Feature value) {
-    debug << "Audio::AbstractImporter::Feature" << Debug::nospace;
+Debug& operator<<(Debug& debug, const ImporterFeature value) {
+    debug << "Audio::ImporterFeature" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case AbstractImporter::Feature::v: return debug << "::" #v;
+        #define _c(v) case ImporterFeature::v: return debug << "::" #v;
         _c(OpenData)
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -150,9 +150,9 @@ Debug& operator<<(Debug& debug, const AbstractImporter::Feature value) {
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, const AbstractImporter::Features value) {
-    return Containers::enumSetDebugOutput(debug, value, "Audio::AbstractImporter::Features{}", {
-        AbstractImporter::Feature::OpenData});
+Debug& operator<<(Debug& debug, const ImporterFeatures value) {
+    return Containers::enumSetDebugOutput(debug, value, "Audio::ImporterFeatures{}", {
+        ImporterFeature::OpenData});
 }
 
 }}

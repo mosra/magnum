@@ -136,7 +136,7 @@ class MAGNUM_ANYIMAGEIMPORTER_EXPORT AnyImageImporter: public AbstractImporter {
         ~AnyImageImporter();
 
     private:
-        MAGNUM_ANYIMAGEIMPORTER_LOCAL Features doFeatures() const override;
+        MAGNUM_ANYIMAGEIMPORTER_LOCAL ImporterFeatures doFeatures() const override;
         MAGNUM_ANYIMAGEIMPORTER_LOCAL bool doIsOpened() const override;
         MAGNUM_ANYIMAGEIMPORTER_LOCAL void doClose() override;
         MAGNUM_ANYIMAGEIMPORTER_LOCAL void doOpenFile(const std::string& filename) override;

@@ -43,7 +43,7 @@ WavImporter::WavImporter() = default;
 
 WavImporter::WavImporter(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractImporter{manager, plugin} {}
 
-auto WavImporter::doFeatures() const -> Features { return Feature::OpenData; }
+ImporterFeatures WavImporter::doFeatures() const { return ImporterFeature::OpenData; }
 
 bool WavImporter::doIsOpened() const { return !!_data; }
 

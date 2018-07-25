@@ -105,7 +105,7 @@ class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
         ~TgaImporter();
 
     private:
-        Features MAGNUM_TGAIMPORTER_LOCAL doFeatures() const override;
+        ImporterFeatures MAGNUM_TGAIMPORTER_LOCAL doFeatures() const override;
         bool MAGNUM_TGAIMPORTER_LOCAL doIsOpened() const override;
         void MAGNUM_TGAIMPORTER_LOCAL doOpenData(Containers::ArrayView<const char> data) override;
         void MAGNUM_TGAIMPORTER_LOCAL doClose() override;

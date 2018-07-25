@@ -96,7 +96,7 @@ AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, cons
 
 void AbstractImporter::setFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* const userData) {
     CORRADE_ASSERT(!isOpened(), "Trade::AbstractImporter::setFileCallback(): can't be set while a file is opened", );
-    CORRADE_ASSERT(features() & (Feature::FileCallback|Feature::OpenData), "Trade::AbstractImporter::setFileCallback(): importer supports neither loading from data nor via callbacks, callbacks can't be used", );
+    CORRADE_ASSERT(features() & (ImporterFeature::FileCallback|ImporterFeature::OpenData), "Trade::AbstractImporter::setFileCallback(): importer supports neither loading from data nor via callbacks, callbacks can't be used", );
 
     _fileCallback = callback;
     _fileCallbackUserData = userData;
@@ -106,7 +106,7 @@ void AbstractImporter::setFileCallback(Containers::Optional<Containers::ArrayVie
 void AbstractImporter::doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) {}
 
 bool AbstractImporter::openData(Containers::ArrayView<const char> data) {
-    CORRADE_ASSERT(features() & Feature::OpenData,
+    CORRADE_ASSERT(features() & ImporterFeature::OpenData,
         "Trade::AbstractImporter::openData(): feature not supported", {});
 
     /* We accept empty data here (instead of checking for them and failing so
@@ -122,7 +122,7 @@ void AbstractImporter::doOpenData(Containers::ArrayView<const char>) {
 }
 
 bool AbstractImporter::openState(const void* state, const std::string& filePath) {
-    CORRADE_ASSERT(features() & Feature::OpenState,
+    CORRADE_ASSERT(features() & ImporterFeature::OpenState,
         "Trade::AbstractImporter::openState(): feature not supported", {});
 
     close();
@@ -139,13 +139,13 @@ bool AbstractImporter::openFile(const std::string& filename) {
 
     /* If file loading callbacks are not set or the importer supports handling
        them directly, call into the implementation */
-    if(!_fileCallback || (doFeatures() & Feature::FileCallback)) {
+    if(!_fileCallback || (doFeatures() & ImporterFeature::FileCallback)) {
         doOpenFile(filename);
 
     /* Otherwise, if loading from data is supported, use the callback and pass
        the data through to openData(). Mark the file as ready to be closed once
        opening is finished. */
-    } else if(doFeatures() & Feature::OpenData) {
+    } else if(doFeatures() & ImporterFeature::OpenData) {
         /* This needs to be duplicated here and in the doOpenFile()
            implementation in order to support both following cases:
             - plugins that don't support FileCallback but have their own
@@ -171,7 +171,7 @@ bool AbstractImporter::openFile(const std::string& filename) {
 }
 
 void AbstractImporter::doOpenFile(const std::string& filename) {
-    CORRADE_ASSERT(features() & Feature::OpenData, "Trade::AbstractImporter::openFile(): not implemented", );
+    CORRADE_ASSERT(features() & ImporterFeature::OpenData, "Trade::AbstractImporter::openFile(): not implemented", );
 
     /* If callbacks are set, use them. This is the same implementation as in
        openFile(), see the comment there for details. */
@@ -640,12 +640,12 @@ const void* AbstractImporter::importerState() const {
 
 const void* AbstractImporter::doImporterState() const { return nullptr; }
 
-Debug& operator<<(Debug& debug, const AbstractImporter::Feature value) {
-    debug << "Trade::AbstractImporter::Feature" << Debug::nospace;
+Debug& operator<<(Debug& debug, const ImporterFeature value) {
+    debug << "Trade::ImporterFeature" << Debug::nospace;
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case AbstractImporter::Feature::v: return debug << "::" #v;
+        #define _c(v) case ImporterFeature::v: return debug << "::" #v;
         _c(OpenData)
         _c(OpenState)
         _c(FileCallback)
@@ -656,11 +656,11 @@ Debug& operator<<(Debug& debug, const AbstractImporter::Feature value) {
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, const AbstractImporter::Features value) {
-    return Containers::enumSetDebugOutput(debug, value, "Trade::AbstractImporter::Features{}", {
-        AbstractImporter::Feature::OpenData,
-        AbstractImporter::Feature::OpenState,
-        AbstractImporter::Feature::FileCallback});
+Debug& operator<<(Debug& debug, const ImporterFeatures value) {
+    return Containers::enumSetDebugOutput(debug, value, "Trade::ImporterFeatures{}", {
+        ImporterFeature::OpenData,
+        ImporterFeature::OpenState,
+        ImporterFeature::FileCallback});
 }
 
 }}

@@ -118,7 +118,7 @@ class MAGNUM_WAVAUDIOIMPORTER_EXPORT WavImporter: public AbstractImporter {
         explicit WavImporter(PluginManager::AbstractManager& manager, const std::string& plugin);
 
     private:
-        MAGNUM_WAVAUDIOIMPORTER_LOCAL Features doFeatures() const override;
+        MAGNUM_WAVAUDIOIMPORTER_LOCAL ImporterFeatures doFeatures() const override;
         MAGNUM_WAVAUDIOIMPORTER_LOCAL bool doIsOpened() const override;
         MAGNUM_WAVAUDIOIMPORTER_LOCAL void doOpenData(Containers::ArrayView<const char> data) override;
         MAGNUM_WAVAUDIOIMPORTER_LOCAL void doClose() override;

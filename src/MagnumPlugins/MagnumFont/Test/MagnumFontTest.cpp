@@ -141,7 +141,7 @@ void MagnumFontTest::layout() {
 
 void MagnumFontTest::fileCallbackImage() {
     Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
-    CORRADE_VERIFY(font->features() & AbstractFont::Feature::FileCallback);
+    CORRADE_VERIFY(font->features() & FontFeature::FileCallback);
 
     std::unordered_map<std::string, Containers::Array<char>> files;
     files["not/a/path/font.conf"] = Utility::Directory::read(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"));
@@ -162,7 +162,7 @@ void MagnumFontTest::fileCallbackImage() {
 
 void MagnumFontTest::fileCallbackImageNotFound() {
     Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
-    CORRADE_VERIFY(font->features() & AbstractFont::Feature::FileCallback);
+    CORRADE_VERIFY(font->features() & FontFeature::FileCallback);
 
     font->setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
             return Containers::Optional<Containers::ArrayView<const char>>{};

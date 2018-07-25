@@ -153,7 +153,7 @@ AbstractFontTest::AbstractFontTest() {
 
 void AbstractFontTest::construct() {
     struct: AbstractFont {
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -164,7 +164,7 @@ void AbstractFontTest::construct() {
         }
     } font;
 
-    CORRADE_COMPARE(font.features(), AbstractFont::Features{});
+    CORRADE_COMPARE(font.features(), FontFeatures{});
     CORRADE_VERIFY(!font.isOpened());
 
     font.close();
@@ -173,7 +173,7 @@ void AbstractFontTest::construct() {
 
 void AbstractFontTest::openData() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::OpenData; }
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
@@ -203,7 +203,7 @@ void AbstractFontTest::openData() {
 
 void AbstractFontTest::openFileAsData() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::OpenData; }
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
@@ -233,7 +233,7 @@ void AbstractFontTest::openFileAsData() {
 
 void AbstractFontTest::openFileAsDataNotFound() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::OpenData; }
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -253,7 +253,7 @@ void AbstractFontTest::openFileAsDataNotFound() {
 void AbstractFontTest::openFileNotImplemented() {
     struct: AbstractFont {
         /* Supports neither file nor data opening */
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -273,7 +273,7 @@ void AbstractFontTest::openFileNotImplemented() {
 void AbstractFontTest::openDataNotSupported() {
     struct: AbstractFont {
         /* Supports neither file nor data opening */
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -292,7 +292,7 @@ void AbstractFontTest::openDataNotSupported() {
 
 void AbstractFontTest::openDataNotImplemented() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::OpenData; }
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -312,7 +312,7 @@ void AbstractFontTest::openDataNotImplemented() {
 #ifdef MAGNUM_BUILD_DEPRECATED
 void AbstractFontTest::openSingleDataDeprecated() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::OpenData; }
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
@@ -344,7 +344,7 @@ void AbstractFontTest::openSingleDataDeprecated() {
 
 void AbstractFontTest::openMultiDataDeprecated() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::OpenData; }
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
@@ -382,7 +382,7 @@ void AbstractFontTest::openMultiDataDeprecated() {
 
 void AbstractFontTest::setFileCallback() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::OpenData|Feature::FileCallback; }
+        FontFeatures doFeatures() const override { return FontFeature::OpenData|FontFeature::FileCallback; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
         void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void* userData) override {
@@ -408,7 +408,7 @@ void AbstractFontTest::setFileCallback() {
 
 void AbstractFontTest::setFileCallbackTemplate() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::OpenData|Feature::FileCallback; }
+        FontFeatures doFeatures() const override { return FontFeature::OpenData|FontFeature::FileCallback; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
         void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) override {
@@ -440,7 +440,7 @@ void AbstractFontTest::setFileCallbackTemplate() {
 
 void AbstractFontTest::setFileCallbackTemplateNull() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::OpenData|Feature::FileCallback; }
+        FontFeatures doFeatures() const override { return FontFeature::OpenData|FontFeature::FileCallback; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
         void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* userData) override {
@@ -465,7 +465,7 @@ void AbstractFontTest::setFileCallbackTemplateNull() {
 
 void AbstractFontTest::setFileCallbackTemplateConst() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::OpenData|Feature::FileCallback; }
+        FontFeatures doFeatures() const override { return FontFeature::OpenData|FontFeature::FileCallback; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
         void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) override {
@@ -493,7 +493,7 @@ void AbstractFontTest::setFileCallbackTemplateConst() {
 
 void AbstractFontTest::setFileCallbackFileOpened() {
     struct: AbstractFont {
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -515,7 +515,7 @@ void AbstractFontTest::setFileCallbackFileOpened() {
 
 void AbstractFontTest::setFileCallbackNotImplemented() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::FileCallback; }
+        FontFeatures doFeatures() const override { return FontFeature::FileCallback; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -538,7 +538,7 @@ void AbstractFontTest::setFileCallbackNotImplemented() {
 
 void AbstractFontTest::setFileCallbackNotSupported() {
     struct: AbstractFont {
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -561,7 +561,7 @@ void AbstractFontTest::setFileCallbackNotSupported() {
 
 void AbstractFontTest::setFileCallbackOpenFileDirectly() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::FileCallback|Feature::OpenData; }
+        FontFeatures doFeatures() const override { return FontFeature::FileCallback|FontFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
@@ -604,7 +604,7 @@ void AbstractFontTest::setFileCallbackOpenFileDirectly() {
 
 void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::FileCallback|Feature::OpenData; }
+        FontFeatures doFeatures() const override { return FontFeature::FileCallback|FontFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
@@ -662,7 +662,7 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation() {
 
 void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailed() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::FileCallback|Feature::OpenData; }
+        FontFeatures doFeatures() const override { return FontFeature::FileCallback|FontFeature::OpenData; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -694,7 +694,7 @@ void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailed() 
 
 void AbstractFontTest::setFileCallbackOpenFileAsData() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::OpenData; }
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
 
@@ -753,7 +753,7 @@ void AbstractFontTest::setFileCallbackOpenFileAsData() {
 
 void AbstractFontTest::setFileCallbackOpenFileAsDataFailed() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::OpenData; }
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -785,7 +785,7 @@ void AbstractFontTest::setFileCallbackOpenFileAsDataFailed() {
 
 void AbstractFontTest::properties() {
     struct: AbstractFont {
-        Features doFeatures() const override { return Feature::OpenData; }
+        FontFeatures doFeatures() const override { return FontFeature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
@@ -812,7 +812,7 @@ void AbstractFontTest::properties() {
 
 void AbstractFontTest::propertiesNoFont() {
     struct MyFont: AbstractFont {
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -838,7 +838,7 @@ void AbstractFontTest::propertiesNoFont() {
 
 void AbstractFontTest::glyphId() {
     struct MyFont: AbstractFont {
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -854,7 +854,7 @@ void AbstractFontTest::glyphId() {
 
 void AbstractFontTest::glyphIdNoFont() {
     struct MyFont: AbstractFont {
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -873,7 +873,7 @@ void AbstractFontTest::glyphIdNoFont() {
 
 void AbstractFontTest::glyphAdvance() {
     struct MyFont: AbstractFont {
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -889,7 +889,7 @@ void AbstractFontTest::glyphAdvance() {
 
 void AbstractFontTest::glyphAdvanceNoFont() {
     struct MyFont: AbstractFont {
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -920,7 +920,7 @@ void AbstractFontTest::layout() {
     };
 
     struct MyFont: AbstractFont {
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -938,7 +938,7 @@ void AbstractFontTest::layout() {
 
 void AbstractFontTest::layoutNoFont() {
     struct MyFont: AbstractFont {
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -956,7 +956,7 @@ void AbstractFontTest::layoutNoFont() {
 
 void AbstractFontTest::fillGlyphCache() {
     struct MyFont: AbstractFont {
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -983,7 +983,7 @@ void AbstractFontTest::fillGlyphCache() {
 
 void AbstractFontTest::fillGlyphCacheNotSupported() {
     struct MyFont: AbstractFont {
-        Features doFeatures() const override { return Feature::PreparedGlyphCache; }
+        FontFeatures doFeatures() const override { return FontFeature::PreparedGlyphCache; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1001,7 +1001,7 @@ void AbstractFontTest::fillGlyphCacheNotSupported() {
 
 void AbstractFontTest::fillGlyphCacheNotImplemented() {
     struct MyFont: AbstractFont {
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1019,7 +1019,7 @@ void AbstractFontTest::fillGlyphCacheNotImplemented() {
 
 void AbstractFontTest::fillGlyphCacheNoFont() {
     struct MyFont: AbstractFont {
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -1037,7 +1037,7 @@ void AbstractFontTest::fillGlyphCacheNoFont() {
 
 void AbstractFontTest::createGlyphCache() {
     struct MyFont: AbstractFont {
-        Features doFeatures() const override { return Feature::PreparedGlyphCache; }
+        FontFeatures doFeatures() const override { return FontFeature::PreparedGlyphCache; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1063,7 +1063,7 @@ void AbstractFontTest::createGlyphCache() {
 
 void AbstractFontTest::createGlyphCacheNotSupported() {
     struct MyFont: AbstractFont {
-        Features doFeatures() const override { return {}; }
+        FontFeatures doFeatures() const override { return {}; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1080,7 +1080,7 @@ void AbstractFontTest::createGlyphCacheNotSupported() {
 
 void AbstractFontTest::createGlyphCacheNotImplemented() {
     struct MyFont: AbstractFont {
-        Features doFeatures() const override { return Feature::PreparedGlyphCache; }
+        FontFeatures doFeatures() const override { return FontFeature::PreparedGlyphCache; }
         bool doIsOpened() const override { return true; }
         void doClose() override {}
 
@@ -1097,7 +1097,7 @@ void AbstractFontTest::createGlyphCacheNotImplemented() {
 
 void AbstractFontTest::createGlyphCacheNoFont() {
     struct MyFont: AbstractFont {
-        Features doFeatures() const override { return Feature::PreparedGlyphCache; }
+        FontFeatures doFeatures() const override { return FontFeature::PreparedGlyphCache; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
 
@@ -1115,15 +1115,15 @@ void AbstractFontTest::createGlyphCacheNoFont() {
 void AbstractFontTest::debugFeature() {
     std::ostringstream out;
 
-    Debug{&out} << AbstractFont::Feature::OpenData << AbstractFont::Feature(0xf0);
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::Feature::OpenData Text::AbstractFont::Feature(0xf0)\n");
+    Debug{&out} << FontFeature::OpenData << FontFeature(0xf0);
+    CORRADE_COMPARE(out.str(), "Text::FontFeature::OpenData Text::FontFeature(0xf0)\n");
 }
 
 void AbstractFontTest::debugFeatures() {
     std::ostringstream out;
 
-    Debug{&out} << (AbstractFont::Feature::OpenData|AbstractFont::Feature::PreparedGlyphCache) << AbstractFont::Features{};
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::Feature::OpenData|Text::AbstractFont::Feature::PreparedGlyphCache Text::AbstractFont::Features{}\n");
+    Debug{&out} << (FontFeature::OpenData|FontFeature::PreparedGlyphCache) << FontFeatures{};
+    CORRADE_COMPARE(out.str(), "Text::FontFeature::OpenData|Text::FontFeature::PreparedGlyphCache Text::FontFeatures{}\n");
 }
 
 }}}}

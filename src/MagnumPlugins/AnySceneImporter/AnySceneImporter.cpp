@@ -51,7 +51,7 @@ AnySceneImporter::AnySceneImporter(PluginManager::AbstractManager& manager, cons
 
 AnySceneImporter::~AnySceneImporter() = default;
 
-auto AnySceneImporter::doFeatures() const -> Features { return {}; }
+ImporterFeatures AnySceneImporter::doFeatures() const { return {}; }
 
 bool AnySceneImporter::doIsOpened() const { return !!_in; }
 

@@ -46,7 +46,7 @@ TgaImporter::TgaImporter(PluginManager::AbstractManager& manager, const std::str
 
 TgaImporter::~TgaImporter() = default;
 
-auto TgaImporter::doFeatures() const -> Features { return Feature::OpenData; }
+ImporterFeatures TgaImporter::doFeatures() const { return ImporterFeature::OpenData; }
 
 bool TgaImporter::doIsOpened() const { return _in; }
 

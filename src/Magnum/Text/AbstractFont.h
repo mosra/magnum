@@ -45,6 +45,63 @@
 namespace Magnum { namespace Text {
 
 /**
+@brief Features supported by a font implementation
+@m_since_latest
+
+@see @ref FontFeatures, @ref AbstractFont::features()
+*/
+enum class FontFeature: UnsignedByte {
+    /** Opening fonts from raw data using @ref AbstractFont::openData() */
+    OpenData = 1 << 0,
+
+    /**
+     * Specifying callbacks for loading additional files referenced from the
+     * main file using @ref AbstractFont::setFileCallback(). If the font
+     * doesn't expose this feature, the format is either single-file or loading
+     * via callbacks is not supported.
+     *
+     * See @ref Text-AbstractFont-usage-callbacks and particular font plugin
+     * documentation for more information.
+     * @m_since{2019,10}
+     */
+    FileCallback = 1 << 1,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * The format is multi-file, thus @ref AbstractFont::openSingleData()
+     * convenience function cannot be used.
+     * @m_deprecated_since{2019,10} Obsolete, use file callbacks
+     *      instead.
+     */
+    MultiFile CORRADE_DEPRECATED_ENUM("obsolete, use file callbacks instead") = FileCallback,
+    #endif
+
+    /**
+     * The font contains prepared glyph cache.
+     *
+     * @see @ref AbstractFont::fillGlyphCache(),
+     *      @ref AbstractFont::createGlyphCache()
+     */
+    PreparedGlyphCache = 1 << 2
+};
+
+/**
+@brief Set of features supported by a font implementation
+@m_since_latest
+
+@see @ref AbstractFont::features()
+*/
+typedef Containers::EnumSet<FontFeature> FontFeatures;
+
+CORRADE_ENUMSET_OPERATORS(FontFeatures)
+
+/** @debugoperatorenum{FontFeature} */
+MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, FontFeature value);
+
+/** @debugoperatorenum{FontFeatures} */
+MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, FontFeatures value);
+
+/**
 @brief Base for font plugins
 
 Provides interface for opening fonts, filling glyph cache and layouting the
@@ -68,13 +125,13 @@ information about actual text rendering.
 Besides loading data directly from the filesystem using @ref openFile() like
 shown above, it's possible to use @ref openData() to import data from memory.
 Note that the particular importer implementation must support
-@ref Feature::OpenData for this method to work.
+@ref FontFeature::OpenData for this method to work.
 
 Some font formats consist of more than one file and in that case you may want
 to intercept those references and load them in a custom way as well. For font
-plugins that advertise support for this with @ref Feature::FileCallback this is
-done by specifying a file loading callback using @ref setFileCallback(). The
-callback gets a filename, @ref InputFileCallbackPolicy and an user
+plugins that advertise support for this with @ref FontFeature::FileCallback
+this is done by specifying a file loading callback using @ref setFileCallback().
+The callback gets a filename, @ref InputFileCallbackPolicy and an user
 pointer as parameters; returns a non-owning view on the loaded data or a
 @ref Corrade::Containers::NullOpt "Containers::NullOpt" to indicate the file
 loading failed. For example, loading a memory-mapped font could look like
@@ -85,12 +142,12 @@ correctly.
 
 @snippet MagnumText.cpp AbstractFont-usage-callbacks
 
-For importers that don't support @ref Feature::FileCallback directly, the base
-@ref openFile() implementation will use the file callback to pass the loaded
-data through to @ref openData(), in case the importer supports at least
-@ref Feature::OpenData. If the importer supports neither @ref Feature::FileCallback
-nor @ref Feature::OpenData, @ref setFileCallback() doesn't allow the callbacks
-to be set.
+For importers that don't support @ref FontFeature::FileCallback directly, the
+base @ref openFile() implementation will use the file callback to pass the
+loaded data through to @ref openData(), in case the importer supports at least
+@ref FontFeature::OpenData. If the importer supports neither
+@ref FontFeature::FileCallback nor @ref FontFeature::OpenData,
+@ref setFileCallback() doesn't allow the callbacks to be set.
 
 The input file callback signature is the same for @ref Text::AbstractFont and
 @ref Trade::AbstractImporter to allow code reuse.
@@ -107,56 +164,26 @@ checked by the implementation:
 -   Functions @ref doOpenData() and @ref doOpenFile() are called after the
     previous file was closed, function @ref doClose() is called only if there
     is any file opened.
--   Function @ref doOpenData() is called only if @ref Feature::OpenData is
+-   Function @ref doOpenData() is called only if @ref FontFeature::OpenData is
     supported.
 -   The @ref doSetFileCallback() function is called only if
-    @ref Feature::FileCallback is supported and there is no file opened.
+    @ref FontFeature::FileCallback is supported and there is no file opened.
 -   All `do*()` implementations working on opened file are called only if
     there is any file opened.
 */
 class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
     public:
-        /**
-         * @brief Features supported by this font implementation
-         *
-         * @see @ref Features, @ref features()
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief FontFeature
+         * @m_deprecated_since_latest Use @ref FontFeature instead.
          */
-        enum class Feature: UnsignedByte {
-            /** Opening fonts from raw data using @ref openData() */
-            OpenData = 1 << 0,
+        typedef CORRADE_DEPRECATED("use FontFeature instead") FontFeature Feature;
 
-            /**
-             * Specifying callbacks for loading additional files referenced
-             * from the main file using @ref setFileCallback(). If the font
-             * doesn't expose this feature, the format is either single-file or
-             * loading via callbacks is not supported.
-             *
-             * See @ref Text-AbstractFont-usage-callbacks and particular font
-             * plugin documentation for more information.
-             * @m_since{2019,10}
-             */
-            FileCallback = 1 << 1,
-
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /**
-             * The format is multi-file, thus @ref openSingleData() convenience
-             * function cannot be used.
-             * @m_deprecated_since{2019,10} Obsolete, use file callbacks
-             *      instead.
-             */
-            MultiFile CORRADE_DEPRECATED_ENUM("obsolete, use file callbacks instead") = FileCallback,
-            #endif
-
-            /**
-             * The font contains prepared glyph cache.
-             *
-             * @see @ref fillGlyphCache(), @ref createGlyphCache()
-             */
-            PreparedGlyphCache = 1 << 2
-        };
-
-        /** @brief Set of features supported by this font implementation */
-        typedef Containers::EnumSet<Feature> Features;
+        /** @brief @copybrief FontFeatures
+         * @m_deprecated_since_latest Use @ref FontFeatures instead.
+         */
+        typedef CORRADE_DEPRECATED("use FontFeatures instead") FontFeatures Features;
+        #endif
 
         /**
          * @brief Plugin interface
@@ -193,7 +220,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         explicit AbstractFont(PluginManager::AbstractManager& manager, const std::string& plugin);
 
         /** @brief Features supported by this font */
-        Features features() const { return doFeatures(); }
+        FontFeatures features() const { return doFeatures(); }
 
         /**
          * @brief File opening callback function
@@ -215,22 +242,22 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @brief Set file opening callback
          * @m_since{2019,10}
          *
-         * In case the font plugin supports @ref Feature::FileCallback, files
-         * opened through @ref openFile() will be loaded through the provided
-         * callback. Besides that, all external files referenced by the
-         * top-level file will be loaded through the callback function as well,
-         * usually on demand. The callback function gets a filename,
+         * In case the font plugin supports @ref FontFeature::FileCallback,
+         * files opened through @ref openFile() will be loaded through the
+         * provided callback. Besides that, all external files referenced by
+         * the top-level file will be loaded through the callback function as
+         * well, usually on demand. The callback function gets a filename,
          * @ref InputFileCallbackPolicy and the @p userData pointer as input
          * and returns a non-owning view on the loaded data as output or a
          * @ref Corrade::Containers::NullOpt if loading failed --- because
          * empty files might also be valid in some circumstances, @cpp nullptr @ce
          * can't be used to indicate a failure.
          *
-         * In case the font plugin doesn't support @ref Feature::FileCallback but
-         * supports at least @ref Feature::OpenData, a file opened through
-         * @ref openFile() will be internally loaded through the provided
-         * callback and then passed to @ref openData(). First the file is
-         * loaded with @ref InputFileCallbackPolicy::LoadTemporary passed to
+         * In case the font plugin doesn't support @ref FontFeature::FileCallback
+         * but supports at least @ref FontFeature::OpenData, a file opened
+         * through @ref openFile() will be internally loaded through the
+         * provided callback and then passed to @ref openData(). First the file
+         * is loaded with @ref InputFileCallbackPolicy::LoadTemporary passed to
          * the callback, then the returned memory view is passed to
          * @ref openData() (sidestepping the potential @ref openFile()
          * implementation of that particular font plugin) and after that the
@@ -241,8 +268,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          *
          * In case @p callback is @cpp nullptr @ce, the current callback (if
          * any) is reset. This function expects that the font plugin supports
-         * either @ref Feature::FileCallback or @ref Feature::OpenData. If an
-         * font plugin supports neither, callbacks can't be used.
+         * either @ref FontFeature::FileCallback or @ref FontFeature::OpenData.
+         * If a font plugin supports neither, callbacks can't be used.
          *
          * It's expected that this function is called *before* a file is
          * opened. It's also expected that the loaded data are kept in scope
@@ -292,8 +319,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param size          Font size
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. Available only if @ref Feature::OpenData is supported. Returns
-         * @cpp true @ce on success, @cpp false @ce otherwise.
+         * file. Available only if @ref FontFeature::OpenData is supported.
+         * Returns @cpp true @ce on success, @cpp false @ce otherwise.
          * @see @ref features(), @ref openFile()
          */
         bool openData(Containers::ArrayView<const char> data, Float size);
@@ -318,8 +345,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param size          Font size
          *
          * Closes previous file, if it was opened, and tries to open given
-         * file. If the plugin has @ref Feature::MultiFile, the function will
-         * use additional files in given path, all sharing common basename
+         * file. If the plugin has @ref FontFeature::MultiFile, the function
+         * will use additional files in given path, all sharing common basename
          * derived from @p filename. Returns @cpp true @ce on success,
          * @cpp false @ce otherwise.
          */
@@ -393,9 +420,9 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param characters    UTF-8 characters to render
          *
          * Fills the cache with given characters. Fonts having
-         * @ref Feature::PreparedGlyphCache do not support partial glyph cache
-         * filling, use @ref createGlyphCache() instead. Expects that a font is
-         * opened.
+         * @ref FontFeature::PreparedGlyphCache do not support partial glyph
+         * cache filling, use @ref createGlyphCache() instead. Expects that a
+         * font is opened.
          */
         void fillGlyphCache(AbstractGlyphCache& cache, const std::string& characters);
 
@@ -403,7 +430,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @brief Create glyph cache
          *
          * Configures and fills glyph cache with the contents of whole font.
-         * Available only if @ref Feature::PreparedGlyphCache is supported.
+         * Available only if @ref FontFeature::PreparedGlyphCache is supported.
          * Other fonts support only partial glyph cache filling, see
          * @ref fillGlyphCache(). Expects that a font is opened.
          */
@@ -465,7 +492,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @brief Implementation for @ref openFile()
          *
          * Return metrics of opened font on successful opening, zeros
-         * otherwise. If @ref Feature::OpenData is supported, default
+         * otherwise. If @ref FontFeature::OpenData is supported, default
          * implementation opens the file and calls @ref doOpenData() with its
          * contents. It is allowed to call this function from your
          * @ref doOpenFile() implementation --- in particular, this
@@ -473,7 +500,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @ref setFileCallback().
          *
          * This function is not called when file callbacks are set through
-         * @ref setFileCallback() and @ref Feature::FileCallback is not
+         * @ref setFileCallback() and @ref FontFeature::FileCallback is not
          * supported --- instead, file is loaded though the callback and data
          * passed through to @ref doOpenData().
          */
@@ -481,7 +508,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
 
     private:
         /** @brief Implementation for @ref features() */
-        virtual Features doFeatures() const = 0;
+        virtual FontFeatures doFeatures() const = 0;
 
         /**
          * @brief Implementation for @ref setFileCallback()
@@ -540,14 +567,6 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
 
         Float _size{}, _ascent{}, _descent{}, _lineHeight{};
 };
-
-CORRADE_ENUMSET_OPERATORS(AbstractFont::Features)
-
-/** @debugoperatorclassenum{AbstractFont,AbstractFont::Feature} */
-MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, AbstractFont::Feature value);
-
-/** @debugoperatorclassenum{AbstractFont,AbstractFont::Features} */
-MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, AbstractFont::Features value);
 
 /**
 @brief Base for text layouters
