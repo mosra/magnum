@@ -397,6 +397,33 @@ following scenarios are possible:
     to load for a variety of random reasons. Try to rebuild everything with the
     same set of flags.
 
+@subsection platforms-html5-troubleshooting-mime Incorrect response MIME type
+
+Depending on your browser, you might see a warning similar to the following in
+the console:
+
+@code{.shell-session}
+wasm streaming compile failed: TypeError: Failed to execute 'compile' on
+    'WebAssembly': Incorrect response MIME type. Expected 'application/wasm'.
+falling back to ArrayBuffer instantiation
+@endcode
+
+This is not a critical error, but causes slow startup since the browser usually
+attempts to load the file twice. This is because the HTTP `Content-Type` header
+is not set properly by the webserver. In case you use Apache, fixing this is a
+matter of adding the following line to your `.htaccess`:
+
+    AddType application/wasm .wasm
+
+@todoc use .htaccess extension for the code here once Pygments know it
+
+It is not possible when using Python `http.server` from the command line, but
+the mapping [can be added programmatically](https://docs.python.org/3/library/http.server.html#http.server.SimpleHTTPRequestHandler):
+
+@code{.py}
+http.server.SimpleHTTPRequestHandler.extensions_map['.wasm'] = 'application/wasm'
+@endcode
+
 */
 
 }
