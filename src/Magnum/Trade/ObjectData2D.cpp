@@ -31,11 +31,11 @@ namespace Magnum { namespace Trade {
 
 ObjectData2D::ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, const ObjectInstanceType2D instanceType, const UnsignedInt instance, const void* const importerState): _children{std::move(children)}, _transformation{transformation}, _instanceType{instanceType}, _flags{}, _instance{Int(instance)}, _importerState{importerState} {}
 
-ObjectData2D::ObjectData2D(std::vector<UnsignedInt> children, const Vector2& translation, const Complex& rotation, const Vector2& scaling, const ObjectInstanceType2D instanceType, const UnsignedInt instance, const void* const importerState): _children{std::move(children)}, _transformation{translation, rotation, scaling}, _instanceType{instanceType}, _flags{ObjectFlag2D::HasTransformationRotationScaling}, _instance{Int(instance)}, _importerState{importerState} {}
+ObjectData2D::ObjectData2D(std::vector<UnsignedInt> children, const Vector2& translation, const Complex& rotation, const Vector2& scaling, const ObjectInstanceType2D instanceType, const UnsignedInt instance, const void* const importerState): _children{std::move(children)}, _transformation{translation, rotation, scaling}, _instanceType{instanceType}, _flags{ObjectFlag2D::HasTranslationRotationScaling}, _instance{Int(instance)}, _importerState{importerState} {}
 
 ObjectData2D::ObjectData2D(std::vector<UnsignedInt> children, const Matrix3& transformation, const void* const importerState): _children{std::move(children)}, _transformation{transformation}, _instanceType{ObjectInstanceType2D::Empty}, _flags{}, _instance{-1}, _importerState{importerState} {}
 
-ObjectData2D::ObjectData2D(std::vector<UnsignedInt> children, const Vector2& translation, const Complex& rotation, const Vector2& scaling, const void* const importerState): _children{std::move(children)}, _transformation{translation, rotation, scaling}, _instanceType{ObjectInstanceType2D::Empty}, _flags{ObjectFlag2D::HasTransformationRotationScaling}, _instance{-1}, _importerState{importerState} {}
+ObjectData2D::ObjectData2D(std::vector<UnsignedInt> children, const Vector2& translation, const Complex& rotation, const Vector2& scaling, const void* const importerState): _children{std::move(children)}, _transformation{translation, rotation, scaling}, _instanceType{ObjectInstanceType2D::Empty}, _flags{ObjectFlag2D::HasTranslationRotationScaling}, _instance{-1}, _importerState{importerState} {}
 
 ObjectData2D::ObjectData2D(ObjectData2D&&)
     #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
@@ -52,25 +52,25 @@ ObjectData2D& ObjectData2D::operator=(ObjectData2D&&)
     = default;
 
 Vector2 ObjectData2D::translation() const {
-    CORRADE_ASSERT(_flags & ObjectFlag2D::HasTransformationRotationScaling,
+    CORRADE_ASSERT(_flags & ObjectFlag2D::HasTranslationRotationScaling,
         "Trade::ObjectData2D::translation(): object has only a combined transformation", {});
     return _transformation.trs.translation;
 }
 
 Complex ObjectData2D::rotation() const {
-    CORRADE_ASSERT(_flags & ObjectFlag2D::HasTransformationRotationScaling,
+    CORRADE_ASSERT(_flags & ObjectFlag2D::HasTranslationRotationScaling,
         "Trade::ObjectData2D::rotation(): object has only a combined transformation", {});
     return _transformation.trs.rotation;
 }
 
 Vector2 ObjectData2D::scaling() const {
-    CORRADE_ASSERT(_flags & ObjectFlag2D::HasTransformationRotationScaling,
+    CORRADE_ASSERT(_flags & ObjectFlag2D::HasTranslationRotationScaling,
         "Trade::ObjectData2D::scaling(): object has only a combined transformation", {});
     return _transformation.trs.scaling;
 }
 
 Matrix3 ObjectData2D::transformation() const {
-    if(_flags & ObjectFlag2D::HasTransformationRotationScaling)
+    if(_flags & ObjectFlag2D::HasTranslationRotationScaling)
         return Matrix3::from(_transformation.trs.rotation.toMatrix(),
                              _transformation.trs.translation)*
                Matrix3::scaling(_transformation.trs.scaling);
@@ -96,7 +96,7 @@ Debug& operator<<(Debug& debug, ObjectFlag2D value) {
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(value) case ObjectFlag2D::value: return debug << "Trade::ObjectFlag2D::" #value;
-        _c(HasTransformationRotationScaling)
+        _c(HasTranslationRotationScaling)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -106,7 +106,7 @@ Debug& operator<<(Debug& debug, ObjectFlag2D value) {
 
 Debug& operator<<(Debug& debug, ObjectFlags2D value) {
     return enumSetDebugOutput(debug, value, "Trade::ObjectFlags2D{}", {
-        ObjectFlag2D::HasTransformationRotationScaling});
+        ObjectFlag2D::HasTranslationRotationScaling});
 }
 #endif
 

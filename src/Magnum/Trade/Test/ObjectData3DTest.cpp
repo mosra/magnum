@@ -88,7 +88,7 @@ void ObjectData3DTest::constructEmptyTransformations() {
     const ObjectData3D data{{0, 2, 3}, Vector3::xAxis(-4.0f), Quaternion::rotation(32.5_degf, Vector3::zAxis()), Vector3::yScale(1.5f), &a};
 
     CORRADE_COMPARE(data.children(), (std::vector<UnsignedInt>{0, 2, 3}));
-    CORRADE_COMPARE(data.flags(), ObjectFlag3D::HasTransformationRotationScaling);
+    CORRADE_COMPARE(data.flags(), ObjectFlag3D::HasTranslationRotationScaling);
     CORRADE_COMPARE(data.translation(), Vector3::xAxis(-4.0f));
     CORRADE_COMPARE(data.rotation(), Quaternion::rotation(32.5_degf, Vector3::zAxis()));
     CORRADE_COMPARE(data.scaling(), Vector3::yScale(1.5f));
@@ -119,7 +119,7 @@ void ObjectData3DTest::constructMeshTransformations() {
     const MeshObjectData3D data{{1, 3}, Vector3::xAxis(-4.0f), Quaternion::rotation(32.5_degf, Vector3::zAxis()), Vector3::yScale(1.5f), 13, 42, &a};
 
     CORRADE_COMPARE(data.children(), (std::vector<UnsignedInt>{1, 3}));
-    CORRADE_COMPARE(data.flags(), ObjectFlag3D::HasTransformationRotationScaling);
+    CORRADE_COMPARE(data.flags(), ObjectFlag3D::HasTranslationRotationScaling);
     CORRADE_COMPARE(data.translation(), Vector3::xAxis(-4.0f));
     CORRADE_COMPARE(data.rotation(), Quaternion::rotation(32.5_degf, Vector3::zAxis()));
     CORRADE_COMPARE(data.scaling(), Vector3::yScale(1.5f));
@@ -171,7 +171,7 @@ void ObjectData3DTest::constructMoveTransformations() {
     ObjectData3D b{std::move(data)};
 
     CORRADE_COMPARE(b.children(), (std::vector<UnsignedInt>{1, 3}));
-    CORRADE_COMPARE(b.flags(), ObjectFlag3D::HasTransformationRotationScaling);
+    CORRADE_COMPARE(b.flags(), ObjectFlag3D::HasTranslationRotationScaling);
     CORRADE_COMPARE(b.translation(), Vector3::xAxis(-4.0f));
     CORRADE_COMPARE(b.rotation(), Quaternion::rotation(32.5_degf, Vector3::zAxis()));
     CORRADE_COMPARE(b.scaling(), Vector3::yScale(1.5f));
@@ -189,7 +189,7 @@ void ObjectData3DTest::constructMoveTransformations() {
     d = std::move(b);
 
     CORRADE_COMPARE(d.children(), (std::vector<UnsignedInt>{1, 3}));
-    CORRADE_COMPARE(d.flags(), ObjectFlag3D::HasTransformationRotationScaling);
+    CORRADE_COMPARE(d.flags(), ObjectFlag3D::HasTranslationRotationScaling);
     CORRADE_COMPARE(d.translation(), Vector3::xAxis(-4.0f));
     CORRADE_COMPARE(d.rotation(), Quaternion::rotation(32.5_degf, Vector3::zAxis()));
     CORRADE_COMPARE(d.scaling(), Vector3::yScale(1.5f));
@@ -253,14 +253,14 @@ void ObjectData3DTest::debugType() {
 
 void ObjectData3DTest::debugFlag() {
     std::ostringstream o;
-    Debug(&o) << ObjectFlag3D::HasTransformationRotationScaling << ObjectFlag3D(0xbe);
-    CORRADE_COMPARE(o.str(), "Trade::ObjectFlag3D::HasTransformationRotationScaling Trade::ObjectFlag3D(0xbe)\n");
+    Debug(&o) << ObjectFlag3D::HasTranslationRotationScaling << ObjectFlag3D(0xbe);
+    CORRADE_COMPARE(o.str(), "Trade::ObjectFlag3D::HasTranslationRotationScaling Trade::ObjectFlag3D(0xbe)\n");
 }
 
 void ObjectData3DTest::debugFlags() {
     std::ostringstream o;
-    Debug(&o) << (ObjectFlag3D::HasTransformationRotationScaling|ObjectFlags3D{}) << ObjectFlags3D{};
-    CORRADE_COMPARE(o.str(), "Trade::ObjectFlag3D::HasTransformationRotationScaling Trade::ObjectFlags3D{}\n");
+    Debug(&o) << (ObjectFlag3D::HasTranslationRotationScaling|ObjectFlags3D{}) << ObjectFlags3D{};
+    CORRADE_COMPARE(o.str(), "Trade::ObjectFlag3D::HasTranslationRotationScaling Trade::ObjectFlags3D{}\n");
 }
 
 }}}

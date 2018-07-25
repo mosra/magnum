@@ -86,7 +86,7 @@ void ObjectData2DTest::constructEmptyTransformations() {
     const ObjectData2D data{{0, 2, 3}, Vector2::xAxis(-4.0f), Complex::rotation(32.5_degf), Vector2::yScale(1.5f), &a};
 
     CORRADE_COMPARE(data.children(), (std::vector<UnsignedInt>{0, 2, 3}));
-    CORRADE_COMPARE(data.flags(), ObjectFlag2D::HasTransformationRotationScaling);
+    CORRADE_COMPARE(data.flags(), ObjectFlag2D::HasTranslationRotationScaling);
     CORRADE_COMPARE(data.translation(), Vector2::xAxis(-4.0f));
     CORRADE_COMPARE(data.rotation(), Complex::rotation(32.5_degf));
     CORRADE_COMPARE(data.scaling(), Vector2::yScale(1.5f));
@@ -117,7 +117,7 @@ void ObjectData2DTest::constructMeshTransformations() {
     const MeshObjectData2D data{{0, 2, 3}, Vector2::xAxis(-4.0f), Complex::rotation(32.5_degf), Vector2::yScale(1.5f), 13, 42, &a};
 
     CORRADE_COMPARE(data.children(), (std::vector<UnsignedInt>{0, 2, 3}));
-    CORRADE_COMPARE(data.flags(), ObjectFlag2D::HasTransformationRotationScaling);
+    CORRADE_COMPARE(data.flags(), ObjectFlag2D::HasTranslationRotationScaling);
     CORRADE_COMPARE(data.translation(), Vector2::xAxis(-4.0f));
     CORRADE_COMPARE(data.rotation(), Complex::rotation(32.5_degf));
     CORRADE_COMPARE(data.scaling(), Vector2::yScale(1.5f));
@@ -157,7 +157,7 @@ void ObjectData2DTest::constructMoveTransformations() {
     ObjectData2D b{std::move(data)};
 
     CORRADE_COMPARE(b.children(), (std::vector<UnsignedInt>{1, 3}));
-    CORRADE_COMPARE(b.flags(), ObjectFlag2D::HasTransformationRotationScaling);
+    CORRADE_COMPARE(b.flags(), ObjectFlag2D::HasTranslationRotationScaling);
     CORRADE_COMPARE(b.translation(), Vector2::xAxis(-4.0f));
     CORRADE_COMPARE(b.rotation(), Complex::rotation(32.5_degf));
     CORRADE_COMPARE(b.scaling(), Vector2::yScale(1.5f));
@@ -175,7 +175,7 @@ void ObjectData2DTest::constructMoveTransformations() {
     d = std::move(b);
 
     CORRADE_COMPARE(d.children(), (std::vector<UnsignedInt>{1, 3}));
-    CORRADE_COMPARE(d.flags(), ObjectFlag2D::HasTransformationRotationScaling);
+    CORRADE_COMPARE(d.flags(), ObjectFlag2D::HasTranslationRotationScaling);
     CORRADE_COMPARE(d.translation(), Vector2::xAxis(-4.0f));
     CORRADE_COMPARE(d.rotation(), Complex::rotation(32.5_degf));
     CORRADE_COMPARE(d.scaling(), Vector2::yScale(1.5f));
@@ -239,14 +239,14 @@ void ObjectData2DTest::debugType() {
 
 void ObjectData2DTest::debugFlag() {
     std::ostringstream o;
-    Debug(&o) << ObjectFlag2D::HasTransformationRotationScaling << ObjectFlag2D(0xbe);
-    CORRADE_COMPARE(o.str(), "Trade::ObjectFlag2D::HasTransformationRotationScaling Trade::ObjectFlag2D(0xbe)\n");
+    Debug(&o) << ObjectFlag2D::HasTranslationRotationScaling << ObjectFlag2D(0xbe);
+    CORRADE_COMPARE(o.str(), "Trade::ObjectFlag2D::HasTranslationRotationScaling Trade::ObjectFlag2D(0xbe)\n");
 }
 
 void ObjectData2DTest::debugFlags() {
     std::ostringstream o;
-    Debug(&o) << (ObjectFlag2D::HasTransformationRotationScaling|ObjectFlags2D{}) << ObjectFlags2D{};
-    CORRADE_COMPARE(o.str(), "Trade::ObjectFlag2D::HasTransformationRotationScaling Trade::ObjectFlags2D{}\n");
+    Debug(&o) << (ObjectFlag2D::HasTranslationRotationScaling|ObjectFlags2D{}) << ObjectFlags2D{};
+    CORRADE_COMPARE(o.str(), "Trade::ObjectFlag2D::HasTranslationRotationScaling Trade::ObjectFlags2D{}\n");
 }
 
 }}}

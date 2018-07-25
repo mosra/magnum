@@ -68,7 +68,7 @@ enum class ObjectFlag2D: UnsignedByte {
      * transformation using @ref ObjectData2D::translation(),
      * @ref ObjectData2D::rotation() and @ref ObjectData2D::scaling().
      */
-    HasTransformationRotationScaling = 1 << 0
+    HasTranslationRotationScaling = 1 << 0
 };
 
 /**
@@ -168,7 +168,7 @@ class MAGNUM_TRADE_EXPORT ObjectData2D {
         /**
          * @brief Translation (relative to parent)
          *
-         * Available only if @ref ObjectFlag2D::HasTransformationRotationScaling
+         * Available only if @ref ObjectFlag2D::HasTranslationRotationScaling
          * is set, use @ref transformation() otherwise. Applied as last in the
          * final transformation, see @ref transformation() for more
          * information.
@@ -179,7 +179,7 @@ class MAGNUM_TRADE_EXPORT ObjectData2D {
         /**
          * @brief Rotation (relative to parent)
          *
-         * Available only if @ref ObjectFlag2D::HasTransformationRotationScaling
+         * Available only if @ref ObjectFlag2D::HasTranslationRotationScaling
          * is set, use @ref transformation() otherwise. Applied second in the
          * final transformation, see @ref transformation() for more
          * information.
@@ -190,7 +190,7 @@ class MAGNUM_TRADE_EXPORT ObjectData2D {
         /**
          * @brief Scaling (relative to parent)
          *
-         * Available only if @ref ObjectFlag2D::HasTransformationRotationScaling
+         * Available only if @ref ObjectFlag2D::HasTranslationRotationScaling
          * is set, use @ref transformation() otherwise. Applied as first in the
          * final transformation, see @ref transformation() for more
          * information.
@@ -201,7 +201,7 @@ class MAGNUM_TRADE_EXPORT ObjectData2D {
         /**
          * @brief Transformation (relative to parent)
          *
-         * If @ref ObjectFlag2D::HasTransformationRotationScaling is not set,
+         * If @ref ObjectFlag2D::HasTranslationRotationScaling is not set,
          * returns the imported object transformation matrix. Otherwise
          * calculates the final transformation matrix @f$ \boldsymbol{M} @f$
          * from translation, rotation and scaling matrices @f$ \boldsymbol{T} @f$,
