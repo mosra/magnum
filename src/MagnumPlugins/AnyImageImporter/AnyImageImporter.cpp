@@ -38,7 +38,7 @@ AnyImageImporter::AnyImageImporter(PluginManager::AbstractManager& manager, cons
 
 AnyImageImporter::~AnyImageImporter() = default;
 
-auto AnyImageImporter::doFeatures() const -> Features { return {}; }
+auto AnyImageImporter::doFeatures() const -> Features { return Feature::OpenData; }
 
 bool AnyImageImporter::doIsOpened() const { return !!_in; }
 
@@ -113,6 +113,74 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
        itself) */
     std::unique_ptr<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
     if(!importer->openFile(filename)) return;
+
+    /* Success, save the instance */
+    _in = std::move(importer);
+}
+
+void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
+    CORRADE_INTERNAL_ASSERT(manager());
+
+    std::string plugin;
+    /* https://docs.microsoft.com/cs-cz/windows/desktop/direct3ddds/dx-graphics-dds-pguide */
+    if(Utility::String::viewBeginsWith(data, "DDS "))
+        plugin = "DdsImporter";
+    /* http://www.openexr.com/openexrfilelayout.pdf */
+    else if(Utility::String::viewBeginsWith(data, "\x76\x2f\x31\x01"))
+        plugin = "OpenExrImporter";
+    /* https://en.wikipedia.org/wiki/Radiance_(software)#HDR_image_format */
+    else if(Utility::String::viewBeginsWith(data, "#?RADIANCE"))
+        plugin = "HdrImporter";
+    /* https://en.wikipedia.org/wiki/JPEG#Syntax_and_structure */
+    else if(Utility::String::viewBeginsWith(data, "\xff\xd8\xff"))
+        plugin = "JpegImporter";
+    /* https://en.wikipedia.org/wiki/Portable_Network_Graphics#File_header */
+    else if(Utility::String::viewBeginsWith(data, "\x89PNG\x0d\x0a\x1a\x0a"))
+        plugin = "PngImporter";
+    /* https://github.com/file/file/blob/d04de269e0b06ccd0a7d1bf4974fed1d75be7d9e/magic/Magdir/images#L18-L22
+       TGAs are a complete guesswork, so try after everything else fails. */
+    else if([data]() {
+            /* TGA header is 18 bytes */
+            if(data.size() < 18) return false;
+
+            /* Third byte (image type) must be one of these */
+            if(data[2] != 1 && data[2] != 2  && data[2] != 3 &&
+               data[2] != 9 && data[2] != 10 && data[2] != 11) return false;
+
+            /* If image type is 1 or 9, second byte (colormap type) must be 1 */
+            if((data[2] == 1 || data[2] == 9) && data[1] != 1) return false;
+
+            /* ... and 0 otherwise */
+            if(data[2] != 1 && data[2] != 9 && data[1] != 0) return false;
+
+            /* Colormap index (unsigned short, byte 3+4) should be 0 */
+            if(data[3] != 0 && data[4] != 0) return false;
+
+            /* Probably TGA, heh. Or random memory. */
+            return true;
+        }()) plugin = "TgaImporter";
+    else if(!data.size()) {
+        Error{} << "Trade::AnyImageImporter::openData(): file is empty";
+        return;
+    } else {
+        std::uint32_t signature = data[0] << 24;
+        if(data.size() > 1) signature |= data[1] << 16;
+        if(data.size() > 2) signature |= data[2] << 8;
+        if(data.size() > 3) signature |= data[3];
+        Error() << "Trade::AnyImageImporter::openData(): cannot determine type from signature" << reinterpret_cast<void*>(signature);
+        return;
+    }
+
+    /* Try to load the plugin */
+    if(!(manager()->load(plugin) & PluginManager::LoadState::Loaded)) {
+        Error() << "Trade::AnyImageImporter::openData(): cannot load" << plugin << "plugin";
+        return;
+    }
+
+    /* Try to open the file (error output should be printed by the plugin
+       itself) */
+    std::unique_ptr<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
+    if(!importer->openData(data)) return;
 
     /* Success, save the instance */
     _in = std::move(importer);

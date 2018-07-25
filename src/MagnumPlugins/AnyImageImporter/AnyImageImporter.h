@@ -68,14 +68,16 @@ of the `Magnum` package and link to the `Magnum::AnyImageImporter` target. See
 Supported formats:
 
 -   Windows Bitmap (`*.bmp`), loaded with any plugin that provides `BmpImporter`
--   DirectDraw Surface (`*.dds`), loaded with @ref DdsImporter or any other
-    plugin that provides it
+-   DirectDraw Surface (`*.dds` or data with corresponding signature), loaded
+    with @ref DdsImporter or any other plugin that provides it
 -   Graphics Interchange Format (`*.gif`), loaded with any plugin that provides
     `GifImporter`
--   OpenEXR (`*.exr`), loaded with any plugin that provides `OpenExrImporter`
--   Radiance HDR (`*.hdr`), loaded with any plugin that provides `HdrImporter`
--   JPEG (`*.jpg`, `*.jpe`, `*.jpeg`), loaded with @ref JpegImporter or any
-    other plugin that provides it
+-   OpenEXR (`*.exr` or data with corresponding signature), loaded with any
+    plugin that provides `OpenExrImporter`
+-   Radiance HDR (`*.hdr` or data with corresponding signature), loaded with
+    any plugin that provides `HdrImporter`
+-   JPEG (`*.jpg`, `*.jpe`, `*.jpeg` or data with corresponding signature),
+    loaded with @ref JpegImporter or any other plugin that provides it
 -   JPEG 2000 (`*.jp2`), loaded with any plugin that provides
     `Jpeg2000Importer`
 -   Multiple-image Network Graphics (`*.mng`), loaded with any plugin that
@@ -87,18 +89,20 @@ Supported formats:
 -   Softimage PIC (`*.pic`), loaded with any plugin that provides `PicImporter`
 -   Portable Anymap (`*.pnm`), loaded with any plugin that provides
     `PnmImporter`
--   Portable Network Graphics (`*.png`), loaded with @ref PngImporter or any
-    other plugin that provides it
+-   Portable Network Graphics (`*.png` or data with corresponding signature),
+    loaded with @ref PngImporter or any other plugin that provides it
 -   Portable Pixmap (`*.ppm`), loaded with any plugin that provides `PpmImporter`
 -   Adobe Photoshop (`*.psd`), loaded with any plugin that provides `PsdImporter`
 -   Silicon Graphics (`*.sgi`, `*.bw`, `*.rgb`, `*.rgba`), loaded with any
     plugin that provides `SgiImporter`
 -   Tagged Image File Format (`*.tif`, `*.tiff`), loaded with any plugin that
     provides `TiffImporter`
--   Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst`), loaded with
-    @ref TgaImporter or any other plugin that provides it
+-   Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst` or data with
+    corresponding signature), loaded with @ref TgaImporter or any other plugin
+    that provides it
 
-Only loading from files is supported.
+Detecting file type through @ref openData() is supported only for a subset of
+formats that are marked as such in the list above.
 */
 class MAGNUM_ANYIMAGEIMPORTER_EXPORT AnyImageImporter: public AbstractImporter {
     public:
@@ -115,6 +119,7 @@ class MAGNUM_ANYIMAGEIMPORTER_EXPORT AnyImageImporter: public AbstractImporter {
         MAGNUM_ANYIMAGEIMPORTER_LOCAL bool doIsOpened() const override;
         MAGNUM_ANYIMAGEIMPORTER_LOCAL void doClose() override;
         MAGNUM_ANYIMAGEIMPORTER_LOCAL void doOpenFile(const std::string& filename) override;
+        MAGNUM_ANYIMAGEIMPORTER_LOCAL void doOpenData(Containers::ArrayView<const char> data) override;
 
         MAGNUM_ANYIMAGEIMPORTER_LOCAL UnsignedInt doImage2DCount() const override;
         MAGNUM_ANYIMAGEIMPORTER_LOCAL Containers::Optional<ImageData2D> doImage2D(UnsignedInt id) override;
