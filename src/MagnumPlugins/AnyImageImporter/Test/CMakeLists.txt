@@ -36,7 +36,7 @@ endif()
 if(NOT BUILD_PLUGINS_STATIC)
     set(ANYIMAGEIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:AnyImageImporter>)
     if(WITH_TGAIMPORTER)
-        set(TGAIMAGEIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
+        set(TGAIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
     endif()
 
     # First replace ${} variables, then $<> generator expressions
