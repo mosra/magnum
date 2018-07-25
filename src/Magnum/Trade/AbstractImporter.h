@@ -1114,10 +1114,12 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class Callback, class T> void AbstractImporter::setFileCallback(Callback callback, T& userData) {
-    /* Don't try to wrap a null function pointer */
-    if(!callback) return setFileCallback(nullptr);
+    /* Don't try to wrap a null function pointer. Need to cast first because
+       MSVC (even 2017) can't apply ! to a lambda. Ugh. */
+    const auto callbackPtr = static_cast<Containers::ArrayView<const char>(*)(const std::string&, ImporterFileCallbackPolicy, T&)>(callback);
+    if(!callbackPtr) return setFileCallback(nullptr);
 
-    _fileCallbackTemplate = { reinterpret_cast<void(*)()>(static_cast<Containers::ArrayView<const char>(*)(const std::string&, ImporterFileCallbackPolicy, T&)>(callback)), &userData };
+    _fileCallbackTemplate = { reinterpret_cast<void(*)()>(callbackPtr), &userData };
     setFileCallback([](const std::string& filename, const ImporterFileCallbackPolicy flags, void* const userData) {
         auto& s = *reinterpret_cast<FileCallbackTemplate*>(userData);
         return reinterpret_cast<Containers::ArrayView<const char>(*)(const std::string&, ImporterFileCallbackPolicy, T&)>(s.callback)(filename, flags, *static_cast<T*>(s.userData));
