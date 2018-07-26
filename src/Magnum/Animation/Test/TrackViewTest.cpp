@@ -125,6 +125,7 @@ void TrackViewTest::constructEmpty() {
     const TrackView<Float, Vector3> a;
 
     CORRADE_VERIFY(!a.interpolator());
+    CORRADE_VERIFY(!a.size());
     CORRADE_VERIFY(a.keys().empty());
     CORRADE_VERIFY(a.values().empty());
     CORRADE_COMPARE(a.at(42.0f), Vector3{});
@@ -141,6 +142,7 @@ void TrackViewTest::constructInterpolator() {
     CORRADE_COMPARE(a.interpolator(), Math::select);
     CORRADE_COMPARE(a.before(), Extrapolation::Extrapolated);
     CORRADE_COMPARE(a.after(), Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(a.size(), 2);
     CORRADE_COMPARE(a.keys().size(), 2);
     CORRADE_COMPARE(a.values().size(), 2);
     CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
@@ -157,6 +159,7 @@ void TrackViewTest::constructInterpolatorDefaults() {
     CORRADE_COMPARE(a.interpolator(), Math::lerp);
     CORRADE_COMPARE(a.before(), Extrapolation::Constant);
     CORRADE_COMPARE(a.after(), Extrapolation::Constant);
+    CORRADE_COMPARE(a.size(), 2);
     CORRADE_COMPARE(a.keys().size(), 2);
     CORRADE_COMPARE(a.values().size(), 2);
     CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
@@ -173,6 +176,7 @@ void TrackViewTest::constructInterpolation() {
     CORRADE_COMPARE(a.interpolator(), Math::lerp);
     CORRADE_COMPARE(a.before(), Extrapolation::Extrapolated);
     CORRADE_COMPARE(a.after(), Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(a.size(), 2);
     CORRADE_COMPARE(a.keys().size(), 2);
     CORRADE_COMPARE(a.values().size(), 2);
     CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
@@ -189,6 +193,7 @@ void TrackViewTest::constructInterpolationDefaults() {
     CORRADE_COMPARE(a.interpolator(), Math::select);
     CORRADE_COMPARE(a.before(), Extrapolation::Constant);
     CORRADE_COMPARE(a.after(), Extrapolation::Constant);
+    CORRADE_COMPARE(a.size(), 2);
     CORRADE_COMPARE(a.keys().size(), 2);
     CORRADE_COMPARE(a.values().size(), 2);
     CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
@@ -209,6 +214,7 @@ void TrackViewTest::constructInterpolationInterpolator() {
     CORRADE_COMPARE(a.interpolator(), customLerp);
     CORRADE_COMPARE(a.before(), Extrapolation::Extrapolated);
     CORRADE_COMPARE(a.after(), Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(a.size(), 2);
     CORRADE_COMPARE(a.keys().size(), 2);
     CORRADE_COMPARE(a.values().size(), 2);
     CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
@@ -225,6 +231,7 @@ void TrackViewTest::constructInterpolationInterpolatorDefaults() {
     CORRADE_COMPARE(a.interpolator(), customLerp);
     CORRADE_COMPARE(a.before(), Extrapolation::Constant);
     CORRADE_COMPARE(a.after(), Extrapolation::Constant);
+    CORRADE_COMPARE(a.size(), 2);
     CORRADE_COMPARE(a.keys().size(), 2);
     CORRADE_COMPARE(a.values().size(), 2);
     CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
@@ -242,6 +249,7 @@ void TrackViewTest::constructSingleArrayInterpolator() {
     CORRADE_COMPARE(a.interpolator(), Math::select);
     CORRADE_COMPARE(a.before(), Extrapolation::Extrapolated);
     CORRADE_COMPARE(a.after(), Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(a.size(), 2);
     CORRADE_COMPARE(a.keys().size(), 2);
     CORRADE_COMPARE(a.values().size(), 2);
     CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
@@ -259,6 +267,7 @@ void TrackViewTest::constructSingleArrayInterpolatorDefaults() {
     CORRADE_COMPARE(a.interpolator(), Math::lerp);
     CORRADE_COMPARE(a.before(), Extrapolation::Constant);
     CORRADE_COMPARE(a.after(), Extrapolation::Constant);
+    CORRADE_COMPARE(a.size(), 2);
     CORRADE_COMPARE(a.keys().size(), 2);
     CORRADE_COMPARE(a.values().size(), 2);
     CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
@@ -276,6 +285,7 @@ void TrackViewTest::constructSingleArrayInterpolation() {
     CORRADE_COMPARE(a.interpolator(), Math::lerp);
     CORRADE_COMPARE(a.before(), Extrapolation::Extrapolated);
     CORRADE_COMPARE(a.after(), Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(a.size(), 2);
     CORRADE_COMPARE(a.keys().size(), 2);
     CORRADE_COMPARE(a.values().size(), 2);
     CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
@@ -293,6 +303,7 @@ void TrackViewTest::constructSingleArrayInterpolationDefaults() {
     CORRADE_COMPARE(a.interpolator(), Math::select);
     CORRADE_COMPARE(a.before(), Extrapolation::Constant);
     CORRADE_COMPARE(a.after(), Extrapolation::Constant);
+    CORRADE_COMPARE(a.size(), 2);
     CORRADE_COMPARE(a.keys().size(), 2);
     CORRADE_COMPARE(a.values().size(), 2);
     CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
@@ -310,6 +321,7 @@ void TrackViewTest::constructSingleArrayInterpolationInterpolator() {
     CORRADE_COMPARE(a.interpolator(), customLerp);
     CORRADE_COMPARE(a.before(), Extrapolation::Extrapolated);
     CORRADE_COMPARE(a.after(), Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(a.size(), 2);
     CORRADE_COMPARE(a.keys().size(), 2);
     CORRADE_COMPARE(a.values().size(), 2);
     CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
@@ -327,6 +339,7 @@ void TrackViewTest::constructSingleArrayInterpolationInterpolatorDefaults() {
     CORRADE_COMPARE(a.interpolator(), customLerp);
     CORRADE_COMPARE(a.before(), Extrapolation::Constant);
     CORRADE_COMPARE(a.after(), Extrapolation::Constant);
+    CORRADE_COMPARE(a.size(), 2);
     CORRADE_COMPARE(a.keys().size(), 2);
     CORRADE_COMPARE(a.values().size(), 2);
     CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
@@ -348,6 +361,7 @@ void TrackViewTest::constructCopyStorage() {
     CORRADE_COMPARE(bv.interpolator(), customLerp);
     CORRADE_COMPARE(bv.before(), Extrapolation::Extrapolated);
     CORRADE_COMPARE(bv.after(), Extrapolation::DefaultConstructed);
+    CORRADE_COMPARE(bv.size(), 2);
     CORRADE_COMPARE(bv.keys().size(), 2);
     CORRADE_COMPARE(bv.values().size(), 2);
     CORRADE_COMPARE(bv[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));

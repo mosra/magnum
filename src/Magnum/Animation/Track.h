@@ -285,6 +285,9 @@ template<class K, class V, class R
          */
         Extrapolation after() const { return _after; }
 
+        /** @brief Keyframe count */
+        std::size_t size() const { return _data.size(); }
+
         /**
          * @brief Keyframe data
          *
@@ -310,7 +313,11 @@ template<class K, class V, class R
             return _data ? Containers::StridedArrayView<const V>{&_data[0].second, _data.size(), sizeof(std::pair<K, V>)} : nullptr;
         }
 
-        /** @brief Keyframe access */
+        /**
+         * @brief Keyframe access
+         *
+         * @see @ref size()
+         */
         const std::pair<K, V>& operator[](std::size_t i) const { return _data[i]; }
 
         /**
@@ -610,6 +617,9 @@ template<class K, class V, class R
          */
         Extrapolation after() const { return _after; }
 
+        /** @brief Keyframe count */
+        std::size_t size() const { return _keys.size(); }
+
         /**
          * @brief Key data
          *
@@ -628,7 +638,11 @@ template<class K, class V, class R
             return reinterpret_cast<const Containers::StridedArrayView<const V>&>(_values);
         }
 
-        /** @brief Keyframe access */
+        /**
+         * @brief Keyframe access
+         *
+         * @see @ref size()
+         */
         std::pair<K, V> operator[](std::size_t i) const {
             return {keys()[i], values()[i]};
         }
