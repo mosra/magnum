@@ -106,9 +106,11 @@ See also:
     @ref Trade::AbstractImageConverter::Feature enums and
     @ref Trade::AbstractImporter::Features,
     @ref Trade::AbstractImageConverter::Features enum sets
-    @ref Trade::AnyImageImporter "AnyImageImporter" plugin now supports
+-   @ref Trade::AnyImageImporter "AnyImageImporter" plugin now supports
     detection and loading of DDS, EXR, HDR, JPEG, PNG and TGA files from data
     next to file type detection based on filename
+-   @ref Trade::AnyImageConverter "AnyImageConverter" learned detection of JPEG
+    output
 
 @subsection changelog-latest-changes Changes and improvements
 

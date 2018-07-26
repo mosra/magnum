@@ -53,6 +53,10 @@ bool AnyImageConverter::doExportToFile(const ImageView2D& image, const std::stri
         plugin = "OpenExrImageConverter";
     else if(Utility::String::endsWith(filename, ".hdr"))
         plugin = "HdrImageConverter";
+    else if(Utility::String::endsWith(filename, ".jpg") ||
+            Utility::String::endsWith(filename, ".jpeg") ||
+            Utility::String::endsWith(filename, ".jpe"))
+        plugin = "JpegImageConverter";
     else if(Utility::String::endsWith(filename, ".png"))
         plugin = "PngImageConverter";
     else if(Utility::String::endsWith(filename, ".tga") ||

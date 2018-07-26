@@ -73,6 +73,8 @@ Supported formats for uncompressed data:
     `BmpImageConverter`
 -   Radiance HDR (`*.hdr`), converted with any plugin that provides
     `HdrImageConverter`
+-   JPEG (`*.jpg`, `*.jpe`, `*.jpeg`), converted with @ref JpegImageConverter
+    or any other plugin that provides it
 -   Portable Network Graphics (`*.png`), converted with @ref PngImageConverter
     or any other plugin that provides it
 -   Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst`), converted with
