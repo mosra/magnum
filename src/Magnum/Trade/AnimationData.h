@@ -207,16 +207,30 @@ class AnimationTrackData {
 class MAGNUM_TRADE_EXPORT AnimationData {
     public:
         /**
-         * @brief Constructor
+         * @brief Construct with implicit duration
          * @param data          Buffer containing all keyframe data for this
          *      animation clip
          * @param tracks        Track data
          * @param importerState Importer-specific state
          *
          * Each item of @p track should have an @ref Animation::TrackView
-         * instance pointing its key/value views to @p data.
+         * instance pointing its key/value views to @p data. The @ref duration()
+         * is automatically calculated from durations of all tracks.
          */
         explicit AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @brief Construct with explicit duration
+         * @param data          Buffer containing all keyframe data for this
+         *      animation clip
+         * @param tracks        Track data
+         * @param duration      Animation track duration
+         * @param importerState Importer-specific state
+         *
+         * Each item of @p track should have an @ref Animation::TrackView
+         * instance pointing its key/value views to @p data.
+         */
+        explicit AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const Range1D& duration, const void* importerState = nullptr) noexcept;
 
         ~AnimationData();
 
@@ -256,6 +270,9 @@ class MAGNUM_TRADE_EXPORT AnimationData {
         #ifndef CORRADE_GCC47_COMPATIBILITY
         Containers::ArrayView<const char> data() const && = delete; /**< @overload */
         #endif
+
+        /** @brief Duration */
+        Range1D duration() const { return _duration; }
 
         /** @brief Track count */
         UnsignedInt trackCount() const { return _tracks.size(); }
@@ -340,6 +357,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
         const void* importerState() const { return _importerState; }
 
     private:
+        Range1D _duration;
         Containers::Array<char> _data;
         Containers::Array<AnimationTrackData> _tracks;
         const void* _importerState;

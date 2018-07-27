@@ -35,6 +35,8 @@ struct AnimationDataTest: TestSuite::Tester {
     explicit AnimationDataTest();
 
     void construct();
+    void constructImplicitDuration();
+    void constructImplicitDurationEmpty();
     void constructCopy();
     void constructMove();
 
@@ -52,6 +54,8 @@ struct AnimationDataTest: TestSuite::Tester {
 
 AnimationDataTest::AnimationDataTest() {
     addTests({&AnimationDataTest::construct,
+              &AnimationDataTest::constructImplicitDuration,
+              &AnimationDataTest::constructImplicitDurationEmpty,
               &AnimationDataTest::constructCopy,
               &AnimationDataTest::constructMove,
 
@@ -99,8 +103,9 @@ void AnimationDataTest::construct() {
             {&view[0].rotation, view.size(), sizeof(Data)},
             Animation::Interpolation::Linear,
             animationInterpolatorFor<Quaternion>(Animation::Interpolation::Linear)}}
-        }}, &state};
+        }}, {-1.0f, 7.0f}, &state};
 
+    CORRADE_COMPARE(data.duration(), (Range1D{-1.0f, 7.0f}));
     CORRADE_COMPARE(data.data().size(), sizeof(Data)*3);
     CORRADE_COMPARE(data.trackCount(), 2);
     CORRADE_COMPARE(data.importerState(), &state);
@@ -128,6 +133,71 @@ void AnimationDataTest::construct() {
         CORRADE_COMPARE(track.interpolation(), Animation::Interpolation::Linear);
         CORRADE_COMPARE(track.at(2.5f), Quaternion::rotation(32.5_degf, Vector3::yAxis()));
     }
+}
+
+void AnimationDataTest::constructImplicitDuration() {
+    /* Ain't the prettiest, but trust me: you won't do it like this in the
+       plugins anyway */
+    struct Data {
+        Float time;
+        bool value;
+    };
+    Containers::Array<char> buffer{sizeof(Data)*4};
+    auto view = Containers::arrayCast<Data>(buffer);
+    view[0] = {1.0f, true};
+    view[1] = {5.0f, false};
+    view[2] = {3.0f, true};
+    view[3] = {7.0f, false};
+
+    const int state = 5;
+    AnimationData data{std::move(buffer), Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
+        {AnimationTrackType::Bool,
+         AnimationTrackTarget(129), 0,
+         Animation::TrackView<Float, bool>{
+            {&view[0].time, 2, sizeof(Data)},
+            {&view[0].value, 2, sizeof(Data)},
+            Animation::Interpolation::Constant}},
+        {AnimationTrackType::Bool,
+         AnimationTrackTarget(130), 1,
+         Animation::TrackView<Float, bool>{
+            {&view[2].time, 2, sizeof(Data)},
+            {&view[2].value, 2, sizeof(Data)},
+            Animation::Interpolation::Linear}}
+        }}, &state};
+
+    CORRADE_COMPARE(data.duration(), (Range1D{1.0f, 7.0f}));
+    CORRADE_COMPARE(data.trackCount(), 2);
+    CORRADE_COMPARE(data.importerState(), &state);
+    {
+        CORRADE_COMPARE(data.trackType(0), AnimationTrackType::Bool);
+        CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Bool);
+        CORRADE_COMPARE(data.trackTarget(0), AnimationTrackTarget(129));
+        CORRADE_COMPARE(data.trackTargetId(0), 0);
+
+        Animation::TrackView<Float, bool> track = data.track<bool>(0);
+        CORRADE_COMPARE(track.duration(), (Range1D{1.0f, 5.0f}));
+        CORRADE_COMPARE(track.keys().size(), 2);
+        CORRADE_COMPARE(track.values().size(), 2);
+        CORRADE_COMPARE(track.interpolation(), Animation::Interpolation::Constant);
+        CORRADE_COMPARE(track.at(6.0f), false);
+    } {
+        CORRADE_COMPARE(data.trackType(1), AnimationTrackType::Bool);
+        CORRADE_COMPARE(data.trackResultType(1), AnimationTrackType::Bool);
+        CORRADE_COMPARE(data.trackTarget(1), AnimationTrackTarget(130));
+        CORRADE_COMPARE(data.trackTargetId(1), 1);
+
+        Animation::TrackView<Float, bool> track = data.track<bool>(1);
+        CORRADE_COMPARE(track.duration(), (Range1D{3.0f, 7.0f}));
+        CORRADE_COMPARE(track.keys().size(), 2);
+        CORRADE_COMPARE(track.values().size(), 2);
+        CORRADE_COMPARE(track.interpolation(), Animation::Interpolation::Linear);
+        CORRADE_COMPARE(track.at(4.5f), true);
+    }
+}
+
+void AnimationDataTest::constructImplicitDurationEmpty() {
+    AnimationData data{nullptr, nullptr};
+    CORRADE_COMPARE(data.duration(), Range1D{});
 }
 
 void AnimationDataTest::constructCopy() {
@@ -164,10 +234,11 @@ void AnimationDataTest::constructMove() {
             {&view[0].rotation, view.size(), sizeof(Data)},
             Animation::Interpolation::Linear,
             animationInterpolatorFor<Quaternion>(Animation::Interpolation::Linear)}}
-        }}, &state};
+        }}, {-1.0f, 7.0f}, &state};
 
     AnimationData b{std::move(a)};
 
+    CORRADE_COMPARE(b.duration(), (Range1D{-1.0f, 7.0f}));
     CORRADE_COMPARE(b.data().size(), sizeof(Data)*3);
     CORRADE_COMPARE(b.trackCount(), 2);
     CORRADE_COMPARE(b.importerState(), &state);
@@ -200,6 +271,7 @@ void AnimationDataTest::constructMove() {
     AnimationData c{nullptr, nullptr, &other};
     c = std::move(b);
 
+    CORRADE_COMPARE(c.duration(), (Range1D{-1.0f, 7.0f}));
     CORRADE_COMPARE(c.data().size(), sizeof(Data)*3);
     CORRADE_COMPARE(c.trackCount(), 2);
     CORRADE_COMPARE(c.importerState(), &state);

@@ -32,7 +32,17 @@
 
 namespace Magnum { namespace Trade {
 
-AnimationData::AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const void* importerState) noexcept: _data{std::move(data)}, _tracks{std::move(tracks)}, _importerState{importerState} {}
+AnimationData::AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const Range1D& duration, const void* importerState) noexcept: _duration{duration}, _data{std::move(data)}, _tracks{std::move(tracks)}, _importerState{importerState} {}
+
+AnimationData::AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const void* importerState) noexcept: _data{std::move(data)}, _tracks{std::move(tracks)}, _importerState{importerState} {
+    if(!_tracks.empty()) {
+        /* Reset duration to duration of the first track so it properly support
+           cases where tracks don't start at 0 */
+        _duration = _tracks.front()._view.duration();
+        for(std::size_t i = 1; i != _tracks.size(); ++i)
+            _duration = Math::join(_duration, _tracks[i]._view.duration());
+    }
+}
 
 AnimationData::~AnimationData() = default;
 
