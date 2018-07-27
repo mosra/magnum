@@ -44,7 +44,7 @@ enum class Interpolation: UnsignedByte;
 enum class Extrapolation: UnsignedByte;
 
 template<class K, class V, class R = ResultOf<V>> class Track;
-class TrackViewStorage;
+template<class K> class TrackViewStorage;
 template<class K, class V, class R = ResultOf<V>> class TrackView;
 
 }}

@@ -180,14 +180,14 @@ class AnimationTrackData {
          * @param targetId      Track target ID
          * @param view          Type-erased @ref Animation::TrackView instance
          */
-        /*implicit*/ AnimationTrackData(AnimationTrackType type, AnimationTrackType resultType, AnimationTrackTarget target, UnsignedInt targetId, Animation::TrackViewStorage view) noexcept: _type{type}, _resultType{resultType}, _target{target}, _targetId{targetId}, _view{view} {}
+        /*implicit*/ AnimationTrackData(AnimationTrackType type, AnimationTrackType resultType, AnimationTrackTarget target, UnsignedInt targetId, Animation::TrackViewStorage<Float> view) noexcept: _type{type}, _resultType{resultType}, _target{target}, _targetId{targetId}, _view{view} {}
 
         /** @overload
          *
          * Equivalent to the above with @p type used as both value type and
          * result type.
          */
-        /*implicit*/ AnimationTrackData(AnimationTrackType type, AnimationTrackTarget target, UnsignedInt targetId, Animation::TrackViewStorage view) noexcept: _type{type}, _resultType{type}, _target{target}, _targetId{targetId}, _view{view} {}
+        /*implicit*/ AnimationTrackData(AnimationTrackType type, AnimationTrackTarget target, UnsignedInt targetId, Animation::TrackViewStorage<Float> view) noexcept: _type{type}, _resultType{type}, _target{target}, _targetId{targetId}, _view{view} {}
 
     private:
         friend AnimationData;
@@ -195,7 +195,7 @@ class AnimationTrackData {
         AnimationTrackType _type, _resultType;
         AnimationTrackTarget _target;
         UnsignedInt _targetId;
-        Animation::TrackViewStorage _view;
+        Animation::TrackViewStorage<Float> _view;
 };
 
 /**

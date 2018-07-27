@@ -366,7 +366,7 @@ void TrackViewTest::constructCopyStorage() {
     const TrackView<Float, Vector3> a{data, Interpolation::Constant, customLerp,
         Extrapolation::Extrapolated, Extrapolation::DefaultConstructed};
 
-    const TrackViewStorage b = a;
+    const TrackViewStorage<Float> b = a;
 
     auto& bv = *static_cast<const TrackView<Float, Vector3>*>(&b);
 
