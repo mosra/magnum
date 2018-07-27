@@ -70,6 +70,11 @@ UnsignedInt AnimationData::trackTargetId(UnsignedInt id) const {
     return _tracks[id]._targetId;
 }
 
+const Animation::TrackViewStorage<Float>& AnimationData::track(UnsignedInt id) const {
+    CORRADE_ASSERT(id < _tracks.size(), "Trade::AnimationData::track(): index out of range", _tracks[id]._view);
+    return _tracks[id]._view;
+}
+
 template<class V, class R> auto animationInterpolatorFor(Animation::Interpolation interpolation) -> R(*)(const V&, const V&, Float) {
     return Animation::interpolatorFor<V, R>(interpolation);
 }

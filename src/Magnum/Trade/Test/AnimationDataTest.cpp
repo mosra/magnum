@@ -342,7 +342,7 @@ void AnimationDataTest::trackWrongIndex() {
     data.trackResultType(0);
     data.trackTarget(0);
     data.trackTargetId(0);
-    data.track<Float>(0);
+    data.track(0);
 
     CORRADE_COMPARE(out.str(),
         "Trade::AnimationData::trackType(): index out of range\n"
