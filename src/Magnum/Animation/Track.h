@@ -33,6 +33,7 @@
 
 #include "Magnum/Animation/Animation.h"
 #include "Magnum/Animation/Interpolation.h"
+#include "Magnum/Math/Range.h"
 
 namespace Magnum { namespace Animation {
 
@@ -284,6 +285,17 @@ template<class K, class V, class R
          * @see @ref before(), @ref at()
          */
         Extrapolation after() const { return _after; }
+
+        /**
+         * @brief Duration of the track
+         *
+         * Calculated from first and last keyframe. If there are no keyframes,
+         * a default-constructed value is returned. Use @ref Math::join() to
+         * calculate combined duration for a set of tracks.
+         */
+        Math::Range1D<K> duration() const {
+            return _data.empty() ? Math::Range1D<K>{} : Math::Range1D<K>{_data.front().first, _data.back().first};
+        }
 
         /** @brief Keyframe count */
         std::size_t size() const { return _data.size(); }
@@ -616,6 +628,17 @@ template<class K, class V, class R
          * @see @ref before(), @ref at(), @ref atStrict()
          */
         Extrapolation after() const { return _after; }
+
+        /**
+         * @brief Duration of the track
+         *
+         * Calculated from first and last keyframe. If there are no keyframes,
+         * a default-constructed value is returned. Use @ref Math::join() to
+         * calculate combined duration for a set of tracks.
+         */
+        Math::Range1D<K> duration() const {
+            return _keys.empty() ? Math::Range1D<K>{} : Math::Range1D<K>{keys().front(), keys().back()};
+        }
 
         /** @brief Keyframe count */
         std::size_t size() const { return _keys.size(); }
