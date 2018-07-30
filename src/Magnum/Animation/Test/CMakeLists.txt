@@ -23,6 +23,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+corrade_add_test(AnimationBenchmark Benchmark.cpp LIBRARIES Magnum)
 corrade_add_test(AnimationInterpolationTest InterpolationTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(AnimationTrackTest TrackTest.cpp LIBRARIES Magnum)
 corrade_add_test(AnimationTrackViewTest TrackViewTest.cpp LIBRARIES Magnum)
@@ -32,6 +33,7 @@ set_property(TARGET
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
 
 set_target_properties(
+    AnimationBenchmark
     AnimationInterpolationTest
     AnimationTrackTest
     AnimationTrackViewTest
