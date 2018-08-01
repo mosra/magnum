@@ -126,7 +126,7 @@ template<class T> class Deg: public Unit<Deg, T> {
          * @brief Construct degrees from radians
          *
          * Performs conversion from radians to degrees, i.e.: @f[
-         *      deg = 180 \frac {rad} \pi
+         *      deg = rad \frac{180}{\pi}
          * @f]
          * @m_keyword{degrees(),GLSL degrees(),}
          */
@@ -198,7 +198,7 @@ template<class T> class Rad: public Unit<Rad, T> {
          * @brief Construct radians from degrees
          *
          * Performs conversion from degrees to radians, i.e.: @f[
-         *      rad = deg \frac \pi 180
+         *      rad = deg \frac{\pi}{180}
          * @f]
          * @m_keyword{radians(),GLSL radians(),}
          */
