@@ -23,13 +23,144 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Magnum/Timeline.h"
 #include "Magnum/Math/Quaternion.h"
-#include "Magnum/Animation/Track.h"
+#include "Magnum/Animation/Player.h"
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
 int main() {
+
+{
+/* [Player-usage] */
+const Animation::TrackView<Float, Vector3> translation;
+const Animation::TrackView<Float, Quaternion> rotation;
+const Animation::TrackView<Float, Vector3> scaling;
+
+Vector3 objectScaling;
+Quaternion objectRotation;
+Vector3 objectTranslation;
+
+Animation::Player<Float> player;
+player.add(scaling, objectScaling)
+      .add(rotation, objectRotation)
+      .add(translation, objectTranslation);
+/* [Player-usage] */
+}
+
+{
+const Animation::TrackView<Float, Vector3> translation;
+const Animation::TrackView<Float, Quaternion> rotation;
+const Animation::TrackView<Float, Vector3> scaling;
+struct Object3D {
+    Object3D& setTranslation(const Vector3&) { return *this; }
+    Object3D& setRotation(const Quaternion&) { return *this; }
+    Object3D& setScaling(const Vector3&) { return *this; }
+};
+#ifdef __clang__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuninitialized"
+#elif defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
+/* [Player-usage-callback] */
+Object3D* object;
+
+Animation::Player<Float> player;
+player.addWithCallback(scaling,
+    [](const Float&, const Vector3& scaling, Object3D& object) {
+        object.setScaling(scaling);
+    }, *object);
+player.addWithCallback(rotation,
+    [](const Float&, const Quaternion& rotation, Object3D& object) {
+        object.setRotation(rotation);
+    }, *object);
+player.addWithCallback(translation,
+    [](const Float&, const Vector3& translation, Object3D& object) {
+        object.setTranslation(translation);
+    }, *object);
+/* [Player-usage-callback] */
+#if defined(__clang__) || defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif
+}
+
+{
+/* [Player-usage-playback] */
+Animation::Player<Float> player;
+Timeline timeline;
+
+// during initialization
+timeline.start();
+player.play(timeline.previousFrameTime());
+
+// every frame
+player.advance(timeline.previousFrameTime());
+/* [Player-usage-playback] */
+}
+
+{
+/* [Player-usage-chrono] */
+Animation::Player<std::chrono::nanoseconds, Float> player;
+// add tracks…
+
+// start the animation
+player.play(std::chrono::system_clock::now().time_since_epoch());
+
+// call every frame
+player.advance(std::chrono::system_clock::now().time_since_epoch());
+/* [Player-usage-chrono] */
+}
+
+{
+/* [Player-higher-order] */
+struct Data {
+    Animation::Player<Float> player; // player we want to control
+    Timeline timeline;
+} data;
+
+Animation::Track<Float, Animation::State> stateTrack{{
+    {3.0f, Animation::State::Playing},
+    {3.0f, Animation::State::Paused},
+    {3.5f, Animation::State::Playing},
+    {5.0f, Animation::State::Stopped}
+}, Math::select};
+Animation::State state;
+
+Animation::Player<Float> controller;
+controller.addWithCallbackOnChange(stateTrack,
+    [](const Float&, const Animation::State& state, Data& data) {
+        data.player.setState(state, data.timeline.previousFrameTime());
+    }, state, data);
+/* [Player-higher-order] */
+}
+
+{
+Timeline timeline;
+/* [Player-higher-order-animated-time] */
+Animation::Player<Float> player; // player we want to control
+
+Animation::Track<Float, Float> timeTrack{{
+    {0.0f, 0.0f}, /* Start normal */
+    {1.0f, 1.0f}, /* Then speed up */
+    {2.0f, 3.0f}, /* Pause for a bit */
+    {5.0f, 3.0f}, /* And normal again */
+    {6.0f, 4.0f}
+}, Animation::Interpolation::Linear};
+
+Animation::Player<Float> timer;
+timer.addWithCallback(timeTrack,
+    [](const Float&, const Float& time, Animation::Player<Float>& player) {
+        player.advance(time);
+    }, player);
+
+/* Calls player.advance() with the animated time */
+timer.advance(timeline.previousFrameTime());
+/* [Player-higher-order-animated-time] */
+}
+
 {
 /* [Track-usage] */
 const Animation::Track<Float, Vector2> jump{{

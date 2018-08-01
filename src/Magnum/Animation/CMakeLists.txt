@@ -26,6 +26,8 @@
 set(MagnumAnimation_HEADERS
     Animation.h
     Interpolation.h
+    Player.h
+    Player.hpp
     Track.h)
 
 # Force IDEs to display all header files in project view

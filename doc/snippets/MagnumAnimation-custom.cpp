@@ -1,5 +1,3 @@
-#ifndef Magnum_Animation_Animation_h
-#define Magnum_Animation_Animation_h
 /*
     This file is part of Magnum.
 
@@ -25,30 +23,25 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for @ref Magnum::Animation namespace
- */
+#include "Magnum/Magnum.h"
 
-#include "Magnum/Types.h"
+using namespace Magnum;
 
-namespace Magnum { namespace Animation {
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+/* [Player-usage-custom] */
+#include "Magnum/Animation/Player.hpp"
 
-namespace Implementation {
-    template<class V> struct ResultTraits;
-    template<class, class> struct TypeTraits;
-}
+// …
 
-template<class V> using ResultOf = typename Implementation::ResultTraits<V>::Type;
-
-enum class Interpolation: UnsignedByte;
-enum class Extrapolation: UnsignedByte;
-
-template<class T, class K = T> class Player;
-
-template<class K, class V, class R = ResultOf<V>> class Track;
-template<class K> class TrackViewStorage;
-template<class K, class V, class R = ResultOf<V>> class TrackView;
-
-}}
-
+/* 64-bit integer global time (microseconds), 16-bit frame counter with 24 FPS */
+Animation::Player<UnsignedLong, UnsignedShort> player{
+    [](UnsignedLong time, UnsignedShort duration) {
+        /* One frame is 1/24 second */
+        const UnsignedLong durationNs = UnsignedLong(duration)*1000000/24;
+        const UnsignedInt playCount = time/durationNs;
+        const UnsignedShort factor = (time - playCount*durationNs)*24/1000000;
+        return std::make_pair(playCount, factor);
+    }};
+/* [Player-usage-custom] */
+/* WARNING: Keep the above in sync with PlayerCustomTest */
 #endif

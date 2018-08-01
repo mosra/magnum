@@ -1,5 +1,3 @@
-#ifndef Magnum_Animation_Animation_h
-#define Magnum_Animation_Animation_h
 /*
     This file is part of Magnum.
 
@@ -25,30 +23,35 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for @ref Magnum::Animation namespace
- */
-
-#include "Magnum/Types.h"
+#include "Player.hpp"
 
 namespace Magnum { namespace Animation {
 
-namespace Implementation {
-    template<class V> struct ResultTraits;
-    template<class, class> struct TypeTraits;
+Debug& operator<<(Debug& debug, const State value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case State::value: return debug << "Animation::State::" #value;
+        _c(Stopped)
+        _c(Playing)
+        _c(Paused)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Animation::State(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
-template<class V> using ResultOf = typename Implementation::ResultTraits<V>::Type;
+/* On non-MinGW Windows the instantiations are already marked with extern
+   template */
+#if !defined(CORRADE_TARGET_WINDOWS) || defined(__MINGW32__)
+#define MAGNUM_EXPORT_HPP MAGNUM_EXPORT
+#else
+#define MAGNUM_EXPORT_HPP
+#endif
 
-enum class Interpolation: UnsignedByte;
-enum class Extrapolation: UnsignedByte;
-
-template<class T, class K = T> class Player;
-
-template<class K, class V, class R = ResultOf<V>> class Track;
-template<class K> class TrackViewStorage;
-template<class K, class V, class R = ResultOf<V>> class TrackView;
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template class MAGNUM_EXPORT_HPP Player<Float, Float>;
+template class MAGNUM_EXPORT_HPP Player<std::chrono::nanoseconds, Float>;
+#endif
 
 }}
-
-#endif

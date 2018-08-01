@@ -25,7 +25,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Animation/Track.h"
+#include "Magnum/Animation/Player.h"
 
 namespace Magnum { namespace Animation { namespace Test {
 
@@ -42,6 +42,11 @@ struct Benchmark: TestSuite::Tester {
     void atStrict();
     void atStrictInterleaved();
     void atStrictInterleavedDirectInterpolator();
+
+    void playerAdvanceEmpty();
+    void playerAdvanceEmptyTrack();
+    void playerAdvance();
+    void playerAdvanceCallback();
 
     Containers::Array<Float> _keys;
     Containers::Array<Int> _values;
@@ -66,7 +71,12 @@ Benchmark::Benchmark() {
                    &Benchmark::atHint,
                    &Benchmark::atStrict,
                    &Benchmark::atStrictInterleaved,
-                   &Benchmark::atStrictInterleavedDirectInterpolator}, 10);
+                   &Benchmark::atStrictInterleavedDirectInterpolator,
+
+                   &Benchmark::playerAdvanceEmpty,
+                   &Benchmark::playerAdvanceEmptyTrack,
+                   &Benchmark::playerAdvance,
+                   &Benchmark::playerAdvanceCallback}, 10);
 
     _keys = Containers::Array<Float>{DataSize};
     _values = Containers::Array<Int>{Containers::DirectInit, DataSize, 1};
@@ -156,6 +166,64 @@ void Benchmark::atStrictInterleaved() {
         std::size_t hint{};
         for(Float i = 0.0f; i < 500.0f; i += 1.0f)
             result += _trackInterleaved.atStrict(i, hint);
+    }
+    CORRADE_COMPARE(result, 125000);
+}
+
+void Benchmark::atStrictInterleavedDirectInterpolator() {
+    Int result{};
+    CORRADE_BENCHMARK(250) {
+        std::size_t hint{};
+        for(Float i = 0.0f; i < 500.0f; i += 1.0f)
+            result += _trackInterleaved.atStrict(Math::select, i, hint);
+    }
+    CORRADE_COMPARE(result, 125000);
+}
+
+void Benchmark::playerAdvanceEmpty() {
+    Player<Float> player;
+    player.play(0.0f);
+    CORRADE_BENCHMARK(250) {
+        for(Float i = 0.0f; i < 500.0f; i += 1.0f)
+            player.advance(i);
+    }
+}
+
+void Benchmark::playerAdvanceEmptyTrack() {
+    TrackView<Float, Int> empty{nullptr, nullptr, Math::select};
+    Int result{};
+    Player<Float> player;
+    player.add(empty, result)
+        .play({});
+    CORRADE_BENCHMARK(250) {
+        for(Float i = 0.0f; i < 500.0f; i += 1.0f)
+            player.advance(i);
+    }
+    CORRADE_COMPARE(result, 0);
+}
+
+void Benchmark::playerAdvance() {
+    Int result{};
+    Player<Float> player;
+    player.add(_track, result)
+        .play({});
+    CORRADE_BENCHMARK(250) {
+        for(Float i = 0.0f; i < 500.0f; i += 1.0f)
+            player.advance(i);
+    }
+    CORRADE_COMPARE(result, 1);
+}
+
+void Benchmark::playerAdvanceCallback() {
+    Int result{};
+    Player<Float> player;
+    player.addWithCallback(_track, [](const Float&, const Int& value, Int& result) {
+        result += value;
+    }, result)
+        .play({});
+    CORRADE_BENCHMARK(250) {
+        for(Float i = 0.0f; i < 500.0f; i += 1.0f)
+            player.advance(i);
     }
     CORRADE_COMPARE(result, 125000);
 }

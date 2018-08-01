@@ -43,7 +43,8 @@ namespace Magnum { namespace Animation {
 @tparam V       Value type
 @tparam R       Result type
 
-Immutable storage of keyframe + value pairs.
+Immutable storage of keyframe + value pairs. Usually used in combination with
+the @ref Player class, but it's possible to use it separately as well.
 
 @section Animation-Track-usage Basic usage
 

@@ -39,6 +39,7 @@ set(Magnum_GracefulAssert_SRCS
     ImageView.cpp
     PixelFormat.cpp
 
+    Animation/Player.cpp
     Animation/Interpolation.cpp)
 
 set(Magnum_HEADERS

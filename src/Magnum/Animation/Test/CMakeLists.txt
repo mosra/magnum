@@ -25,6 +25,8 @@
 
 corrade_add_test(AnimationBenchmark Benchmark.cpp LIBRARIES Magnum)
 corrade_add_test(AnimationInterpolationTest InterpolationTest.cpp LIBRARIES MagnumTestLib)
+corrade_add_test(AnimationPlayerTest PlayerTest.cpp LIBRARIES MagnumTestLib)
+corrade_add_test(AnimationPlayerCustomTest PlayerCustomTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(AnimationTrackTest TrackTest.cpp LIBRARIES Magnum)
 corrade_add_test(AnimationTrackViewTest TrackViewTest.cpp LIBRARIES Magnum)
 
@@ -35,6 +37,8 @@ set_property(TARGET
 set_target_properties(
     AnimationBenchmark
     AnimationInterpolationTest
+    AnimationPlayerTest
+    AnimationPlayerCustomTest
     AnimationTrackTest
     AnimationTrackViewTest
     PROPERTIES FOLDER "Magnum/Animation/Test")
