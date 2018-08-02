@@ -143,6 +143,11 @@ template<class T, class TranslationType = T> using BasicTranslationTransformatio
 typedef BasicTranslationTransformation2D<Float> TranslationTransformation2D;
 typedef BasicTranslationTransformation3D<Float> TranslationTransformation3D;
 
+template<class> class BasicTranslationRotationScalingTransformation2D;
+template<class> class BasicTranslationRotationScalingTransformation3D;
+typedef BasicTranslationRotationScalingTransformation2D<Float> TranslationRotationScalingTransformation2D;
+typedef BasicTranslationRotationScalingTransformation3D<Float> TranslationRotationScalingTransformation3D;
+
 namespace Implementation {
     template<class> struct Transformation;
 }

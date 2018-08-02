@@ -90,6 +90,12 @@ class for more detailed information:
 -   @ref SceneGraph::BasicDualQuaternionTransformation "SceneGraph::DualQuaternionTransformation" ---
     3D translation and rotation with fast inverse transformation and
     floating-point drift reduction
+-   @ref SceneGraph::BasicTranslationRotationScalingTransformation2D "SceneGraph::TranslationRotationScalingTransformation2D" ---
+    2D transformations with separate translation, rotation and scaling. Usable
+    for scenes with animation tracks that control these properties separately.
+-   @ref SceneGraph::BasicTranslationRotationScalingTransformation3D "SceneGraph::TranslationRotationScalingTransformation3D" ---
+    2D transformations with separate translation, rotation and scaling. Usable
+    for scenes with animation tracks that control these properties separately.
 -   @ref SceneGraph::TranslationTransformation "SceneGraph::TranslationTransformation*D" ---
     Just 2D/3D translation (no rotation, scaling or anything else)
 

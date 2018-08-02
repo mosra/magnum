@@ -62,6 +62,8 @@ set(MagnumSceneGraph_HEADERS
     Scene.h
     SceneGraph.h
     TranslationTransformation.h
+    TranslationRotationScalingTransformation2D.h
+    TranslationRotationScalingTransformation3D.h
 
     visibility.h)
 
