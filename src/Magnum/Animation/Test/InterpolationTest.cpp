@@ -48,6 +48,9 @@ struct InterpolationTest: TestSuite::Tester {
     void interpolateError();
     void interpolateStrictError();
 
+    void interpolateIntegerKey();
+    void interpolateStrictIntegerKey();
+
     void debugExtrapolation();
 };
 
@@ -141,6 +144,9 @@ InterpolationTest::InterpolationTest() {
               &InterpolationTest::interpolateError,
               &InterpolationTest::interpolateStrictError,
 
+              &InterpolationTest::interpolateIntegerKey,
+              &InterpolationTest::interpolateStrictIntegerKey,
+
               &InterpolationTest::debugExtrapolation});
 }
 
@@ -233,6 +239,24 @@ void InterpolationTest::interpolateStrictDifferentResultType() {
     std::size_t hint{};
     CORRADE_COMPARE((Animation::interpolateStrict<Float, Half, Float>(
         Keys, HalfValues, lerpHalf, 4.75f, hint)), 1.0f);
+    CORRADE_COMPARE(hint, 2);
+}
+
+namespace {
+    constexpr Int IntegerKeys[]{0, 48, 96, 120};
+}
+
+void InterpolationTest::interpolateIntegerKey() {
+    std::size_t hint{};
+    CORRADE_COMPARE((Animation::interpolate<Int, Float>(
+        IntegerKeys, Values, Extrapolation::Extrapolated, Extrapolation::Extrapolated, Math::lerp, 114, hint)), 1.0f);
+    CORRADE_COMPARE(hint, 2);
+}
+
+void InterpolationTest::interpolateStrictIntegerKey() {
+    std::size_t hint{};
+    CORRADE_COMPARE((Animation::interpolateStrict<Int, Float>(
+        IntegerKeys, Values, Math::lerp, 114, hint)), 1.0f);
     CORRADE_COMPARE(hint, 2);
 }
 

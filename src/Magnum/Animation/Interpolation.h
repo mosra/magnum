@@ -188,7 +188,7 @@ template<class K, class V, class R> R interpolate(const Containers::StridedArray
     }
 
     return interpolator(values[hint], values[hint + 1],
-        Math::lerpInverted(keys[hint], keys[hint + 1], frame));
+        Math::lerpInverted(Float(keys[hint]), Float(keys[hint + 1]), Float(frame)));
 }
 
 template<class K, class V, class R> R interpolateStrict(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, R(*const interpolator)(const V&, const V&, Float), const K frame, std::size_t& hint) {
@@ -203,7 +203,7 @@ template<class K, class V, class R> R interpolateStrict(const Containers::Stride
         ++hint;
 
     return interpolator(values[hint], values[hint + 1],
-        Math::lerpInverted(keys[hint], keys[hint + 1], frame));
+        Math::lerpInverted(Float(keys[hint]), Float(keys[hint + 1]), Float(frame)));
 }
 
 }}
