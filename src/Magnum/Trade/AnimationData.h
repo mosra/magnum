@@ -393,18 +393,35 @@ namespace Implementation {
     template<> constexpr AnimationTrackType animationTypeFor<Float>() { return AnimationTrackType::Float; }
     template<> constexpr AnimationTrackType animationTypeFor<UnsignedInt>() { return AnimationTrackType::UnsignedInt; }
     template<> constexpr AnimationTrackType animationTypeFor<Int>() { return AnimationTrackType::Int; }
+
     template<> constexpr AnimationTrackType animationTypeFor<Math::BoolVector<2>>() { return AnimationTrackType::BoolVector2; }
     template<> constexpr AnimationTrackType animationTypeFor<Math::BoolVector<3>>() { return AnimationTrackType::BoolVector3; }
     template<> constexpr AnimationTrackType animationTypeFor<Math::BoolVector<4>>() { return AnimationTrackType::BoolVector4; }
+
     template<> constexpr AnimationTrackType animationTypeFor<Vector2>() { return AnimationTrackType::Vector2; }
-    template<> constexpr AnimationTrackType animationTypeFor<Vector2ui>() { return AnimationTrackType::Vector2ui; }
-    template<> constexpr AnimationTrackType animationTypeFor<Vector2i>() { return AnimationTrackType::Vector2i; }
     template<> constexpr AnimationTrackType animationTypeFor<Vector3>() { return AnimationTrackType::Vector3; }
-    template<> constexpr AnimationTrackType animationTypeFor<Vector3ui>() { return AnimationTrackType::Vector3ui; }
-    template<> constexpr AnimationTrackType animationTypeFor<Vector3i>() { return AnimationTrackType::Vector3i; }
     template<> constexpr AnimationTrackType animationTypeFor<Vector4>() { return AnimationTrackType::Vector4; }
+    template<> constexpr AnimationTrackType animationTypeFor<Math::Vector<2, Float>>() { return AnimationTrackType::Vector2; }
+    template<> constexpr AnimationTrackType animationTypeFor<Math::Vector<3, Float>>() { return AnimationTrackType::Vector3; }
+    template<> constexpr AnimationTrackType animationTypeFor<Math::Vector<4, Float>>() { return AnimationTrackType::Vector4; }
+
+    template<> constexpr AnimationTrackType animationTypeFor<Color3>() { return AnimationTrackType::Vector3; }
+    template<> constexpr AnimationTrackType animationTypeFor<Color4>() { return AnimationTrackType::Vector4; }
+
+    template<> constexpr AnimationTrackType animationTypeFor<Vector2ui>() { return AnimationTrackType::Vector2ui; }
+    template<> constexpr AnimationTrackType animationTypeFor<Vector3ui>() { return AnimationTrackType::Vector3ui; }
     template<> constexpr AnimationTrackType animationTypeFor<Vector4ui>() { return AnimationTrackType::Vector4ui; }
+    template<> constexpr AnimationTrackType animationTypeFor<Math::Vector<2, UnsignedInt>>() { return AnimationTrackType::Vector2ui; }
+    template<> constexpr AnimationTrackType animationTypeFor<Math::Vector<3, UnsignedInt>>() { return AnimationTrackType::Vector3ui; }
+    template<> constexpr AnimationTrackType animationTypeFor<Math::Vector<4, UnsignedInt>>() { return AnimationTrackType::Vector4ui; }
+
+    template<> constexpr AnimationTrackType animationTypeFor<Vector2i>() { return AnimationTrackType::Vector2i; }
+    template<> constexpr AnimationTrackType animationTypeFor<Vector3i>() { return AnimationTrackType::Vector3i; }
     template<> constexpr AnimationTrackType animationTypeFor<Vector4i>() { return AnimationTrackType::Vector4i; }
+    template<> constexpr AnimationTrackType animationTypeFor<Math::Vector<2, Int>>() { return AnimationTrackType::Vector2i; }
+    template<> constexpr AnimationTrackType animationTypeFor<Math::Vector<3, Int>>() { return AnimationTrackType::Vector3i; }
+    template<> constexpr AnimationTrackType animationTypeFor<Math::Vector<4, Int>>() { return AnimationTrackType::Vector4i; }
+
     template<> constexpr AnimationTrackType animationTypeFor<Quaternion>() { return AnimationTrackType::Quaternion; }
     template<> constexpr AnimationTrackType animationTypeFor<DualQuaternion>() { return AnimationTrackType::DualQuaternion; }
     /* LCOV_EXCL_STOP */
