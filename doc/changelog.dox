@@ -80,6 +80,12 @@ See also:
     implementations that store separate translation, rotation and scaling
     parameters for easier use with animated scenes
 
+@subsubsection changelog-latest-new-shaders Shaders library
+
+-   New dedicated @ref Shaders::VertexColor::Color3 and
+    @ref Shaders::VertexColor::Color4 attribute specifiers for more convenient
+    distinction between three- and four-component vertex color attribute.
+
 @subsubsection changelog-latest-new-trade Trade library
 
 -   @ref Trade::ObjectData2D and @ref Trade::ObjectData3D now support also
@@ -139,12 +145,6 @@ See also:
     pointer
 -   @ref Platform::GlfwApplication now loads modifiers for mouse move and mouse
     scroll events lazily, only when needed
-
-@subsubsection changelog-latest-changes-shaders Shaders library
-
--   New dedicated @ref Shaders::VertexColor::Color3 and
-    @ref Shaders::VertexColor::Color4 attribute specifiers for more convenient
-    distinction between three- and four-component vertex color attribute.
 
 @subsubsection changelog-latest-changes-texturetools TextureTools library
 
