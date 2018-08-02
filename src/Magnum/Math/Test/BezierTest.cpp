@@ -61,7 +61,7 @@ typedef Math::QuadraticBezier2D<Float> QuadraticBezier2D;
 typedef Math::QuadraticBezier2D<Double> QuadraticBezier2Dd;
 typedef Math::CubicBezier2D<Float> CubicBezier2D;
 
-struct BezierTest : Corrade::TestSuite::Tester {
+struct BezierTest: Corrade::TestSuite::Tester {
     explicit BezierTest();
 
     void construct();
@@ -217,24 +217,30 @@ void BezierTest::compare() {
 void BezierTest::valueLinear() {
     LinearBezier2D bezier{Vector2{0.0f, 0.0f}, Vector2{20.0f, 4.0f}};
 
+    CORRADE_COMPARE(bezier.value(0.0f), (Vector2{0.0f, 0.0f}));
     CORRADE_COMPARE(bezier.value(0.2f), (Vector2{4.0f, 0.8f}));
     CORRADE_COMPARE(bezier.value(0.5f), (Vector2{10.0f, 2.0f}));
+    CORRADE_COMPARE(bezier.value(1.0f), (Vector2{20.0f, 4.0f}));
     CORRADE_COMPARE(bezier.value(0.2f), Math::lerp(bezier[0], bezier[1], 0.2f));
 }
 
 void BezierTest::valueQuadratic() {
     QuadraticBezier2D bezier{Vector2{0.0f, 0.0f}, Vector2{10.0f, 15.0f}, Vector2{20.0f, 4.0f}};
 
+    CORRADE_COMPARE(bezier.value(0.0f), (Vector2{0.0f, 0.0f}));
     CORRADE_COMPARE(bezier.value(0.2f), (Vector2{4.0f, 4.96f}));
     CORRADE_COMPARE(bezier.value(0.5f), (Vector2{10.0f, 8.5f}));
+    CORRADE_COMPARE(bezier.value(1.0f), (Vector2{20.0f, 4.0f}));
     CORRADE_VERIFY(bezier.value(0.2f) != Math::lerp(bezier[0], bezier[2], 0.2f));
 }
 
 void BezierTest::valueCubic() {
     CubicBezier2D bezier{Vector2{0.0f, 0.0f}, Vector2{10.0f, 15.0f}, Vector2{20.0f, 4.0f}, Vector2{5.0f, -20.0f}};
 
+    CORRADE_COMPARE(bezier.value(0.0f), (Vector2{0.0f, 0.0f}));
     CORRADE_COMPARE(bezier.value(0.2f), (Vector2{5.8f, 5.984f}));
     CORRADE_COMPARE(bezier.value(0.5f), (Vector2{11.875f, 4.625f}));
+    CORRADE_COMPARE(bezier.value(1.0f), (Vector2{5.0f, -20.0f}));
     CORRADE_VERIFY(bezier.value(0.2f) != Math::lerp(bezier[0], bezier[3], 0.2f));
 }
 
