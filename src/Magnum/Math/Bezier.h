@@ -85,7 +85,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
             {}
 
         /** @brief Construct Bézier curve with given array of control points */
-        template<typename... U> constexpr Bezier(const Vector<dimensions, T>& first, U... next) noexcept: _data{first, next...} {
+        template<typename... U> constexpr /*implicit*/ Bezier(const Vector<dimensions, T>& first, U... next) noexcept: _data{first, next...} {
             static_assert(sizeof...(U) + 1 == order + 1, "Wrong number of arguments");
         }
 
@@ -97,10 +97,10 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          */
         template<class U> constexpr explicit Bezier(const Bezier<order, dimensions, U>& other) noexcept: Bezier{typename Implementation::GenerateSequence<order + 1>::Type(), other} {}
 
-        /** @brief Construct Bézier from external representation */
+        /** @brief Construct Bézier curve from external representation */
         template<class U, class V = decltype(Implementation::BezierConverter<order, dimensions, T, U>::from(std::declval<U>()))> constexpr explicit Bezier(const U& other) noexcept: Bezier<order, dimensions, T>{Implementation::BezierConverter<order, dimensions, T, U>::from(other)} {}
 
-        /** @brief Convert Bézier to external representation */
+        /** @brief Convert Bézier curve to external representation */
         template<class U, class V = decltype(Implementation::BezierConverter<order, dimensions, T, U>::to(std::declval<Bezier<order, dimensions, T>>()))> constexpr explicit operator U() const {
             return Implementation::BezierConverter<order, dimensions, T, U>::to(*this);
         }
