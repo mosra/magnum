@@ -51,6 +51,11 @@ See also:
     @ref Math::Intersection::sphereCone(),
     @ref Math::Intersection::aabbCone(),
     @ref Math::Intersection::rangeCone()
+-   Added @ref Math::Matrix3::rotationShear(),
+    @ref Math::Matrix4::rotationShear(), @ref Math::Matrix3::scalingSquared(),
+    @ref Math::Matrix4::scalingSquared(), @ref Math::Matrix3::scaling() const
+    and @ref Math::Matrix4::scaling() const getters for extracting further
+    properties from the rotation/scaling part of a matrix
 -   Added @ref Math::Constants::piQuarter()
 -   Added a convenience function @ref Math::select() as a constant
     interpolation counterpart to @ref Math::lerp()
@@ -103,6 +108,12 @@ See also:
     possible as well
 -   The @ref GL::BufferUsage parameter in @ref GL::Buffer::setData() is now
     optional, defaults to @ref GL::BufferUsage::StaticDraw
+
+@subsubsection changelog-latest-changes-math Math library
+
+-   @ref Math::Matrix3::rotation() const and @ref Math::Matrix4::rotation() const
+    now allow non-uniform scaling, but expect the roation/scaling part to be
+    orthogonal after normalization
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 
@@ -213,6 +224,13 @@ See also:
 -   @ref Audio::Playable is now by default omnidirectional instead of having
     source in direction of negative Z axis (the direction has effect only when
     setting inner and outer cone properties of @ref Audio::Source).
+-   @ref Math::Matrix3::rotation() const and @ref Math::Matrix4::rotation() const
+    now allow non-uniform scaling, but expect the roation/scaling part to be
+    orthogonal after normalization (before it required uniform scaling but not
+    orthogonal axes) --- this might cause imprecise data that were previously
+    working to fail with an assertion. See the new
+    @ref Math::Matrix3::rotationShear() and @ref Math::Matrix4::rotationShear()
+    accessors for a possible solution.
 -   @ref Trade::PhongMaterialData::ambientColor(),
     @ref Trade::PhongMaterialData::diffuseColor() "diffuseColor()" and
     @ref Trade::PhongMaterialData::specularColor() "specularColor()" now return

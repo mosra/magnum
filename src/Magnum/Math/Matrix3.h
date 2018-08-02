@@ -77,8 +77,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *            0 &   0 & 1
          *      \end{pmatrix}
          * @f]
-         * @see @ref rotationScaling(),
-         *      @ref Matrix4::scaling(const Vector3<T>&),
+         * @see @ref scaling() const, @ref Matrix4::scaling(const Vector3<T>&),
          *      @ref Vector2::xScale(), @ref Vector2::yScale()
          */
         constexpr static Matrix3<T> scaling(const Vector2<T>& vector) {
@@ -259,7 +258,7 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         /**
          * @brief 2D rotation and scaling part of the matrix
          *
-         * Upper-left 2x2 part of the matrix. @f[
+         * Unchanged upper-left 2x2 part of the matrix. @f[
          *      \begin{pmatrix}
          *          \color{m-danger} a_x & \color{m-success} b_x & t_x \\
          *          \color{m-danger} a_y & \color{m-success} b_y & t_y \\
@@ -267,10 +266,16 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *      \end{pmatrix}
          * @f]
          *
+         * Note that an arbitrary combination of rotation and scaling can also
+         * represent shear and reflection. Especially when non-uniform scaling
+         * is involved, decomposition of the result into primary linear
+         * transformations may have multiple equivalent solutions. See
+         * @ref Algorithms::svd() and @ref Algorithms::qr() for further info.
+         * See also @ref rotationShear(), @ref rotation() const and
+         * @ref scaling() const for extracting further properties.
+         *
          * @see @ref from(const Matrix2x2<T>&, const Vector2<T>&),
-         *      @ref rotation() const, @ref rotationNormalized(),
-         *      @ref uniformScaling(), @ref rotation(Rad<T>),
-         *      @ref Matrix4::rotationScaling()
+         *      @ref rotation(Rad<T>), @ref Matrix4::rotationScaling()
          */
         constexpr Matrix2x2<T> rotationScaling() const {
             return {(*this)[0].xy(),
@@ -278,10 +283,11 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         }
 
         /**
-         * @brief 2D rotation part of the matrix assuming there is no scaling
+         * @brief 2D rotation and scaling part of the matrix
          *
-         * Similar to @ref rotationScaling(), but additionally checks that the
-         * base vectors are normalized. Check its documentation for caveats. @f[
+         * Normalized upper-left 2x2 part of the matrix. Assuming the following
+         * matrix, with the upper-left 2x2 part represented by column vectors
+         * @f$ \boldsymbol{a} @f$ and @f$ \boldsymbol{b} @f$: @f[
          *      \begin{pmatrix}
          *          \color{m-danger} a_x & \color{m-success} b_x & t_x \\
          *          \color{m-danger} a_y & \color{m-success} b_y & t_y \\
@@ -289,22 +295,83 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *      \end{pmatrix}
          * @f]
          *
-         * @see @ref rotation() const, @ref uniformScaling(),
-         *      @ref Matrix4::rotationNormalized()
-         * @todo assert also orthogonality or this is good enough?
+         * @m_class{m-noindent}
+         *
+         * the resulting rotation is extracted as: @f[
+         *      \boldsymbol{R} = \begin{pmatrix}
+         *          \cfrac{\boldsymbol{a}}{|\boldsymbol{a}|} &
+         *          \cfrac{\boldsymbol{b}}{|\boldsymbol{b}|}
+         *      \end{pmatrix}
+         * @f]
+         *
+         * This function is a counterpart to @ref rotation() const that does
+         * not require orthogonal input. See also @ref rotationScaling() and
+         * @ref scaling() const for extracting other properties. The
+         * @ref Algorithms::svd() and @ref Algorithms::qr() can be used to
+         * separate the rotation / shear properties.
+         *
+         * @see @ref from(const Matrix2x2<T>&, const Vector2<T>&),
+         *      @ref rotation(Rad), @ref Matrix4::rotationShear() const
          */
-        Matrix2x2<T> rotationNormalized() const {
-            CORRADE_ASSERT((*this)[0].xy().isNormalized() && (*this)[1].xy().isNormalized(),
-                           "Math::Matrix3::rotationNormalized(): the rotation part is not normalized", {});
-            return {(*this)[0].xy(),
-                    (*this)[1].xy()};
+        Matrix2x2<T> rotationShear() const {
+            return {(*this)[0].xy().normalized(),
+                    (*this)[1].xy().normalized()};
         }
 
         /**
          * @brief 2D rotation part of the matrix
          *
-         * Normalized upper-left 2x2 part of the matrix. Expects uniform
-         * scaling. @f[
+         * Normalized upper-left 2x2 part of the matrix. Expects that the
+         * normalized part is orthogonal. Assuming the following matrix, with
+         * the upper-left 2x2 part represented by column vectors
+         * @f$ \boldsymbol{a} @f$ and @f$ \boldsymbol{b} @f$: @f[
+         *      \begin{pmatrix}
+         *          \color{m-warning} a_x & \color{m-warning} b_x & t_x \\
+         *          \color{m-warning} a_y & \color{m-warning} b_y & t_y \\
+         *          \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 1
+         *      \end{pmatrix}
+         * @f]
+         *
+         * @m_class{m-noindent}
+         *
+         * the resulting rotation is extracted as: @f[
+         *      \boldsymbol{R} = \begin{pmatrix}
+         *          \cfrac{\boldsymbol{a}}{|\boldsymbol{a}|} &
+         *          \cfrac{\boldsymbol{b}}{|\boldsymbol{b}|}
+         *      \end{pmatrix}
+         * @f]
+         *
+         * This function is equivalent to @ref rotationShear() but with the
+         * added orthogonality requirement. See also @ref rotationScaling() and
+         * @ref scaling() const for extracting other properties.
+         *
+         * @note Extracting rotation part of a matrix this way may cause
+         *      assertions in case you have unsanitized input (for example a
+         *      model transformation loaded from an external source) or when
+         *      you accumulate many transformations together (for example when
+         *      controlling a FPS camera). To mitigate this, either first
+         *      reorthogonalize the matrix using
+         *      @ref Algorithms::gramSchmidtOrthogonalize(), decompose it to
+         *      basic linear transformations using @ref Algorithms::svd() or
+         *      @ref Algorithms::qr() or use a different transformation
+         *      representation that suffers less floating point error and can
+         *      be easier renormalized such as @ref DualComplex. Another
+         *      possibility is to ignore the error and extract combined
+         *      rotation and scaling / shear with @ref rotationScaling() /
+         *      @ref rotationShear().
+         *
+         * @see @ref rotationNormalized(), @ref scaling() const,
+         *      @ref rotation(Rad<T>), @ref Matrix4::rotation() const
+         */
+        Matrix2x2<T> rotation() const;
+
+        /**
+         * @brief 2D rotation part of the matrix assuming there is no scaling
+         *
+         * Similar to @ref rotation(), but expects that the rotation part is
+         * orthogonal, saving the extra renormalization. Assuming the
+         * following matrix, with the upper-left 2x2 part represented by column
+         * vectors @f$ \boldsymbol{a} @f$ and @f$ \boldsymbol{b} @f$: @f[
          *      \begin{pmatrix}
          *          \color{m-danger} a_x & \color{m-success} b_x & t_x \\
          *          \color{m-danger} a_y & \color{m-success} b_y & t_y \\
@@ -312,27 +379,89 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *      \end{pmatrix}
          * @f]
          *
-         * @note Extracting rotation part of a matrix this way will cause
-         *      assertions in case you have unsanitized input (for example a
-         *      model transformation loaded from an external source) or when
-         *      you accumulate many transformations together (for example when
-         *      controlling a FPS camera). To mitigate this, either renormalize
-         *      the matrix using @ref Algorithms::gramSchmidtOrthogonalize() or
-         *      @ref Algorithms::svd() first, use a different transformation
-         *      representation that suffers less floating point error and can
-         *      be easier renormalized such as @ref DualComplex, or, ignore the
-         *      error and extract combined non-uniform rotation and scaling
-         *      with @ref rotationScaling().
+         * @m_class{m-noindent}
          *
-         * @see @ref rotationNormalized(), @ref rotationScaling(),
-         *      @ref uniformScaling(), @ref rotation(Rad<T>),
-         *      @ref Matrix4::rotation() const
+         * the resulting rotation is extracted as: @f[
+         *      \boldsymbol{R} = \begin{pmatrix}
+         *          \cfrac{\boldsymbol{a}}{|\boldsymbol{a}|} &
+         *          \cfrac{\boldsymbol{b}}{|\boldsymbol{b}|}
+         *      \end{pmatrix} = \begin{pmatrix}
+         *          \boldsymbol{a} &
+         *          \boldsymbol{b}
+         *      \end{pmatrix}
+         * @f]
+         *
+         * In particular, for an orthogonal matrix, @ref rotationScaling(),
+         * @ref rotationShear(), @ref rotation() const and
+         * @ref rotationNormalized() all return the same value.
+         *
+         * @see @ref isOrthogonal(), @ref uniformScaling(),
+         *      @ref Matrix4::rotationNormalized()
          */
-        Matrix2x2<T> rotation() const {
-            CORRADE_ASSERT(TypeTraits<T>::equals((*this)[0].xy().dot(), (*this)[1].xy().dot()),
-                           "Math::Matrix3::rotation(): the matrix doesn't have uniform scaling", {});
-            return {(*this)[0].xy().normalized(),
-                    (*this)[1].xy().normalized()};
+        Matrix2x2<T> rotationNormalized() const;
+
+        /**
+         * @brief Non-uniform scaling part of the matrix, squared
+         *
+         * Squared length of vectors in upper-left 2x2 part of the matrix.
+         * Faster alternative to @ref scaling() const, because it doesn't
+         * calculate the square root. Assuming the following matrix, with the
+         * upper-left 2x2 part represented by column vectors
+         * @f$ \boldsymbol{a} @f$ and @f$ \boldsymbol{b} @f$: @f[
+         *      \begin{pmatrix}
+         *          \color{m-warning} a_x & \color{m-warning} b_x & t_x \\
+         *          \color{m-warning} a_y & \color{m-warning} b_y & t_y \\
+         *          \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 1
+         *      \end{pmatrix}
+         * @f]
+         *
+         * @m_class{m-noindent}
+         *
+         * the resulting scaling vector, squared, is: @f[
+         *      \boldsymbol{s}^2 = \begin{pmatrix}
+         *          \boldsymbol{a} \cdot \boldsymbol{a} \\
+         *          \boldsymbol{b} \cdot \boldsymbol{b}
+         *      \end{pmatrix}
+         * @f]
+         *
+         * @see @ref scaling() const, @ref uniformScalingSquared(),
+         *      @ref rotation() const, @ref Matrix4::scalingSquared()
+         */
+        Vector2<T> scalingSquared() const {
+            return {(*this)[0].xy().dot(),
+                    (*this)[1].xy().dot()};
+        }
+
+        /**
+         * @brief Non-uniform scaling part of the matrix, squared
+         *
+         * Length of vectors in upper-left 2x2 part of the matrix. Use the
+         * faster alternative @ref scalingSquared() where possible. Assuming
+         * the following matrix, with the upper-left 2x2 part represented by
+         * column vectors @f$ \boldsymbol{a} @f$ and @f$ \boldsymbol{b} @f$:
+         * @f[
+         *      \begin{pmatrix}
+         *          \color{m-warning} a_x & \color{m-warning} b_x & t_x \\
+         *          \color{m-warning} a_y & \color{m-warning} b_y & t_y \\
+         *          \color{m-dim} 0 & \color{m-dim} 0 & \color{m-dim} 1
+         *      \end{pmatrix}
+         * @f]
+         *
+         * @m_class{m-noindent}
+         *
+         * the resulting scaling vector is: @f[
+         *      \boldsymbol{s} = \begin{pmatrix}
+         *          | \boldsymbol{a} | \\
+         *          | \boldsymbol{b} |
+         *      \end{pmatrix}
+         * @f]
+         *
+         * @see @ref scalingSquared(), @ref uniformScaling(),
+         *      @ref rotation() const, @ref Matrix4::scaling() const
+         */
+        Vector2<T> scaling() const {
+            return {(*this)[0].xy().length(),
+                    (*this)[1].xy().length()};
         }
 
         /**
@@ -341,7 +470,9 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * Squared length of vectors in upper-left 2x2 part of the matrix.
          * Expects that the scaling is the same in all axes. Faster alternative
          * to @ref uniformScaling(), because it doesn't compute the square
-         * root. See its documentation for caveats. @f[
+         * root. Assuming the following matrix, with the upper-left 2x2 part
+         * represented by column vectors @f$ \boldsymbol{a} @f$ and
+         * @f$ \boldsymbol{b} @f$: @f[
          *      \begin{pmatrix}
          *          \color{m-warning} a_x & \color{m-warning} b_x & t_x \\
          *          \color{m-warning} a_y & \color{m-warning} b_y & t_y \\
@@ -349,23 +480,38 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *      \end{pmatrix}
          * @f]
          *
-         * @see @ref rotationScaling(), @ref rotation() const,
-         *      @ref rotationNormalized(), @ref scaling(const Vector2<T>&),
-         *      @ref Matrix4::uniformScaling()
+         * @m_class{m-noindent}
+         *
+         * the resulting uniform scaling, squared, is: @f[
+         *      s^2 = \boldsymbol{a} \cdot \boldsymbol{a}
+         *          = \boldsymbol{b} \cdot \boldsymbol{b}
+         * @f]
+         *
+         * @note Extracting uniform scaling of a matrix this way may cause
+         *      assertions in case you have unsanitized input (for example a
+         *      model transformation loaded from an external source) or when
+         *      you accumulate many transformations together (for example when
+         *      controlling a FPS camera). To mitigate this, either first
+         *      reorthogonalize the matrix using
+         *      @ref Algorithms::gramSchmidtOrthogonalize(), decompose it to
+         *      basic linear transformations using @ref Algorithms::svd() or
+         *      @ref Algorithms::qr() or extract a non-uniform scaling using
+         *      @ref scalingSquared().
+         *
+         * @see @ref rotation() const, @ref scaling() const,
+         *      @ref scaling(const Vector2<T>&),
+         *      @ref Matrix4::uniformScalingSquared()
          */
-        T uniformScalingSquared() const {
-            const T scalingSquared = (*this)[0].xy().dot();
-            CORRADE_ASSERT(TypeTraits<T>::equals((*this)[1].xy().dot(), scalingSquared),
-                           "Math::Matrix3::uniformScaling(): the matrix doesn't have uniform scaling", {});
-            return scalingSquared;
-        }
+        T uniformScalingSquared() const;
 
         /**
          * @brief Uniform scaling part of the matrix
          *
          * Length of vectors in upper-left 2x2 part of the matrix. Expects that
          * the scaling is the same in all axes. Use faster alternative
-         * @ref uniformScalingSquared() where possible. @f[
+         * @ref uniformScalingSquared() where possible. Assuming the following
+         * matrix, with the upper-left 3x3 part represented by column vectors
+         * @f$ \boldsymbol{a} @f$ and  @f$ \boldsymbol{b} @f$: @f[
          *      \begin{pmatrix}
          *          \color{m-warning} a_x & \color{m-warning} b_x & t_x \\
          *          \color{m-warning} a_y & \color{m-warning} b_y & t_y \\
@@ -373,18 +519,25 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          *      \end{pmatrix}
          * @f]
          *
-         * @note Extracting uniform scaling of a matrix this way will cause
+         * @m_class{m-noindent}
+         *
+         * the resulting uniform scaling is: @f[
+         *      s = | \boldsymbol{a} | = | \boldsymbol{b} |
+         * @f]
+         *
+         * @note Extracting uniform scaling of a matrix this way may cause
          *      assertions in case you have unsanitized input (for example a
          *      model transformation loaded from an external source) or when
          *      you accumulate many transformations together (for example when
-         *      controlling a FPS camera). To mitigate this, either renormalize
-         *      the matrix using @ref Algorithms::gramSchmidtOrthogonalize() or
-         *      @ref Algorithms::svd() first or extract the scaling manually by
-         *      calculating lengths of @ref right() and @ref up() vectors.
+         *      controlling a FPS camera). To mitigate this, either first
+         *      reorthogonalize the matrix using
+         *      @ref Algorithms::gramSchmidtOrthogonalize(), decompose it to
+         *      basic linear transformations using @ref Algorithms::svd() or
+         *      @ref Algorithms::qr() or extract a non-uniform scaling using
+         *      @ref scaling() const.
          *
-         * @see @ref rotationScaling(), @ref rotation() const,
-         *      @ref rotationNormalized(), @ref scaling(const Vector2<T>&),
-         *      @ref Matrix4::uniformScaling()
+         * @see @ref rotation() const, @ref scalingSquared() const,
+         *      @ref scaling(const Vector2<T>&), @ref Matrix4::uniformScaling()
          */
         T uniformScaling() const { return std::sqrt(uniformScalingSquared()); }
 
@@ -497,6 +650,29 @@ template<class T> Matrix3<T> Matrix3<T>::rotation(const Rad<T> angle) {
     return {{ cosine,   sine, T(0)},
             {  -sine, cosine, T(0)},
             {   T(0),   T(0), T(1)}};
+}
+
+template<class T> Matrix2x2<T> Matrix3<T>::rotation() const {
+    Matrix2x2<T> rotation{(*this)[0].xy().normalized(),
+                          (*this)[1].xy().normalized()};
+    CORRADE_ASSERT(rotation.isOrthogonal(),
+        "Math::Matrix3::rotation(): the normalized rotation part is not orthogonal", {});
+    return rotation;
+}
+
+template<class T> Matrix2x2<T> Matrix3<T>::rotationNormalized() const {
+    Matrix2x2<T> rotation{(*this)[0].xy(),
+                          (*this)[1].xy()};
+    CORRADE_ASSERT(rotation.isOrthogonal(),
+        "Math::Matrix3::rotationNormalized(): the rotation part is not orthogonal", {});
+    return rotation;
+}
+
+template<class T> T Matrix3<T>::uniformScalingSquared() const {
+    const T scalingSquared = (*this)[0].xy().dot();
+    CORRADE_ASSERT(TypeTraits<T>::equals((*this)[1].xy().dot(), scalingSquared),
+        "Math::Matrix3::uniformScaling(): the matrix doesn't have uniform scaling", {});
+    return scalingSquared;
 }
 
 template<class T> inline Matrix3<T> Matrix3<T>::invertedRigid() const {
