@@ -47,6 +47,8 @@ struct Benchmark: TestSuite::Tester {
     void playerAdvanceEmptyTrack();
     void playerAdvance();
     void playerAdvanceCallback();
+    void playerAdvanceRawCallback();
+    void playerAdvanceRawCallbackDirectInterpolator();
 
     Containers::Array<Float> _keys;
     Containers::Array<Int> _values;
@@ -76,7 +78,9 @@ Benchmark::Benchmark() {
                    &Benchmark::playerAdvanceEmpty,
                    &Benchmark::playerAdvanceEmptyTrack,
                    &Benchmark::playerAdvance,
-                   &Benchmark::playerAdvanceCallback}, 10);
+                   &Benchmark::playerAdvanceCallback,
+                   &Benchmark::playerAdvanceRawCallback,
+                   &Benchmark::playerAdvanceRawCallbackDirectInterpolator}, 10);
 
     _keys = Containers::Array<Float>{DataSize};
     _values = Containers::Array<Int>{Containers::DirectInit, DataSize, 1};
@@ -220,6 +224,34 @@ void Benchmark::playerAdvanceCallback() {
     player.addWithCallback(_track, [](const Float&, const Int& value, Int& result) {
         result += value;
     }, result)
+        .play({});
+    CORRADE_BENCHMARK(250) {
+        for(Float i = 0.0f; i < 500.0f; i += 1.0f)
+            player.advance(i);
+    }
+    CORRADE_COMPARE(result, 125000);
+}
+
+void Benchmark::playerAdvanceRawCallback() {
+    Int result{};
+    Player<Float> player;
+    player.addRawCallback(_track, [](const TrackViewStorage<Float>& track, Float key, std::size_t& hint, void* destination, void(*)(), void*) {
+            *static_cast<Int*>(destination) += static_cast<const TrackView<Float, Int>&>(track).atStrict(key, hint);
+        }, &result, nullptr, nullptr)
+        .play({});
+    CORRADE_BENCHMARK(250) {
+        for(Float i = 0.0f; i < 500.0f; i += 1.0f)
+            player.advance(i);
+    }
+    CORRADE_COMPARE(result, 125000);
+}
+
+void Benchmark::playerAdvanceRawCallbackDirectInterpolator() {
+    Int result{};
+    Player<Float> player;
+    player.addRawCallback(_track, [](const TrackViewStorage<Float>& track, Float key, std::size_t& hint, void* destination, void(*)(), void*) {
+            *static_cast<Int*>(destination) += static_cast<const TrackView<Float, Int>&>(track).atStrict(Math::select, key, hint);
+        }, &result, nullptr, nullptr)
         .play({});
     CORRADE_BENCHMARK(250) {
         for(Float i = 0.0f; i < 500.0f; i += 1.0f)

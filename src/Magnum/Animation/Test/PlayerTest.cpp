@@ -62,6 +62,7 @@ struct PlayerTest: TestSuite::Tester {
     void addWithCallbackTemplate();
     void addWithCallbackOnChange();
     void addWithCallbackOnChangeTemplate();
+    void addRawCallback();
 
     void runFor100YearsFloat();
     void runFor100YearsChrono();
@@ -114,7 +115,8 @@ PlayerTest::PlayerTest() {
               &PlayerTest::addWithCallback,
               &PlayerTest::addWithCallbackTemplate,
               &PlayerTest::addWithCallbackOnChange,
-              &PlayerTest::addWithCallbackOnChangeTemplate});
+              &PlayerTest::addWithCallbackOnChangeTemplate,
+              &PlayerTest::addRawCallback});
 
     addInstancedTests({
         &PlayerTest::runFor100YearsFloat,
@@ -702,6 +704,34 @@ void PlayerTest::addWithCallbackOnChangeTemplate() {
     player.advance(4.0f);
     CORRADE_COMPARE(data.value, 5.0f);
     CORRADE_COMPARE(data.called, 2);
+}
+
+void PlayerTest::addRawCallback() {
+    Animation::Track<Float, Int> track;
+
+    Int result = -1;
+    std::vector<Int> data;
+    auto callback = [](std::vector<Int>& data, Int value) {
+        data.push_back(value);
+    };
+
+    Animation::Player<Float> player;
+    player.addRawCallback(track,
+        [](const Animation::TrackViewStorage<Float>& track, Float key,
+        std::size_t& hint, void* destination, void(*callback)(), void* userData) {
+            Int value = static_cast<const Animation::TrackView<Float, Int>&>(track).at(key, hint);
+            if(value == *static_cast<Int*>(destination)) return;
+            *static_cast<Int*>(destination) = value;
+            reinterpret_cast<void(*)(std::vector<Int>&, Int)>(callback)(*static_cast<std::vector<Int>*>(userData), value);
+        }, &result, reinterpret_cast<void(*)()>(+callback), &data)
+        .play({});
+
+    /* Should add the default-constructed value into the vector, but only once */
+    CORRADE_COMPARE(data, std::vector<Int>{});
+    player.advance({});
+    CORRADE_COMPARE(data, std::vector<Int>{0});
+    player.advance(1.0f);
+    CORRADE_COMPARE(data, std::vector<Int>{0});
 }
 
 void PlayerTest::runFor100YearsFloat() {

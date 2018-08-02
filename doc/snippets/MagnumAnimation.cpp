@@ -162,6 +162,30 @@ timer.advance(timeline.previousFrameTime());
 }
 
 {
+/* [Player-addRawCallback] */
+Animation::Track<Float, Int> track;
+
+Int result;
+std::vector<Int> data;
+auto callback = [](std::vector<Int>& data, Int value) {
+    data.push_back(value);
+};
+
+Animation::Player<Float> player;
+player.addRawCallback(track,
+    [](const Animation::TrackViewStorage<Float>& track, Float key,
+    std::size_t& hint, void* destination, void(*callback)(), void* userData) {
+        Int value = static_cast<const Animation::TrackView<Float, Int>&>(track)
+            .atStrict(key, hint);
+        if(value == *static_cast<Int*>(destination)) return;
+        *static_cast<Int*>(destination) = value;
+        reinterpret_cast<void(*)(std::vector<Int>&, Int)>(callback)
+            (*static_cast<std::vector<Int>*>(userData), value);
+    }, &result, reinterpret_cast<void(*)()>(+callback), &data);
+/* [Player-addRawCallback] */
+}
+
+{
 /* [Track-usage] */
 const Animation::Track<Float, Vector2> jump{{
     {0.0f, Vector2::yAxis(0.0f)},

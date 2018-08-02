@@ -108,7 +108,9 @@ implementation:
 
 The @ref addWithCallbackOnChange() variant will fire the callback only if the
 interpolated value changes, which is useful for triggering other events. See
-@ref Animation-Player-higher-order "below" for an example.
+@ref Animation-Player-higher-order "below" for an example. Lastly, there is
+@ref addRawCallback() that allows for greater control and further performance
+optimizations. See its documentation for a usage example code snippet.
 
 By default, the @ref duration() of an animation is calculated implicitly from
 all added tracks. You can use @ref setDuration() to specify a custom duration
@@ -323,7 +325,7 @@ template<class T, class K
          * @brief Whether the player is empty
          *
          * @see @ref size(), @ref add(), @ref addWithCallback(),
-         *      @ref addWithCallbackOnChange()
+         *      @ref addWithCallbackOnChange(), @ref addRawCallback()
          */
         bool isEmpty() const;
 
@@ -331,7 +333,7 @@ template<class T, class K
          * @brief Count of tracks managed by this player
          *
          * @see @ref isEmpty(), @ref add(), @ref addWithCallback(),
-         *      @ref addWithCallbackOnChange()
+         *      @ref addWithCallbackOnChange(), @ref addRawCallback()
          */
         std::size_t size() const;
 
@@ -372,6 +374,7 @@ template<class T, class K
          *
          * See the overload below for a more convenient type-safe way to pass
          * user data.
+         * @see @ref addRawCallback()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class V, class R> Player<T, K>& addWithCallback(const TrackView<K, V, R>& track, void(*callback)(const K&, const R&, void*), void* userData = nullptr);
@@ -404,7 +407,8 @@ template<class T, class K
          * Equivalent to calling the above with a lambda wrapper that casts
          * @cpp void* @ce back to @cpp T* @ce and dereferences it in order to
          * pass it to @p callback. There is no additional overhead compared to
-         * the overload taking the @cpp void* @ce pointer.
+         * the overload taking the @cpp void* @ce pointer, however see
+         * @ref addRawCallback() for optimization possibilities.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class V, class R, class U> Player<T, K>& addWithCallback(const TrackView<K, V, R>& track, void(*callback)(const K&, const R&, U&), U& userData);
@@ -439,6 +443,7 @@ template<class T, class K
          *
          * See the overload below for a more convenient type-safe way to pass
          * user data.
+         * @see @ref addRawCallback()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class V, class R> Player<T, K>& addWithCallbackOnChange(const TrackView<K, V, R>& track, void(*callback)(const K&, const R&, void*), R& destination, void* userData = nullptr);
@@ -466,7 +471,8 @@ template<class T, class K
          * Equivalent to calling the above with a lambda wrapper that casts
          * @cpp void* @ce back to @cpp T* @ce and dereferences it in order to
          * pass it to @p callback. There is no additional overhead compared to
-         * the overload taking the @cpp void* @ce pointer.
+         * the overload taking the @cpp void* @ce pointer, however see
+         * @ref addRawCallback() for optimization possibilities.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class V, class R, class U> Player<T, K>& addWithCallbackOnChange(const TrackView<K, V, R>& track, void(*callback)(const K&, const R&, void*), R& destination, U& userData);
@@ -485,6 +491,48 @@ template<class T, class K
         #else
         template<class V, class R, class U, class Callback> Player<T, K>& addWithCallbackOnChange(const Track<K, V, R>& track, Callback callback, R& destination, U& userData) {
             return addWithCallbackOnChange(TrackView<K, V, R>{track}, callback, destination, userData);
+        }
+        #endif
+
+        /**
+         * @brief Add a track with a raw callback
+         *
+         * This is a low-level function meant to be used if you want to avoid
+         * the extra overhead of an additional callback in @ref addWithCallback()
+         * or @ref addWithCallbackOnChange(), want more flexibility in the user
+         * callback or want to control the track interpolation directly --- for
+         * example taking advantage of @ref TrackView::atStrict() or passing an
+         * inlineable interpolator function instead of using the saved
+         * interpolator function pointer.
+         *
+         * The callback takes the raw @ref TrackViewStorage reference (which
+         * you need to cast to a correct type), the interpolated key and hint
+         * that's meant to be passed to @ref TrackView::at(), the destination
+         * pointer (equivalent to the one passed to @ref add()), user callback
+         * pointer (which again needs to be cast to a correct type) and user
+         * data pointer. The following code snippet shows implementation of the
+         * @ref addWithCallbackOnChange() API using this function, using a
+         * custom callback to add a value to a vector if it changes:
+         *
+         * @snippet MagnumAnimation.cpp Player-addRawCallback
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class V, class R, class Callback> Player<T, K>& addRawCallback(const TrackView<K, V, R>& track, void(*callback)(const TrackViewStorage<K>&, K, std::size_t&, void*, void(*)(), void*), void* destination, void(*userCallback)(), void* userData);
+        #else
+        template<class V, class R, class Callback> Player<T, K>& addRawCallback(const TrackView<K, V, R>& track, Callback callback, void* destination, void(*userCallback)(), void* userData);
+        #endif
+
+        /** @overload
+         *
+         * Note that the track ownership is *not* transferred to the
+         * @ref Player and you have to ensure that it's kept in scope for the
+         * whole lifetime of the @ref Player instance.
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        template<class V, class R> Player<T, K>& addRawCallback(const Track<K, V, R>& track, void(*callback)(const TrackViewStorage<K>&, K, std::size_t&, void*, void(*)(), void*), void* destination, void(*userCallback)(), void* userData);
+        #else
+        template<class V, class R, class Callback> Player<T, K>& addRawCallback(const Track<K, V, R>& track, Callback callback, void* destination, void(*userCallback)(), void* userData) {
+            return addRawCallback(TrackView<K, V, R>{track}, callback, destination, userCallback, userData);
         }
         #endif
 
@@ -640,6 +688,11 @@ template<class T, class K> template<class V, class R, class U, class Callback> P
             reinterpret_cast<void(*)(const K&, const R&, U&)>(callback)(key, result, *static_cast<U*>(userData));
             *static_cast<R*>(destination) = result;
         }, &destination, reinterpret_cast<void(*)()>(callbackPtr), &userData);
+}
+
+template<class T, class K> template<class V, class R, class Callback> Player<T, K>& Player<T, K>::addRawCallback(const TrackView<K, V, R>& track, Callback callback, void* destination, void(*userCallback)(), void* userData) {
+    auto callbackPtr = static_cast<void(*)(const TrackViewStorage<K>&, K, std::size_t&, void*, void(*)(), void*)>(callback);
+    return addInternal(track, callbackPtr, destination, userCallback, userData);
 }
 #endif
 
