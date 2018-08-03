@@ -224,7 +224,9 @@ template<class T> class BasicTranslationRotationScalingTransformation2D: public 
 
         Math::Vector2<T> _translation;
         Math::Complex<T> _rotation;
-        Math::Vector2<T> _scaling{T(1)};
+        /* Can't {} on GCC 4.7, _scaling(T(1)) fails on the most vexing parse
+           (what the ... eh???) */
+        Math::Vector2<T> _scaling = Math::Vector2<T>(T(1));
 };
 
 /**
