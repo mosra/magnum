@@ -68,9 +68,9 @@ template<class T, class K> struct Player<T, K>::Track  {
 };
 #endif
 
-template<class T, class K> Player<T, K>::Player(Player<T, K>&&) noexcept = default;
+template<class T, class K> Player<T, K>::Player(Player<T, K>&&) = default;
 
-template<class T, class K> Player<T, K>& Player<T, K>::operator=(Player<T, K>&&) noexcept = default;
+template<class T, class K> Player<T, K>& Player<T, K>::operator=(Player<T, K>&&) = default;
 
 template<class T, class K> Player<T, K>::Player(): Player<T, K>{Implementation::DefaultScaler<T, K>::scale} {}
 
