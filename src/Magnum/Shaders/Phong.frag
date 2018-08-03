@@ -33,24 +33,6 @@
 #define const
 #endif
 
-#ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 7)
-#endif
-uniform lowp vec4 lightColor
-    #ifndef GL_ES
-    = vec4(1.0)
-    #endif
-    ;
-
-#ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 8)
-#endif
-uniform mediump float shininess
-    #ifndef GL_ES
-    = 80.0
-    #endif
-    ;
-
 #ifdef AMBIENT_TEXTURE
 #ifdef EXPLICIT_TEXTURE_LAYER
 layout(binding = 0)
@@ -100,6 +82,24 @@ layout(location = 6)
 uniform lowp vec4 specularColor
     #ifndef GL_ES
     = vec4(1.0)
+    #endif
+    ;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 7)
+#endif
+uniform lowp vec4 lightColor
+    #ifndef GL_ES
+    = vec4(1.0)
+    #endif
+    ;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 8)
+#endif
+uniform mediump float shininess
+    #ifndef GL_ES
+    = 80.0
     #endif
     ;
 
