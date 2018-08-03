@@ -90,6 +90,8 @@ See also:
 -   New dedicated @ref Shaders::VertexColor::Color3 and
     @ref Shaders::VertexColor::Color4 attribute specifiers for more convenient
     distinction between three- and four-component vertex color attribute.
+-   Classical alpha masking support in @ref Shaders::Flat and
+    @ref Shaders::Phong
 
 @subsubsection changelog-latest-new-trade Trade library
 

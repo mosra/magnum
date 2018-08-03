@@ -45,6 +45,17 @@ uniform lowp vec4 color
     #endif
     ;
 
+#ifdef ALPHA_MASK
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 2)
+#endif
+uniform lowp float alphaMask
+    #ifndef GL_ES
+    = 0.5
+    #endif
+    ;
+#endif
+
 #ifdef TEXTURED
 in mediump vec2 interpolatedTextureCoordinates;
 #endif
@@ -59,4 +70,8 @@ void main() {
         texture(textureData, interpolatedTextureCoordinates)*
         #endif
         color;
+
+    #ifdef ALPHA_MASK
+    if(fragmentColor.a < alphaMask) discard;
+    #endif
 }

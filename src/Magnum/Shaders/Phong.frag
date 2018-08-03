@@ -103,6 +103,17 @@ uniform mediump float shininess
     #endif
     ;
 
+#ifdef ALPHA_MASK
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 9)
+#endif
+uniform lowp float alphaMask
+    #ifndef GL_ES
+    = 0.5
+    #endif
+    ;
+#endif
+
 in mediump vec3 transformedNormal;
 in highp vec3 lightDirection;
 in highp vec3 cameraDirection;
@@ -148,4 +159,8 @@ void main() {
         mediump float specularity = pow(max(0.0, dot(normalize(cameraDirection), reflection)), shininess);
         color += finalSpecularColor*specularity;
     }
+
+    #ifdef ALPHA_MASK
+    if(color.a < alphaMask) discard;
+    #endif
 }

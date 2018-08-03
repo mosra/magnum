@@ -43,6 +43,9 @@ struct PhongGLTest: GL::OpenGLTester {
 
     void bindTextures();
     void bindTexturesNotEnabled();
+
+    void setAlphaMask();
+    void setAlphaMaskNotEnabled();
 };
 
 constexpr struct {
@@ -56,7 +59,9 @@ constexpr struct {
     {"ambient + diffuse texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture},
     {"ambient + specular texture", Phong::Flag::AmbientTexture|Phong::Flag::SpecularTexture},
     {"diffuse + specular texture", Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture},
-    {"ambient + diffuse + specular texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture}};
+    {"ambient + diffuse + specular texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture},
+    {"alpha mask", Phong::Flag::AlphaMask},
+    {"alpha mask + diffuse texture", Phong::Flag::AlphaMask|Phong::Flag::DiffuseTexture}
 };
 
 PhongGLTest::PhongGLTest() {
@@ -65,7 +70,10 @@ PhongGLTest::PhongGLTest() {
     addTests({&PhongGLTest::constructMove,
 
               &PhongGLTest::bindTextures,
-              &PhongGLTest::bindTexturesNotEnabled});
+              &PhongGLTest::bindTexturesNotEnabled,
+
+              &PhongGLTest::setAlphaMask,
+              &PhongGLTest::setAlphaMaskNotEnabled});
 }
 
 void PhongGLTest::construct() {
@@ -137,6 +145,25 @@ void PhongGLTest::bindTexturesNotEnabled() {
         "Shaders::Phong::bindDiffuseTexture(): the shader was not created with diffuse texture enabled\n"
         "Shaders::Phong::bindSpecularTexture(): the shader was not created with specular texture enabled\n"
         "Shaders::Phong::bindTextures(): the shader was not created with any textures enabled\n");
+}
+
+void PhongGLTest::setAlphaMask() {
+    /* Test just that no assertion is fired */
+    Phong shader{Phong::Flag::AlphaMask};
+    shader.setAlphaMask(0.25f);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void PhongGLTest::setAlphaMaskNotEnabled() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Phong shader;
+    shader.setAlphaMask(0.75f);
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::Phong::setAlphaMask(): the shader was not created with alpha mask enabled\n");
 }
 
 }}}

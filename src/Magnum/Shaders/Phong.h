@@ -76,7 +76,14 @@ Common rendering setup:
 
 @snippet MagnumShaders.cpp Phong-usage-texture2
 
-@subsection Shaders-Phong-usage-alpha Alpha-masked drawing
+@subsection Shaders-Phong-usage-alpha Alpha blending and masking
+
+Enable @ref Flag::AlphaMask and tune @ref setAlphaMask() for simple
+binary alpha-masked drawing that doesn't require depth sorting or blending
+enabled. Note that this feature is implemented using the GLSL @glsl discard @ce
+operation which is known to have considerable performance impact on some
+platforms. With proper depth sorting and blending you'll usually get much
+better performance and output quality.
 
 For general alpha-masked drawing you need to provide ambient texture with alpha
 channel and set alpha channel of diffuse/specular color to `0.0f` so only
@@ -138,7 +145,20 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              * Multiply specular color with a texture.
              * @see @ref setSpecularColor(), @ref setSpecularTexture()
              */
-            SpecularTexture = 1 << 2
+            SpecularTexture = 1 << 2,
+
+            /**
+             * Enable alpha masking. If the combined fragment color has an
+             * alpha less than the value specified with @ref setAlphaMask(),
+             * given fragment is discarded.
+             *
+             * This uses the @glsl discard @ce operation which is known to have
+             * considerable performance impact on some platforms. While useful
+             * for cheap alpha masking that doesn't require depth sorting,
+             * with proper depth sorting and blending you'll usually get much
+             * better performance and output quality.
+             */
+            AlphaMask = 1 << 3
         };
 
         /**
@@ -318,6 +338,17 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         }
 
         /**
+         * @brief Set alpha mask value
+         * @return Reference to self (for method chaining)
+         *
+         * Expects that the shader was created with @ref Flag::AlphaMask
+         * enabled. Fragments with alpha values smaller than the mask value
+         * will be discarded. Default is @cpp 0.5f @ce. See the flag
+         * documentation for further information.
+         */
+        Phong& setAlphaMask(Float mask);
+
+        /**
          * @brief Set transformation matrix
          * @return Reference to self (for method chaining)
          */
@@ -377,7 +408,8 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
             _diffuseColorUniform{5},
             _specularColorUniform{6},
             _lightColorUniform{7},
-            _shininessUniform{8};
+            _shininessUniform{8},
+            _alphaMaskUniform{9};
 };
 
 CORRADE_ENUMSET_OPERATORS(Phong::Flags)

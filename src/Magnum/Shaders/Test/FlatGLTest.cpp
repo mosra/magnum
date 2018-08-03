@@ -44,6 +44,9 @@ struct FlatGLTest: GL::OpenGLTester {
 
     template<UnsignedInt dimensions> void bindTexture();
     template<UnsignedInt dimensions> void bindTextureNotEnabled();
+
+    template<UnsignedInt dimensions> void setAlphaMask();
+    template<UnsignedInt dimensions> void setAlphaMaskNotEnabled();
 };
 
 namespace {
@@ -71,7 +74,12 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::bindTexture<2>,
         &FlatGLTest::bindTexture<3>,
         &FlatGLTest::bindTextureNotEnabled<2>,
-        &FlatGLTest::bindTextureNotEnabled<3>});
+        &FlatGLTest::bindTextureNotEnabled<3>,
+
+        &FlatGLTest::setAlphaMask<2>,
+        &FlatGLTest::setAlphaMask<3>,
+        &FlatGLTest::setAlphaMaskNotEnabled<2>,
+        &FlatGLTest::setAlphaMaskNotEnabled<3>});
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::construct() {
@@ -141,6 +149,25 @@ template<UnsignedInt dimensions> void FlatGLTest::bindTextureNotEnabled() {
     shader.bindTexture(texture);
 
     CORRADE_COMPARE(out.str(), "Shaders::Flat::bindTexture(): the shader was not created with texturing enabled\n");
+}
+
+template<UnsignedInt dimensions> void FlatGLTest::setAlphaMask() {
+    /* Test just that no assertion is fired */
+    Flat<dimensions> shader{Flat<dimensions>::Flag::AlphaMask};
+    shader.setAlphaMask(0.25f);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+template<UnsignedInt dimensions> void FlatGLTest::setAlphaMaskNotEnabled() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Flat<dimensions> shader;
+    shader.setAlphaMask(0.75f);
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::Flat::setAlphaMask(): the shader was not created with alpha mask enabled\n");
 }
 
 }}}
