@@ -122,9 +122,23 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * @see @ref Flags, @ref flags()
          */
         enum class Flag: UnsignedByte {
-            AmbientTexture = 1 << 0,    /**< The shader uses ambient texture instead of color */
-            DiffuseTexture = 1 << 1,    /**< The shader uses diffuse texture instead of color */
-            SpecularTexture = 1 << 2    /**< The shader uses specular texture instead of color */
+            /**
+             * Multiply ambient color with a texture.
+             * @see @ref setAmbientColor(), @ref setAmbientTexture()
+             */
+            AmbientTexture = 1 << 0,
+
+            /**
+             * Multiply diffuse color with a texture.
+             * @see @ref setDiffuseColor(), @ref setDiffuseTexture()
+             */
+            DiffuseTexture = 1 << 1,
+
+            /**
+             * Multiply specular color with a texture.
+             * @see @ref setSpecularColor(), @ref setSpecularTexture()
+             */
+            SpecularTexture = 1 << 2
         };
 
         /**
