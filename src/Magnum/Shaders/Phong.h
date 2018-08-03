@@ -199,7 +199,8 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * @brief Bind ambient texture
          * @return Reference to self (for method chaining)
          *
-         * Has effect only if @ref Flag::AmbientTexture is set.
+         * Expects that the shader was created with @ref Flag::AmbientTexture
+         * enabled.
          * @see @ref bindTextures(), @ref setAmbientColor()
          */
         Phong& bindAmbientTexture(GL::Texture2D& texture);
@@ -231,7 +232,8 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * @brief Bind diffuse texture
          * @return Reference to self (for method chaining)
          *
-         * Has effect only if @ref Flag::DiffuseTexture is set.
+         * Expects that the shader was created with @ref Flag::DiffuseTexture
+         * enabled.
          * @see @ref bindTextures(), @ref setDiffuseColor()
          */
         Phong& bindDiffuseTexture(GL::Texture2D& texture);
@@ -264,7 +266,8 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * @brief Bind specular texture
          * @return Reference to self (for method chaining)
          *
-         * Has effect only if @ref Flag::SpecularTexture is set.
+         * Expects that the shader was created with @ref Flag::SpecularTexture
+         * enabled.
          * @see @ref bindTextures(), @ref setSpecularColor()
          */
         Phong& bindSpecularTexture(GL::Texture2D& texture);
@@ -284,7 +287,10 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          *
          * A particular texture has effect only if particular texture flag from
          * @ref Phong::Flag "Flag" is set, you can use `nullptr` for the rest.
-         * More efficient than setting each texture separately.
+         * Expects that the shader was created with at least one of
+         * @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture or
+         * @ref Flag::SpecularTexture enabled. More efficient than setting each
+         * texture separately.
          * @see @ref bindAmbientTexture(), @ref bindDiffuseTexture(),
          *      @ref bindSpecularTexture()
          */

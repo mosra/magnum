@@ -125,21 +125,29 @@ Phong::Phong(const Flags flags): _flags(flags) {
 }
 
 Phong& Phong::bindAmbientTexture(GL::Texture2D& texture) {
-    if(_flags & Flag::AmbientTexture) texture.bind(AmbientTextureLayer);
+    CORRADE_ASSERT(_flags & Flag::AmbientTexture,
+        "Shaders::Phong::bindAmbientTexture(): the shader was not created with ambient texture enabled", *this);
+    texture.bind(AmbientTextureLayer);
     return *this;
 }
 
 Phong& Phong::bindDiffuseTexture(GL::Texture2D& texture) {
-    if(_flags & Flag::DiffuseTexture) texture.bind(DiffuseTextureLayer);
+    CORRADE_ASSERT(_flags & Flag::DiffuseTexture,
+        "Shaders::Phong::bindDiffuseTexture(): the shader was not created with diffuse texture enabled", *this);
+    texture.bind(DiffuseTextureLayer);
     return *this;
 }
 
 Phong& Phong::bindSpecularTexture(GL::Texture2D& texture) {
-    if(_flags & Flag::SpecularTexture) texture.bind(SpecularTextureLayer);
+    CORRADE_ASSERT(_flags & Flag::SpecularTexture,
+        "Shaders::Phong::bindSpecularTexture(): the shader was not created with specular texture enabled", *this);
+    texture.bind(SpecularTextureLayer);
     return *this;
 }
 
 Phong& Phong::bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::Texture2D* specular) {
+    CORRADE_ASSERT(_flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture),
+        "Shaders::Phong::bindTextures(): the shader was not created with any textures enabled", *this);
     GL::AbstractTexture::bind(AmbientTextureLayer, {ambient, diffuse, specular});
     return *this;
 }

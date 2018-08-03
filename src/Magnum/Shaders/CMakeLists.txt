@@ -31,11 +31,13 @@ set(MagnumShaders_SRCS
     DistanceFieldVector.cpp
     Flat.cpp
     MeshVisualizer.cpp
-    Phong.cpp
     Vector.cpp
     VertexColor.cpp
 
     ${MagnumShaders_RCS})
+
+set(MagnumShaders_GracefulAssert_SRCS
+    Phong.cpp)
 
 set(MagnumShaders_HEADERS
     DistanceFieldVector.h
@@ -53,11 +55,25 @@ set(MagnumShaders_HEADERS
 # Header files to display in project view of IDEs only
 set(MagnumShaders_PRIVATE_HEADERS Implementation/CreateCompatibilityShader.h)
 
-# Shaders library
-add_library(MagnumShaders ${SHARED_OR_STATIC}
+# Objects shared between main and test library
+add_library(MagnumShadersObjects OBJECT
     ${MagnumShaders_SRCS}
-    ${MagnumShaders_HEADERS}
-    ${MagnumShaders_PRIVATE_HEADERS})
+    ${MagnumShaders_HEADERS})
+target_include_directories(MagnumShadersObjects PUBLIC
+    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
+if(NOT BUILD_STATIC)
+    target_compile_definitions(MagnumShadersObjects PRIVATE "MagnumShadersObjects_EXPORTS")
+endif()
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(MagnumShadersObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+set_target_properties(MagnumShadersObjects PROPERTIES FOLDER "Magnum/Shaders")
+
+# Main Shaders library
+add_library(MagnumShaders ${SHARED_OR_STATIC}
+    $<TARGET_OBJECTS:MagnumShadersObjects>
+    ${MagnumShaders_GracefulAssert_SRCS})
 set_target_properties(MagnumShaders PROPERTIES
     DEBUG_POSTFIX "-d"
     FOLDER "Magnum/Shaders")
@@ -77,6 +93,31 @@ install(TARGETS MagnumShaders
 install(FILES ${MagnumShaders_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Shaders)
 
 if(BUILD_TESTS)
+    # Library with graceful assert for testing
+    add_library(MagnumShadersTestLib ${SHARED_OR_STATIC}
+        $<TARGET_OBJECTS:MagnumShadersObjects>
+        ${MagnumShaders_GracefulAssert_SRCS})
+    set_target_properties(MagnumShadersTestLib PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Shaders")
+    target_compile_definitions(MagnumShadersTestLib PRIVATE
+        "CORRADE_GRACEFUL_ASSERT" "MagnumShaders_EXPORTS")
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumShadersTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
+    target_link_libraries(MagnumShadersTestLib PUBLIC
+        Magnum
+        MagnumGL)
+
+    # On Windows we need to install first and then run the tests to avoid "DLL
+    # not found" hell, thus we need to install this too
+    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING AND NOT BUILD_STATIC)
+        install(TARGETS MagnumShadersTestLib
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    endif()
+
     add_subdirectory(Test)
 endif()
 

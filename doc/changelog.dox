@@ -153,6 +153,15 @@ See also:
 -   @ref Platform::GlfwApplication now loads modifiers for mouse move and mouse
     scroll events lazily, only when needed
 
+@subsubsection changelog-latest-changes-shaders Shaders library
+
+-   @ref Shaders::Phong::bindAmbientTexture(),
+    @ref Shaders::Phong::bindDiffuseTexture(),
+    @ref Shaders::Phong::bindSpecularTexture() and
+    @ref Shaders::Phong::bindTextures() now assert that the shader was created
+    with the corresponding flag enabled to prevent accidental "black screen of
+    death" errors.
+
 @subsubsection changelog-latest-changes-texturetools TextureTools library
 
 -   Fixed @ref TextureTools::distanceField() to not require more than 8 texture
@@ -245,6 +254,13 @@ See also:
     working to fail with an assertion. See the new
     @ref Math::Matrix3::rotationShear() and @ref Math::Matrix4::rotationShear()
     accessors for a possible solution.
+-   @ref Shaders::Phong::bindAmbientTexture(),
+    @ref Shaders::Phong::bindDiffuseTexture(),
+    @ref Shaders::Phong::bindSpecularTexture() and
+    @ref Shaders::Phong::bindTextures() now assert that the shader was created
+    with the corresponding flag enabled to prevent accidental "black screen of
+    death" errors. This might cause your application to abort if it was calling
+    these functions when not needed.
 -   @ref Trade::PhongMaterialData::ambientColor(),
     @ref Trade::PhongMaterialData::diffuseColor() "diffuseColor()" and
     @ref Trade::PhongMaterialData::specularColor() "specularColor()" now return

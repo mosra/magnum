@@ -31,7 +31,7 @@
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_BUILD_STATIC
-    #ifdef MagnumShaders_EXPORTS
+    #if defined(MagnumShaders_EXPORTS) || defined(MagnumShadersObjects_EXPORTS)
         #define MAGNUM_SHADERS_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
         #define MAGNUM_SHADERS_EXPORT CORRADE_VISIBILITY_IMPORT

@@ -23,7 +23,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
+
+#include "Magnum/PixelFormat.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/GL/OpenGLTester.h"
+#include "Magnum/GL/Texture.h"
+#include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Shaders/Phong.h"
 
 namespace Magnum { namespace Shaders { namespace Test {
@@ -34,6 +40,9 @@ struct PhongGLTest: GL::OpenGLTester {
     void construct();
 
     void constructMove();
+
+    void bindTextures();
+    void bindTexturesNotEnabled();
 };
 
 constexpr struct {
@@ -48,11 +57,15 @@ constexpr struct {
     {"ambient + specular texture", Phong::Flag::AmbientTexture|Phong::Flag::SpecularTexture},
     {"diffuse + specular texture", Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture},
     {"ambient + diffuse + specular texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture}};
+};
 
 PhongGLTest::PhongGLTest() {
     addInstancedTests({&PhongGLTest::construct}, Containers::arraySize(ConstructData));
 
-    addTests({&PhongGLTest::constructMove});
+    addTests({&PhongGLTest::constructMove,
+
+              &PhongGLTest::bindTextures,
+              &PhongGLTest::bindTexturesNotEnabled});
 }
 
 void PhongGLTest::construct() {
@@ -84,6 +97,46 @@ void PhongGLTest::constructMove() {
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_VERIFY(!b.id());
+}
+
+void PhongGLTest::bindTextures() {
+    char data[4];
+
+    GL::Texture2D texture;
+    texture
+        .setMinificationFilter(SamplerFilter::Linear, SamplerMipmap::Linear)
+        .setMagnificationFilter(SamplerFilter::Linear)
+        .setWrapping(SamplerWrapping::ClampToEdge)
+        .setImage(0, GL::TextureFormat::RGBA, ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Test just that no assertion is fired */
+    Phong shader{Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture};
+    shader.bindAmbientTexture(texture)
+          .bindDiffuseTexture(texture)
+          .bindSpecularTexture(texture)
+          .bindTextures(&texture, &texture, &texture);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void PhongGLTest::bindTexturesNotEnabled() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    GL::Texture2D texture;
+    Phong shader;
+    shader.bindAmbientTexture(texture)
+          .bindDiffuseTexture(texture)
+          .bindSpecularTexture(texture)
+          .bindTextures(&texture, &texture, &texture);
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::Phong::bindAmbientTexture(): the shader was not created with ambient texture enabled\n"
+        "Shaders::Phong::bindDiffuseTexture(): the shader was not created with diffuse texture enabled\n"
+        "Shaders::Phong::bindSpecularTexture(): the shader was not created with specular texture enabled\n"
+        "Shaders::Phong::bindTextures(): the shader was not created with any textures enabled\n");
 }
 
 }}}
