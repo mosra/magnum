@@ -660,6 +660,7 @@ template<class T, class K> template<class V, class R, class Callback> Player<T, 
     auto callbackPtr = static_cast<void(*)(const K&, const R&, void*)>(callback);
     return addInternal(track,
         [](const TrackViewStorage<K>& track, K key, std::size_t& hint, void*, void(*callback)(), void* userData) {
+            /** @todo try to use atStrict() if possible */
             reinterpret_cast<void(*)(const K&, const R&, void*)>(callback)(key, static_cast<const TrackView<K, V, R>&>(track).at(key, hint), userData);
         }, nullptr, reinterpret_cast<void(*)()>(callbackPtr), userData);
 }
@@ -668,6 +669,7 @@ template<class T, class K> template<class V, class R, class U, class Callback> P
     auto callbackPtr = static_cast<void(*)(const K&, const R&, U&)>(callback);
     return addInternal(track,
         [](const TrackViewStorage<K>& track, K key, std::size_t& hint, void*, void(*callback)(), void* userData) {
+            /** @todo try to use atStrict() if possible */
             reinterpret_cast<void(*)(const K&, const R&, U&)>(callback)(key, static_cast<const TrackView<K, V, R>&>(track).at(key, hint), *static_cast<U*>(userData));
         }, nullptr, reinterpret_cast<void(*)()>(callbackPtr), &userData);
 }
@@ -676,6 +678,7 @@ template<class T, class K> template<class V, class R, class Callback> Player<T, 
     auto callbackPtr = static_cast<void(*)(const K&, const R&, void*)>(callback);
     return addInternal(track,
         [](const TrackViewStorage<K>& track, K key, std::size_t& hint, void* destination, void(*callback)(), void* userData) {
+            /** @todo try to use atStrict() if possible */
             R result = static_cast<const TrackView<K, V, R>&>(track).at(key, hint);
             if(result == *static_cast<R*>(destination)) return;
             reinterpret_cast<void(*)(const K&, const R&, void*)>(callback)(key, result, userData);
@@ -687,6 +690,7 @@ template<class T, class K> template<class V, class R, class U, class Callback> P
     auto callbackPtr = static_cast<void(*)(const K&, const R&, U&)>(callback);
     return addInternal(track,
         [](const TrackViewStorage<K>& track, K key, std::size_t& hint, void* destination, void(*callback)(), void* userData) {
+            /** @todo try to use atStrict() if possible */
             R result = static_cast<const TrackView<K, V, R>&>(track).at(key, hint);
             if(result == *static_cast<R*>(destination)) return;
             reinterpret_cast<void(*)(const K&, const R&, U&)>(callback)(key, result, *static_cast<U*>(userData));
