@@ -32,109 +32,34 @@ struct PhongGLTest: GL::OpenGLTester {
     explicit PhongGLTest();
 
     void construct();
-    void constructAmbientTexture();
-    void constructDiffuseTexture();
-    void constructSpecularTexture();
-    void constructAmbientDiffuseTexture();
-    void constructAmbientSpecularTexture();
-    void constructDiffuseSpecularTexture();
-    void constructAmbientDiffuseSpecularTexture();
 
     void constructMove();
 };
 
-PhongGLTest::PhongGLTest() {
-    addTests({&PhongGLTest::construct,
-              &PhongGLTest::constructAmbientTexture,
-              &PhongGLTest::constructDiffuseTexture,
-              &PhongGLTest::constructSpecularTexture,
-              &PhongGLTest::constructAmbientDiffuseTexture,
-              &PhongGLTest::constructAmbientSpecularTexture,
-              &PhongGLTest::constructDiffuseSpecularTexture,
-              &PhongGLTest::constructAmbientDiffuseSpecularTexture,
+constexpr struct {
+    const char* name;
+    Phong::Flags flags;
+} ConstructData[]{
+    {"", {}},
+    {"ambient texture", Phong::Flag::AmbientTexture},
+    {"diffuse texture", Phong::Flag::DiffuseTexture},
+    {"specular texture", Phong::Flag::SpecularTexture},
+    {"ambient + diffuse texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture},
+    {"ambient + specular texture", Phong::Flag::AmbientTexture|Phong::Flag::SpecularTexture},
+    {"diffuse + specular texture", Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture},
+    {"ambient + diffuse + specular texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture}};
 
-              &PhongGLTest::constructMove});
+PhongGLTest::PhongGLTest() {
+    addInstancedTests({&PhongGLTest::construct}, Containers::arraySize(ConstructData));
+
+    addTests({&PhongGLTest::constructMove});
 }
 
 void PhongGLTest::construct() {
-    Phong shader;
-    {
-        #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
-        #endif
-        CORRADE_VERIFY(shader.id());
-        CORRADE_VERIFY(shader.validate().first);
-    }
-}
+    auto&& data = ConstructData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
-void PhongGLTest::constructAmbientTexture() {
-    Phong shader(Phong::Flag::AmbientTexture);
-    {
-        #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
-        #endif
-        CORRADE_VERIFY(shader.id());
-        CORRADE_VERIFY(shader.validate().first);
-    }
-}
-
-void PhongGLTest::constructDiffuseTexture() {
-    Phong shader(Phong::Flag::DiffuseTexture);
-    {
-        #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
-        #endif
-        CORRADE_VERIFY(shader.id());
-        CORRADE_VERIFY(shader.validate().first);
-    }
-}
-
-void PhongGLTest::constructSpecularTexture() {
-    Phong shader(Phong::Flag::SpecularTexture);
-    {
-        #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
-        #endif
-        CORRADE_VERIFY(shader.id());
-        CORRADE_VERIFY(shader.validate().first);
-    }
-}
-
-void PhongGLTest::constructAmbientDiffuseTexture() {
-    Phong shader(Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture);
-    {
-        #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
-        #endif
-        CORRADE_VERIFY(shader.id());
-        CORRADE_VERIFY(shader.validate().first);
-    }
-}
-
-void PhongGLTest::constructAmbientSpecularTexture() {
-    Phong shader(Phong::Flag::AmbientTexture|Phong::Flag::SpecularTexture);
-    {
-        #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
-        #endif
-        CORRADE_VERIFY(shader.id());
-        CORRADE_VERIFY(shader.validate().first);
-    }
-}
-
-void PhongGLTest::constructDiffuseSpecularTexture() {
-    Phong shader(Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture);
-    {
-        #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
-        #endif
-        CORRADE_VERIFY(shader.id());
-        CORRADE_VERIFY(shader.validate().first);
-    }
-}
-
-void PhongGLTest::constructAmbientDiffuseSpecularTexture() {
-    Phong shader(Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture);
+    Phong shader{data.flags};
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
