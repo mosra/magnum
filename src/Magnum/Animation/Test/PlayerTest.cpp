@@ -833,11 +833,19 @@ void PlayerTest::runFor100YearsFloat() {
 
     CORRADE_COMPARE(player.state(), State::Playing);
     {
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         CORRADE_EXPECT_FAIL_IF(data.failsFuzzyFloat, "Imprecision larger than 2.5e-4f.");
+        #else
+        CORRADE_EXPECT_FAIL_IF(data.failsFuzzyFloat && !Math::TypeTraits<Float>::equals(value, 3.0f), "Imprecision larger than 2.5e-4f.");
+        #endif
         CORRADE_COMPARE_WITH(value, 3.0f, TestSuite::Compare::around(0.00025f));
     }
     if(!data.failsFuzzyFloat) {
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
         CORRADE_EXPECT_FAIL_IF(data.failsFloat, "Imprecision larger than 1e-6f.");
+        #else
+        CORRADE_EXPECT_FAIL_IF(data.failsFloat && !Math::TypeTraits<Float>::equals(value, 3.0f), "Imprecision larger than 2.5e-4f.");
+        #endif
         CORRADE_COMPARE(value, 3.0f);
     }
 }
