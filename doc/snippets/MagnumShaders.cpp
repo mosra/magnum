@@ -232,9 +232,8 @@ mesh.draw(shader);
 /* [MeshVisualizer-usage-geom2] */
 
 /* [MeshVisualizer-usage-no-geom-old1] */
-constexpr std::size_t vertexCount = Containers::arraySize(data);
-Float vertexIndex[vertexCount];
-std::iota(vertexIndex, vertexIndex + vertexCount, 0.0f);
+Containers::Array<Float> vertexIndex{Containers::arraySize(data)};
+std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
 
 GL::Buffer vertexIndices;
 vertexIndices.setData(vertexIndex, GL::BufferUsage::StaticDraw);
@@ -353,13 +352,13 @@ mesh.draw(shader);
 #endif
 
 {
-GL::Texture2D ambientAlphaTexture, diffuseAlphaTexture;
+GL::Texture2D diffuseAlphaTexture;
 Color3 diffuseRgb, specularRgb;
 /* [Phong-usage-alpha] */
 Shaders::Phong shader{Shaders::Phong::Flag::AmbientTexture|
                       Shaders::Phong::Flag::DiffuseTexture};
-shader.bindTextures(&ambientAlphaTexture, &diffuseAlphaTexture, nullptr)
-    .setAmbientColor(0x000000ff_rgbf)
+shader.bindTextures(&diffuseAlphaTexture, &diffuseAlphaTexture, nullptr)
+    .setAmbientColor(0x000000ff_rgbaf)
     .setDiffuseColor(Color4{diffuseRgb, 0.0f})
     .setSpecularColor(Color4{specularRgb, 0.0f});
 /* [Phong-usage-alpha] */
