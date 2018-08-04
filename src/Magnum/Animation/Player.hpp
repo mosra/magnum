@@ -88,7 +88,8 @@ template<class T, class K> std::size_t Player<T, K>::size() const {
 
 template<class T, class K> const TrackViewStorage<K>& Player<T, K>::track(std::size_t i) const {
     CORRADE_ASSERT(i < _tracks.size(),
-        "Animation::Player::track(): index out of range", _tracks[i].track);
+        /* Returning track 0 so we can test this w/ MSVC debug iterators */
+        "Animation::Player::track(): index out of range", _tracks[0].track);
     return _tracks[i].track;
 }
 

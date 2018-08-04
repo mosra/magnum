@@ -278,8 +278,13 @@ void PlayerTest::trackInvalidIndex() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    Float value;
     Player<Float> player;
-    player.track(0);
+    /* Adding at least one track so the return in the graceful assert can
+       return the first value and not trigger MSVC debug iterator abort */
+    player.add(TrackView<Float, Float>{}, value);
+
+    player.track(1);
 
     CORRADE_COMPARE(out.str(), "Animation::Player::track(): index out of range\n");
 }
