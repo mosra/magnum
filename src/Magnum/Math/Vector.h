@@ -505,7 +505,7 @@ template<std::size_t size, class T> class Vector {
          * @brief Vector projected onto line
          *
          * Returns vector projected onto @p line. @f[
-         *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b
+         *      \operatorname{proj}_{\boldsymbol{b}}\,(\boldsymbol{a}) = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b
          * @f]
          * @see @ref Math::dot(), @ref projectedOntoNormalized()
          */
@@ -518,7 +518,7 @@ template<std::size_t size, class T> class Vector {
          *
          * Slightly faster alternative to @ref projected(), expects @p line to
          * be normalized. @f[
-         *      \boldsymbol a_1 = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b =
+         *      \operatorname{proj}_{\boldsymbol{b}}\,(\boldsymbol{a}) = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b =
          *          (\boldsymbol a \cdot \boldsymbol b) \boldsymbol b
          * @f]
          * @see @ref Math::dot()
