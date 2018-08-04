@@ -27,6 +27,8 @@ namespace Magnum {
 /** @page shaders Builtin shaders
 @brief Overview and basic usage of builtin shaders.
 
+@m_keywords{Shaders}
+
 @tableofcontents
 @m_footernavigation
 

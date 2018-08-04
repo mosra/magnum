@@ -152,6 +152,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          */
         typedef Containers::EnumSet<Flag> Flags;
         #else
+        /* Done this way to be prepared for possible future diversion of 2D
+           and 3D flags (e.g. introducing 3D-specific features) */
         typedef Implementation::FlatFlag Flag;
         typedef Implementation::FlatFlags Flags;
         #endif
