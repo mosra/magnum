@@ -49,6 +49,8 @@ player.add(scaling, objectScaling)
 /* [Player-usage] */
 }
 
+/* WinRT has warnings-as-errors and fails on the unitialized object var */
+#ifndef CORRADE_TARGET_WINDOWS_RT
 {
 const Animation::TrackView<Float, Vector3> translation;
 const Animation::TrackView<Float, Quaternion> rotation;
@@ -86,6 +88,7 @@ player.addWithCallback(translation,
 #pragma GCC diagnostic pop
 #endif
 }
+#endif
 
 {
 /* [Player-usage-playback] */
