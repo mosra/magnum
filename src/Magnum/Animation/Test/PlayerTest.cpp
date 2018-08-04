@@ -759,14 +759,18 @@ void PlayerTest::addWithCallbackOnChangeTemplate() {
     CORRADE_COMPARE(data.called, 2);
 }
 
+namespace {
+    /* Can't use raw lambdas because MSVC 2015 */
+    void callback(std::vector<Int>& data, Int value) {
+        data.push_back(value);
+    }
+}
+
 void PlayerTest::addRawCallback() {
     Animation::Track<Float, Int> track;
 
     Int result = -1;
     std::vector<Int> data;
-    auto callback = [](std::vector<Int>& data, Int value) {
-        data.push_back(value);
-    };
 
     Animation::Player<Float> player;
     player.addRawCallback(track,
@@ -776,7 +780,7 @@ void PlayerTest::addRawCallback() {
             if(value == *static_cast<Int*>(destination)) return;
             *static_cast<Int*>(destination) = value;
             reinterpret_cast<void(*)(std::vector<Int>&, Int)>(callback)(*static_cast<std::vector<Int>*>(userData), value);
-        }, &result, reinterpret_cast<void(*)()>(+callback), &data)
+        }, &result, reinterpret_cast<void(*)()>(callback), &data)
         .play({});
 
     /* Should add the default-constructed value into the vector, but only once */

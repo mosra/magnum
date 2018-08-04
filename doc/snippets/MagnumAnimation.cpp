@@ -162,6 +162,7 @@ timer.advance(timeline.previousFrameTime());
 }
 
 {
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Can't call + on lambdas */
 /* [Player-addRawCallback] */
 Animation::Track<Float, Int> track;
 
@@ -183,6 +184,7 @@ player.addRawCallback(track,
             (*static_cast<std::vector<Int>*>(userData), value);
     }, &result, reinterpret_cast<void(*)()>(+callback), &data);
 /* [Player-addRawCallback] */
+#endif
 }
 
 {
