@@ -482,7 +482,7 @@ void Sdl2Application::mainLoopIteration() {
                     #pragma GCC diagnostic push
                     #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
                     #endif
-                    MouseEvent e(event.wheel.y > 0 ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {event.wheel.x, event.wheel.y}
+                    MouseEvent ew(event.wheel.y > 0 ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {event.wheel.x, event.wheel.y}
                         #ifndef CORRADE_TARGET_EMSCRIPTEN
                         , 0
                         #endif
@@ -490,7 +490,7 @@ void Sdl2Application::mainLoopIteration() {
                     #ifdef __GNUC__
                     #pragma GCC diagnostic pop
                     #endif
-                    mousePressEvent(e);
+                    mousePressEvent(ew);
                 }
                 #endif
             } break;
