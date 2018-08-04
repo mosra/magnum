@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Utility/Format.h>
+
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Shaders/Flat.h"
 
@@ -31,27 +33,41 @@ namespace Magnum { namespace Shaders { namespace Test {
 struct FlatGLTest: GL::OpenGLTester {
     explicit FlatGLTest();
 
-    void construct2D();
-    void construct3D();
-    void construct2DTextured();
-    void construct3DTextured();
+    template<UnsignedInt dimensions> void construct();
 
-    void constructMove2D();
-    void constructMove3D();
+    template<UnsignedInt dimensions> void constructMove();
 };
 
+namespace {
+
+constexpr struct {
+    const char* name;
+    Flat2D::Flags flags;
+} ConstructData[]{
+    {"", {}},
+    {"textured", Flat2D::Flag::Textured}
+};
+
+}
+
 FlatGLTest::FlatGLTest() {
-    addTests({&FlatGLTest::construct2D,
-              &FlatGLTest::construct3D,
-              &FlatGLTest::construct2DTextured,
-              &FlatGLTest::construct3DTextured,
+    addInstancedTests<FlatGLTest>({
+        &FlatGLTest::construct<2>,
+        &FlatGLTest::construct<3>},
+        Containers::arraySize(ConstructData));
 
-              &FlatGLTest::constructMove2D,
-              &FlatGLTest::constructMove3D});
+    addTests<FlatGLTest>({
+        &FlatGLTest::constructMove<2>,
+        &FlatGLTest::constructMove<3>});
 }
 
-void FlatGLTest::construct2D() {
-    Flat2D shader;
+template<UnsignedInt dimensions> void FlatGLTest::construct() {
+    setTestCaseName(Utility::formatString("construct<{}>", dimensions));
+
+    auto&& data = ConstructData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Flat<dimensions> shader{data.flags};
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
@@ -61,68 +77,20 @@ void FlatGLTest::construct2D() {
     }
 }
 
-void FlatGLTest::construct3D() {
-    Flat3D shader;
-    {
-        #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
-        #endif
-        CORRADE_VERIFY(shader.id());
-        CORRADE_VERIFY(shader.validate().first);
-    }
-}
+template<UnsignedInt dimensions> void FlatGLTest::constructMove() {
+    setTestCaseName(Utility::formatString("constructMove<{}>", dimensions));
 
-void FlatGLTest::construct2DTextured() {
-    Flat2D shader(Flat2D::Flag::Textured);
-    {
-        #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
-        #endif
-        CORRADE_VERIFY(shader.id());
-        CORRADE_VERIFY(shader.validate().first);
-    }
-}
-
-void FlatGLTest::construct3DTextured() {
-    Flat3D shader(Flat3D::Flag::Textured);
-    {
-        #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
-        #endif
-        CORRADE_VERIFY(shader.id());
-        CORRADE_VERIFY(shader.validate().first);
-    }
-}
-
-void FlatGLTest::constructMove2D() {
-    Flat2D a;
+    Flat<dimensions> a;
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Flat2D b{std::move(a)};
+    Flat<dimensions> b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_VERIFY(!a.id());
 
-    Flat2D c{NoCreate};
-    c = std::move(b);
-    CORRADE_COMPARE(c.id(), id);
-    CORRADE_VERIFY(!b.id());
-}
-
-void FlatGLTest::constructMove3D() {
-    Flat3D a;
-    const GLuint id = a.id();
-    CORRADE_VERIFY(id);
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    Flat3D b{std::move(a)};
-    CORRADE_COMPARE(b.id(), id);
-    CORRADE_VERIFY(!a.id());
-
-    Flat3D c{NoCreate};
+    Flat<dimensions> c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_VERIFY(!b.id());
