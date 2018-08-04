@@ -29,26 +29,44 @@
  * @brief Function @ref Magnum::Math::Algorithms::qr()
  */
 
-#include "Magnum/Math/Matrix.h"
+#include "Magnum/Math/Algorithms/GramSchmidt.h"
 
 namespace Magnum { namespace Math { namespace Algorithms {
 
 /**
 @brief QR decomposition
 
-Calculated using the classic [Gram-Schmidt process](https://en.wikipedia.org/wiki/QR_decomposition#Using_the_Gram–Schmidt_process).
+Calculated using the [Gram-Schmidt process](https://en.wikipedia.org/wiki/QR_decomposition#Using_the_Gram–Schmidt_process),
+in particular the [modifed Gram-Schmidt](https://en.wikipedia.org/wiki/Gram–Schmidt_process#Numerical_stability)
+from @ref gramSchmidtOrthonormalize(). Given the input matrix
+@f$ \boldsymbol{A} = (\boldsymbol{a}_1, \cdots, \boldsymbol{a}_n) @f$ and the set of
+column vectors @f$ \boldsymbol{e}_k @f$ coming from the Gram-Schmidt process,
+the resulting @f$ \boldsymbol{Q} @f$ and @f$ \boldsymbol{R} @f$ matrices are as
+follows: @f[
+    \begin{array}{rcl}
+        \boldsymbol{Q} & = & \left( \boldsymbol{e}_1, \cdots, \boldsymbol{e}_n \right) \\[10pt]
+        \boldsymbol{R} & = & \begin{pmatrix}
+            \boldsymbol{e}_1 \cdot \boldsymbol{a}_1 & \boldsymbol{e}_1 \cdot \boldsymbol{a}_2 &  \boldsymbol{e}_1 \cdot \boldsymbol{a}_3 & \ldots \\
+            0 & \boldsymbol{e}_2 \cdot \boldsymbol{a}_2 & \boldsymbol{e}_2 \cdot \boldsymbol{a}_3 & \ldots \\
+            0 & 0 & \boldsymbol{e}_3 \cdot \boldsymbol{a}_3 & \ldots \\
+            \vdots & \vdots & \vdots & \ddots
+        \end{pmatrix}
+    \end{array}
+@f]
+
+One possible use is to decompose a transformation matrix into separate rotation
+and scaling/shear parts. Note, however, that the decomposition is not unique.
+See the [associated test case](https://github.com/mosra/magnum/blob/master/src/Magnum/Math/Algorithms/Test/QrTest.cpp)
+for an example.
+@see @ref svd(), @ref Matrix3::rotationShear(), @ref Matrix4::rotationShear()
 */
 template<std::size_t size, class T> std::pair<Matrix<size, T>, Matrix<size, T>> qr(const Matrix<size, T>& matrix) {
-    Matrix<size, T> q, r;
-
+    const Matrix<size, T> q = gramSchmidtOrthonormalize(matrix);
+    Matrix<size, T> r{ZeroInit};
     for(std::size_t k = 0; k != size; ++k) {
-        Vector<size, T> p = matrix[k];
-        for(std::size_t j = 0; j != k; ++j) {
-            r[k][j] = Math::dot(p, q[j]);
-            p -= q[j]*r[k][j];
+        for(std::size_t j = 0; j <= k; ++j) {
+            r[k][j] = Math::dot(q[j], matrix[k]);
         }
-        r[k][k] = p.length();
-        q[k] = p/r[k][k];
     }
 
     return {q, r};
