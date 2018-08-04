@@ -25,6 +25,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
+#include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Algorithms/Svd.h"
 
 namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
@@ -33,6 +34,7 @@ struct SvdTest: Corrade::TestSuite::Tester {
     explicit SvdTest();
 
     template<class T> void test();
+    void decomposeRotationShear();
 };
 
 template<class T> using Matrix5x8 = RectangularMatrix<5, 8, T>;
@@ -42,8 +44,9 @@ template<class T> using Vector8 = Vector<8, T>;
 template<class T> using Vector5 = Vector<5, T>;
 
 SvdTest::SvdTest() {
-    addTests<SvdTest>({&SvdTest::test<Float>,
-                       &SvdTest::test<Double>});
+    addTests({&SvdTest::test<Float>,
+              &SvdTest::test<Double>,
+              &SvdTest::decomposeRotationShear});
 }
 
 template<class T> void SvdTest::test() {
@@ -89,6 +92,28 @@ template<class T> void SvdTest::test() {
         #endif
         CORRADE_COMPARE(w, expected);
     }
+}
+
+void SvdTest::decomposeRotationShear() {
+    typedef Math::Matrix4<Float> Matrix4;
+    typedef Math::Matrix3x3<Float> Matrix3x3;
+    typedef Math::Vector3<Float> Vector3;
+
+    using namespace Math::Literals;
+
+    Matrix4 a = Matrix4::scaling({1.5f, 2.0f, 1.0f})*Matrix4::rotationZ(35.0_degf);
+
+    Matrix3x3 u{NoInit};
+    Vector3 w{NoInit};
+    Matrix3x3 v{NoInit};
+    std::tie(u, w, v) = Algorithms::svd(a.rotationScaling());
+
+    CORRADE_COMPARE(u*Matrix3x3::fromDiagonal(w)*v.transposed(), a.rotationScaling());
+
+    /* U contains a flipped sign for Z, use it to remove the sign from the
+       transposed rotation matrix V */
+    CORRADE_COMPARE(w, (Vector3{1.5f, 2.0f, 1.0f}));
+    CORRADE_COMPARE(Matrix4::from(u*v.transposed(), {}), Matrix4::rotationZ(35.0_degf));
 }
 
 }}}}

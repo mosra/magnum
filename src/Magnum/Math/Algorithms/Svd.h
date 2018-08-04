@@ -60,20 +60,25 @@ template<> constexpr Double smallestDelta<Double>() { return 1.0e-64; }
 
 Performs [Thin SVD](https://en.wikipedia.org/wiki/Singular-value_decomposition#Thin_SVD)
 on given matrix where @p rows >= `cols`: @f[
-    M = U \Sigma V^*
+    \boldsymbol{M} = \boldsymbol{U} \boldsymbol{\Sigma} \boldsymbol{V}^*
 @f]
 
-Returns first @p cols column vectors of @f$ U @f$, diagonal of @f$ \Sigma @f$
-and non-transposed @f$ V @f$. If the solution doesn't converge, returns
-zero matrices.
+Returns first @p cols column vectors of @f$ \boldsymbol{U} @f$, diagonal of
+@f$ \boldsymbol{\Sigma} @f$ and non-transposed @f$ \boldsymbol{V} @f$. If the
+solution doesn't converge, returns zero matrices.
 
-Full @f$ U @f$, @f$ \Sigma @f$ matrices and original @f$ M @f$ matrix can be
-reconstructed from the values as following:
+Full @f$ \boldsymbol{U} @f$, @f$ \boldsymbol{\Sigma} @f$ matrices and original
+@f$ \boldsymbol{M} @f$ matrix can be reconstructed from the values as
+following:
 
 @snippet MagnumMathAlgorithms.cpp svd
 
-Implementation based on *Golub, G. H.; Reinsch, C. (1970). "Singular value
-decomposition and least squares solutions"*.
+One possible use is to decompose a transformation matrix into separate rotation
+and scaling parts. Note, however, that the decomposition is not unique. See the
+[associated test case](https://github.com/mosra/magnum/blob/master/src/Magnum/Math/Algorithms/Test/SvdTest.cpp)
+for an example. Implementation based on *Golub, G. H.; Reinsch, C. (1970).
+"Singular value decomposition and least squares solutions"*.
+@see @ref qr(), @ref Matrix3::rotationShear(), @ref Matrix4::rotationShear()
 */
 /* The matrix is passed by value because it is changed inside */
 template<std::size_t cols, std::size_t rows, class T> std::tuple<RectangularMatrix<cols, rows, T>, Vector<cols, T>, Matrix<cols, T>> svd(RectangularMatrix<cols, rows, T> m) {
