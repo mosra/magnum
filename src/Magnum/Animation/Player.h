@@ -370,9 +370,26 @@ template<class T, class K
          * and you have to ensure that it's kept in scope for the whole
          * lifetime of the @ref Player instance.
          */
+        #ifndef CORRADE_MSVC2017_COMPATIBILITY
         template<class V, class R> Player<T, K>& add(const Track<K, V, R>& track, R& destination) {
             return add(TrackView<K, V, R>{track}, destination);
         }
+        #else
+        /* MSVC 2015 and 2017 is clueless when it comes to trying to deduce the
+           template parameters (C2893: Failed to specialize function template).
+           It works when calling add<V, R> explicitly, but that makes the API
+           hard to use and inconsistent between platforms. The only possible
+           workaround is to make add() take *anything*, casting it to proper
+           TrackView type and then calling add() with explicit template
+           parameters. This also neatly resolves the Track/TrackView overload,
+           as the static_cast is either a no-op or it invokes the conversion
+           operator on Track. The original code also reportedly makes the
+           Intellisense freezing like hell and adding this overload fixes the
+           freezes. Three birds with one stone. */
+        template<class Track, class R> Player<T, K>& add(const Track& track, R& destination) {
+            return add<typename Track::ValueType, R>(static_cast<const TrackView<K, typename Track::ValueType, R>&>(track), destination);
+        }
+        #endif
 
         /**
          * @brief Add a track with a result callback
@@ -406,9 +423,13 @@ template<class T, class K
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class V, class R> Player<T, K>& addWithCallback(const Track<K, V, R>& track, void(*callback)(const K&, const R&, void*), void* userData = nullptr);
-        #else /* See above why */
+        #elif !defined(CORRADE_MSVC2017_COMPATIBILITY) /* See above why */
         template<class V, class R, class Callback> Player<T, K>& addWithCallback(const Track<K, V, R>& track, Callback callback, void* userData = nullptr) {
             return addWithCallback(TrackView<K, V, R>{track}, callback, userData);
+        }
+        #else /* see the add() function for explanation */
+        template<class Track, class Callback> Player<T, K>& addWithCallback(const Track& track, Callback callback, void* userData = nullptr) {
+            return addWithCallback<typename Track::ValueType, typename Track::ResultType, Callback>(static_cast<const TrackView<K, typename Track::ValueType, typename Track::ResultType>&>(track), callback, userData);
         }
         #endif
 
@@ -435,9 +456,13 @@ template<class T, class K
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class V, class R, class U> Player<T, K>& addWithCallback(const Track<K, V, R>& track, void(*callback)(const K&, const R&, U&), U& userData);
-        #else /* See above why */
+        #elif !defined(CORRADE_MSVC2017_COMPATIBILITY) /* See above why */
         template<class V, class R, class U, class Callback> Player<T, K>& addWithCallback(const Track<K, V, R>& track, Callback callback, U& userData) {
             return addWithCallback(TrackView<K, V, R>{track}, callback, userData);
+        }
+        #else /* see the add() function for explanation */
+        template<class Track, class U, class Callback> Player<T, K>& addWithCallback(const Track& track, Callback callback, U& userData) {
+            return addWithCallback<typename Track::ValueType, typename Track::ResultType, U, Callback>(static_cast<const TrackView<K, typename Track::ValueType, typename Track::ResultType>&>(track), callback, userData);
         }
         #endif
 
@@ -470,9 +495,13 @@ template<class T, class K
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class V, class R> Player<T, K>& addWithCallbackOnChange(const Track<K, V, R>& track, void(*callback)(const K&, const R&, void*), R& destination, void* userData = nullptr);
-        #else /* See above why */
+        #elif !defined(CORRADE_MSVC2017_COMPATIBILITY) /* See above why */
         template<class V, class R, class Callback> Player<T, K>& addWithCallbackOnChange(const Track<K, V, R>& track, Callback callback, R& destination, void* userData = nullptr) {
             return addWithCallbackOnChange(TrackView<K, V, R>{track}, callback, destination, userData);
+        }
+        #else /* see the add() function for explanation */
+        template<class Track, class R, class Callback> Player<T, K>& addWithCallbackOnChange(const Track& track, Callback callback, R& destination, void* userData = nullptr) {
+            return addWithCallbackOnChange<typename Track::ValueType, R, Callback>(static_cast<const TrackView<K, typename Track::ValueType, R>&>(track), callback, destination, userData);
         }
         #endif
 
@@ -499,9 +528,13 @@ template<class T, class K
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class V, class R, class U> Player<T, K>& addWithCallbackOnChange(const Track<K, V, R>& track, void(*callback)(const K&, const R&, void*), R& destination, U& userData);
-        #else
+        #elif !defined(CORRADE_MSVC2017_COMPATIBILITY) /* See above why */
         template<class V, class R, class U, class Callback> Player<T, K>& addWithCallbackOnChange(const Track<K, V, R>& track, Callback callback, R& destination, U& userData) {
             return addWithCallbackOnChange(TrackView<K, V, R>{track}, callback, destination, userData);
+        }
+        #else /* see the add() function for explanation */
+        template<class Track, class R, class U, class Callback> Player<T, K>& addWithCallbackOnChange(const Track& track, Callback callback, R& destination, U& userData) {
+            return addWithCallbackOnChange<typename Track::ValueType, R, U, Callback>(static_cast<const TrackView<K, typename Track::ValueType, R>&>(track), callback, destination, userData);
         }
         #endif
 
@@ -541,9 +574,13 @@ template<class T, class K
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class V, class R> Player<T, K>& addRawCallback(const Track<K, V, R>& track, void(*callback)(const TrackViewStorage<K>&, K, std::size_t&, void*, void(*)(), void*), void* destination, void(*userCallback)(), void* userData);
-        #else
+        #elif !defined(CORRADE_MSVC2017_COMPATIBILITY) /* See above why */
         template<class V, class R, class Callback> Player<T, K>& addRawCallback(const Track<K, V, R>& track, Callback callback, void* destination, void(*userCallback)(), void* userData) {
             return addRawCallback(TrackView<K, V, R>{track}, callback, destination, userCallback, userData);
+        }
+        #else /* see the add() function for explanation */
+        template<class Track, class Callback> Player<T, K>& addRawCallback(const Track& track, Callback callback, void* destination, void(*userCallback)(), void* userData) {
+            return addRawCallback<typename Track::ValueType, typename Track::ResultType, Callback>(static_cast<const TrackView<K, typename Track::ValueType, typename Track::ResultType>&>(track), callback, destination, userCallback, userData);
         }
         #endif
 
