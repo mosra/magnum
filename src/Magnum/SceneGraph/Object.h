@@ -52,6 +52,8 @@ namespace Implementation {
 /**
 @brief Object
 
+@m_keywords{Object2D Object3D}
+
 Base of scene graph. Contains specific transformation implementation, takes
 care of parent/children relationship and contains features. See @ref scenegraph
 for introduction.

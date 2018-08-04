@@ -36,8 +36,16 @@ namespace Magnum { namespace SceneGraph {
 /**
 @brief Scene
 
+@m_keywords{Scene2D Scene3D}
+
 Basically @ref Object which cannot have parent or non-default transformation.
-See @ref scenegraph for introduction.
+Common usage is to typedef @ref Scene with desired transformation type to save
+unnecessary typing later, along with @ref Object and possibly other types,
+e.g.:
+
+@snippet MagnumSceneGraph.cpp Object-typedef
+
+See @ref scenegraph for an introduction.
 */
 template<class Transformation> class Scene: public Object<Transformation> {
     public:
