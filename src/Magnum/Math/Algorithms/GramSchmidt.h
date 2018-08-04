@@ -36,6 +36,25 @@ namespace Magnum { namespace Math { namespace Algorithms {
 /**
 @brief In-place Gram-Schmidt matrix orthogonalization
 @param[in,out] matrix   Matrix to perform orthogonalization on
+
+Performs the [Gram-Schmidt process](https://en.wikipedia.org/wiki/Gram–Schmidt_process).
+With a *projection operator* defined as
+@f[
+    \operatorname{proj}_{\boldsymbol{u}}\,(\boldsymbol{v}) = \frac{\boldsymbol{u} \cdot \boldsymbol{v}}{\boldsymbol{u} \cdot \boldsymbol{u}} \boldsymbol{u}
+@f]
+
+@m_class{m-noindent}
+
+the process works as follows, with @f$ \boldsymbol{v}_k @f$ being columns of
+@p matrix and @f$ \boldsymbol{u}_k @f$ columns of the output: @f[
+    \boldsymbol{u}_k = \boldsymbol{v}_k - \sum_{j = 1}^{k - 1} \operatorname{proj}_{\boldsymbol{u}_j}\,(\boldsymbol{v}_k)
+@f]
+
+Note that the above is not performed directly due to numerical instability,
+the stable [modified Gram-Schmidt](https://en.wikipedia.org/wiki/Gram–Schmidt_process#Numerical_stability)
+algorithm is used instead.
+@see @ref gramSchmidtOrthogonalize(), @ref gramSchmidtOrthonormalizeInPlace(),
+    @ref Vector::projected()
 */
 template<std::size_t cols, std::size_t rows, class T> void gramSchmidtOrthogonalizeInPlace(RectangularMatrix<cols, rows, T>& matrix) {
     static_assert(cols <= rows, "Unsupported matrix aspect ratio");
@@ -59,6 +78,25 @@ template<std::size_t cols, std::size_t rows, class T> RectangularMatrix<cols, ro
 /**
 @brief In-place Gram-Schmidt matrix orthonormalization
 @param[in,out] matrix   Matrix to perform orthonormalization on
+
+Performs the [Gram-Schmidt process](https://en.wikipedia.org/wiki/Gram–Schmidt_process).
+With a *projection operator* defined as
+@f[
+    \operatorname{proj}_{\boldsymbol{u}}\,(\boldsymbol{v}) = \frac{\boldsymbol{u} \cdot \boldsymbol{v}}{\boldsymbol{u} \cdot \boldsymbol{u}} \boldsymbol{u}
+@f]
+
+@m_class{m-noindent}
+
+the Gram-Schmidt process works as follows, with @f$ \boldsymbol{v}_k @f$ being
+columns of @p matrix and @f$ \boldsymbol{e}_k @f$ columns of the output: @f[
+    \boldsymbol{u}_k = \boldsymbol{v}_k - \sum_{j = 1}^{k - 1} \operatorname{proj}_{\boldsymbol{u}_j}\,(\boldsymbol{v}_k), ~~~~~~ \boldsymbol{e}_k = \frac{\boldsymbol{u}_k}{|\boldsymbol{u}_k|}
+@f]
+
+In particular, this adds the normalization step on top of
+@ref gramSchmidtOrthogonalizeInPlace(). Note that the above is not performed
+directly due to numerical instability, the stable [modified Gram-Schmidt](https://en.wikipedia.org/wiki/Gram–Schmidt_process#Numerical_stability)
+algorithm is used instead.
+@see @ref gramSchmidtOrthonormalize(), @ref Vector::projectedOntoNormalized()
 */
 template<std::size_t cols, std::size_t rows, class T> void gramSchmidtOrthonormalizeInPlace(RectangularMatrix<cols, rows, T>& matrix) {
     static_assert(cols <= rows, "Unsupported matrix aspect ratio");

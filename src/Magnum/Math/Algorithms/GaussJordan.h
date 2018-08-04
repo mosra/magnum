@@ -40,10 +40,10 @@ namespace Magnum { namespace Math { namespace Algorithms {
 @return True if @p a is regular, false if @p a is singular (and thus the
     system cannot be solved).
 
-As Gauss-Jordan elimination works on rows and matrices in OpenGL are
-column-major, it is more efficient to operate on transposed matrices and treat
-columns as rows. See also @ref gaussJordanInPlace() which works with
-non-transposed matrices.
+As [Gauss-Jordan elimination](https://en.wikipedia.org/wiki/Gaussian_elimination)
+works on rows and matrices in OpenGL are column-major, it is more efficient to
+operate on transposed matrices and treat columns as rows. See also
+@ref gaussJordanInPlace() which works with non-transposed matrices.
 
 The function eliminates matrix @p a and solves @p t in place. For efficiency
 reasons, only pure Gaussian elimination is done on @p a and the final
@@ -114,8 +114,9 @@ template<std::size_t size, std::size_t cols, class T> bool gaussJordanInPlace(Re
 /**
 @brief Gauss-Jordan matrix inversion
 
-Since @f$ (\boldsymbol{A}^{-1})^T = (\boldsymbol{A}^T)^{-1} @f$, passes
-@p matrix and an identity matrix to @ref gaussJordanInPlaceTransposed();
+Uses the [Gauss-Jordan elimination](https://en.wikipedia.org/wiki/Gaussian_elimination#Finding_the_inverse_of_a_matrix) to perform a matrix
+inversion. Since @f$ (\boldsymbol{A}^{-1})^T = (\boldsymbol{A}^T)^{-1} @f$,
+passes @p matrix and an identity matrix to @ref gaussJordanInPlaceTransposed();
 returning the inverted matrix. Expects that the matrix is invertible.
 @see @ref Matrix::inverted()
 */

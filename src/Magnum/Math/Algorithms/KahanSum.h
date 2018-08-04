@@ -39,35 +39,24 @@ namespace Magnum { namespace Math { namespace Algorithms {
 @param[in] end              Range end
 @param[in] sum              Initial value for the sum
 @param[in,out] compensation Floating-point roundoff error compensation value.
-    If non-`nullptr`, value behind the pointer is used as initial compensation
-    value and the resulting value is
+    If non-@cpp nullptr @ce, value behind the pointer is used as initial
+    compensation value and the resulting value is
 
 Calculates a sum of a large range of floating-point numbers with roundoff error
-compensation. Compared to for example `std::accumulate()` the algorithm
-significantly reduces numerical error in the total. See Wikipedia for an
-in-depth explanation: https://en.wikipedia.org/wiki/Kahan_summation_algorithm
+compensation. Compared to for example @ref std::accumulate() the algorithm
+significantly reduces numerical error in the total. See the
+[Kahan summation algorithm](https://en.wikipedia.org/wiki/Kahan_summation_algorithm)
+article on Wikipedia for an in-depth explanation. Example with summation of a
+hundred million ones:
 
-Example with summation of a hundred million ones:
-
-@code{.cpp}
-std::vector<Float> data(100000000, 1.0f);
-Float a = std::accumulate(data.begin(), data.end());            // 1.667e7f
-Float b = Math::Algorithms::kahanSum(data.begin(), data.end()); // 1.000e8f
-@endcode
+@snippet MagnumMathAlgorithms.cpp kahanSum
 
 If required, it is also possible to use this algorithm on non-contiguous ranges
 or single values (for example when calculating sum of pixel values in an image
 with some row padding or when the inputs are generated / converted from other
 values):
 
-@code{.cpp}
-Containers::ArrayView<UnsignedByte> pixels;
-Float sum = 0.0f, c = 0.0f;
-for(UnsignedByte pixel: pixels) {
-    Float value = Math::normalize<Float>(pixel);
-    sum = Math::Algorithms::kahanSum(&value, &value + 1, sum, &c);
-}
-@endcode
+@snippet MagnumMathAlgorithms.cpp kahanSum-iterative
 */
 template<class Iterator, class T = typename std::decay<decltype(*std::declval<Iterator>())>::type> T kahanSum(Iterator begin, Iterator end, T sum = T(0), T* compensation = nullptr) {
     T c = compensation ? *compensation : T(0);

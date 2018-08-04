@@ -58,10 +58,11 @@ template<> constexpr Double smallestDelta<Double>() { return 1.0e-64; }
 /**
 @brief Singular Value Decomposition
 
-Performs Thin SVD on given matrix where @p rows >= @p cols:
-@f[
+Performs [Thin SVD](https://en.wikipedia.org/wiki/Singular-value_decomposition#Thin_SVD)
+on given matrix where @p rows >= `cols`: @f[
     M = U \Sigma V^*
 @f]
+
 Returns first @p cols column vectors of @f$ U @f$, diagonal of @f$ \Sigma @f$
 and non-transposed @f$ V @f$. If the solution doesn't converge, returns
 zero matrices.
@@ -69,26 +70,7 @@ zero matrices.
 Full @f$ U @f$, @f$ \Sigma @f$ matrices and original @f$ M @f$ matrix can be
 reconstructed from the values as following:
 
-@code{.cpp}
-Math::RectangularMatrix<cols, rows, Double> m;
-
-Math::RectangularMatrix<cols, rows, Double> uPart;
-Math::Vector<cols, Double> wDiagonal;
-Math::Matrix<cols, Double> v;
-
-std::tie(uPart, wDiagonal, v) = Math::Algorithms::svd(m);
-
-// Extend U
-Math::Matrix<rows, Double> u(Matrix<rows, Double>::Zero);
-for(std::size_t i = 0; i != rows; ++i)
-    u[i] = uPart[i];
-
-// Diagonal W
-Math::RectangularMatrix<cols, rows, Double> w =
-    Math::RectangularMatrix<cols, rows, Double>::fromDiagonal(wDiagonal);
-
-// u*w*v.transposed() == m
-@endcode
+@snippet MagnumMathAlgorithms.cpp svd
 
 Implementation based on *Golub, G. H.; Reinsch, C. (1970). "Singular value
 decomposition and least squares solutions"*.

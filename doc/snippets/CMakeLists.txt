@@ -42,7 +42,8 @@ add_library(snippets-Magnum STATIC
     Magnum.cpp
     MagnumAnimation.cpp
     MagnumAnimation-custom.cpp
-    MagnumMath.cpp)
+    MagnumMath.cpp
+    MagnumMathAlgorithms.cpp)
 target_link_libraries(snippets-Magnum PRIVATE Magnum)
 set_target_properties(snippets-Magnum PROPERTIES FOLDER "Magnum/doc/snippets")
 

@@ -36,7 +36,7 @@ namespace Magnum { namespace Math { namespace Algorithms {
 /**
 @brief QR decomposition
 
-Calculated using classic Gram-Schmidt process.
+Calculated using the classic [Gram-Schmidt process](https://en.wikipedia.org/wiki/QR_decomposition#Using_the_Gram–Schmidt_process).
 */
 template<std::size_t size, class T> std::pair<Matrix<size, T>, Matrix<size, T>> qr(const Matrix<size, T>& matrix) {
     Matrix<size, T> q, r;
