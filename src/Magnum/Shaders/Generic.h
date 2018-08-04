@@ -36,10 +36,9 @@ namespace Magnum { namespace Shaders {
 /**
 @brief Generic shader definition
 
-Definitions common for majority of shaders in @ref Shaders namespace, allowing
-mesh configured for the generic shader to be used with any of them. See
-@ref shaders-generic for more information.
-
+Definitions common for majority of shaders in the @ref Shaders namespace,
+allowing mesh configured for a generic shader to be used with any of them.
+See @ref shaders-generic for more information.
 @see @ref shaders, @ref Generic2D, @ref Generic3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT

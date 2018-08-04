@@ -40,8 +40,10 @@ namespace Magnum { namespace Shaders {
 @brief Mesh visualization shader
 
 Uses geometry shader to visualize wireframe of 3D meshes. You need to provide
-@ref Position attribute in your triangle mesh and call at least
-@ref setTransformationProjectionMatrix() to be able to render.
+the @ref Position attribute in your triangle mesh. By default, the shader
+renders the mesh with a white color in an identity transformation. Use
+@ref setTransformationProjectionMatrix(), @ref setColor() and others to
+configure the shader.
 
 @image html shaders-meshvisualizer.png
 
@@ -59,8 +61,8 @@ If you have geometry shaders available, you don't need to do anything else.
 
 If you don't have geometry shaders, you need to set @ref Flag::NoGeometryShader
 (it's enabled by default in OpenGL ES 2.0) and use only **non-indexed** triangle
-meshes (see @ref MeshTools::duplicate() for possible solution). Additionaly, if
-you have OpenGL < 3.1 or OpenGL ES 2.0, you need to provide also
+meshes (see @ref MeshTools::duplicate() for a possible solution). Additionaly,
+if you have OpenGL < 3.1 or OpenGL ES 2.0, you need to provide also the
 @ref VertexIndex attribute.
 
 @requires_gles30 Extension @gl_extension{OES,standard_derivatives} for
@@ -186,6 +188,8 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
         /**
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
+         *
+         * Initial value is an identity matrix.
          */
         MeshVisualizer& setTransformationProjectionMatrix(const Matrix4& matrix) {
             setUniform(_transformationProjectionMatrixUniform, matrix);
@@ -197,7 +201,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * Has effect only if @ref Flag::Wireframe is enabled and geometry
-         * shaders are used.
+         * shaders are used. Initial value is a zero vector.
          */
         MeshVisualizer& setViewportSize(const Vector2& size) {
             if(_flags & Flag::Wireframe && !(_flags & Flag::NoGeometryShader))
@@ -209,7 +213,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
          * @brief Set base object color
          * @return Reference to self (for method chaining)
          *
-         * Initial value is fully opaque white.
+         * Initial value is @cpp 0xffffffff_rgbaf @ce.
          */
         MeshVisualizer& setColor(const Color4& color) {
             setUniform(_colorUniform, color);
@@ -220,7 +224,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
          * @brief Set wireframe color
          * @return Reference to self (for method chaining)
          *
-         * Initial value is fully opaque black. Has effect only if
+         * Initial value is @cpp 0x000000ff_rgbaf @ce. Has effect only if
          * @ref Flag::Wireframe is enabled.
          */
         MeshVisualizer& setWireframeColor(const Color4& color) {

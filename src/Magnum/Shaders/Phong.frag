@@ -64,7 +64,7 @@ uniform lowp sampler2D diffuseTexture;
 layout(location = 5)
 #endif
 uniform lowp vec4 diffuseColor
-    #if !defined(GL_ES) && defined(DIFFUSE_TEXTURE)
+    #ifndef GL_ES
     = vec4(1.0)
     #endif
     ;

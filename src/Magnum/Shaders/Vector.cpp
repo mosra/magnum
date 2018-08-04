@@ -93,6 +93,12 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector() {
     {
         GL::AbstractShaderProgram::setUniform(GL::AbstractShaderProgram::uniformLocation("vectorTexture"), AbstractVector<dimensions>::VectorTextureLayer);
     }
+
+    /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
+    #ifdef MAGNUM_TARGET_GLES
+    setTransformationProjectionMatrix({});
+    setColor(Color4{1.0f}); /* Background color is zero by default */
+    #endif
 }
 
 template class Vector<2>;

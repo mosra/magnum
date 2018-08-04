@@ -50,15 +50,16 @@ namespace Implementation {
 /**
 @brief Flat shader
 
-Draws whole mesh with given unshaded color or texture. For colored mesh you
-need to provide @ref Position attribute in your triangle mesh and call at least
-@ref setTransformationProjectionMatrix() and @ref setColor().
+Draws the whole mesh with given color or texture. For a colored mesh you need
+to provide the @ref Position attribute in your triangle mesh. By default, the
+shader renders the mesh with a white color in an identity transformation.
+Use @ref setTransformationProjectionMatrix(), @ref setColor() and others to
+configure the shader.
 
-If you want to use texture, you need to provide also @ref TextureCoordinates
-attribute. Pass @ref Flag::Textured to constructor and then at render time
-don't forget to set also the texture via @ref bindTexture(). The texture is
-multipled by the color, which is by default set to fully opaque white if
-texturing is enabled.
+If you want to use a texture, you need to provide also @ref TextureCoordinates
+attribute. Pass @ref Flag::Textured to the constructor and then at render time
+don't forget to bind also the texture via @ref bindTexture(). The texture is
+multipled by the color, which is by default set to @cpp 0xffffffff_rgbaf @ce.
 
 For coloring the texture based on intensity you can use the @ref Vector shader.
 
@@ -191,6 +192,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
         /**
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
+         *
+         * Initial value is an identity matrix.
          */
         Flat<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
             setUniform(_transformationProjectionMatrixUniform, matrix);
@@ -201,7 +204,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          * @brief Set color
          * @return Reference to self (for method chaining)
          *
-         * If @ref Flag::Textured is set, default value is
+         * If @ref Flag::Textured is set, initial value is
          * @cpp 0xffffffff_rgbaf @ce and the color will be multiplied with
          * texture.
          * @see @ref bindTexture()
@@ -212,7 +215,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
         }
 
         /**
-         * @brief Bind texture
+         * @brief Bind a color texture
          * @return Reference to self (for method chaining)
          *
          * Expects that the shader was created with @ref Flag::Textured
@@ -227,7 +230,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          *
          * Expects that the shader was created with @ref Flag::AlphaMask
          * enabled. Fragments with alpha values smaller than the mask value
-         * will be discarded. Default is @cpp 0.5f @ce. See the flag
+         * will be discarded. Initial value is @cpp 0.5f @ce. See the flag
          * documentation for further information.
          */
         Flat<dimensions>& setAlphaMask(Float mask);

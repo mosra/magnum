@@ -31,7 +31,11 @@
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
-uniform highp mat3 transformationProjectionMatrix;
+uniform highp mat3 transformationProjectionMatrix
+    #ifndef GL_ES
+    = mat3(1.0)
+    #endif
+    ;
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = POSITION_ATTRIBUTE_LOCATION)

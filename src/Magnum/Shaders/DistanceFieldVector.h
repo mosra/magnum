@@ -41,13 +41,15 @@ namespace Magnum { namespace Shaders {
 /**
 @brief Distance field vector shader
 
-Renders vector graphics in form of signed distance field. See
+Renders vector graphics in a form of signed distance field. See
 @ref TextureTools::distanceField() for more information. Note that the final
 rendered outlook will greatly depend on radius of input distance field and
 value passed to @ref setSmoothness(). You need to provide @ref Position and
 @ref TextureCoordinates attributes in your triangle mesh and call at least
-@ref setTransformationProjectionMatrix(), @ref setColor() and
-@ref bindVectorTexture().
+@ref bindVectorTexture(). By default, the shader renders the distance field
+texture with a white color in an identity transformation, use
+@ref setTransformationProjectionMatrix(), @ref setColor() and others to
+configure the shader.
 
 @image html shaders-distancefieldvector.png
 
@@ -102,6 +104,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
         /**
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
+         *
+         * Initial value is an identity matrix.
          */
         DistanceFieldVector& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
             GL::AbstractShaderProgram::setUniform(_transformationProjectionMatrixUniform, matrix);
@@ -112,6 +116,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @brief Set fill color
          * @return Reference to self (for method chaining)
          *
+         * Initial value is @cpp 0xffffffff_rgbaf @ce.
          * @see @ref setOutlineColor()
          */
         DistanceFieldVector& setColor(const Color4& color) {
@@ -123,6 +128,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @brief Set outline color
          * @return Reference to self (for method chaining)
          *
+         * Initial value is @cpp 0x00000000_rgbaf @ce and the outline is not
+         * drawn --- see @ref setOutlineRange() for more information.
          * @see @ref setOutlineRange(), @ref setColor()
          */
         DistanceFieldVector& setOutlineColor(const Color4& color) {
@@ -134,11 +141,11 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * @brief Set outline range
          * @return Reference to self (for method chaining)
          *
-         * Parameter @p start describes where fill ends and possible outline
-         * starts. Initial value is @cpp 0.5f @ce, larger values will make the
-         * vector art look thinner, smaller will make it look thicker.
+         * The @p start parameter describes where fill ends and possible
+         * outline starts. Initial value is @cpp 0.5f @ce, larger values will
+         * make the vector art look thinner, smaller will make it look thicker.
          *
-         * Parameter @p end describes where outline ends. If set to value
+         * The @p end parameter describes where outline ends. If set to value
          * larger than @p start the outline is not drawn. Initial value is
          * @cpp 1.0f @ce.
          *

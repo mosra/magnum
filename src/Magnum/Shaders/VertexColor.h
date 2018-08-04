@@ -43,8 +43,9 @@ namespace Magnum { namespace Shaders {
 @brief Vertex color shader
 
 Draws vertex-colored mesh. You need to provide @ref Position and @ref Color
-attributes in your triangle mesh and call at least
-@ref setTransformationProjectionMatrix().
+attributes in your triangle mesh. By default, the shader renders the mesh in
+an identity transformation. Use @ref setTransformationProjectionMatrix() to
+configure the shader.
 
 @image html shaders-vertexcolor.png
 
@@ -126,7 +127,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
          *
-         * Default is identity matrix.
+         * Default is an identity matrix.
          */
         VertexColor<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
             setUniform(_transformationProjectionMatrixUniform, matrix);

@@ -32,12 +32,16 @@
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
 #endif
-uniform lowp vec4 backgroundColor;
+uniform lowp vec4 backgroundColor; /* defaults to zero */
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 2)
 #endif
-uniform lowp vec4 color;
+uniform lowp vec4 color
+    #ifndef GL_ES
+    = vec4(1.0)
+    #endif
+    ;
 
 #ifdef EXPLICIT_TEXTURE_LAYER
 layout(binding = 15)

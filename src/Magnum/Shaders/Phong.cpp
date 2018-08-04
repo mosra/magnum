@@ -95,7 +95,7 @@ Phong::Phong(const Flags flags): _flags(flags) {
         _transformationMatrixUniform = uniformLocation("transformationMatrix");
         _projectionMatrixUniform = uniformLocation("projectionMatrix");
         _normalMatrixUniform = uniformLocation("normalMatrix");
-        _lightUniform = uniformLocation("light");
+        _lightPositionUniform = uniformLocation("lightPosition");
         _ambientColorUniform = uniformLocation("ambientColor");
         _diffuseColorUniform = uniformLocation("diffuseColor");
         _specularColorUniform = uniformLocation("specularColor");
@@ -118,13 +118,16 @@ Phong::Phong(const Flags flags): _flags(flags) {
     /* Default to fully opaque white so we can see the textures */
     if(flags & Flag::AmbientTexture) setAmbientColor(Color4{1.0f});
     else setAmbientColor(Color4{0.0f, 1.0f});
-
-    if(flags & Flag::DiffuseTexture) setDiffuseColor(Color4{1.0f});
-
+    setDiffuseColor(Color4{1.0f});
     setSpecularColor(Color4{1.0f});
     setLightColor(Color4{1.0f});
     setShininess(80.0f);
     if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
+
+    setTransformationMatrix({});
+    setProjectionMatrix({});
+    setNormalMatrix({});
+    /* Light position is zero by default */
     #endif
 }
 

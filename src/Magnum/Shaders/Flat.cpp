@@ -102,8 +102,8 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
-    /* Default to fully opaque white so we can see the texture */
-    if(flags & Flag::Textured) setColor(Color4(1.0f));
+    setTransformationProjectionMatrix({});
+    setColor(Color4{1.0f});
     if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
     #endif
 }

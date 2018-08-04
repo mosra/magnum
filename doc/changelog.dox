@@ -157,6 +157,8 @@ See also:
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 
+-   All shaders now have reasonable default values for uniforms in order to
+    further simplify and remove friction from quick prototyping use cases
 -   @ref Shaders::Flat::bindTexture(), @ref Shaders::Phong::bindAmbientTexture(),
     @ref Shaders::Phong::bindDiffuseTexture(),
     @ref Shaders::Phong::bindSpecularTexture() and

@@ -63,8 +63,11 @@ usage examples. Example mesh configuration for @ref Shaders::Phong shader:
 Each shader then has its own set of configuration functions. Some configuration
 is static, specified commonly as flags in constructor, directly affecting
 compiled shader code. Other configuration is specified through uniforms and
-various binding points, commonly exposed through various setters. Example
-configuration and rendering using @link Shaders::Phong @endlink:
+various binding points, commonly exposed through various setters. All shader
+uniforms have a reasonable defaults so you are able to see at least something
+when using the shader directly without any further configuration, but in most
+cases you may want to specify at least the transformation/projection matrices.
+Example configuration and rendering using @link Shaders::Phong @endlink:
 
 @snippet MagnumShaders.cpp shaders-rendering
 

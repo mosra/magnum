@@ -31,22 +31,34 @@
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
-uniform highp mat4 transformationMatrix;
+uniform highp mat4 transformationMatrix
+    #ifndef GL_ES
+    = mat4(1.0)
+    #endif
+    ;
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 1)
 #endif
-uniform highp mat4 projectionMatrix;
+uniform highp mat4 projectionMatrix
+    #ifndef GL_ES
+    = mat4(1.0)
+    #endif
+    ;
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 2)
 #endif
-uniform mediump mat3 normalMatrix;
+uniform mediump mat3 normalMatrix
+    #ifndef GL_ES
+    = mat3(1.0)
+    #endif
+    ;
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 3)
 #endif
-uniform highp vec3 light;
+uniform highp vec3 lightPosition; /* defaults to zero */
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = POSITION_ATTRIBUTE_LOCATION)
@@ -80,7 +92,7 @@ void main() {
     transformedNormal = normalMatrix*normal;
 
     /* Direction to the light */
-    lightDirection = normalize(light - transformedPosition);
+    lightDirection = normalize(lightPosition - transformedPosition);
 
     /* Direction to the camera */
     cameraDirection = -transformedPosition;
