@@ -186,7 +186,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          * @brief Bind texture
          * @return Reference to self (for method chaining)
          *
-         * Has effect only if @ref Flag::Textured is set.
+         * Expects that the shader was created with @ref Flag::Textured
+         * enabled.
          * @see @ref setColor()
          */
         Flat<dimensions>& bindTexture(GL::Texture2D& texture);

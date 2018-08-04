@@ -23,8 +23,13 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Utility/Format.h>
 
+#include "Magnum/ImageView.h"
+#include "Magnum/PixelFormat.h"
+#include "Magnum/GL/Texture.h"
+#include "Magnum/GL/TextureFormat.h"
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Shaders/Flat.h"
 
@@ -36,6 +41,9 @@ struct FlatGLTest: GL::OpenGLTester {
     template<UnsignedInt dimensions> void construct();
 
     template<UnsignedInt dimensions> void constructMove();
+
+    template<UnsignedInt dimensions> void bindTexture();
+    template<UnsignedInt dimensions> void bindTextureNotEnabled();
 };
 
 namespace {
@@ -58,7 +66,12 @@ FlatGLTest::FlatGLTest() {
 
     addTests<FlatGLTest>({
         &FlatGLTest::constructMove<2>,
-        &FlatGLTest::constructMove<3>});
+        &FlatGLTest::constructMove<3>,
+
+        &FlatGLTest::bindTexture<2>,
+        &FlatGLTest::bindTexture<3>,
+        &FlatGLTest::bindTextureNotEnabled<2>,
+        &FlatGLTest::bindTextureNotEnabled<3>});
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::construct() {
@@ -94,6 +107,40 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMove() {
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_VERIFY(!b.id());
+}
+
+template<UnsignedInt dimensions> void FlatGLTest::bindTexture() {
+    setTestCaseName(Utility::formatString("bindTexture<{}>", dimensions));
+
+    char data[4];
+
+    GL::Texture2D texture;
+    texture
+        .setMinificationFilter(SamplerFilter::Linear, SamplerMipmap::Linear)
+        .setMagnificationFilter(SamplerFilter::Linear)
+        .setWrapping(SamplerWrapping::ClampToEdge)
+        .setImage(0, GL::TextureFormat::RGBA, ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Test just that no assertion is fired */
+    Flat<dimensions> shader{Flat<dimensions>::Flag::Textured};
+    shader.bindTexture(texture);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+template<UnsignedInt dimensions> void FlatGLTest::bindTextureNotEnabled() {
+    setTestCaseName(Utility::formatString("bindTextureNotEnabled<{}>", dimensions));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    GL::Texture2D texture;
+    Flat<dimensions> shader;
+    shader.bindTexture(texture);
+
+    CORRADE_COMPARE(out.str(), "Shaders::Flat::bindTexture(): the shader was not created with texturing enabled\n");
 }
 
 }}}

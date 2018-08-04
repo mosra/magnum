@@ -41,7 +41,7 @@ set_target_properties(
 
 if(BUILD_GL_TESTS)
     corrade_add_test(ShadersDistanceFieldVectorGLTest DistanceFieldVectorGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
-    corrade_add_test(ShadersFlatGLTest FlatGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
+    corrade_add_test(ShadersFlatGLTest FlatGLTest.cpp LIBRARIES MagnumShadersTestLib MagnumOpenGLTester)
     corrade_add_test(ShadersMeshVisualizerGLTest MeshVisualizerGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
     corrade_add_test(ShadersPhongGLTest PhongGLTest.cpp LIBRARIES MagnumShadersTestLib MagnumOpenGLTester)
     corrade_add_test(ShadersVectorGLTest VectorGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)

@@ -106,7 +106,9 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
 }
 
 template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::bindTexture(GL::Texture2D& texture) {
-    if(_flags & Flag::Textured)  texture.bind(TextureLayer);
+    CORRADE_ASSERT(_flags & Flag::Textured,
+        "Shaders::Flat::bindTexture(): the shader was not created with texturing enabled", *this);
+    texture.bind(TextureLayer);
     return *this;
 }
 

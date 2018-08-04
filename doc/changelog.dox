@@ -155,7 +155,7 @@ See also:
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 
--   @ref Shaders::Phong::bindAmbientTexture(),
+-   @ref Shaders::Flat::bindTexture(), @ref Shaders::Phong::bindAmbientTexture(),
     @ref Shaders::Phong::bindDiffuseTexture(),
     @ref Shaders::Phong::bindSpecularTexture() and
     @ref Shaders::Phong::bindTextures() now assert that the shader was created
@@ -254,7 +254,7 @@ See also:
     working to fail with an assertion. See the new
     @ref Math::Matrix3::rotationShear() and @ref Math::Matrix4::rotationShear()
     accessors for a possible solution.
--   @ref Shaders::Phong::bindAmbientTexture(),
+-   @ref Shaders::Flat::bindTexture(), @ref Shaders::Phong::bindAmbientTexture(),
     @ref Shaders::Phong::bindDiffuseTexture(),
     @ref Shaders::Phong::bindSpecularTexture() and
     @ref Shaders::Phong::bindTextures() now assert that the shader was created
