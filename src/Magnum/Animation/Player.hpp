@@ -164,16 +164,29 @@ template<class T, class K> Player<T, K>& Player<T, K>::advance(T time) {
        the future, do nothing */
     } else if(_state != State::Playing || time < _startTime) return *this;
 
-    /* Calculate current play iteration and key value in that iteration. If we
-       exceeded play count, stop the animation and give out value at duration
-       end. */
-    UnsignedInt playCount;
+    /* If the player duration is empty, we can't call the scaler. If play count
+       is infinite, infinitely advance to a key at duration start. If not, stop
+       the animation. */
     K key;
-    std::tie(playCount, key) = _scaler(timeToUse - _startTime, _duration.size()[0]);
-    if(_playCount && playCount >= _playCount) {
-        _state = State::Stopped;
-        _startTime = {};
-        key = _duration.size()[0];
+    const K duration = _duration.size()[0];
+    if(duration == K{}) {
+        key = K{};
+        if(_playCount != 0) {
+            _state = State::Stopped;
+            _startTime = {};
+        }
+
+    /* Otherwise calculate current play iteration and key value in that
+       iteration. If we exceeded play count, stop the animation and give out
+       value at duration end. */
+    } else {
+        UnsignedInt playCount;
+        std::tie(playCount, key) = _scaler(timeToUse - _startTime, duration);
+        if(_playCount && playCount >= _playCount) {
+            _state = State::Stopped;
+            _startTime = {};
+            key = duration;
+        }
     }
 
     /* Advance all tracks. Properly handle durations that don't start at 0. */

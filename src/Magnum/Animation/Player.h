@@ -112,13 +112,19 @@ interpolated value changes, which is useful for triggering other events. See
 @ref addRawCallback() that allows for greater control and further performance
 optimizations. See its documentation for a usage example code snippet.
 
-By default, the @ref duration() of an animation is calculated implicitly from
-all added tracks. You can use @ref setDuration() to specify a custom duration
---- if it extends beyond the keyframe values, values of begin/end keyframes
-will be extrapolated according to @ref Extrapolation specified for every track;
-if it will be shorter, only a slice of the animation will be played. The
-animation is implicitly played only once, use @ref setPlayCount() to set a
-number of repeats or make it repeat indefinitely.
+The animation is implicitly played only once, use @ref setPlayCount() to set a
+number of repeats or make it repeat indefinitely. By default, the
+@ref duration() of an animation is calculated implicitly from all added tracks.
+You can use @ref setDuration() to specify a custom duration:
+
+-   If it extends beyond the keyframe values, values of begin/end keyframes
+    will be extrapolated according to @ref Extrapolation specified for every
+    track.
+-   If it will be shorter, only a slice of the animation will be played.
+-   If duration size is empty (min and and max se to the same value) and
+    @ref setPlayCount() is set to inifite, then the animator will indefinitely
+    give out value from a key that's at the start of the duration. If play
+    count is finite, the animation will get stopped right away.
 
 @section Animation-Player-playback Animation playback
 
@@ -239,7 +245,8 @@ template<class T, class K
          *
          * The function gets time from when the animation started and combined
          * duration of all tracks; returns play iteration index and key value
-         * inside given iteration.
+         * inside given iteration. The combined duration is guaranteed to be
+         * always non-zero, zero durations are handled by the player itself.
          */
         typedef std::pair<UnsignedInt, K>(*Scaler)(T, K);
 

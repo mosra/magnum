@@ -54,6 +54,8 @@ struct PlayerTest: TestSuite::Tester {
     void advancePlayCount();
     void advancePlayCountInfinite();
     void advanceChrono();
+    void advanceZeroDuration();
+    void advanceZeroDurationChrono();
 
     void setState();
 
@@ -108,6 +110,8 @@ PlayerTest::PlayerTest() {
               &PlayerTest::advancePlayCount,
               &PlayerTest::advancePlayCountInfinite,
               &PlayerTest::advanceChrono,
+              &PlayerTest::advanceZeroDuration,
+              &PlayerTest::advanceZeroDurationChrono,
 
               &PlayerTest::setState,
 
@@ -556,6 +560,55 @@ void PlayerTest::advanceChrono() {
 
     /* 1.75 secs in */
     player.advance(std::chrono::milliseconds{3750});
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(value, 4.0f);
+}
+
+void PlayerTest::advanceZeroDuration() {
+    Float value = -1.0f;
+    Player<Float> player;
+    player.add(Track, value)
+        /* 1.75 secs since the start of the original duration */
+        .setDuration(Range1D::fromSize(1.0f + 1.75f, 0.0f))
+        .setPlayCount(0)
+        .play(2.0f);
+
+    CORRADE_COMPARE(player.duration().size(), 0.0f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* Still before starting time, nothing is done */
+    player.advance(1.75f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* After that, the value at 1.75 secs is returned independent of time */
+    player.advance(100.0f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(value, 4.0f);
+}
+
+void PlayerTest::advanceZeroDurationChrono() {
+    Float value = -1.0f;
+    Player<std::chrono::nanoseconds, Float> player;
+    player.add(Track, value)
+        /* 1.75 secs since the start of the original duration */
+        .setDuration(Range1D::fromSize(1.0f + 1.75f, 0.0f))
+        .setPlayCount(0)
+        .play(std::chrono::seconds{2});
+
+    CORRADE_COMPARE(player.duration().size(), 0.0f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* Still before starting time, nothing is done */
+    player.advance(std::chrono::milliseconds{1750});
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* After that, the value at 1.75 seconds is returned independent of the
+       time */
+    player.advance(std::chrono::seconds{100});
     CORRADE_COMPARE(player.state(), State::Playing);
     CORRADE_COMPARE(value, 4.0f);
 }
