@@ -36,11 +36,13 @@ struct PlaneTest: TestSuite::Tester {
     explicit PlaneTest();
 
     void solid();
+    void solidTextured();
     void wireframe();
 };
 
 PlaneTest::PlaneTest() {
     addTests({&PlaneTest::solid,
+              &PlaneTest::solidTextured,
               &PlaneTest::wireframe});
 }
 
@@ -51,6 +53,18 @@ void PlaneTest::solid() {
     CORRADE_COMPARE(plane.primitive(), MeshPrimitive::TriangleStrip);
     CORRADE_COMPARE(plane.positions(0).size(), 4);
     CORRADE_COMPARE(plane.normals(0).size(), 4);
+    CORRADE_COMPARE(plane.textureCoords2DArrayCount(), 0);
+}
+
+void PlaneTest::solidTextured() {
+    Trade::MeshData3D plane = Primitives::planeSolid(Primitives::PlaneTextureCoords::Generate);
+
+    CORRADE_VERIFY(!plane.isIndexed());
+    CORRADE_COMPARE(plane.primitive(), MeshPrimitive::TriangleStrip);
+    CORRADE_COMPARE(plane.positions(0).size(), 4);
+    CORRADE_COMPARE(plane.normals(0).size(), 4);
+    CORRADE_COMPARE(plane.textureCoords2DArrayCount(), 1);
+    CORRADE_COMPARE(plane.textureCoords2D(0).size(), 4);
 }
 
 void PlaneTest::wireframe() {

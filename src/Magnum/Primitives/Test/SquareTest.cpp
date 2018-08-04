@@ -36,11 +36,13 @@ struct SquareTest: TestSuite::Tester {
     explicit SquareTest();
 
     void solid();
+    void solidTextured();
     void wireframe();
 };
 
 SquareTest::SquareTest() {
     addTests({&SquareTest::solid,
+              &SquareTest::solidTextured,
               &SquareTest::wireframe});
 }
 
@@ -50,6 +52,17 @@ void SquareTest::solid() {
     CORRADE_VERIFY(!square.isIndexed());
     CORRADE_COMPARE(square.primitive(), MeshPrimitive::TriangleStrip);
     CORRADE_COMPARE(square.positions(0).size(), 4);
+    CORRADE_COMPARE(square.textureCoords2DArrayCount(), 0);
+}
+
+void SquareTest::solidTextured() {
+    Trade::MeshData2D square = Primitives::squareSolid(Primitives::SquareTextureCoords::Generate);
+
+    CORRADE_VERIFY(!square.isIndexed());
+    CORRADE_COMPARE(square.primitive(), MeshPrimitive::TriangleStrip);
+    CORRADE_COMPARE(square.positions(0).size(), 4);
+    CORRADE_COMPARE(square.textureCoords2DArrayCount(), 1);
+    CORRADE_COMPARE(square.textureCoords2D(0).size(), 4);
 }
 
 void SquareTest::wireframe() {
