@@ -209,7 +209,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          *
          * If @ref Flag::AmbientTexture is set, default value is
          * @cpp 0xffffffff_rgbaf @ce and the color will be multiplied with
-         * ambient texture, otherwise default value is @cpp 0x000000ff_rgbaf @ce.
+         * ambient texture, otherwise default value is @cpp 0x00000000_rgbaf @ce.
          * @see @ref bindAmbientTexture()
          */
         Phong& setAmbientColor(const Color4& color) {

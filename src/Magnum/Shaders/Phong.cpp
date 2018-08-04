@@ -117,7 +117,7 @@ Phong::Phong(const Flags flags): _flags(flags) {
     #ifdef MAGNUM_TARGET_GLES
     /* Default to fully opaque white so we can see the textures */
     if(flags & Flag::AmbientTexture) setAmbientColor(Color4{1.0f});
-    else setAmbientColor(Color4{0.0f, 1.0f});
+    else setAmbientColor(Color4{0.0f});
     setDiffuseColor(Color4{1.0f});
     setSpecularColor(Color4{1.0f});
     setLightColor(Color4{1.0f});

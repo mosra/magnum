@@ -46,7 +46,7 @@ layout(location = 4)
 uniform lowp vec4 ambientColor
     #ifndef GL_ES
     #ifndef AMBIENT_TEXTURE
-    = vec4(0.0, 0.0, 0.0, 1.0)
+    = vec4(0.0)
     #else
     = vec4(1.0)
     #endif

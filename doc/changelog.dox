@@ -165,6 +165,9 @@ See also:
     @ref Shaders::Phong::bindTextures() now assert that the shader was created
     with the corresponding flag enabled to prevent accidental "black screen of
     death" errors.
+-   Ambient color in untextured @ref Shaders::Phong now defaults to
+    @cpp 0x00000000_rgbaf @ce in order to support alpha-masked drawing out of
+    the box
 
 @subsubsection changelog-latest-changes-texturetools TextureTools library
 
@@ -265,6 +268,10 @@ See also:
     with the corresponding flag enabled to prevent accidental "black screen of
     death" errors. This might cause your application to abort if it was calling
     these functions when not needed.
+-   Ambient color in untextured @ref Shaders::Phong now defaults to
+    @cpp 0x00000000_rgbaf @ce in order to support alpha-masked drawing out of
+    the box. This may break code that assumed the alpha channel being opaque by
+    default.
 -   @ref Trade::PhongMaterialData::ambientColor(),
     @ref Trade::PhongMaterialData::diffuseColor() "diffuseColor()" and
     @ref Trade::PhongMaterialData::specularColor() "specularColor()" now return
