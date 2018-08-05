@@ -518,6 +518,9 @@ your platform best:
     @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"
     library. Enables also building of the GL library.
 
+Magnum should be compiled with `WITH_SDL2APPLICATION`, so the examples on this site are possible to be compiled. 
+It is required to configure SDL2 beforehand using CMake and install it to the same folder where you are going to install Magnum. This folder is defined by CMAKE_PREFIX_PATH. It is quite possible to compile SDL2 later, after installing and compiling Magnum.
+
 None of the context libraries is built by default. Similarly to the application
 libraries, they are always built as static. You need them only if you chose to
 not use any of the application libraries above (see @ref platform-custom for
