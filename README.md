@@ -71,6 +71,13 @@ Graphics APIs:
 See the [Build Status page](http://magnum.graphics/build-status/) for detailed
 per-platform build status.
 
+WHAT'S NEW?
+===========
+
+Curious about what was added or improved recently? Check out the
+[Changelog](http://doc.magnum.graphics/magnum/changelog.html#changelog-latest)
+page in the documentation.
+
 GETTING STARTED
 ===============
 
@@ -105,14 +112,9 @@ separate repositories.
 -   **Magnum Extras** — playground for testing new APIs, specialized stuff
     that doesn't necessarily need to be a part of main Magnum repository or
     mutually exclusive functionality: https://github.com/mosra/magnum-extras
--   **libRocket integration** — integrates Magnum as rendering backend into
-    [libRocket](https://github.com/libRocket/libRocket) GUI library:
-    https://github.com/miguelmartin75/Magnum-libRocket
--   **Dear IMGUI integration** — integrated Magnum as rendering backend into
-    [Dear IMGUI](https://github.com/ocornut/imgui) library:
-    https://github.com/denesik/MagnumImguiPort
--   **Magnum Inspector** — Gtk-based inspector window running alongside Magnum
-    https://github.com/wivlaro/magnum-inspector
+
+Outside of the project itself, there's also a lot of community contributions
+— [check them out on the website](http://magnum.graphics/features/community/).
 
 CONTACT & SUPPORT
 =================
