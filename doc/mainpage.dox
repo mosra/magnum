@@ -30,7 +30,17 @@ namespace Magnum {
 
 This is a documentation for the Magnum Project. To see high-level feature
 overview, project goals or read the developer blog, head over to the
-[project homepage](http://magnum.graphics/).
+[project homepage](http://magnum.graphics/). There's also
+
+@section mainpage-whats-new What's new?
+
+Curious about what was added or improved recently? Check out the
+@ref changelog-latest "Changelog". There's also changelog for
+@ref corrade-changelog-latest "Corrade",
+@ref changelog-plugins-latest "Magnum Plugins",
+@ref changelog-extras-latest "Magnum Extras",
+@ref changelog-integration-latest "Magnum Integration" and
+@ref changelog-examples-latest "Magnum Examples".
 
 @section mainpage-getting-started Getting started
 
