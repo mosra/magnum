@@ -27,8 +27,10 @@
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/PixelFormat.h"
+#include "Magnum/Animation/Player.h"
 #include "Magnum/MeshTools/Transform.h"
 #include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
@@ -131,6 +133,29 @@ importer->setFileCallback([](const std::string& filename,
         return Containers::ArrayView<const char>{found->second};
     }, data);
 /* [AbstractImporter-setFileCallback-template] */
+}
+
+{
+UnsignedInt id{};
+std::unique_ptr<Trade::AbstractImporter> importer;
+/* [AnimationData-usage] */
+
+Containers::Optional<Trade::AnimationData> data = importer->animation(id);
+
+Animation::Player<Float> player;
+Containers::Array<Vector3> positions; /* Translations for all objects */
+for(UnsignedInt i = 0; i != data->trackCount(); ++i) {
+    if(data->trackTarget(i) == Trade::AnimationTrackTarget::Translation3D) {
+        CORRADE_INTERNAL_ASSERT(data->trackType(i) ==
+            Trade::AnimationTrackType::Vector3);
+        player.add(data->track<Vector3>(i), positions[data->trackTargetId(i)]);
+    }
+
+    // similarly for rotation / scaling ...
+}
+
+Containers::Array<char> animationData = data->release(); /* Take ownership */
+/* [AnimationData-usage] */
 }
 
 {

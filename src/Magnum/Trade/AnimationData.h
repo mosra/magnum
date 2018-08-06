@@ -201,7 +201,26 @@ class AnimationTrackData {
 /**
 @brief Animation clip data
 
-@see @ref AbstractImporter::animation()
+Provides access to animation data and track properties of given clip. The
+instance is commonly returned from @ref AbstractImporter::animation() and a
+typical usage is feeding all the tracks directly to @ref Animation::Player.
+For every track, you need to query its concrete type and then feed the
+resulting @ref Animation::TrackView of correct type to
+@ref Animation::Player::add(), for example.
+
+Note that this class owns the animation track data and the tracks are only
+views on it. In order to be able to destroy the @ref AnimationData instance and
+keep using the animations later, you need to take ownership of the data using
+@ref release().
+
+In the following snippet all animated positions are stored in an array. The
+array is then updated during calls to @ref Animation::Player::advance().
+
+@snippet MagnumTrade.cpp AnimationData-usage
+
+It's also possible to directly update object transformations using callbacks,
+among other things. See documentation of the @ref Animation::Player class for
+more information.
 @experimental
 */
 class MAGNUM_TRADE_EXPORT AnimationData {
