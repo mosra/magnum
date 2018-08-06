@@ -84,6 +84,8 @@ See also:
     @ref SceneGraph::TranslationRotationScalingTransformation3D transformation
     implementations that store separate translation, rotation and scaling
     parameters for easier use with animated scenes
+-   Ability to affect order of items drawn by @ref SceneGraph::Camera --- see
+    @ref SceneGraph-Drawable-draw-order for more information
 
 @subsubsection changelog-latest-new-shaders Shaders library
 

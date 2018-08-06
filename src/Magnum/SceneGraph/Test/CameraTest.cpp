@@ -23,7 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <algorithm>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/SceneGraph/Camera.hpp" /* only for aspectRatioFix(), so it doesn't have to be exported */
 #include "Magnum/SceneGraph/Camera.h"
@@ -45,7 +47,9 @@ struct CameraTest: TestSuite::Tester {
     void projectionSizeOrthographic();
     void projectionSizePerspective();
     void projectionSizeViewport();
+
     void draw();
+    void drawOrdered();
 };
 
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D> Object2D;
@@ -61,7 +65,9 @@ CameraTest::CameraTest() {
               &CameraTest::projectionSizeOrthographic,
               &CameraTest::projectionSizePerspective,
               &CameraTest::projectionSizeViewport,
-              &CameraTest::draw});
+
+              &CameraTest::draw,
+              &CameraTest::drawOrdered});
 }
 
 void CameraTest::fixAspectRatio() {
@@ -208,6 +214,57 @@ void CameraTest::draw() {
     CORRADE_COMPARE(firstTransformation, Matrix4::translation({0.0f, -3.0f, 1.5f})*Matrix4::scaling(Vector3(5.0f)));
     CORRADE_COMPARE(secondTransformation, Matrix4::translation(Vector3::zAxis(1.5f)));
     CORRADE_COMPARE(thirdTransformation, Matrix4());
+}
+
+void CameraTest::drawOrdered() {
+    class Drawable: public SceneGraph::Drawable3D {
+        public:
+            Drawable(AbstractObject3D& object, DrawableGroup3D* group, std::vector<Matrix4>& result): SceneGraph::Drawable3D(object, group), _result(result) {}
+
+        protected:
+            void draw(const Matrix4& transformationMatrix, Camera3D&) override {
+                _result.push_back(transformationMatrix);
+            }
+
+        private:
+            std::vector<Matrix4>& _result;
+    };
+
+    DrawableGroup3D group;
+    Scene3D scene;
+
+    std::vector<Matrix4> transformations;
+
+    Object3D first(&scene);
+    first.scale(Vector3(5.0f))
+        .translate(Vector3::zAxis(-1.0f));
+    new Drawable{first, &group, transformations};
+
+    Object3D second(&scene);
+    second.translate(Vector3::zAxis(3.0f));
+    new Drawable{second, &group, transformations};
+
+    Object3D third(&second);
+    third.translate(Vector3::zAxis(-1.5f));
+    new Drawable{third, &group, transformations};
+
+    Camera3D camera(third);
+
+    std::vector<std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4>> drawableTransformations = camera.drawableTransformations(group);
+    std::sort(drawableTransformations.begin(), drawableTransformations.end(),
+        [](const std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4>& a,
+           const std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4>& b) {
+            return a.second.translation().z() < b.second.translation().z();
+        });
+
+    camera.draw(drawableTransformations);
+
+    /* Should be ordered front to back, most negative Z first */
+    CORRADE_COMPARE_AS(transformations, (std::vector<Matrix4>{
+        Matrix4::translation(Vector3::zAxis(-2.5f))*Matrix4::scaling(Vector3{5.0f}), /* first */
+        Matrix4{}, /* third */
+        Matrix4::translation(Vector3::zAxis(1.5f)) /* second */
+    }), TestSuite::Compare::Container);
 }
 
 }}}

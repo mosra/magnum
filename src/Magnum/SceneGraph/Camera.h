@@ -187,11 +187,31 @@ template<UnsignedInt dimensions, class T> class Camera: public AbstractFeature<d
         void setViewport(const Vector2i& size);
 
         /**
+         * @brief Drawable transformations
+         *
+         * Returns calculated transformations for given group of drawables.
+         * Useful in combination with @ref draw(const std::vector<std::pair<std::reference_wrapper<Drawable<dimensions, T>>, MatrixTypeFor<dimensions, T>>>&)
+         * to provide custom draw order. See @ref SceneGraph-Drawable-draw-order
+         * for more information.
+         */
+        std::vector<std::pair<std::reference_wrapper<Drawable<dimensions, T>>, MatrixTypeFor<dimensions, T>>> drawableTransformations(DrawableGroup<dimensions, T>& group);
+
+        /**
          * @brief Draw
          *
          * Draws given group of drawables.
+         * @see @ref draw(const std::vector<std::pair<std::reference_wrapper<Drawable<dimensions, T>>, MatrixTypeFor<dimensions, T>>>&)
          */
         void draw(DrawableGroup<dimensions, T>& group);
+
+        /**
+         * @brief Draw given drawables with transformations
+         *
+         * Useful in combination with @ref drawableTransformations() for
+         * drawing in a custom order. See @ref SceneGraph-Drawable-draw-order
+         * for more information.
+         */
+        void draw(const std::vector<std::pair<std::reference_wrapper<Drawable<dimensions, T>>, MatrixTypeFor<dimensions, T>>>& drawableTransformations);
 
     private:
         /** Recalculates camera matrix */

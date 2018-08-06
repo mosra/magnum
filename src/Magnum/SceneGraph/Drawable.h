@@ -111,6 +111,17 @@ parameters once for whole group instead of setting them again in each
 
 @snippet MagnumSceneGraph-gl.cpp Drawable-multiple-groups
 
+@section SceneGraph-Drawable-draw-order Custom draw order
+
+By default the contents of a drawable group are drawn in the order they were
+added. In some cases you may want to draw them in a different order (for
+example to have correctly sorted transparent objects) or draw just a subset
+(for example to cull invisible objects way). That can be achieved using @ref Camera::drawableTransformations()
+in combination with @ref Camera::draw(const std::vector<std::pair<std::reference_wrapper<Drawable<dimensions, T>>, MatrixTypeFor<dimensions, T>>>&) and applying @ref std::sort() with a custom
+predicate on the drawable transformation list:
+
+@snippet MagnumSceneGraph.cpp Drawable-draw-order
+
 @section SceneGraph-Drawable-explicit-specializations Explicit template specializations
 
 The following specializations are explicitly compiled into @ref SceneGraph

@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <algorithm>
+
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/SceneGraph/Animable.h"
 #include "Magnum/SceneGraph/AnimableGroup.h"
@@ -327,6 +329,24 @@ camera.setProjectionMatrix(Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001
 /* [Camera-3D] */
 }
 
+}
+
+{
+Object3D cameraObject;
+SceneGraph::Camera3D camera{cameraObject};
+SceneGraph::DrawableGroup3D drawableGroup;
+/* [Drawable-draw-order] */
+std::vector<std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4>>
+    drawableTransformations = camera.drawableTransformations(drawableGroup);
+
+std::sort(drawableTransformations.begin(), drawableTransformations.end(),
+    [](const std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4>& a,
+       const std::pair<std::reference_wrapper<SceneGraph::Drawable3D>, Matrix4>& b) {
+        return a.second.translation().z() < b.second.translation().z();
+    });
+
+camera.draw(drawableTransformations);
+/* [Drawable-draw-order] */
 }
 
 }

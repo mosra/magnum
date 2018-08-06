@@ -82,6 +82,30 @@ template<UnsignedInt dimensions, class T> void Camera<dimensions, T>::setViewpor
     fixAspectRatio();
 }
 
+template<UnsignedInt dimensions, class T> std::vector<std::pair<std::reference_wrapper<Drawable<dimensions, T>>, MatrixTypeFor<dimensions, T>>> Camera<dimensions, T>::drawableTransformations(DrawableGroup<dimensions, T>& group) {
+    AbstractObject<dimensions, T>* scene = AbstractFeature<dimensions, T>::object().scene();
+    CORRADE_ASSERT(scene, "Camera::draw(): cannot draw when camera is not part of any scene", {});
+
+    /* Compute camera matrix */
+    AbstractFeature<dimensions, T>::object().setClean();
+
+    /* Compute transformations of all objects in the group relative to the camera */
+    std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>> objects;
+    objects.reserve(group.size());
+    for(std::size_t i = 0; i != group.size(); ++i)
+        objects.push_back(group[i].object());
+    std::vector<MatrixTypeFor<dimensions, T>> transformations =
+        scene->transformationMatrices(objects, _cameraMatrix);
+
+    /* Combine drawable references and transformation matrices */
+    std::vector<std::pair<std::reference_wrapper<Drawable<dimensions, T>>, MatrixTypeFor<dimensions, T>>> combined;
+    combined.reserve(group.size());
+    for(std::size_t i = 0; i != group.size(); ++i)
+        combined.emplace_back(group[i], transformations[i]);
+
+    return combined;
+}
+
 template<UnsignedInt dimensions, class T> void Camera<dimensions, T>::draw(DrawableGroup<dimensions, T>& group) {
     AbstractObject<dimensions, T>* scene = AbstractFeature<dimensions, T>::object().scene();
     CORRADE_ASSERT(scene, "Camera::draw(): cannot draw when camera is not part of any scene", );
@@ -100,6 +124,11 @@ template<UnsignedInt dimensions, class T> void Camera<dimensions, T>::draw(Drawa
     /* Perform the drawing */
     for(std::size_t i = 0; i != transformations.size(); ++i)
         group[i].draw(transformations[i], *this);
+}
+
+template<UnsignedInt dimensions, class T> void Camera<dimensions, T>::draw(const std::vector<std::pair<std::reference_wrapper<Drawable<dimensions, T>>, MatrixTypeFor<dimensions, T>>>& drawableTransformations) {
+    for(auto&& drawableTransformation: drawableTransformations)
+        drawableTransformation.first.get().draw(drawableTransformation.second, *this);
 }
 
 }}
