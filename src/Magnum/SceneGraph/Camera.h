@@ -184,14 +184,14 @@ template<UnsignedInt dimensions, class T> class Camera: public AbstractFeature<d
          * according to aspect ratio policy.
          * @see @ref setAspectRatioPolicy()
          */
-        virtual void setViewport(const Vector2i& size);
+        void setViewport(const Vector2i& size);
 
         /**
          * @brief Draw
          *
          * Draws given group of drawables.
          */
-        virtual void draw(DrawableGroup<dimensions, T>& group);
+        void draw(DrawableGroup<dimensions, T>& group);
 
     private:
         /** Recalculates camera matrix */

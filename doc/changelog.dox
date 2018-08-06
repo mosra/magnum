@@ -263,6 +263,10 @@ See also:
     working to fail with an assertion. See the new
     @ref Math::Matrix3::rotationShear() and @ref Math::Matrix4::rotationShear()
     accessors for a possible solution.
+-   @ref SceneGraph::Camera::setViewport() and @ref SceneGraph::Camera::draw()
+    are no longer @cpp virtual @ce functions. If you need to override their
+    functionality, simply call the subclass implementation directly instead of
+    calling it through a @ref SceneGraph::Camera.
 -   @ref Shaders::Flat::bindTexture(), @ref Shaders::Phong::bindAmbientTexture(),
     @ref Shaders::Phong::bindDiffuseTexture(),
     @ref Shaders::Phong::bindSpecularTexture() and
