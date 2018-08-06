@@ -225,6 +225,11 @@ See also:
 
 -   Compiled code snippets for @ref Audio and @ref SceneGraph libraries, fixing
     cases where outdated or plain wrong API constructs were mentioned
+-   Extended documentation for @ref Math::Matrix3::rotation(),
+    @ref Math::Matrix4::rotation() and related accessors, explaining use cases
+    and caveats
+-   Reworked documentation of @ref Math::Algorithms, adding math equations and
+    usage examples to all functions
 -   Explicitly mentioning copy/move constructibility for all classes with
     non-trivial construction
 -   Website styling got out of sync with generated Doxygen documentation,
