@@ -40,41 +40,66 @@ Adds drawing functionality to the object. Each Drawable is part of some
 @ref DrawableGroup and the whole group can be drawn with particular camera
 using @ref Camera::draw().
 
-@section SceneGraph-Drawable-usage Usage
+@section SceneGraph-Drawable-subclassing Subclassing
 
-First thing is to add @ref Drawable feature to some object and implement
-@ref draw() function. You can do it conveniently using multiple inheritance
-(see @ref scenegraph-features for introduction). Example drawable object that
-draws blue sphere:
+The class is used via subclassing and implementing the @ref draw() function.
+The simplest option is to do it via single inheritance. Example drawable object
+that draws a blue sphere:
 
 @snippet MagnumSceneGraph-gl.cpp Drawable-usage
 
-The @p transformationMatrix parameter in @ref draw() function contains
+For brevity the class has its own shader and mesh instance and a hardcoded
+light position, usually you'll have them stored in a central location, shared
+by multiple objects, and pass only references around.
+
+The @p transformationMatrix parameter in the @ref draw() function contains
 transformation of the object (to which the drawable is attached) relative to
-@p camera. The camera contains projection matrix. Some shaders (like the
-@ref Shaders::Phong used in the example) have separate functions for setting
+@p camera. The camera contains the projection matrix. Some shaders (like the
+@ref Shaders::Phong used in the snippet) have separate functions for setting
 transformation and projection matrix, but some (such as @ref Shaders::Flat)
-have single function to set composite transformation and projection matrix. In
-that case you need to combine the two matrices manually like in the following
-code. Some shaders have additional requirements for various transformation
-matrices, see their respective documentation for details.
+have a single function to set composite transformation and projection matrix.
+In that case you need to combine the two matrices manually like in the
+following code. Some shaders might have additional requirements, see their
+respective documentation for details.
 
 @snippet MagnumSceneGraph-gl.cpp Drawable-usage-shader
+
+@subsection SceneGraph-Drawable-usage Drawing the scene
 
 There is no way to just draw all the drawables in the scene, you need to create
 some drawable group and add the drawable objects to both the scene and the
 group. You can also use @ref DrawableGroup::add() and
 @ref DrawableGroup::remove() instead of passing the group in the constructor.
+If you don't need to change any properties of the drawable later, you can just
+"create and forget", the scene graph will take care of all memory manager from
+there.
 
 @snippet MagnumSceneGraph-gl.cpp Drawable-usage-instance
 
-The last thing you need is camera attached to some object (thus using its
-transformation). Using the camera and the drawable group you can perform
-drawing in your @ref Platform::Sdl2Application::drawEvent() "drawEvent()"
+The last thing you need is a camera attached to some object (thus using its
+transformation). With the camera and the drawable group you can perform drawing
+in your @ref Platform::Sdl2Application::drawEvent() "drawEvent()"
 implementation. See @ref Camera2D and @ref Camera3D documentation for more
 information.
 
 @snippet MagnumSceneGraph-gl.cpp Drawable-usage-camera
+
+@section SceneGraph-Drawable-multiple-inheritance Using multiple inheritance
+
+Besides single inheritance, it's also possible to derive your class from both
+@ref Object and @ref Drawable. This for example allows you to directly access
+object transformation and parent/child relationship from within the drawable
+object.
+
+@snippet MagnumSceneGraph-gl.cpp Drawable-usage-multiple-inheritance
+
+The @ref draw() implementation is the same as in the above snippet. Note that,
+in contrast to the single inheritance case, where the @ref Drawable constructor
+got the holder @cpp object @ce, here we pass it @cpp *this @ce, because this
+class is both the holder object and the drawable. Instantiating the drawable
+object is then done in a single step:
+
+@snippet MagnumSceneGraph-gl.cpp Drawable-usage-instance-multiple-inheritance
 
 @section SceneGraph-Drawable-multiple-groups Using multiple drawable groups to improve performance
 

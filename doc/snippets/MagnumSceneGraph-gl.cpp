@@ -90,18 +90,23 @@ static_cast<void>(absolutePosition);
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 
-class RedCube: public Object3D, public SceneGraph::Drawable3D {
+class RedCubeDrawable: public SceneGraph::Drawable3D {
     public:
-        explicit RedCube(Object3D* parent, SceneGraph::DrawableGroup3D* group): Object3D{parent}, SceneGraph::Drawable3D{*this, group} {
+        explicit RedCubeDrawable(Object3D& object, SceneGraph::DrawableGroup3D* group):
+            SceneGraph::Drawable3D{object, group}
+        {
             _mesh = MeshTools::compile(Primitives::cubeSolid());
         }
 
     private:
         void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override {
-            _shader.setDiffuseColor(Color3::fromHsv(216.0_degf, 0.85f, 1.0f))
-                .setLightPosition(camera.cameraMatrix().transformPoint({5.0f, 5.0f, 7.0f}))
+            using namespace Math::Literals;
+
+            _shader.setDiffuseColor(0xa5c9ea_rgbf)
+                .setLightPosition(camera.cameraMatrix().transformPoint(
+                    {5.0f, 5.0f, 7.0f}))
                 .setTransformationMatrix(transformationMatrix)
-                .setNormalMatrix(transformationMatrix.rotation())
+                .setNormalMatrix(transformationMatrix.rotationScaling())
                 .setProjectionMatrix(camera.projectionMatrix());
             _mesh.draw(_shader);
         }
@@ -111,11 +116,29 @@ class RedCube: public Object3D, public SceneGraph::Drawable3D {
 };
 /* [Drawable-usage] */
 
+/* [Drawable-usage-multiple-inheritance] */
+class RedCube: public Object3D, public SceneGraph::Drawable3D {
+    public:
+        explicit RedCube(Object3D* parent, SceneGraph::DrawableGroup3D* group):
+            Object3D{parent}, SceneGraph::Drawable3D{*this, group}
+        {
+            _mesh = MeshTools::compile(Primitives::cubeSolid());
+        }
+
+    private:
+        void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) override;
+
+        GL::Mesh _mesh;
+        Shaders::Phong _shader;
+};
+/* [Drawable-usage-multiple-inheritance] */
+
 void draw(const Matrix4&, SceneGraph::Camera3D&);
 void draw(const Matrix4& transformationMatrix, SceneGraph::Camera3D& camera) {
 /* [Drawable-usage-shader] */
 Shaders::Flat3D shader;
-shader.setTransformationProjectionMatrix(camera.projectionMatrix()*transformationMatrix);
+shader.setTransformationProjectionMatrix(
+    camera.projectionMatrix()*transformationMatrix);
 /* [Drawable-usage-shader] */
 }
 
@@ -198,11 +221,20 @@ int main() {
 Scene3D scene;
 SceneGraph::DrawableGroup3D drawables;
 
-(new RedCube(&scene, &drawables))
-    ->translate(Vector3::yAxis(-0.3f))
+Object3D* redCube = new Object3D{&scene};
+(*redCube)
+    .translate(Vector3::yAxis(-0.3f))
     .rotateX(30.0_degf);
+new RedCubeDrawable{*redCube, &drawables};
 
 // ...
 /* [Drawable-usage-instance] */
+
+/* [Drawable-usage-instance-multiple-inheritance] */
+(new RedCube(&scene, &drawables))
+    ->translate(Vector3::yAxis(-0.3f))
+    .rotateX(30.0_degf);
+/* [Drawable-usage-instance-multiple-inheritance] */
+
 return 0; /* on iOS SDL redefines main to SDL_main and then return is needed */
 }
