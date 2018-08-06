@@ -42,6 +42,14 @@ namespace Magnum { namespace Trade {
 
 Provides access to mesh data and additional information, such as primitive
 type.
+
+It's possible to use @ref MeshTools::transformPointsInPlace() and
+@ref MeshTools::transformVectorsInPlace() to do transformations on the stored
+vertex data. For example, baking a particular translation + rotation directly
+to positions and normals:
+
+@snippet MagnumTrade.cpp MeshData3D-transform
+
 @see @ref AbstractImporter::mesh3D(), @ref MeshData2D
 */
 class MAGNUM_TRADE_EXPORT MeshData3D {

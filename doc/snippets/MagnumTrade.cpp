@@ -27,8 +27,11 @@
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/PixelFormat.h"
+#include "Magnum/MeshTools/Transform.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
+#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
 #include "Magnum/Trade/ObjectData2D.h"
 #include "Magnum/Trade/ObjectData3D.h"
 #include "Magnum/Trade/PhongMaterialData.h"
@@ -163,8 +166,20 @@ else
 #endif
 
 {
-Trade::ObjectData2D& foo();
-Trade::ObjectData2D& data = foo();
+Trade::MeshData2D& foo();
+Trade::MeshData2D& data = foo();
+/* [MeshData2D-transform] */
+Matrix3 transformation =
+    Matrix3::translation({3.0f, -2.0f})*
+    Matrix3::scaling(Vector2{2.0f})*
+    Matrix3::rotation(45.0_degf);
+MeshTools::transformPointsInPlace(transformation, data.positions(0));
+/* [MeshData2D-transform] */
+}
+
+{
+Trade::ObjectData2D& baz();
+Trade::ObjectData2D& data = baz();
 /* [ObjectData2D-transformation] */
 Matrix3 transformation =
     Matrix3::from(data.rotation().toMatrix(), data.translation())*
@@ -174,8 +189,20 @@ static_cast<void>(transformation);
 }
 
 {
-Trade::ObjectData3D& bar();
-Trade::ObjectData3D& data = bar();
+Trade::MeshData3D& bar();
+Trade::MeshData3D& data = bar();
+/* [MeshData3D-transform] */
+Matrix4 transformation =
+    Matrix4::translation({3.0f, 1.5f, -2.0f})*
+    Matrix4::rotationX(45.0_degf);
+MeshTools::transformPointsInPlace(transformation, data.positions(0));
+MeshTools::transformVectorsInPlace(transformation, data.normals(0));
+/* [MeshData3D-transform] */
+}
+
+{
+Trade::ObjectData3D& fizz();
+Trade::ObjectData3D& data = fizz();
 /* [ObjectData3D-transformation] */
 Matrix4 transformation =
     Matrix4::from(data.rotation().toMatrix(), data.translation())*
