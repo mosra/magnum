@@ -70,7 +70,7 @@ Expects that both quaternions are normalized. @f[
 @f]
 @see @ref Quaternion::isNormalized(),
     @ref angle(const Complex<T>&, const Complex<T>&),
-    @ref angle(const Vector<size, T>&, const Vector<size, T>&)
+    @ref angle(const Vector<size, FloatingPoint>&, const Vector<size, FloatingPoint>&)
  */
 template<class T> inline Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),

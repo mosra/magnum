@@ -61,6 +61,11 @@ See also:
     @ref Math::Matrix4::scalingSquared(), @ref Math::Matrix3::scaling() const
     and @ref Math::Matrix4::scaling() const getters for extracting further
     properties from the rotation/scaling part of a matrix
+-   Added @ref Math::Color3::fromSrgb(UnsignedInt),
+    @ref Math::Color4::fromSrgbAlpha(UnsignedInt),
+    @ref Math::Color4::fromSrgb(UnsignedInt, T), @ref Math::Color3::toSrgbInt(),
+    and @ref Math::Color4::toSrgbAlphaInt() for easier conversion of packed
+    24-/32-bit sRGB colors to and from @ref Math::Color3 / @ref Math::Color4
 -   Added @ref Math::Constants::piQuarter()
 -   Added a convenience function @ref Math::select() as a constant
     interpolation counterpart to @ref Math::lerp()

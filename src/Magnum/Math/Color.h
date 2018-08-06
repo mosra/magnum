@@ -364,7 +364,9 @@ template<class T> class Color3: public Vector3<T> {
          *          \left( \dfrac{\boldsymbol{c}_\mathrm{sRGB} + a}{1 + a} \right)^{2.4}, & \boldsymbol{c}_\mathrm{sRGB} > 0.04045
          *      \end{cases}
          * @f]
-         * @see @link operator""_srgbf() @endlink, @ref toSrgb()
+         * @see @ref fromSrgb(const Vector3<Integral>&), @ref fromSrgb(UnsignedInt),
+         *      @link operator""_srgbf() @endlink, @ref toSrgb(),
+         *      @ref Color4::fromSrgbAlpha()
          */
         /* Input is a Vector3 to hint that it doesn't have any (additive,
            multiplicative) semantics of a linear RGB color */
@@ -381,11 +383,33 @@ template<class T> class Color3: public Vector3<T> {
          * out of it:
          *
          * @snippet MagnumMath.cpp Color3-fromSrgb
+         *
+         * @see @ref fromSrgb(UnsignedInt), @link operator""_srgbf() @endlink,
+         *      @ref Color4::fromSrgbAlpha(const Vector4<Integral>&)
          */
         /* Input is a Vector3 to hint that it doesn't have any (additive,
            multiplicative) semantics of a linear RGB color */
         template<class Integral> static Color3<T> fromSrgb(const Vector3<Integral>& srgb) {
             return Implementation::fromSrgbIntegral<T, Integral>(srgb);
+        }
+
+        /** @overload
+         * @brief Create linear RGB color from 24-bit sRGB representation
+         * @param srgb  24-bit sRGB color
+         *
+         * See @ref fromSrgb() for more information and @ref toSrgbInt() for an
+         * inverse operation. There's also a @link operator""_srgbf() @endlink
+         * that does this conversion directly from hexadecimal literals. The
+         * following two statements are equivalent:
+         *
+         * @snippet MagnumMath.cpp Color3-fromSrgb-int
+         *
+         * @see @ref Color4::fromSrgbAlpha(UnsignedInt)
+         */
+        static Color3<T> fromSrgb(UnsignedInt srgb) {
+            return fromSrgb<UnsignedByte>({UnsignedByte(srgb >> 16),
+                                           UnsignedByte(srgb >> 8),
+                                           UnsignedByte(srgb)});
         }
 
         /**
@@ -525,7 +549,7 @@ template<class T> class Color3: public Vector3<T> {
          *          (1 + a) \boldsymbol{c}_\mathrm{linear}^{1/2.4}-a, & \boldsymbol{c}_\mathrm{linear} > 0.0031308
          *      \end{cases}
          * @f]
-         * @see @ref fromSrgb()
+         * @see @ref fromSrgb(), @ref toSrgbInt(), @ref Color4::toSrgbAlpha()
          */
         Vector3<FloatingPointType> toSrgb() const {
             return Implementation::toSrgb<T>(*this);
@@ -538,9 +562,23 @@ template<class T> class Color3: public Vector3<T> {
          * want to create for example an 8-bit sRGB representation out of it:
          *
          * @snippet MagnumMath.cpp Color3-toSrgb
+         *
+         * @see @ref toSrgbInt(), @ref Color4::toSrgbAlpha()
          */
         template<class Integral> Vector3<Integral> toSrgb() const {
             return Implementation::toSrgbIntegral<T, Integral>(*this);
+        }
+
+        /**
+         * @brief Convert to 24-bit integral sRGB representation
+         *
+         * See @ref toSrgb() const for more information and
+         * @ref fromSrgb(UnsignedInt) for an inverse operation.
+         * @see @ref Color4::toSrgbAlphaInt()
+         */
+        UnsignedInt toSrgbInt() const {
+            const auto srgb = toSrgb<UnsignedByte>();
+            return (srgb[0] << 16) | (srgb[1] << 8) | srgb[2];
         }
 
         /**
@@ -737,9 +775,11 @@ class Color4: public Vector4<T> {
          *
          * Useful in cases where you have for example an 8-bit sRGB + alpha
          * representation and want to create a floating-point linear RGBA color
-         * out of it:
+         * out of it. See @ref Color3::fromSrgb() for more information.
          *
          * @snippet MagnumMath.cpp Color4-fromSrgbAlpha
+         *
+         * @see @ref fromSrgbAlpha(UnsignedInt)
          */
         /* Input is a Vector4 to hint that it doesn't have any (additive,
            multiplicative) semantics of a linear RGB color */
@@ -756,14 +796,55 @@ class Color4: public Vector4<T> {
          *
          * Useful in cases where you have for example an 8-bit sRGB
          * representation and want to create a floating-point linear RGBA color
-         * out of it:
+         * out of it. See @ref Color3::fromSrgb() for more information.
          *
          * @snippet MagnumMath.cpp Color4-fromSrgb
+         *
+         * @see @ref fromSrgb(UnsignedInt, T)
          */
         /* Input is a Vector3 to hint that it doesn't have any (additive,
            multiplicative) semantics of a linear RGB color */
         template<class Integral> static Color4<T> fromSrgb(const Vector3<Integral>& srgb, T a = Implementation::fullChannel<T>()) {
             return {Implementation::fromSrgbIntegral<T, Integral>(srgb), a};
+        }
+
+        /** @overload
+         * @brief Create linear RGBA color from 32-bit sRGB + alpha representation
+         * @param srgbAlpha     32-bit sRGB color with linear alpha
+         *
+         * See @ref Color3::fromSrgb() for more information and
+         * @ref toSrgbAlphaInt() for an inverse operation. There's also a
+         * @link operator""_srgbaf() @endlink that does this conversion
+         * directly from hexadecimal literals.
+         *
+         * @snippet MagnumMath.cpp Color4-fromSrgbAlpha-int
+         */
+        static Color4<T> fromSrgbAlpha(UnsignedInt srgbAlpha) {
+            return fromSrgbAlpha<UnsignedByte>({UnsignedByte(srgbAlpha >> 24),
+                                                UnsignedByte(srgbAlpha >> 16),
+                                                UnsignedByte(srgbAlpha >> 8),
+                                                UnsignedByte(srgbAlpha)});
+        }
+
+        /** @overload
+         * @brief Create linear RGBA color from 32-bit sRGB + alpha representation
+         * @param srgb      24-bit sRGB color
+         * @param a         Alpha value, defaults to @cpp 1.0 @ce for
+         *      floating-point types and maximum positive value for integral
+         *      types
+         *
+         * See @ref Color3::fromSrgb() for more information and
+         * @ref toSrgbAlphaInt() for an inverse operation. There's also a
+         * @link operator""_srgbaf() @endlink that does this conversion
+         * directly from hexadecimal literals. The following two statements are
+         * equivalent:
+         *
+         * @snippet MagnumMath.cpp Color4-fromSrgb-int
+         */
+        static Color4<T> fromSrgb(UnsignedInt srgb, T a = Implementation::fullChannel<T>()) {
+            return fromSrgb<UnsignedByte>({UnsignedByte(srgb >> 16),
+                                           UnsignedByte(srgb >> 8),
+                                           UnsignedByte(srgb)}, a);
         }
 
         /**
@@ -897,7 +978,7 @@ class Color4: public Vector4<T> {
          * channel is kept linear. See @ref Color3::toSrgb() for more
          * information.
          *
-         * @see @ref fromSrgbAlpha()
+         * @see @ref fromSrgbAlpha(), @ref toSrgbAlphaInt()
          */
         Vector4<FloatingPointType> toSrgbAlpha() const {
             return Implementation::toSrgbAlpha<T>(*this);
@@ -911,9 +992,24 @@ class Color4: public Vector4<T> {
          * out of it:
          *
          * @snippet MagnumMath.cpp Color4-toSrgbAlpha
+         *
+         * @see @ref toSrgbAlphaInt()
          */
         template<class Integral> Vector4<Integral> toSrgbAlpha() const {
             return Implementation::toSrgbAlphaIntegral<T, Integral>(*this);
+        }
+
+        /**
+         * @brief Convert to 32-bit integral sRGB + linear alpha representation
+         *
+         * See @ref Color3::toSrgb() const for more information and
+         * @ref fromSrgbAlpha(UnsignedInt) for an inverse operation. Use
+         * @ref rgb() together with @ref Color3::toSrgbInt() to output a 24-bit
+         * sRGB color.
+         */
+        UnsignedInt toSrgbAlphaInt() const {
+            const auto srgbAlpha = toSrgbAlpha<UnsignedByte>();
+            return (srgbAlpha[0] << 24) | (srgbAlpha[1] << 16) | (srgbAlpha[2] << 8) | srgbAlpha[3];
         }
 
         /**
@@ -1092,9 +1188,7 @@ inline Color3<Float> operator "" _rgbf(unsigned long long value) {
 /** @relatesalso Magnum::Math::Color3
 @brief Float sRGB literal
 
-Unpacks the 8-bit values into three floats and converts the color space from
-sRGB to linear RGB. See @ref Color3::fromSrgb() for more information. Example
-usage:
+Calls @ref Color3::fromSrgb(UnsignedInt) on the literal value. Example usage:
 
 @snippet MagnumMath.cpp _srgbf
 
@@ -1103,7 +1197,7 @@ usage:
 @m_keywords{_srgbf srgbf}
 */
 inline Color3<Float> operator "" _srgbf(unsigned long long value) {
-    return Color3<Float>::fromSrgb<UnsignedByte>({UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
+    return Color3<Float>::fromSrgb(value);
 }
 
 /** @relatesalso Magnum::Math::Color4
@@ -1128,9 +1222,8 @@ inline Color4<Float> operator "" _rgbaf(unsigned long long value) {
 /** @relatesalso Magnum::Math::Color4
 @brief Float sRGB + alpha literal
 
-Unpacks the 8-bit values into four floats and converts the color space from
-sRGB + alpha to linear RGBA. See @ref Color4::fromSrgbAlpha() for more
-information. Example usage:
+Calls @ref Color4::fromSrgbAlpha(UnsignedInt) on the literal value. Example
+usage:
 
 @snippet MagnumMath.cpp _srgbaf
 
@@ -1139,7 +1232,7 @@ information. Example usage:
 @m_keywords{_srgbaf srgbaf}
 */
 inline Color4<Float> operator "" _srgbaf(unsigned long long value) {
-    return Color4<Float>::fromSrgbAlpha<UnsignedByte>({UnsignedByte(value >> 24), UnsignedByte(value >> 16), UnsignedByte(value >> 8), UnsignedByte(value)});
+    return Color4<Float>::fromSrgbAlpha(value);
 }
 
 }

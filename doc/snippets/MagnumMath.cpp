@@ -700,6 +700,15 @@ static_cast<void>(rgb);
 }
 
 {
+/* [Color3-fromSrgb-int] */
+Color3 a = Color3::fromSrgb(0xff3366);
+Color3 b = 0xff3366_srgbf;
+/* [Color3-fromSrgb-int] */
+static_cast<void>(a);
+static_cast<void>(b);
+}
+
+{
 Color3 color;
 /* [Color3-toHsv] */
 Deg hue;
@@ -727,8 +736,24 @@ static_cast<void>(rgba);
 {
 /* [Color4-fromSrgb] */
 Math::Vector3<UnsignedByte> srgb;
-auto rgba = Color4::fromSrgb(srgb);
+auto rgba = Color4::fromSrgb(srgb, 0.5f);
 /* [Color4-fromSrgb] */
+static_cast<void>(rgba);
+}
+
+{
+/* [Color4-fromSrgbAlpha-int] */
+Color4 a = Color4::fromSrgbAlpha(0xff336680);
+Color4 b = 0xff336680_srgbaf;
+/* [Color4-fromSrgbAlpha-int] */
+static_cast<void>(a);
+static_cast<void>(b);
+}
+
+{
+/* [Color4-fromSrgb-int] */
+Color4 rgba = Color4::fromSrgb(0xff3366, 0.5f);
+/* [Color4-fromSrgb-int] */
 static_cast<void>(rgba);
 }
 
