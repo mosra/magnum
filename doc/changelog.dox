@@ -140,6 +140,12 @@ See also:
 -   @ref Math::Matrix3::rotation() const and @ref Math::Matrix4::rotation() const
     now allow non-uniform scaling, but expect the roation/scaling part to be
     orthogonal after normalization
+-   @ref Math::angle(), @ref Math::Vector::lengthInverted(),
+    @ref Math::Vector::normalized(), @ref Math::Vector::resized(),
+    @ref Math::Vector::projected(), @ref Math::Vector::projectedOntoNormalized()
+    and @ref Math::Vector2::aspectRatio() are now enabled only for
+    floating-point types to avoid errors when using these functions
+    accidentally on integral vectors
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 

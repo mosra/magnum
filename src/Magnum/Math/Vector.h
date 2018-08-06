@@ -84,17 +84,24 @@ template<std::size_t size, class T> inline T dot(const Vector<size, T>& a, const
 /** @relatesalso Vector
 @brief Angle between normalized vectors
 
-Expects that both vectors are normalized. @f[
+Expects that both vectors are normalized. Enabled only for floating-point
+types. @f[
     \theta = acos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| |\boldsymbol b|} \right) = acos (\boldsymbol a \cdot \boldsymbol b)
 @f]
 @see @ref Vector::isNormalized(),
     @ref angle(const Complex<T>&, const Complex<T>&),
     @ref angle(const Quaternion<T>&, const Quaternion<T>&)
 */
-template<std::size_t size, class T> inline Rad<T> angle(const Vector<size, T>& normalizedA, const Vector<size, T>& normalizedB) {
+template<std::size_t size, class FloatingPoint> inline
+#ifdef DOXYGEN_GENERATING_OUTPUT
+Rad<FloatingPoint>
+#else
+typename std::enable_if<std::is_floating_point<FloatingPoint>::value, Rad<FloatingPoint>>::type
+#endif
+angle(const Vector<size, FloatingPoint>& normalizedA, const Vector<size, FloatingPoint>& normalizedB) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::angle(): vectors must be normalized", {});
-    return Rad<T>(std::acos(dot(normalizedA, normalizedB)));
+    return Rad<FloatingPoint>(std::acos(dot(normalizedA, normalizedB)));
 }
 
 /**
@@ -468,28 +475,39 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Inverse vector length
          *
-         * @f[
+         * Enabled only for floating-point types. @f[
          *      \frac{1}{|\boldsymbol a|} = \frac{1}{\sqrt{\boldsymbol a \cdot \boldsymbol a}}
          * @f]
          * @see @ref length(), @ref Math::sqrtInverted(), @ref normalized(),
          *      @ref resized()
          */
-        T lengthInverted() const { return T(1)/length(); }
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        T
+        #else
+        template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, T>::type
+        #endif
+        lengthInverted() const { return T(1)/length(); }
 
         /**
          * @brief Normalized vector (of unit length)
          *
+         * Enabled only for floating-point types.
          * @see @ref isNormalized(), @ref lengthInverted(), @ref resized()
          * @m_keyword{normalize(),GLSL normalize(),}
          */
-        Vector<size, T> normalized() const { return *this*lengthInverted(); }
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>
+        #else
+        template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Vector<size, T>>::type
+        #endif
+        normalized() const { return *this*lengthInverted(); }
 
         /**
          * @brief Resized vector
          *
          * Convenience equivalent to the following code. Due to operation order
          * this function is faster than the obvious way of sizing
-         * @ref normalized() vector.
+         * a @ref normalized() vector. Enabled only for floating-point types.
          *
          * @code{.cpp}
          * vec*(vec.lengthInverted()*length) // the parentheses are important
@@ -497,19 +515,30 @@ template<std::size_t size, class T> class Vector {
          *
          * @see @ref normalized()
          */
-        Vector<size, T> resized(T length) const {
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>
+        #else
+        template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Vector<size, T>>::type
+        #endif
+        resized(T length) const {
             return *this*(lengthInverted()*length);
         }
 
         /**
          * @brief Vector projected onto line
          *
-         * Returns vector projected onto @p line. @f[
+         * Returns a vector projected onto @p line. Enabled only for
+         * floating-point types. @f[
          *      \operatorname{proj}_{\boldsymbol{b}}\,(\boldsymbol{a}) = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b
          * @f]
          * @see @ref Math::dot(), @ref projectedOntoNormalized()
          */
-        Vector<size, T> projected(const Vector<size, T>& line) const {
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>
+        #else
+        template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Vector<size, T>>::type
+        #endif
+        projected(const Vector<size, T>& line) const {
             return line*Math::dot(*this, line)/line.dot();
         }
 
@@ -517,13 +546,18 @@ template<std::size_t size, class T> class Vector {
          * @brief Vector projected onto normalized line
          *
          * Slightly faster alternative to @ref projected(), expects @p line to
-         * be normalized. @f[
+         * be normalized. Enabled only for floating-point types. @f[
          *      \operatorname{proj}_{\boldsymbol{b}}\,(\boldsymbol{a}) = \frac{\boldsymbol a \cdot \boldsymbol b}{\boldsymbol b \cdot \boldsymbol b} \boldsymbol b =
          *          (\boldsymbol a \cdot \boldsymbol b) \boldsymbol b
          * @f]
          * @see @ref Math::dot()
          */
-        Vector<size, T> projectedOntoNormalized(const Vector<size, T>& line) const;
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>
+        #else
+        template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Vector<size, T>>::type
+        #endif
+        projectedOntoNormalized(const Vector<size, T>& line) const;
 
         /**
          * @brief Flipped vector
@@ -1159,16 +1193,16 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
         return Math::Vector<size, T>::operator/(other);                     \
     }                                                                       \
                                                                             \
-    Type<T> normalized() const {                                            \
+    template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Type<T>>::type normalized() const { \
         return Math::Vector<size, T>::normalized();                         \
     }                                                                       \
-    Type<T> resized(T length) const {                                       \
+    template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Type<T>>::type resized(T length) const { \
         return Math::Vector<size, T>::resized(length);                      \
     }                                                                       \
-    Type<T> projected(const Math::Vector<size, T>& other) const {           \
+    template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Type<T>>::type projected(const Math::Vector<size, T>& other) const {           \
         return Math::Vector<size, T>::projected(other);                     \
     }                                                                       \
-    Type<T> projectedOntoNormalized(const Math::Vector<size, T>& other) const { \
+    template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, Type<T>>::type projectedOntoNormalized(const Math::Vector<size, T>& other) const { \
         return Math::Vector<size, T>::projectedOntoNormalized(other);       \
     }                                                                       \
     constexpr Type<T> flipped() const {                                     \
@@ -1318,7 +1352,13 @@ template<std::size_t size, class T> inline Vector<size, T> Vector<size, T>::oper
     return out;
 }
 
-template<std::size_t size, class T> inline Vector<size, T> Vector<size, T>::projectedOntoNormalized(const Vector<size, T>& line) const {
+template<std::size_t size, class T>
+#ifdef DOXYGEN_GENERATING_OUTPUT
+inline Vector<size, T>
+#else
+template<class U> inline typename std::enable_if<std::is_floating_point<U>::value, Vector<size, T>>::type
+#endif
+Vector<size, T>::projectedOntoNormalized(const Vector<size, T>& line) const {
     CORRADE_ASSERT(line.isNormalized(), "Math::Vector::projectedOntoNormalized(): line must be normalized", {});
     return line*Math::dot(*this, line);
 }

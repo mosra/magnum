@@ -168,11 +168,17 @@ template<class T> class Vector2: public Vector<2, T> {
         /**
          * @brief Aspect ratio
          *
-         * Returns quotient of the two elements. @f[
+         * Returns quotient of the two elements. Enabled only for
+         * floating-point types. @f[
          *      a = \frac{v_x}{v_y}
          * @f]
          */
-        T aspectRatio() const { return x()/y(); }
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        T
+        #else
+        template<class U = T> typename std::enable_if<std::is_floating_point<U>::value, T>::type
+        #endif
+        aspectRatio() const { return x()/y(); }
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(2, Vector2)
 };
