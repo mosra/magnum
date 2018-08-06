@@ -65,6 +65,12 @@ MAGNUM_SCENEGRAPH_EXPORT Debug& operator<<(Debug& debug, AnimationState value);
 Adds animation feature to object. Each Animable is part of some
 @ref AnimableGroup, which takes care of running the animations.
 
+@note
+    The Animable feature affects only a single object. In many cases you have
+    animations affecting multiple objects in a scene. See the @ref Animation
+    namespace and the @ref Animation::Player class in particular for an
+    alternative API.
+
 @section SceneGraph-Animable-usage Usage
 
 First thing is to add @ref Animable feature to some object and implement
