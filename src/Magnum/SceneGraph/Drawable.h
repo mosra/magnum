@@ -64,7 +64,7 @@ respective documentation for details.
 
 @snippet MagnumSceneGraph-gl.cpp Drawable-usage-shader
 
-@subsection SceneGraph-Drawable-usage Drawing the scene
+@section SceneGraph-Drawable-usage Drawing the scene
 
 There is no way to just draw all the drawables in the scene, you need to create
 some drawable group and add the drawable objects to both the scene and the
