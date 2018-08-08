@@ -407,7 +407,7 @@ template<class V, class R = Animation::ResultOf<V>> MAGNUM_TRADE_EXPORT auto ani
 #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
 namespace Implementation {
     /* LCOV_EXCL_START */
-    template<class T> AnimationTrackType animationTypeFor();
+    template<class T> constexpr AnimationTrackType animationTypeFor();
     template<> constexpr AnimationTrackType animationTypeFor<bool>() { return AnimationTrackType::Bool; }
     template<> constexpr AnimationTrackType animationTypeFor<Float>() { return AnimationTrackType::Float; }
     template<> constexpr AnimationTrackType animationTypeFor<UnsignedInt>() { return AnimationTrackType::UnsignedInt; }
