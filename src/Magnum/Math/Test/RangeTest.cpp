@@ -116,6 +116,7 @@ struct RangeTest: Corrade::TestSuite::Tester {
     void scaled();
 
     void contains();
+    void intersectIntersects();
     void join();
 
     void subclassTypes();
@@ -154,6 +155,7 @@ RangeTest::RangeTest() {
               &RangeTest::scaled,
 
               &RangeTest::contains,
+              &RangeTest::intersectIntersects,
               &RangeTest::join,
 
               &RangeTest::subclassTypes,
@@ -504,6 +506,58 @@ void RangeTest::contains() {
     CORRADE_VERIFY(a.contains({40, 23}));
     CORRADE_VERIFY(!a.contains({33, 23}));
     CORRADE_VERIFY(!a.contains({40, 30}));
+}
+
+void RangeTest::intersectIntersects() {
+    Range2Di a({34, 23}, {47, 30});
+
+    /* Intersects itself */
+    CORRADE_VERIFY(Math::intersects(a, a));
+    CORRADE_COMPARE(Math::intersect(a, a), a);
+
+    /* Non-empty intersection */
+    Range2Di b{{30, 25}, {35, 105}};
+    Range2Di c{{34, 25}, {35, 30}};
+    CORRADE_VERIFY(Math::intersects(a, b));
+    CORRADE_VERIFY(Math::intersects(b, a));
+    CORRADE_COMPARE(Math::intersect(a, b), c);
+    CORRADE_COMPARE(Math::intersect(b, a), c);
+
+    /* Intersecting with an empty range outside produces a default-constructed range */
+    Range2Di d{{130, -15}, {130, -15}};
+    CORRADE_VERIFY(!Math::intersects(a, d));
+    CORRADE_VERIFY(!Math::intersects(d, a));
+    CORRADE_COMPARE(Math::intersect(a, d), Range2Di{});
+    CORRADE_COMPARE(Math::intersect(d, a), Range2Di{});
+
+    /* Intersecting with an empty range inside produces an empty range */
+    Range2Di e{{40, 25}, {40, 25}};
+    CORRADE_VERIFY(Math::intersects(a, e));
+    CORRADE_VERIFY(Math::intersects(e, a));
+    CORRADE_COMPARE(Math::intersect(a, e), e);
+    CORRADE_COMPARE(Math::intersect(e, a), e);
+
+    /* Doesn't intersect a range touching the edges from the outside */
+    Range2Di i{{20, 30}, {34, 40}};
+    Range2Di j{{47, 20}, {60, 23}};
+    Range2Di k{{20, 20}, {34, 23}};
+    Range2Di l{{47, 30}, {60, 40}};
+    CORRADE_VERIFY(!Math::intersects(a, i));
+    CORRADE_VERIFY(!Math::intersects(a, j));
+    CORRADE_VERIFY(!Math::intersects(a, k));
+    CORRADE_VERIFY(!Math::intersects(a, l));
+    CORRADE_VERIFY(!Math::intersects(i, a));
+    CORRADE_VERIFY(!Math::intersects(j, a));
+    CORRADE_VERIFY(!Math::intersects(k, a));
+    CORRADE_VERIFY(!Math::intersects(l, a));
+    CORRADE_COMPARE(Math::intersect(a, i), Range2Di{});
+    CORRADE_COMPARE(Math::intersect(a, j), Range2Di{});
+    CORRADE_COMPARE(Math::intersect(a, k), Range2Di{});
+    CORRADE_COMPARE(Math::intersect(a, l), Range2Di{});
+    CORRADE_COMPARE(Math::intersect(i, a), Range2Di{});
+    CORRADE_COMPARE(Math::intersect(j, a), Range2Di{});
+    CORRADE_COMPARE(Math::intersect(k, a), Range2Di{});
+    CORRADE_COMPARE(Math::intersect(l, a), Range2Di{});
 }
 
 void RangeTest::join() {

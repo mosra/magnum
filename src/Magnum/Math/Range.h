@@ -129,6 +129,7 @@ template<UnsignedInt dimensions, class T> class Range {
         /**
          * @brief Minimal coordinates (inclusive)
          *
+         * Denoted as @f$ \operatorname{min}(A) @f$ in related math equations.
          * @see @ref size(), @ref Range2D::bottomLeft(),
          *      @ref Range3D::backBottomLeft()
          */
@@ -138,6 +139,7 @@ template<UnsignedInt dimensions, class T> class Range {
         /**
          * @brief Maximal coordinates (exclusive)
          *
+         * Denoted as @f$ \operatorname{max}(A) @f$ in related math equations.
          * @see @ref size(), @ref Range2D::topRight(),
          *      @ref Range3D::frontTopRight()
          */
@@ -562,13 +564,45 @@ template<class T> class Range3D: public Range<3, T> {
 @brief Join two ranges
 
 Returns a range that contains both input ranges. If one of the ranges is empty,
-only the other is returned. Results are undefined if any range has negative
+only the other is returned. Results are undefined if any range has a negative
 size.
 */
 template<UnsignedInt dimensions, class T> inline Range<dimensions, T> join(const Range<dimensions, T>& a, const Range<dimensions, T>& b) {
     if(a.min() == a.max()) return b;
     if(b.min() == b.max()) return a;
     return {min(a.min(), b.min()), max(a.max(), b.max())};
+}
+
+/** @relatesalso Range
+@brief Intersect two ranges
+
+Returns a range that covers the intersection of both ranges. If the
+intersection is empty, a default-constructed range is returned. The range
+minimum is interpreted as inclusive, maximum as exclusive. Results are
+undefined if any range has a negative size.
+@see @ref intersects()
+*/
+template<UnsignedInt dimensions, class T> inline Range<dimensions, T> intersect(const Range<dimensions, T>& a, const Range<dimensions, T>& b) {
+    if(!intersects(a, b)) return {};
+    return {max(a.min(), b.min()), min(a.max(), b.max())};
+}
+
+/** @relatesalso Range
+@brief Whether two ranges intersect
+
+Returns @cpp true @ce if the following holds for all dimensions @f$ i @f$,
+@cpp false @ce otherwise. @f[
+    \bigwedge_i
+    (\operatorname{max}(A)_i > \operatorname{min}(B)_i) \land
+    (\operatorname{min}(A)_i < \operatorname{max}(B)_i)
+@f]
+The range minimum is interpreted as inclusive, maximum as exclusive. Results
+are undefined if any range has a negative size.
+@see @ref Range::contains(), @ref intersect(), @ref join(), @ref Range::min(),
+    @ref Range::max()
+*/
+template<UnsignedInt dimensions, class T> inline bool intersects(const Range<dimensions, T>& a, const Range<dimensions, T>& b) {
+    return (a.max() > b.min()).all() && (a.min() < b.max()).all();
 }
 
 /** @debugoperator{Range} */
