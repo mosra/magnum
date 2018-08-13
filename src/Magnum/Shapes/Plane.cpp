@@ -40,12 +40,12 @@ Plane Plane::transformed(const Matrix4& matrix) const {
 }
 
 bool Plane::operator%(const Line3D& other) const {
-    Float t = Math::Intersection::planeLine(_position, _normal, other.a(), other.b()-other.a());
+    Float t = Math::Intersection::planeLine(Math::planeEquation(_normal, _position), other.a(), other.b()-other.a());
     return t != t || (t != Constants::inf() && t != -Constants::inf());
 }
 
 bool Plane::operator%(const LineSegment3D& other) const {
-    Float t = Math::Intersection::planeLine(_position, _normal, other.a(), other.b()-other.a());
+    Float t = Math::Intersection::planeLine(Math::planeEquation(_normal, _position), other.a(), other.b()-other.a());
     return t > 0.0f && t < 1.0f;
 }
 

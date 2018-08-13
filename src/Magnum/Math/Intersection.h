@@ -110,8 +110,7 @@ template<class T> inline T lineSegmentLine(const Vector2<T>& p, const Vector2<T>
 
 /**
 @brief Intersection of a plane and line
-@param planePosition    Plane position
-@param planeNormal      Plane normal
+@param plane            Plane equation
 @param p                Starting point of the line
 @param r                Direction of the line
 
@@ -123,26 +122,35 @@ Returns intersection point position @f$ t @f$ on the line:
 -   @f$ t \notin [ 0 ; 1 ] @f$ if the intersection is outside the line segment
 -   @f$ t \in \{-\infty, \infty\} @f$ if the intersection doesn't exist
 
-First the parameter @f$ f @f$ of parametric equation of the plane is calculated
-from plane normal @f$ \boldsymbol{n} @f$ and plane position: @f[
-     \begin{pmatrix} n_0 \\ n_1 \\ n_2 \end{pmatrix} \cdot
-     \begin{pmatrix} x \\ y \\ z \end{pmatrix} - f = 0
-@f]
-Using plane normal @f$ \boldsymbol{n} @f$, parameter @f$ f @f$ and line defined
-by @f$ \boldsymbol{p} @f$ and @f$ \boldsymbol{r} @f$, value of @f$ t @f$ is
-calculated and returned. @f[
-     \begin{array}{rcl}
-         f & = & \boldsymbol n \cdot (\boldsymbol p + t \boldsymbol r) \\
-         \Rightarrow t & = & \cfrac{f - \boldsymbol n \cdot \boldsymbol p}{\boldsymbol n \cdot \boldsymbol r}
-     \end{array}
+Using the plane equation @f$ ax + by + cz + d = 0 @f$ with @f$ \boldsymbol{n} @f$
+defined as @f$ \boldsymbol{n} = (a, b, c)^T @f$ and a line defined by
+@f$ \boldsymbol{p} @f$ and @f$ \boldsymbol{r} @f$, value of @f$ t @f$ is
+calculated as: @f[
+    t = \cfrac{-d - \boldsymbol{n} \cdot \boldsymbol{p}}{\boldsymbol{n} \cdot \boldsymbol{r}}
 @f]
 
-@see @ref isInf(), @ref isNan()
+@see @ref planeEquation(), @ref isInf(), @ref isNan()
 */
-template<class T> inline T planeLine(const Vector3<T>& planePosition, const Vector3<T>& planeNormal, const Vector3<T>& p, const Vector3<T>& r) {
-    const T f = dot(planePosition, planeNormal);
-    return (f - dot(planeNormal, p))/dot(planeNormal, r);
+template<class T> inline T planeLine(const Vector4<T>& plane, const Vector3<T>& p, const Vector3<T>& r) {
+    return (-plane.w() - dot(plane.xyz(), p))/dot(plane.xyz(), r);
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief Intersection of a plane and line
+@param planePosition    Plane position
+@param planeNormal      Plane normal
+@param p                Starting point of the line
+@param r                Direction of the line
+
+@deprecated Use @ref planeLine(const Vector4<T>&, const Vector3<T>&, const Vector3<T>&)
+    together with @ref planeEquation(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
+    instead.
+*/
+template<class T> inline CORRADE_DEPRECATED("use planeLine(const Vector4&, const Vector3&, const Vector3&) together with planeEquation(const Vector3&, const Vector3&) instead") T planeLine(const Vector3<T>& planePosition, const Vector3<T>& planeNormal, const Vector3<T>& p, const Vector3<T>& r) {
+    return planeLine(planeEquation(planePosition, planeNormal), p, r);
+}
+#endif
 
 /**
 @brief Intersection of a point and a frustum

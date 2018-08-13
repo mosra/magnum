@@ -84,21 +84,23 @@ IntersectionTest::IntersectionTest() {
 void IntersectionTest::planeLine() {
     const Vector3 planePosition(-1.0f, 1.0f, 0.5f);
     const Vector3 planeNormal(0.0f, 0.0f, 1.0f);
+    const Vector4 planeEquation = Math::planeEquation(planeNormal, planePosition);
+    CORRADE_COMPARE(planeEquation, (Vector4{0.0f, 0.0f, 1.0f, -0.5f}));
 
     /* Inside line segment */
-    CORRADE_COMPARE(Intersection::planeLine(planePosition, planeNormal,
+    CORRADE_COMPARE(Intersection::planeLine(planeEquation,
         {0.0f, 0.0f, -1.0f}, {0.0f, 0.0f, 2.0f}), 0.75f);
 
     /* Outside line segment */
-    CORRADE_COMPARE(Intersection::planeLine(planePosition, planeNormal,
+    CORRADE_COMPARE(Intersection::planeLine(planeEquation,
         {0.0f, 0.0f, 1.0f}, {0.0f, 0.0f, 1.0f}), -0.5f);
 
     /* Line lies on the plane */
-    CORRADE_COMPARE(Intersection::planeLine(planePosition, planeNormal,
+    CORRADE_COMPARE(Intersection::planeLine(planeEquation,
         {1.0f, 0.5f, 0.5f}, {-1.0f, 0.5f, 0.0f}), Constants::nan());
 
     /* Line is parallel to the plane */
-    CORRADE_COMPARE(Intersection::planeLine(planePosition, planeNormal,
+    CORRADE_COMPARE(Intersection::planeLine(planeEquation,
         {1.0f, 0.0f, 1.0f}, {-1.0f, 0.0f, 0.0f}), -Constants::inf());
 }
 

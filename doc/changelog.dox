@@ -268,6 +268,9 @@ See also:
     deeply nested, use @ref Math::Distance and @ref Math::Intersection instead
 -   `Math::Geometry::Intersection::boxFrustum()` is deprecated, use
     @ref Math::Intersection::rangeFrustum() instead
+-   @ref Math::Intersection::planeLine() taking a separate plane normal and
+    position is deprecated, use @ref Math::planeEquation() and the overload
+    taking a plane equation as @ref Math::Vector4 instead
 -   @ref Audio::PlayableGroup::setClean() is deprecated in favor of
     @ref Audio::Listener::update(), as that one is a feature superset with
     clearer naming
