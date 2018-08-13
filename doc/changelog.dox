@@ -76,6 +76,9 @@ See also:
 -   Added @ref Math::Constants::piQuarter()
 -   Added a convenience function @ref Math::select() as a constant
     interpolation counterpart to @ref Math::lerp()
+-   Added a convenience function @ref Math::planeEquation() to aid with passing
+    passing parameters to @ref Math::Intersection::planeLine(),
+    @ref Math::Distance::pointPlane() and others
 -   Ability to convert @ref Math::BoolVector from and to external
     representation
 

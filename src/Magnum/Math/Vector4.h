@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Math::Vector4
+ * @brief Class @ref Magnum::Math::Vector4, function @ref Magnum::Math::planeEquation()
  */
 
 #include "Magnum/Math/Vector3.h"
@@ -199,6 +199,54 @@ template<class T> class Vector4: public Vector<4, T> {
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, Vector4)
 };
+
+/** @relatesalso Vector4
+@brief Create a plane equation from three points
+
+Assuming the three points form a triangle in a counter-clockwise winding,
+creates a plane equation in the following form: @f[
+    ax + by + cz + d = 0
+@f]
+
+The first three coefficients describe the *scaled* normal
+@f$ \boldsymbol{n} = (a, b, c)^T @f$ and are calculated using a cross product.
+The coefficient @f$ d @f$ is calculated using a dot product with the normal
+@f$ \boldsymbol{n} @f$ using the first point in order to satisfy the equation
+when assigning @f$ \boldsymbol{p_i} @f$ to @f$ x @f$, @f$ y @f$, @f$ z @f$. @f[
+    \begin{array}{rcl}
+        \boldsymbol{n} & = & (\boldsymbol{p_1} - \boldsymbol{p_0}) \times (\boldsymbol{p_2} - \boldsymbol{p_0}) \\
+        d & = & - \boldsymbol{n} \cdot \boldsymbol{p_0}
+    \end{array}
+@f]
+@see @ref planeEquation(const Vector3<T>&, const Vector3<T>&), @ref cross(),
+    @ref dot()
+*/
+template<class T> Vector4<T> planeEquation(const Vector3<T>& p0, const Vector3<T>& p1, const Vector3<T>& p2) {
+    const Vector3<T> normal = Math::cross(p1 - p0, p2 - p0).normalized();
+    return {normal, -Math::dot(normal, p0)};
+}
+
+
+/** @relatesalso Vector4
+@brief Create a plane equation from a normal and a point
+
+Creates a plane equation in the following form: @f[
+    ax + by + cz + d = 0
+@f]
+
+The first three coefficients describe the *scaled* normal
+@f$ \boldsymbol{n} = (a, b, c)^T @f$, the coefficient @f$ d @f$ is calculated
+using a dot product with the normal @f$ \boldsymbol{n} @f$ using the point
+@f$ \boldsymbol{p} @f$ in order to satisfy the equation when assigning
+@f$ \boldsymbol{p} @f$ to @f$ x @f$, @f$ y @f$, @f$ z @f$. @f[
+    d = - \boldsymbol{n} \cdot \boldsymbol{p}
+@f]
+@see @ref planeEquation(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&),
+    @ref dot()
+*/
+template<class T> Vector4<T> planeEquation(const Vector3<T>& normal, const Vector3<T>& point) {
+    return {normal, -Math::dot(normal, point)};
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, Vector4)

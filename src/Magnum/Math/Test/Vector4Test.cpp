@@ -68,6 +68,9 @@ struct Vector4Test: Corrade::TestSuite::Tester {
     void threeComponent();
     void twoComponent();
 
+    void planeEquationThreePoints();
+    void planeEquationNormalPoint();
+
     void swizzleType();
     void debug();
     void configuration();
@@ -92,6 +95,9 @@ Vector4Test::Vector4Test() {
               &Vector4Test::access,
               &Vector4Test::threeComponent,
               &Vector4Test::twoComponent,
+
+              &Vector4Test::planeEquationThreePoints,
+              &Vector4Test::planeEquationNormalPoint,
 
               &Vector4Test::swizzleType,
               &Vector4Test::debug,
@@ -257,6 +263,34 @@ void Vector4Test::twoComponent() {
     constexpr Float d = b.xy().x();
     CORRADE_COMPARE(c, Vector2(1.0f, 2.0f));
     CORRADE_COMPARE(d, 1.0f);
+}
+
+void Vector4Test::planeEquationThreePoints() {
+    const Vector3 a{1.0f, 0.5f, 3.0f};
+    const Vector3 b{1.5f, 1.5f, 2.5f};
+    const Vector3 c{2.0f, 1.5f, 1.0f};
+    const Vector4 eq = Math::planeEquation(a, b, c);
+
+    CORRADE_COMPARE(Math::dot(a, eq.xyz()) + eq.w(), 0.0f);
+    CORRADE_COMPARE(Math::dot(b, eq.xyz()) + eq.w(), 0.0f);
+    CORRADE_COMPARE(Math::dot(c, eq.xyz()) + eq.w(), 0.0f);
+    CORRADE_COMPARE(eq, (Vector4{-0.9045340f, 0.3015113f, -0.3015113f, 1.658312f}));
+
+    /* Different winding order should only give a negated normal */
+    CORRADE_COMPARE(Math::planeEquation(a, c, b), -eq);
+}
+
+void Vector4Test::planeEquationNormalPoint() {
+    const Vector3 a{1.0f, 0.5f, 3.0f};
+    const Vector3 normal{-0.9045340f, 0.3015113f, -0.3015113f};
+    const Vector4 eq = Math::planeEquation(normal, a);
+
+    const Vector3 b{1.5f, 1.5f, 2.5f};
+    const Vector3 c{2.0f, 1.5f, 1.0f};
+    CORRADE_COMPARE(Math::dot(a, eq.xyz()) + eq.w(), 0.0f);
+    CORRADE_COMPARE(Math::dot(b, eq.xyz()) + eq.w(), 0.0f);
+    CORRADE_COMPARE(Math::dot(c, eq.xyz()) + eq.w(), 0.0f);
+    CORRADE_COMPARE(eq, (Vector4{-0.9045340f, 0.3015113f, -0.3015113f, 1.658312f}));
 }
 
 void Vector4Test::swizzleType() {

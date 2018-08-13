@@ -169,8 +169,8 @@ The distance is negative if the point lies behind the plane.
 More efficient than @ref pointPlane() when merely the sign of the distance is
 of interest, for example when testing on which half space of the plane the
 point lies.
-@see @ref pointPlaneNormalized()
-    */
+@see @ref planeEquation(), @ref pointPlaneNormalized()
+*/
 template<class T> inline T pointPlaneScaled(const Vector3<T>& point, const Vector4<T>& plane) {
     return dot(plane.xyz(), point) + plane.w();
 }
@@ -187,6 +187,7 @@ The distance is negative if the point lies behind the plane.
 In cases where the planes normal is a unit vector, @ref pointPlaneNormalized()
 is more efficient. If merely the sign of the distance is of interest,
 @ref pointPlaneScaled() is more efficient.
+@see @ref planeEquation()
 */
 template<class T> inline T pointPlane(const Vector3<T>& point, const Vector4<T>& plane) {
     return pointPlaneScaled<T>(point, plane)/plane.xyz().length();
@@ -205,6 +206,7 @@ The distance is negative if the point lies behind the plane. Expects that
 More efficient than @ref pointPlane() in cases where the plane's normal is
 normalized. Equivalent to @ref pointPlaneScaled() but with assertion added on
 top.
+@see @ref planeEquation()
 */
 template<class T> inline T pointPlaneNormalized(const Vector3<T>& point, const Vector4<T>& plane) {
     CORRADE_ASSERT(plane.xyz().isNormalized(),

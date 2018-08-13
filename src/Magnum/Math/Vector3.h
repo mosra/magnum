@@ -48,7 +48,7 @@ Which is equivalent to the common one (source:
 https://twitter.com/sjb3d/status/563640846671953920): @f[
      \boldsymbol a \times \boldsymbol b = \begin{pmatrix}a_yb_z - a_zb_y \\ a_zb_x - a_xb_z \\ a_xb_y - a_yb_x \end{pmatrix}
 @f]
-@see @ref cross(const Vector2<T>&, const Vector2<T>&)
+@see @ref cross(const Vector2<T>&, const Vector2<T>&), @ref planeEquation()
 */
 template<class T> inline Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
     return swizzle<'y', 'z', 'x'>(a*swizzle<'y', 'z', 'x'>(b) -
