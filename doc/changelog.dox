@@ -71,6 +71,8 @@ See also:
     and @ref Math::Range3D::y() for slicing ranges into lower dimensions
 -   Added @ref Math::intersect() and @ref Math::intersects() as a counterpart
     to @ref Math::join() for operating with @ref Math::Range instances
+-   Added @ref Math::Range::contains() overloading taking a range, in addition
+    to vector
 -   Added @ref Math::Constants::piQuarter()
 -   Added a convenience function @ref Math::select() as a constant
     interpolation counterpart to @ref Math::lerp()

@@ -115,7 +115,8 @@ struct RangeTest: Corrade::TestSuite::Tester {
     void padded();
     void scaled();
 
-    void contains();
+    void containsVector();
+    void containsRange();
     void intersectIntersects();
     void join();
 
@@ -154,7 +155,8 @@ RangeTest::RangeTest() {
               &RangeTest::padded,
               &RangeTest::scaled,
 
-              &RangeTest::contains,
+              &RangeTest::containsVector,
+              &RangeTest::containsRange,
               &RangeTest::intersectIntersects,
               &RangeTest::join,
 
@@ -500,12 +502,52 @@ void RangeTest::scaled() {
     CORRADE_COMPARE(a.scaled({2, -3}), b);
 }
 
-void RangeTest::contains() {
+void RangeTest::containsVector() {
     Range2Di a({34, 23}, {47, 30});
 
     CORRADE_VERIFY(a.contains({40, 23}));
     CORRADE_VERIFY(!a.contains({33, 23}));
     CORRADE_VERIFY(!a.contains({40, 30}));
+
+    /* Contains a point at min, but not at max */
+    CORRADE_VERIFY(a.contains({34, 23}));
+    CORRADE_VERIFY(!a.contains({47, 30}));
+}
+
+void RangeTest::containsRange() {
+    Range2Di a({34, 23}, {47, 30});
+
+    /* Contains whole range with a gap, not the other way around */
+    Range2Di b{{35, 25}, {40, 28}};
+    CORRADE_VERIFY(a.contains(b));
+    CORRADE_VERIFY(!b.contains(a));
+
+    /* Contains itself, empty range contains itself as well */
+    Range2Di c;
+    CORRADE_VERIFY(a.contains(a));
+    CORRADE_VERIFY(b.contains(b));
+    CORRADE_VERIFY(c.contains(c));
+
+    /* Contains zero-sized range inside but not outside */
+    Range2Di d{{34, 23}, {34, 23}};
+    Range2Di e{{33, 23}, {33, 23}};
+    Range2Di f{{47, 30}, {47, 30}};
+    Range2Di g{{47, 31}, {47, 31}};
+    CORRADE_VERIFY(a.contains(d));
+    CORRADE_VERIFY(!a.contains(e));
+    CORRADE_VERIFY(a.contains(f));
+    CORRADE_VERIFY(!a.contains(g));
+
+    /* Doesn't contain a range that overlaps */
+    Range2Di h{{30, 25}, {35, 105}};
+    CORRADE_VERIFY(!a.contains(h));
+    CORRADE_VERIFY(!h.contains(a));
+
+    /* Doesn't contain a range touching the edges from the outside */
+    Range2Di i{{20, 30}, {34, 40}};
+    Range2Di j{{47, 20}, {60, 23}};
+    CORRADE_VERIFY(!a.contains(i));
+    CORRADE_VERIFY(!a.contains(j));
 }
 
 void RangeTest::intersectIntersects() {

@@ -190,9 +190,41 @@ template<UnsignedInt dimensions, class T> class Range {
          */
         Range<dimensions, T> scaled(const VectorType& scaling) const;
 
-        /** @brief Whether given point is contained inside the range */
-        constexpr bool contains(const VectorType& a) const {
-            return (a >= _min).all() && (a < _max).all();
+        /**
+         * @brief Whether given point is contained inside the range
+         *
+         * Returns @cpp true @ce if the following holds for all dimensions
+         * @f$ i @f$, @cpp false @ce otherwise. @f[
+         *      \bigwedge_i
+         *      (b_i \ge \operatorname{min}(A)_i) \land
+         *      (b_i < \operatorname{max}(A)_i)
+         * @f]
+         *
+         * The range minimum is interpreted as inclusive, maximum as exclusive.
+         * Results are undefined if the range has negative size.
+         * @see @ref intersects(), @ref contains(const Range<dimensions, T>&) const,
+         *      @ref min(), @ref max()
+         */
+        bool contains(const VectorType& b) const {
+            return (b >= _min).all() && (b < _max).all();
+        }
+
+        /**
+         * @brief Whether another range is fully contained inside this range
+         *
+         * Returns @cpp true @ce if the following holds for all dimensions
+         * @f$ i @f$, @cpp false @ce otherwise. @f[
+         *      \bigwedge_i
+         *      (\operatorname{min}(B)_i \ge \operatorname{min}(A)_i) \land
+         *      (\operatorname{max}(B)_i \le \operatorname{max}(A)_i)
+         * @f]
+         *
+         * Results are undefined if the range has negative size.
+         * @see @ref intersects(), @ref contains(const VectorType&) const,
+         *      @ref min(), @ref max()
+         */
+        bool contains(const Range<dimensions, T>& b) const {
+            return (b._min >= _min).all() && (b._max <= _max).all();
         }
 
     private:
