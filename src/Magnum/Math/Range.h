@@ -317,6 +317,16 @@ template<class T> class Range2D: public Range<2, T> {
         T& top() { return Range<2, T>::max().y(); }
         constexpr T top() const { return Range<2, T>::max().y(); } /**< @overload */
 
+        /** @brief Range in the X axis */
+        constexpr Range<1, T> x() const {
+            return {Range<2, T>::min().x(), Range<2, T>::max().x()};
+        }
+
+        /** @brief Range in the Y axis */
+        constexpr Range<1, T> y() const {
+            return {Range<2, T>::min().y(), Range<2, T>::max().y()};
+        }
+
         /**
          * @brief Range width
          *
@@ -469,6 +479,26 @@ template<class T> class Range3D: public Range<3, T> {
         /** @brief Front edge */
         T& front() { return Range<3, T>::max().z(); }
         constexpr T front() const { return Range<3, T>::max().z(); } /**< @overload */
+
+        /** @brief Range in the X axis */
+        constexpr Range<1, T> x() const {
+            return {Range<3, T>::min().x(), Range<3, T>::max().x()};
+        }
+
+        /** @brief Range in the Y axis */
+        constexpr Range<1, T> y() const {
+            return {Range<3, T>::min().y(), Range<3, T>::max().y()};
+        }
+
+        /** @brief Range in the Z axis */
+        constexpr Range<1, T> z() const {
+            return {Range<3, T>::min().z(), Range<3, T>::max().z()};
+        }
+
+        /** @brief Range in the XY plane */
+        constexpr Range<2, T> xy() const {
+            return {Range<3, T>::min().xy(), Range<3, T>::max().xy()};
+        }
 
         /**
          * @brief Range width

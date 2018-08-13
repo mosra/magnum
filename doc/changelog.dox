@@ -66,6 +66,9 @@ See also:
     @ref Math::Color4::fromSrgb(UnsignedInt, T), @ref Math::Color3::toSrgbInt(),
     and @ref Math::Color4::toSrgbAlphaInt() for easier conversion of packed
     24-/32-bit sRGB colors to and from @ref Math::Color3 / @ref Math::Color4
+-   Added @ref Math::Range2D::x(), @ref Math::Range3D::x(),
+    @ref Math::Range2D::y(), @ref Math::Range3D::y(), @ref Math::Range3D::z()
+    and @ref Math::Range3D::y() for slicing ranges into lower dimensions
 -   Added @ref Math::Constants::piQuarter()
 -   Added a convenience function @ref Math::select() as a constant
     interpolation counterpart to @ref Math::lerp()

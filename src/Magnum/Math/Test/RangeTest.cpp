@@ -107,6 +107,7 @@ struct RangeTest: Corrade::TestSuite::Tester {
 
     void access();
     void compare();
+    void dimensionSlice();
     void size();
     void center();
 
@@ -144,6 +145,7 @@ RangeTest::RangeTest() {
 
               &RangeTest::access,
               &RangeTest::compare,
+              &RangeTest::dimensionSlice,
               &RangeTest::size,
               &RangeTest::center,
 
@@ -407,6 +409,36 @@ void RangeTest::compare() {
     CORRADE_VERIFY(Range1D(1.0f, 1.0f) != Range1D(1.0f, 1.0f + TypeTraits<Float>::epsilon()*2));
     CORRADE_VERIFY(Range1D(1.0f, 1.0f) == Range1D(1.0f + TypeTraits<Float>::epsilon()/2.0f,
                                                   1.0f + TypeTraits<Float>::epsilon()/2.0f));
+}
+
+void RangeTest::dimensionSlice() {
+    constexpr Range1Di lineX{34, 47};
+    constexpr Range1Di lineY{23, 30};
+    constexpr Range1Di lineZ{-17, 12};
+    constexpr Range2Di rect{{34, 23}, {47, 30}};
+    constexpr Range3Di cube{{34, 23, -17}, {47, 30, 12}};
+
+    constexpr Range1Di x2 = rect.x();
+    constexpr Range1Di x3 = cube.x();
+    CORRADE_COMPARE(x2, lineX);
+    CORRADE_COMPARE(x3, lineX);
+    CORRADE_COMPARE(rect.x(), lineX);
+    CORRADE_COMPARE(cube.x(), lineX);
+
+    constexpr Range1Di y2 = rect.y();
+    constexpr Range1Di y3 = cube.y();
+    CORRADE_COMPARE(y2, lineY);
+    CORRADE_COMPARE(y3, lineY);
+    CORRADE_COMPARE(rect.y(), lineY);
+    CORRADE_COMPARE(cube.y(), lineY);
+
+    constexpr Range1Di z = cube.z();
+    CORRADE_COMPARE(z, lineZ);
+    CORRADE_COMPARE(cube.z(), lineZ);
+
+    constexpr Range2Di xy = cube.xy();
+    CORRADE_COMPARE(xy, rect);
+    CORRADE_COMPARE(cube.xy(), rect);
 }
 
 void RangeTest::size() {
