@@ -73,6 +73,8 @@ See also:
     to @ref Math::join() for operating with @ref Math::Range instances
 -   Added @ref Math::Range::contains() overloading taking a range, in addition
     to vector
+-   @ref Math::Range is now constructible from a @ref std::pair of values,
+    making it usable in combination with @ref Math::minmax(), for example
 -   Added @ref Math::Constants::piQuarter()
 -   Added a convenience function @ref Math::select() as a constant
     interpolation counterpart to @ref Math::lerp()

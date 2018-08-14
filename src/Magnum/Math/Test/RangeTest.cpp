@@ -101,6 +101,7 @@ struct RangeTest: Corrade::TestSuite::Tester {
     void constructDefault();
     void constructNoInit();
     void constructFromSize();
+    void constructPair();
     void constructConversion();
     void constructCopy();
     void convert();
@@ -141,6 +142,7 @@ RangeTest::RangeTest() {
               &RangeTest::constructDefault,
               &RangeTest::constructNoInit,
               &RangeTest::constructFromSize,
+              &RangeTest::constructPair,
               &RangeTest::constructConversion,
               &RangeTest::constructCopy,
               &RangeTest::convert,
@@ -236,6 +238,24 @@ void RangeTest::constructFromSize() {
     CORRADE_COMPARE(Range1Di::fromSize(3, 23), Range1Di(3, 26));
     CORRADE_COMPARE(Range2Di::fromSize({3, 5}, {23, 78}), Range2Di({3, 5}, {26, 83}));
     CORRADE_COMPARE(Range3Di::fromSize({3, 5, -7}, {23, 78, 9}), Range3Di({3, 5, -7}, {26, 83, 2}));
+}
+
+void RangeTest::constructPair() {
+    Vector2i a{10, 22};
+    Vector2i b{30, 18};
+    Vector2i c{20, 25};
+
+    Range1Di bounds1a{Math::minmax<Math::Vector<1, Int>>({a.x(), b.x(), c.x()})};
+    Range1Di bounds1b{std::pair<Math::Vector<1, Int>, Math::Vector<1, Int>>{10, 30}};
+    Range1Di bounds1c{10, 30};
+    CORRADE_COMPARE(bounds1a, bounds1c);
+    CORRADE_COMPARE(bounds1b, bounds1c);
+
+    Range2Di bounds2a{Math::minmax({a, b, c})};
+    Range2Di bounds2b{std::pair<Math::Vector<2, Int>, Math::Vector<2, Int>>{{10, 18}, {30, 25}}};
+    Range2Di bounds2c{{10, 18}, {30, 25}};
+    CORRADE_COMPARE(bounds2a, bounds2c);
+    CORRADE_COMPARE(bounds2b, bounds2c);
 }
 
 void RangeTest::constructConversion() {

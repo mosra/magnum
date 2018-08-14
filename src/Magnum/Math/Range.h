@@ -82,8 +82,27 @@ template<UnsignedInt dimensions, class T> class Range {
         /** @brief Construct without initializing the contents */
         explicit Range(NoInitT) noexcept: _min{NoInit}, _max{NoInit} {}
 
-        /** @brief Construct range from minimal and maximal coordinates */
+        /** @brief Construct a range from minimal and maximal coordinates */
         constexpr /*implicit*/ Range(const VectorType& min, const VectorType& max) noexcept: _min{min}, _max{max} {}
+
+        /**
+         * @brief Construct a range from a pair of minimal and maximal coordinates
+         *
+         * Useful in combination with e.g. @ref minmax(), here for example to
+         * calculate bounds of a triangle:
+         *
+         * @snippet MagnumMath.cpp Range-construct-minmax
+         *
+         * @todo std::pair constructors are not constexpr in C++11, make it so in C++14 */
+        /*implicit*/ Range(const std::pair<VectorType, VectorType>& minmax) noexcept:
+            _min{minmax.first}, _max{minmax.second} {}
+
+        /** @overload */
+        /** @todo std::pair constructors are not constexpr in C++11, make it so in C++14 */
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        template<UnsignedInt d = dimensions, class = std::enable_if<d != 1>>
+        #endif
+        /*implicit*/ Range(const std::pair<Vector<dimensions, T>, Vector<dimensions, T>>& minmax) noexcept: _min{minmax.first}, _max{minmax.second} {}
 
         /**
          * @brief Construct range from another of different type

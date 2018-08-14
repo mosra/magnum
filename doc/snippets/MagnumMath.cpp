@@ -28,6 +28,7 @@
 #include "Magnum/Math/DualComplex.h"
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/Half.h"
+#include "Magnum/Math/Range.h"
 #include "Magnum/Math/Algorithms/GramSchmidt.h"
 
 using namespace Magnum;
@@ -856,6 +857,14 @@ Vector3 b{a};                                // converts to 32-bit floats
 Debug{} << a;                                // prints {3.14159, -1.4142, 1.618}
 Debug{} << Math::Vector3<UnsignedShort>{a};  // prints {16968, 48552, 15993}
 /* [Half-usage-vector] */
+}
+
+{
+/* [Range-construct-minmax] */
+Vector3 a, b, c;
+Range3D bounds{Math::minmax({a, b, c})};
+/* [Range-construct-minmax] */
+static_cast<void>(bounds);
 }
 
 }

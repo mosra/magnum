@@ -345,7 +345,8 @@ template<class T> inline T max(std::initializer_list<T> list) {
 /**
 @brief Minimum and maximum of two values
 
-@see @ref min(), @ref max(), @ref clamp(), @ref Vector::minmax()
+@see @ref min(), @ref max(), @ref clamp(), @ref Vector::minmax(),
+    @ref Range::Range(const std::pair<VectorType, VectorType>&)
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline std::pair<T, T> minmax(const T& a, const T& b);
@@ -379,6 +380,7 @@ namespace Implementation {
 @brief Minimum and maximum of a range
 
 If the range is empty, returns default-constructed values.
+@see @ref Range::Range(const std::pair<VectorType, VectorType>&)
 */
 template<class T> std::pair<T, T> minmax(Corrade::Containers::ArrayView<const T> range) {
     if(range.empty()) return {};
