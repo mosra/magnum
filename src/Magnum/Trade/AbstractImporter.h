@@ -123,12 +123,22 @@ you may want to intercept those references and load them in a custom way as
 well. For importers that advertise support for this with @ref Feature::FileCallback
 this is done by specifying a file loading callback using @ref setFileCallback().
 The callback gets a filename, @ref ImporterFileCallbackPolicy and an user
-pointer as parameters. For example, loading a scene from memory-mapped files
-could look like this. Note that the file loading callback affects @ref openFile()
-as well --- you don't have to load the top-level file manually and pass it to
-@ref openData(), it's done implicitly by the importer:
+pointer as parameters; returns a non-owning view on the loaded data or a
+@ref Corrade::Containers::NullOpt "Containers::NullOpt" to indicate the file
+loading failed. For example, loading a scene from memory-mapped files could
+look like below. Note that the file loading callback affects @ref openFile() as
+well --- you don't have to load the top-level file manually and pass it to
+@ref openData(), any importer supporting the callback feature handles that
+correctly.
 
 @snippet MagnumTrade.cpp AbstractImporter-usage-callbacks
+
+For importers that don't support @ref Feature::FileCallback directly, the base
+@ref openFile() implementation will use the file callback to pass the loaded
+data through to @ref openData(), in case the importer supports at least
+@ref Feature::OpenData. If the importer supports neither @ref Feature::FileCallback
+nor @ref Feature::OpenData, @ref setFileCallback() doesn't allow the callbacks
+to be set.
 
 @subsection Trade-AbstractImporter-usage-state Internal importer state
 
@@ -178,10 +188,16 @@ into* a @ref std::shared_ptr instance and that might not be desirable.
 
 The plugin needs to implement the @ref doFeatures(), @ref doIsOpened()
 functions, at least one of @ref doOpenData() / @ref doOpenFile() /
-@ref doOpenState() functions, function @ref doClose(), function
-@ref doSetFileCallback() in case it's desired to respond on file loading
-callback setup and one or more tuples of data access functions, based on what
-features are supported in given format.
+@ref doOpenState() functions, function @ref doClose() and one or more tuples of
+data access functions, based on what features are supported in given format.
+
+In order to support @ref Feature::FileCallback, the importer needs to properly
+use the callbacks to both load the top-level file in @ref doOpenFile() and also
+load any external files when needed. The @ref doOpenFile() can delegate back
+into the base implementation, but it should remember at least the base file
+path to pass correct paths to subsequent file callbacks. The
+@ref doSetFileCallback() can be overriden in case it's desired to respond to
+file loading callback setup, but doesn't have to be.
 
 For multi-data formats the file opening shouldn't take long and all parsing
 should be done in the data parsing functions instead, because the user might
@@ -296,7 +312,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * @see @ref Trade-AbstractImporter-usage-callbacks
          */
-        auto fileCallback() const -> Containers::ArrayView<const char>(*)(const std::string&, ImporterFileCallbackPolicy, void*) { return _fileCallback; }
+        auto fileCallback() const -> Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, ImporterFileCallbackPolicy, void*) { return _fileCallback; }
 
         /**
          * @brief File opening callback user data
@@ -308,35 +324,41 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Set file opening callback
          *
-         * In case a scene file opened using @ref openData() references other
-         * files such as images and @ref Feature::FileCallback is supported by
-         * the importer, @p callback will be used to load file data. The
-         * callback function gets a filename, @ref ImporterFileCallbackPolicy
-         * and the @p userData pointer as input and returns a non-owning view
-         * on the loaded data as output.
+         * In case the importer supports @ref Feature::FileCallback, files
+         * opened through @ref openFile() will be loaded through the provided
+         * callback. Besides that, all external files referenced by the
+         * top-level file will be loaded through the callback function as well,
+         * usually on demand. The callback function gets a filename,
+         * @ref ImporterFileCallbackPolicy and the @p userData pointer as input
+         * and returns a non-owning view on the loaded data as output or a
+         * @ref Corrade::Containers::NullOpt if loading failed --- because
+         * empty files might also be valid in some circumstances, @cpp nullptr @ce
+         * can't be used to indicate a failure.
          *
-         * In case @ref openFile() is used and at least @ref Feature::OpenData
-         * is supported, the callback is used for loading the top-level file.
-         * First the file is loaded with @ref ImporterFileCallbackPolicy::LoadTemporary
-         * passed to the callback, then the returned memory view is passed to
+         * In case the importer doesn't support @ref Feature::FileCallback but
+         * supports at least @ref Feature::OpenData, a file opened through
+         * @ref openFile() will be internally loaded through the provided
+         * callback and then passed to @ref openData(). First the file is
+         * loaded with @ref ImporterFileCallbackPolicy::LoadTemporary passed to
+         * the callback, then the returned memory view is passed to
          * @ref openData() (sidestepping the potential @ref openFile()
-         * implementation of that particular plugin) and after that the
+         * implementation of that particular importer) and after that the
          * callback is called again with @ref ImporterFileCallbackPolicy::Close
          * because the semantics of @ref openData() don't require the data to
          * be alive after. In case you need a different behavior, use
          * @ref openData() directly.
          *
-         * In case the importer supports neither @ref Feature::FileCallback nor
-         * @ref Feature::OpenData, the callback won't have a chance to be used
-         * in any of the above scenarios and thus the function prints a warning
-         * and returns without setting anything. In case @p callback is
-         * @cpp nullptr @ce, the current callback (if any) is reset.
+         * In case @p callback is @cpp nullptr @ce, the current callback (if
+         * any) is reset. This function expects that the importer supports
+         * either @ref Feature::FileCallback or @ref Feature::OpenData. If an
+         * importer supports neither, callbacks can't be used.
          *
          * It's expected that this function is called *before* a file is
          * opened. It's also expected that the loaded data are kept in scope
          * for as long as the importer needs them, based on the value of
-         * @ref ImporterFileCallbackPolicy. Particular importer documentation
-         * provides * more information about the behavior.
+         * @ref ImporterFileCallbackPolicy. Documentation of particular
+         * importers provides more information about the expected callback
+         * behavior.
          *
          * Following is an example of setting up a file loading callback for
          * fetching compiled-in resources from @ref Corrade::Utility::Resource.
@@ -347,7 +369,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * @see @ref Trade-AbstractImporter-usage-callbacks
          */
-        void setFileCallback(Containers::ArrayView<const char>(*callback)(const std::string&, ImporterFileCallbackPolicy, void*), void* userData = nullptr);
+        void setFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, ImporterFileCallbackPolicy, void*), void* userData = nullptr);
 
         /**
          * @brief Set file opening callback
@@ -361,7 +383,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @see @ref Trade-AbstractImporter-usage-callbacks
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class T> void setFileCallback(Containers::ArrayView<const char>(*callback)(const std::string&, ImporterFileCallbackPolicy, T&), T& userData);
+        template<class T> void setFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, ImporterFileCallbackPolicy, T&), T& userData);
         #else
         /* Otherwise the user would be forced to use the + operator to convert
            a lambda to a function pointer and (besides being weird and
@@ -808,7 +830,13 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * the file and calls @ref Magnum::Trade::AbstractImporter::doOpenData() "doOpenData()"
          * with its contents. It is allowed to call this function from your
          * @ref Magnum::Trade::AbstractImporter::doOpenFile() "doOpenFile()"
-         * implementation.
+         * implementation --- in particular, this implementation will also
+         * correctly handle callbacks set through @ref setFileCallback().
+         *
+         * This function is not called when file callbacks are set through
+         * @ref setFileCallback() and @ref Feature::FileCallback is not
+         * supported --- instead, file is loaded though the callback and data
+         * passed through to @ref Magnum::Trade::AbstractImporter::doOpenData() "doOpenData()".
          */
         virtual void doOpenFile(const std::string& filename);
 
@@ -829,7 +857,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * and user data pointer are available through @ref fileCallback() and
          * @ref fileCallbackUserData().
          */
-        virtual void doSetFileCallback(Containers::ArrayView<const char>(*callback)(const std::string&, ImporterFileCallbackPolicy, void*), void* userData);
+        virtual void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, ImporterFileCallbackPolicy, void*), void* userData);
 
         /** @brief Implementation for @ref isOpened() */
         virtual bool doIsOpened() const = 0;
@@ -1166,7 +1194,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         virtual const void* doImporterState() const;
 
     private:
-        Containers::ArrayView<const char>(*_fileCallback)(const std::string&, ImporterFileCallbackPolicy, void*){};
+        Containers::Optional<Containers::ArrayView<const char>>(*_fileCallback)(const std::string&, ImporterFileCallbackPolicy, void*){};
         void* _fileCallbackUserData{};
 
         /* Used by the templated version only */
@@ -1180,13 +1208,13 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
 template<class Callback, class T> void AbstractImporter::setFileCallback(Callback callback, T& userData) {
     /* Don't try to wrap a null function pointer. Need to cast first because
        MSVC (even 2017) can't apply ! to a lambda. Ugh. */
-    const auto callbackPtr = static_cast<Containers::ArrayView<const char>(*)(const std::string&, ImporterFileCallbackPolicy, T&)>(callback);
+    const auto callbackPtr = static_cast<Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, ImporterFileCallbackPolicy, T&)>(callback);
     if(!callbackPtr) return setFileCallback(nullptr);
 
     _fileCallbackTemplate = { reinterpret_cast<void(*)()>(callbackPtr), &userData };
     setFileCallback([](const std::string& filename, const ImporterFileCallbackPolicy flags, void* const userData) {
         auto& s = *reinterpret_cast<FileCallbackTemplate*>(userData);
-        return reinterpret_cast<Containers::ArrayView<const char>(*)(const std::string&, ImporterFileCallbackPolicy, T&)>(s.callback)(filename, flags, *static_cast<T*>(s.userData));
+        return reinterpret_cast<Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, ImporterFileCallbackPolicy, T&)>(s.callback)(filename, flags, *static_cast<T*>(s.userData));
     }, &_fileCallbackTemplate);
 }
 #endif

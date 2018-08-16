@@ -73,19 +73,16 @@ AbstractImporter::AbstractImporter(PluginManager::Manager<AbstractImporter>& man
 
 AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager, plugin} {}
 
-void AbstractImporter::setFileCallback(Containers::ArrayView<const char>(*callback)(const std::string&, ImporterFileCallbackPolicy, void*), void* const userData) {
+void AbstractImporter::setFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, ImporterFileCallbackPolicy, void*), void* const userData) {
     CORRADE_ASSERT(!isOpened(), "Trade::AbstractImporter::setFileCallback(): can't be set while a file is opened", );
-    if(!(features() & (Feature::FileCallback|Feature::OpenData))) {
-        Warning{} << "Trade::AbstractImporter::setFileCallback(): importer supports neither loading from data nor via callbacks, ignoring";
-        return;
-    }
+    CORRADE_ASSERT(features() & (Feature::FileCallback|Feature::OpenData), "Trade::AbstractImporter::setFileCallback(): importer supports neither loading from data nor via callbacks, callbacks can't be used", );
 
     _fileCallback = callback;
     _fileCallbackUserData = userData;
     doSetFileCallback(callback, userData);
 }
 
-void AbstractImporter::doSetFileCallback(Containers::ArrayView<const char>(*)(const std::string&, ImporterFileCallbackPolicy, void*), void*) {}
+void AbstractImporter::doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, ImporterFileCallbackPolicy, void*), void*) {}
 
 bool AbstractImporter::openData(Containers::ArrayView<const char> data) {
     CORRADE_ASSERT(features() & Feature::OpenData,
@@ -116,15 +113,35 @@ void AbstractImporter::doOpenState(const void*, const std::string&) {
 bool AbstractImporter::openFile(const std::string& filename) {
     close();
 
-    /* If file loading callbacks are set and the importer can open data, do
-       that. Mark the file as ready to be closed once opening is finished. */
-    if((doFeatures() & Feature::OpenData) && _fileCallback) {
-        doOpenData(_fileCallback(filename, ImporterFileCallbackPolicy::LoadTemporary, _fileCallbackUserData));
+    /* If file loading callbacks are not set or the importer supports handling
+       them directly, call into the implementation */
+    if(!_fileCallback || (doFeatures() & Feature::FileCallback)) {
+        doOpenFile(filename);
+
+    /* Otherwise, if loading from data is supported, use the callback and pass
+       the data through to openData(). Mark the file as ready to be closed once
+       opening is finished. */
+    } else if(doFeatures() & Feature::OpenData) {
+        /* This needs to be duplicated here and in the doOpenFile()
+           implementation in order to support both following cases:
+            - plugins that don't support FileCallback but have their own
+              doOpenFile() implementation (callback needs to be used here,
+              because the base doOpenFile() implementation might never get
+              called)
+            - plugins that support FileCallback but want to delegate the actual
+              file loading to the default implementation (callback used in the
+              base doOpenFile() implementation, because this branch is never
+              taken in that case) */
+        const Containers::Optional<Containers::ArrayView<const char>> data = _fileCallback(filename, ImporterFileCallbackPolicy::LoadTemporary, _fileCallbackUserData);
+        if(!data) {
+            Error() << "Trade::AbstractImporter::openFile(): cannot open file" << filename;
+            return isOpened();
+        }
+        doOpenData(*data);
         _fileCallback(filename, ImporterFileCallbackPolicy::Close, _fileCallbackUserData);
 
-    /* Otherwise (either no callbacks set or opening data is not supported)
-       just call the default implementation */
-    } else doOpenFile(filename);
+    /* Shouldn't get here, the assert is fired already in setFileCallback() */
+    } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
     return isOpened();
 }
@@ -132,13 +149,26 @@ bool AbstractImporter::openFile(const std::string& filename) {
 void AbstractImporter::doOpenFile(const std::string& filename) {
     CORRADE_ASSERT(features() & Feature::OpenData, "Trade::AbstractImporter::openFile(): not implemented", );
 
-    /* Open file */
-    if(!Utility::Directory::fileExists(filename)) {
-        Error() << "Trade::AbstractImporter::openFile(): cannot open file" << filename;
-        return;
-    }
+    /* If callbacks are set, use them. This is the same implementation as in
+       openFile(), see the comment there for details. */
+    if(_fileCallback) {
+        const Containers::Optional<Containers::ArrayView<const char>> data = _fileCallback(filename, ImporterFileCallbackPolicy::LoadTemporary, _fileCallbackUserData);
+        if(!data) {
+            Error() << "Trade::AbstractImporter::openFile(): cannot open file" << filename;
+            return;
+        }
+        doOpenData(*data);
+        _fileCallback(filename, ImporterFileCallbackPolicy::Close, _fileCallbackUserData);
 
-    doOpenData(Utility::Directory::read(filename));
+    /* Otherwise open the file directly */
+    } else {
+        if(!Utility::Directory::fileExists(filename)) {
+            Error() << "Trade::AbstractImporter::openFile(): cannot open file" << filename;
+            return;
+        }
+
+        doOpenData(Utility::Directory::read(filename));
+    }
 }
 
 void AbstractImporter::close() {

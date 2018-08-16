@@ -71,20 +71,22 @@ struct Data {
 } data;
 
 importer->setFileCallback([](const std::string& filename,
-    Trade::ImporterFileCallbackPolicy policy, Data& data) {
+    Trade::ImporterFileCallbackPolicy policy, Data& data)
+        -> Containers::Optional<Containers::ArrayView<const char>>
+    {
         auto found = data.files.find(filename);
 
         /* Discard the memory mapping, if not needed anymore */
         if(policy == Trade::ImporterFileCallbackPolicy::Close) {
             if(found != data.files.end()) data.files.erase(found);
-            return Containers::ArrayView<const char>{};
+            return {};
         }
 
         /* Load if not there yet */
         if(found == data.files.end()) found = data.files.emplace(
             filename, Utility::Directory::mapRead(filename)).first;
 
-        return Containers::ArrayView<const char>{found->second};
+        return Containers::arrayView(found->second);
     }, data);
 
 importer->openFile("scene.gltf"); // memory-maps all files
@@ -113,7 +115,7 @@ std::unique_ptr<Trade::AbstractImporter> importer;
 importer->setFileCallback([](const std::string& filename,
     Trade::ImporterFileCallbackPolicy, void*) {
         Utility::Resource rs("data");
-        return rs.getRaw(filename);
+        return Containers::optional(rs.getRaw(filename));
     });
 /* [AbstractImporter-setFileCallback] */
 }
@@ -126,10 +128,15 @@ struct Data {
 } data;
 
 importer->setFileCallback([](const std::string& filename,
-    Trade::ImporterFileCallbackPolicy, Data& data) {
+    Trade::ImporterFileCallbackPolicy, Data& data)
+        -> Containers::Optional<Containers::ArrayView<const char>>
+    {
         auto found = data.files.find(filename);
-        if(found == data.files.end()) found = data.files.emplace(
-            filename, Utility::Directory::read(filename)).first;
+        if(found == data.files.end()) {
+            if(!Utility::Directory::fileExists(filename))
+                return Containers::NullOpt;
+            found = data.files.emplace(filename, Utility::Directory::read(filename)).first;
+        }
         return Containers::ArrayView<const char>{found->second};
     }, data);
 /* [AbstractImporter-setFileCallback-template] */
