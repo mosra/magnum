@@ -243,7 +243,7 @@ namespace AMD {
     _extension(161,KHR,texture_compression_astc_hdr,    GL210,  None) // #118
     _extension(162,KHR,debug,                           GL210, GL430) // #119
     _extension(163,KHR,context_flush_control,           GL210, GL450) // #168
-    _extension(164,KHR,robust_buffer_access_behavior,   GL320, None) // #169
+    _extension(164,KHR,robust_buffer_access_behavior,   GL320,  None) // #169
     _extension(165,KHR,robustness,                      GL320, GL450) // #170
     _extension(166,KHR,blend_equation_advanced,         GL210,  None) // #174
     _extension(167,KHR,blend_equation_advanced_coherent, GL210, None) // #174
