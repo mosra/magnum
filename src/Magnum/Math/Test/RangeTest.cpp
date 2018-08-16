@@ -460,7 +460,10 @@ void RangeTest::dimensionSlice() {
     CORRADE_COMPARE(z, lineZ);
     CORRADE_COMPARE(cube.z(), lineZ);
 
-    constexpr Range2Di xy = cube.xy();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY
+    constexpr /* No clue. Also, IDGAF. */
+    #endif
+    Range2Di xy = cube.xy();
     CORRADE_COMPARE(xy, rect);
     CORRADE_COMPARE(cube.xy(), rect);
 }
