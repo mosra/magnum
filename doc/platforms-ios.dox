@@ -32,10 +32,63 @@ namespace Magnum {
 @m_footernavigation
 
 With Apple decision to focus on Metal, iOS OpenGL ES support is stuck on
-version 3.0 (i.e., a version before compute shaders are available).
+version 3.0 (i.e., a version before compute shaders are available). Moreover,
+OpenGL ES is deprecated since iOS 12.
 
-See also @ref Platform::Sdl2Application for more information. Some of the
+See also @ref Platform::Sdl2Application for more information, majority of the
 @ref platforms-macos "macOS platform-specific info" applies here as well.
+
+@section platforms-ios-bundle Bundle creation
+
+Unlike on macOS, where applications can also run directly from a compiled
+executable, on iOS you are required to create a bundle. The bundle setup is
+similar to macOS, see the @ref platforms-macos-bundle "macOS platform guide"
+for details. Compared to macOS, the `*.plist` file controls many more options
+(such as HiDPI/Retina support, supported display orientation, icons, splash
+screen...). CMake uses its own template that can be configured using various
+`MACOSX_BUNDLE_*` variables, but the builtin file is tailored for macOS and you
+are much better off rolling your own template and passing **abosolute** path to
+it to CMake using the `MACOSX_BUNDLE_INFO_PLIST` property:
+
+@code{.cmake}
+if(CORRADE_TARGET_IOS)
+    set_target_properties(my-application PROPERTIES
+        MACOSX_BUNDLE ON
+        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in)
+endif()
+@endcode
+
+Below are contents of the `*.plist` file as is used in the
+@ref Platform-Sdl2Application-bootstrap-ios "SDL2 bootstrap application",
+requesting OpenGL ES 2.0 and advertising Retina support:
+
+@code{.xml}
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleDevelopmentRegion</key>
+  <string>en-US</string>
+  <key>CFBundleExecutable</key>
+  <string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
+  <key>CFBundleIdentifier</key>
+  <string>cz.mosra.magnum.MyApplication</string>
+  <key>CFBundleInfoDictionaryVersion</key>
+  <string>6.0</string>
+  <key>CFBundleName</key>
+  <string>My Application</string>
+  <key>CFBundlePackageType</key>
+  <string>APPL</string>
+
+  <key>UIRequiredDeviceCapabilities</key>
+  <array>
+    <string>opengles-2</string>
+  </array>
+  <key>NSHighResolutionCapable</key>
+  <true/>
+</dict>
+</plist>
+@endcode
 
 @section platforms-ios-xcode Xcode
 

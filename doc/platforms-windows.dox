@@ -29,9 +29,58 @@ namespace Magnum {
 @brief Tips and tricks for Windows platforms
 
 @tableofcontents
+@m_keyword{ANGLE OpenGL compatibility layer,,}
 @m_footernavigation
 
-See @ref Platform::Sdl2Application for more information about WinRT.
+@section platforms-windows-rt Windows RT
+
+Windows RT is a restricted subset of Windows API, used for UWP / "Metro" /
+Windows Store apps. The major difference is lack of access to APIs that are
+common in Win32 world, such as memory-mapped files, DLLs or environment
+variables.
+
+In particular, Windows RT doesn't provide a direct access to OpenGL, the only
+possibility to use it is through ANGLE. See @ref building-windows-angle and
+@ref platforms-gl-es-angle for more information.
+
+For Windows RT you need to provide logo images and splash screen, all
+referenced from the `*.appxmanifest` file. The file is slightly different for
+different targets, template for Windows Store and MSVC 2013 is below, others
+are in the @ref Platform-Sdl2Application-bootstrap-winrt "SDL2 bootstrap application".
+
+@code{.xml}
+<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
+  <Identity Name="MyApplication" Publisher="CN=A Publisher" Version="1.1.0.0" />
+  <Properties>
+    <DisplayName>My Application</DisplayName>
+    <PublisherDisplayName>A Publisher</PublisherDisplayName>
+    <Logo>assets/logo-store.png</Logo>
+  </Properties>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="MyApplication.App">
+      <m2:VisualElements
+        DisplayName="Magnum Windows Store Application"
+        Description="My Application"
+        BackgroundColor="#202020"
+        ForegroundText="light"
+        Square150x150Logo="assets/logo.png"
+        Square30x30Logo="assets/logo-small.png">
+        <m2:SplashScreen Image="assets/splash.png" />
+      </m2:VisualElements>
+    </Application>
+  </Applications>
+</Package>
+@endcode
+
+The assets are referenced also from the main `CMakeLists.txt` file. You have to
+mark all non-source files (except for the `*.pfx` key) with `VS_DEPLOYMENT_CONTENT`
+property and optionally set their location with `VS_DEPLOYMENT_LOCATION`. If
+you are using `*.resw` files, these need to have the `VS_TOOL_OVERRIDE`
+property set to `PRIResource`.
 
 @todoc DLL paths
 @todoc vcpkg

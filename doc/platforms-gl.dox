@@ -29,6 +29,7 @@ namespace Magnum {
 @brief Information common for all platforms that support OpenGL and OpenGL ES
 
 @tableofcontents
+@m_keyword{ANGLE OpenGL compatibility layer,,}
 @m_footernavigation
 
 @todoc desktop gles

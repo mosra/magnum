@@ -34,7 +34,8 @@ namespace Magnum {
 @todoc code coverage
 
 With Apple decision to focus on Metal, macOS OpenGL support is stuck on version
-4.2 (i.e., a version before compute shaders are available).
+4.2 (i.e., a version before compute shaders are available). Moreover, OpenGL is
+deprecated since macOS 10.14.
 
 @section platforms-macos-bundle Bundle creation
 

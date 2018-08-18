@@ -29,6 +29,7 @@ namespace Magnum {
 @brief Guide how to download and build Magnum on different platforms.
 
 @m_keywords{Building}
+@m_keyword{ANGLE OpenGL compatibility layer,,}
 
 @tableofcontents
 @m_footernavigation

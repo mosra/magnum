@@ -224,94 +224,18 @@ If no other application header is included, this class is also aliased to
 @cpp Platform::Application @ce and the macro is aliased to @cpp MAGNUM_APPLICATION_MAIN() @ce
 to simplify porting.
 
-@section Platform-Sdl2Application-usage-ios Usage with iOS
+@subsection Platform-Sdl2Application-usage-ios iOS specifics
 
-A lot of options for iOS build (such as HiDPI/Retina support, supported display
-orientation, icons, splash screen...) is specified through the `*.plist` file.
-CMake uses its own template that can be configured using various `MACOSX_BUNDLE_*`
-variables, but many options are missing from there and you are much better off
-rolling your own template and passing **abosolute** path to it to CMake using
-the `MACOSX_BUNDLE_INFO_PLIST` property. Below are contents of the `*.plist`
-file used in the bootstrap application, requesting OpenGL ES 2.0 and
-advertising Retina support:
-
-@code{.xml}
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-  <key>CFBundleDevelopmentRegion</key>
-  <string>en-US</string>
-  <key>CFBundleExecutable</key>
-  <string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
-  <key>CFBundleIdentifier</key>
-  <string>cz.mosra.magnum.MyApplication</string>
-  <key>CFBundleInfoDictionaryVersion</key>
-  <string>6.0</string>
-  <key>CFBundleName</key>
-  <string>My Application</string>
-  <key>CFBundlePackageType</key>
-  <string>APPL</string>
-
-  <key>UIRequiredDeviceCapabilities</key>
-  <array>
-    <string>opengles-2</string>
-  </array>
-  <key>NSHighResolutionCapable</key>
-  <true/>
-</dict>
-</plist>
-@endcode
-
-Some other options can be configured from runtime when creating the SDL2
-application window, see documentation of particular value for details:
+As noted in the @ref platforms-ios-bundle "iOS platform guide", a lot of
+options needs to be set via a `*.plist` file. Some options can be configured
+from runtime when creating the SDL2 application window, see documentation of
+a particular value for details:
 
 -   @ref Configuration::WindowFlag::AllowHighDpi allows creating HiDPI/Retina
     drawable
 -   @ref Configuration::WindowFlag::Borderless hides the menu bar
 -   @ref Configuration::WindowFlag::Resizable makes the application respond to
     device orientation changes
-
-@section Platform-Sdl2Application-usage-winrt Usage with Windows RT
-
-For Windows RT you need to provide logo images and splash screen, all
-referenced from the `*.appxmanifest` file. The file is slightly different for
-different targets, template for Windows Store and MSVC 2013 is below, others
-are in the bootstrap application.
-
-@code{.xml}
-<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
-  <Identity Name="MyApplication" Publisher="CN=A Publisher" Version="1.1.0.0" />
-  <Properties>
-    <DisplayName>My Application</DisplayName>
-    <PublisherDisplayName>A Publisher</PublisherDisplayName>
-    <Logo>assets/logo-store.png</Logo>
-  </Properties>
-  <Resources>
-    <Resource Language="x-generate" />
-  </Resources>
-  <Applications>
-    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="MyApplication.App">
-      <m2:VisualElements
-        DisplayName="Magnum Windows Store Application"
-        Description="My Application"
-        BackgroundColor="#202020"
-        ForegroundText="light"
-        Square150x150Logo="assets/logo.png"
-        Square30x30Logo="assets/logo-small.png">
-        <m2:SplashScreen Image="assets/splash.png" />
-      </m2:VisualElements>
-    </Application>
-  </Applications>
-</Package>
-@endcode
-
-The assets are referenced also from the main `CMakeLists.txt` file. You have to
-mark all non-source files (except for the `*.pfx` key) with `VS_DEPLOYMENT_CONTENT`
-property and optionally set their location with `VS_DEPLOYMENT_LOCATION`. If
-you are using `*.resw` files, these need to have the `VS_TOOL_OVERRIDE`
-property set to `PRIResource`.
 */
 class Sdl2Application {
     public:
