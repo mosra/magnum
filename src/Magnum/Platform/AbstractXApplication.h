@@ -420,7 +420,7 @@ class AbstractXApplication::InputEvent {
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
-        constexpr InputEvent(Modifiers modifiers): _modifiers(modifiers), _accepted(false) {}
+        constexpr explicit InputEvent(Modifiers modifiers): _modifiers(modifiers), _accepted(false) {}
 
         ~InputEvent() = default;
     #endif
@@ -527,7 +527,7 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
         constexpr Vector2i position() const { return _position; }
 
     private:
-        constexpr KeyEvent(Key key, Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _key(key), _position(position) {}
+        constexpr explicit KeyEvent(Key key, Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _key(key), _position(position) {}
 
         const Key _key;
         const Vector2i _position;
@@ -562,7 +562,7 @@ class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent 
         constexpr Vector2i position() const { return _position; }
 
     private:
-        constexpr MouseEvent(Button button, Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _button(button), _position(position) {}
+        constexpr explicit MouseEvent(Button button, Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _button(button), _position(position) {}
 
         const Button _button;
         const Vector2i _position;
@@ -581,7 +581,7 @@ class AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEv
         constexpr Vector2i position() const { return _position; }
 
     private:
-        constexpr MouseMoveEvent(Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _position(position) {}
+        constexpr explicit MouseMoveEvent(Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _position(position) {}
 
         const Vector2i _position;
 };

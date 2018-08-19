@@ -1464,7 +1464,7 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
         constexpr bool isRepeated() const { return _repeated; }
 
     private:
-        constexpr KeyEvent(Key key, Modifiers modifiers, bool repeated): _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
+        constexpr explicit KeyEvent(Key key, Modifiers modifiers, bool repeated): _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
 
         const Key _key;
         const Modifiers _modifiers;
@@ -1535,7 +1535,7 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        constexpr MouseEvent(Button button, const Vector2i& position
+        constexpr explicit MouseEvent(Button button, const Vector2i& position
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             , Int clickCount
             #endif
@@ -1608,7 +1608,7 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        constexpr MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition, Buttons buttons): _position{position}, _relativePosition{relativePosition}, _buttons{buttons}, _modifiersLoaded{false} {}
+        constexpr explicit MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition, Buttons buttons): _position{position}, _relativePosition{relativePosition}, _buttons{buttons}, _modifiersLoaded{false} {}
 
         const Vector2i _position, _relativePosition;
         const Buttons _buttons;
@@ -1636,7 +1636,7 @@ class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        constexpr MouseScrollEvent(const Vector2& offset): _offset{offset}, _modifiersLoaded{false} {}
+        constexpr explicit MouseScrollEvent(const Vector2& offset): _offset{offset}, _modifiersLoaded{false} {}
 
         const Vector2 _offset;
         bool _modifiersLoaded;
@@ -1703,7 +1703,7 @@ class Sdl2Application::MultiGestureEvent {
         Int fingerCount() const { return _fingerCount; }
 
     private:
-        constexpr MultiGestureEvent(const Vector2& center, Float relativeRotation, Float relativeDistance, Int fingerCount): _center{center}, _relativeRotation{relativeRotation}, _relativeDistance{relativeDistance}, _fingerCount{fingerCount}, _accepted{false} {}
+        constexpr explicit MultiGestureEvent(const Vector2& center, Float relativeRotation, Float relativeDistance, Int fingerCount): _center{center}, _relativeRotation{relativeRotation}, _relativeDistance{relativeDistance}, _fingerCount{fingerCount}, _accepted{false} {}
 
         Vector2 _center;
         Float _relativeRotation,
@@ -1750,7 +1750,7 @@ class Sdl2Application::TextInputEvent {
         constexpr Containers::ArrayView<const char> text() const { return _text; }
 
     private:
-        constexpr TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
+        constexpr explicit TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
 
         Containers::ArrayView<const char> _text;
         bool _accepted;
@@ -1800,7 +1800,7 @@ class Sdl2Application::TextEditingEvent {
         constexpr Int length() const { return _length; }
 
     private:
-        constexpr TextEditingEvent(Containers::ArrayView<const char> text, Int start, Int length): _text{text}, _start{start}, _length{length}, _accepted{false} {}
+        constexpr explicit TextEditingEvent(Containers::ArrayView<const char> text, Int start, Int length): _text{text}, _start{start}, _length{length}, _accepted{false} {}
 
         Containers::ArrayView<const char> _text;
         Int _start, _length;
