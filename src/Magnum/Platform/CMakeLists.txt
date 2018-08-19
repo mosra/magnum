@@ -222,6 +222,17 @@ if(WITH_SDL2APPLICATION)
             ${MagnumSomeContext_LIBRARY})
     endif()
 
+    # If there is X11, ask it for DPI
+    if(CORRADE_TARGET_UNIX AND NOT CORRADE_TARGET_APPLE)
+        find_package(X11)
+        if(X11_FOUND)
+            # Not linking to X11, we dlopen() instead
+            target_include_directories(MagnumSdl2Application PRIVATE ${X11_X11_INCLUDE_PATH})
+            target_link_libraries(MagnumSdl2Application PUBLIC ${CMAKE_DL_LIBS})
+            target_compile_definitions(MagnumSdl2Application PRIVATE "_MAGNUM_PLATFORM_USE_X11")
+        endif()
+    endif()
+
     install(FILES ${MagnumSdl2Application_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumSdl2Application
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}

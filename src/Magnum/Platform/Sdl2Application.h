@@ -56,6 +56,10 @@
 
 namespace Magnum { namespace Platform {
 
+namespace Implementation {
+    enum class DpiScalingPolicy: UnsignedByte;
+}
+
 /** @nosubgrouping
 @brief SDL2 application
 
@@ -236,6 +240,89 @@ a particular value for details:
 -   @ref Configuration::WindowFlag::Borderless hides the menu bar
 -   @ref Configuration::WindowFlag::Resizable makes the application respond to
     device orientation changes
+
+@section Platform-Sdl2Application-dpi DPI awareness
+
+On displays that match the platform default DPI (96 or 72),
+@ref Configuration::setSize() will create the window in exactly the requested
+size and the framebuffer pixels will match display pixels 1:1. On displays that
+have different DPI, there are three possible scenarios, listed below. It's
+possible to fine tune the behavior either using extra parameters passed to
+@ref Configuration::setSize() or via the `--magnum-dpi-scaling` command-line
+option.
+
+-   Framebuffer DPI scaling. The window is created with exactly the requested
+    size and all event coordinates are reported also relative to that size.
+    However, the window backing framebuffer has a different size. This is only
+    supported on macOS and iOS. See @ref platforms-macos-hidpi for details how
+    to enable it. Equivalent to passing
+    @ref Configuration::DpiScalingPolicy::Framebuffer to
+    @ref Configuration::setSize() or `framebuffer` on command line.
+-   Virtual DPI scaling. Scales the window based on DPI scaling setting in the
+    system. For example if a 800x600 window is requested and DPI scaling is set
+    to 200%, the resulting window will have 1600x1200 pixels. The backing
+    framebuffer will have the same size. This is supported on Linux and
+    Windows. Equivalent to passing @ref Configuration::DpiScalingPolicy::Virtual
+    to @ref Configuration::setSize() or `virtual` on command line.
+-   Physical DPI scaling. Takes the requested window size as a physical size
+    that a window would have on platform's default DPI and scales it to have
+    the same physical size on given display physical DPI. So, for example on a
+    display with 240 DPI the window size will be 2000x1500 in pixels, but it
+    will be 21 centimeters wide, the same as a 800x600 window would be on a 96
+    DPI display. On platforms that don't have a concept of a window (such
+    as mobile platforms or @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"), it
+    causes the framebuffer to match display pixels 1:1 without any scaling.
+    This is supported on Linux, Windows, all mobile platforms except iOS and
+    Emscripten. Equivalent to passing
+    @ref Configuration::DpiScalingPolicy::Physical to
+    @ref Configuration::setSize() or `physical` on command line.
+
+Besides the above, it's possible to supply a custom DPI scaling value to
+@ref Configuration::setSize() or the `--magnum-dpi-scaling` command-line
+option. Using `--magnum-dpi-scaling &lt;number&gt;` will make the scaling
+same in both directions, with `--magnum-dpi-scaling "<horizontal> <vertical>"`
+the scaling will be different in each direction. On desktop systems custom DPI
+scaling value will affect physical window size (with the content being scaled),
+on mobile and web it will affect sharpness of the contents.
+
+The default is depending on the platform:
+
+-   On macOS and iOS, the default and only supported option is
+    @ref Configuration::DpiScalingPolicy::Framebuffer. On this platform,
+    @ref windowSize() and @ref framebufferSize() will differ depending on
+    whether `NSHighResolutionCapable` is enabled in the `*.plist` file or not.
+    By default, @ref dpiScaling() is @cpp 1.0f @ce in both dimensions but it
+    can be overriden using custom DPI scaling.
+-   On Windows, the default is @ref Configuration::DpiScalingPolicy::Framebuffer.
+    The @ref windowSize() and @ref framebufferSize() is always the same.
+    Depending on whether the DPI awareness was enabled in the manifest file or
+    set by the `SetProcessDpiAwareness()` API, @ref dpiScaling() is either
+    @cpp 1.0f @ce in both dimensions, indicating a low-DPI screen or a
+    non-DPI-aware app, or some other value for HiDPI screens. In both cases the
+    value can be overriden using custom DPI scaling.
+-   On Linux, the default is @ref Configuration::DpiScalingPolicy::Virtual,
+    taken from the `Xft.dpi` property. If the property is not available, it
+    falls back to @ref Configuration::DpiScalingPolicy::Physical, querying the
+    monitor DPI value. The @ref windowSize() and @ref framebufferSize() is
+    always the same, @ref dpiScaling() contains the queried DPI scaling value.
+    The value can be overriden using custom DPI scaling.
+-   On @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", the default is physical DPI
+    scaling, taken from [Window.getDevicePixelRatio()](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio). The
+    @ref windowSize() and @ref framebufferSize() is always the same,
+    @ref dpiScaling() contains the queried DPI scaling value. The value can be
+    overriden using custom DPI scaling.
+
+If your application is saving and restoring window size, it's advisable to take
+@ref dpiScaling() into account:
+
+-   Either divide the window size by the DPI scaling value and use that to
+    restore the window next time --- but note this might accumulate slight
+    differences in window sizes over time, especially if fractional scaling is
+    involved.
+-   Or save the scaled size and use @ref Configuration::setSize(const Vector2i&, const Vector2&)
+    with @cpp 1.0f @ce as custom DPI scaling next time --- but this doesn't
+    properly handle cases where the window is opened on a display with
+    different DPI.
 */
 class Sdl2Application {
     public:
@@ -472,15 +559,60 @@ class Sdl2Application {
 
         /** @{ @name Screen handling */
 
+    public:
         /**
          * @brief Window size
          *
          * Window size to which all input event coordinates can be related.
-         * Note that especially on HiDPI systems the reported window size might
-         * not be the same as framebuffer size.
+         * Note that, especially on HiDPI systems, it may be different from
+         * @ref framebufferSize(). If a window is not created yet, returns
+         * zero vector. See @ref Platform-Sdl2Application-dpi for more
+         * information.
+         * @see @ref dpiScaling()
          */
-        Vector2i windowSize();
+        Vector2i windowSize() const;
 
+        #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
+        /**
+         * @brief Framebuffer size
+         *
+         * Size of the default framebuffer. Note that, especially on HiDPI
+         * systems, it may be different from @ref windowSize(). If a window is
+         * not created yet, returns zero vector. See
+         * @ref Platform-Sdl2Application-dpi for more information.
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
+         *
+         * @see @ref dpiScaling()
+         */
+        Vector2i framebufferSize() const;
+        #endif
+
+        /**
+         * @brief DPI scaling
+         *
+         * How the content should be scaled relative to system defaults for
+         * given @ref windowSize(). If a window is not created yet, returns
+         * zero vector, use @ref dpiScaling(const Configuration&) const for
+         * calculating a value independently. See @ref Platform-Sdl2Application-dpi
+         * for more information.
+         * @see @ref framebufferSize()
+         */
+        Vector2 dpiScaling() const { return _dpiScaling; }
+
+        /**
+         * @brief DPI scaling for given configuration
+         *
+         * Calculates DPI scaling that would be used when creating a window
+         * with given @p configuration. Takes into account DPI scaling policy
+         * and custom scaling specified on the command-line. See
+         * @ref Platform-Sdl2Application-dpi for more information.
+         */
+        Vector2 dpiScaling(const Configuration& configuration) const;
+
+    protected:
         /**
          * @brief Swap buffers
          *
@@ -739,6 +871,13 @@ class Sdl2Application {
         typedef Containers::EnumSet<Flag> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
+        /* These are saved from command-line arguments */
+        bool _verboseLog{};
+        Implementation::DpiScalingPolicy _commandLineDpiScalingPolicy{};
+        Vector2 _commandLineDpiScaling;
+
+        Vector2 _dpiScaling;
+
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_Window* _window;
         UnsignedInt _minimalLoopPeriod;
@@ -949,6 +1088,33 @@ CORRADE_ENUMSET_OPERATORS(Sdl2Application::GLConfiguration::Flags)
 #endif
 #endif
 
+namespace Implementation {
+    enum class DpiScalingPolicy: UnsignedByte {
+        /* Using 0 for an "unset" value */
+
+        #ifdef CORRADE_TARGET_APPLE
+        Framebuffer = 1,
+        #endif
+
+        #ifndef CORRADE_TARGET_APPLE
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
+        Virtual = 2,
+        #endif
+
+        Physical = 3,
+        #endif
+
+        Default
+            #ifdef CORRADE_TARGET_APPLE
+            = Framebuffer
+            #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
+            = Virtual
+            #else
+            = Physical
+            #endif
+    };
+}
+
 /**
 @brief Configuration
 
@@ -1025,6 +1191,62 @@ class Sdl2Application::Configuration {
         typedef Containers::EnumSet<WindowFlag> WindowFlags;
         #endif
 
+        /**
+         * @brief DPI scaling policy
+         *
+         * DPI scaling policy when requesting a particular window size. Can
+         * be overriden on command-line using `--magnum-dpi-scaling` or via
+         * the `MAGNUM_DPI_SCALING` environment variable.
+         * @see @ref setSize(), @ref Platform-Sdl2Application-dpi
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        enum class DpiScalingPolicy: UnsignedByte {
+            /**
+             * Framebuffer DPI scaling. The window will have the same size as
+             * requested, but the framebuffer size will be different. Supported
+             * only on macOS and iOS and is also the only supported value
+             * there.
+             */
+            Framebuffer,
+
+            /**
+             * Virtual DPI scaling. Scales the window based on UI scaling
+             * setting in the system. Falls back to
+             * @ref DpiScalingPolicy::Physical on platforms that don't support
+             * it. Supported only on desktop platforms (except macOS) and it's
+             * the default there.
+             *
+             * Equivalent to `--magnum-dpi-scaling virtual` passed on
+             * command-line.
+             */
+            Virtual,
+
+            /**
+             * Physical DPI scaling. Takes the requested window size as a
+             * physical size that a window would have on platform's default DPI
+             * and scales it to have the same size on given display physical
+             * DPI. On platforms that don't have a concept of a window it
+             * causes the framebuffer to match screen pixels 1:1 without any
+             * scaling. Supported on desktop platforms except macOS and on
+             * mobile and web. Default on mobile and web.
+             *
+             * Equivalent to `--magnum-dpi-scaling physical` passed on
+             * command-line.
+             */
+            Physical,
+
+            /**
+             * Default policy for current platform. Alias to one of
+             * @ref DpiScalingPolicy::Framebuffer, @ref DpiScalingPolicy::Virtual
+             * or @ref DpiScalingPolicy::Physical depending on platform. See
+             * @ref Platform-Sdl2Application-dpi for details.
+             */
+            Default
+        };
+        #else
+        typedef Implementation::DpiScalingPolicy DpiScalingPolicy;
+        #endif
+
         /*implicit*/ Configuration();
         ~Configuration();
 
@@ -1061,17 +1283,58 @@ class Sdl2Application::Configuration {
         Vector2i size() const { return _size; }
 
         /**
+         * @brief DPI scaling policy
+         *
+         * If @ref dpiScaling() is non-zero, it has a priority over this value.
+         * The `--magnum-dpi-scaling` command-line option has a priority over
+         * any application-set value.
+         * @see @ref setSize(const Vector2i&, DpiScalingPolicy)
+         */
+        DpiScalingPolicy dpiScalingPolicy() const { return _dpiScalingPolicy; }
+
+        /**
+         * @brief Custom DPI scaling
+         *
+         * If zero, then @ref dpiScalingPolicy() has a priority over this
+         * value. The `--magnum-dpi-scaling` command-line option has a priority
+         * over any application-set value.
+         * @see @ref setSize(const Vector2i&, const Vector2&)
+         */
+        Vector2 dpiScaling() const { return _dpiScaling; }
+
+        /**
          * @brief Set window size
+         * @param size              Desired window size
+         * @param dpiScalingPolicy  Policy based on which DPI scaling will be set
          * @return Reference to self (for method chaining)
          *
          * Default is @cpp {800, 600} @ce and @cpp {640, 480} @ce on
-         * Emscripten. On iOS it defaults to a "reasonable" size based on
-         * whether HiDPI support is enabled using @ref WindowFlag::AllowHighDpi,
-         * but not necessarily native display resolution (you have to set it
-         * explicitly).
+         * Emscripten with @p dpiScalingPolicy set to
+         * @ref DpiScalingPolicy::Default. On iOS it defaults to a size that
+         * matches display resolution. See @ref Platform-Sdl2Application-dpi
+         * for more information.
+         * @see @ref setSize(const Vector2i&, const Vector2&)
          */
-        Configuration& setSize(const Vector2i& size) {
+        Configuration& setSize(const Vector2i& size, DpiScalingPolicy dpiScalingPolicy = DpiScalingPolicy::Default) {
             _size = size;
+            _dpiScalingPolicy = dpiScalingPolicy;
+            return *this;
+        }
+
+        /**
+         * @brief Set window size with custom DPI scaling
+         * @param size              Desired window size
+         * @param dpiScaling        Custom DPI scaling value
+         *
+         * Compared to @ref setSize(const Vector2i&, DpiScalingPolicy) which
+         * autodetects the DPI scaling value according to given policy, this
+         * function sets the DPI scaling directly. The resulting
+         * @ref Sdl2Application::windowSize() is @cpp size*dpiScaling @ce and
+         * @ref Sdl2Application::dpiScaling() is @p dpiScaling.
+         */
+        Configuration& setSize(const Vector2i& size, const Vector2& dpiScaling) {
+            _size = size;
+            _dpiScaling = dpiScaling;
             return *this;
         }
 
@@ -1156,7 +1419,9 @@ class Sdl2Application::Configuration {
         std::string _title;
         #endif
         Vector2i _size;
+        DpiScalingPolicy _dpiScalingPolicy;
         WindowFlags _windowFlags;
+        Vector2 _dpiScaling;
         #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
         Int _sampleCount;
         #ifndef CORRADE_TARGET_EMSCRIPTEN

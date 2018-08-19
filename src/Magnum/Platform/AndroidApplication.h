@@ -300,7 +300,11 @@ class AndroidApplication {
 
         /** @{ @name Screen handling */
 
-        /** @copydoc Sdl2Application::windowSize() */
+        /**
+         * @brief Window size
+         *
+         * Window size to which all input event coordinates can be related.
+         */
         Vector2i windowSize();
 
         /**

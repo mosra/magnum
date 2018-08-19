@@ -86,6 +86,8 @@ See also:
 
 @subsubsection changelog-latest-new-platform Platform libraries
 
+-   Initial HiDPI support for Linux and Emscripten in
+    @ref Platform::Sdl2Application
 -   Implemented @ref Platform::GlfwApplication::MouseMoveEvent::buttons() for
     feature parity with @ref Platform::Sdl2Application
 -   Added @ref Platform::Sdl2Application::GLConfiguration::setColorBufferSize() "GLConfiguration::setColorBufferSize()",

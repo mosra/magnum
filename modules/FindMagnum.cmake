@@ -639,6 +639,11 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 find_package(SDL2)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES SDL2::SDL2)
+                if(CORRADE_TARGET_UNIX AND NOT CORRADE_TARGET_APPLE)
+                    # Needed for opt-in DPI queries
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
+                endif()
 
                 # With GLVND (since CMake 3.11) we need to explicitly link to
                 # GLX/EGL because libOpenGL doesn't provide it. For EGL we have

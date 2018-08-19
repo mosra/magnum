@@ -34,6 +34,7 @@
 
 #include "Magnum/Math/Range.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
+#include "Magnum/Platform/Implementation/dpiScaling.hpp"
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Version.h"
@@ -78,18 +79,43 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
     _minimalLoopPeriod{0},
     #endif
     #ifdef MAGNUM_TARGET_GL
-    _glContext{nullptr}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}},
+    _glContext{nullptr},
     #endif
     _flags{Flag::Redraw}
 {
+    Utility::Arguments args{Implementation::windowScalingArguments()};
+    #ifdef MAGNUM_TARGET_GL
+    _context.reset(new GLContext{NoCreate, args, arguments.argc, arguments.argv});
+    #else
+    args.parse(arguments.argc, arguments.argv);
+    #endif
+
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         Error() << "Cannot initialize SDL.";
         std::exit(1);
     }
 
-    #ifndef MAGNUM_TARGET_GL
-    static_cast<void>(arguments);
+    /* Save command-line arguments */
+    if(args.value("log") == "verbose") _verboseLog = true;
+    const std::string dpiScaling = args.value("dpi-scaling");
+    if(dpiScaling == "default")
+        _commandLineDpiScalingPolicy = Implementation::DpiScalingPolicy::Default;
+    #ifdef CORRADE_TARGET_APPLE
+    else if(dpiScaling == "framebuffer")
+        _commandLineDpiScalingPolicy = Implementation::DpiScalingPolicy::Framebuffer;
     #endif
+    #ifndef CORRADE_TARGET_APPLE
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
+    else if(dpiScaling == "virtual")
+        _commandLineDpiScalingPolicy = Implementation::DpiScalingPolicy::Virtual;
+    #endif
+    else if(dpiScaling == "physical")
+        _commandLineDpiScalingPolicy = Implementation::DpiScalingPolicy::Physical;
+    #endif
+    else if(dpiScaling.find_first_of(" \t\n") != std::string::npos)
+        _commandLineDpiScaling = args.value<Vector2>("dpi-scaling");
+    else
+        _commandLineDpiScaling = Vector2{args.value<Float>("dpi-scaling")};
 }
 
 void Sdl2Application::create() {
@@ -106,11 +132,95 @@ void Sdl2Application::create(const Configuration& configuration, const GLConfigu
 }
 #endif
 
+Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) const {
+    std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;
+
+    /* Use values from the configuration only if not overriden on command line.
+       In any case explicit scaling has a precedence before the policy. */
+    Implementation::DpiScalingPolicy dpiScalingPolicy{};
+    if(!_commandLineDpiScaling.isZero()) {
+        Debug{verbose} << "Platform::Sdl2Application: user-defined DPI scaling" << _commandLineDpiScaling.x();
+        return _commandLineDpiScaling;
+    } else if(UnsignedByte(_commandLineDpiScalingPolicy)) {
+        dpiScalingPolicy = _commandLineDpiScalingPolicy;
+    } else if(!configuration.dpiScaling().isZero()) {
+        Debug{verbose} << "Platform::Sdl2Application: app-defined DPI scaling" << _commandLineDpiScaling.x();
+        return configuration.dpiScaling();
+    } else {
+        dpiScalingPolicy = configuration.dpiScalingPolicy();
+    }
+
+    /* There's no choice on Apple, it's all controlled by the plist file. So
+       unless someone specified custom scaling via config or command-line
+       above, return the default. */
+    #ifdef CORRADE_TARGET_APPLE
+    return Vector2{1.0f};
+
+    /* Otherwise there's a choice between virtual and physical DPI scaling */
+    #else
+    /* Try to get virtual DPI scaling first, if supported and requested */
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
+    if(dpiScalingPolicy == Implementation::DpiScalingPolicy::Virtual) {
+        /* Use Xft.dpi on X11 */
+        #ifdef _MAGNUM_PLATFORM_USE_X11
+        const Vector2 dpiScaling{Implementation::x11DpiScaling()};
+        if(!dpiScaling.isZero()) {
+            Debug{verbose} << "Platform::Sdl2Application: virtual DPI scaling" << dpiScaling.x();
+            return dpiScaling;
+        }
+
+        /* Otherwise ¯\_(ツ)_/¯ */
+        #else
+        Debug{verbose} << "Platform::Sdl2Application: sorry, virtual DPI scaling not implemented on this platform yet";
+        return Vector2{1.0f};
+        #endif
+    }
+    #endif
+
+    /* At this point, either the virtual DPI query failed or a physical DPI
+       scaling is requested */
+    #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
+    CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::DpiScalingPolicy::Virtual || dpiScalingPolicy == Implementation::DpiScalingPolicy::Physical);
+    #else
+    CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::DpiScalingPolicy::Physical);
+    #endif
+
+    /* Take device pixel ratio on Emscripten */
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
+    const Vector2 dpiScaling{Implementation::emscriptenDpiScaling()};
+    Debug{verbose} << "Platform::Sdl2Application: physical DPI scaling" << dpiScaling.x();
+    return dpiScaling;
+
+    /* Take display DPI elsewhere. Enable only on Linux for now, I need to
+       test this properly on Windows first. Also only since SDL 2.0.4. */
+    #elif defined(CORRADE_TARGET_UNIX) && SDL_VERSION_ATLEAST(2, 0, 4)
+    Vector2 dpi;
+    if(SDL_GetDisplayDPI(0, nullptr, &dpi.x(), &dpi.y()) == 0) {
+        const Vector2 dpiScaling{dpi/96.0f};
+        Debug{verbose} << "Platform::Sdl2Application: physical DPI scaling" << dpiScaling;
+        return dpiScaling;
+    }
+
+    Warning{} << "Platform::Sdl2Application: can't get physical display DPI, falling back to no scaling:" << SDL_GetError();
+    return Vector2{1.0f};
+
+    /* Not implemented otherwise */
+    #else
+    Debug{verbose} << "Platform::Sdl2Application: sorry, physical DPI scaling not implemented on this platform yet";
+    return Vector2{1.0f};
+    #endif
+    #endif
+}
+
 bool Sdl2Application::tryCreate(const Configuration& configuration) {
     #ifdef MAGNUM_TARGET_GL
     if(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless))
         return tryCreate(configuration, GLConfiguration{});
     #endif
+
+    /* Scale window based on DPI */
+    _dpiScaling = dpiScaling(configuration);
+    const Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Create window */
@@ -121,7 +231,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
         nullptr,
         #endif
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        configuration.size().x(), configuration.size().y(),
+        scaledWindowSize.x(), scaledWindowSize.y(),
         Uint32(configuration.windowFlags()&~Configuration::WindowFlag::Contextless))))
     {
         Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
@@ -129,7 +239,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
     }
     #else
     /* Emscripten-specific initialization */
-    if(!(_glContext = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF))) {
+    if(!(_glContext = SDL_SetVideoMode(scaledWindowSize.x(), scaledWindowSize.y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF))) {
         Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
         return false;
     }
@@ -183,6 +293,10 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     /* sRGB */
     SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, glConfiguration.isSRGBCapable());
     #endif
+
+    /* Scale window based on DPI */
+    _dpiScaling = dpiScaling(configuration);
+    const Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
 
     /** @todo Remove when Emscripten has proper SDL2 support */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -241,7 +355,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         nullptr,
         #endif
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-        configuration.size().x(), configuration.size().y(),
+        scaledWindowSize.x(), scaledWindowSize.y(),
         SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN|Uint32(configuration.windowFlags()))))
     {
         Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
@@ -294,7 +408,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
 
         if(!(_window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
-            configuration.size().x(), configuration.size().y(),
+            scaledWindowSize.x(), scaledWindowSize.y(),
             SDL_WINDOW_OPENGL|SDL_WINDOW_HIDDEN|Uint32(configuration.windowFlags()&~Configuration::WindowFlag::Contextless))))
         {
             Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
@@ -325,7 +439,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     #endif
     #else
     /* Emscripten-specific initialization */
-    if(!(_glContext = SDL_SetVideoMode(configuration.size().x(), configuration.size().y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF))) {
+    if(!(_glContext = SDL_SetVideoMode(scaledWindowSize.x(), scaledWindowSize.y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF))) {
         Error() << "Platform::Sdl2Application::tryCreate(): cannot create context:" << SDL_GetError();
         return false;
     }
@@ -354,10 +468,20 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
 }
 #endif
 
-Vector2i Sdl2Application::windowSize() {
+Vector2i Sdl2Application::windowSize() const {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     Vector2i size;
     SDL_GetWindowSize(_window, &size.x(), &size.y());
+    return size;
+    #else
+    return {_glContext->w, _glContext->h};
+    #endif
+}
+
+Vector2i Sdl2Application::framebufferSize() const {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    Vector2i size;
+    SDL_GL_GetDrawableSize(_window, &size.x(), &size.y());
     return size;
     #else
     return {_glContext->w, _glContext->h};
@@ -633,12 +757,13 @@ Sdl2Application::Configuration::Configuration():
     _title("Magnum SDL2 Application"),
     #endif
     #ifdef CORRADE_TARGET_EMSCRIPTEN
-    _size{640, 480}
+    _size{640, 480},
     #elif !defined(CORRADE_TARGET_IOS)
-    _size{800, 600}
+    _size{800, 600},
     #else
-    _size{} /* SDL2 detects someting for us */
+    _size{}, /* SDL2 detects someting for us */
     #endif
+    _dpiScalingPolicy{DpiScalingPolicy::Default}
     #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
     , _sampleCount(0)
     #ifndef CORRADE_TARGET_EMSCRIPTEN
