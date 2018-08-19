@@ -330,7 +330,7 @@ class GlfwApplication {
 
         /** @{ @name Screen handling */
 
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
+    public:
         /**
          * @brief Window size
          *
@@ -338,9 +338,9 @@ class GlfwApplication {
          * Note that especially on HiDPI systems the reported window size might
          * not be the same as framebuffer size.
          */
-        Vector2i windowSize();
-        #endif
+        Vector2i windowSize() const;
 
+    protected:
         /**
          * @brief Swap buffers
          *

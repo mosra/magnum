@@ -165,7 +165,7 @@ bool AndroidApplication::tryCreate(const Configuration& configuration, const GLC
     return _context->tryCreate();
 }
 
-Vector2i AndroidApplication::windowSize() {
+Vector2i AndroidApplication::windowSize() const {
     return {ANativeWindow_getWidth(_state->window),
             ANativeWindow_getHeight(_state->window)};
 }

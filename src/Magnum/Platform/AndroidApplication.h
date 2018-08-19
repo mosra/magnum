@@ -300,13 +300,15 @@ class AndroidApplication {
 
         /** @{ @name Screen handling */
 
+    public:
         /**
          * @brief Window size
          *
          * Window size to which all input event coordinates can be related.
          */
-        Vector2i windowSize();
+        Vector2i windowSize() const;
 
+    protected:
         /**
          * @brief Swap buffers
          *
