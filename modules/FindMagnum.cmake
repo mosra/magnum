@@ -639,8 +639,14 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 find_package(SDL2)
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES SDL2::SDL2)
-                if(CORRADE_TARGET_UNIX AND NOT CORRADE_TARGET_APPLE)
-                    # Needed for opt-in DPI queries
+                # Use the Foundation framework on Apple to query the DPI awareness
+                if(CORRADE_TARGET_APPLE)
+                    find_library(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY Foundation)
+                    mark_as_advanced(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY)
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES ${_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY})
+                # Needed for opt-in DPI queries
+                elseif(CORRADE_TARGET_UNIX)
                     set_property(TARGET Magnum::${_component} APPEND PROPERTY
                         INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
                 endif()

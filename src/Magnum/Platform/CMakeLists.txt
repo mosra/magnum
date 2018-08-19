@@ -205,6 +205,9 @@ if(WITH_SDL2APPLICATION)
     if(TARGET_GL)
         list(APPEND MagnumSdl2Application_SRCS ${MagnumSomeContext_OBJECTS})
     endif()
+    if(CORRADE_TARGET_APPLE)
+        list(APPEND MagnumSdl2Application_SRCS Implementation/dpiScaling.mm)
+    endif()
 
     add_library(MagnumSdl2Application STATIC
         ${MagnumSdl2Application_SRCS}
@@ -222,8 +225,17 @@ if(WITH_SDL2APPLICATION)
             ${MagnumSomeContext_LIBRARY})
     endif()
 
+    # Use the Foundation framework on Apple to query the DPI awareness
+    if(CORRADE_TARGET_APPLE)
+        find_library(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY Foundation)
+        mark_as_advanced(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY)
+        find_path(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR NAMES NSBundle.h)
+        mark_as_advanced(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR)
+        target_link_libraries(MagnumSdl2Application PUBLIC ${_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY})
+        target_include_directories(MagnumSdl2Application PRIVATE ${_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR})
+
     # If there is X11, ask it for DPI
-    if(CORRADE_TARGET_UNIX AND NOT CORRADE_TARGET_APPLE)
+    elseif(CORRADE_TARGET_UNIX)
         find_package(X11)
         if(X11_FOUND)
             # Not linking to X11, we dlopen() instead

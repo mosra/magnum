@@ -40,7 +40,9 @@
 #include <emscripten/html5.h>
 #endif
 
-namespace Magnum { namespace Platform { namespace Implementation { namespace {
+namespace Magnum { namespace Platform { namespace Implementation {
+
+namespace {
 
 inline Utility::Arguments windowScalingArguments() {
     Utility::Arguments args{"magnum"};
@@ -126,6 +128,12 @@ inline Float emscriptenDpiScaling() {
 }
 #endif
 
-}}}}
+}
+
+#ifdef CORRADE_TARGET_APPLE
+bool isAppleBundleHiDpiEnabled();
+#endif
+
+}}}
 
 #endif

@@ -135,6 +135,15 @@ void Sdl2Application::create(const Configuration& configuration, const GLConfigu
 Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) const {
     std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;
 
+    /* Print a helpful warning in case some extra steps are needed for HiDPI
+       support */
+    #ifdef CORRADE_TARGET_APPLE
+    if(!Implementation::isAppleBundleHiDpiEnabled())
+        Warning{} << "Platform::Sdl2Application: warning: the executable is not a HiDPI-enabled app bundle";
+    #elif defined(CORRADE_TARGET_WINDOWS)
+    /** @todo */
+    #endif
+
     /* Use values from the configuration only if not overriden on command line.
        In any case explicit scaling has a precedence before the policy. */
     Implementation::DpiScalingPolicy dpiScalingPolicy{};
