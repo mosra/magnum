@@ -179,6 +179,23 @@ class AbstractXApplication {
 
         /** @{ @name Screen handling */
 
+    public:
+        /**
+         * @brief Window size
+         *
+         * Window size to which all input event coordinates can be related.
+         * Same as @ref framebufferSize().
+         */
+        Vector2i windowSize() const { return _windowSize; }
+
+        /**
+         * @brief Framebuffer size
+         *
+         * Size of the default framebuffer. Same as @ref windowSize().
+         */
+        Vector2i framebufferSize() const { return _windowSize; }
+
+    protected:
         /**
          * @brief Swap buffers
          *
@@ -251,7 +268,7 @@ class AbstractXApplication {
         std::unique_ptr<Platform::GLContext> _context;
 
         /** @todo Get this from the created window */
-        Vector2i _viewportSize;
+        Vector2i _windowSize;
 
         Flags _flags;
 };

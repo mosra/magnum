@@ -74,7 +74,7 @@ bool AbstractXApplication::tryCreate(const Configuration& configuration, const G
 
     CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::AbstractXApplication::tryCreate(): context already created", false);
 
-    _viewportSize = configuration.size();
+    _windowSize = configuration.size();
 
     /* Get default X display */
     _display = XOpenDisplay(nullptr);
@@ -154,8 +154,8 @@ int AbstractXApplication::exec() {
                 /* Window resizing */
                 case ConfigureNotify: {
                     Vector2i size(event.xconfigure.width, event.xconfigure.height);
-                    if(size != _viewportSize) {
-                        _viewportSize = size;
+                    if(size != _windowSize) {
+                        _windowSize = size;
                         viewportEvent(size);
                         _flags |= Flag::Redraw;
                     }
