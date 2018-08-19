@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_GLUTAPPLICATION
+
 #include "GlutApplication.h"
 
 #include <tuple>
@@ -33,7 +35,9 @@
 
 namespace Magnum { namespace Platform {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 GlutApplication* GlutApplication::_instance = nullptr;
+CORRADE_IGNORE_DEPRECATED_POP
 
 GlutApplication::GlutApplication(const Arguments& arguments): GlutApplication{arguments, Configuration{}, GLConfiguration{}} {}
 
@@ -181,7 +185,9 @@ GlutApplication::Configuration::Configuration():
     {}
 GlutApplication::Configuration::~Configuration() = default;
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template class BasicScreen<GlutApplication>;
 template class BasicScreenedApplication<GlutApplication>;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}

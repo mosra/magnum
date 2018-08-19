@@ -43,10 +43,23 @@
 
 #include <GL/freeglut.h>
 
+#ifndef MAGNUM_BUILD_DEPRECATED
+#error Scheduled for removal. Consider switching to Sdl2Application or GlfwApplication instead.
+#endif
+
+/* I still have a test for this class and it shouldn't pollute the log there */
+#ifndef _MAGNUM_DO_NOT_WARN_DEPRECATED_GLUTAPPLICATION
+CORRADE_DEPRECATED_FILE("Scheduled for removal. Consider switching to Sdl2Application or GlfwApplication instead.")
+#endif
+
 namespace Magnum { namespace Platform {
 
 /** @nosubgrouping
 @brief GLUT application
+
+@deprecated This application is based on an outdated toolkit and scheduled for
+    removal in a future release. Please consider switching to either
+    @ref Sdl2Application or @ref GlfwApplication as soon as possible.
 
 Application using the [GLUT](http://freeglut.sourceforge.net/) toolkit.
 Supports keyboard and mouse handling with support for changing cursor and mouse
@@ -108,7 +121,7 @@ If no other application header is included, this class is also aliased to
 @cpp Platform::Application @ce and the macro is aliased to
 @cpp MAGNUM_APPLICATION_MAIN() @ce to simplify porting.
 */
-class GlutApplication {
+class CORRADE_DEPRECATED("Scheduled for removal. Consider switching to Sdl2Application or GlfwApplication instead.") GlutApplication {
     public:
         /** @brief Application arguments */
         struct Arguments {
@@ -789,6 +802,12 @@ class GlutApplication::MouseMoveEvent: public GlutApplication::InputEvent {
 @brief Entry point for GLUT-based applications
 @param className Class name
 
+@deprecated This application is based on an outdated toolkit and scheduled for
+    removal in a future release. Please consider switching to either
+    @ref Magnum::Platform::Sdl2Application "Platform::Sdl2Application" or
+    @ref Magnum::Platform::GlfwApplication "Platform::GlfwApplication" as soon
+    as possible.
+
 See @ref Magnum::Platform::GlutApplication "Platform::GlutApplication" for
 usage information. This macro abstracts out platform-specific entry point code
 and is equivalent to the following, see @ref portability-applications for more
@@ -805,6 +824,7 @@ When no other application header is included this macro is also aliased to
 @cpp MAGNUM_APPLICATION_MAIN() @ce.
 */
 #define MAGNUM_GLUTAPPLICATION_MAIN(className)                              \
+    CORRADE_DEPRECATED_MACRO(MAGNUM_APPLICATION_MAIN(), "Scheduled for removal. Consider switching to Sdl2Application or GlfwApplication instead.") \
     int main(int argc, char** argv) {                                       \
         className app({argc, argv});                                        \
         return app.exec();                                                  \
@@ -812,16 +832,28 @@ When no other application header is included this macro is also aliased to
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
-typedef GlutApplication Application;
-typedef BasicScreen<GlutApplication> Screen;
-typedef BasicScreenedApplication<GlutApplication> ScreenedApplication;
+CORRADE_IGNORE_DEPRECATED_PUSH
+typedef CORRADE_DEPRECATED("Scheduled for removal. Consider switching to Sdl2Application or GlfwApplication instead.") GlutApplication Application;
+typedef CORRADE_DEPRECATED("Scheduled for removal. Consider switching to Sdl2Application or GlfwApplication instead.")BasicScreen<GlutApplication> Screen;
+typedef CORRADE_DEPRECATED("Scheduled for removal. Consider switching to Sdl2Application or GlfwApplication instead.") BasicScreenedApplication<GlutApplication> ScreenedApplication;
+CORRADE_IGNORE_DEPRECATED_POP
+#ifndef _MAGNUM_DO_NOT_WARN_DEPRECATED_GLUTAPPLICATION
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_GLUTAPPLICATION_MAIN(className)
+#else
+#define MAGNUM_APPLICATION_MAIN(className)                                  \
+    int main(int argc, char** argv) {                                       \
+        className app({argc, argv});                                        \
+        return app.exec();                                                  \
+    }
+#endif
 #else
 #undef MAGNUM_APPLICATION_MAIN
 #endif
 #endif
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 CORRADE_ENUMSET_OPERATORS(GlutApplication::MouseMoveEvent::Buttons)
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
 

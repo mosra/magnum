@@ -154,6 +154,10 @@ endif()
 
 # GLUT application
 if(WITH_GLUTAPPLICATION)
+    if(NOT MAGNUM_BUILD_DEPRECATED)
+        message(FATAL_ERROR "GlutApplication is scheduled for removal and not available if BUILD_DEPRECATED is disabled. Please consider switching to Sdl2Application or GlfwApplication instead.")
+    endif()
+
     find_package(GLUT)
     if(NOT GLUT_FOUND)
         message(FATAL_ERROR "GLUT library, required by GlutApplication, was not found. Set WITH_GLUTAPPLICATION to OFF to skip building it.")

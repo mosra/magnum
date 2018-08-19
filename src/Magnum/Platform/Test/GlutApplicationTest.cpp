@@ -23,8 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_GLUTAPPLICATION
+
 #include "Magnum/Platform/GlutApplication.h"
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 namespace Magnum { namespace Platform { namespace Test {
 
 struct GlutApplicationTest: Platform::Application {
@@ -35,3 +38,4 @@ struct GlutApplicationTest: Platform::Application {
 }}}
 
 MAGNUM_APPLICATION_MAIN(Magnum::Platform::Test::GlutApplicationTest)
+CORRADE_IGNORE_DEPRECATED_POP

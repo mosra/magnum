@@ -111,7 +111,8 @@ the components. The optional components are:
 Platform namespace is split into more components:
 
 -   `GlfwApplication` --- @ref Platform::GlfwApplication "GlfwApplication"
--   `GlutApplication` --- @ref Platform::GlutApplication "GlutApplication"
+-   `GlutApplication` @m_class{m-label m-danger} **deprecated** ---
+    @ref Platform::GlutApplication "GlutApplication"
 -   `GlxApplication` --- @ref Platform::GlxApplication "GlxApplication"
 -   `Sdl2Application` --- @ref Platform::Sdl2Application "Sdl2Application"
 -   `XEglApplication` --- @ref Platform::XEglApplication "XEglApplication"
