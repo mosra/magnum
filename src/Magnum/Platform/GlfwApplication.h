@@ -130,6 +130,7 @@ class GlfwApplication {
         #ifdef MAGNUM_TARGET_GL
         class GLConfiguration;
         #endif
+        class ViewportEvent;
         class InputEvent;
         class KeyEvent;
         class MouseEvent;
@@ -365,8 +366,37 @@ class GlfwApplication {
     #else
     private:
     #endif
-        /** @copydoc Sdl2Application::viewportEvent() */
-        virtual void viewportEvent(const Vector2i& size);
+        /**
+         * @brief Viewport event
+         *
+         * Called when window size changes. The default implementation does
+         * nothing. If you want to respond to size changes, you should pass the
+         * new size to @ref GL::DefaultFramebuffer::setViewport() (if using
+         * OpenGL) and possibly elsewhere (to
+         * @ref SceneGraph::Camera::setViewport(), other framebuffers...).
+         *
+         * Note that this function might not get called at all if the window
+         * size doesn't change. You should configure the initial state of your
+         * cameras, framebuffers etc. in application constructor rather than
+         * relying on this function to be called. Size of the window can be
+         * retrieved also using @ref windowSize().
+         *
+         * @todoc make this a copydoc of Sdl2Application once both have
+         *      framebufferSize() and dpiScaling()
+         */
+        virtual void viewportEvent(ViewportEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief viewportEvent(ViewportEvent&)
+         * @deprecated Use @ref viewportEvent(ViewportEvent&) instead.
+         *      To preserve backwards compatibility, this function is called
+         *      from @ref viewportEvent(ViewportEvent&) with
+         *      @ref ViewportEvent::windowSize() passed to @p size. Overriding
+         *      the new function will cause this function to not be called
+         *      anymore.
+         */
+        virtual CORRADE_DEPRECATED("use viewportEvent(ViewportEvent&) instead") void viewportEvent(const Vector2i& size);
+        #endif
 
         /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;
@@ -861,6 +891,28 @@ class GlfwApplication::Configuration {
 };
 
 CORRADE_ENUMSET_OPERATORS(GlfwApplication::Configuration::WindowFlags)
+
+/**
+@brief Viewport event
+
+@see @ref viewportEvent()
+*/
+class GlfwApplication::ViewportEvent {
+    public:
+        /**
+         * @brief Window size
+         *
+         * @see @ref GlfwApplication::windowSize()
+         */
+        Vector2i windowSize() const { return _windowSize; }
+
+    private:
+        friend GlfwApplication;
+
+        explicit ViewportEvent(const Vector2i& windowSize): _windowSize{windowSize} {}
+
+        Vector2i _windowSize;
+};
 
 /**
 @brief Base for input events

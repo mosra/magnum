@@ -38,7 +38,7 @@ class MyApplication: public Platform::Application {
         MyApplication(const Arguments& arguments);
 
     protected:
-        void viewportEvent(const Vector2i& size) override;
+        void viewportEvent(ViewportEvent& size) override;
         void drawEvent() override;
         void keyPressEvent(KeyEvent& event) override;
 };

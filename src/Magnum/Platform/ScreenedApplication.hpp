@@ -37,6 +37,20 @@ namespace Magnum { namespace Platform {
 template<class Application> BasicScreen<Application>::BasicScreen() = default;
 template<class Application> BasicScreen<Application>::~BasicScreen() = default;
 
+template<class Application> void BasicScreen<Application>::viewportEvent(ViewportEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    viewportEvent(event.windowSize());
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+template<class Application> void BasicScreen<Application>::viewportEvent(const Vector2i&) {}
+#endif
+
 template<class Application> void BasicScreen<Application>::keyPressEvent(KeyEvent&) {}
 template<class Application> void BasicScreen<Application>::keyReleaseEvent(KeyEvent&) {}
 template<class Application> void BasicScreen<Application>::mousePressEvent(MouseEvent&) {}
@@ -78,13 +92,13 @@ template<class Application> BasicScreenedApplication<Application>& BasicScreened
     return *this;
 }
 
-template<class Application> void BasicScreenedApplication<Application>::globalViewportEvent(const Vector2i&) {}
+template<class Application> void BasicScreenedApplication<Application>::globalViewportEvent(typename Application::ViewportEvent&) {}
 
-template<class Application> void BasicScreenedApplication<Application>::viewportEvent(const Vector2i& size) {
+template<class Application> void BasicScreenedApplication<Application>::viewportEvent(typename Application::ViewportEvent& event) {
     /* Call global event before all other (to resize framebuffer first) */
-    globalViewportEvent(size);
+    globalViewportEvent(event);
 
-    for(BasicScreen<Application>& s: *this) s.viewportEvent(size);
+    for(BasicScreen<Application>& s: *this) s.viewportEvent(event);
 }
 
 template<class Application> void BasicScreenedApplication<Application>::drawEvent() {

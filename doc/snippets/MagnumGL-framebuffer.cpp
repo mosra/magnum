@@ -31,8 +31,8 @@ using namespace Magnum;
 
 struct A: Platform::Sdl2Application {
 /* [DefaultFramebuffer-usage-viewport] */
-void viewportEvent(const Vector2i& size) override {
-    GL::defaultFramebuffer.setViewport({{}, size});
+void viewportEvent(ViewportEvent& event) override {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 
     // ...
 }

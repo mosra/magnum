@@ -156,7 +156,8 @@ int AbstractXApplication::exec() {
                     Vector2i size(event.xconfigure.width, event.xconfigure.height);
                     if(size != _windowSize) {
                         _windowSize = size;
-                        viewportEvent(size);
+                        ViewportEvent e{size};
+                        viewportEvent(e);
                         _flags |= Flag::Redraw;
                     }
                 } break;
@@ -190,7 +191,20 @@ int AbstractXApplication::exec() {
     return 0;
 }
 
+void AbstractXApplication::viewportEvent(ViewportEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    viewportEvent(event.framebufferSize());
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 void AbstractXApplication::viewportEvent(const Vector2i&) {}
+#endif
+
 void AbstractXApplication::keyPressEvent(KeyEvent&) {}
 void AbstractXApplication::keyReleaseEvent(KeyEvent&) {}
 void AbstractXApplication::mousePressEvent(MouseEvent&) {}

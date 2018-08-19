@@ -65,13 +65,13 @@ class MyApplication: public Platform::Application {
     // ...
 
     private:
-        void viewportEvent(const Vector2i& size) override;
+        void viewportEvent(ViewportEvent& event) override;
 };
 
 // ...
 
-void MyApplication::viewportEvent(const Vector2i& size) {
-    GL::defaultFramebuffer.setViewport({{}, size});
+void MyApplication::viewportEvent(ViewportEvent& event) {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
 }
 /* [size] */
 

@@ -143,6 +143,7 @@ class AndroidApplication {
 
         class Configuration;
         class GLConfiguration;
+        class ViewportEvent;
         class InputEvent;
         class MouseEvent;
         class MouseMoveEvent;
@@ -324,8 +325,13 @@ class AndroidApplication {
     #else
     private:
     #endif
-        /** @copydoc Sdl2Application::viewportEvent() */
-        virtual void viewportEvent(const Vector2i& size);
+        /** @copydoc GlfwApplication::viewportEvent(ViewportEvent&) */
+        virtual void viewportEvent(ViewportEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copydoc GlfwApplication::viewportEvent(const Vector2i&) */
+        virtual CORRADE_DEPRECATED("use viewportEvent(ViewportEvent&) instead") void viewportEvent(const Vector2i& size);
+        #endif
 
         /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;
@@ -504,6 +510,28 @@ class AndroidApplication::Configuration {
 
     private:
         Vector2i _size;
+};
+
+/**
+@brief Viewport event
+
+@see @ref viewportEvent()
+*/
+class AndroidApplication::ViewportEvent {
+    public:
+        /**
+         * @brief Window size
+         *
+         * @see @ref AndroidApplication::windowSize()
+         */
+        Vector2i windowSize() const { return _windowSize; }
+
+    private:
+        friend AndroidApplication;
+
+        explicit ViewportEvent(const Vector2i& windowSize): _windowSize{windowSize} {}
+
+        Vector2i _windowSize;
 };
 
 /**

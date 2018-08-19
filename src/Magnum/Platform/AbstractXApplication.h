@@ -73,6 +73,7 @@ class AbstractXApplication {
 
         class Configuration;
         class GLConfiguration;
+        class ViewportEvent;
         class InputEvent;
         class KeyEvent;
         class MouseEvent;
@@ -211,8 +212,13 @@ class AbstractXApplication {
     #else
     private:
     #endif
-        /** @copydoc Sdl2Application::viewportEvent() */
-        virtual void viewportEvent(const Vector2i& size);
+        /** @copydoc GlfwApplication::viewportEvent(ViewportEvent&) */
+        virtual void viewportEvent(ViewportEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @copydoc GlfwApplication::viewportEvent(const Vector2i&) */
+        virtual CORRADE_DEPRECATED("use viewportEvent(ViewportEvent&) instead") void viewportEvent(const Vector2i& size);
+        #endif
 
         /** @copydoc Sdl2Application::drawEvent() */
         virtual void drawEvent() = 0;
@@ -361,6 +367,37 @@ class AbstractXApplication::Configuration {
         #ifdef MAGNUM_BUILD_DEPRECATED
         GL::Version _version;
         #endif
+};
+
+/**
+@brief Viewport event
+
+@see @ref viewportEvent()
+*/
+class AbstractXApplication::ViewportEvent {
+    public:
+        /**
+         * @brief Window size
+         *
+         * Same as @ref framebufferSize().
+         * @see @ref AbstractXApplication::windowSize()
+         */
+        Vector2i windowSize() const { return _size; }
+
+        /**
+         * @brief Framebuffer size
+         *
+         * Same as @ref windowSize().
+         * @see @ref AbstractXApplication::framebufferSize()
+         */
+        Vector2i framebufferSize() const { return _size; }
+
+    private:
+        friend AbstractXApplication;
+
+        explicit ViewportEvent(const Vector2i& size): _size{size} {}
+
+        Vector2i _size;
 };
 
 /**

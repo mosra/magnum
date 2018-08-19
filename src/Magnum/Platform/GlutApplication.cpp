@@ -134,6 +134,11 @@ bool GlutApplication::tryCreate(const Configuration& configuration, const GLConf
 
 GlutApplication::~GlutApplication() = default;
 
+void GlutApplication::staticViewportEvent(int x, int y) {
+    ViewportEvent e{{x, y}};
+    _instance->viewportEvent(e);
+}
+
 void GlutApplication::staticKeyPressEvent(unsigned char key, int x, int y) {
     KeyEvent e(static_cast<KeyEvent::Key>(key), {x, y});
     _instance->keyPressEvent(e);
@@ -167,7 +172,20 @@ void GlutApplication::staticMouseMoveEvent(int x, int y) {
     _instance->mouseMoveEvent(e);
 }
 
+void GlutApplication::viewportEvent(ViewportEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    viewportEvent(event.windowSize());
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 void GlutApplication::viewportEvent(const Vector2i&) {}
+#endif
+
 void GlutApplication::keyPressEvent(KeyEvent&) {}
 void GlutApplication::keyReleaseEvent(KeyEvent&) {}
 void GlutApplication::mousePressEvent(MouseEvent&) {}

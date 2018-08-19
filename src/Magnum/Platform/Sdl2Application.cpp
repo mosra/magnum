@@ -573,15 +573,9 @@ void Sdl2Application::mainLoopIteration() {
             case SDL_WINDOWEVENT:
                 switch(event.window.event) {
                     case SDL_WINDOWEVENT_RESIZED: {
-                        #ifndef CORRADE_TARGET_IOS
-                        viewportEvent({event.window.data1, event.window.data2});
-                        #else
-                        /* On iOS the window event is in points and not pixels,
-                           but we need pixels to call glViewport() properly */
-                        Vector2i drawableSize;
-                        SDL_GL_GetDrawableSize(_window, &drawableSize.x(), &drawableSize.y());
-                        viewportEvent(drawableSize);
-                        #endif
+                        ViewportEvent e{{event.window.data1, event.window.data2}, framebufferSize(), _dpiScaling};
+                        /** @todo handle also WM_DPICHANGED events when a window is moved between displays with different DPI */
+                        viewportEvent(e);
                         _flags |= Flag::Redraw;
                     } break;
                     case SDL_WINDOWEVENT_EXPOSED:
@@ -738,7 +732,20 @@ void Sdl2Application::tickEvent() {
     _flags |= Flag::NoTickEvent;
 }
 
+void Sdl2Application::viewportEvent(ViewportEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    viewportEvent(event.framebufferSize());
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 void Sdl2Application::viewportEvent(const Vector2i&) {}
+#endif
+
 void Sdl2Application::keyPressEvent(KeyEvent&) {}
 void Sdl2Application::keyReleaseEvent(KeyEvent&) {}
 void Sdl2Application::mousePressEvent(MouseEvent&) {}

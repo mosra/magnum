@@ -174,7 +174,20 @@ void AndroidApplication::swapBuffers() {
     eglSwapBuffers(_display, _surface);
 }
 
+void AndroidApplication::viewportEvent(ViewportEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    viewportEvent(event.windowSize());
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 void AndroidApplication::viewportEvent(const Vector2i&) {}
+#endif
+
 void AndroidApplication::mousePressEvent(MouseEvent&) {}
 void AndroidApplication::mouseReleaseEvent(MouseEvent&) {}
 void AndroidApplication::mouseMoveEvent(MouseMoveEvent&) {}

@@ -339,6 +339,7 @@ class Sdl2Application {
         #ifdef MAGNUM_TARGET_GL
         class GLConfiguration;
         #endif
+        class ViewportEvent;
         class InputEvent;
         class KeyEvent;
         class MouseEvent;
@@ -682,17 +683,34 @@ class Sdl2Application {
          *
          * Called when window size changes. The default implementation does
          * nothing. If you want to respond to size changes, you should pass the
-         * new size to @ref GL::DefaultFramebuffer::setViewport() (if using
-         * OpenGL) and possibly elsewhere (to
-         * @ref SceneGraph::Camera::setViewport(), other framebuffers...).
+         * new *framebuffer* size to @ref GL::DefaultFramebuffer::setViewport()
+         * (if using OpenGL) and possibly elsewhere (to
+         * @ref SceneGraph::Camera::setViewport(), other framebuffers...) and
+         * the new *window* size and DPI scaling to APIs that respond to user
+         * events or scale UI elements.
          *
          * Note that this function might not get called at all if the window
          * size doesn't change. You should configure the initial state of your
          * cameras, framebuffers etc. in application constructor rather than
-         * relying on this function to be called. Viewport of default
-         * framebuffer can be retrieved via @ref GL::DefaultFramebuffer::viewport().
+         * relying on this function to be called. Size of the window can be
+         * retrieved using @ref windowSize(), size of the backing framebuffer
+         * via @ref framebufferSize() and DPI scaling using @ref dpiScaling().
+         * See @ref Platform-Sdl2Application-dpi for detailed info about these
+         * values.
          */
-        virtual void viewportEvent(const Vector2i& size);
+        virtual void viewportEvent(ViewportEvent& event);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief viewportEvent(ViewportEvent&)
+         * @deprecated Use @ref viewportEvent(ViewportEvent&) instead.
+         *      To preserve backwards compatibility, this function is called
+         *      from @ref viewportEvent(ViewportEvent&) with
+         *      @ref ViewportEvent::framebufferSize() passed to @p size.
+         *      Overriding the new function will cause this function to not be
+         *      called anymore.
+         */
+        virtual CORRADE_DEPRECATED("use viewportEvent(ViewportEvent&) instead") void viewportEvent(const Vector2i& size);
+        #endif
 
         /**
          * @brief Draw event
@@ -1430,6 +1448,53 @@ class Sdl2Application::Configuration {
         bool _sRGBCapable;
         #endif
         #endif
+};
+
+/**
+@brief Viewport event
+
+@see @ref viewportEvent()
+*/
+class Sdl2Application::ViewportEvent {
+    public:
+        /**
+         * @brief Window size
+         *
+         * On some platforms with HiDPI displays, window size can be different
+         * from @ref framebufferSize(). See @ref Platform-Sdl2Application-dpi
+         * for more information.
+         * @see @ref Sdl2Application::windowSize()
+         */
+        Vector2i windowSize() const { return _windowSize; }
+
+        /**
+         * @brief Framebuffer size
+         *
+         * On some platforms with HiDPI displays, framebuffer size can be
+         * different from @ref windowSize(). See
+         * @ref Platform-Sdl2Application-dpi for more information.
+         * @see @ref Sdl2Application::framebufferSize()
+         */
+        Vector2i framebufferSize() const { return _framebufferSize; }
+
+        /**
+         * @brief DPI scaling
+         *
+         * On some platforms moving an app between displays can result in DPI
+         * scaling value being changed in tandem with a window/framebuffer
+         * size. Simply resizing a window doesn't change the DPI scaling value.
+         * See @ref Platform-Sdl2Application-dpi for more information.
+         * @see @ref Sdl2Application::dpiScaling()
+         */
+        Vector2 dpiScaling() const { return _dpiScaling; }
+
+    private:
+        friend Sdl2Application;
+
+        explicit ViewportEvent(const Vector2i& windowSize, const Vector2i& framebufferSize, const Vector2& dpiScaling): _windowSize{windowSize}, _framebufferSize{framebufferSize}, _dpiScaling{dpiScaling} {}
+
+        Vector2i _windowSize, _framebufferSize;
+        Vector2 _dpiScaling;
 };
 
 /**

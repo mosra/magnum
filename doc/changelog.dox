@@ -173,6 +173,9 @@ See also:
 
 @subsubsection changelog-latest-changes-platform Platform libraries
 
+-   @ref Platform::Sdl2Application::viewportEvent() "Platform::*Application::viewportEvent()"
+    now gets all information needed for DPI-aware rendering instead of just
+    a framebuffer size --- now also window size and the DPI scaling value
 -   @ref Platform::GlfwApplication now behaves the same as
     @ref Platform::Sdl2Application when creating an OpenGL context: first it
     attempts to create a forward-compatible core OpenGL 3.2+ context and if
@@ -183,6 +186,9 @@ See also:
     pointer
 -   @ref Platform::GlfwApplication now loads modifiers for mouse move and mouse
     scroll events lazily, only when needed
+-   @ref Platform::BasicScreen::viewportEvent() "Platform::Screen::viewportEvent()"
+    is no longer pure virtual to be consistent with all `*Application`
+    implementations
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 
@@ -271,6 +277,10 @@ See also:
     scheduled for removal in a future release. Please consider switching to
     @ref Platform::Sdl2Application or @ref Platform::GlfwApplication as soon as
     possible.
+-   `Platform::*Application::viewportEvent(const Vector2i&)` is deprecated
+    because it doesn't provide all information needed for DPI-aware rendering.
+    Override the @ref Platform::Sdl2Application::viewportEvent(ViewportEvent&) "viewportEvent(ViewportEvent&)"
+    function instead.
 -   `Math::Geometry`, `Math::Geometry::Distance` and
     `Math::Geometry::Intersection` namespaces are deprecated for being too
     deeply nested, use @ref Math::Distance and @ref Math::Intersection instead

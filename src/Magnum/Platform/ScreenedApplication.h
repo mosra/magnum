@@ -204,7 +204,7 @@ template<class Application> class BasicScreenedApplication: public Application, 
          * implementation does nothing. See @ref Sdl2Application::viewportEvent() "*Application::viewportEvent()"
          * for more information.
          */
-        virtual void globalViewportEvent(const Vector2i& size);
+        virtual void globalViewportEvent(typename Application::ViewportEvent& size);
 
         /**
          * @brief Draw event
@@ -222,11 +222,10 @@ template<class Application> class BasicScreenedApplication: public Application, 
         friend Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>;
         friend BasicScreen<Application>;
         #endif
-
         /* The user is supposed to override only globalViewportEvent() and
            globalDrawEvent(), these implementations are dispatching the events
            to attached screens. */
-        void viewportEvent(const Vector2i& size) override final;
+        void viewportEvent(typename Application::ViewportEvent& event) override final;
         void drawEvent() override final;
         void keyPressEvent(typename Application::KeyEvent& event) override final;
         void keyReleaseEvent(typename Application::KeyEvent& event) override final;

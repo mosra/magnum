@@ -355,7 +355,8 @@ void GlfwApplication::setupCallbacks() {
         static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->drawEvent();
     });
     glfwSetFramebufferSizeCallback(_window, [](GLFWwindow* const window, const int w, const int h) {
-        static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->viewportEvent({w, h});
+        ViewportEvent e{{w, h}};
+        static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->viewportEvent(e);
     });
     glfwSetKeyCallback(_window, [](GLFWwindow* const window, const int key, int, const int action, const int mods) {
         const auto instance = static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
@@ -469,7 +470,20 @@ auto GlfwApplication::MouseScrollEvent::modifiers() -> Modifiers {
     return *_modifiers;
 }
 
+void GlfwApplication::viewportEvent(ViewportEvent& event) {
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    viewportEvent(event.windowSize());
+    CORRADE_IGNORE_DEPRECATED_POP
+    #else
+    static_cast<void>(event);
+    #endif
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
 void GlfwApplication::viewportEvent(const Vector2i&) {}
+#endif
+
 void GlfwApplication::keyPressEvent(KeyEvent&) {}
 void GlfwApplication::keyReleaseEvent(KeyEvent&) {}
 void GlfwApplication::mousePressEvent(MouseEvent&) {}
