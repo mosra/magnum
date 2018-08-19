@@ -193,7 +193,7 @@ namespace {
 void AndroidApplication::commandEvent(android_app* state, int32_t cmd) {
     Data& data = *static_cast<Data*>(state->userData);
 
-    switch (cmd) {
+    switch(cmd) {
         case APP_CMD_SAVE_STATE:
             /** @todo Make use of this */
             break;
