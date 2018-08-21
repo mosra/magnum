@@ -281,6 +281,9 @@ See also:
     because it doesn't provide all information needed for DPI-aware rendering.
     Override the @ref Platform::Sdl2Application::viewportEvent(ViewportEvent&) "viewportEvent(ViewportEvent&)"
     function instead.
+-   `Platform::Sdl2Application::Configuration::WindowFlags::AllowHighDpi` is
+    deprecated and has no effect as it is now passed implicitly on platforms
+    that need it
 -   `Math::Geometry`, `Math::Geometry::Distance` and
     `Math::Geometry::Intersection` namespaces are deprecated for being too
     deeply nested, use @ref Math::Distance and @ref Math::Intersection instead
@@ -1065,7 +1068,7 @@ a high-level overview.
     application) (see [mosra/magnum#105](https://github.com/mosra/magnum/issues/105))
 -   Added @ref Platform::Sdl2Application::GLConfiguration::setSRGBCapable() "Platform::Sdl2Application::Configuration::setSRGBCapable()"
 -   Added @ref Platform::Sdl2Application::Configuration::WindowFlag::Borderless
-    and @ref Platform::Sdl2Application::Configuration::WindowFlag::AllowHighDpi
+    and `Platform::Sdl2Application::Configuration::WindowFlag::AllowHighDpi`
     for iOS and macOS
 -   Added @ref Platform::WindowlessGlxApplication::Configuration::setFlags() "Platform::Windowless*Application::Configuration::setFlags()" with
     @ref Platform::WindowlessGlxApplication::Configuration::Flag::Debug "Flag::Debug"

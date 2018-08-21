@@ -235,8 +235,6 @@ options needs to be set via a `*.plist` file. Some options can be configured
 from runtime when creating the SDL2 application window, see documentation of
 a particular value for details:
 
--   @ref Configuration::WindowFlag::AllowHighDpi allows creating HiDPI/Retina
-    drawable
 -   @ref Configuration::WindowFlag::Borderless hides the menu bar
 -   @ref Configuration::WindowFlag::Resizable makes the application respond to
     device orientation changes
@@ -1171,14 +1169,15 @@ class Sdl2Application::Configuration {
             /** No window decoration. On iOS this hides the menu bar. */
             Borderless = SDL_WINDOW_BORDERLESS,
 
-            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            #ifdef MAGNUM_BUILD_DEPRECATED
             /**
-             * Allow high DPI. On iOS you also have to set the
-             * `NSHighResolutionCapable` entry in the `*.plist` file to make
-             * it working.
-             * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             * Allow high DPI.
+             *
+             * @deprecated Has no effect, as this flag is passed implicitly
+             *      on platforms where needed. See
+             *      @ref Platform-Sdl2Application-dpi for more information.
              */
-            AllowHighDpi = SDL_WINDOW_ALLOW_HIGHDPI,
+            AllowHighDpi CORRADE_DEPRECATED_ENUM("has no effect, passed implicitly on platforms that need it") = 0,
             #endif
 
             Hidden = SDL_WINDOW_HIDDEN,             /**< Hidden window */
