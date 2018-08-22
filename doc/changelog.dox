@@ -189,6 +189,8 @@ See also:
 -   @ref Platform::BasicScreen::viewportEvent() "Platform::Screen::viewportEvent()"
     is no longer pure virtual to be consistent with all `*Application`
     implementations
+-   @ref Platform::Sdl2Application::Configuration::WindowFlags values that make
+    no sense on Emscripten are not available there anymore
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 

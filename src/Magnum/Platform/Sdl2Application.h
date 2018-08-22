@@ -1164,10 +1164,21 @@ class Sdl2Application::Configuration {
              */
             Resizable = SDL_WINDOW_RESIZABLE,
 
-            Fullscreen = SDL_WINDOW_FULLSCREEN,     /**< Fullscreen window */
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            /**
+             * Fullscreen window
+             *
+             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             */
+            Fullscreen = SDL_WINDOW_FULLSCREEN,
 
-            /** No window decoration. On iOS this hides the menu bar. */
+            /**
+             * No window decoration. On iOS this hides the menu bar.
+             *
+             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             */
             Borderless = SDL_WINDOW_BORDERLESS,
+            #endif
 
             #ifdef MAGNUM_BUILD_DEPRECATED
             /**
@@ -1180,10 +1191,35 @@ class Sdl2Application::Configuration {
             AllowHighDpi CORRADE_DEPRECATED_ENUM("has no effect, passed implicitly on platforms that need it") = 0,
             #endif
 
-            Hidden = SDL_WINDOW_HIDDEN,             /**< Hidden window */
-            Maximized = SDL_WINDOW_MAXIMIZED,       /**< Maximized window */
-            Minimized = SDL_WINDOW_MINIMIZED,       /**< Minimized window */
-            MouseLocked = SDL_WINDOW_INPUT_GRABBED, /**< Window with mouse locked */
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            /**
+             * Hidden window
+             *
+             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             */
+            Hidden = SDL_WINDOW_HIDDEN,
+
+            /**
+             * Maximized window
+             *
+             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             */
+            Maximized = SDL_WINDOW_MAXIMIZED,
+
+            /**
+             * Minimized window
+             *
+             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             */
+            Minimized = SDL_WINDOW_MINIMIZED,
+
+            /**
+             * Window with mouse locked
+             *
+             * @note Not available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             */
+            MouseLocked = SDL_WINDOW_INPUT_GRABBED,
+            #endif
 
             /**
              * Do not create any GPU context. Use together with
@@ -1202,8 +1238,12 @@ class Sdl2Application::Configuration {
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         typedef Containers::EnumSet<WindowFlag, SDL_WINDOW_RESIZABLE|
-            SDL_WINDOW_FULLSCREEN|SDL_WINDOW_HIDDEN|SDL_WINDOW_MAXIMIZED|
-            SDL_WINDOW_MINIMIZED|SDL_WINDOW_INPUT_GRABBED> WindowFlags;
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            SDL_WINDOW_FULLSCREEN|SDL_WINDOW_BORDERLESS|SDL_WINDOW_HIDDEN|
+            SDL_WINDOW_MAXIMIZED|SDL_WINDOW_MINIMIZED|SDL_WINDOW_INPUT_GRABBED|
+            #endif
+            Uint32(WindowFlag::Contextless)
+            > WindowFlags;
         #else
         typedef Containers::EnumSet<WindowFlag> WindowFlags;
         #endif
