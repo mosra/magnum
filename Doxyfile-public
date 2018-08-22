@@ -5,7 +5,7 @@
 
 OUTPUT_DIRECTORY       = build/doc-public/
 GENERATE_TAGFILE       = build/doc-public/magnum.tag
-TAGFILES               = ../corrade/build/doc-public/corrade.tag=http://doc.magnum.graphics/corrade-ng/ \
+TAGFILES               = ../corrade/build/doc-public/corrade.tag=http://doc.magnum.graphics/corrade/ \
                          ../corrade/doc/stl.tag=http://en.cppreference.com/w/
 
 ## No need to expose TODO list or bug list in public docs. Aliases copied from
