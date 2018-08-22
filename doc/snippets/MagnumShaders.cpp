@@ -24,6 +24,7 @@
 */
 
 #include <numeric>
+#include <Corrade/Containers/Array.h>
 
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/DefaultFramebuffer.h"
