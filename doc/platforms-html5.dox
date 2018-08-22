@@ -554,6 +554,21 @@ the mapping [can be added programmatically](https://docs.python.org/3/library/ht
 http.server.SimpleHTTPRequestHandler.extensions_map['.wasm'] = 'application/wasm'
 @endcode
 
+@subsection platforms-html5-troubleshooting-emasm Warnings about $ characters when using EM_ASM
+
+The [EM_ASM()](https://kripken.github.io/emscripten-site/docs/porting/connecting_cpp_and_javascript/Interacting-with-code.html#interacting-with-code-call-javascript-from-native)
+family of macros is using `$0`, `$1`, ... to refer to macro arguments from
+JavaScript code. Using them in C++ sources triggers a warning from Clang:
+
+@code{.shell-session}
+warning: '$' in identifier
+@endcode
+
+Solution is to disable the warning for the offending lines, here for example
+when modifying a title element contents through DOM:
+
+@snippet platforms-html5.cpp emasm-dollar
+
 */
 
 }

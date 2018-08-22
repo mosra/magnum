@@ -38,12 +38,17 @@ if(CORRADE_TARGET_EMSCRIPTEN AND NOT TARGET_GLES2)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -s USE_WEBGL2=1")
 endif()
 
-add_library(snippets-Magnum STATIC
+set(snippets_Magnum_SRCS
     Magnum.cpp
     MagnumAnimation.cpp
     MagnumAnimation-custom.cpp
     MagnumMath.cpp
     MagnumMathAlgorithms.cpp)
+if(CORRADE_TARGET_EMSCRIPTEN)
+    list(APPEND snippets_Magnum_SRCS platforms-html5.cpp)
+endif()
+
+add_library(snippets-Magnum STATIC ${snippets_Magnum_SRCS})
 target_link_libraries(snippets-Magnum PRIVATE Magnum)
 set_target_properties(snippets-Magnum PROPERTIES FOLDER "Magnum/doc/snippets")
 
