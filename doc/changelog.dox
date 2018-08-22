@@ -90,6 +90,9 @@ See also:
     @ref Platform::Sdl2Application
 -   Implemented missing resize event support in @ref Platform::Sdl2Application
     on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
+-   Ability to modify CSS classes that control layout of
+    @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" app canvas using
+    @ref Platform::Sdl2Application::setContainerCssClass()
 -   Implemented @ref Platform::GlfwApplication::MouseMoveEvent::buttons() for
     feature parity with @ref Platform::Sdl2Application
 -   Added @ref Platform::Sdl2Application::GLConfiguration::setColorBufferSize() "GLConfiguration::setColorBufferSize()",

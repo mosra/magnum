@@ -531,6 +531,15 @@ Vector2i Sdl2Application::framebufferSize() const {
     return size;
 }
 
+#ifdef CORRADE_TARGET_EMSCRIPTEN
+void Sdl2Application::setContainerCssClass(const std::string& cssClass) {
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
+    EM_ASM_({document.getElementById('container').className = Pointer_stringify($0, $1);}, cssClass.data(), cssClass.size());
+    #pragma GCC diagnostic pop
+}
+#endif
+
 void Sdl2Application::swapBuffers() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     SDL_GL_SwapWindow(_window);

@@ -626,6 +626,22 @@ class Sdl2Application {
          */
         Vector2 dpiScaling(const Configuration& configuration) const;
 
+        #if defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)
+        /**
+         * @brief Set container CSS class
+         *
+         * Assigns given CSS class to the @cb{.html} <div class="container"> @ce.
+         * Useful for example to change aspect ratio of the view or stretch it
+         * to cover the full page. See @ref platforms-html5-layout for more
+         * information about possible values. Note that this replaces any
+         * existing class, to set multiple classes separate them with
+         * whitespace.
+         *
+         * @note Only available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        void setContainerCssClass(const std::string& cssClass);
+        #endif
+
     protected:
         /**
          * @brief Swap buffers
