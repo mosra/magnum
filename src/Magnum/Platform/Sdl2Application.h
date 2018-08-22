@@ -230,6 +230,10 @@ to simplify porting.
 
 @subsection Platform-Sdl2Application-usage-ios iOS specifics
 
+Leaving a default (zero) window size in @ref Configuration will cause the app
+to autodetect it based on the actual device screen size. This also depends on
+@ref Platform-Sdl2Application-dpi "DPI awareness", see below for details.
+
 As noted in the @ref platforms-ios-bundle "iOS platform guide", a lot of
 options needs to be set via a `*.plist` file. Some options can be configured
 from runtime when creating the SDL2 application window, see documentation of
@@ -238,6 +242,17 @@ a particular value for details:
 -   @ref Configuration::WindowFlag::Borderless hides the menu bar
 -   @ref Configuration::WindowFlag::Resizable makes the application respond to
     device orientation changes
+
+@subsection Platform-Sdl2Application-usage-emscripten Emscripten specifics
+
+Leaving a default (zero) window size in @ref Configuration will cause the app
+to use a window size that corresponds to *CSS pixel size* of the
+@cb{.html} <canvas> @ce element. The size is then multiplied by DPI scaling
+value, see @ref Platform-Sdl2Application-dpi "DPI awareness" below for details.
+
+If you enable @ref Configuration::WindowFlag::Resizable, the canvas will be
+resized when size of the canvas changes and you get @ref viewportEvent(). If
+the flag is not enabled, no canvas resizing is performed.
 
 @section Platform-Sdl2Application-dpi DPI awareness
 
@@ -880,7 +895,8 @@ class Sdl2Application {
             Exit = 1 << 3
             #endif
             #ifdef CORRADE_TARGET_EMSCRIPTEN
-            TextInputActive = 1 << 4
+            TextInputActive = 1 << 4,
+            Resizable = 1 << 5
             #endif
         };
 
@@ -897,6 +913,8 @@ class Sdl2Application {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_Window* _window;
         UnsignedInt _minimalLoopPeriod;
+        #else
+        Vector2i _lastKnownCanvasSize;
         #endif
 
         #ifdef MAGNUM_TARGET_GL
@@ -1159,8 +1177,12 @@ class Sdl2Application::Configuration {
         enum class WindowFlag: Uint32 {
             /**
              * Resizable window. On iOS this allows the application to respond
-             * to display orientation changes. Implement @ref viewportEvent()
-             * to react to the resizing events.
+             * to display orientation changes, on
+             * @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" this causes the
+             * framebuffer to be resized when the @cb{.html} <canvas> @ce size
+             * changes.
+             *
+             * Implement @ref viewportEvent() to react to the resizing events.
              */
             Resizable = SDL_WINDOW_RESIZABLE,
 
@@ -1365,11 +1387,11 @@ class Sdl2Application::Configuration {
          * @param dpiScalingPolicy  Policy based on which DPI scaling will be set
          * @return Reference to self (for method chaining)
          *
-         * Default is @cpp {800, 600} @ce and @cpp {640, 480} @ce on
-         * Emscripten with @p dpiScalingPolicy set to
-         * @ref DpiScalingPolicy::Default. On iOS it defaults to a size that
-         * matches display resolution. See @ref Platform-Sdl2Application-dpi
-         * for more information.
+         * Default is @cpp {800, 600} @ce on desktop platforms. On
+         * @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" and iOS the default is a
+         * zero vector, meaning a value that matches the display or canvas size
+         * is autodetected. See @ref Platform-Sdl2Application-dpi for more
+         * information.
          * @see @ref setSize(const Vector2i&, const Vector2&)
          */
         Configuration& setSize(const Vector2i& size, DpiScalingPolicy dpiScalingPolicy = DpiScalingPolicy::Default) {
