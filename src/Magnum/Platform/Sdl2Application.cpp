@@ -442,9 +442,10 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
        in so all other code can assume that the viewport is set to sane values.
        Fortunately on iOS we also don't have to load any function pointers so
        it's safe to do the glViewport() call as it is linked statically. */
-    Vector2i drawableSize;
-    SDL_GL_GetDrawableSize(_window, &drawableSize.x(), &drawableSize.y());
-    glViewport(0, 0, drawableSize.x(), drawableSize.y());
+    {
+        const Vector2i viewport = framebufferSize();
+        glViewport(0, 0, viewport.x(), viewport.y());
+    }
     #endif
 
     /* Emscripten-specific initialization */
