@@ -90,7 +90,7 @@ cd build-emscripten-wasm/src
 node my-application.js
 @endcode
 
-@section platforms-html5-apps Building and deploying graphics apps
+@section platforms-html5-apps Building and deploying graphical apps
 
 In case you don't have an OpenGL ES build set up yet, you need to copy
 `FindOpenGLES2.cmake` (or `FindOpenGLES3.cmake`) from the
@@ -117,36 +117,43 @@ install prefix.
 @code{.html-jinja}
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Magnum Emscripten Application</title>
-    <link rel="stylesheet" href="WebApplication.css" />
-  </head>
-  <body>
-    <h1>Magnum Emscripten Application</h1>
-    <div id="listener">
+<head>
+  <meta charset="UTF-8" />
+  <title>Magnum Emscripten Application</title>
+  <link rel="stylesheet" href="WebApplication.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <h1>Magnum Emscripten Application</h1>
+  <div id="container">
+    <div id="sizer"><div id="expander"><div id="listener">
       <canvas id="module"></canvas>
       <div id="status">Initialization...</div>
-      <div id="statusDescription"></div>
+      <div id="status-description"></div>
       <script src="EmscriptenApplication.js"></script>
       <script async="async" src="{{ application }}.js"></script>
-    </div>
-  </body>
+    </div></div></div>
+  </div>
+</body>
 </html>
 @endcode
 
-Replace @cb{.jinja} {{ application }} @ce with the name of your application
-executable. You can modify all the files to your liking, but the HTML file must
-contain at least the @cb{.html} <canvas> @ce enclosed in listener
-@cb{.html} <div> @ce. The JavaScript file contains event listeners which print
-loading status on the page. The status displayed in the remaining two
-@cb{.html} <div> @ce s, if they are available. The CSS file contains
-a rudimentary style.
+For basic usage you don't need to modify the CSS and JS files at all and
+everything can be set up directly from the HTML markup. Replace
+@cb{.jinja} {{ application }} @ce with the name of your application executable
+and adapt page title and heading as desired. You can modify all files to your
+liking, but the HTML file must contain at least
+@cb{.html} <canvas id="module"> @ce enclosed in
+@cb{.html} <div id="listener"> @ce. The JavaScript file contains event
+listeners that print loading status on the page. The status is displayed in the
+remaining two @cb{.html} <div> @ce s, if they are available. The CSS file
+contains a basic style, see @ref platforms-html5-layout "below" for available
+options to tweak the default look.
 
-In order to deploy the app, you need to install the JS driver code, the
-WebAssembly binary (or the asm.js memory image, in case you are compiling
-with the classic asm.js toolchain), the HTML markup and the JS/CSS modules to a
-common location. The following CMake snippet handles all of that:
+In order to deploy the app, you need to put the JS driver code, the WebAssembly
+binary (or the asm.js memory image, in case you are compiling with the classic
+asm.js toolchain), the HTML markup and the JS/CSS files to a common location.
+The following CMake snippet handles all of that:
 
 @code{.cmake}
 if(CORRADE_TARGET_EMSCRIPTEN)
@@ -194,9 +201,9 @@ class. See its documentation for more information
 about general usage. You can also use the Emscripten APIs directly or any other
 way.
 
-@note The @ref Platform::WindowlessEglApplication also contains a fully
-    configured bootstrap project that's ready to build and deploy. Check its
-    documentation for details.
+@note @ref Platform::WindowlessEglApplication also contains a fully configured
+    bootstrap project that's ready to build and deploy. Check its documentation
+    for details.
 
 Similarly to graphics apps, you need to provide a HTML markup for your
 application. Template one is below, its main difference from the one above is
@@ -209,22 +216,25 @@ install prefix.
 @code{.html-jinja}
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Magnum Windowless Emscripten Application</title>
-    <link rel="stylesheet" href="WebApplication.css" />
-  </head>
-  <body>
-    <h1>Magnum Windowless Emscripten Application</h1>
-    <div id="listener">
+<head>
+  <meta charset="UTF-8" />
+  <title>Magnum Windowless Emscripten Application</title>
+  <link rel="stylesheet" href="WebApplication.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <h1>Magnum Windowless Emscripten Application</h1>
+  <div id="container">
+    <div id="sizer"><div id="expander"><div id="listener">
       <canvas id="module" class="hidden"></canvas>
       <pre id="log"></pre>
       <div id="status">Initialization...</div>
-      <div id="statusDescription"></div>
+      <div id="status-description"></div>
       <script src="WindowlessEmscriptenApplication.js"></script>
       <script async="async" src="{{ application }}.js"></script>
-    </div>
-  </body>
+    </div></div></div>
+  </div>
+</body>
 </html>
 @endcode
 
@@ -234,9 +244,11 @@ contain at least the @cb{.html} <canvas> @ce enclosed in listener @cb{.html} <di
 and the @cb{.html} <pre id="log"> @ce for displaying the output. The JavaScript
 file contains event listeners which print loading status on the page. The
 status displayed in the remaining two @cb{.html} <div> @ce s, if they are
-available. The CSS file contains a rudimentary style.
+available. The CSS file is shared with graphical apps, again see
+@ref platforms-html5-layout "below" for available options to tweak the default
+look.
 
-Deployment is similar to @ref platforms-html5-apps "graphics apps", only
+Deployment is similar to @ref platforms-html5-apps "graphical apps", only
 referencing a different JS file:
 
 @code{.cmake}
@@ -254,12 +266,125 @@ if(CORRADE_TARGET_EMSCRIPTEN)
 endif()
 @endcode
 
+@section platforms-html5-layout Modifying page style, canvas size and aspect ratio
+
+The `WebApplication.css` file contains a basic style and the additional
+@cb{.css} .container @ce, @cb{.css} .sizer @ce and @cb{.css} .expander @ce
+@cb{.html} <div> @ce s take care of aligning the canvas to the center and
+making it responsively scale on narrow screens, preserving aspect ratio. For
+proper responsiveness on all platforms it's important to include the
+@cb{.html} <meta name="viewport"> @ce tag in the HTML markup as well.
+
+By default the canvas is @cpp 640px @ce wide with a 4:3 aspect ratio, you can
+modify this by placing one of the @cb{.css} .aspect-* @ce CSS classes on the
+@cb{.html} <div id="container"> @ce:
+
+Aspect ratio    | CSS class (landscape/portrait)
+--------------- | ------------------------------
+1:1             | @cb{.css} .aspect-1-1 @ce <b></b>
+4:3 (1.33:1)    | @cb{.css} .aspect-4-3 @ce (default) / @cb{.css} .aspect-3-4 @ce
+3:2 (1.5:1)     | @cb{.css} .aspect-3-2 @ce / @cb{.css} .aspect-2-3 @ce
+16:9 (1.78:1)   | @cb{.css} .aspect-16-9 @ce / @cb{.css} .aspect-9-16 @ce
+2:1             | @cb{.css} .aspect-2-1 @ce / @cb{.css} .aspect-1-2 @ce
+
+For example, for a 640x360 canvas (16:9 aspect ratio), you would use
+@cb{.html} <div id="container" class="aspect-16-9"> @ce. Besides the predefined
+classes above, it's also possible to specify your own aspect ratio using a
+@cb{.css} padding-bottom @ce style with a percentage equal to inverse of
+the ratio for @cb{.css} div#expander @ce --- for example, a 2.35:1 ratio would
+be @cb{.html} <div id="expander" style="padding-bottom: 42.553%"> @ce.
+
+Size of the canvas can be also overriden by specifying one of the
+@cb{.css} .width-* @ce CSS classes on the @cb{.html} <div id="container"> @ce:
+
+Width           | CSS class
+--------------- | ---------
+240px           | @cb{.css} .width-240 @ce <b></b>
+320px           | @cb{.css} .width-320 @ce <b></b>
+360px           | @cb{.css} .width-360 @ce <b></b>
+480px           | @cb{.css} .width-480 @ce <b></b>
+600px           | @cb{.css} .width-600 @ce <b></b>
+640px           | @cb{.css} .width-640 @ce (default)
+800px           | @cb{.css} .width-800 @ce <b></b>
+
+For example, for a 480x640 canvas (3:4, portrait) you would use
+@cb{.html} <div id="container" class="width-480 aspect-3-4"> @ce. Besides the
+predefined classes above, it's also possible to specify your own by adding a
+@cb{.css} width @ce style to the @cb{.css} div#sizer @ce --- for example, a
+1024x768 canvas would be @cb{.html} <div id="sizer" style="width: 1024px"> @ce.
+Again note that if the canvas is larger than window width, it gets
+automatically scaled down, preserving its aspect ratio.
+
+It's also possible to stretch the canvas to occupy the full page using the
+@cb{.css} .fullsize @ce CSS class set to @cb{.css} div#container @ce. In this
+case it's advised to remove all other elements (such as the @cb{.html} <h1> @ce
+element) from the page to avoid them affecting the canvas. Combining
+@cb{.css} .fullsize @ce with the other @cb{.css} .aspect-* @ce or
+@cb{.css} .width-* @ce classes is not supported.
+
+@section platforms-html5-events Controlling event behavior
+
+@subsection platforms-html5-events-keyboard Keyboard events
+
+By default, the graphical Emscripten application grabs all keyboard input
+anywhere on the page (so e.g. @m_class{m-label m-default} **F5** or opening
+browser console via a keyboard shortcut doesn't work). If you don't want it to
+grab keyboard input at all, set @cb{.js} Module.doNotCaptureKeyboard @ce to
+@cb{.js} true @ce, either by modifying the `EmscriptenApplication.js` file or
+directly in the HTML source:
+
+@code{.html}
+<script>
+// after EmscriptenApplication.js has been loaded
+Module.doNotCaptureKeyboard = true;
+</script>
+@endcode
+
+The above is implicitly set for windowless apps, because these don't have any
+event loop.
+
+Another solution is to specify the element on which it should capture keybard
+using @cb{.js} Module.keyboardListeningElement @ce --- it requires the actual
+element instance (*not* just its ID). The element then needs to be activated
+(for example with a mouse click) in order to start receiving input. The
+@cb{.html} <canvas> @ce element is a bit special in this regard --- in order to
+make it receive keyboard input, you have to add a `tabindex` attribute to it
+like this:
+
+@code{.html}
+<canvas id="module" tabindex="0"></canvas>
+@endcode
+
+After that, the canvas can be focused with a @m_class{m-label m-default} **Tab**
+key. But because Emscripten eats all mouse input, the `mousedown` event won't
+be propagated to focus the canvas unlesss you do that manually:
+
+@code{.js}
+Module.keyboardListeningElement = Module.canvas;
+Module.canvas.addEventListener('mousedown', function(event) {
+    event.target.focus();
+});
+@endcode
+
+@subsection platforms-html5-events-contextmenu Context menu
+
+By default, the canvas opens a browser-specific popup menu on right click. That
+allows the user to for example save a screenshot of the canvas, but if you are
+handling right click directly in your app, you may want to disable the default
+behavior:
+
+@code{.js}
+Module.canvas.addEventListener('contextmenu', function(event) {
+    event.preventDefault();
+}, true);
+@endcode
+
 @section platforms-html5-environment Terminal output, environment and command-line arguments
 
 When running console apps using Node.js, command-line arguments and terminal
 output work like usual.
 
-For graphics apps in the browser, `EmscriptenApplication.js` redirects all
+For graphical apps in the browser, `EmscriptenApplication.js` redirects all
 output (thus also @ref Corrade::Utility::Debug "Debug",
 @ref Corrade::Utility::Warning "Warning" and @ref Corrade::Utility::Error "Error")
 to JavaScript console. For windowless apps, `WindowlessEmscriptenApplication.js`
@@ -380,14 +505,14 @@ following scenarios are possible:
 
 -   By default, the size of Emscripten heap is restricted to 16 MB. That might
     not be enough if you have large compiled-in resources or allocate large
-    amount of memory. This can be solved either with:
+    amount of memory. This can be solved with either of these:
     -   Adding `-s TOTAL_MEMORY=&lt;bytes&gt;` to compiler/linker flags, where
         &lt;bytes&gt; is the new heap size
     -   Adding `-s ALLOW_MEMORY_GROWTH=1` to compiler/linker flags. This is
         useful in case you don't know how much memory you need in advance and
         [might disable some optimizations](https://kripken.github.io/emscripten-site/docs/optimizing/Optimizing-Code.html#memory-growth).
-    -   Setting `Module { TOTAL_MEMORY: &lt;bytes&gt;; }` in the JavaScript
-        driver file
+    -   Setting @cb{.js} Module { TOTAL_MEMORY: <bytes>; } @ce in the
+        JavaScript driver file
 -   Sometimes Chromium-based browsers refuse to create WebGL context on a
     particular page, while on other sites it works and the same page works in
     other browsers such as Firefox. This can be caused by Chromium running for

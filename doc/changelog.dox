@@ -178,6 +178,17 @@ See also:
 -   @ref Platform::Sdl2Application::viewportEvent() "Platform::*Application::viewportEvent()"
     now gets all information needed for DPI-aware rendering instead of just
     a framebuffer size --- now also window size and the DPI scaling value
+-   Overhauled the builtin @ref platforms-html5 "Emscripten" HTML markup and
+    styling for HTML5/WebGL apps:
+    -   the builtin style now matches the dark theme of the Magnum website
+    -   canvas is responsively sized and preserves aspect ratio when scaled
+        down
+    -   when the app aborts, a helpful message is printed instead of everything
+        getting stuck
+    -   it's possible to override the default canvas size and aspect ratio,
+        see @ref platforms-html5-layout
+    -   documentation explaining quirks of event handling, see
+        @ref platforms-html5-events
 -   @ref Platform::GlfwApplication now behaves the same as
     @ref Platform::Sdl2Application when creating an OpenGL context: first it
     attempts to create a forward-compatible core OpenGL 3.2+ context and if

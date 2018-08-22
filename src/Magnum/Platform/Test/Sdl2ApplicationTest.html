@@ -1,18 +1,28 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="UTF-8" />
-    <title>Magnum Sdl2Application Test</title>
-    <link rel="stylesheet" href="WebApplication.css" />
-  </head>
-  <body>
-    <h1>Magnum Sdl2Application Test</h1>
-    <div id="listener">
-      <canvas id="module"></canvas>
+<head>
+  <meta charset="UTF-8" />
+  <title>Magnum Sdl2Application Test</title>
+  <link rel="stylesheet" href="WebApplication.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <h1>Magnum Sdl2Application Test</h1>
+  <div id="container">
+    <div id="sizer"><div id="expander"><div id="listener">
+      <canvas id="module" tabindex="0"></canvas>
       <div id="status">Initialization...</div>
-      <div id="statusDescription"></div>
+      <div id="status-description"></div>
       <script src="EmscriptenApplication.js"></script>
       <script async="async" src="PlatformSdl2ApplicationTest.js"></script>
-    </div>
-  </body>
+      <script>
+      /* To test keyboard capture directly on the canvas */
+      Module.keyboardListeningElement = document.getElementById('module');
+      Module.canvas.addEventListener('mousedown', function(event) {
+          event.target.focus();
+      });
+      </script>
+    </div></div></div>
+  </div>
+</body>
 </html>
