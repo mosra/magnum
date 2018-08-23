@@ -255,20 +255,16 @@ if(WITH_SDL2APPLICATION)
     add_library(Magnum::Sdl2Application ALIAS MagnumSdl2Application)
 endif()
 
-# JavaScript and CSS stuff for Emscripten
+# JavaScript and CSS stuff for Emscripten. Installed unconditionally so it can
+# be also used by people who hate the Application classes
 if(CORRADE_TARGET_EMSCRIPTEN)
-    set(MagnumEmscriptenApplication_FILES )
-    if(WITH_SDL2APPLICATION)
-        list(APPEND MagnumEmscriptenApplication_FILES EmscriptenApplication.js)
-    endif()
-    if(WITH_WINDOWLESSEGLAPPLICATION)
-        list(APPEND MagnumEmscriptenApplication_FILES WindowlessEmscriptenApplication.js)
-    endif()
-    if(WITH_SDL2APPLICATION OR WITH_WINDOWLESSEGLAPPLICATION)
-        list(APPEND MagnumEmscriptenApplication_FILES WebApplication.css)
-        list(APPEND MagnumPlatform_FILES ${MagnumEmscriptenApplication_FILES})
-        install(FILES ${MagnumEmscriptenApplication_FILES} DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
-    endif()
+    set(MagnumEmscriptenApplication_FILES
+        EmscriptenApplication.js
+        WindowlessEmscriptenApplication.js
+        WebApplication.css)
+
+    list(APPEND MagnumPlatform_FILES ${MagnumEmscriptenApplication_FILES})
+    install(FILES ${MagnumEmscriptenApplication_FILES} DESTINATION ${MAGNUM_DATA_INSTALL_DIR})
 endif()
 
 # GLX application

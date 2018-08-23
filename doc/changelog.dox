@@ -246,6 +246,12 @@ See also:
     using a static build of SDL2 on Linux
 -   `FindSDL2.cmake` is now able to properly find a debug build of SDL, which
     enables Vcpkg to properly copy all dependency DLLs on Windows
+-   `FindMagnum.cmake` now provides full paths to application JS/CSS files on
+    @ref platforms-html5 "Emscripten" builds through new `MAGNUM_EMSCRIPTENAPPLICATION_JS`,
+    `MAGNUM_WINDOWLESSEMSCRIPTENAPPLICATION_JS` and `MAGNUM_WEBAPPLICATION_CSS`
+    CMake variables. These files are now installed unconditionally even if no
+    `Platform::*Application` library is built to allow them to be used with
+    third-party application implementations.
 -   @ref Trade::ObjImporter "ObjImporter" didn't work with CMake subprojects
     due to an embarrassing typo (see
     [mosra/magnum#259](https://github.com/mosra/magnum/issues/259))

@@ -111,8 +111,10 @@ To target the web browser, you need to provide a HTML markup for your
 application. Template one is below. The markup references two files,
 `EmscriptenApplication.js` and `WebApplication.css`, both are in the
 [src/Magnum/Platform/](https://github.com/mosra/magnum/tree/master/src/Magnum/Platform)
-directory in the source tree and are also put into `share/magnum/` inside your
-install prefix.
+directory in the source tree, are also put into `share/magnum/` inside your
+install prefix and if you use CMake, their @ref cmake "full path is available"
+through the `MAGNUM_EMSCRIPTENAPPLICATION_JS` and `MAGNUM_WEBAPPLICATION_CSS`
+variables.
 
 @code{.html-jinja}
 <!DOCTYPE html>
@@ -160,8 +162,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     install(TARGETS my-application DESTINATION ${CMAKE_INSTALL_PREFIX})
     install(FILES
         my-application.html
-        EmscriptenApplication.js
-        WebApplication.css
+        ${MAGNUM_EMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${CMAKE_INSTALL_PREFIX})
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/my-application.js.mem
@@ -209,9 +211,10 @@ Similarly to graphics apps, you need to provide a HTML markup for your
 application. Template one is below, its main difference from the one above is
 that it shows the console output instead of the canvas. The markup references
 two files, `WindowlessEmscriptenApplication.js` and `WebApplication.css`, both
-are in the [src/Magnum/Platform/](https://github.com/mosra/magnum/tree/master/src/Magnum/Platform)
-directory in the source tree and are also put into `share/magnum/` inside your
-install prefix.
+are again in the [src/Magnum/Platform/](https://github.com/mosra/magnum/tree/master/src/Magnum/Platform)
+directory in the source tree, are put into `share/magnum/` inside your
+install prefix and available through `MAGNUM_WINDOWLESSEMSCRIPTENAPPLICATION_JS`
+and `MAGNUM_WEBAPPLICATION_CSS` CMake variables.
 
 @code{.html-jinja}
 <!DOCTYPE html>
@@ -256,8 +259,8 @@ if(CORRADE_TARGET_EMSCRIPTEN)
     install(TARGETS my-application DESTINATION ${CMAKE_INSTALL_PREFIX})
     install(FILES
         my-application.html
-        WindowlessEmscriptenApplication.js
-        WebApplication.css
+        ${MAGNUM_WINDOWLESSEMSCRIPTENAPPLICATION_JS}
+        ${MAGNUM_WEBAPPLICATION_CSS}
         DESTINATION ${CMAKE_INSTALL_PREFIX})
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/my-application.js.mem

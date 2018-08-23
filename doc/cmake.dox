@@ -90,6 +90,16 @@ This module tries to find base Magnum library and then defines:
 -   `MAGNUM_PLUGINS_AUDIOIMPORTER[|_DEBUG|_RELEASE]_DIR` --- Directory with
     dynamic audio importer plugins
 
+If Magnum is built for @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", the
+following variables contain paths to various support files --- see
+@ref platforms-html5 for more information about each file:
+
+-   `MAGNUM_EMSCRIPTENAPPLICATION_JS` --- Path to the `EmscriptenApplication.js`
+    file
+-   `MAGNUM_WINDOWLESSEMSCRIPTENAPPLICATION_JS` --- Path to the
+    `WindowlessEmscriptenApplication.js` file
+-   `MAGNUM_WEBAPPLICATION_CSS` --- Path to the `WebApplication.css` file
+
 However, this command will try to find only the base library, not the optional
 components. The base library depends on @ref corrade-cmake Corrade and OpenGL
 libraries (or OpenGL ES libraries). Additional dependencies are specified by
