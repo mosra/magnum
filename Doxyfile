@@ -929,6 +929,7 @@ EXAMPLE_PATH           = doc/snippets/ \
                          src/ \
                          ../magnum-plugins/src/ \
                          ../magnum-examples/src/ \
+                         ../magnum-extras/doc/snippets/ \
                          ../magnum-integration/doc/snippets/ \
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
