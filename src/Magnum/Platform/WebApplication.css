@@ -35,11 +35,6 @@ body {
   background-color: #2f363f; /*var(--background-color)*/
   color: #dcdcdc; /*var(--color)*/
 }
-h1 {
-  text-align: center;
-  font-size: 1.75rem;
-  font-weight: 600;
-}
 
 /* #container         makes the canvas occupy the whole page width
    #sizer           centers it
@@ -150,6 +145,23 @@ pre#log {
   color: #e6e6e6; /*var(--code-color)*/
   background-color: #282e36; /*var(--code-background-color)*/
   font-size: 0.8rem; /* so 80 columns fits into 640 pixels */
+}
+
+/* Styling for extra content */
+h1 {
+  text-align: center;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+#sizer p {
+  text-align: center;
+}
+code {
+  font-family: monospace, monospace, monospace; /* https://en.wikipedia.org/wiki/User:Davidgothberg/Test59 */
+  font-size: 0.9em;
+  padding: 0.125rem;
+  color: #e6e6e6; /*var(--code-color)*/
+  background-color: #282e36; /*var(--code-background-color)*/
 }
 
 /* kate: indent-width 2; */
