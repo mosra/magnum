@@ -74,7 +74,7 @@ above to it via GET parameters. See the relevant section of the
 @code{.shell-session}
 
   +---------------------------------------------------------+
-  | Information about Magnum engine and OpenAL capabilities |
+  |   Information about Magnum engine OpenAL capabilities   |
   +---------------------------------------------------------+
 
 Audio Renderer: OpenAL Soft by OpenAL Community
@@ -108,7 +108,7 @@ int main(const int argc, const char** const argv) {
 
     Debug() << "";
     Debug() << "  +---------------------------------------------------------+";
-    Debug() << "  | Information about Magnum engine and OpenAL capabilities |";
+    Debug() << "  |   Information about Magnum engine OpenAL capabilities   |";
     Debug() << "  +---------------------------------------------------------+";
     Debug() << "";
 
