@@ -24,6 +24,7 @@
 */
 
 namespace Magnum {
+
 /** @page features Feature guide
 @brief Fundamental principles and design goals.
 
@@ -40,5 +41,7 @@ necessary to read through everything, pick only what you need.
 -   @subpage scenegraph --- @copybrief scenegraph
 -   @subpage shapes --- @copybrief shapes
 -   @subpage debug-tools --- @copybrief debug-tools
+-   @subpage ui --- @copybrief ui
 */
+
 }
