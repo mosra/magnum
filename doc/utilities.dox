@@ -25,13 +25,19 @@
 
 namespace Magnum {
 /** @page utilities Utilities
-@brief Command-line utilities for system information and data conversion
+@brief Utilities for system information, data conversion, multimedia apps
 
--   @subpage magnum-gl-info --- @copybrief magnum-gl-info
--   @subpage magnum-al-info --- @copybrief magnum-al-info
+The following command-line utilities are available:
+
+-   @subpage magnum-gl-info @m_class{m-label m-default m-flat} **live web demo** --- @copybrief magnum-gl-info
+-   @subpage magnum-al-info @m_class{m-label m-default m-flat} **live web demo** --- @copybrief magnum-al-info
 -   @subpage magnum-distancefieldconverter --- @copybrief magnum-distancefieldconverter
 -   @subpage magnum-fontconverter --- @copybrief magnum-fontconverter
 -   @subpage magnum-imageconverter --- @copybrief magnum-imageconverter
+
+The following graphical apps are available:
+
+-   @subpage magnum-ui-gallery @m_class{m-label m-default m-flat} **live web demo** --- @copybrief magnum-ui-gallery
 
 */
 }

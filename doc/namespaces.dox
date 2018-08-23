@@ -67,7 +67,8 @@ find_package(Magnum REQUIRED Sdl2Application)
 target_link_libraries(your-app Magnum::Application)
 @endcode
 
-See documentation of particular `*Application` classs, @ref building,
+See documentation of particular `*Application` classs, the
+@ref magnum-gl-info "magnum-gl-info" utility documentation, @ref building,
 @ref cmake and @ref platform for more information.
 */
 
@@ -210,10 +211,9 @@ find_package(Magnum REQUIRED Audio)
 target_link_libraries(your-app Magnum::Audio)
 @endcode
 
-See @ref building and @ref cmake for more information.
-
-Additional plugins are built separately, see particular `Audio::*Importer`
-class documentation, @ref building, @ref building-plugins, @ref cmake,
+Additional plugins and utilities are built separately. See particular
+`Audio::*Importer` class documentation, the @ref magnum-al-info "magnum-al-info"
+utility documentation, @ref building, @ref building-plugins, @ref cmake,
 @ref cmake-plugins and @ref plugins for more information.
 */
 
@@ -396,11 +396,11 @@ find_package(Magnum REQUIRED Text)
 target_link_libraries(your-app Magnum::Text)
 @endcode
 
-See @ref building and @ref cmake for more information.
-
-Additional plugins are built separately, see particular `*Font` and
-`*FontConverter` class documentation, @ref building, @ref building-plugins,
-@ref cmake, @ref cmake-plugins and @ref plugins for more information.
+Additional plugins and utilities are built separately. See particular `*Font`
+and `*FontConverter` class documentation, the
+@ref magnum-fontconverter "magnum-fontconverter" utility documentation,
+@ref building, @ref building-plugins, @ref cmake, @ref cmake-plugins and
+@ref plugins for more information.
 */
 
 /** @dir Magnum/TextureTools
@@ -427,7 +427,9 @@ Note that functionality depending on @ref GL APIs is available only if Magnum
 is built with both `WITH_GL` and `TARGET_GL` enabled (which is done by
 default).
 
-See @ref building and @ref cmake for more information.
+Additional utilities are built separately. See the
+@ref magnum-distancefieldconverter "magnum-distancefieldconverter" utility
+documentation, @ref building and @ref cmake for more information.
 */
 
 /** @dir Magnum/Trade
@@ -450,12 +452,11 @@ find_package(Magnum REQUIRED Trade)
 target_link_libraries(your-app Magnum::Trade)
 @endcode
 
-See @ref building and @ref cmake for more information.
-
-Additional plugins are built separately, see particular `Trade::*Importer` and
-`*ImageConverter` class documentation, @ref building, @ref building-plugins,
-@ref cmake, @ref cmake-plugins and @ref plugins for more
-information.
+Additional plugins and utilities are built separately. See particular
+`Trade::*Importer` and `*ImageConverter` class documentation, the
+@ref magnum-imageconverter "magnum-imageconverter" utility documentation,
+@ref building, @ref building-plugins, @ref cmake, @ref cmake-plugins and
+@ref plugins for more information.
 */
 
 /** @dir Magnum/Vk

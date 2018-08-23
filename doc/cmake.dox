@@ -175,11 +175,14 @@ dependencies, you need to find the dependency and then link to it.
 
 Lastly, a few utility executables are available:
 
--   `distancefieldconverter` --- @ref magnum-distancefieldconverter executable
--   `fontconverter` --- @ref magnum-fontconverter executable
--   `imageconverter` --- @ref magnum-imageconverter executable
--   `gl-info` --- @ref magnum-gl-info executable
--   `al-info` --- @ref magnum-al-info executable
+-   `distancefieldconverter` --- @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
+    executable
+-   `fontconverter` --- @ref magnum-fontconverter "magnum-fontconverter"
+    executable
+-   `imageconverter` --- @ref magnum-imageconverter "magnum-imageconverter"
+    executable
+-   `gl-info` --- @ref magnum-gl-info "magnum-gl-info" executable
+-   `al-info` --- @ref magnum-al-info "magnum-al-info" executable
 
 Note that [each namespace](namespaces.html), all @ref Platform libraries and
 each plugin class contain more detailed information about dependencies,

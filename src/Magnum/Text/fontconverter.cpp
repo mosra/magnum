@@ -62,6 +62,17 @@ namespace Magnum {
 
 @m_footernavigation
 
+This utility is built if both `WITH_TEXT` and `WITH_FONTCONVERTER` is enabled
+when building Magnum. To use this utility with CMake, you need to request the
+`fontconverter` component of the `Magnum` package and use the
+`Magnum::fontconverter` target for example in a custom command:
+
+@code{.cmake}
+find_package(Magnum REQUIRED fontconverter)
+
+add_custom_command(OUTPUT ... COMMAND Magnum::fontconverter ...)
+@endcode
+
 @section magnum-fontconverter-usage Usage
 
 @code{.sh}

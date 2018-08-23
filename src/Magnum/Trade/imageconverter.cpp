@@ -39,6 +39,17 @@ namespace Magnum {
 
 @m_footernavigation
 
+This utility is built if both `WITH_TRADE` and `WITH_IMAGECONVERTER` is enabled
+when building Magnum. To use this utility with CMake, you need to request the
+`imageconverter` component of the `Magnum` package and use the
+`Magnum::imageconverter` target for example in a custom command:
+
+@code{.cmake}
+find_package(Magnum REQUIRED imageconverter)
+
+add_custom_command(OUTPUT ... COMMAND Magnum::imageconverter ...)
+@endcode
+
 @section magnum-imageconverter-usage Usage
 
 @code{.sh}
