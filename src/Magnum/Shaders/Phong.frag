@@ -151,13 +151,13 @@ void main() {
 
     /* Add diffuse color */
     lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection));
-    color += finalDiffuseColor*lightColor*intensity;
+    color += vec4(finalDiffuseColor.rgb*lightColor.rgb*intensity, lightColor.a*finalDiffuseColor.a);
 
     /* Add specular color, if needed */
     if(intensity > 0.001) {
         highp vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
         mediump float specularity = pow(max(0.0, dot(normalize(cameraDirection), reflection)), shininess);
-        color += finalSpecularColor*specularity;
+        color += vec4(finalSpecularColor.rgb*specularity, finalSpecularColor.a);
     }
 
     #ifdef ALPHA_MASK
