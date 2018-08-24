@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+"use strict"; /* it summons the Cthulhu in a proper way, they say */
+
 var Module = {
     preRun: [],
     postRun: [],
