@@ -50,7 +50,10 @@ var Module = {
 
     setStatus: function(message) {
         var status = document.getElementById('status');
-        if(status) status.innerHTML = message;
+        /* Emscripten calls setStatus("") after a timeout even if the app
+           aborts. That would erase the crash message, so don't allow that */
+        if(status && status.innerHTML != "Oops :(")
+            status.innerHTML = message;
     },
 
     setStatusDescription: function(message) {
