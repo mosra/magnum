@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
+#include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Quaternion.h"
@@ -92,6 +93,7 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
     void transformVectorNormalized();
 
     void debug();
+    void configuration();
 };
 
 typedef Math::Deg<Float> Deg;
@@ -143,7 +145,8 @@ QuaternionTest::QuaternionTest() {
               &QuaternionTest::transformVector,
               &QuaternionTest::transformVectorNormalized,
 
-              &QuaternionTest::debug});
+              &QuaternionTest::debug,
+              &QuaternionTest::configuration});
 }
 
 void QuaternionTest::construct() {
@@ -521,6 +524,25 @@ void QuaternionTest::debug() {
 
     Debug(&o) << Quaternion({1.0f, 2.0f, 3.0f}, -4.0f);
     CORRADE_COMPARE(o.str(), "Quaternion({1, 2, 3}, -4)\n");
+}
+
+void QuaternionTest::configuration() {
+    Corrade::Utility::Configuration c;
+
+    Quaternion q{{3.0f, 3.125f, 9.0f}, 9.55f};
+    std::string value{"3 3.125 9 9.55"};
+
+    c.setValue("quat", q);
+    CORRADE_COMPARE(c.value("quat"), value);
+    CORRADE_COMPARE(c.value<Quaternion>("quat"), q);
+
+    /* Underflow */
+    c.setValue("underflow", "2.1 8.9");
+    CORRADE_COMPARE(c.value<Quaternion>("underflow"), (Quaternion{{2.1f, 8.9f, 0.0f}, 0.0f}));
+
+    /* Overflow */
+    c.setValue("overflow", "2 1 8 9 16 33");
+    CORRADE_COMPARE(c.value<Quaternion>("overflow"), (Quaternion{{2.0f, 1.0f, 8.0f}, 9.0f}));
 }
 
 }}}

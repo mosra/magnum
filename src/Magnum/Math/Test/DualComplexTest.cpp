@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/DualComplex.h"
 #include "Magnum/Math/DualQuaternion.h"
@@ -87,6 +88,7 @@ struct DualComplexTest: Corrade::TestSuite::Tester {
     void transformPoint();
 
     void debug();
+    void configuration();
 };
 
 typedef Math::Deg<Float> Deg;
@@ -135,7 +137,8 @@ DualComplexTest::DualComplexTest() {
               &DualComplexTest::matrix,
               &DualComplexTest::transformPoint,
 
-              &DualComplexTest::debug});
+              &DualComplexTest::debug,
+              &DualComplexTest::configuration});
 }
 
 void DualComplexTest::construct() {
@@ -416,6 +419,25 @@ void DualComplexTest::debug() {
 
     Debug(&o) << DualComplex({-1.0f, -2.5f}, {-3.0f, -7.5f});
     CORRADE_COMPARE(o.str(), "DualComplex({-1, -2.5}, {-3, -7.5})\n");
+}
+
+void DualComplexTest::configuration() {
+    Corrade::Utility::Configuration c;
+
+    DualComplex a{{3.0f, 3.125f}, {9.0f, 9.55f}};
+    std::string value("3 3.125 9 9.55");
+
+    c.setValue("dualcomplex", a);
+    CORRADE_COMPARE(c.value("dualcomplex"), value);
+    CORRADE_COMPARE(c.value<DualComplex>("dualcomplex"), a);
+
+    /* Underflow */
+    c.setValue("underflow", "2.1 8.9");
+    CORRADE_COMPARE(c.value<DualComplex>("underflow"), (DualComplex{{2.1f, 8.9f}, {0.0f, 0.0f}}));
+
+    /* Overflow */
+    c.setValue("overflow", "2 1 8 9 16 33");
+    CORRADE_COMPARE(c.value<DualComplex>("overflow"), (DualComplex{{2.0f, 1.0f}, {8.0f, 9.0f}}));
 }
 
 }}}

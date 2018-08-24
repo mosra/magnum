@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/DualQuaternion.h"
 
@@ -91,6 +92,7 @@ struct DualQuaternionTest: Corrade::TestSuite::Tester {
     void sclerp();
 
     void debug();
+    void configuration();
 };
 
 typedef Math::Deg<Float> Deg;
@@ -143,7 +145,8 @@ DualQuaternionTest::DualQuaternionTest() {
 
               &DualQuaternionTest::sclerp,
 
-              &DualQuaternionTest::debug});
+              &DualQuaternionTest::debug,
+              &DualQuaternionTest::configuration});
 }
 
 void DualQuaternionTest::construct() {
@@ -511,6 +514,25 @@ void DualQuaternionTest::debug() {
 
     Debug(&o) << DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f});
     CORRADE_COMPARE(o.str(), "DualQuaternion({{1, 2, 3}, -4}, {{0.5, -3.1, 3.3}, 2})\n");
+}
+
+void DualQuaternionTest::configuration() {
+    Corrade::Utility::Configuration c;
+
+    DualQuaternion a{{{3.0f, 3.125f, 9.0f}, 9.55f}, {{-1.2f, 0.3f, 1.1f}, 92.05f}};
+    std::string value{"3 3.125 9 9.55 -1.2 0.3 1.1 92.05"};
+
+    c.setValue("dualquat", a);
+    CORRADE_COMPARE(c.value("dualquat"), value);
+    CORRADE_COMPARE(c.value<DualQuaternion>("dualquat"), a);
+
+    /* Underflow */
+    c.setValue("underflow", "2.1 8.9");
+    CORRADE_COMPARE(c.value<DualQuaternion>("underflow"), (DualQuaternion{{{2.1f, 8.9f, 0.0f}, 0.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}}));
+
+    /* Overflow */
+    c.setValue("overflow", "2 1 8 9 16 33 -1 5 2 10");
+    CORRADE_COMPARE(c.value<DualQuaternion>("overflow"), (DualQuaternion{{{2.0f, 1.0f, 8.0f}, 9.0f}, {{16.0f, 33.0f, -1.0f}, 5.0f}}));
 }
 
 }}}

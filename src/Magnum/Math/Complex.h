@@ -471,4 +471,26 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 
 }}
 
+namespace Corrade { namespace Utility {
+
+/** @configurationvalue{Magnum::Math::Complex} */
+template<class T> struct ConfigurationValue<Magnum::Math::Complex<T>> {
+    ConfigurationValue() = delete;
+
+    /** @brief Writes elements separated with spaces */
+    static std::string toString(const Magnum::Math::Complex<T>& value, ConfigurationValueFlags flags) {
+        return ConfigurationValue<Magnum::Math::Vector<2, T>>::toString(reinterpret_cast<const Magnum::Math::Vector<2, T>&>(value), flags);
+    }
+
+    /** @brief Reads elements separated with whitespace */
+    static Magnum::Math::Complex<T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
+        const Magnum::Math::Vector<2, T> value = ConfigurationValue<Magnum::Math::Vector<2, T>>::fromString(stringValue, flags);
+        return reinterpret_cast<const Magnum::Math::Complex<T>&>(value);
+    }
+};
+
+/* No explicit instantiation needed, as Vector<2, T> is instantiated already */
+
+}}
+
 #endif

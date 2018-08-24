@@ -80,6 +80,11 @@ template struct ConfigurationValue<Magnum::Math::Range<3, Magnum::Float>>;
 template struct ConfigurationValue<Magnum::Math::Range<3, Magnum::Int>>;
 template struct ConfigurationValue<Magnum::Math::Range<2, Magnum::Double>>;
 template struct ConfigurationValue<Magnum::Math::Range<3, Magnum::Double>>;
+
+/* Other (complex, dual complex, quaternion) just reinterpret to 2/4-component
+   vectors instantiated above */
+template struct ConfigurationValue<Magnum::Math::DualQuaternion<Magnum::Float>>;
+template struct ConfigurationValue<Magnum::Math::DualQuaternion<Magnum::Double>>;
 #endif
 
 }}
