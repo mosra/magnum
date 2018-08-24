@@ -475,13 +475,6 @@ void DualQuaternionTest::transformPointNormalized() {
     CORRADE_COMPARE(transformedB, Vector3(-1.0f, -2.918512f, 2.780698f));
 }
 
-void DualQuaternionTest::debug() {
-    std::ostringstream o;
-
-    Debug(&o) << DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f});
-    CORRADE_COMPARE(o.str(), "DualQuaternion({{1, 2, 3}, -4}, {{0.5, -3.1, 3.3}, 2})\n");
-}
-
 void DualQuaternionTest::sclerp() {
     const DualQuaternion from = DualQuaternion::translation(Vector3{20.0f, .0f, .0f})*DualQuaternion::rotation(180.0_degf, Vector3{.0f, 1.0f, .0f});
     const DualQuaternion to = DualQuaternion::translation(Vector3{42.0f, 42.0f, 42.0f})*DualQuaternion::rotation(75.0_degf, Vector3{1.0f, .0f, .0f});
@@ -511,6 +504,13 @@ void DualQuaternionTest::sclerp() {
     const auto rotation = DualQuaternion::rotation(35.0_degf, Vector3{0.3f, 0.2f, 0.1f});
     CORRADE_COMPARE(Math::sclerp(DualQuaternion::translation(Vector3{1.0f, 2.0f, 4.0f})*rotation, DualQuaternion::translation(Vector3{5, -6, 2})*rotation, 0.25f),
                     DualQuaternion::translation(Vector3{2.0f, 0.0f, 3.5f})*rotation);
+}
+
+void DualQuaternionTest::debug() {
+    std::ostringstream o;
+
+    Debug(&o) << DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f});
+    CORRADE_COMPARE(o.str(), "DualQuaternion({{1, 2, 3}, -4}, {{0.5, -3.1, 3.3}, 2})\n");
 }
 
 }}}
