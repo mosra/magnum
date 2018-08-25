@@ -66,8 +66,8 @@ CORRADE_ENUMSET_OPERATORS(GridFlags)
 /**
 @brief 3D solid grid
 
-2x2 grid. Indexed @ref MeshPrimitive::Triangles with optional normals and
-texture coordinates.
+2x2 grid in the XY plane with normals in positive Z direction. Indexed
+@ref MeshPrimitive::Triangles with optional normals and texture coordinates.
 
 @image html primitives-grid3dsolid.png
 
@@ -83,7 +83,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D grid3DSolid(const Vector2i& subdivisi
 /**
 @brief 3D wireframe grid
 
-2x2 grid. Indexed @ref MeshPrimitive::Lines.
+2x2 grid in the XY plane. Indexed @ref MeshPrimitive::Lines.
 
 @image html primitives-grid3dwireframe.png
 
