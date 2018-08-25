@@ -464,17 +464,17 @@ class AbstractXApplication::InputEvent {
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
         /** @copydoc Sdl2Application::InputEvent::isAccepted() */
-        constexpr bool isAccepted() const { return _accepted; }
+        bool isAccepted() const { return _accepted; }
 
         /** @brief Modifiers */
-        constexpr Modifiers modifiers() const { return _modifiers; }
+        Modifiers modifiers() const { return _modifiers; }
 
         /** @brief Mouse buttons */
-        constexpr Buttons buttons() const { return Button(static_cast<unsigned int>(_modifiers)); }
+        Buttons buttons() const { return Button(static_cast<unsigned int>(_modifiers)); }
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
-        constexpr explicit InputEvent(Modifiers modifiers): _modifiers(modifiers), _accepted(false) {}
+        explicit InputEvent(Modifiers modifiers): _modifiers(modifiers), _accepted(false) {}
 
         ~InputEvent() = default;
     #endif
@@ -575,13 +575,13 @@ class AbstractXApplication::KeyEvent: public AbstractXApplication::InputEvent {
         };
 
         /** @brief Key */
-        constexpr Key key() const { return _key; }
+        Key key() const { return _key; }
 
         /** @brief Position */
-        constexpr Vector2i position() const { return _position; }
+        Vector2i position() const { return _position; }
 
     private:
-        constexpr explicit KeyEvent(Key key, Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _key(key), _position(position) {}
+        explicit KeyEvent(Key key, Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _key(key), _position(position) {}
 
         const Key _key;
         const Vector2i _position;
@@ -610,13 +610,13 @@ class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent 
         };
 
         /** @brief Button */
-        constexpr Button button() const { return _button; }
+        Button button() const { return _button; }
 
         /** @brief Position */
-        constexpr Vector2i position() const { return _position; }
+        Vector2i position() const { return _position; }
 
     private:
-        constexpr explicit MouseEvent(Button button, Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _button(button), _position(position) {}
+        explicit MouseEvent(Button button, Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _button(button), _position(position) {}
 
         const Button _button;
         const Vector2i _position;
@@ -632,10 +632,10 @@ class AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEv
 
     public:
         /** @brief Position */
-        constexpr Vector2i position() const { return _position; }
+        Vector2i position() const { return _position; }
 
     private:
-        constexpr explicit MouseMoveEvent(Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _position(position) {}
+        explicit MouseMoveEvent(Modifiers modifiers, const Vector2i& position): InputEvent(modifiers), _position(position) {}
 
         const Vector2i _position;
 };

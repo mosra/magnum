@@ -982,10 +982,10 @@ class GlfwApplication::InputEvent {
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
         /** @copydoc Sdl2Application::InputEvent::isAccepted() */
-        constexpr bool isAccepted() const { return _accepted; }
+        bool isAccepted() const { return _accepted; }
 
     protected:
-        constexpr explicit InputEvent(): _accepted(false) {}
+        explicit InputEvent(): _accepted(false) {}
 
         ~InputEvent() = default;
 
@@ -1187,7 +1187,7 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
         #endif
 
         /** @copydoc Sdl2Application::KeyEvent::key() */
-        constexpr Key key() const { return _key; }
+        Key key() const { return _key; }
 
         #if defined(DOXYGEN_GENERATING_OUTPUT) || GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
         /**
@@ -1204,13 +1204,13 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
         #endif
 
         /** @brief Modifiers */
-        constexpr Modifiers modifiers() const { return _modifiers; }
+        Modifiers modifiers() const { return _modifiers; }
 
         /** @copydoc Sdl2Application::KeyEvent::isRepeated() */
-        constexpr bool isRepeated() const { return _repeated; }
+        bool isRepeated() const { return _repeated; }
 
     private:
-        constexpr explicit KeyEvent(Key key, Modifiers modifiers, bool repeated): _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
+        explicit KeyEvent(Key key, Modifiers modifiers, bool repeated): _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
 
         const Key _key;
         const Modifiers _modifiers;
@@ -1261,16 +1261,16 @@ class GlfwApplication::MouseEvent: public GlfwApplication::InputEvent {
         };
 
         /** @brief Button */
-        constexpr Button button() const { return _button; }
+        Button button() const { return _button; }
 
         /** @brief Position */
-        constexpr Vector2i position() const { return _position; }
+        Vector2i position() const { return _position; }
 
         /** @brief Modifiers */
-        constexpr Modifiers modifiers() const { return _modifiers; }
+        Modifiers modifiers() const { return _modifiers; }
 
     private:
-        constexpr explicit MouseEvent(Button button, const Vector2i& position, Modifiers modifiers): _button{button}, _position{position}, _modifiers{modifiers} {}
+        explicit MouseEvent(Button button, const Vector2i& position, Modifiers modifiers): _button{button}, _position{position}, _modifiers{modifiers} {}
 
         const Button _button;
         const Vector2i _position;
@@ -1379,7 +1379,7 @@ class GlfwApplication::TextInputEvent {
         TextInputEvent& operator=(TextInputEvent&&) = delete;
 
         /** @brief Whether the event is accepted */
-        constexpr bool isAccepted() const { return _accepted; }
+        bool isAccepted() const { return _accepted; }
 
         /**
          * @brief Set event as accepted
@@ -1392,10 +1392,10 @@ class GlfwApplication::TextInputEvent {
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
         /** @brief Input text in UTF-8 */
-        constexpr Containers::ArrayView<const char> text() const { return _text; }
+        Containers::ArrayView<const char> text() const { return _text; }
 
     private:
-        constexpr explicit TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
+        explicit TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
 
         Containers::ArrayView<const char> _text;
         bool _accepted;

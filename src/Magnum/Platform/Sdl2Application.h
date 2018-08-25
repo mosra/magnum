@@ -1650,7 +1650,7 @@ class Sdl2Application::InputEvent {
         InputEvent& operator=(InputEvent&&) = delete;
 
         /** @brief Whether the event is accepted */
-        constexpr bool isAccepted() const { return _accepted; }
+        bool isAccepted() const { return _accepted; }
 
         /**
          * @brief Set event as accepted
@@ -1664,7 +1664,7 @@ class Sdl2Application::InputEvent {
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
-        constexpr explicit InputEvent(): _accepted(false) {}
+        explicit InputEvent(): _accepted(false) {}
 
         ~InputEvent() = default;
     #endif
@@ -1846,7 +1846,7 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
          *
          * @see @ref keyName()
          */
-        constexpr Key key() const { return _key; }
+        Key key() const { return _key; }
 
         /**
          * @brief Key name
@@ -1860,7 +1860,7 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
         std::string keyName() const;
 
         /** @brief Modifiers */
-        constexpr Modifiers modifiers() const { return _modifiers; }
+        Modifiers modifiers() const { return _modifiers; }
 
         /**
          * @brief Whether the key press is repeated
@@ -1868,10 +1868,10 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
          * Returns @cpp true @ce if the key press event is repeated,
          * @cpp false @ce if not or if this was key release event.
          */
-        constexpr bool isRepeated() const { return _repeated; }
+        bool isRepeated() const { return _repeated; }
 
     private:
-        constexpr explicit KeyEvent(Key key, Modifiers modifiers, bool repeated): _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
+        explicit KeyEvent(Key key, Modifiers modifiers, bool repeated): _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
 
         const Key _key;
         const Modifiers _modifiers;
@@ -1920,10 +1920,10 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         };
 
         /** @brief Button */
-        constexpr Button button() const { return _button; }
+        Button button() const { return _button; }
 
         /** @brief Position */
-        constexpr Vector2i position() const { return _position; }
+        Vector2i position() const { return _position; }
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
@@ -1931,7 +1931,7 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
-        constexpr Int clickCount() const { return _clickCount; }
+        Int clickCount() const { return _clickCount; }
         #endif
 
         /**
@@ -1942,7 +1942,7 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        constexpr explicit MouseEvent(Button button, const Vector2i& position
+        explicit MouseEvent(Button button, const Vector2i& position
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             , Int clickCount
             #endif
@@ -1995,17 +1995,17 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         typedef Containers::EnumSet<Button> Buttons;
 
         /** @brief Position */
-        constexpr Vector2i position() const { return _position; }
+        Vector2i position() const { return _position; }
 
         /**
          * @brief Relative position
          *
          * Position relative to previous event.
          */
-        constexpr Vector2i relativePosition() const { return _relativePosition; }
+        Vector2i relativePosition() const { return _relativePosition; }
 
         /** @brief Mouse buttons */
-        constexpr Buttons buttons() const { return _buttons; }
+        Buttons buttons() const { return _buttons; }
 
         /**
          * @brief Modifiers
@@ -2015,7 +2015,7 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        constexpr explicit MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition, Buttons buttons): _position{position}, _relativePosition{relativePosition}, _buttons{buttons}, _modifiersLoaded{false} {}
+        explicit MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition, Buttons buttons): _position{position}, _relativePosition{relativePosition}, _buttons{buttons}, _modifiersLoaded{false} {}
 
         const Vector2i _position, _relativePosition;
         const Buttons _buttons;
@@ -2033,7 +2033,7 @@ class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
 
     public:
         /** @brief Scroll offset */
-        constexpr Vector2 offset() const { return _offset; }
+        Vector2 offset() const { return _offset; }
 
         /**
          * @brief Modifiers
@@ -2043,7 +2043,7 @@ class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        constexpr explicit MouseScrollEvent(const Vector2& offset): _offset{offset}, _modifiersLoaded{false} {}
+        explicit MouseScrollEvent(const Vector2& offset): _offset{offset}, _modifiersLoaded{false} {}
 
         const Vector2 _offset;
         bool _modifiersLoaded;
@@ -2073,7 +2073,7 @@ class Sdl2Application::MultiGestureEvent {
         MultiGestureEvent& operator=(MultiGestureEvent&&) = delete;
 
         /** @brief Whether the event is accepted */
-        constexpr bool isAccepted() const { return _accepted; }
+        bool isAccepted() const { return _accepted; }
 
         /**
          * @brief Set event as accepted
@@ -2110,7 +2110,7 @@ class Sdl2Application::MultiGestureEvent {
         Int fingerCount() const { return _fingerCount; }
 
     private:
-        constexpr explicit MultiGestureEvent(const Vector2& center, Float relativeRotation, Float relativeDistance, Int fingerCount): _center{center}, _relativeRotation{relativeRotation}, _relativeDistance{relativeDistance}, _fingerCount{fingerCount}, _accepted{false} {}
+        explicit MultiGestureEvent(const Vector2& center, Float relativeRotation, Float relativeDistance, Int fingerCount): _center{center}, _relativeRotation{relativeRotation}, _relativeDistance{relativeDistance}, _fingerCount{fingerCount}, _accepted{false} {}
 
         Vector2 _center;
         Float _relativeRotation,
@@ -2141,7 +2141,7 @@ class Sdl2Application::TextInputEvent {
         TextInputEvent& operator=(TextInputEvent&&) = delete;
 
         /** @brief Whether the event is accepted */
-        constexpr bool isAccepted() const { return _accepted; }
+        bool isAccepted() const { return _accepted; }
 
         /**
          * @brief Set event as accepted
@@ -2154,10 +2154,10 @@ class Sdl2Application::TextInputEvent {
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
         /** @brief Input text in UTF-8 */
-        constexpr Containers::ArrayView<const char> text() const { return _text; }
+        Containers::ArrayView<const char> text() const { return _text; }
 
     private:
-        constexpr explicit TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
+        explicit TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
 
         Containers::ArrayView<const char> _text;
         bool _accepted;
@@ -2185,7 +2185,7 @@ class Sdl2Application::TextEditingEvent {
         TextEditingEvent& operator=(TextEditingEvent&&) = delete;
 
         /** @brief Whether the event is accepted */
-        constexpr bool isAccepted() const { return _accepted; }
+        bool isAccepted() const { return _accepted; }
 
         /**
          * @brief Set event as accepted
@@ -2198,16 +2198,16 @@ class Sdl2Application::TextEditingEvent {
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
         /** @brief Input text in UTF-8 */
-        constexpr Containers::ArrayView<const char> text() const { return _text; }
+        Containers::ArrayView<const char> text() const { return _text; }
 
         /** @brief Location to begin editing from */
-        constexpr Int start() const { return _start; }
+        Int start() const { return _start; }
 
         /** @brief Number of characters to edit from the start point */
-        constexpr Int length() const { return _length; }
+        Int length() const { return _length; }
 
     private:
-        constexpr explicit TextEditingEvent(Containers::ArrayView<const char> text, Int start, Int length): _text{text}, _start{start}, _length{length}, _accepted{false} {}
+        explicit TextEditingEvent(Containers::ArrayView<const char> text, Int start, Int length): _text{text}, _start{start}, _length{length}, _accepted{false} {}
 
         Containers::ArrayView<const char> _text;
         Int _start, _length;

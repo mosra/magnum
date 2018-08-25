@@ -653,10 +653,10 @@ class GlutApplication::InputEvent {
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
         /** @copydoc Sdl2Application::InputEvent::isAccepted() */
-        constexpr bool isAccepted() const { return _accepted; }
+        bool isAccepted() const { return _accepted; }
 
     protected:
-        constexpr InputEvent(): _accepted(false) {}
+        InputEvent(): _accepted(false) {}
 
         ~InputEvent() = default;
 
@@ -751,13 +751,13 @@ class GlutApplication::KeyEvent: public GlutApplication::InputEvent {
         };
 
         /** @brief Key */
-        constexpr Key key() const { return _key; }
+        Key key() const { return _key; }
 
         /** @brief Position */
-        constexpr Vector2i position() const { return _position; }
+        Vector2i position() const { return _position; }
 
     private:
-        constexpr KeyEvent(Key key, const Vector2i& position): _key(key), _position(position) {}
+        KeyEvent(Key key, const Vector2i& position): _key(key), _position(position) {}
 
         const Key _key;
         const Vector2i _position;
@@ -786,13 +786,13 @@ class GlutApplication::MouseEvent: public GlutApplication::InputEvent {
         };
 
         /** @brief Button */
-        constexpr Button button() const { return _button; }
+        Button button() const { return _button; }
 
         /** @brief Position */
-        constexpr Vector2i position() const { return _position; }
+        Vector2i position() const { return _position; }
 
     private:
-        constexpr MouseEvent(Button button, const Vector2i& position): _button(button), _position(position) {}
+        MouseEvent(Button button, const Vector2i& position): _button(button), _position(position) {}
 
         const Button _button;
         const Vector2i _position;
@@ -828,13 +828,13 @@ class GlutApplication::MouseMoveEvent: public GlutApplication::InputEvent {
         typedef Containers::EnumSet<Button> Buttons;
 
         /** @brief Position */
-        constexpr Vector2i position() const { return _position; }
+        Vector2i position() const { return _position; }
 
         /** @brief Mouse buttons */
-        constexpr Buttons buttons() const { return _buttons; }
+        Buttons buttons() const { return _buttons; }
 
     private:
-        constexpr MouseMoveEvent(const Vector2i& position, Buttons buttons): _position(position), _buttons(buttons) {}
+        MouseMoveEvent(const Vector2i& position, Buttons buttons): _position(position), _buttons(buttons) {}
 
         const Vector2i _position;
         const Buttons _buttons;
