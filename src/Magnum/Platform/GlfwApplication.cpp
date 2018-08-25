@@ -436,6 +436,8 @@ void GlfwApplication::setSwapInterval(const Int interval) {
 }
 
 int GlfwApplication::exec() {
+    CORRADE_ASSERT(_window, "Platform::GlfwApplication::exec(): no window opened", {});
+
     while(!glfwWindowShouldClose(_window)) {
         if(_flags & Flag::Redraw) {
             _flags &= ~Flag::Redraw;
