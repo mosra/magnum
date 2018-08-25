@@ -1343,6 +1343,13 @@ class GlfwApplication::MouseScrollEvent: public GlfwApplication::InputEvent {
         Vector2 offset() const { return _offset; }
 
         /**
+         * @brief Position
+         *
+         * Lazily populated on first request.
+         */
+        Vector2i position();
+
+        /**
          * @brief Modifiers
          *
          * Lazily populated on first request.
@@ -1354,6 +1361,7 @@ class GlfwApplication::MouseScrollEvent: public GlfwApplication::InputEvent {
 
         GLFWwindow* _window;
         const Vector2 _offset;
+        Containers::Optional<Vector2i> _position;
         Containers::Optional<Modifiers> _modifiers;
 };
 

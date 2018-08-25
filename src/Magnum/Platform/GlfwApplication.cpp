@@ -465,6 +465,16 @@ auto GlfwApplication::MouseMoveEvent::modifiers() -> Modifiers {
     return *_modifiers;
 }
 
+Vector2i GlfwApplication::MouseScrollEvent::position() {
+    if(!_position) {
+        Vector2d position;
+        glfwGetCursorPos(_window, &position.x(), &position.y());
+        _position = Vector2i{position};
+    }
+
+    return *_position;
+}
+
 auto GlfwApplication::MouseScrollEvent::modifiers() -> Modifiers {
     if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
     return *_modifiers;

@@ -879,6 +879,13 @@ Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseMoveEvent::modifier
     return _modifiers = fixedModifiers(Uint16(SDL_GetModState()));
 }
 
+Vector2i Sdl2Application::MouseScrollEvent::position() {
+    if(_positionLoaded) return _position;
+    _positionLoaded = true;
+    SDL_GetMouseState(&_position.x(), &_position.y());
+    return _position;
+}
+
 Sdl2Application::InputEvent::Modifiers Sdl2Application::MouseScrollEvent::modifiers() {
     if(_modifiersLoaded) return _modifiers;
     _modifiersLoaded = true;

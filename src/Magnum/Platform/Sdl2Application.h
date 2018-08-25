@@ -2036,6 +2036,13 @@ class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
         Vector2 offset() const { return _offset; }
 
         /**
+         * @brief Position
+         *
+         * Lazily populated on first request.
+         */
+        Vector2i position();
+
+        /**
          * @brief Modifiers
          *
          * Lazily populated on first request.
@@ -2043,10 +2050,12 @@ class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        explicit MouseScrollEvent(const Vector2& offset): _offset{offset}, _modifiersLoaded{false} {}
+        explicit MouseScrollEvent(const Vector2& offset): _offset{offset}, _positionLoaded{false}, _modifiersLoaded{false} {}
 
         const Vector2 _offset;
+        bool _positionLoaded;
         bool _modifiersLoaded;
+        Vector2i _position;
         Modifiers _modifiers;
 };
 

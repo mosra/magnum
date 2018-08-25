@@ -98,6 +98,8 @@ See also:
     @ref Platform::Sdl2Application::setContainerCssClass()
 -   Implemented @ref Platform::GlfwApplication::MouseMoveEvent::buttons() for
     feature parity with @ref Platform::Sdl2Application
+-   Added @ref Platform::Sdl2Application::MouseScrollEvent::position() and
+    @ref Platform::GlfwApplication::MouseScrollEvent::position()
 -   Added @ref Platform::Sdl2Application::GLConfiguration::setColorBufferSize() "GLConfiguration::setColorBufferSize()",
     @ref Platform::Sdl2Application::GLConfiguration::setDepthBufferSize() "GLConfiguration::setDepthBufferSize()",
     @ref Platform::Sdl2Application::GLConfiguration::setStencilBufferSize() "GLConfiguration::setStencilBufferSize()",
