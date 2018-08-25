@@ -50,6 +50,9 @@ find_package(Magnum REQUIRED imageconverter)
 add_custom_command(OUTPUT ... COMMAND Magnum::imageconverter ...)
 @endcode
 
+See @ref building, @ref cmake and the @ref Trade namespace for more
+information.
+
 @section magnum-imageconverter-usage Usage
 
 @code{.sh}

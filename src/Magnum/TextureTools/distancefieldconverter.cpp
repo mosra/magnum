@@ -79,6 +79,9 @@ find_package(Magnum REQUIRED distancefieldconverter)
 add_custom_command(OUTPUT ... COMMAND Magnum::distancefieldconverter ...)
 @endcode
 
+See @ref building, @ref cmake and the @ref TextureTools namespace for more
+information.
+
 @section magnum-distancefieldconverter-usage Usage
 
 @code{.sh}

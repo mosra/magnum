@@ -73,6 +73,8 @@ find_package(Magnum REQUIRED fontconverter)
 add_custom_command(OUTPUT ... COMMAND Magnum::fontconverter ...)
 @endcode
 
+See @ref building, @ref cmake and the @ref Text namespace for more information.
+
 @section magnum-fontconverter-usage Usage
 
 @code{.sh}

@@ -98,6 +98,8 @@ find_package(Magnum REQUIRED gl-info)
 add_custom_command(OUTPUT ... COMMAND Magnum::gl-info ...)
 @endcode
 
+See @ref building, @ref cmake and the @ref GL namespace for more information.
+
 @section magnum-gl-info-usage Usage
 
 @code{.sh}
