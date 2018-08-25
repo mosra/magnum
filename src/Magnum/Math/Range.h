@@ -58,13 +58,13 @@ template<UnsignedInt dimensions, class T> class Range {
         /**
          * @brief Underlying vector type
          *
-         * `T` in 1D, @ref Math::Vector2 "Vector2<T>" in 2D,
-         * @ref Math::Vector3 "Vector3<T>" in 3D.
+         * @ref Math::Vector "Vector<1, T>" in 1D, @ref Math::Vector2 "Vector2<T>"
+         * in 2D, @ref Math::Vector3 "Vector3<T>" in 3D.
          */
         typedef typename Implementation::RangeTraits<dimensions, T>::Type VectorType;
 
         /**
-         * @brief Create range from minimal coordinates and size
+         * @brief Create a range from minimal coordinates and size
          * @param min   Minimal coordinates
          * @param size  Range size
          */
