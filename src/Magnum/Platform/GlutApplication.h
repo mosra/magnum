@@ -656,7 +656,7 @@ class GlutApplication::InputEvent {
         bool isAccepted() const { return _accepted; }
 
     protected:
-        InputEvent(): _accepted(false) {}
+        explicit InputEvent(): _accepted(false) {}
 
         ~InputEvent() = default;
 
@@ -757,7 +757,7 @@ class GlutApplication::KeyEvent: public GlutApplication::InputEvent {
         Vector2i position() const { return _position; }
 
     private:
-        KeyEvent(Key key, const Vector2i& position): _key(key), _position(position) {}
+        explicit KeyEvent(Key key, const Vector2i& position): _key(key), _position(position) {}
 
         const Key _key;
         const Vector2i _position;
@@ -792,7 +792,7 @@ class GlutApplication::MouseEvent: public GlutApplication::InputEvent {
         Vector2i position() const { return _position; }
 
     private:
-        MouseEvent(Button button, const Vector2i& position): _button(button), _position(position) {}
+        explicit MouseEvent(Button button, const Vector2i& position): _button(button), _position(position) {}
 
         const Button _button;
         const Vector2i _position;
@@ -834,7 +834,7 @@ class GlutApplication::MouseMoveEvent: public GlutApplication::InputEvent {
         Buttons buttons() const { return _buttons; }
 
     private:
-        MouseMoveEvent(const Vector2i& position, Buttons buttons): _position(position), _buttons(buttons) {}
+        explicit MouseMoveEvent(const Vector2i& position, Buttons buttons): _position(position), _buttons(buttons) {}
 
         const Vector2i _position;
         const Buttons _buttons;
