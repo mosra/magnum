@@ -37,7 +37,7 @@ body {
 }
 
 /* #container         makes the canvas occupy the whole page width
-   #sizer           centers it
+   #sizer             centers it
    #expander          does aspect ratio preservation
    #listener          snaps to #expander edges
    #listener::before  does the border, which finally goes below the canvas */
