@@ -40,7 +40,7 @@ uniform lowp sampler2D textureData;
 layout(location = 1)
 #endif
 uniform lowp vec4 color
-    #if !defined(GL_ES) && defined(TEXTURED)
+    #ifndef GL_ES
     = vec4(1.0)
     #endif
     ;
