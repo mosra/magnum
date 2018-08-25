@@ -287,6 +287,9 @@ See also:
 -   @ref Platform::GlfwApplication::InputEvent::Modifier::Super is properly
     reported for both left and right modifier (Windows/⌘) key instead of just
     the right one
+-   @ref Platform::GlfwApplication::exec() now asserts instead of crashing if
+    the constructor fails to create a window (see [mosra/magnum#192](https://github.com/mosra/magnum/issues/192),
+    [mosra/magnum#272](https://github.com/mosra/magnum/pull/272))
 
 @subsection changelog-latest-docs Documentation
 
