@@ -526,6 +526,14 @@ class AndroidApplication::ViewportEvent {
          */
         Vector2i windowSize() const { return _windowSize; }
 
+        /**
+         * @brief Framebuffer size
+         *
+         * The same as @ref windowSize().
+         * @todo this might not be true, implement properly!
+         */
+        Vector2i framebufferSize() const { return _windowSize; }
+
     private:
         friend AndroidApplication;
 
