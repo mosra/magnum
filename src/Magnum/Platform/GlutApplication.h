@@ -121,7 +121,7 @@ If no other application header is included, this class is also aliased to
 @cpp Platform::Application @ce and the macro is aliased to
 @cpp MAGNUM_APPLICATION_MAIN() @ce to simplify porting.
 */
-class CORRADE_DEPRECATED("Scheduled for removal. Consider switching to Sdl2Application or GlfwApplication instead.") GlutApplication {
+class CORRADE_DEPRECATED("scheduled for removal, consider switching to Sdl2Application or GlfwApplication instead") GlutApplication {
     public:
         /** @brief Application arguments */
         struct Arguments {
@@ -866,7 +866,7 @@ When no other application header is included this macro is also aliased to
 @cpp MAGNUM_APPLICATION_MAIN() @ce.
 */
 #define MAGNUM_GLUTAPPLICATION_MAIN(className)                              \
-    CORRADE_DEPRECATED_MACRO(MAGNUM_APPLICATION_MAIN(), "Scheduled for removal. Consider switching to Sdl2Application or GlfwApplication instead.") \
+    CORRADE_DEPRECATED_MACRO(MAGNUM_APPLICATION_MAIN(), "scheduled for removal, consider switching to Sdl2Application or GlfwApplication instead") \
     int main(int argc, char** argv) {                                       \
         className app({argc, argv});                                        \
         return app.exec();                                                  \
@@ -875,9 +875,9 @@ When no other application header is included this macro is also aliased to
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
 CORRADE_IGNORE_DEPRECATED_PUSH
-typedef CORRADE_DEPRECATED("Scheduled for removal. Consider switching to Sdl2Application or GlfwApplication instead.") GlutApplication Application;
-typedef CORRADE_DEPRECATED("Scheduled for removal. Consider switching to Sdl2Application or GlfwApplication instead.")BasicScreen<GlutApplication> Screen;
-typedef CORRADE_DEPRECATED("Scheduled for removal. Consider switching to Sdl2Application or GlfwApplication instead.") BasicScreenedApplication<GlutApplication> ScreenedApplication;
+typedef CORRADE_DEPRECATED("scheduled for removal, consider switching to Sdl2Application or GlfwApplication instead") GlutApplication Application;
+typedef CORRADE_DEPRECATED("scheduled for removal, consider switching to Sdl2Application or GlfwApplication instead")BasicScreen<GlutApplication> Screen;
+typedef CORRADE_DEPRECATED("scheduled for removal, consider switching to Sdl2Application or GlfwApplication instead") BasicScreenedApplication<GlutApplication> ScreenedApplication;
 CORRADE_IGNORE_DEPRECATED_POP
 #ifndef _MAGNUM_DO_NOT_WARN_DEPRECATED_GLUTAPPLICATION
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_GLUTAPPLICATION_MAIN(className)
