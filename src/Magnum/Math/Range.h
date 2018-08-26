@@ -73,6 +73,20 @@ template<UnsignedInt dimensions, class T> class Range {
         }
 
         /**
+         * @brief Create a range from center and half size
+         * @param center    Range center
+         * @param halfSize  Half size
+         *
+         * For creating integer center ranges you can use @ref fromSize()
+         * together with @ref padded(), for example:
+         *
+         * @snippet MagnumMath.cpp Range-fromCenter-integer
+         */
+        static Range<dimensions, T> fromCenter(const VectorType& center, const VectorType& halfSize) {
+            return {center - halfSize, center + halfSize};
+        }
+
+        /**
          * @brief Construct zero range
          *
          * Construct zero-size range positioned at origin.
@@ -197,7 +211,7 @@ template<UnsignedInt dimensions, class T> class Range {
          *
          * Translates the minimal and maximal coordinates by given amount.
          * Center remains the same.
-         * @see @ref translated()
+         * @see @ref translated(), @ref fromCenter()
          */
         Range<dimensions, T> padded(const VectorType& padding) const;
 
@@ -254,6 +268,9 @@ template<UnsignedInt dimensions, class T> class Range {
 #define MAGNUM_RANGE_SUBCLASS_IMPLEMENTATION(dimensions, Type, VectorType)  \
     static Type<T> fromSize(const VectorType<T>& min, const VectorType<T>& size) { \
         return Range<dimensions, T>::fromSize(min, size);                   \
+    }                                                                       \
+    static Type<T> fromCenter(const VectorType<T>& center, const VectorType<T>& halfSize) { \
+        return Range<dimensions, T>::fromCenter(center, halfSize);                   \
     }                                                                       \
                                                                             \
     Type<T> translated(const VectorType<T>& vector) const {                 \

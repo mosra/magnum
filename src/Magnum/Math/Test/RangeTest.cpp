@@ -101,6 +101,7 @@ struct RangeTest: Corrade::TestSuite::Tester {
     void constructDefault();
     void constructNoInit();
     void constructFromSize();
+    void constructFromCenter();
     void constructPair();
     void constructConversion();
     void constructCopy();
@@ -142,6 +143,7 @@ RangeTest::RangeTest() {
               &RangeTest::constructDefault,
               &RangeTest::constructNoInit,
               &RangeTest::constructFromSize,
+              &RangeTest::constructFromCenter,
               &RangeTest::constructPair,
               &RangeTest::constructConversion,
               &RangeTest::constructCopy,
@@ -238,6 +240,12 @@ void RangeTest::constructFromSize() {
     CORRADE_COMPARE(Range1Di::fromSize(3, 23), Range1Di(3, 26));
     CORRADE_COMPARE(Range2Di::fromSize({3, 5}, {23, 78}), Range2Di({3, 5}, {26, 83}));
     CORRADE_COMPARE(Range3Di::fromSize({3, 5, -7}, {23, 78, 9}), Range3Di({3, 5, -7}, {26, 83, 2}));
+}
+
+void RangeTest::constructFromCenter() {
+    CORRADE_COMPARE(Range1Di::fromCenter(15, 3), (Range1Di{12, 18}));
+    CORRADE_COMPARE(Range2Di::fromCenter({15, 5}, {3, 10}), (Range2Di{{12, -5}, {18, 15}}));
+    CORRADE_COMPARE(Range3Di::fromCenter({15, 5, -7}, {3, 10, 9}), (Range3Di{{12, -5, -16}, {18, 15, 2}}));
 }
 
 void RangeTest::constructPair() {

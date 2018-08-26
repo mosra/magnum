@@ -867,4 +867,12 @@ Range3D bounds{Math::minmax({a, b, c})};
 static_cast<void>(bounds);
 }
 
+{
+/* [Range-fromCenter-integer] */
+Vector2i center, filterRadius;
+auto filterArea = Range2Di::fromSize(center, Vector2i{1}).padded(filterRadius);
+/* [Range-fromCenter-integer] */
+static_cast<void>(filterArea);
+}
+
 }
