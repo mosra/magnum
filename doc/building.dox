@@ -161,7 +161,8 @@ sudo pacman -U magnum-*.pkg.tar.xz
 Edit the PKGBUILDs if you want to pass additional flags to CMake or
 @ref building-features "enable / disable additional features".
 
-There are also ArchLinux packages for @ref building-plugins-packages-arch "Magnum Plugins", @ref building-integration-packages-arch "Magnum Integration",
+There are also ArchLinux packages for @ref building-plugins-packages-arch "Magnum Plugins",
+@ref building-integration-packages-arch "Magnum Integration",
 @ref building-extras-packages-arch "Magnum Extras" and
 @ref building-examples-packages-arch "Magnum Examples".
 
@@ -206,7 +207,8 @@ If you want to pass additional flags to CMake or
 `dh_auto_configure` at the bottom of `debian/rules`. Watch out, as
 indentation has to be done using tabs, not spaces.
 
-There are also Debian packages for @ref building-plugins-packages-deb "Magnum Plugins", @ref building-integration-packages-deb "Magnum Integration",
+There are also Debian packages for @ref building-plugins-packages-deb "Magnum Plugins",
+@ref building-integration-packages-deb "Magnum Integration",
 @ref building-extras-packages-deb "Magnum Extras" and
 @ref building-examples-packages-deb "Magnum Examples".
 
@@ -226,7 +228,8 @@ If you want to pass additional flags to CMake or
 @ref building-features "enable / disable additional features", add them to
 `mycmakeargs` in the `*.ebuild` file.
 
-There are also Gentoo packages for @ref building-plugins-packages-gentoo "Magnum Plugins", @ref building-integration-packages-gentoo "Magnum Integration",
+There are also Gentoo packages for @ref building-plugins-packages-gentoo "Magnum Plugins",
+@ref building-integration-packages-gentoo "Magnum Integration",
 @ref building-extras-packages-gentoo "Magnum Extras" and
 @ref building-examples-packages-gentoo "Magnum Examples".
 
@@ -255,7 +258,8 @@ want to pass additional flags to CMake or
 @ref building-features "enable / disable additional features", edit the `*.rb`
 file.
 
-There are also Homebrew packages for @ref building-plugins-packages-brew "Magnum Plugins", @ref building-integration-packages-brew "Magnum Integration",
+There are also Homebrew packages for @ref building-plugins-packages-brew "Magnum Plugins",
+@ref building-integration-packages-brew "Magnum Integration",
 @ref building-extras-packages-brew "Magnum Extras" and
 @ref building-examples-packages-brew "Magnum Examples".
 
