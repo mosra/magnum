@@ -1,16 +1,20 @@
 Third-party components
 ----------------------
 
-Not mentioning OpenGL API and platform-specific toolkits.
-
--   Magnum internally uses code generated using **flextGL** extension loader
-    generator -- https://github.com/ginkgo/flextGL. Copyright © 2011 Thomas
-    Weber, licensed under [MIT license](https://raw.githubusercontent.com/ginkgo/flextGL/master/COPYING)
+-   Magnum makes use of the **OpenGL** and **WebGL** APIs --
+    https://www.opengl.org/, https://www.khronos.org/webgl/
+-   The `GL` and `Vk` namespaces internally use code generated using the
+    **flextGL** extension loader generator -- https://github.com/mosra/flextgl.
+    Copyright © 2011-2018 Thomas Weber, licensed under the
+    [MIT license](https://raw.githubusercontent.com/mosra/flextgl/master/COPYING)
 -   The `Audio` namespace depends on the **OpenAL** API --
     http://www.openal.org.
+-   The `Platform::GlfwApplication` class uses the **GLFW** library --
+    http://www.glfw.org/, licensed under the
+    [zlib/libpng](http://www.glfw.org/license.html) license.
 -   The `Platform::GlutApplication` class uses **freeGLUT** library --
-    http://freeglut.sourceforge.net/, licensed under MIT license.
--   The `Platform::Sdl2Application` class uses **SDL2** library --
+    http://freeglut.sourceforge.net/, licensed under the MIT license.
+-   The `Platform::Sdl2Application` class uses the **SDL2** library --
     https://www.libsdl.org/, licensed under [ZLIB license](http://www.gzip.org/zlib/zlib_license.html)
 
 Contributors to Magnum library
