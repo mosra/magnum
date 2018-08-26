@@ -20,35 +20,65 @@ Third-party components
 Contributors to Magnum library
 ------------------------------
 
--   Miguel Martin ([@miguelmartin75](https://github.com/miguelmartin75)) --
-    initial macOS port, various other improvements
--   Travis Watkins ([@amaranth](https://github.com/amaranth)) -- support for
-    windowless applications under macOS
--   [@ArEnSc](https://github.com/ArEnSc) / [@michael-chung](https://github.com/michael-chung) --
-    initial implementation of windowless applications under macOS, macOS
-    port improvements
--   Stefan Wasilewski ([@smw](https://github.com/smw)) -- macOS port
-    improvements
--   Konstantinos Chatzilygeroudis ([@costashatz](https://github.com/costashatz)) --
-    Debian package
--   Olga Turanksaya ([@olga-python](https://github.com/olga-python)) -- Gentoo
-    ebuild
--   [@wivlaro](https://github.com/wivlaro) -- numerous bug reports, macOS
-    fixes, feature improvements
--   Jonathan Hale ([@Squareys](https://github.com/Squareys)) -- Audio library
-    enhancements, GlfwApplication implementation, frustum and cone culling, bug
-    reports, documentation improvements
--   Gerhard de Clercq -- Windows RT (Store/Phone) port
--   Ashwin Ravichandran ([@](ashrko619)[https://github.com/ashrko619]) --
-    Bézier curve implementation
+Listing only people with code contributions, because otherwise there's too many
+:) Big thanks to everyone involved!
+
 -   Alice Margatroid ([@Alicemargatroid](https://github.com/Alicemargatroid)) --
     Multi-channel support in Audio library, standard conformance, float,
     double, A-Law and μ-Law format support in `WavAudioImporter` plugin
--   [@sigman78](https://github.com/sigman78) -- Initial MSVC 2017 port, Vcpkg
-    packages
 -   Alexander F Rødseth ([@xyproto](https://github.com/xyproto)) -- packages in
     the ArchLinux community repository
+-   Alexey Yurchenko ([@alexesDev](https://github.com/alexesDev)) -- static
+    analyis, bug reports
+-   Andy Somogyi ([@andysomogyi](https://github.com/andysomogyi)) -- bugreports,
+    API design improvement suggestions
+-   [@ArEnSc](https://github.com/ArEnSc) -- initial implementation of
+    windowless applications under macOS, macOS port improvements
+-   Ashwin Ravichandran ([@ashrko619](https://github.com/ashrko619)) --
+    Bézier curve implementation
+-   Bill Robinson ([@wivlaro](https://github.com/wivlaroú) -- numerous bug
+    reports, macOS fixes, feature improvements
+-   [@biosek](https://github.com/biosek)) -- documentation fixes
+-   Denis Igorevich Lobanov ([@denislobanov](https://github.com/denislobanov) --
+    math fixes
+-   [@dlardi](https://github.com/dlardi)) -- WGL-related bugfixes
+-   Eliot Saba ([@staticfloat](https://github.com/staticfloat)) -- macOS-related
+    GLFW updates
+-   Émile Grégoire ([@emgre](https://github.com/emgre)) -- documentation
+    updates, algorithm bugfixes
+-   Gerhard de Clercq -- Windows RT (Store/Phone) port
+-   Guillaume Giraud ([@Guillaume227](https://github.com/Guillaume227)) --
+    algorithm bugfixes
+-   Jonathan Hale ([@Squareys](https://github.com/Squareys)) -- Audio library
+    enhancements, GlfwApplication implementation, frustum and cone culling, bug
+    reports, documentation improvements
+-   Joel Clay ([@jclay](https://github.com/jclay)) --- Vcpkg packages
+-   Konstantinos Chatzilygeroudis ([@costashatz](https://github.com/costashatz))
+    -- Debian package
+-   Krzysztof Szenk ([@Crisspl](https://github.com/Crisspl)) -- math fixes
+-   Leon Moctezuma ([@leonidax](https://github.com/leonidax)) -- bugreports,
+    API design direction
+-   Miguel Martin ([@miguelmartin75](https://github.com/miguelmartin75)) --
+    initial macOS port, various other improvements
 -   Nathan Ollerenshaw ([@matjam](https://github.com/matjam)) --- Ubuntu
     packages in a PPA repository
+-   Nicholas "LB" Branden ([@LB--](https://github.com/LB--)) -- warning fixes
+-   Olga Turanksaya ([@olga-python](https://github.com/olga-python)) -- Gentoo
+    ebuild
+-   Sam Spilsbury ([@smspillaz](https://github.com/smspillaz)) -- WebGL and
+    GLES fixes
+-   Samuel Kogler ([@skogler](https://github.com/skogler)) -- GLFW application
+    crash fixes
+-   [@sigman78](https://github.com/sigman78) -- Initial MSVC 2017 port, Vcpkg
+    packages
+-   Siim Kallas ([@seemk](https://github.com/seemk)) -- Sdl2Application
+    improvements, bugfixes
+-   Steeve Morin ([@steeve](https://github.com/steeve)) -- iOS buildsystem
+    improvements
+-   Stefan Wasilewski ([@smw](https://github.com/smw)) -- macOS port
+    improvements
+-   Travis Watkins ([@amaranth](https://github.com/amaranth)) -- support for
+    windowless applications under macOS
 
-Big thanks to everyone involved!
+Is this list missing your name or something's wrong?
+[Let us know!](http://magnum.graphics/contact/)
