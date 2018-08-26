@@ -514,8 +514,10 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
 Vector2i Sdl2Application::windowSize() const {
     Vector2i size;
     #ifndef CORRADE_TARGET_EMSCRIPTEN
+    CORRADE_ASSERT(_window, "Platform::Sdl2Application::windowSize(): no window opened", {});
     SDL_GetWindowSize(_window, &size.x(), &size.y());
     #else
+    CORRADE_ASSERT(_glContext, "Platform::Sdl2Application::windowSize(): no window opened", {});
     emscripten_get_canvas_element_size(nullptr, &size.x(), &size.y());
     #endif
     return size;
@@ -524,8 +526,10 @@ Vector2i Sdl2Application::windowSize() const {
 Vector2i Sdl2Application::framebufferSize() const {
     Vector2i size;
     #ifndef CORRADE_TARGET_EMSCRIPTEN
+    CORRADE_ASSERT(_window, "Platform::Sdl2Application::framebufferSize(): no window opened", {});
     SDL_GL_GetDrawableSize(_window, &size.x(), &size.y());
     #else
+    CORRADE_ASSERT(_glContext, "Platform::Sdl2Application::framebufferSize(): no window opened", {});
     emscripten_get_canvas_element_size(nullptr, &size.x(), &size.y());
     #endif
     return size;

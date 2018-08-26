@@ -426,6 +426,8 @@ GlfwApplication::~GlfwApplication() {
 }
 
 Vector2i GlfwApplication::windowSize() const {
+    CORRADE_ASSERT(_window, "Platform::GlfwApplication::windowSize(): no window opened", {});
+
     Vector2i size;
     glfwGetWindowSize(_window, &size.x(), &size.y());
     return size;

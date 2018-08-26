@@ -927,7 +927,7 @@ class Sdl2Application {
         Vector2 _dpiScaling;
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        SDL_Window* _window;
+        SDL_Window* _window{};
         UnsignedInt _minimalLoopPeriod;
         #else
         Vector2i _lastKnownCanvasSize;
@@ -937,7 +937,7 @@ class Sdl2Application {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_GLContext _glContext;
         #else
-        SDL_Surface* _glContext;
+        SDL_Surface* _glContext{};
         #endif
         std::unique_ptr<Platform::GLContext> _context;
         #endif
