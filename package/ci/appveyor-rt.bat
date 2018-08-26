@@ -29,6 +29,7 @@ cmake .. ^
     -DWITH_INTERCONNECT=OFF ^
     -DWITH_PLUGINMANAGER=OFF ^
     -DWITH_TESTSUITE=OFF ^
+    -DWITH_UTILITY=OFF ^
     -G Ninja || exit /b
 cmake --build . --target install || exit /b
 cd .. || exit /b

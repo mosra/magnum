@@ -12,10 +12,10 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps-native \
-    -DCMAKE_INSTALL_RPATH=$HOME/deps-native/lib \
     -DWITH_INTERCONNECT=OFF \
     -DWITH_PLUGINMANAGER=OFF \
     -DWITH_TESTSUITE=OFF \
+    -DWITH_UTILITY=OFF \
     -G Ninja
 ninja install
 cd ..
