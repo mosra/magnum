@@ -17,6 +17,12 @@ cmake .. \
 ninja install
 cd ../..
 
+# The fastest Vulkan driver ever. See travis.yml for why we have a separate
+# Vulkan build.
+g++ package/ci/libvulkan.cpp -std=c++11 -shared -o $HOME/libvulkan.so
+
+# Enabling only stuff that's directly affected by Vulkan, disabling everything
+# else.
 mkdir build && cd build
 # Not using CXXFLAGS in order to avoid affecting dependencies
 cmake .. \
@@ -29,17 +35,30 @@ cmake .. \
     -DWITH_GL=OFF \
     -DWITH_MESHTOOLS=OFF \
     -DWITH_PRIMITIVES=OFF \
-    -DWITH_SCENEGRAPH=ON \
+    -DWITH_SCENEGRAPH=OFF \
     -DWITH_SHADERS=OFF \
-    -DWITH_SHAPES=ON \
+    -DWITH_SHAPES=OFF \
     -DWITH_TEXT=OFF \
     -DWITH_TEXTURETOOLS=OFF \
     -DWITH_TRADE=OFF \
     -DWITH_VK=ON \
     -DWITH_AL_INFO=OFF \
-    -DWITH_VK_INFO=ON \
+    -DWITH_GL_INFO=OFF \
+    -DWITH_ANYAUDIOIMPORTER=OFF \
+    -DWITH_ANYIMAGECONVERTER=OFF \
+    -DWITH_ANYIMAGEIMPORTER=OFF \
+    -DWITH_ANYSCENEIMPORTER=OFF \
+    -DWITH_MAGNUMFONT=OFF \
+    -DWITH_MAGNUMFONTCONVERTER=OFF \
+    -DWITH_OBJIMPORTER=OFF \
+    -DWITH_TGAIMAGECONVERTER=OFF \
+    -DWITH_TGAIMPORTER=OFF \
+    -DWITH_WAVAUDIOIMPORTER=OFF \
+    -DWITH_DISTANCEFIELDCONVERTER=OFF \
+    -DWITH_FONTCONVERTER=OFF \
+    -DWITH_IMAGECONVERTER=OFF \
     -DBUILD_TESTS=ON \
-    -DBUILD_VK_TESTS=ON \
+    -DBUILD_GL_TESTS=OFF \
     -DBUILD_DEPRECATED=$BUILD_DEPRECATED \
     -G Ninja
 # Otherwise the job gets killed (probably because using too much memory)

@@ -216,11 +216,11 @@ install:
 # supporting that. Latest GLFW is tested on macOS.
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && ( [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-sanitizers" ] ) && [ ! -e "$HOME/glfw/include" ]; then wget https://github.com/glfw/glfw/releases/download/3.1.2/glfw-3.1.2.zip && unzip glfw-3.1.2.zip && cd glfw-3.1.2 && mkdir build && cd build && cmake .. -DCMAKE_INSTALL_PREFIX=$HOME/glfw -DCMAKE_BUILD_TYPE=Release -DGLFW_BUILD_EXAMPLES=OFF -DGLFW_BUILD_TESTS=OFF -DGLFW_BUILD_DOCS=OFF -DBUILD_SHARED_LIBS=ON && cmake --build . --target install && cd ../..; fi
 
-# Vulkan (eheh)
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-vulkan" ]; then g++ package/ci/libvulkan.cpp -std=c++11 -shared -o $HOME/libvulkan.so; fi
-
 script:
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && ( [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-sanitizers" ] ); then ./package/ci/travis-desktop.sh; fi
+# Vulkan needs to be in a separate build, because it needs new CMake (for the
+# Find module) and in the future also C++14. Unfortunately that means we can't
+# apply the sanitizer or non-deprecated build on it.
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-vulkan" ]; then ./package/ci/travis-desktop-vulkan.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-gles" ]; then ./package/ci/travis-desktop-gles.sh; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then ./package/ci/travis-android-arm.sh; fi

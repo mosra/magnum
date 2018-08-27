@@ -12,6 +12,10 @@ environment:
     COMPILER: msvc
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     APPVEYOR_JOB_NAME: windows-gl-msvc2017
+  - TARGET: desktop-vulkan
+    COMPILER: msvc
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
+    APPVEYOR_JOB_NAME: windows-vulkan-msvc2017
   - TARGET: desktop
     COMPILER: mingw
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
@@ -83,6 +87,10 @@ build_script:
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" call package\ci\appveyor-desktop.bat
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" call package\ci\appveyor-desktop-mingw.bat
 - IF "%TARGET%" == "desktop-gles" call package\ci\appveyor-desktop-gles.bat
+# Vulkan needs to be in a separate build, because in the future it'll need
+# C++14 and building it together with C++11 code would harm verifiability of
+# C++11 compatibility.
+- IF "%TARGET%" == "desktop-vulkan" call package\ci\appveyor-desktop-vulkan.bat
 - IF "%TARGET%" == "rt" call package\ci\appveyor-rt.bat
 
 cache:

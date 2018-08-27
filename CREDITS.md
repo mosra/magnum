@@ -62,7 +62,8 @@ Listing only people with code contributions, because otherwise there's too many
     initial macOS port, various other improvements
 -   Nathan Ollerenshaw ([@matjam](https://github.com/matjam)) --- Ubuntu
     packages in a PPA repository
--   Nicholas "LB" Branden ([@LB--](https://github.com/LB--)) -- warning fixes
+-   Nicholas "LB" Branden ([@LB--](https://github.com/LB--)) -- warning fixes,
+    Windows buildsystem improvements
 -   Olga Turanksaya ([@olga-python](https://github.com/olga-python)) -- Gentoo
     ebuild
 -   Sam Spilsbury ([@smspillaz](https://github.com/smspillaz)) -- WebGL and
