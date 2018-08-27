@@ -27,6 +27,7 @@
 */
 
 #include <cstdint>
+#include <cstddef>
 #include <Corrade/Utility/VisibilityMacros.h>
 
 #include "Magnum/configure.h"
@@ -89,8 +90,6 @@ extern "C" {
 @enums
 
 /* Data types */
-
-typedef std::size_t size_t;
 
 @passthru
 
