@@ -69,25 +69,6 @@ This application library is available only on desktop OpenGL (Linux, Windows,
 macOS). It depends on the [GLUT](http://freeglut.sourceforge.net/) library and
 is built if `WITH_GLUTAPPLICATION` is enabled when building Magnum.
 
-@section Platform-GlutApplication-bootstrap Bootstrap application
-
-Fully contained base application using @ref GlutApplication along with
-CMake setup is available in `base-glut` branch of
-[Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository,
-download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base-glut.tar.gz)
-or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-glut.zip) file.
-After extracting the downloaded archive you can build and run the application
-with these four commands:
-
-@code{.sh}
-mkdir build && cd build
-cmake ..
-cmake --build .
-./src/MyApplication # or ./src/Debug/MyApplication
-@endcode
-
-See @ref cmake for more information.
-
 @section Platform-GlutApplication-usage General usage
 
 In order to use this library from CMake, you need to request the
