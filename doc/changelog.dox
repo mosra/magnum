@@ -302,7 +302,9 @@ See also:
     usage examples to all functions
 -   Explicitly mentioning copy/move constructibility for all classes with
     non-trivial construction
--   Improved Vcpkg build instructions (see [mosra/magnum#273](https://github.com/mosra/magnum/pull/273))
+-   Improved Vcpkg build instructions (see
+    [mosra/magnum#271](https://github.com/mosra/magnum/pull/271),
+    [mosra/magnum#273](https://github.com/mosra/magnum/pull/273))
 -   Website styling got out of sync with generated Doxygen documentation,
     causing search icon to either disappear on some browsers or be extremely
     oversized on others (see
