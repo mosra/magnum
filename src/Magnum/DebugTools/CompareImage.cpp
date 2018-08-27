@@ -412,7 +412,7 @@ namespace Corrade { namespace TestSuite {
 
 using namespace Magnum;
 
-Comparator<DebugTools::CompareImage>::Comparator(Float maxThreshold, Float meanThreshold): _maxThreshold{maxThreshold}, _meanThreshold{meanThreshold} {
+Comparator<DebugTools::CompareImage>::Comparator(Float maxThreshold, Float meanThreshold): _maxThreshold{maxThreshold}, _meanThreshold{meanThreshold}, _max{}, _mean{} {
     CORRADE_ASSERT(meanThreshold <= maxThreshold,
         "DebugTools::CompareImage: maxThreshold can't be smaller than meanThreshold", );
 }

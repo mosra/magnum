@@ -656,7 +656,7 @@ class MAGNUM_GL_EXPORT Context {
         MAGNUM_GL_LOCAL bool isCoreProfileImplementationNV();
         #endif
 
-        void(*_functionLoader)();
+        void(*_functionLoader)(){};
         Version _version;
         #ifndef MAGNUM_TARGET_WEBGL
         Flags _flags;

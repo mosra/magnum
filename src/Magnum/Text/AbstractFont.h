@@ -361,7 +361,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
     #endif
-        Float _size, _ascent, _descent, _lineHeight;
+        Float _size{}, _ascent{}, _descent{}, _lineHeight{};
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractFont::Features)

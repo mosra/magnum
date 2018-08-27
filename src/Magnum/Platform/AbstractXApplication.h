@@ -266,9 +266,9 @@ class AbstractXApplication {
         typedef Containers::EnumSet<Flag> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
-        Display* _display;
-        Window _window;
-        Atom _deleteWindow;
+        Display* _display{};
+        Window _window{};
+        Atom _deleteWindow{};
 
         std::unique_ptr<Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>> _contextHandler;
         std::unique_ptr<Platform::GLContext> _context;
