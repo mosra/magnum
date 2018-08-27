@@ -97,8 +97,8 @@ enum class ImporterFileCallbackPolicy: UnsignedByte {
 /**
 @brief Base for importer plugins
 
-Provides interface for importing 2D/3D scene, mesh, material, texture and image
-data.
+Provides interface for importing 2D/3D scene, camera, light, animation, mesh,
+material, texture and image data.
 
 @section Trade-AbstractImporter-usage Usage
 
