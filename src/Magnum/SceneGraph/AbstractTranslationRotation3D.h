@@ -125,7 +125,7 @@ template<class T> class AbstractBasicTranslationRotation3D: public AbstractBasic
          * more information.
          */
         AbstractBasicTranslationRotation3D<T>& rotateYLocal(Math::Rad<T> angle) {
-            doRotateY(angle);
+            doRotateYLocal(angle);
             return *this;
         }
 
