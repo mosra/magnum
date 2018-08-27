@@ -107,6 +107,7 @@ void BufferImageGLTest::construct() {
     CORRADE_COMPARE(a.format(), GL::PixelFormat::Red);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
+    CORRADE_COMPARE(a.dataSize(), 3);
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
@@ -130,6 +131,7 @@ void BufferImageGLTest::constructGeneric() {
     CORRADE_COMPARE(a.format(), GL::PixelFormat::Red);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
+    CORRADE_COMPARE(a.dataSize(), 3);
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
@@ -217,6 +219,7 @@ void BufferImageGLTest::constructBuffer() {
     CORRADE_COMPARE(a.format(), GL::PixelFormat::Red);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
+    CORRADE_COMPARE(a.dataSize(), 3);
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
@@ -246,6 +249,7 @@ void BufferImageGLTest::constructBufferGeneric() {
     CORRADE_COMPARE(a.format(), GL::PixelFormat::Red);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
+    CORRADE_COMPARE(a.dataSize(), 3);
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
@@ -369,6 +373,7 @@ void BufferImageGLTest::constructMove() {
     CORRADE_COMPARE(b.format(), GL::PixelFormat::Red);
     CORRADE_COMPARE(b.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(b.size(), Vector2i(4, 1));
+    CORRADE_COMPARE(b.dataSize(), 4);
     CORRADE_COMPARE(b.buffer().id(), id);
 
     const unsigned short data2[2*4] = { 1, 2, 3, 4, 5, 6, 7, 8 };
@@ -387,6 +392,7 @@ void BufferImageGLTest::constructMove() {
     CORRADE_COMPARE(c.format(), GL::PixelFormat::Red);
     CORRADE_COMPARE(c.type(), PixelType::UnsignedByte);
     CORRADE_COMPARE(c.size(), Vector2i(4, 1));
+    CORRADE_COMPARE(c.dataSize(), 4);
     CORRADE_COMPARE(c.buffer().id(), id);
 }
 
@@ -480,6 +486,7 @@ void BufferImageGLTest::setData() {
     CORRADE_COMPARE(a.format(), GL::PixelFormat::RGBA);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedShort);
     CORRADE_COMPARE(a.size(), Vector2i(1, 2));
+    CORRADE_COMPARE(a.dataSize(), 16);
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES
@@ -507,6 +514,7 @@ void BufferImageGLTest::setDataGeneric() {
     CORRADE_COMPARE(a.format(), GL::PixelFormat::RGBA);
     CORRADE_COMPARE(a.type(), PixelType::UnsignedShort);
     CORRADE_COMPARE(a.size(), Vector2i(1, 2));
+    CORRADE_COMPARE(a.dataSize(), 16);
 
     /** @todo How to verify the contents in ES? */
     #ifndef MAGNUM_TARGET_GLES

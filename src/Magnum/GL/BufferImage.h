@@ -764,7 +764,7 @@ typedef CompressedBufferImage<2> CompressedBufferImage2D;
 /** @brief Three-dimensional compressed buffer image */
 typedef CompressedBufferImage<3> CompressedBufferImage3D;
 
-template<UnsignedInt dimensions> inline BufferImage<dimensions>::BufferImage(BufferImage<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _buffer{std::move(other._buffer)} {
+template<UnsignedInt dimensions> inline BufferImage<dimensions>::BufferImage(BufferImage<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _buffer{std::move(other._buffer)}, _dataSize{std::move(other._dataSize)} {
     other._size = {};
 }
 
@@ -780,6 +780,7 @@ template<UnsignedInt dimensions> inline BufferImage<dimensions>& BufferImage<dim
     swap(_type, other._type);
     swap(_size, other._size);
     swap(_buffer, other._buffer);
+    swap(_dataSize, other._dataSize);
     return *this;
 }
 
