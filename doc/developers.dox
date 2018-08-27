@@ -426,7 +426,7 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
 
 @section developers-gl-extensions Checklist for adding / removing GL versions and extensions
 
-1.  Install [flextGL](https://github.com/ginkgo/flextGL)
+1.  Install [flextGL](https://github.com/mosra/flextgl)
 2.  Go to `src/MagnumExternal/OpenGL/GL/`:
     -   Update `extensions.txt` (bump a version or add/remove extensions)
     -   Run @cb{.sh} .../flextGLgen.py -D . -t . extensions.txt @ce to generate
@@ -467,7 +467,7 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
 8.  Add a table listing the new version and all new extensions in it to
     `doc/opengl-support.dox` (take a list of them from the changelog in the
     official spec PDF). Some extensions might be already present in the general
-    extension list, move them out of there
+    extension list, move them out of there.
 9.  Add a new `requires-glXY`, `requires-glesXY` or `requires-webglXY` page
     with @c \@m_footernavigation to `doc/opengl-support.dox`, mention it as a
     @c \@subpage at a correct position in the list
@@ -480,7 +480,7 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
     -   to @ref GL::Extension::extensions() in `src/Magnum/GL/Context.cpp`
     -   to @cpp GL::Context::tryCreate() @ce in `src/Magnum/GL/Context.cpp`
     -   to specify GLSL version in `src/Magnum/GL/Shader.cpp`
-    -   to the list in `src/Magnum/Platform/magnum-gl-info.cpp`
+    -   to the list in `src/Magnum/Platform/gl-info.cpp`
     -   to the test in `src/Magnum/GL/Test/ContextTest.cpp`
 12. Add new extensions to `src/Magnum/GL/Extensions.h`
     -   order them by extension ID that is mentioned in every extension spec
@@ -769,23 +769,26 @@ inverse.
     add a mention to the changelog), @m_span{m-label m-danger m-flat} scrapped @m_endspan
     or @m_span{m-label m-dim m-flat} no action needed @m_endspan label to wrap
     them up
-6.  Update changelog for the next release:
+6.  Go through merged PRs (and the *most important* issues) and add new people
+    to `CREDITS.md` and http://magnum.graphics/about/, if they are not there
+    yet
+7.  Update changelog for the next release:
     -   change section names for the latest release from `latest` to `20XY-ab`
     -   change the title from `Changes since 20XY.aa` to `20XY.ab`
     -   add a paragraph stating date of release and referencing the to-be-added
         tag on GitHub
-7.  Bump `MAGNUM_LIBRARY_VERSION` and `MAGNUM_LIBRARY_SOVERSION` in all
+8.  Bump `MAGNUM_LIBRARY_VERSION` and `MAGNUM_LIBRARY_SOVERSION` in all
     projects, if needed --- ensure all projects have the exact same version
-8.  Rebuild all projects with the new shared library version numbers, verify
+9.  Rebuild all projects with the new shared library version numbers, verify
     all tools and examples still behave properly
-9.  Build and upload public docs (see @ref developers-documentation), verify
+10. Build and upload public docs (see @ref developers-documentation), verify
     that there are no new warnings and the changelog looks correct
-10. Push all new changes to a temporary branch (e.g., `next`)
-11. Wait for the CIs to get green
-12. Tag a new version using @cb{.sh} git tag -a v20XY.ab @ce, say just
+11. Push all new changes to a temporary branch (e.g., `next`)
+12. Wait for the CIs to get green
+13. Tag a new version using @cb{.sh} git tag -a v20XY.ab @ce, say just
     `Version 20XY.ab` as a message
-13. Push the tag, verify that the CIs are still green
-14. Write a release announcement for the blog
+14. Push the tag, verify that the CIs are still green
+15. Write a release announcement for the blog
     -   highlight the most prominent features, mention detailed blog posts
         about them, if any
     -   reference detailed changelogs for all projects at the end
@@ -793,22 +796,24 @@ inverse.
     -   create some fancy eye-catchy cover image featuring nice screenshots of
         new functionality
     -   add release annoucement link under the button on front page
-15. Publish the release announcement, verify it looks correct
-16. Advertise the release announcement, preferrably Monday 5 PM, never Friday
+16. Publish the release announcement, verify it looks correct
+17. Advertise the release announcement, preferrably Monday 5 PM, never Friday
     or weekends
     -   come up with some 100-character-long extended title
     -   Twitter (extended title + url and some hashtags), first dry-run the
         link on https://cards-dev.twitter.com/validator to ensure the cover
         image gets displayed
-    -   Reddit `r/cpp`, `r/gamedev`; Hacker News (extended title + url)
+    -   GitHub Release Radar (releaseradar@github.com)
+    -   Reddit `r/cpp`, `r/gamedev`, `r/webassembly`, `r/vulkan`, `r/webgl`,
+        `r/gltf`; Hacker News (extended title + url)
     -   summarize the release to mailing list
     -   summarize the release highlighting GL- and Vulkan-related functionality
         and submit that to Khronos
     -   Add a message to the Gitter chat (title as heading, cover image,
         summary in a blockquote and "read more" link)
-17. Reference Twitter, Reddit, Hacker News and mailing list in a "Discussion"
+18. Reference Twitter, Reddit, Hacker News and mailing list in a "Discussion"
     note at the end of the article, reupload that change
-18. Update versions of ArchLinux AUR packages:
+19. Update versions of ArchLinux AUR packages:
     -   run `makepkg` in `package/archlinux/magnum*-git`, verify it builds and
         says correct version, ideally with `r0` at the ennd
     -   copy the updated `PKGBUILD` to the AUR package repo, run
@@ -816,14 +821,15 @@ inverse.
     -   commit the updated `PKGBUILD` and `.SRCINFO`, push
     -   after pushing all, verify that the version is updated in the AUR web
         interface as well
-19. Update Debian package changelog in `package/debian/changelog`, copypasting
+20. Update Debian package changelog in `package/debian/changelog`, copypasting
     the last entry, updating it and using the Git tag date+time for it (note
     that the date format is slightly different)
-20. Update Homebrew package versions
-21. Ask someone to update Vcpkg packages
-22. Close the 20XY.ab GitHub milestone
-23. Add link to the release notes to the tag on GitHub
-24. Have a drink and take two days off
+21. Update Homebrew package versions
+22. Ask someone to update the Ubuntu PPA
+23. Ask someone to update Vcpkg packages
+24. Close the 20XY.ab GitHub milestone
+25. Add link to the release notes to the tag on GitHub
+26. Have a drink and take two days off
 
 */
 }
