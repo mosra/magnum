@@ -66,10 +66,10 @@ if(BUILD_AL_TESTS)
     if(WITH_SCENEGRAPH)
         corrade_add_test(AudioListenerALTest ListenerALTest.cpp LIBRARIES MagnumSceneGraph MagnumAudio)
         corrade_add_test(AudioPlayableALTest PlayableALTest.cpp LIBRARIES MagnumSceneGraph MagnumAudio)
-    endif()
 
-    set_target_properties(
-        AudioListenerALTest
-        AudioPlayableALTest
-        PROPERTIES FOLDER "Magnum/Audio/Test")
+        set_target_properties(
+            AudioListenerALTest
+            AudioPlayableALTest
+            PROPERTIES FOLDER "Magnum/Audio/Test")
+    endif()
 endif()
