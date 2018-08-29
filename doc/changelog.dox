@@ -92,7 +92,7 @@ See also:
 @subsubsection changelog-latest-new-platform Platform libraries
 
 -   Initial HiDPI support for Linux and Emscripten in
-    @ref Platform::Sdl2Application
+    @ref Platform::Sdl2Application and @ref Platform::GlfwApplication
 -   Implemented missing resize event support in @ref Platform::Sdl2Application
     on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"
 -   Ability to modify CSS classes that control layout of

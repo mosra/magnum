@@ -51,6 +51,10 @@
 
 namespace Magnum { namespace Platform {
 
+namespace Implementation {
+    enum class GlfwDpiScalingPolicy: UnsignedByte;
+}
+
 /** @nosubgrouping
 @brief GLFW application
 
@@ -114,6 +118,13 @@ MAGNUM_GLFWAPPLICATION_MAIN(MyApplication)
 If no other application header is included, this class is also aliased to
 @cpp Platform::Application @ce and the macro is aliased to
 @cpp MAGNUM_APPLICATION_MAIN() @ce to simplify porting.
+
+@section Platform-GlfwApplication-dpi DPI awareness
+
+DPI awareness behavior is consistent with @ref Sdl2Application except that iOS
+or Emscripten specifics don't apply here. See
+@ref Platform-Sdl2Application-dpi "its DPI awareness documentation" for more
+information.
 */
 class GlfwApplication {
     public:
@@ -336,10 +347,52 @@ class GlfwApplication {
          * @brief Window size
          *
          * Window size to which all input event coordinates can be related.
-         * Note that especially on HiDPI systems the reported window size might
-         * not be the same as framebuffer size.
+         * Note that, especially on HiDPI systems, it may be different from
+         * @ref framebufferSize(). Expects that a window is already created.
+         * See @ref Platform-GlfwApplication-dpi for more information.
+         * @see @ref dpiScaling()
          */
         Vector2i windowSize() const;
+
+        #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
+        /**
+         * @brief Framebuffer size
+         *
+         * Size of the default framebuffer. Note that, especially on HiDPI
+         * systems, it may be different from @ref windowSize(). Expects that a
+         * window is already created. See @ref Platform-GlfwApplication-dpi for
+         * more information.
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
+         *
+         * @see @ref dpiScaling()
+         */
+        Vector2i framebufferSize() const;
+        #endif
+
+        /**
+         * @brief DPI scaling
+         *
+         * How the content should be scaled relative to system defaults for
+         * given @ref windowSize(). If a window is not created yet, returns
+         * zero vector, use @ref dpiScaling(const Configuration&) const for
+         * calculating a value independently. See @ref Platform-GlfwApplication-dpi
+         * for more information.
+         * @see @ref framebufferSize()
+         */
+        Vector2 dpiScaling() const { return _dpiScaling; }
+
+        /**
+         * @brief DPI scaling for given configuration
+         *
+         * Calculates DPI scaling that would be used when creating a window
+         * with given @p configuration. Takes into account DPI scaling policy
+         * and custom scaling specified on the command-line. See
+         * @ref Platform-GlfwApplication-dpi for more information.
+         */
+        Vector2 dpiScaling(const Configuration& configuration) const;
 
     protected:
         /**
@@ -499,6 +552,12 @@ class GlfwApplication {
 
         void setupCallbacks();
 
+        /* These are saved from command-line arguments */
+        bool _verboseLog{};
+        Implementation::GlfwDpiScalingPolicy _commandLineDpiScalingPolicy{};
+        Vector2 _commandLineDpiScaling;
+
+        Vector2 _dpiScaling;
         GLFWwindow* _window{nullptr};
         Flags _flags;
         #ifdef MAGNUM_TARGET_GL
@@ -667,6 +726,29 @@ class GlfwApplication::GLConfiguration {
 CORRADE_ENUMSET_OPERATORS(GlfwApplication::GLConfiguration::Flags)
 #endif
 
+namespace Implementation {
+    enum class GlfwDpiScalingPolicy: UnsignedByte {
+        /* Using 0 for an "unset" value */
+
+        #ifdef CORRADE_TARGET_APPLE
+        Framebuffer = 1,
+        #endif
+
+        #ifndef CORRADE_TARGET_APPLE
+        Virtual = 2,
+
+        Physical = 3,
+        #endif
+
+        Default
+            #ifdef CORRADE_TARGET_APPLE
+            = Framebuffer
+            #else
+            = Virtual
+            #endif
+    };
+}
+
 /**
 @brief Configuration
 
@@ -746,6 +828,62 @@ class GlfwApplication::Configuration {
          */
         typedef Containers::EnumSet<WindowFlag> WindowFlags;
 
+        /**
+         * @brief DPI scaling policy
+         *
+         * DPI scaling policy when requesting a particular window size. Can
+         * be overriden on command-line using `--magnum-dpi-scaling` or via
+         * the `MAGNUM_DPI_SCALING` environment variable.
+         * @see @ref setSize(), @ref Platform-Sdl2Application-dpi
+         */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        enum class DpiScalingPolicy: UnsignedByte {
+            /**
+             * Framebuffer DPI scaling. The window will have the same size as
+             * requested, but the framebuffer size will be different. Supported
+             * only on macOS and iOS and is also the only supported value
+             * there.
+             */
+            Framebuffer,
+
+            /**
+             * Virtual DPI scaling. Scales the window based on UI scaling
+             * setting in the system. Falls back to
+             * @ref DpiScalingPolicy::Physical on platforms that don't support
+             * it. Supported only on desktop platforms (except macOS) and it's
+             * the default there.
+             *
+             * Equivalent to `--magnum-dpi-scaling virtual` passed on
+             * command-line.
+             */
+            Virtual,
+
+            /**
+             * Physical DPI scaling. Takes the requested window size as a
+             * physical size that a window would have on platform's default DPI
+             * and scales it to have the same size on given display physical
+             * DPI. On platforms that don't have a concept of a window it
+             * causes the framebuffer to match screen pixels 1:1 without any
+             * scaling. Supported on desktop platforms except macOS and on
+             * mobile and web. Default on mobile and web.
+             *
+             * Equivalent to `--magnum-dpi-scaling physical` passed on
+             * command-line.
+             */
+            Physical,
+
+            /**
+             * Default policy for current platform. Alias to one of
+             * @ref DpiScalingPolicy::Framebuffer, @ref DpiScalingPolicy::Virtual
+             * or @ref DpiScalingPolicy::Physical depending on platform. See
+             * @ref Platform-Sdl2Application-dpi for details.
+             */
+            Default
+        };
+        #else
+        typedef Implementation::GlfwDpiScalingPolicy DpiScalingPolicy;
+        #endif
+
         /** @brief Cursor mode */
         enum class CursorMode: Int {
             /** Visible unconstrained cursor */
@@ -779,13 +917,55 @@ class GlfwApplication::Configuration {
         Vector2i size() const { return _size; }
 
         /**
+         * @brief DPI scaling policy
+         *
+         * If @ref dpiScaling() is non-zero, it has a priority over this value.
+         * The `--magnum-dpi-scaling` command-line option has a priority over
+         * any application-set value.
+         * @see @ref setSize(const Vector2i&, DpiScalingPolicy)
+         */
+        DpiScalingPolicy dpiScalingPolicy() const { return _dpiScalingPolicy; }
+
+        /**
+         * @brief Custom DPI scaling
+         *
+         * If zero, then @ref dpiScalingPolicy() has a priority over this
+         * value. The `--magnum-dpi-scaling` command-line option has a priority
+         * over any application-set value.
+         * @see @ref setSize(const Vector2i&, const Vector2&)
+         */
+        Vector2 dpiScaling() const { return _dpiScaling; }
+
+        /**
          * @brief Set window size
+         * @param size              Desired window size
+         * @param dpiScalingPolicy  Policy based on which DPI scaling will be set
          * @return Reference to self (for method chaining)
          *
-         * Default is @cpp {800, 600} @ce.
+         * Default is @cpp {800, 600} @ce. See @ref Platform-GlfwApplication-dpi
+         * for more information.
+         * @see @ref setSize(const Vector2i&, const Vector2&)
          */
-        Configuration& setSize(const Vector2i& size) {
+        Configuration& setSize(const Vector2i& size, DpiScalingPolicy dpiScalingPolicy = DpiScalingPolicy::Default) {
             _size = size;
+            _dpiScalingPolicy = dpiScalingPolicy;
+            return *this;
+        }
+
+        /**
+         * @brief Set window size with custom DPI scaling
+         * @param size              Desired window size
+         * @param dpiScaling        Custom DPI scaling value
+         *
+         * Compared to @ref setSize(const Vector2i&, DpiScalingPolicy) which
+         * autodetects the DPI scaling value according to given policy, this
+         * function sets the DPI scaling directly. The resulting
+         * @ref GlfwApplication::windowSize() is @cpp size*dpiScaling @ce and
+         * @ref GlfwApplication::dpiScaling() is @p dpiScaling.
+         */
+        Configuration& setSize(const Vector2i& size, const Vector2& dpiScaling) {
+            _size = size;
+            _dpiScaling = dpiScaling;
             return *this;
         }
 
@@ -881,6 +1061,8 @@ class GlfwApplication::Configuration {
         std::string _title;
         Vector2i _size;
         WindowFlags _windowFlags;
+        DpiScalingPolicy _dpiScalingPolicy;
+        Vector2 _dpiScaling;
         CursorMode _cursorMode;
         #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
         Int _sampleCount;

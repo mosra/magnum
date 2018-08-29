@@ -57,7 +57,7 @@
 namespace Magnum { namespace Platform {
 
 namespace Implementation {
-    enum class DpiScalingPolicy: UnsignedByte;
+    enum class Sdl2DpiScalingPolicy: UnsignedByte;
 }
 
 /** @nosubgrouping
@@ -921,7 +921,7 @@ class Sdl2Application {
 
         /* These are saved from command-line arguments */
         bool _verboseLog{};
-        Implementation::DpiScalingPolicy _commandLineDpiScalingPolicy{};
+        Implementation::Sdl2DpiScalingPolicy _commandLineDpiScalingPolicy{};
         Vector2 _commandLineDpiScaling;
 
         Vector2 _dpiScaling;
@@ -1139,7 +1139,7 @@ CORRADE_ENUMSET_OPERATORS(Sdl2Application::GLConfiguration::Flags)
 #endif
 
 namespace Implementation {
-    enum class DpiScalingPolicy: UnsignedByte {
+    enum class Sdl2DpiScalingPolicy: UnsignedByte {
         /* Using 0 for an "unset" value */
 
         #ifdef CORRADE_TARGET_APPLE
@@ -1339,7 +1339,7 @@ class Sdl2Application::Configuration {
             Default
         };
         #else
-        typedef Implementation::DpiScalingPolicy DpiScalingPolicy;
+        typedef Implementation::Sdl2DpiScalingPolicy DpiScalingPolicy;
         #endif
 
         /*implicit*/ Configuration();

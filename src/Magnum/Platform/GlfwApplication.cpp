@@ -32,6 +32,7 @@
 #include <Corrade/Utility/Unicode.h>
 
 #include "Magnum/Platform/ScreenedApplication.hpp"
+#include "Magnum/Platform/Implementation/dpiScaling.hpp"
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Version.h"
@@ -59,10 +60,14 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, const Configuration
 
 GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
     _flags{Flag::Redraw}
-    #ifdef MAGNUM_TARGET_GL
-    , _context{new GLContext{NoCreate, arguments.argc, arguments.argv}}
-    #endif
 {
+    Utility::Arguments args{Implementation::windowScalingArguments()};
+    #ifdef MAGNUM_TARGET_GL
+    _context.reset(new GLContext{NoCreate, args, arguments.argc, arguments.argv});
+    #else
+    args.parse(arguments.argc, arguments.argv);
+    #endif
+
     /* Init GLFW */
     glfwSetErrorCallback([](int, const char* const description) {
         Error{} << description;
@@ -73,9 +78,24 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
         std::exit(8);
     }
 
-    #ifndef MAGNUM_TARGET_GL
-    static_cast<void>(arguments);
+    /* Save command-line arguments */
+    if(args.value("log") == "verbose") _verboseLog = true;
+    const std::string dpiScaling = args.value("dpi-scaling");
+    if(dpiScaling == "default")
+        _commandLineDpiScalingPolicy = Implementation::GlfwDpiScalingPolicy::Default;
+    #ifdef CORRADE_TARGET_APPLE
+    else if(dpiScaling == "framebuffer")
+        _commandLineDpiScalingPolicy = Implementation::GlfwDpiScalingPolicy::Framebuffer;
+    #else
+    else if(dpiScaling == "virtual")
+        _commandLineDpiScalingPolicy = Implementation::GlfwDpiScalingPolicy::Virtual;
+    else if(dpiScaling == "physical")
+        _commandLineDpiScalingPolicy = Implementation::GlfwDpiScalingPolicy::Physical;
     #endif
+    else if(dpiScaling.find_first_of(" \t\n") != std::string::npos)
+        _commandLineDpiScaling = args.value<Vector2>("dpi-scaling");
+    else
+        _commandLineDpiScaling = Vector2{args.value<Float>("dpi-scaling")};
 }
 
 void GlfwApplication::create() {
@@ -92,6 +112,82 @@ void GlfwApplication::create(const Configuration& configuration, const GLConfigu
 }
 #endif
 
+Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) const {
+    std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;
+
+    /* Print a helpful warning in case some extra steps are needed for HiDPI
+       support */
+    #ifdef CORRADE_TARGET_APPLE
+    if(!Implementation::isAppleBundleHiDpiEnabled())
+        Warning{} << "Platform::GlfwApplication: warning: the executable is not a HiDPI-enabled app bundle";
+    #elif defined(CORRADE_TARGET_WINDOWS)
+    /** @todo */
+    #endif
+
+    /* Use values from the configuration only if not overriden on command line.
+       In any case explicit scaling has a precedence before the policy. */
+    Implementation::GlfwDpiScalingPolicy dpiScalingPolicy{};
+    if(!_commandLineDpiScaling.isZero()) {
+        Debug{verbose} << "Platform::GlfwApplication: user-defined DPI scaling" << _commandLineDpiScaling.x();
+        return _commandLineDpiScaling;
+    } else if(UnsignedByte(_commandLineDpiScalingPolicy)) {
+        dpiScalingPolicy = _commandLineDpiScalingPolicy;
+    } else if(!configuration.dpiScaling().isZero()) {
+        Debug{verbose} << "Platform::GlfwApplication: app-defined DPI scaling" << _commandLineDpiScaling.x();
+        return configuration.dpiScaling();
+    } else {
+        dpiScalingPolicy = configuration.dpiScalingPolicy();
+    }
+
+    /* There's no choice on Apple, it's all controlled by the plist file. So
+       unless someone specified custom scaling via config or command-line
+       above, return the default. */
+    #ifdef CORRADE_TARGET_APPLE
+    return Vector2{1.0f};
+
+    /* Otherwise there's a choice between virtual and physical DPI scaling */
+    #else
+    /* Try to get virtual DPI scaling first, if supported and requested */
+    if(dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Virtual) {
+        /* Use Xft.dpi on X11 */
+        #ifdef _MAGNUM_PLATFORM_USE_X11
+        const Vector2 dpiScaling{Implementation::x11DpiScaling()};
+        if(!dpiScaling.isZero()) {
+            Debug{verbose} << "Platform::GlfwApplication: virtual DPI scaling" << dpiScaling.x();
+            return dpiScaling;
+        }
+
+        /* Otherwise ¯\_(ツ)_/¯ */
+        #else
+        Debug{verbose} << "Platform::GlfwApplication: sorry, virtual DPI scaling not implemented on this platform yet";
+        return Vector2{1.0f};
+        #endif
+    }
+
+    /* At this point, either the virtual DPI query failed or a physical DPI
+       scaling is requested */
+    CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Virtual || dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Physical);
+
+    /* Take display DPI. Enable only on Linux for now, I need to test this
+       properly on Windows first. */
+    #ifdef CORRADE_TARGET_UNIX
+    GLFWmonitor* const monitor = glfwGetPrimaryMonitor();
+    const GLFWvidmode* const mode = glfwGetVideoMode(monitor);
+    Vector2i monitorSize;
+    glfwGetMonitorPhysicalSize(monitor, &monitorSize.x(), &monitorSize.y());
+    auto dpi = Vector2{Vector2i{mode->width, mode->height}*25.4f/Vector2{monitorSize}};
+    const Vector2 dpiScaling{dpi/96.0f};
+    Debug{verbose} << "Platform::GlfwApplication: physical DPI scaling" << dpiScaling;
+    return dpiScaling;
+
+    /* Not implemented otherwise */
+    #else
+    Debug{verbose} << "Platform::GlfwApplication: sorry, physical DPI scaling not implemented on this platform yet";
+    return Vector2{1.0f};
+    #endif
+    #endif
+}
+
 bool GlfwApplication::tryCreate(const Configuration& configuration) {
     #ifdef MAGNUM_TARGET_GL
     #ifdef GLFW_NO_API
@@ -103,6 +199,10 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
     #endif
 
     CORRADE_ASSERT(!_window, "Platform::GlfwApplication::tryCreate(): window already created", false);
+
+    /* Scale window based on DPI */
+    _dpiScaling = dpiScaling(configuration);
+    const Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
 
     /* Window flags */
     GLFWmonitor* monitor = nullptr; /* Needed for setting fullscreen */
@@ -126,7 +226,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
     #endif
 
     /* Create the window */
-    _window = glfwCreateWindow(configuration.size().x(), configuration.size().y(), configuration.title().c_str(), monitor, nullptr);
+    _window = glfwCreateWindow(scaledWindowSize.x(), scaledWindowSize.y(), configuration.title().c_str(), monitor, nullptr);
     if(!_window) {
         Error() << "Platform::GlfwApplication::tryCreate(): cannot create window";
         glfwTerminate();
@@ -193,6 +293,10 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     #endif
 
     CORRADE_ASSERT(!_window && _context->version() == GL::Version::None, "Platform::GlfwApplication::tryCreate(): window with OpenGL context already created", false);
+
+    /* Scale window based on DPI */
+    _dpiScaling = dpiScaling(configuration);
+    const Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
 
     /* Window flags */
     GLFWmonitor* monitor = nullptr; /* Needed for setting fullscreen */
@@ -271,7 +375,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
        blinking in case we have to destroy it again right away. If the creation
        succeeds, make the context current so we can query GL_VENDOR below. */
     glfwWindowHint(GLFW_VISIBLE, false);
-    if((_window = glfwCreateWindow(configuration.size().x(), configuration.size().y(), configuration.title().c_str(), monitor, nullptr)))
+    if((_window = glfwCreateWindow(scaledWindowSize.x(), scaledWindowSize.y(), configuration.title().c_str(), monitor, nullptr)))
         glfwMakeContextCurrent(_window);
 
     #ifndef MAGNUM_TARGET_GLES
@@ -312,7 +416,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, false);
 
-        _window = glfwCreateWindow(configuration.size().x(), configuration.size().y(), configuration.title().c_str(), monitor, nullptr);
+        _window = glfwCreateWindow(scaledWindowSize.x(), scaledWindowSize.y(), configuration.title().c_str(), monitor, nullptr);
     }
     #endif
 
@@ -433,6 +537,14 @@ Vector2i GlfwApplication::windowSize() const {
     return size;
 }
 
+Vector2i GlfwApplication::framebufferSize() const {
+    CORRADE_ASSERT(_window, "Platform::GlfwApplication::framebufferSize(): no window opened", {});
+
+    Vector2i size;
+    glfwGetFramebufferSize(_window, &size.x(), &size.y());
+    return size;
+}
+
 void GlfwApplication::setSwapInterval(const Int interval) {
     glfwSwapInterval(interval);
 }
@@ -518,6 +630,7 @@ GlfwApplication::Configuration::Configuration():
     _title{"Magnum GLFW Application"},
     _size{800, 600},
     _windowFlags{WindowFlag::Focused},
+    _dpiScalingPolicy{DpiScalingPolicy::Default},
     _cursorMode{CursorMode::Normal}
     #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
     , _sampleCount{0}, _version{GL::Version::None}

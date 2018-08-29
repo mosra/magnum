@@ -125,6 +125,9 @@ if(WITH_GLFWAPPLICATION)
     if(TARGET_GL)
         list(APPEND MagnumGlfwApplication_SRCS ${MagnumSomeContext_OBJECTS})
     endif()
+    if(CORRADE_TARGET_APPLE)
+        list(APPEND MagnumGlfwApplication_SRCS Implementation/dpiScaling.mm)
+    endif()
 
     add_library(MagnumGlfwApplication STATIC
         ${MagnumGlfwApplication_SRCS}
@@ -140,6 +143,26 @@ if(WITH_GLFWAPPLICATION)
             MagnumGL
             # need to link to GLX explicitly if using GLVND (CMake 3.11+)
             ${MagnumSomeContext_LIBRARY})
+    endif()
+
+    # Use the Foundation framework on Apple to query the DPI awareness
+    if(CORRADE_TARGET_APPLE)
+        find_library(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY Foundation)
+        mark_as_advanced(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY)
+        find_path(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR NAMES NSBundle.h)
+        mark_as_advanced(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR)
+        target_link_libraries(MagnumGlfwApplication PUBLIC ${_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY})
+        target_include_directories(MagnumGlfwApplication PRIVATE ${_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR})
+
+    # If there is X11, ask it for DPI
+    elseif(CORRADE_TARGET_UNIX)
+        find_package(X11)
+        if(X11_FOUND)
+            # Not linking to X11, we dlopen() instead
+            target_include_directories(MagnumGlfwApplication PRIVATE ${X11_X11_INCLUDE_PATH})
+            target_link_libraries(MagnumGlfwApplication PUBLIC ${CMAKE_DL_LIBS})
+            target_compile_definitions(MagnumGlfwApplication PRIVATE "_MAGNUM_PLATFORM_USE_X11")
+        endif()
     endif()
 
     install(FILES ${MagnumGlfwApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)

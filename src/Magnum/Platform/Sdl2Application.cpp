@@ -99,18 +99,18 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
     if(args.value("log") == "verbose") _verboseLog = true;
     const std::string dpiScaling = args.value("dpi-scaling");
     if(dpiScaling == "default")
-        _commandLineDpiScalingPolicy = Implementation::DpiScalingPolicy::Default;
+        _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Default;
     #ifdef CORRADE_TARGET_APPLE
     else if(dpiScaling == "framebuffer")
-        _commandLineDpiScalingPolicy = Implementation::DpiScalingPolicy::Framebuffer;
+        _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Framebuffer;
     #endif
     #ifndef CORRADE_TARGET_APPLE
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
     else if(dpiScaling == "virtual")
-        _commandLineDpiScalingPolicy = Implementation::DpiScalingPolicy::Virtual;
+        _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Virtual;
     #endif
     else if(dpiScaling == "physical")
-        _commandLineDpiScalingPolicy = Implementation::DpiScalingPolicy::Physical;
+        _commandLineDpiScalingPolicy = Implementation::Sdl2DpiScalingPolicy::Physical;
     #endif
     else if(dpiScaling.find_first_of(" \t\n") != std::string::npos)
         _commandLineDpiScaling = args.value<Vector2>("dpi-scaling");
@@ -146,7 +146,7 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) const {
 
     /* Use values from the configuration only if not overriden on command line.
        In any case explicit scaling has a precedence before the policy. */
-    Implementation::DpiScalingPolicy dpiScalingPolicy{};
+    Implementation::Sdl2DpiScalingPolicy dpiScalingPolicy{};
     if(!_commandLineDpiScaling.isZero()) {
         Debug{verbose} << "Platform::Sdl2Application: user-defined DPI scaling" << _commandLineDpiScaling.x();
         return _commandLineDpiScaling;
@@ -169,7 +169,7 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) const {
     #else
     /* Try to get virtual DPI scaling first, if supported and requested */
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
-    if(dpiScalingPolicy == Implementation::DpiScalingPolicy::Virtual) {
+    if(dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Virtual) {
         /* Use Xft.dpi on X11 */
         #ifdef _MAGNUM_PLATFORM_USE_X11
         const Vector2 dpiScaling{Implementation::x11DpiScaling()};
@@ -189,9 +189,9 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) const {
     /* At this point, either the virtual DPI query failed or a physical DPI
        scaling is requested */
     #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)
-    CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::DpiScalingPolicy::Virtual || dpiScalingPolicy == Implementation::DpiScalingPolicy::Physical);
+    CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Virtual || dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Physical);
     #else
-    CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::DpiScalingPolicy::Physical);
+    CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::Sdl2DpiScalingPolicy::Physical);
     #endif
 
     /* Take device pixel ratio on Emscripten */
