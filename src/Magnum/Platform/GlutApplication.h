@@ -26,8 +26,13 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Platform::GlutApplication, macro @ref MAGNUM_GLUTAPPLICATION_MAIN()
- */
+@brief Class @ref Magnum::Platform::GlutApplication, macro @ref MAGNUM_GLUTAPPLICATION_MAIN()
+
+@deprecated This application is based on an outdated toolkit and scheduled for
+    removal in a future release. Please consider switching to either
+    @ref Magnum::Platform::Sdl2Application or @ref Magnum::Platform::GlfwApplication
+    as soon as possible.
+*/
 
 #include <memory>
 #include <string>
@@ -44,16 +49,17 @@
 #include <GL/freeglut.h>
 
 #ifndef MAGNUM_BUILD_DEPRECATED
-#error Scheduled for removal. Consider switching to Sdl2Application or GlfwApplication instead.
+#error scheduled for removal, consider switching to Sdl2Application or GlfwApplication instead
 #endif
 
 /* I still have a test for this class and it shouldn't pollute the log there */
 #ifndef _MAGNUM_DO_NOT_WARN_DEPRECATED_GLUTAPPLICATION
-CORRADE_DEPRECATED_FILE("Scheduled for removal. Consider switching to Sdl2Application or GlfwApplication instead.")
+CORRADE_DEPRECATED_FILE("scheduled for removal, consider switching to Sdl2Application or GlfwApplication instead")
 #endif
 
 namespace Magnum { namespace Platform {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 /** @nosubgrouping
 @brief GLUT application
 
@@ -855,11 +861,9 @@ When no other application header is included this macro is also aliased to
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
-CORRADE_IGNORE_DEPRECATED_PUSH
 typedef CORRADE_DEPRECATED("scheduled for removal, consider switching to Sdl2Application or GlfwApplication instead") GlutApplication Application;
 typedef CORRADE_DEPRECATED("scheduled for removal, consider switching to Sdl2Application or GlfwApplication instead")BasicScreen<GlutApplication> Screen;
 typedef CORRADE_DEPRECATED("scheduled for removal, consider switching to Sdl2Application or GlfwApplication instead") BasicScreenedApplication<GlutApplication> ScreenedApplication;
-CORRADE_IGNORE_DEPRECATED_POP
 #ifndef _MAGNUM_DO_NOT_WARN_DEPRECATED_GLUTAPPLICATION
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_GLUTAPPLICATION_MAIN(className)
 #else
@@ -874,7 +878,6 @@ CORRADE_IGNORE_DEPRECATED_POP
 #endif
 #endif
 
-CORRADE_IGNORE_DEPRECATED_PUSH
 CORRADE_ENUMSET_OPERATORS(GlutApplication::MouseMoveEvent::Buttons)
 CORRADE_IGNORE_DEPRECATED_POP
 
