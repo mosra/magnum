@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
@@ -56,6 +58,7 @@ SphereTest::SphereTest() {
               &SphereTest::collisionSphereInverted});
 }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 void SphereTest::transformed() {
     const Shapes::Sphere3D sphere({1.0f, 2.0f, 3.0f}, 7.0f);
 
@@ -171,6 +174,7 @@ void SphereTest::collisionSphereInverted() {
     const Shapes::Sphere3D sphere3({1.5f, 2.0f, 3.0f}, 1.0f);
     CORRADE_VERIFY(!(sphere%sphere3) && !(sphere/sphere3));
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

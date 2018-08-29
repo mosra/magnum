@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "BoxRenderer.h"
 
 #include "Magnum/GL/Mesh.h"
@@ -32,6 +34,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> BoxRenderer<dimensions>::BoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>& box): box(static_cast<const Shapes::Implementation::Shape<Shapes::Box<dimensions>>&>(box).shape) {}
 
 template<UnsignedInt dimensions> void BoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const MatrixTypeFor<dimensions, Float>& projectionMatrix) {
@@ -42,5 +45,6 @@ template<UnsignedInt dimensions> void BoxRenderer<dimensions>::draw(Resource<Sha
 
 template class BoxRenderer<2>;
 template class BoxRenderer<3>;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}

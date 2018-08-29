@@ -49,10 +49,14 @@ class ObjectRendererOptions;
 
 class ResourceManager;
 
-template<UnsignedInt> class ShapeRenderer;
-typedef ShapeRenderer<2> ShapeRenderer2D;
-typedef ShapeRenderer<3> ShapeRenderer3D;
-class ShapeRendererOptions;
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+template<UnsignedInt> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") ShapeRenderer;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") ShapeRenderer<2> ShapeRenderer2D;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") ShapeRenderer<3> ShapeRenderer3D;
+class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") ShapeRendererOptions;
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 #endif
 #endif
 

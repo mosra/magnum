@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "Plane.h"
 
 #include "Magnum/Math/Intersection.h"
@@ -31,6 +33,7 @@
 
 namespace Magnum { namespace Shapes {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 Plane Plane::transformed(const Matrix4& matrix) const {
     /* Using matrix.rotation() would result in two more normalizations (slow),
        using .normalized() instead of matrix.uniformScaling() would not check
@@ -48,5 +51,6 @@ bool Plane::operator%(const LineSegment3D& other) const {
     Float t = Math::Intersection::planeLine(Math::planeEquation(_normal, _position), other.a(), other.b()-other.a());
     return t > 0.0f && t < 1.0f;
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}

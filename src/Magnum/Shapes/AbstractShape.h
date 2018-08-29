@@ -26,17 +26,29 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Shapes::AbstractShape, typedef @ref Magnum::Shapes::AbstractShape2D, @ref Magnum::Shapes::AbstractShape3D
- */
+@brief Class @ref Magnum::Shapes::AbstractShape, typedef @ref Magnum::Shapes::AbstractShape2D, @ref Magnum::Shapes::AbstractShape3D
+
+@deprecated The @ref Magnum::Shapes library is a failed design experiment and
+    is scheduled for removal in a future release. Related geometry algorithms
+    were moved to @ref Magnum::Math::Distance and @ref Magnum::Math::Intersection;
+    if you need a full-fledged physics library, please have look at
+    [Bullet](https://bulletphysics.org), which has Magnum integration in
+    @ref Magnum::BulletIntegration, or at [Box2D](https://box2d.org/), which
+    has a @ref examples-box2d "Magnum example" as well.
+*/
 
 #include "Magnum/Magnum.h"
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/SceneGraph/AbstractGroupedFeature.h"
 #include "Magnum/Shapes/shapeImplementation.h"
+#include "Magnum/Shapes/Shapes.h"
 #include "Magnum/Shapes/visibility.h"
+
+/* File-level deprecation warning issued from Shapes.h */
 
 namespace Magnum { namespace Shapes {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 namespace Implementation {
     template<UnsignedInt dimensions> inline const AbstractShape<dimensions>& getAbstractShape(const Shapes::AbstractShape<dimensions>& shape) {
         return shape.abstractTransformedShape();
@@ -46,11 +58,19 @@ namespace Implementation {
 /**
 @brief Base class for object shapes
 
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+
 This class is not directly instantiable, use @ref Shape instead. See
 @ref shapes for brief introduction.
 @see @ref AbstractShape2D, @ref AbstractShape3D
 */
-template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: public SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>, Float> {
+template<UnsignedInt dimensions> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") MAGNUM_SHAPES_EXPORT AbstractShape: public SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>, Float> {
     #ifndef CORRADE_MSVC2017_COMPATIBILITY
     friend const Implementation::AbstractShape<dimensions>& Implementation::getAbstractShape<>(const AbstractShape<dimensions>&);
     #else
@@ -120,11 +140,32 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT AbstractShape: publi
         virtual const Implementation::AbstractShape<dimensions> MAGNUM_SHAPES_LOCAL & abstractTransformedShape() const = 0;
 };
 
-/** @brief Base class for two-dimensional object shapes */
-typedef AbstractShape<2> AbstractShape2D;
+/**
+@brief Base class for two-dimensional object shapes
 
-/** @brief Base class for three-dimensional object shapes */
-typedef AbstractShape<3> AbstractShape3D;
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") AbstractShape<2> AbstractShape2D;
+
+/**
+@brief Base class for three-dimensional object shapes
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") AbstractShape<3> AbstractShape3D;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
 

@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "AxisAlignedBox.h"
 
 #include "Magnum/Math/Matrix3.h"
@@ -31,6 +33,7 @@
 
 namespace Magnum { namespace Shapes {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> AxisAlignedBox<dimensions> AxisAlignedBox<dimensions>::transformed(const MatrixTypeFor<dimensions, Float>& matrix) const {
     return AxisAlignedBox<dimensions>(matrix.transformPoint(_min),
                                       matrix.transformPoint(_max));
@@ -45,5 +48,6 @@ template<UnsignedInt dimensions> bool AxisAlignedBox<dimensions>::operator%(cons
 template class MAGNUM_SHAPES_EXPORT AxisAlignedBox<2>;
 template class MAGNUM_SHAPES_EXPORT AxisAlignedBox<3>;
 #endif
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}

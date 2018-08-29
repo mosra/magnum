@@ -31,6 +31,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> class AbstractSphereRenderer;
 
 template<> class AbstractSphereRenderer<2>: public AbstractShapeRenderer<2> {
@@ -53,6 +54,7 @@ template<UnsignedInt dimensions> class SphereRenderer: public AbstractSphereRend
     private:
         const Shapes::Sphere<dimensions>& sphere;
 };
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

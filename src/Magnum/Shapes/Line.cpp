@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "Line.h"
 
 #include "Magnum/Math/Matrix3.h"
@@ -30,6 +32,7 @@
 
 namespace Magnum { namespace Shapes {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> Line<dimensions> Line<dimensions>::transformed(const MatrixTypeFor<dimensions, Float>& matrix) const {
     return Line<dimensions>(matrix.transformPoint(_a),
                             matrix.transformPoint(_b));
@@ -40,5 +43,6 @@ template<UnsignedInt dimensions> Line<dimensions> Line<dimensions>::transformed(
 template class MAGNUM_SHAPES_EXPORT Line<2>;
 template class MAGNUM_SHAPES_EXPORT Line<3>;
 #endif
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}

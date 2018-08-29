@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "CollisionDispatch.h"
 
 #include "Magnum/Shapes/AxisAlignedBox.h"
@@ -37,6 +39,7 @@
 
 namespace Magnum { namespace Shapes { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<> bool collides(const AbstractShape<2>& a, const AbstractShape<2>& b) {
     if(a.type() < b.type()) return collides(b, a);
 
@@ -125,5 +128,6 @@ template<> Collision<3> collision(const AbstractShape<3>& a, const AbstractShape
 
     return {};
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}

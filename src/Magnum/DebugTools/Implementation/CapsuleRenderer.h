@@ -31,6 +31,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> class AbstractCapsuleRenderer;
 
 template<> class AbstractCapsuleRenderer<2>: public AbstractShapeRenderer<2> {
@@ -61,6 +62,7 @@ template<UnsignedInt dimensions> class CapsuleRenderer: public AbstractCapsuleRe
     private:
         const Shapes::Capsule<dimensions>& capsule;
 };
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

@@ -26,17 +26,37 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Shapes::Collision, typedef @ref Magnum::Shapes::Collision2D, @ref Magnum::Shapes::Collision3D
- */
+@brief Class @ref Magnum::Shapes::Collision, typedef @ref Magnum::Shapes::Collision2D, @ref Magnum::Shapes::Collision3D
+
+@deprecated The @ref Magnum::Shapes library is a failed design experiment and
+    is scheduled for removal in a future release. Related geometry algorithms
+    were moved to @ref Magnum::Math::Distance and @ref Magnum::Math::Intersection;
+    if you need a full-fledged physics library, please have look at
+    [Bullet](https://bulletphysics.org), which has Magnum integration in
+    @ref Magnum::BulletIntegration, or at [Box2D](https://box2d.org/), which
+    has a @ref examples-box2d "Magnum example" as well.
+*/
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Math/Vector3.h"
+#include "Magnum/Shapes/Shapes.h"
+
+/* File-level deprecation warning issued from Shapes.h */
 
 namespace Magnum { namespace Shapes {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 /**
 @brief Collision data
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
 
 Contains information about collision between objects A and B, described by
 contact position, separation normal and separation distance.
@@ -51,7 +71,7 @@ If the collision not occured, contact position and separation normal is
 undefined (i.e., *not* normalized) and separation distance is negative or zero.
 @see @ref Collision2D, @ref Collision3D
 */
-template<UnsignedInt dimensions> class Collision {
+template<UnsignedInt dimensions> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Collision {
     public:
         /**
          * @brief Default constructor
@@ -121,11 +141,32 @@ template<UnsignedInt dimensions> class Collision {
         Float _separationDistance;
 };
 
-/** @brief Two-dimensional collision data */
-typedef Collision<2> Collision2D;
+/**
+@brief Two-dimensional collision data
 
-/** @brief Three-dimensional collision data */
-typedef Collision<3> Collision3D;
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Collision<2> Collision2D;
+
+/**
+@brief Three-dimensional collision data
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Collision<3> Collision3D;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
 

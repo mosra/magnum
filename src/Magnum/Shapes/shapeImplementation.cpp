@@ -23,12 +23,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "shapeImplementation.h"
 
 #include <Corrade/Utility/Debug.h>
 
 namespace Magnum { namespace Shapes { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 Debug& operator<<(Debug& debug, ShapeDimensionTraits<2>::Type value) {
     switch(value) {
         /* LCOV_EXCL_START */
@@ -77,5 +80,6 @@ template<UnsignedInt dimensions> AbstractShape<dimensions>::AbstractShape() = de
 
 template struct AbstractShape<2>;
 template struct AbstractShape<3>;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}

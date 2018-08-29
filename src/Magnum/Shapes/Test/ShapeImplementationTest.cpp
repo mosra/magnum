@@ -26,6 +26,8 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "Magnum/Shapes/shapeImplementation.h"
 
 namespace Magnum { namespace Shapes { namespace Test {
@@ -40,6 +42,7 @@ ShapeImplementationTest::ShapeImplementationTest() {
     addTests({&ShapeImplementationTest::debug});
 }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 void ShapeImplementationTest::debug() {
     std::ostringstream o;
     Debug(&o) << Implementation::ShapeDimensionTraits<2>::Type::Composition << Implementation::ShapeDimensionTraits<2>::Type(0xbe);
@@ -49,6 +52,7 @@ void ShapeImplementationTest::debug() {
     Debug(&o) << Implementation::ShapeDimensionTraits<3>::Type::Plane << Implementation::ShapeDimensionTraits<3>::Type(0xbe);
     CORRADE_COMPARE(o.str(), "Shapes::Shape3D::Type::Plane Shapes::Shape3D::Type(0xbe)\n");
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

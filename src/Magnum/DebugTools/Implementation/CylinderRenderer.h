@@ -31,6 +31,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> class AbstractCylinderRenderer;
 
 template<> class AbstractCylinderRenderer<2>: public AbstractShapeRenderer<2> {
@@ -53,6 +54,7 @@ template<UnsignedInt dimensions> class CylinderRenderer: public AbstractCylinder
     private:
         const Shapes::Cylinder<dimensions>& cylinder;
 };
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

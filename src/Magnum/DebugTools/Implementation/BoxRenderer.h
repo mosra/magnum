@@ -31,6 +31,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> class BoxRenderer: public AbstractBoxRenderer<dimensions> {
     public:
         explicit BoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>& box);
@@ -41,6 +42,7 @@ template<UnsignedInt dimensions> class BoxRenderer: public AbstractBoxRenderer<d
     private:
         const Shapes::Box<dimensions>& box;
 };
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "PointRenderer.h"
 
 #include "Magnum/DebugTools/ShapeRenderer.h"
@@ -35,6 +37,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 namespace {
     template<UnsignedInt dimensions> ResourceKey meshKey();
     template<> inline ResourceKey meshKey<2>() { return ResourceKey("point2d"); }
@@ -64,5 +67,6 @@ template<UnsignedInt dimensions> void PointRenderer<dimensions>::draw(Resource<S
 
 template class PointRenderer<2>;
 template class PointRenderer<3>;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}

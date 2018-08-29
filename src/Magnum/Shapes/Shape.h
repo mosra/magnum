@@ -26,21 +26,40 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Shapes::Shape
- */
+@brief Class @ref Magnum::Shapes::Shape
+
+@deprecated The @ref Magnum::Shapes library is a failed design experiment and
+    is scheduled for removal in a future release. Related geometry algorithms
+    were moved to @ref Magnum::Math::Distance and @ref Magnum::Math::Intersection;
+    if you need a full-fledged physics library, please have look at
+    [Bullet](https://bulletphysics.org), which has Magnum integration in
+    @ref Magnum::BulletIntegration, or at [Box2D](https://box2d.org/), which
+    has a @ref examples-box2d "Magnum example" as well.
+*/
 
 #include "Magnum/Shapes/AbstractShape.h"
 #include "Magnum/Shapes/Shapes.h"
 #include "Magnum/Shapes/visibility.h"
 
+/* File-level deprecation warning issued from Shapes.h */
+
 namespace Magnum { namespace Shapes {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 namespace Implementation {
     template<class> struct ShapeHelper;
 }
 
 /**
 @brief Object shape
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
 
 Adds shape for collision detection to object. Each Shape is part of
 some @ref ShapeGroup, which essentially maintains a set of objects which can
@@ -67,7 +86,7 @@ Shapes::AbstractShape3D* firstCollision = shapes.firstCollision(shape);
 @see @ref scenegraph, @ref ShapeGroup2D, @ref ShapeGroup3D,
     @ref DebugTools::ShapeRenderer
 */
-template<class T> class Shape: public AbstractShape<T::Dimensions> {
+template<class T> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Shape: public AbstractShape<T::Dimensions> {
     friend Implementation::ShapeHelper<T>;
 
     public:
@@ -152,6 +171,7 @@ namespace Implementation {
         static void transform(Shapes::Shape<Composition<dimensions>>& shape, const MatrixTypeFor<dimensions, Float>& absoluteTransformationMatrix);
     };
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
 

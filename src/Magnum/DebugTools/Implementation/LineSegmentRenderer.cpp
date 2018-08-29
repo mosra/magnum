@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "LineSegmentRenderer.h"
 
 #include "Magnum/DebugTools/ShapeRenderer.h"
@@ -37,6 +39,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 namespace {
     template<UnsignedInt dimensions> ResourceKey meshKey();
     template<> inline ResourceKey meshKey<2>() { return ResourceKey("line2d"); }
@@ -64,5 +67,6 @@ template<UnsignedInt dimensions> void LineSegmentRenderer<dimensions>::draw(Reso
 
 template class LineSegmentRenderer<2>;
 template class LineSegmentRenderer<3>;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}

@@ -45,6 +45,7 @@ LineSegmentRendererTest::LineSegmentRendererTest() {
               &LineSegmentRendererTest::line3D});
 }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 void LineSegmentRendererTest::line2D() {
     const Vector2 a(-2.0f, 3.0f);
     const Vector2 b(3.4f, -1.5f);
@@ -62,6 +63,7 @@ void LineSegmentRendererTest::line3D() {
     CORRADE_COMPARE(matrix.transformPoint({0.0f, 0.0f, 0.0f}), a);
     CORRADE_COMPARE(matrix.transformPoint({1.0f, 0.0f, 0.0f}), b);
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

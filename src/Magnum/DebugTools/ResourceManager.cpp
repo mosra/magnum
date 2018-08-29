@@ -23,21 +23,36 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "ResourceManager.h"
 
 #include "Magnum/ResourceManager.hpp"
 #include "Magnum/DebugTools/ForceRenderer.h"
 #include "Magnum/DebugTools/ObjectRenderer.h"
-#include "Magnum/DebugTools/ShapeRenderer.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/MeshView.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/DebugTools/ShapeRenderer.h"
+#endif
+
 namespace Magnum {
 
 namespace Implementation {
-    template struct MAGNUM_DEBUGTOOLS_EXPORT ResourceManagerLocalInstanceImplementation<ResourceManagerLocalInstance, GL::AbstractShaderProgram, GL::Buffer, GL::Mesh, GL::MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions>;
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    #endif
+    template struct MAGNUM_DEBUGTOOLS_EXPORT ResourceManagerLocalInstanceImplementation<ResourceManagerLocalInstance, GL::AbstractShaderProgram, GL::Buffer, GL::Mesh, GL::MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        , DebugTools::ShapeRendererOptions
+        #endif
+    >;
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
 }
 
 namespace DebugTools {
@@ -45,7 +60,11 @@ namespace DebugTools {
 ResourceManager::ResourceManager() {
     setFallback(new ForceRendererOptions);
     setFallback(new ObjectRendererOptions);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
     setFallback(new ShapeRendererOptions);
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
 }
 
 ResourceManager::~ResourceManager() = default;

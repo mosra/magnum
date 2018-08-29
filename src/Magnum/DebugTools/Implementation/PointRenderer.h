@@ -31,6 +31,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> class PointRenderer: public AbstractShapeRenderer<dimensions> {
     public:
         explicit PointRenderer(const Shapes::Implementation::AbstractShape<dimensions>& point);
@@ -41,6 +42,7 @@ template<UnsignedInt dimensions> class PointRenderer: public AbstractShapeRender
     private:
         const Shapes::Point<dimensions>& point;
 };
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

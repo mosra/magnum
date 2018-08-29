@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "AbstractBoxRenderer.h"
 
 #include "Magnum/GL/Mesh.h"
@@ -33,6 +35,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 AbstractBoxRenderer<2>::AbstractBoxRenderer(): AbstractShapeRenderer<2>("box2d", "box2d-vertices", {}) {
     if(!wireframeMesh) AbstractShapeRenderer<2>::createResources(Primitives::squareWireframe());
 }
@@ -40,5 +43,6 @@ AbstractBoxRenderer<2>::AbstractBoxRenderer(): AbstractShapeRenderer<2>("box2d",
 AbstractBoxRenderer<3>::AbstractBoxRenderer(): AbstractShapeRenderer<3>("box3d", "box3d-vertices", "box3d-indices") {
     if(!wireframeMesh) AbstractShapeRenderer<3>::createResources(Primitives::cubeWireframe());
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}

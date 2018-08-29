@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "Composition.h"
 
 #include <algorithm>
@@ -32,6 +34,7 @@
 
 namespace Magnum { namespace Shapes {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 /*
 Hierarchy implementation notes:
 
@@ -152,5 +155,6 @@ template<UnsignedInt dimensions> bool Composition<dimensions>::collides(const Im
 template class MAGNUM_SHAPES_EXPORT Composition<2>;
 template class MAGNUM_SHAPES_EXPORT Composition<3>;
 #endif
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}

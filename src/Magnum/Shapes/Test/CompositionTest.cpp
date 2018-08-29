@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shapes/Point.h"
@@ -62,6 +64,7 @@ CompositionTest::CompositionTest() {
               &CompositionTest::transformed});
 }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 void CompositionTest::negated() {
     const Shapes::Composition2D a = !Shapes::Point2D(Vector2::xAxis(0.5f));
 
@@ -182,6 +185,7 @@ void CompositionTest::transformed() {
     CORRADE_COMPARE(b.get<Shapes::AxisAlignedBox2D>(2).min(), Vector2(1.5f, -7.0f));
     CORRADE_COMPARE(b.get<Shapes::AxisAlignedBox2D>(2).max(), Vector2(2.0f, -6.5f));
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

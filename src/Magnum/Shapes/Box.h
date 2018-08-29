@@ -26,18 +26,38 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Shapes::Box, typedef @ref Magnum::Shapes::Box2D, @ref Magnum::Shapes::Box3D
- */
+@brief Class @ref Magnum::Shapes::Box, typedef @ref Magnum::Shapes::Box2D, @ref Magnum::Shapes::Box3D
+
+@deprecated The @ref Magnum::Shapes library is a failed design experiment and
+    is scheduled for removal in a future release. Related geometry algorithms
+    were moved to @ref Magnum::Math::Distance and @ref Magnum::Math::Intersection;
+    if you need a full-fledged physics library, please have look at
+    [Bullet](https://bulletphysics.org), which has Magnum integration in
+    @ref Magnum::BulletIntegration, or at [Box2D](https://box2d.org/), which
+    has a @ref examples-box2d "Magnum example" as well.
+*/
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Matrix4.h"
+#include "Magnum/Shapes/Shapes.h"
 #include "Magnum/Shapes/visibility.h"
+
+/* File-level deprecation warning issued from Shapes.h */
 
 namespace Magnum { namespace Shapes {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 /**
 @brief Unit-size box with assigned transformation matrix
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
 
 Unit-size means that half extents are equal to 1, equivalent to e.g. sphere
 radius. See @ref shapes for brief introduction.
@@ -45,7 +65,7 @@ radius. See @ref shapes for brief introduction.
 @todo Use quat + position + size instead?
 @todo Assert for skew
 */
-template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Box {
+template<UnsignedInt dimensions> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") MAGNUM_SHAPES_EXPORT Box {
     public:
         enum: UnsignedInt {
             Dimensions = dimensions /**< Dimension count */
@@ -78,11 +98,32 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Box {
         MatrixTypeFor<dimensions, Float> _transformation;
 };
 
-/** @brief Two-dimensional box */
-typedef Box<2> Box2D;
+/**
+@brief Two-dimensional box
 
-/** @brief Three-dimensional box */
-typedef Box<3> Box3D;
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Box<2> Box2D;
+
+/**
+@brief Three-dimensional box
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Box<3> Box3D;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
 

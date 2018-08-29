@@ -29,11 +29,13 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> MatrixTypeFor<dimensions, Float> lineSegmentRendererTransformation(const VectorTypeFor<dimensions, Float>& a, const VectorTypeFor<dimensions, Float>& b) {
     auto transformation = MatrixTypeFor<dimensions, Float>::translation(a);
     transformation.right() = b - a;
     return transformation;
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

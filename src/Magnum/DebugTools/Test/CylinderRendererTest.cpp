@@ -51,6 +51,7 @@ CylinderRendererTest::CylinderRendererTest() {
               &CylinderRendererTest::common3D});
 }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 void CylinderRendererTest::zeroLength2D() {
     const Vector2 a(0.5f, 3.0f);
     const Matrix3 transformation = Implementation::cylinderRendererTransformation<2>(a, a, 3.5f);
@@ -119,6 +120,7 @@ void CylinderRendererTest::common3D() {
 
     CORRADE_COMPARE(transformation.translation(), 0.5f*(a + b));
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

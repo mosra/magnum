@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(NOT MAGNUM_BUILD_DEPRECATED)
+    message(FATAL_ERROR "Shapes are scheduled for removal and not available if BUILD_DEPRECATED is disabled. See the docs for alternatives.")
+endif()
+
 set(MagnumShapes_SRCS
     AbstractShape.cpp
     AxisAlignedBox.cpp

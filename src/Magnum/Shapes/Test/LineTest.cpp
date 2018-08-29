@@ -25,6 +25,8 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shapes/Line.h"
@@ -41,12 +43,14 @@ LineTest::LineTest() {
     addTests({&LineTest::transformed});
 }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 void LineTest::transformed() {
     const auto line = Shapes::Line3D({1.0f, 2.0f, 3.0f}, {-1.0f, -2.0f, -3.0f})
         .transformed(Matrix4::rotation(Deg(90.0f), Vector3::zAxis()));
     CORRADE_COMPARE(line.a(), Vector3(-2.0f, 1.0f, 3.0f));
     CORRADE_COMPARE(line.b(), Vector3(2.0f, -1.0f, -3.0f));
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

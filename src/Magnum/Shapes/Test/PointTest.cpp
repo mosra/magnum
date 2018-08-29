@@ -25,6 +25,8 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shapes/Point.h"
@@ -41,11 +43,13 @@ PointTest::PointTest() {
     addTests({&PointTest::transformed});
 }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 void PointTest::transformed() {
     const auto point = Shapes::Point3D({1.0f, 2.0f, 3.0f})
         .transformed(Matrix4::translation({5.0f, 6.0f, 7.0f}));
     CORRADE_COMPARE(point.position(), Vector3(6.0f, 8.0f, 10.0f));
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

@@ -452,9 +452,9 @@ information. See also @ref corrade-cmake and @ref Corrade/Corrade.h for
 related info for the Corrade library.
 
 By default the engine is built with nearly everything except the @ref Audio
-library, plugins, command-line utilities and application libraries (see below).
-Using the following `WITH_*` CMake options you can specify which parts will
-be built and which not:
+and @ref Shapes libraries, plugins, command-line utilities and application
+libraries (see below). Using the following `WITH_*` CMake options you can
+specify which parts will be built and which not:
 
 -   `WITH_AUDIO` --- Build the @ref Audio library. Depends on
     [OpenAL](https://www.openal.org/), not built by default.
@@ -469,8 +469,8 @@ be built and which not:
     automatically if `WITH_SHAPES` is enabled.
 -   `WITH_SHADERS` --- Build the @ref Shaders library. Enables also building of
     the GL library.
--   `WITH_SHAPES` --- Build the @ref Shapes library. Enables also building of
-    the SceneGraph library.
+-   `WITH_SHAPES` @m_class{m-label m-danger} **deprecated** --- Build the
+    @ref Shapes library. Enables also building of the SceneGraph library.
 -   `WITH_TEXT` --- Build the @ref Text library. Enables also building of
     the TextureTools and GL libraries.
 -   `WITH_TEXTURETOOLS` --- Build the @ref TextureTools library. Enabled

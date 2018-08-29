@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "ShapeRenderer.h"
 
 #include "Magnum/DebugTools/ResourceManager.h"
@@ -40,6 +42,7 @@
 
 namespace Magnum { namespace DebugTools {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 namespace Implementation {
 
 template<> void createDebugMesh(ShapeRenderer<2>& renderer, const Shapes::Implementation::AbstractShape<2>& shape) {
@@ -129,5 +132,6 @@ template<UnsignedInt dimensions> void ShapeRenderer<dimensions>::draw(const Matr
 
 template class ShapeRenderer<2>;
 template class ShapeRenderer<3>;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}

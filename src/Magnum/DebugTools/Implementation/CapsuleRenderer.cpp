@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "CapsuleRenderer.h"
 
 #include "Magnum/DebugTools/ResourceManager.h"
@@ -39,6 +41,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 AbstractCapsuleRenderer<2>::AbstractCapsuleRenderer(): AbstractShapeRenderer<2>("capsule2d", "capsule2d-vertices", "capsule2d-indices") {
     constexpr UnsignedInt rings = 10;
     if(!wireframeMesh) createResources(Primitives::capsule2DWireframe(rings, 1, 1.0f));
@@ -123,5 +126,6 @@ template<UnsignedInt dimensions> void CapsuleRenderer<dimensions>::draw(Resource
 
 template class CapsuleRenderer<2>;
 template class CapsuleRenderer<3>;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}

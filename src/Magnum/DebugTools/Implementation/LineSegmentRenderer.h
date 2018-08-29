@@ -31,6 +31,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> class LineSegmentRenderer: public AbstractShapeRenderer<dimensions> {
     public:
         explicit LineSegmentRenderer(const Shapes::Implementation::AbstractShape<dimensions>& line);
@@ -41,6 +42,7 @@ template<UnsignedInt dimensions> class LineSegmentRenderer: public AbstractShape
     private:
         const Shapes::LineSegment<dimensions>& line;
 };
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

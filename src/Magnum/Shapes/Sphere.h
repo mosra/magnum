@@ -26,19 +26,38 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Shapes::Sphere, typedef @ref Magnum::Shapes::Sphere2D, @ref Magnum::Shapes::Sphere3D
- */
+@brief Class @ref Magnum::Shapes::Sphere, typedef @ref Magnum::Shapes::Sphere2D, @ref Magnum::Shapes::Sphere3D
+
+@deprecated The @ref Magnum::Shapes library is a failed design experiment and
+    is scheduled for removal in a future release. Related geometry algorithms
+    were moved to @ref Magnum::Math::Distance and @ref Magnum::Math::Intersection;
+    if you need a full-fledged physics library, please have look at
+    [Bullet](https://bulletphysics.org), which has Magnum integration in
+    @ref Magnum::BulletIntegration, or at [Box2D](https://box2d.org/), which
+    has a @ref examples-box2d "Magnum example" as well.
+*/
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Math/Vector3.h"
-#include "Magnum/Shapes/Collision.h"
 #include "Magnum/Shapes/Shapes.h"
+#include "Magnum/Shapes/Collision.h"
 #include "Magnum/Shapes/visibility.h"
+
+/* File-level deprecation warning issued from Shapes.h */
 
 namespace Magnum { namespace Shapes {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 /**
 @brief Sphere defined by position and radius
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
 
 Unlike other elements the sphere expects uniform scaling. See @ref shapes for
 brief introduction.
@@ -46,7 +65,7 @@ brief introduction.
 @todo Store the radius as squared value to avoid sqrt/pow? Will complicate
     collision detection with another sphere.
 */
-template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Sphere {
+template<UnsignedInt dimensions> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") MAGNUM_SHAPES_EXPORT Sphere {
     public:
         enum: UnsignedInt {
             Dimensions = dimensions /**< Dimension count */
@@ -104,20 +123,48 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Sphere {
         Float _radius;
 };
 
-/** @brief Two-dimensional sphere */
-typedef Sphere<2> Sphere2D;
+/**
+@brief Two-dimensional sphere
 
-/** @brief Three-dimensional sphere */
-typedef Sphere<3> Sphere3D;
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Sphere<2> Sphere2D;
+
+/**
+@brief Three-dimensional sphere
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Sphere<3> Sphere3D;
 
 /**
 @brief Inverted sphere defined by position and radius
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
 
 Inverted version of @ref Sphere, detecting collisions on the outside, not on
 the inside. See @ref shapes for brief introduction.
 @see @ref InvertedSphere2D, @ref InvertedSphere3D
 */
-template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT InvertedSphere:
+template<UnsignedInt dimensions> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") MAGNUM_SHAPES_EXPORT InvertedSphere:
     #ifdef DOXYGEN_GENERATING_OUTPUT
     public Sphere<dimensions>
     #else
@@ -163,35 +210,136 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT InvertedSphere:
         constexpr /*implicit*/ InvertedSphere(const Sphere<dimensions>& other): Sphere<dimensions>(other) {}
 };
 
-/** @brief Inverted two-dimensional sphere */
-typedef InvertedSphere<2> InvertedSphere2D;
+/**
+@brief Inverted two-dimensional sphere
 
-/** @brief Inverted three-dimensional sphere */
-typedef InvertedSphere<3> InvertedSphere3D;
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") InvertedSphere<2> InvertedSphere2D;
 
-/** @collisionoccurenceoperator{Point,Sphere} */
-template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
+/**
+@brief Inverted three-dimensional sphere
 
-/** @collisionoccurenceoperator{Point,InvertedSphere} */
-template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const InvertedSphere<dimensions>& b) { return b % a; }
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") InvertedSphere<3> InvertedSphere3D;
 
-/** @collisionoperator{Point,Sphere} */
-template<UnsignedInt dimensions> inline Collision<dimensions> operator/(const Point<dimensions>& a, const Sphere<dimensions>& b) { return (b/a).flipped(); }
+/**
+@collisionoccurenceoperator{Point,Sphere}
 
-/** @collisionoperator{Point,InvertedSphere} */
-template<UnsignedInt dimensions> inline Collision<dimensions> operator/(const Point<dimensions>& a, const InvertedSphere<dimensions>& b) { return (b/a).flipped(); }
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+template<UnsignedInt dimensions> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") bool operator%(const Point<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
 
-/** @collisionoccurenceoperator{Line,Sphere} */
-template<UnsignedInt dimensions> inline bool operator%(const Line<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
+/**
+@collisionoccurenceoperator{Point,InvertedSphere}
 
-/** @collisionoccurenceoperator{LineSegment,Sphere} */
-template<UnsignedInt dimensions> inline bool operator%(const LineSegment<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+template<UnsignedInt dimensions> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") bool operator%(const Point<dimensions>& a, const InvertedSphere<dimensions>& b) { return b % a; }
 
-/** @collisionoccurenceoperator{Sphere,InvertedSphere} */
-template<UnsignedInt dimensions> inline bool operator%(const Sphere<dimensions>& a, const InvertedSphere<dimensions>& b) { return b % a; }
+/**
+@collisionoperator{Point,Sphere}
 
-/** @collisionoperator{Sphere,InvertedSphere} */
-template<UnsignedInt dimensions> inline Collision<dimensions> operator/(const Sphere<dimensions>& a, const InvertedSphere<dimensions>& b) { return (b/a).flipped(); }
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+template<UnsignedInt dimensions> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Collision<dimensions> operator/(const Point<dimensions>& a, const Sphere<dimensions>& b) { return (b/a).flipped(); }
+
+/**
+@collisionoperator{Point,InvertedSphere}
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+template<UnsignedInt dimensions> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Collision<dimensions> operator/(const Point<dimensions>& a, const InvertedSphere<dimensions>& b) { return (b/a).flipped(); }
+
+/**
+@collisionoccurenceoperator{Line,Sphere}
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+template<UnsignedInt dimensions> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") bool operator%(const Line<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
+
+/**
+@collisionoccurenceoperator{LineSegment,Sphere}
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+template<UnsignedInt dimensions> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") bool operator%(const LineSegment<dimensions>& a, const Sphere<dimensions>& b) { return b % a; }
+
+/**
+@collisionoccurenceoperator{Sphere,InvertedSphere}
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+template<UnsignedInt dimensions> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") bool operator%(const Sphere<dimensions>& a, const InvertedSphere<dimensions>& b) { return b % a; }
+
+/**
+@collisionoperator{Sphere,InvertedSphere}
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+template<UnsignedInt dimensions> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Collision<dimensions> operator/(const Sphere<dimensions>& a, const InvertedSphere<dimensions>& b) { return (b/a).flipped(); }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
 

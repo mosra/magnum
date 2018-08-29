@@ -30,6 +30,7 @@
 
 namespace Magnum { namespace Shapes { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt> struct AbstractShape;
 
 /*
@@ -45,6 +46,7 @@ each combination).
 template<UnsignedInt dimensions> bool collides(const AbstractShape<dimensions>& a, const AbstractShape<dimensions>& b);
 
 template<UnsignedInt dimensions> Collision<dimensions> collision(const AbstractShape<dimensions>& a, const AbstractShape<dimensions>& b);
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

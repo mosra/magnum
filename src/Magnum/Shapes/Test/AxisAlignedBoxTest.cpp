@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Magnum.h"
 #include "Magnum/Shapes/AxisAlignedBox.h"
@@ -44,6 +46,7 @@ AxisAlignedBoxTest::AxisAlignedBoxTest() {
               &AxisAlignedBoxTest::collisionPoint});
 }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 void AxisAlignedBoxTest::transformed() {
     const auto box = Shapes::AxisAlignedBox3D({-1.0f, -2.0f, -3.0f}, {1.0f, 2.0f, 3.0f})
         .transformed(Matrix4::translation(Vector3(1.0f))*Matrix4::scaling({2.0f, -1.0f, 1.5f}));
@@ -59,6 +62,7 @@ void AxisAlignedBoxTest::collisionPoint() {
     VERIFY_NOT_COLLIDES(box, point1);
     VERIFY_COLLIDES(box, point2);
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

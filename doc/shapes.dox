@@ -30,6 +30,16 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
+@deprecated This library is a failed design experiment and is scheduled for
+    removal in a future release. Related geometry algorithms were moved to
+    @ref Magnum::Math::Distance "Math::Distance" and
+    @ref Magnum::Math::Intersection "Math::Intersection"; if you need a
+    full-fledged physics library, please have look at
+    [Bullet](https://bulletphysics.org), which has Magnum integration in
+    @ref Magnum::BulletIntegration "BulletIntegration" or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+
 The essential thing in collision detection is to define a complex object with
 collection of simple shapes, for which it is easy to detect collisions. The
 library is contained in @ref Shapes namespace, see its documentation for more

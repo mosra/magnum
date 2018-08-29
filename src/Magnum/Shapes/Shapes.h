@@ -26,70 +26,91 @@
 */
 
 /** @file
- * @brief Forward declarations for the @ref Magnum::Shapes namespace
- */
+@brief Forward declarations for the @ref Magnum::Shapes namespace
+
+@deprecated The @ref Magnum::Shapes library is a failed design experiment and
+    is scheduled for removal in a future release. Related geometry algorithms
+    were moved to @ref Magnum::Math::Distance and @ref Magnum::Math::Intersection;
+    if you need a full-fledged physics library, please have look at
+    [Bullet](https://bulletphysics.org), which has Magnum integration in
+    @ref Magnum::BulletIntegration, or at [Box2D](https://box2d.org/), which
+    has a @ref examples-box2d "Magnum example" as well.
+*/
+
+#include <Corrade/Utility/Macros.h>
 
 #include "Magnum/Types.h"
 
-namespace Magnum { namespace Shapes {
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-template<UnsignedInt> class AbstractShape;
-typedef AbstractShape<2> AbstractShape2D;
-typedef AbstractShape<3> AbstractShape3D;
-
-template<UnsignedInt> class AxisAlignedBox;
-typedef AxisAlignedBox<2> AxisAlignedBox2D;
-typedef AxisAlignedBox<3> AxisAlignedBox3D;
-
-template<UnsignedInt> class Box;
-typedef Box<2> Box2D;
-typedef Box<3> Box3D;
-
-template<UnsignedInt> class Capsule;
-typedef Capsule<2> Capsule2D;
-typedef Capsule<3> Capsule3D;
-
-template<UnsignedInt> class Collision;
-typedef Collision<2> Collision2D;
-typedef Collision<3> Collision3D;
-
-template<UnsignedInt> class Composition;
-typedef Composition<2> Composition2D;
-typedef Composition<3> Composition3D;
-
-template<UnsignedInt> class Cylinder;
-typedef Cylinder<2> Cylinder2D;
-typedef Cylinder<3> Cylinder3D;
-
-template<UnsignedInt> class Line;
-typedef Line<2> Line2D;
-typedef Line<3> Line3D;
-
-template<UnsignedInt> class LineSegment;
-typedef LineSegment<2> LineSegment2D;
-typedef LineSegment<3> LineSegment3D;
-
-template<class> class Shape;
-
-template<UnsignedInt> class ShapeGroup;
-typedef ShapeGroup<2> ShapeGroup2D;
-typedef ShapeGroup<3> ShapeGroup3D;
-
-template<UnsignedInt> class Sphere;
-typedef Sphere<2> Sphere2D;
-typedef Sphere<3> Sphere3D;
-
-template<UnsignedInt> class InvertedSphere;
-typedef InvertedSphere<2> InvertedSphere2D;
-typedef InvertedSphere<3> InvertedSphere3D;
-
-class Plane;
-
-template<UnsignedInt> class Point;
-typedef Point<2> Point2D;
-typedef Point<3> Point3D;
+#ifndef MAGNUM_BUILD_DEPRECATED
+#error the Shapes library is scheduled for removal, see the docs for alternatives
 #endif
+
+/* I still have a test for this class and it shouldn't pollute the log there */
+#ifndef _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+CORRADE_DEPRECATED_FILE("the Shapes library is scheduled for removal, see the docs for alternatives")
+#endif
+
+namespace Magnum { namespace CORRADE_DEPRECATED_NAMESPACE("scheduled for removal, see the docs for alternatives") Shapes {
+
+CORRADE_IGNORE_DEPRECATED_PUSH
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<UnsignedInt> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") AbstractShape;
+typedef AbstractShape<2> CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") AbstractShape2D;
+typedef AbstractShape<3> CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") AbstractShape3D;
+
+template<UnsignedInt> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") AxisAlignedBox;
+typedef AxisAlignedBox<2> CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") AxisAlignedBox2D;
+typedef AxisAlignedBox<3> CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") AxisAlignedBox3D;
+
+template<UnsignedInt> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Box;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Box<2> Box2D;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Box<3> Box3D;
+
+template<UnsignedInt> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Capsule;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Capsule<2> Capsule2D;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Capsule<3> Capsule3D;
+
+template<UnsignedInt> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Collision;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Collision<2> Collision2D;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Collision<3> Collision3D;
+
+template<UnsignedInt> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Composition;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Composition<2> Composition2D;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Composition<3> Composition3D;
+
+template<UnsignedInt> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Cylinder;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Cylinder<2> Cylinder2D;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Cylinder<3> Cylinder3D;
+
+template<UnsignedInt> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Line;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Line<2> Line2D;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Line<3> Line3D;
+
+template<UnsignedInt> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") LineSegment;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") LineSegment<2> LineSegment2D;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") LineSegment<3> LineSegment3D;
+
+template<class> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Shape;
+
+template<UnsignedInt> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") ShapeGroup;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") ShapeGroup<2> ShapeGroup2D;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") ShapeGroup<3> ShapeGroup3D;
+
+template<UnsignedInt> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Sphere;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Sphere<2> Sphere2D;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Sphere<3> Sphere3D;
+
+template<UnsignedInt> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") InvertedSphere;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") InvertedSphere<2> InvertedSphere2D;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") InvertedSphere<3> InvertedSphere3D;
+
+class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Plane;
+
+template<UnsignedInt> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Point;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Point<2> Point2D;
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Point<3> Point3D;
+#endif
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
 

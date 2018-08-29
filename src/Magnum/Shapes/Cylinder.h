@@ -26,18 +26,37 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Shapes::Cylinder, typedef @ref Magnum::Shapes::Cylinder2D, @ref Magnum::Shapes::Cylinder3D
- */
+@brief Class @ref Magnum::Shapes::Cylinder, typedef @ref Magnum::Shapes::Cylinder2D, @ref Magnum::Shapes::Cylinder3D
+
+@deprecated The @ref Magnum::Shapes library is a failed design experiment and
+    is scheduled for removal in a future release. Related geometry algorithms
+    were moved to @ref Magnum::Math::Distance and @ref Magnum::Math::Intersection;
+    if you need a full-fledged physics library, please have look at
+    [Bullet](https://bulletphysics.org), which has Magnum integration in
+    @ref Magnum::BulletIntegration, or at [Box2D](https://box2d.org/), which
+    has a @ref examples-box2d "Magnum example" as well.
+*/
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Shapes/Shapes.h"
 #include "Magnum/Shapes/visibility.h"
 
+/* File-level deprecation warning issued from Shapes.h */
+
 namespace Magnum { namespace Shapes {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 /**
 @brief Infinite cylinder defined by line and radius
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
 
 Unlike other elements the cylinder expects uniform scaling. See @ref shapes for
 brief introduction.
@@ -45,7 +64,7 @@ brief introduction.
 @todo Store the radius as squared value to avoid sqrt/pow? Will complicate
     collision detection with sphere.
 */
-template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Cylinder {
+template<UnsignedInt dimensions> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") MAGNUM_SHAPES_EXPORT Cylinder {
     public:
         enum: UnsignedInt {
             Dimensions = dimensions /**< Dimension count */
@@ -101,17 +120,58 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Cylinder {
         Float _radius;
 };
 
-/** @brief Infinite two-dimensional cylinder */
-typedef Cylinder<2> Cylinder2D;
+/**
+@brief Infinite two-dimensional cylinder
 
-/** @brief Infinite three-dimensional cylinder */
-typedef Cylinder<3> Cylinder3D;
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Cylinder<2> Cylinder2D;
 
-/** @collisionoccurenceoperator{Point,Cylinder} */
-template<UnsignedInt dimensions> inline bool operator%(const Point<dimensions>& a, const Cylinder<dimensions>& b) { return b % a; }
+/**
+@brief Infinite three-dimensional cylinder
 
-/** @collisionoccurenceoperator{Sphere,Cylinder} */
-template<UnsignedInt dimensions> inline bool operator%(const Sphere<dimensions>& a, const Cylinder<dimensions>& b) { return b % a; }
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Cylinder<3> Cylinder3D;
+
+/**
+@collisionoccurenceoperator{Point,Cylinder}
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+template<UnsignedInt dimensions> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") bool operator%(const Point<dimensions>& a, const Cylinder<dimensions>& b) { return b % a; }
+
+/**
+@collisionoccurenceoperator{Sphere,Cylinder}
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+template<UnsignedInt dimensions> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") bool operator%(const Sphere<dimensions>& a, const Cylinder<dimensions>& b) { return b % a; }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
 

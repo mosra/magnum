@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "AxisAlignedBoxRenderer.h"
 
 #include "Magnum/GL/Mesh.h"
@@ -32,6 +34,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> AxisAlignedBoxRenderer<dimensions>::AxisAlignedBoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>& axisAlignedBox): axisAlignedBox(static_cast<const Shapes::Implementation::Shape<Shapes::AxisAlignedBox<dimensions>>&>(axisAlignedBox).shape) {}
 
 template<UnsignedInt dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(Resource<ShapeRendererOptions>& options, const MatrixTypeFor<dimensions, Float>& projectionMatrix) {
@@ -44,5 +47,6 @@ template<UnsignedInt dimensions> void AxisAlignedBoxRenderer<dimensions>::draw(R
 
 template class AxisAlignedBoxRenderer<2>;
 template class AxisAlignedBoxRenderer<3>;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}

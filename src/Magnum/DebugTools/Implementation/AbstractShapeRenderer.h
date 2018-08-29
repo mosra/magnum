@@ -35,6 +35,7 @@
 
 namespace Magnum {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 namespace Shapes { namespace Implementation {
     template<UnsignedInt> struct AbstractShape;
 }}
@@ -64,6 +65,9 @@ template<UnsignedInt dimensions> class AbstractShapeRenderer {
         Resource<GL::Buffer> indexBuffer, vertexBuffer;
 };
 
-}}}
+}}
+CORRADE_IGNORE_DEPRECATED_POP
+
+}
 
 #endif

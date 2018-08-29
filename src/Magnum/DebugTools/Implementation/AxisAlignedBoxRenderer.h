@@ -31,6 +31,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> class AxisAlignedBoxRenderer: public AbstractBoxRenderer<dimensions> {
     public:
         explicit AxisAlignedBoxRenderer(const Shapes::Implementation::AbstractShape<dimensions>& axisAlignedBox);
@@ -41,6 +42,7 @@ template<UnsignedInt dimensions> class AxisAlignedBoxRenderer: public AbstractBo
     private:
         const Shapes::AxisAlignedBox<dimensions>& axisAlignedBox;
 };
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

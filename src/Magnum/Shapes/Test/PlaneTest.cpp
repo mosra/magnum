@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shapes/LineSegment.h"
 #include "Magnum/Shapes/Point.h"
@@ -46,6 +48,7 @@ PlaneTest::PlaneTest() {
               &PlaneTest::collisionLineSegment});
 }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 void PlaneTest::transformed() {
     const Shapes::Plane plane({1.0f, 2.0f, 3.0f}, {Constants::sqrt2(), -Constants::sqrt2(), 0});
 
@@ -76,6 +79,7 @@ void PlaneTest::collisionLineSegment() {
     VERIFY_NOT_COLLIDES(plane, line2);
     VERIFY_NOT_COLLIDES(plane, line3);
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

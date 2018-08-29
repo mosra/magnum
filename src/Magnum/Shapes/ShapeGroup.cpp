@@ -23,12 +23,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "ShapeGroup.h"
 
 #include "Magnum/Shapes/AbstractShape.h"
 
 namespace Magnum { namespace Shapes {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> void ShapeGroup<dimensions>::setClean() {
     /* Clean all objects */
     if(!this->isEmpty()) {
@@ -56,5 +59,6 @@ template<UnsignedInt dimensions> AbstractShape<dimensions>* ShapeGroup<dimension
 template class MAGNUM_SHAPES_EXPORT ShapeGroup<2>;
 template class MAGNUM_SHAPES_EXPORT ShapeGroup<3>;
 #endif
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}

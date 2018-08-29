@@ -38,17 +38,27 @@
 #include "Magnum/DebugTools/visibility.h"
 #include "Magnum/GL/GL.h"
 #include "Magnum/SceneGraph/SceneGraph.h"
-#include "Magnum/Shapes/Shapes.h"
 
 /** @todo fix this better */
 #ifdef CORRADE_MSVC2017_COMPATIBILITY
 #include "Magnum/DebugTools/ForceRenderer.h"
 #include "Magnum/DebugTools/ObjectRenderer.h"
-#include "Magnum/DebugTools/ShapeRenderer.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/MeshView.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#if !defined(Magnum_DebugTools_ShapeRenderer_h) && !defined(_MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES)
+#define Magnum_DebugTools_ShapeRenderer_h_not_included
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+#endif
+#include "Magnum/DebugTools/ShapeRenderer.h"
+#ifdef Magnum_DebugTools_ShapeRenderer_h_not_included
+#undef Magnum_DebugTools_ShapeRenderer_h_not_included
+#undef _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+#endif
+#endif
 #endif
 
 #ifdef MAGNUM_TARGET_GL
@@ -64,11 +74,22 @@ information.
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
 */
-class MAGNUM_DEBUGTOOLS_EXPORT ResourceManager: public Magnum::ResourceManager<Magnum::Implementation::ResourceManagerLocalInstance, GL::AbstractShaderProgram, GL::Buffer, GL::Mesh, GL::MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions, DebugTools::ShapeRendererOptions> {
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+#endif
+class MAGNUM_DEBUGTOOLS_EXPORT ResourceManager: public Magnum::ResourceManager<Magnum::Implementation::ResourceManagerLocalInstance, GL::AbstractShaderProgram, GL::Buffer, GL::Mesh, GL::MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    , DebugTools::ShapeRendererOptions
+    #endif
+    >
+{
     public:
         explicit ResourceManager();
         ~ResourceManager();
 };
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 #else
 #error this header is available only in the OpenGL build
 #endif

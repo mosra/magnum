@@ -32,6 +32,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> class AbstractBoxRenderer;
 
 template<> class AbstractBoxRenderer<2>: public AbstractShapeRenderer<2> {
@@ -43,6 +44,7 @@ template<> class AbstractBoxRenderer<3>: public AbstractShapeRenderer<3> {
     public:
         AbstractBoxRenderer();
 };
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

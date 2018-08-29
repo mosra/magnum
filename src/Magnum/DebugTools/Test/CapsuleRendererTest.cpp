@@ -51,6 +51,7 @@ CapsuleRendererTest::CapsuleRendererTest() {
               &CapsuleRendererTest::common3D});
 }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 void CapsuleRendererTest::zeroLength2D() {
     const Vector2 a(0.5f, 3.0f);
     std::array<Matrix3, 3> transformation = Implementation::capsuleRendererTransformation<2>(a, a, 3.5f);
@@ -171,6 +172,7 @@ void CapsuleRendererTest::common3D() {
     CORRADE_COMPARE(transformation[1].translation(), 0.5f*(a + b));
     CORRADE_COMPARE(transformation[2].translation(), b-capDistance);
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

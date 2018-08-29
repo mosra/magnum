@@ -39,7 +39,8 @@ necessary to read through everything, pick only what you need.
 -   @subpage opengl-wrapping --- @copybrief opengl-wrapping
 -   @subpage shaders --- @copybrief shaders
 -   @subpage scenegraph --- @copybrief scenegraph
--   @subpage shapes --- @copybrief shapes
+-   @subpage shapes @m_class{m-label m-danger} **deprecated** ---
+    @copybrief shapes
 -   @subpage debug-tools --- @copybrief debug-tools
 -   @subpage ui --- @copybrief ui
 */

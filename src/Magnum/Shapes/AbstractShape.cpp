@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "AbstractShape.h"
 
 #include <Corrade/Utility/Debug.h>
@@ -33,6 +35,7 @@
 
 namespace Magnum { namespace Shapes {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> AbstractShape<dimensions>::AbstractShape(SceneGraph::AbstractObject<dimensions, Float>& object, ShapeGroup<dimensions>* group): SceneGraph::AbstractGroupedFeature<dimensions, AbstractShape<dimensions>, Float>(object, group) {
     SceneGraph::AbstractFeature<dimensions, Float>::setCachedTransformations(SceneGraph::CachedTransformation::Absolute);
 }
@@ -65,5 +68,6 @@ template<UnsignedInt dimensions> void AbstractShape<dimensions>::markDirty() {
 template class MAGNUM_SHAPES_EXPORT AbstractShape<2>;
 template class MAGNUM_SHAPES_EXPORT AbstractShape<3>;
 #endif
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}

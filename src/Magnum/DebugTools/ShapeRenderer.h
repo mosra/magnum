@@ -27,8 +27,16 @@
 
 #ifdef MAGNUM_TARGET_GL
 /** @file
- * @brief Class @ref Magnum::DebugTools::ShapeRenderer, @ref Magnum::DebugTools::ShapeRendererOptions, typedef @ref Magnum::DebugTools::ShapeRenderer2D, @ref Magnum::DebugTools::ShapeRenderer3D
- */
+@brief Class @ref Magnum::DebugTools::ShapeRenderer, @ref Magnum::DebugTools::ShapeRendererOptions, typedef @ref Magnum::DebugTools::ShapeRenderer2D, @ref Magnum::DebugTools::ShapeRenderer3D
+
+@deprecated The @ref Magnum::Shapes library is a failed design experiment and
+    is scheduled for removal in a future release. Related geometry algorithms
+    were moved to @ref Magnum::Math::Distance and @ref Magnum::Math::Intersection;
+    if you need a full-fledged physics library, please have look at
+    [Bullet](https://bulletphysics.org), which has Magnum integration in
+    @ref Magnum::BulletIntegration, or at [Box2D](https://box2d.org/), which
+    has a @ref examples-box2d "Magnum example" as well.
+*/
 #endif
 
 #include "Magnum/Resource.h"
@@ -36,11 +44,22 @@
 #include "Magnum/SceneGraph/Drawable.h"
 #include "Magnum/Shapes/Shapes.h"
 #include "Magnum/Shapes/shapeImplementation.h"
+#include "Magnum/DebugTools/DebugTools.h"
 #include "Magnum/DebugTools/visibility.h"
+
+#ifndef MAGNUM_BUILD_DEPRECATED
+#error the Shapes library is scheduled for removal, see the docs for alternatives
+#endif
+
+/* I still have a test for this class and it shouldn't pollute the log there */
+#ifndef _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+CORRADE_DEPRECATED_FILE("the Shapes library is scheduled for removal, see the docs for alternatives")
+#endif
 
 #ifdef MAGNUM_TARGET_GL
 namespace Magnum { namespace DebugTools {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt> class ShapeRenderer;
 
 namespace Implementation {
@@ -52,13 +71,21 @@ namespace Implementation {
 /**
 @brief Shape renderer options
 
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+
 See @ref ShapeRenderer documentation for more information.
 
 @note This class is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
 */
-class ShapeRendererOptions {
+class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") ShapeRendererOptions {
     public:
         /**
          * @brief Shape rendering mode
@@ -124,6 +151,14 @@ class ShapeRendererOptions {
 /**
 @brief Shape renderer
 
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+
 Visualizes collision shapes using wireframe primitives. See
 @ref debug-tools-renderers for more information.
 
@@ -149,7 +184,7 @@ new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables);
 
 @todo Different drawing style for inverted shapes? (marking the "inside" somehow)
 */
-template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::Drawable<dimensions, Float> {
+template<UnsignedInt dimensions> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: public SceneGraph::Drawable<dimensions, Float> {
     #ifndef DOXYGEN_GENERATING_OUTPUT
     friend void Implementation::createDebugMesh<>(ShapeRenderer<dimensions>&, const Shapes::Implementation::AbstractShape<dimensions>&);
     #endif
@@ -178,11 +213,32 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ShapeRenderer: p
         std::vector<Implementation::AbstractShapeRenderer<dimensions>*> _renderers;
 };
 
-/** @brief Two-dimensional shape renderer */
-typedef ShapeRenderer<2> ShapeRenderer2D;
+/**
+@brief Two-dimensional shape renderer
 
-/** @brief Three-dimensional shape renderer */
-typedef ShapeRenderer<3> ShapeRenderer3D;
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") ShapeRenderer<2> ShapeRenderer2D;
+
+/**
+@brief Three-dimensional shape renderer
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") ShapeRenderer<3> ShapeRenderer3D;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
 #else

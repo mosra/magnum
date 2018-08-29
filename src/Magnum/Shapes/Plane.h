@@ -26,23 +26,42 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Shapes::Plane
- */
+@brief Class @ref Magnum::Shapes::Plane
+
+@deprecated The @ref Magnum::Shapes library is a failed design experiment and
+    is scheduled for removal in a future release. Related geometry algorithms
+    were moved to @ref Magnum::Math::Distance and @ref Magnum::Math::Intersection;
+    if you need a full-fledged physics library, please have look at
+    [Bullet](https://bulletphysics.org), which has Magnum integration in
+    @ref Magnum::BulletIntegration, or at [Box2D](https://box2d.org/), which
+    has a @ref examples-box2d "Magnum example" as well.
+*/
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Shapes/Shapes.h"
 #include "Magnum/Shapes/visibility.h"
 
+/* File-level deprecation warning issued from Shapes.h */
+
 namespace Magnum { namespace Shapes {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 /**
 @brief Infinite plane, defined by position and normal (3D only)
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
 
 Unlike other elements the plane expects uniform scaling. See @ref shapes for
 brief introduction.
 */
-class MAGNUM_SHAPES_EXPORT Plane {
+class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") MAGNUM_SHAPES_EXPORT Plane {
     public:
         enum: UnsignedInt {
             Dimensions = 3 /**< Dimension count */
@@ -90,17 +109,33 @@ class MAGNUM_SHAPES_EXPORT Plane {
 /** @relatesalso Line
 @brief Collision occurence of @ref Line and @ref Plane
 
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+
 @see @ref Plane::operator%(const Line3D&) const
 */
-inline bool operator%(const Line3D& a, const Plane& b) { return b % a; }
+inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") bool operator%(const Line3D& a, const Plane& b) { return b % a; }
 
 /** @relatesalso LineSegment
 @brief Collision occurence of @ref LineSegment and @ref Plane
 
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+
 @see @ref Plane::operator%(const LineSegment3D&) const
 */
-inline bool operator%(const LineSegment3D& a, const Plane& b) { return b % a; }
-
+inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") bool operator%(const LineSegment3D& a, const Plane& b) { return b % a; }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
 

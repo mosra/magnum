@@ -35,6 +35,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> std::array<MatrixTypeFor<dimensions, Float>, 3> capsuleRendererTransformation(const VectorTypeFor<dimensions, Float>& a, const VectorTypeFor<dimensions, Float>& b, Float radius);
 
 template<> std::array<Matrix3, 3> capsuleRendererTransformation<2>(const Vector2& a, const Vector2& b, const Float radius) {
@@ -101,6 +102,7 @@ template<> std::array<Matrix4, 3> capsuleRendererTransformation<3>(const Vector3
         Matrix4::translation(b-capDistance)*rotationScaling
     }};
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

@@ -25,6 +25,8 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "Magnum/Magnum.h"
 #include "Magnum/Shapes/Collision.h"
 
@@ -42,6 +44,7 @@ CollisionTest::CollisionTest() {
               &CollisionTest::flipped});
 }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 void CollisionTest::boolConversion() {
     CORRADE_VERIFY(!Collision3D());
     CORRADE_VERIFY(!Collision3D({}, {2.0f, 0.0f, 0.0f}, 0.0f));
@@ -55,6 +58,7 @@ void CollisionTest::flipped() {
     CORRADE_COMPARE(flipped.separationNormal(), Vector3(-1.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(flipped.separationDistance(), 0.5f);
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

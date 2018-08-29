@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "Cylinder.h"
 
 #include "Magnum/Magnum.h"
@@ -35,6 +37,7 @@
 
 namespace Magnum { namespace Shapes {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> Cylinder<dimensions> Cylinder<dimensions>::transformed(const MatrixTypeFor<dimensions, Float>& matrix) const {
     return Cylinder<dimensions>(matrix.transformPoint(_a), matrix.transformPoint(_b), matrix.uniformScaling()*_radius);
 }
@@ -53,5 +56,6 @@ template<UnsignedInt dimensions> bool Cylinder<dimensions>::operator%(const Sphe
 template class MAGNUM_SHAPES_EXPORT Cylinder<2>;
 template class MAGNUM_SHAPES_EXPORT Cylinder<3>;
 #endif
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}

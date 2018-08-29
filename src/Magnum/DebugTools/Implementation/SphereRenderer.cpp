@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "SphereRenderer.h"
 
 #include "Magnum/DebugTools/ShapeRenderer.h"
@@ -36,6 +38,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 AbstractSphereRenderer<2>::AbstractSphereRenderer(): AbstractShapeRenderer<2>("sphere2d", "sphere2d-vertices", {}) {
     if(!wireframeMesh) createResources(Primitives::circle2DWireframe(40));
 }
@@ -56,5 +59,6 @@ template<UnsignedInt dimensions> void SphereRenderer<dimensions>::draw(Resource<
 
 template class SphereRenderer<2>;
 template class SphereRenderer<3>;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}

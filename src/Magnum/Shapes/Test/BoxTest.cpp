@@ -25,6 +25,8 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shapes/Box.h"
@@ -41,11 +43,13 @@ BoxTest::BoxTest() {
     addTests({&BoxTest::transformed});
 }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 void BoxTest::transformed() {
     const auto box = Shapes::Box3D(Matrix4::translation({1.0f, 2.0f, -3.0f}))
         .transformed(Matrix4::scaling({2.0f, -1.0f, 1.5f}));
     CORRADE_COMPARE(box.transformation(), Matrix4::scaling({2.0f, -1.0f, 1.5f})*Matrix4::translation({1.0f, 2.0f, -3.0f}));
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

@@ -35,6 +35,7 @@
 
 namespace Magnum { namespace Shapes { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 /*
     Adding new collision type:
 
@@ -181,6 +182,7 @@ template<class T> struct Shape: AbstractShape<T::Dimensions> {
         static_cast<Shape<T>*>(result)->shape = shape.transformed(matrix);
     }
 };
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

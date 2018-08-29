@@ -25,6 +25,8 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "Magnum/Shapes/Composition.h"
 #include "Magnum/Shapes/Point.h"
 #include "Magnum/Shapes/Shape.h"
@@ -59,6 +61,7 @@ ShapeTest::ShapeTest() {
               &ShapeTest::shapeGroup});
 }
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 void ShapeTest::clean() {
     Scene3D scene;
     ShapeGroup3D shapes;
@@ -221,6 +224,7 @@ void ShapeTest::shapeGroup() {
     a.setClean();
     CORRADE_COMPARE(point.position(), Vector2(5.25f, -1.0f));
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

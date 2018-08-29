@@ -26,8 +26,16 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Shapes::Composition, typedef @ref Magnum::Shapes::Composition2D, @ref Magnum::Shapes::Composition3D, enum @ref Magnum::Shapes::CompositionOperation
- */
+@brief Class @ref Magnum::Shapes::Composition, typedef @ref Magnum::Shapes::Composition2D, @ref Magnum::Shapes::Composition3D, enum @ref Magnum::Shapes::CompositionOperation
+
+@deprecated The @ref Magnum::Shapes library is a failed design experiment and
+    is scheduled for removal in a future release. Related geometry algorithms
+    were moved to @ref Magnum::Math::Distance and @ref Magnum::Math::Intersection;
+    if you need a full-fledged physics library, please have look at
+    [Bullet](https://bulletphysics.org), which has Magnum integration in
+    @ref Magnum::BulletIntegration, or at [Box2D](https://box2d.org/), which
+    has a @ref examples-box2d "Magnum example" as well.
+*/
 
 #include <type_traits>
 #include <utility>
@@ -39,8 +47,11 @@
 #include "Magnum/Shapes/shapeImplementation.h"
 #include "Magnum/Shapes/visibility.h"
 
+/* File-level deprecation warning issued from Shapes.h */
+
 namespace Magnum { namespace Shapes {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 namespace Implementation {
     template<class> struct ShapeHelper;
 
@@ -52,8 +63,18 @@ namespace Implementation {
     }
 }
 
-/** @brief Shape operation */
-enum class CompositionOperation: UnsignedByte {
+/**
+@brief Shape operation
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+enum class CORRADE_DEPRECATED_ENUM("scheduled for removal, see the docs for alternatives") CompositionOperation: UnsignedByte {
     Not,    /**< Boolean NOT */
     And,    /**< Boolean AND */
     Or      /**< Boolean OR */
@@ -62,9 +83,17 @@ enum class CompositionOperation: UnsignedByte {
 /**
 @brief Composition of shapes
 
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+
 Result of logical operations on shapes. See @ref shapes for brief introduction.
 */
-template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
+template<UnsignedInt dimensions> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") MAGNUM_SHAPES_EXPORT Composition {
     friend Implementation::AbstractShape<dimensions>& Implementation::getAbstractShape<>(Composition<dimensions>&, std::size_t);
     friend const Implementation::AbstractShape<dimensions>& Implementation::getAbstractShape<>(const Composition<dimensions>&, std::size_t);
     friend Implementation::ShapeHelper<Composition<dimensions>>;
@@ -187,24 +216,66 @@ template<UnsignedInt dimensions> class MAGNUM_SHAPES_EXPORT Composition {
         Containers::Array<Node> _nodes;
 };
 
-/** @brief Two-dimensional shape composition */
-typedef Composition<2> Composition2D;
+/**
+@brief Two-dimensional shape composition
 
-/** @brief Three-dimensional shape composition */
-typedef Composition<3> Composition3D;
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+CORRADE_IGNORE_DEPRECATED_PUSH /* Otherwise GCC warns on the typedef :/ */
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Composition<2> Composition2D;
+CORRADE_IGNORE_DEPRECATED_POP
+
+/**
+@brief Three-dimensional shape composition
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+CORRADE_IGNORE_DEPRECATED_PUSH /* Otherwise GCC warns on the typedef :/ */
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Composition<3> Composition3D;
+CORRADE_IGNORE_DEPRECATED_POP
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
-/** @debugoperatorclassenum{Composition,Composition::Type} */
+/**
+@debugoperatorclassenum{Composition,Composition::Type}
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
 template<UnsignedInt dimensions> Debug& operator<<(Debug& debug, typename Composition<dimensions>::Type value);
 #endif
 
 /** @relates Composition
 @brief Collision occurence of shape with Composition
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt dimensions, class T> inline bool operator%(const T& a, const Composition<dimensions>& b) {
 #else
-template<UnsignedInt dimensions, class T> inline auto operator%(const T& a, const Composition<dimensions>& b) -> typename std::enable_if<std::is_same<decltype(Implementation::TypeOf<T>::type()), typename Implementation::ShapeDimensionTraits<dimensions>::Type>::value, bool>::type {
+template<UnsignedInt dimensions, class T> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") auto operator%(const T& a, const Composition<dimensions>& b) -> typename std::enable_if<std::is_same<decltype(Implementation::TypeOf<T>::type()), typename Implementation::ShapeDimensionTraits<dimensions>::Type>::value, bool>::type {
 #endif
     return b % a;
 }
@@ -212,27 +283,51 @@ template<UnsignedInt dimensions, class T> inline auto operator%(const T& a, cons
 #ifdef DOXYGEN_GENERATING_OUTPUT
 /** @relates Composition
 @brief Logical NOT of shape
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
 */
-template<class T> inline Composition<T::Dimensions> operator!(T a);
+template<class T> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Composition<T::Dimensions> operator!(T a);
 
 /** @relates Composition
 @brief Logical AND of two shapes
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
 
 [Short-circuit evaluation](http://en.wikipedia.org/wiki/Short-circuit_evaluation)
 is used here, so this operation can be used for providing simplified shape
 version, because collision with @p b is computed only if @p a collides.
 See @ref shapes-simplification for an example.
 */
-template<class T> inline Composition<T::Dimensions> operator&&(T a, T b);
+template<class T> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Composition<T::Dimensions> operator&&(T a, T b);
 
 /** @relates Composition
 @brief Logical OR of two shapes
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
 
 [Short-circuit evaluation](http://en.wikipedia.org/wiki/Short-circuit_evaluation)
 is used, so if collision with @p a is detected, collision with @p b is not
 computed.
 */
-template<class T> inline Composition<T::Dimensions> operator||(T a, T b);
+template<class T> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") Composition<T::Dimensions> operator||(T a, T b);
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -243,13 +338,13 @@ template<class T> inline Composition<T::Dimensions> operator||(T a, T b);
     std::is_same<decltype(Implementation::TypeOf<T>::type()), typename Implementation::ShapeDimensionTraits<T::Dimensions>::Type>::value && \
     std::is_same<decltype(Implementation::TypeOf<U>::type()), typename Implementation::ShapeDimensionTraits<T::Dimensions>::Type>::value, \
     Composition<T::Dimensions>>::type
-template<class T> inline auto operator!(T&& a) -> enableIfIsShapeType {
+template<class T> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") auto operator!(T&& a) -> enableIfIsShapeType {
     return Composition<T::Dimensions>(CompositionOperation::Not, std::forward<T>(a));
 }
-template<class T, class U> inline auto operator&&(T&& a, U&& b) -> enableIfAreShapeType {
+template<class T, class U> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") auto operator&&(T&& a, U&& b) -> enableIfAreShapeType {
     return Composition<T::Dimensions>(CompositionOperation::And, std::forward<T>(a), std::forward<U>(b));
 }
-template<class T, class U> inline auto operator||(T&& a, U&& b) -> enableIfAreShapeType {
+template<class T, class U> inline CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") auto operator||(T&& a, U&& b) -> enableIfAreShapeType {
     return Composition<T::Dimensions>(CompositionOperation::Or, std::forward<T>(a), std::forward<U>(b));
 }
 #undef enableIfIsShapeType
@@ -293,6 +388,7 @@ template<UnsignedInt dimensions> template<class T> inline const T& Composition<d
         "but" << _shapes[i]->type(), *static_cast<T*>(nullptr));
     return static_cast<Implementation::Shape<T>*>(_shapes[i])->shape;
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
 

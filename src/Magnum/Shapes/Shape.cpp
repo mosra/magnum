@@ -23,12 +23,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "Shape.h"
 
 #include "Magnum/Shapes/Composition.h"
 
 namespace Magnum { namespace Shapes { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> void ShapeHelper<Composition<dimensions>>::set(Shapes::Shape<Composition<dimensions>>& shape, const Composition<dimensions>& composition) {
     shape._transformedShape.shape = shape._shape.shape = composition;
 }
@@ -45,5 +48,6 @@ template<UnsignedInt dimensions> void ShapeHelper<Composition<dimensions>>::tran
 
 template struct MAGNUM_SHAPES_EXPORT ShapeHelper<Composition<2>>;
 template struct MAGNUM_SHAPES_EXPORT ShapeHelper<Composition<3>>;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}

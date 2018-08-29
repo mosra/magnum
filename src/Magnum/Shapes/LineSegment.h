@@ -26,20 +26,39 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Shapes::LineSegment, typedef @ref Magnum::Shapes::LineSegment2D, @ref Magnum::Shapes::LineSegment3D
- */
+@brief Class @ref Magnum::Shapes::LineSegment, typedef @ref Magnum::Shapes::LineSegment2D, @ref Magnum::Shapes::LineSegment3D
+
+@deprecated The @ref Magnum::Shapes library is a failed design experiment and
+    is scheduled for removal in a future release. Related geometry algorithms
+    were moved to @ref Magnum::Math::Distance and @ref Magnum::Math::Intersection;
+    if you need a full-fledged physics library, please have look at
+    [Bullet](https://bulletphysics.org), which has Magnum integration in
+    @ref Magnum::BulletIntegration, or at [Box2D](https://box2d.org/), which
+    has a @ref examples-box2d "Magnum example" as well.
+*/
 
 #include "Magnum/Shapes/Line.h"
 
+/* File-level deprecation warning issued from Shapes.h */
+
 namespace Magnum { namespace Shapes {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 /**
 @brief Line segment, defined by starting and ending point
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
 
 See @ref shapes for brief introduction.
 @see @ref LineSegment2D, @ref LineSegment3D
 */
-template<UnsignedInt dimensions> class LineSegment: public Line<dimensions> {
+template<UnsignedInt dimensions> class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") LineSegment: public Line<dimensions> {
     public:
         /**
          * @brief Default constructor
@@ -60,11 +79,32 @@ template<UnsignedInt dimensions> class LineSegment: public Line<dimensions> {
         constexpr LineSegment(const Line<dimensions>& line): Line<dimensions>(line) {}
 };
 
-/** @brief Two-dimensional line segment */
-typedef LineSegment<2> LineSegment2D;
+/**
+@brief Two-dimensional line segment
 
-/** @brief Three-dimensional line segment */
-typedef LineSegment<3> LineSegment3D;
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") LineSegment<2> LineSegment2D;
+
+/**
+@brief Three-dimensional line segment
+
+@deprecated The @ref Shapes library is a failed design experiment and is
+    scheduled for removal in a future release. Related geometry algorithms were
+    moved to @ref Math::Distance and @ref Math::Intersection; if you need a
+    full-fledged physics library, please have look at [Bullet](https://bulletphysics.org),
+    which has Magnum integration in @ref BulletIntegration, or at
+    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
+    as well.
+*/
+typedef CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") LineSegment<3> LineSegment3D;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
 

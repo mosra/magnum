@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "CylinderRenderer.h"
 
 #include "Magnum/DebugTools/ShapeRenderer.h"
@@ -38,6 +40,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 AbstractCylinderRenderer<2>::AbstractCylinderRenderer(): AbstractShapeRenderer<2>("cylinder2d", "cylinder2d-vertices", {}) {
     if(!wireframeMesh) createResources(Primitives::squareWireframe());
 }
@@ -57,5 +60,6 @@ template<UnsignedInt dimensions> void CylinderRenderer<dimensions>::draw(Resourc
 
 template class CylinderRenderer<2>;
 template class CylinderRenderer<3>;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}

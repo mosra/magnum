@@ -33,6 +33,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 template<UnsignedInt dimensions> MatrixTypeFor<dimensions, Float> cylinderRendererTransformation(const VectorTypeFor<dimensions, Float>& a, const VectorTypeFor<dimensions, Float>& b, Float radius);
 
 template<> Matrix3 cylinderRendererTransformation<2>(const Vector2& a, const Vector2& b, const Float radius) {
@@ -83,6 +84,7 @@ template<> Matrix4 cylinderRendererTransformation<3>(const Vector3& a, const Vec
     /* Scaling and translation */
     return Matrix4::translation(0.5f*(a + b))*rotation*Matrix4::scaling({radius, length, radius});
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
 

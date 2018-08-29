@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
+
 #include "AbstractShapeRenderer.h"
 
 #include <Corrade/Containers/Array.h>
@@ -38,6 +40,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Implementation {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 namespace {
 
 template<UnsignedInt dimensions> ResourceKey shaderKey();
@@ -130,5 +133,6 @@ template<UnsignedInt dimensions> void AbstractShapeRenderer<dimensions>::createR
 
 template class AbstractShapeRenderer<2>;
 template class AbstractShapeRenderer<3>;
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}}
