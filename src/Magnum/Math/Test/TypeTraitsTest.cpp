@@ -226,12 +226,11 @@ template<class T> void TypeTraitsTest::equalsZeroIntegral() {
     setTestCaseName(std::string{"equalsZeroIntegral<"} + TypeTraits<T>::name() + ">");
 
     const T a(-123);
-    const T b(-123);
-    const T magnitude = std::max(abs(a), abs(b));
+    const T magnitude = abs(a);
 
-    CORRADE_VERIFY(TypeTraits<T>::equals(a, b));
-    CORRADE_VERIFY(TypeTraits<T>::equalsZero(a - b, magnitude));
-    CORRADE_VERIFY(!TypeTraits<T>::equalsZero(a - b + TypeTraits<T>::epsilon(), magnitude));
+    CORRADE_VERIFY(TypeTraits<T>::equals(a, a));
+    CORRADE_VERIFY(TypeTraits<T>::equalsZero(a - a, magnitude));
+    CORRADE_VERIFY(!TypeTraits<T>::equalsZero(a - a + TypeTraits<T>::epsilon(), magnitude));
 }
 
 template<class T> void TypeTraitsTest::equalsZeroFloatingPoint() {
@@ -239,15 +238,14 @@ template<class T> void TypeTraitsTest::equalsZeroFloatingPoint() {
     setTestCaseDescription(EqualsZeroData[testCaseInstanceId()].name);
 
     const T a = EqualsZeroData[testCaseInstanceId()].get(T{});
-    const T b = EqualsZeroData[testCaseInstanceId()].get(T{});
     const T step = EqualsZeroData[testCaseInstanceId()].getStep(T{});
-    const T magnitude = std::max(abs(a), abs(b));
+    const T magnitude = abs(a);
 
-    CORRADE_VERIFY(TypeTraits<T>::equals(a + step/T(2.0), b));
-    CORRADE_VERIFY(TypeTraits<T>::equalsZero(a + step/T(2.0) - b, magnitude));
+    CORRADE_VERIFY(TypeTraits<T>::equals(a + step/T(2.0), a));
+    CORRADE_VERIFY(TypeTraits<T>::equalsZero(a + step/T(2.0) - a, magnitude));
 
-    CORRADE_VERIFY(!TypeTraits<T>::equals(a - step*T(2.0), b));
-    CORRADE_VERIFY(!TypeTraits<T>::equalsZero(a - step*T(2.0) - b, magnitude));
+    CORRADE_VERIFY(!TypeTraits<T>::equals(a - step*T(2.0), a));
+    CORRADE_VERIFY(!TypeTraits<T>::equalsZero(a - step*T(2.0) - a, magnitude));
 }
 
 }}}
