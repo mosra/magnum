@@ -153,11 +153,12 @@ if(TARGET_GL)
         target_link_libraries(MagnumDebugTools PUBLIC MagnumSceneGraph)
     endif()
     if(WITH_SHAPES)
-        target_link_libraries(MagnumDebugTools PUBLIC MagnumShapes MagnumPrimitives)
+        target_link_libraries(MagnumDebugTools PUBLIC MagnumShapes)
     endif()
     if(WITH_SCENEGRAPH OR WITH_SHAPES)
         target_link_libraries(MagnumDebugTools PUBLIC
             MagnumMeshTools
+            MagnumPrimitives
             MagnumShaders)
     endif()
 endif()
@@ -191,11 +192,12 @@ if(BUILD_TESTS)
             target_link_libraries(MagnumDebugToolsTestLib PUBLIC MagnumSceneGraph)
         endif()
         if(WITH_SHAPES)
-            target_link_libraries(MagnumDebugToolsTestLib PUBLIC MagnumShapes MagnumPrimitives)
+            target_link_libraries(MagnumDebugToolsTestLib PUBLIC MagnumShapes)
         endif()
         if(WITH_SCENEGRAPH OR WITH_SHAPES)
             target_link_libraries(MagnumDebugToolsTestLib PUBLIC
                 MagnumMeshTools
+                MagnumPrimitives
                 MagnumShaders)
         endif()
     endif()
