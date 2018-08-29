@@ -816,7 +816,8 @@ You will need [Emscripten](http://kripken.github.io/emscripten-site/) installed
 and configured and
 @ref building-corrade-cross-emscripten "Corrade built for Emscripten". The
 toolchains require CMake 3.7 or newer to properly set compiler and linker
-flags.
+flags. If you are on Windows, [this blog post](https://blog.squareys.de/magnum-emscripten-on-windows/)
+may be helpful.
 
 There are two toolchain files. The `generic/Emscripten.cmake` is for the
 classical (asm.js) build, the `generic/Emscripten-wasm.cmake` is for a
