@@ -579,9 +579,8 @@ class Sdl2Application {
          *
          * Window size to which all input event coordinates can be related.
          * Note that, especially on HiDPI systems, it may be different from
-         * @ref framebufferSize(). If a window is not created yet, returns
-         * zero vector. See @ref Platform-Sdl2Application-dpi for more
-         * information.
+         * @ref framebufferSize(). Expects that a window is already created.
+         * See @ref Platform-Sdl2Application-dpi for more information.
          * @see @ref dpiScaling()
          */
         Vector2i windowSize() const;
@@ -591,9 +590,9 @@ class Sdl2Application {
          * @brief Framebuffer size
          *
          * Size of the default framebuffer. Note that, especially on HiDPI
-         * systems, it may be different from @ref windowSize(). If a window is
-         * not created yet, returns zero vector. See
-         * @ref Platform-Sdl2Application-dpi for more information.
+         * systems, it may be different from @ref windowSize(). Expects that a
+         * window is already created. See @ref Platform-Sdl2Application-dpi for
+         * more information.
          *
          * @note This function is available only if Magnum is compiled with
          *      @ref MAGNUM_TARGET_GL enabled (done by default). See
