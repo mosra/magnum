@@ -105,7 +105,9 @@ if(WITH_DEBUGTOOLS AND Corrade_TestSuite_FOUND AND NOT CORRADE_TARGET_IOS)
     # corrade_add_test() because it shouldn't be run as part of CTest as it
     # purposedly fails.
     add_executable(debugtools-compareimage debugtools-compareimage.cpp)
-    target_link_libraries(debugtools-compareimage PRIVATE MagnumDebugTools)
+    target_link_libraries(debugtools-compareimage PRIVATE
+        MagnumDebugTools
+        MagnumTrade)
     target_include_directories(debugtools-compareimage PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
     set_target_properties(debugtools-compareimage PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
