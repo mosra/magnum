@@ -26,9 +26,15 @@
 #include "flextVk.h"
 #include "flextVkGlobal.h"
 
+VkResult(VKAPI_PTR *flextvkEnumerateInstanceVersion)(uint32_t*) = nullptr;
+
 FlextVkInstance flextVkInstance{};
 
 FlextVkDevice flextVkDevice{};
+
+void flextVkInit() {
+    flextvkEnumerateInstanceVersion = reinterpret_cast<VkResult(*)(uint32_t*)>(vkGetInstanceProcAddr(nullptr, "vkEnumerateInstanceVersion"));
+}
 
 void flextVkInitInstance(VkInstance instance, FlextVkInstance* data) {
     data->GetPhysicalDevicePresentRectanglesKHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkPhysicalDevice, VkSurfaceKHR, uint32_t*, VkRect2D*)>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDevicePresentRectanglesKHR"));
@@ -217,7 +223,6 @@ void flextVkInitDevice(VkDevice device, FlextVkDevice* data, PFN_vkVoidFunction(
     data->CreateSamplerYcbcrConversion = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkSamplerYcbcrConversionCreateInfo*, const VkAllocationCallbacks*, VkSamplerYcbcrConversion*)>(getDeviceProcAddr(device, "vkCreateSamplerYcbcrConversion"));
     data->DestroyDescriptorUpdateTemplate = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, VkDescriptorUpdateTemplate, const VkAllocationCallbacks*)>(getDeviceProcAddr(device, "vkDestroyDescriptorUpdateTemplate"));
     data->DestroySamplerYcbcrConversion = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, VkSamplerYcbcrConversion, const VkAllocationCallbacks*)>(getDeviceProcAddr(device, "vkDestroySamplerYcbcrConversion"));
-    data->EnumerateInstanceVersion = reinterpret_cast<VkResult(VKAPI_PTR*)(uint32_t*)>(getDeviceProcAddr(device, "vkEnumerateInstanceVersion"));
     data->GetBufferMemoryRequirements2 = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, const VkBufferMemoryRequirementsInfo2*, VkMemoryRequirements2*)>(getDeviceProcAddr(device, "vkGetBufferMemoryRequirements2"));
     data->GetDescriptorSetLayoutSupport = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, const VkDescriptorSetLayoutCreateInfo*, VkDescriptorSetLayoutSupport*)>(getDeviceProcAddr(device, "vkGetDescriptorSetLayoutSupport"));
     data->GetDeviceGroupPeerMemoryFeatures = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, uint32_t, uint32_t, uint32_t, VkPeerMemoryFeatureFlags*)>(getDeviceProcAddr(device, "vkGetDeviceGroupPeerMemoryFeatures"));

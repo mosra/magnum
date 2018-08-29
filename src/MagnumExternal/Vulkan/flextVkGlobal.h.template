@@ -57,7 +57,7 @@ extern FLEXTVK_EXPORT FlextVkDevice flextVkDevice;
 /* VK_@cat */
 
 @for f in funcs:
-@if f.params[0][1] not in ['VkInstance', 'VkPhysicalDevice'] and f.name not in ['GetInstanceProcAddr', 'GetDeviceProcAddr', 'EnumerateInstanceExtensionProperties', 'EnumerateInstanceLayerProperties', 'CreateInstance']:
+@if f.params[0][1] not in ['VkInstance', 'VkPhysicalDevice'] and f.name not in ['GetInstanceProcAddr', 'GetDeviceProcAddr', 'EnumerateInstanceVersion', 'EnumerateInstanceExtensionProperties', 'EnumerateInstanceLayerProperties', 'CreateInstance']:
 #define vk@f.name flextVkDevice.@f.name
 @end
 @end

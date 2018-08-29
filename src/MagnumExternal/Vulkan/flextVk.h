@@ -3292,6 +3292,14 @@ VKAPI_ATTR VkResult VKAPI_CALL vkEnumerateInstanceExtensionProperties(const char
 VKAPI_ATTR VkResult VKAPI_CALL vkEnumerateInstanceLayerProperties(uint32_t*, VkLayerProperties*);
 VKAPI_ATTR PFN_vkVoidFunction VKAPI_CALL vkGetInstanceProcAddr(VkInstance, const char*);
 
+/* Global function pointers. These are not present in all Vulkan versions, so
+   they need to be loaded at runtime. */
+extern FLEXTVK_EXPORT VkResult(VKAPI_PTR *flextvkEnumerateInstanceVersion)(uint32_t*);
+#define vkEnumerateInstanceVersion flextvkEnumerateInstanceVersion
+
+/* Global function pointer initialization */
+void FLEXTVK_EXPORT flextVkInit();
+
 /* Per-instance function pointers */
 struct FlextVkInstance {
 
@@ -3568,7 +3576,6 @@ struct FlextVkDevice {
     VkResult    (VKAPI_PTR *CreateSamplerYcbcrConversion)(VkDevice, const VkSamplerYcbcrConversionCreateInfo*, const VkAllocationCallbacks*, VkSamplerYcbcrConversion*);
     void    (VKAPI_PTR *DestroyDescriptorUpdateTemplate)(VkDevice, VkDescriptorUpdateTemplate, const VkAllocationCallbacks*);
     void    (VKAPI_PTR *DestroySamplerYcbcrConversion)(VkDevice, VkSamplerYcbcrConversion, const VkAllocationCallbacks*);
-    VkResult    (VKAPI_PTR *EnumerateInstanceVersion)(uint32_t*);
     void    (VKAPI_PTR *GetBufferMemoryRequirements2)(VkDevice, const VkBufferMemoryRequirementsInfo2*, VkMemoryRequirements2*);
     void    (VKAPI_PTR *GetDescriptorSetLayoutSupport)(VkDevice, const VkDescriptorSetLayoutCreateInfo*, VkDescriptorSetLayoutSupport*);
     void    (VKAPI_PTR *GetDeviceGroupPeerMemoryFeatures)(VkDevice, uint32_t, uint32_t, uint32_t, VkPeerMemoryFeatureFlags*);

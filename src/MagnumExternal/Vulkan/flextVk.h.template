@@ -106,6 +106,23 @@ VKAPI_ATTR @f.returntype VKAPI_CALL vk@f.name\
 @end
 @end
 
+/* Global function pointers. These are not present in all Vulkan versions, so
+   they need to be loaded at runtime. */
+@for cat,funcs in functions:
+@if funcs:
+@for f in funcs:
+@if f.name in ['EnumerateInstanceVersion']:
+extern FLEXTVK_EXPORT @f.returntype\
+(VKAPI_PTR *flextvk@f.name)(@f.param_type_list_string());
+#define vk@f.name flextvk@f.name
+@end
+@end
+@end
+@end
+
+/* Global function pointer initialization */
+void FLEXTVK_EXPORT flextVkInit();
+
 /* Per-instance function pointers */
 struct FlextVkInstance {
     @for cat,funcs in functions:
@@ -134,7 +151,7 @@ struct FlextVkDevice {
     /* VK_@cat */
 
     @for f in funcs:
-    @if f.params[0][1] not in ['VkInstance', 'VkPhysicalDevice'] and f.name not in ['GetInstanceProcAddr', 'GetDeviceProcAddr', 'EnumerateInstanceExtensionProperties', 'EnumerateInstanceLayerProperties', 'CreateInstance']:
+    @if f.params[0][1] not in ['VkInstance', 'VkPhysicalDevice'] and f.name not in ['GetInstanceProcAddr', 'GetDeviceProcAddr', 'EnumerateInstanceVersion', 'EnumerateInstanceExtensionProperties', 'EnumerateInstanceLayerProperties', 'CreateInstance']:
     @f.returntype\
     (VKAPI_PTR *@f.name)(@f.param_type_list_string());
     @end

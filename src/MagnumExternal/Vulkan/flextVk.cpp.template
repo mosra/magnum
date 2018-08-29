@@ -27,9 +27,33 @@
 #include "flextVk.h"
 #include "flextVkGlobal.h"
 
+@for category,funcs in functions:
+@if funcs:
+@for f in funcs:
+@if f.name in ['EnumerateInstanceVersion']:
+@f.returntype\
+(VKAPI_PTR *flextvk@f.name)(@f.param_type_list_string()) = nullptr;
+@end
+@end
+@end
+@end
+
 FlextVkInstance flextVkInstance{};
 
 FlextVkDevice flextVkDevice{};
+
+void flextVkInit() {
+    @for category,funcs in functions:
+    @if funcs:
+    @for f in funcs:
+    @if f.name in ['EnumerateInstanceVersion']:
+    flextvk@f.name = reinterpret_cast<@f.returntype\
+(*)(@f.param_type_list_string())>(vkGetInstanceProcAddr(nullptr, "vk@f.name"));
+    @end
+    @end
+    @end
+    @end
+}
 
 void flextVkInitInstance(VkInstance instance, FlextVkInstance* data) {
     @for category,funcs in functions:
@@ -47,7 +71,7 @@ void flextVkInitInstance(VkInstance instance, FlextVkInstance* data) {
 void flextVkInitDevice(VkDevice device, FlextVkDevice* data, PFN_vkVoidFunction(VKAPI_PTR *getDeviceProcAddr)(VkDevice, const char*)) {
     @for category,funcs in functions:
     @for f in funcs:
-    @if f.params[0][1] not in ['VkInstance', 'VkPhysicalDevice'] and f.name not in ['GetInstanceProcAddr', 'GetDeviceProcAddr', 'EnumerateInstanceExtensionProperties', 'EnumerateInstanceLayerProperties', 'CreateInstance']:
+    @if f.params[0][1] not in ['VkInstance', 'VkPhysicalDevice'] and f.name not in ['GetInstanceProcAddr', 'GetDeviceProcAddr', 'EnumerateInstanceVersion', 'EnumerateInstanceExtensionProperties', 'EnumerateInstanceLayerProperties', 'CreateInstance']:
     data->@f.name = reinterpret_cast<@f.returntype\
 (VKAPI_PTR*)(@f.param_type_list_string())>(getDeviceProcAddr(device, "vk@f.name"));
     @end
