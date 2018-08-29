@@ -152,8 +152,8 @@ class GLContext: public GL::Context {
 };
 
 #ifdef MAGNUM_BUILD_DEPRECATED
-/** @brief @copybrief GL::Extension
- * @deprecated Use @ref GL::Extension instead.
+/** @brief @copybrief Platform::GLContext
+ * @deprecated Use @ref Platform::GLContext instead.
  */
 typedef CORRADE_DEPRECATED("use Platform::GLContext instead") GLContext Context;
 #endif
