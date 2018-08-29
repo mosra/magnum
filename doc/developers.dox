@@ -365,7 +365,11 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
     -   Add a compatibility @cpp typedef @ce / @cpp using @ce for a renamed
         symbol, marking it with @ref CORRADE_DEPRECATED() / @ref CORRADE_DEPRECATED_ALIAS()
     -   Add a compatibility header for a renamed include, including the
-        original file from it and marking it with @ref CORRADE_DEPRECATED_FILE()
+        original file from it and marking it with @ref CORRADE_DEPRECATED_FILE().
+        Ensure the file is not included from anywhere else anymore, since that
+        would mean the user then gets spammed with more than just one warning
+        per included file. This macro also can't easily be disabled on most
+        platforms.
     -   Add a compatibility inline function for a function that got renamed or
         its arguments changed, mark it with @ref CORRADE_DEPRECATED()
     -   Add a compatibility enum value for a value that got renamed or deleted,
@@ -404,6 +408,60 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
     using the old API) and verify they are still green (and red in
     non-deprecated build)
 14. Update dependent projects
+
+@section developers-deprecation-library Checklist for deprecating a whole library
+
+1.  If there's no compatible replacement (for example when removing support for
+    an outdated toolkit), think about possible alternatives, external libraries
+    or other ways to reach the same goal.
+2.  Add deprecation notes, listing alternatives
+    -   to docs of the whole namespace and all its members
+    -   to docs of the directory and all files inside
+    -   to all feature overview pages
+    -   to each symbol using one of the @ref CORRADE_DEPRECATED() macros, with
+        a shorter note mentioning alternatives
+    -   ensure each public headers (transitively) contains exactly one
+        @ref CORRADE_DEPRECATED_FILE() macro to warn the user *exactly once*
+        about including a deprecated header --- in particular, putting it in
+        every file would spam the user way too much
+    -   since the files are still compiled and included by the library, wrap it
+        in @cpp #ifndef _MAGNUM_DO_NOT_WARN_DEPRECATED_LIBRARYNAME @ce and
+        @cpp #define @ce this macro in all `*.cpp` files and tests to avoid
+        spamming the compiler log
+    -   an @cpp #error @ce to each header file in case @ref MAGNUM_BUILD_DEPRECATED
+        is not enabled
+    -   wrap contents of every header, source and test file in
+        @ref CORRADE_IGNORE_DEPRECATED_PUSH and @ref CORRADE_IGNORE_DEPRECATED_POP
+        to avoid warnings when compiling the library itself (no, this doesn't
+        disable warnings for library *users*)
+    -   a @cmake message(FATAL_ERROR) @ce to corresponding `CMakeLists.txt` in
+        case @ref MAGNUM_BUILD_DEPRECATED is not enabled
+    -   a @m_class{m-label m-danger} **deprecated** label next to the `WITH_*`
+        CMake option in the corresponding `doc/building.dox` page and next to
+        the CMake component name in the corresponding `doc/cmake.dox` page
+        (and similar files in other repos), possibly also to all pages that
+        list it (if any)
+3.  If the library was enabled by default, make it disabled by default. Update
+    relevant sections in `doc/building.dox` and `doc/cmake.dox`.
+4.  Include the library component in the corresponding `Find` module component
+    list only if @ref MAGNUM_BUILD_DEPRECATED is enabled.
+5.  Remove the deprecated library from all packages except developer `PKGBUILD`s
+    and CIs, remove also its no-longer-needed dependencies from these packages
+6.  Verify no other libraries, projects or examples depend on given library
+    anymore. If they do:
+    -   rework examples to not use the deprecated functionality anymore
+    -   if there are dependencies in other libraries or projects, make the
+        related features deprecated in the same manner, building them only
+        if @ref MAGNUM_BUILD_DEPRECATED is enabled
+    -   update corresponding `Find` modules to require dependency on this
+        library only if @ref MAGNUM_BUILD_DEPRECATED is enabled
+7.  Verify no CIs in dependent projects have this library enabled. If they do,
+    it should be only if @ref MAGNUM_BUILD_DEPRECATED is enabled and only if
+    there is a (deprecated) feature depending on this library.
+8.  Mention the deprecated library in the deprecation section of `doc/changelog.dox`
+    (and similar files in other repos), note the alternatives and note that
+    it's no longer built by default or included in any packages (in case it was
+    before)
 
 @section developers-removing Checklist for removing a feature
 
