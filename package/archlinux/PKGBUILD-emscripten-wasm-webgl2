@@ -31,6 +31,7 @@ build() {
         -DMAGNUM_DEPLOY_PREFIX=/srv/http/emscripten-webgl2 \
         -DTARGET_GLES2=OFF \
         -DWITH_AUDIO=ON \
+        -DWITH_SHAPES=ON \
         -DWITH_SDL2APPLICATION=ON \
         -WDITH_WINDOWLESSEGLAPPLICATION=ON \
         -DWITH_ANYAUDIOIMPORTER=ON \
