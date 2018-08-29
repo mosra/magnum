@@ -249,6 +249,8 @@ See also:
     for more information.
 -   Magnum now links to GLVND on Linux instead of the old libGL ABI if using
     CMake 3.11 and newer
+-   @ref cmake "FindMagnum.cmake" now allows to use the @ref DebugTools library
+    even if some of its optional dependencies are not compiled in
 -   `FindSDL2.cmake` now properly links to `dl` and `pthread` libraries when
     using a static build of SDL2 on Linux
 -   `FindSDL2.cmake` is now able to properly find a debug build of SDL, which

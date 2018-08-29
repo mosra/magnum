@@ -362,8 +362,16 @@ set(_MAGNUM_Audio_DEPENDENCIES )
 set(_MAGNUM_DebugTools_DEPENDENCIES )
 if(MAGNUM_TARGET_GL)
     # MeshTools, Primitives, SceneGraph, Shaders and Shapes are used only for
-    # GL renderers
+    # GL renderers. All of this is optional, compiled in only if the base
+    # library was selected.
     list(APPEND _MAGNUM_DebugTools_DEPENDENCIES MeshTools Primitives SceneGraph Shaders Shapes Trade GL)
+    set(_MAGNUM_DebugTools_MeshTools_DEPENDENCY_IS_OPTIONAL ON)
+    set(_MAGNUM_DebugTools_Primitives_DEPENDENCY_IS_OPTIONAL ON)
+    set(_MAGNUM_DebugTools_SceneGraph_DEPENDENCY_IS_OPTIONAL ON)
+    set(_MAGNUM_DebugTools_Shaders_DEPENDENCY_IS_OPTIONAL ON)
+    set(_MAGNUM_DebugTools_Shapes_DEPENDENCY_IS_OPTIONAL ON)
+    set(_MAGNUM_DebugTools_Trade_DEPENDENCY_IS_OPTIONAL ON)
+    set(_MAGNUM_DebugTools_GL_DEPENDENCY_IS_OPTIONAL ON)
 endif()
 
 set(_MAGNUM_MeshTools_DEPENDENCIES )
@@ -448,10 +456,14 @@ endforeach()
 # Ensure that all inter-component dependencies are specified as well
 set(_MAGNUM_ADDITIONAL_COMPONENTS )
 foreach(_component ${Magnum_FIND_COMPONENTS})
-    # Mark the dependencies as required if the component is also required
+    # Mark the dependencies as required if the component is also required, but
+    # only if they themselves are not optional (for example parts of DebugTools
+    # are present only if their respective base library is compiled)
     if(Magnum_FIND_REQUIRED_${_component})
         foreach(_dependency ${_MAGNUM_${_component}_DEPENDENCIES})
-            set(Magnum_FIND_REQUIRED_${_dependency} TRUE)
+            if(NOT _MAGNUM_${_component}_${_dependency}_DEPENDENCY_IS_OPTIONAL)
+                set(Magnum_FIND_REQUIRED_${_dependency} TRUE)
+            endif()
         endforeach()
     endif()
 
@@ -473,7 +485,9 @@ foreach(_WHAT LIBRARY PLUGIN EXECUTABLE)
     set(_MAGNUM_${_WHAT}_COMPONENTS "^(${_MAGNUM_${_WHAT}_COMPONENTS})$")
 endforeach()
 
-# Find all components
+# Find all components. Maintain a list of components that'll need to have
+# their optional dependencies checked.
+set(_MAGNUM_OPTIONAL_DEPENDENCIES_TO_ADD )
 foreach(_component ${Magnum_FIND_COMPONENTS})
     string(TOUPPER ${_component} _COMPONENT)
 
@@ -884,14 +898,25 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             endif()
         endif()
 
-        # Link to core Magnum library, add inter-library dependencies
+        # Link to core Magnum library, add inter-library dependencies. If there
+        # are optional dependencies, defer adding them to later once we know if
+        # they were found or not.
         if(_component MATCHES ${_MAGNUM_LIBRARY_COMPONENTS} OR _component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS})
             set_property(TARGET Magnum::${_component} APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES Magnum::Magnum)
+            set(_MAGNUM_${component}_OPTIONAL_DEPENDENCIES_TO_ADD )
             foreach(_dependency ${_MAGNUM_${_component}_DEPENDENCIES})
-                set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                    INTERFACE_LINK_LIBRARIES Magnum::${_dependency})
+                if(NOT _MAGNUM_${_component}_${_dependency}_DEPENDENCY_IS_OPTIONAL)
+                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES Magnum::${_dependency})
+                else()
+                    list(APPEND _MAGNUM_${_component}_OPTIONAL_DEPENDENCIES_TO_ADD
+                        ${_dependency})
+                endif()
             endforeach()
+            if(_MAGNUM_${_component}_OPTIONAL_DEPENDENCIES_TO_ADD)
+                list(APPEND _MAGNUM_OPTIONAL_DEPENDENCIES_TO_ADD ${_component})
+            endif()
         endif()
 
         # Decide if the library was found
@@ -953,6 +978,17 @@ include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(Magnum
     REQUIRED_VARS MAGNUM_INCLUDE_DIR MAGNUM_LIBRARY ${MAGNUM_EXTRAS_NEEDED}
     HANDLE_COMPONENTS)
+
+# Components with optional dependencies -- add them once we know if they were
+# found or not.
+foreach(_component ${_MAGNUM_OPTIONAL_DEPENDENCIES_TO_ADD})
+    foreach(_dependency ${_MAGNUM_${_component}_OPTIONAL_DEPENDENCIES_TO_ADD})
+        if(Magnum_${_dependency}_FOUND)
+            set_property(TARGET Magnum::${_component} APPEND PROPERTY
+                INTERFACE_LINK_LIBRARIES Magnum::${_dependency})
+        endif()
+    endforeach()
+endforeach()
 
 # Create Windowless*Application, *Application and *Context aliases
 # TODO: ugh why can't I make an alias of IMPORTED target?
