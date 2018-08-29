@@ -31,7 +31,6 @@ corrade_add_test(MeshToolsGenerateFlatNormalsTest GenerateFlatNormalsTest.cpp LI
 corrade_add_test(MeshToolsInterleaveTest InterleaveTest.cpp LIBRARIES Magnum)
 corrade_add_test(MeshToolsRemoveDuplicatesTest RemoveDuplicatesTest.cpp LIBRARIES Magnum)
 corrade_add_test(MeshToolsSubdivideTest SubdivideTest.cpp LIBRARIES Magnum)
-corrade_add_test(MeshToolsSubdivideRemov___Benchmark SubdivideRemoveDuplicatesBenchmark.cpp LIBRARIES MagnumPrimitives)
 corrade_add_test(MeshToolsTipsifyTest TipsifyTest.cpp LIBRARIES MagnumMeshTools)
 corrade_add_test(MeshToolsTransformTest TransformTest.cpp LIBRARIES MagnumMeshTools)
 
@@ -51,7 +50,12 @@ set_target_properties(
     MeshToolsInterleaveTest
     MeshToolsRemoveDuplicatesTest
     MeshToolsSubdivideTest
-    MeshToolsSubdivideRemov___Benchmark
     MeshToolsTipsifyTest
     MeshToolsTransformTest
     PROPERTIES FOLDER "Magnum/MeshTools/Test")
+
+if(WITH_PRIMITIVES)
+    corrade_add_test(MeshToolsSubdivideRemov___Benchmark SubdivideRemoveDuplicatesBenchmark.cpp LIBRARIES MagnumPrimitives)
+
+    set_target_properties(MeshToolsSubdivideRemov___Benchmark PROPERTIES FOLDER "Magnum/MeshTools/Test")
+endif()
