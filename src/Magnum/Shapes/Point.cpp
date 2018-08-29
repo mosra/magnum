@@ -34,7 +34,9 @@ template<UnsignedInt dimensions> Point<dimensions> Point<dimensions>::transforme
     return Point<dimensions>(matrix.transformPoint(_position));
 }
 
-template class Point<2>;
-template class Point<3>;
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template class MAGNUM_SHAPES_EXPORT Point<2>;
+template class MAGNUM_SHAPES_EXPORT Point<3>;
+#endif
 
 }}

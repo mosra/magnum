@@ -31,7 +31,9 @@ template<UnsignedInt dimensions> Box<dimensions> Box<dimensions>::transformed(co
     return Box<dimensions>(matrix*_transformation);
 }
 
-template class Box<2>;
-template class Box<3>;
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template class MAGNUM_SHAPES_EXPORT Box<2>;
+template class MAGNUM_SHAPES_EXPORT Box<3>;
+#endif
 
 }}

@@ -36,7 +36,9 @@ template<UnsignedInt dimensions> Line<dimensions> Line<dimensions>::transformed(
 }
 
 /* Explicitly instantiate the templates */
-template class Line<2>;
-template class Line<3>;
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template class MAGNUM_SHAPES_EXPORT Line<2>;
+template class MAGNUM_SHAPES_EXPORT Line<3>;
+#endif
 
 }}
