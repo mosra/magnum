@@ -369,7 +369,7 @@ endif()
 set(_MAGNUM_MeshTools_DEPENDENCIES )
 if(MAGNUM_TARGET_GL)
     # Trade is used only in compile(), which needs GL as well
-    list(APPEND _MAGNUM_${_COMPONENT}_DEPENDENCIES Trade GL)
+    list(APPEND _MAGNUM_MeshTools_DEPENDENCIES Trade GL)
 endif()
 
 set(_MAGNUM_OpenGLTester_DEPENDENCIES GL)
