@@ -1167,7 +1167,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          *      instead.
          */
         template<class T> CORRADE_DEPRECATED("use non-templated map() and Containers::arrayCast() instead") T* map(GLintptr offset, GLsizeiptr length, MapFlags flags) {
-            return Containers::arrayCast<T>(map(offset, length, flags));
+            return reinterpret_cast<T*>(map(offset, length, flags).data());
         }
         #endif
 
