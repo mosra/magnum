@@ -88,8 +88,10 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
     void angle();
     void matrix();
     void lerp();
+    void lerp2D();
     void lerpNotNormalized();
     void slerp();
+    void slerp2D();
     void slerpNotNormalized();
     void transformVector();
     void transformVectorNormalized();
@@ -145,8 +147,10 @@ QuaternionTest::QuaternionTest() {
               &QuaternionTest::angle,
               &QuaternionTest::matrix,
               &QuaternionTest::lerp,
+              &QuaternionTest::lerp2D,
               &QuaternionTest::lerpNotNormalized,
               &QuaternionTest::slerp,
+              &QuaternionTest::slerp2D,
               &QuaternionTest::slerpNotNormalized,
               &QuaternionTest::transformVector,
               &QuaternionTest::transformVectorNormalized,
@@ -469,6 +473,17 @@ void QuaternionTest::lerp() {
     CORRADE_COMPARE(lerp, Quaternion({0.119127f, 0.049134f, 0.049134f}, 0.990445f));
 }
 
+void QuaternionTest::lerp2D() {
+    /* Results should be consistent with ComplexTest::lerp() */
+    Quaternion a = Quaternion::rotation(15.0_degf, Vector3::zAxis());
+    Quaternion b = Quaternion::rotation(57.0_degf, Vector3::zAxis());
+    Quaternion lerp = Math::lerp(a, b, 0.35f);
+
+    CORRADE_VERIFY(lerp.isNormalized());
+    CORRADE_COMPARE(lerp.angle(), 29.6351_degf); /* almost but not quite 29.7 */
+    CORRADE_COMPARE(lerp, (Quaternion{{0.0f, 0.0f, 0.255742f}, 0.966745f}));
+}
+
 void QuaternionTest::lerpNotNormalized() {
     std::ostringstream out;
     Error redirectError{&out};
@@ -492,6 +507,17 @@ void QuaternionTest::slerp() {
     /* Avoid division by zero */
     CORRADE_COMPARE(Math::slerp(a, a, 0.25f), a);
     CORRADE_COMPARE(Math::slerp(a, -a, 0.42f), a);
+}
+
+void QuaternionTest::slerp2D() {
+    /* Result angle should be equivalent to ComplexTest::slerp() */
+    Quaternion a = Quaternion::rotation(15.0_degf, Vector3::zAxis());
+    Quaternion b = Quaternion::rotation(57.0_degf, Vector3::zAxis());
+    Quaternion slerp = Math::slerp(a, b, 0.35f);
+
+    CORRADE_VERIFY(slerp.isNormalized());
+    CORRADE_COMPARE(slerp.angle(), 29.7_degf); /* 15 + (57-15)*0.35 */
+    CORRADE_COMPARE(slerp, (Quaternion{{0.0f, 0.0f, 0.256289f}, 0.9666f}));
 }
 
 void QuaternionTest::slerpNotNormalized() {

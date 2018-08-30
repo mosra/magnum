@@ -456,6 +456,53 @@ template<class T> inline Complex<T> operator/(T scalar, const Complex<T>& comple
     return {scalar/complex.real(), scalar/complex.imaginary()};
 }
 
+/** @relatesalso Complex
+@brief Linear interpolation of two complex numbers
+@param normalizedA  First complex number
+@param normalizedB  Second complex number
+@param t            Interpolation phase (from range @f$ [0; 1] @f$)
+
+Expects that both complex numbers are normalized. @f[
+    c_{LERP} = \frac{(1 - t) c_A + t c_B}{|(1 - t) c_A + t c_B|}
+@f]
+@see @ref Complex::isNormalized(), @ref slerp(const Complex<T>&, const Complex<T>&, T),
+    @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T),
+    @ref lerp(const T&, const T&, U)
+*/
+template<class T> inline Complex<T> lerp(const Complex<T>& normalizedA, const Complex<T>& normalizedB, T t) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+        "Math::lerp(): complex numbers must be normalized", {});
+    return ((T(1) - t)*normalizedA + t*normalizedB).normalized();
+}
+
+/** @relatesalso Complex
+@brief Spherical linear interpolation of two complex numbers
+@param normalizedA  First complex number
+@param normalizedB  Second complex number
+@param t            Interpolation phase (from range @f$ [0; 1] @f$)
+
+Expects that both complex numbers are normalized. If the complex numbers are
+the same, returns the first argument. @f[
+    c_{SLERP} = \frac{sin((1 - t) \theta) c_A + sin(t \theta) c_B}{sin \theta}
+    ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
+    \theta = acos \left( \frac{c_A \cdot c_B}{|c_A| \cdot |c_B|} \right) = acos(c_A \cdot c_B)
+@f]
+@see @ref Complex::isNormalized(), @ref lerp(const Complex<T>&, const Complex<T>&, T),
+    @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T)
+ */
+template<class T> inline Complex<T> slerp(const Complex<T>& normalizedA, const Complex<T>& normalizedB, T t) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+        "Math::slerp(): complex numbers must be normalized", {});
+    const T cosAngle = dot(normalizedA, normalizedB);
+
+    /* Avoid division by zero */
+    if(std::abs(cosAngle) >= T(1)) return Complex<T>{normalizedA};
+
+    /** @todo couldn't this be done somewhat simpler? */
+    const T a = std::acos(cosAngle);
+    return (std::sin((T(1) - t)*a)*normalizedA + std::sin(t*a)*normalizedB)/std::sin(a);
+}
+
 /** @debugoperator{Complex} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Complex<T>& value) {
     return debug << "Complex(" << Corrade::Utility::Debug::nospace

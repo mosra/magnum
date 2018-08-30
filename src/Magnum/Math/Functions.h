@@ -560,7 +560,8 @@ The interpolation for vectors is done as in following, similarly for scalars: @f
 @f]
 
 See @ref select() for constant interpolation using the same API.
-@see @ref lerpInverted(), @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T)
+@see @ref lerpInverted(), @ref lerp(const Complex<T>&, const Complex<T>&, T),
+    @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T)
 @m_keyword{mix(),GLSL mix(),}
 */
 template<class T, class U> inline
