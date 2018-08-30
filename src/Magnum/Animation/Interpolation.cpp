@@ -25,6 +25,7 @@
 
 #include "Interpolation.h"
 
+#include "Magnum/Math/Complex.h"
 #include "Magnum/Math/DualQuaternion.h"
 
 namespace Magnum { namespace Animation {
@@ -61,6 +62,17 @@ Debug& operator<<(Debug& debug, const Extrapolation value) {
 
 namespace Implementation {
 
+template<class T> auto TypeTraits<Math::Complex<T>, Math::Complex<T>>::interpolator(Interpolation interpolation) -> Interpolator {
+    switch(interpolation) {
+        case Interpolation::Constant: return Math::select;
+        case Interpolation::Linear: return Math::slerp;
+
+        case Interpolation::Custom: ; /* nope */
+    }
+
+    CORRADE_ASSERT(false, "Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
+}
+
 template<class T> auto TypeTraits<Math::Quaternion<T>, Math::Quaternion<T>>::interpolator(Interpolation interpolation) -> Interpolator {
     switch(interpolation) {
         case Interpolation::Constant: return Math::select;
@@ -83,6 +95,7 @@ template<class T> auto TypeTraits<Math::DualQuaternion<T>, Math::DualQuaternion<
     CORRADE_ASSERT(false, "Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
 }
 
+template struct MAGNUM_EXPORT TypeTraits<Math::Complex<Float>, Math::Complex<Float>>;
 template struct MAGNUM_EXPORT TypeTraits<Math::Quaternion<Float>, Math::Quaternion<Float>>;
 template struct MAGNUM_EXPORT TypeTraits<Math::DualQuaternion<Float>, Math::DualQuaternion<Float>>;
 

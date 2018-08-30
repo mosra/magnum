@@ -67,7 +67,9 @@ Linear  | @cpp bool @ce <b></b> | @cpp bool @ce <b></b> | @ref Math::select()
 Linear  | @ref Math::BoolVector | @ref Math::BoolVector | @ref Math::select()
 Linear              | any scalar `V`    | `V`           | @ref Math::lerp()
 Linear              | any vector `V`    | `V`           | @ref Math::lerp()
+Linear              | @ref Math::Complex | @ref Math::Complex | @ref Math::lerp(const Complex<T>&, const Complex<T>&, T) "Math::lerp()"
 Linear              | @ref Math::Quaternion | @ref Math::Quaternion | @ref Math::lerp(const Quaternion<T>&, const Quaternion<T>&, T) "Math::lerp()"
+Spherical linear    | @ref Math::Complex | @ref Math::Complex | @ref Math::slerp(const Complex<T>&, const Complex<T>&, T) "Math::slerp()"
 Spherical linear    | @ref Math::Quaternion | @ref Math::Quaternion | @ref Math::slerp(const Quaternion<T>&, const Quaternion<T>&, T) "Math::slerp()"
 Screw linear        | @ref Math::DualQuaternion | @ref Math::DualQuaternion | @ref Math::sclerp(const DualQuaternion<T>&, const DualQuaternion<T>&, T) "Math::sclerp()"
 

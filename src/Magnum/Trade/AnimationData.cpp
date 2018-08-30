@@ -97,6 +97,7 @@ template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Vector4, Vector4>(Ani
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Vector4d, Vector4d>(Animation::Interpolation) -> Vector4d(*)(const Vector4d&, const Vector4d&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Vector4i, Vector4i>(Animation::Interpolation) -> Vector4i(*)(const Vector4i&, const Vector4i&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Vector4ui, Vector4ui>(Animation::Interpolation) -> Vector4ui(*)(const Vector4ui&, const Vector4ui&, Float);
+template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Complex, Complex>(Animation::Interpolation) -> Complex(*)(const Complex&, const Complex&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Quaternion, Quaternion>(Animation::Interpolation) -> Quaternion(*)(const Quaternion&, const Quaternion&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<DualQuaternion, DualQuaternion>(Animation::Interpolation) -> DualQuaternion(*)(const DualQuaternion&, const DualQuaternion&, Float);
 
@@ -120,6 +121,7 @@ Debug& operator<<(Debug& debug, const AnimationTrackType value) {
         _c(Vector4)
         _c(Vector4ui)
         _c(Vector4i)
+        _c(Complex)
         _c(Quaternion)
         _c(DualQuaternion)
         #undef _c

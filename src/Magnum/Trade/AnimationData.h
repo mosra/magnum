@@ -76,6 +76,12 @@ enum class AnimationTrackType: UnsignedByte {
     Vector4i,           /**< @ref Magnum::Vector4i "Vector4i" */
 
     /**
+     * @ref Magnum::Complex "Complex". Usually used for
+     * @ref AnimationTrackTarget::Rotation2D.
+     */
+    Complex,
+
+    /**
      * @ref Magnum::Quaternion "Quaternion". Usually used for
      * @ref AnimationTrackTarget::Rotation3D.
      */
@@ -114,7 +120,7 @@ enum class AnimationTrackTarget: UnsignedByte {
      * Modifies 2D object rotation. Type is usually
      * @ref Magnum::Complex "Complex".
      *
-     * @see @ref ObjectData2D::rotation()
+     * @see @ref AnimationTrackType::Complex, @ref ObjectData2D::rotation()
      */
     Rotation2D,
 
@@ -441,6 +447,7 @@ namespace Implementation {
     template<> constexpr AnimationTrackType animationTypeFor<Math::Vector<3, Int>>() { return AnimationTrackType::Vector3i; }
     template<> constexpr AnimationTrackType animationTypeFor<Math::Vector<4, Int>>() { return AnimationTrackType::Vector4i; }
 
+    template<> constexpr AnimationTrackType animationTypeFor<Complex>() { return AnimationTrackType::Complex; }
     template<> constexpr AnimationTrackType animationTypeFor<Quaternion>() { return AnimationTrackType::Quaternion; }
     template<> constexpr AnimationTrackType animationTypeFor<DualQuaternion>() { return AnimationTrackType::DualQuaternion; }
     /* LCOV_EXCL_STOP */

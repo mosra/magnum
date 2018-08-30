@@ -100,6 +100,7 @@ Interpolation type  | Value type        | Result type   | Interpolator
 @ref Interpolation::Linear | @ref Math::BoolVector | @ref Math::BoolVector | @ref Math::select()
 @ref Interpolation::Linear | any scalar `V` | `V`       | @ref Math::lerp()
 @ref Interpolation::Linear | any vector `V` | `V`       | @ref Math::lerp()
+@ref Interpolation::Linear | @ref Math::Complex | @ref Math::Complex | @ref Math::slerp(const Complex<T>&, const Complex<T>&, T) "Math::slerp()"
 @ref Interpolation::Linear | @ref Math::Quaternion | @ref Math::Quaternion | @ref Math::slerp(const Quaternion<T>&, const Quaternion<T>&, T) "Math::slerp()"
 @ref Interpolation::Linear | @ref Math::DualQuaternion | @ref Math::DualQuaternion | @ref Math::sclerp(const DualQuaternion<T>&, const DualQuaternion<T>&, T) "Math::sclerp()"
 
@@ -246,6 +247,13 @@ template<class T> auto TypeTraitsBool<T>::interpolator(Interpolation interpolati
 }
 template<> struct TypeTraits<bool, bool>: TypeTraitsBool<bool> {};
 template<std::size_t size> struct TypeTraits<Math::BoolVector<size>, Math::BoolVector<size>>: TypeTraitsBool<Math::BoolVector<size>> {};
+
+/* Complex, preferring slerp() as it is more precise */
+template<class T> struct MAGNUM_EXPORT TypeTraits<Math::Complex<T>, Math::Complex<T>> {
+    typedef Math::Complex<T>(*Interpolator)(const Math::Complex<T>&, const Math::Complex<T>&, Float);
+
+    static Interpolator interpolator(Interpolation interpolation);
+};
 
 /* Quaternions and dual quaternions, preferring slerp() as it is more precise */
 template<class T> struct MAGNUM_EXPORT TypeTraits<Math::Quaternion<T>, Math::Quaternion<T>> {

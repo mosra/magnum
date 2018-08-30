@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Animation/Interpolation.h"
+#include "Magnum/Math/Complex.h"
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/Half.h"
 
@@ -38,6 +39,7 @@ struct InterpolationTest: TestSuite::Tester {
     void interpolatorFor();
     void interpolatorForBool();
     void interpolatorForBoolVector();
+    void interpolatorForComplex();
     void interpolatorForQuaternion();
     void interpolatorForDualQuaternion();
 
@@ -138,6 +140,7 @@ InterpolationTest::InterpolationTest() {
     addTests({&InterpolationTest::interpolatorFor,
               &InterpolationTest::interpolatorForBool,
               &InterpolationTest::interpolatorForBoolVector,
+              &InterpolationTest::interpolatorForComplex,
               &InterpolationTest::interpolatorForQuaternion,
               &InterpolationTest::interpolatorForDualQuaternion});
 
@@ -209,6 +212,26 @@ void InterpolationTest::interpolatorForBoolVector() {
     Error redirectError{&out};
     Animation::interpolatorFor<Math::BoolVector<4>>(Interpolation::Custom);
     Animation::interpolatorFor<Math::BoolVector<4>>(Interpolation(0xde));
+
+    CORRADE_COMPARE(out.str(),
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
+}
+
+void InterpolationTest::interpolatorForComplex() {
+    CORRADE_COMPARE(Animation::interpolatorFor<Complex>(Interpolation::Constant)(
+        Complex::rotation(25.0_degf),
+        Complex::rotation(75.0_degf), 0.5f),
+        Complex::rotation(25.0_degf));
+    CORRADE_COMPARE(Animation::interpolatorFor<Complex>(Interpolation::Linear)(
+        Complex::rotation(25.0_degf),
+        Complex::rotation(75.0_degf), 0.5f),
+        Complex::rotation(50.0_degf));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Animation::interpolatorFor<Complex>(Interpolation::Custom);
+    Animation::interpolatorFor<Complex>(Interpolation(0xde));
 
     CORRADE_COMPARE(out.str(),
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
