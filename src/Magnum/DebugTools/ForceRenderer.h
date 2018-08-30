@@ -47,8 +47,8 @@ namespace Magnum { namespace DebugTools {
 See @ref ForceRenderer documentation for more information.
 
 @note This class is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" and `WITH_SCENEGRAPH` enabled (done by
+    default). See @ref building-features for more information.
 */
 class ForceRendererOptions {
     public:
@@ -109,8 +109,8 @@ new DebugTools::ForceRenderer2D(object, {0.3f, 1.5f, -0.7f}, &force, "my", debug
 @endcode
 
 @note This class is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" and `WITH_SCENEGRAPH` enabled (done by
+    default). See @ref building-features for more information.
 
 @see @ref ForceRenderer2D, @ref ForceRenderer3D, @ref ForceRendererOptions
 */

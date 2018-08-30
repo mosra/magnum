@@ -46,8 +46,8 @@ namespace Magnum { namespace DebugTools {
 See @ref ObjectRenderer documentation for more information.
 
 @note This class is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" and `WITH_SCENEGRAPH` enabled (done by
+    default). See @ref building-features for more information.
 */
 class ObjectRendererOptions {
     public:
@@ -91,8 +91,8 @@ new DebugTools::ObjectRenderer2D(object, "my", debugDrawables);
 @endcode
 
 @note This class is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" and `WITH_SCENEGRAPH` enabled (done by
+    default). See @ref building-features for more information.
 
 @see @ref ObjectRenderer2D, @ref ObjectRenderer3D, @ref ObjectRendererOptions
 */
