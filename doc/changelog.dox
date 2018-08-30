@@ -165,6 +165,8 @@ See also:
     possible as well
 -   The @ref GL::BufferUsage parameter in @ref GL::Buffer::setData() is now
     optional, defaults to @ref GL::BufferUsage::StaticDraw
+-   Re-enabled @fn_gl{DrawRangeElements} for WebGL 2 (see
+    [mosra/magnum#97](https://github.com/mosra/magnum/issues/97))
 
 @subsubsection changelog-latest-changes-math Math library
 
