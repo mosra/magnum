@@ -43,13 +43,16 @@ namespace Magnum { namespace MeshTools {
 @param positions    Array of vertex positions
 @return Normal indices and vectors
 
-For each face generates one normal vector, removes duplicates before
-returning. Example usage:
+All vertices in each triangle face get the same normal vector. Removes
+duplicates before returning. Example usage:
 
 @snippet MagnumMeshTools.cpp generateFlatNormals
 
-You can then use @ref combineIndexedArrays() to combine normal and vertex array
-to use the same indices.
+This will generate index buffer that's different from the input @p indices
+array, so you'll need to recombine them using @ref combineIndexedArrays() in
+order to have a single index array for both vertices and normals:
+
+@snippet MagnumMeshTools.cpp generateFlatNormals-recombine
 
 @attention The function requires the mesh to have triangle faces, thus index
     count must be divisible by 3.

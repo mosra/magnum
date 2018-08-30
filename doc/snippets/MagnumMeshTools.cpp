@@ -92,6 +92,12 @@ std::vector<Vector3> normals;
 std::tie(normalIndices, normals) =
     MeshTools::generateFlatNormals(vertexIndices, positions);
 /* [generateFlatNormals] */
+
+/* [generateFlatNormals-recombine] */
+std::vector<UnsignedInt> indices = MeshTools::combineIndexedArrays(
+    std::make_pair(std::cref(vertexIndices), std::ref(positions)),
+    std::make_pair(std::cref(normalIndices), std::ref(normals)));
+/* [generateFlatNormals-recombine] */
 }
 
 {
