@@ -192,10 +192,12 @@ template<class T> class Complex {
         }
 
         /** @brief Real part */
-        constexpr T real() const { return _real; }
+        T& real() { return _real; }
+        constexpr T real() const { return _real; } /**< @overload */
 
         /** @brief Imaginary part */
-        constexpr T imaginary() const { return _imaginary; }
+        T& imaginary() { return _imaginary; }
+        constexpr T imaginary() const { return _imaginary; } /**< @overload */
 
         /**
          * @brief Convert complex number to vector

@@ -239,10 +239,14 @@ template<class T> class Quaternion {
         }
 
         /** @brief Vector part */
-        constexpr const Vector3<T> vector() const { return _vector; }
+        Vector3<T>& vector() { return _vector; }
+        /* Returning const so it's possible to call constexpr functions on the
+           result. WTF, C++?! */
+        constexpr const Vector3<T> vector() const { return _vector; } /**< @overload */
 
         /** @brief Scalar part */
-        constexpr T scalar() const { return _scalar; }
+        T& scalar() { return _scalar; }
+        constexpr T scalar() const { return _scalar; } /**< @overload */
 
         /**
          * @brief Rotation angle of unit quaternion

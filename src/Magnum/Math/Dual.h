@@ -123,11 +123,15 @@ template<class T> class Dual {
 
         /** @brief Real part */
         T& real() { return _real; }
-        constexpr T real() const { return _real; } /**< @overload */
+        /* Returning const so it's possible to call constexpr functions on the
+           result. WTF, C++?! */
+        constexpr const T real() const { return _real; } /**< @overload */
 
         /** @brief Dual part */
         T& dual() { return _dual; }
-        constexpr T dual() const { return _dual; } /**< @overload */
+        /* Returning const so it's possible to call constexpr functions on the
+           result. WTF, C++?! */
+        constexpr const T dual() const { return _dual; } /**< @overload */
 
         /**
          * @brief Add and assign dual number

@@ -65,6 +65,8 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
     void constructCopy();
     void convert();
 
+    void data();
+
     void compare();
     void isNormalized();
     template<class T> void isNormalizedEpsilon();
@@ -120,6 +122,8 @@ QuaternionTest::QuaternionTest() {
               &QuaternionTest::constructCopy,
               &QuaternionTest::convert,
 
+              &QuaternionTest::data,
+
               &QuaternionTest::compare,
               &QuaternionTest::isNormalized,
               &QuaternionTest::isNormalizedEpsilon<Float>,
@@ -162,11 +166,8 @@ QuaternionTest::QuaternionTest() {
 void QuaternionTest::construct() {
     constexpr Quaternion a = {{1.0f, 2.0f, 3.0f}, -4.0f};
     CORRADE_COMPARE(a, Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
-
-    constexpr Vector3 b = a.vector();
-    constexpr Float c = a.scalar();
-    CORRADE_COMPARE(b, Vector3(1.0f, 2.0f, 3.0f));
-    CORRADE_COMPARE(c, -4.0f);
+    CORRADE_COMPARE(a.vector(), Vector3(1.0f, 2.0f, 3.0f));
+    CORRADE_COMPARE(a.scalar(), -4.0f);
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, Vector3, Float>::value));
 }
@@ -257,6 +258,19 @@ void QuaternionTest::convert() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Quat, Quaternion>::value));
     CORRADE_VERIFY(!(std::is_convertible<Quaternion, Quat>::value));
+}
+
+void QuaternionTest::data() {
+    constexpr Quaternion ca{{1.0f, 2.0f, 3.0f}, -4.0f};
+    constexpr Vector3 vector = ca.vector();
+    constexpr Float scalar = ca.scalar();
+    CORRADE_COMPARE(vector, (Vector3{1.0f, 2.0f, 3.0f}));
+    CORRADE_COMPARE(scalar, -4.0f);
+
+    Quaternion a{{1.0f, 2.0f, 3.0f}, -4.0f};
+    a.vector().y() = 4.3f;
+    a.scalar() = 1.1f;
+    CORRADE_COMPARE(a, (Quaternion{{1.0f, 4.3f, 3.0f}, 1.1f}));
 }
 
 void QuaternionTest::compare() {

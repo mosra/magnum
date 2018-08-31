@@ -64,6 +64,8 @@ struct ComplexTest: Corrade::TestSuite::Tester {
     void constructCopy();
     void convert();
 
+    void data();
+
     void compare();
     void isNormalized();
     template<class T> void isNormalizedEpsilon();
@@ -105,6 +107,8 @@ ComplexTest::ComplexTest() {
               &ComplexTest::constructConversion,
               &ComplexTest::constructCopy,
               &ComplexTest::convert,
+
+              &ComplexTest::data,
 
               &ComplexTest::compare,
               &ComplexTest::isNormalized,
@@ -154,11 +158,8 @@ using namespace Math::Literals;
 void ComplexTest::construct() {
     constexpr Complex a = {0.5f, -3.7f};
     CORRADE_COMPARE(a, Complex(0.5f, -3.7f));
-
-    constexpr Float b = a.real();
-    constexpr Float c = a.imaginary();
-    CORRADE_COMPARE(b, 0.5f);
-    CORRADE_COMPARE(c, -3.7f);
+    CORRADE_COMPARE(a.real(), 0.5f);
+    CORRADE_COMPARE(a.imaginary(), -3.7f);
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Complex, Float, Float>::value));
 }
@@ -253,6 +254,19 @@ void ComplexTest::convert() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Cmpl, Complex>::value));
     CORRADE_VERIFY(!(std::is_convertible<Complex, Cmpl>::value));
+}
+
+void ComplexTest::data() {
+    constexpr Complex ca{1.5f, -3.5f};
+    constexpr Float real = ca.real();
+    constexpr Float imaginary = ca.imaginary();
+    CORRADE_COMPARE(real, 1.5f);
+    CORRADE_COMPARE(imaginary, -3.5f);
+
+    Complex a{1.5f, -3.5f};
+    a.real() = 2.0f;
+    a.imaginary() = -3.5f;
+    CORRADE_COMPARE(a, (Complex{2.0f, -3.5f}));
 }
 
 void ComplexTest::compare() {

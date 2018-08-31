@@ -88,6 +88,10 @@ See also:
     @ref Math::Distance::pointPlane() and others
 -   Ability to convert @ref Math::BoolVector from and to external
     representation
+-   Mutable overloads for @ref Math::Complex::real(),
+    @ref Math::Complex::imaginary(), @ref Math::Dual::real(),
+    @ref Math::Dual::dual(), @ref Math::Quaternion::vector() and
+    @ref Math::Quaternion::scalar()
 -   Ability to use @ref Math::Complex, @ref Math::DualComplex,
     @ref Math::Quaternion, @ref Math::DualQuaternion with
     @ref Corrade::Utility::Configuration and @ref Corrade::Utility::Arguments
