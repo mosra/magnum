@@ -25,6 +25,8 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/Bezier.h"
+#include "Magnum/Math/CubicHermite.h"
 #include "Magnum/Math/DualComplex.h"
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/Half.h"
@@ -837,6 +839,18 @@ using namespace Math::Literals;
 Color4 a = 0x33b27fcc_srgbaf;   // {0.0331048f, 0.445201f, 0.212231f, 0.8f}
 /* [_srgbaf] */
 static_cast<void>(a);
+}
+
+{
+/* [CubicHermite-fromBezier] */
+CubicBezier2D segment;
+auto startPoint = CubicHermite2D::fromBezier(
+    {Vector2{}, Vector2{}, Vector2{}, segment[3]}, segment);
+auto endPoint = CubicHermite2D::fromBezier(segment,
+    {segment[0], Vector2{}, Vector2{}, Vector2{}});
+/* [CubicHermite-fromBezier] */
+static_cast<void>(startPoint);
+static_cast<void>(endPoint);
 }
 
 {

@@ -46,8 +46,12 @@ namespace Implementation {
 @tparam dimensions  Dimensions of control points
 @tparam T           Underlying data type
 
-Implementation of M-order N-dimensional
-[Bézier Curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve).
+Represents a M-order N-dimensional
+[Bézier Curve](https://en.wikipedia.org/wiki/B%C3%A9zier_curve) segment.
+
+Cubic Bézier curves are fully interchangeable with cubic Hermite splines, use
+@ref fromCubicHermite() and @ref CubicHermite::fromBezier() for the conversion.
+
 @see @ref QuadraticBezier, @ref CubicBezier, @ref QuadraticBezier2D,
     @ref QuadraticBezier3D, @ref CubicBezier2D, @ref CubicBezier3D
 */
@@ -63,6 +67,37 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
             Order = order,          /**< Order of Bézier curve */
             Dimensions = dimensions /**< Dimensions of control points */
         };
+
+        /**
+         * @brief Create cubic Hermite spline point from adjacent Bézier curve segments
+         *
+         * Given two cubic Hermite spline points defined by points
+         * @f$ \boldsymbol{p}_i @f$, in-tangents @f$ \boldsymbol{m}_i @f$ and
+         * out-tangents @f$ \boldsymbol{n}_i @f$, the corresponding cubic
+         * Bezier curve segment with points @f$ \boldsymbol{c}_0 @f$,
+         * @f$ \boldsymbol{c}_1 @f$, @f$ \boldsymbol{c}_2 @f$ and
+         * @f$ \boldsymbol{c}_3 @f$ is defined as: @f[
+         *      \begin{array}{rcl}
+         *          \boldsymbol{c}_0 & = & \boldsymbol{p}_a \\
+         *          \boldsymbol{c}_1 & = & \frac{1}{3} \boldsymbol{n}_a - \boldsymbol{p}_a \\
+         *          \boldsymbol{c}_2 & = & \boldsymbol{p}_b - \frac{1}{3} \boldsymbol{m}_b \\
+         *          \boldsymbol{c}_3 & = & \boldsymbol{p}_b
+         *      \end{array}
+         * @f]
+         *
+         * Enabled only on @ref CubicBezier for @ref CubicHermite with vector
+         * underlying types. See @ref CubicHermite::fromBezier() for the
+         * inverse operation.
+         */
+        template<class VectorType> static
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        typename std::enable_if<std::is_base_of<Vector<dimensions, T>, VectorType>::value && order == 3, Bezier<order, dimensions, T>>::type
+        #else
+        Bezier<order, dimensions, T>
+        #endif
+        fromCubicHermite(const CubicHermite<VectorType>& a, const CubicHermite<VectorType>& b) {
+            return {a.point(), a.outTangent()/T(3) - a.point(), b.point() - b.inTangent()/T(3), b.point()};
+        }
 
         /**
          * @brief Default constructor

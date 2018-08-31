@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
+#include "Magnum/Math/Bezier.h"
 #include "Magnum/Math/CubicHermite.h"
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Vector2.h"
@@ -65,6 +66,8 @@ struct CubicHermiteTest: Corrade::TestSuite::Tester {
     void constructConversionComplex();
     void constructConversionQuaternion();
 
+    void constructFromBezier();
+
     void constructCopyScalar();
     void constructCopyVector();
     void constructCopyComplex();
@@ -94,6 +97,7 @@ struct CubicHermiteTest: Corrade::TestSuite::Tester {
 
     void splerpScalar();
     void splerpVector();
+    void splerpVectorFromBezier();
     void splerpComplex();
     void splerpComplexNotNormalized();
     void splerpQuaternion();
@@ -136,6 +140,8 @@ CubicHermiteTest::CubicHermiteTest() {
               &CubicHermiteTest::constructConversionComplex,
               &CubicHermiteTest::constructConversionQuaternion,
 
+              &CubicHermiteTest::constructFromBezier,
+
               &CubicHermiteTest::constructCopyScalar,
               &CubicHermiteTest::constructCopyVector,
               &CubicHermiteTest::constructCopyComplex,
@@ -165,6 +171,7 @@ CubicHermiteTest::CubicHermiteTest() {
 
               &CubicHermiteTest::splerpScalar,
               &CubicHermiteTest::splerpVector,
+              &CubicHermiteTest::splerpVectorFromBezier,
               &CubicHermiteTest::splerpComplex,
               &CubicHermiteTest::splerpComplexNotNormalized,
               &CubicHermiteTest::splerpQuaternion,
@@ -179,6 +186,7 @@ CubicHermiteTest::CubicHermiteTest() {
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Complex<Float> Complex;
 typedef Math::Quaternion<Float> Quaternion;
+typedef Math::CubicBezier2D<Float> CubicBezier2D;
 typedef Math::CubicHermite1D<Float> CubicHermite1D;
 typedef Math::CubicHermite2D<Float> CubicHermite2D;
 typedef Math::CubicHermiteComplex<Float> CubicHermiteComplex;
@@ -499,6 +507,20 @@ void CubicHermiteTest::constructConversionQuaternion() {
     CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteQuaternion, CubicHermiteQuaternioni>::value));
 }
 
+void CubicHermiteTest::constructFromBezier() {
+    /* Taken from BezierTest::valueCubic() -- we're testing the same values
+       also in splerpVectorFromBezier(). See
+       BezierTest::constructFromCubicHermite() for the inverse. */
+    CubicBezier2D bezier{Vector2{0.0f, 0.0f}, Vector2{10.0f, 15.0f}, Vector2{20.0f, 4.0f}, Vector2{5.0f, -20.0f}};
+    auto a = CubicHermite2D::fromBezier({Vector2{}, Vector2{}, Vector2{}, bezier[0]}, bezier);
+    auto b = CubicHermite2D::fromBezier(bezier, {bezier[3], Vector2{}, Vector2{}, Vector2{}});
+
+    CORRADE_COMPARE(a.point(), bezier[0]);
+    CORRADE_COMPARE(a.outTangent(), (Vector2{30.0f, 45.0f}));
+    CORRADE_COMPARE(b.inTangent(), (Vector2{-45, -72}));
+    CORRADE_COMPARE(b.point(), bezier[3]);
+}
+
 void CubicHermiteTest::constructCopyScalar() {
     constexpr CubicHermite1D a{2.0f, -2.0f, -0.5f};
     constexpr CubicHermite1D b{a};
@@ -813,6 +835,25 @@ void CubicHermiteTest::splerpVector() {
 
     CORRADE_COMPARE(Math::splerp(a, b, 0.35f), (Vector2{1.04525f, 0.357862f}));
     CORRADE_COMPARE(Math::splerp(a, b, 0.8f), (Vector2{-2.152f, 0.9576f}));
+}
+
+void CubicHermiteTest::splerpVectorFromBezier() {
+    /* Taken from BezierTest::valueCubic() */
+    CubicBezier2D bezier{Vector2{0.0f, 0.0f}, Vector2{10.0f, 15.0f}, Vector2{20.0f, 4.0f}, Vector2{5.0f, -20.0f}};
+    auto a = CubicHermite2D::fromBezier({Vector2{}, Vector2{}, Vector2{}, bezier[0]}, bezier);
+    auto b = CubicHermite2D::fromBezier(bezier, {bezier[3], Vector2{}, Vector2{}, Vector2{}});
+
+    CORRADE_COMPARE(bezier.value(0.0f), (Vector2{0.0f, 0.0f}));
+    CORRADE_COMPARE(Math::splerp(a, b, 0.0f), (Vector2{0.0f, 0.0f}));
+
+    CORRADE_COMPARE(bezier.value(0.2f), (Vector2{5.8f, 5.984f}));
+    CORRADE_COMPARE(Math::splerp(a, b, 0.2f), (Vector2{5.8f, 5.984f}));
+
+    CORRADE_COMPARE(bezier.value(0.5f), (Vector2{11.875f, 4.625f}));
+    CORRADE_COMPARE(Math::splerp(a, b, 0.5f), (Vector2{11.875f, 4.625f}));
+
+    CORRADE_COMPARE(bezier.value(1.0f), (Vector2{5.0f, -20.0f}));
+    CORRADE_COMPARE(Math::splerp(a, b, 1.0f), (Vector2{5.0f, -20.0f}));
 }
 
 void CubicHermiteTest::splerpComplex() {

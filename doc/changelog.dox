@@ -47,7 +47,9 @@ See also:
 
 @subsubsection changelog-latest-new-math Math library
 
--   New @ref Math::CubicHermite class for cubic Hermite spline interpolation
+-   New @ref Math::CubicHermite class for cubic Hermite spline interpolation,
+    convertible to and from cubic Bézier curves using
+    @ref Math::Bezier::fromCubicHermite() and @ref Math::CubicHermite::fromBezier()
 -   Added @ref Math::Intersection::rangeFrustum(),
     @ref Math::Intersection::aabbFrustum(),
     @ref Math::Intersection::sphereFrustum(),

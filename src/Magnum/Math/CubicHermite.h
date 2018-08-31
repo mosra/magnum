@@ -46,6 +46,9 @@ animation keyframe representation. The structure assumes the in/out tangents
 to be in their final form, i.e. already normalized by length of their adjacent
 segments.
 
+Cubic Hermite splines are fully interchangeable with cubic Bézier curves, use
+@ref fromBezier() and @ref Bezier::fromCubicHermite() for the conversion.
+
 @see @ref CubicHermite2D, @ref CubicHermite3D,
     @ref Magnum::CubicHermite2D, @ref Magnum::CubicHermite2Dd,
     @ref Magnum::CubicHermite3D, @ref Magnum::CubicHermite3Dd,
@@ -55,6 +58,46 @@ segments.
 template<class T> class CubicHermite {
     public:
         typedef T Type;             /**< @brief Underlying data type */
+
+        /**
+         * @brief Create cubic Hermite spline point from adjacent Bézier curve segments
+         *
+         * Given two adjacent cubic Bézier curve segments defined by points
+         * @f$ \boldsymbol{a}_i @f$ and @f$ \boldsymbol{b}_i @f$,
+         * @f$ i \in \{ 0, 1, 2, 3 \} @f$, the corresponding cubic Hermite
+         * spline point @f$ \boldsymbol{p} @f$, in-tangent @f$ \boldsymbol{m} @f$
+         * and out-tangent @f$ \boldsymbol{n} @f$ is defined as: @f[
+         *      \begin{array}{rcl}
+         *          \boldsymbol{m} & = & 3 (\boldsymbol{a}_3 - \boldsymbol{a}_2)
+         *                           =   3 (\boldsymbol{b}_0 - \boldsymbol{a}_2) \\
+         *          \boldsymbol{p} & = & \boldsymbol{a}_3 = \boldsymbol{b}_0 \\
+         *          \boldsymbol{n} & = & 3 (\boldsymbol{b}_1 - \boldsymbol{a}_3)
+         *                           =   3 (\boldsymbol{b}_1 - \boldsymbol{b}_0)
+         *      \end{array}
+         * @f]
+         *
+         * Expects that the two segments are adjacent (i.e., the endpoint of
+         * first segment is the start point of the second). If you need to
+         * create a cubic Hermite spline point that's at the beginning or at
+         * the end of a curve, simply pass a dummy Bézier segment that
+         * satisfies this constraint as the other parameter:
+         *
+         * @snippet MagnumMath.cpp CubicHermite-fromBezier
+         *
+         * Enabled only on vector underlying types. See
+         * @ref Bezier::fromCubicHermite() for the inverse operation.
+         */
+        template<UnsignedInt dimensions, class U> static
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        CubicHermite<T>
+        #else
+        typename std::enable_if<std::is_base_of<Vector<dimensions, U>, T>::value, CubicHermite<T>>::type
+        #endif
+        fromBezier(const CubicBezier<dimensions, U>& a, const CubicBezier<dimensions, U>& b) {
+            return CORRADE_CONSTEXPR_ASSERT(a[3] == b[0],
+                "Math::CubicHermite::fromBezier(): segments are not adjacent"),
+                CubicHermite<T>{3*(a[3] - a[2]), a[3], 3*(b[1] - a[3])};
+        }
 
         /**
          * @brief Default constructor
