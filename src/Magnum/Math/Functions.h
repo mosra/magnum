@@ -559,9 +559,13 @@ The interpolation for vectors is done as in following, similarly for scalars: @f
     \boldsymbol{v_{LERP}} = (1 - t) \boldsymbol{v_A} + t \boldsymbol{v_B}
 @f]
 
-See @ref select() for constant interpolation using the same API.
+See @ref select() for constant interpolation using the same API and
+@ref splerp() for spline interpolation.
 @see @ref lerpInverted(), @ref lerp(const Complex<T>&, const Complex<T>&, T),
-    @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T)
+    @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T),
+    @ref lerp(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref lerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
+    @ref lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
 @m_keyword{mix(),GLSL mix(),}
 */
 template<class T, class U> inline

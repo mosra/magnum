@@ -1,0 +1,422 @@
+#ifndef Magnum_Math_CubicHermiteSpline_h
+#define Magnum_Math_CubicHermiteSpline_h
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+/** @file
+ * @brief Class @ref Magnum::Math::CubicHermite, alias @ref Magnum::Math::CubicHermite2D, @ref Magnum::Math::CubicHermite3D, function @ref Magnum::Math::select(), @ref Magnum::Math::lerp(), @ref Magnum::Math::splerp()
+ */
+
+#include "Magnum/Math/Complex.h"
+#include "Magnum/Math/Quaternion.h"
+
+namespace Magnum { namespace Math {
+
+/**
+@brief Cubic Hermite spline point
+
+Represents a point on a [cubic Hermite spline](https://en.wikipedia.org/wiki/Cubic_Hermite_spline).
+
+Unlike @ref Bezier, which describes a curve segment, this structure describes
+a spline point @f$ \boldsymbol{p} @f$, with in-tangent @f$ \boldsymbol{m} @f$
+and out-tangent @f$ \boldsymbol{n} @f$. This form is more suitable for
+animation keyframe representation. The structure assumes the in/out tangents
+to be in their final form, i.e. already normalized by length of their adjacent
+segments.
+
+@see @ref CubicHermite2D, @ref CubicHermite3D,
+    @ref Magnum::CubicHermite2D, @ref Magnum::CubicHermite2Dd,
+    @ref Magnum::CubicHermite3D, @ref Magnum::CubicHermite3Dd,
+    @ref CubicBezier
+@experimental
+*/
+template<class T> class CubicHermite {
+    public:
+        typedef T Type;             /**< @brief Underlying data type */
+
+        /**
+         * @brief Default constructor
+         *
+         * Equivalent to @ref CubicHermite(ZeroInitT) for vector types and to
+         * @ref CubicHermite(IdentityInitT) for complex and quaternion types.
+         */
+        constexpr /*implicit*/ CubicHermite() noexcept: CubicHermite{typename std::conditional<std::is_constructible<T, IdentityInitT>::value, IdentityInitT, ZeroInitT>::type{typename std::conditional<std::is_constructible<T, IdentityInitT>::value, IdentityInitT, ZeroInitT>::type::Init{}}} {}
+
+        /**
+         * @brief Default constructor
+         *
+         * Construct cubic Hermite spline point with all control points being
+         * zero.
+         */
+        constexpr explicit CubicHermite(ZeroInitT) noexcept: CubicHermite{ZeroInit, typename std::conditional<std::is_constructible<T, ZeroInitT>::value, ZeroInitT*, void*>::type{}} {}
+
+        /**
+         * @brief Identity constructor
+         *
+         * The @ref point() is constructed as identity in order to have
+         * interpolation working correctly; @ref inTangent() and
+         * @ref outTangent() is constructed as zero. Enabled only for complex
+         * and quaternion types.
+         */
+        template<class U = T, class = typename std::enable_if<std::is_constructible<U, IdentityInitT>::value>::type> constexpr explicit CubicHermite(IdentityInitT) noexcept: _inTangent{ZeroInit}, _point{IdentityInit}, _outTangent{ZeroInit} {}
+
+        /** @brief Construct cubic Hermite spline point without initializing its contents */
+        explicit CubicHermite(NoInitT) noexcept: CubicHermite{NoInit, typename std::conditional<std::is_constructible<T, NoInitT>::value, NoInitT*, void*>::type{}} {}
+
+        /**
+         * @brief Construct cubic Hermite spline point with given control points
+         * @param inTangent     In-tangent @f$ \boldsymbol{m} @f$
+         * @param point         Point @f$ \boldsymbol{p} @f$
+         * @param outTangent    Out-tangent @f$ \boldsymbol{n} @f$
+         */
+        constexpr /*implicit*/ CubicHermite(const T& inTangent, const T& point, const T& outTangent) noexcept: _inTangent{inTangent}, _point{point}, _outTangent{outTangent} {}
+
+        /**
+         * @brief Construct subic Hermite spline point from another of different type
+         *
+         * Performs only default casting on the values, no rounding or
+         * anything else.
+         */
+        template<class U> constexpr explicit CubicHermite(const CubicHermite<U>& other) noexcept: _inTangent{T(other._inTangent)}, _point{T(other._point)}, _outTangent{T(other._outTangent)} {}
+
+        /** @brief Equality comparison */
+        bool operator==(const CubicHermite<T>& other) const;
+
+        /** @brief Non-equality comparison */
+        bool operator!=(const CubicHermite<T>& other) const {
+            return !operator==(other);
+        }
+
+        /** @brief In-tangent @f$ \boldsymbol{m} @f$ */
+        T& inTangent() { return _inTangent; }
+        /* returns const& so [] operations are also constexpr */
+        constexpr const T& inTangent() const { return _inTangent; } /**< @overload */
+
+        /** @brief Point @f$ \boldsymbol{p} @f$ */
+        T& point() { return _point; }
+        /* returns const& so [] operations are also constexpr */
+        constexpr const T& point() const { return _point; } /**< @overload */
+
+        /** @brief Out-tangent @f$ \boldsymbol{n} @f$ */
+        T& outTangent() { return _outTangent; }
+        /* returns const& so [] operations are also constexpr */
+        constexpr const T& outTangent() const { return _outTangent; } /**< @overload */
+
+    private:
+        template<class> friend class CubicHermite;
+
+        /* Called from CubicHermite(ZeroInit), either using the ZeroInit
+           constructor (if available) or passing zero directly (for scalar
+           types) */
+        constexpr explicit CubicHermite(ZeroInitT, ZeroInitT*) noexcept: _inTangent{ZeroInit}, _point{ZeroInit}, _outTangent{ZeroInit} {}
+        constexpr explicit CubicHermite(ZeroInitT, void*) noexcept: _inTangent{T(0)}, _point{T(0)}, _outTangent{T(0)} {}
+
+        /* Called from CubicHermite(NoInit), either using the NoInit
+           constructor (if available) or not doing oanything */
+        explicit CubicHermite(NoInitT, NoInitT*) noexcept: _inTangent{NoInit}, _point{NoInit}, _outTangent{NoInit} {}
+        explicit CubicHermite(NoInitT, void*) noexcept {}
+
+        T _inTangent;
+        T _point;
+        T _outTangent;
+};
+
+/**
+@brief Scalar cubic Hermite spline point
+
+Convenience alternative to @cpp CubicHermite<T> @ce. See @ref CubicHermite for
+more information.
+@see @ref CubicHermite2D, @ref CubicHermite3D, @ref CubicHermiteComplex,
+    @ref CubicHermiteQuaternion, @ref Magnum::CubicHermite1D,
+    @ref Magnum::CubicHermite1Dd
+*/
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<class T> using CubicHermite1D = CubicHermite<T>;
+#endif
+
+/**
+@brief Two-dimensional cubic Hermite spline point
+
+Convenience alternative to @cpp CubicHermite<Vector2<T>> @ce. See
+@ref CubicHermite for more information.
+@see @ref CubicHermite1D, @ref CubicHermite3D, @ref CubicHermiteComplex,
+    @ref CubicHermiteQuaternion, @ref Magnum::CubicHermite2D,
+    @ref Magnum::CubicHermite2Dd
+*/
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<class T> using CubicHermite2D = CubicHermite<Vector2<T>>;
+#endif
+
+/**
+@brief Three-dimensional cubic Hermite spline point
+
+Convenience alternative to @cpp CubicHermite<Vector2<T>> @ce. See
+@ref CubicHermite for more information.
+@see @ref CubicHermite1D, @ref CubicHermite2D, @ref CubicHermiteComplex,
+    @ref CubicHermiteQuaternion, @ref Magnum::CubicHermite3D,
+    @ref Magnum::CubicHermite3Dd
+*/
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<class T> using CubicHermite3D = CubicHermite<Vector3<T>>;
+#endif
+
+/**
+@brief Cubic Hermite spline complex number
+
+Convenience alternative to @cpp CubicHermite<Complex<T>> @ce. See
+@ref CubicHermite for more information.
+@see @ref CubicHermite1D, @ref CubicHermite2D, @ref CubicHermite3D,
+    @ref CubicHermiteQuaternion, @ref Magnum::CubicHermiteComplex,
+    @ref Magnum::CubicHermiteComplexd
+*/
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<class T> using CubicHermiteComplex = CubicHermite<Complex<T>>;
+#endif
+
+/**
+@brief Cubic Hermite spline quaternion
+
+Convenience alternative to @cpp CubicHermite<Quaternion<T>> @ce. See
+@ref CubicHermite for more information.
+@see @ref CubicHermite1D, @ref CubicHermite2D, @ref CubicHermite3D,
+    @ref CubicHermiteComplex, @ref Magnum::CubicHermiteQuaternion,
+    @ref Magnum::CubicHermiteQuaterniond
+*/
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<class T> using CubicHermiteQuaternion = CubicHermite<Quaternion<T>>;
+#endif
+
+/** @debugoperator{CubicHermite} */
+template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const CubicHermite<T>& value) {
+    return debug << "CubicHermite(" << Corrade::Utility::Debug::nospace
+        << value.inTangent() << Corrade::Utility::Debug::nospace << ","
+        << value.point() << Corrade::Utility::Debug::nospace << ","
+        << value.outTangent() << Corrade::Utility::Debug::nospace << ")";
+}
+
+/* Explicit instantiation for commonly used types */
+#ifndef DOXYGEN_GENERATING_OUTPUT
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Float>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Double>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector2<Float>>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector3<Float>>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector4<Float>>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector2<Double>>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector3<Double>>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector4<Double>>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Complex<Float>>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Complex<Double>>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Quaternion<Float>>&);
+extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Quaternion<Double>>&);
+#endif
+
+/** @relatesalso CubicHermite
+@brief Constant interpolation of two cubic Hermite spline points
+@param a     First value
+@param b     Second value
+@param t     Interpolation phase
+
+Given segment points @f$ \boldsymbol{p}_i @f$, in-tangents @f$ \boldsymbol{m}_i @f$
+and out-tangents @f$ \boldsymbol{n}_i @f$, the interpolated value @f$ \boldsymbol{p} @f$
+at phase @f$ t @f$ is: @f[
+    \boldsymbol{p}(t) = \begin{cases}
+        \boldsymbol{p}_a, & t < 1 \\
+        \boldsymbol{p}_b, & t \ge 1
+    \end{cases}
+@f]
+
+Equivalent to calling @ref select(const T&, const T&, U) on
+@ref CubicHermite::point() extracted from both @p a and @p b.
+@see @ref lerp(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref splerp(const CubicHermite<T>&, const CubicHermite<T>&, U)
+*/
+template<class T, class U> T select(const CubicHermite<T>& a, const CubicHermite<T>& b, U t) {
+    /* Not using select() from Functions.h to avoid the header dependency */
+    return t < U(1) ? a.point() : b.point();
+}
+
+/** @relatesalso CubicHermite
+@brief Linear interpolation of two cubic Hermite points
+@param a     First spline point
+@param b     Second spline point
+@param t     Interpolation phase
+
+Given segment points @f$ \boldsymbol{p}_i @f$, in-tangents @f$ \boldsymbol{m}_i @f$
+and out-tangents @f$ \boldsymbol{n}_i @f$, the interpolated value @f$ \boldsymbol{p} @f$
+at phase @f$ t @f$ is: @f[
+    \boldsymbol{p}(t) = (1 - t) \boldsymbol{p}_a + t \boldsymbol{p}_b
+@f]
+
+Equivalent to calling @ref lerp(const T&, const T&, U) on
+@ref CubicHermite::point() extracted from both @p a and @p b.
+@see @ref lerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
+    @ref lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
+    @ref select(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref splerp(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref splerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
+    @ref splerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
+*/
+template<class T, class U> T lerp(const CubicHermite<T>& a, const CubicHermite<T>& b, U t) {
+    /* To avoid dependency on Functions.h */
+    return Implementation::lerp(a.point(), b.point(), t);
+}
+
+/** @relatesalso CubicHermite
+@brief Linear interpolation of two cubic Hermite complex numbers
+
+Unlike @ref lerp(const CubicHermite<T>&, const CubicHermite<T>&, U) this adds
+a normalization step after. Given segment points @f$ \boldsymbol{p}_i @f$,
+in-tangents @f$ \boldsymbol{m}_i @f$ and out-tangents @f$ \boldsymbol{n}_i @f$,
+the interpolated value @f$ \boldsymbol{p} @f$ at phase @f$ t @f$ is: @f[
+    \boldsymbol{p}(t) = \frac{(1 - t) \boldsymbol{p}_a + t \boldsymbol{p}_b}{|(1 - t) \boldsymbol{p}_a + t \boldsymbol{p}_b|}
+@f]
+
+Equivalent to calling @ref lerp(const Complex<T>&, const Complex<T>&, T) on
+@ref CubicHermite::point() extracted from @p a and @p b. Expects that
+@ref CubicHermite::point() is a normalized complex number in both @p a and @p b.
+@see @ref Complex::isNormalized(),
+    @ref lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
+    @ref select(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref splerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T)
+*/
+template<class T> Complex<T> lerp(const CubicHermiteComplex<T>& a, const CubicHermiteComplex<T>& b, T t) {
+    return lerp(a.point(), b.point(), t);
+}
+
+/** @relatesalso CubicHermite
+@brief Linear interpolation of two cubic Hermite quaternions
+
+Unlike @ref lerp(const CubicHermite<T>&, const CubicHermite<T>&, U) this adds a
+normalization step after. Given segment points @f$ \boldsymbol{p}_i @f$,
+in-tangents @f$ \boldsymbol{m}_i @f$ and out-tangents @f$ \boldsymbol{n}_i @f$,
+the interpolated value @f$ \boldsymbol{p} @f$ at phase @f$ t @f$ is: @f[
+    \boldsymbol{p}(t) = \frac{(1 - t) \boldsymbol{p}_a + t \boldsymbol{p}_b}{|(1 - t) \boldsymbol{p}_a + t \boldsymbol{p}_b|}
+@f]
+
+Equivalent to calling @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T)
+on @ref CubicHermite::point() extracted from @p a and @p b. Expects that
+@ref CubicHermite::point() is a normalized quaternion in both @p a and @p b.
+@see @ref Quaternion::isNormalized(),
+    @ref lerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
+    @ref select(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref splerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
+*/
+template<class T> Quaternion<T> lerp(const CubicHermiteQuaternion<T>& a, const CubicHermiteQuaternion<T>& b, T t) {
+    return lerp(a.point(), b.point(), t);
+}
+
+/** @relatesalso CubicHermite
+@brief Spline interpolation of two cubic Hermite points
+@param a     First spline point
+@param b     Second spline point
+@param t     Interpolation phase
+
+Given segment points @f$ \boldsymbol{p}_i @f$, in-tangents @f$ \boldsymbol{m}_i @f$
+and out-tangents @f$ \boldsymbol{n}_i @f$, the interpolated value @f$ \boldsymbol{p} @f$
+at phase @f$ t @f$ is: @f[
+    \boldsymbol{p}(t) = (2 t^3 - 3 t^2 + 1) \boldsymbol{p}_a + (t^3 - 2 t^2 + t) \boldsymbol{n}_a + (-2 t^3 + 3 t^2) \boldsymbol{p}_b + (t^3 - t^2)\boldsymbol{m}_b
+@f]
+
+@see @ref splerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
+    @ref splerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
+    @ref select(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref lerp(const CubicHermite<T>&, const CubicHermite<T>&, U),
+*/
+template<class T, class U> T splerp(const CubicHermite<T>& a, const CubicHermite<T>& b, U t) {
+    return (U(2)*t*t*t - U(3)*t*t + U(1))*a.point() +
+        (t*t*t - U(2)*t*t + t)*a.outTangent() +
+        (U(-2)*t*t*t + U(3)*t*t)*b.point() +
+        (t*t*t - t*t)*b.inTangent();
+}
+
+/** @relatesalso CubicHermite
+@brief Spline interpolation of two cubic Hermite complex numbers
+
+Unlike @ref splerp(const CubicHermite<T>&, const CubicHermite<T>&, U) this adds
+a normalization step after. Given segment points @f$ \boldsymbol{p}_i @f$,
+in-tangents @f$ \boldsymbol{m}_i @f$ and out-tangents @f$ \boldsymbol{n}_i @f$,
+the interpolated value @f$ \boldsymbol{p} @f$ at phase @f$ t @f$ is: @f[
+    \begin{array}{rcl}
+        \boldsymbol{p'}(t) & = & (2 t^3 - 3 t^2 + 1) \boldsymbol{p}_a + (t^3 - 2 t^2 + t) \boldsymbol{n}_a + (-2 t^3 + 3 t^2) \boldsymbol{p}_b + (t^3 - t^2)\boldsymbol{m}_b \\
+        \boldsymbol{p}(t) & = & \cfrac{\boldsymbol{p'}(t)}{|\boldsymbol{p'}(t)|}
+    \end{array}
+@f]
+
+Expects that @ref CubicHermite::point() is a normalized complex number in both
+@p a and @p b.
+@see @ref Complex::isNormalized(),
+    @ref splerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
+    @ref select(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref lerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T)
+*/
+template<class T> Complex<T> splerp(const CubicHermiteComplex<T>& a, const CubicHermiteComplex<T>& b, T t) {
+    CORRADE_ASSERT(a.point().isNormalized() && b.point().isNormalized(),
+        "Math::splerp(): complex spline points must be normalized", {});
+    return ((T(2)*t*t*t - T(3)*t*t + T(1))*a.point() +
+        (t*t*t - T(2)*t*t + t)*a.outTangent() +
+        (T(-2)*t*t*t + T(3)*t*t)*b.point() +
+        (t*t*t - t*t)*b.inTangent()).normalized();
+}
+
+/** @relatesalso CubicHermite
+@brief Spline interpolation of two cubic Hermite quaternions
+
+Unlike @ref splerp(const CubicHermite<T>&, const CubicHermite<T>&, U) this adds
+a normalization step after. Given segment points @f$ \boldsymbol{p}_i @f$,
+in-tangents @f$ \boldsymbol{m}_i @f$ and out-tangents @f$ \boldsymbol{n}_i @f$,
+the interpolated value @f$ \boldsymbol{p} @f$ at phase @f$ t @f$ is: @f[
+    \begin{array}{rcl}
+        \boldsymbol{p'}(t) & = & (2 t^3 - 3 t^2 + 1) \boldsymbol{p}_a + (t^3 - 2 t^2 + t) \boldsymbol{n}_a + (-2 t^3 + 3 t^2) \boldsymbol{p}_b + (t^3 - t^2)\boldsymbol{m}_b \\
+        \boldsymbol{p}(t) & = & \cfrac{\boldsymbol{p'}(t)}{|\boldsymbol{p'}(t)|}
+    \end{array}
+@f]
+
+Expects that @ref CubicHermite::point() is a normalized quaternion in both @p a
+and @p b.
+@see @ref Quaternion::isNormalized(),
+    @ref splerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
+    @ref select(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
+*/
+template<class T> Quaternion<T> splerp(const CubicHermiteQuaternion<T>& a, const CubicHermiteQuaternion<T>& b, T t) {
+    CORRADE_ASSERT(a.point().isNormalized() && b.point().isNormalized(),
+        "Math::splerp(): quaternion spline points must be normalized", {});
+    return ((T(2)*t*t*t - T(3)*t*t + T(1))*a.point() +
+        (t*t*t - T(2)*t*t + t)*a.outTangent() +
+        (T(-2)*t*t*t + T(3)*t*t)*b.point() +
+        (t*t*t - t*t)*b.inTangent()).normalized();
+}
+
+template<class T> inline bool CubicHermite<T>::operator==(const CubicHermite<T>& other) const {
+    /* For non-scalar types default implementation of TypeTraits would be used,
+       which is just operator== */
+    return TypeTraits<T>::equals(_inTangent, other._inTangent) &&
+        TypeTraits<T>::equals(_point, other._point) &&
+        TypeTraits<T>::equals(_outTangent, other._outTangent);
+}
+
+}}
+
+#endif

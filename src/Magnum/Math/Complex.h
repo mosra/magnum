@@ -469,7 +469,10 @@ Expects that both complex numbers are normalized. @f[
 @f]
 @see @ref Complex::isNormalized(), @ref slerp(const Complex<T>&, const Complex<T>&, T),
     @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T),
-    @ref lerp(const T&, const T&, U)
+    @ref lerp(const T&, const T&, U),
+    @ref lerp(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref lerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
+    @ref lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
 */
 template<class T> inline Complex<T> lerp(const Complex<T>& normalizedA, const Complex<T>& normalizedB, T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),

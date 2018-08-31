@@ -90,7 +90,10 @@ Expects that both quaternions are normalized. @f[
 @see @ref Quaternion::isNormalized(),
     @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T), @ref sclerp(),
     @ref lerp(const T&, const T&, U),
-    @ref lerp(const Complex<T>&, const Complex<T>&, T)
+    @ref lerp(const Complex<T>&, const Complex<T>&, T),
+    @ref lerp(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref lerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
+    @ref lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
 */
 template<class T> inline Quaternion<T> lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),

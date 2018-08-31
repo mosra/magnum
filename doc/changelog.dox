@@ -47,6 +47,7 @@ See also:
 
 @subsubsection changelog-latest-new-math Math library
 
+-   New @ref Math::CubicHermite class for cubic Hermite spline interpolation
 -   Added @ref Math::Intersection::rangeFrustum(),
     @ref Math::Intersection::aabbFrustum(),
     @ref Math::Intersection::sphereFrustum(),
