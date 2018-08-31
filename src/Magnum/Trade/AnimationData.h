@@ -87,7 +87,34 @@ enum class AnimationTrackType: UnsignedByte {
      */
     Quaternion,
 
-    DualQuaternion      /**< @ref Magnum::DualQuaternion "DualQuaternion" */
+    DualQuaternion,     /**< @ref Magnum::DualQuaternion "DualQuaternion" */
+    CubicHermite1D,     /**< @ref Magnum::CubicHermite1D "CubicHermite1D" */
+
+    /**
+     * @ref Magnum::CubicHermite2D "CubicHermite2D". Usually used for
+     * spline-interpolated @ref AnimationTrackTarget::Translation2D and
+     * @ref AnimationTrackTarget::Scaling2D.
+     */
+    CubicHermite2D,
+
+    /**
+     * @ref Magnum::CubicHermite3D "CubicHermite3D". Usually used for
+     * spline-interpolated @ref AnimationTrackTarget::Translation3D and
+     * @ref AnimationTrackTarget::Scaling3D.
+     */
+    CubicHermite3D,
+
+    /**
+     * @ref Magnum::CubicHermiteComplex "CubicHermiteComplex". Usually used for
+     * spline-interpolated @ref AnimationTrackTarget::Rotation2D.
+     */
+    CubicHermiteComplex,
+
+    /**
+     * @ref Magnum::CubicHermiteQuaternion "CubicHermiteQuaternion". Usually
+     * used for spline-interpolated @ref AnimationTrackTarget::Rotation3D.
+     */
+    CubicHermiteQuaternion
 };
 
 /** @debugoperatorenum{AnimationTrackType} */
@@ -102,49 +129,73 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, AnimationTrackType value);
 enum class AnimationTrackTarget: UnsignedByte {
     /**
      * Modifies 2D object translation. Type is usually
-     * @ref Magnum::Vector2 "Vector2".
+     * @ref Magnum::Vector2 "Vector2" or
+     * @ref Magnum::CubicHermite2D "CubicHermite2D" for spline-interpolated
+     * data.
      *
-     * @see @ref AnimationTrackType::Vector2, @ref ObjectData2D::translation()
+     * @see @ref AnimationTrackType::Vector2,
+     *      @ref AnimationTrackType::CubicHermite2D,
+     *      @ref ObjectData2D::translation()
      */
     Translation2D,
 
     /**
      * Modifies 3D object translation. Type is usually
-     * @ref Magnum::Vector3 "Vector3".
+     * @ref Magnum::Vector3 "Vector3" or
+     * @ref Magnum::CubicHermite3D "CubicHermite3D" for spline-interpolated
+     * data.
      *
-     * @see @ref AnimationTrackType::Vector3, @ref ObjectData3D::translation()
+     * @see @ref AnimationTrackType::Vector3,
+     *      @ref AnimationTrackType::CubicHermite3D,
+     *      @ref ObjectData3D::translation()
      */
     Translation3D,
 
     /**
      * Modifies 2D object rotation. Type is usually
-     * @ref Magnum::Complex "Complex".
+     * @ref Magnum::Complex "Complex" or
+     * @ref Magnum::CubicHermiteComplex "CubicHermiteComplex" for
+     * spline-interpolated data.
      *
-     * @see @ref AnimationTrackType::Complex, @ref ObjectData2D::rotation()
+     * @see @ref AnimationTrackType::Complex,
+     *      @ref AnimationTrackType::CubicHermiteComplex,
+     *      @ref ObjectData2D::rotation()
      */
     Rotation2D,
 
     /**
      * Modifies 3D object rotation. Type is usually
-     * @ref Magnum::Quaternion "Quaternion".
+     * @ref Magnum::Quaternion "Quaternion" or
+     * @ref Magnum::CubicHermiteQuaternion "CubicHermiteQuaternion" for
+     * spline-interpolated data.
      *
-     * @see @ref AnimationTrackType::Quaternion, @ref ObjectData3D::rotation()
+     * @see @ref AnimationTrackType::Quaternion,
+     *      @ref AnimationTrackType::CubicHermiteQuaternion,
+     *      @ref ObjectData3D::rotation()
      */
     Rotation3D,
 
     /**
      * Modifies 2D object scaling. Type is usually
-     * @ref Magnum::Vector2 "Vector2".
+     * @ref Magnum::Vector2 "Vector2" or
+     * @ref Magnum::CubicHermite2D "CubicHermite2D" for spline-interpolated
+     * data.
      *
-     * @see @ref AnimationTrackType::Vector2, @ref ObjectData2D::scaling()
+     * @see @ref AnimationTrackType::Vector2,
+     *      @ref AnimationTrackType::CubicHermite2D,
+     *      @ref ObjectData2D::scaling()
      */
     Scaling2D,
 
     /**
      * Modifies 3D object scaling. Type is usually
-     * @ref Magnum::Vector3 "Vector3".
+     * @ref Magnum::Vector3 "Vector3" or
+     * @ref Magnum::CubicHermite3D "CubicHermite3D" for spline-interpolated
+     * data.
      *
-     * @see @ref AnimationTrackType::Vector3, @ref ObjectData3D::scaling()
+     * @see @ref AnimationTrackType::Vector3,
+     *      @ref AnimationTrackType::CubicHermite3D,
+     *      @ref ObjectData3D::scaling()
      */
     Scaling3D,
 
@@ -450,6 +501,12 @@ namespace Implementation {
     template<> constexpr AnimationTrackType animationTypeFor<Complex>() { return AnimationTrackType::Complex; }
     template<> constexpr AnimationTrackType animationTypeFor<Quaternion>() { return AnimationTrackType::Quaternion; }
     template<> constexpr AnimationTrackType animationTypeFor<DualQuaternion>() { return AnimationTrackType::DualQuaternion; }
+
+    template<> constexpr AnimationTrackType animationTypeFor<CubicHermite1D>() { return AnimationTrackType::CubicHermite1D; }
+    template<> constexpr AnimationTrackType animationTypeFor<CubicHermite2D>() { return AnimationTrackType::CubicHermite2D; }
+    template<> constexpr AnimationTrackType animationTypeFor<CubicHermite3D>() { return AnimationTrackType::CubicHermite3D; }
+    template<> constexpr AnimationTrackType animationTypeFor<CubicHermiteComplex>() { return AnimationTrackType::CubicHermiteComplex; }
+    template<> constexpr AnimationTrackType animationTypeFor<CubicHermiteQuaternion>() { return AnimationTrackType::CubicHermiteQuaternion; }
     /* LCOV_EXCL_STOP */
 }
 #endif
