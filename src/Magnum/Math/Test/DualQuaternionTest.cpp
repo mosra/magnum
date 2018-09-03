@@ -479,15 +479,20 @@ void DualQuaternionTest::transformPointNormalized() {
 }
 
 void DualQuaternionTest::sclerp() {
-    const DualQuaternion from = DualQuaternion::translation(Vector3{20.0f, .0f, .0f})*DualQuaternion::rotation(180.0_degf, Vector3{.0f, 1.0f, .0f});
-    const DualQuaternion to = DualQuaternion::translation(Vector3{42.0f, 42.0f, 42.0f})*DualQuaternion::rotation(75.0_degf, Vector3{1.0f, .0f, .0f});
+    auto from = DualQuaternion::translation({20.0f, 0.0f, 0.0f})*
+        DualQuaternion::rotation(180.0_degf, Vector3::yAxis());
+    auto to = DualQuaternion::translation({42.0f, 42.0f, 42.0f})*
+        DualQuaternion::rotation(75.0_degf, Vector3::xAxis());
 
-    constexpr DualQuaternion expected1{Quaternion{{.23296291314453416f, .9238795325112867f, .0f}, .303603179340959f},
-                                       Quaternion{{2.235619101917766f, 2.8169719855488395f, 10.722240915237789f}, -10.287636336847847f}};
-    constexpr DualQuaternion expected2{Quaternion{{.4437679833315842f, .6845471059286887f, .0f}, .5783296955322937f},
-                                       Quaternion{{5.764394870292371f, 11.161306653193549f, 9.671267015501789f}, -17.634394590712066f}};
-    constexpr DualQuaternion expected3{Quaternion{{.5979785904506439f, .18738131458572468f, .0f}, .7793008714910992f},
-                                       Quaternion{{13.409627907069353f, 25.452124456683414f, 5.681581047706807f}, -16.409481115504978f}};
+    DualQuaternion expected1{
+        {{0.23296291f, 0.92387953f, 0.0f}, 0.30360317f},
+        {{2.23561910f, 2.81697198f, 10.72224091f}, -10.28763633f}};
+    DualQuaternion expected2{
+        {{0.44376798f, 0.68454710f, 0.0f}, 0.57832969f},
+        {{5.76439487f, 11.16130665f, 9.67126701f}, -17.63439459f}};
+    DualQuaternion expected3{
+        {{0.59797859f, 0.18738131f, 0.0f}, 0.77930087f},
+        {{13.40962790f, 25.45212445f, 5.68158104f}, -16.40948111f}};
 
     const DualQuaternion interp1 = Math::sclerp(from, to, 0.25f);
     const DualQuaternion interp2 = Math::sclerp(from, to, 0.52f);
@@ -501,12 +506,13 @@ void DualQuaternionTest::sclerp() {
 
     /* Dual quaternions with identical rotation */
     CORRADE_COMPARE(Math::sclerp(from, from, 0.42f), from);
-    CORRADE_COMPARE(Math::sclerp(from, DualQuaternion(-from.real(), from.dual()), 0.42f), from);
+    CORRADE_COMPARE(Math::sclerp(from, {-from.real(), from.dual()}, 0.42f), from);
 
     /* No difference in rotation, but in translation */
-    const auto rotation = DualQuaternion::rotation(35.0_degf, Vector3{0.3f, 0.2f, 0.1f});
-    CORRADE_COMPARE(Math::sclerp(DualQuaternion::translation(Vector3{1.0f, 2.0f, 4.0f})*rotation, DualQuaternion::translation(Vector3{5, -6, 2})*rotation, 0.25f),
-                    DualQuaternion::translation(Vector3{2.0f, 0.0f, 3.5f})*rotation);
+    const auto rotation = DualQuaternion::rotation(35.0_degf, {0.3f, 0.2f, 0.1f});
+    CORRADE_COMPARE(Math::sclerp(
+        DualQuaternion::translation({1.0f, 2.0f, 4.0f})*rotation, DualQuaternion::translation({5.0f, -6.0f, 2.0f})*rotation, 0.25f),
+        DualQuaternion::translation({2.0f, 0.0f, 3.5f})*rotation);
 }
 
 void DualQuaternionTest::debug() {
