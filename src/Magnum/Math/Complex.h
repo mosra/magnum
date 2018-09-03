@@ -488,9 +488,10 @@ template<class T> inline Complex<T> lerp(const Complex<T>& normalizedA, const Co
 
 Expects that both complex numbers are normalized. If the complex numbers are
 the same, returns the first argument. @f[
-    c_{SLERP} = \frac{sin((1 - t) \theta) c_A + sin(t \theta) c_B}{sin \theta}
-    ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-    \theta = acos \left( \frac{c_A \cdot c_B}{|c_A| \cdot |c_B|} \right) = acos(c_A \cdot c_B)
+    \begin{array}{rcl}
+        \theta & = & \arccos \left( \frac{c_A \cdot c_B}{|c_A| |c_B|} \right) = \arccos(c_A \cdot c_B) \\[6pt]
+        c_{SLERP} & = & \cfrac{\sin((1 - t) \theta) c_A + \sin(t \theta) c_B}{\sin(\theta)}
+    \end{array}
 @f]
 @see @ref Complex::isNormalized(), @ref lerp(const Complex<T>&, const Complex<T>&, T),
     @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T)
