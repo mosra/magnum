@@ -452,10 +452,9 @@ class MAGNUM_TRADE_EXPORT AnimationData {
 /** @relatesalso AnimationData
 @brief Animation interpolator function for given interpolation behavior
 
-To be used from importer plugins --- unlike @ref Animation::interpolatorFor()
-guarantees that the returned function pointer is not instantiated inside plugin
-binary to avoid dangling function pointers on plugin unload. See
-@ref Animation::interpolatorFor() for more information.
+To be used from importer plugins --- wrapper around @ref Animation::interpolatorFor(),
+guaranteeing that the returned function pointer is not instantiated inside the
+plugin binary to avoid dangling function pointers on plugin unload.
 @see @ref AnimationData
 @experimental
 */
