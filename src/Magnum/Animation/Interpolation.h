@@ -120,8 +120,7 @@ Interpolation       | Value type        | Result type   | Interpolator
 @ref Interpolation::Spline "Spline" | @ref Math::CubicHermiteQuaternion | @ref Math::Quaternion | @ref Math::splerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T) "Math::splerp()"
 
 @see @ref interpolate(), @ref interpolateStrict(),
-    @ref Animation-Track-interpolators "Track types and interpolators",
-    @ref Trade::animationInterpolatorFor()
+    @ref transformations-interpolation, @ref Trade::animationInterpolatorFor()
 @experimental
 */
 template<class V, class R = ResultOf<V>> auto interpolatorFor(Interpolation interpolation) -> R(*)(const V&, const V&, Float);
