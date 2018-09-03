@@ -79,7 +79,13 @@ template<class T> inline Rad<T> angle(const Complex<T>& normalizedA, const Compl
 @brief Complex number
 @tparam T   Data type
 
-Represents 2D rotation. See @ref transformations for brief introduction.
+Represents 2D rotation. Usually denoted as the following in equations, with
+@f$ a_0 @f$ being the @ref real() part and @f$ a_i @f$ the @ref imaginary()
+part: @f[
+    c = a_0 + i a_i
+@f]
+
+See @ref transformations for brief introduction.
 @see @ref Magnum::Complex, @ref Magnum::Complexd, @ref Matrix3
 */
 template<class T> class Complex {
@@ -191,11 +197,11 @@ template<class T> class Complex {
             return Implementation::isNormalizedSquared(dot());
         }
 
-        /** @brief Real part */
+        /** @brief Real part (@f$ a_0 @f$) */
         T& real() { return _real; }
         constexpr T real() const { return _real; } /**< @overload */
 
-        /** @brief Imaginary part */
+        /** @brief Imaginary part (@f$ a_i @f$) */
         T& imaginary() { return _imaginary; }
         constexpr T imaginary() const { return _imaginary; } /**< @overload */
 

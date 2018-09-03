@@ -333,13 +333,13 @@ template<class T> class Quaternion {
             return Implementation::isNormalizedSquared(dot());
         }
 
-        /** @brief Vector part */
+        /** @brief Vector part (@f$ \boldsymbol{q}_V @f$) */
         Vector3<T>& vector() { return _vector; }
         /* Returning const so it's possible to call constexpr functions on the
            result. WTF, C++?! */
         constexpr const Vector3<T> vector() const { return _vector; } /**< @overload */
 
-        /** @brief Scalar part */
+        /** @brief Scalar part (@f$ q_S @f$) */
         T& scalar() { return _scalar; }
         constexpr T scalar() const { return _scalar; } /**< @overload */
 

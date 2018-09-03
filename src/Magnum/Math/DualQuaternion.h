@@ -179,8 +179,14 @@ template<class T> inline DualQuaternion<T> sclerpShortestPath(const DualQuaterni
 @brief Dual quaternion
 @tparam T   Underlying data type
 
-Represents 3D rotation and translation. See @ref transformations for brief
-introduction.
+Represents 3D rotation and translation. Usually denoted as the following in
+equations, with @f$ q_0 @f$ being the @ref real() part and @f$ q_\epsilon @f$
+the @ref dual() part: @f[
+    \hat q = q_0 + \epsilon q_\epsilon
+@f]
+
+See @ref Dual and @ref Quaternion for further notation description and
+@ref transformations for a brief introduction.
 @see @ref Magnum::DualQuaternion, @ref Magnum::DualQuaterniond, @ref Dual,
     @ref Quaternion, @ref Matrix4
 */
