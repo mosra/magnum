@@ -51,17 +51,27 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
         /**
          * @brief Material flag
          *
+         * A superset of @ref AbstractMaterialData::Flag.
          * @see @ref Flags, @ref flags()
          */
-        enum class Flag: UnsignedByte {
-            AmbientTexture = 1 << 0,    /**< The material has ambient texture instead of color */
-            DiffuseTexture = 1 << 1,    /**< The material has diffuse texture instead of color */
-            SpecularTexture = 1 << 2    /**< The material has specular texture instead of color */
+        enum class Flag: UnsignedShort {
+            /** @copydoc AbstractMaterialData::Flag::DoubleSided */
+            DoubleSided = 1 << 0,
+
+            /** The material has an ambient texture instead of color */
+            AmbientTexture = 1 << 1,
+
+            /** The material has a diffuse texture instead of color */
+            DiffuseTexture = 1 << 2,
+
+            /** The material has a specular texture instead of color */
+            SpecularTexture = 1 << 3
         };
 
         /**
          * @brief Material flags
          *
+         * A superset of @ref AbstractMaterialData::Flags.
          * @see @ref flags()
          */
         typedef Containers::EnumSet<Flag> Flags;
@@ -69,6 +79,10 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
         /**
          * @brief Constructor
          * @param flags             Material flags
+         * @param alphaMode         Alpha mode. Use
+         *      @ref MaterialAlphaMode::Opaque for a default value.
+         * @param alphaMask         Alpha mask value. Use @cpp 0.5f @ce for a
+         *      default value.
          * @param shininess         Shininess
          * @param importerState     Importer-specific state
          *
@@ -78,7 +92,16 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
          * @cpp 0xffffffff_rgbaf @ce, all texture IDs (if any) are by default
          * set to @cpp 0 @ce.
          */
-        explicit PhongMaterialData(Flags flags, Float shininess, const void* importerState = nullptr) noexcept;
+        explicit PhongMaterialData(Flags flags, MaterialAlphaMode alphaMode, Float alphaMask, Float shininess, const void* importerState = nullptr) noexcept;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Constructor
+         * @deprecated Use @ref PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("use PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*) instead") PhongMaterialData(Flags flags, Float shininess, const void* importerState = nullptr) noexcept: PhongMaterialData{flags, MaterialAlphaMode::Opaque, 0.5f, shininess, importerState} {}
+        #endif
 
         /** @brief Copying is not allowed */
         PhongMaterialData(const PhongMaterialData&) = delete;
@@ -92,8 +115,14 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
         /** @brief Move assignment */
         PhongMaterialData& operator=(PhongMaterialData&& other) noexcept;
 
-        /** @brief Material flags */
-        Flags flags() const { return _flags; }
+        /**
+         * @brief Material flags
+         *
+         * A superset of @ref AbstractMaterialData::flags().
+         */
+        Flags flags() const {
+            return Flag(UnsignedShort(AbstractMaterialData::flags()));
+        }
 
         /**
          * @brief Ambient color

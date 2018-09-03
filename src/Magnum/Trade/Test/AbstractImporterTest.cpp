@@ -2355,7 +2355,7 @@ void AbstractImporterTest::material() {
             else return {};
         }
         std::unique_ptr<AbstractMaterialData> doMaterial(UnsignedInt id) override {
-            if(id == 7) return std::unique_ptr<PhongMaterialData>{new PhongMaterialData{{}, {}, &state}};
+            if(id == 7) return std::unique_ptr<PhongMaterialData>{new PhongMaterialData{{}, {}, {}, {}, &state}};
             else return {};
         }
     };

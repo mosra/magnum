@@ -39,6 +39,8 @@ class AbstractImageConverter;
 enum class ImporterFileCallbackPolicy: UnsignedByte;
 class AbstractImporter;
 
+enum class MaterialType: UnsignedByte;
+enum class MaterialAlphaMode: UnsignedByte;
 class AbstractMaterialData;
 
 enum class AnimationTrackTarget: UnsignedByte;

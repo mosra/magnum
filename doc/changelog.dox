@@ -145,6 +145,9 @@ See also:
 
 -   @ref Trade::AnimationData class and animation import interface in
     @ref Trade::AbstractImporter::animation() and related functions
+-   New @ref Trade::AbstractMaterialData::flags(),
+    @ref Trade::AbstractMaterialData::alphaMode() and
+    @ref Trade::AbstractMaterialData::alphaMask() material properties
 -   @ref Trade::ObjectData2D and @ref Trade::ObjectData3D now support also
     separate translation / rotation / scaling specification instead of a
     combined transformation matrix. See @ref Trade::ObjectData2D::transformation()
@@ -374,6 +377,11 @@ See also:
 -   `Shaders::VertexColor::Color` is deprecated, use the direct
     @ref Shaders::VertexColor::Color3 or @ref Shaders::VertexColor::Color4
     alternatives instead
+-   @ref Trade::AbstractMaterialData constructor taking just two parameters
+    and @ref Trade::PhongMaterialData constructor taking three parameters are
+    deprecated, use @ref Trade::AbstractMaterialData::AbstractMaterialData(MaterialType, Flags, MaterialAlphaMode, Float, const void*)
+    and @ref Trade::PhongMaterialData::PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*)
+    instead
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

@@ -25,11 +25,16 @@
 
 #include "AbstractMaterialData.h"
 
+#include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Utility/Debug.h>
 
 namespace Magnum { namespace Trade {
 
-AbstractMaterialData::AbstractMaterialData(const MaterialType type, const void* const importerState) noexcept: _type{type}, _importerState{importerState} {}
+AbstractMaterialData::AbstractMaterialData(AbstractMaterialData&&) noexcept = default;
+
+AbstractMaterialData& AbstractMaterialData::operator=(AbstractMaterialData&&) noexcept = default;
+
+AbstractMaterialData::AbstractMaterialData(const MaterialType type, const Flags flags, const MaterialAlphaMode alphaMode, const Float alphaMask, const void* const importerState) noexcept: _type{type}, _alphaMode{alphaMode}, _flags{flags}, _alphaMask{alphaMask}, _importerState{importerState} {}
 
 AbstractMaterialData::~AbstractMaterialData() = default;
 
@@ -43,6 +48,38 @@ Debug& operator<<(Debug& debug, const MaterialType value) {
     }
 
     return debug << "Trade::MaterialType(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const AbstractMaterialData::Flag value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case AbstractMaterialData::Flag::value: return debug << "Trade::AbstractMaterialData::Flag::" #value;
+        _c(DoubleSided)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Trade::AbstractMaterialData::Flag(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const AbstractMaterialData::Flags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Trade::AbstractMaterialData::Flags{}", {
+        AbstractMaterialData::Flag::DoubleSided
+    });
+}
+
+Debug& operator<<(Debug& debug, const MaterialAlphaMode value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case MaterialAlphaMode::value: return debug << "Trade::MaterialAlphaMode::" #value;
+        _c(Opaque)
+        _c(Mask)
+        _c(Blend)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Trade::MaterialAlphaMode(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 }}

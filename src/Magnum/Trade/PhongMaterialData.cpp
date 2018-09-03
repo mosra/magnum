@@ -31,7 +31,7 @@ namespace Magnum { namespace Trade {
 
 using namespace Math::Literals;
 
-PhongMaterialData::PhongMaterialData(const Flags flags, const Float shininess, const void* const importerState) noexcept: AbstractMaterialData{MaterialType::Phong, importerState}, _flags{flags}, _shininess{shininess} {
+PhongMaterialData::PhongMaterialData(const Flags flags, const MaterialAlphaMode alphaMode, const Float alphaMask, const Float shininess, const void* const importerState) noexcept: AbstractMaterialData{MaterialType::Phong, AbstractMaterialData::Flag(UnsignedShort(flags)), alphaMode, alphaMask, importerState}, _flags{flags}, _shininess{shininess} {
     if(_flags & Flag::AmbientTexture)
         _ambient.texture = {};
     else
@@ -121,11 +121,14 @@ UnsignedInt& PhongMaterialData::specularTexture() {
 
 Debug& operator<<(Debug& debug, const PhongMaterialData::Flag value) {
     switch(value) {
+        /* LCOV_EXCL_START */
         #define _c(v) case PhongMaterialData::Flag::v: return debug << "Trade::PhongMaterialData::Flag::" #v;
+        _c(DoubleSided)
         _c(AmbientTexture)
         _c(DiffuseTexture)
         _c(SpecularTexture)
         #undef _c
+        /* LCOV_EXCL_STOP */
     }
 
     return debug << "Trade::PhongMaterialData::Flag(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
@@ -133,6 +136,7 @@ Debug& operator<<(Debug& debug, const PhongMaterialData::Flag value) {
 
 Debug& operator<<(Debug& debug, const PhongMaterialData::Flags value) {
     return Containers::enumSetDebugOutput(debug, value, "Trade::PhongMaterialData::Flags{}", {
+        PhongMaterialData::Flag::DoubleSided,
         PhongMaterialData::Flag::AmbientTexture,
         PhongMaterialData::Flag::DiffuseTexture,
         PhongMaterialData::Flag::SpecularTexture});
