@@ -307,6 +307,8 @@ See also:
 -   @ref Platform::GlfwApplication::exec() now asserts instead of crashing if
     the constructor fails to create a window (see [mosra/magnum#192](https://github.com/mosra/magnum/issues/192),
     [mosra/magnum#272](https://github.com/mosra/magnum/pull/272))
+-   @ref Math::sclerp() was not properly interpolating the translation if
+    rotation was the same on both sides
 
 @subsection changelog-latest-docs Documentation
 

@@ -66,15 +66,15 @@ Expects that both dual quaternions are normalized. @f[
 template<class T> inline DualQuaternion<T> sclerp(const DualQuaternion<T>& normalizedA, const DualQuaternion<T>& normalizedB, const T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::sclerp(): dual quaternions must be normalized", {});
-    const T dotResult = dot(normalizedA.real().vector(), normalizedB.real().vector());
+    const T cosHalfAngle = dot(normalizedA.real(), normalizedB.real());
 
-    /* Avoid division by zero */
-    const T cosHalfAngle = dotResult + normalizedA.real().scalar()*normalizedB.real().scalar();
+    /* Avoid division by zero: interpolate just the translation part */
+    /** @todo could this be optimized somehow? */
     if(std::abs(cosHalfAngle) >= T(1))
-        return {normalizedA.real(), {Implementation::lerp(normalizedA.dual().vector(), normalizedB.dual().vector(), t), T(0)}};
+        return DualQuaternion<T>::translation(Implementation::lerp(normalizedA.translation(), normalizedB.translation(), t))*DualQuaternion<T>{normalizedA.real()};
 
     /* l + εm = q_A^**q_B, multiplying with -1 ensures shortest path when dot < 0 */
-    const DualQuaternion<T> diff = normalizedA.quaternionConjugated()*(dotResult < T(0) ? -normalizedB : normalizedB);
+    const DualQuaternion<T> diff = normalizedA.quaternionConjugated()*(cosHalfAngle < T(0) ? -normalizedB : normalizedB);
     const Quaternion<T>& l = diff.real();
     const Quaternion<T>& m = diff.dual();
 
