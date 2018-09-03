@@ -86,7 +86,7 @@ template<std::size_t size, class T> inline T dot(const Vector<size, T>& a, const
 
 Expects that both vectors are normalized. Enabled only for floating-point
 types. @f[
-    \theta = acos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| |\boldsymbol b|} \right) = acos (\boldsymbol a \cdot \boldsymbol b)
+    \theta = \arccos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| |\boldsymbol b|} \right) = \arccos (\boldsymbol a \cdot \boldsymbol b)
 @f]
 @see @ref Vector::isNormalized(),
     @ref angle(const Complex<T>&, const Complex<T>&),

@@ -66,7 +66,7 @@ namespace Implementation {
 @brief Angle between normalized quaternions
 
 Expects that both quaternions are normalized. @f[
-     \theta = acos \left( \frac{p \cdot q}{|p| |q|} \right) = acos(p \cdot q)
+     \theta = \arccos \left( \frac{p \cdot q}{|p| |q|} \right) = \arccos(p \cdot q)
 @f]
 @see @ref Quaternion::isNormalized(),
     @ref angle(const Complex<T>&, const Complex<T>&),
@@ -347,7 +347,7 @@ template<class T> class Quaternion {
          * @brief Rotation angle of unit quaternion
          *
          * Expects that the quaternion is normalized. @f[
-         *      \theta = 2 \cdot acos q_S
+         *      \theta = 2 \cdot \arccos(q_S)
          * @f]
          * @see @ref isNormalized(), @ref axis(), @ref rotation()
          */

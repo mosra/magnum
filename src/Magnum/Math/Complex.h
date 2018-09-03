@@ -63,7 +63,7 @@ template<class T> inline T dot(const Complex<T>& a, const Complex<T>& b) {
 @brief Angle between normalized complex numbers
 
 Expects that both complex numbers are normalized. @f[
-    \theta = acos \left( \frac{Re(c_0 \cdot c_1))}{|c_0| |c_1|} \right) = acos (a_0 a_1 + b_0 b_1)
+    \theta = \arccos \left( \frac{Re(c_0 \cdot c_1))}{|c_0| |c_1|} \right) = \arccos (a_0 a_1 + b_0 b_1)
 @f]
 @see @ref Complex::isNormalized(),
     @ref angle(const Quaternion<T>&, const Quaternion<T>&),
