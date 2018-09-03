@@ -84,7 +84,7 @@ template<class T> inline DualQuaternion<T> sclerp(const DualQuaternion<T>& norma
 
     /* Avoid division by zero: interpolate just the translation part */
     /** @todo could this be optimized somehow? */
-    if(std::abs(cosHalfAngle) >= T(1))
+    if(std::abs(cosHalfAngle) >= T(1) - TypeTraits<T>::epsilon())
         return DualQuaternion<T>::translation(Implementation::lerp(normalizedA.translation(), normalizedB.translation(), t))*DualQuaternion<T>{normalizedA.real()};
 
     /* l + εm = q_A^**q_B */
@@ -151,7 +151,7 @@ template<class T> inline DualQuaternion<T> sclerpShortestPath(const DualQuaterni
 
     /* Avoid division by zero: interpolate just the translation part */
     /** @todo could this be optimized somehow? */
-    if(std::abs(cosHalfAngle) >= T(1))
+    if(std::abs(cosHalfAngle) >= T(1) - TypeTraits<T>::epsilon())
         return DualQuaternion<T>::translation(Implementation::lerp(normalizedA.translation(), normalizedB.translation(), t))*DualQuaternion<T>{normalizedA.real()};
 
     /* l + εm = q_A^**q_B, multiplying with -1 ensures shortest path when dot < 0 */

@@ -163,7 +163,8 @@ template<class T> inline Quaternion<T> slerp(const Quaternion<T>& normalizedA, c
     const T cosHalfAngle = dot(normalizedA, normalizedB);
 
     /* Avoid division by zero */
-    if(std::abs(cosHalfAngle) >= T(1)) return Quaternion<T>{normalizedA};
+    if(std::abs(cosHalfAngle) >= T(1) - TypeTraits<T>::epsilon())
+        return normalizedA;
 
     const T a = std::acos(cosHalfAngle);
     return (std::sin((T(1) - t)*a)*normalizedA + std::sin(t*a)*normalizedB)/std::sin(a);
@@ -206,7 +207,8 @@ template<class T> inline Quaternion<T> slerpShortestPath(const Quaternion<T>& no
     const T cosHalfAngle = dot(normalizedA, normalizedB);
 
     /* Avoid division by zero */
-    if(std::abs(cosHalfAngle) >= T(1)) return Quaternion<T>{normalizedA};
+    if(std::abs(cosHalfAngle) >= T(1) - TypeTraits<T>::epsilon())
+        return normalizedA;
 
     const Quaternion<T> shortestNormalizedA = cosHalfAngle < 0 ? -normalizedA : normalizedA;
 
