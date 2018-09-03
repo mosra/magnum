@@ -78,7 +78,7 @@ template<class T> auto TypeTraits<Math::Complex<T>, Math::Complex<T>>::interpola
 template<class T> auto TypeTraits<Math::Quaternion<T>, Math::Quaternion<T>>::interpolator(Interpolation interpolation) -> Interpolator {
     switch(interpolation) {
         case Interpolation::Constant: return Math::select;
-        case Interpolation::Linear: return Math::slerp;
+        case Interpolation::Linear: return Math::slerpShortestPath;
 
         case Interpolation::Spline:
         case Interpolation::Custom: ; /* nope */
@@ -90,7 +90,7 @@ template<class T> auto TypeTraits<Math::Quaternion<T>, Math::Quaternion<T>>::int
 template<class T> auto TypeTraits<Math::DualQuaternion<T>, Math::DualQuaternion<T>>::interpolator(Interpolation interpolation) -> Interpolator {
     switch(interpolation) {
         case Interpolation::Constant: return Math::select;
-        case Interpolation::Linear: return Math::sclerp;
+        case Interpolation::Linear: return Math::sclerpShortestPath;
 
         case Interpolation::Spline:
         case Interpolation::Custom: ; /* nope */

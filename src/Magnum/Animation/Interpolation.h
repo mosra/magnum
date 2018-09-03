@@ -97,29 +97,31 @@ template<class V> using ResultOf = typename Implementation::ResultTraits<V>::Typ
 
 Expects that @p interpolation is not @ref Interpolation::Custom. Favors
 output correctness over performance, supply custom interpolator functions for
-faster but less precise results.
+faster but potentially less correct results.
 
 @m_class{m-fullwidth}
 
-Interpolation type  | Value type        | Result type   | Interpolator
+Interpolation       | Value type        | Result type   | Interpolator
 ------------------- | ----------------- | ------------- | ------------
-@ref Interpolation::Constant | any `V`  | `V`           | @ref Math::select()
-@ref Interpolation::Constant | @ref Math::CubicHermite "Math::CubicHermite<T>"  | `T` | @ref Math::select(const CubicHermite<T>&, const CubicHermite<T>&, U) "Math::select()"
-@ref Interpolation::Linear | @cpp bool @ce <b></b> | @cpp bool @ce <b></b> | @ref Math::select()
-@ref Interpolation::Linear | @ref Math::BoolVector | @ref Math::BoolVector | @ref Math::select()
-@ref Interpolation::Linear | any scalar `V` | `V`       | @ref Math::lerp()
-@ref Interpolation::Linear | any vector `V` | `V`       | @ref Math::lerp()
-@ref Interpolation::Linear | @ref Math::Complex | @ref Math::Complex | @ref Math::slerp(const Complex<T>&, const Complex<T>&, T) "Math::slerp()"
-@ref Interpolation::Linear | @ref Math::Quaternion | @ref Math::Quaternion | @ref Math::slerp(const Quaternion<T>&, const Quaternion<T>&, T) "Math::slerp()"
-@ref Interpolation::Linear | @ref Math::DualQuaternion | @ref Math::DualQuaternion | @ref Math::sclerp(const DualQuaternion<T>&, const DualQuaternion<T>&, T) "Math::sclerp()"
-@ref Interpolation::Linear | @ref Math::CubicHermite "Math::CubicHermite<T>" | `T` | @ref Math::lerp(const CubicHermite<T>&, const CubicHermite<T>&, U) "Math::lerp()"
-@ref Interpolation::Linear | @ref Math::CubicHermiteComplex | @ref Math::Complex | @ref Math::lerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T) "Math::lerp()"
-@ref Interpolation::Linear | @ref Math::CubicHermiteQuaternion | @ref Math::Quaternion | @ref Math::lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T) "Math::lerp()"
-@ref Interpolation::Spline | @ref Math::CubicHermite "Math::CubicHermite<T>" | `T` | @ref Math::splerp(const CubicHermite<T>&, const CubicHermite<T>&, U) "Math::splerp()"
-@ref Interpolation::Spline | @ref Math::CubicHermiteComplex | @ref Math::Complex | @ref Math::splerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T) "Math::splerp()"
-@ref Interpolation::Spline | @ref Math::CubicHermiteQuaternion | @ref Math::Quaternion | @ref Math::splerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T) "Math::splerp()"
+@ref Interpolation::Constant "Constant" | any `V`  | `V`           | @ref Math::select()
+@ref Interpolation::Constant "Constant" | @ref Math::CubicHermite "Math::CubicHermite<T>"  | `T` | @ref Math::select(const CubicHermite<T>&, const CubicHermite<T>&, U) "Math::select()"
+@ref Interpolation::Linear "Linear" | @cpp bool @ce <b></b> | @cpp bool @ce <b></b> | @ref Math::select()
+@ref Interpolation::Linear "Linear" | @ref Math::BoolVector | @ref Math::BoolVector | @ref Math::select()
+@ref Interpolation::Linear "Linear" | any scalar `V` | `V`       | @ref Math::lerp()
+@ref Interpolation::Linear "Linear" | any vector `V` | `V`       | @ref Math::lerp()
+@ref Interpolation::Linear "Linear" | @ref Math::Complex | @ref Math::Complex | @ref Math::slerp(const Complex<T>&, const Complex<T>&, T) "Math::slerp()"
+@ref Interpolation::Linear "Linear" | @ref Math::Quaternion | @ref Math::Quaternion | @ref Math::slerpShortestPath(const Quaternion<T>&, const Quaternion<T>&, T) "Math::slerpShortestPath()"
+@ref Interpolation::Linear "Linear" | @ref Math::DualQuaternion | @ref Math::DualQuaternion | @ref Math::sclerpShortestPath(const DualQuaternion<T>&, const DualQuaternion<T>&, T) "Math::sclerpShortestPath()"
+@ref Interpolation::Linear "Linear" | @ref Math::CubicHermite "Math::CubicHermite<T>" | `T` | @ref Math::lerp(const CubicHermite<T>&, const CubicHermite<T>&, U) "Math::lerp()"
+@ref Interpolation::Linear "Linear" | @ref Math::CubicHermiteComplex | @ref Math::Complex | @ref Math::lerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T) "Math::lerp()"
+@ref Interpolation::Linear "Linear" | @ref Math::CubicHermiteQuaternion | @ref Math::Quaternion | @ref Math::lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T) "Math::lerp()"
+@ref Interpolation::Spline "Spline" | @ref Math::CubicHermite "Math::CubicHermite<T>" | `T` | @ref Math::splerp(const CubicHermite<T>&, const CubicHermite<T>&, U) "Math::splerp()"
+@ref Interpolation::Spline "Spline" | @ref Math::CubicHermiteComplex | @ref Math::Complex | @ref Math::splerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T) "Math::splerp()"
+@ref Interpolation::Spline "Spline" | @ref Math::CubicHermiteQuaternion | @ref Math::Quaternion | @ref Math::splerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T) "Math::splerp()"
 
-@see @ref interpolate(), @ref interpolateStrict()
+@see @ref interpolate(), @ref interpolateStrict(),
+    @ref Animation-Track-interpolators "Track types and interpolators",
+    @ref Trade::animationInterpolatorFor()
 @experimental
 */
 template<class V, class R = ResultOf<V>> auto interpolatorFor(Interpolation interpolation) -> R(*)(const V&, const V&, Float);
