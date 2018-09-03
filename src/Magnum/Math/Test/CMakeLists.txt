@@ -61,6 +61,8 @@ corrade_add_test(MathDistanceTest DistanceTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathIntersectionTest IntersectionTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathIntersectionBenchmark IntersectionBenchmark.cpp LIBRARIES MagnumMathTestLib)
 
+corrade_add_test(MathInterpolationBenchmark InterpolationBenchmark.cpp LIBRARIES MagnumMathTestLib)
+
 set_property(TARGET
     MathVectorTest
     MathMatrixTest
