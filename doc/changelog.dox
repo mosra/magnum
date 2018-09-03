@@ -72,6 +72,11 @@ See also:
 -   Added @ref Math::lerp(const Complex<T>&, const Complex<T>&, T) and
     @ref Math::slerp(const Complex<T>&, const Complex<T>&, T) for feature
     parity with @ref Math::Quaternion
+-   Added @ref Math::lerpShortestPath(const Quaternion<T>&, const Quaternion<T>&, T),
+    @ref Math::slerpShortestPath(const Quaternion<T>&, const Quaternion<T>&, T)
+    and @ref Math::sclerpShortestPath(const DualQuaternion<T>&, const DualQuaternion<T>&, T)
+    variants; clarified that the original versions are explicitly *not*
+    shortest-path
 -   Added @ref Math::Range2D::x(), @ref Math::Range3D::x(),
     @ref Math::Range2D::y(), @ref Math::Range3D::y(), @ref Math::Range3D::z()
     and @ref Math::Range3D::y() for slicing ranges into lower dimensions

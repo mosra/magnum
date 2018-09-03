@@ -89,12 +89,16 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
     void rotation();
     void angle();
     void matrix();
+
     void lerp();
+    void lerpShortestPath();
     void lerp2D();
     void lerpNotNormalized();
     void slerp();
+    void slerpShortestPath();
     void slerp2D();
     void slerpNotNormalized();
+
     void transformVector();
     void transformVectorNormalized();
 
@@ -150,12 +154,16 @@ QuaternionTest::QuaternionTest() {
               &QuaternionTest::rotation,
               &QuaternionTest::angle,
               &QuaternionTest::matrix,
+
               &QuaternionTest::lerp,
+              &QuaternionTest::lerpShortestPath,
               &QuaternionTest::lerp2D,
               &QuaternionTest::lerpNotNormalized,
               &QuaternionTest::slerp,
+              &QuaternionTest::slerpShortestPath,
               &QuaternionTest::slerp2D,
               &QuaternionTest::slerpNotNormalized,
+
               &QuaternionTest::transformVector,
               &QuaternionTest::transformVectorNormalized,
 
@@ -481,10 +489,34 @@ void QuaternionTest::matrix() {
 void QuaternionTest::lerp() {
     Quaternion a = Quaternion::rotation(15.0_degf, Vector3(1.0f/Constants<Float>::sqrt3()));
     Quaternion b = Quaternion::rotation(23.0_degf, Vector3::xAxis());
-    Quaternion lerp = Math::lerp(a, b, 0.35f);
 
+    Quaternion lerp = Math::lerp(a, b, 0.35f);
+    Quaternion lerpShortestPath = Math::lerpShortestPath(a, b, 0.35f);
+    Quaternion expected{{0.119127f, 0.049134f, 0.049134f}, 0.990445f};
+
+    /* Both should give the same result */
     CORRADE_VERIFY(lerp.isNormalized());
-    CORRADE_COMPARE(lerp, Quaternion({0.119127f, 0.049134f, 0.049134f}, 0.990445f));
+    CORRADE_VERIFY(lerpShortestPath.isNormalized());
+    CORRADE_COMPARE(lerp, expected);
+    CORRADE_COMPARE(lerpShortestPath, expected);
+}
+
+void QuaternionTest::lerpShortestPath() {
+    Quaternion a = Quaternion::rotation(0.0_degf, Vector3::zAxis());
+    Quaternion b = Quaternion::rotation(225.0_degf, Vector3::zAxis());
+
+    Quaternion slerp = Math::lerp(a, b, 0.25f);
+    Quaternion slerpShortestPath = Math::lerpShortestPath(a, b, 0.25f);
+
+    CORRADE_VERIFY(slerp.isNormalized());
+    CORRADE_VERIFY(slerpShortestPath.isNormalized());
+    CORRADE_COMPARE(slerp.axis(), Vector3::zAxis());
+    CORRADE_COMPARE(slerpShortestPath.axis(), Vector3::zAxis());
+    CORRADE_COMPARE(slerp.angle(), 38.8848_degf);
+    CORRADE_COMPARE(slerpShortestPath.angle(), 329.448_degf);
+
+    CORRADE_COMPARE(slerp, (Quaternion{{0.0f, 0.0f, 0.332859f}, 0.942977f}));
+    CORRADE_COMPARE(slerpShortestPath, (Quaternion{{0.0f, 0.0f, 0.26347f}, -0.964667f}));
 }
 
 void QuaternionTest::lerp2D() {
@@ -513,14 +545,40 @@ void QuaternionTest::lerpNotNormalized() {
 void QuaternionTest::slerp() {
     Quaternion a = Quaternion::rotation(15.0_degf, Vector3(1.0f/Constants<Float>::sqrt3()));
     Quaternion b = Quaternion::rotation(23.0_degf, Vector3::xAxis());
-    Quaternion slerp = Math::slerp(a, b, 0.35f);
 
+    Quaternion slerp = Math::slerp(a, b, 0.35f);
+    Quaternion slerpShortestPath = Math::slerpShortestPath(a, b, 0.35f);
+    Quaternion expected{{0.1191653f, 0.0491109f, 0.0491109f}, 0.9904423f};
+
+    /* Both should give the same result */
     CORRADE_VERIFY(slerp.isNormalized());
-    CORRADE_COMPARE(slerp, Quaternion({0.1191653f, 0.0491109f, 0.0491109f}, 0.9904423f));
+    CORRADE_COMPARE(slerp, expected);
+    CORRADE_VERIFY(slerpShortestPath.isNormalized());
+    CORRADE_COMPARE(slerpShortestPath, expected);
 
     /* Avoid division by zero */
     CORRADE_COMPARE(Math::slerp(a, a, 0.25f), a);
     CORRADE_COMPARE(Math::slerp(a, -a, 0.42f), a);
+    CORRADE_COMPARE(Math::slerpShortestPath(a, a, 0.25f), a);
+    CORRADE_COMPARE(Math::slerpShortestPath(a, -a, 0.25f), a);
+}
+
+void QuaternionTest::slerpShortestPath() {
+    Quaternion a = Quaternion::rotation(0.0_degf, Vector3::zAxis());
+    Quaternion b = Quaternion::rotation(225.0_degf, Vector3::zAxis());
+
+    Quaternion slerp = Math::slerp(a, b, 0.25f);
+    Quaternion slerpShortestPath = Math::slerpShortestPath(a, b, 0.25f);
+
+    CORRADE_VERIFY(slerp.isNormalized());
+    CORRADE_VERIFY(slerpShortestPath.isNormalized());
+    CORRADE_COMPARE(slerp.axis(), Vector3::zAxis());
+    CORRADE_COMPARE(slerpShortestPath.axis(), Vector3::zAxis());
+    CORRADE_COMPARE(slerp.angle(), 56.25_degf);
+    CORRADE_COMPARE(slerpShortestPath.angle(), 326.25_degf);
+
+    CORRADE_COMPARE(slerp, (Quaternion{{0.0f, 0.0f, 0.471397f}, 0.881921f}));
+    CORRADE_COMPARE(slerpShortestPath, (Quaternion{{0.0f, 0.0f, 0.290285f}, -0.95694f}));
 }
 
 void QuaternionTest::slerp2D() {

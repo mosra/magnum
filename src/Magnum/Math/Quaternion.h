@@ -87,6 +87,9 @@ template<class T> inline Rad<T> angle(const Quaternion<T>& normalizedA, const Qu
 Expects that both quaternions are normalized. @f[
     q_{LERP} = \frac{(1 - t) q_A + t q_B}{|(1 - t) q_A + t q_B|}
 @f]
+
+Note that this function does not check for shortest path interpolation, see
+@ref lerpShortestPath() for an alternative.
 @see @ref Quaternion::isNormalized(),
     @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T), @ref sclerp(),
     @ref lerp(const T&, const T&, U),
@@ -102,17 +105,55 @@ template<class T> inline Quaternion<T> lerp(const Quaternion<T>& normalizedA, co
 }
 
 /** @relatesalso Quaternion
+@brief Linear shortest-path interpolation of two quaternions
+@param normalizedA  First quaternion
+@param normalizedB  Second quaternion
+@param t            Interpolation phase (from range @f$ [0; 1] @f$)
+
+Unlike @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T), this
+interpolates on the shortest path at some performance expense. Expects that
+both quaternions are normalized. @f[
+    \begin{array}{rcl}
+        d & = & q_A \cdot q_B \\[5pt]
+        q'_A & = & \begin{cases}
+                \phantom{-}q_A, & d \ge 0 \\
+                -q_A, & d < 0
+            \end{cases} \\[15pt]
+        q_{LERP} & = & \cfrac{(1 - t) q'_A + t q_B}{|(1 - t) q'_A + t q_B|}
+    \end{array}
+@f]
+@see @ref Quaternion::isNormalized(), @ref slerpShortestPath(),
+    @ref sclerpShortestPath()
+*/
+template<class T> inline Quaternion<T> lerpShortestPath(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
+    return lerp(dot(normalizedA, normalizedB) < T(0) ? -normalizedA : normalizedA, normalizedB, t);
+}
+
+/** @relatesalso Quaternion
 @brief Spherical linear interpolation of two quaternions
 @param normalizedA  First quaternion
 @param normalizedB  Second quaternion
 @param t            Interpolation phase (from range @f$ [0; 1] @f$)
 
 Expects that both quaternions are normalized. If the quaternions are the same
-or one is a negation of the other, returns the first argument. @f[
-    q_{SLERP} = \frac{sin((1 - t) \theta) q_A + sin(t \theta) q_B}{sin \theta}
-    ~ ~ ~ ~ ~ ~ ~ ~ ~ ~ ~
-    \theta = acos \left( \frac{q_A \cdot q_B}{|q_A| \cdot |q_B|} \right) = acos(q_A \cdot q_B)
+or one is a negation of the other, it just returns the first argument: @f[
+    \begin{array}{rcl}
+        d & = & q_A \cdot q_B \\[5pt]
+        q_{SLERP} & = & q_A, ~ {\color{m-primary} \text{if} ~ d \ge 1}
+    \end{array}
 @f]
+
+@m_class{m-noindent}
+
+otherwise, the interpolation is performed as: @f[
+    \begin{array}{rcl}
+        \theta & = & \arccos \left( \frac{q_A \cdot q_B}{|q_A| |q_B|} \right) = \arccos(q_A \cdot q_B) = \arccos(d) \\[5pt]
+        q_{SLERP} & = & \cfrac{\sin((1 - t) \theta) q_A + \sin(t \theta) q_B}{\sin(\theta)}
+    \end{array}
+@f]
+
+Note that this function does not check for shortest path interpolation, see
+@ref slerpShortestPath() for an alternative.
 @see @ref Quaternion::isNormalized(), @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T),
     @ref slerp(const Complex<T>&, const Complex<T>&, T), @ref sclerp()
 */
@@ -128,11 +169,62 @@ template<class T> inline Quaternion<T> slerp(const Quaternion<T>& normalizedA, c
     return (std::sin((T(1) - t)*a)*normalizedA + std::sin(t*a)*normalizedB)/std::sin(a);
 }
 
+/** @relatesalso Quaternion
+@brief Spherical linear shortest-path interpolation of two quaternions
+@param normalizedA  First quaternion
+@param normalizedB  Second quaternion
+@param t            Interpolation phase (from range @f$ [0; 1] @f$)
+
+Unlike @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T) this function
+interpolates on the shortest path. Expects that both quaternions are
+normalized. If the quaternions are the same or one is a negation of the other,
+it just returns the first argument: @f[
+    \begin{array}{rcl}
+        d & = & q_A \cdot q_B \\
+        q_{SLERP} & = & q_A, ~ {\color{m-primary} \text{if} ~ d \ge 1}
+    \end{array}
+@f]
+
+@m_class{m-noindent}
+
+otherwise, the interpolation is performed as: @f[
+    \begin{array}{rcl}
+        q'_A & = & \begin{cases}
+                \phantom{-}q_A, & d \ge 0 \\
+                -q_A, & d < 0
+            \end{cases} \\[15pt]
+        \theta & = & \arccos \left( \frac{|q'_A \cdot q_B|}{|q'_A| |q_B|} \right) = \arccos(|q'_A \cdot q_B|) = \arccos(|d|) \\[5pt]
+        q_{SLERP} & = & \cfrac{\sin((1 - t) \theta) q'_A + \sin(t \theta) q_B}{\sin(\theta)}
+    \end{array}
+@f]
+@see @ref Quaternion::isNormalized(), @ref lerpShortestPath(),
+        @ref sclerpShortestPath()
+*/
+template<class T> inline Quaternion<T> slerpShortestPath(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+        "Math::slerp(): quaternions must be normalized", {});
+    const T cosHalfAngle = dot(normalizedA, normalizedB);
+
+    /* Avoid division by zero */
+    if(std::abs(cosHalfAngle) >= T(1)) return Quaternion<T>{normalizedA};
+
+    const Quaternion<T> shortestNormalizedA = cosHalfAngle < 0 ? -normalizedA : normalizedA;
+
+    const T a = std::acos(std::abs(cosHalfAngle));
+    return (std::sin((T(1) - t)*a)*shortestNormalizedA + std::sin(t*a)*normalizedB)/std::sin(a);
+}
+
 /**
 @brief Quaternion
 @tparam T   Underlying data type
 
-Represents 3D rotation. See @ref transformations for brief introduction.
+Represents 3D rotation. Usually denoted as the following in equations, with
+@f$ \boldsymbol{q}_V @f$ being the @ref vector() part and @f$ q_S @f$ being the
+@ref scalar() part: @f[
+    q = [\boldsymbol{q}_V, q_S]
+@f]
+
+See @ref transformations for a brief introduction.
 @see @ref Magnum::Quaternion, @ref Magnum::Quaterniond, @ref DualQuaternion,
     @ref Matrix4
 */
