@@ -7,3 +7,6 @@ extraction:
       build_command:
         - package/ci/lgtm.sh
 
+path_classifiers:
+  library:
+    - corrade-master
