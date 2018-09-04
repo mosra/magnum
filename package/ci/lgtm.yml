@@ -2,7 +2,7 @@ extraction:
   cpp:
     configure:
       command:
-        - echo "Not needed -- this is here to override LGTM from automatically running cmake"
+        - echo "Not needed -- this is here to stop LGTM from automatically running cmake"
     index:
       build_command:
         - package/ci/lgtm.sh
