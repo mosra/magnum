@@ -148,6 +148,9 @@ See also:
 -   New @ref Trade::AbstractMaterialData::flags(),
     @ref Trade::AbstractMaterialData::alphaMode() and
     @ref Trade::AbstractMaterialData::alphaMask() material properties
+-   New @ref Trade::CameraData::type(), @ref Trade::CameraData::aspectRatio()
+    and @ref Trade::CameraData::size() properties, ability to describe 2D
+    cameras
 -   @ref Trade::ObjectData2D and @ref Trade::ObjectData3D now support also
     separate translation / rotation / scaling specification instead of a
     combined transformation matrix. See @ref Trade::ObjectData2D::transformation()
@@ -381,6 +384,9 @@ See also:
     and @ref Trade::PhongMaterialData constructor taking three parameters are
     deprecated, use @ref Trade::AbstractMaterialData::AbstractMaterialData(MaterialType, Flags, MaterialAlphaMode, Float, const void*)
     and @ref Trade::PhongMaterialData::PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*)
+    instead
+-   @ref Trade::CameraData constructor not taking an explicit type enum is
+    deprecated, use @ref Trade::CameraData::CameraData(CameraType, Rad, Float, Float, Float, const void*)
     instead
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs

@@ -48,6 +48,7 @@ enum class AnimationTrackType: UnsignedByte;
 class AnimationTrackData;
 class AnimationData;
 
+enum class CameraType: UnsignedByte;
 class CameraData;
 
 template<UnsignedInt> class ImageData;

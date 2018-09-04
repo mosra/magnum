@@ -44,7 +44,7 @@ namespace Magnum { namespace Trade {
 @see @ref ObjectData2D::instanceType()
 */
 enum class ObjectInstanceType2D: UnsignedByte {
-    Camera,     /**< Camera instance (see CameraData) */
+    Camera,     /**< Camera instance (see @ref CameraData) */
 
     /**
      * Mesh instance. The data can be cast to @ref MeshObjectData2D to provide

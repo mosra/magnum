@@ -1475,7 +1475,7 @@ void AbstractImporterTest::camera() {
             else return {};
         }
         Containers::Optional<CameraData> doCamera(UnsignedInt id) override {
-            if(id == 7) return CameraData{{}, {}, {}, &state};
+            if(id == 7) return CameraData{{}, Vector2{}, {}, {}, &state};
             else return {};
         }
     };
