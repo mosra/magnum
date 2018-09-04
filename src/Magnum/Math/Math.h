@@ -43,14 +43,6 @@ template<std::size_t> class BoolVector;
 
 /* Class Constants used only statically */
 
-template<UnsignedInt, UnsignedInt, class> class Bezier;
-template<UnsignedInt dimensions, class T> using QuadraticBezier = Bezier<2, dimensions, T>;
-template<UnsignedInt dimensions, class T> using CubicBezier = Bezier<3, dimensions, T>;
-template<class T> using QuadraticBezier2D = QuadraticBezier<2, T>;
-template<class T> using QuadraticBezier3D = QuadraticBezier<3, T>;
-template<class T> using CubicBezier2D = CubicBezier<2, T>;
-template<class T> using CubicBezier3D = CubicBezier<3, T>;
-
 template<class> class Complex;
 template<class> class Dual;
 template<class> class DualComplex;
@@ -89,6 +81,21 @@ template<class> class Vector4;
 
 template<class> class Color3;
 template<class> class Color4;
+
+template<UnsignedInt, UnsignedInt, class> class Bezier;
+template<UnsignedInt dimensions, class T> using QuadraticBezier = Bezier<2, dimensions, T>;
+template<UnsignedInt dimensions, class T> using CubicBezier = Bezier<3, dimensions, T>;
+template<class T> using QuadraticBezier2D = QuadraticBezier<2, T>;
+template<class T> using QuadraticBezier3D = QuadraticBezier<3, T>;
+template<class T> using CubicBezier2D = CubicBezier<2, T>;
+template<class T> using CubicBezier3D = CubicBezier<3, T>;
+
+template<class> class CubicHermite;
+template<class T> using CubicHermite1D = CubicHermite<T>;
+template<class T> using CubicHermite2D = CubicHermite<Vector2<T>>;
+template<class T> using CubicHermite3D = CubicHermite<Vector3<T>>;
+template<class T> using CubicHermiteComplex = CubicHermite<Complex<T>>;
+template<class T> using CubicHermiteQuaternion = CubicHermite<Quaternion<T>>;
 
 template<UnsignedInt, class> class Range;
 template<class T> using Range1D = Range<1, T>;

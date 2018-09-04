@@ -24,6 +24,7 @@
 */
 
 #include "Magnum/Math/Bezier.h"
+#include "Magnum/Math/CubicHermite.h"
 #include "Magnum/Math/DualComplex.h"
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/Frustum.h"
@@ -100,6 +101,17 @@ template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bez
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<2, 3, Double>&);
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 2, Double>&);
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 3, Double>&);
+
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Float>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Double>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector2<Float>>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector3<Float>>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector2<Double>>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Vector3<Double>>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Complex<Float>>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Complex<Double>>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Quaternion<Float>>&);
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Quaternion<Double>>&);
 
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Float>&);
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Double>&);

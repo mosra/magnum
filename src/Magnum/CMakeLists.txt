@@ -133,6 +133,7 @@ endif()
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS
     Math/Color.cpp
+    Math/Half.cpp
     Math/Functions.cpp
     Math/Packing.cpp
     Math/instantiation.cpp)

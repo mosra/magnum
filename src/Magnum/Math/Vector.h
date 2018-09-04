@@ -72,7 +72,7 @@ namespace Implementation {
 Returns `0` when two vectors are perpendicular, `> 0` when two vectors are in
 the same general direction, `1` when two *normalized* vectors are parallel,
 `< 0` when two vectors are in opposite general direction and `-1` when two
-*normalized* vectors are antiparallel. @f[
+* *normalized* vectors are antiparallel. @f[
     \boldsymbol a \cdot \boldsymbol b = \sum_{i=0}^{n-1} \boldsymbol a_i \boldsymbol b_i
 @f]
 @see @ref Vector::dot() const, @ref Vector::operator-(), @ref Vector2::perpendicular()
@@ -86,7 +86,7 @@ template<std::size_t size, class T> inline T dot(const Vector<size, T>& a, const
 
 Expects that both vectors are normalized. Enabled only for floating-point
 types. @f[
-    \theta = acos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| |\boldsymbol b|} \right) = acos (\boldsymbol a \cdot \boldsymbol b)
+    \theta = \arccos \left( \frac{\boldsymbol a \cdot \boldsymbol b}{|\boldsymbol a| |\boldsymbol b|} \right) = \arccos (\boldsymbol a \cdot \boldsymbol b)
 @f]
 @see @ref Vector::isNormalized(),
     @ref angle(const Complex<T>&, const Complex<T>&),

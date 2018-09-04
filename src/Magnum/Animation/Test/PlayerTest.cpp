@@ -833,6 +833,10 @@ void PlayerTest::runFor100YearsFloat() {
 
     CORRADE_COMPARE(player.state(), State::Playing);
     {
+        /* Asm.js uses doubles for all floating-point calculations, so we don't
+           lose any precision and thus even the "run for 100 years" test passes
+           there. Unfortunately it's not possible to detect if this is asm.js
+           so the XFAIL is done like this. */
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         CORRADE_EXPECT_FAIL_IF(data.failsFuzzyFloat, "Imprecision larger than 2.5e-4f.");
         #else

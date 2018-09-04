@@ -97,8 +97,13 @@ template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Vector4, Vector4>(Ani
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Vector4d, Vector4d>(Animation::Interpolation) -> Vector4d(*)(const Vector4d&, const Vector4d&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Vector4i, Vector4i>(Animation::Interpolation) -> Vector4i(*)(const Vector4i&, const Vector4i&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Vector4ui, Vector4ui>(Animation::Interpolation) -> Vector4ui(*)(const Vector4ui&, const Vector4ui&, Float);
+template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Complex, Complex>(Animation::Interpolation) -> Complex(*)(const Complex&, const Complex&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<Quaternion, Quaternion>(Animation::Interpolation) -> Quaternion(*)(const Quaternion&, const Quaternion&, Float);
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<DualQuaternion, DualQuaternion>(Animation::Interpolation) -> DualQuaternion(*)(const DualQuaternion&, const DualQuaternion&, Float);
+template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<CubicHermite2D, Math::Vector2<Float>>(Animation::Interpolation) -> Math::Vector2<Float>(*)(const CubicHermite2D&, const CubicHermite2D&, Float);
+template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<CubicHermite3D, Math::Vector3<Float>>(Animation::Interpolation) -> Math::Vector3<Float>(*)(const CubicHermite3D&, const CubicHermite3D&, Float);
+template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<CubicHermiteComplex, Complex>(Animation::Interpolation) -> Complex(*)(const CubicHermiteComplex&, const CubicHermiteComplex&, Float);
+template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<CubicHermiteQuaternion, Quaternion>(Animation::Interpolation) -> Quaternion(*)(const CubicHermiteQuaternion&, const CubicHermiteQuaternion&, Float);
 
 Debug& operator<<(Debug& debug, const AnimationTrackType value) {
     switch(value) {
@@ -120,8 +125,14 @@ Debug& operator<<(Debug& debug, const AnimationTrackType value) {
         _c(Vector4)
         _c(Vector4ui)
         _c(Vector4i)
+        _c(Complex)
         _c(Quaternion)
         _c(DualQuaternion)
+        _c(CubicHermite1D)
+        _c(CubicHermite2D)
+        _c(CubicHermite3D)
+        _c(CubicHermiteComplex)
+        _c(CubicHermiteQuaternion)
         #undef _c
         /* LCOV_EXCL_STOP */
     }

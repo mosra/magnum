@@ -55,8 +55,8 @@ additional shader and the @glsl floatBitsToUint() @ce GLSL function and then
 reinterpreted back to @ref GL::PixelType::Float when read to client memory.
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
+    @ref building-features for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, Image2D& image);
 
@@ -70,8 +70,8 @@ Image2D image = DebugTools::textureSubImage(texture, 0, rect, {PixelFormat::RGBA
 @endcode
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
+    @ref building-features for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, Image2D&& image);
 
@@ -87,8 +87,8 @@ marked as framebuffer readable are supported; their generic
 @ref Magnum::PixelFormat "PixelFormat" counterparts are supported as well.
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
+    @ref building-features for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, Image2D& image);
 
@@ -102,8 +102,8 @@ Image2D image = DebugTools::textureSubImage(texture, CubeMapCoordinate::Positive
 @endcode
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
+    @ref building-features for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT Image2D textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, Image2D&& image);
 
@@ -124,8 +124,8 @@ marked as framebuffer readable are supported; their generic
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
+    @ref building-features for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, GL::BufferImage2D& image, GL::BufferUsage usage);
 
@@ -139,8 +139,8 @@ BufferImage2D image = DebugTools::textureSubImage(texture, 0, rect, {PixelFormat
 @endcode
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
+    @ref building-features for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT GL::BufferImage2D textureSubImage(GL::Texture2D& texture, Int level, const Range2Di& range, GL::BufferImage2D&& image, GL::BufferUsage usage);
 
@@ -158,8 +158,8 @@ marked as framebuffer readable are supported; their generic
 @requires_webgl20 Pixel buffer objects are not available in WebGL 1.0.
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
+    @ref building-features for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT void textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, GL::BufferImage2D& image, GL::BufferUsage usage);
 
@@ -173,8 +173,8 @@ BufferImage2D image = DebugTools::textureSubImage(texture, CubeMapCoordinate::Po
 @endcode
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
+    @ref building-features for more information.
 */
 MAGNUM_DEBUGTOOLS_EXPORT GL::BufferImage2D textureSubImage(GL::CubeMapTexture& texture, GL::CubeMapCoordinate coordinate, Int level, const Range2Di& range, GL::BufferImage2D&& image, GL::BufferUsage usage);
 #endif

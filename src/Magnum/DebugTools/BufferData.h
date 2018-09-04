@@ -50,8 +50,8 @@ Emulates @ref GL::Buffer::subData() call on platforms that don't support it
 (such as OpenGL ES) by using @ref GL::Buffer::map().
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
+    @ref building-features for more information.
 
 @requires_gles30 Extension @gl_extension{EXT,map_buffer_range} in OpenGL ES
     2.0.
@@ -70,8 +70,8 @@ Emulates @ref GL::Buffer::data() call on platforms that don't support it (such
 as OpenGL ES) by using @ref GL::Buffer::map().
 
 @note This function is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
+    @ref building-features for more information.
 
 @requires_gles30 Extension @gl_extension{EXT,map_buffer_range} in OpenGL ES
     2.0.

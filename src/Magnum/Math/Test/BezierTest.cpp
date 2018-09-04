@@ -29,6 +29,7 @@
 #include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Bezier.h"
+#include "Magnum/Math/CubicHermite.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Math/Functions.h"
 
@@ -60,6 +61,7 @@ typedef Math::Bezier<1, 2, Float> LinearBezier2D;
 typedef Math::QuadraticBezier2D<Float> QuadraticBezier2D;
 typedef Math::QuadraticBezier2D<Double> QuadraticBezier2Dd;
 typedef Math::CubicBezier2D<Float> CubicBezier2D;
+typedef Math::CubicHermite2D<Float> CubicHermite2D;
 
 struct BezierTest: Corrade::TestSuite::Tester {
     explicit BezierTest();
@@ -68,6 +70,7 @@ struct BezierTest: Corrade::TestSuite::Tester {
     void constructDefault();
     void constructNoInit();
     void constructConversion();
+    void constructFromCubicHermite();
     void constructCopy();
     void convert();
 
@@ -91,6 +94,7 @@ BezierTest::BezierTest() {
               &BezierTest::constructDefault,
               &BezierTest::constructNoInit,
               &BezierTest::constructConversion,
+              &BezierTest::constructFromCubicHermite,
               &BezierTest::constructCopy,
               &BezierTest::convert,
 
@@ -158,6 +162,16 @@ void BezierTest::constructConversion() {
     CORRADE_VERIFY(!(std::is_convertible<QuadraticBezier2Dd, QuadraticBezier2D>::value));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<QuadraticBezier2D, QuadraticBezier2Dd>::value));
+}
+
+void BezierTest::constructFromCubicHermite() {
+    /* See CubicHermiterTest::constructFromBezier() for the inverse. Expected
+       value the same as in valueCubic() to test also interpolation with it. */
+    CubicHermite2D a{{}, Vector2{0.0f, 0.0f}, Vector2{30.0f, 45.0f}};
+    CubicHermite2D b{Vector2{-45, -72}, Vector2{5.0f, -20.0f}, {}};
+    auto bezier = CubicBezier2D::fromCubicHermite(a, b);
+
+    CORRADE_COMPARE(bezier, (CubicBezier2D{Vector2{0.0f, 0.0f}, Vector2{10.0f, 15.0f}, Vector2{20.0f, 4.0f}, Vector2{5.0f, -20.0f}}));
 }
 
 void BezierTest::constructCopy() {
@@ -237,6 +251,7 @@ void BezierTest::valueQuadratic() {
 void BezierTest::valueCubic() {
     CubicBezier2D bezier{Vector2{0.0f, 0.0f}, Vector2{10.0f, 15.0f}, Vector2{20.0f, 4.0f}, Vector2{5.0f, -20.0f}};
 
+    /* Values should be exactly the same as in CubicHermiterTest::splerpVectorFromBezier() */
     CORRADE_COMPARE(bezier.value(0.0f), (Vector2{0.0f, 0.0f}));
     CORRADE_COMPARE(bezier.value(0.2f), (Vector2{5.8f, 5.984f}));
     CORRADE_COMPARE(bezier.value(0.5f), (Vector2{11.875f, 4.625f}));

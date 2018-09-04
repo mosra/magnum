@@ -27,6 +27,8 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Animation/Interpolation.h"
+#include "Magnum/Math/Complex.h"
+#include "Magnum/Math/CubicHermite.h"
 #include "Magnum/Math/DualQuaternion.h"
 #include "Magnum/Math/Half.h"
 
@@ -38,8 +40,13 @@ struct InterpolationTest: TestSuite::Tester {
     void interpolatorFor();
     void interpolatorForBool();
     void interpolatorForBoolVector();
+    void interpolatorForComplex();
     void interpolatorForQuaternion();
     void interpolatorForDualQuaternion();
+    void interpolatorForCubicHermiteScalar();
+    void interpolatorForCubicHermiteVector();
+    void interpolatorForCubicHermiteComplex();
+    void interpolatorForCubicHermiteQuaternion();
 
     void interpolate();
     void interpolateStrict();
@@ -138,8 +145,13 @@ InterpolationTest::InterpolationTest() {
     addTests({&InterpolationTest::interpolatorFor,
               &InterpolationTest::interpolatorForBool,
               &InterpolationTest::interpolatorForBoolVector,
+              &InterpolationTest::interpolatorForComplex,
               &InterpolationTest::interpolatorForQuaternion,
-              &InterpolationTest::interpolatorForDualQuaternion});
+              &InterpolationTest::interpolatorForDualQuaternion,
+              &InterpolationTest::interpolatorForCubicHermiteScalar,
+              &InterpolationTest::interpolatorForCubicHermiteVector,
+              &InterpolationTest::interpolatorForCubicHermiteComplex,
+              &InterpolationTest::interpolatorForCubicHermiteQuaternion});
 
     addInstancedTests({&InterpolationTest::interpolate,
                        &InterpolationTest::interpolateStrict},
@@ -175,11 +187,11 @@ void InterpolationTest::interpolatorFor() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    Animation::interpolatorFor<Float>(Interpolation::Custom);
+    Animation::interpolatorFor<Float>(Interpolation::Spline);
     Animation::interpolatorFor<Float>(Interpolation(0xde));
 
     CORRADE_COMPARE(out.str(),
-        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Spline\n"
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
 }
 
@@ -215,6 +227,26 @@ void InterpolationTest::interpolatorForBoolVector() {
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
 }
 
+void InterpolationTest::interpolatorForComplex() {
+    CORRADE_COMPARE(Animation::interpolatorFor<Complex>(Interpolation::Constant)(
+        Complex::rotation(25.0_degf),
+        Complex::rotation(75.0_degf), 0.5f),
+        Complex::rotation(25.0_degf));
+    CORRADE_COMPARE(Animation::interpolatorFor<Complex>(Interpolation::Linear)(
+        Complex::rotation(25.0_degf),
+        Complex::rotation(75.0_degf), 0.5f),
+        Complex::rotation(50.0_degf));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Animation::interpolatorFor<Complex>(Interpolation::Custom);
+    Animation::interpolatorFor<Complex>(Interpolation(0xde));
+
+    CORRADE_COMPARE(out.str(),
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
+}
+
 void InterpolationTest::interpolatorForQuaternion() {
     CORRADE_COMPARE(Animation::interpolatorFor<Quaternion>(Interpolation::Constant)(
         Quaternion::rotation(25.0_degf, Vector3::xAxis()),
@@ -227,11 +259,11 @@ void InterpolationTest::interpolatorForQuaternion() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    Animation::interpolatorFor<Quaternion>(Interpolation::Custom);
+    Animation::interpolatorFor<Quaternion>(Interpolation::Spline);
     Animation::interpolatorFor<Quaternion>(Interpolation(0xde));
 
     CORRADE_COMPARE(out.str(),
-        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Spline\n"
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
 }
 
@@ -249,6 +281,80 @@ void InterpolationTest::interpolatorForDualQuaternion() {
     Error redirectError{&out};
     Animation::interpolatorFor<DualQuaternion>(Interpolation::Custom);
     Animation::interpolatorFor<DualQuaternion>(Interpolation(0xde));
+
+    CORRADE_COMPARE(out.str(),
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
+}
+
+void InterpolationTest::interpolatorForCubicHermiteScalar() {
+    CubicHermite1D a{2.0f, 3.0f, -1.0f};
+    CubicHermite1D b{5.0f, -2.0f, 1.5f};
+    CORRADE_COMPARE(Animation::interpolatorFor<CubicHermite1D>(Interpolation::Constant)(a, b, 0.8f), 3.0f);
+    CORRADE_COMPARE(Animation::interpolatorFor<CubicHermite1D>(Interpolation::Linear)(a, b, 0.8f), -1.0f);
+    CORRADE_COMPARE(Animation::interpolatorFor<CubicHermite1D>(Interpolation::Spline)(a, b, 0.8f), -2.152f);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Animation::interpolatorFor<CubicHermite1D>(Interpolation::Custom);
+    Animation::interpolatorFor<CubicHermite1D>(Interpolation(0xde));
+
+    CORRADE_COMPARE(out.str(),
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
+}
+
+void InterpolationTest::interpolatorForCubicHermiteVector() {
+    CubicHermite2D a{{2.0f, 1.5f}, {3.0f, 0.1f}, {-1.0f, 0.0f}};
+    CubicHermite2D b{{5.0f, 0.3f}, {-2.0f, 1.1f}, {1.5f, 0.3f}};
+    CORRADE_COMPARE(Animation::interpolatorFor<CubicHermite2D>(Interpolation::Constant)(a, b, 0.8f), (Vector2{3.0f, 0.1f}));
+    CORRADE_COMPARE(Animation::interpolatorFor<CubicHermite2D>(Interpolation::Linear)(a, b, 0.8f), (Vector2{-1.0f, 0.9f}));
+    CORRADE_COMPARE(Animation::interpolatorFor<CubicHermite2D>(Interpolation::Spline)(a, b, 0.8f), (Vector2{-2.152f, 0.9576f}));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Animation::interpolatorFor<CubicHermite2D>(Interpolation::Custom);
+    Animation::interpolatorFor<CubicHermite2D>(Interpolation(0xde));
+
+    CORRADE_COMPARE(out.str(),
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
+}
+
+void InterpolationTest::interpolatorForCubicHermiteComplex() {
+    CubicHermiteComplex a{{2.0f, 1.5f}, {0.999445f, 0.0333148f}, {-1.0f, 0.0f}};
+    CubicHermiteComplex b{{5.0f, 0.3f}, {-0.876216f, 0.481919f}, {1.5f, 0.3f}};
+    CORRADE_COMPARE(Animation::interpolatorFor<CubicHermiteComplex>(Interpolation::Constant)(a, b, 0.8f), (Complex{0.999445f, 0.0333148f}));
+    CORRADE_COMPARE(Animation::interpolatorFor<CubicHermiteComplex>(Interpolation::Linear)(a, b, 0.8f), (Complex{-0.78747f, 0.616353f}));
+    CORRADE_COMPARE(Animation::interpolatorFor<CubicHermiteComplex>(Interpolation::Spline)(a, b, 0.8f), (Complex{-0.95958f, 0.281435f}));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Animation::interpolatorFor<CubicHermiteComplex>(Interpolation::Custom);
+    Animation::interpolatorFor<CubicHermiteComplex>(Interpolation(0xde));
+
+    CORRADE_COMPARE(out.str(),
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"
+        "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation(0xde)\n");
+}
+
+void InterpolationTest::interpolatorForCubicHermiteQuaternion() {
+    CubicHermiteQuaternion a{
+        {{2.0f, 1.5f, 0.3f}, 1.1f},
+        {{0.780076f, 0.0260025f, 0.598059f}, 0.182018f},
+        {{-1.0f, 0.0f, 0.3f}, 0.4f}};
+    CubicHermiteQuaternion b{
+        {{5.0f, 0.3f, 1.1f}, 0.5f},
+        {{-0.711568f, 0.391362f, 0.355784f}, 0.462519f},
+        {{1.5f, 0.3f, 17.0f}, -7.0f}};
+    CORRADE_COMPARE(Animation::interpolatorFor<CubicHermiteQuaternion>(Interpolation::Constant)(a, b, 0.8f), (Quaternion{{0.780076f, 0.0260025f, 0.598059f}, 0.182018f}));
+    CORRADE_COMPARE(Animation::interpolatorFor<CubicHermiteQuaternion>(Interpolation::Linear)(a, b, 0.8f), (Quaternion{{-0.533196f, 0.410685f, 0.521583f}, 0.524396f}));
+    CORRADE_COMPARE(Animation::interpolatorFor<CubicHermiteQuaternion>(Interpolation::Spline)(a, b, 0.8f), (Quaternion{{-0.911408f, 0.23368f, 0.185318f}, 0.283524f}));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    Animation::interpolatorFor<CubicHermiteQuaternion>(Interpolation::Custom);
+    Animation::interpolatorFor<CubicHermiteQuaternion>(Interpolation(0xde));
 
     CORRADE_COMPARE(out.str(),
         "Animation::interpolatorFor(): can't deduce interpolator function for Animation::Interpolation::Custom\n"

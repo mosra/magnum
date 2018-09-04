@@ -609,12 +609,12 @@ void HalfTest::debug() {
 
     std::ostringstream out;
 
-    Debug{&out} << -3.64_h << Half{Constants::inf()}
+    Debug{&out} << -36.41_h << Half{Constants::inf()}
         << Math::Vector3<Half>{3.14159_h, -1.4142_h, 1.618_h};
     #ifdef _MSC_VER
-    CORRADE_COMPARE(out.str(), "-3.64063 inf Vector(3.14063, -1.41406, 1.61816)\n");
+    CORRADE_COMPARE(out.str(), "-36.41 inf Vector(3.141, -1.414, 1.618)\n");
     #else
-    CORRADE_COMPARE(out.str(), "-3.64062 inf Vector(3.14062, -1.41406, 1.61816)\n");
+    CORRADE_COMPARE(out.str(), "-36.41 inf Vector(3.141, -1.414, 1.618)\n");
     #endif
 }
 

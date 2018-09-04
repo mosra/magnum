@@ -82,8 +82,9 @@ namespace Implementation {
 See @ref ShapeRenderer documentation for more information.
 
 @note This class is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default) and
+    `WITH_SHAPES` enabled (disabled by default). See @ref building-features for
+    more information.
 */
 class CORRADE_DEPRECATED("scheduled for removal, see the docs for alternatives") ShapeRendererOptions {
     public:
@@ -177,8 +178,9 @@ new DebugTools::ShapeRenderer2D(shape, "red", debugDrawables);
 @endcode
 
 @note This class is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default) and
+    `WITH_SHAPES` enabled (disabled by default). See @ref building-features for
+    more information.
 
 @see @ref ShapeRenderer2D, @ref ShapeRenderer3D, @ref ShapeRendererOptions
 

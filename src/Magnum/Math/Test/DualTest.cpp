@@ -42,6 +42,8 @@ struct DualTest: Corrade::TestSuite::Tester {
     void constructConversion();
     void constructCopy();
 
+    void data();
+
     void compare();
 
     void addSubtract();
@@ -79,6 +81,8 @@ DualTest::DualTest() {
               &DualTest::constructConversion,
               &DualTest::constructCopy,
 
+              &DualTest::data,
+
               &DualTest::compare,
 
               &DualTest::addSubtract,
@@ -101,10 +105,8 @@ DualTest::DualTest() {
 
 void DualTest::construct() {
     constexpr Dual a = {2.0f, -7.5f};
-    constexpr Float b = a.real();
-    constexpr Float c = a.dual();
-    CORRADE_COMPARE(b, 2.0f);
-    CORRADE_COMPARE(c, -7.5f);
+    CORRADE_COMPARE(a.real(), 2.0f);
+    CORRADE_COMPARE(a.dual(), -7.5f);
 
     constexpr Dual d(3.0f);
     CORRADE_COMPARE(d.real(), 3.0f);
@@ -174,6 +176,19 @@ void DualTest::constructCopy() {
 
     CORRADE_VERIFY(std::is_nothrow_copy_constructible<Dual>::value);
     CORRADE_VERIFY(std::is_nothrow_copy_assignable<Dual>::value);
+}
+
+void DualTest::data() {
+    constexpr Dual ca{1.5f, -3.5f};
+    constexpr Float real = ca.real();
+    constexpr Float dual = ca.dual();
+    CORRADE_COMPARE(real, 1.5f);
+    CORRADE_COMPARE(dual, -3.5f);
+
+    Dual a{1.5f, -3.5f};
+    a.real() = 2.0f;
+    a.dual() = -3.5f;
+    CORRADE_COMPARE(a, (Dual{2.0f, -3.5f}));
 }
 
 void DualTest::compare() {

@@ -48,33 +48,114 @@ namespace Implementation {
 @param normalizedB  Second dual quaternion
 @param t            Interpolation phase (from range @f$ [0; 1] @f$)
 
-Expects that both dual quaternions are normalized. @f[
-\begin{array}{rcl}
-    l + \epsilon m & = & \hat q_A^* \hat q_B \\
-    \frac{\hat a} 2 & = & acos \left( l_S \right) - \epsilon m_S \frac 1 {|l_V|} \\
-    \hat {\boldsymbol n} & = & \boldsymbol n_0 + \epsilon \boldsymbol n_\epsilon
-    ~~~~~~~~ \boldsymbol n_0 = l_V \frac 1 {|l_V|}
-    ~~~~~~~~ \boldsymbol n_\epsilon = \left( m_V - {\boldsymbol n}_0 \frac {a_\epsilon} 2 l_S \right)\frac 1 {|l_V|} \\
-    {\hat q}_{ScLERP} & = & \hat q_A (\hat q_A^* \hat q_B)^t =
-        \hat q_A \left[ \hat {\boldsymbol n} sin \left( t \frac {\hat a} 2 \right), cos \left( t \frac {\hat a} 2 \right) \right] \\
-\end{array}
+Expects that both dual quaternions are normalized. If the real parts are the
+same or one is a negation of the other, returns the @ref DualQuaternion::rotation()
+(real) part combined with interpolated @ref DualQuaternion::translation(): @f[
+    \begin{array}{rcl}
+        d & = & q_{A_0} \cdot q_{B_0} \\[5pt]
+        {\hat q}_{ScLERP} & = & 2 \left[(1 - t)(q_{A_\epsilon} q_{A_0}^*)_V + t (q_{B_\epsilon} q_{B_0}^*)_V \right] q_A, ~ {\color{m-primary} \text{if} ~ d \ge 1}
+    \end{array}
 @f]
-@see @ref DualQuaternion::isNormalized(),
-    @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T),
-    @ref lerp(const T&, const T&, U)
+
+@m_class{m-noindent}
+
+otherwise, the interpolation is performed as: @f[
+    \begin{array}{rcl}
+        l + \epsilon m & = & \hat q_A^* \hat q_B \\[5pt]
+        \frac{\hat a} 2 & = & \arccos \left( l_S \right) - \epsilon m_S \frac 1 {|\boldsymbol{l}_V|} \\[5pt]
+        \hat {\boldsymbol n} & = & \boldsymbol n_0 + \epsilon \boldsymbol n_\epsilon,
+        ~~~~~~~~ \boldsymbol n_0 = \boldsymbol{l}_V \frac 1 {|\boldsymbol{l}_V|},
+        ~~~~~~~~ \boldsymbol n_\epsilon = \left(\boldsymbol{m}_V - {\boldsymbol n}_0 \frac {a_\epsilon} 2 l_S \right)\frac 1 {|\boldsymbol{l}_V|} \\[5pt]
+        {\hat q}_{ScLERP} & = & \hat q_A (\hat q_A^* \hat q_B)^t =
+            \hat q_A \left[ \hat {\boldsymbol n} \sin \left( t \frac {\hat a} 2 \right), \cos \left( t \frac {\hat a} 2 \right) \right]
+    \end{array}
+@f]
+
+Note that this function does not check for shortest path interpolation, see
+@ref sclerpShortestPath() for an alternative.
+@see @ref DualQuaternion::isNormalized(), @ref DualQuaternion::quaternionConjugated(),
+    @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T),
+    @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T)
 */
 template<class T> inline DualQuaternion<T> sclerp(const DualQuaternion<T>& normalizedA, const DualQuaternion<T>& normalizedB, const T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
         "Math::sclerp(): dual quaternions must be normalized", {});
-    const T dotResult = dot(normalizedA.real().vector(), normalizedB.real().vector());
+    const T cosHalfAngle = dot(normalizedA.real(), normalizedB.real());
 
-    /* Avoid division by zero */
-    const T cosHalfAngle = dotResult + normalizedA.real().scalar()*normalizedB.real().scalar();
-    if(std::abs(cosHalfAngle) >= T(1))
-        return {normalizedA.real(), {Implementation::lerp(normalizedA.dual().vector(), normalizedB.dual().vector(), t), T(0)}};
+    /* Avoid division by zero: interpolate just the translation part */
+    /** @todo could this be optimized somehow? */
+    if(std::abs(cosHalfAngle) >= T(1) - TypeTraits<T>::epsilon())
+        return DualQuaternion<T>::translation(Implementation::lerp(normalizedA.translation(), normalizedB.translation(), t))*DualQuaternion<T>{normalizedA.real()};
+
+    /* l + εm = q_A^**q_B */
+    const DualQuaternion<T> diff = normalizedA.quaternionConjugated()*normalizedB;
+    const Quaternion<T>& l = diff.real();
+    const Quaternion<T>& m = diff.dual();
+
+    /* a/2 = acos(l_S) - εm_S/|l_V| */
+    const T invr = l.vector().lengthInverted();
+    const Dual<T> aHalf{std::acos(l.scalar()), -m.scalar()*invr};
+
+    /* direction = n_0 = l_V/|l_V|
+       moment = n_ε = (m_V - n_0*(a_ε/2)*l_S)/|l_V| */
+    const Vector3<T> direction = l.vector()*invr;
+    const Vector3<T> moment = (m.vector() - direction*(aHalf.dual()*l.scalar()))*invr;
+    const Dual<Vector3<T>> n{direction, moment};
+
+    /* q_ScLERP = q_A*(cos(t*a/2) + n*sin(t*a/2)) */
+    Dual<T> sin, cos;
+    std::tie(sin, cos) = Math::sincos(t*Dual<Rad<T>>(aHalf));
+    return normalizedA*DualQuaternion<T>{n*sin, cos};
+}
+
+/** @relatesalso DualQuaternion
+@brief Screw linear shortest-path interpolation of two dual quaternions
+@param normalizedA  First dual quaternion
+@param normalizedB  Second dual quaternion
+@param t            Interpolation phase (from range @f$ [0; 1] @f$)
+
+Unlike @ref sclerp(const DualQuaternion<T>&, const DualQuaternion<T>&, T) this
+function interpolates on the shortest path. Expects that both dual quaternions
+are normalized. If the real parts are the same or one is a negation of the
+other, returns the @ref DualQuaternion::rotation() (real) part combined with
+interpolated @ref DualQuaternion::translation(): @f[
+    \begin{array}{rcl}
+        d & = & q_{A_0} \cdot q_{B_0} \\[5pt]
+        {\hat q}_{ScLERP} & = & 2 \left((1 - t)(q_{A_\epsilon} q_{A_0}^*)_V + t (q_{B_\epsilon} q_{B_0}^*)_V \right) (q_{A_0} + \epsilon [\boldsymbol{0}, 0]), ~ {\color{m-primary} \text{if} ~ d \ge 1}
+    \end{array}
+@f]
+
+@m_class{m-noindent}
+
+otherwise, the interpolation is performed as: @f[
+    \begin{array}{rcl}
+        l + \epsilon m & = & \begin{cases}
+            \phantom{-}\hat q_A^* \hat q_B, & d \ge 0 \\
+            -\hat q_A^* \hat q_B, & d < 0 \\
+        \end{cases} \\[15pt]
+        \frac{\hat a} 2 & = & \arccos \left( l_S \right) - \epsilon m_S \frac 1 {|\boldsymbol{l}_V|} \\[5pt]
+        \hat {\boldsymbol n} & = & \boldsymbol n_0 + \epsilon \boldsymbol n_\epsilon,
+        ~~~~~~~~ \boldsymbol n_0 = \boldsymbol{l}_V \frac 1 {|\boldsymbol{l}_V|},
+        ~~~~~~~~ \boldsymbol n_\epsilon = \left(\boldsymbol{m}_V - {\boldsymbol n}_0 \frac {a_\epsilon} 2 l_S \right)\frac 1 {|\boldsymbol{l}_V|} \\[5pt]
+        {\hat q}_{ScLERP} & = & \hat q_A (\hat q_A^* \hat q_B)^t =
+            \hat q_A \left[ \hat {\boldsymbol n} \sin \left( t \frac {\hat a} 2 \right), \cos \left( t \frac {\hat a} 2 \right) \right]
+    \end{array}
+@f]
+@see @ref DualQuaternion::isNormalized(), @ref lerpShortestPath(),
+    @ref slerpShortestPath()
+*/
+template<class T> inline DualQuaternion<T> sclerpShortestPath(const DualQuaternion<T>& normalizedA, const DualQuaternion<T>& normalizedB, const T t) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+        "Math::sclerp(): dual quaternions must be normalized", {});
+    const T cosHalfAngle = dot(normalizedA.real(), normalizedB.real());
+
+    /* Avoid division by zero: interpolate just the translation part */
+    /** @todo could this be optimized somehow? */
+    if(std::abs(cosHalfAngle) >= T(1) - TypeTraits<T>::epsilon())
+        return DualQuaternion<T>::translation(Implementation::lerp(normalizedA.translation(), normalizedB.translation(), t))*DualQuaternion<T>{normalizedA.real()};
 
     /* l + εm = q_A^**q_B, multiplying with -1 ensures shortest path when dot < 0 */
-    const DualQuaternion<T> diff = normalizedA.quaternionConjugated()*(dotResult < T(0) ? -normalizedB : normalizedB);
+    const DualQuaternion<T> diff = normalizedA.quaternionConjugated()*(cosHalfAngle < T(0) ? -normalizedB : normalizedB);
     const Quaternion<T>& l = diff.real();
     const Quaternion<T>& m = diff.dual();
 
@@ -98,8 +179,14 @@ template<class T> inline DualQuaternion<T> sclerp(const DualQuaternion<T>& norma
 @brief Dual quaternion
 @tparam T   Underlying data type
 
-Represents 3D rotation and translation. See @ref transformations for brief
-introduction.
+Represents 3D rotation and translation. Usually denoted as the following in
+equations, with @f$ q_0 @f$ being the @ref real() part and @f$ q_\epsilon @f$
+the @ref dual() part: @f[
+    \hat q = q_0 + \epsilon q_\epsilon
+@f]
+
+See @ref Dual and @ref Quaternion for further notation description and
+@ref transformations for a brief introduction.
 @see @ref Magnum::DualQuaternion, @ref Magnum::DualQuaterniond, @ref Dual,
     @ref Quaternion, @ref Matrix4
 */

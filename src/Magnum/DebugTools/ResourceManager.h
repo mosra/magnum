@@ -71,8 +71,8 @@ Stores various data used by debug renderers. See @ref debug-tools for more
 information.
 
 @note This class is available only if Magnum is compiled with
-    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
-    for more information.
+    @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
+    @ref building-features for more information.
 */
 #ifdef MAGNUM_BUILD_DEPRECATED
 CORRADE_IGNORE_DEPRECATED_PUSH

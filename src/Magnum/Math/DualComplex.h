@@ -43,8 +43,14 @@ namespace Implementation {
 @brief Dual complex number
 @tparam T   Underlying data type
 
-Represents 2D rotation and translation. See @ref transformations for brief
-introduction.
+Represents 2D rotation and translation. Usually denoted as the following in
+equations, with @f$ q_0 @f$ being the @ref real() part and @f$ q_\epsilon @f$
+the @ref dual() part: @f[
+    \hat q = q_0 + \epsilon q_\epsilon
+@f]
+
+See @ref Dual and @ref Complex for further notation description and
+@ref transformations for brief introduction.
 @see @ref Magnum::DualComplex, @ref Magnum::DualComplexd, @ref Dual,
     @ref Complex, @ref Matrix3
 @todo Can this be done similarly as in dual quaternions? It sort of works, but

@@ -55,28 +55,18 @@ interpolator function and extrapolation behavior.
 
 @section Animation-Track-interpolators Types and interpolators
 
-The track supports arbitrary types for keys, values and interpolators. These
-are common combinations:
+The track supports arbitrary types for keys, values and interpolators. See
+@ref transformations-interpolation for an overview of builtin interpolation
+functions.
 
-@m_class{m-fullwidth}
-
-Interpolation type  | Value type        | Result type   | Interpolator
-------------------- | ----------------- | ------------- | ------------
-Constant            | any `V`           | `V`           | @ref Math::select()
-Linear  | @cpp bool @ce <b></b> | @cpp bool @ce <b></b> | @ref Math::select()
-Linear  | @ref Math::BoolVector | @ref Math::BoolVector | @ref Math::select()
-Linear              | any scalar `V`    | `V`           | @ref Math::lerp()
-Linear              | any vector `V`    | `V`           | @ref Math::lerp()
-Linear              | @ref Math::Quaternion | @ref Math::Quaternion | @ref Math::lerp(const Quaternion<T>&, const Quaternion<T>&, T) "Math::lerp()"
-Spherical linear    | @ref Math::Quaternion | @ref Math::Quaternion | @ref Math::slerp(const Quaternion<T>&, const Quaternion<T>&, T) "Math::slerp()"
-Screw linear        | @ref Math::DualQuaternion | @ref Math::DualQuaternion | @ref Math::sclerp(const DualQuaternion<T>&, const DualQuaternion<T>&, T) "Math::sclerp()"
-
-It's also possible to supply a generic interpolation behavior by passing the
-@ref Interpolation enum to the constructor. In case the interpolator function
-is not passed in as well, it's autodetected using @ref interpolatorFor(). See
-its documentation for more information. The @ref Interpolation enum is then
-stored in @ref interpolation() and acts as a hint for desired interpolation
-behavior for users who might want to use their own interpolator.
+Besides directly specifying an interpolator function as shown in the above
+snippet, it's also possible to supply a generic interpolation behavior by
+passing the @ref Interpolation enum to the constructor. In case the
+interpolator function is not passed in as well, it's autodetected using
+@ref interpolatorFor(). See its documentation for more information. The
+@ref Interpolation enum is then stored in @ref interpolation() and acts as a
+hint for desired interpolation behavior for users who might want to use their
+own interpolator.
 
 @section Animation-Track-performance Performance tuning
 

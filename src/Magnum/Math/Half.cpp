@@ -23,27 +23,19 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-namespace Magnum {
+#include "Magnum/Math/Half.h"
 
-/** @page features Feature guide
-@brief Fundamental principles and design goals.
+#include <iomanip>
+#include <sstream>
 
-Overview and tutorials of high-level feature groups in Magnum. It's not
-necessary to read through everything, pick only what you need.
+namespace Magnum { namespace Math {
 
--   @subpage platform --- @copybrief platform
--   @subpage types --- @copybrief types
--   @subpage matrix-vector --- @copybrief matrix-vector
--   @subpage transformations --- @copybrief transformations
--   @subpage animation --- @copybrief animation
--   @subpage plugins --- @copybrief plugins
--   @subpage opengl-wrapping --- @copybrief opengl-wrapping
--   @subpage shaders --- @copybrief shaders
--   @subpage scenegraph --- @copybrief scenegraph
--   @subpage shapes @m_class{m-label m-danger} **deprecated** ---
-    @copybrief shapes
--   @subpage debug-tools --- @copybrief debug-tools
--   @subpage ui --- @copybrief ui
-*/
-
+Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, Half value) {
+    std::ostringstream out;
+    /* Wikipedia says it's 3 or 4 decimal places:
+       https://en.wikipedia.org/wiki/Half-precision_floating-point_format */
+    out << std::setprecision(4) << Float(value);
+    return debug << out.str();
 }
+
+}}

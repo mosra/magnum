@@ -243,8 +243,45 @@ and translation matrices using @ref DualComplex::fromMatrix() and
 
 @section transformations-interpolation Transformation interpolation
 
-@todoc Write this when interpolation is done also for (dual) complex numbers and
-    dual quaternions
+Magnum provides various tools for interpolation, from basic constant/linear
+interpolation of scalars and vectors to spline-based interpolation of
+quaternions or dual quaternions. The table below is a complete list of all
+builtin interpolation methods:
+
+@m_class{m-fullwidth}
+
+Interpolation       | Value type        | Result type   | Interpolator
+------------------- | ----------------- | ------------- | ------------
+Constant            | any `V`           | `V`           | @ref Math::select()
+Constant | @ref Math::CubicHermite "Math::CubicHermite<T>" | `T` | @ref Math::select(const CubicHermite<T>&, const CubicHermite<T>&, U) "Math::select()"
+Linear  | @cpp bool @ce <b></b> | @cpp bool @ce <b></b> | @ref Math::select()
+Linear  | @ref Math::BoolVector | @ref Math::BoolVector | @ref Math::select()
+Linear              | any scalar `V`    | `V`           | @ref Math::lerp()
+Linear              | any vector `V`    | `V`           | @ref Math::lerp()
+Linear              | @ref Math::Complex | @ref Math::Complex | @ref Math::lerp(const Complex<T>&, const Complex<T>&, T) "Math::lerp()"
+Linear              | @ref Math::Quaternion | @ref Math::Quaternion | @ref Math::lerp(const Quaternion<T>&, const Quaternion<T>&, T) "Math::lerp()", \n @ref Math::lerpShortestPath(const Quaternion<T>&, const Quaternion<T>&, T) "Math::lerpShortestPath()"
+Linear | @ref Math::CubicHermite "Math::CubicHermite<T>" | `T` | @ref Math::lerp(const CubicHermite<T>&, const CubicHermite<T>&, U) "Math::lerp()"
+Linear | @ref Math::CubicHermiteComplex | @ref Math::Complex | @ref Math::lerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T) "Math::lerp()"
+Linear | @ref Math::CubicHermiteQuaternion | @ref Math::Quaternion | @ref Math::lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T) "Math::lerp()"
+Spherical linear    | @ref Math::Complex | @ref Math::Complex | @ref Math::slerp(const Complex<T>&, const Complex<T>&, T) "Math::slerp()"
+Spherical linear    | @ref Math::Quaternion | @ref Math::Quaternion | @ref Math::slerp(const Quaternion<T>&, const Quaternion<T>&, T) "Math::slerp()", \n @ref Math::slerpShortestPath(const Quaternion<T>&, const Quaternion<T>&, T) "Math::slerpShortestPath()"
+Screw linear        | @ref Math::DualQuaternion | @ref Math::DualQuaternion | @ref Math::sclerp(const DualQuaternion<T>&, const DualQuaternion<T>&, T) "Math::sclerp()", \n @ref Math::sclerpShortestPath(const DualQuaternion<T>&, const DualQuaternion<T>&, T) "Math::sclerpShortestPath()"
+Spline | @ref Math::CubicHermite "Math::CubicHermite<T>" | `T` | @ref Math::splerp(const CubicHermite<T>&, const CubicHermite<T>&, U) "Math::splerp()"
+Spline | @ref Math::CubicHermiteComplex | @ref Math::Complex | @ref Math::splerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T) "Math::splerp()"
+Spline | @ref Math::CubicHermiteQuaternion | @ref Math::Quaternion | @ref Math::splerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T) "Math::splerp()"
+
+The @ref Math::CubicHermite class is a generic implementation of cubic Hermite
+splines to which other curve types such as Bézier are convertible. See its
+documentation for more information.
+
+@attention Direct interpolation of transformation matrices or Euler angles is
+    not supported due to their well known performance / correctness issues and
+    limitations such as gimbal lock --- you have to convert them to one of the
+    supported representations such as @ref Complex numbers or @ref Quaternion
+    and interpolate these instead.
+
+Interpolation is most commonly used in animations --- see @ref animation for
+more information.
 
 @section transformations-normalization Normalizing transformations
 

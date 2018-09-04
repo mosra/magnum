@@ -186,8 +186,8 @@ See @ref building and @ref cmake for more information.
 @brief Keyframe-based animation
 
 This library is built as part of Magnum by default. To use it, you need to
-find `Magnum` package and link to `Magnum::Magnum` target. See @ref building
-and @ref cmake for more information.
+find `Magnum` package and link to `Magnum::Magnum` target. See @ref building,
+@ref cmake and @ref animation for more information.
 @experimental
 */
 

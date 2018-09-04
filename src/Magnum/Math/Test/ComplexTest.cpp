@@ -64,6 +64,8 @@ struct ComplexTest: Corrade::TestSuite::Tester {
     void constructCopy();
     void convert();
 
+    void data();
+
     void compare();
     void isNormalized();
     template<class T> void isNormalizedEpsilon();
@@ -86,6 +88,10 @@ struct ComplexTest: Corrade::TestSuite::Tester {
     void angle();
     void rotation();
     void matrix();
+    void lerp();
+    void lerpNotNormalized();
+    void slerp();
+    void slerpNotNormalized();
     void transformVector();
 
     void debug();
@@ -101,6 +107,8 @@ ComplexTest::ComplexTest() {
               &ComplexTest::constructConversion,
               &ComplexTest::constructCopy,
               &ComplexTest::convert,
+
+              &ComplexTest::data,
 
               &ComplexTest::compare,
               &ComplexTest::isNormalized,
@@ -128,6 +136,10 @@ ComplexTest::ComplexTest() {
               &ComplexTest::angle,
               &ComplexTest::rotation,
               &ComplexTest::matrix,
+              &ComplexTest::lerp,
+              &ComplexTest::lerpNotNormalized,
+              &ComplexTest::slerp,
+              &ComplexTest::slerpNotNormalized,
               &ComplexTest::transformVector,
 
               &ComplexTest::debug,
@@ -141,14 +153,13 @@ typedef Math::Vector2<Float> Vector2;
 typedef Math::Matrix3<Float> Matrix3;
 typedef Math::Matrix2x2<Float> Matrix2x2;
 
+using namespace Math::Literals;
+
 void ComplexTest::construct() {
     constexpr Complex a = {0.5f, -3.7f};
     CORRADE_COMPARE(a, Complex(0.5f, -3.7f));
-
-    constexpr Float b = a.real();
-    constexpr Float c = a.imaginary();
-    CORRADE_COMPARE(b, 0.5f);
-    CORRADE_COMPARE(c, -3.7f);
+    CORRADE_COMPARE(a.real(), 0.5f);
+    CORRADE_COMPARE(a.imaginary(), -3.7f);
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Complex, Float, Float>::value));
 }
@@ -243,6 +254,19 @@ void ComplexTest::convert() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<Cmpl, Complex>::value));
     CORRADE_VERIFY(!(std::is_convertible<Complex, Cmpl>::value));
+}
+
+void ComplexTest::data() {
+    constexpr Complex ca{1.5f, -3.5f};
+    constexpr Float real = ca.real();
+    constexpr Float imaginary = ca.imaginary();
+    CORRADE_COMPARE(real, 1.5f);
+    CORRADE_COMPARE(imaginary, -3.5f);
+
+    Complex a{1.5f, -3.5f};
+    a.real() = 2.0f;
+    a.imaginary() = -3.5f;
+    CORRADE_COMPARE(a, (Complex{2.0f, -3.5f}));
 }
 
 void ComplexTest::compare() {
@@ -409,6 +433,57 @@ void ComplexTest::matrix() {
 
     Complex b = Complex::fromMatrix(m);
     CORRADE_COMPARE(b, a);
+}
+
+void ComplexTest::lerp() {
+    /* Results should be consistent with QuaternionTest::lerp2D() (but not
+       equivalent, probably because quaternions double cover and complex
+       numbers not) */
+    Complex a = Complex::rotation(15.0_degf);
+    Complex b = Complex::rotation(57.0_degf);
+    Complex lerp = Math::lerp(a, b, 0.35f);
+
+    CORRADE_VERIFY(lerp.isNormalized());
+    CORRADE_COMPARE(lerp.angle(), 29.4308_degf); /* almost but not quite 29.7 */
+    CORRADE_COMPARE(lerp, (Complex{0.87095f, 0.491372f}));
+}
+
+void ComplexTest::lerpNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Complex a;
+    Math::lerp(a*3.0f, a, 0.35f);
+    Math::lerp(a, a*-3.0f, 0.35f);
+    CORRADE_COMPARE(out.str(),
+        "Math::lerp(): complex numbers must be normalized\n"
+        "Math::lerp(): complex numbers must be normalized\n");
+}
+
+void ComplexTest::slerp() {
+    /* Result angle should be equivalent to QuaternionTest::slerp2D() */
+    Complex a = Complex::rotation(15.0_degf);
+    Complex b = Complex::rotation(57.0_degf);
+    Complex slerp = Math::slerp(a, b, 0.35f);
+
+    CORRADE_VERIFY(slerp.isNormalized());
+    CORRADE_COMPARE(slerp.angle(), 29.7_degf); /* 15 + (57-15)*0.35 */
+    CORRADE_COMPARE(slerp, (Complex{0.868632f, 0.495459f}));
+
+    /* Avoid division by zero */
+    CORRADE_COMPARE(Math::slerp(a, a, 0.25f), a);
+}
+
+void ComplexTest::slerpNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Complex a;
+    Math::slerp(a*3.0f, a, 0.35f);
+    Math::slerp(a, a*-3.0f, 0.35f);
+    CORRADE_COMPARE(out.str(),
+        "Math::slerp(): complex numbers must be normalized\n"
+        "Math::slerp(): complex numbers must be normalized\n");
 }
 
 void ComplexTest::transformVector() {

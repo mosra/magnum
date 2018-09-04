@@ -63,7 +63,7 @@ template<class T> inline T dot(const Complex<T>& a, const Complex<T>& b) {
 @brief Angle between normalized complex numbers
 
 Expects that both complex numbers are normalized. @f[
-    \theta = acos \left( \frac{Re(c_0 \cdot c_1))}{|c_0| |c_1|} \right) = acos (a_0 a_1 + b_0 b_1)
+    \theta = \arccos \left( \frac{Re(c_0 \cdot c_1))}{|c_0| |c_1|} \right) = \arccos (a_0 a_1 + b_0 b_1)
 @f]
 @see @ref Complex::isNormalized(),
     @ref angle(const Quaternion<T>&, const Quaternion<T>&),
@@ -72,14 +72,20 @@ Expects that both complex numbers are normalized. @f[
 template<class T> inline Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
                    "Math::angle(): complex numbers must be normalized", {});
-    return Rad<T>(std::acos(normalizedA.real()*normalizedB.real() + normalizedA.imaginary()*normalizedB.imaginary()));
+    return Rad<T>(std::acos(dot(normalizedA, normalizedB)));
 }
 
 /**
 @brief Complex number
 @tparam T   Data type
 
-Represents 2D rotation. See @ref transformations for brief introduction.
+Represents 2D rotation. Usually denoted as the following in equations, with
+@f$ a_0 @f$ being the @ref real() part and @f$ a_i @f$ the @ref imaginary()
+part: @f[
+    c = a_0 + i a_i
+@f]
+
+See @ref transformations for brief introduction.
 @see @ref Magnum::Complex, @ref Magnum::Complexd, @ref Matrix3
 */
 template<class T> class Complex {
@@ -191,11 +197,13 @@ template<class T> class Complex {
             return Implementation::isNormalizedSquared(dot());
         }
 
-        /** @brief Real part */
-        constexpr T real() const { return _real; }
+        /** @brief Real part (@f$ a_0 @f$) */
+        T& real() { return _real; }
+        constexpr T real() const { return _real; } /**< @overload */
 
-        /** @brief Imaginary part */
-        constexpr T imaginary() const { return _imaginary; }
+        /** @brief Imaginary part (@f$ a_i @f$) */
+        T& imaginary() { return _imaginary; }
+        constexpr T imaginary() const { return _imaginary; } /**< @overload */
 
         /**
          * @brief Convert complex number to vector
@@ -454,6 +462,57 @@ template<class T> inline Complex<T> operator*(T scalar, const Complex<T>& comple
 */
 template<class T> inline Complex<T> operator/(T scalar, const Complex<T>& complex) {
     return {scalar/complex.real(), scalar/complex.imaginary()};
+}
+
+/** @relatesalso Complex
+@brief Linear interpolation of two complex numbers
+@param normalizedA  First complex number
+@param normalizedB  Second complex number
+@param t            Interpolation phase (from range @f$ [0; 1] @f$)
+
+Expects that both complex numbers are normalized. @f[
+    c_{LERP} = \frac{(1 - t) c_A + t c_B}{|(1 - t) c_A + t c_B|}
+@f]
+@see @ref Complex::isNormalized(), @ref slerp(const Complex<T>&, const Complex<T>&, T),
+    @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T),
+    @ref lerp(const T&, const T&, U),
+    @ref lerp(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref lerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
+    @ref lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
+*/
+template<class T> inline Complex<T> lerp(const Complex<T>& normalizedA, const Complex<T>& normalizedB, T t) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+        "Math::lerp(): complex numbers must be normalized", {});
+    return ((T(1) - t)*normalizedA + t*normalizedB).normalized();
+}
+
+/** @relatesalso Complex
+@brief Spherical linear interpolation of two complex numbers
+@param normalizedA  First complex number
+@param normalizedB  Second complex number
+@param t            Interpolation phase (from range @f$ [0; 1] @f$)
+
+Expects that both complex numbers are normalized. If the complex numbers are
+the same, returns the first argument. @f[
+    \begin{array}{rcl}
+        \theta & = & \arccos \left( \frac{c_A \cdot c_B}{|c_A| |c_B|} \right) = \arccos(c_A \cdot c_B) \\[6pt]
+        c_{SLERP} & = & \cfrac{\sin((1 - t) \theta) c_A + \sin(t \theta) c_B}{\sin(\theta)}
+    \end{array}
+@f]
+@see @ref Complex::isNormalized(), @ref lerp(const Complex<T>&, const Complex<T>&, T),
+    @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T)
+ */
+template<class T> inline Complex<T> slerp(const Complex<T>& normalizedA, const Complex<T>& normalizedB, T t) {
+    CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
+        "Math::slerp(): complex numbers must be normalized", {});
+    const T cosAngle = dot(normalizedA, normalizedB);
+
+    /* Avoid division by zero */
+    if(std::abs(cosAngle) >= T(1)) return Complex<T>{normalizedA};
+
+    /** @todo couldn't this be done somewhat simpler? */
+    const T a = std::acos(cosAngle);
+    return (std::sin((T(1) - t)*a)*normalizedA + std::sin(t*a)*normalizedB)/std::sin(a);
 }
 
 /** @debugoperator{Complex} */

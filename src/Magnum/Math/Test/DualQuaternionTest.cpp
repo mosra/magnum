@@ -90,6 +90,7 @@ struct DualQuaternionTest: Corrade::TestSuite::Tester {
     void transformPointNormalized();
 
     void sclerp();
+    void sclerpShortestPath();
 
     void debug();
     void configuration();
@@ -144,6 +145,7 @@ DualQuaternionTest::DualQuaternionTest() {
               &DualQuaternionTest::transformPointNormalized,
 
               &DualQuaternionTest::sclerp,
+              &DualQuaternionTest::sclerpShortestPath,
 
               &DualQuaternionTest::debug,
               &DualQuaternionTest::configuration});
@@ -479,34 +481,99 @@ void DualQuaternionTest::transformPointNormalized() {
 }
 
 void DualQuaternionTest::sclerp() {
-    const DualQuaternion from = DualQuaternion::translation(Vector3{20.0f, .0f, .0f})*DualQuaternion::rotation(180.0_degf, Vector3{.0f, 1.0f, .0f});
-    const DualQuaternion to = DualQuaternion::translation(Vector3{42.0f, 42.0f, 42.0f})*DualQuaternion::rotation(75.0_degf, Vector3{1.0f, .0f, .0f});
+    auto from = DualQuaternion::translation({20.0f, 0.0f, 0.0f})*
+        DualQuaternion::rotation(65.0_degf, Vector3::yAxis());
+    auto to = DualQuaternion::translation({42.0f, 42.0f, 42.0f})*
+        DualQuaternion::rotation(75.0_degf, Vector3::xAxis());
 
-    constexpr DualQuaternion expected1{Quaternion{{.23296291314453416f, .9238795325112867f, .0f}, .303603179340959f},
-                                       Quaternion{{2.235619101917766f, 2.8169719855488395f, 10.722240915237789f}, -10.287636336847847f}};
-    constexpr DualQuaternion expected2{Quaternion{{.4437679833315842f, .6845471059286887f, .0f}, .5783296955322937f},
-                                       Quaternion{{5.764394870292371f, 11.161306653193549f, 9.671267015501789f}, -17.634394590712066f}};
-    constexpr DualQuaternion expected3{Quaternion{{.5979785904506439f, .18738131458572468f, .0f}, .7793008714910992f},
-                                       Quaternion{{13.409627907069353f, 25.452124456683414f, 5.681581047706807f}, -16.409481115504978f}};
+    const DualQuaternion begin = Math::sclerp(from, to, 0.0f);
+    const DualQuaternion beginShortestPath = Math::sclerpShortestPath(from, to, 0.0f);
+    const DualQuaternion end = Math::sclerp(from, to, 1.0f);
+    const DualQuaternion endShortestPath = Math::sclerpShortestPath(from, to, 1.0f);
+    CORRADE_COMPARE(begin, from);
+    CORRADE_COMPARE(beginShortestPath, from);
+    CORRADE_COMPARE(end, to);
+    CORRADE_COMPARE(endShortestPath, to);
+
+    DualQuaternion expected1{
+        {{0.170316f, 0.424975f, 0.0f}, 0.889038f},
+        {{10.689f, 7.47059f, 5.33428f}, -5.61881f}};
+    DualQuaternion expected2{
+        {{0.34568f, 0.282968f, 0.0f}, 0.89467f},
+        {{12.8764f, 15.8357f, 5.03088f}, -9.98371f}};
+    DualQuaternion expected3{
+        {{0.550678f, 0.072563f, 0.0f}, 0.831558f},
+        {{15.6916f, 26.3477f, 4.23219f}, -12.6905f}};
 
     const DualQuaternion interp1 = Math::sclerp(from, to, 0.25f);
+    const DualQuaternion interp1ShortestPath = Math::sclerpShortestPath(from, to, 0.25f);
     const DualQuaternion interp2 = Math::sclerp(from, to, 0.52f);
+    const DualQuaternion interp2ShortestPath = Math::sclerpShortestPath(from, to, 0.52f);
     const DualQuaternion interp3 = Math::sclerp(from, to, 0.88f);
+    const DualQuaternion interp3ShortestPath = Math::sclerpShortestPath(from, to, 0.88f);
 
     CORRADE_COMPARE(interp1, expected1);
+    CORRADE_COMPARE(interp1ShortestPath, expected1);
     CORRADE_COMPARE(interp2, expected2);
+    CORRADE_COMPARE(interp2ShortestPath, expected2);
     CORRADE_COMPARE(interp3, expected3);
+    CORRADE_COMPARE(interp3ShortestPath, expected3);
 
     /* Edge cases: */
 
     /* Dual quaternions with identical rotation */
     CORRADE_COMPARE(Math::sclerp(from, from, 0.42f), from);
-    CORRADE_COMPARE(Math::sclerp(from, DualQuaternion(-from.real(), from.dual()), 0.42f), from);
+    CORRADE_COMPARE(Math::sclerpShortestPath(from, from, 0.42f), from);
+    CORRADE_COMPARE(Math::sclerp(from, -from, 0.42f), from);
+    CORRADE_COMPARE(Math::sclerpShortestPath(from, -from, 0.42f), from);
 
     /* No difference in rotation, but in translation */
-    const auto rotation = DualQuaternion::rotation(35.0_degf, Vector3{0.3f, 0.2f, 0.1f});
-    CORRADE_COMPARE(Math::sclerp(DualQuaternion::translation(Vector3{1.0f, 2.0f, 4.0f})*rotation, DualQuaternion::translation(Vector3{5, -6, 2})*rotation, 0.25f),
-                    DualQuaternion::translation(Vector3{2.0f, 0.0f, 3.5f})*rotation);
+    {
+        auto rotation = DualQuaternion::rotation(35.0_degf, Vector3{0.3f, 0.2f, 0.1f}.normalized());
+        auto a = DualQuaternion::translation({1.0f, 2.0f, 4.0f})*rotation;
+        auto b = DualQuaternion::translation({5.0f, -6.0f, 2.0f})*rotation;
+        auto expected = DualQuaternion::translation({2.0f, 0.0f, 3.5f})*rotation;
+
+        auto interpolateTranslation = Math::sclerp(a, b, 0.25f);
+        auto interpolateTranslationShortestPath = Math::sclerpShortestPath(a, b, 0.25f);
+        CORRADE_VERIFY(interpolateTranslation.isNormalized());
+        CORRADE_VERIFY(interpolateTranslationShortestPath.isNormalized());
+        CORRADE_COMPARE(interpolateTranslation, expected);
+        CORRADE_COMPARE(interpolateTranslationShortestPath, expected);
+    }
+}
+
+void DualQuaternionTest::sclerpShortestPath() {
+    DualQuaternion a = DualQuaternion::translation({1.5f, 0.3f, 0.0f})*
+        DualQuaternion::rotation(0.0_degf, Vector3::zAxis());
+    DualQuaternion b = DualQuaternion::translation({3.5f, 0.3f, 1.0f})*
+        DualQuaternion::rotation(225.0_degf, Vector3::zAxis());
+
+    DualQuaternion sclerp = Math::sclerp(a, b, 0.25f);
+    DualQuaternion sclerpShortestPath = Math::sclerpShortestPath(a, b, 0.25f);
+
+    CORRADE_VERIFY(sclerp.isNormalized());
+    CORRADE_VERIFY(sclerpShortestPath.isNormalized());
+    CORRADE_COMPARE(sclerp.rotation().axis(), Vector3::zAxis());
+    /** @todo why is this inverted compared to QuaternionTest::slerpShortestPath()? */
+    CORRADE_COMPARE(sclerpShortestPath.rotation().axis(), -Vector3::zAxis());
+    CORRADE_COMPARE(sclerp.rotation().angle(), 56.25_degf);
+    /* Because the axis is inverted, this is also inverted compared to
+       QuaternionTest::slerpShortestPath() */
+    CORRADE_COMPARE(sclerpShortestPath.rotation().angle(), 360.0_degf - 326.25_degf);
+
+    CORRADE_COMPARE(sclerp, (DualQuaternion{
+        {{0.0f, 0.0f, 0.471397f}, 0.881921f},
+        {{0.536892f, -0.692656f, 0.11024f}, -0.0589246f}}));
+    /* Also inverted compared to QuaternionTest::slerpShortestPath() */
+    CORRADE_COMPARE(sclerpShortestPath, (DualQuaternion{
+        {{0.0f, 0.0f, -0.290285f}, 0.95694f},
+        {{0.794402f, 0.651539f, 0.119618f}, 0.0362856f}}));
+
+    /* Translation along Z should be the same in both, in 25% of the way.
+       Translation in the XY plane is along a screw, so that's different. */
+    CORRADE_COMPARE(sclerpShortestPath.translation().z(), 0.25f);
+    CORRADE_COMPARE(sclerpShortestPath.translation().z(), 0.25f);
 }
 
 void DualQuaternionTest::debug() {

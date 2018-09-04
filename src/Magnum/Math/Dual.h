@@ -45,6 +45,11 @@ namespace Implementation {
 /**
 @brief Dual number
 @tparam T   Underlying data type
+
+Usually denoted as the following in equations, with @f$ a_0 @f$ being the
+@ref real() part and @f$ a_\epsilon @f$ the @ref dual() part: @f[
+    \hat a = a_0 + \epsilon a_\epsilon
+@f]
 */
 template<class T> class Dual {
     template<class> friend class Dual;
@@ -121,13 +126,17 @@ template<class T> class Dual {
             return !operator==(other);
         }
 
-        /** @brief Real part */
+        /** @brief Real part (@f$ a_0 @f$) */
         T& real() { return _real; }
-        constexpr T real() const { return _real; } /**< @overload */
+        /* Returning const so it's possible to call constexpr functions on the
+           result. WTF, C++?! */
+        constexpr const T real() const { return _real; } /**< @overload */
 
-        /** @brief Dual part */
+        /** @brief Dual part (@f$ a_\epsilon @f$) */
         T& dual() { return _dual; }
-        constexpr T dual() const { return _dual; } /**< @overload */
+        /* Returning const so it's possible to call constexpr functions on the
+           result. WTF, C++?! */
+        constexpr const T dual() const { return _dual; } /**< @overload */
 
         /**
          * @brief Add and assign dual number

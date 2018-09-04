@@ -47,6 +47,9 @@ See also:
 
 @subsubsection changelog-latest-new-math Math library
 
+-   New @ref Math::CubicHermite class for cubic Hermite spline interpolation,
+    convertible to and from cubic Bézier curves using
+    @ref Math::Bezier::fromCubicHermite() and @ref Math::CubicHermite::fromBezier()
 -   Added @ref Math::Intersection::rangeFrustum(),
     @ref Math::Intersection::aabbFrustum(),
     @ref Math::Intersection::sphereFrustum(),
@@ -66,6 +69,14 @@ See also:
     @ref Math::Color4::fromSrgb(UnsignedInt, T), @ref Math::Color3::toSrgbInt(),
     and @ref Math::Color4::toSrgbAlphaInt() for easier conversion of packed
     24-/32-bit sRGB colors to and from @ref Math::Color3 / @ref Math::Color4
+-   Added @ref Math::lerp(const Complex<T>&, const Complex<T>&, T) and
+    @ref Math::slerp(const Complex<T>&, const Complex<T>&, T) for feature
+    parity with @ref Math::Quaternion
+-   Added @ref Math::lerpShortestPath(const Quaternion<T>&, const Quaternion<T>&, T),
+    @ref Math::slerpShortestPath(const Quaternion<T>&, const Quaternion<T>&, T)
+    and @ref Math::sclerpShortestPath(const DualQuaternion<T>&, const DualQuaternion<T>&, T)
+    variants; clarified that the original versions are explicitly *not*
+    shortest-path
 -   Added @ref Math::Range2D::x(), @ref Math::Range3D::x(),
     @ref Math::Range2D::y(), @ref Math::Range3D::y(), @ref Math::Range3D::z()
     and @ref Math::Range3D::y() for slicing ranges into lower dimensions
@@ -85,6 +96,10 @@ See also:
     @ref Math::Distance::pointPlane() and others
 -   Ability to convert @ref Math::BoolVector from and to external
     representation
+-   Mutable overloads for @ref Math::Complex::real(),
+    @ref Math::Complex::imaginary(), @ref Math::Dual::real(),
+    @ref Math::Dual::dual(), @ref Math::Quaternion::vector() and
+    @ref Math::Quaternion::scalar()
 -   Ability to use @ref Math::Complex, @ref Math::DualComplex,
     @ref Math::Quaternion, @ref Math::DualQuaternion with
     @ref Corrade::Utility::Configuration and @ref Corrade::Utility::Arguments
@@ -297,6 +312,8 @@ See also:
 -   @ref Platform::GlfwApplication::exec() now asserts instead of crashing if
     the constructor fails to create a window (see [mosra/magnum#192](https://github.com/mosra/magnum/issues/192),
     [mosra/magnum#272](https://github.com/mosra/magnum/pull/272))
+-   @ref Math::sclerp() was not properly interpolating the translation if
+    rotation was the same on both sides
 
 @subsection changelog-latest-docs Documentation
 

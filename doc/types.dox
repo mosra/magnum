@@ -42,14 +42,14 @@ consistency and reduce confusion (e.g. @ref std::int32_t, @cpp int @ce and
 
 | Magnum type        | Size           | Equivalent GLSL type    |
 | ------------------ | -------------- | ----------------------- |
-| @ref UnsignedByte  | 8bit unsigned  |                         |
-| @ref Byte          | 8bit signed    |                         |
-| @ref UnsignedShort | 16bit unsigned |                         |
-| @ref Short         | 16bit signed   |                         |
+| @ref UnsignedByte  | 8bit unsigned  | (*none*)                |
+| @ref Byte          | 8bit signed    | (*none*)                |
+| @ref UnsignedShort | 16bit unsigned | (*none*)                |
+| @ref Short         | 16bit signed   | (*none*)                |
 | @ref UnsignedInt   | 32bit unsigned | @glsl uint @ce <b></b>  |
 | @ref Int           | 32bit signed   | @glsl int @ce <b></b>   |
-| @ref UnsignedLong  | 64bit unsigned |                         |
-| @ref Long          | 64bit signed   |                         |
+| @ref UnsignedLong  | 64bit unsigned | (*none*)                |
+| @ref Long          | 64bit signed   | (*none*)                |
 | @ref Half          | 16bit          | (*none*)                |
 | @ref Float         | 32bit          | @glsl float @ce <b></b> |
 | @ref Double        | 64bit          | @glsl double @ce <b></b> |
@@ -170,10 +170,14 @@ Other types, which don't have their GLSL equivalent, are:
     or @ref QuadraticBezier3Dd
 -   @ref CubicBezier2D or @ref CubicBezier2Dd, @ref CubicBezier3D
     or @ref CubicBezier3Dd
+-   @ref CubicHermite1D or @ref CubicHermite1Dd, @ref CubicHermite2D or
+    @ref CubicHermite2Dd, @ref CubicHermite3D or @ref CubicHermite3Dd
 -   @ref Complex or @ref Complexd, @ref DualComplex or @ref DualComplexd
 -   @ref Frustum or @ref Frustumd
 -   @ref Quaternion or @ref Quaterniond, @ref DualQuaternion or
     @ref DualQuaterniond
+-   @ref CubicHermiteComplex or @ref CubicHermiteComplexd
+-   @ref CubicHermiteQuaternion or @ref CubicHermiteQuaterniond
 -   @ref Range1D / @ref Range2D / @ref Range3D, @ref Range1Di / @ref Range2Di /
     @ref Range3Di or @ref Range1Dd / @ref Range2Dd / @ref Range3Dd
 
