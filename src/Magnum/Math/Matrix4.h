@@ -266,7 +266,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      \boldsymbol{A} = \begin{pmatrix}
          *          \frac{2}{s_x} & 0 & 0 & 0 \\
          *          0 & \frac{2}{s_y} & 0 & 0 \\
-         *          0 & 0 & \frac{2}{n - f} & \frac{2n}{n - f} - 1 \\
+         *          0 & 0 & \frac{2}{n - f} & \frac{n + f}{n - f} \\
          *          0 & 0 & 0 & 1
          *      \end{pmatrix}
          * @f]
@@ -298,7 +298,8 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *          0 & 0 & -1 & 0
          *      \end{pmatrix}
          * @f]
-         * @see @ref orthographicProjection(), @ref Matrix3::projection(),
+         * @see @ref perspectiveProjection(Rad<T> fov, T, T, T),
+         *      @ref orthographicProjection(), @ref Matrix3::projection(),
          *      @ref Constants::inf()
          * @m_keywords{gluPerspective()}
          */
@@ -306,15 +307,15 @@ template<class T> class Matrix4: public Matrix4x4<T> {
 
         /**
          * @brief 3D perspective projection matrix
-         * @param fov           Field of view angle (horizontal)
-         * @param aspectRatio   Aspect ratio
-         * @param near          Near clipping plane
-         * @param far           Far clipping plane
+         * @param fov           Horizontal field of view angle @f$ \theta @f$
+         * @param aspectRatio   Horizontal:vertical aspect ratio @f$ a @f$
+         * @param near          Near clipping plane @f$ n @f$
+         * @param far           Far clipping plane @f$ f @f$
          *
          * If @p far is finite, the result is: @f[
          *      \boldsymbol{A} = \begin{pmatrix}
-         *          \frac{1}{\tan{\frac{\theta}{2}}} & 0 & 0 & 0 \\
-         *          0 & \frac{a}{\tan{\frac{\theta}{2}}} & 0 & 0 \\
+         *          \frac{1}{\tan \left(\frac{\theta}{2} \right)} & 0 & 0 & 0 \\
+         *          0 & \frac{a}{\tan \left(\frac{\theta}{2} \right)} & 0 & 0 \\
          *          0 & 0 & \frac{n + f}{n - f} & \frac{2nf}{n - f} \\
          *          0 & 0 & -1 & 0
          *      \end{pmatrix}
@@ -322,19 +323,29 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *
          * For infinite @p far, the result is: @f[
          *      \boldsymbol{A} = \begin{pmatrix}
-         *          \frac{1}{\tan{\frac{\theta}{2}}} & 0 & 0 & 0 \\
-         *          0 & \frac{a}{\tan{\frac{\theta}{2}}} & 0 & 0 \\
+         *          \frac{1}{\tan \left( \frac{\theta}{2} \right) } & 0 & 0 & 0 \\
+         *          0 & \frac{a}{\tan \left( \frac{\theta}{2} \right) } & 0 & 0 \\
          *          0 & 0 & -1 & -2n \\
          *          0 & 0 & -1 & 0
          *      \end{pmatrix}
          * @f]
+         *
+         * This function is equivalent to calling
+         * @ref perspectiveProjection(const Vector2<T>&, T, T) with the
+         * @p size parameter calculated as @f[
+         *      \boldsymbol{s} = 2 n \tan \left(\tfrac{\theta}{2} \right)
+         *      \begin{pmatrix}
+         *          1 \\
+         *          \frac{1}{a}
+         *      \end{pmatrix}
+         * @f]
+         *
          * @see @ref orthographicProjection(), @ref Matrix3::projection(),
          *      @ref Constants::inf()
          * @m_keywords{gluPerspective()}
          */
         static Matrix4<T> perspectiveProjection(Rad<T> fov, T aspectRatio, T near, T far) {
-            const T xyScale = 2*std::tan(T(fov)/2)*near;
-            return perspectiveProjection(Vector2<T>(xyScale, xyScale/aspectRatio), near, far);
+            return perspectiveProjection(T(2)*near*std::tan(T(fov)*T(0.5))*Vector2<T>::yScale(T(1)/aspectRatio), near, far);
         }
 
         /**
