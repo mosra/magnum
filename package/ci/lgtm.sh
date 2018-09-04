@@ -1,0 +1,62 @@
+#!/bin/bash
+set -ev
+
+# Corrade
+wget -O corrade-master.zip https://github.com/mosra/corrade/archive/master.zip?foobar=`time +%s`
+unzip corrade-master.zip
+
+# Build Corrade
+cd corrade-master
+mkdir _lgtm_build
+cd _lgtm_build
+cmake .. \
+    -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
+    -DCMAKE_INSTALL_RPATH=$HOME/deps/lib \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DBUILD_DEPRECATED=$BUILD_DEPRECATED \
+    -DWITH_INTERCONNECT=OFF \
+    -G Ninja
+ninja install
+cd ../..
+
+mkdir _lgtm_build
+cd _lgtm_build
+# Not using CXXFLAGS in order to avoid affecting dependencies
+cmake .. \
+    -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
+    -DCMAKE_INSTALL_PREFIX=$HOME/deps \
+    -DCMAKE_PREFIX_PATH=$HOME/glfw \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DVULKAN_LIBRARY=$HOME/libvulkan.so \
+    -DWITH_AUDIO=ON \
+    -DWITH_SHAPES=$BUILD_DEPRECATED \
+    -DWITH_VK=OFF \
+    -DWITH_GLFWAPPLICATION=ON \
+    -DWITH_GLUTAPPLICATION=$WITH_GLUTAPPLICATION \
+    -DWITH_SDL2APPLICATION=ON \
+    -DWITH_WINDOWLESS${PLATFORM_GL_API}APPLICATION=ON \
+    -DWITH_${PLATFORM_GL_API}CONTEXT=ON \
+    -DWITH_OPENGLTESTER=ON \
+    -DWITH_ANYAUDIOIMPORTER=ON \
+    -DWITH_ANYIMAGECONVERTER=ON \
+    -DWITH_ANYIMAGEIMPORTER=ON \
+    -DWITH_ANYSCENEIMPORTER=ON \
+    -DWITH_MAGNUMFONT=ON \
+    -DWITH_MAGNUMFONTCONVERTER=ON \
+    -DWITH_OBJIMPORTER=ON \
+    -DWITH_TGAIMAGECONVERTER=ON \
+    -DWITH_TGAIMPORTER=ON \
+    -DWITH_WAVAUDIOIMPORTER=ON \
+    -DWITH_DISTANCEFIELDCONVERTER=ON \
+    -DWITH_FONTCONVERTER=ON \
+    -DWITH_IMAGECONVERTER=ON \
+    -DWITH_GL_INFO=ON \
+    -DWITH_AL_INFO=ON \
+    -DBUILD_TESTS=ON \
+    -DBUILD_GL_TESTS=ON \
+    -DBUILD_DEPRECATED=$BUILD_DEPRECATED \
+    -G Ninja
+
+ninja 
+
