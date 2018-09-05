@@ -437,7 +437,7 @@ template<class T> class Range2D: public Range<2, T> {
 };
 
 /**
-@brief Two-dimensional range
+@brief Three-dimensional range
 
 See @ref Range for more information.
 @see @ref Range1D, @ref Range2D
