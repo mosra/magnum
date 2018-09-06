@@ -55,10 +55,11 @@ uniform mediump mat3 normalMatrix
     #endif
     ;
 
+/* Needs to be last because it uses locations 9 to 9 + LIGHT_COUNT - 1 */
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 3)
+layout(location = 9)
 #endif
-uniform highp vec3 lightPosition; /* defaults to zero */
+uniform highp vec3 lightPositions[LIGHT_COUNT]; /* defaults to zero */
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = POSITION_ATTRIBUTE_LOCATION)
@@ -80,7 +81,7 @@ out mediump vec2 interpolatedTextureCoords;
 #endif
 
 out mediump vec3 transformedNormal;
-out highp vec3 lightDirection;
+out highp vec3 lightDirections[LIGHT_COUNT];
 out highp vec3 cameraDirection;
 
 void main() {
@@ -92,7 +93,8 @@ void main() {
     transformedNormal = normalMatrix*normal;
 
     /* Direction to the light */
-    lightDirection = normalize(lightPosition - transformedPosition);
+    for(int i = 0; i < LIGHT_COUNT; ++i)
+        lightDirections[i] = normalize(lightPositions[i] - transformedPosition);
 
     /* Direction to the camera */
     cameraDirection = -transformedPosition;

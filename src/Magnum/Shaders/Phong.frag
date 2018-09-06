@@ -88,15 +88,6 @@ uniform lowp vec4 specularColor
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 7)
 #endif
-uniform lowp vec4 lightColor
-    #ifndef GL_ES
-    = vec4(1.0)
-    #endif
-    ;
-
-#ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 8)
-#endif
 uniform mediump float shininess
     #ifndef GL_ES
     = 80.0
@@ -105,7 +96,7 @@ uniform mediump float shininess
 
 #ifdef ALPHA_MASK
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 9)
+layout(location = 8)
 #endif
 uniform lowp float alphaMask
     #ifndef GL_ES
@@ -114,8 +105,20 @@ uniform lowp float alphaMask
     ;
 #endif
 
+/* Needs to be last because it uses locations 9 + LIGHT_COUNT to
+   9 + 2*LIGHT_COUNT - 1. Location 9 is lightPositions. Also it can't be
+   specified as 9 + LIGHT_COUNT because that requires ARB_enhanced_layouts. */
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = LIGHT_COLORS_LOCATION) /* I fear this will blow up some drivers */
+#endif
+uniform lowp vec4 lightColors[LIGHT_COUNT]
+    #ifndef GL_ES
+    = vec4[](LIGHT_COLOR_INITIALIZER)
+    #endif
+    ;
+
 in mediump vec3 transformedNormal;
-in highp vec3 lightDirection;
+in highp vec3 lightDirections[LIGHT_COUNT];
 in highp vec3 cameraDirection;
 
 #if defined(AMBIENT_TEXTURE) || defined(DIFFUSE_TEXTURE) || defined(SPECULAR_TEXTURE)
@@ -147,17 +150,19 @@ void main() {
     color = finalAmbientColor;
 
     mediump vec3 normalizedTransformedNormal = normalize(transformedNormal);
-    highp vec3 normalizedLightDirection = normalize(lightDirection);
 
-    /* Add diffuse color */
-    lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection));
-    color += vec4(finalDiffuseColor.rgb*lightColor.rgb*intensity, lightColor.a*finalDiffuseColor.a);
+    /* Add diffuse color for each light */
+    for(int i = 0; i < LIGHT_COUNT; ++i) {
+        highp vec3 normalizedLightDirection = normalize(lightDirections[i]);
+        lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection));
+        color += vec4(finalDiffuseColor.rgb*lightColors[i].rgb*intensity, lightColors[i].a*finalDiffuseColor.a);
 
-    /* Add specular color, if needed */
-    if(intensity > 0.001) {
-        highp vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
-        mediump float specularity = pow(max(0.0, dot(normalize(cameraDirection), reflection)), shininess);
-        color += vec4(finalSpecularColor.rgb*specularity, finalSpecularColor.a);
+        /* Add specular color, if needed */
+        if(intensity > 0.001) {
+            highp vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
+            mediump float specularity = pow(max(0.0, dot(normalize(cameraDirection), reflection)), shininess);
+            color += vec4(finalSpecularColor.rgb*specularity, finalSpecularColor.a);
+        }
     }
 
     #ifdef ALPHA_MASK

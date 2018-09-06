@@ -46,22 +46,27 @@ struct PhongGLTest: GL::OpenGLTester {
 
     void setAlphaMask();
     void setAlphaMaskNotEnabled();
+
+    void setWrongLightCount();
+    void setWrongLightId();
 };
 
 constexpr struct {
     const char* name;
     Phong::Flags flags;
+    UnsignedInt lightCount;
 } ConstructData[]{
-    {"", {}},
-    {"ambient texture", Phong::Flag::AmbientTexture},
-    {"diffuse texture", Phong::Flag::DiffuseTexture},
-    {"specular texture", Phong::Flag::SpecularTexture},
-    {"ambient + diffuse texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture},
-    {"ambient + specular texture", Phong::Flag::AmbientTexture|Phong::Flag::SpecularTexture},
-    {"diffuse + specular texture", Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture},
-    {"ambient + diffuse + specular texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture},
-    {"alpha mask", Phong::Flag::AlphaMask},
-    {"alpha mask + diffuse texture", Phong::Flag::AlphaMask|Phong::Flag::DiffuseTexture}
+    {"", {}, 1},
+    {"ambient texture", Phong::Flag::AmbientTexture, 1},
+    {"diffuse texture", Phong::Flag::DiffuseTexture, 1},
+    {"specular texture", Phong::Flag::SpecularTexture, 1},
+    {"ambient + diffuse texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture, 1},
+    {"ambient + specular texture", Phong::Flag::AmbientTexture|Phong::Flag::SpecularTexture, 1},
+    {"diffuse + specular texture", Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture, 1},
+    {"ambient + diffuse + specular texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture, 1},
+    {"alpha mask", Phong::Flag::AlphaMask, 1},
+    {"alpha mask + diffuse texture", Phong::Flag::AlphaMask|Phong::Flag::DiffuseTexture, 1},
+    {"five lights", {}, 5}
 };
 
 PhongGLTest::PhongGLTest() {
@@ -73,15 +78,19 @@ PhongGLTest::PhongGLTest() {
               &PhongGLTest::bindTexturesNotEnabled,
 
               &PhongGLTest::setAlphaMask,
-              &PhongGLTest::setAlphaMaskNotEnabled});
+              &PhongGLTest::setAlphaMaskNotEnabled,
+
+              &PhongGLTest::setWrongLightCount,
+              &PhongGLTest::setWrongLightId});
 }
 
 void PhongGLTest::construct() {
     auto&& data = ConstructData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    Phong shader{data.flags};
+    Phong shader{data.flags, data.lightCount};
     CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_COMPARE(shader.lightCount(), data.lightCount);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
@@ -92,7 +101,7 @@ void PhongGLTest::construct() {
 }
 
 void PhongGLTest::constructMove() {
-    Phong a{Phong::Flag::AlphaMask};
+    Phong a{Phong::Flag::AlphaMask, 3};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -101,12 +110,14 @@ void PhongGLTest::constructMove() {
     Phong b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_COMPARE(b.flags(), Phong::Flag::AlphaMask);
+    CORRADE_COMPARE(b.lightCount(), 3);
     CORRADE_VERIFY(!a.id());
 
     Phong c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), Phong::Flag::AlphaMask);
+    CORRADE_COMPARE(c.lightCount(), 3);
     CORRADE_VERIFY(!b.id());
 }
 
@@ -167,6 +178,48 @@ void PhongGLTest::setAlphaMaskNotEnabled() {
 
     CORRADE_COMPARE(out.str(),
         "Shaders::Phong::setAlphaMask(): the shader was not created with alpha mask enabled\n");
+}
+
+void PhongGLTest::setWrongLightCount() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Phong shader{{}, 5};
+
+    /* This is okay */
+    shader.setLightColors({{}, {}, {}, {}, {}})
+        .setLightPositions({{}, {}, {}, {}, {}});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* This is not */
+    shader.setLightColor({})
+        .setLightPosition({});
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::Phong::setLightColors(): expected 5 items but got 1\n"
+        "Shaders::Phong::setLightPositions(): expected 5 items but got 1\n");
+}
+
+void PhongGLTest::setWrongLightId() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Phong shader{{}, 3};
+
+    /* This is okay */
+    shader.setLightColor(2, {})
+        .setLightPosition(2, {});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* This is not */
+    shader.setLightColor(3, {})
+        .setLightPosition(3, {});
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::Phong::setLightColor(): light ID 3 is out of bounds for 3 lights\n"
+        "Shaders::Phong::setLightPosition(): light ID 3 is out of bounds for 3 lights\n");
 }
 
 }}}

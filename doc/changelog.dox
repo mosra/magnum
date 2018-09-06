@@ -138,6 +138,7 @@ See also:
 -   New dedicated @ref Shaders::VertexColor::Color3 and
     @ref Shaders::VertexColor::Color4 attribute specifiers for more convenient
     distinction between three- and four-component vertex color attribute.
+-   Support for multiple lights in @ref Shaders::Phong
 -   Classical alpha masking support in @ref Shaders::Flat and
     @ref Shaders::Phong
 -   Debug output for the @ref Shaders::Flat::Flag / @ref Shaders::Flat::Flags,

@@ -172,9 +172,10 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
 
         /**
          * @brief Constructor
-         * @param flags     Flags
+         * @param flags         Flags
+         * @param lightCount    Count of light sources
          */
-        explicit Phong(Flags flags = {});
+        explicit Phong(Flags flags = {}, UnsignedInt lightCount = 1);
 
         /**
          * @brief Construct without creating the underlying OpenGL object
@@ -202,6 +203,9 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
 
         /** @brief Flags */
         Flags flags() const { return _flags; }
+
+        /** @brief Light count */
+        UnsignedInt lightCount() const { return _lightCount; }
 
         /**
          * @brief Set ambient color
@@ -388,41 +392,94 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         }
 
         /**
+         * @brief Set light positions
+         * @return Reference to self (for method chaining)
+         *
+         * Initial values are zero vectors --- that will in most cases cause
+         * the object to be rendered black (or in the ambient color), as the
+         * lights are is inside of it. Expects that the size of the @p lights
+         * array is the same as @ref lightCount().
+         * @see @ref setLightPosition(UnsignedInt, const Vector3&),
+         *      @ref setLightPosition(const Vector3&)
+         */
+        Phong& setLightPositions(Containers::ArrayView<const Vector3> lights);
+
+        /** @overload */
+        Phong& setLightPositions(std::initializer_list<Vector3> lights) {
+            return setLightPositions({lights.begin(), lights.size()});
+        }
+
+        /**
+         * @brief Set position for given light
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setLightPosition() updates just a single light position.
+         * Expects that @p id is less than @ref lightCount().
+         * @see @ref setLightPosition(const Vector3&)
+         */
+        Phong& setLightPosition(UnsignedInt id, const Vector3& position);
+
+        /**
          * @brief Set light position
          * @return Reference to self (for method chaining)
          *
-         * Initial value is a zero vector --- that will in most cases cause the
-         * object to be rendered black (or in the ambient color), as the light
-         * is inside of it.
+         * Convenience alternative to @ref setLightPositions() when there is
+         * just one light.
+         * @see @ref setLightPosition(UnsignedInt, const Vector3&)
          */
-        Phong& setLightPosition(const Vector3& light) {
-            setUniform(_lightPositionUniform, light);
-            return *this;
+        Phong& setLightPosition(const Vector3& position) {
+            return setLightPositions({&position, 1});
         }
+
+        /**
+         * @brief Set light colors
+         * @return Reference to self (for method chaining)
+         *
+         * Initial values are @cpp 0xffffffff_rgbaf @ce. Expects that the size
+         * of the @p colors array is the same as @ref lightCount().
+         */
+        Phong& setLightColors(Containers::ArrayView<const Color4> colors);
+
+        /** @overload */
+        Phong& setLightColors(std::initializer_list<Color4> colors) {
+            return setLightColors({colors.begin(), colors.size()});
+        }
+
+        /**
+         * @brief Set position for given light
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setLightColors() updates just a single light color.
+         * Expects that @p id is less than @ref lightCount().
+         * @see @ref setLightColor(const Color4&)
+         */
+        Phong& setLightColor(UnsignedInt id, const Color4& color);
 
         /**
          * @brief Set light color
          * @return Reference to self (for method chaining)
          *
-         * Initial value is @cpp 0xffffffff_rgbaf @ce.
+         * Convenience alternative to @ref setLightColors() when there is just
+         * one light.
+         * @see @ref setLightColor(UnsignedInt, const Color4&)
          */
         Phong& setLightColor(const Color4& color) {
-            setUniform(_lightColorUniform, color);
-            return *this;
+            return setLightColors({&color, 1});
         }
 
     private:
         Flags _flags;
+        UnsignedInt _lightCount;
         Int _transformationMatrixUniform{0},
             _projectionMatrixUniform{1},
             _normalMatrixUniform{2},
-            _lightPositionUniform{3},
             _ambientColorUniform{4},
             _diffuseColorUniform{5},
             _specularColorUniform{6},
-            _lightColorUniform{7},
-            _shininessUniform{8},
-            _alphaMaskUniform{9};
+            _shininessUniform{7},
+            _alphaMaskUniform{8},
+            _lightPositionsUniform{9},
+            _lightColorsUniform; /* 9 + lightCount, set in the constructor */
 };
 
 /** @debugoperatorclassenum{Phong,Phong::Flag} */

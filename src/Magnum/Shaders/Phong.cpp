@@ -25,7 +25,11 @@
 
 #include "Phong.h"
 
+#ifdef MAGNUM_TARGET_GLES
+#include <Corrade/Containers/Array.h>
+#endif
 #include <Corrade/Containers/EnumSet.hpp>
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/GL/Context.h"
@@ -45,7 +49,7 @@ namespace {
     };
 }
 
-Phong::Phong(const Flags flags): _flags(flags) {
+Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _lightCount{lightCount}, _lightColorsUniform{9 + Int(lightCount)} {
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
     if(!Utility::Resource::hasGroup("MagnumShaders"))
@@ -62,13 +66,40 @@ Phong::Phong(const Flags flags): _flags(flags) {
     GL::Shader vert = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Vertex);
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
+    #ifndef MAGNUM_TARGET_GLES
+    /* Initializer for the light color array -- we need a list of vec4(1.0)
+       joined by commas. For GLES we'll simply upload the values directly. */
+    constexpr const char lightInitializerPreamble[] = "#define LIGHT_COLOR_INITIALIZER ";
+    constexpr std::size_t lightInitializerPreambleSize =
+        Containers::arraySize(lightInitializerPreamble) - 1;
+    constexpr const char lightInitializerItem[] = "vec4(1.0), ";
+    constexpr std::size_t lightInitializerItemSize =
+        Containers::arraySize(lightInitializerItem) - 1;
+    std::string lightInitializer;
+    lightInitializer.reserve(Containers::arraySize(lightInitializerPreamble) - 1 + lightCount*lightInitializerItemSize);
+    lightInitializer.append(lightInitializerPreamble, lightInitializerPreambleSize);
+    for(std::size_t i = 0; i != lightCount; ++i)
+        lightInitializer.append(lightInitializerItem, lightInitializerItemSize);
+
+    /* Drop the last comma and add a newline at the end */
+    lightInitializer[lightInitializer.size() - 2] = '\n';
+    lightInitializer.resize(lightInitializer.size() - 1);
+    #endif
+
     vert.addSource(flags ? "#define TEXTURED\n" : "")
+        .addSource(Utility::formatString("#define LIGHT_COUNT {}\n", lightCount))
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Phong.vert"));
     frag.addSource(flags & Flag::AmbientTexture ? "#define AMBIENT_TEXTURE\n" : "")
         .addSource(flags & Flag::DiffuseTexture ? "#define DIFFUSE_TEXTURE\n" : "")
         .addSource(flags & Flag::SpecularTexture ? "#define SPECULAR_TEXTURE\n" : "")
         .addSource(flags & Flag::AlphaMask ? "#define ALPHA_MASK\n" : "")
+        .addSource(Utility::formatString(
+            "#define LIGHT_COUNT {}\n"
+            "#define LIGHT_COLORS_LOCATION {}\n", lightCount, 9 + lightCount))
+        #ifndef MAGNUM_TARGET_GLES
+        .addSource(std::move(lightInitializer))
+        #endif
         .addSource(rs.get("Phong.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
@@ -96,13 +127,13 @@ Phong::Phong(const Flags flags): _flags(flags) {
         _transformationMatrixUniform = uniformLocation("transformationMatrix");
         _projectionMatrixUniform = uniformLocation("projectionMatrix");
         _normalMatrixUniform = uniformLocation("normalMatrix");
-        _lightPositionUniform = uniformLocation("lightPosition");
         _ambientColorUniform = uniformLocation("ambientColor");
         _diffuseColorUniform = uniformLocation("diffuseColor");
         _specularColorUniform = uniformLocation("specularColor");
-        _lightColorUniform = uniformLocation("lightColor");
         _shininessUniform = uniformLocation("shininess");
         if(flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask");
+        _lightPositionsUniform = uniformLocation("lightPositions");
+        _lightColorsUniform = uniformLocation("lightColors");
     }
 
     #ifndef MAGNUM_TARGET_GLES
@@ -121,9 +152,9 @@ Phong::Phong(const Flags flags): _flags(flags) {
     else setAmbientColor(Color4{0.0f});
     setDiffuseColor(Color4{1.0f});
     setSpecularColor(Color4{1.0f});
-    setLightColor(Color4{1.0f});
     setShininess(80.0f);
     if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
+    setLightColors(Containers::Array<Color4>{Containers::DirectInit, lightCount, Color4{1.0f}});
 
     setTransformationMatrix({});
     setProjectionMatrix({});
@@ -174,10 +205,24 @@ Phong& Phong::setLightPositions(const Containers::ArrayView<const Vector3> posit
     return *this;
 }
 
+Phong& Phong::setLightPosition(UnsignedInt id, const Vector3& position) {
+    CORRADE_ASSERT(id < _lightCount,
+        "Shaders::Phong::setLightPosition(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
+    setUniform(_lightPositionsUniform + id, position);
+    return *this;
+}
+
 Phong& Phong::setLightColors(const Containers::ArrayView<const Color4> colors) {
     CORRADE_ASSERT(_lightCount == colors.size(),
         "Shaders::Phong::setLightColors(): expected" << _lightCount << "items but got" << colors.size(), *this);
     setUniform(_lightColorsUniform, colors);
+    return *this;
+}
+
+Phong& Phong::setLightColor(UnsignedInt id, const Color4& color) {
+    CORRADE_ASSERT(id < _lightCount,
+        "Shaders::Phong::setLightColor(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
+    setUniform(_lightColorsUniform + id, color);
     return *this;
 }
 
