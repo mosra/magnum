@@ -94,6 +94,15 @@ struct CubicHermiteTest: Corrade::TestSuite::Tester {
     void lerpComplexNotNormalized();
     void lerpQuaternion();
     void lerpQuaternionNotNormalized();
+    void lerpQuaternionShortestPath();
+    void lerpQuaternionShortestPathNotNormalized();
+
+    void slerpComplex();
+    void slerpComplexNotNormalized();
+    void slerpQuaternion();
+    void slerpQuaternionNotNormalized();
+    void slerpQuaternionShortestPath();
+    void slerpQuaternionShortestPathNotNormalized();
 
     void splerpScalar();
     void splerpVector();
@@ -168,6 +177,15 @@ CubicHermiteTest::CubicHermiteTest() {
               &CubicHermiteTest::lerpComplexNotNormalized,
               &CubicHermiteTest::lerpQuaternion,
               &CubicHermiteTest::lerpQuaternionNotNormalized,
+              &CubicHermiteTest::lerpQuaternionShortestPath,
+              &CubicHermiteTest::lerpQuaternionShortestPathNotNormalized,
+
+              &CubicHermiteTest::slerpComplex,
+              &CubicHermiteTest::slerpComplexNotNormalized,
+              &CubicHermiteTest::slerpQuaternion,
+              &CubicHermiteTest::slerpQuaternionNotNormalized,
+              &CubicHermiteTest::slerpQuaternionShortestPath,
+              &CubicHermiteTest::slerpQuaternionShortestPathNotNormalized,
 
               &CubicHermiteTest::splerpScalar,
               &CubicHermiteTest::splerpVector,
@@ -183,7 +201,10 @@ CubicHermiteTest::CubicHermiteTest() {
               &CubicHermiteTest::debugQuaternion});
 }
 
+using namespace Math::Literals;
+
 typedef Math::Vector2<Float> Vector2;
+typedef Math::Vector3<Float> Vector3;
 typedef Math::Complex<Float> Complex;
 typedef Math::Quaternion<Float> Quaternion;
 typedef Math::CubicBezier2D<Float> CubicBezier2D;
@@ -819,6 +840,164 @@ void CubicHermiteTest::lerpQuaternionNotNormalized() {
     CORRADE_COMPARE(out.str(),
         "Math::lerp(): quaternions must be normalized\n"
         "Math::lerp(): quaternions must be normalized\n");
+}
+
+void CubicHermiteTest::lerpQuaternionShortestPath() {
+    /* Values from QuaternionTest::lerpShortestPath() */
+    CubicHermiteQuaternion a{
+        {{2.0f, 1.5f, 0.3f}, 1.1f},
+        Quaternion::rotation(0.0_degf, Vector3::zAxis()),
+        {{-1.0f, 0.0f, 0.3f}, 0.4f}};
+    CubicHermiteQuaternion b{
+        {{5.0f, 0.3f, 1.1f}, 0.5f},
+        Quaternion::rotation(225.0_degf, Vector3::zAxis()),
+        {{1.5f, 0.3f, 17.0f}, -7.0f}};
+
+    Quaternion lerp = Math::lerp(a, b, 0.25f);
+    Quaternion lerpShortestPath = Math::lerpShortestPath(a, b, 0.25f);
+    CORRADE_COMPARE(lerp.axis(), Vector3::zAxis());
+    CORRADE_COMPARE(lerpShortestPath.axis(), Vector3::zAxis());
+    CORRADE_COMPARE(lerp.angle(), 38.8848_degf);
+    CORRADE_COMPARE(lerpShortestPath.angle(), 329.448_degf);
+
+    Quaternion expected{{0.0f, 0.0f, 0.26347f}, -0.964667f};
+    CORRADE_COMPARE(lerpShortestPath, expected);
+    CORRADE_COMPARE(Math::lerpShortestPath(a.point(), b.point(), 0.25f), expected);
+}
+
+void CubicHermiteTest::lerpQuaternionShortestPathNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    /* This one should not assert as the default constructor should create
+       identity point */
+    Math::lerpShortestPath(CubicHermiteQuaternion{}, {}, 0.3f);
+
+    /* These will, tho */
+    CubicHermiteQuaternion a{{}, Quaternion{}*2.0f, {}};
+    Math::lerpShortestPath({}, a, 0.3f);
+    Math::lerpShortestPath(a, {}, 0.3f);
+    /* lerpShortestPath() is calling lerp(), so the message is from there */
+    CORRADE_COMPARE(out.str(),
+        "Math::lerp(): quaternions must be normalized\n"
+        "Math::lerp(): quaternions must be normalized\n");
+}
+
+void CubicHermiteTest::slerpComplex() {
+    CubicHermiteComplex a{{2.0f, 1.5f}, {0.999445f, 0.0333148f}, {-1.0f, 0.0f}};
+    CubicHermiteComplex b{{5.0f, 0.3f}, {-0.876216f, 0.481919f}, {1.5f, 0.3f}};
+
+    CORRADE_COMPARE(Math::slerp(a, b, 0.0f), a.point());
+    CORRADE_COMPARE(Math::slerp(a, b, 1.0f), b.point());
+
+    Complex expected035{0.585564f, 0.810627f};
+    CORRADE_COMPARE(Math::slerp(a, b, 0.35f), expected035);
+    CORRADE_COMPARE(Math::slerp(a.point(), b.point(), 0.35f), expected035);
+    CORRADE_VERIFY(Math::slerp(a, b, 0.35f).isNormalized());
+
+    Complex expected08{-0.520014f, 0.854159f};
+    CORRADE_COMPARE(Math::slerp(a, b, 0.8f), expected08);
+    CORRADE_COMPARE(Math::slerp(a.point(), b.point(), 0.8f), expected08);
+    CORRADE_VERIFY(Math::slerp(a, b, 0.8f).isNormalized());
+}
+
+void CubicHermiteTest::slerpComplexNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    /* This one should not assert as the default constructor should create
+       identity point */
+    CORRADE_COMPARE(Math::slerp(CubicHermiteComplex{}, {}, 0.3f), Complex{});
+
+    /* These will, tho */
+    CubicHermiteComplex a{{}, Complex{}*2.0f, {}};
+    Math::slerp({}, a, 0.3f);
+    Math::slerp(a, {}, 0.3f);
+    CORRADE_COMPARE(out.str(),
+        "Math::slerp(): complex numbers must be normalized\n"
+        "Math::slerp(): complex numbers must be normalized\n");
+}
+
+void CubicHermiteTest::slerpQuaternion() {
+    CubicHermiteQuaternion a{
+        {{2.0f, 1.5f, 0.3f}, 1.1f},
+        {{0.780076f, 0.0260025f, 0.598059f}, 0.182018f},
+        {{-1.0f, 0.0f, 0.3f}, 0.4f}};
+    CubicHermiteQuaternion b{
+        {{5.0f, 0.3f, 1.1f}, 0.5f},
+        {{-0.711568f, 0.391362f, 0.355784f}, 0.462519f},
+        {{1.5f, 0.3f, 17.0f}, -7.0f}};
+
+    CORRADE_COMPARE(Math::slerp(a, b, 0.0f), a.point());
+    CORRADE_COMPARE(Math::slerp(a, b, 1.0f), b.point());
+
+    Quaternion expected035{{0.308542f, 0.265288f, 0.790272f}, 0.458142f};
+    CORRADE_COMPARE(Math::slerp(a, b, 0.35f), expected035);
+    CORRADE_COMPARE(Math::slerp(a.point(), b.point(), 0.35f), expected035);
+    CORRADE_VERIFY(Math::slerp(a, b, 0.35f).isNormalized());
+
+    Quaternion expected08{{-0.442885f, 0.410928f, 0.584814f}, 0.541279f};
+    CORRADE_COMPARE(Math::slerp(a, b, 0.8f), expected08);
+    CORRADE_COMPARE(Math::slerp(a.point(), b.point(), 0.8f), expected08);
+    CORRADE_VERIFY(Math::slerp(a, b, 0.8f).isNormalized());
+}
+
+void CubicHermiteTest::slerpQuaternionNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    /* This one should not assert as the default constructor should create
+       identity point */
+    Math::slerp(CubicHermiteQuaternion{}, {}, 0.3f);
+
+    /* These will, tho */
+    CubicHermiteQuaternion a{{}, Quaternion{}*2.0f, {}};
+    Math::slerp({}, a, 0.3f);
+    Math::slerp(a, {}, 0.3f);
+    CORRADE_COMPARE(out.str(),
+        "Math::slerp(): quaternions must be normalized\n"
+        "Math::slerp(): quaternions must be normalized\n");
+}
+
+void CubicHermiteTest::slerpQuaternionShortestPath() {
+    /* Values from QuaternionTest::slerpShortestPath() */
+    CubicHermiteQuaternion a{
+        {{2.0f, 1.5f, 0.3f}, 1.1f},
+        Quaternion::rotation(0.0_degf, Vector3::zAxis()),
+        {{-1.0f, 0.0f, 0.3f}, 0.4f}};
+    CubicHermiteQuaternion b{
+        {{5.0f, 0.3f, 1.1f}, 0.5f},
+        Quaternion::rotation(225.0_degf, Vector3::zAxis()),
+        {{1.5f, 0.3f, 17.0f}, -7.0f}};
+
+    Quaternion slerp = Math::slerp(a, b, 0.25f);
+    Quaternion slerpShortestPath = Math::slerpShortestPath(a, b, 0.25f);
+    CORRADE_COMPARE(slerp.axis(), Vector3::zAxis());
+    CORRADE_COMPARE(slerpShortestPath.axis(), Vector3::zAxis());
+    CORRADE_COMPARE(slerp.angle(), 56.25_degf);
+    CORRADE_COMPARE(slerpShortestPath.angle(), 326.25_degf);
+    CORRADE_COMPARE(slerp, (Quaternion{{0.0f, 0.0f, 0.471397f}, 0.881921f}));
+
+    Quaternion expected{{0.0f, 0.0f, 0.290285f}, -0.95694f};
+    CORRADE_COMPARE(slerpShortestPath, expected);
+    CORRADE_COMPARE(Math::slerpShortestPath(a.point(), b.point(), 0.25f), expected);
+}
+
+void CubicHermiteTest::slerpQuaternionShortestPathNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    /* This one should not assert as the default constructor should create
+       identity point */
+    Math::slerpShortestPath(CubicHermiteQuaternion{}, {}, 0.3f);
+
+    /* These will, tho */
+    CubicHermiteQuaternion a{{}, Quaternion{}*2.0f, {}};
+    Math::slerpShortestPath({}, a, 0.3f);
+    Math::slerpShortestPath(a, {}, 0.3f);
+    CORRADE_COMPARE(out.str(),
+        "Math::slerpShortestPath(): quaternions must be normalized\n"
+        "Math::slerpShortestPath(): quaternions must be normalized\n");
 }
 
 void CubicHermiteTest::splerpScalar() {

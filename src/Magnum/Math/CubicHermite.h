@@ -316,6 +316,10 @@ Equivalent to calling @ref lerp(const T&, const T&, U) on
 @ref CubicHermite::point() extracted from both @p a and @p b.
 @see @ref lerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
     @ref lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
+    @ref lerpShortestPath(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
+    @ref slerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
+    @ref slerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
+    @ref slerpShortestPath(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
     @ref select(const CubicHermite<T>&, const CubicHermite<T>&, U),
     @ref splerp(const CubicHermite<T>&, const CubicHermite<T>&, U),
     @ref splerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
@@ -337,6 +341,7 @@ normalized complex number in both @p a and @p b.
 @see @ref Complex::isNormalized(),
     @ref lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
     @ref select(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref slerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
     @ref splerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T)
 */
 template<class T> Complex<T> lerp(const CubicHermiteComplex<T>& a, const CubicHermiteComplex<T>& b, T t) {
@@ -352,12 +357,84 @@ on @ref CubicHermite::point() extracted from @p a and @p b. Compared to
 normalization step after. Expects that @ref CubicHermite::point() is a
 normalized quaternion in both @p a and @p b.
 @see @ref Quaternion::isNormalized(),
+    @ref lerpShortestPath(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
     @ref lerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
     @ref select(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref slerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
     @ref splerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
 */
 template<class T> Quaternion<T> lerp(const CubicHermiteQuaternion<T>& a, const CubicHermiteQuaternion<T>& b, T t) {
     return lerp(a.point(), b.point(), t);
+}
+
+/** @relatesalso CubicHermite
+@brief Linear shortest-path interpolation of two cubic Hermite quaternions
+
+Equivalent to calling @ref lerpShortestPath(const Quaternion<T>&, const Quaternion<T>&, T)
+on @ref CubicHermite::point() extracted from @p a and @p b. Expects that
+@ref CubicHermite::point() is a normalized quaternion in both @p a and @p b.
+
+Note that rotations interpolated with this function may go along a completely
+different path compared to @ref splerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T).
+Use @ref lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
+for behavior that is consistent with spline interpolation.
+@see @ref Quaternion::isNormalized(),
+    @ref slerpShortestPath(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
+*/
+template<class T> Quaternion<T> lerpShortestPath(const CubicHermiteQuaternion<T>& a, const CubicHermiteQuaternion<T>& b, T t) {
+    return lerpShortestPath(a.point(), b.point(), t);
+}
+
+/** @relatesalso CubicHermite
+@brief Spherical linear interpolation of two cubic Hermite complex numbers
+
+Equivalent to calling @ref slerp(const Complex<T>&, const Complex<T>&, T) on
+@ref CubicHermite::point() extracted from @p a and @p b. Expects that
+@ref CubicHermite::point() is a normalized complex number in both @p a and @p b.
+@see @ref Complex::isNormalized(),
+    @ref slerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
+    @ref select(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref lerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
+    @ref splerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T)
+ */
+template<class T> inline Complex<T> slerp(const CubicHermiteComplex<T>& a, const CubicHermiteComplex<T>& b, T t) {
+    return slerp(a.point(), b.point(), t);
+}
+
+/** @relatesalso CubicHermite
+@brief Spherical linear interpolation of two cubic Hermite quaternions
+
+Equivalent to calling @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T)
+on @ref CubicHermite::point() extracted from @p a and @p b. Expects that
+@ref CubicHermite::point() is a normalized complex number in both @p a and @p b.
+@see @ref Quaternion::isNormalized(),
+    @ref slerpShortestPath(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
+    @ref slerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
+    @ref select(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
+    @ref splerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
+ */
+template<class T> inline Quaternion<T> slerp(const CubicHermiteQuaternion<T>& a, const CubicHermiteQuaternion<T>& b, T t) {
+    return slerp(a.point(), b.point(), t);
+}
+
+/** @relatesalso CubicHermite
+@brief Spherical linear shortest-path interpolation of two cubic Hermite quaternions
+
+Equivalent to calling @ref slerpShortestPath(const Quaternion<T>&, const Quaternion<T>&, T)
+on @ref CubicHermite::point() extracted from @p a and @p b. Expects that
+@ref CubicHermite::point() is a normalized quaternion in both @p a and @p b.
+
+Note that rotations interpolated with this function may go along a completely
+different path compared to @ref splerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T).
+Use @ref slerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
+for spherical linear interpolation with behavior that is consistent with spline
+interpolation.
+@see @ref Quaternion::isNormalized(),
+    @ref lerpShortestPath(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
+*/
+template<class T> Quaternion<T> slerpShortestPath(const CubicHermiteQuaternion<T>& a, const CubicHermiteQuaternion<T>& b, T t) {
+    return slerpShortestPath(a.point(), b.point(), t);
 }
 
 /** @relatesalso CubicHermite
@@ -402,7 +479,8 @@ Expects that @ref CubicHermite::point() is a normalized complex number in both
 @see @ref Complex::isNormalized(),
     @ref splerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
     @ref select(const CubicHermite<T>&, const CubicHermite<T>&, U),
-    @ref lerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T)
+    @ref lerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
+    @ref slerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T)
 */
 template<class T> Complex<T> splerp(const CubicHermiteComplex<T>& a, const CubicHermiteComplex<T>& b, T t) {
     CORRADE_ASSERT(a.point().isNormalized() && b.point().isNormalized(),
@@ -431,7 +509,8 @@ and @p b.
 @see @ref Quaternion::isNormalized(),
     @ref splerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
     @ref select(const CubicHermite<T>&, const CubicHermite<T>&, U),
-    @ref lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
+    @ref lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
+    @ref slerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
 */
 template<class T> Quaternion<T> splerp(const CubicHermiteQuaternion<T>& a, const CubicHermiteQuaternion<T>& b, T t) {
     CORRADE_ASSERT(a.point().isNormalized() && b.point().isNormalized(),

@@ -89,7 +89,8 @@ Expects that both quaternions are normalized. @f[
 @f]
 
 Note that this function does not check for shortest path interpolation, see
-@ref lerpShortestPath() for an alternative.
+@ref lerpShortestPath(const Quaternion<T>&, const Quaternion<T>&, T) for an
+alternative.
 @see @ref Quaternion::isNormalized(),
     @ref slerp(const Quaternion<T>&, const Quaternion<T>&, T), @ref sclerp(),
     @ref lerp(const T&, const T&, U),
@@ -122,7 +123,9 @@ both quaternions are normalized. @f[
         q_{LERP} & = & \cfrac{(1 - t) q'_A + t q_B}{|(1 - t) q'_A + t q_B|}
     \end{array}
 @f]
-@see @ref Quaternion::isNormalized(), @ref slerpShortestPath(),
+@see @ref Quaternion::isNormalized(),
+    @ref slerpShortestPath(const Quaternion<T>&, const Quaternion<T>&, T),
+    @ref lerpShortestPath(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
     @ref sclerpShortestPath()
 */
 template<class T> inline Quaternion<T> lerpShortestPath(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
@@ -153,9 +156,11 @@ otherwise, the interpolation is performed as: @f[
 @f]
 
 Note that this function does not check for shortest path interpolation, see
-@ref slerpShortestPath() for an alternative.
+@ref slerpShortestPath(const Quaternion<T>&, const Quaternion<T>&, T) for an
+alternative.
 @see @ref Quaternion::isNormalized(), @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T),
-    @ref slerp(const Complex<T>&, const Complex<T>&, T), @ref sclerp()
+    @ref slerp(const Complex<T>&, const Complex<T>&, T), @ref sclerp(),
+    @ref slerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T)
 */
 template<class T> inline Quaternion<T> slerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
@@ -198,8 +203,10 @@ otherwise, the interpolation is performed as: @f[
         q_{SLERP} & = & \cfrac{\sin((1 - t) \theta) q'_A + \sin(t \theta) q_B}{\sin(\theta)}
     \end{array}
 @f]
-@see @ref Quaternion::isNormalized(), @ref lerpShortestPath(),
-        @ref sclerpShortestPath()
+@see @ref Quaternion::isNormalized(),
+    @ref lerpShortestPath(const Quaternion<T>&, const Quaternion<T>&, T),
+    @ref slerpShortestPath(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
+    @ref sclerpShortestPath()
 */
 template<class T> inline Quaternion<T> slerpShortestPath(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
