@@ -38,6 +38,7 @@ namespace Magnum {
 @brief Converts images of different formats
 
 @m_footernavigation
+@m_keywords{magnum-imageconverter imageconverter}
 
 This utility is built if both `WITH_TRADE` and `WITH_IMAGECONVERTER` is enabled
 when building Magnum. To use this utility with CMake, you need to request the

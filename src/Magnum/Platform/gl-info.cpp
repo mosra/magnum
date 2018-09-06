@@ -84,6 +84,7 @@ namespace Magnum {
 @brief Displays information about Magnum engine OpenGL capabilities
 
 @m_footernavigation
+@m_keywords{magnum-gl-info gl-info}
 
 @m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/magnum-info/">@m_div{m-big}Live web version @m_enddiv @m_div{m-small} uses WebAssembly & WebGL @m_enddiv </a> @m_enddiv
 

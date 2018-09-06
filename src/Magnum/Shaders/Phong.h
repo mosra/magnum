@@ -88,10 +88,10 @@ platforms. With proper depth sorting and blending you'll usually get much
 better performance and output quality.
 
 For general alpha-masked drawing you need to provide ambient texture with alpha
-channel and set alpha channel of diffuse/specular color to `0.0f` so only
-ambient alpha will be taken into account. If you have diffuse texture combined
-with the alpha mask, you can use that texture for both ambient and diffuse
-part and then separate the alpha like this:
+channel and set alpha channel of diffuse/specular color to @cpp 0.0f @ce so
+only ambient alpha will be taken into account. If you have diffuse texture
+combined with the alpha mask, you can use that texture for both ambient and
+diffuse part and then separate the alpha like this:
 
 @snippet MagnumShaders.cpp Phong-usage-alpha
 

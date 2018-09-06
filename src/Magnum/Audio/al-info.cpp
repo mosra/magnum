@@ -33,6 +33,7 @@ namespace Magnum {
 @brief Displays information about Magnum OpenAL capabilities
 
 @m_footernavigation
+@m_keywords{magnum-al-info al-info}
 
 @m_div{m-button m-primary} <a href="http://magnum.graphics/showcase/magnum-al-info/">@m_div{m-big}Live web version @m_enddiv @m_div{m-small} uses WebAssembly & WebAudio @m_enddiv </a> @m_enddiv
 

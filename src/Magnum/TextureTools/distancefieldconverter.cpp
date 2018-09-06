@@ -66,6 +66,7 @@ namespace Magnum {
 @brief Converts red channel of an image to distance field representation
 
 @m_footernavigation
+@m_keywords{magnum-distancefieldconverter distancefieldconverter}
 
 This utility is built if both `WITH_TEXTURETOOLS` and
 `WITH_DISTANCEFIELDCONVERTER` is enabled when building Magnum. To use this

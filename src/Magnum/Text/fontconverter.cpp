@@ -61,6 +61,7 @@ namespace Magnum {
 @brief Converts font to raster one of given atlas size
 
 @m_footernavigation
+@m_keywords{magnum-fontconverter fontconverter}
 
 This utility is built if both `WITH_TEXT` and `WITH_FONTCONVERTER` is enabled
 when building Magnum. To use this utility with CMake, you need to request the
