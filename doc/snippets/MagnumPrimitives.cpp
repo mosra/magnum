@@ -23,41 +23,23 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Line.h"
-
-#include "Magnum/Mesh.h"
-#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Vector3.h"
+#include "Magnum/Primitives/Line.h"
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
 
-namespace Magnum { namespace Primitives {
+using namespace Magnum;
 
-Trade::MeshData2D line2D(const Vector2& a, const Vector2& b) {
-    return Trade::MeshData2D{MeshPrimitive::Lines, {}, {{a, b}}, {}, {}, nullptr};
+int main() {
+{
+/* [line2D-identity] */
+Primitives::line2D({0.0f, 0.0f}, {1.0f, 0.0f});
+/* [line2D-identity] */
 }
 
-Trade::MeshData3D line3D(const Vector3& a, const Vector3& b) {
-    return Trade::MeshData3D{MeshPrimitive::Lines, {}, {{a, b}}, {}, {}, {}, nullptr};
+{
+/* [line3D-identity] */
+Primitives::line3D({0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f});
+/* [line3D-identity] */
 }
-
-Trade::MeshData2D line2D() {
-   return line2D({0.0f, 0.0f}, {1.0f, 0.0f});
 }
-
-Trade::MeshData3D line3D() {
-    return line3D({0.0f, 0.0f, 0.0f}, {1.0f, 0.0f, 0.0f});
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* LCOV_EXCL_START */
-Trade::MeshData2D Line2D::wireframe() {
-    return line2D();
-}
-
-Trade::MeshData3D Line3D::wireframe() {
-    return line3D();
-}
-/* LCOV_EXCL_STOP */
-#endif
-
-}}

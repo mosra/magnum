@@ -29,6 +29,7 @@
  * @brief Function @ref Magnum::Primitives::line2D(), @ref Magnum::Primitives::line3D()
  */
 
+#include "Magnum/Magnum.h"
 #include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
@@ -41,24 +42,43 @@ namespace Magnum { namespace Primitives {
 /**
 @brief 2D line
 
-Unit-size line in direction of positive X axis. Non-indexed
-@ref MeshPrimitive::Lines.
+Non-indexed @ref MeshPrimitive::Lines going from @p a to @p b.
 
 @image html primitives-line2d.png
 
-@see @ref line3D(), @ref axis2D(), @ref crosshair2D()
+@see @ref line3D(), @ref line3D(const Vector3&, const Vector3&), @ref axis2D(),
+    @ref crosshair2D()
+*/
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D line2D(const Vector2& a, const Vector2& b);
+
+/**
+@brief 2D line in an identity transformation
+
+Equivalent to calling @ref line2D(const Vector2&, const Vector2&) as
+
+@snippet MagnumPrimitives.cpp line2D-identity
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D line2D();
 
 /**
 @brief 3D line
 
-Unit-size line in direction of positive X axis. Non-indexed
-@ref MeshPrimitive::Lines.
+Non-indexed @ref MeshPrimitive::Lines going from @p a to @p b.
 
 @image html primitives-line3d.png
 
-@see @ref line2D(), @ref axis3D(), @ref crosshair3D()
+@see @ref line3D(), @ref line2D(const Vector2&, const Vector2&), @ref axis3D(),
+    @ref crosshair3D()
+*/
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D line3D(const Vector3& a, const Vector3& b);
+
+/**
+@brief 3D line in an identity transformation
+
+Unit-size line in direction of positive X axis. Equivalent to calling
+@ref line3D(const Vector3&, const Vector3&) as
+
+@snippet MagnumPrimitives.cpp line3D-identity
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D line3D();
 

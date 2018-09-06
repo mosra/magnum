@@ -112,6 +112,14 @@ if(WITH_DEBUGTOOLS AND Corrade_TestSuite_FOUND AND NOT CORRADE_TARGET_IOS)
     set_target_properties(debugtools-compareimage PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
 
+if(WITH_PRIMITIVES)
+    add_library(snippets-MagnumPrimitives STATIC
+        MagnumPrimitives.cpp)
+    target_link_libraries(snippets-MagnumPrimitives PRIVATE MagnumPrimitives)
+    set_target_properties(snippets-MagnumPrimitives
+        PROPERTIES FOLDER "Magnum/doc/snippets")
+endif()
+
 if(WITH_SCENEGRAPH)
     add_library(snippets-MagnumSceneGraph STATIC
         MagnumSceneGraph.cpp)

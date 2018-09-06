@@ -124,6 +124,13 @@ See also:
     @ref Platform::AndroidApplication. This also makes the default framebuffer
     parameters consistent across the implementations.
 
+@subsubsection changelog-latest-new-primitives Primitives library
+
+-   New @ref Primitives::line2D(const Vector2&, const Vector2&) and
+    @ref Primitives::line3D(const Vector3&, const Vector3&) overloads for
+    easier creation of arbitrary lines, as transforming the line identities is
+    not worth the mental overhead
+
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 
 -   New @ref SceneGraph::TranslationRotationScalingTransformation2D and
