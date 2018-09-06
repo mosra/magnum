@@ -710,9 +710,9 @@ void CubicHermiteTest::selectQuaternion() {
         {{-2.0f, 1.1f, 1.0f}, 1.3f},
         {{1.5f, 0.3f, 17.0f}, -7.0f}};
 
-    CORRADE_COMPARE(Math::select(a, b, 0.0f), (Quaternion{{3.0f, 0.1f, 2.3f}, 0.7f}));
-    CORRADE_COMPARE(Math::select(a, b, 0.8f), (Quaternion{{3.0f, 0.1f, 2.3f}, 0.7f}));
-    CORRADE_COMPARE(Math::select(a, b, 1.0f), (Quaternion{{-2.0f, 1.1f, 1.0f}, 1.3f}));
+    CORRADE_COMPARE(Math::select(a, b, 0.0f), a.point());
+    CORRADE_COMPARE(Math::select(a, b, 0.8f), a.point());
+    CORRADE_COMPARE(Math::select(a, b, 1.0f), b.point());
 }
 
 void CubicHermiteTest::lerpScalar() {
@@ -733,29 +733,33 @@ void CubicHermiteTest::lerpVector() {
     CubicHermite2D a{{2.0f, 1.5f}, {3.0f, 0.1f}, {-1.0f, 0.0f}};
     CubicHermite2D b{{5.0f, 0.3f}, {-2.0f, 1.1f}, {1.5f, 0.3f}};
 
-    CORRADE_COMPARE(Math::lerp(a, b, 0.0f), (Vector2{3.0f, 0.1f}));
-    CORRADE_COMPARE(Math::lerp(a, b, 1.0f), (Vector2{-2.0f, 1.1f}));
+    CORRADE_COMPARE(Math::lerp(a, b, 0.0f), a.point());
+    CORRADE_COMPARE(Math::lerp(a, b, 1.0f), b.point());
 
-    CORRADE_COMPARE(Math::lerp(a, b, 0.35f), (Vector2{1.25f, 0.45f}));
-    CORRADE_COMPARE(Math::lerp(a.point(), b.point(), 0.35f), (Vector2{1.25f, 0.45f}));
+    Vector2 expected035{1.25f, 0.45f};
+    CORRADE_COMPARE(Math::lerp(a, b, 0.35f), expected035);
+    CORRADE_COMPARE(Math::lerp(a.point(), b.point(), 0.35f), expected035);
 
-    CORRADE_COMPARE(Math::lerp(a, b, 0.8f), (Vector2{-1.0f, 0.9f}));
-    CORRADE_COMPARE(Math::lerp(a.point(), b.point(), 0.8f), (Vector2{-1.0f, 0.9f}));
+    Vector2 expected08{-1.0f, 0.9f};
+    CORRADE_COMPARE(Math::lerp(a, b, 0.8f), expected08);
+    CORRADE_COMPARE(Math::lerp(a.point(), b.point(), 0.8f), expected08);
 }
 
 void CubicHermiteTest::lerpComplex() {
     CubicHermiteComplex a{{2.0f, 1.5f}, {0.999445f, 0.0333148f}, {-1.0f, 0.0f}};
     CubicHermiteComplex b{{5.0f, 0.3f}, {-0.876216f, 0.481919f}, {1.5f, 0.3f}};
 
-    CORRADE_COMPARE(Math::lerp(a, b, 0.0f), (Complex{0.999445f, 0.0333148f}));
-    CORRADE_COMPARE(Math::lerp(a, b, 1.0f), (Complex{-0.876216f, 0.481919f}));
+    CORRADE_COMPARE(Math::lerp(a, b, 0.0f), a.point());
+    CORRADE_COMPARE(Math::lerp(a, b, 1.0f), b.point());
 
-    CORRADE_COMPARE(Math::lerp(a, b, 0.35f), (Complex{0.874384f, 0.485235f}));
-    CORRADE_COMPARE(Math::lerp(a.point(), b.point(), 0.35f), (Complex{0.874384f, 0.485235f}));
+    Complex expected035{0.874384f, 0.485235f};
+    CORRADE_COMPARE(Math::lerp(a, b, 0.35f), expected035);
+    CORRADE_COMPARE(Math::lerp(a.point(), b.point(), 0.35f), expected035);
     CORRADE_VERIFY(Math::lerp(a, b, 0.35f).isNormalized());
 
-    CORRADE_COMPARE(Math::lerp(a, b, 0.8f), (Complex{-0.78747f, 0.616353f}));
-    CORRADE_COMPARE(Math::lerp(a.point(), b.point(), 0.8f), (Complex{-0.78747f, 0.616353f}));
+    Complex expected08{-0.78747f, 0.616353f};
+    CORRADE_COMPARE(Math::lerp(a, b, 0.8f), expected08);
+    CORRADE_COMPARE(Math::lerp(a.point(), b.point(), 0.8f), expected08);
     CORRADE_VERIFY(Math::lerp(a, b, 0.8f).isNormalized());
 }
 
@@ -786,15 +790,17 @@ void CubicHermiteTest::lerpQuaternion() {
         {{-0.711568f, 0.391362f, 0.355784f}, 0.462519f},
         {{1.5f, 0.3f, 17.0f}, -7.0f}};
 
-    CORRADE_COMPARE(Math::lerp(a, b, 0.0f), (Quaternion{{0.780076f, 0.0260025f, 0.598059f}, 0.182018f}));
-    CORRADE_COMPARE(Math::lerp(a, b, 1.0f), (Quaternion{{-0.711568f, 0.391362f, 0.355784f}, 0.462519f}));
+    CORRADE_COMPARE(Math::lerp(a, b, 0.0f), a.point());
+    CORRADE_COMPARE(Math::lerp(a, b, 1.0f), b.point());
 
-    CORRADE_COMPARE(Math::lerp(a, b, 0.35f), (Quaternion{{0.392449f, 0.234067f, 0.780733f}, 0.426207f}));
-    CORRADE_COMPARE(Math::lerp(a.point(), b.point(), 0.35f), (Quaternion{{0.392449f, 0.234067f, 0.780733f}, 0.426207f}));
+    Quaternion expected035{{0.392449f, 0.234067f, 0.780733f}, 0.426207f};
+    CORRADE_COMPARE(Math::lerp(a, b, 0.35f), expected035);
+    CORRADE_COMPARE(Math::lerp(a.point(), b.point(), 0.35f), expected035);
     CORRADE_VERIFY(Math::lerp(a, b, 0.35f).isNormalized());
 
-    CORRADE_COMPARE(Math::lerp(a, b, 0.8f), (Quaternion{{-0.533196f, 0.410685f, 0.521583f}, 0.524396f}));
-    CORRADE_COMPARE(Math::lerp(a.point(), b.point(), 0.8f), (Quaternion{{-0.533196f, 0.410685f, 0.521583f}, 0.524396f}));
+    Quaternion expected08{{-0.533196f, 0.410685f, 0.521583f}, 0.524396f};
+    CORRADE_COMPARE(Math::lerp(a, b, 0.8f), expected08);
+    CORRADE_COMPARE(Math::lerp(a.point(), b.point(), 0.8f), expected08);
     CORRADE_VERIFY(Math::lerp(a, b, 0.8f).isNormalized());
 }
 
@@ -830,8 +836,8 @@ void CubicHermiteTest::splerpVector() {
     CubicHermite2D a{{2.0f, 1.5f}, {3.0f, 0.1f}, {-1.0f, 0.0f}};
     CubicHermite2D b{{5.0f, 0.3f}, {-2.0f, 1.1f}, {1.5f, 0.3f}};
 
-    CORRADE_COMPARE(Math::splerp(a, b, 0.0f), (Vector2{3.0f, 0.1f}));
-    CORRADE_COMPARE(Math::splerp(a, b, 1.0f), (Vector2{-2.0f, 1.1f}));
+    CORRADE_COMPARE(Math::splerp(a, b, 0.0f), a.point());
+    CORRADE_COMPARE(Math::splerp(a, b, 1.0f), b.point());
 
     CORRADE_COMPARE(Math::splerp(a, b, 0.35f), (Vector2{1.04525f, 0.357862f}));
     CORRADE_COMPARE(Math::splerp(a, b, 0.8f), (Vector2{-2.152f, 0.9576f}));
@@ -860,8 +866,8 @@ void CubicHermiteTest::splerpComplex() {
     CubicHermiteComplex a{{2.0f, 1.5f}, {0.999445f, 0.0333148f}, {-1.0f, 0.0f}};
     CubicHermiteComplex b{{5.0f, 0.3f}, {-0.876216f, 0.481919f}, {1.5f, 0.3f}};
 
-    CORRADE_COMPARE(Math::splerp(a, b, 0.0f), (Complex{0.999445f, 0.0333148f}));
-    CORRADE_COMPARE(Math::splerp(a, b, 1.0f), (Complex{-0.876216f, 0.481919f}));
+    CORRADE_COMPARE(Math::splerp(a, b, 0.0f), a.point());
+    CORRADE_COMPARE(Math::splerp(a, b, 1.0f), b.point());
 
     CORRADE_COMPARE(Math::splerp(a, b, 0.35f), (Complex{-0.483504f, 0.875342f}));
     CORRADE_VERIFY(Math::splerp(a, b, 0.35f).isNormalized());
@@ -897,8 +903,8 @@ void CubicHermiteTest::splerpQuaternion() {
         {{-0.711568f, 0.391362f, 0.355784f}, 0.462519f},
         {{1.5f, 0.3f, 17.0f}, -7.0f}};
 
-    CORRADE_COMPARE(Math::splerp(a, b, 0.0f), (Quaternion{{0.780076f, 0.0260025f, 0.598059f}, 0.182018f}));
-    CORRADE_COMPARE(Math::splerp(a, b, 1.0f), (Quaternion{{-0.711568f, 0.391362f, 0.355784f}, 0.462519f}));
+    CORRADE_COMPARE(Math::splerp(a, b, 0.0f), a.point());
+    CORRADE_COMPARE(Math::splerp(a, b, 1.0f), b.point());
 
     CORRADE_COMPARE(Math::splerp(a, b, 0.35f), (Quaternion{{-0.309862f, 0.174831f, 0.809747f}, 0.466615f}));
     CORRADE_VERIFY(Math::splerp(a, b, 0.35f).isNormalized());
