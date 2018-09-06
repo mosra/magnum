@@ -81,6 +81,7 @@ void PhongGLTest::construct() {
     setTestCaseDescription(data.name);
 
     Phong shader{data.flags};
+    CORRADE_COMPARE(shader.flags(), data.flags);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
@@ -91,7 +92,7 @@ void PhongGLTest::construct() {
 }
 
 void PhongGLTest::constructMove() {
-    Phong a;
+    Phong a{Phong::Flag::AlphaMask};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -99,11 +100,13 @@ void PhongGLTest::constructMove() {
 
     Phong b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
+    CORRADE_COMPARE(b.flags(), Phong::Flag::AlphaMask);
     CORRADE_VERIFY(!a.id());
 
     Phong c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
+    CORRADE_COMPARE(c.flags(), Phong::Flag::AlphaMask);
     CORRADE_VERIFY(!b.id());
 }
 

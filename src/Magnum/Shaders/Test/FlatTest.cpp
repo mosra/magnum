@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Shaders/Flat.h"
@@ -37,6 +38,9 @@ struct FlatTest: TestSuite::Tester {
 
     void constructCopy2D();
     void constructCopy3D();
+
+    void debugFlag();
+    void debugFlags();
 };
 
 FlatTest::FlatTest() {
@@ -44,7 +48,10 @@ FlatTest::FlatTest() {
               &FlatTest::constructNoCreate3D,
 
               &FlatTest::constructCopy2D,
-              &FlatTest::constructCopy3D});
+              &FlatTest::constructCopy3D,
+
+              &FlatTest::debugFlag,
+              &FlatTest::debugFlags});
 }
 
 void FlatTest::constructNoCreate2D() {
@@ -73,6 +80,20 @@ void FlatTest::constructCopy2D() {
 void FlatTest::constructCopy3D() {
     CORRADE_VERIFY(!(std::is_constructible<Flat3D, const Flat3D&>{}));
     CORRADE_VERIFY(!(std::is_assignable<Flat3D, const Flat3D&>{}));
+}
+
+void FlatTest::debugFlag() {
+    std::ostringstream out;
+
+    Debug{&out} << Flat3D::Flag::Textured << Flat3D::Flag(0xf0);
+    CORRADE_COMPARE(out.str(), "Shaders::Flat::Flag::Textured Shaders::Flat::Flag(0xf0)\n");
+}
+
+void FlatTest::debugFlags() {
+    std::ostringstream out;
+
+    Debug{&out} << (Flat3D::Flag::Textured|Flat3D::Flag::AlphaMask) << Flat3D::Flags{};
+    CORRADE_COMPARE(out.str(), "Shaders::Flat::Flag::Textured|Shaders::Flat::Flag::AlphaMask Shaders::Flat::Flags{}\n");
 }
 
 }}}

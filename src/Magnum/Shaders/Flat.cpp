@@ -25,6 +25,7 @@
 
 #include "Flat.h"
 
+#include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/GL/Context.h"
@@ -124,5 +125,28 @@ template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::setAlphaMas
 
 template class Flat<2>;
 template class Flat<3>;
+
+namespace Implementation {
+
+Debug& operator<<(Debug& debug, const FlatFlag value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case FlatFlag::v: return debug << "Shaders::Flat::Flag::" #v;
+        _c(Textured)
+        _c(AlphaMask)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Shaders::Flat::Flag(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const FlatFlags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Shaders::Flat::Flags{}", {
+        FlatFlag::Textured,
+        FlatFlag::AlphaMask});
+}
+
+}
 
 }}

@@ -25,6 +25,7 @@
 
 #include "MeshVisualizer.h"
 
+#include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Resource.h>
 
@@ -150,6 +151,27 @@ MeshVisualizer::MeshVisualizer(const Flags flags): _flags{flags} {
         setSmoothness(2.0f);
     }
     #endif
+}
+
+Debug& operator<<(Debug& debug, const MeshVisualizer::Flag value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case MeshVisualizer::Flag::v: return debug << "Shaders::MeshVisualizer::Flag::" #v;
+        _c(NoGeometryShader)
+        _c(Wireframe)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Shaders::MeshVisualizer::Flag(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const MeshVisualizer::Flags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Shaders::MeshVisualizer::Flags{}", {
+        MeshVisualizer::Flag::Wireframe,
+        /* Wireframe contains this on ES2 so it's not reported there */
+        MeshVisualizer::Flag::NoGeometryShader
+    });
 }
 
 }}

@@ -140,6 +140,10 @@ See also:
     distinction between three- and four-component vertex color attribute.
 -   Classical alpha masking support in @ref Shaders::Flat and
     @ref Shaders::Phong
+-   Debug output for the @ref Shaders::Flat::Flag / @ref Shaders::Flat::Flags,
+    @ref Shaders::MeshVisualizer::Flag / @ref Shaders::MeshVisualizer::Flags
+    and @ref Shaders::Phong::Flag / @ref Shaders::Phong::Flags enums / enum
+    sets
 
 @subsubsection changelog-latest-new-trade Trade library
 

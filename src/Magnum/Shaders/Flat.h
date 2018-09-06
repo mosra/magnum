@@ -259,7 +259,20 @@ typedef Flat<2> Flat2D;
 /** @brief 3D flat shader */
 typedef Flat<3> Flat3D;
 
-CORRADE_ENUMSET_OPERATORS(Implementation::FlatFlags)
+#ifdef DOXYGEN_GENERATING_OUTPUT
+/** @debugoperatorclassenum{Flat,Flat::Flag} */
+template<UnsignedInt dimensions> Debug& operator<<(Debug& debug, Flat<dimensions>::Flag value);
+
+/** @debugoperatorclassenum{Flat,Flat::Flags} */
+template<UnsignedInt dimensions> Debug& operator<<(Debug& debug, Flat<dimensions>::Flags value);
+#else
+namespace Implementation {
+    MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, FlatFlag value);
+    MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, FlatFlags value);
+    CORRADE_ENUMSET_OPERATORS(FlatFlags)
+}
+#endif
+
 
 }}
 

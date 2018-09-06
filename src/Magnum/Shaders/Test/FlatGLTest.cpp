@@ -89,6 +89,7 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
     setTestCaseDescription(data.name);
 
     Flat<dimensions> shader{data.flags};
+    CORRADE_COMPARE(shader.flags(), data.flags);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
@@ -101,7 +102,7 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
 template<UnsignedInt dimensions> void FlatGLTest::constructMove() {
     setTestCaseName(Utility::formatString("constructMove<{}>", dimensions));
 
-    Flat<dimensions> a;
+    Flat<dimensions> a{Flat<dimensions>::Flag::Textured};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -109,11 +110,13 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMove() {
 
     Flat<dimensions> b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
+    CORRADE_COMPARE(b.flags(), Flat<dimensions>::Flag::Textured);
     CORRADE_VERIFY(!a.id());
 
     Flat<dimensions> c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
+    CORRADE_COMPARE(c.flags(), Flat<dimensions>::Flag::Textured);
     CORRADE_VERIFY(!b.id());
 }
 

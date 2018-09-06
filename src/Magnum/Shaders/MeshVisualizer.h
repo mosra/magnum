@@ -185,6 +185,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
         /** @brief Move assignment */
         MeshVisualizer& operator=(MeshVisualizer&&) noexcept = default;
 
+        /** @brief Flags */
+        Flags flags() const { return _flags; }
+
         /**
          * @brief Set transformation and projection matrix
          * @return Reference to self (for method chaining)
@@ -262,6 +265,12 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
             _wireframeWidthUniform{4},
             _smoothnessUniform{5};
 };
+
+/** @debugoperatorclassenum{MeshVisualizer,MeshVisualizer::Flag} */
+MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, MeshVisualizer::Flag value);
+
+/** @debugoperatorclassenum{MeshVisualizer,MeshVisualizer::Flags} */
+MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, MeshVisualizer::Flags value);
 
 CORRADE_ENUMSET_OPERATORS(MeshVisualizer::Flags)
 

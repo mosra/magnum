@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Shaders/MeshVisualizer.h"
@@ -34,11 +35,17 @@ struct MeshVisualizerTest: TestSuite::Tester {
 
     void constructNoCreate();
     void constructCopy();
+
+    void debugFlag();
+    void debugFlags();
 };
 
 MeshVisualizerTest::MeshVisualizerTest() {
     addTests({&MeshVisualizerTest::constructNoCreate,
-              &MeshVisualizerTest::constructCopy});
+              &MeshVisualizerTest::constructCopy,
+
+              &MeshVisualizerTest::debugFlag,
+              &MeshVisualizerTest::debugFlags});
 }
 
 void MeshVisualizerTest::constructNoCreate() {
@@ -53,6 +60,24 @@ void MeshVisualizerTest::constructNoCreate() {
 void MeshVisualizerTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_constructible<MeshVisualizer, const MeshVisualizer&>{}));
     CORRADE_VERIFY(!(std::is_assignable<MeshVisualizer, const MeshVisualizer&>{}));
+}
+
+void MeshVisualizerTest::debugFlag() {
+    std::ostringstream out;
+
+    Debug{&out} << MeshVisualizer::Flag::Wireframe << MeshVisualizer::Flag(0xf0);
+    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizer::Flag::Wireframe Shaders::MeshVisualizer::Flag(0xf0)\n");
+}
+
+void MeshVisualizerTest::debugFlags() {
+    std::ostringstream out;
+
+    Debug{&out} << (MeshVisualizer::Flag::Wireframe|MeshVisualizer::Flag::NoGeometryShader) << MeshVisualizer::Flags{};
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizer::Flag::Wireframe|Shaders::MeshVisualizer::Flag::NoGeometryShader Shaders::MeshVisualizer::Flags{}\n");
+    #else
+    CORRADE_COMPARE(out.str(), "Shaders::MeshVisualizer::Flag::Wireframe Shaders::MeshVisualizer::Flags{}\n");
+    #endif
 }
 
 }}}

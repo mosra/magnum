@@ -25,6 +25,7 @@
 
 #include "Phong.h"
 
+#include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/GL/Context.h"
@@ -164,6 +165,43 @@ Phong& Phong::setAlphaMask(Float mask) {
         "Shaders::Phong::setAlphaMask(): the shader was not created with alpha mask enabled", *this);
     setUniform(_alphaMaskUniform, mask);
     return *this;
+}
+
+Phong& Phong::setLightPositions(const Containers::ArrayView<const Vector3> positions) {
+    CORRADE_ASSERT(_lightCount == positions.size(),
+        "Shaders::Phong::setLightPositions(): expected" << _lightCount << "items but got" << positions.size(), *this);
+    setUniform(_lightPositionsUniform, positions);
+    return *this;
+}
+
+Phong& Phong::setLightColors(const Containers::ArrayView<const Color4> colors) {
+    CORRADE_ASSERT(_lightCount == colors.size(),
+        "Shaders::Phong::setLightColors(): expected" << _lightCount << "items but got" << colors.size(), *this);
+    setUniform(_lightColorsUniform, colors);
+    return *this;
+}
+
+Debug& operator<<(Debug& debug, const Phong::Flag value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case Phong::Flag::v: return debug << "Shaders::Phong::Flag::" #v;
+        _c(AmbientTexture)
+        _c(DiffuseTexture)
+        _c(SpecularTexture)
+        _c(AlphaMask)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Shaders::Phong::Flag(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const Phong::Flags value) {
+    return Containers::enumSetDebugOutput(debug, value, "Shaders::Phong::Flags{}", {
+        Phong::Flag::AmbientTexture,
+        Phong::Flag::DiffuseTexture,
+        Phong::Flag::SpecularTexture,
+        Phong::Flag::AlphaMask});
 }
 
 }}

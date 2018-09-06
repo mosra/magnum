@@ -54,6 +54,7 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
 
 void MeshVisualizerGLTest::construct() {
     MeshVisualizer shader;
+    CORRADE_COMPARE(shader.flags(), MeshVisualizer::Flags{});
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
@@ -78,7 +79,8 @@ void MeshVisualizerGLTest::constructWireframeGeometryShader() {
         Debug() << "Using" << GL::Extensions::NV::shader_noperspective_interpolation::string();
     #endif
 
-    MeshVisualizer shader(MeshVisualizer::Flag::Wireframe);
+    MeshVisualizer shader{MeshVisualizer::Flag::Wireframe};
+    CORRADE_COMPARE(shader.flags(), MeshVisualizer::Flag::Wireframe);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
@@ -90,7 +92,8 @@ void MeshVisualizerGLTest::constructWireframeGeometryShader() {
 #endif
 
 void MeshVisualizerGLTest::constructWireframeNoGeometryShader() {
-    MeshVisualizer shader(MeshVisualizer::Flag::Wireframe|MeshVisualizer::Flag::NoGeometryShader);
+    MeshVisualizer shader{MeshVisualizer::Flag::Wireframe|MeshVisualizer::Flag::NoGeometryShader};
+    CORRADE_COMPARE(shader.flags(), MeshVisualizer::Flag::Wireframe|MeshVisualizer::Flag::NoGeometryShader);
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
@@ -101,7 +104,7 @@ void MeshVisualizerGLTest::constructWireframeNoGeometryShader() {
 }
 
 void MeshVisualizerGLTest::constructMove() {
-    MeshVisualizer a;
+    MeshVisualizer a{MeshVisualizer::Flag::Wireframe|MeshVisualizer::Flag::NoGeometryShader};
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
@@ -109,11 +112,13 @@ void MeshVisualizerGLTest::constructMove() {
 
     MeshVisualizer b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
+    CORRADE_COMPARE(b.flags(), MeshVisualizer::Flag::Wireframe|MeshVisualizer::Flag::NoGeometryShader);
     CORRADE_VERIFY(!a.id());
 
     MeshVisualizer c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
+    CORRADE_COMPARE(c.flags(), MeshVisualizer::Flag::Wireframe|MeshVisualizer::Flag::NoGeometryShader);
     CORRADE_VERIFY(!b.id());
 }
 

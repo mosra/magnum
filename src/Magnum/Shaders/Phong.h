@@ -425,6 +425,12 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
             _alphaMaskUniform{9};
 };
 
+/** @debugoperatorclassenum{Phong,Phong::Flag} */
+MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, Phong::Flag value);
+
+/** @debugoperatorclassenum{Phong,Phong::Flags} */
+MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, Phong::Flags value);
+
 CORRADE_ENUMSET_OPERATORS(Phong::Flags)
 
 }}

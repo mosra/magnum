@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Shaders/Phong.h"
@@ -34,11 +35,17 @@ struct PhongTest: TestSuite::Tester {
 
     void constructNoCreate();
     void constructCopy();
+
+    void debugFlag();
+    void debugFlags();
 };
 
 PhongTest::PhongTest() {
     addTests({&PhongTest::constructNoCreate,
-              &PhongTest::constructCopy});
+              &PhongTest::constructCopy,
+
+              &PhongTest::debugFlag,
+              &PhongTest::debugFlags});
 }
 
 void PhongTest::constructNoCreate() {
@@ -53,6 +60,20 @@ void PhongTest::constructNoCreate() {
 void PhongTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_constructible<Phong, const Phong&>{}));
     CORRADE_VERIFY(!(std::is_assignable<Phong, const Phong&>{}));
+}
+
+void PhongTest::debugFlag() {
+    std::ostringstream out;
+
+    Debug{&out} << Phong::Flag::AmbientTexture << Phong::Flag(0xf0);
+    CORRADE_COMPARE(out.str(), "Shaders::Phong::Flag::AmbientTexture Shaders::Phong::Flag(0xf0)\n");
+}
+
+void PhongTest::debugFlags() {
+    std::ostringstream out;
+
+    Debug{&out} << (Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture) << Phong::Flags{};
+    CORRADE_COMPARE(out.str(), "Shaders::Phong::Flag::DiffuseTexture|Shaders::Phong::Flag::SpecularTexture Shaders::Phong::Flags{}\n");
 }
 
 }}}
