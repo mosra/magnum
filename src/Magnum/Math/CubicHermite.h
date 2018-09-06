@@ -277,9 +277,9 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 
 /** @relatesalso CubicHermite
 @brief Constant interpolation of two cubic Hermite spline points
-@param a     First value
-@param b     Second value
-@param t     Interpolation phase
+@param a     First spline point
+@param b     Second spline point
+@param t     Interpolation phase (from range @f$ [0; 1] @f$)
 
 Given segment points @f$ \boldsymbol{p}_i @f$, in-tangents @f$ \boldsymbol{m}_i @f$
 and out-tangents @f$ \boldsymbol{n}_i @f$, the interpolated value @f$ \boldsymbol{p} @f$
@@ -304,7 +304,7 @@ template<class T, class U> T select(const CubicHermite<T>& a, const CubicHermite
 @brief Linear interpolation of two cubic Hermite points
 @param a     First spline point
 @param b     Second spline point
-@param t     Interpolation phase
+@param t     Interpolation phase (from range @f$ [0; 1] @f$)
 
 Given segment points @f$ \boldsymbol{p}_i @f$, in-tangents @f$ \boldsymbol{m}_i @f$
 and out-tangents @f$ \boldsymbol{n}_i @f$, the interpolated value @f$ \boldsymbol{p} @f$
@@ -329,16 +329,11 @@ template<class T, class U> T lerp(const CubicHermite<T>& a, const CubicHermite<T
 /** @relatesalso CubicHermite
 @brief Linear interpolation of two cubic Hermite complex numbers
 
-Unlike @ref lerp(const CubicHermite<T>&, const CubicHermite<T>&, U) this adds
-a normalization step after. Given segment points @f$ \boldsymbol{p}_i @f$,
-in-tangents @f$ \boldsymbol{m}_i @f$ and out-tangents @f$ \boldsymbol{n}_i @f$,
-the interpolated value @f$ \boldsymbol{p} @f$ at phase @f$ t @f$ is: @f[
-    \boldsymbol{p}(t) = \frac{(1 - t) \boldsymbol{p}_a + t \boldsymbol{p}_b}{|(1 - t) \boldsymbol{p}_a + t \boldsymbol{p}_b|}
-@f]
-
 Equivalent to calling @ref lerp(const Complex<T>&, const Complex<T>&, T) on
-@ref CubicHermite::point() extracted from @p a and @p b. Expects that
-@ref CubicHermite::point() is a normalized complex number in both @p a and @p b.
+@ref CubicHermite::point() extracted from @p a and @p b. Compared to
+@ref lerp(const CubicHermite<T>&, const CubicHermite<T>&, U) this adds a
+normalization step after. Expects that @ref CubicHermite::point() is a
+normalized complex number in both @p a and @p b.
 @see @ref Complex::isNormalized(),
     @ref lerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
     @ref select(const CubicHermite<T>&, const CubicHermite<T>&, U),
@@ -351,16 +346,11 @@ template<class T> Complex<T> lerp(const CubicHermiteComplex<T>& a, const CubicHe
 /** @relatesalso CubicHermite
 @brief Linear interpolation of two cubic Hermite quaternions
 
-Unlike @ref lerp(const CubicHermite<T>&, const CubicHermite<T>&, U) this adds a
-normalization step after. Given segment points @f$ \boldsymbol{p}_i @f$,
-in-tangents @f$ \boldsymbol{m}_i @f$ and out-tangents @f$ \boldsymbol{n}_i @f$,
-the interpolated value @f$ \boldsymbol{p} @f$ at phase @f$ t @f$ is: @f[
-    \boldsymbol{p}(t) = \frac{(1 - t) \boldsymbol{p}_a + t \boldsymbol{p}_b}{|(1 - t) \boldsymbol{p}_a + t \boldsymbol{p}_b|}
-@f]
-
 Equivalent to calling @ref lerp(const Quaternion<T>&, const Quaternion<T>&, T)
-on @ref CubicHermite::point() extracted from @p a and @p b. Expects that
-@ref CubicHermite::point() is a normalized quaternion in both @p a and @p b.
+on @ref CubicHermite::point() extracted from @p a and @p b. Compared to
+@ref lerp(const CubicHermite<T>&, const CubicHermite<T>&, U) this adds a
+normalization step after. Expects that @ref CubicHermite::point() is a
+normalized quaternion in both @p a and @p b.
 @see @ref Quaternion::isNormalized(),
     @ref lerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
     @ref select(const CubicHermite<T>&, const CubicHermite<T>&, U),
@@ -385,7 +375,7 @@ at phase @f$ t @f$ is: @f[
 @see @ref splerp(const CubicHermiteComplex<T>&, const CubicHermiteComplex<T>&, T),
     @ref splerp(const CubicHermiteQuaternion<T>&, const CubicHermiteQuaternion<T>&, T),
     @ref select(const CubicHermite<T>&, const CubicHermite<T>&, U),
-    @ref lerp(const CubicHermite<T>&, const CubicHermite<T>&, U),
+    @ref lerp(const CubicHermite<T>&, const CubicHermite<T>&, U)
 */
 template<class T, class U> T splerp(const CubicHermite<T>& a, const CubicHermite<T>& b, U t) {
     return (U(2)*t*t*t - U(3)*t*t + U(1))*a.point() +

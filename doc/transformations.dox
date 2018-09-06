@@ -29,6 +29,7 @@ namespace Magnum {
 
 @tableofcontents
 @m_footernavigation
+@m_keyword{Transformations}
 
 Transformations are essential operations involved in scene management --- object
 relations, hierarchies, animations etc. They extend basic vectors and matrices
