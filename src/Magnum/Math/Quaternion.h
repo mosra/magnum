@@ -203,7 +203,7 @@ otherwise, the interpolation is performed as: @f[
 */
 template<class T> inline Quaternion<T> slerpShortestPath(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::slerp(): quaternions must be normalized", {});
+        "Math::slerpShortestPath(): quaternions must be normalized", {});
     const T cosHalfAngle = dot(normalizedA, normalizedB);
 
     /* Avoid division by zero */
