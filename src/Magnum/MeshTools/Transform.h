@@ -55,13 +55,8 @@ Example usage:
     @ref Quaternion::transformVectorNormalized()
 @todo GPU transform feedback implementation (otherwise this is only bad joke)
 */
-template<class T, class U> void transformVectorsInPlace(const Math::Quaternion<T>& normalizedQuaternion, U& vectors) {
-    for(auto& vector: vectors) vector = normalizedQuaternion.transformVectorNormalized(vector);
-}
-
-/** @overload */
-template<class T, class U> void transformVectorsInPlace(const Math::Complex<T>& complex, U& vectors) {
-    for(auto& vector: vectors) vector = complex.transformVector(vector);
+template<class T, class U> void transformVectorsInPlace(const Math::Matrix4<T>& matrix, U& vectors) {
+    for(auto& vector: vectors) vector = matrix.transformVector(vector);
 }
 
 /** @overload */
@@ -70,8 +65,13 @@ template<class T, class U> void transformVectorsInPlace(const Math::Matrix3<T>& 
 }
 
 /** @overload */
-template<class T, class U> void transformVectorsInPlace(const Math::Matrix4<T>& matrix, U& vectors) {
-    for(auto& vector: vectors) vector = matrix.transformVector(vector);
+template<class T, class U> void transformVectorsInPlace(const Math::Complex<T>& complex, U& vectors) {
+    for(auto& vector: vectors) vector = complex.transformVector(vector);
+}
+
+/** @overload */
+template<class T, class U> void transformVectorsInPlace(const Math::Quaternion<T>& normalizedQuaternion, U& vectors) {
+    for(auto& vector: vectors) vector = normalizedQuaternion.transformVectorNormalized(vector);
 }
 
 /**
@@ -106,13 +106,8 @@ Example usage:
     @ref Matrix4::transformPoint(),
     @ref DualQuaternion::transformPointNormalized()
 */
-template<class T, class U> void transformPointsInPlace(const Math::DualQuaternion<T>& normalizedDualQuaternion, U& points) {
-    for(auto& point: points) point = normalizedDualQuaternion.transformPointNormalized(point);
-}
-
-/** @overload */
-template<class T, class U> void transformPointsInPlace(const Math::DualComplex<T>& dualComplex, U& points) {
-    for(auto& point: points) point = dualComplex.transformPoint(point);
+template<class T, class U> void transformPointsInPlace(const Math::Matrix4<T>& matrix, U& points) {
+    for(auto& point: points) point = matrix.transformPoint(point);
 }
 
 /** @overload */
@@ -121,8 +116,13 @@ template<class T, class U> void transformPointsInPlace(const Math::Matrix3<T>& m
 }
 
 /** @overload */
-template<class T, class U> void transformPointsInPlace(const Math::Matrix4<T>& matrix, U& points) {
-    for(auto& point: points) point = matrix.transformPoint(point);
+template<class T, class U> void transformPointsInPlace(const Math::DualComplex<T>& dualComplex, U& points) {
+    for(auto& point: points) point = dualComplex.transformPoint(point);
+}
+
+/** @overload */
+template<class T, class U> void transformPointsInPlace(const Math::DualQuaternion<T>& normalizedDualQuaternion, U& points) {
+    for(auto& point: points) point = normalizedDualQuaternion.transformPointNormalized(point);
 }
 
 /**
