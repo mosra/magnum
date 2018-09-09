@@ -311,6 +311,14 @@ See also:
 
 @subsection changelog-latest-bugfixes Bug fixes
 
+-   MSVC 15.8 (released on Aug 14, 2018) has a regression causing the compiler
+    to crash with an ICE (C1001) on @ref Math::Color4 constructors that have a
+    default alpha parameter. This is only only when the `/permissive-` flag is
+    specified (which is done by default for projects created directly using
+    Visual Studio but not for projects using CMake). This has been worked
+    around, but can't be guaranteed it was the only case. In case you're
+    experiencing a similar issue somewhere else, please try to disable the
+    `/permissive-` flag first.
 -   An assert was firing during @ref Platform::GlfwApplication initialization
     due to a pointer not being properly initialized after the
     @ref Platform::GlfwApplication::GLConfiguration "GLConfiguration" rework in

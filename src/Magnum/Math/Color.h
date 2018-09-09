@@ -197,12 +197,26 @@ template<class T> inline Vector3<typename Color3<T>::FloatingPointType> toXyz(ty
 }
 
 /* Value for full channel (1.0f for floats, 255 for unsigned byte) */
+#if !defined(CORRADE_MSVC2017_COMPATIBILITY) || defined(CORRADE_MSVC2015_COMPATIBILITY)
+/* MSVC 2017 since 15.8 crashes with the following at a constructor line that
+   calls this function via a default parameter. This happens only when the
+   /permissive- (yes, there's a dash at the end) flag is specified, which is
+   projects created directly using VS (enabled by default since 15.5) but not
+   projects using CMake. Not using SFINAE in this case makes it work. Minimal
+   repro case here: https://twitter.com/czmosra/status/1038610648568147968 */
 template<class T> constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type fullChannel() {
     return T(1);
 }
 template<class T> constexpr typename std::enable_if<std::is_integral<T>::value, T>::type fullChannel() {
     return Implementation::bitMax<T>();
 }
+#else
+template<class T> constexpr T fullChannel() { return bitMax<T>(); }
+/** @todo half */
+template<> constexpr float fullChannel<float>() { return 1.0f; }
+template<> constexpr double fullChannel<double>() { return 1.0; }
+template<> constexpr long double fullChannel<long double>() { return 1.0l; }
+#endif
 
 }
 
