@@ -230,7 +230,7 @@ linear RGB using @ref fromSrgb(), calculation done on the linear representation
 and then converted back to sRGB using @ref toSrgb().
 
 Note that constructor conversion between different types (like in @ref Vector
-classes) doesn't do any (de)normalization, you should use @ref pack) and
+classes) doesn't do any (de)normalization, you should use @ref pack() and
 @ref unpack() instead, for example:
 
 @snippet MagnumMath.cpp Color3-pack
