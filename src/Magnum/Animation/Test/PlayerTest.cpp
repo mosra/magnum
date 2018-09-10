@@ -355,20 +355,14 @@ void PlayerTest::advancePlaying() {
        Elapsed time still shows that it stopped by itself. */
     player.advance(5.5f);
     CORRADE_COMPARE(player.state(), State::Stopped);
-    {
-        CORRADE_EXPECT_FAIL("Not yet implemented.");
-        CORRADE_COMPARE(player.elapsed(5.5f), std::make_pair(0, 3.0f));
-    }
+    CORRADE_COMPARE(player.elapsed(5.5f), std::make_pair(0, 3.0f));
     CORRADE_COMPARE(value, 2.0f);
 
     /* But further advancing will not write anything */
     value = -1.0f;
     player.advance(100.0f);
     CORRADE_COMPARE(player.state(), State::Stopped);
-    {
-        CORRADE_EXPECT_FAIL("Not yet implemented.");
-        CORRADE_COMPARE(player.elapsed(100.0f), std::make_pair(0, 3.0f));
-    }
+    CORRADE_COMPARE(player.elapsed(100.0f), std::make_pair(0, 3.0f));
     CORRADE_COMPARE(value, -1.0f);
 }
 
@@ -582,20 +576,14 @@ void PlayerTest::advancePlayCount() {
     /* When the player gets stopped, the value at the stop time is written */
     player.advance(11.5f);
     CORRADE_COMPARE(player.state(), State::Stopped);
-    {
-        CORRADE_EXPECT_FAIL("Not yet implemented.");
-        CORRADE_COMPARE(player.elapsed(11.5f), std::make_pair(2, 3.0f));
-    }
+    CORRADE_COMPARE(player.elapsed(11.5f), std::make_pair(2, 3.0f));
     CORRADE_COMPARE(value, 2.0f);
 
     /* But further advancing will not write anything */
     value = -1.0f;
     player.advance(100.0f);
     CORRADE_COMPARE(player.state(), State::Stopped);
-    {
-        CORRADE_EXPECT_FAIL("Not yet implemented.");
-        CORRADE_COMPARE(player.elapsed(100.0f), std::make_pair(2, 3.0f));
-    }
+    CORRADE_COMPARE(player.elapsed(100.0f), std::make_pair(2, 3.0f));
     CORRADE_COMPARE(value, -1.0f);
 }
 

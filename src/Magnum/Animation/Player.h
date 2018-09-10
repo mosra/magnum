@@ -711,7 +711,7 @@ template<class T, class K
         Math::Range1D<K> _duration;
         UnsignedInt _playCount{1};
         State _state{State::Stopped};
-        T _startTime{}, _pauseTime{};
+        T _startTime{}, _stopPauseTime{};
         Scaler _scaler;
 };
 

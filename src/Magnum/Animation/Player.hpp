@@ -123,12 +123,15 @@ template<class T, class K> Player<T, K>& Player<T, K>::pause(T pauseTime) {
     if(_state != State::Playing) return *this;
 
     _state = State::Paused;
-    _pauseTime = pauseTime;
+    _stopPauseTime = pauseTime;
     return *this;
 }
 
 template<class T, class K> Player<T, K>& Player<T, K>::stop() {
     _state = State::Stopped;
+    /* Anything, just not a default-constructed value */
+    /** @todo might be problematic for some types */
+    _stopPauseTime = T{1};
     return *this;
 }
 
@@ -144,7 +147,7 @@ template<class T, class K> Player<T, K>& Player<T, K>::setState(State state, T t
 
 namespace Implementation {
 
-template<class T, class K> Containers::Optional<std::pair<UnsignedInt, K>> playerElapsed(const K duration, const UnsignedInt playCount, const typename Player<T, K>::Scaler scaler, const T time, T& startTime, T& pauseTime, State& state) {
+template<class T, class K> Containers::Optional<std::pair<UnsignedInt, K>> playerElapsed(const K duration, const UnsignedInt playCount, const typename Player<T, K>::Scaler scaler, const T time, T& startTime, T& stopPauseTime, State& state) {
     /* Time to use for advancing the animation */
     T timeToUse = time;
 
@@ -154,16 +157,17 @@ template<class T, class K> Containers::Optional<std::pair<UnsignedInt, K>> playe
 
        std::chrono::duration doesn't have operator bool, so I need to compare
        to default-constructed value. Ugh. */
-    if(state == State::Paused && (pauseTime != T{})) {
-        timeToUse = pauseTime;
-        startTime = pauseTime - startTime;
-        pauseTime = {};
+    if(state == State::Paused && (stopPauseTime != T{})) {
+        timeToUse = stopPauseTime;
+        startTime = stopPauseTime - startTime;
+        stopPauseTime = {};
 
     /* The animation was stopped by the user right before this iteration,
        "park" the animation to the initial time */
-    } else if(state == State::Stopped && (startTime != T{})) {
-        startTime = {};
+    } else if(state == State::Stopped && (stopPauseTime != T{})) {
         timeToUse = {};
+        startTime = {};
+        stopPauseTime = {};
 
     /* Otherwise, if the player is not playing or scheduled to start playing in
        the future, do nothing */
@@ -190,7 +194,8 @@ template<class T, class K> Containers::Optional<std::pair<UnsignedInt, K>> playe
         std::tie(playIteration, key) = scaler(timeToUse - startTime, duration);
         if(playCount && playIteration >= playCount) {
             state = State::Stopped;
-            startTime = {}; /** @todo no? so we can distinguish between stopped by itself and not */
+            /* Don't reset the startTime to disambiguate between explicitly
+               stopped and "time run out" animation */
             playIteration = playCount - 1;
             key = duration;
         }
@@ -205,25 +210,35 @@ template<class T, class K> std::pair<UnsignedInt, K> Player<T, K>::elapsed(const
     /* Get the elapsed time. This is an immutable query, so make copies of the
        (otherwise to be modified) internal state. */
     T startTime = _startTime;
-    T pauseTime = _pauseTime;
+    T pauseTime = _stopPauseTime;
     State state = _state;
-    const Containers::Optional<std::pair<UnsignedInt, K>> elapsed = Implementation::playerElapsed(_duration.size()[0], _playCount, _scaler, time, startTime, pauseTime, state);
+    const K duration = _duration.size()[0];
+    const Containers::Optional<std::pair<UnsignedInt, K>> elapsed = Implementation::playerElapsed(duration, _playCount, _scaler, time, startTime, pauseTime, state);
     if(elapsed) return *elapsed;
 
-    /* If not advancing, the animation can be paused: calculate the keyframe at
-       which it was paused */
-    if(state == State::Paused) return _scaler(_startTime, _duration.size()[0]);
+    /* If not advancing, the animation can be paused -- calculate the iteration
+       index and keyframe at which it was paused if the duration is nonzero. */
+    if(_state == State::Paused && duration)
+        return _scaler(_startTime, duration);
 
-    /** @todo stopped by itself vs. explicitly */
+    /* It can be also stopped by running out, in that case return the last
+       iteration index and the duration. Again have to use comparison to
+       default-constructed value because std::chrono::nanoseconds doesn't have
+       operator bool. */
+    if(_state == State::Stopped && _startTime != T{}) {
+        CORRADE_INTERNAL_ASSERT(_playCount);
+        return {_playCount - 1, duration};
+    }
 
-    /* Otherwise the animation is just stopped: return a zero value */
+    /* Otherwise (zero duration, explicitly stopped, not yet started) return
+       zero */
     return {0, K{}};
 }
 
 template<class T, class K> Player<T, K>& Player<T, K>::advance(const T time) {
     /* Get the elapsed time. If we shouldn't advance anything (player already
        stopped / not yet playing, quit */
-    Containers::Optional<std::pair<UnsignedInt, K>> elapsed = Implementation::playerElapsed(_duration.size()[0], _playCount, _scaler, time, _startTime, _pauseTime, _state);
+    Containers::Optional<std::pair<UnsignedInt, K>> elapsed = Implementation::playerElapsed(_duration.size()[0], _playCount, _scaler, time, _startTime, _stopPauseTime, _state);
     if(!elapsed) return *this;
 
     /* Advance all tracks. Properly handle durations that don't start at 0. */
