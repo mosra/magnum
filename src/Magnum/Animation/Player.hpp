@@ -31,6 +31,8 @@
 
 #include "Player.h"
 
+#include <Corrade/Containers/Optional.h>
+
 namespace Magnum { namespace Animation {
 
 namespace Implementation {
@@ -140,7 +142,9 @@ template<class T, class K> Player<T, K>& Player<T, K>::setState(State state, T t
     CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-template<class T, class K> Player<T, K>& Player<T, K>::advance(T time) {
+namespace Implementation {
+
+template<class T, class K> Containers::Optional<std::pair<UnsignedInt, K>> playerElapsed(const K duration, const UnsignedInt playCount, const typename Player<T, K>::Scaler scaler, const T time, T& startTime, T& pauseTime, State& state) {
     /* Time to use for advancing the animation */
     T timeToUse = time;
 
@@ -150,49 +154,81 @@ template<class T, class K> Player<T, K>& Player<T, K>::advance(T time) {
 
        std::chrono::duration doesn't have operator bool, so I need to compare
        to default-constructed value. Ugh. */
-    if(_state == State::Paused && (_pauseTime != T{})) {
-        timeToUse = _pauseTime;
-        _startTime = _pauseTime - _startTime;
-        _pauseTime = {};
+    if(state == State::Paused && (pauseTime != T{})) {
+        timeToUse = pauseTime;
+        startTime = pauseTime - startTime;
+        pauseTime = {};
 
     /* The animation was stopped by the user right before this iteration,
        "park" the animation to the initial time */
-    } else if(_state == State::Stopped && (_startTime != T{})) {
-        _startTime = {};
+    } else if(state == State::Stopped && (startTime != T{})) {
+        startTime = {};
         timeToUse = {};
 
     /* Otherwise, if the player is not playing or scheduled to start playing in
        the future, do nothing */
-    } else if(_state != State::Playing || time < _startTime) return *this;
+    } else if(state != State::Playing || time < startTime)
+        return Containers::NullOpt;
 
     /* If the player duration is empty, we can't call the scaler. If play count
        is infinite, infinitely advance to a key at duration start. If not, stop
        the animation. */
+    UnsignedInt playIteration;
     K key;
-    const K duration = _duration.size()[0];
     if(duration == K{}) {
         key = K{};
-        if(_playCount != 0) {
-            _state = State::Stopped;
-            _startTime = {};
+        playIteration = 0;
+        if(playCount != 0) {
+            state = State::Stopped;
+            startTime = {};
         }
 
     /* Otherwise calculate current play iteration and key value in that
        iteration. If we exceeded play count, stop the animation and give out
        value at duration end. */
     } else {
-        UnsignedInt playCount;
-        std::tie(playCount, key) = _scaler(timeToUse - _startTime, duration);
-        if(_playCount && playCount >= _playCount) {
-            _state = State::Stopped;
-            _startTime = {};
+        std::tie(playIteration, key) = scaler(timeToUse - startTime, duration);
+        if(playCount && playIteration >= playCount) {
+            state = State::Stopped;
+            startTime = {}; /** @todo no? so we can distinguish between stopped by itself and not */
+            playIteration = playCount - 1;
             key = duration;
         }
     }
 
+    return {Containers::InPlaceInit, playIteration, key};
+}
+
+}
+
+template<class T, class K> std::pair<UnsignedInt, K> Player<T, K>::elapsed(const T time) const {
+    /* Get the elapsed time. This is an immutable query, so make copies of the
+       (otherwise to be modified) internal state. */
+    T startTime = _startTime;
+    T pauseTime = _pauseTime;
+    State state = _state;
+    const Containers::Optional<std::pair<UnsignedInt, K>> elapsed = Implementation::playerElapsed(_duration.size()[0], _playCount, _scaler, time, startTime, pauseTime, state);
+    if(elapsed) return *elapsed;
+
+    /* If not advancing, the animation can be paused: calculate the keyframe at
+       which it was paused */
+    if(state == State::Paused) return _scaler(_startTime, _duration.size()[0]);
+
+    /** @todo stopped by itself vs. explicitly */
+
+    /* Otherwise the animation is just stopped: return a zero value */
+    return {0, K{}};
+}
+
+template<class T, class K> Player<T, K>& Player<T, K>::advance(const T time) {
+    /* Get the elapsed time. If we shouldn't advance anything (player already
+       stopped / not yet playing, quit */
+    Containers::Optional<std::pair<UnsignedInt, K>> elapsed = Implementation::playerElapsed(_duration.size()[0], _playCount, _scaler, time, _startTime, _pauseTime, _state);
+    if(!elapsed) return *this;
+
     /* Advance all tracks. Properly handle durations that don't start at 0. */
     for(Track& t: _tracks)
-        t.advancer(t.track, _duration.min()[0] + key, t.hint, t.destination, t.userCallback, t.userCallbackData);
+        t.advancer(t.track, _duration.min()[0] + elapsed->second, t.hint, t.destination, t.userCallback, t.userCallbackData);
 
     return *this;
 }

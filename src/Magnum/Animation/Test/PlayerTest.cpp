@@ -295,11 +295,17 @@ void PlayerTest::advanceNotRunning() {
     player.add(Track, value);
 
     CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(0.0f), std::make_pair(0, 0.0f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* Asking for elapsed doesn't change anything */
+    CORRADE_COMPARE(player.elapsed(1.75f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     player.advance(1.75f);
 
     CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(1.75f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 }
 
@@ -311,32 +317,58 @@ void PlayerTest::advancePlaying() {
 
     CORRADE_COMPARE(player.duration().size(), 3.0f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(0.0f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* Still before starting time, nothing is done */
     player.advance(1.75f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(1.75f), std::make_pair(0, 0.0f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* Asking for elapsed will say it's playing already, but doesn't change
+       anything */
+    CORRADE_COMPARE(player.elapsed(3.75f), std::make_pair(0, 1.75f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* 1.75 secs in */
     player.advance(3.75f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(3.75f), std::make_pair(0, 1.75f));
     CORRADE_COMPARE(value, 4.0f);
 
     /* 2.67 secs in */
-    player.advance(4.6666667f);
+    player.advance(4.666666667f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    /** @todo make std::pair/std::tuple comparisons respect fuzzyness inside */
+    CORRADE_COMPARE(player.elapsed(4.666666667f).first, 0);
+    CORRADE_COMPARE(player.elapsed(4.666666667f).second, 2.666666667f);
     CORRADE_COMPARE(value, 3.0f);
 
-    /* When the player gets stopped, the value at the stop time is written */
+    /* Asking for elapsed will say the stop time, but again doesn't change the
+       state */
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(5.5f), std::make_pair(0, 3.0f));
+    CORRADE_COMPARE(value, 3.0f);
+
+    /* When the player gets stopped, the value at the stop time is written.
+       Elapsed time still shows that it stopped by itself. */
     player.advance(5.5f);
     CORRADE_COMPARE(player.state(), State::Stopped);
+    {
+        CORRADE_EXPECT_FAIL("Not yet implemented.");
+        CORRADE_COMPARE(player.elapsed(5.5f), std::make_pair(0, 3.0f));
+    }
     CORRADE_COMPARE(value, 2.0f);
 
     /* But further advancing will not write anything */
     value = -1.0f;
     player.advance(100.0f);
     CORRADE_COMPARE(player.state(), State::Stopped);
+    {
+        CORRADE_EXPECT_FAIL("Not yet implemented.");
+        CORRADE_COMPARE(player.elapsed(100.0f), std::make_pair(0, 3.0f));
+    }
     CORRADE_COMPARE(value, -1.0f);
 }
 
@@ -347,27 +379,32 @@ void PlayerTest::advanceRestart() {
         .play(2.0f);
 
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(0.0f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* Still before starting time, nothing is done */
     player.advance(1.75f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(1.75f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* 1.75 secs in */
     player.advance(3.75f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(3.75f), std::make_pair(0, 1.75f));
     CORRADE_COMPARE(value, 4.0f);
 
     /* Call play again, will restart from the beginning... */
     value = -1.0f;
     player.play(4.0f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(4.0f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* ... but only after calling advance() again. Now at 1 sec in. */
     player.advance(5.0f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(5.0f), std::make_pair(0, 1.0f));
     CORRADE_COMPARE(value, 2.5f);
 }
 
@@ -379,23 +416,29 @@ void PlayerTest::advanceStop() {
 
     player.advance(3.75f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(3.75f), std::make_pair(0, 1.75f));
     CORRADE_COMPARE(value, 4.0f);
 
-    /* Stop, should not update anything */
+    /* Stop, should not update anything. Elapsed will report a time from the
+       beginning again. */
     value = -1.0;
     player.stop();
     CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(5.0f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
-    /* Advancing will update with a value from beginning of the duration */
+    /* Advancing will update with a value from beginning of the duration.
+       Elapsed shows the same. */
     player.advance(5.0f);
     CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(5.0f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, 1.5f);
 
     /* But further advancing will not write anything */
     value = -1.0f;
     player.advance(100.0f);
     CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(100.0f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 }
 
@@ -406,43 +449,52 @@ void PlayerTest::advancePauseResume() {
         .play(2.0f);
 
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(3.75f), std::make_pair(0, 1.75f));
     CORRADE_COMPARE(value, -1.0f);
 
     player.advance(3.75f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(3.75f), std::make_pair(0, 1.75f));
     CORRADE_COMPARE(value, 4.0f);
 
     /* Pausing should not update anything */
     value = -1.0f;
     player.pause(4.0f);
     CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(4.0f), std::make_pair(0, 2.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* Pausing again should be a no-op */
     player.pause(4.1f);
     CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(4.1f), std::make_pair(0, 2.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* But advance() after should. No matter what time is passed to it, it
        should update with time of pause. */
     player.advance(4.5f);
     CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(4.5f), std::make_pair(0, 2.0f));
     CORRADE_COMPARE(value, 5.0f); /* value at 2.0f, not 2.5f */
 
     /* Advancing further should do nothing */
     value = -1.0f;
     player.advance(50.0f);
     CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(50.0f), std::make_pair(0, 2.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* Resuming the animation, again should not update anything */
     player.play(100.0f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(100.0f), std::make_pair(0, 2.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* Advancing the animation should update again. It was paused after two
        seconds, so continuing at 2.5 seconds now. */
     player.advance(100.5f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(100.5f), std::make_pair(0, 2.5f));
     CORRADE_COMPARE(value, 3.5f);
 }
 
@@ -454,35 +506,41 @@ void PlayerTest::advancePauseStop() {
 
     player.advance(3.75f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(3.75f), std::make_pair(0, 1.75f));
     CORRADE_COMPARE(value, 4.0f);
 
     /* Pause, get value from the pause time */
     player.pause(4.0f);
     player.advance(4.5f);
     CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(3.75f), std::make_pair(0, 2.0f));
     CORRADE_COMPARE(value, 5.0f);
 
     /* Stop, should not update anything */
     value = -1.0;
     player.stop();
     CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(5.0f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* Advancing will update with a value from beginning of the duration */
     player.advance(5.0f);
     CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(5.0f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, 1.5f);
 
     /* But further advancing will not write anything */
     value = -1.0f;
     player.advance(100.0f);
     CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(100.0f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* Pause while stopped is a no-op */
     player.pause(101.0f);
     player.advance(101.0f);
     CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(101.0f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 }
 
@@ -494,37 +552,50 @@ void PlayerTest::advancePlayCount() {
         .play(2.0f);
 
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(1.75f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* Still before starting time, nothing is done */
     player.advance(1.75f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(1.75f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* 1.75 secs in */
     player.advance(3.75f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(3.75f), std::make_pair(0, 1.75f));
     CORRADE_COMPARE(value, 4.0f);
 
     /* 2 secs in, second round */
     player.advance(7.0f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(7.0f), std::make_pair(1, 2.0f));
     CORRADE_COMPARE(value, 5.0f);
 
     /* 1.75 secs in, third round */
     player.advance(9.75f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(9.75f), std::make_pair(2, 1.75f));
     CORRADE_COMPARE(value, 4.0f);
 
     /* When the player gets stopped, the value at the stop time is written */
     player.advance(11.5f);
     CORRADE_COMPARE(player.state(), State::Stopped);
+    {
+        CORRADE_EXPECT_FAIL("Not yet implemented.");
+        CORRADE_COMPARE(player.elapsed(11.5f), std::make_pair(2, 3.0f));
+    }
     CORRADE_COMPARE(value, 2.0f);
 
     /* But further advancing will not write anything */
     value = -1.0f;
     player.advance(100.0f);
     CORRADE_COMPARE(player.state(), State::Stopped);
+    {
+        CORRADE_EXPECT_FAIL("Not yet implemented.");
+        CORRADE_COMPARE(player.elapsed(100.0f), std::make_pair(2, 3.0f));
+    }
     CORRADE_COMPARE(value, -1.0f);
 }
 
@@ -536,26 +607,31 @@ void PlayerTest::advancePlayCountInfinite() {
         .play(2.0f);
 
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(1.75f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* Still before starting time, nothing is done */
     player.advance(1.75f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(1.75f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* 1.75 secs in */
     player.advance(3.75f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(3.75f), std::make_pair(0, 1.75f));
     CORRADE_COMPARE(value, 4.0f);
 
     /* 2 secs in, second round */
     player.advance(7.0f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(7.0f), std::make_pair(1, 2.0f));
     CORRADE_COMPARE(value, 5.0f);
 
-    /* 1.75 secs in, 10th round */
+    /* 1.75 secs in, 11th round */
     player.advance(33.75f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(33.75f), std::make_pair(10, 1.75f));
     CORRADE_COMPARE(value, 4.0f);
 }
 
@@ -567,16 +643,22 @@ void PlayerTest::advanceChrono() {
 
     CORRADE_COMPARE(player.duration().size(), 3.0f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(std::chrono::milliseconds{1750}),
+        std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* Still before starting time, nothing is done */
     player.advance(std::chrono::milliseconds{1750});
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(std::chrono::milliseconds{1750}),
+        std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* 1.75 secs in */
     player.advance(std::chrono::milliseconds{3750});
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(std::chrono::milliseconds{3750}),
+        std::make_pair(0, 1.75f));
     CORRADE_COMPARE(value, 4.0f);
 }
 
@@ -591,16 +673,19 @@ void PlayerTest::advanceZeroDuration() {
 
     CORRADE_COMPARE(player.duration().size(), 0.0f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(1.75f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* Still before starting time, nothing is done */
     player.advance(1.75f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(1.75f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* After that, the value at 1.75 secs is returned independent of time */
     player.advance(100.0f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(100.0f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, 4.0f);
 }
 
@@ -615,17 +700,23 @@ void PlayerTest::advanceZeroDurationChrono() {
 
     CORRADE_COMPARE(player.duration().size(), 0.0f);
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(std::chrono::milliseconds{1750}),
+        std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* Still before starting time, nothing is done */
     player.advance(std::chrono::milliseconds{1750});
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(std::chrono::milliseconds{1750}),
+        std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* After that, the value at 1.75 seconds is returned independent of the
        time */
     player.advance(std::chrono::seconds{100});
     CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(std::chrono::seconds{100}),
+        std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, 4.0f);
 }
 

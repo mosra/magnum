@@ -287,6 +287,7 @@ template<class T, class K
          * If the duration was not set explicitly using @ref setDuration(),
          * returns value calculated implicitly from all added tracks. If no
          * tracks are added, returns default-constructed value.
+         * @see @ref elapsed()
          */
         Math::Range1D<K> duration() const { return _duration; }
 
@@ -594,6 +595,24 @@ template<class T, class K
         State state() const { return _state; }
 
         /**
+         * @brief Elapsed animation iteration and keyframe
+         *
+         * Returns repeat iteration index and elapsed animation keyframe in
+         * given iteration corresponding to @p time. If @ref state() is
+         * @ref State::Stopped and the player was stopped explicitly, the
+         * function returns a default-constructed value (usually
+         * @cpp {0, 0.0f} @ce). If @ref state() is @ref State::Stopped due to
+         * the animation running out, the function returns the iteration count
+         * and duration end keyframe. If @ref state() is @ref State::Paused,
+         * the function returns a time at which the animation was paused.
+         *
+         * Unlike @ref advance(), this function doesn't modify the animation
+         * state in any way, it's merely a query.
+         * @see @ref duration()
+         */
+        std::pair<UnsignedInt, K> elapsed(T time) const;
+
+        /**
          * @brief Play
          *
          * Starts playing all tracks added to the player at given @p startTime.
@@ -677,6 +696,7 @@ template<class T, class K
          * to the begin time of @ref duration() to correctly "park" the
          * animation back to its initial state. After that, no more updates are
          * done until the animation is started again.
+         * @see @ref elapsed()
          */
         Player<T, K>& advance(T time);
 
@@ -684,6 +704,8 @@ template<class T, class K
         struct Track;
 
         Player<T, K>& addInternal(const TrackViewStorage<K>& track, void (*advancer)(const TrackViewStorage<K>&, K, std::size_t&, void*, void(*)(), void*), void* destination, void(*userCallback)(), void* userCallbackData);
+
+        Containers::Optional<std::pair<UnsignedInt, K>> elapsedInternal(T time, T& updatedStartTime, T& updatedPauseTime, State& updatedState) const;
 
         std::vector<Track> _tracks;
         Math::Range1D<K> _duration;
