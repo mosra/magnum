@@ -81,7 +81,13 @@ namespace Implementation {
 
 Provides a generic way for querying interpolated results from multiple
 animation tracks of distinct types from a single place, together with managing
-their running state.
+the animation running state.
+
+Similarly to @ref Track / @ref TrackView, the player is also partially statless
+--- in particular, it neither accesses any global timer or keeps any notion of
+"current time". Instead, all time-dependent functions take absolute time as a
+parameter. This both simplifies the internal state management and adds
+additional flexibility on user side.
 
 @section Animation-Player-setup Setting up
 
@@ -127,11 +133,6 @@ You can use @ref setDuration() to specify a custom duration:
     count is finite, the animation will get stopped right away.
 
 @section Animation-Player-playback Animation playback
-
-The @ref Player class doesn't access any global timer functionality, but
-instead requires you to call its APIs with explicit time values. That allows
-for greater flexibility and control over animation playback, among other
-things.
 
 By default, the player is in a @ref State::Stopped state. Call @ref play() with
 a time value denoting the moment at which the animation should start. After
@@ -597,7 +598,7 @@ template<class T, class K
          *
          * Starts playing all tracks added to the player at given @p startTime.
          * If @ref state() is already @ref State::Playing, the animation is
-         * restarted from the beginning at @p startTiime. If @ref state() is
+         * restarted from the beginning at @p startTime. If @ref state() is
          * @ref State::Paused, the animation continues from the time that was
          * passed to @ref pause().
          *
