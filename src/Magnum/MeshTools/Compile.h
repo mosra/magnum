@@ -51,6 +51,7 @@ Configures a mesh for @ref Shaders::Generic2D shader with vertex buffer and
 possibly also an index buffer, if the mesh is indexed. Positions are bound to
 @ref Shaders::Generic2D::Position attribute. If the mesh contains texture
 coordinates, these are bound to @ref Shaders::Generic2D::TextureCoordinates
+attribute. If the mesh contains colors, these are bound to @ref Shaders::Generic3D::Color4
 attribute. No data compression or index optimization (except for index buffer
 packing) is done, both the vertex buffer and the index buffer (if any) is owned
 by the mesh, both created with @ref GL::BufferUsage::StaticDraw.
@@ -84,10 +85,11 @@ Configures mesh for @ref Shaders::Generic3D shader with vertex buffer and
 possibly also index buffer, if the mesh is indexed. Positions are bound to
 @ref Shaders::Generic3D::Position attribute. If the mesh contains normals, they
 are bound to @ref Shaders::Generic3D::Normal attribute, texture coordinates are
-bound to @ref Shaders::Generic2D::TextureCoordinates attribute. No data
-compression or index optimization (except for index buffer packing) is done,
-both the vertex buffer and the index buffer (if any) is owned by the mesh, both
-created with @ref GL::BufferUsage::StaticDraw.
+bound to @ref Shaders::Generic3D::TextureCoordinates attribute. If the mesh
+contains colors, they are bound to @ref Shaders::Generic3D::Color4 attribute.
+No data compression or index optimization (except for index buffer packing) is
+done, both the vertex buffer and the index buffer (if any) is owned by the mesh,
+both created with @ref GL::BufferUsage::StaticDraw.
 
 This is just a convenience function for creating generic meshes, you might want
 to use @ref interleave() and @ref compressIndices() functions together with

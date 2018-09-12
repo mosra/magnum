@@ -28,6 +28,7 @@
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/MeshTools/CompressIndices.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/Trade/MeshData2D.h"
@@ -45,9 +46,14 @@ GL::Mesh compile(const Trade::MeshData2D& meshData) {
 
     /* Decide about stride and offsets */
     UnsignedInt stride = sizeof(Shaders::Generic2D::Position::Type);
-    const UnsignedInt normalOffset = sizeof(Shaders::Generic2D::Position::Type);
-    if(meshData.hasTextureCoords2D())
+    UnsignedInt textureCoordsOffset = sizeof(Shaders::Generic2D::Position::Type);
+    UnsignedInt colorsOffset = sizeof(Shaders::Generic2D::Position::Type);
+    if(meshData.hasTextureCoords2D()) {
         stride += sizeof(Shaders::Generic2D::TextureCoordinates::Type);
+        colorsOffset += sizeof(Shaders::Generic2D::TextureCoordinates::Type);
+    }
+    if(meshData.hasColors())
+        stride += sizeof(Shaders::Generic2D::Color4::Type);
 
     /* Create vertex buffer */
     GL::Buffer vertexBuffer{GL::Buffer::TargetHint::Array};
@@ -65,13 +71,25 @@ GL::Mesh compile(const Trade::MeshData2D& meshData) {
     /* Add also texture coordinates, if present */
     if(meshData.hasTextureCoords2D()) {
         MeshTools::interleaveInto(data,
-            normalOffset,
+            textureCoordsOffset,
             meshData.textureCoords2D(0),
-            stride - normalOffset - sizeof(Shaders::Generic2D::TextureCoordinates::Type));
+            stride - textureCoordsOffset - sizeof(Shaders::Generic2D::TextureCoordinates::Type));
         mesh.addVertexBuffer(vertexBufferRef, 0,
-            normalOffset,
+            textureCoordsOffset,
             Shaders::Generic2D::TextureCoordinates(),
-            stride - normalOffset - sizeof(Shaders::Generic2D::TextureCoordinates::Type));
+            stride - textureCoordsOffset - sizeof(Shaders::Generic2D::TextureCoordinates::Type));
+    }
+
+    /* Add also colors, if present */
+    if(meshData.hasColors()) {
+        MeshTools::interleaveInto(data,
+            colorsOffset,
+            meshData.colors(0),
+            stride - colorsOffset - sizeof(Shaders::Generic3D::Color4::Type));
+        mesh.addVertexBuffer(vertexBufferRef, 0,
+            colorsOffset,
+            Shaders::Generic3D::Color4(),
+            stride - colorsOffset - sizeof(Shaders::Generic3D::Color4::Type));
     }
 
     /* Fill vertex buffer with interleaved data */
@@ -111,12 +129,18 @@ GL::Mesh compile(const Trade::MeshData3D& meshData) {
     UnsignedInt stride = sizeof(Shaders::Generic3D::Position::Type);
     const UnsignedInt normalOffset = sizeof(Shaders::Generic3D::Position::Type);
     UnsignedInt textureCoordsOffset = sizeof(Shaders::Generic3D::Position::Type);
+    UnsignedInt colorsOffset = sizeof(Shaders::Generic3D::Position::Type);
     if(meshData.hasNormals()) {
         stride += sizeof(Shaders::Generic3D::Normal::Type);
         textureCoordsOffset += sizeof(Shaders::Generic3D::Normal::Type);
+        colorsOffset += sizeof(Shaders::Generic3D::Normal::Type);
     }
-    if(meshData.hasTextureCoords2D())
+    if(meshData.hasTextureCoords2D()) {
         stride += sizeof(Shaders::Generic3D::TextureCoordinates::Type);
+        colorsOffset += sizeof(Shaders::Generic3D::Normal::Type);
+    }
+    if(meshData.hasColors())
+        stride += sizeof(Shaders::Generic3D::Color4::Type);
 
     /* Create vertex buffer */
     GL::Buffer vertexBuffer{GL::Buffer::TargetHint::Array};
@@ -153,6 +177,18 @@ GL::Mesh compile(const Trade::MeshData3D& meshData) {
             textureCoordsOffset,
             Shaders::Generic3D::TextureCoordinates(),
             stride - textureCoordsOffset - sizeof(Shaders::Generic3D::TextureCoordinates::Type));
+    }
+
+    /* Add also colors, if present */
+    if(meshData.hasColors()) {
+        MeshTools::interleaveInto(data,
+            colorsOffset,
+            meshData.colors(0),
+            stride - colorsOffset - sizeof(Shaders::Generic3D::Color4::Type));
+        mesh.addVertexBuffer(vertexBufferRef, 0,
+            colorsOffset,
+            Shaders::Generic3D::Color4(),
+            stride - colorsOffset - sizeof(Shaders::Generic3D::Color4::Type));
     }
 
     /* Fill vertex buffer with interleaved data */
