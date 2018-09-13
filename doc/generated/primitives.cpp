@@ -171,17 +171,7 @@ int PrimitiveVisualizer::exec() {
             Containers::Optional<Trade::MeshData2D> data;
             std::tie(data, filename) = (this->*fun)();
 
-            /* TODO: use MeshTools::compile() once it can handle colors */
-            GL::Buffer vertices, indices;
-            vertices.setData(MeshTools::interleave(data->positions(0), data->colors(0)), GL::BufferUsage::StaticDraw);
-            indices.setData(data->indices(), GL::BufferUsage::StaticDraw);
-            GL::Mesh mesh;
-            mesh.addVertexBuffer(vertices, 0, Shaders::VertexColor2D::Position{}, Shaders::VertexColor2D::Color4{})
-                .setIndexBuffer(indices, 0, GL::MeshIndexType::UnsignedInt)
-                .setCount(data->indices().size())
-                .setPrimitive(data->primitive());
-
-            mesh.draw(shader);
+            MeshTools::compile(*data).draw(shader);
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
@@ -200,17 +190,7 @@ int PrimitiveVisualizer::exec() {
             Containers::Optional<Trade::MeshData3D> data;
             std::tie(data, filename) = (this->*fun)();
 
-            /* TODO: use MeshTools::compile() once it can handle colors */
-            GL::Buffer vertices, indices;
-            vertices.setData(MeshTools::interleave(data->positions(0), data->colors(0)), GL::BufferUsage::StaticDraw);
-            indices.setData(data->indices(), GL::BufferUsage::StaticDraw);
-            GL::Mesh mesh;
-            mesh.addVertexBuffer(vertices, 0, Shaders::VertexColor3D::Position{}, Shaders::VertexColor3D::Color4{})
-                .setIndexBuffer(indices, 0, GL::MeshIndexType::UnsignedInt)
-                .setCount(data->indices().size())
-                .setPrimitive(data->primitive());
-
-            mesh.draw(shader);
+            MeshTools::compile(*data).draw(shader);
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
