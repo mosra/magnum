@@ -43,7 +43,19 @@
 @page developers Developers guide
 @page coding-style Coding style
 @page debugoperators Debug output operators for custom types
+
+See also and @ref configurationvalues and a @m_class{m-dox-external}
+[related section in Corrade](http://doc.magnum.graphics/corrade/corrade-configurationvalues.html).
+
+@todoc remove the above workaround once Doxygen is not totally fucked up and able to export xrefitems to tagfiles
+
 @page configurationvalues Configuration value parsers and writers for custom types
+
+See also @ref debugoperators and a @m_class{m-dox-external}
+[related section in Corrade](http://doc.magnum.graphics/corrade/corrade-debugoperators.html).
+
+@todoc remove the above workaround once Doxygen is not totally fucked up and able to export xrefitems to tagfiles
+
 @page deprecated Deprecated list
 
 */
