@@ -440,35 +440,35 @@ void PlayerTest::advancePauseResume() {
     Float value = -1.0f;
     Player<Float> player;
     player.add(Track, value)
-        .play(2.0f);
+        .play(22.0f);
 
     CORRADE_COMPARE(player.state(), State::Playing);
-    CORRADE_COMPARE(player.elapsed(3.75f), std::make_pair(0, 1.75f));
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 1.75f));
     CORRADE_COMPARE(value, -1.0f);
 
-    player.advance(3.75f);
+    player.advance(23.75f);
     CORRADE_COMPARE(player.state(), State::Playing);
-    CORRADE_COMPARE(player.elapsed(3.75f), std::make_pair(0, 1.75f));
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 1.75f));
     CORRADE_COMPARE(value, 4.0f);
 
     /* Pausing should not update anything */
     value = -1.0f;
-    player.pause(4.0f);
+    player.pause(24.0f);
     CORRADE_COMPARE(player.state(), State::Paused);
-    CORRADE_COMPARE(player.elapsed(4.0f), std::make_pair(0, 2.0f));
+    CORRADE_COMPARE(player.elapsed(24.0f), std::make_pair(0, 2.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* Pausing again should be a no-op */
-    player.pause(4.1f);
+    player.pause(24.1f);
     CORRADE_COMPARE(player.state(), State::Paused);
-    CORRADE_COMPARE(player.elapsed(4.1f), std::make_pair(0, 2.0f));
+    CORRADE_COMPARE(player.elapsed(24.1f), std::make_pair(0, 2.0f));
     CORRADE_COMPARE(value, -1.0f);
 
     /* But advance() after should. No matter what time is passed to it, it
        should update with time of pause. */
-    player.advance(4.5f);
+    player.advance(24.5f);
     CORRADE_COMPARE(player.state(), State::Paused);
-    CORRADE_COMPARE(player.elapsed(4.5f), std::make_pair(0, 2.0f));
+    CORRADE_COMPARE(player.elapsed(24.5f), std::make_pair(0, 2.0f));
     CORRADE_COMPARE(value, 5.0f); /* value at 2.0f, not 2.5f */
 
     /* Advancing further should do nothing */
