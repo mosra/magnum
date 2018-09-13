@@ -89,8 +89,6 @@ See @ref transformations for brief introduction.
 @see @ref Magnum::Complex, @ref Magnum::Complexd, @ref Matrix3
 */
 template<class T> class Complex {
-    template<class> friend class Complex;
-
     public:
         typedef T Type; /**< @brief Underlying data type */
 
@@ -440,6 +438,11 @@ template<class T> class Complex {
         }
 
     private:
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* Doxygen copies the description from Magnum::Complex here. Ugh. */
+        template<class> friend class Complex;
+        #endif
+
         T _real, _imaginary;
 };
 

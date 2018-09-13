@@ -238,8 +238,6 @@ See @ref transformations for a brief introduction.
     @ref Matrix4
 */
 template<class T> class Quaternion {
-    template<class> friend class Quaternion;
-
     public:
         typedef T Type; /**< @brief Underlying data type */
 
@@ -588,6 +586,11 @@ template<class T> class Quaternion {
         Vector3<T> transformVectorNormalized(const Vector3<T>& vector) const;
 
     private:
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* Doxygen copies the description from Magnum::Quaternion here. Ugh. */
+        template<class> friend class Quaternion;
+        #endif
+
         /* Used to avoid including Functions.h */
         constexpr static T pow2(T value) {
             return value*value;
