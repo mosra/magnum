@@ -218,6 +218,8 @@ See also:
 
 -   @ref MeshTools::compile() API got simplified to make use of the new buffer
     ownership feature of @ref GL::Mesh
+-   @ref MeshTools::compile() learned to handle vertex color attributes as well
+    (see [mosra/magnum#284](https://github.com/mosra/magnum/pull/284))
 
 @subsubsection changelog-latest-changes-platform Platform libraries
 
