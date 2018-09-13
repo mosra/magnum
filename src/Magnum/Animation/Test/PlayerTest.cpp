@@ -51,6 +51,8 @@ struct PlayerTest: TestSuite::Tester {
     void advanceStop();
     void advancePauseResume();
     void advancePauseStop();
+    void advancePauseStopped();
+    void advancePauseTooLate();
     void advancePlayCount();
     void advancePlayCountInfinite();
     void advanceChrono();
@@ -118,6 +120,8 @@ PlayerTest::PlayerTest() {
               &PlayerTest::advanceStop,
               &PlayerTest::advancePauseResume,
               &PlayerTest::advancePauseStop,
+              &PlayerTest::advancePauseStopped,
+              &PlayerTest::advancePauseTooLate,
               &PlayerTest::advancePlayCount,
               &PlayerTest::advancePlayCountInfinite,
               &PlayerTest::advanceChrono,
@@ -536,6 +540,48 @@ void PlayerTest::advancePauseStop() {
     CORRADE_COMPARE(player.state(), State::Stopped);
     CORRADE_COMPARE(player.elapsed(101.0f), std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, -1.0f);
+}
+
+void PlayerTest::advancePauseStopped() {
+    Float value = -1.0f;
+    Player<Float> player;
+    player.add(Track, value)
+        .play(22.0f);
+
+    player.advance(50.0f);
+    CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(50.0f), std::make_pair(0, 3.0f));
+    CORRADE_COMPARE(value, 2.0f);
+
+    /* Pausing a stopped animation should change nothing */
+    value = -1.0f;
+    player.pause(50.5f);
+    player.advance(51.0f);
+    CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(51.0f), std::make_pair(0, 3.0f));
+    CORRADE_COMPARE(value, -1);
+}
+
+void PlayerTest::advancePauseTooLate() {
+    Float value = -1.0f;
+    Player<Float> player;
+    player.add(Track, value)
+        .play(22.0f);
+
+    player.advance(23.75f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 1.75f));
+    CORRADE_COMPARE(value, 4.0f);
+
+    /* Pausing too late will set the state to paused at first */
+    player.pause(50.0f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(50.0f), std::make_pair(0, 3.0f));
+
+    /* But advancing will make it stopped since it's too late */
+    player.advance(50.5f);
+    CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(50.5f), std::make_pair(0, 3.0f));
 }
 
 void PlayerTest::advancePlayCount() {
