@@ -149,7 +149,7 @@ namespace Implementation {
 
 template<class T, class K> Containers::Optional<std::pair<UnsignedInt, K>> playerElapsed(const K duration, const UnsignedInt playCount, const typename Player<T, K>::Scaler scaler, const T time, T& startTime, T& stopPauseTime, State& state) {
     /* Time to use for advancing the animation */
-    T timeToUse = time;
+    T timeToUse = time - startTime;
 
     /* The animation was paused right before this iteration, "park" the
        animation to the pause time. This time will be used by play() to offset
@@ -158,8 +158,8 @@ template<class T, class K> Containers::Optional<std::pair<UnsignedInt, K>> playe
        std::chrono::duration doesn't have operator bool, so I need to compare
        to default-constructed value. Ugh. */
     if(state == State::Paused && (stopPauseTime != T{})) {
-        timeToUse = stopPauseTime;
         startTime = stopPauseTime - startTime;
+        timeToUse = startTime;
         stopPauseTime = {};
 
     /* The animation was stopped by the user right before this iteration,
@@ -191,7 +191,7 @@ template<class T, class K> Containers::Optional<std::pair<UnsignedInt, K>> playe
        iteration. If we exceeded play count, stop the animation and give out
        value at duration end. */
     } else {
-        std::tie(playIteration, key) = scaler(timeToUse - startTime, duration);
+        std::tie(playIteration, key) = scaler(timeToUse, duration);
         if(playCount && playIteration >= playCount) {
             state = State::Stopped;
             /* Don't reset the startTime to disambiguate between explicitly
