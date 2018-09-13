@@ -203,7 +203,7 @@ template<class T> inline Vector3<typename Color3<T>::FloatingPointType> toXyz(ty
    /permissive- (yes, there's a dash at the end) flag is specified, which is
    projects created directly using VS (enabled by default since 15.5) but not
    projects using CMake. Not using SFINAE in this case makes it work. Minimal
-   repro case here: https://twitter.com/czmosra/status/1038610648568147968 */
+   repro case here: https://twitter.com/czmosra/status/1039446378248896513 */
 template<class T> constexpr typename std::enable_if<std::is_floating_point<T>::value, T>::type fullChannel() {
     return T(1);
 }
