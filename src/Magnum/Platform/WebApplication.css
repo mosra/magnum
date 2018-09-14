@@ -116,6 +116,7 @@ body {
   z-index: 10;
   border-radius: 0.2rem; /*var(--border-radius)*/
 }
+#module:focus { outline-color: #5b9dd9; } /*var(--header-link-current-color)*/
 #module {
   margin-bottom: -0.25rem; /* otherwise there's scrollbar w/ fullsize (why?) */
 }
