@@ -189,7 +189,9 @@ endif()
 target_include_directories(Magnum PUBLIC
     ${PROJECT_SOURCE_DIR}/src
     ${PROJECT_BINARY_DIR}/src)
-if(BUILD_DEPRECATED AND TARGET_GL) # TODO: remove once compat gets dropped
+if(BUILD_DEPRECATED) # TODO: remove once compat gets dropped
+    # Some deprecated APIs use headers (but not externally defined symbols)
+    # from the GL library, link those includes as well
     target_include_directories(Magnum PUBLIC
         ${PROJECT_SOURCE_DIR}/src/MagnumExternal/OpenGL)
 endif()
@@ -277,7 +279,7 @@ if(BUILD_TESTS)
     target_include_directories(MagnumTestLib PUBLIC
         ${PROJECT_SOURCE_DIR}/src
         ${PROJECT_BINARY_DIR}/src)
-    if(BUILD_DEPRECATED AND TARGET_GL) # TODO: remove once compat gets dropped
+    if(BUILD_DEPRECATED) # TODO: remove once compat gets dropped
         target_include_directories(MagnumTestLib PUBLIC
             ${PROJECT_SOURCE_DIR}/src/MagnumExternal/OpenGL)
     endif()

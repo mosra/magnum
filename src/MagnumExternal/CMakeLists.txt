@@ -26,7 +26,10 @@
 if(WITH_AUDIO)
     add_subdirectory(OpenAL)
 endif()
-if(WITH_GL)
+# Some deprecated APIs use headers (but not externally defined symbols)
+# from the GL library, link those includes as well
+# TODO: remove once compat gets dropped
+if(WITH_GL OR MAGNUM_BUILD_DEPRECATED)
     add_subdirectory(OpenGL)
 endif()
 if(WITH_VK)
