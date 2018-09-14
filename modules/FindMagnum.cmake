@@ -327,7 +327,7 @@ if(NOT TARGET Magnum::Magnum)
         ${MAGNUM_INCLUDE_DIR})
     # Some deprecated APIs use headers (but not externally defined symbols)
     # from the GL library, link those includes as well
-    if(MAGNUM_BUILD_DEPRECATED)
+    if(MAGNUM_BUILD_DEPRECATED AND MAGNUM_TARGET_GL)
         set_property(TARGET Magnum::Magnum APPEND PROPERTY
             INTERFACE_INCLUDE_DIRECTORIES ${MAGNUM_INCLUDE_DIR}/MagnumExternal/OpenGL)
     endif()

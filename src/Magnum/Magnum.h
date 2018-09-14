@@ -34,7 +34,7 @@
 #include "Magnum/Types.h"
 #include "Magnum/Math/Math.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
 #include "Magnum/GL/GL.h"
 #endif
 
@@ -761,7 +761,7 @@ enum class SamplerWrapping: UnsignedInt;
 
 class Timeline;
 
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
 typedef CORRADE_DEPRECATED("use GL::AbstractFramebuffer instead") GL::AbstractFramebuffer AbstractFramebuffer;
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))

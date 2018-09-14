@@ -350,7 +350,7 @@ template<UnsignedInt dimensions> class ImageView {
          */
         UnsignedInt formatExtra() const { return _formatExtra; }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
+        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
         /**
          * @brief Data type of pixel data
          * @deprecated Cast @ref formatExtra() to @ref GL::PixelType instead.

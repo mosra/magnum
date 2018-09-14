@@ -285,6 +285,8 @@ See also:
 
 -   There's now a PPA for Ubuntu packages. See @ref building-packages-deb
     for more information.
+-   Fixed various issues preventing to build and use the base libraries with
+    OpenGL support disabled (see [mosra/magnum#255](https://github.com/mosra/magnum/pull/255))
 -   Magnum now links to GLVND on Linux instead of the old libGL ABI if using
     CMake 3.11 and newer
 -   @ref cmake "FindMagnum.cmake" now allows to use the @ref DebugTools library

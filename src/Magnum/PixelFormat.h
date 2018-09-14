@@ -635,7 +635,7 @@ enum class PixelFormat: UnsignedInt {
     #endif
 };
 
-#ifdef MAGNUM_BUILD_DEPRECATED
+#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
 /** @brief @copybrief GL::PixelType
  * @deprecated Use @ref GL::PixelType instead.
  */
