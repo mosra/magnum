@@ -6,7 +6,7 @@ pkgdesc="C++11/C++14 graphics middleware for games and data visualization (cover
 arch=('i686' 'x86_64')
 url="http://magnum.graphics"
 license=('MIT')
-depends=('corrade' 'openal' 'freeglut' 'sdl2' 'glfw' 'gcc6')
+depends=('corrade' 'openal' 'freeglut' 'sdl2' 'glfw' 'vulkan-icd-loader' 'gcc6')
 makedepends=('cmake' 'ninja' 'lcov')
 options=('!strip')
 provides=('magnum-git')
@@ -28,6 +28,7 @@ build() {
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DWITH_AUDIO=ON \
         -DWITH_SHAPES=ON \
+        -DWITH_VK=ON \
         -DWITH_GLFWAPPLICATION=ON \
         -DWITH_GLUTAPPLICATION=ON \
         -DWITH_GLXAPPLICATION=ON \
