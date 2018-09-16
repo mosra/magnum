@@ -300,7 +300,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* sRGB */
-    SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, glConfiguration.isSRGBCapable());
+    SDL_GL_SetAttribute(SDL_GL_FRAMEBUFFER_SRGB_CAPABLE, glConfiguration.isSrgbCapable());
     #endif
 
     /** @todo Remove when Emscripten has proper SDL2 support */
@@ -836,7 +836,7 @@ Sdl2Application::GLConfiguration::GLConfiguration():
     _colorBufferSize{8, 8, 8, 0}, _depthBufferSize{24}, _stencilBufferSize{0},
     _sampleCount(0)
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    , _version(GL::Version::None), _sRGBCapable{false}
+    , _version(GL::Version::None), _srgbCapable{false}
     #endif
     {}
 
@@ -856,7 +856,7 @@ Sdl2Application::Configuration::Configuration():
     #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
     , _sampleCount(0)
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    , _version(GL::Version::None), _sRGBCapable{false}
+    , _version(GL::Version::None), _srgbCapable{false}
     #endif
     #endif
     {}

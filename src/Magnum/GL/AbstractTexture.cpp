@@ -444,7 +444,7 @@ void AbstractTexture::setMaxAnisotropy(const Float anisotropy) {
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-void AbstractTexture::setSRGBDecode(bool decode) {
+void AbstractTexture::setSrgbDecode(bool decode) {
     (this->*Context::current().state().texture->parameteriImplementation)(GL_TEXTURE_SRGB_DECODE_EXT,
         decode ? GL_DECODE_EXT : GL_SKIP_DECODE_EXT);
 }

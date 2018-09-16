@@ -56,7 +56,7 @@ struct CubeMapTextureGLTest: OpenGLTester {
 
     template<class T> void sampling();
     #ifndef MAGNUM_TARGET_WEBGL
-    void samplingSRGBDecode();
+    void samplingSrgbDecode();
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     void samplingSwizzle();
@@ -311,7 +311,7 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               &CubeMapTextureGLTest::sampling<GenericSampler>,
               &CubeMapTextureGLTest::sampling<GLSampler>,
               #ifndef MAGNUM_TARGET_WEBGL
-              &CubeMapTextureGLTest::samplingSRGBDecode,
+              &CubeMapTextureGLTest::samplingSrgbDecode,
               #endif
               #ifndef MAGNUM_TARGET_GLES2
               &CubeMapTextureGLTest::samplingSwizzle,
@@ -498,7 +498,7 @@ template<class T> void CubeMapTextureGLTest::sampling() {
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-void CubeMapTextureGLTest::samplingSRGBDecode() {
+void CubeMapTextureGLTest::samplingSrgbDecode() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::EXT::sRGB>())
         CORRADE_SKIP(Extensions::EXT::sRGB::string() + std::string(" is not supported."));
@@ -507,7 +507,7 @@ void CubeMapTextureGLTest::samplingSRGBDecode() {
         CORRADE_SKIP(Extensions::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
 
     CubeMapTexture texture;
-    texture.setSRGBDecode(false);
+    texture.setSrgbDecode(false);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }

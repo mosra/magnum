@@ -474,7 +474,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         #endif
         void setMaxAnisotropy(Float anisotropy);
         #ifndef MAGNUM_TARGET_WEBGL
-        void setSRGBDecode(bool decode);
+        void setSrgbDecode(bool decode);
         #endif
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)

@@ -410,6 +410,16 @@ See also:
 -   @ref Trade::CameraData constructor not taking an explicit type enum is
     deprecated, use @ref Trade::CameraData::CameraData(CameraType, Rad, Float, Float, Float, const void*)
     instead
+-   @cpp GL::*Texture::setSRGBDecode() @ce,
+    @cpp GL::Renderer::Feature::FramebufferSRGB @ce,
+    @cpp Platform::*Application::GLConfiguration::setSRGBCapable() @ce and
+    @cpp Platform::*Application::GLConfiguration::isSRGBCapable() @ce is
+    deprecated, use
+    @ref GL::Texture::setSrgbDecode() "GL::*Texture::setSrgbDecode()",
+    @ref GL::Renderer::Feature::FramebufferSrgb,
+    @ref Platform::Sdl2Application::GLConfiguration::setSrgbCapable() "Platform::*Application::GLConfiguration::setSrgbCapable()" and
+    @ref Platform::Sdl2Application::GLConfiguration::isSrgbCapable() "Platform::*Application::GLConfiguration::isSrgbCapable()" instead as it
+    has consistent naming with @ref Math::Color3 "Math::Color" APIs
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
@@ -1176,7 +1186,7 @@ a high-level overview.
     which allows the context to be destructed and created again in case the
     version is not what the application wants (as opposed to just aborting the
     application) (see [mosra/magnum#105](https://github.com/mosra/magnum/issues/105))
--   Added @ref Platform::Sdl2Application::GLConfiguration::setSRGBCapable() "Platform::Sdl2Application::Configuration::setSRGBCapable()"
+-   Added @cpp Platform::Sdl2Application::Configuration::setSRGBCapable() @ce
 -   Added @ref Platform::Sdl2Application::Configuration::WindowFlag::Borderless
     and `Platform::Sdl2Application::Configuration::WindowFlag::AllowHighDpi`
     for iOS and macOS

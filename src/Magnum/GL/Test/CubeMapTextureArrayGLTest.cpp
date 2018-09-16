@@ -49,7 +49,7 @@ struct CubeMapTextureArrayGLTest: OpenGLTester {
     void bindImage();
 
     template<class T> void sampling();
-    void samplingSRGBDecode();
+    void samplingSrgbDecode();
     void samplingBorderInteger();
     void samplingSwizzle();
     void samplingDepthStencilMode();
@@ -283,7 +283,7 @@ CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
 
               &CubeMapTextureArrayGLTest::sampling<GenericSampler>,
               &CubeMapTextureArrayGLTest::sampling<GLSampler>,
-              &CubeMapTextureArrayGLTest::samplingSRGBDecode,
+              &CubeMapTextureArrayGLTest::samplingSrgbDecode,
               &CubeMapTextureArrayGLTest::samplingBorderInteger,
               &CubeMapTextureArrayGLTest::samplingSwizzle,
               &CubeMapTextureArrayGLTest::samplingDepthStencilMode,
@@ -462,7 +462,7 @@ template<class T> void CubeMapTextureArrayGLTest::sampling() {
    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-void CubeMapTextureArrayGLTest::samplingSRGBDecode() {
+void CubeMapTextureArrayGLTest::samplingSrgbDecode() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())
         CORRADE_SKIP(Extensions::ARB::texture_cube_map_array::string() + std::string(" is not supported."));
@@ -474,7 +474,7 @@ void CubeMapTextureArrayGLTest::samplingSRGBDecode() {
         CORRADE_SKIP(Extensions::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
 
     CubeMapTextureArray texture;
-    texture.setSRGBDecode(false);
+    texture.setSrgbDecode(false);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }

@@ -171,9 +171,17 @@ class MAGNUM_GL_EXPORT Renderer {
              *      off.
              */
             #ifndef MAGNUM_TARGET_GLES
-            FramebufferSRGB = GL_FRAMEBUFFER_SRGB,
+            FramebufferSrgb = GL_FRAMEBUFFER_SRGB,
             #else
-            FramebufferSRGB = GL_FRAMEBUFFER_SRGB_EXT,
+            FramebufferSrgb = GL_FRAMEBUFFER_SRGB_EXT,
+            #endif
+
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /**
+             * Perform sRGB conversion of values written to sRGB framebuffers.
+             * @deprecated Use @ref Feature::FramebufferSrgb instead.
+             */
+            FramebufferSRGB CORRADE_DEPRECATED_ENUM("use GL::Renderer::Feature::FramebufferSrgb instead") = FramebufferSrgb,
             #endif
             #endif
 

@@ -399,19 +399,28 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
-         * @brief @copybrief Texture::setSRGBDecode()
+         * @brief @copybrief Texture::setSrgbDecode()
          * @return Reference to self (for method chaining)
          *
-         * See @ref Texture::setSRGBDecode() for more information.
+         * See @ref Texture::setSrgbDecode() for more information.
          * @requires_extension Extension @gl_extension{EXT,texture_sRGB_decode}
          * @requires_es_extension Extension @gl_extension{ANDROID,extension_pack_es31a} /
          *      @gl_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
-         * @requires_gles SRGB decode is not available in WebGL.
+         * @requires_gles sRGB decode is not available in WebGL.
          */
-        TextureArray<dimensions>& setSRGBDecode(bool decode) {
-            AbstractTexture::setSRGBDecode(decode);
+        TextureArray<dimensions>& setSrgbDecode(bool decode) {
+            AbstractTexture::setSrgbDecode(decode);
             return *this;
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /** @brief @copybrief setSrgbDecode()
+         * @deprecated Use @ref setSrgbDecode() instead.
+         */
+        CORRADE_DEPRECATED("use setSrgbDecode() instead") TextureArray<dimensions>& setSRGBDecode(bool decode) {
+            return setSrgbDecode(decode);
+        }
+        #endif
 
         /**
          * @brief @copybrief Texture::setSwizzle()

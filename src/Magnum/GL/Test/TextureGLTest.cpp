@@ -88,10 +88,10 @@ struct TextureGLTest: OpenGLTester {
 
     #ifndef MAGNUM_TARGET_WEBGL
     #ifndef MAGNUM_TARGET_GLES
-    void samplingSRGBDecode1D();
+    void samplingSrgbDecode1D();
     #endif
-    void samplingSRGBDecode2D();
-    void samplingSRGBDecode3D();
+    void samplingSrgbDecode2D();
+    void samplingSrgbDecode3D();
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2
@@ -475,10 +475,10 @@ TextureGLTest::TextureGLTest() {
 
         #ifndef MAGNUM_TARGET_WEBGL
         #ifndef MAGNUM_TARGET_GLES
-        &TextureGLTest::samplingSRGBDecode1D,
+        &TextureGLTest::samplingSrgbDecode1D,
         #endif
-        &TextureGLTest::samplingSRGBDecode2D,
-        &TextureGLTest::samplingSRGBDecode3D,
+        &TextureGLTest::samplingSrgbDecode2D,
+        &TextureGLTest::samplingSrgbDecode3D,
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -904,12 +904,12 @@ template<class T> void TextureGLTest::sampling1D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-void TextureGLTest::samplingSRGBDecode1D() {
+void TextureGLTest::samplingSrgbDecode1D() {
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_sRGB_decode>())
         CORRADE_SKIP(Extensions::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
 
     Texture1D texture;
-    texture.setSRGBDecode(false);
+    texture.setSrgbDecode(false);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
@@ -982,7 +982,7 @@ template<class T> void TextureGLTest::sampling2D() {
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-void TextureGLTest::samplingSRGBDecode2D() {
+void TextureGLTest::samplingSrgbDecode2D() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::EXT::sRGB>())
         CORRADE_SKIP(Extensions::EXT::sRGB::string() + std::string(" is not supported."));
@@ -991,7 +991,7 @@ void TextureGLTest::samplingSRGBDecode2D() {
         CORRADE_SKIP(Extensions::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
 
     Texture2D texture;
-    texture.setSRGBDecode(false);
+    texture.setSrgbDecode(false);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
@@ -1117,7 +1117,7 @@ template<class T> void TextureGLTest::sampling3D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-void TextureGLTest::samplingSRGBDecode3D() {
+void TextureGLTest::samplingSrgbDecode3D() {
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::OES::texture_3D>())
         CORRADE_SKIP(Extensions::OES::texture_3D::string() + std::string(" is not supported."));
@@ -1128,7 +1128,7 @@ void TextureGLTest::samplingSRGBDecode3D() {
         CORRADE_SKIP(Extensions::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
 
     Texture3D texture;
-    texture.setSRGBDecode(false);
+    texture.setSrgbDecode(false);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }

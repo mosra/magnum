@@ -1105,20 +1105,36 @@ class Sdl2Application::GLConfiguration {
          *
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
-        bool isSRGBCapable() const { return _sRGBCapable; }
+        bool isSrgbCapable() const { return _srgbCapable; }
 
         /**
          * @brief Set sRGB-capable default framebuffer
          * @return Reference to self (for method chaining)
          *
          * Default is @cpp false @ce. See also
-         * @ref GL::Renderer::Feature::FramebufferSRGB.
+         * @ref GL::Renderer::Feature::FramebufferSrgb.
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
-        GLConfiguration& setSRGBCapable(bool enabled) {
-            _sRGBCapable = enabled;
+        GLConfiguration& setSrgbCapable(bool enabled) {
+            _srgbCapable = enabled;
             return *this;
         }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief isSrgbCapable()
+         * @deprecated Use @ref isSrgbCapable() instead.
+         */
+        CORRADE_DEPRECATED("use isSrgbCapable() instead") bool isSRGBCapable() const { return isSrgbCapable(); }
+
+        /**
+         * @brief @copybrief setSrgbCapable()
+         * @deprecated Use @ref setSrgbCapable() instead.
+         */
+        CORRADE_DEPRECATED("use setSrgbCapable() instead") GLConfiguration& setSRGBCapable(bool enabled) {
+            return setSrgbCapable(enabled);
+        }
+        #endif
         #endif
 
     private:
@@ -1128,7 +1144,7 @@ class Sdl2Application::GLConfiguration {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         GL::Version _version;
         Flags _flags;
-        bool _sRGBCapable;
+        bool _srgbCapable;
         #endif
 };
 
@@ -1493,16 +1509,16 @@ class Sdl2Application::Configuration {
         }
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        /** @brief @copybrief GLConfiguration::isSRGBCapable()
-         * @deprecated Use @ref GLConfiguration::isSRGBCapable() instead.
+        /** @brief @copybrief GLConfiguration::isSrgbCapable()
+         * @deprecated Use @ref GLConfiguration::isSrgbCapable() instead.
          */
-        CORRADE_DEPRECATED("use GLConfiguration::isSRGBCapable() instead") bool isSRGBCapable() const { return _sRGBCapable; }
+        CORRADE_DEPRECATED("use GLConfiguration::isSrgbCapable() instead") bool isSRGBCapable() const { return _srgbCapable; }
 
-        /** @brief @copybrief GLConfiguration::setSRGBCapable()
-         * @deprecated Use @ref GLConfiguration::setSRGBCapable() instead.
+        /** @brief @copybrief GLConfiguration::setSrgbCapable()
+         * @deprecated Use @ref GLConfiguration::setSrgbCapable() instead.
          */
-        CORRADE_DEPRECATED("use GLConfiguration::setSRGBCapable() instead") Configuration& setSRGBCapable(bool enabled) {
-            _sRGBCapable = enabled;
+        CORRADE_DEPRECATED("use GLConfiguration::setSrgbCapable() instead") Configuration& setSRGBCapable(bool enabled) {
+            _srgbCapable = enabled;
             return *this;
         }
         #endif
@@ -1521,7 +1537,7 @@ class Sdl2Application::Configuration {
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         GL::Version _version;
         Flags _flags;
-        bool _sRGBCapable;
+        bool _srgbCapable;
         #endif
         #endif
 };

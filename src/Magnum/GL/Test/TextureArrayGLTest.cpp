@@ -70,9 +70,9 @@ struct TextureArrayGLTest: OpenGLTester {
     template<class T> void sampling2D();
 
     #ifndef MAGNUM_TARGET_GLES
-    void samplingSRGBDecode1D();
+    void samplingSrgbDecode1D();
     #endif
-    void samplingSRGBDecode2D();
+    void samplingSrgbDecode2D();
 
     #ifndef MAGNUM_TARGET_GLES
     void samplingSwizzle1D();
@@ -287,9 +287,9 @@ TextureArrayGLTest::TextureArrayGLTest() {
         &TextureArrayGLTest::sampling2D<GLSampler>,
 
         #ifndef MAGNUM_TARGET_GLES
-        &TextureArrayGLTest::samplingSRGBDecode1D,
+        &TextureArrayGLTest::samplingSrgbDecode1D,
         #endif
-        &TextureArrayGLTest::samplingSRGBDecode2D,
+        &TextureArrayGLTest::samplingSrgbDecode2D,
 
         #ifndef MAGNUM_TARGET_GLES
         &TextureArrayGLTest::samplingSwizzle1D,
@@ -578,14 +578,14 @@ template<class T> void TextureArrayGLTest::sampling1D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-void TextureArrayGLTest::samplingSRGBDecode1D() {
+void TextureArrayGLTest::samplingSrgbDecode1D() {
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
         CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_sRGB_decode>())
         CORRADE_SKIP(Extensions::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
 
     Texture1DArray texture;
-    texture.setSRGBDecode(false);
+    texture.setSrgbDecode(false);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
@@ -668,7 +668,7 @@ template<class T> void TextureArrayGLTest::sampling2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-void TextureArrayGLTest::samplingSRGBDecode2D() {
+void TextureArrayGLTest::samplingSrgbDecode2D() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
         CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
@@ -677,7 +677,7 @@ void TextureArrayGLTest::samplingSRGBDecode2D() {
         CORRADE_SKIP(Extensions::EXT::texture_sRGB_decode::string() + std::string(" is not supported."));
 
     Texture2DArray texture;
-    texture.setSRGBDecode(false);
+    texture.setSrgbDecode(false);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }

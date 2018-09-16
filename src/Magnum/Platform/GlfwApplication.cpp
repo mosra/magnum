@@ -322,7 +322,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     glfwWindowHint(GLFW_DEPTH_BITS, glConfiguration.depthBufferSize());
     glfwWindowHint(GLFW_STENCIL_BITS, glConfiguration.stencilBufferSize());
     glfwWindowHint(GLFW_SAMPLES, glConfiguration.sampleCount());
-    glfwWindowHint(GLFW_SRGB_CAPABLE, glConfiguration.isSRGBCapable());
+    glfwWindowHint(GLFW_SRGB_CAPABLE, glConfiguration.isSrgbCapable());
 
     const GLConfiguration::Flags& flags = glConfiguration.flags();
     #ifdef GLFW_CONTEXT_NO_ERROR
