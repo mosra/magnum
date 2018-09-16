@@ -60,14 +60,14 @@ AnimationTrackType AnimationData::trackResultType(UnsignedInt id) const {
     return _tracks[id]._resultType;
 }
 
-AnimationTrackTarget AnimationData::trackTarget(UnsignedInt id) const {
-    CORRADE_ASSERT(id < _tracks.size(), "Trade::AnimationData::trackTarget(): index out of range", {});
-    return _tracks[id]._target;
+AnimationTrackTargetType AnimationData::trackTargetType(UnsignedInt id) const {
+    CORRADE_ASSERT(id < _tracks.size(), "Trade::AnimationData::trackTargetType(): index out of range", {});
+    return _tracks[id]._targetType;
 }
 
-UnsignedInt AnimationData::trackTargetId(UnsignedInt id) const {
-    CORRADE_ASSERT(id < _tracks.size(), "Trade::AnimationData::trackTargetId(): index out of range", {});
-    return _tracks[id]._targetId;
+UnsignedInt AnimationData::trackTarget(UnsignedInt id) const {
+    CORRADE_ASSERT(id < _tracks.size(), "Trade::AnimationData::trackTarget(): index out of range", {});
+    return _tracks[id]._target;
 }
 
 const Animation::TrackViewStorage<Float>& AnimationData::track(UnsignedInt id) const {
@@ -140,13 +140,13 @@ Debug& operator<<(Debug& debug, const AnimationTrackType value) {
     return debug << "Trade::AnimationTrackType(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, const AnimationTrackTarget value) {
-    if(UnsignedByte(value) >= UnsignedByte(AnimationTrackTarget::Custom))
-        return debug << "Trade::AnimationTrackTarget::Custom(" << Debug::nospace << UnsignedByte(value) << Debug::nospace << ")";
+Debug& operator<<(Debug& debug, const AnimationTrackTargetType value) {
+    if(UnsignedByte(value) >= UnsignedByte(AnimationTrackTargetType::Custom))
+        return debug << "Trade::AnimationTrackTargetType::Custom(" << Debug::nospace << UnsignedByte(value) << Debug::nospace << ")";
 
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case AnimationTrackTarget::value: return debug << "Trade::AnimationTrackTarget::" #value;
+        #define _c(value) case AnimationTrackTargetType::value: return debug << "Trade::AnimationTrackTargetType::" #value;
         _c(Translation2D)
         _c(Translation3D)
         _c(Rotation2D)
@@ -157,10 +157,10 @@ Debug& operator<<(Debug& debug, const AnimationTrackTarget value) {
         /* LCOV_EXCL_STOP */
 
         /* To silence compiler warning about unhandled values */
-        case AnimationTrackTarget::Custom: CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        case AnimationTrackTargetType::Custom: CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 
-    return debug << "Trade::AnimationTrackTarget(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "Trade::AnimationTrackTargetType(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 #endif
 

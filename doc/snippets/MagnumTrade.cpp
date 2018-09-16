@@ -152,10 +152,10 @@ Containers::Optional<Trade::AnimationData> data = importer->animation(id);
 Animation::Player<Float> player;
 Containers::Array<Vector3> positions; /* Translations for all objects */
 for(UnsignedInt i = 0; i != data->trackCount(); ++i) {
-    if(data->trackTarget(i) == Trade::AnimationTrackTarget::Translation3D) {
+    if(data->trackTargetType(i) == Trade::AnimationTrackTargetType::Translation3D) {
         CORRADE_INTERNAL_ASSERT(data->trackType(i) ==
             Trade::AnimationTrackType::Vector3);
-        player.add(data->track<Vector3>(i), positions[data->trackTargetId(i)]);
+        player.add(data->track<Vector3>(i), positions[data->trackTarget(i)]);
     }
 
     // similarly for rotation / scaling ...

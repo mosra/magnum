@@ -49,7 +49,7 @@ struct AnimationDataTest: TestSuite::Tester {
     void trackWrongResultType();
 
     void debugAnimationTrackType();
-    void debugAnimationTrackTarget();
+    void debugAnimationTrackTargetType();
 };
 
 AnimationDataTest::AnimationDataTest() {
@@ -68,7 +68,7 @@ AnimationDataTest::AnimationDataTest() {
               &AnimationDataTest::trackWrongResultType,
 
               &AnimationDataTest::debugAnimationTrackType,
-              &AnimationDataTest::debugAnimationTrackTarget});
+              &AnimationDataTest::debugAnimationTrackTargetType});
 }
 
 using namespace Math::Literals;
@@ -90,14 +90,14 @@ void AnimationDataTest::construct() {
     const int state = 5;
     AnimationData data{std::move(buffer), Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
         {AnimationTrackType::Vector3,
-         AnimationTrackTarget::Translation3D, 42,
+         AnimationTrackTargetType::Translation3D, 42,
          Animation::TrackView<Float, Vector3>{
             {&view[0].time, view.size(), sizeof(Data)},
             {&view[0].position, view.size(), sizeof(Data)},
             Animation::Interpolation::Constant,
             animationInterpolatorFor<Vector3>(Animation::Interpolation::Constant)}},
         {AnimationTrackType::Quaternion,
-         AnimationTrackTarget::Rotation3D, 1337,
+         AnimationTrackTargetType::Rotation3D, 1337,
          Animation::TrackView<Float, Quaternion>{
             {&view[0].time, view.size(), sizeof(Data)},
             {&view[0].rotation, view.size(), sizeof(Data)},
@@ -113,8 +113,8 @@ void AnimationDataTest::construct() {
     {
         CORRADE_COMPARE(data.trackType(0), AnimationTrackType::Vector3);
         CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Vector3);
-        CORRADE_COMPARE(data.trackTarget(0), AnimationTrackTarget::Translation3D);
-        CORRADE_COMPARE(data.trackTargetId(0), 42);
+        CORRADE_COMPARE(data.trackTargetType(0), AnimationTrackTargetType::Translation3D);
+        CORRADE_COMPARE(data.trackTarget(0), 42);
 
         Animation::TrackView<Float, Vector3> track = data.track<Vector3>(0);
         CORRADE_COMPARE(track.keys().size(), 3);
@@ -124,8 +124,8 @@ void AnimationDataTest::construct() {
     } {
         CORRADE_COMPARE(data.trackType(1), AnimationTrackType::Quaternion);
         CORRADE_COMPARE(data.trackResultType(1), AnimationTrackType::Quaternion);
-        CORRADE_COMPARE(data.trackTarget(1), AnimationTrackTarget::Rotation3D);
-        CORRADE_COMPARE(data.trackTargetId(1), 1337);
+        CORRADE_COMPARE(data.trackTargetType(1), AnimationTrackTargetType::Rotation3D);
+        CORRADE_COMPARE(data.trackTarget(1), 1337);
 
         Animation::TrackView<Float, Quaternion> track = data.track<Quaternion>(1);
         CORRADE_COMPARE(track.keys().size(), 3);
@@ -152,13 +152,13 @@ void AnimationDataTest::constructImplicitDuration() {
     const int state = 5;
     AnimationData data{std::move(buffer), Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
         {AnimationTrackType::Bool,
-         AnimationTrackTarget(129), 0,
+         AnimationTrackTargetType(129), 0,
          Animation::TrackView<Float, bool>{
             {&view[0].time, 2, sizeof(Data)},
             {&view[0].value, 2, sizeof(Data)},
             Animation::Interpolation::Constant}},
         {AnimationTrackType::Bool,
-         AnimationTrackTarget(130), 1,
+         AnimationTrackTargetType(130), 1,
          Animation::TrackView<Float, bool>{
             {&view[2].time, 2, sizeof(Data)},
             {&view[2].value, 2, sizeof(Data)},
@@ -171,8 +171,8 @@ void AnimationDataTest::constructImplicitDuration() {
     {
         CORRADE_COMPARE(data.trackType(0), AnimationTrackType::Bool);
         CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Bool);
-        CORRADE_COMPARE(data.trackTarget(0), AnimationTrackTarget(129));
-        CORRADE_COMPARE(data.trackTargetId(0), 0);
+        CORRADE_COMPARE(data.trackTargetType(0), AnimationTrackTargetType(129));
+        CORRADE_COMPARE(data.trackTarget(0), 0);
 
         Animation::TrackView<Float, bool> track = data.track<bool>(0);
         CORRADE_COMPARE(track.duration(), (Range1D{1.0f, 5.0f}));
@@ -183,8 +183,8 @@ void AnimationDataTest::constructImplicitDuration() {
     } {
         CORRADE_COMPARE(data.trackType(1), AnimationTrackType::Bool);
         CORRADE_COMPARE(data.trackResultType(1), AnimationTrackType::Bool);
-        CORRADE_COMPARE(data.trackTarget(1), AnimationTrackTarget(130));
-        CORRADE_COMPARE(data.trackTargetId(1), 1);
+        CORRADE_COMPARE(data.trackTargetType(1), AnimationTrackTargetType(130));
+        CORRADE_COMPARE(data.trackTarget(1), 1);
 
         Animation::TrackView<Float, bool> track = data.track<bool>(1);
         CORRADE_COMPARE(track.duration(), (Range1D{3.0f, 7.0f}));
@@ -221,14 +221,14 @@ void AnimationDataTest::constructMove() {
     const int state = 5;
     AnimationData a{std::move(buffer), Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
         {AnimationTrackType::Vector3,
-         AnimationTrackTarget::Translation3D, 42,
+         AnimationTrackTargetType::Translation3D, 42,
          Animation::TrackView<Float, Vector3>{
             {&view[0].time, view.size(), sizeof(Data)},
             {&view[0].position, view.size(), sizeof(Data)},
             Animation::Interpolation::Constant,
             animationInterpolatorFor<Vector3>(Animation::Interpolation::Constant)}},
         {AnimationTrackType::Quaternion,
-         AnimationTrackTarget::Rotation3D, 1337,
+         AnimationTrackTargetType::Rotation3D, 1337,
          Animation::TrackView<Float, Quaternion>{
             {&view[0].time, view.size(), sizeof(Data)},
             {&view[0].rotation, view.size(), sizeof(Data)},
@@ -246,8 +246,8 @@ void AnimationDataTest::constructMove() {
     {
         CORRADE_COMPARE(b.trackType(0), AnimationTrackType::Vector3);
         CORRADE_COMPARE(b.trackResultType(0), AnimationTrackType::Vector3);
-        CORRADE_COMPARE(b.trackTarget(0), AnimationTrackTarget::Translation3D);
-        CORRADE_COMPARE(b.trackTargetId(0), 42);
+        CORRADE_COMPARE(b.trackTargetType(0), AnimationTrackTargetType::Translation3D);
+        CORRADE_COMPARE(b.trackTarget(0), 42);
 
         Animation::TrackView<Float, Vector3> track = b.track<Vector3>(0);
         CORRADE_COMPARE(track.keys().size(), 3);
@@ -257,8 +257,8 @@ void AnimationDataTest::constructMove() {
     } {
         CORRADE_COMPARE(b.trackType(1), AnimationTrackType::Quaternion);
         CORRADE_COMPARE(b.trackResultType(1), AnimationTrackType::Quaternion);
-        CORRADE_COMPARE(b.trackTarget(1), AnimationTrackTarget::Rotation3D);
-        CORRADE_COMPARE(b.trackTargetId(1), 1337);
+        CORRADE_COMPARE(b.trackTargetType(1), AnimationTrackTargetType::Rotation3D);
+        CORRADE_COMPARE(b.trackTarget(1), 1337);
 
         Animation::TrackView<Float, Quaternion> track = b.track<Quaternion>(1);
         CORRADE_COMPARE(track.keys().size(), 3);
@@ -279,8 +279,8 @@ void AnimationDataTest::constructMove() {
     {
         CORRADE_COMPARE(c.trackType(0), AnimationTrackType::Vector3);
         CORRADE_COMPARE(c.trackResultType(0), AnimationTrackType::Vector3);
-        CORRADE_COMPARE(c.trackTarget(0), AnimationTrackTarget::Translation3D);
-        CORRADE_COMPARE(c.trackTargetId(0), 42);
+        CORRADE_COMPARE(c.trackTargetType(0), AnimationTrackTargetType::Translation3D);
+        CORRADE_COMPARE(c.trackTarget(0), 42);
 
         Animation::TrackView<Float, Vector3> track = c.track<Vector3>(0);
         CORRADE_COMPARE(track.keys().size(), 3);
@@ -290,8 +290,8 @@ void AnimationDataTest::constructMove() {
     } {
         CORRADE_COMPARE(c.trackType(1), AnimationTrackType::Quaternion);
         CORRADE_COMPARE(c.trackResultType(1), AnimationTrackType::Quaternion);
-        CORRADE_COMPARE(c.trackTarget(1), AnimationTrackTarget::Rotation3D);
-        CORRADE_COMPARE(c.trackTargetId(1), 1337);
+        CORRADE_COMPARE(c.trackTargetType(1), AnimationTrackTargetType::Rotation3D);
+        CORRADE_COMPARE(c.trackTarget(1), 1337);
 
         Animation::TrackView<Float, Quaternion> track = c.track<Quaternion>(1);
         CORRADE_COMPARE(track.keys().size(), 3);
@@ -321,7 +321,7 @@ void AnimationDataTest::trackCustomResultType() {
     AnimationData data{std::move(buffer), Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
         {AnimationTrackType::Vector3i,
          AnimationTrackType::Vector3,
-         AnimationTrackTarget::Scaling3D, 0,
+         AnimationTrackTargetType::Scaling3D, 0,
          Animation::TrackView<Float, Vector3i, Vector3>{
              {&view[0].time, view.size(), sizeof(Data)},
              {&view[0].position, view.size(), sizeof(Data)},
@@ -340,15 +340,15 @@ void AnimationDataTest::trackWrongIndex() {
     AnimationData data{nullptr, nullptr};
     data.trackType(0);
     data.trackResultType(0);
+    data.trackTargetType(0);
     data.trackTarget(0);
-    data.trackTargetId(0);
     data.track(0);
 
     CORRADE_COMPARE(out.str(),
         "Trade::AnimationData::trackType(): index out of range\n"
         "Trade::AnimationData::trackResultType(): index out of range\n"
+        "Trade::AnimationData::trackTargetType(): index out of range\n"
         "Trade::AnimationData::trackTarget(): index out of range\n"
-        "Trade::AnimationData::trackTargetId(): index out of range\n"
         "Trade::AnimationData::track(): index out of range\n");
 }
 
@@ -359,7 +359,7 @@ void AnimationDataTest::trackWrongType() {
     AnimationData data{nullptr, Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
         {AnimationTrackType::Vector3i,
          AnimationTrackType::Vector3,
-         AnimationTrackTarget::Scaling3D, 0, {}}
+         AnimationTrackTargetType::Scaling3D, 0, {}}
     }}};
 
     data.track<Vector3>(0);
@@ -374,7 +374,7 @@ void AnimationDataTest::trackWrongResultType() {
     AnimationData data{nullptr, Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
         {AnimationTrackType::Vector3i,
          AnimationTrackType::Vector3,
-         AnimationTrackTarget::Scaling3D, 0, {}}
+         AnimationTrackTargetType::Scaling3D, 0, {}}
     }}};
 
     data.track<Vector3i, Vector2>(0);
@@ -389,11 +389,11 @@ void AnimationDataTest::debugAnimationTrackType() {
     CORRADE_COMPARE(out.str(), "Trade::AnimationTrackType::DualQuaternion Trade::AnimationTrackType(0xde)\n");
 }
 
-void AnimationDataTest::debugAnimationTrackTarget() {
+void AnimationDataTest::debugAnimationTrackTargetType() {
     std::ostringstream out;
 
-    Debug{&out} << AnimationTrackTarget::Rotation3D << AnimationTrackTarget(135) << AnimationTrackTarget(0x42);
-    CORRADE_COMPARE(out.str(), "Trade::AnimationTrackTarget::Rotation3D Trade::AnimationTrackTarget::Custom(135) Trade::AnimationTrackTarget(0x42)\n");
+    Debug{&out} << AnimationTrackTargetType::Rotation3D << AnimationTrackTargetType(135) << AnimationTrackTargetType(0x42);
+    CORRADE_COMPARE(out.str(), "Trade::AnimationTrackTargetType::Rotation3D Trade::AnimationTrackTargetType::Custom(135) Trade::AnimationTrackTargetType(0x42)\n");
 }
 
 }}}
