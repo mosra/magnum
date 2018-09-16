@@ -621,7 +621,7 @@ void GlfwApplication::textInputEvent(TextInputEvent&) {}
 #ifdef MAGNUM_TARGET_GL
 GlfwApplication::GLConfiguration::GLConfiguration():
     _colorBufferSize{8, 8, 8, 0}, _depthBufferSize{24}, _stencilBufferSize{0},
-    _sampleCount{0}, _version{GL::Version::None} {}
+    _sampleCount{0}, _version{GL::Version::None}, _srgbCapable{false} {}
 
 GlfwApplication::GLConfiguration::~GLConfiguration() = default;
 #endif
@@ -633,7 +633,7 @@ GlfwApplication::Configuration::Configuration():
     _dpiScalingPolicy{DpiScalingPolicy::Default},
     _cursorMode{CursorMode::Normal}
     #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-    , _sampleCount{0}, _version{GL::Version::None}
+    , _sampleCount{0}, _version{GL::Version::None}, _srgbCapable{false}
     #endif
     {}
 

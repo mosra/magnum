@@ -705,6 +705,9 @@ class GlfwApplication::GLConfiguration {
 
         /**
          * @brief Set sRGB-capable default framebuffer
+         *
+         * Default is @cpp false @ce. See also
+         * @ref GL::Renderer::Feature::FramebufferSrgb.
          * @return Reference to self (for method chaining)
          */
         GLConfiguration& setSrgbCapable(bool enabled) {
