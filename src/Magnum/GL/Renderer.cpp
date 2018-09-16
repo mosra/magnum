@@ -209,7 +209,7 @@ void Renderer::initializeContextBasedFunctionality() {
 
 #ifndef MAGNUM_TARGET_GLES
 void Renderer::clearDepthfImplementationDefault(const GLfloat depth) {
-    glClearDepth(depth);
+    glClearDepth(GLdouble(depth));
 }
 #endif
 
