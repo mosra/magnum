@@ -295,6 +295,11 @@ template<class T> inline T min(std::initializer_list<T> list) {
     return min(Corrade::Containers::ArrayView<const T>{list.begin(), list.size()});
 }
 
+/** @overload */
+template<class T, std::size_t size> inline T min(const T(&array)[size]) {
+    return min(Corrade::Containers::arrayView(array));
+}
+
 /**
 @brief Maximum
 
@@ -340,6 +345,11 @@ template<class T> T max(Corrade::Containers::ArrayView<const T> range) {
 /** @overload */
 template<class T> inline T max(std::initializer_list<T> list) {
     return max(Corrade::Containers::ArrayView<const T>{list.begin(), list.size()});
+}
+
+/** @overload */
+template<class T, std::size_t size> inline T max(const T(&array)[size]) {
+    return max(Corrade::Containers::arrayView(array));
 }
 
 /**
@@ -395,6 +405,11 @@ template<class T> std::pair<T, T> minmax(Corrade::Containers::ArrayView<const T>
 /** @overload */
 template<class T> inline std::pair<T, T> minmax(std::initializer_list<T> list) {
     return minmax(Corrade::Containers::ArrayView<const T>{list.begin(), list.size()});
+}
+
+/** @overload */
+template<class T, std::size_t size> inline std::pair<T, T> minmax(const T(&array)[size]) {
+    return minmax(Corrade::Containers::arrayView(array));
 }
 
 /**

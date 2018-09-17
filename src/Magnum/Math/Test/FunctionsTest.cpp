@@ -153,6 +153,9 @@ void FunctionsTest::minList() {
                                Vector3i(9, -5, 18)}), Vector3i(-2, -5, 2));
 
     CORRADE_COMPARE(Math::min(std::initializer_list<Vector3i>{}), Vector3i{});
+
+    const Int array[]{5, -2, 9};
+    CORRADE_COMPARE(Math::min(array), -2);
 }
 
 void FunctionsTest::max() {
@@ -168,6 +171,9 @@ void FunctionsTest::maxList() {
                                Vector3i(9, -5, 18)}), Vector3i(9, 14, 18));
 
     CORRADE_COMPARE(Math::max(std::initializer_list<Vector3i>{}), Vector3i{});
+
+    const Int array[]{5, -2, 9};
+    CORRADE_COMPARE(Math::max(array), 9);
 }
 
 void FunctionsTest::minmax() {
@@ -198,6 +204,9 @@ void FunctionsTest::minmaxList() {
     CORRADE_COMPARE(Math::minmax({Vector2{2.0f, 1.0f}, Vector2{-3.0f, -2.0f}, Vector2{-1.0f, 3.0f}}), expectedVec);
     CORRADE_COMPARE(Math::minmax({Vector2{-3.0f, 3.0f}, Vector2{2.0f, -2.0f}, Vector2{-1.0f, 1.0f}}), expectedVec);
     CORRADE_COMPARE(Math::minmax({Vector2{-3.0f, -2.0f}, Vector2{-1.0f, 3.0f}, Vector2{2.0f, 1.0f}}), expectedVec);
+
+    const Float array[]{-1.0f, 2.0f, -3.0f};
+    CORRADE_COMPARE(Math::minmax(array), expected);
 }
 
 void FunctionsTest::clamp() {

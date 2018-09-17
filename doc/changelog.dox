@@ -103,6 +103,8 @@ See also:
 -   Ability to use @ref Math::Complex, @ref Math::DualComplex,
     @ref Math::Quaternion, @ref Math::DualQuaternion with
     @ref Corrade::Utility::Configuration and @ref Corrade::Utility::Arguments
+-   New @ref Math::min(), @ref Math::max() and @ref Math::minmax() overloads
+    taking plain C arrays
 
 @subsubsection changelog-latest-new-platform Platform libraries
 
