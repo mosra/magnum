@@ -1346,12 +1346,13 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
             Y = GLFW_KEY_Y,                     /**< Letter Y */
             Z = GLFW_KEY_Z,                     /**< Letter Z */
 
-            /* Function keys */
             CapsLock = GLFW_KEY_CAPS_LOCK,      /**< Caps lock */
             ScrollLock = GLFW_KEY_SCROLL_LOCK,  /**< Scroll lock */
             NumLock = GLFW_KEY_NUM_LOCK,        /**< Num lock */
             PrintScreen = GLFW_KEY_PRINT_SCREEN,/**< Print screen */
             Pause = GLFW_KEY_PAUSE,             /**< Pause */
+            Menu = GLFW_KEY_MENU,               /**< Menu */
+
             NumZero = GLFW_KEY_KP_0,            /**< Numpad zero */
             NumOne = GLFW_KEY_KP_1,             /**< Numpad one */
             NumTwo = GLFW_KEY_KP_2,             /**< Numpad two */
@@ -1368,8 +1369,7 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
             NumSubtract = GLFW_KEY_KP_SUBTRACT, /**< Numpad subtract */
             NumAdd = GLFW_KEY_KP_ADD,           /**< Numpad add */
             NumEnter = GLFW_KEY_KP_ENTER,       /**< Numpad enter */
-            NumEqual = GLFW_KEY_KP_EQUAL,       /**< Numpad equal */
-            Menu = GLFW_KEY_MENU                /**< Menu */
+            NumEqual = GLFW_KEY_KP_EQUAL        /**< Numpad equal */
         };
 
         #if defined(DOXYGEN_GENERATING_OUTPUT) || GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302

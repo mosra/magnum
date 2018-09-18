@@ -1843,7 +1843,25 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
             W = SDLK_w,                 /**< Letter W */
             X = SDLK_x,                 /**< Letter X */
             Y = SDLK_y,                 /**< Letter Y */
-            Z = SDLK_z                  /**< Letter Z */
+            Z = SDLK_z,                 /**< Letter Z */
+
+            NumZero = SDLK_KP_0,            /**< Numpad zero */
+            NumOne = SDLK_KP_1,             /**< Numpad one */
+            NumTwo = SDLK_KP_2,             /**< Numpad two */
+            NumThree = SDLK_KP_3,           /**< Numpad three */
+            NumFour = SDLK_KP_4,            /**< Numpad four */
+            NumFive = SDLK_KP_5,            /**< Numpad five */
+            NumSix = SDLK_KP_6,             /**< Numpad six */
+            NumSeven = SDLK_KP_7,           /**< Numpad seven */
+            NumEight = SDLK_KP_8,           /**< Numpad eight */
+            NumNine = SDLK_KP_9,            /**< Numpad nine */
+            NumDecimal = SDLK_KP_DECIMAL,   /**< Numpad decimal */
+            NumDivide = SDLK_KP_DIVIDE,     /**< Numpad divide */
+            NumMultiply = SDLK_KP_MULTIPLY, /**< Numpad multiply */
+            NumSubtract = SDLK_KP_MINUS,    /**< Numpad subtract */
+            NumAdd = SDLK_KP_PLUS,          /**< Numpad add */
+            NumEnter = SDLK_KP_ENTER,       /**< Numpad enter */
+            NumEqual = SDLK_KP_EQUALS       /**< Numpad equal */
         };
 
         /**

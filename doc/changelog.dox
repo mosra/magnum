@@ -125,6 +125,8 @@ See also:
     to @ref Platform::Sdl2Application, @ref Platform::GlfwApplication and
     @ref Platform::AndroidApplication. This also makes the default framebuffer
     parameters consistent across the implementations.
+-   Added numpad keys to @ref Platform::Sdl2Application::KeyEvent::Key,
+    consistent with GLFW key mapping
 
 @subsubsection changelog-latest-new-primitives Primitives library
 
