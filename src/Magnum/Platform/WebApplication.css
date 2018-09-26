@@ -98,7 +98,7 @@ body {
 #container.width-800 #sizer { width: 800px; }
 
 #container.aspect-1-1 #expander { padding-bottom: 100%; }
-#container.aspect-4-3 #expander, #container:not(.fullsize) #expander {
+#container.aspect-4-3 #expander, #container:not(.fullsize):not([class*='aspect-']) #expander {
   padding-bottom: 75%; /* default */
 }
 #container.aspect-3-4 #expander { padding-bottom: 133.3333%; }
