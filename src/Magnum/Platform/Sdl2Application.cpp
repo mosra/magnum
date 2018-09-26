@@ -180,8 +180,7 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) const {
 
         /* Otherwise ¯\_(ツ)_/¯ */
         #else
-        Debug{verbose} << "Platform::Sdl2Application: sorry, virtual DPI scaling not implemented on this platform yet";
-        return Vector2{1.0f};
+        Debug{verbose} << "Platform::Sdl2Application: sorry, virtual DPI scaling not implemented on this platform yet, falling back to physical DPI scaling";
         #endif
     }
     #endif

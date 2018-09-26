@@ -159,8 +159,7 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) const {
 
         /* Otherwise ¯\_(ツ)_/¯ */
         #else
-        Debug{verbose} << "Platform::GlfwApplication: sorry, virtual DPI scaling not implemented on this platform yet";
-        return Vector2{1.0f};
+        Debug{verbose} << "Platform::GlfwApplication: sorry, virtual DPI scaling not implemented on this platform yet, falling back to physical DPI scaling";
         #endif
     }
 
