@@ -635,8 +635,9 @@ template<class T, class K
          *
          * Pauses the currently playing animation at given @p pauseTime. If
          * @ref state() is not @ref State::Playing, the function does nothing.
-         * See @ref advance() for a detailed description of behavior when the
-         * animation gets paused.
+         * If @p pauseTime is too far in the future, the animation will get
+         * paused at the end (i.e., not stopped). See @ref advance() for a
+         * detailed description of behavior when the animation gets paused.
          * @see @ref setState()
          */
         Player<T, K>& pause(T pauseTime);

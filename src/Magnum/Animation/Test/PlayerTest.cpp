@@ -56,8 +56,10 @@ struct PlayerTest: TestSuite::Tester {
     void advancePlayCount();
     void advancePlayCountInfinite();
     void advanceChrono();
-    void advanceZeroDuration();
-    void advanceZeroDurationChrono();
+    void advanceZeroDurationStop();
+    void advanceZeroDurationPause();
+    void advanceZeroDurationInfinitePlayCount();
+    void advanceZeroDurationInfinitePlayCountChrono();
 
     void setState();
 
@@ -125,8 +127,10 @@ PlayerTest::PlayerTest() {
               &PlayerTest::advancePlayCount,
               &PlayerTest::advancePlayCountInfinite,
               &PlayerTest::advanceChrono,
-              &PlayerTest::advanceZeroDuration,
-              &PlayerTest::advanceZeroDurationChrono,
+              &PlayerTest::advanceZeroDurationStop,
+              &PlayerTest::advanceZeroDurationPause,
+              &PlayerTest::advanceZeroDurationInfinitePlayCount,
+              &PlayerTest::advanceZeroDurationInfinitePlayCountChrono,
 
               &PlayerTest::setState,
 
@@ -573,14 +577,14 @@ void PlayerTest::advancePauseTooLate() {
     CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 1.75f));
     CORRADE_COMPARE(value, 4.0f);
 
-    /* Pausing too late will set the state to paused at first */
+    /* Pausing too late will set the state to paused */
     player.pause(50.0f);
     CORRADE_COMPARE(player.state(), State::Paused);
     CORRADE_COMPARE(player.elapsed(50.0f), std::make_pair(0, 3.0f));
 
-    /* But advancing will make it stopped since it's too late */
+    /* And advancing will keep it paused, not transforming to stopped */
     player.advance(50.5f);
-    CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.state(), State::Paused);
     CORRADE_COMPARE(player.elapsed(50.5f), std::make_pair(0, 3.0f));
 }
 
@@ -696,7 +700,49 @@ void PlayerTest::advanceChrono() {
     CORRADE_COMPARE(value, 4.0f);
 }
 
-void PlayerTest::advanceZeroDuration() {
+void PlayerTest::advanceZeroDurationStop() {
+    Float value = -1.0f;
+    Player<Float> player;
+    player.add(Track, value)
+        /* 1.75 secs since the start of the original duration */
+        .setDuration(Range1D::fromSize(1.0f + 1.75f, 0.0f))
+        .play(2.0f);
+
+    CORRADE_COMPARE(player.duration().size(), 0.0f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(1.75f), std::make_pair(0, 0.0f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* The value at 1.75 secs is returned independent of time, state is stopped */
+    player.advance(100.0f);
+    CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(100.0f), std::make_pair(0, 0.0f));
+    CORRADE_COMPARE(value, 4.0f);
+}
+
+void PlayerTest::advanceZeroDurationPause() {
+    Float value = -1.0f;
+    Player<Float> player;
+    player.add(Track, value)
+        /* 1.75 secs since the start of the original duration */
+        .setDuration(Range1D::fromSize(1.0f + 1.75f, 0.0f))
+        .play(2.0f);
+
+    CORRADE_COMPARE(player.duration().size(), 0.0f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(1.75f), std::make_pair(0, 0.0f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* The value at 1.75 secs is returned independent of time, state is paused
+       (explicitly not stopped) */
+    player.pause(100.0f);
+    player.advance(100.0f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(100.0f), std::make_pair(0, 0.0f));
+    CORRADE_COMPARE(value, 4.0f);
+}
+
+void PlayerTest::advanceZeroDurationInfinitePlayCount() {
     Float value = -1.0f;
     Player<Float> player;
     player.add(Track, value)
@@ -723,7 +769,7 @@ void PlayerTest::advanceZeroDuration() {
     CORRADE_COMPARE(value, 4.0f);
 }
 
-void PlayerTest::advanceZeroDurationChrono() {
+void PlayerTest::advanceZeroDurationInfinitePlayCountChrono() {
     Float value = -1.0f;
     Player<std::chrono::nanoseconds, Float> player;
     player.add(Track, value)
