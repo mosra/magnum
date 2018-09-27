@@ -645,7 +645,7 @@ template<class T, class K
          * @brief Stop
          *
          * Stops the currently playing animation. If @ref state() is
-         * @ref State::Paused, discard the pause information. If @ref state()
+         * @ref State::Paused, discards the pause information. If @ref state()
          * is already @ref State::Stopped, the function does nothing. See
          * @ref advance() for a detailed description of behavior when the
          * animation gets stopped.
@@ -686,16 +686,16 @@ template<class T, class K
          * If @ref pause() was called right before a particular @ref advance()
          * iteration, the function will update destination locations and/or
          * fire user-defined callbacks with key and result values corresponding
-         * to the time passed to the @ref pause() call before to correctly
-         * "park" the animation. After that, no more updates are done until the
-         * animation is started again.
+         * to the time passed to the @ref pause() call before in order to
+         * correctly "park" the animation. After that, no more updates are done
+         * until the animation is started again.
          *
          * If @ref stop() was called right before a particular @ref advance()
          * iteration, the function will update destination locations and/or
          * fire user-defined callbacks with key and result values corresponding
-         * to the begin time of @ref duration() to correctly "park" the
-         * animation back to its initial state. After that, no more updates are
-         * done until the animation is started again.
+         * to the begin time of @ref duration() in order to correctly "park"
+         * the animation back to its initial state. After that, no more updates
+         * are done until the animation is started again.
          * @see @ref elapsed()
          */
         Player<T, K>& advance(T time);
