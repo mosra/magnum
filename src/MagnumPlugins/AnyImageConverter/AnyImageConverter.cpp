@@ -28,7 +28,8 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/String.h>
-#include <Magnum/Trade/ImageData.h>
+
+#include "Magnum/Trade/ImageData.h"
 
 namespace Magnum { namespace Trade {
 

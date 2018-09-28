@@ -30,8 +30,8 @@
  */
 
 #include <memory>
-#include <Magnum/Audio/AbstractImporter.h>
 
+#include "Magnum/Audio/AbstractImporter.h"
 #include "MagnumPlugins/AnyAudioImporter/configure.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

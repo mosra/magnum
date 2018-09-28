@@ -29,8 +29,7 @@
  * @brief Class @ref Magnum::Trade::AnySceneImporter
  */
 
-#include <Magnum/Trade/AbstractImporter.h>
-
+#include "Magnum/Trade/AbstractImporter.h"
 #include "MagnumPlugins/AnySceneImporter/configure.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

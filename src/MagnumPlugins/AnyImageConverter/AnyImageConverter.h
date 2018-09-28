@@ -29,8 +29,7 @@
  * @brief Class @ref Magnum::Trade::AnyImageConverter
  */
 
-#include <Magnum/Trade/AbstractImageConverter.h>
-
+#include "Magnum/Trade/AbstractImageConverter.h"
 #include "MagnumPlugins/AnyImageConverter/configure.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

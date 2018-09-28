@@ -29,8 +29,7 @@
  * @brief Class @ref Magnum::Trade::AnyImageImporter
  */
 
-#include <Magnum/Trade/AbstractImporter.h>
-
+#include "Magnum/Trade/AbstractImporter.h"
 #include "MagnumPlugins/AnyImageImporter/configure.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
