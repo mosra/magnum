@@ -29,6 +29,7 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/String.h>
 #include "Magnum/Trade/AbstractMaterialData.h"
+#include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/CameraData.h"
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/LightData.h"
@@ -135,6 +136,11 @@ void AnySceneImporter::doOpenFile(const std::string& filename) {
     /* Success, save the instance */
     _in = std::move(importer);
 }
+
+UnsignedInt AnySceneImporter::doAnimationCount() const { return _in->animationCount(); }
+Int AnySceneImporter::doAnimationForName(const std::string& name) { return _in->animationForName(name); }
+std::string AnySceneImporter::doAnimationName(const UnsignedInt id) { return _in->animationName(id); }
+Containers::Optional<AnimationData> AnySceneImporter::doAnimation(const UnsignedInt id) { return _in->animation(id); }
 
 Int AnySceneImporter::doDefaultScene() { return _in->defaultScene(); }
 

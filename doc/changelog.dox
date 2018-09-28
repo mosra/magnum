@@ -181,6 +181,8 @@ See also:
     next to file type detection based on filename
 -   @ref Trade::AnyImageConverter "AnyImageConverter" learned detection of JPEG
     output
+-   @ref Trade::AnySceneImporter "AnySceneImporter" gained support for
+    animation import
 
 @subsection changelog-latest-changes Changes and improvements
 

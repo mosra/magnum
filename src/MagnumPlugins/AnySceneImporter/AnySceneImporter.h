@@ -124,6 +124,11 @@ class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
         MAGNUM_ANYSCENEIMPORTER_LOCAL void doClose() override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL void doOpenFile(const std::string& filename) override;
 
+        MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doAnimationCount() const override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doAnimationName(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Int doAnimationForName(const std::string& name) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Optional<AnimationData> doAnimation(UnsignedInt id) override;
+
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doDefaultScene() override;
 
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doSceneCount() const override;
