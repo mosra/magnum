@@ -195,14 +195,14 @@ template<class T, class K> Containers::Optional<std::pair<UnsignedInt, K>> playe
 
        std::chrono::duration doesn't have operator bool, so I need to compare
        to default-constructed value. Ugh. */
-    if(state == State::Paused && (stopPauseTime != T{})) {
+    if(state == State::Paused && stopPauseTime != T{}) {
         startTime = stopPauseTime - startTime;
         timeToUse = startTime;
         stopPauseTime = {};
 
     /* The animation was stopped by the user right before this iteration,
        "park" the animation to the initial time */
-    } else if(state == State::Stopped && (stopPauseTime != T{})) {
+    } else if(state == State::Stopped && stopPauseTime != T{}) {
         timeToUse = {};
         startTime = {};
         stopPauseTime = {};
