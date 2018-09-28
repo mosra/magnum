@@ -119,6 +119,7 @@ struct RangeTest: Corrade::TestSuite::Tester {
 
     void containsVector();
     void containsRange();
+    void containsRangeInverted();
     void intersectIntersects();
     void join();
 
@@ -161,6 +162,7 @@ RangeTest::RangeTest() {
 
               &RangeTest::containsVector,
               &RangeTest::containsRange,
+              &RangeTest::containsRangeInverted,
               &RangeTest::intersectIntersects,
               &RangeTest::join,
 
@@ -579,6 +581,16 @@ void RangeTest::containsRange() {
     Range2Di j{{47, 20}, {60, 23}};
     CORRADE_VERIFY(!a.contains(i));
     CORRADE_VERIFY(!a.contains(j));
+}
+
+void RangeTest::containsRangeInverted() {
+    /* Inverse range contains things that are only outside */
+    Range2Di b({40, 50}, {10, 30});
+    CORRADE_VERIFY( b.contains({{45, 55}, { 5, 25}}));
+    CORRADE_VERIFY(!b.contains({{35, 45}, {15, 35}})); /* B contains A */
+    CORRADE_VERIFY(!b.contains({{15, 35}, {35, 45}})); /* Fully inside */
+    CORRADE_VERIFY(!b.contains({{45, 55}, {15, 25}})); /* "Leaks" on max X */
+    CORRADE_VERIFY(!b.contains({{45, 45}, { 5, 25}})); /* "Leaks" on min Y */
 }
 
 void RangeTest::intersectIntersects() {
