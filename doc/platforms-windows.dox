@@ -32,6 +32,12 @@ namespace Magnum {
 @m_keyword{ANGLE OpenGL compatibility layer,,}
 @m_footernavigation
 
+@section platforms-windows-hidpi HiDPI support
+
+Windows supports two approaches to advertising HiDPI support --- either via the
+manifest file or through the [SetProcessDpiAwareness()](https://docs.microsoft.com/en-us/windows/desktop/api/shellscalingapi/nf-shellscalingapi-setprocessdpiawareness)
+API. See the API documentation for more information.
+
 @section platforms-windows-rt Windows RT
 
 Windows RT is a restricted subset of Windows API, used for UWP / "Metro" /

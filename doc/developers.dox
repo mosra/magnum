@@ -96,6 +96,8 @@ required to follow them to the point.
     -   if the library is combined from an `OBJECT` library, add its name to
         the above @cpp #ifdef @ce as well (and then explicitly add
         @cmake target_compile_definitions(MagnumLibraryNameObjects PRIVATE "MagnumLibraryNameObjects_EXPORTS") @ce to `CMakeLists.txt` in case `BUILD_STATIC` is not set)
+    -   the macro *does not* contain the full namespace path but rather mirrors
+        the library *file* name
 9.  Mention the directory and namespace in `doc/namespaces.dox`, basically
     copy-pasting the following from existing documentation:
     -   directory-level doc block referencing the namespace

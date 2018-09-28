@@ -205,6 +205,16 @@ scene files:
 
 @snippet plugins.cpp configuration
 
+Besides affecting a single plugin instance, you can also change the
+configuration globally via @ref Corrade::PluginManager::PluginMetadata::configuration() "PluginManager::PluginMetadata::configuration()".
+That will affect all plugin instances created after. Resetting the global
+configuration back to the initial state can be done by recreating the plugin
+manager.
+
+@section plugins-direct Direct usage of plugins
+
+@todoc and also check that this is not already mentioned above
+
 @section plugins-develop Developing your own plugins
 
 See class documentation of particular plugin interfaces for more information
