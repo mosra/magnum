@@ -61,6 +61,16 @@ struct PlayerTest: TestSuite::Tester {
     void advanceZeroDurationInfinitePlayCount();
     void advanceZeroDurationInfinitePlayCountChrono();
 
+    void seekByStopped();
+    void seekByPlaying();
+    void seekByPaused();
+    void seekByPausedParked();
+
+    void seekToStopped();
+    void seekToPlaying();
+    void seekToPaused();
+    void seekToPausedParked();
+
     void setState();
 
     void add();
@@ -131,6 +141,16 @@ PlayerTest::PlayerTest() {
               &PlayerTest::advanceZeroDurationPause,
               &PlayerTest::advanceZeroDurationInfinitePlayCount,
               &PlayerTest::advanceZeroDurationInfinitePlayCountChrono,
+
+              &PlayerTest::seekByStopped,
+              &PlayerTest::seekByPlaying,
+              &PlayerTest::seekByPaused,
+              &PlayerTest::seekByPausedParked,
+
+              &PlayerTest::seekToStopped,
+              &PlayerTest::seekToPlaying,
+              &PlayerTest::seekToPaused,
+              &PlayerTest::seekToPausedParked,
 
               &PlayerTest::setState,
 
@@ -798,6 +818,226 @@ void PlayerTest::advanceZeroDurationInfinitePlayCountChrono() {
     CORRADE_COMPARE(player.elapsed(std::chrono::seconds{100}),
         std::make_pair(0, 0.0f));
     CORRADE_COMPARE(value, 4.0f);
+}
+
+void PlayerTest::seekByStopped() {
+    Float value = -1.0f;
+    Player<Float> player;
+    player.add(Track, value);
+
+    CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(0.0f), std::make_pair(0, 0.0f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    player.seekBy(1.5f);
+    player.advance(1.75f);
+
+    /* Nothing should change */
+    CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(0.0f), std::make_pair(0, 0.0f));
+    CORRADE_COMPARE(value, -1.0f);
+}
+
+void PlayerTest::seekByPlaying() {
+    Float value = -1.0f;
+    Player<Float> player;
+    player.add(Track, value)
+        .play(22.0f);
+
+    /* 1.75 secs in */
+    player.advance(23.75f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 1.75f));
+    CORRADE_COMPARE(value, 4.0f);
+
+    /* Seek to 0.5 secs in, the value should not change after just a seek */
+    value = -1.0f;
+    player.seekBy(-1.25f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 0.5f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* Now it should be updated at 0.5 secs in */
+    player.advance(23.75f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 0.5f));
+    CORRADE_COMPARE(value, 2.0f);
+}
+
+void PlayerTest::seekByPaused() {
+    Float value = -1.0f;
+    Player<Float> player;
+    player.add(Track, value)
+        .play(22.0f);
+
+    /* Pause at 1.75 secs in, no advance() yet so not parked yet */
+    player.pause(23.75f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 1.75f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* Seek to 0.5 secs in, the value should not change after just a seek */
+    player.seekBy(-1.25f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 0.5f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* Now it should be updated at 0.5 secs in */
+    player.advance(23.75f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 0.5f));
+    CORRADE_COMPARE(value, 2.0f);
+
+    /* Updating again should do nothing */
+    value = -1.0f;
+    player.advance(25.0f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(25.0f), std::make_pair(0, 0.5f));
+    CORRADE_COMPARE(value, -1.0f);
+}
+
+void PlayerTest::seekByPausedParked() {
+    Float value = -1.0f;
+    Player<Float> player;
+    player.add(Track, value)
+        .play(22.0f);
+
+    /* Pause at 1.75 secs in */
+    player.pause(23.75f)
+        .advance(23.75f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 1.75f));
+    CORRADE_COMPARE(value, 4.0f);
+
+    /* Seek to 0.5 secs in, the value should not change after just a seek */
+    value = -1.0f;
+    player.seekBy(-1.25f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 0.5f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* Now it should be updated (re-parked) at 0.5 secs in */
+    player.advance(23.75f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 0.5f));
+    CORRADE_COMPARE(value, 2.0f);
+
+    /* Updating again should do nothing */
+    value = -1.0f;
+    player.advance(25.0f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(25.0f), std::make_pair(0, 0.5f));
+    CORRADE_COMPARE(value, -1.0f);
+}
+
+void PlayerTest::seekToStopped() {
+    Float value = -1.0f;
+    Player<Float> player;
+    player.add(Track, value);
+
+    CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(0.0f), std::make_pair(0, 0.0f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    player.seekTo(1.75f, -0.5f);
+    player.advance(1.75f);
+
+    /* Nothing should change */
+    CORRADE_COMPARE(player.state(), State::Stopped);
+    CORRADE_COMPARE(player.elapsed(0.0f), std::make_pair(0, 0.0f));
+    CORRADE_COMPARE(value, -1.0f);
+}
+
+void PlayerTest::seekToPlaying() {
+    Float value = -1.0f;
+    Player<Float> player;
+    player.add(Track, value)
+        .play(22.0f);
+
+    /* 1.75 secs in */
+    player.advance(23.75f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 1.75f));
+    CORRADE_COMPARE(value, 4.0f);
+
+    /* Seek to 0.5 secs in, the value should not change after just a seek */
+    value = -1.0f;
+    player.seekTo(23.75f, 0.5f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 0.5f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* Now it should be updated at 0.5 secs in */
+    player.advance(23.75f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 0.5f));
+    CORRADE_COMPARE(value, 2.0f);
+}
+
+void PlayerTest::seekToPaused() {
+    Float value = -1.0f;
+    Player<Float> player;
+    player.add(Track, value)
+        .play(22.0f);
+
+    /* Pause at 1.75 secs in, no advance() yet so not parked yet */
+    player.pause(23.75f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 1.75f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* Seek to 0.5 secs in, the value should not change after just a seek */
+    player.seekTo(23.75f, 0.5f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 0.5f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* Now it should be updated at 0.5 secs in */
+    player.advance(23.75f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 0.5f));
+    CORRADE_COMPARE(value, 2.0f);
+
+    /* Updating again should do nothing */
+    value = -1.0f;
+    player.advance(25.0f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(25.0f), std::make_pair(0, 0.5f));
+    CORRADE_COMPARE(value, -1.0f);
+}
+
+void PlayerTest::seekToPausedParked() {
+    Float value = -1.0f;
+    Player<Float> player;
+    player.add(Track, value)
+        .play(22.0f);
+
+    /* Pause at 1.75 secs in */
+    player.pause(23.75f)
+        .advance(23.75f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 1.75f));
+    CORRADE_COMPARE(value, 4.0f);
+
+    /* Seek to 0.5 secs in, the value should not change after just a seek */
+    value = -1.0f;
+    player.seekTo(23.75f, 0.5f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 0.5f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* Now it should be updated (re-parked) at 0.5 secs in */
+    player.advance(23.75f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(23.75f), std::make_pair(0, 0.5f));
+    CORRADE_COMPARE(value, 2.0f);
+
+    /* Updating again should do nothing */
+    value = -1.0f;
+    player.advance(25.0f);
+    CORRADE_COMPARE(player.state(), State::Paused);
+    CORRADE_COMPARE(player.elapsed(25.0f), std::make_pair(0, 0.5f));
+    CORRADE_COMPARE(value, -1.0f);
 }
 
 void PlayerTest::setState() {

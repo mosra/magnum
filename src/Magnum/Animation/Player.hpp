@@ -127,6 +127,44 @@ template<class T, class K> Player<T, K>& Player<T, K>::pause(T pauseTime) {
     return *this;
 }
 
+template<class T, class K> Player<T, K>& Player<T, K>::seekBy(T timeDelta) {
+    /* Animation is stopped, nothing to do */
+    if(_state == State::Stopped) return *this;
+
+    /* If the animation is paused and parked already, trigger a "park" again in
+       order to have the values updated on the next call to advance(). The
+       value is simply the new elapsed animation time. */
+    if(_state == State::Paused && _stopPauseTime == T{}) {
+        _stopPauseTime = _startTime + timeDelta;
+        _startTime = {};
+        return *this;
+    }
+
+    /* Otherwise, the animation is either playing or not yet parked, simply
+       patch the start time to make the seek */
+    _startTime -= timeDelta;
+    return *this;
+}
+
+template<class T, class K> Player<T, K>& Player<T, K>::seekTo(T seekTime, T animationTime) {
+    /* Animation is stopped, nothing to do */
+    if(_state == State::Stopped) return *this;
+
+    /* If the animation is paused and parked already, trigger a "park" again in
+       order to have the values updated on the next call to advance(). The
+       value is simply the new elapsed animation time. */
+    if(_state == State::Paused && _stopPauseTime == T{}) {
+        _stopPauseTime = animationTime;
+        _startTime = {};
+        return *this;
+    }
+
+    /* Otherwise, the animation is either playing or not yet parked, simply
+       patch the start time to make the seek */
+    _startTime = seekTime - animationTime;
+    return *this;
+}
+
 template<class T, class K> Player<T, K>& Player<T, K>::stop() {
     _state = State::Stopped;
     /* Anything, just not a default-constructed value */

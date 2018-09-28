@@ -160,7 +160,14 @@ Calling @ref pause() while the animation is running immediately transfers the
 animation state to @ref State::Paused and the next @ref advance() iteration
 will give out interpolated values corresponding to a time that was passed to
 the @ref pause() function. After that, no more updates are done until the
-animation is resumed again with @ref play() or stopped with @ref stop().
+animation is resumed again with @ref play(), stopped with @ref stop() or seeked
+using @ref seekBy() / @ref seekTo().
+
+Calling @ref seekBy() / @ref seekTo() while the animation is either playing or
+pause will cause it to jump to specified time -- the next call to @ref advance()
+will update the destination locations and/or fire user-defined callbacks with
+new values, behaving as if the animation was played / paused with the seek
+time.
 
 The callbacks are only ever fired from within the @ref advance() function,
 never from @ref pause(), @ref stop() or any other API.
@@ -643,6 +650,42 @@ template<class T, class K
         Player<T, K>& pause(T pauseTime);
 
         /**
+         * @brief Seek by given time delta
+         *
+         * Causes the animation to jump forward (if @p timeDelta is positive)
+         * or backward (if @p timeDelta is negative). If @ref state() is
+         * @ref State::Paused, seeking too far backward will make the animation
+         * paused at the beginning, while seeking too far forward will cause
+         * it paused at the end (i.e., not stopped). If @ref state() is already
+         * @ref State::Stopped, the function does nothing. See @ref advance()
+         * for a detailed description of seeking behavior.
+         *
+         * @note This function doesn't clamp the seek in any way --- so for
+         *      example seeking too far back will make the animation wait for
+         *      being played from the beginning in the future.
+         */
+        Player<T, K>& seekBy(T timeDelta);
+
+        /**
+         * @brief Seek to given absolute animation time
+         *
+         * Causes the animation to jump to @p animationTime at given
+         * @p seekTime. If @ref state() is @ref State::Playing, seeking too far
+         * backward will make the animation start from the beginning, while
+         * seeking too far forward will cause the animation to be stopped. If
+         * @ref state() is @ref State::Paused, seeking too far backward will
+         * make the animation paused at the beginning, while seeking too far
+         * forward will cause it paused at the end (i.e., not stopped). If
+         * @ref state() is @ref State::Stopped, the function does nothing. See
+         * @ref advance() for a detailed description of seeking behavior.
+         *
+         * @note This function doesn't clamp the seek in any way --- so for
+         *      example seeking too far back will make the animation wait for
+         *      being played from the beginning in the future.
+         */
+        Player<T, K>& seekTo(T seekTime, T animationTime);
+
+        /**
          * @brief Stop
          *
          * Stops the currently playing animation. If @ref state() is
@@ -689,7 +732,8 @@ template<class T, class K
          * fire user-defined callbacks with key and result values corresponding
          * to the time passed to the @ref pause() call before in order to
          * correctly "park" the animation. After that, no more updates are done
-         * until the animation is started again.
+         * until the animation is started again or @ref seekBy() / @ref seekTo()
+         * is called.
          *
          * If @ref stop() was called right before a particular @ref advance()
          * iteration, the function will update destination locations and/or
@@ -697,6 +741,14 @@ template<class T, class K
          * to the begin time of @ref duration() in order to correctly "park"
          * the animation back to its initial state. After that, no more updates
          * are done until the animation is started again.
+         *
+         * If @ref seekBy() or @ref seekTo() was called right before a
+         * particular @ref advance() iteration and @ref state() is
+         * @ref State::Paused, the function will update destination locations
+         * and/or fire user-defined callbacks with key and result values
+         * corresponding to the new pause time in order to correctly "park" the
+         * animation. After that, no more updates are done until the animation
+         * is started again or @ref seekBy() / @ref seekTo() is called.
          * @see @ref elapsed()
          */
         Player<T, K>& advance(T time);
