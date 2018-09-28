@@ -289,6 +289,8 @@ template<UnsignedInt dimensions, class T> class Range {
 
 Convenience alternative to @cpp Range<1, T> @ce. See @ref Range for more
 information.
+@see @ref Range2D, @ref Range3D, @ref Magnum::Range1D, @ref Magnum::Range1Di,
+    @ref Magnum::Range1Dd
 */
 #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
 template<class T> using Range1D = Range<1, T>;
@@ -298,7 +300,8 @@ template<class T> using Range1D = Range<1, T>;
 @brief Two-dimensional range
 
 See @ref Range for more information.
-@see @ref Range1D, @ref Range3D
+@see @ref Range1D, @ref Range3D, @ref Magnum::Range2D, @ref Magnum::Range2Di,
+    @ref Magnum::Range2Dd
 */
 template<class T> class Range2D: public Range<2, T> {
     public:
@@ -440,7 +443,8 @@ template<class T> class Range2D: public Range<2, T> {
 @brief Three-dimensional range
 
 See @ref Range for more information.
-@see @ref Range1D, @ref Range2D
+@see @ref Range1D, @ref Range2D, @ref Magnum::Range3D, @ref Magnum::Range3Di,
+    @ref Magnum::Range3Dd
 */
 template<class T> class Range3D: public Range<3, T> {
     public:

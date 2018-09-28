@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Math::RectangularMatrix, typedef @ref Magnum::Math::Matrix2x3, @ref Magnum::Math::Matrix3x2, @ref Magnum::Math::Matrix2x4, @ref Magnum::Math::Matrix4x2, @ref Magnum::Math::Matrix3x4, @ref Magnum::Math::Matrix4x3
+ * @brief Class @ref Magnum::Math::RectangularMatrix, alias @ref Magnum::Math::Matrix2x3, @ref Magnum::Math::Matrix3x2, @ref Magnum::Math::Matrix2x4, @ref Magnum::Math::Matrix4x2, @ref Magnum::Math::Matrix3x4, @ref Magnum::Math::Matrix4x3
  */
 
 #include "Magnum/Math/Vector.h"
