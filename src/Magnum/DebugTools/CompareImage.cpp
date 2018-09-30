@@ -93,6 +93,7 @@ std::tuple<std::vector<Float>, Float, Float> calculateImageDelta(const ImageView
             case PixelFormat::second:                                       \
                 max = calculateImageDelta<size, T>(actual, expected, delta); \
                 break;
+        /* LCOV_EXCL_START */
         _d(R8Unorm, R8UI, 1, UnsignedByte)
         _d(RG8Unorm, RG8UI, 2, UnsignedByte)
         _d(RGB8Unorm, RGB8UI, 3, UnsignedByte)
@@ -121,6 +122,7 @@ std::tuple<std::vector<Float>, Float, Float> calculateImageDelta(const ImageView
         _c(RG32F, 2, Float)
         _c(RGB32F, 3, Float)
         _c(RGBA32F, 4, Float)
+        /* LCOV_EXCL_STOP */
         #undef _d
         #undef _c
 
@@ -250,6 +252,7 @@ void printPixelAt(Debug& out, const char* const pixels, const std::size_t stride
             case PixelFormat::second:                                       \
                 out << pixelAt<size, T>(pixels, stride, pos);               \
                 break;
+        /* LCOV_EXCL_START */
         _d(R8Unorm, R8UI, 1, UnsignedByte)
         _d(RG8Unorm, RG8UI, 2, UnsignedByte)
         _c(RGB8UI, 3, UnsignedByte)
@@ -279,6 +282,7 @@ void printPixelAt(Debug& out, const char* const pixels, const std::size_t stride
         _c(RG32F, 2, Float)
         _c(RGB32F, 3, Float)
         _c(RGBA32F, 4, Float)
+        /* LCOV_EXCL_STOP */
         #undef _d
         #undef _c
 
@@ -346,7 +350,7 @@ void printPixelAt(Debug& out, const char* const pixels, const std::size_t stride
         CORRADE_IGNORE_DEPRECATED_POP
         #endif
             /* Already handled by a printing assert before */
-            CORRADE_ASSERT_UNREACHABLE();
+            CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
 }
 
