@@ -149,7 +149,9 @@ elseif(BUILD_STATIC_PIC)
 endif()
 target_link_libraries(MagnumDebugTools PUBLIC Magnum)
 if(Corrade_TestSuite_FOUND)
-    target_link_libraries(MagnumDebugTools PUBLIC Corrade::TestSuite)
+    target_link_libraries(MagnumDebugTools PUBLIC
+        Corrade::TestSuite
+        MagnumTrade)
 endif()
 if(TARGET_GL)
     target_link_libraries(MagnumDebugTools PUBLIC MagnumGL)
@@ -188,7 +190,9 @@ if(BUILD_TESTS)
     endif()
     target_link_libraries(MagnumDebugToolsTestLib PUBLIC Magnum)
     if(Corrade_TestSuite_FOUND)
-        target_link_libraries(MagnumDebugToolsTestLib PUBLIC Corrade::TestSuite)
+        target_link_libraries(MagnumDebugToolsTestLib PUBLIC
+            Corrade::TestSuite
+            MagnumTrade)
     endif()
     if(TARGET_GL)
         target_link_libraries(MagnumDebugToolsTestLib PUBLIC MagnumGL)

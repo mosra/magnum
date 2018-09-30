@@ -1,5 +1,3 @@
-#ifndef Magnum_DebugTools_visibility_h
-#define Magnum_DebugTools_visibility_h
 /*
     This file is part of Magnum.
 
@@ -25,24 +23,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <Corrade/Utility/VisibilityMacros.h>
-
-#include "Magnum/configure.h"
-
-#ifndef DOXYGEN_GENERATING_OUTPUT
-#ifndef MAGNUM_BUILD_STATIC
-    #if defined(MagnumDebugTools_EXPORTS) || defined(MagnumDebugToolsObjects_EXPORTS)
-        #define MAGNUM_DEBUGTOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
-    #else
-        #define MAGNUM_DEBUGTOOLS_EXPORT CORRADE_VISIBILITY_IMPORT
-    #endif
-#else
-    #define MAGNUM_DEBUGTOOLS_EXPORT CORRADE_VISIBILITY_STATIC
-#endif
-#define MAGNUM_DEBUGTOOLS_LOCAL CORRADE_VISIBILITY_LOCAL
-#else
-#define MAGNUM_DEBUGTOOLS_EXPORT
-#define MAGNUM_DEBUGTOOLS_LOCAL
-#endif
-
-#endif
+#cmakedefine ANYIMAGEIMPORTER_PLUGIN_FILENAME "${ANYIMAGEIMPORTER_PLUGIN_FILENAME}"
+#cmakedefine TGAIMPORTER_PLUGIN_FILENAME "${TGAIMPORTER_PLUGIN_FILENAME}"
+#define DEBUGTOOLS_TEST_DIR "${DEBUGTOOLS_TEST_DIR}"

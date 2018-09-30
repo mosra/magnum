@@ -23,13 +23,75 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/TestSuite/Tester.h>
+#include <Corrade/PluginManager/Manager.h>
+#include <Magnum/Image.h>
+#include <Magnum/PixelFormat.h>
+#include <Magnum/DebugTools/CompareImage.h>
 #include <Magnum/DebugTools/ResourceManager.h>
 #include <Magnum/DebugTools/ObjectRenderer.h>
 #include <Magnum/SceneGraph/Drawable.h>
 #include <Magnum/SceneGraph/Object.h>
 #include <Magnum/SceneGraph/MatrixTransformation3D.h>
+#include <Magnum/Trade/AbstractImporter.h>
 
 using namespace Magnum;
+
+namespace {
+    Image2D doProcessing() {
+        return Image2D{PixelFormat::RGBA8Unorm, {}, {}};
+    }
+
+    Image2D loadExpectedImage() {
+        return Image2D{PixelFormat::RGBA8Unorm, {}, {}};
+    }
+}
+
+struct Foo: TestSuite::Tester {
+void foo() {
+{
+/* [CompareImageFile] */
+CORRADE_COMPARE_WITH("actual.png", "expected.png",
+    (DebugTools::CompareImageFile{15.5f, 5.0f}));
+/* [CompareImageFile] */
+}
+
+{
+/* [CompareImageFile-manager] */
+PluginManager::Manager<Trade::AbstractImporter> manager;
+
+CORRADE_COMPARE_WITH("actual.png", "expected.png",
+    (DebugTools::CompareImageFile{manager, 15.5f, 5.0f}));
+/* [CompareImageFile-manager] */
+}
+
+{
+/* [CompareImageFile-skip] */
+PluginManager::Manager<Trade::AbstractImporter> manager;
+if(manager.loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
+   manager.loadState("PngImporter") == PluginManager::LoadState::NotFound)
+    CORRADE_SKIP("AnyImageImporter/PngImporter not found, can't compare.");
+
+CORRADE_COMPARE_WITH("actual.png", "expected.png",
+    (DebugTools::CompareImageFile{manager, 15.5f, 5.0f}));
+/* [CompareImageFile-skip] */
+}
+
+{
+/* [CompareImageToFile] */
+Image2D actual = doProcessing();
+CORRADE_COMPARE_WITH(actual, "expected.png",
+    (DebugTools::CompareImageToFile{15.5f, 5.0f}));
+/* [CompareImageToFile] */
+
+/* [CompareFileToImage] */
+Image2D expected = loadExpectedImage();
+CORRADE_COMPARE_WITH("actual.png", expected,
+    (DebugTools::CompareFileToImage{15.5f, 5.0f}));
+/* [CompareFileToImage] */
+}
+}
+};
 
 int main() {
 {
