@@ -73,11 +73,22 @@ check() {
 
     rm -rf coverage
     mkdir coverage
+    # Keep in sync with package/ci/appveyor-lcov.sh and travis.yml, please
     lcov --gcov-tool="gcov-6" --directory . --capture --output-file coverage.info
-    lcov --gcov-tool="gcov-6" --extract coverage.info "*/src/Magnum*/*" --output-file coverage.info
-    lcov --gcov-tool="gcov-6" --remove coverage.info "*/src/MagnumExternal/*" --output-file coverage.info
-    lcov --gcov-tool="gcov-6" --remove coverage.info "*/Test/*" --output-file coverage.info
-    lcov --gcov-tool="gcov-6" --remove coverage.info "*/build-coverage/src/*" --output-file coverage.info
+    lcov --gcov-tool="gcov-6" --extract coverage.info "*/src/Magnum*/*" --output-file coverage.info > /dev/null
+    # Deprecated, we don't care about coverage anymore
+    lcov --gcov-tool="gcov-6" --remove coverage.info "*/src/Magnum/Shapes/*" --output-file coverage.info > /dev/null
+    lcov --gcov-tool="gcov-6" --remove coverage.info "*/src/Magnum/DebugTools/ShapeRenderer*" --output-file coverage.info > /dev/null
+    lcov --gcov-tool="gcov-6" --remove coverage.info "*/src/Magnum/DebugTools/Implementation/*BoxRenderer*" --output-file coverage.info > /dev/null
+    lcov --gcov-tool="gcov-6" --remove coverage.info "*/src/Magnum/DebugTools/Implementation/AbstractShapeRenderer*" --output-file coverage.info > /dev/null
+    lcov --gcov-tool="gcov-6" --remove coverage.info "*/src/Magnum/DebugTools/Implementation/CapsuleRenderer*" --output-file coverage.info > /dev/null
+    lcov --gcov-tool="gcov-6" --remove coverage.info "*/src/Magnum/DebugTools/Implementation/CylinderRenderer*" --output-file coverage.info > /dev/null
+    lcov --gcov-tool="gcov-6" --remove coverage.info "*/src/Magnum/DebugTools/Implementation/LineSegmentRenderer*" --output-file coverage.info > /dev/null
+    lcov --gcov-tool="gcov-6" --remove coverage.info "*/src/Magnum/DebugTools/Implementation/PointRenderer*" --output-file coverage.info > /dev/null
+    lcov --gcov-tool="gcov-6" --remove coverage.info "*/src/Magnum/DebugTools/Implementation/SphereRenderer*" --output-file coverage.info > /dev/null
+    lcov --gcov-tool="gcov-6" --remove coverage.info "*/src/MagnumExternal/*" --output-file coverage.info > /dev/null
+    lcov --gcov-tool="gcov-6" --remove coverage.info "*/Test/*" --output-file coverage.info > /dev/null
+    lcov --gcov-tool="gcov-6" --remove coverage.info "*/build-coverage/src/*" --output-file coverage.info > /dev/null
     genhtml --output-directory ./coverage coverage.info
 }
 
