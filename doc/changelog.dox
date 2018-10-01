@@ -356,6 +356,9 @@ See also:
     a proper documented default value instead of being left uninitialized.
 -   @ref Math::sclerp() was not properly interpolating the translation if
     rotation was the same on both sides
+-   Improved @ref TextureTools::distanceField() to work better on shader
+    compilers that have problems compiling nested loops (WebGL implementations,
+    some ES2 devices)
 
 @subsection changelog-latest-docs Documentation
 

@@ -40,11 +40,6 @@
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 0)
 #endif
-uniform lowp int radius;
-
-#ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 1)
-#endif
 uniform mediump vec2 scaling;
 
 #ifdef EXPLICIT_TEXTURE_LAYER
@@ -58,7 +53,7 @@ layout(pixel_center_integer) in mediump vec4 gl_FragCoord;
 #endif
 #else
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 2)
+layout(location = 1)
 #endif
 uniform mediump vec2 imageSizeInverted;
 #endif
@@ -108,12 +103,13 @@ void main() {
     const highp float sign = isInside ? 1.0 : -1.0;
 
     /* Minimal found distance is just out of the radius (i.e. infinity) */
-    highp float minDistanceSquared = float((radius+1)*(radius+1));
+    highp float minDistanceSquared = float((RADIUS+1)*(RADIUS+1));
 
     /* Go in circles around the point and find nearest value */
-    int radiusLimit = radius;
-    for(int i = 1; i <= radiusLimit; ++i) {
-        for(int j = 0, jmax = i*2; j < jmax; ++j) {
+    int radiusLimit = RADIUS;
+    for(int i = 1; i <= RADIUS; ++i) {
+        int jmax = i*2;
+        for(int j = 0; j < RADIUS*2; ++j) {
             #ifdef TEXELFETCH_USABLE
             const lowp ivec2 offset = ivec2(-i+j, i);
             #else
@@ -142,14 +138,18 @@ void main() {
                    value, e.g. for distance 3.5 we can find smaller value even
                    in radius 3 */
                 #ifdef NEW_GLSL
-                radiusLimit = min(radius, int(floor(length(vec2(offset)))));
+                radiusLimit = min(RADIUS, int(floor(length(vec2(offset)))));
                 #else
-                radiusLimit = int(min(float(radius), floor(length(vec2(offset)))));
+                radiusLimit = int(min(float(RADIUS), floor(length(vec2(offset)))));
                 #endif
             }
+
+            if(j + 1 >= jmax) break;
         }
+
+        if(i + 1 > radiusLimit) break;
     }
 
     /* Final signed distance, normalized from [-radius-1, radius+1] to [0, 1] */
-    value = sign*sqrt(minDistanceSquared)/float(radius*2+2)+0.5;
+    value = sign*sqrt(minDistanceSquared)/float(RADIUS*2+2)+0.5;
 }

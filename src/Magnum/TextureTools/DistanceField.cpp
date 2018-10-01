@@ -25,6 +25,7 @@
 
 #include "DistanceField.h"
 
+#include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/Math/Range.h"
@@ -52,12 +53,7 @@ class DistanceFieldShader: public GL::AbstractShaderProgram {
     public:
         typedef GL::Attribute<0, Vector2> Position;
 
-        explicit DistanceFieldShader();
-
-        DistanceFieldShader& setRadius(Int radius) {
-            setUniform(radiusUniform, radius);
-            return *this;
-        }
+        explicit DistanceFieldShader(Int radius);
 
         DistanceFieldShader& setScaling(const Vector2& scaling) {
             setUniform(scalingUniform, scaling);
@@ -79,12 +75,11 @@ class DistanceFieldShader: public GL::AbstractShaderProgram {
            units, so be careful to not step over that. ES3 on the same has 16. */
         enum: Int { TextureUnit = 7 };
 
-        Int radiusUniform{0},
-            scalingUniform{1},
+        Int scalingUniform{0},
             imageSizeInvertedUniform;
 };
 
-DistanceFieldShader::DistanceFieldShader() {
+DistanceFieldShader::DistanceFieldShader(Int radius) {
     #ifdef MAGNUM_BUILD_STATIC
     /* Import resources on static build, if not already */
     if(!Utility::Resource::hasGroup("MagnumTextureTools"))
@@ -103,7 +98,8 @@ DistanceFieldShader::DistanceFieldShader() {
 
     vert.addSource(rs.get("FullScreenTriangle.glsl"))
         .addSource(rs.get("DistanceFieldShader.vert"));
-    frag.addSource(rs.get("DistanceFieldShader.frag"));
+    frag.addSource(Utility::formatString("#define RADIUS {}\n", radius))
+        .addSource(rs.get("DistanceFieldShader.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 
@@ -125,7 +121,6 @@ DistanceFieldShader::DistanceFieldShader() {
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_uniform_location>())
     #endif
     {
-        radiusUniform = uniformLocation("radius");
         scalingUniform = uniformLocation("scaling");
 
         #ifndef MAGNUM_TARGET_GLES
@@ -175,9 +170,8 @@ void distanceField(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& 
         return;
     }
 
-    DistanceFieldShader shader;
-    shader.setRadius(radius)
-        .setScaling(Vector2(imageSize)/Vector2(rectangle.size()))
+    DistanceFieldShader shader{radius};
+    shader.setScaling(Vector2(imageSize)/Vector2(rectangle.size()))
         .bindTexture(input);
 
     #ifndef MAGNUM_TARGET_GLES
