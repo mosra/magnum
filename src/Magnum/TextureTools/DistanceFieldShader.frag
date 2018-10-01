@@ -38,18 +38,19 @@
 #endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 0) uniform int radius;
-layout(location = 1) uniform vec2 scaling;
-#else
-uniform lowp int radius;
-uniform mediump vec2 scaling;
+layout(location = 0)
 #endif
+uniform lowp int radius;
+
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 1)
+#endif
+uniform mediump vec2 scaling;
 
 #ifdef EXPLICIT_TEXTURE_LAYER
-layout(binding = 7) uniform sampler2D textureData;
-#else
-uniform lowp sampler2D textureData;
+layout(binding = 7)
 #endif
+uniform lowp sampler2D textureData;
 
 #ifdef TEXELFETCH_USABLE
 #ifndef GL_ES
@@ -57,10 +58,9 @@ layout(pixel_center_integer) in mediump vec4 gl_FragCoord;
 #endif
 #else
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 2) uniform vec2 imageSizeInverted;
-#else
-uniform mediump vec2 imageSizeInverted;
+layout(location = 2)
 #endif
+uniform mediump vec2 imageSizeInverted;
 #endif
 
 #ifdef NEW_GLSL
