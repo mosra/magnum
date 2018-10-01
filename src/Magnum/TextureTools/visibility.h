@@ -29,6 +29,7 @@
 
 #include "Magnum/configure.h"
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_BUILD_STATIC
     #ifdef MagnumTextureTools_EXPORTS
         #define MAGNUM_TEXTURETOOLS_EXPORT CORRADE_VISIBILITY_EXPORT
@@ -37,6 +38,9 @@
     #endif
 #else
     #define MAGNUM_TEXTURETOOLS_EXPORT CORRADE_VISIBILITY_STATIC
+#endif
+#else
+#define MAGNUM_TEXTURETOOLS_EXPORT
 #endif
 
 #endif
