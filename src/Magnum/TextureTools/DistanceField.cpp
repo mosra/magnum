@@ -76,7 +76,7 @@ class DistanceFieldShader: public GL::AbstractShaderProgram {
 
     private:
         /* ES2 on iOS (apparently independent on the device) has only 8 texture
-           units, so be careful to not step over that. ES3 has 16. */
+           units, so be careful to not step over that. ES3 on the same has 16. */
         enum: Int { TextureUnit = 7 };
 
         Int radiusUniform{0},
