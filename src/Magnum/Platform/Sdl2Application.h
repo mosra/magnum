@@ -228,6 +228,21 @@ If no other application header is included, this class is also aliased to
 @cpp Platform::Application @ce and the macro is aliased to @cpp MAGNUM_APPLICATION_MAIN() @ce
 to simplify porting.
 
+@subsection Platform-Sdl2Application-usage-linux Linux specifics
+
+SDL by default attempts to disable compositing, which may cause ugly flickering
+for non-fullscreen apps (KWin, among others, is known to respect this setting).
+When using SDL >= 2.0.8, @ref Sdl2Application turns this behavior off, keeping
+the compositor running to avoid the flicker. You can turn this behavior back on
+by enabling the [corresponding SDL hint](https://wiki.libsdl.org/CategoryHints) through an environment variable:
+
+@code{.sh}
+SDL_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR=1 ./your-app
+@endcode
+
+If you're running an older version of SDL, you can disallow apps from bypassing
+the compositor in system-wide KWin settings.
+
 @subsection Platform-Sdl2Application-usage-ios iOS specifics
 
 Leaving a default (zero) window size in @ref Configuration will cause the app

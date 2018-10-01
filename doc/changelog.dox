@@ -267,6 +267,9 @@ See also:
     @cpp {640, 480} @ce
 -   @ref Platform::Sdl2Application::Configuration::WindowFlags values that make
     no sense on Emscripten are not available there anymore
+-   When using SDL 2.0.8 and newer, @ref Platform::Sdl2Application no longer
+    attempts to disable compositing on Linux. See @ref Platform-Sdl2Application-usage-linux
+    for more information.
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 
