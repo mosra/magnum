@@ -33,9 +33,13 @@
 
 #include "Implementation/Egl.h"
 
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+#include <Corrade/Containers/ArrayView.h>
+#endif
+
 namespace Magnum { namespace Platform {
 
-WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, GLContext*) {
+WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, GLContext* const magnumContext) {
     /* Initialize */
     _display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
     if(!eglInitialize(_display, nullptr, nullptr)) {
@@ -84,7 +88,10 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
         return;
     }
 
-    const EGLint attributes[] = {
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_WEBGL)
+    const /* Is modified below to work around a SwiftShader limitation */
+    #endif
+    EGLint attributes[] = {
         #ifdef MAGNUM_TARGET_GLES
         EGL_CONTEXT_CLIENT_VERSION,
             #if defined(MAGNUM_TARGET_GLES2) || defined(CORRADE_TARGET_EMSCRIPTEN)
@@ -99,6 +106,8 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
             #endif
         #endif
         #ifndef MAGNUM_TARGET_WEBGL
+        /* Needs to be last because we're zeroing this out for SwiftShader (see
+           below) */
         EGL_CONTEXT_FLAGS_KHR, EGLint(configuration.flags()),
         #endif
         EGL_NONE
@@ -107,11 +116,41 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     #ifdef MAGNUM_TARGET_WEBGL
     static_cast<void>(configuration);
     #endif
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_WEBGL)
+    static_cast<void>(magnumContext);
+    #endif
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    const std::string version = eglQueryString(_display, EGL_VERSION);
+
+    /* SwiftShader 3.3.0.1 blows up on encountering EGL_CONTEXT_FLAGS_KHR with
+       a zero value, so erase these. It also doesn't handle them as correct
+       flags, but instead checks for the whole value, so a combination won't
+       work either: https://github.com/google/swiftshader/blob/5fb5e817a20d3e60f29f7338493f922b5ac9d7c4/src/OpenGL/libEGL/libEGL.cpp#L794-L8104 */
+    if(!configuration.flags() && version.find("SwiftShader") != std::string::npos && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-no-empty-egl-context-flags"))) {
+        auto& contextFlags = attributes[Containers::arraySize(attributes) - 3];
+        CORRADE_INTERNAL_ASSERT(contextFlags == EGL_CONTEXT_FLAGS_KHR);
+        contextFlags = EGL_NONE;
+    }
+    #endif
 
     if(!(_context = eglCreateContext(_display, config, EGL_NO_CONTEXT, attributes))) {
         Error() << "Platform::WindowlessEglApplication::tryCreateContext(): cannot create EGL context:" << Implementation::eglErrorString(eglGetError());
         return;
     }
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    /* SwiftShader 3.3.0.1 needs some pbuffer, otherwise it crashes somewhere
+       deep inside when making the context current */
+    if(version.find("SwiftShader") != std::string::npos && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-egl-context-needs-pbuffer"))) {
+        EGLint surfaceAttributes[] = {
+            EGL_WIDTH, 32,
+            EGL_HEIGHT, 32,
+            EGL_NONE
+        };
+        _surface = eglCreatePbufferSurface(_display, config, surfaceAttributes);
+    }
+    #endif
 }
 
 WindowlessEglContext::WindowlessEglContext(WindowlessEglContext&& other): _display{other._display}, _context{other._context} {
@@ -121,6 +160,9 @@ WindowlessEglContext::WindowlessEglContext(WindowlessEglContext&& other): _displ
 
 WindowlessEglContext::~WindowlessEglContext() {
     if(_context) eglDestroyContext(_display, _context);
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if(_surface) eglDestroySurface(_display, _surface);
+    #endif
     if(_display) eglTerminate(_display);
 }
 
@@ -132,8 +174,15 @@ WindowlessEglContext& WindowlessEglContext::operator=(WindowlessEglContext && ot
 }
 
 bool WindowlessEglContext::makeCurrent() {
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    /* _surface is EGL_NO_SURFACE everywhere except on SwiftShader. See above
+       for details. */
+    if(eglMakeCurrent(_display, _surface, _surface, _context))
+        return true;
+    #else
     if(eglMakeCurrent(_display, EGL_NO_SURFACE, EGL_NO_SURFACE, _context))
         return true;
+    #endif
 
     Error() << "Platform::WindowlessEglApplication::tryCreateContext(): cannot make context current:" << Implementation::eglErrorString(eglGetError());
     return false;

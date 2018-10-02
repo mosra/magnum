@@ -115,6 +115,10 @@ class WindowlessEglContext {
     private:
         EGLDisplay _display{};
         EGLContext _context{};
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        /* Needed only by SwiftShader, using EGL_NO_SURFACE everywhere else */
+        EGLSurface _surface = EGL_NO_SURFACE;
+        #endif
 };
 
 /**

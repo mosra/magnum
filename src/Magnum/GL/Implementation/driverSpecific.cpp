@@ -110,7 +110,18 @@ namespace {
            strings when running on Emscripten with -s USE_PTHREADS=1. Working
            around that by replacing all chars > 127 with spaces. Relevant code:
            https://github.com/kripken/emscripten/blob/7f89560101843198787530731f40a65288f6f15f/src/fetch-worker.js#L54-L58 */
-        "emscripten-pthreads-broken-unicode-shader-sources"
+        "emscripten-pthreads-broken-unicode-shader-sources",
+        #endif
+
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        /* Empty EGL_CONTEXT_FLAGS_KHR cause SwiftShader 3.3.0.1 to fail
+           context creation with EGL_BAD_ATTRIBUTE. Not sending the flags then.
+           Relevant code: https://github.com/google/swiftshader/blob/5fb5e817a20d3e60f29f7338493f922b5ac9d7c4/src/OpenGL/libEGL/libEGL.cpp#L794-L810 */
+        "swiftshader-no-empty-egl-context-flags",
+
+        /* SwiftShader 3.3.0.1 crashes deep inside eglMakeCurrent() when using
+           EGL_NO_SURFACE. Supplying a 32x32 PBuffer to work around that. */
+        "swiftshader-egl-context-needs-pbuffer",
         #endif
         /* [workarounds] */
     };

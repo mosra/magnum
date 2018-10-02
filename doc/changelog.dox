@@ -270,6 +270,11 @@ See also:
 -   When using SDL 2.0.8 and newer, @ref Platform::Sdl2Application no longer
     attempts to disable compositing on Linux. See @ref Platform-Sdl2Application-usage-linux
     for more information.
+-   New @cpp "swiftshader-no-empty-egl-context-flags" @ce and
+    @cpp "swiftshader-egl-context-needs-pbuffer" @ce workarounds to make
+    @ref Platform::WindowlessEglApplication working with
+    [SwiftShader](https://github.com/google/swiftshader). See
+    @ref opengl-workarounds for more information.
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 
