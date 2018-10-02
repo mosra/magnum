@@ -1399,6 +1399,8 @@ void CubeMapTextureGLTest::generateMipmap() {
     CORRADE_COMPARE(texture.imageSize(1), Vector2i( 0));
     #endif
 
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
     texture.generateMipmap();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
