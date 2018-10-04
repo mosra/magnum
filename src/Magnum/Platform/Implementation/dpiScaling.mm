@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#import "NSBundle.h"
+#import "Foundation/NSBundle.h"
 
 #include "dpiScaling.hpp"
 
