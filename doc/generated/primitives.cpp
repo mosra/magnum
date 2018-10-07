@@ -56,6 +56,7 @@
 #include <Magnum/Primitives/Cone.h>
 #include <Magnum/Primitives/Cube.h>
 #include <Magnum/Primitives/Cylinder.h>
+#include <Magnum/Primitives/Gradient.h>
 #include <Magnum/Primitives/Grid.h>
 #include <Magnum/Primitives/Icosphere.h>
 #include <Magnum/Primitives/Line.h>
@@ -117,6 +118,14 @@ struct PrimitiveVisualizer: Platform::WindowlessApplication {
     std::pair<Trade::MeshData3D, std::string> icosphereSolid();
     std::pair<Trade::MeshData3D, std::string> planeSolid();
     std::pair<Trade::MeshData3D, std::string> uvSphereSolid();
+
+    std::pair<Trade::MeshData2D, std::string> gradient2D();
+    std::pair<Trade::MeshData2D, std::string> gradient2DHorizontal();
+    std::pair<Trade::MeshData2D, std::string> gradient2DVertical();
+
+    std::pair<Trade::MeshData3D, std::string> gradient3D();
+    std::pair<Trade::MeshData3D, std::string> gradient3DHorizontal();
+    std::pair<Trade::MeshData3D, std::string> gradient3DVertical();
 };
 
 namespace {
@@ -346,6 +355,52 @@ int PrimitiveVisualizer::exec() {
         }
     }
 
+    {
+        Shaders::VertexColor2D shader;
+        shader.setTransformationProjectionMatrix(Projection2D*Transformation2D);
+
+        for(auto fun: {&PrimitiveVisualizer::gradient2D,
+                       &PrimitiveVisualizer::gradient2DHorizontal,
+                       &PrimitiveVisualizer::gradient2DVertical}) {
+            multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
+
+            std::string filename;
+            Containers::Optional<Trade::MeshData2D> data;
+            std::tie(data, filename) = (this->*fun)();
+
+            MeshTools::compile(*data)
+                .draw(shader)
+                .draw(wireframe2D);
+
+            GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
+            Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
+            converter->exportToFile(result, Utility::Directory::join("../", "primitives-" + filename));
+        }
+    }
+
+    {
+        Shaders::VertexColor3D shader;
+        shader.setTransformationProjectionMatrix(Projection3D*Transformation3D);
+
+        for(auto fun: {&PrimitiveVisualizer::gradient3D,
+                       &PrimitiveVisualizer::gradient3DHorizontal,
+                       &PrimitiveVisualizer::gradient3DVertical}) {
+            multisampleFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
+
+            std::string filename;
+            Containers::Optional<Trade::MeshData3D> data;
+            std::tie(data, filename) = (this->*fun)();
+
+            MeshTools::compile(*data)
+                .draw(shader)
+                .draw(wireframe3D);
+
+            GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
+            Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
+            converter->exportToFile(result, Utility::Directory::join("../", "primitives-" + filename));
+        }
+    }
+
     return 0;
 }
 
@@ -353,8 +408,40 @@ std::pair<Trade::MeshData2D, std::string> PrimitiveVisualizer::axis2D() {
     return {Primitives::axis2D(), "axis2d.png"};
 }
 
+std::pair<Trade::MeshData2D, std::string> PrimitiveVisualizer::gradient2D() {
+    return {Primitives::gradient2D({1.0f, -2.0f}, 0x2f83cc_srgbf, {-1.0f, 2.0f}, 0x3bd267_srgbf), "gradient2d.png"};
+}
+
+namespace {
+    /* End colors for axis-aligned gradients are 20%/80% blends of the above to
+       match the range */
+    const Color3 Gradient20Percent = Math::lerp(0x2f83cc_srgbf, 0x3bd267_srgbf, 0.2f);
+    const Color3 Gradient80Percent = Math::lerp(0x2f83cc_srgbf, 0x3bd267_srgbf, 0.8f);
+}
+
+std::pair<Trade::MeshData2D, std::string> PrimitiveVisualizer::gradient2DHorizontal() {
+    return {Primitives::gradient2DHorizontal(Gradient20Percent, Gradient80Percent), "gradient2dhorizontal.png"};
+}
+
+std::pair<Trade::MeshData2D, std::string> PrimitiveVisualizer::gradient2DVertical() {
+    /* End colors are 20%/80% blends of the above to match the range */
+    return {Primitives::gradient2DVertical(Gradient20Percent, Gradient80Percent), "gradient2dvertical.png"};
+}
+
 std::pair<Trade::MeshData3D, std::string> PrimitiveVisualizer::axis3D() {
     return {Primitives::axis3D(), "axis3d.png"};
+}
+
+std::pair<Trade::MeshData3D, std::string> PrimitiveVisualizer::gradient3D() {
+    return {Primitives::gradient3D({1.0f, -2.0f, -1.5f}, 0x2f83cc_srgbf, {-1.0f, 2.0f, -1.5f}, 0x3bd267_srgbf), "gradient3d.png"};
+}
+
+std::pair<Trade::MeshData3D, std::string> PrimitiveVisualizer::gradient3DHorizontal() {
+    return {Primitives::gradient3DHorizontal(Gradient20Percent, Gradient80Percent), "gradient3dhorizontal.png"};
+}
+
+std::pair<Trade::MeshData3D, std::string> PrimitiveVisualizer::gradient3DVertical() {
+    return {Primitives::gradient3DVertical(Gradient20Percent, Gradient80Percent), "gradient3dvertical.png"};
 }
 
 std::pair<Trade::MeshData2D, std::string> PrimitiveVisualizer::capsule2DWireframe() {

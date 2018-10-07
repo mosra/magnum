@@ -57,7 +57,7 @@ enum class SquareTextureCoords: UnsignedByte {
 
 @image html primitives-squaresolid.png width=256px
 
-@see @ref squareWireframe(), @ref planeSolid()
+@see @ref squareWireframe(), @ref planeSolid(), @ref gradient2D()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D squareSolid(SquareTextureCoords textureCoords = SquareTextureCoords::DontGenerate);
 

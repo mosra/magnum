@@ -23,7 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/Color.h"
+#include "Magnum/Primitives/Gradient.h"
 #include "Magnum/Primitives/Line.h"
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
@@ -31,6 +32,25 @@
 using namespace Magnum;
 
 int main() {
+{
+Color4 colorA, colorB;
+/* [gradient2DHorizontal] */
+Primitives::gradient2D({-1.0f, 0.0f}, colorA, {1.0f, 0.0f}, colorB);
+/* [gradient2DHorizontal] */
+
+/* [gradient2DVertical] */
+Primitives::gradient2D({0.0f, -1.0f}, colorA, {0.0f, 1.0f}, colorB);
+/* [gradient2DVertical] */
+
+/* [gradient3DHorizontal] */
+Primitives::gradient3D({-1.0f, 0.0f, 0.0f}, colorA, {1.0f, 0.0f, 0.0f}, colorB);
+/* [gradient3DHorizontal] */
+
+/* [gradient3DVertical] */
+Primitives::gradient3D({0.0f, -1.0f, 0.0f}, colorA, {0.0f, 1.0f, 0.0f}, colorB);
+/* [gradient3DVertical] */
+}
+
 {
 /* [line2D-identity] */
 Primitives::line2D({0.0f, 0.0f}, {1.0f, 0.0f});

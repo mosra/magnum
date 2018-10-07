@@ -160,6 +160,10 @@ See also:
 
 @subsubsection changelog-latest-new-primitives Primitives library
 
+-   New @ref Primitives::gradient2D(), @ref Primitives::gradient2DHorizontal(),
+    @ref Primitives::gradient2DVertical(), @ref Primitives::gradient3D(),
+    @ref Primitives::gradient3DHorizontal() and
+    @ref Primitives::gradient3DVertical() primitives
 -   New @ref Primitives::line2D(const Vector2&, const Vector2&) and
     @ref Primitives::line3D(const Vector3&, const Vector3&) overloads for
     easier creation of arbitrary lines, as transforming the line identities is

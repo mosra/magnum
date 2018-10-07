@@ -58,7 +58,7 @@ normals in positive Z direction.
 
 @image html primitives-planesolid.png width=256px
 
-@see @ref planeWireframe(), @ref squareSolid()
+@see @ref planeWireframe(), @ref squareSolid(), @ref gradient3D()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D planeSolid(PlaneTextureCoords textureCoords = PlaneTextureCoords::DontGenerate);
 
