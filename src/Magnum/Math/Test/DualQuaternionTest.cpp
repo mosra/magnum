@@ -67,6 +67,8 @@ struct DualQuaternionTest: Corrade::TestSuite::Tester {
     void constructCopy();
     void convert();
 
+    void data();
+
     void isNormalized();
     template<class T> void isNormalizedEpsilonRotation();
     template<class T> void isNormalizedEpsilonTranslation();
@@ -117,6 +119,8 @@ DualQuaternionTest::DualQuaternionTest() {
               &DualQuaternionTest::constructCopy,
               &DualQuaternionTest::convert,
 
+              &DualQuaternionTest::data,
+
               &DualQuaternionTest::isNormalized,
               &DualQuaternionTest::isNormalizedEpsilonRotation<Float>,
               &DualQuaternionTest::isNormalizedEpsilonRotation<Double>,
@@ -154,15 +158,11 @@ DualQuaternionTest::DualQuaternionTest() {
 void DualQuaternionTest::construct() {
     constexpr DualQuaternion a = {{{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}};
     CORRADE_COMPARE(a, DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}));
+    CORRADE_COMPARE(a.real(), Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
+    CORRADE_COMPARE(a.dual(), Quaternion({0.5f, -3.1f, 3.3f}, 2.0f));
 
-    constexpr Quaternion b = a.real();
-    CORRADE_COMPARE(b, Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
-
-    constexpr Quaternion c = a.dual();
-    CORRADE_COMPARE(c, Quaternion({0.5f, -3.1f, 3.3f}, 2.0f));
-
-    constexpr DualQuaternion d({{1.0f, 2.0f, 3.0f}, -4.0f});
-    CORRADE_COMPARE(d, DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
+    constexpr DualQuaternion b({{1.0f, 2.0f, 3.0f}, -4.0f});
+    CORRADE_COMPARE(b, DualQuaternion({{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, Quaternion, Quaternion>::value));
 }
@@ -273,6 +273,23 @@ void DualQuaternionTest::convert() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<DualQuat, DualQuaternion>::value));
     CORRADE_VERIFY(!(std::is_convertible<DualQuaternion, DualQuat>::value));
+}
+
+void DualQuaternionTest::data() {
+    constexpr DualQuaternion ca{{{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}};
+
+    constexpr Quaternion b = ca.real();
+    CORRADE_COMPARE(b, Quaternion({1.0f, 2.0f, 3.0f}, -4.0f));
+
+    constexpr Quaternion c = ca.dual();
+    CORRADE_COMPARE(c, Quaternion({0.5f, -3.1f, 3.3f}, 2.0f));
+
+    DualQuaternion a{{{1.0f, 2.0f, 3.0f}, -4.0f}, {{0.5f, -3.1f, 3.3f}, 2.0f}};
+
+    constexpr Float d = *ca.data();
+    Float e = a.data()[7];
+    CORRADE_COMPARE(d, 1.0f);
+    CORRADE_COMPARE(e, 2.0f);
 }
 
 void DualQuaternionTest::isNormalized() {

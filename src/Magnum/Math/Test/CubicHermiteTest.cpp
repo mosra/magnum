@@ -600,8 +600,13 @@ void CubicHermiteTest::dataScalar() {
     CubicHermite1D a{2.0f, -2.0f, -0.5f};
     a.inTangent() = 3.0f;
     a.point() = 1.0f;
-    a.outTangent() = 2.0f;
-    CORRADE_COMPARE(a, (CubicHermite1D{3.0f, 1.0f, 2.0f}));
+    a.outTangent() = 2.1f;
+    CORRADE_COMPARE(a, (CubicHermite1D{3.0f, 1.0f, 2.1f}));
+
+    constexpr Float b = *ca.data();
+    Float c = a.data()[2];
+    CORRADE_COMPARE(b, 2.0f);
+    CORRADE_COMPARE(c, 2.1f);
 }
 
 void CubicHermiteTest::dataVector() {
@@ -618,6 +623,11 @@ void CubicHermiteTest::dataVector() {
     a.point().x() = 1.0f;
     a.outTangent().y() = 2.0f;
     CORRADE_COMPARE(a, (CubicHermite2D{{1.0f, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f}}));
+
+    constexpr Vector2 b = *ca.data();
+    Vector2 c = a.data()[2];
+    CORRADE_COMPARE(b, (Vector2{1.0f, 2.0f}));
+    CORRADE_COMPARE(c, (Vector2{3.0f, 2.0f}));
 }
 
 void CubicHermiteTest::dataComplex() {
@@ -634,6 +644,11 @@ void CubicHermiteTest::dataComplex() {
     a.point().real() = 1.0f;
     a.outTangent().imaginary() = 2.0f;
     CORRADE_COMPARE(a, (CubicHermiteComplex{{1.0f, 3.0f}, {1.0f, -2.0f}, {3.0f, 2.0f}}));
+
+    constexpr Complex b = *ca.data();
+    Complex c = a.data()[2];
+    CORRADE_COMPARE(b, (Complex{1.0f, 2.0f}));
+    CORRADE_COMPARE(c, (Complex{3.0f, 2.0f}));
 }
 
 void CubicHermiteTest::dataQuaternion() {
@@ -660,6 +675,11 @@ void CubicHermiteTest::dataQuaternion() {
         {{1.0f, 3.0f, -1.0f}, 3.0f},
         {{1.5f, -2.0f, 0.1f}, 1.0f},
         {{3.0f, -0.5f, 2.0f}, 0.3f}}));
+
+    constexpr Quaternion b = *ca.data();
+    Quaternion c = a.data()[2];
+    CORRADE_COMPARE(b, (Quaternion{{1.0f, 2.0f, -1.0f}, 3.0f}));
+    CORRADE_COMPARE(c, (Quaternion{{3.0f, -0.5f, 2.0f}, 0.3f}));
 }
 
 void CubicHermiteTest::compareScalar() {

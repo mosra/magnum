@@ -144,6 +144,15 @@ template<class T> class CubicHermite {
          */
         template<class U> constexpr explicit CubicHermite(const CubicHermite<U>& other) noexcept: _inTangent{T(other._inTangent)}, _point{T(other._point)}, _outTangent{T(other._outTangent)} {}
 
+        /**
+         * @brief Raw data
+         * @return One-dimensional array of three elements
+         *
+         * @see @ref inTangent(), @ref point(), @ref outTangent()
+         */
+        T* data() { return &_inTangent; }
+        constexpr const T* data() const { return &_inTangent; } /**< @overload */
+
         /** @brief Equality comparison */
         bool operator==(const CubicHermite<T>& other) const;
 

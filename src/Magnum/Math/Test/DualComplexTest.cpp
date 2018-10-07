@@ -64,6 +64,8 @@ struct DualComplexTest: Corrade::TestSuite::Tester {
     void constructCopy();
     void convert();
 
+    void data();
+
     void isNormalized();
     template<class T> void isNormalizedEpsilonRotation();
     template<class T> void isNormalizedEpsilonTranslation();
@@ -109,6 +111,8 @@ DualComplexTest::DualComplexTest() {
               &DualComplexTest::constructCopy,
               &DualComplexTest::convert,
 
+              &DualComplexTest::data,
+
               &DualComplexTest::isNormalized,
               &DualComplexTest::isNormalizedEpsilonRotation<Float>,
               &DualComplexTest::isNormalizedEpsilonRotation<Double>,
@@ -144,14 +148,11 @@ DualComplexTest::DualComplexTest() {
 void DualComplexTest::construct() {
     constexpr DualComplex a = {{-1.0f, 2.5f}, {3.0f, -7.5f}};
     CORRADE_COMPARE(a, DualComplex({-1.0f, 2.5f}, {3.0f, -7.5f}));
+    CORRADE_COMPARE(a.real(), Complex(-1.0f, 2.5f));
+    CORRADE_COMPARE(a.dual(), Complex(3.0f, -7.5f));
 
-    constexpr Complex b = a.real();
-    constexpr Complex c = a.dual();
-    CORRADE_COMPARE(b, Complex(-1.0f, 2.5f));
-    CORRADE_COMPARE(c, Complex(3.0f, -7.5f));
-
-    constexpr DualComplex d(Complex(-1.0f, 2.5f));
-    CORRADE_COMPARE(d, DualComplex({-1.0f, 2.5f}, {0.0f, 0.0f}));
+    constexpr DualComplex b(Complex(-1.0f, 2.5f));
+    CORRADE_COMPARE(b, DualComplex({-1.0f, 2.5f}, {0.0f, 0.0f}));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, Complex, Complex>::value));
 }
@@ -245,6 +246,22 @@ void DualComplexTest::convert() {
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<DualCmpl, DualComplex>::value));
     CORRADE_VERIFY(!(std::is_convertible<DualComplex, DualCmpl>::value));
+}
+
+void DualComplexTest::data() {
+    constexpr DualComplex ca{{-1.0f, 2.5f}, {3.0f, -7.5f}};
+
+    constexpr Complex b = ca.real();
+    constexpr Complex c = ca.dual();
+    CORRADE_COMPARE(b, Complex(-1.0f, 2.5f));
+    CORRADE_COMPARE(c, Complex(3.0f, -7.5f));
+
+    DualComplex a{{-1.0f, 2.5f}, {3.0f, -7.5f}};
+
+    constexpr Float d = *ca.data();
+    Float e = a.data()[3];
+    CORRADE_COMPARE(d, -1.0f);
+    CORRADE_COMPARE(e, -7.5f);
 }
 
 void DualComplexTest::isNormalized() {

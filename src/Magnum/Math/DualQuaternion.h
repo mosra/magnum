@@ -330,6 +330,15 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         }
 
         /**
+         * @brief Raw data
+         * @return One-dimensional array of eight elements
+         *
+         * @see @ref real(), @ref dual()
+         */
+        T* data() { return Dual<Quaternion<T>>::data()->data(); }
+        constexpr const T* data() const { return Dual<Quaternion<T>>::data()->data(); } /**< @overload */
+
+        /**
          * @brief Whether the dual quaternion is normalized
          *
          * Dual quaternion is normalized if it has unit length: @f[

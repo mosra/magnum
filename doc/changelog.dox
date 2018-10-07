@@ -121,6 +121,10 @@ See also:
 -   Ability to use @ref Math::Complex, @ref Math::DualComplex,
     @ref Math::Quaternion, @ref Math::DualQuaternion with
     @ref Corrade::Utility::Configuration and @ref Corrade::Utility::Arguments
+-   Added @ref Math::Complex::data(), @ref Math::Quaternion::data(),
+    @ref Math::DualComplex::data(), @ref Math::DualQuaternion::data(),
+    @ref Math::Bezier::data() and @ref Math::CubicHermite::data() for simple
+    access to underlying memory like with other math types
 -   New @ref Math::min(), @ref Math::max() and @ref Math::minmax() overloads
     taking plain C arrays
 

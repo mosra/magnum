@@ -140,6 +140,15 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
             return Implementation::BezierConverter<order, dimensions, T, U>::to(*this);
         }
 
+        /**
+         * @brief Raw data
+         * @return One-dimensional array of @cpp order + 1 @ce elements
+         *
+         * @see @ref operator[]()
+         */
+        Vector<dimensions, T>* data() { return _data; }
+        constexpr const Vector<dimensions, T>* data() const { return _data; } /**< @overload */
+
         /** @brief Equality comparison */
         bool operator==(const Bezier<order, dimensions, T>& other) const {
             for(std::size_t i = 0; i != order + 1; ++i)

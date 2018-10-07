@@ -283,6 +283,11 @@ void QuaternionTest::data() {
     a.vector().y() = 4.3f;
     a.scalar() = 1.1f;
     CORRADE_COMPARE(a, (Quaternion{{1.0f, 4.3f, 3.0f}, 1.1f}));
+
+    constexpr Float b = *ca.data();
+    Float c = a.data()[3];
+    CORRADE_COMPARE(b, 1.0f);
+    CORRADE_COMPARE(c, 1.1f);
 }
 
 void QuaternionTest::compare() {

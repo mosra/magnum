@@ -189,6 +189,11 @@ void DualTest::data() {
     a.real() = 2.0f;
     a.dual() = -3.5f;
     CORRADE_COMPARE(a, (Dual{2.0f, -3.5f}));
+
+    constexpr Float b = *ca.data();
+    Float c = a.data()[1];
+    CORRADE_COMPARE(b, 1.5f);
+    CORRADE_COMPARE(c, -3.5f);
 }
 
 void DualTest::compare() {

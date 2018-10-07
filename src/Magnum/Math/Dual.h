@@ -115,6 +115,15 @@ template<class T> class Dual {
         /** @brief Copy constructor */
         constexpr /*implicit*/ Dual(const Dual<T>&) noexcept = default;
 
+        /**
+         * @brief Raw data
+         * @return One-dimensional array of two elements
+         *
+         * @see @ref real(), @ref dual()
+         */
+        T* data() { return &_real; }
+        constexpr const T* data() const { return &_real; } /**< @overload */
+
         /** @brief Equality comparison */
         bool operator==(const Dual<T>& other) const {
             return TypeTraits<T>::equals(_real, other._real) &&
@@ -126,13 +135,21 @@ template<class T> class Dual {
             return !operator==(other);
         }
 
-        /** @brief Real part (@f$ a_0 @f$) */
+        /**
+         * @brief Real part (@f$ a_0 @f$)
+         *
+         * @see @ref data()
+         */
         T& real() { return _real; }
         /* Returning const so it's possible to call constexpr functions on the
            result. WTF, C++?! */
         constexpr const T real() const { return _real; } /**< @overload */
 
-        /** @brief Dual part (@f$ a_\epsilon @f$) */
+        /**
+         * @brief Dual part (@f$ a_\epsilon @f$)
+         *
+         * @see @ref data()
+         */
         T& dual() { return _dual; }
         /* Returning const so it's possible to call constexpr functions on the
            result. WTF, C++?! */

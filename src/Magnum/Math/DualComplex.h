@@ -181,6 +181,15 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         }
 
         /**
+         * @brief Raw data
+         * @return One-dimensional array of four elements
+         *
+         * @see @ref real(), @ref dual()
+         */
+        T* data() { return Dual<Complex<T>>::data()->data(); }
+        constexpr const T* data() const { return Dual<Complex<T>>::data()->data(); } /**< @overload */
+
+        /**
          * @brief Whether the dual complex number is normalized
          *
          * Dual complex number is normalized if its real part has unit length: @f[

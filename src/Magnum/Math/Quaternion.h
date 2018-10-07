@@ -318,6 +318,15 @@ template<class T> class Quaternion {
             return Implementation::QuaternionConverter<T, U>::to(*this);
         }
 
+        /**
+         * @brief Raw data
+         * @return One-dimensional array of four elements
+         *
+         * @see @ref vector(), @ref scalar()
+         */
+        T* data() { return _vector.data(); }
+        constexpr const T* data() const { return _vector.data(); } /**< @overload */
+
         /** @brief Equality comparison */
         bool operator==(const Quaternion<T>& other) const {
             return _vector == other._vector && TypeTraits<T>::equals(_scalar, other._scalar);

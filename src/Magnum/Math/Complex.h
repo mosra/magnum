@@ -172,6 +172,15 @@ template<class T> class Complex {
             return Implementation::ComplexConverter<T, U>::to(*this);
         }
 
+        /**
+         * @brief Raw data
+         * @return One-dimensional array of two elements
+         *
+         * @see @ref real(), @ref imaginary()
+         */
+        T* data() { return &_real; }
+        constexpr const T* data() const { return &_real; } /**< @overload */
+
         /** @brief Equality comparison */
         bool operator==(const Complex<T>& other) const {
             return TypeTraits<T>::equals(_real, other._real) &&
@@ -195,11 +204,19 @@ template<class T> class Complex {
             return Implementation::isNormalizedSquared(dot());
         }
 
-        /** @brief Real part (@f$ a_0 @f$) */
+        /**
+         * @brief Real part (@f$ a_0 @f$)
+         *
+         * @see @ref data()
+         */
         T& real() { return _real; }
         constexpr T real() const { return _real; } /**< @overload */
 
-        /** @brief Imaginary part (@f$ a_i @f$) */
+        /**
+         * @brief Imaginary part (@f$ a_i @f$)
+         *
+         * @see @ref data()
+         */
         T& imaginary() { return _imaginary; }
         constexpr T imaginary() const { return _imaginary; } /**< @overload */
 
