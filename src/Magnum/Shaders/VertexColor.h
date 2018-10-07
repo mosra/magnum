@@ -47,7 +47,7 @@ attributes in your triangle mesh. By default, the shader renders the mesh in
 an identity transformation. Use @ref setTransformationProjectionMatrix() to
 configure the shader.
 
-@image html shaders-vertexcolor.png
+@image html shaders-vertexcolor.png width=256px
 
 @section Shaders-VertexColor-example Example usage
 

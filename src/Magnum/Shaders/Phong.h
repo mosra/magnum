@@ -54,7 +54,7 @@ don't forget to also call appropriate subset of @ref bindAmbientTexture(),
 @ref bindTextures()). The texture is multipled by the color, which is by
 default set to fully opaque white for enabled textures.
 
-@image html shaders-phong.png
+@image html shaders-phong.png width=256px
 
 @section Shaders-Phong-usage Example usage
 

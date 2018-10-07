@@ -411,6 +411,8 @@ See also:
     oversized on others (see
     [mosra/magnum#260](https://github.com/mosra/magnum/issues/260),
     [mosra/magnum#261](https://github.com/mosra/magnum/issues/261))
+-   Documentation of @ref Primitives and @ref Shaders namespaces now has proper
+    sRGB and HiDPi renderings of all primitives and shaders
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

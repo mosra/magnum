@@ -51,7 +51,7 @@ texture with a white color in an identity transformation, use
 @ref setTransformationProjectionMatrix(), @ref setColor() and others to
 configure the shader.
 
-@image html shaders-distancefieldvector.png
+@image html shaders-distancefieldvector.png width=256px
 
 @section Shaders-DistanceFieldVector-usage Example usage
 

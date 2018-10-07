@@ -50,8 +50,7 @@ white color in an identity transformation. Use
 @ref setTransformationProjectionMatrix(), @ref setColor() and others to
 configure the shader.
 
-@image html shaders-vector.png
-@image latex shaders-vector.png
+@image html shaders-vector.png width=256px
 
 @section Shaders-Vector-usage Example usage
 

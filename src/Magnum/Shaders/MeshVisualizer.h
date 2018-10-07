@@ -45,7 +45,7 @@ renders the mesh with a white color in an identity transformation. Use
 @ref setTransformationProjectionMatrix(), @ref setColor() and others to
 configure the shader.
 
-@image html shaders-meshvisualizer.png
+@image html shaders-meshvisualizer.png width=256px
 
 @section Shaders-MeshVisualizer-wireframe Wireframe visualization
 

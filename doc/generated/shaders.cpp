@@ -84,7 +84,7 @@ struct ShaderVisualizer: Platform::WindowlessApplication {
 };
 
 namespace {
-    constexpr const Vector2i ImageSize{256};
+    constexpr const Vector2i ImageSize{512};
 }
 
 int ShaderVisualizer::exec() {
@@ -103,7 +103,7 @@ int ShaderVisualizer::exec() {
     }
 
     GL::Renderbuffer multisampleColor, multisampleDepth;
-    multisampleColor.setStorageMultisample(16, GL::RenderbufferFormat::RGBA8, ImageSize);
+    multisampleColor.setStorageMultisample(16, GL::RenderbufferFormat::SRGB8Alpha8, ImageSize);
     multisampleDepth.setStorageMultisample(16, GL::RenderbufferFormat::DepthComponent24, ImageSize);
 
     GL::Framebuffer multisampleFramebuffer{{{}, ImageSize}};
@@ -113,12 +113,13 @@ int ShaderVisualizer::exec() {
     CORRADE_INTERNAL_ASSERT(multisampleFramebuffer.checkStatus(GL::FramebufferTarget::Draw) == GL::Framebuffer::Status::Complete);
 
     GL::Renderbuffer color;
-    color.setStorage(GL::RenderbufferFormat::RGBA8, ImageSize);
+    color.setStorage(GL::RenderbufferFormat::SRGB8Alpha8, ImageSize);
     GL::Framebuffer framebuffer{{{}, ImageSize}};
     framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, color);
 
     GL::Renderer::enable(GL::Renderer::Feature::DepthTest);
-    GL::Renderer::setClearColor(0x000000_rgbaf);
+    GL::Renderer::enable(GL::Renderer::Feature::FramebufferSrgb);
+    GL::Renderer::setClearColor(0x000000_srgbaf);
 
     for(auto fun: {&ShaderVisualizer::phong,
                    &ShaderVisualizer::meshVisualizer,
@@ -143,13 +144,13 @@ int ShaderVisualizer::exec() {
 namespace {
     const auto Projection = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
     const auto Transformation = Matrix4::translation(Vector3::zAxis(-5.0f));
-    const auto BaseColor = 0x2f83cc_rgbf;
-    const auto OutlineColor = 0xdcdcdc_rgbf;
+    const auto BaseColor = 0x2f83cc_srgbf;
+    const auto OutlineColor = 0xdcdcdc_srgbf;
 }
 
 std::string ShaderVisualizer::phong() {
     MeshTools::compile(Primitives::uvSphereSolid(16, 32)).draw(Shaders::Phong{}
-        .setAmbientColor(0x22272e_rgbf)
+        .setAmbientColor(0x22272e_srgbf)
         .setDiffuseColor(BaseColor)
         .setShininess(200.0f)
         .setLightPosition({5.0f, 5.0f, 7.0f})
@@ -169,6 +170,7 @@ std::string ShaderVisualizer::meshVisualizer() {
         .draw(Shaders::MeshVisualizer{Shaders::MeshVisualizer::Flag::Wireframe}
             .setColor(BaseColor)
             .setWireframeColor(OutlineColor)
+            .setWireframeWidth(2.0f)
             .setViewportSize(Vector2{ImageSize})
             .setTransformationProjectionMatrix(projection));
 
@@ -191,7 +193,7 @@ std::string ShaderVisualizer::vertexColor() {
     std::vector<Color3> colors;
     colors.reserve(sphere.positions(0).size());
     for(Vector3 position: sphere.positions(0))
-        colors.push_back(Color3::fromHsv(Math::lerp(240.0_degf, 420.0_degf, Math::max(1.0f - (position - target).length(), 0.0f)), 0.75f, 0.75f));
+        colors.push_back(Color3::fromHsv(Math::lerp(240.0_degf, 420.0_degf, Math::max(1.0f - (position - target).length(), 0.0f)), 0.85f, 0.666f));
 
     GL::Buffer vertices, indices;
     vertices.setData(MeshTools::interleave(sphere.positions(0), colors), GL::BufferUsage::StaticDraw);

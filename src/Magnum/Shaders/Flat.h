@@ -63,7 +63,7 @@ multipled by the color, which is by default set to @cpp 0xffffffff_rgbaf @ce.
 
 For coloring the texture based on intensity you can use the @ref Vector shader.
 
-@image html shaders-flat.png
+@image html shaders-flat.png width=256px
 
 @section Shaders-Flat-usage Example usage
 
