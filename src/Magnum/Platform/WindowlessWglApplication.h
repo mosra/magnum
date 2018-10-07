@@ -46,6 +46,7 @@
 /* Define stuff that we need because I can't be bothered with creating a new
    header just for a few defines */
 #define WGL_CONTEXT_DEBUG_BIT_ARB 0x0001
+#define WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB 0x0002
 #endif
 
 namespace Magnum { namespace Platform {
@@ -147,6 +148,16 @@ class WindowlessWglContext::Configuration {
          * @see @ref Flags, @ref setFlags(), @ref Context::Flag
          */
         enum class Flag: int {
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Forward compatible context
+             *
+             * @requires_gl Core/compatibility profile distinction and forward
+             *      compatibility applies only to desktop GL.
+             */
+            ForwardCompatible = WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
+            #endif
+
             Debug = WGL_CONTEXT_DEBUG_BIT_ARB   /**< Create debug context */
         };
 
@@ -156,12 +167,16 @@ class WindowlessWglContext::Configuration {
          * @see @ref setFlags(), @ref Context::Flags
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<Flag, WGL_CONTEXT_DEBUG_BIT_ARB> Flags;
+        typedef Containers::EnumSet<Flag, WGL_CONTEXT_DEBUG_BIT_ARB
+            #ifndef MAGNUM_TARGET_GLES
+            |WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB
+            #endif
+            > Flags;
         #else
         typedef Containers::EnumSet<Flag> Flags;
         #endif
 
-        constexpr /*implicit*/ Configuration() {}
+        /*implicit*/ Configuration();
 
         /** @brief Context flags */
         Flags flags() const { return _flags; }
@@ -170,16 +185,46 @@ class WindowlessWglContext::Configuration {
          * @brief Set context flags
          * @return Reference to self (for method chaining)
          *
-         * Default is no flag. See also @ref GL::Context::flags().
+         * Default is @ref Flag::ForwardCompatible on desktop GL and no flags
+         * on OpenGL ES.
+         * @see @ref addFlags(), @ref clearFlags(), @ref GL::Context::flags()
          */
         Configuration& setFlags(Flags flags) {
             _flags = flags;
             return *this;
         }
 
+        /**
+         * @brief Add context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         */
+        Configuration& addFlags(Flags flags) {
+            _flags |= flags;
+            return *this;
+        }
+
+        /**
+         * @brief Clear context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ANDs the inverse of @p flags with existing
+         * instead of replacing them. Useful for removing default flags.
+         * @see @ref addFlags()
+         */
+        Configuration& clearFlags(Flags flags) {
+            _flags &= ~flags;
+            return *this;
+        }
+
     private:
         Flags _flags;
 };
+
+CORRADE_ENUMSET_OPERATORS(WindowlessWglContext::Configuration::Flags)
 
 /**
 @brief Windowless WGL application

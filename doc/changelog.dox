@@ -143,6 +143,13 @@ See also:
     added @ref Platform::Sdl2Application::GLConfiguration::addFlags() "GLConfiguration::addFlags()"
     and @ref Platform::Sdl2Application::GLConfiguration::clearFlags() "GLConfiguration::clearFlags()"
     for easier flag handling
+-   Exposed enabled-by-default @ref Platform::WindowlessEglApplication::Configuration::Flag::ForwardCompatible "Configuration::Flag::ForwardCompatible"
+    flag in @ref Platform::WindowlessEglApplication,
+    @ref Platform::WindowlessGlxApplication and
+    @ref Platform::WindowlessWglApplication,
+    added @ref Platform::WindowlessEglApplication::Configuration::addFlags() "Configuration::addFlags()"
+    and @ref Platform::WindowlessEglApplication::Configuration::clearFlags() "Configuration::clearFlags()"
+    for easier flag handling
 
 @subsubsection changelog-latest-new-primitives Primitives library
 

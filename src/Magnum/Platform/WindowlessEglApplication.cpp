@@ -188,6 +188,14 @@ bool WindowlessEglContext::makeCurrent() {
     return false;
 }
 
+WindowlessEglContext::Configuration::Configuration()
+    #ifndef MAGNUM_TARGET_GLES
+    : _flags{Flag::ForwardCompatible}
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    : _flags{}
+    #endif
+    {}
+
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessEglApplication::WindowlessEglApplication(const Arguments& arguments): WindowlessEglApplication{arguments, Configuration{}} {}
 #endif

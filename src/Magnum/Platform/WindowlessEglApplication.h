@@ -139,6 +139,16 @@ class WindowlessEglContext::Configuration {
          * @requires_gles Context flags are not available in WebGL.
          */
         enum class Flag: int {
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Forward compatible context
+             *
+             * @requires_gl Core/compatibility profile distinction and forward
+             *      compatibility applies only to desktop GL.
+             */
+            ForwardCompatible = EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR,
+            #endif
+
             Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR    /**< Create debug context */
         };
 
@@ -149,13 +159,17 @@ class WindowlessEglContext::Configuration {
          * @requires_gles Context flags are not available in WebGL.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        typedef Containers::EnumSet<Flag, EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR> Flags;
+        typedef Containers::EnumSet<Flag, EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR
+            #ifndef MAGNUM_TARGET_GLES
+            |EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR
+            #endif
+            > Flags;
         #else
         typedef Containers::EnumSet<Flag> Flags;
         #endif
         #endif
 
-        constexpr /*implicit*/ Configuration() {}
+        /*implicit*/ Configuration();
 
         #ifndef MAGNUM_TARGET_WEBGL
         /**
@@ -169,11 +183,41 @@ class WindowlessEglContext::Configuration {
          * @brief Set context flags
          * @return Reference to self (for method chaining)
          *
-         * Default is no flag. See also @ref GL::Context::flags().
+         * Default is @ref Flag::ForwardCompatible on desktop GL and no flags
+         * on OpenGL ES.
+         * @see @ref addFlags(), @ref clearFlags(), @ref GL::Context::flags()
          * @requires_gles Context flags are not available in WebGL.
          */
         Configuration& setFlags(Flags flags) {
             _flags = flags;
+            return *this;
+        }
+
+        /**
+         * @brief Add context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         * @requires_gles Context flags are not available in WebGL.
+         */
+        Configuration& addFlags(Flags flags) {
+            _flags |= flags;
+            return *this;
+        }
+
+        /**
+         * @brief Clear context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ANDs the inverse of @p flags with existing
+         * instead of replacing them. Useful for removing default flags.
+         * @see @ref addFlags()
+         * @requires_gles Context flags are not available in WebGL.
+         */
+        Configuration& clearFlags(Flags flags) {
+            _flags &= ~flags;
             return *this;
         }
         #endif
@@ -183,6 +227,10 @@ class WindowlessEglContext::Configuration {
         Flags _flags;
         #endif
 };
+
+#ifndef MAGNUM_TARGET_WEBGL
+CORRADE_ENUMSET_OPERATORS(WindowlessEglContext::Configuration::Flags)
+#endif
 
 /**
 @brief Windowless EGL application

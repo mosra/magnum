@@ -85,7 +85,7 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
         GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
         GLX_CONTEXT_MINOR_VERSION_ARB, 1,
         GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
-        GLX_CONTEXT_FLAGS_ARB, GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB|GLint(configuration.flags()),
+        GLX_CONTEXT_FLAGS_ARB, GLint(configuration.flags()),
         #endif
         0
     };
@@ -130,7 +130,8 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
             /* Destroy the core context and create a compatibility one */
             glXDestroyContext(_display, _context);
             const GLint fallbackContextAttributes[] = {
-                GLX_CONTEXT_FLAGS_ARB, GLint(configuration.flags()),
+                /** @todo keep the fwcompat? */
+                GLX_CONTEXT_FLAGS_ARB, GLint(configuration.flags() & ~Configuration::Flag::ForwardCompatible),
                 0
             };
             _context = glXCreateContextAttribsARB(_display, configs[0], nullptr, True, fallbackContextAttributes);
@@ -179,6 +180,14 @@ bool WindowlessGlxContext::makeCurrent() {
     Error() << "Platform::WindowlessGlxContext::makeCurrent(): cannot make context current";
     return false;
 }
+
+WindowlessGlxContext::Configuration::Configuration():
+    #ifndef MAGNUM_TARGET_GLES
+    _flags{Flag::ForwardCompatible}
+    #else
+    _flags{}
+    #endif
+    {}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessGlxApplication::WindowlessGlxApplication(const Arguments& arguments): WindowlessGlxApplication{arguments, Configuration{}}  {}

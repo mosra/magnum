@@ -40,7 +40,6 @@
 #define WGL_CONTEXT_FLAGS_ARB 0x2094
 #define WGL_CONTEXT_PROFILE_MASK_ARB 0x9126
 #define WGL_CONTEXT_CORE_PROFILE_BIT_ARB 0x00000001
-#define WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB 0x0002
 #define WGL_CONTEXT_ES2_PROFILE_BIT_EXT 0x00000004
 #endif
 
@@ -137,7 +136,7 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
         WGL_CONTEXT_MAJOR_VERSION_ARB, 3,
         WGL_CONTEXT_MINOR_VERSION_ARB, 1,
         WGL_CONTEXT_PROFILE_MASK_ARB, WGL_CONTEXT_CORE_PROFILE_BIT_ARB,
-        WGL_CONTEXT_FLAGS_ARB, WGL_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB|GLint(configuration.flags()),
+        WGL_CONTEXT_FLAGS_ARB, GLint(configuration.flags()),
         #endif
         0
     };
@@ -149,7 +148,8 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
         Warning() << "Platform::WindowlessWglContext: cannot create core context, falling back to compatibility context:" << GetLastError();
 
         const int fallbackContextAttributes[] = {
-            WGL_CONTEXT_FLAGS_ARB, int(configuration.flags()),
+            /** @todo or keep the fwcompat? */
+            WGL_CONTEXT_FLAGS_ARB, GLint(configuration.flags() & ~Configuration::Flag::ForwardCompatible),
             0
         };
         _context = wglCreateContextAttribsARB(_deviceContext, nullptr, fallbackContextAttributes);
@@ -184,7 +184,8 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
             /* Destroy the core context and create a compatibility one */
             wglDeleteContext(_context);
             const int fallbackContextAttributes[] = {
-                WGL_CONTEXT_FLAGS_ARB, int(configuration.flags()),
+                /** @todo or keep the fwcompat? */
+                WGL_CONTEXT_FLAGS_ARB, GLint(configuration.flags() & ~Configuration::Flag::ForwardCompatible),
                 0
             };
             _context = wglCreateContextAttribsARB(_deviceContext, nullptr, fallbackContextAttributes);
@@ -233,6 +234,14 @@ bool WindowlessWglContext::makeCurrent() {
     Error() << "Platform::WindowlessWglContext::makeCurrent(): cannot make context current:" << GetLastError();
     return false;
 }
+
+WindowlessWglContext::Configuration::Configuration():
+    #ifndef MAGNUM_TARGET_GLES
+    _flags{Flag::ForwardCompatible}
+    #else
+    _flags{}
+    #endif
+    {}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 WindowlessWglApplication::WindowlessWglApplication(const Arguments& arguments): WindowlessWglApplication{arguments, Configuration{}} {}

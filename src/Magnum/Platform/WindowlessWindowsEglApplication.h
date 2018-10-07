@@ -164,9 +164,37 @@ class WindowlessWindowsEglContext::Configuration {
             return *this;
         }
 
+        /**
+         * @brief Add context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         */
+        Configuration& addFlags(Flags flags) {
+            _flags |= flags;
+            return *this;
+        }
+
+        /**
+         * @brief Clear context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ANDs the inverse of @p flags with existing
+         * instead of replacing them. Useful for removing default flags.
+         * @see @ref addFlags()
+         */
+        Configuration& clearFlags(Flags flags) {
+            _flags &= ~flags;
+            return *this;
+        }
+
     private:
         Flags _flags;
 };
+
+CORRADE_ENUMSET_OPERATORS(WindowlessWindowsEglContext::Configuration::Flags)
 
 /**
 @brief Windowless Windows/EGL application
