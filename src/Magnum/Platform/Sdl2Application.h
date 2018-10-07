@@ -977,9 +977,8 @@ class Sdl2Application::GLConfiguration {
         /**
          * @brief Context flag
          *
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          * @see @ref Flags, @ref setFlags(), @ref Context::Flag
-         * @todo re-enable when Emscripten has proper SDL2 support
+         * @requires_gles Context flags are not available in WebGL.
          */
         enum class Flag: int {
             Debug = SDL_GL_CONTEXT_DEBUG_FLAG,  /**< Create debug context */
@@ -994,8 +993,8 @@ class Sdl2Application::GLConfiguration {
         /**
          * @brief Context flags
          *
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          * @see @ref setFlags(), @ref Context::Flags
+         * @requires_gles Context flags are not available in WebGL.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         typedef Containers::EnumSet<Flag, SDL_GL_CONTEXT_DEBUG_FLAG|
@@ -1012,7 +1011,7 @@ class Sdl2Application::GLConfiguration {
         /**
          * @brief Context flags
          *
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @requires_gles Context flags are not available in WebGL.
          */
         Flags flags() const { return _flags; }
 
@@ -1021,7 +1020,7 @@ class Sdl2Application::GLConfiguration {
          * @return Reference to self (for method chaining)
          *
          * Default is no flag. See also @ref GL::Context::flags().
-         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @requires_gles Context flags are not available in WebGL.
          */
         GLConfiguration& setFlags(Flags flags) {
             _flags = flags;
