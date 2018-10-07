@@ -155,7 +155,7 @@ void main() {
     for(int i = 0; i < LIGHT_COUNT; ++i) {
         highp vec3 normalizedLightDirection = normalize(lightDirections[i]);
         lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection));
-        color += vec4(finalDiffuseColor.rgb*lightColors[i].rgb*intensity, lightColors[i].a*finalDiffuseColor.a);
+        color += vec4(finalDiffuseColor.rgb*lightColors[i].rgb*intensity, lightColors[i].a*finalDiffuseColor.a/float(LIGHT_COUNT));
 
         /* Add specular color, if needed */
         if(intensity > 0.001) {
