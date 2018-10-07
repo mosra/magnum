@@ -260,6 +260,15 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifdef CORRADE_TARGET_ANDROID
     Debug() << "    CORRADE_TARGET_ANDROID";
     #endif
+    #ifdef CORRADE_TARGET_X86
+    Debug() << "    CORRADE_TARGET_X86";
+    #endif
+    #ifdef CORRADE_TARGET_ARM
+    Debug() << "    CORRADE_TARGET_ARM";
+    #endif
+    #ifdef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    Debug() << "    CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT";
+    #endif
     #ifdef CORRADE_TESTSUITE_TARGET_XCTEST
     Debug() << "    CORRADE_TESTSUITE_TARGET_XCTEST";
     #endif
