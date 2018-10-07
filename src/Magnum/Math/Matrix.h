@@ -35,6 +35,15 @@ namespace Magnum { namespace Math {
 
 namespace Implementation {
     template<std::size_t, class> struct MatrixDeterminant;
+
+    template<std::size_t size, std::size_t col, std::size_t otherSize, class T, std::size_t ...row> constexpr Vector<size, T> valueOrIdentityVector(Sequence<row...>, const RectangularMatrix<otherSize, otherSize, T>& other) {
+        return {(col < otherSize && row < otherSize ? other[col][row] :
+            col == row ? T{1} : T{0})...};
+    }
+
+    template<std::size_t size, std::size_t col, std::size_t otherSize, class T> constexpr Vector<size, T> valueOrIdentityVector(const RectangularMatrix<otherSize, otherSize, T>& other) {
+        return valueOrIdentityVector<size, col>(typename Implementation::GenerateSequence<size>::Type(), other);
+    }
 }
 
 /**
@@ -110,6 +119,20 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
 
         /** @brief Construct matrix from external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<size, size, T, U>::from(std::declval<U>()))> constexpr explicit Matrix(const U& other): RectangularMatrix<size, size, T>(Implementation::RectangularMatrixConverter<size, size, T, U>::from(other)) {}
+
+        /**
+         * @brief Construct matrix by slicing or expanding another of a different size
+         *
+         * If the other matrix is larger, takes only the first @cpp size @ce
+         * columns and rows from it; if the other matrix is smaller, it's
+         * expanded to an identity (ones on diagonal, zeros elsewhere).
+         */
+        template<std::size_t otherSize> constexpr explicit Matrix(const RectangularMatrix<otherSize, otherSize, T>& other) noexcept
+            /** @todoc remove workaround when doxygen is sane */
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            : Matrix<size, T>{typename Implementation::GenerateSequence<size>::Type(), other}
+            #endif
+            {}
 
         /** @brief Copy constructor */
         constexpr /*implicit*/ Matrix(const RectangularMatrix<size, size, T>& other) noexcept: RectangularMatrix<size, size, T>(other) {}
@@ -199,6 +222,10 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         }
         MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(size, size, Matrix<size, T>)
         #endif
+
+    private:
+        /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
+        template<std::size_t otherSize, std::size_t ...col> constexpr explicit Matrix(Implementation::Sequence<col...>, const RectangularMatrix<otherSize, otherSize, T>& other) noexcept: RectangularMatrix<size, size, T>{Implementation::valueOrIdentityVector<size, col>(other)...} {}
 };
 
 /**

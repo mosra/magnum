@@ -241,6 +241,15 @@ template<class T> class Matrix3: public Matrix3x3<T> {
         /** @brief Construct matrix from external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(std::declval<U>()))> constexpr explicit Matrix3(const U& other) noexcept: Matrix3x3<T>(Implementation::RectangularMatrixConverter<3, 3, T, U>::from(other)) {}
 
+        /**
+         * @brief Construct matrix by slicing or expanding another of a different size
+         *
+         * If the other matrix is larger, takes only the first @cpp size @ce
+         * columns and rows from it; if the other matrix is smaller, it's
+         * expanded to an identity (ones on diagonal, zeros elsewhere).
+         */
+        template<std::size_t otherSize> constexpr explicit Matrix3(const RectangularMatrix<otherSize, otherSize, T>& other) noexcept: Matrix3x3<T>{other} {}
+
         /** @brief Copy constructor */
         constexpr /*implicit*/ Matrix3(const RectangularMatrix<3, 3, T>& other) noexcept: Matrix3x3<T>(other) {}
 

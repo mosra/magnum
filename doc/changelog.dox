@@ -114,6 +114,8 @@ See also:
     @ref Math::Distance::pointPlane() and others
 -   Ability to convert @ref Math::BoolVector from and to external
     representation
+-   Ability to construct @ref Math::Matrix from a smaller or larger square
+    matrix by slicing or expanding it
 -   Mutable overloads for @ref Math::Complex::real(),
     @ref Math::Complex::imaginary(), @ref Math::Dual::real(),
     @ref Math::Dual::dual(), @ref Math::Quaternion::vector() and

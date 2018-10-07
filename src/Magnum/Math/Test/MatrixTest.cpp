@@ -66,6 +66,7 @@ struct MatrixTest: Corrade::TestSuite::Tester {
     void constructOneValue();
     void constructOneComponent();
     void constructConversion();
+    void constructFromDifferentSize();
     void constructCopy();
     void convert();
 
@@ -84,12 +85,14 @@ struct MatrixTest: Corrade::TestSuite::Tester {
     void configuration();
 };
 
+typedef Matrix<2, Float> Matrix2x2;
+typedef Matrix<3, Float> Matrix3x3;
 typedef Matrix<4, Float> Matrix4x4;
 typedef Matrix<4, Int> Matrix4x4i;
-typedef Matrix<3, Float> Matrix3x3;
+typedef Vector<2, Float> Vector2;
+typedef Vector<3, Float> Vector3;
 typedef Vector<4, Float> Vector4;
 typedef Vector<4, Int> Vector4i;
-typedef Vector<3, Float> Vector3;
 typedef Math::Constants<Float> Constants;
 
 MatrixTest::MatrixTest() {
@@ -100,6 +103,7 @@ MatrixTest::MatrixTest() {
               &MatrixTest::constructOneValue,
               &MatrixTest::constructOneComponent,
               &MatrixTest::constructConversion,
+              &MatrixTest::constructFromDifferentSize,
               &MatrixTest::constructCopy,
               &MatrixTest::convert,
 
@@ -228,6 +232,27 @@ void MatrixTest::constructConversion() {
     CORRADE_VERIFY(!(std::is_convertible<Matrix4x4, Matrix4x4i>::value));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4x4, Matrix4x4i>::value));
+}
+
+void MatrixTest::constructFromDifferentSize() {
+    constexpr Matrix4x4 a{Vector4{3.0f,  5.0f, 8.0f, -3.0f},
+                          Vector4{4.5f,  4.0f, 7.0f,  2.0f},
+                          Vector4{1.0f,  2.0f, 3.0f, -1.0f},
+                          Vector4{7.9f, -1.0f, 8.0f, -1.5f}};
+    constexpr Matrix2x2 b{Vector2{3.0f,  5.0f},
+                          Vector2{4.5f,  4.0f}};
+    constexpr Matrix4x4 c{Vector4{3.0f, 5.0f, 0.0f, 0.0f},
+                          Vector4{4.5f, 4.0f, 0.0f, 0.0f},
+                          Vector4{0.0f, 0.0f, 1.0f, 0.0f},
+                          Vector4{0.0f, 0.0f, 0.0f, 1.0f}};
+
+    constexpr Matrix4x4 larger{b};
+    CORRADE_COMPARE(larger, c);
+    CORRADE_COMPARE(Matrix4x4{b}, c);
+
+    constexpr Matrix2x2 smaller{a};
+    CORRADE_COMPARE(smaller, b);
+    CORRADE_COMPARE(Matrix2x2{a}, b);
 }
 
 void MatrixTest::constructCopy() {

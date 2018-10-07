@@ -65,6 +65,7 @@ struct Matrix3Test: Corrade::TestSuite::Tester {
     void constructNoInit();
     void constructOneValue();
     void constructConversion();
+    void constructFromDifferentSize();
     void constructCopy();
     void convert();
 
@@ -98,11 +99,11 @@ struct Matrix3Test: Corrade::TestSuite::Tester {
 };
 
 typedef Math::Deg<Float> Deg;
+typedef Math::Matrix2x2<Float> Matrix2x2;
 typedef Math::Matrix3<Float> Matrix3;
 typedef Math::Matrix3<Int> Matrix3i;
-typedef Math::Matrix2x2<Float> Matrix2x2;
-typedef Math::Vector3<Float> Vector3;
 typedef Math::Vector2<Float> Vector2;
+typedef Math::Vector3<Float> Vector3;
 
 Matrix3Test::Matrix3Test() {
     addTests({&Matrix3Test::construct,
@@ -111,6 +112,7 @@ Matrix3Test::Matrix3Test() {
               &Matrix3Test::constructNoInit,
               &Matrix3Test::constructOneValue,
               &Matrix3Test::constructConversion,
+              &Matrix3Test::constructFromDifferentSize,
               &Matrix3Test::constructCopy,
               &Matrix3Test::convert,
 
@@ -231,6 +233,25 @@ void Matrix3Test::constructConversion() {
     CORRADE_VERIFY(!(std::is_convertible<Matrix3, Matrix3i>::value));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, Matrix3i>::value));
+}
+
+void Matrix3Test::constructFromDifferentSize() {
+    constexpr Matrix3 a{{3.0f,  5.0f, 8.0f},
+                        {4.5f,  4.0f, 7.0f},
+                        {1.0f,  2.0f, 3.0f}};
+    constexpr Matrix2x2 b{Vector2{3.0f,  5.0f},
+                          Vector2{4.5f,  4.0f}};
+    constexpr Matrix3 c{{3.0f, 5.0f, 0.0f},
+                        {4.5f, 4.0f, 0.0f},
+                        {0.0f, 0.0f, 1.0f}};
+
+    constexpr Matrix3 larger{b};
+    CORRADE_COMPARE(larger, c);
+    CORRADE_COMPARE(Matrix3{b}, c);
+
+    constexpr Matrix2x2 smaller{a};
+    CORRADE_COMPARE(smaller, b);
+    CORRADE_COMPARE(Matrix2x2{a}, b);
 }
 
 void Matrix3Test::constructCopy() {
