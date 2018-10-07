@@ -60,7 +60,7 @@ Sphere with radius @cpp 1.0f @ce. Indexed @ref MeshPrimitive::Triangles with
 normals and optional 2D texture coordinates. If texture coordinates are
 generated, vertices of one segment are duplicated for texture wrapping.
 
-@image html primitives-uvspheresolid.png
+@image html primitives-uvspheresolid.png width=256px
 
 @see @ref icosphereSolid()
 */
@@ -75,7 +75,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D uvSphereSolid(UnsignedInt rings, Unsi
 
 Sphere with radius @cpp 1.0f @ce. Indexed @ref MeshPrimitive::Lines.
 
-@image html primitives-uvspherewireframe.png
+@image html primitives-uvspherewireframe.png width=256px
 
 @see @ref icosphereSolid()
 */

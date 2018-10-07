@@ -44,7 +44,7 @@ namespace Magnum { namespace Primitives {
 
 Non-indexed @ref MeshPrimitive::Lines going from @p a to @p b.
 
-@image html primitives-line2d.png
+@image html primitives-line2d.png width=256px
 
 @see @ref line3D(), @ref line3D(const Vector3&, const Vector3&), @ref axis2D(),
     @ref crosshair2D()
@@ -65,7 +65,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D line2D();
 
 Non-indexed @ref MeshPrimitive::Lines going from @p a to @p b.
 
-@image html primitives-line3d.png
+@image html primitives-line3d.png width=256px
 
 @see @ref line3D(), @ref line2D(const Vector2&, const Vector2&), @ref axis3D(),
     @ref crosshair3D()

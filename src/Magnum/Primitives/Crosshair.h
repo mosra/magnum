@@ -43,7 +43,7 @@ namespace Magnum { namespace Primitives {
 
 2x2 crosshair (two crossed lines), non-indexed @ref MeshPrimitive::Lines.
 
-@image html primitives-crosshair2d.png
+@image html primitives-crosshair2d.png width=256px
 
 @see @ref crosshair3D(), @ref axis2D(), @ref line2D()
 */
@@ -67,7 +67,7 @@ struct MAGNUM_PRIMITIVES_EXPORT Crosshair2D {
 
 2x2x2 crosshair (three crossed lines), non-indexed @ref MeshPrimitive::Lines.
 
-@image html primitives-crosshair3d.png
+@image html primitives-crosshair3d.png width=256px
 
 @see @ref crosshair2D(), @ref axis2D(), @ref line3D()
 */

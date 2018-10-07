@@ -70,7 +70,7 @@ Cylinder along Y axis of radius @cpp 1.0f @ce. Indexed
 optional capped ends. If texture coordinates are generated, vertices of one
 segment are duplicated for texture wrapping.
 
-@image html primitives-cylindersolid.png
+@image html primitives-cylindersolid.png width=256px
 
 The cylinder is by default created with radius set to @f$ 1.0 @f$. In order to
 get radius @f$ r @f$, length @f$ l @f$ and preserve correct normals, set
@@ -92,7 +92,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cylinderSolid(UnsignedInt rings, Unsi
 Cylinder along Y axis of radius @cpp 1.0f @ce. Indexed
 @ref MeshPrimitive::Lines.
 
-@image html primitives-cylinderwireframe.png
+@image html primitives-cylinderwireframe.png width=256px
 
 @see @ref cylinderSolid(), @ref coneWireframe()
 */

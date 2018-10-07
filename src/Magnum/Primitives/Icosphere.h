@@ -45,7 +45,7 @@ namespace Magnum { namespace Primitives {
 Sphere with radius @cpp 1.0f @ce. Indexed @ref MeshPrimitive::Triangles with
 normals.
 
-@image html primitives-icospheresolid.png
+@image html primitives-icospheresolid.png width=256px
 
 The @p subdivisions parameter describes how many times is each icosphere
 triangle subdivided, recursively. Specifying @cpp 0 @ce will result in an

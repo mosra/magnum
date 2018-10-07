@@ -76,7 +76,12 @@ using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
 struct PrimitiveVisualizer: Platform::WindowlessApplication {
-    explicit PrimitiveVisualizer(const Arguments& arguments): Platform::WindowlessApplication{arguments} {}
+    explicit PrimitiveVisualizer(const Arguments& arguments): Platform::WindowlessApplication{arguments,
+        #ifndef CORRADE_TARGET_APPLE
+        /* So we can have wide lines */
+        Configuration{}.clearFlags(Configuration::Flag::ForwardCompatible)
+        #endif
+    } {}
 
     int exec() override;
 
@@ -115,9 +120,9 @@ struct PrimitiveVisualizer: Platform::WindowlessApplication {
 };
 
 namespace {
-    constexpr const Vector2i ImageSize{256};
-    const auto BaseColor = 0x2f83cc_rgbf;
-    const auto OutlineColor = 0xdcdcdc_rgbf;
+    constexpr const Vector2i ImageSize{512};
+    const auto BaseColor = 0x2f83cc_srgbf;
+    const auto OutlineColor = 0xdcdcdc_srgbf;
     const auto Projection2D = Matrix3::projection({3.0f, 3.0f});
     const auto Projection3D = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
     const auto Transformation2D = Matrix3::rotation(13.2_degf);
@@ -136,7 +141,7 @@ int PrimitiveVisualizer::exec() {
     }
 
     GL::Renderbuffer multisampleColor, multisampleDepth;
-    multisampleColor.setStorageMultisample(16, GL::RenderbufferFormat::RGBA8, ImageSize);
+    multisampleColor.setStorageMultisample(16, GL::RenderbufferFormat::SRGB8Alpha8, ImageSize);
     multisampleDepth.setStorageMultisample(16, GL::RenderbufferFormat::DepthComponent24, ImageSize);
 
     GL::Framebuffer multisampleFramebuffer{{{}, ImageSize}};
@@ -146,7 +151,7 @@ int PrimitiveVisualizer::exec() {
     CORRADE_INTERNAL_ASSERT(multisampleFramebuffer.checkStatus(GL::FramebufferTarget::Draw) == GL::Framebuffer::Status::Complete);
 
     GL::Renderbuffer color;
-    color.setStorage(GL::RenderbufferFormat::RGBA8, ImageSize);
+    color.setStorage(GL::RenderbufferFormat::SRGB8Alpha8, ImageSize);
     GL::Framebuffer framebuffer{{{}, ImageSize}};
     framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, color);
 
@@ -154,11 +159,13 @@ int PrimitiveVisualizer::exec() {
        order to draw the wireframe over. I couldn't get polygon offset to work
        on the first try so I gave up. This will of course break with things
        like torus later. */
+    GL::Renderer::enable(GL::Renderer::Feature::FramebufferSrgb);
     GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
     GL::Renderer::setBlendFunction(GL::Renderer::BlendFunction::One, GL::Renderer::BlendFunction::One);
-    GL::Renderer::setClearColor(0x000000_rgbaf);
-    GL::Renderer::setLineWidth(1.5f);
+    GL::Renderer::setClearColor(0x000000_srgbaf);
+    CORRADE_INTERNAL_ASSERT(GL::Renderer::lineWidthRange().contains(2.0f));
+    GL::Renderer::setLineWidth(2.0f);
 
     {
         Shaders::VertexColor2D shader;
@@ -253,17 +260,22 @@ int PrimitiveVisualizer::exec() {
         }
     }
 
+    Shaders::MeshVisualizer wireframe2D{Shaders::MeshVisualizer::Flag::Wireframe};
+    wireframe2D.setColor(0x00000000_srgbaf)
+        .setWireframeColor(OutlineColor)
+        .setWireframeWidth(2.0f)
+        .setViewportSize(Vector2{ImageSize})
+        .setTransformationProjectionMatrix(Matrix4{
+            /** @todo clean up once Matrix4 from Matrix3 constructor exists */
+            {(Projection2D*Transformation2D)[0], 0.0f},
+            {(Projection2D*Transformation2D)[1], 0.0f},
+            {0.0f, 0.0f, 1.0f, 0.0f},
+            {{(Projection2D*Transformation2D)[2].xy(), 0.0f}, 1.0f}});
+
     {
-        const Matrix3 projection = Projection2D*Transformation2D;
-        Shaders::MeshVisualizer shader{Shaders::MeshVisualizer::Flag::Wireframe};
-        shader.setColor(BaseColor)
-            .setWireframeColor(OutlineColor)
-            .setViewportSize(Vector2{ImageSize})
-            .setTransformationProjectionMatrix(Matrix4{
-                {projection[0], 0.0f},
-                {projection[1], 0.0f},
-                {0.0f, 0.0f, 1.0f, 0.0f},
-                {{projection[2].xy(), 0.0f}, 1.0f}});
+        Shaders::Flat2D flat;
+        flat.setColor(BaseColor)
+            .setTransformationProjectionMatrix(Projection2D*Transformation2D);
 
         for(auto fun: {&PrimitiveVisualizer::circle2DSolid,
                        &PrimitiveVisualizer::squareSolid})
@@ -282,7 +294,8 @@ int PrimitiveVisualizer::exec() {
                 .setCount(data->positions(0).size())
                 .setPrimitive(data->primitive());
 
-            mesh.draw(shader);
+            mesh.draw(flat)
+                .draw(wireframe2D);
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});
@@ -290,21 +303,22 @@ int PrimitiveVisualizer::exec() {
         }
     }
 
+    Shaders::MeshVisualizer wireframe3D{Shaders::MeshVisualizer::Flag::Wireframe};
+    wireframe3D.setColor(0x00000000_srgbaf)
+        .setWireframeColor(OutlineColor)
+        .setWireframeWidth(2.0f)
+        .setViewportSize(Vector2{ImageSize})
+        .setTransformationProjectionMatrix(Projection3D*Transformation3D);
+
     {
         Shaders::Phong phong;
-        phong.setAmbientColor(0x22272e_rgbf)
+        phong.setAmbientColor(0x22272e_srgbf)
             .setDiffuseColor(BaseColor)
-            .setSpecularColor(0x000000_rgbf)
+            .setSpecularColor(0x000000_srgbf)
             .setLightPosition({5.0f, 5.0f, 7.0f})
             .setProjectionMatrix(Projection3D)
             .setTransformationMatrix(Transformation3D)
             .setNormalMatrix(Transformation3D.rotationScaling());
-
-        Shaders::MeshVisualizer wireframe{Shaders::MeshVisualizer::Flag::Wireframe};
-        wireframe.setColor(0x000000_rgbaf)
-            .setWireframeColor(OutlineColor)
-            .setViewportSize(Vector2{ImageSize})
-            .setTransformationProjectionMatrix(Projection3D*Transformation3D);
 
         for(auto fun: {&PrimitiveVisualizer::capsule3DSolid,
                        &PrimitiveVisualizer::circle3DSolid,
@@ -324,7 +338,7 @@ int PrimitiveVisualizer::exec() {
 
             MeshTools::compile(*data)
                 .draw(phong)
-                .draw(wireframe);
+                .draw(wireframe3D);
 
             GL::AbstractFramebuffer::blit(multisampleFramebuffer, framebuffer, framebuffer.viewport(), GL::FramebufferBlit::Color);
             Image2D result = framebuffer.read(framebuffer.viewport(), {PixelFormat::RGBA8Unorm});

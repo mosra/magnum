@@ -70,7 +70,7 @@ Cone along Y axis of radius @cpp 1.0f @ce. Indexed
 normals over the whole area, the tip consists of @cpp segments*2 @ce vertices
 instead of just one.
 
-@image html primitives-conesolid.png
+@image html primitives-conesolid.png width=256px
 
 The cone is by default created with radius set to @f$ 1.0 @f$. In order to get
 radius @f$ r @f$, length @f$ l @f$ and preserve correct normals, set
@@ -89,7 +89,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D coneSolid(UnsignedInt rings, Unsigned
 
 Cone along Y axis of radius @cpp 1.0f @ce. Indexed @ref MeshPrimitive::Lines.
 
-@image html primitives-conewireframe.png
+@image html primitives-conewireframe.png width=256px
 
 @see @ref coneSolid(), @ref cylinderWireframe()
 */

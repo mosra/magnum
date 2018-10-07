@@ -69,7 +69,7 @@ CORRADE_ENUMSET_OPERATORS(GridFlags)
 2x2 grid in the XY plane with normals in positive Z direction. Indexed
 @ref MeshPrimitive::Triangles with optional normals and texture coordinates.
 
-@image html primitives-grid3dsolid.png
+@image html primitives-grid3dsolid.png width=256px
 
 The @p subdivisions parameter describes how many times the plane gets cut in
 each direction. Specifying @cpp {0, 0} @ce will make the result an (indexed)
@@ -85,7 +85,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D grid3DSolid(const Vector2i& subdivisi
 
 2x2 grid in the XY plane. Indexed @ref MeshPrimitive::Lines.
 
-@image html primitives-grid3dwireframe.png
+@image html primitives-grid3dwireframe.png width=256px
 
 The @p subdivisions parameter describes how many times the plane gets cut in
 each direction. Specifying @cpp {0, 0} @ce will make the result an (indexed)

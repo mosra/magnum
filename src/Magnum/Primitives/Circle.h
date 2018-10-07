@@ -44,7 +44,7 @@ namespace Magnum { namespace Primitives {
 
 Circle with radius @cpp 1.0f @ce. Non-indexed @ref MeshPrimitive::TriangleFan.
 
-@image html primitives-circle2dsolid.png
+@image html primitives-circle2dsolid.png width=256px
 
 @see @ref circle2DWireframe(), @ref circle3DSolid()
 */
@@ -56,7 +56,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D circle2DSolid(UnsignedInt segments);
 
 Circle with radius @cpp 1.0f @ce. Non-indexed @ref MeshPrimitive::LineLoop.
 
-@image html primitives-circle2dwireframe.png
+@image html primitives-circle2dwireframe.png width=256px
 
 @see @ref circle2DSolid(), @ref circle3DWireframe()
 */
@@ -87,7 +87,7 @@ struct MAGNUM_PRIMITIVES_EXPORT Circle {
 Circle on the XY plane with radius @cpp 1.0f @ce. Non-indexed
 @ref MeshPrimitive::TriangleFan with normals in positive Z direction.
 
-@image html primitives-circle3dsolid.png
+@image html primitives-circle3dsolid.png width=256px
 
 @see @ref circle3DWireframe(), @ref circle2DSolid()
 */
@@ -100,7 +100,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D circle3DSolid(UnsignedInt segments);
 Circle on the XY plane with radius @cpp 1.0f @ce. Non-indexed
 @ref MeshPrimitive::LineLoop.
 
-@image html primitives-circle3dwireframe.png
+@image html primitives-circle3dwireframe.png width=256px
 
 @see @ref circle2DSolid(), @ref circle3DWireframe()
 */

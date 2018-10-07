@@ -43,7 +43,7 @@ namespace Magnum { namespace Primitives {
 
 Indexed @ref MeshPrimitive::Triangles with flat normals.
 
-@image html primitives-cubesolid.png
+@image html primitives-cubesolid.png width=256px
 
 @see @ref cubeSolidStrip(), @ref cubeWireframe()
 */
@@ -55,7 +55,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cubeSolid();
 Non-indexed @ref MeshPrimitive::TriangleStrip. Just positions, no
 normals or anything else.
 
-@image html primitives-cubesolid.png
+@image html primitives-cubesolid.png width=256px
 
 @see @ref cubeSolid(), @ref cubeWireframe()
 */
@@ -66,7 +66,7 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cubeSolidStrip();
 
 Indexed @ref MeshPrimitive::Lines.
 
-@image html primitives-cubewireframe.png
+@image html primitives-cubewireframe.png width=256px
 
 @see @ref cubeSolid(), @ref cubeSolidStrip()
 */
