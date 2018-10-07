@@ -84,6 +84,17 @@ RendererState::RendererState(Context& context, std::vector<std::string>& extensi
         packPixelStorage.disengagedRowLength = 0;
     #endif
     #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    if((context.detectedDriver() & Context::DetectedDriver::Mesa) &&
+       (context.flags() & Context::Flag::ForwardCompatible) &&
+        !context.isDriverWorkaroundDisabled("mesa-forward-compatible-line-width-range"))
+        lineWidthRangeImplementation = &Renderer::lineWidthRangeImplementationMesaForwardCompatible;
+    else
+    #endif
+    {
+        lineWidthRangeImplementation = &Renderer::lineWidthRangeImplementationDefault;
+    }
 }
 
 RendererState::PixelStorage::PixelStorage():

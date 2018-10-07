@@ -436,7 +436,7 @@ OpenGL function                         | Matching API
 glGet() parameter                       | Matching API
 --------------------------------------- | ------------
 @def_gl{ACTIVE_TEXTURE}, \n @def_gl{TEXTURE_BINDING_1D_ARRAY}, \n @def_gl{TEXTURE_BINDING_1D}, \n @def_gl{TEXTURE_BINDING_2D_ARRAY}, \n @def_gl{TEXTURE_BINDING_2D_MULTISAMPLE_ARRAY}, \n @def_gl{TEXTURE_BINDING_2D_MULTISAMPLE}, \n @def_gl{TEXTURE_BINDING_2D}           , \n @def_gl{TEXTURE_BINDING_3D}, \n @def_gl{TEXTURE_BINDING_BUFFER}, \n @def_gl{TEXTURE_BINDING_BUFFER}, \n @def_gl{TEXTURE_BINDING_CUBE_MAP}, \n @def_gl{TEXTURE_BINDING_RECTANGLE} | not queryable but tracked internally
-@def_gl{ALIASED_LINE_WIDTH_RANGE}       | |
+@def_gl{ALIASED_LINE_WIDTH_RANGE}       | @ref GL::Renderer::lineWidthRange()
 @def_gl{ARRAY_BUFFER_BINDING}, \n @def_gl{DISPATCH_INDIRECT_BUFFER_BINDING}, \n @def_gl{ELEMENT_ARRAY_BUFFER_BINDING}, \n @def_gl{PIXEL_PACK_BUFFER_BINDING}, \n @def_gl{PIXEL_UNPACK_BUFFER_BINDING} | not queryable but tracked internally
 @def_gl{BLEND_COLOR}                    | not queryable, @ref GL::Renderer::setBlendColor() setter only
 @def_gl{BLEND_DST_ALPHA}, \n @def_gl{BLEND_DST_RGB}, \n @def_gl{BLEND_SRC_ALPHA}, \n @def_gl{BLEND_SRC_RGB} | not queryable, @ref GL::Renderer::setBlendFunction() setter only
@@ -458,7 +458,6 @@ glGet() parameter                       | Matching API
 @def_gl{IMPLEMENTATION_COLOR_READ_TYPE} | |
 @def_gl{LAYER_PROVOKING_VERTEX}         | |
 @def_gl{LINE_SMOOTH}, \n @def_gl{POLYGON_SMOOTH} | not supported (@ref opengl-unsupported "details")
-@def_gl{LINE_WIDTH_GRANULARITY}, \n @def_gl{LINE_WIDTH_RANGE} | |
 @def_gl{LINE_WIDTH}                     | not queryable, @ref GL::Renderer::setLineWidth() setter only
 @def_gl{LOGIC_OP_MODE}                  | not queryable, @ref GL::Renderer::setLogicOperation() setter only
 @def_gl{MAJOR_VERSION}, \n @def_gl{MINOR_VERSION} | @ref GL::Context::version()
@@ -559,7 +558,8 @@ glGet() parameter                       | Matching API
 @def_gl{SHADER_COMPILER}                | not supported (@ref opengl-unsupported "details")
 @def_gl{SHADER_STORAGE_BUFFER_BINDING}, \n @def_gl{SHADER_STORAGE_BUFFER_SIZE}, \n @def_gl{SHADER_STORAGE_BUFFER_START} | not queryable
 @def_gl{SHADER_STORAGE_BUFFER_OFFSET_ALIGNMENT} | @ref GL::Buffer::shaderStorageOffsetAlignment()
-@def_gl{SMOOTH_LINE_WIDTH_GRANULARITY}, \n @def_gl{SMOOTH_LINE_WIDTH_RANGE} | |
+@def_gl{SMOOTH_LINE_WIDTH_GRANULARITY} / @def_gl{LINE_WIDTH_GRANULARITY}, \n
+@def_gl{SMOOTH_LINE_WIDTH_RANGE} / @def_gl{LINE_WIDTH_RANGE} | not supported (@ref opengl-unsupported "details")
 @def_gl{STENCIL_BACK_FUNC}, \n @def_gl{STENCIL_BACK_REF}, \n @def_gl{STENCIL_BACK_VALUE_MASK}, \n @def_gl{STENCIL_FUNC}, \n @def_gl{STENCIL_REF}, \n @def_gl{STENCIL_VALUE_MASK} | not queryable, @ref GL::Renderer::setStencilFunction() setter only
 @def_gl{STENCIL_BACK_FAIL}, \n @def_gl{STENCIL_BACK_PASS_DEPTH_FAIL}, \n @def_gl{STENCIL_BACK_PASS_DEPTH_PASS}, \n @def_gl{STENCIL_FAIL}, \n @def_gl{STENCIL_PASS_DEPTH_FAIL}, \n @def_gl{STENCIL_PASS_DEPTH_PASS} | not queryable, @ref GL::Renderer::setStencilOperation() setter only
 @def_gl{SUBPIXEL_BITS}                  | |

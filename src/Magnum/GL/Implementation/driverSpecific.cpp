@@ -50,6 +50,14 @@ namespace {
         "intel-windows-glsl-exposes-unsupported-shading-language-420pack",
         #endif
 
+        #ifndef MAGNUM_TARGET_GLES
+        /* Forward-compatible GL contexts on Mesa still report line width range
+           as [1, 7], but setting wide line width fails. According to the specs
+           the max value on forward compatible contexts should be 1.0, so
+           patching it. */
+        "mesa-forward-compatible-line-width-range",
+        #endif
+
         #if !defined(MAGNUM_TARGET_GLES2) && defined(CORRADE_TARGET_WINDOWS)
         /* On Windows NVidia drivers the glTransformFeedbackVaryings() does not
            make a copy of its char* arguments so it fails at link time when the

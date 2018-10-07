@@ -110,6 +110,7 @@ if(BUILD_GL_TESTS)
     corrade_add_test(GLCubeMapTextureGLTest CubeMapTextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLFramebufferGLTest FramebufferGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLMeshGLTest MeshGLTest.cpp LIBRARIES MagnumGLTestLib MagnumOpenGLTester)
+    corrade_add_test(GLRendererGLTest RendererGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLRenderbufferGLTest RenderbufferGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLTextureGLTest TextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
 

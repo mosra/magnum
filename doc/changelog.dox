@@ -55,6 +55,10 @@ See also:
 
 -   Exposing @ref GL::Context::Flag::ForwardCompatible through
     @ref GL::Context::flags(), which was deliberately ignored before.
+-   New @ref GL::Renderer::lineWidthRange() limit query. The reported maximum
+    can be over @cpp 1.0f @ce only in non-forward-compatible contexts, a new
+    @cpp "mesa-forward-compatible-line-width-range" @ce workaround fixes that
+    for Mesa. See @ref opengl-workarounds for more information.
 
 @subsubsection changelog-latest-new-math Math library
 

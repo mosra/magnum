@@ -288,6 +288,18 @@ class MAGNUM_GL_EXPORT Renderer {
         };
 
         /**
+         * @brief Line width range
+         *
+         * The result is cached, repeated queries don't result in repeated
+         * OpenGL calls. Note that lines wider than @cpp 1.0f @ce are supported
+         * only when the context is not forward-compatible. Smooth lines are
+         * @ref opengl-unsupported "not supported by design".
+         * @see @ref setLineWidth(), @fn_gl{Get} with
+         *      @def_gl_keyword{ALIASED_LINE_WIDTH_RANGE}
+         */
+        static Range1D lineWidthRange();
+
+        /**
          * @brief Enable feature
          *
          * @see @ref disable(), @ref setFeature(), @fn_gl_keyword{Enable}
@@ -567,8 +579,11 @@ class MAGNUM_GL_EXPORT Renderer {
         /**
          * @brief Set line width
          *
-         * Initial value is @cpp 1.0f @ce.
-         * @see @fn_gl_keyword{LineWidth}
+         * Initial value is @cpp 1.0f @ce. Note that on contexts that are
+         * @ref Context::Flag::ForwardCompatible the max supported value is
+         * @cpp 1.0f @ce --- request a non-forward-compatible context to get
+         * wide lines on supported hardware.
+         * @see @ref lineWidthRange(), @fn_gl_keyword{LineWidth}
          */
         static void setLineWidth(Float width);
 
@@ -1627,6 +1642,11 @@ class MAGNUM_GL_EXPORT Renderer {
 
     private:
         static void MAGNUM_GL_LOCAL initializeContextBasedFunctionality();
+
+        static MAGNUM_GL_LOCAL Range1D lineWidthRangeImplementationDefault();
+        #ifndef MAGNUM_TARGET_GLES
+        static MAGNUM_GL_LOCAL Range1D lineWidthRangeImplementationMesaForwardCompatible();
+        #endif
 
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_GL_LOCAL clearDepthfImplementationDefault(GLfloat depth);
