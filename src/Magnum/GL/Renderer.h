@@ -262,11 +262,18 @@ class MAGNUM_GL_EXPORT Renderer {
             RasterizerDiscard = GL_RASTERIZER_DISCARD,
             #endif
 
+            #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
             /**
-             * Scissor test
-             * @see @ref setScissor()
+             * Sample shading.
+             * @see @ref setMinSampleShading()
+             * @requires_gl40 Extension @gl_extension{ARB,sample_shading}
+             * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a}
+             *      / @gl_extension{OES,sample_shading}
+             * @requires_gles30 Sample shading is not defined in OpenGL ES 2.0.
+             * @requires_gles Sample shading is not available in WebGL.
              */
-            ScissorTest = GL_SCISSOR_TEST,
+            SampleShading = GL_SAMPLE_SHADING,
+            #endif
 
             #ifndef MAGNUM_TARGET_GLES
             /**
@@ -278,6 +285,12 @@ class MAGNUM_GL_EXPORT Renderer {
              */
             SeamlessCubeMapTexture = GL_TEXTURE_CUBE_MAP_SEAMLESS,
             #endif
+
+            /**
+             * Scissor test
+             * @see @ref setScissor()
+             */
+            ScissorTest = GL_SCISSOR_TEST,
 
             /**
              * Stencil test
@@ -597,6 +610,20 @@ class MAGNUM_GL_EXPORT Renderer {
          *      OpenGL ES and WebGL instead.
          */
         static void setPointSize(Float size);
+        #endif
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /**
+         * @brief Set min sample shading value
+         *
+         * @see @ref Feature::SampleShading, @fn_gl_keyword{MinSampleShading}
+         * @requires_gl40 Extension @gl_extension{ARB,sample_shading}
+         * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
+         *      @gl_extension{OES,sample_shading}
+         * @requires_gles30 Sample shading is not defined in OpenGL ES 2.0.
+         * @requires_gles Sample shading is not available in WebGL.
+         */
+        static void setMinSampleShading(Float value);
         #endif
 
         /*@}*/
@@ -1652,6 +1679,13 @@ class MAGNUM_GL_EXPORT Renderer {
         static void MAGNUM_GL_LOCAL clearDepthfImplementationDefault(GLfloat depth);
         #endif
         static void MAGNUM_GL_LOCAL clearDepthfImplementationES(GLfloat depth);
+
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        static MAGNUM_GL_LOCAL void minSampleShadingImplementationDefault(GLfloat value);
+        #ifdef MAGNUM_TARGET_GLES
+        static MAGNUM_GL_LOCAL void minSampleShadingImplementationOES(GLfloat value);
+        #endif
+        #endif
 
         #ifndef MAGNUM_TARGET_WEBGL
         static GraphicsResetStatus MAGNUM_GL_LOCAL graphicsResetStatusImplementationDefault();

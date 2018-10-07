@@ -133,6 +133,22 @@ void Renderer::setPointSize(const Float size) {
 }
 #endif
 
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+void Renderer::setMinSampleShading(const Float value) {
+    (Context::current().state().renderer->minSampleShadingImplementation)(value);
+}
+
+void Renderer::minSampleShadingImplementationDefault(const GLfloat value) {
+    glMinSampleShading(value);
+}
+
+#ifdef MAGNUM_TARGET_GLES
+void Renderer::minSampleShadingImplementationOES(const GLfloat value) {
+    glMinSampleShadingOES(value);
+}
+#endif
+#endif
+
 void Renderer::setScissor(const Range2Di& rectangle) {
     glScissor(rectangle.left(), rectangle.bottom(), rectangle.sizeX(), rectangle.sizeY());
 }

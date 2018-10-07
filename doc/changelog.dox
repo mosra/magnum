@@ -59,6 +59,9 @@ See also:
     can be over @cpp 1.0f @ce only in non-forward-compatible contexts, a new
     @cpp "mesa-forward-compatible-line-width-range" @ce workaround fixes that
     for Mesa. See @ref opengl-workarounds for more information.
+-   Implemented the @gl_extension{ARB,sample_shading} desktop extension and the
+    equivalent functionality in OpenGL ES 3.2 / @gl_extension{OES,sample_shading}
+    ES3 extension
 
 @subsubsection changelog-latest-new-math Math library
 

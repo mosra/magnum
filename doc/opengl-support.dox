@@ -135,7 +135,7 @@ Extension                                   | Status
 ------------------------------------------- | ------
 GLSL 4.00                                   | done
 @gl_extension{ARB,draw_buffers_blend}       | |
-@gl_extension{ARB,sample_shading}           | |
+@gl_extension{ARB,sample_shading}           | done
 @gl_extension{ARB,texture_cube_map_array}   | done
 @gl_extension{ARB,texture_gather}           | missing limit queries
 @gl_extension{ARB,texture_query_lod}        | done (shading language only)
@@ -353,7 +353,7 @@ Extension                                   | Status
 @gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}  | done
 @gl_extension{KHR,robustness}               | |
 @gl_extension{KHR,robust_buffer_access_behavior} | done (nothing to do)
-@gl_extension{OES,sample_shading}           | |
+@gl_extension{OES,sample_shading}           | done
 @gl_extension{OES,sample_variables}         | done (shading language only)
 @gl_extension{OES,shader_image_atomic}      | done (shading language only)
 @gl_extension{OES,shader_multisample_interpolation} | |

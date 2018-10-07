@@ -95,6 +95,17 @@ RendererState::RendererState(Context& context, std::vector<std::string>& extensi
     {
         lineWidthRangeImplementation = &Renderer::lineWidthRangeImplementationDefault;
     }
+
+    #ifndef MAGNUM_TARGET_GLES
+    minSampleShadingImplementation = &Renderer::minSampleShadingImplementationDefault;
+    #elif !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(context.isVersionSupported(Version::GLES320))
+        minSampleShadingImplementation = &Renderer::minSampleShadingImplementationDefault;
+    else if(context.isExtensionSupported<Extensions::OES::sample_shading>())
+        minSampleShadingImplementation = &Renderer::minSampleShadingImplementationOES;
+    else
+        minSampleShadingImplementation = nullptr;
+    #endif
 }
 
 RendererState::PixelStorage::PixelStorage():

@@ -38,6 +38,9 @@ struct RendererState {
 
     Range1D(*lineWidthRangeImplementation)();
     void(*clearDepthfImplementation)(GLfloat);
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void(*minSampleShadingImplementation)(GLfloat);
+    #endif
     #ifndef MAGNUM_TARGET_WEBGL
     Renderer::GraphicsResetStatus(*graphicsResetStatusImplementation)();
 
