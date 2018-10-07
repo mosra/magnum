@@ -496,6 +496,12 @@ See also:
     @ref Trade::PhongMaterialData::diffuseColor() "diffuseColor()" and
     @ref Trade::PhongMaterialData::specularColor() "specularColor()" now return
     @ref Color4 instead of @ref Color3
+-   Applications now expose GL context forward compatibility as an
+    enabled-by-default context flag. Calling
+    @ref Platform::Sdl2Application::GLConfiguration::setFlags() "Platform::*Application::GLConfiguration::setFlags()"
+    (and similarly on windowless apps) will reset that flag, use
+    @ref Platform::Sdl2Application::GLConfiguration::addFlags() "Platform::*Application::GLConfiguration::addFlags()" (And similarly on
+    windowless apps) to preserve the enabled-by-default flags.
 
 @section changelog-2018-04 2018.04
 
