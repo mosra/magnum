@@ -890,6 +890,9 @@ Debug& operator<<(Debug& debug, const Context::Flag value) {
         /* LCOV_EXCL_START */
         #define _c(value) case Context::Flag::value: return debug << "GL::Context::Flag::" #value;
         _c(Debug)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(ForwardCompatible)
+        #endif
         _c(NoError)
         #ifndef MAGNUM_TARGET_GLES2
         _c(RobustAccess)
@@ -904,6 +907,9 @@ Debug& operator<<(Debug& debug, const Context::Flag value) {
 Debug& operator<<(Debug& debug, const Context::Flags value) {
     return Containers::enumSetDebugOutput(debug, value, "GL::Context::Flags{}", {
         Context::Flag::Debug,
+        #ifndef MAGNUM_TARGET_GLES
+        Context::Flag::ForwardCompatible,
+        #endif
         Context::Flag::NoError,
         #ifndef MAGNUM_TARGET_GLES2
         Context::Flag::RobustAccess

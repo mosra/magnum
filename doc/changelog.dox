@@ -51,6 +51,11 @@ See also:
     and @ref DebugTools::CompareFileToImage comparators extending
     @ref DebugTools::CompareImage with convenient image file loading
 
+@subsubsection changelog-latest-new-gl GL library
+
+-   Exposing @ref GL::Context::Flag::ForwardCompatible through
+    @ref GL::Context::flags(), which was deliberately ignored before.
+
 @subsubsection changelog-latest-new-math Math library
 
 -   New @ref Math::CubicHermite class for cubic Hermite spline interpolation,

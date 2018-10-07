@@ -164,6 +164,16 @@ class MAGNUM_GL_EXPORT Context {
             Debug = GL_CONTEXT_FLAG_DEBUG_BIT_KHR,
             #endif
 
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Forward compatible context
+             * @see @ref isCoreProfile()
+             * @requires_gl Core/compatibility profile distinction and forward
+             *      compatibility applies only to desktop GL.
+             */
+            ForwardCompatible = GL_CONTEXT_FLAG_FORWARD_COMPATIBLE_BIT,
+            #endif
+
             /**
              * Context without error reporting
              * @requires_gl46 Extension @gl_extension{KHR,no_error}
@@ -489,8 +499,10 @@ class MAGNUM_GL_EXPORT Context {
          *
          * The result is cached, repeated queries don't result in repeated
          * OpenGL calls.
-         * @see @fn_gl{Get} with @def_gl_keyword{CORE_PROFILE_MASK}
-         * @requires_gl Not available on OpenGL ES or WebGL.
+         * @see @fn_gl{Get} with @def_gl_keyword{CORE_PROFILE_MASK},
+         *      @ref Flag::ForwardCompatible
+         * @requires_gl Core/compatibility profile distinction and forward
+         *      compatibility applies only to desktop GL.
          */
         bool isCoreProfile();
         #endif
