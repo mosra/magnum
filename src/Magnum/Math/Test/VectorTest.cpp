@@ -309,7 +309,7 @@ void VectorTest::data() {
     /* Pointer chasings, i.e. *(b.data()[3]), are not possible */
     constexpr Vector4 a(1.0f, 2.0f, -3.0f, 4.5f);
     constexpr Float f = a[3];
-    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing pointer is verboten */
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing a pointer is verboten */
     constexpr
     #endif
     Float g = *a.data();
