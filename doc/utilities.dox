@@ -27,17 +27,33 @@ namespace Magnum {
 /** @page utilities Utilities
 @brief Utilities for system information, data conversion, multimedia apps
 
-The following command-line utilities are available:
+@section utilities-gui GUI apps
+
+@m_class{m-row m-container-inflate}
+
+@parblock
+
+@m_div{m-col-m-4 m-push-m-2 m-col-s-6 m-text-center}
+@image html player.jpg
+@subpage magnum-player @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief magnum-player
+@m_enddiv
+
+@m_div{m-col-m-4 m-push-m-2 m-col-s-6 m-text-center}
+@image html ui-gallery.png
+@subpage magnum-ui-gallery @m_class{m-label m-default m-flat} **live web demo**
+\n @copybrief magnum-ui-gallery
+@m_enddiv
+
+@endparblock
+
+@section utilities-cli Command-line utilities
 
 -   @subpage magnum-gl-info @m_class{m-label m-default m-flat} **live web demo** --- @copybrief magnum-gl-info
 -   @subpage magnum-al-info @m_class{m-label m-default m-flat} **live web demo** --- @copybrief magnum-al-info
 -   @subpage magnum-distancefieldconverter --- @copybrief magnum-distancefieldconverter
 -   @subpage magnum-fontconverter --- @copybrief magnum-fontconverter
 -   @subpage magnum-imageconverter --- @copybrief magnum-imageconverter
-
-The following graphical apps are available:
-
--   @subpage magnum-ui-gallery @m_class{m-label m-default m-flat} **live web demo** --- @copybrief magnum-ui-gallery
 
 */
 }
