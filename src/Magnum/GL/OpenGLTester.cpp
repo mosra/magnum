@@ -37,7 +37,7 @@ OpenGLTester::OpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfigu
     /* Try to create debug context, fallback to normal one if not possible. No
        such thing on macOS, iOS or WebGL. */
     #if !defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)
-    if(!_windowlessApplication.tryCreateContext(Platform::WindowlessApplication::Configuration{}.setFlags(Platform::WindowlessApplication::Configuration::Flag::Debug)))
+    if(!_windowlessApplication.tryCreateContext(Platform::WindowlessApplication::Configuration{}.addFlags(Platform::WindowlessApplication::Configuration::Flag::Debug)))
         _windowlessApplication.createContext();
     #else
     _windowlessApplication.createContext();
