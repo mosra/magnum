@@ -23,7 +23,6 @@ cmake .. \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
     -DCMAKE_PREFIX_PATH=$HOME/glfw \
     -DCMAKE_BUILD_TYPE=Debug \
-    -DVULKAN_LIBRARY=$HOME/libvulkan.so \
     -DWITH_AUDIO=ON \
     -DWITH_SHAPES=$BUILD_DEPRECATED \
     -DWITH_VK=OFF \
