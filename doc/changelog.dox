@@ -138,6 +138,11 @@ See also:
     parameters consistent across the implementations.
 -   Added numpad keys to @ref Platform::Sdl2Application::KeyEvent::Key,
     consistent with GLFW key mapping
+-   Exposed enabled-by-default @ref Platform::Sdl2Application::GLConfiguration::Flag::ForwardCompatible "GLConfiguration::Flag::ForwardCompatible"
+    flag in @ref Platform::Sdl2Application and @ref Platform::GlfwApplication,
+    added @ref Platform::Sdl2Application::GLConfiguration::addFlags() "GLConfiguration::addFlags()"
+    and @ref Platform::Sdl2Application::GLConfiguration::clearFlags() "GLConfiguration::clearFlags()"
+    for easier flag handling
 
 @subsubsection changelog-latest-new-primitives Primitives library
 

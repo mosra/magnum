@@ -981,7 +981,18 @@ class Sdl2Application::GLConfiguration {
          * @requires_gles Context flags are not available in WebGL.
          */
         enum class Flag: int {
-            Debug = SDL_GL_CONTEXT_DEBUG_FLAG,  /**< Create debug context */
+            #ifndef MAGNUM_TARGET_GLES
+            /**
+             * Forward compatible context
+             *
+             * @requires_gl Core/compatibility profile distinction and forward
+             *      compatibility applies only to desktop GL.
+             */
+            ForwardCompatible = SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG,
+            #endif
+
+            /** Create debug context */
+            Debug = SDL_GL_CONTEXT_DEBUG_FLAG,
 
             /** Create context with robust access */
             RobustAccess = SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG,
@@ -998,7 +1009,11 @@ class Sdl2Application::GLConfiguration {
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
         typedef Containers::EnumSet<Flag, SDL_GL_CONTEXT_DEBUG_FLAG|
-            SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG|SDL_GL_CONTEXT_RESET_ISOLATION_FLAG> Flags;
+            SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG|SDL_GL_CONTEXT_RESET_ISOLATION_FLAG
+            #ifndef MAGNUM_TARGET_GLES
+            |SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG
+            #endif
+            > Flags;
         #else
         typedef Containers::EnumSet<Flag> Flags;
         #endif
@@ -1019,11 +1034,41 @@ class Sdl2Application::GLConfiguration {
          * @brief Set context flags
          * @return Reference to self (for method chaining)
          *
-         * Default is no flag. See also @ref GL::Context::flags().
+         * Default is @ref Flag::ForwardCompatible on desktop GL and no flags
+         * on OpenGL ES.
+         * @see @ref addFlags(), @ref clearFlags(), @ref GL::Context::flags()
          * @requires_gles Context flags are not available in WebGL.
          */
         GLConfiguration& setFlags(Flags flags) {
             _flags = flags;
+            return *this;
+        }
+
+        /**
+         * @brief Add context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ORs the flags with existing instead of
+         * replacing them. Useful for preserving the defaults.
+         * @see @ref clearFlags()
+         * @requires_gles Context flags are not available in WebGL.
+         */
+        GLConfiguration& addFlags(Flags flags) {
+            _flags |= flags;
+            return *this;
+        }
+
+        /**
+         * @brief Clear context flags
+         * @return Reference to self (for method chaining)
+         *
+         * Unlike @ref setFlags(), ANDs the inverse of @p flags with existing
+         * instead of replacing them. Useful for removing default flags.
+         * @see @ref addFlags()
+         * @requires_gles Context flags are not available in WebGL.
+         */
+        GLConfiguration& clearFlags(Flags flags) {
+            _flags &= ~flags;
             return *this;
         }
 

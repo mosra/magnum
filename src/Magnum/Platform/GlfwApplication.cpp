@@ -339,7 +339,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         #ifndef MAGNUM_TARGET_GLES
         if(glConfiguration.version() >= GL::Version::GL320) {
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, true);
+            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, flags >= GLConfiguration::Flag::ForwardCompatible);
         }
         #else
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
@@ -355,7 +355,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, true);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, flags >= GLConfiguration::Flag::ForwardCompatible);
         #else
         /* For ES the major context version is compile-time constant */
         #ifdef MAGNUM_TARGET_GLES3
@@ -413,6 +413,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 2);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_ANY_PROFILE);
+        /** @todo or keep the fwcompat? */
         glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, false);
 
         _window = glfwCreateWindow(scaledWindowSize.x(), scaledWindowSize.y(), configuration.title().c_str(), monitor, nullptr);
@@ -620,7 +621,13 @@ void GlfwApplication::textInputEvent(TextInputEvent&) {}
 #ifdef MAGNUM_TARGET_GL
 GlfwApplication::GLConfiguration::GLConfiguration():
     _colorBufferSize{8, 8, 8, 0}, _depthBufferSize{24}, _stencilBufferSize{0},
-    _sampleCount{0}, _version{GL::Version::None}, _srgbCapable{false} {}
+    _sampleCount{0}, _version{GL::Version::None},
+    #ifndef MAGNUM_TARGET_GLES
+    _flags{Flag::ForwardCompatible},
+    #else
+    _flags{},
+    #endif
+    _srgbCapable{false} {}
 
 GlfwApplication::GLConfiguration::~GLConfiguration() = default;
 #endif
@@ -632,6 +639,9 @@ GlfwApplication::Configuration::Configuration():
     _dpiScalingPolicy{DpiScalingPolicy::Default},
     _cursorMode{CursorMode::Normal}
     #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+    /* Deliberately not setting _flags to ForwardCompatible to avoid them
+       having higher priority over GLConfiguration flags, appending that flag
+       later */
     , _sampleCount{0}, _version{GL::Version::None}, _srgbCapable{false}
     #endif
     {}
