@@ -247,7 +247,7 @@ template<class T> class Quaternion {
          * @param normalizedAxis    Normalized rotation axis
          *
          * Expects that the rotation axis is normalized. @f[
-         *      q = [\boldsymbol a \cdot sin \frac \theta 2, cos \frac \theta 2]
+         *      q = [\boldsymbol a \cdot \sin(\frac{\theta}{2}), \cos(\frac{\theta}{2})]
          * @f]
          * @see @ref angle(), @ref axis(), @ref DualQuaternion::rotation(),
          *      @ref Matrix4::rotation(), @ref Complex::rotation(),

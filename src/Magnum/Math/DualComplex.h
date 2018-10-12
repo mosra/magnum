@@ -65,7 +65,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * @param angle         Rotation angle (counterclockwise)
          *
          * @f[
-         *      \hat c = (cos \theta + i sin \theta) + \epsilon (0 + i0)
+         *      \hat c = (\cos(\theta) + i \sin(\theta)) + \epsilon (0 + i0)
          * @f]
          * @see @ref Complex::rotation(), @ref Matrix3::rotation(),
          *      @ref DualQuaternion::rotation()

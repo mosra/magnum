@@ -97,7 +97,7 @@ template<class T> class Complex {
          * @param angle             Rotation angle (counterclockwise)
          *
          * @f[
-         *      c = cos \theta + i sin \theta
+         *      c = \cos(\theta) + i \sin(\theta)
          * @f]
          * @see @ref angle(), @ref Matrix3::rotation(),
          *      @ref Quaternion::rotation()
@@ -135,7 +135,7 @@ template<class T> class Complex {
         explicit Complex(NoInitT) noexcept {}
 
         /**
-         * @brief Construct complex number from real and imaginary part
+         * @brief Construct a complex number from real and imaginary part
          *
          * @f[
          *      c = a + ib
@@ -144,7 +144,7 @@ template<class T> class Complex {
         constexpr /*implicit*/ Complex(T real, T imaginary) noexcept: _real(real), _imaginary(imaginary) {}
 
         /**
-         * @brief Construct complex number from vector
+         * @brief Construct a complex number from a vector
          *
          * To be used in transformations later. @f[
          *      c = v_x + iv_y
@@ -154,20 +154,20 @@ template<class T> class Complex {
         constexpr explicit Complex(const Vector2<T>& vector) noexcept: _real(vector.x()), _imaginary(vector.y()) {}
 
         /**
-         * @brief Construct complex number from another of different type
+         * @brief Construct a complex number from another of different type
          *
          * Performs only default casting on the values, no rounding or anything
          * else.
          */
         template<class U> constexpr explicit Complex(const Complex<U>& other) noexcept: _real{T(other._real)}, _imaginary{T(other._imaginary)} {}
 
-        /** @brief Construct complex number from external representation */
+        /** @brief Construct a complex number from external representation */
         template<class U, class V = decltype(Implementation::ComplexConverter<T, U>::from(std::declval<U>()))> constexpr explicit Complex(const U& other): Complex{Implementation::ComplexConverter<T, U>::from(other)} {}
 
         /** @brief Copy constructor */
         constexpr /*implicit*/ Complex(const Complex<T>&) noexcept = default;
 
-        /** @brief Convert complex number to external representation */
+        /** @brief Convert a complex number to external representation */
         template<class U, class V = decltype(Implementation::ComplexConverter<T, U>::to(std::declval<Complex<T>>()))> constexpr explicit operator U() const {
             return Implementation::ComplexConverter<T, U>::to(*this);
         }
@@ -221,21 +221,22 @@ template<class T> class Complex {
         constexpr T imaginary() const { return _imaginary; } /**< @overload */
 
         /**
-         * @brief Convert complex number to vector
+         * @brief Convert a complex number to vector
          *
          * @f[
          *      \boldsymbol v = \begin{pmatrix} a \\ b \end{pmatrix}
          * @f]
+         * @see @ref Complex(const Vector2<T>&)
          */
         constexpr explicit operator Vector2<T>() const {
             return {_real, _imaginary};
         }
 
         /**
-         * @brief Rotation angle of complex number
+         * @brief Rotation angle of a complex number
          *
          * @f[
-         *      \theta = atan2(b, a)
+         *      \theta = \operatorname{atan2}(b, a)
          * @f]
          * @see @ref rotation()
          */
@@ -244,7 +245,7 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Convert complex number to rotation matrix
+         * @brief Convert a complex number to a rotation matrix
          *
          * @f[
          *      M = \begin{pmatrix}
@@ -261,7 +262,7 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Add complex number and assign
+         * @brief Add a complex number and assign
          *
          * The computation is done in-place. @f[
          *      c_0 + c_1 = (a_0 + a_1) + i(b_0 + b_1)
@@ -274,7 +275,7 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Add complex number
+         * @brief Add a complex number
          *
          * @see @ref operator+=(const Complex<T>&)
          */
@@ -294,7 +295,7 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Subtract complex number and assign
+         * @brief Subtract a complex number and assign
          *
          * The computation is done in-place. @f[
          *      c_0 - c_1 = (a_0 - a_1) + i(b_0 - b_1)
@@ -307,7 +308,7 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Subtract complex number
+         * @brief Subtract a complex number
          *
          * @see @ref operator-=(const Complex<T>&)
          */
@@ -316,10 +317,10 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Multiply with scalar and assign
+         * @brief Multiply with a scalar and assign
          *
          * The computation is done in-place. @f[
-         *      c \cdot t = ta + itb
+         *      c t = a t + i b t
          * @f]
          */
         Complex<T>& operator*=(T scalar) {
@@ -329,7 +330,7 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Multiply with scalar
+         * @brief Multiply with a scalar
          *
          * @see @ref operator*=(T)
          */
@@ -338,10 +339,10 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Divide with scalar and assign
+         * @brief Divide with a scalar and assign
          *
          * The computation is done in-place. @f[
-         *      \frac c t = \frac a t + i \frac b t
+         *      \frac{c}{t} = \frac{a}{t} + i \frac{b}{t}
          * @f]
          */
         Complex<T>& operator/=(T scalar) {
@@ -351,7 +352,7 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Divide with scalar
+         * @brief Divide with a scalar
          *
          * @see @ref operator/=(T)
          */
@@ -360,7 +361,7 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Multiply with complex number
+         * @brief Multiply with a complex number
          *
          * @f[
          *      c_0 c_1 = (a_0 + ib_0)(a_1 + ib_1) = (a_0 a_1 - b_0 b_1) + i(a_1 b_0 + a_0 b_1)
@@ -442,7 +443,7 @@ template<class T> class Complex {
         }
 
         /**
-         * @brief Rotate vector with complex number
+         * @brief Rotate a vector with the complex number
          *
          * @f[
          *      v' = c v = c (v_x + iv_y)
@@ -464,7 +465,7 @@ template<class T> class Complex {
 };
 
 /** @relates Complex
-@brief Multiply scalar with complex
+@brief Multiply a scalar with a complex number
 
 Same as @ref Complex::operator*(T) const.
 */
@@ -473,10 +474,10 @@ template<class T> inline Complex<T> operator*(T scalar, const Complex<T>& comple
 }
 
 /** @relates Complex
-@brief Divide complex with number and invert
+@brief Divide a complex number with a scalar and invert
 
 @f[
-    \frac t c = \frac t a + i \frac t b
+    \frac{t}{c} = \frac{t}{a} + i \frac{t}{b}
 @f]
 @see @ref Complex::operator/()
 */

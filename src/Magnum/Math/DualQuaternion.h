@@ -200,7 +200,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @param normalizedAxis    Normalized rotation axis
          *
          * Expects that the rotation axis is normalized. @f[
-         *      \hat q = [\boldsymbol a \cdot sin \frac \theta 2, cos \frac \theta 2] + \epsilon [\boldsymbol 0, 0]
+         *      \hat q = [\boldsymbol a \cdot \sin(\frac{\theta}{2}), \cos(\frac{\theta}{2})] + \epsilon [\boldsymbol 0, 0]
          * @f]
          * @see @ref rotation() const, @ref Quaternion::rotation(),
          *      @ref Matrix4::rotation(), @ref DualComplex::rotation(),
