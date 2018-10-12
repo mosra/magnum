@@ -111,7 +111,7 @@ template<UnsignedInt dimensions, class T> class AbstractObject
          * Calling `object.addFeature<MyFeature>(args...)` is equivalent to
          * `new MyFeature{object, args...}`.
          */
-        template<class U, class ...Args> U& addFeature(Args... args) {
+        template<class U, class ...Args> U& addFeature(Args&&... args) {
             return *(new U{*this, std::forward<Args>(args)...});
         }
 

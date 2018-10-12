@@ -404,6 +404,9 @@ See also:
 -   Improved @ref TextureTools::distanceField() to work better on shader
     compilers that have problems compiling nested loops (WebGL implementations,
     some ES2 devices)
+-   @ref SceneGraph::AbstractObject::addFeature() and
+    @ref SceneGraph::Object::addChild() were not properly forwarding reference
+    arguments
 
 @subsection changelog-latest-docs Documentation
 
