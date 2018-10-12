@@ -72,15 +72,15 @@ Object3D* object;
 
 Animation::Player<Float> player;
 player.addWithCallback(scaling,
-    [](const Float&, const Vector3& scaling, Object3D& object) {
+    [](Float, const Vector3& scaling, Object3D& object) {
         object.setScaling(scaling);
     }, *object);
 player.addWithCallback(rotation,
-    [](const Float&, const Quaternion& rotation, Object3D& object) {
+    [](Float, const Quaternion& rotation, Object3D& object) {
         object.setRotation(rotation);
     }, *object);
 player.addWithCallback(translation,
-    [](const Float&, const Vector3& translation, Object3D& object) {
+    [](Float, const Vector3& translation, Object3D& object) {
         object.setTranslation(translation);
     }, *object);
 /* [Player-usage-callback] */
@@ -134,7 +134,7 @@ Animation::State state;
 
 Animation::Player<Float> controller;
 controller.addWithCallbackOnChange(stateTrack,
-    [](const Float&, const Animation::State& state, Data& data) {
+    [](Float, const Animation::State& state, Data& data) {
         data.player.setState(state, data.timeline.previousFrameTime());
     }, state, data);
 /* [Player-higher-order] */
@@ -155,7 +155,7 @@ Animation::Track<Float, Float> timeTrack{{
 
 Animation::Player<Float> timer;
 timer.addWithCallback(timeTrack,
-    [](const Float&, const Float& time, Animation::Player<Float>& player) {
+    [](Float, const Float& time, Animation::Player<Float>& player) {
         player.advance(time);
     }, player);
 

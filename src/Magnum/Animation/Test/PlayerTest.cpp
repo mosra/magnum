@@ -1076,7 +1076,7 @@ void PlayerTest::addWithCallback() {
         Int called = 0;
     } data;
     Player<Float> player;
-    player.addWithCallback(Track, [](const Float&, const Float& value, void* userData) {
+    player.addWithCallback(Track, [](Float, const Float& value, void* userData) {
         static_cast<Data*>(userData)->value = value;
         ++static_cast<Data*>(userData)->called;
     }, &data)
@@ -1100,7 +1100,7 @@ void PlayerTest::addWithCallbackTemplate() {
         Int called = 0;
     } data;
     Player<Float> player;
-    player.addWithCallback(Track, [](const Float&, const Float& value, Data& userData) {
+    player.addWithCallback(Track, [](Float, const Float& value, Data& userData) {
         userData.value = value;
         ++userData.called;
     }, data)
@@ -1124,7 +1124,7 @@ void PlayerTest::addWithCallbackOnChange() {
         Int called = 0;
     } data;
     Player<Float> player;
-    player.addWithCallbackOnChange(Track, [](const Float&, const Float& value, void* userData) {
+    player.addWithCallbackOnChange(Track, [](Float, const Float& value, void* userData) {
         static_cast<Data*>(userData)->value = value;
         ++static_cast<Data*>(userData)->called;
     }, data.value, &data)
@@ -1158,7 +1158,7 @@ void PlayerTest::addWithCallbackOnChangeTemplate() {
         Int called = 0;
     } data;
     Player<Float> player;
-    player.addWithCallbackOnChange(Track, [](const Float&, const Float& value, Data& userData) {
+    player.addWithCallbackOnChange(Track, [](Float, const Float& value, Data& userData) {
         userData.value = value;
         ++userData.called;
     }, data.value, data)

@@ -221,7 +221,7 @@ void Benchmark::playerAdvance() {
 void Benchmark::playerAdvanceCallback() {
     Int result{};
     Player<Float> player;
-    player.addWithCallback(_track, [](const Float&, const Int& value, Int& result) {
+    player.addWithCallback(_track, [](Float, const Int& value, Int& result) {
         result += value;
     }, result)
         .play({});

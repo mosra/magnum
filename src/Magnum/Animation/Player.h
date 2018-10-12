@@ -414,7 +414,7 @@ template<class T, class K
          * @see @ref addRawCallback()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class V, class R> Player<T, K>& addWithCallback(const TrackView<K, V, R>& track, void(*callback)(const K&, const R&, void*), void* userData = nullptr);
+        template<class V, class R> Player<T, K>& addWithCallback(const TrackView<K, V, R>& track, void(*callback)(K, const R&, void*), void* userData = nullptr);
         #else
         /* Otherwise the user would be forced to use the + operator to convert
            a lambda to a function pointer and (besides being weird and
@@ -431,7 +431,7 @@ template<class T, class K
          * whole lifetime of the @ref Player instance.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class V, class R> Player<T, K>& addWithCallback(const Track<K, V, R>& track, void(*callback)(const K&, const R&, void*), void* userData = nullptr);
+        template<class V, class R> Player<T, K>& addWithCallback(const Track<K, V, R>& track, void(*callback)(K, const R&, void*), void* userData = nullptr);
         #elif !defined(CORRADE_MSVC2017_COMPATIBILITY) /* See above why */
         template<class V, class R, class Callback> Player<T, K>& addWithCallback(const Track<K, V, R>& track, Callback callback, void* userData = nullptr) {
             return addWithCallback(TrackView<K, V, R>{track}, callback, userData);
@@ -452,7 +452,7 @@ template<class T, class K
          * @ref addRawCallback() for optimization possibilities.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class V, class R, class U> Player<T, K>& addWithCallback(const TrackView<K, V, R>& track, void(*callback)(const K&, const R&, U&), U& userData);
+        template<class V, class R, class U> Player<T, K>& addWithCallback(const TrackView<K, V, R>& track, void(*callback)(K, const R&, U&), U& userData);
         #else /* See above why */
         template<class V, class R, class U, class Callback> Player<T, K>& addWithCallback(const TrackView<K, V, R>& track, Callback callback, U& userData);
         #endif
@@ -464,7 +464,7 @@ template<class T, class K
          * whole lifetime of the @ref Player instance.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class V, class R, class U> Player<T, K>& addWithCallback(const Track<K, V, R>& track, void(*callback)(const K&, const R&, U&), U& userData);
+        template<class V, class R, class U> Player<T, K>& addWithCallback(const Track<K, V, R>& track, void(*callback)(K, const R&, U&), U& userData);
         #elif !defined(CORRADE_MSVC2017_COMPATIBILITY) /* See above why */
         template<class V, class R, class U, class Callback> Player<T, K>& addWithCallback(const Track<K, V, R>& track, Callback callback, U& userData) {
             return addWithCallback(TrackView<K, V, R>{track}, callback, userData);
@@ -491,7 +491,7 @@ template<class T, class K
          * @see @ref addRawCallback()
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class V, class R> Player<T, K>& addWithCallbackOnChange(const TrackView<K, V, R>& track, void(*callback)(const K&, const R&, void*), R& destination, void* userData = nullptr);
+        template<class V, class R> Player<T, K>& addWithCallbackOnChange(const TrackView<K, V, R>& track, void(*callback)(K, const R&, void*), R& destination, void* userData = nullptr);
         #else /* See above why */
         template<class V, class R, class Callback> Player<T, K>& addWithCallbackOnChange(const TrackView<K, V, R>& track, Callback callback, R& destination, void* userData = nullptr);
         #endif
@@ -503,7 +503,7 @@ template<class T, class K
          * whole lifetime of the @ref Player instance.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class V, class R> Player<T, K>& addWithCallbackOnChange(const Track<K, V, R>& track, void(*callback)(const K&, const R&, void*), R& destination, void* userData = nullptr);
+        template<class V, class R> Player<T, K>& addWithCallbackOnChange(const Track<K, V, R>& track, void(*callback)(K, const R&, void*), R& destination, void* userData = nullptr);
         #elif !defined(CORRADE_MSVC2017_COMPATIBILITY) /* See above why */
         template<class V, class R, class Callback> Player<T, K>& addWithCallbackOnChange(const Track<K, V, R>& track, Callback callback, R& destination, void* userData = nullptr) {
             return addWithCallbackOnChange(TrackView<K, V, R>{track}, callback, destination, userData);
@@ -524,7 +524,7 @@ template<class T, class K
          * @ref addRawCallback() for optimization possibilities.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class V, class R, class U> Player<T, K>& addWithCallbackOnChange(const TrackView<K, V, R>& track, void(*callback)(const K&, const R&, void*), R& destination, U& userData);
+        template<class V, class R, class U> Player<T, K>& addWithCallbackOnChange(const TrackView<K, V, R>& track, void(*callback)(K, const R&, void*), R& destination, U& userData);
         #else /* See above why */
         template<class V, class R, class U, class Callback> Player<T, K>& addWithCallbackOnChange(const TrackView<K, V, R>& track, Callback callback, R& destination, U& userData);
         #endif
@@ -536,7 +536,7 @@ template<class T, class K
          * whole lifetime of the @ref Player instance.
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        template<class V, class R, class U> Player<T, K>& addWithCallbackOnChange(const Track<K, V, R>& track, void(*callback)(const K&, const R&, void*), R& destination, U& userData);
+        template<class V, class R, class U> Player<T, K>& addWithCallbackOnChange(const Track<K, V, R>& track, void(*callback)(K, const R&, void*), R& destination, U& userData);
         #elif !defined(CORRADE_MSVC2017_COMPATIBILITY) /* See above why */
         template<class V, class R, class U, class Callback> Player<T, K>& addWithCallbackOnChange(const Track<K, V, R>& track, Callback callback, R& destination, U& userData) {
             return addWithCallbackOnChange(TrackView<K, V, R>{track}, callback, destination, userData);
@@ -777,43 +777,43 @@ template<class T, class K> template<class V, class R> Player<T, K>& Player<T, K>
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<class T, class K> template<class V, class R, class Callback> Player<T, K>& Player<T, K>::addWithCallback(const TrackView<K, V, R>& track, Callback callback, void* userData) {
-    auto callbackPtr = static_cast<void(*)(const K&, const R&, void*)>(callback);
+    auto callbackPtr = static_cast<void(*)(K, const R&, void*)>(callback);
     return addInternal(track,
         [](const TrackViewStorage<K>& track, K key, std::size_t& hint, void*, void(*callback)(), void* userData) {
             /** @todo try to use atStrict() if possible */
-            reinterpret_cast<void(*)(const K&, const R&, void*)>(callback)(key, static_cast<const TrackView<K, V, R>&>(track).at(key, hint), userData);
+            reinterpret_cast<void(*)(K, const R&, void*)>(callback)(key, static_cast<const TrackView<K, V, R>&>(track).at(key, hint), userData);
         }, nullptr, reinterpret_cast<void(*)()>(callbackPtr), userData);
 }
 
 template<class T, class K> template<class V, class R, class U, class Callback> Player<T, K>& Player<T, K>::addWithCallback(const TrackView<K, V, R>& track, Callback callback, U& userData) {
-    auto callbackPtr = static_cast<void(*)(const K&, const R&, U&)>(callback);
+    auto callbackPtr = static_cast<void(*)(K, const R&, U&)>(callback);
     return addInternal(track,
         [](const TrackViewStorage<K>& track, K key, std::size_t& hint, void*, void(*callback)(), void* userData) {
             /** @todo try to use atStrict() if possible */
-            reinterpret_cast<void(*)(const K&, const R&, U&)>(callback)(key, static_cast<const TrackView<K, V, R>&>(track).at(key, hint), *static_cast<U*>(userData));
+            reinterpret_cast<void(*)(K, const R&, U&)>(callback)(key, static_cast<const TrackView<K, V, R>&>(track).at(key, hint), *static_cast<U*>(userData));
         }, nullptr, reinterpret_cast<void(*)()>(callbackPtr), &userData);
 }
 
 template<class T, class K> template<class V, class R, class Callback> Player<T, K>& Player<T, K>::addWithCallbackOnChange(const TrackView<K, V, R>& track, Callback callback, R& destination, void* userData) {
-    auto callbackPtr = static_cast<void(*)(const K&, const R&, void*)>(callback);
+    auto callbackPtr = static_cast<void(*)(K, const R&, void*)>(callback);
     return addInternal(track,
         [](const TrackViewStorage<K>& track, K key, std::size_t& hint, void* destination, void(*callback)(), void* userData) {
             /** @todo try to use atStrict() if possible */
             R result = static_cast<const TrackView<K, V, R>&>(track).at(key, hint);
             if(result == *static_cast<R*>(destination)) return;
-            reinterpret_cast<void(*)(const K&, const R&, void*)>(callback)(key, result, userData);
+            reinterpret_cast<void(*)(K, const R&, void*)>(callback)(key, result, userData);
             *static_cast<R*>(destination) = result;
         }, &destination, reinterpret_cast<void(*)()>(callbackPtr), userData);
 }
 
 template<class T, class K> template<class V, class R, class U, class Callback> Player<T, K>& Player<T, K>::addWithCallbackOnChange(const TrackView<K, V, R>& track, Callback callback, R& destination, U& userData) {
-    auto callbackPtr = static_cast<void(*)(const K&, const R&, U&)>(callback);
+    auto callbackPtr = static_cast<void(*)(K, const R&, U&)>(callback);
     return addInternal(track,
         [](const TrackViewStorage<K>& track, K key, std::size_t& hint, void* destination, void(*callback)(), void* userData) {
             /** @todo try to use atStrict() if possible */
             R result = static_cast<const TrackView<K, V, R>&>(track).at(key, hint);
             if(result == *static_cast<R*>(destination)) return;
-            reinterpret_cast<void(*)(const K&, const R&, U&)>(callback)(key, result, *static_cast<U*>(userData));
+            reinterpret_cast<void(*)(K, const R&, U&)>(callback)(key, result, *static_cast<U*>(userData));
             *static_cast<R*>(destination) = result;
         }, &destination, reinterpret_cast<void(*)()>(callbackPtr), &userData);
 }
