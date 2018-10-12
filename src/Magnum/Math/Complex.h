@@ -322,6 +322,7 @@ template<class T> class Complex {
          * The computation is done in-place. @f[
          *      c t = a t + i b t
          * @f]
+         * @see @ref operator*=(const Vector2<T>&)
          */
         Complex<T>& operator*=(T scalar) {
             _real *= scalar;
@@ -330,12 +331,36 @@ template<class T> class Complex {
         }
 
         /**
+         * @brief Multiply with a vector and assign
+         *
+         * The computation is done in-place. @f[
+         *      c \boldsymbol{v} = a v_x + i b v_y
+         * @f]
+         * @see @ref operator*=(T)
+         */
+        Complex<T>& operator*=(const Vector2<T>& vector) {
+             _real *= vector.x();
+             _imaginary *= vector.y();
+             return *this;
+        }
+
+        /**
          * @brief Multiply with a scalar
          *
-         * @see @ref operator*=(T)
+         * @see @ref operator*=(T), @ref operator*(const Vector2<T>&) const,
+         *      @ref operator*(const Complex<T>&) const
          */
         Complex<T> operator*(T scalar) const {
             return Complex<T>(*this) *= scalar;
+        }
+
+        /**
+         * @brief Multiply with a vector
+         *
+         * @see @ref operator*=(const Vector2<T>&)
+         */
+        Complex<T> operator*(const Vector2<T>& vector) const {
+            return Complex<T>(*this) *= vector;
         }
 
         /**
@@ -344,6 +369,7 @@ template<class T> class Complex {
          * The computation is done in-place. @f[
          *      \frac{c}{t} = \frac{a}{t} + i \frac{b}{t}
          * @f]
+         * @see @ref operator/=(const Vector2<T>&)
          */
         Complex<T>& operator/=(T scalar) {
             _real /= scalar;
@@ -352,12 +378,35 @@ template<class T> class Complex {
         }
 
         /**
+         * @brief Divide with a vector and assign
+         *
+         * The computation is done in-place. @f[
+         *      c \boldsymbol{v} = \frac{a}{v_x} + i \frac{b}{v_y}
+         * @f]
+         * @see @ref operator/=(T)
+         */
+        Complex<T>& operator/=(const Vector2<T>& vector) {
+             _real /= vector.x();
+             _imaginary /= vector.y();
+             return *this;
+        }
+
+        /**
          * @brief Divide with a scalar
          *
-         * @see @ref operator/=(T)
+         * @see @ref operator/=(T), @ref operator/(const Vector2<T>&) const
          */
         Complex<T> operator/(T scalar) const {
             return Complex<T>(*this) /= scalar;
+        }
+
+        /**
+         * @brief Divide with a vector
+         *
+         * @see @ref operator/=(const Vector2<T>&), @ref operator/(T) const
+         */
+        Complex<T> operator/(const Vector2<T>& vector) const {
+            return Complex<T>(*this) /= vector;
         }
 
         /**
@@ -366,6 +415,7 @@ template<class T> class Complex {
          * @f[
          *      c_0 c_1 = (a_0 + ib_0)(a_1 + ib_1) = (a_0 a_1 - b_0 b_1) + i(a_1 b_0 + a_0 b_1)
          * @f]
+         * @see @ref operator*(const Vector2<T>& other) const
          */
         Complex<T> operator*(const Complex<T>& other) const {
             return {_real*other._real - _imaginary*other._imaginary,
@@ -473,6 +523,15 @@ template<class T> inline Complex<T> operator*(T scalar, const Complex<T>& comple
     return complex*scalar;
 }
 
+/** @relatesalso Complex
+@brief Multiply a vector with a complex number
+
+Same as @ref Complex::operator*(const Vector2<T>&) const.
+*/
+template<class T> inline Complex<T> operator*(const Vector2<T>& vector, const Complex<T>& complex) {
+    return complex*vector;
+}
+
 /** @relates Complex
 @brief Divide a complex number with a scalar and invert
 
@@ -483,6 +542,18 @@ template<class T> inline Complex<T> operator*(T scalar, const Complex<T>& comple
 */
 template<class T> inline Complex<T> operator/(T scalar, const Complex<T>& complex) {
     return {scalar/complex.real(), scalar/complex.imaginary()};
+}
+
+/** @relates Complex
+@brief Divide a complex number with a vector and invert
+
+@f[
+    \frac{\boldsymbol{v}}{c} = \frac{v_x}{a} + i \frac{v_y}{b}
+@f]
+@see @ref Complex::operator/()
+*/
+template<class T> inline Complex<T> operator/(const Vector2<T>& vector, const Complex<T>& complex) {
+    return {vector.x()/complex.real(), vector.y()/complex.imaginary()};
 }
 
 /** @relatesalso Complex

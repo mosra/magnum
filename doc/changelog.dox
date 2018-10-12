@@ -120,6 +120,9 @@ See also:
     @ref Math::Complex::imaginary(), @ref Math::Dual::real(),
     @ref Math::Dual::dual(), @ref Math::Quaternion::vector() and
     @ref Math::Quaternion::scalar()
+-   Ability to do a component-wise multiply and divide of @ref Math::Complex
+    and a @ref Math::Vector2, in addition to multiplication/division with a
+    scalar
 -   Ability to use @ref Math::Complex, @ref Math::DualComplex,
     @ref Math::Quaternion, @ref Math::DualQuaternion with
     @ref Corrade::Utility::Configuration and @ref Corrade::Utility::Arguments
