@@ -411,6 +411,8 @@ See also:
     and caveats
 -   Reworked documentation of @ref Math::Algorithms, adding math equations and
     usage examples to all functions
+-   Improved documentation of @ref Math::Constants, showing useful identities
+    for each
 -   Explicitly mentioning copy/move constructibility for all classes with
     non-trivial construction
 -   Improved Vcpkg build instructions (see

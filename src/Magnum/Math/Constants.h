@@ -46,30 +46,43 @@ template<class T> struct Constants {
     /* See TypeTraits for answer why these are functions and not constants. */
     #ifdef DOXYGEN_GENERATING_OUTPUT
     /**
-     * @brief Pi
+     * @brief @f$ \pi @f$.
      *
+     * @f[
+     *      \pi = 180 \degree
+     * @f]
      * @see @ref piHalf(), @ref piQuarter(), @ref tau(), @ref Deg, @ref Rad
      */
     static constexpr T pi();
 
     /**
-     * @brief Half of a pi
+     * @brief Half of a @f$ \pi @f$
      *
+     * @f[
+     *      \frac{\pi}{2} = 90 \degree
+     * @f]
      * @see @ref pi(), @ref piQuarter(), @ref tau(), @ref Deg, @ref Rad
      */
     static constexpr T piHalf();
 
     /**
-     * @brief Quarter of a pi
+     * @brief Quarter of a @f$ \pi @f$
      *
+     * @f[
+     *      \frac{\pi}{4} = 45 \degree
+     * @f]
      * @see @ref pi(), @ref piHalf(), @ref tau(), @ref Deg, @ref Rad
      */
     static constexpr T piQuarter();
 
     /**
-     * @brief Tau
+     * @brief @f$ \tau @f$.
      *
      * Or two pi. See the [Tau manifesto](https://www.tauday.com/tau-manifesto).
+     *
+     * @f[
+     *      \tau = 2 \pi = 360 \degree
+     * @f]
      * @see @ref pi(), @ref piHalf(), @ref piQuarter(), @ref Deg, @ref Rad
      */
     static constexpr T tau();
@@ -77,12 +90,32 @@ template<class T> struct Constants {
     /**
      * @brief Euler's number
      *
+     * @f[
+     *      e = \ln (1)
+     * @f]
      * @see @ref log(), @ref exp()
      */
     static constexpr T e();
 
-    static constexpr T sqrt2(); /**< @brief Square root of 2 */
-    static constexpr T sqrt3(); /**< @brief Square root of 3 */
+    /**
+     * @brief Square root of 2
+     *
+     * @f[
+     *      \sqrt{2}
+     * @f]
+     * @see @ref sqrt3(), @ref sqrtHalf()
+     */
+    static constexpr T sqrt2();
+
+    /**
+     * @brief Square root of 3
+     *
+     * @f[
+     *      \sqrt{3}
+     * @f]
+     * @see @ref sqrt2(), @ref sqrtHalf()
+     */
+    static constexpr T sqrt3();
 
     /**
      * @brief Quiet NaN
@@ -92,7 +125,7 @@ template<class T> struct Constants {
     static constexpr T nan();
 
     /**
-     * @brief Positive infinity
+     * @brief Positive @f$ \infty @f$.
      *
      * @see @ref isInf()
      */
