@@ -106,7 +106,7 @@ See also:
     integral centered ranges
 -   @ref Math::Range is now constructible from a @ref std::pair of values,
     making it usable in combination with @ref Math::minmax(), for example
--   Added @ref Math::Constants::piQuarter()
+-   Added @ref Math::Constants::piQuarter(), @ref Math::Constants::sqrtHalf()
 -   Added a convenience function @ref Math::select() as a constant
     interpolation counterpart to @ref Math::lerp()
 -   Added a convenience function @ref Math::planeEquation() to aid with passing

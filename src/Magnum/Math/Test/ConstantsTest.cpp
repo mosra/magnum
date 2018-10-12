@@ -51,8 +51,10 @@ template<class T> void ConstantsTest::constants() {
     {
         constexpr T a = Constants<T>::sqrt2();
         constexpr T b = Constants<T>::sqrt3();
+        constexpr T c = Constants<T>::sqrtHalf();
         CORRADE_COMPARE(Math::pow<2>(a), T(2));
         CORRADE_COMPARE(Math::pow<2>(b), T(3));
+        CORRADE_COMPARE(Math::pow<2>(c), T(0.5));
     } {
         constexpr T a = Constants<T>::pi();
         constexpr T b = Constants<T>::piHalf();

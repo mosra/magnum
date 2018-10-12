@@ -71,7 +71,8 @@ template<class T> struct Constants {
      * @f[
      *      \frac{\pi}{4} = 45 \degree
      * @f]
-     * @see @ref pi(), @ref piHalf(), @ref tau(), @ref Deg, @ref Rad
+     * @see @ref pi(), @ref piHalf(), @ref sqrtHalf(), @ref tau(), @ref Deg,
+     *      @ref Rad
      */
     static constexpr T piQuarter();
 
@@ -118,6 +119,16 @@ template<class T> struct Constants {
     static constexpr T sqrt3();
 
     /**
+     * @brief Square root of @f$ \frac{1}{2} @f$
+     *
+     * @f[
+     *      \frac{\sqrt{2}}{2} = \frac{1}{\sqrt{2}} = \sin(45 \degree) = \cos(45 \degree)
+     * @f]
+     * @see @ref sqrt2(), @ref sqrt3(), @ref piQuarter()
+     */
+    static constexpr T sqrtHalf();
+
+    /**
      * @brief Quiet NaN
      *
      * @see @ref isNan()
@@ -144,6 +155,7 @@ template<> struct Constants<Double> {
     static constexpr Double e()         { return 2.718281828459045; }
     static constexpr Double sqrt2()     { return 1.414213562373095; }
     static constexpr Double sqrt3()     { return 1.732050807568877; }
+    static constexpr Double sqrtHalf()  { return 0.707106781186547; }
 
     static constexpr Double nan()   { return Double(NAN); }
     static constexpr Double inf()   { return HUGE_VAL; }
@@ -158,6 +170,7 @@ template<> struct Constants<Float> {
     static constexpr Float e()          { return 2.718281828f; }
     static constexpr Float sqrt2()      { return 1.414213562f; }
     static constexpr Float sqrt3()      { return 1.732050808f; }
+    static constexpr Float sqrtHalf()   { return 0.707106781f; }
 
     static constexpr Float nan()    { return NAN; }
     static constexpr Float inf()    { return HUGE_VALF; }
