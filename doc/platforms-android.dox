@@ -642,6 +642,36 @@ quick, the log is spitting out a lot of info all the time. Possible causes:
     [the official documentation](https://developer.android.com/studio/projects/gradle-external-native-builds.html#jniLibs)
     for details.
 
+@subsection platforms-android-troubleshooting-java8 Gradle aborting due to too new Java
+
+If you see the following output, it might be that you're using Java 9 or 10,
+which is not supported by Android build tools yet:
+
+@code{.shell-session}
+$ gradle build
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+…
+> Failed to notify project evaluation listener.
+   > Could not initialize class com.android.sdklib.repository.AndroidSdkHandler
+@endcode
+
+Solution is to point @cb{.sh} $JAVA_HOME @ce to a Java 8 installation, for
+example. This affects not just `gradle`, but also other tools like `sdkmanager`
+(see @ref platforms-android-troubleshooting-licenses "below"), so you may want
+to export it for the whole session:
+
+@code{.sh}
+export JAVA_HOME=/usr/lib/jvm/java-8-openjdk/
+gradle build
+@endcode
+
+On ArchLinux, Java 8 is provided by the [jdk8-openjdk](https://www.archlinux.org/packages/extra/x86_64/jdk8-openjdk/)
+package, which is pulled in as a dependency of the `android-sdk` and `gradle`
+packages.
+
 @subsection platforms-android-troubleshooting-term Gradle aborting due to termcap
 
 If you see the following output, Gradle is crashing because @cb{.sh} $TERM @ce
@@ -679,6 +709,16 @@ sure to verify that everything went well by executing @cb{.sh} sdkmanager --lice
 again. If it offers the same licenses again, you might want to force it with
 @cb{.sh} sudo @ce.
 
+If the tool blows up with the following error, it's again because the Java
+version is too new, see @ref platforms-android-troubleshooting-java8 "above"
+for a solution:
+
+@code{.shell-session}
+Exception in thread "main" java.lang.NoClassDefFoundError: javax/xml/bind/annotation/XmlSchema
+        at com.android.repository.api.SchemaModule$SchemaModuleVersion.<init>(SchemaModule.java:156)
+        …
+@endcode
+
 @subsection platforms-android-troubleshooting-permissions Android SDK directory permissions
 
 Gradle is able to work with system-installed Android SDK. If it complains about
@@ -692,7 +732,9 @@ directory permissions such as
 @endcode
 
 it's often enough to just install such packages. In case of ArchLinux, all
-relevant packages are available in AUR.
+relevant packages are available in AUR. For the above error in particular, the
+matching packages are [android-sdk-build-tools-26.0.2](https://aur.archlinux.org/packages/android-sdk-build-tools-26.0.2/)
+and [android-platform-25](https://aur.archlinux.org/packages/android-platform-25/).
 */
 
 }
