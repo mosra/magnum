@@ -106,6 +106,7 @@ HTML_EXTRA_STYLESHEET = \
 
 ##! M_FAVICON = doc/favicon.ico
 
+##! M_MAIN_PROJECT_URL = http://magnum.graphics/
 ##! M_LINKS_NAVBAR1 = \
 ##!  "getting-started building cmake" \
 ##!  "pages features platforms example-index tips utilities"
