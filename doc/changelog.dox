@@ -410,6 +410,8 @@ See also:
 
 @subsection changelog-latest-docs Documentation
 
+-   New @ref custom-buildsystems page listing the most important things to keep
+    in mind when using Magnum with custom buildsystems.
 -   Compiled code snippets for @ref Audio and @ref SceneGraph libraries, fixing
     cases where outdated or plain wrong API constructs were mentioned
 -   Extended documentation for @ref Math::Matrix3::rotation(),

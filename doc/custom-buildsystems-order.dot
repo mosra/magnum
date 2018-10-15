@@ -1,0 +1,107 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+digraph "Magnum library dependency order" {
+    rankdir=BT
+    ranksep=0.8
+    node [style=filled shape=rect margin="0.03,0.03"]
+
+    CorradeUtility [style=solid label="Corrade\nUtility" class="m-primary"]
+    CorradeContainers [style=solid label="Corrade\nContainers" class="m-primary" style=dotted]
+    CorradePluginManager [style=solid label="Corrade\nPluginManager" class="m-info"]
+    CorradeInterconnect [style=solid label="Corrade\nInterconnect" class="m-info"]
+    CorradeTestSuite [style=solid label="Corrade\nTestSuite" class="m-info"]
+
+    Magnum [class="m-primary"]
+    MagnumAnimation [label="Magnum\nAnimation" class="m-primary" style=dotted]
+    MagnumAudio [label="Magnum\nAudio" class="m-info"]
+    MagnumDebugTools [label="Magnum\nDebugTools" class="m-info"]
+    MagnumGL [label="Magnum\nGL" class="m-info"]
+    MagnumMath [label="Magnum\nMath" class="m-primary" style=dotted]
+    MagnumMeshTools [label="Magnum\nMeshTools" class="m-info"]
+    MagnumOpenGLTester [label="Magnum\nOpenGLTester" class="m-info"]
+    MagnumPrimitives [label="Magnum\nPrimitives" class="m-info"]
+    MagnumSceneGraph [label="Magnum\nSceneGraph" class="m-info"]
+    MagnumShaders [label="Magnum\nShaders" class="m-info"]
+    MagnumShapes [label="Magnum\nShapes" class="m-dim"]
+    MagnumText [label="Magnum\nText" class="m-info"]
+    MagnumTextureTools [label="Magnum\nTextureTools" class="m-info"]
+    MagnumTrade [label="Magnum\nTrade" class="m-info"]
+    MagnumVk [label="Magnum\nVk" class="m-info"]
+
+    MagnumApplication [label="Magnum\n*Application" class="m-info"]
+    MagnumWindowlessApplication [label="Magnum\nWindowless*Application" class="m-info"]
+
+    CorradeUtility -> CorradeContainers [dir=both style=dashed class="m-primary"]
+    {rank=same CorradeUtility CorradeContainers}
+    CorradePluginManager -> CorradeUtility [class="m-info"]
+    CorradeInterconnect -> CorradeUtility [class="m-info"]
+    CorradeTestSuite -> CorradeUtility [class="m-info"]
+
+    {rank=same Magnum -> MagnumAnimation -> MagnumMath [dir=both style=dashed]}
+    Magnum -> CorradeUtility
+
+    MagnumAudio -> Magnum
+
+    MagnumDebugTools -> CorradeTestSuite [style=dotted]
+    MagnumDebugTools -> Magnum
+    MagnumDebugTools -> MagnumGL [style=dotted]
+    MagnumDebugTools -> MagnumMeshTools [style=dotted]
+    MagnumDebugTools -> MagnumPrimitives [style=dotted]
+    MagnumDebugTools -> MagnumShaders [style=dotted]
+    MagnumDebugTools -> MagnumShapes [style=dotted class="m-dim"]
+    MagnumDebugTools -> MagnumSceneGraph [style=dotted]
+
+    MagnumGL -> Magnum
+
+    MagnumMeshTools -> Magnum
+
+    MagnumOpenGLTester -> MagnumWindowlessApplication
+
+    MagnumPrimitives -> MagnumTrade
+
+    MagnumSceneGraph -> Magnum
+
+    MagnumShaders -> MagnumGL
+
+    MagnumShapes -> MagnumSceneGraph [class="m-dim"]
+
+    MagnumText -> MagnumTextureTools
+    MagnumText -> MagnumGL
+
+    MagnumTextureTools -> Magnum
+    MagnumTextureTools -> MagnumGL [style=dotted]
+
+    MagnumTrade -> Magnum
+    MagnumTrade -> CorradePluginManager
+
+    MagnumVk -> Magnum
+
+    MagnumApplication -> Magnum
+    MagnumApplication -> MagnumGL [style=dotted]
+    MagnumApplication -> MagnumVk [style=dotted]
+
+    MagnumWindowlessApplication -> MagnumGL
+}

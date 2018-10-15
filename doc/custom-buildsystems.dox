@@ -1,0 +1,133 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+/** @page custom-buildsystems Using Magnum with custom buildsystems
+@brief Guide and troubleshooting when you don't want to use CMake.
+
+While Magnum uses CMake as its primary buildsystem, it's possible to use Magnum
+with a custom buildsystem as well. The following guide will highlight the most
+important concepts for both using and building Magnum.
+
+@attention Please note that custom buildsystems are not officially supported,
+    though their use is *not discouraged*. This guide aims to cover the most
+    important aspects, but the topic is so broad that it's not feasible to
+    cover all platform differences and quirks --- that's why we let CMake do it
+    for us :) You are on your own here. Good luck.
+
+@section custom-buildsystems-usage Using already built Magnum with a custom buildsystem
+
+The easier situation is building Magnum itself with CMake, as explained in
+@ref building, and then integrating the installed libraries and headers into
+your buildsystem. For Magnum built this way, every library has a name
+corresponding to the namespace name and the headers are also in a directory
+with the same name.
+
+@subsection custom-buildsystems-usage-dependency-order Library dependency order
+
+Preserving library linking order is important to avoid linker errors. For
+Corrade and libraries in the main Magnum repository the order is the following.
+The @m_span{m-text m-primary} light blue @m_endspan libraries are the *core*,
+which you need to link every time, the @m_span{m-text m-info} dark blue @m_endspan
+libraries are extra functionality. Some libraries have cyclic dependencies, in
+which case they are both compiled into a single library, the other part of the
+cyclic dependency marked with a dotted rectangle. Deprecated libraries that are
+scheduled for removal are marked with a @m_span{m-text m-dim} dim @m_endspan
+color. In some cases a dependency is optional and you can remove the dependency
+by not disabling parts or configuration options that require given dependency.
+See documentation of each library for more information.
+
+@m_div{m-container-inflate} @m_div{m-row} @m_div{m-col-m-12 m-nopadt}
+@dotfile custom-buildsystems-order.dot
+@m_enddiv @m_enddiv @m_enddiv
+
+So, for example, in order to use the @ref Primitives library, you need to link
+the libraries in this order, the leaf libraries first and the root dependencies
+last:
+
+    MagnumPrimitives MagnumTrade Magnum CorradePluginManager CorradeUtility
+
+Note that some libraries have dependencies outside of Magnum and the above
+diagram doesn't include them --- again, see documentation of each library for
+more information.
+
+@subsection custom-buildsystems-usage-static-plugins Static plugins
+
+While dynamic plugins work without buildsystem integration, static plugins are
+handled automagically with CMake and you need to replicate the magic manually
+when using a custom buildsystem. This is just about compiling an additonal
+`*.cpp` file together with your final app, see @ref plugins-static for more
+information.
+
+For linking static plugins, there's the following dependency order. Most
+plugins have just a single dependency on its interface lib, however there are
+some exceptions:
+
+@m_div{m-container-inflate} @m_div{m-row} @m_div{m-col-m-12 m-nopady}
+@dotfile custom-buildsystems-order-plugins.dot
+@m_enddiv @m_enddiv @m_enddiv
+
+@subsection custom-buildsystems-usage-resource-compilation Resource compilation
+
+The CMake macro @cmake corrade_add_resource() @ce provides a convenience
+wrapper macro around the @ref corrade-rc executable. For the following CMake
+code:
+
+@code{.cmake}
+corrade_add_resource(MyApp_RESOURCES resources.conf)
+
+add_executable(MyApp main.cpp ${MyApp_RESOURCES})
+@endcode
+
+The following is an equivalent shell invocation:
+
+@code{.sh}
+corrade-rc MyApp_RESOURCES resources.conf resources.cpp
+
+# Now compile resources.cpp into your app
+@endcode
+
+In both cases, `MyApp_RESOURCES` can be used for importing the resources at
+runtime with @ref CORRADE_RESOURCE_INITIALIZE(), if needed. Also note that the
+@cmake corrade_add_resource() @ce is doing dependency tracking by introspecting
+the `resources.conf` file. For a custom buildsystem you have to implement that
+by parsing the file yourself.
+
+@subsection custom-buildsystems-usage-toolchains Cross-compilation
+
+Magnum maintains a set of CMake toolchains for cross-compiling. Each toolchain
+typically sets custom linker and compiler flags and you may want to replicate
+the behavior 1:1 to avoid issues. The toolchain files are available at
+https://github.com/mosra/toolchains.
+
+@section custom-buildsystems-building Building Magnum with a custom buildsystem
+
+@todoc mention configure.h generation from .cmake templates
+@todoc mention resources for shaders etc.
+@todoc mention various platform-specific
+
+*/
+
+}

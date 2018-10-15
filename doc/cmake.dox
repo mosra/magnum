@@ -25,16 +25,19 @@
 
 namespace Magnum {
 /** @page cmake Usage with CMake
-@brief Guide how to find and use Magnum with CMake build system
+@brief Guide how to find and use Magnum with the CMake buildsystem.
 
 @m_keywords{CMake}
 
 @tableofcontents
 @m_footernavigation
 
-Magnum uses CMake build system for both building and integration into your
-projects. The logic is in module `FindMagnum.cmake` distributed with the engine
-in `modules/` directory, you are encouraged to copy it along with
+Magnum uses CMake as a primary build system for both building and integration
+into your projects. The following guide explains how to use it. If you wish to
+use a different buildsystem, see @ref custom-buildsystems instead.
+
+The main logic is in the `FindMagnum.cmake` module distributed with the engine
+in the `modules/` directory, you are encouraged to copy it along with
 `FindCorrade.cmake` into your project and add path to the files to
 `CMAKE_MODULE_PATH`. Otherwise, if CMake won't be able to find this file in
 predefined locations, it will error out even if Magnum might be installed on

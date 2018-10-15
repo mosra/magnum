@@ -108,7 +108,7 @@ HTML_EXTRA_STYLESHEET = \
 
 ##! M_MAIN_PROJECT_URL = http://magnum.graphics/
 ##! M_LINKS_NAVBAR1 = \
-##!  "getting-started building cmake" \
+##!  "getting-started building cmake custom-buildsystems" \
 ##!  "pages features platforms example-index tips utilities"
 ##! M_LINKS_NAVBAR2 = \
 ##!  "namespaces" \
