@@ -419,6 +419,8 @@ See also:
     usage examples to all functions
 -   Improved documentation of @ref Math::Constants, showing useful identities
     for each
+-   The @ref scenegraph documentation was proofread and extended with a section
+    covering basics with visual diagrams.
 -   Explicitly mentioning copy/move constructibility for all classes with
     non-trivial construction
 -   Improved Vcpkg build instructions (see
