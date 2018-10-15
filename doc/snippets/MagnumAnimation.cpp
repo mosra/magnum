@@ -24,13 +24,112 @@
 */
 
 #include "Magnum/Timeline.h"
+#include "Magnum/Math/Bezier.h"
+#include "Magnum/Math/Matrix3.h"
 #include "Magnum/Math/Quaternion.h"
+#include "Magnum/Math/Packing.h"
+#include "Magnum/Animation/Easing.h"
 #include "Magnum/Animation/Player.h"
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
 
 int main() {
+
+{
+Vector3 a, b;
+Float t{};
+{
+/* [ease] */
+auto lerpBounceIn =
+    Animation::ease<Vector3, Math::lerp, Animation::Easing::bounceIn>();
+
+Vector3 result1 = Math::lerp(a, b, Animation::Easing::bounceIn(t));
+Vector3 result2 = lerpBounceIn (a, b, t);
+/* [ease] */
+static_cast<void>(result1);
+static_cast<void>(result2);
+}
+
+{
+/* [unpack] */
+UnsignedShort a, b;
+auto lerpPacked =
+    Animation::unpack<UnsignedShort, Float, Math::lerp, Math::unpack<Float>>();
+
+Float result1 = Math::lerp(Math::unpack<Float>(a), Math::unpack<Float>(b), t);
+Float result2 = lerpPacked(a, b, t);
+/* [unpack] */
+static_cast<void>(result1);
+static_cast<void>(result2);
+}
+
+{
+/* [unpackEase] */
+UnsignedShort a, b;
+auto lerpPackedBounceIn = Animation::unpackEase<UnsignedShort, Float,
+    Math::lerp, Math::unpack<Float>, Animation::Easing::bounceIn>();
+
+Float result1 = Math::lerp(Math::unpack<Float>(a), Math::unpack<Float>(b),
+    Animation::Easing::bounceIn(t));
+Float result2 = lerpPackedBounceIn(a, b, t);
+/* [unpackEase] */
+static_cast<void>(result1);
+static_cast<void>(result2);
+}
+}
+
+{
+Vector3 a, b;
+Float t{};
+{
+/* [Easing-factor] */
+Vector3 result = Math::lerp(a, b, Animation::Easing::quadraticInOut(t));
+/* [Easing-factor] */
+static_cast<void>(result);
+}
+
+{
+/* [Easing-ease] */
+auto lerpQuadraticInOut =
+    Animation::ease<Vector3, Math::lerp, Animation::Easing::quadraticInOut>();
+
+Vector3 result = lerpQuadraticInOut(a, b, t);
+/* [Easing-ease] */
+static_cast<void>(result);
+}
+
+{
+/* [Easing-clamp] */
+auto lerpCircularOutClamped = Animation::easeClamped<
+    Vector3, Math::lerp, Animation::Easing::quadraticInOut>();
+
+Vector3 result1 = Math::lerp(a, b,
+    Math::clamp(0.0f, 1.0f, Animation::Easing::circularOut(t)));
+Vector3 result2 = lerpCircularOutClamped(a, b, t);
+/* [Easing-clamp] */
+static_cast<void>(result1);
+static_cast<void>(result2);
+}
+
+{
+/* [Easing-bezier-transform] */
+Matrix3 transformation;
+CubicBezier2D easing;
+CubicBezier2D transformed{
+    transformation.transformPoint(easing[0]),
+    transformation.transformPoint(easing[1]),
+    transformation.transformPoint(easing[2]),
+    transformation.transformPoint(easing[3])};
+/* [Easing-bezier-transform] */
+}
+
+{
+/* [Easing-smoothstep] */
+Math::lerp(a, b, Animation::Easing::smoothstep(t));
+/* [Easing-smoothstep] */
+}
+}
 
 {
 /* [Player-usage] */

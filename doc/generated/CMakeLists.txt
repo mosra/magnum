@@ -46,6 +46,10 @@ else()
     message(FATAL_ERROR "No windowless application available on this platform")
 endif()
 
+add_executable(easings easings.cpp)
+target_link_libraries(easings
+    Magnum::Magnum)
+
 add_executable(shaders shaders.cpp)
 target_link_libraries(shaders
     Magnum::Magnum

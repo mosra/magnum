@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
+#include "Magnum/Animation/Easing.h"
 #include "Magnum/Animation/Interpolation.h"
 #include "Magnum/Math/Complex.h"
 #include "Magnum/Math/CubicHermite.h"
@@ -64,6 +65,12 @@ struct InterpolationTest: TestSuite::Tester {
 
     void interpolateIntegerKey();
     void interpolateStrictIntegerKey();
+
+    void ease();
+    void easeClamped();
+    void unpack();
+    void unpackEase();
+    void unpackEaseClamped();
 
     void debugInterpolation();
     void debugExtrapolation();
@@ -174,6 +181,12 @@ InterpolationTest::InterpolationTest() {
 
               &InterpolationTest::interpolateIntegerKey,
               &InterpolationTest::interpolateStrictIntegerKey,
+
+              &InterpolationTest::ease,
+              &InterpolationTest::easeClamped,
+              &InterpolationTest::unpack,
+              &InterpolationTest::unpackEase,
+              &InterpolationTest::unpackEaseClamped,
 
               &InterpolationTest::debugInterpolation,
               &InterpolationTest::debugExtrapolation});
@@ -504,6 +517,54 @@ void InterpolationTest::interpolateStrictError() {
     CORRADE_COMPARE(out.str(),
         "Animation::interpolateStrict(): at least two keyframes required\n"
         "Animation::interpolateStrict(): keys and values don't have the same size\n");
+}
+
+void InterpolationTest::ease() {
+    auto lerpQuadratic = Animation::ease<Float, Math::lerp, Easing::quadraticIn>();
+
+    CORRADE_COMPARE(Math::lerp(0.5f, 0.95f, Easing::quadraticIn(0.3f)), 0.5405f);
+    CORRADE_COMPARE(lerpQuadratic(0.5f, 0.95f, 0.3f), 0.5405f);
+}
+
+void InterpolationTest::easeClamped() {
+    auto lerpBackInClamped = Animation::easeClamped<Float, Math::lerp, Easing::backIn>();
+
+    /* Verify it doesn't return garbage outside the range */
+    CORRADE_COMPARE(lerpBackInClamped(0.5f, 0.95f, -0.3f), 0.5f);
+    CORRADE_COMPARE(lerpBackInClamped(0.5f, 0.95f, 1.3f), 0.95f);
+
+    /* Verify it doesn't clamp the easer output (should be less than 0.5) */
+    CORRADE_COMPARE(Math::lerp(0.5f, 0.95f, Easing::backIn(0.3f)), 0.402933f);
+    CORRADE_COMPARE(lerpBackInClamped(0.5f, 0.95f, 0.3f), 0.402933f);
+}
+
+void InterpolationTest::unpack() {
+    auto lerpPacked = Animation::unpack<UnsignedShort, Float, Math::lerp, Math::unpack<Float>>();
+
+    CORRADE_COMPARE(Math::lerp(Math::unpack<Float, UnsignedShort>(32767), Math::unpack<Float, UnsignedShort>(62258), 0.3f), 0.634994f);
+    CORRADE_COMPARE(lerpPacked(32767, 62258, 0.3f), 0.634994f);
+}
+
+void InterpolationTest::unpackEase() {
+    auto lerpPackedQuadratic = Animation::unpackEase<UnsignedShort, Float, Math::lerp, Math::unpack<Float>, Easing::quadraticIn>();
+
+    /* Some minor imprecision compared to ease() due to lossy packing */
+    CORRADE_COMPARE(Math::lerp(Math::unpack<Float, UnsignedShort>(32767), Math::unpack<Float, UnsignedShort>(62258), Easing::quadraticIn(0.3f)), 0.540493f);
+    CORRADE_COMPARE(lerpPackedQuadratic(32767, 62258, 0.3f), 0.540493f);
+}
+
+void InterpolationTest::unpackEaseClamped() {
+    auto lerpPackedBackInClamped = Animation::unpackEaseClamped<UnsignedShort, Float, Math::lerp, Math::unpack<Float>, Easing::backIn>();
+
+    /* Some minor imprecision compared to easeClamped() due to lossy packing */
+
+    /* Verify it doesn't return garbage outside the range */
+    CORRADE_COMPARE(lerpPackedBackInClamped(32767, 62258, -0.3f), 0.499992f);
+    CORRADE_COMPARE(lerpPackedBackInClamped(32767, 62258, 1.3f), 0.949996f);
+
+    /* Verify it doesn't clamp the easer output (should be less than 0.5) */
+    CORRADE_COMPARE(Math::lerp(Math::unpack<Float, UnsignedShort>(32767), Math::unpack<Float, UnsignedShort>(62258), Easing::backIn(0.3f)), 0.402924f);
+    CORRADE_COMPARE(lerpPackedBackInClamped(32767, 62258, 0.3f), 0.402924f);
 }
 
 void InterpolationTest::debugInterpolation() {

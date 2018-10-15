@@ -25,6 +25,7 @@
 
 set(MagnumAnimation_HEADERS
     Animation.h
+    Easing.h
     Interpolation.h
     Player.h
     Player.hpp

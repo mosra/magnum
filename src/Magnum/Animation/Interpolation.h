@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Alias @ref Magnum::Animation::ResultOf, enum @ref Magnum::Animation::Extrapolation, function @ref Magnum::Animation::interpolate(), @ref Magnum::Animation::interpolateStrict()
+ * @brief Alias @ref Magnum::Animation::ResultOf, enum @ref Magnum::Animation::Interpolation. @ref Magnum::Animation::Extrapolation, function @ref Magnum::Animation::interpolatorFor(), @ref Magnum::Animation::interpolate(), @ref Magnum::Animation::interpolateStrict(), @ref Magnum::Animation::ease(), @ref Magnum::Animation::easeClamped() @ref Magnum::Animation::unpack(), @ref Magnum::Animation::unpackEase(), @ref Magnum::Animation::unpackEaseClamped()
  */
 
 #include <Corrade/Containers/StridedArrayView.h>
@@ -222,6 +222,72 @@ Used internally from @ref Track::atStrict() / @ref TrackView::atStrict(), see
 @experimental
 */
 template<class K, class V, class R = ResultOf<V>> R interpolateStrict(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, R(*interpolator)(const V&, const V&, Float), K frame, std::size_t& hint);
+
+/**
+@brief Combine easing function and an interpolator
+
+Useful to create a new function out of one of the interpolators from
+@ref transformations-interpolation and an easing function from @ref Easing. For
+example, the following two expressions give the same result:
+
+@snippet MagnumAnimation.cpp ease
+
+@see @ref unpack(), @ref unpackEase()
+*/
+template<class V, ResultOf<V>(*interpolator)(const V&, const V&, Float), Float(*easer)(Float)> constexpr auto ease() -> ResultOf<V>(*)(const V&, const V&, Float) {
+    return [](const V& a, const V& b, Float t) { return interpolator(a, b, easer(t)); };
+}
+
+/**
+@brief Combine easing function and an interpolator
+
+In addition to @ref ease() clamps value coming to @p easer to range
+@f$ [0 ; 1] @f$. Useful when extrapolating using @ref Easing functions that
+have bad behavior outside of this range.
+*/
+template<class V, ResultOf<V>(*interpolator)(const V&, const V&, Float), Float(*easer)(Float)> constexpr auto easeClamped() -> ResultOf<V>(*)(const V&, const V&, Float) {
+    return [](const V& a, const V& b, Float t) { return interpolator(a, b, easer(Math::clamp(t, 0.0f, 1.0f))); };
+}
+
+/**
+@brief Combine unpacking function and an interpolator
+
+Similar to @ref ease(), but for adding an unpacker function to interpolator
+inputs instead of modifying the interpolator phase. The following two
+expressions give the same result:
+
+@snippet MagnumAnimation.cpp unpack
+
+@see @ref unpackEase()
+*/
+template<class T, class V, ResultOf<V>(*interpolator)(const V&, const V&, Float), V(*unpacker)(const T&)> constexpr auto unpack() -> ResultOf<V>(*)(const V&, const V&, Float) {
+    return [](const V& a, const V& b, Float t) { return interpolator(unpacker(a), unpacker(b), t); };
+}
+
+/**
+@brief Combine unpacking and easing functions with an interpolator
+
+Combination of @ref ease() and @ref unpack(), creating a function that first
+unpack the interpolator inputs, then modifies the interpolator phase and
+finally passes that to the interpolator function. The following two expressions
+give the same result:
+
+@snippet MagnumAnimation.cpp unpackEase
+*/
+template<class T, class V, ResultOf<V>(*interpolator)(const V&, const V&, Float), V(*unpacker)(const T&), Float(*easer)(Float)> constexpr auto unpackEase() -> ResultOf<V>(*)(const V&, const V&, Float) {
+    return [](const V& a, const V& b, Float t) { return interpolator(unpacker(a), unpacker(b), easer(t)); };
+}
+
+/**
+@brief Combine easing function and an interpolator
+
+In addition to @ref unpackEase() clamps value coming to @p easer to range
+@f$ [0 ; 1] @f$. Useful when extrapolating with @ref Easing functions that have
+bad behavior outside of this range.
+*/
+template<class T, class V, ResultOf<V>(*interpolator)(const V&, const V&, Float), V(*unpacker)(const T&), Float(*easer)(Float)> constexpr auto unpackEaseClamped() -> ResultOf<V>(*)(const V&, const V&, Float) {
+    return [](const V& a, const V& b, Float t) { return interpolator(unpacker(a), unpacker(b), easer(Math::clamp(t, 0.0f, 1.0f))); };
+}
 
 namespace Implementation {
 

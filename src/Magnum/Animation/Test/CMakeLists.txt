@@ -24,6 +24,7 @@
 #
 
 corrade_add_test(AnimationBenchmark Benchmark.cpp LIBRARIES Magnum)
+corrade_add_test(AnimationEasingTest EasingTest.cpp LIBRARIES Magnum)
 corrade_add_test(AnimationInterpolationTest InterpolationTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(AnimationPlayerTest PlayerTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(AnimationPlayerCustomTest PlayerCustomTest.cpp LIBRARIES MagnumTestLib)
