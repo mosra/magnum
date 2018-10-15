@@ -484,11 +484,13 @@ example the @ref DebugTools has some functionality that gets built only when
 other things), but the CMake buildsystem takes care of these and only the
 relevant toggleable options are shown in CMake GUI or `ccmake`.
 
-None of the @ref Platform "application libraries" is built by default (and you
-need at least one, unless you are handling platform integration yourself ---
+None of the @ref Platform "application libraries" is built by default (and *you
+need at least one*, unless you are handling platform integration yourself ---
 see @ref platform-custom for more information). As they are rather tiny, they
 are always built as static. Choose the one that suits your requirements and
-your platform best:
+your platform best. The @ref Platform::Sdl2Application "Sdl2Application"
+library is a good default choice, as it is the most portable --- and if you're
+going to build any of the @ref example-index "examples", you'll need it.
 
 -   `WITH_ANDROIDAPPLICATION` --- Build the
     @ref Platform::AndroidApplication "AndroidApplication" library. Available
