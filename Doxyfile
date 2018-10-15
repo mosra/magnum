@@ -2198,14 +2198,14 @@ DOT_NUM_THREADS        = 0
 # The default value is: Helvetica.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-DOT_FONTNAME           = Verdana
+DOT_FONTNAME           = Source Sans Pro
 
 # The DOT_FONTSIZE tag can be used to set the size (in points) of the font of
 # dot graphs.
 # Minimum value: 4, maximum value: 24, default value: 10.
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-DOT_FONTSIZE           = 8
+DOT_FONTSIZE           = 16
 
 # By default doxygen will tell dot to use the default font as specified with
 # DOT_FONTNAME. If you specify a different font using DOT_FONTNAME you can set
@@ -2357,7 +2357,10 @@ DOT_PATH               =
 # command).
 # This tag requires that the tag HAVE_DOT is set to YES.
 
-DOTFILE_DIRS           =
+DOTFILE_DIRS           = doc/ \
+                         ../magnum-plugins/doc \
+                         ../magnum-integration/doc \
+                         ../magnum-extras/doc
 
 # The MSCFILE_DIRS tag can be used to specify one or more directories that
 # contain msc files that are included in the documentation (see the \mscfile
