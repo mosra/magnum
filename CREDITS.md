@@ -49,6 +49,8 @@ Listing only people with code contributions, because otherwise there's too many
 -   Gerhard de Clercq -- Windows RT (Store/Phone) port
 -   Guillaume Giraud ([@Guillaume227](https://github.com/Guillaume227)) --
     algorithm bugfixes
+-   Ivan P. ([@uzername](https://github.com/uzername)) --- documentation
+    improvements
 -   Jonathan Hale ([@Squareys](https://github.com/Squareys)) -- Audio library
     enhancements, GlfwApplication implementation, frustum and cone culling, bug
     reports, documentation improvements
