@@ -204,7 +204,9 @@ template<UnsignedInt dimensions, class T> class Range {
          * remains the same.
          * @see @ref padded()
          */
-        Range<dimensions, T> translated(const VectorType& vector) const;
+        Range<dimensions, T> translated(const VectorType& vector) const {
+            return {_min + vector, _max + vector};
+        }
 
         /**
          * @brief Padded rage
@@ -213,7 +215,9 @@ template<UnsignedInt dimensions, class T> class Range {
          * Center remains the same.
          * @see @ref translated(), @ref fromCenter()
          */
-        Range<dimensions, T> padded(const VectorType& padding) const;
+        Range<dimensions, T> padded(const VectorType& padding) const {
+            return {_min - padding, _max + padding};
+        }
 
         /**
          * @brief Scaled range
@@ -221,7 +225,9 @@ template<UnsignedInt dimensions, class T> class Range {
          * Multiplies the minimal and maximal coordinates by given amount.
          * @see @ref padded()
          */
-        Range<dimensions, T> scaled(const VectorType& scaling) const;
+        Range<dimensions, T> scaled(const VectorType& scaling) const {
+            return {_min*scaling, _max*scaling};
+        }
 
         /**
          * @brief Whether given point is contained inside the range
@@ -701,18 +707,6 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<2, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<3, Double>&);
 #endif
-
-template<UnsignedInt dimensions, class T> Range<dimensions, T> Range<dimensions, T>::translated(const VectorType& vector) const {
-    return {_min + vector, _max + vector};
-}
-
-template<UnsignedInt dimensions, class T> Range<dimensions, T> Range<dimensions, T>::padded(const VectorType& padding) const {
-    return {_min - padding, _max + padding};
-}
-
-template<UnsignedInt dimensions, class T> Range<dimensions, T> Range<dimensions, T>::scaled(const VectorType& scaling) const {
-    return {_min*scaling, _max*scaling};
-}
 
 }}
 
