@@ -97,13 +97,15 @@ See also:
     shortest-path
 -   Added @ref Math::Range2D::x(), @ref Math::Range3D::x(),
     @ref Math::Range2D::y(), @ref Math::Range3D::y(), @ref Math::Range3D::z()
-    and @ref Math::Range3D::y() for slicing ranges into lower dimensions
+    and @ref Math::Range3D::xy() for slicing ranges into lower dimensions
 -   Added @ref Math::intersect() and @ref Math::intersects() as a counterpart
     to @ref Math::join() for operating with @ref Math::Range instances
 -   Added @ref Math::Range::contains() overloading taking a range, in addition
     to vector
 -   Added @ref Math::Range::fromCenter() and documented a hint how to create
     integral centered ranges
+-   Added @ref Math::Range::scaledFromCenter() as a counterpart to
+    @ref Math::Range::scaled()
 -   @ref Math::Range is now constructible from a @ref std::pair of values,
     making it usable in combination with @ref Math::minmax(), for example
 -   Added @ref Math::Constants::piQuarter(), @ref Math::Constants::sqrtHalf()

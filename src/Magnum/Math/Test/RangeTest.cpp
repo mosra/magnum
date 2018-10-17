@@ -116,6 +116,7 @@ struct RangeTest: Corrade::TestSuite::Tester {
     void translated();
     void padded();
     void scaled();
+    void scaledFromCenter();
 
     void containsVector();
     void containsRange();
@@ -158,6 +159,7 @@ RangeTest::RangeTest() {
               &RangeTest::translated,
               &RangeTest::padded,
               &RangeTest::scaled,
+              &RangeTest::scaledFromCenter,
 
               &RangeTest::containsVector,
               &RangeTest::containsRange,
@@ -531,6 +533,16 @@ void RangeTest::scaled() {
     Range2Di b({68, -69}, {94, -90});
 
     CORRADE_COMPARE(a.scaled({2, -3}), b);
+    CORRADE_COMPARE((a.size()*Vector2i{2, -3}), b.size());
+}
+
+void RangeTest::scaledFromCenter() {
+    Range2Di a{{34, 22}, {48, 30}};
+    Range2Di b{{27, 38}, {55, 14}};
+
+    CORRADE_COMPARE(a.scaledFromCenter({2, -3}), b);
+    CORRADE_COMPARE(a.center(), b.center());
+    CORRADE_COMPARE((a.size()*Vector2i{2, -3}), b.size());
 }
 
 void RangeTest::containsVector() {

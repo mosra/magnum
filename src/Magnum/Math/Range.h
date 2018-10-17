@@ -223,10 +223,23 @@ template<UnsignedInt dimensions, class T> class Range {
          * @brief Scaled range
          *
          * Multiplies the minimal and maximal coordinates by given amount.
+         * Center *doesn't* remain the same, use @ref scaledFromCenter() for
+         * that operation.
          * @see @ref padded()
          */
         Range<dimensions, T> scaled(const VectorType& scaling) const {
             return {_min*scaling, _max*scaling};
+        }
+
+        /**
+         * @brief Range scaled from the center
+         *
+         * Scales the size, while center remains the same.
+         * @see @ref scaled(), @ref padded(), @ref fromCenter()
+         */
+        Range<dimensions, T> scaledFromCenter(const VectorType& scaling) const {
+            /* Can't use *T(0.5) because that won't work for integers */
+            return fromCenter(center(), size()*scaling/T(2));
         }
 
         /**
