@@ -117,8 +117,19 @@ use the Android Native Activity directly or any other way.
     bootstrap project that's ready to build and deploy. Check its documentation
     for details.
 
-The first thing you need compared to building an app for other platforms is
-creating a shared library instead of an executable:
+If you plan to use @ref Platform::AndroidApplication, be sure to request it
+only on Android, for example:
+
+@code{.cmake}
+if(CORRADE_TARGET_ANDROID)
+    find_package(Magnum REQUIRED AndroidApplication)
+else()
+    find_package(Magnum REQUIRED Sdl2Application)
+endif()
+@endcode
+
+Compared to building an app for other platforms, you need to create a shared
+library instead of an executable:
 
 @code{.cmake}
 if(NOT CORRADE_TARGET_ANDROID)
@@ -180,6 +191,18 @@ to wait for (during development at least). The @cb{.gradle} path @ce then
 references your `CMakeLists.txt` file. Gradle by default bundles all shared
 library targets defined in the CMake project, so there's no need to specify a
 particular library name.
+
+Gradle by default chooses Android SDK Build Tools version that corresponds to
+the @cb{.gradle} compileSdkVersion @ce. If you want to have control (for
+example to make it use Build Tools that you already have installed), specify
+it using @cb{.gradle} buildToolsVersion @ce:
+
+@code{.gradle}
+android {
+    compileSdkVersion 27
+    buildToolsVersion '27.0.3'
+    ...
+@endcode
 
 The [official documentation](https://developer.android.com/studio/projects/gradle-external-native-builds.html#configure-gradle)
 contains a more complete overview of all possibilities.
@@ -644,8 +667,19 @@ quick, the log is spitting out a lot of info all the time. Possible causes:
 
 @subsection platforms-android-troubleshooting-java8 Gradle aborting due to too new Java
 
-If you see the following output, it might be that you're using Java 9 or 10,
-which is not supported by Android build tools yet:
+If you see one of the following outputs, it might be that you're using Java 9
+or 10, which is not supported by Android build tools yet:
+
+@code{.shell-session}
+$ gradle build
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+…
+> Failed to notify project evaluation listener.
+   > javax/xml/bind/annotation/XmlSchema
+@endcode
 
 @code{.shell-session}
 $ gradle build
