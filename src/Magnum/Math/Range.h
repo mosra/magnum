@@ -289,7 +289,7 @@ template<UnsignedInt dimensions, class T> class Range {
         return Range<dimensions, T>::fromSize(min, size);                   \
     }                                                                       \
     static Type<T> fromCenter(const VectorType<T>& center, const VectorType<T>& halfSize) { \
-        return Range<dimensions, T>::fromCenter(center, halfSize);                   \
+        return Range<dimensions, T>::fromCenter(center, halfSize);          \
     }                                                                       \
                                                                             \
     Type<T> translated(const VectorType<T>& vector) const {                 \
