@@ -462,6 +462,23 @@ void Matrix3Test::rotationPartNotOrthogonal() {
     Matrix3::shearingX(1.5f).rotation();
     Matrix3::scaling(Vector2::yScale(0.0f)).rotation();
 
+    #if defined(CORRADE_TARGET_APPLE) || (defined(CORRADE_TARGET_WINDOWS) && defined(__MINGW32__)) || defined(CORRADE_TARGET_ANDROID)
+    CORRADE_COMPARE(out.str(),
+        "Math::Matrix3::rotation(): the normalized rotation part is not orthogonal:\n"
+        "Matrix(1, 0.83205,\n"
+        "       0, 0.5547)\n"
+        "Math::Matrix3::rotation(): the normalized rotation part is not orthogonal:\n"
+        "Matrix(1, nan,\n"
+        "       0, nan)\n");
+    #elif defined(CORRADE_TARGET_WINDOWS) && defined(_MSC_VER)
+    CORRADE_COMPARE(out.str(),
+        "Math::Matrix3::rotation(): the normalized rotation part is not orthogonal:\n"
+        "Matrix(1, 0.83205,\n"
+        "       0, 0.5547)\n"
+        "Math::Matrix3::rotation(): the normalized rotation part is not orthogonal:\n"
+        "Matrix(1, -nan(ind),\n"
+        "       0, -nan(ind))\n");
+    #else
     CORRADE_COMPARE(out.str(),
         "Math::Matrix3::rotation(): the normalized rotation part is not orthogonal:\n"
         "Matrix(1, 0.83205,\n"
@@ -469,6 +486,7 @@ void Matrix3Test::rotationPartNotOrthogonal() {
         "Math::Matrix3::rotation(): the normalized rotation part is not orthogonal:\n"
         "Matrix(1, -nan,\n"
         "       0, -nan)\n");
+    #endif
 }
 
 void Matrix3Test::rotationNormalizedPart() {
