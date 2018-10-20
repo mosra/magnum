@@ -19,7 +19,6 @@ build() {
 
         cmake .. \
             -DCMAKE_TOOLCHAIN_FILE="$_rootdir/toolchains/generic/Emscripten.cmake" \
-            -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
             -G Ninja
     fi
 
