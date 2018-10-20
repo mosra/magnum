@@ -77,6 +77,7 @@ struct MatrixTest: Corrade::TestSuite::Tester {
     void determinant();
     void inverted();
     void invertedOrthogonal();
+    void invertedOrthogonalNotOrthogonal();
 
     void subclassTypes();
     void subclass();
@@ -114,6 +115,7 @@ MatrixTest::MatrixTest() {
               &MatrixTest::determinant,
               &MatrixTest::inverted,
               &MatrixTest::invertedOrthogonal,
+              &MatrixTest::invertedOrthogonalNotOrthogonal,
 
               &MatrixTest::subclassTypes,
               &MatrixTest::subclass,
@@ -360,6 +362,15 @@ void MatrixTest::inverted() {
 }
 
 void MatrixTest::invertedOrthogonal() {
+    Matrix3x3 a(Vector3(Constants::sqrt3()/2.0f, 0.5f, 0.0f),
+                Vector3(-0.5f, Constants::sqrt3()/2.0f, 0.0f),
+                Vector3(0.0f, 0.0f, 1.0f));
+
+    CORRADE_COMPARE(a.invertedOrthogonal()*a, Matrix3x3());
+    CORRADE_COMPARE(a.invertedOrthogonal(), a.inverted());
+}
+
+void MatrixTest::invertedOrthogonalNotOrthogonal() {
     std::ostringstream o;
     Error redirectError{&o};
 
@@ -367,10 +378,11 @@ void MatrixTest::invertedOrthogonal() {
                 Vector3(-0.5f, Constants::sqrt3()/2.0f, 0.0f),
                 Vector3(0.0f, 0.0f, 1.0f));
     (a*2).invertedOrthogonal();
-    CORRADE_COMPARE(o.str(), "Math::Matrix::invertedOrthogonal(): the matrix is not orthogonal\n");
-
-    CORRADE_COMPARE(a.invertedOrthogonal()*a, Matrix3x3());
-    CORRADE_COMPARE(a.invertedOrthogonal(), a.inverted());
+    CORRADE_COMPARE(o.str(),
+        "Math::Matrix::invertedOrthogonal(): the matrix is not orthogonal:\n"
+        "Matrix(1.73205, -1, 0,\n"
+        "       1, 1.73205, 0,\n"
+        "       0, 0, 2)\n");
 }
 
 template<class T> class BasicVec2: public Math::Vector<2, T> {

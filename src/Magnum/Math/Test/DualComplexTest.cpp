@@ -82,16 +82,20 @@ struct DualComplexTest: Corrade::TestSuite::Tester {
     void conjugated();
     void inverted();
     void invertedNormalized();
+    void invertedNormalizedNotNormalized();
 
     void rotation();
     void translation();
     void combinedTransformParts();
     void matrix();
+    void matrixNotOrthogonal();
     void transformPoint();
 
     void debug();
     void configuration();
 };
+
+using namespace Math::Literals;
 
 typedef Math::Deg<Float> Deg;
 typedef Math::Rad<Float> Rad;
@@ -134,11 +138,13 @@ DualComplexTest::DualComplexTest() {
               &DualComplexTest::conjugated,
               &DualComplexTest::inverted,
               &DualComplexTest::invertedNormalized,
+              &DualComplexTest::invertedNormalizedNotNormalized,
 
               &DualComplexTest::rotation,
               &DualComplexTest::translation,
               &DualComplexTest::combinedTransformParts,
               &DualComplexTest::matrix,
+              &DualComplexTest::matrixNotOrthogonal,
               &DualComplexTest::transformPoint,
 
               &DualComplexTest::debug,
@@ -358,15 +364,18 @@ void DualComplexTest::invertedNormalized() {
     DualComplex a({-0.316228f,  0.9486831f}, {     3.0f,    -2.5f});
     DualComplex b({-0.316228f, -0.9486831f}, {3.320391f, 2.05548f});
 
-    std::ostringstream o;
-    Error redirectError{&o};
-    DualComplex({-1.0f, -2.5f}, {}).invertedNormalized();
-    CORRADE_COMPARE(o.str(), "Math::Complex::invertedNormalized(): complex number must be normalized\n");
-
     DualComplex inverted = a.invertedNormalized();
     CORRADE_COMPARE(a*inverted, DualComplex());
     CORRADE_COMPARE(inverted*a, DualComplex());
     CORRADE_COMPARE(inverted, b);
+}
+
+void DualComplexTest::invertedNormalizedNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    DualComplex({-1.0f, -2.5f}, {}).invertedNormalized();
+    CORRADE_COMPARE(out.str(), "Math::Complex::invertedNormalized(): Complex(-1, -2.5) is not normalized\n");
 }
 
 void DualComplexTest::rotation() {
@@ -405,14 +414,19 @@ void DualComplexTest::matrix() {
     Matrix3 m = Matrix3::rotation(Deg(23.0f))*Matrix3::translation({2.0f, 3.0f});
 
     CORRADE_COMPARE(a.toMatrix(), m);
+    CORRADE_COMPARE(DualComplex::fromMatrix(m), a);
+}
 
+void DualComplexTest::matrixNotOrthogonal() {
     std::ostringstream o;
     Error redirectError{&o};
-    DualComplex::fromMatrix(m*2);
-    CORRADE_COMPARE(o.str(), "Math::DualComplex::fromMatrix(): the matrix doesn't represent rigid transformation\n");
 
-    DualComplex b = DualComplex::fromMatrix(m);
-    CORRADE_COMPARE(b, a);
+    DualComplex::fromMatrix(Matrix3::rotation(23.0_degf)*Matrix3::translation({2.0f, 3.0f})*2);
+    CORRADE_COMPARE(o.str(),
+        "Math::DualComplex::fromMatrix(): the matrix doesn't represent rigid transformation:\n"
+        "Matrix(1.84101, -0.781462, 1.33763,\n"
+        "       0.781462, 1.84101, 7.08595,\n"
+        "       0, 0, 2)\n");
 }
 
 void DualComplexTest::transformPoint() {

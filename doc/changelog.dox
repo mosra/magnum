@@ -255,6 +255,8 @@ See also:
 
 @subsubsection changelog-latest-changes-math Math library
 
+-   All assertions in the @ref Math namespace now helpfully print the offending
+    value that caused the assert for easier debugging
 -   @ref Math::Matrix3::rotation() const and @ref Math::Matrix4::rotation() const
     now allow non-uniform scaling, but expect the roation/scaling part to be
     orthogonal after normalization

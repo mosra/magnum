@@ -210,7 +210,7 @@ top.
 */
 template<class T> inline T pointPlaneNormalized(const Vector3<T>& point, const Vector4<T>& plane) {
     CORRADE_ASSERT(plane.xyz().isNormalized(),
-            "Math::Geometry::Distance::pointPlaneNormalized(): plane normal is not an unit vector", {});
+        "Math::Distance::pointPlaneNormalized(): plane normal" << plane.xyz() << "is not normalized", {});
     return pointPlaneScaled<T>(point, plane);
 }
 

@@ -202,7 +202,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          */
         Matrix<size, T> invertedOrthogonal() const {
             CORRADE_ASSERT(isOrthogonal(),
-                "Math::Matrix::invertedOrthogonal(): the matrix is not orthogonal", {});
+                "Math::Matrix::invertedOrthogonal(): the matrix is not orthogonal:" << Corrade::Utility::Debug::Debug::newline << *this, {});
             return RectangularMatrix<size, size, T>::transposed();
         }
 

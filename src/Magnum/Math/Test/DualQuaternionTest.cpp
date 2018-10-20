@@ -83,13 +83,17 @@ struct DualQuaternionTest: Corrade::TestSuite::Tester {
     void conjugated();
     void inverted();
     void invertedNormalized();
+    void invertedNormalizedNotNormalized();
 
     void rotation();
+    void rotationNotNormalized();
     void translation();
     void combinedTransformParts();
     void matrix();
+    void matrixNotOrthogonal();
     void transformPoint();
     void transformPointNormalized();
+    void transformPointNormalizedNotNormalized();
 
     void sclerp();
     void sclerpShortestPath();
@@ -140,13 +144,17 @@ DualQuaternionTest::DualQuaternionTest() {
               &DualQuaternionTest::conjugated,
               &DualQuaternionTest::inverted,
               &DualQuaternionTest::invertedNormalized,
+              &DualQuaternionTest::invertedNormalizedNotNormalized,
 
               &DualQuaternionTest::rotation,
+              &DualQuaternionTest::rotationNotNormalized,
               &DualQuaternionTest::translation,
               &DualQuaternionTest::combinedTransformParts,
               &DualQuaternionTest::matrix,
+              &DualQuaternionTest::matrixNotOrthogonal,
               &DualQuaternionTest::transformPoint,
               &DualQuaternionTest::transformPointNormalized,
+              &DualQuaternionTest::transformPointNormalizedNotNormalized,
 
               &DualQuaternionTest::sclerp,
               &DualQuaternionTest::sclerpShortestPath,
@@ -391,11 +399,6 @@ void DualQuaternionTest::invertedNormalized() {
     DualQuaternion a({{ 1.0f,  2.0f,  3.0f}, -4.0f}, {{ 2.5f, -3.1f,  3.3f}, 2.0f});
     DualQuaternion b({{-1.0f, -2.0f, -3.0f}, -4.0f}, {{-2.5f,  3.1f, -3.3f}, 2.0f});
 
-    std::ostringstream o;
-    Error redirectError{&o};
-    CORRADE_COMPARE(a.invertedNormalized(), DualQuaternion());
-    CORRADE_COMPARE(o.str(), "Math::DualQuaternion::invertedNormalized(): dual quaternion must be normalized\n");
-
     DualQuaternion normalized = a.normalized();
     DualQuaternion inverted = normalized.invertedNormalized();
     CORRADE_COMPARE(normalized*inverted, DualQuaternion());
@@ -403,14 +406,16 @@ void DualQuaternionTest::invertedNormalized() {
     CORRADE_COMPARE(inverted, b/Math::sqrt(Dual(30.0f, -3.6f)));
 }
 
+void DualQuaternionTest::invertedNormalizedNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    DualQuaternion({{ 1.0f,  2.0f,  3.0f}, -4.0f}, {{ 2.5f, -3.1f,  3.3f}, 2.0f}).invertedNormalized();
+    CORRADE_COMPARE(out.str(), "Math::DualQuaternion::invertedNormalized(): DualQuaternion({{1, 2, 3}, -4}, {{2.5, -3.1, 3.3}, 2}) is not normalized\n");
+}
+
 void DualQuaternionTest::rotation() {
-    std::ostringstream o;
-    Error redirectError{&o};
-
     Vector3 axis(1.0f/Constants<Float>::sqrt3());
-
-    CORRADE_COMPARE(DualQuaternion::rotation(Deg(120.0f), axis*2.0f), DualQuaternion());
-    CORRADE_COMPARE(o.str(), "Math::Quaternion::rotation(): axis must be normalized\n");
 
     DualQuaternion q = DualQuaternion::rotation(Deg(120.0f), axis);
     CORRADE_COMPARE(q.length(), 1.0f);
@@ -422,6 +427,14 @@ void DualQuaternionTest::rotation() {
     constexpr DualQuaternion b({{-1.0f, 2.0f, 3.0f}, 4.0f}, {});
     constexpr Quaternion c = b.rotation();
     CORRADE_COMPARE(c, Quaternion({-1.0f, 2.0f, 3.0f}, 4.0f));
+}
+
+void DualQuaternionTest::rotationNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    DualQuaternion::rotation(120.0_degf, Vector3(2.0f));
+    CORRADE_COMPARE(out.str(), "Math::Quaternion::rotation(): axis Vector(2, 2, 2) is not normalized\n");
 }
 
 void DualQuaternionTest::translation() {
@@ -454,13 +467,20 @@ void DualQuaternionTest::matrix() {
     CORRADE_COMPARE(q.toMatrix(), m);
     CORRADE_COMPARE((-q).toMatrix(), m);
 
-    std::ostringstream o;
-    Error redirectError{&o};
-    DualQuaternion::fromMatrix(m*2);
-    CORRADE_COMPARE(o.str(), "Math::DualQuaternion::fromMatrix(): the matrix doesn't represent rigid transformation\n");
+    CORRADE_COMPARE(DualQuaternion::fromMatrix(m), q);
+}
 
-    DualQuaternion p = DualQuaternion::fromMatrix(m);
-    CORRADE_COMPARE(p, q);
+void DualQuaternionTest::matrixNotOrthogonal() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    DualQuaternion::fromMatrix(Matrix4::rotationX(23.0_degf)*Matrix4::translation({-1.0f, 2.0f, 3.0f})*2);
+    CORRADE_COMPARE(out.str(),
+        "Math::DualQuaternion::fromMatrix(): the matrix doesn't represent a rigid transformation:\n"
+        "Matrix(2, 0, 0, -2,\n"
+        "       0, 1.84101, -0.781462, 1.33763,\n"
+        "       0, 0.781462, 1.84101, 7.08595,\n"
+        "       0, 0, 0, 2)\n");
 }
 
 void DualQuaternionTest::transformPoint() {
@@ -486,11 +506,6 @@ void DualQuaternionTest::transformPointNormalized() {
     Matrix4 n = Matrix4::rotationX(Deg(23.0f))*Matrix4::translation({-1.0f, 2.0f, 3.0f});
     Vector3 v(0.0f, -3.6f, 0.7f);
 
-    std::ostringstream o;
-    Error redirectError{&o};
-    (a*Dual(2)).transformPointNormalized(v);
-    CORRADE_COMPARE(o.str(), "Math::DualQuaternion::transformPointNormalized(): dual quaternion must be normalized\n");
-
     Vector3 transformedA = a.transformPointNormalized(v);
     CORRADE_COMPARE(transformedA, m.transformPoint(v));
     CORRADE_COMPARE(transformedA, Vector3(-1.0f, -1.58733f, 2.237721f));
@@ -498,6 +513,15 @@ void DualQuaternionTest::transformPointNormalized() {
     Vector3 transformedB = b.transformPointNormalized(v);
     CORRADE_COMPARE(transformedB, n.transformPoint(v));
     CORRADE_COMPARE(transformedB, Vector3(-1.0f, -2.918512f, 2.780698f));
+}
+
+void DualQuaternionTest::transformPointNormalizedNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    DualQuaternion a = DualQuaternion::translation({-1.0f, 2.0f, 3.0f})*DualQuaternion::rotation(Deg(23.0f), Vector3::xAxis());
+    (a*Dual(2)).transformPointNormalized({});
+    CORRADE_COMPARE(out.str(), "Math::DualQuaternion::transformPointNormalized(): DualQuaternion({{0.398736, 0, 0}, 1.95985}, {{-0.979925, 2.55795, 2.54104}, 0.199368}) is not normalized\n");
 }
 
 void DualQuaternionTest::sclerp() {

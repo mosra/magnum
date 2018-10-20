@@ -817,8 +817,8 @@ void CubicHermiteTest::lerpComplexNotNormalized() {
     Math::lerp({}, a, 0.3f);
     Math::lerp(a, {}, 0.3f);
     CORRADE_COMPARE(out.str(),
-        "Math::lerp(): complex numbers must be normalized\n"
-        "Math::lerp(): complex numbers must be normalized\n");
+        "Math::lerp(): complex numbers Complex(1, 0) and Complex(2, 0) are not normalized\n"
+        "Math::lerp(): complex numbers Complex(2, 0) and Complex(1, 0) are not normalized\n");
 }
 
 void CubicHermiteTest::lerpQuaternion() {
@@ -858,8 +858,8 @@ void CubicHermiteTest::lerpQuaternionNotNormalized() {
     Math::lerp({}, a, 0.3f);
     Math::lerp(a, {}, 0.3f);
     CORRADE_COMPARE(out.str(),
-        "Math::lerp(): quaternions must be normalized\n"
-        "Math::lerp(): quaternions must be normalized\n");
+        "Math::lerp(): quaternions Quaternion({0, 0, 0}, 1) and Quaternion({0, 0, 0}, 2) are not normalized\n"
+        "Math::lerp(): quaternions Quaternion({0, 0, 0}, 2) and Quaternion({0, 0, 0}, 1) are not normalized\n");
 }
 
 void CubicHermiteTest::lerpQuaternionShortestPath() {
@@ -899,8 +899,8 @@ void CubicHermiteTest::lerpQuaternionShortestPathNotNormalized() {
     Math::lerpShortestPath(a, {}, 0.3f);
     /* lerpShortestPath() is calling lerp(), so the message is from there */
     CORRADE_COMPARE(out.str(),
-        "Math::lerp(): quaternions must be normalized\n"
-        "Math::lerp(): quaternions must be normalized\n");
+        "Math::lerp(): quaternions Quaternion({0, 0, 0}, 1) and Quaternion({0, 0, 0}, 2) are not normalized\n"
+        "Math::lerp(): quaternions Quaternion({0, 0, 0}, 2) and Quaternion({0, 0, 0}, 1) are not normalized\n");
 }
 
 void CubicHermiteTest::slerpComplex() {
@@ -934,8 +934,8 @@ void CubicHermiteTest::slerpComplexNotNormalized() {
     Math::slerp({}, a, 0.3f);
     Math::slerp(a, {}, 0.3f);
     CORRADE_COMPARE(out.str(),
-        "Math::slerp(): complex numbers must be normalized\n"
-        "Math::slerp(): complex numbers must be normalized\n");
+        "Math::slerp(): complex numbers Complex(1, 0) and Complex(2, 0) are not normalized\n"
+        "Math::slerp(): complex numbers Complex(2, 0) and Complex(1, 0) are not normalized\n");
 }
 
 void CubicHermiteTest::slerpQuaternion() {
@@ -975,8 +975,8 @@ void CubicHermiteTest::slerpQuaternionNotNormalized() {
     Math::slerp({}, a, 0.3f);
     Math::slerp(a, {}, 0.3f);
     CORRADE_COMPARE(out.str(),
-        "Math::slerp(): quaternions must be normalized\n"
-        "Math::slerp(): quaternions must be normalized\n");
+        "Math::slerp(): quaternions Quaternion({0, 0, 0}, 1) and Quaternion({0, 0, 0}, 2) are not normalized\n"
+        "Math::slerp(): quaternions Quaternion({0, 0, 0}, 2) and Quaternion({0, 0, 0}, 1) are not normalized\n");
 }
 
 void CubicHermiteTest::slerpQuaternionShortestPath() {
@@ -1016,8 +1016,8 @@ void CubicHermiteTest::slerpQuaternionShortestPathNotNormalized() {
     Math::slerpShortestPath({}, a, 0.3f);
     Math::slerpShortestPath(a, {}, 0.3f);
     CORRADE_COMPARE(out.str(),
-        "Math::slerpShortestPath(): quaternions must be normalized\n"
-        "Math::slerpShortestPath(): quaternions must be normalized\n");
+        "Math::slerpShortestPath(): quaternions Quaternion({0, 0, 0}, 1) and Quaternion({0, 0, 0}, 2) are not normalized\n"
+        "Math::slerpShortestPath(): quaternions Quaternion({0, 0, 0}, 2) and Quaternion({0, 0, 0}, 1) are not normalized\n");
 }
 
 void CubicHermiteTest::splerpScalar() {
@@ -1088,8 +1088,8 @@ void CubicHermiteTest::splerpComplexNotNormalized() {
     Math::splerp({}, a, 0.3f);
     Math::splerp(a, {}, 0.3f);
     CORRADE_COMPARE(out.str(),
-        "Math::splerp(): complex spline points must be normalized\n"
-        "Math::splerp(): complex spline points must be normalized\n");
+        "Math::splerp(): complex spline points Complex(1, 0) and Complex(2, 0) are not normalized\n"
+        "Math::splerp(): complex spline points Complex(2, 0) and Complex(1, 0) are not normalized\n");
 }
 
 void CubicHermiteTest::splerpQuaternion() {
@@ -1125,8 +1125,8 @@ void CubicHermiteTest::splerpQuaternionNotNormalized() {
     Math::splerp({}, a, 0.3f);
     Math::splerp(a, {}, 0.3f);
     CORRADE_COMPARE(out.str(),
-        "Math::splerp(): quaternion spline points must be normalized\n"
-        "Math::splerp(): quaternion spline points must be normalized\n");
+        "Math::splerp(): quaternion spline points Quaternion({0, 0, 0}, 1) and Quaternion({0, 0, 0}, 2) are not normalized\n"
+        "Math::splerp(): quaternion spline points Quaternion({0, 0, 0}, 2) and Quaternion({0, 0, 0}, 1) are not normalized\n");
 }
 
 void CubicHermiteTest::debugScalar() {

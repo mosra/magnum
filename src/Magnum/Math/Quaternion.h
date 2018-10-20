@@ -74,7 +74,7 @@ Expects that both quaternions are normalized. @f[
  */
 template<class T> inline Rad<T> angle(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::angle(): quaternions must be normalized", {});
+        "Math::angle(): quaternions" << normalizedA << "and" << normalizedB << "are not normalized", {});
     return Rad<T>{Implementation::angle(normalizedA, normalizedB)};
 }
 
@@ -101,7 +101,7 @@ alternative.
 */
 template<class T> inline Quaternion<T> lerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::lerp(): quaternions must be normalized", {});
+        "Math::lerp(): quaternions" << normalizedA << "and" << normalizedB << "are not normalized", {});
     return ((T(1) - t)*normalizedA + t*normalizedB).normalized();
 }
 
@@ -164,7 +164,7 @@ alternative.
 */
 template<class T> inline Quaternion<T> slerp(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::slerp(): quaternions must be normalized", {});
+        "Math::slerp(): quaternions" << normalizedA << "and" << normalizedB << "are not normalized", {});
     const T cosHalfAngle = dot(normalizedA, normalizedB);
 
     /* Avoid division by zero */
@@ -210,7 +210,7 @@ otherwise, the interpolation is performed as: @f[
 */
 template<class T> inline Quaternion<T> slerpShortestPath(const Quaternion<T>& normalizedA, const Quaternion<T>& normalizedB, T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::slerpShortestPath(): quaternions must be normalized", {});
+        "Math::slerpShortestPath(): quaternions" << normalizedA << "and" << normalizedB << "are not normalized", {});
     const T cosHalfAngle = dot(normalizedA, normalizedB);
 
     /* Avoid division by zero */
@@ -685,22 +685,25 @@ template<class T> Quaternion<T> quaternionFromMatrix(const Matrix3x3<T>& m) {
 
 template<class T> inline Quaternion<T> Quaternion<T>::rotation(const Rad<T> angle, const Vector3<T>& normalizedAxis) {
     CORRADE_ASSERT(normalizedAxis.isNormalized(),
-        "Math::Quaternion::rotation(): axis must be normalized", {});
+        "Math::Quaternion::rotation(): axis" << normalizedAxis << "is not normalized", {});
     return {normalizedAxis*std::sin(T(angle)/2), std::cos(T(angle)/2)};
 }
 
 template<class T> inline Quaternion<T> Quaternion<T>::fromMatrix(const Matrix3x3<T>& matrix) {
-    CORRADE_ASSERT(matrix.isOrthogonal(), "Math::Quaternion::fromMatrix(): the matrix is not orthogonal", {});
+    CORRADE_ASSERT(matrix.isOrthogonal(),
+        "Math::Quaternion::fromMatrix(): the matrix is not orthogonal:" << Corrade::Utility::Debug::newline << matrix, {});
     return Implementation::quaternionFromMatrix(matrix);
 }
 
 template<class T> inline Rad<T> Quaternion<T>::angle() const {
-    CORRADE_ASSERT(isNormalized(), "Math::Quaternion::angle(): quaternion must be normalized", {});
+    CORRADE_ASSERT(isNormalized(),
+        "Math::Quaternion::angle():" << *this << "is not normalized", {});
     return Rad<T>(T(2)*std::acos(_scalar));
 }
 
 template<class T> inline Vector3<T> Quaternion<T>::axis() const {
-    CORRADE_ASSERT(isNormalized(), "Math::Quaternion::axis(): quaternion must be normalized", {});
+    CORRADE_ASSERT(isNormalized(),
+        "Math::Quaternion::axis():" << *this << "is not normalized", {});
     return _vector/std::sqrt(1-pow2(_scalar));
 }
 
@@ -724,12 +727,14 @@ template<class T> inline Quaternion<T> Quaternion<T>::operator*(const Quaternion
 }
 
 template<class T> inline Quaternion<T> Quaternion<T>::invertedNormalized() const {
-    CORRADE_ASSERT(isNormalized(), "Math::Quaternion::invertedNormalized(): quaternion must be normalized", {});
+    CORRADE_ASSERT(isNormalized(),
+        "Math::Quaternion::invertedNormalized():" << *this << "is not normalized", {});
     return conjugated();
 }
 
 template<class T> inline Vector3<T> Quaternion<T>::transformVectorNormalized(const Vector3<T>& vector) const {
-    CORRADE_ASSERT(isNormalized(), "Math::Quaternion::transformVectorNormalized(): quaternion must be normalized", {});
+    CORRADE_ASSERT(isNormalized(),
+        "Math::Quaternion::transformVectorNormalized():" << *this << "is not normalized", {});
     const Vector3<T> t = T(2)*Math::cross(_vector, vector);
     return vector + _scalar*t + Math::cross(_vector, t);
 }

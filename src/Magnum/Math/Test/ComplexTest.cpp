@@ -85,10 +85,13 @@ struct ComplexTest: Corrade::TestSuite::Tester {
     void conjugated();
     void inverted();
     void invertedNormalized();
+    void invertedNormalizedNotNormalized();
 
     void angle();
+    void angleNotNormalized();
     void rotation();
     void matrix();
+    void matrixNotOrthogonal();
     void lerp();
     void lerpNotNormalized();
     void slerp();
@@ -134,10 +137,13 @@ ComplexTest::ComplexTest() {
     addTests({&ComplexTest::conjugated,
               &ComplexTest::inverted,
               &ComplexTest::invertedNormalized,
+              &ComplexTest::invertedNormalizedNotNormalized,
 
               &ComplexTest::angle,
+              &ComplexTest::angleNotNormalized,
               &ComplexTest::rotation,
               &ComplexTest::matrix,
+              &ComplexTest::matrixNotOrthogonal,
               &ComplexTest::lerp,
               &ComplexTest::lerpNotNormalized,
               &ComplexTest::slerp,
@@ -392,14 +398,8 @@ void ComplexTest::inverted() {
 }
 
 void ComplexTest::invertedNormalized() {
-    std::ostringstream o;
-    Error redirectError{&o};
-
     Complex a(-0.6f, 0.8f);
     Complex b(-0.6f, -0.8f);
-
-    (a*2).invertedNormalized();
-    CORRADE_COMPARE(o.str(), "Math::Complex::invertedNormalized(): complex number must be normalized\n");
 
     Complex inverted = a.invertedNormalized();
     CORRADE_COMPARE(a*inverted, Complex());
@@ -407,22 +407,31 @@ void ComplexTest::invertedNormalized() {
     CORRADE_COMPARE(inverted, b);
 }
 
+void ComplexTest::invertedNormalizedNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    (Complex(-0.6f, 0.8f)*2).invertedNormalized();
+    CORRADE_COMPARE(out.str(), "Math::Complex::invertedNormalized(): Complex(-1.2, 1.6) is not normalized\n");
+}
+
 void ComplexTest::angle() {
-    std::ostringstream o;
-    Error redirectError{&o};
-    Math::angle(Complex(1.5f, -2.0f).normalized(), {-4.0f, 3.5f});
-    CORRADE_COMPARE(o.str(), "Math::angle(): complex numbers must be normalized\n");
-
-    o.str({});
-    Math::angle({1.5f, -2.0f}, Complex(-4.0f, 3.5f).normalized());
-    CORRADE_COMPARE(o.str(), "Math::angle(): complex numbers must be normalized\n");
-
     /* Verify also that the angle is the same as angle between 2D vectors */
     Rad angle = Math::angle(Complex( 1.5f, -2.0f).normalized(),
                             Complex(-4.0f,  3.5f).normalized());
     CORRADE_COMPARE(angle, Math::angle(Vector2( 1.5f, -2.0f).normalized(),
                                        Vector2(-4.0f,  3.5f).normalized()));
     CORRADE_COMPARE(angle, Rad(2.933128f));
+}
+
+void ComplexTest::angleNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    Math::angle(Complex(1.5f, -2.0f).normalized(), {-4.0f, 3.5f});
+    Math::angle({1.5f, -2.0f}, Complex(-4.0f, 3.5f).normalized());
+    CORRADE_COMPARE(out.str(),
+        "Math::angle(): complex numbers Complex(0.6, -0.8) and Complex(-4, 3.5) are not normalized\n"
+        "Math::angle(): complex numbers Complex(1.5, -2) and Complex(-0.752577, 0.658505) are not normalized\n");
 }
 
 void ComplexTest::rotation() {
@@ -445,14 +454,18 @@ void ComplexTest::matrix() {
     Matrix2x2 m = Matrix3::rotation(Deg(37.0f)).rotationScaling();
 
     CORRADE_COMPARE(a.toMatrix(), m);
+    CORRADE_COMPARE(Complex::fromMatrix(m), a);
+}
 
-    std::ostringstream o;
-    Error redirectError{&o};
-    Complex::fromMatrix(m*2);
-    CORRADE_COMPARE(o.str(), "Math::Complex::fromMatrix(): the matrix is not orthogonal\n");
+void ComplexTest::matrixNotOrthogonal() {
+    std::ostringstream out;
+    Error redirectError{&out};
 
-    Complex b = Complex::fromMatrix(m);
-    CORRADE_COMPARE(b, a);
+    Complex::fromMatrix(Matrix3::rotation(Deg(37.0f)).rotationScaling()*2);
+    CORRADE_COMPARE(out.str(),
+        "Math::Complex::fromMatrix(): the matrix is not orthogonal:\n"
+        "Matrix(1.59727, -1.20363,\n"
+        "       1.20363, 1.59727)\n");
 }
 
 void ComplexTest::lerp() {
@@ -476,8 +489,8 @@ void ComplexTest::lerpNotNormalized() {
     Math::lerp(a*3.0f, a, 0.35f);
     Math::lerp(a, a*-3.0f, 0.35f);
     CORRADE_COMPARE(out.str(),
-        "Math::lerp(): complex numbers must be normalized\n"
-        "Math::lerp(): complex numbers must be normalized\n");
+        "Math::lerp(): complex numbers Complex(3, 0) and Complex(1, 0) are not normalized\n"
+        "Math::lerp(): complex numbers Complex(1, 0) and Complex(-3, -0) are not normalized\n");
 }
 
 void ComplexTest::slerp() {
@@ -502,8 +515,8 @@ void ComplexTest::slerpNotNormalized() {
     Math::slerp(a*3.0f, a, 0.35f);
     Math::slerp(a, a*-3.0f, 0.35f);
     CORRADE_COMPARE(out.str(),
-        "Math::slerp(): complex numbers must be normalized\n"
-        "Math::slerp(): complex numbers must be normalized\n");
+        "Math::slerp(): complex numbers Complex(3, 0) and Complex(1, 0) are not normalized\n"
+        "Math::slerp(): complex numbers Complex(1, 0) and Complex(-3, -0) are not normalized\n");
 }
 
 void ComplexTest::transformVector() {

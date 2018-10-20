@@ -48,6 +48,7 @@ struct IntersectionTest: Corrade::TestSuite::Tester {
     void pointDoubleCone();
     void sphereCone();
     void sphereConeView();
+    void sphereConeViewNotRigid();
     void rangeCone();
     void aabbCone();
 };
@@ -77,6 +78,7 @@ IntersectionTest::IntersectionTest() {
               &IntersectionTest::pointDoubleCone,
               &IntersectionTest::sphereCone,
               &IntersectionTest::sphereConeView,
+              &IntersectionTest::sphereConeViewNotRigid,
               &IntersectionTest::rangeCone,
               &IntersectionTest::aabbCone});
 }
@@ -377,11 +379,19 @@ void IntersectionTest::sphereConeView() {
     CORRADE_VERIFY(!Intersection::sphereConeView(center - surface + sNormal*0.25f, 0.5f, coneView, angle));
     CORRADE_VERIFY(!Intersection::sphereConeView(center - 4.0f*surface, 0.5f, coneView, angle));
 
+}
+
+void IntersectionTest::sphereConeViewNotRigid() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    CORRADE_VERIFY(!Intersection::sphereConeView(center, 1.0f, Matrix4{ZeroInit}, angle));
-    CORRADE_COMPARE(out.str(), "Math::Geometry::Intersection::sphereConeView(): coneView does not represent a rigid transformation\n");
+    CORRADE_VERIFY(!Intersection::sphereConeView({}, 1.0f, Matrix4{ZeroInit}, {}));
+    CORRADE_COMPARE(out.str(),
+        "Math::Intersection::sphereConeView(): coneView does not represent a rigid transformation:\n"
+        "Matrix(0, 0, 0, 0,\n"
+        "       0, 0, 0, 0,\n"
+        "       0, 0, 0, 0,\n"
+        "       0, 0, 0, 0)\n");
 }
 
 void IntersectionTest::rangeCone() {

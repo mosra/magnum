@@ -98,9 +98,11 @@ struct VectorTest: Corrade::TestSuite::Tester {
 
     void projected();
     void projectedOntoNormalized();
+    void projectedOntoNormalizedNotNormalized();
     void flipped();
 
     void angle();
+    void angleNotNormalized();
 
     void subclassTypes();
     void subclass();
@@ -159,9 +161,11 @@ VectorTest::VectorTest() {
 
               &VectorTest::projected,
               &VectorTest::projectedOntoNormalized,
+              &VectorTest::projectedOntoNormalizedNotNormalized,
               &VectorTest::flipped,
 
               &VectorTest::angle,
+              &VectorTest::angleNotNormalized,
 
               &VectorTest::subclassTypes,
               &VectorTest::subclass,
@@ -481,18 +485,23 @@ void VectorTest::projected() {
 }
 
 void VectorTest::projectedOntoNormalized() {
-    std::ostringstream o;
-    Error redirectError{&o};
-
     Vector3 vector(1.0f, 2.0f, 3.0f);
     Vector3 line(1.0f, -1.0f, 0.5f);
-    vector.projectedOntoNormalized(line);
-    CORRADE_COMPARE(o.str(), "Math::Vector::projectedOntoNormalized(): line must be normalized\n");
 
     Vector3 projected = vector.projectedOntoNormalized(line.normalized());
     CORRADE_COMPARE(projected, Vector3(0.222222f, -0.222222f, 0.111111f));
     CORRADE_COMPARE(projected.normalized(), line.normalized());
     CORRADE_COMPARE(projected, vector.projected(line));
+}
+
+void VectorTest::projectedOntoNormalizedNotNormalized() {
+    Vector3 vector(1.0f, 2.0f, 3.0f);
+    Vector3 line(1.0f, -1.0f, 0.5f);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    vector.projectedOntoNormalized(line);
+    CORRADE_COMPARE(out.str(), "Math::Vector::projectedOntoNormalized(): line Vector(1, -1, 0.5) is not normalized\n");
 }
 
 void VectorTest::flipped() {
@@ -502,18 +511,20 @@ void VectorTest::flipped() {
 }
 
 void VectorTest::angle() {
-    std::ostringstream o;
-    Error redirectError{&o};
-    Math::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f});
-    CORRADE_COMPARE(o.str(), "Math::angle(): vectors must be normalized\n");
-
-    o.str({});
-    Math::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized());
-    CORRADE_COMPARE(o.str(), "Math::angle(): vectors must be normalized\n");
-
     CORRADE_COMPARE(Math::angle(Vector3(2.0f,  3.0f, 4.0f).normalized(),
                                 Vector3(1.0f, -2.0f, 3.0f).normalized()),
                     Rad(1.162514f));
+}
+
+void VectorTest::angleNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    Math::angle(Vector3(2.0f, 3.0f, 4.0f).normalized(), {1.0f, -2.0f, 3.0f});
+    Math::angle({2.0f, 3.0f, 4.0f}, Vector3(1.0f, -2.0f, 3.0f).normalized());
+
+    CORRADE_COMPARE(out.str(),
+        "Math::angle(): vectors Vector(0.371391, 0.557086, 0.742781) and Vector(1, -2, 3) are not normalized\n"
+        "Math::angle(): vectors Vector(2, 3, 4) and Vector(0.267261, -0.534522, 0.801784) are not normalized\n");
 }
 
 template<class T> class BasicVec2: public Math::Vector<2, T> {

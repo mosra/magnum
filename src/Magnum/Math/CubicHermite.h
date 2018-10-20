@@ -493,7 +493,7 @@ Expects that @ref CubicHermite::point() is a normalized complex number in both
 */
 template<class T> Complex<T> splerp(const CubicHermiteComplex<T>& a, const CubicHermiteComplex<T>& b, T t) {
     CORRADE_ASSERT(a.point().isNormalized() && b.point().isNormalized(),
-        "Math::splerp(): complex spline points must be normalized", {});
+        "Math::splerp(): complex spline points" << a.point() << "and" << b.point() << "are not normalized", {});
     return ((T(2)*t*t*t - T(3)*t*t + T(1))*a.point() +
         (t*t*t - T(2)*t*t + t)*a.outTangent() +
         (T(-2)*t*t*t + T(3)*t*t)*b.point() +
@@ -523,7 +523,7 @@ and @p b.
 */
 template<class T> Quaternion<T> splerp(const CubicHermiteQuaternion<T>& a, const CubicHermiteQuaternion<T>& b, T t) {
     CORRADE_ASSERT(a.point().isNormalized() && b.point().isNormalized(),
-        "Math::splerp(): quaternion spline points must be normalized", {});
+        "Math::splerp(): quaternion spline points" << a.point() << "and" << b.point() << "are not normalized", {});
     return ((T(2)*t*t*t - T(3)*t*t + T(1))*a.point() +
         (t*t*t - T(2)*t*t + t)*a.outTangent() +
         (T(-2)*t*t*t + T(3)*t*t)*b.point() +

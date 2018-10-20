@@ -77,10 +77,12 @@ struct Matrix4Test: Corrade::TestSuite::Tester {
     void translation();
     void scaling();
     void rotation();
+    void rotationNotNormalized();
     void rotationX();
     void rotationY();
     void rotationZ();
     void reflection();
+    void reflectionNotNormalized();
     void reflectionIsScaling();
     void shearingXY();
     void shearingXZ();
@@ -104,6 +106,7 @@ struct Matrix4Test: Corrade::TestSuite::Tester {
     void uniformScalingPartNotUniform();
     void vectorParts();
     void invertedRigid();
+    void invertedRigidNotRigid();
     void transform();
     void transformProjection();
 
@@ -138,10 +141,12 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::translation,
               &Matrix4Test::scaling,
               &Matrix4Test::rotation,
+              &Matrix4Test::rotationNotNormalized,
               &Matrix4Test::rotationX,
               &Matrix4Test::rotationY,
               &Matrix4Test::rotationZ,
               &Matrix4Test::reflection,
+              &Matrix4Test::reflectionNotNormalized,
               &Matrix4Test::reflectionIsScaling,
               &Matrix4Test::shearingXY,
               &Matrix4Test::shearingXZ,
@@ -165,6 +170,7 @@ Matrix4Test::Matrix4Test() {
               &Matrix4Test::uniformScalingPartNotUniform,
               &Matrix4Test::vectorParts,
               &Matrix4Test::invertedRigid,
+              &Matrix4Test::invertedRigidNotRigid,
               &Matrix4Test::transform,
               &Matrix4Test::transformProjection,
 
@@ -368,17 +374,19 @@ void Matrix4Test::scaling() {
 }
 
 void Matrix4Test::rotation() {
-    std::ostringstream o;
-    Error redirectError{&o};
-
-    CORRADE_COMPARE(Matrix4::rotation(Deg(-74.0f), {-1.0f, 2.0f, 2.0f}), Matrix4());
-    CORRADE_COMPARE(o.str(), "Math::Matrix4::rotation(): axis must be normalized\n");
-
     Matrix4 matrix({ 0.35612202f, -0.80181062f, 0.47987163f, 0.0f},
                    { 0.47987163f,  0.59757626f,  0.6423596f, 0.0f},
                    {-0.80181062f,  0.00151846f, 0.59757626f, 0.0f},
                    {        0.0f,         0.0f,        0.0f, 1.0f});
     CORRADE_COMPARE(Matrix4::rotation(Deg(-74.0f), Vector3(-1.0f, 2.0f, 2.0f).normalized()), matrix);
+}
+
+void Matrix4Test::rotationNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Matrix4::rotation(Deg(-74.0f), {-1.0f, 2.0f, 2.0f});
+    CORRADE_COMPARE(out.str(), "Math::Matrix4::rotation(): axis Vector(-1, 2, 2) is not normalized\n");
 }
 
 void Matrix4Test::rotationX() {
@@ -409,14 +417,7 @@ void Matrix4Test::rotationZ() {
 }
 
 void Matrix4Test::reflection() {
-    std::ostringstream o;
-    Error redirectError{&o};
-
     Vector3 normal(-1.0f, 2.0f, 2.0f);
-
-    CORRADE_COMPARE(Matrix4::reflection(normal), Matrix4());
-    CORRADE_COMPARE(o.str(), "Math::Matrix4::reflection(): normal must be normalized\n");
-
     Matrix4 actual = Matrix4::reflection(normal.normalized());
     Matrix4 expected({0.777778f,  0.444444f,  0.444444f, 0.0f},
                      {0.444444f,  0.111111f, -0.888889f, 0.0f},
@@ -426,6 +427,14 @@ void Matrix4Test::reflection() {
     CORRADE_COMPARE(actual*actual, Matrix4());
     CORRADE_COMPARE(actual.transformVector(normal), -normal);
     CORRADE_COMPARE(actual, expected);
+}
+
+void Matrix4Test::reflectionNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Matrix4::reflection({-1.0f, 2.0f, 2.0f});
+    CORRADE_COMPARE(out.str(), "Math::Matrix4::reflection(): normal Vector(-1, 2, 2) is not normalized\n");
 }
 
 void Matrix4Test::reflectionIsScaling() {
@@ -609,8 +618,14 @@ void Matrix4Test::rotationPartNotOrthogonal() {
     Matrix4::scaling(Vector3::yScale(0.0f)).rotation();
 
     CORRADE_COMPARE(out.str(),
-        "Math::Matrix4::rotation(): the normalized rotation part is not orthogonal\n"
-        "Math::Matrix4::rotation(): the normalized rotation part is not orthogonal\n");
+        "Math::Matrix4::rotation(): the normalized rotation part is not orthogonal:\n"
+        "Matrix(1, 0, 0.83205,\n"
+        "       0, 1, 0,\n"
+        "       0, 0, 0.5547)\n"
+        "Math::Matrix4::rotation(): the normalized rotation part is not orthogonal:\n"
+        "Matrix(1, -nan, 0,\n"
+        "       0, -nan, 0,\n"
+        "       0, -nan, 1)\n");
 }
 
 void Matrix4Test::rotationNormalizedPart() {
@@ -633,7 +648,11 @@ void Matrix4Test::rotationNormalizedPartNotOrthogonal() {
               {0.0f, -1.0f, 0.1f, 0.0f},
               {9.0f,  4.0f, 5.0f, 9.0f});
     a.rotationNormalized();
-    CORRADE_COMPARE(out.str(), "Math::Matrix4::rotationNormalized(): the rotation part is not orthogonal\n");
+    CORRADE_COMPARE(out.str(),
+        "Math::Matrix4::rotationNormalized(): the rotation part is not orthogonal:\n"
+        "Matrix(0, 1, 0,\n"
+        "       0, 0, -1,\n"
+        "       1, 0, 0.1)\n");
 }
 
 void Matrix4Test::scalingPart() {
@@ -654,7 +673,10 @@ void Matrix4Test::uniformScalingPart() {
 void Matrix4Test::uniformScalingPartNotUniform() {
     std::ostringstream out;
     Error redirectError{&out}; Matrix4::scaling(Vector3::yScale(3.0f)).uniformScaling();
-    CORRADE_COMPARE(out.str(), "Math::Matrix4::uniformScaling(): the matrix doesn't have uniform scaling\n");
+    CORRADE_COMPARE(out.str(), "Math::Matrix4::uniformScaling(): the matrix doesn't have uniform scaling:\n"
+        "Matrix(1, 0, 0,\n"
+        "       0, 3, 0,\n"
+        "       0, 0, 1)\n");
 }
 
 void Matrix4Test::vectorParts() {
@@ -693,13 +715,22 @@ void Matrix4Test::invertedRigid() {
                        Matrix4::reflection(Vector3(0.5f, -2.0f, 2.0f).normalized())*
                        Matrix4::rotation(Deg(74.0f), Vector3(-1.0f, 0.5f, 2.0f).normalized());
 
-    std::ostringstream o;
-    Error redirectError{&o};
-    (2*actual).invertedRigid();
-    CORRADE_COMPARE(o.str(), "Math::Matrix4::invertedRigid(): the matrix doesn't represent rigid transformation\n");
 
     CORRADE_COMPARE(actual.invertedRigid(), expected);
     CORRADE_COMPARE(actual.invertedRigid(), actual.inverted());
+}
+
+void Matrix4Test::invertedRigidNotRigid() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    (Matrix4::rotationX(-60.0_degf)*2.0f).invertedRigid();
+    CORRADE_COMPARE(out.str(),
+        "Math::Matrix4::invertedRigid(): the matrix doesn't represent a rigid transformation:\n"
+        "Matrix(2, 0, 0, 0,\n"
+        "       0, 1, 1.73205, 0,\n"
+        "       0, -1.73205, 1, 0,\n"
+        "       0, 0, 0, 2)\n");
 }
 
 void Matrix4Test::transform() {

@@ -71,7 +71,7 @@ Expects that both complex numbers are normalized. @f[
 */
 template<class T> inline Rad<T> angle(const Complex<T>& normalizedA, const Complex<T>& normalizedB) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-                   "Math::angle(): complex numbers must be normalized", {});
+        "Math::angle(): complex numbers" << normalizedA << "and" << normalizedB << "are not normalized", {});
     return Rad<T>(std::acos(dot(normalizedA, normalizedB)));
 }
 
@@ -115,7 +115,7 @@ template<class T> class Complex {
          */
         static Complex<T> fromMatrix(const Matrix2x2<T>& matrix) {
             CORRADE_ASSERT(matrix.isOrthogonal(),
-                "Math::Complex::fromMatrix(): the matrix is not orthogonal", {});
+                "Math::Complex::fromMatrix(): the matrix is not orthogonal:" << Corrade::Utility::Debug::newline << matrix, {});
             return Implementation::complexFromMatrix(matrix);
         }
 
@@ -488,7 +488,7 @@ template<class T> class Complex {
          */
         Complex<T> invertedNormalized() const {
             CORRADE_ASSERT(isNormalized(),
-                           "Math::Complex::invertedNormalized(): complex number must be normalized", {});
+                "Math::Complex::invertedNormalized():" << *this << "is not normalized", {});
             return conjugated();
         }
 
@@ -574,7 +574,7 @@ Expects that both complex numbers are normalized. @f[
 */
 template<class T> inline Complex<T> lerp(const Complex<T>& normalizedA, const Complex<T>& normalizedB, T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::lerp(): complex numbers must be normalized", {});
+        "Math::lerp(): complex numbers" << normalizedA << "and" << normalizedB << "are not normalized", {});
     return ((T(1) - t)*normalizedA + t*normalizedB).normalized();
 }
 
@@ -596,7 +596,7 @@ the same, returns the first argument. @f[
  */
 template<class T> inline Complex<T> slerp(const Complex<T>& normalizedA, const Complex<T>& normalizedB, T t) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::slerp(): complex numbers must be normalized", {});
+        "Math::slerp(): complex numbers" << normalizedA << "and" << normalizedB << "are not normalized", {});
     const T cosAngle = dot(normalizedA, normalizedB);
 
     /* Avoid division by zero */

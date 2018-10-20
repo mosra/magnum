@@ -100,7 +100,7 @@ typename std::enable_if<std::is_floating_point<FloatingPoint>::value, Rad<Floati
 #endif
 angle(const Vector<size, FloatingPoint>& normalizedA, const Vector<size, FloatingPoint>& normalizedB) {
     CORRADE_ASSERT(normalizedA.isNormalized() && normalizedB.isNormalized(),
-        "Math::angle(): vectors must be normalized", {});
+        "Math::angle(): vectors" << normalizedA << "and" << normalizedB << "are not normalized", {});
     return Rad<FloatingPoint>(std::acos(dot(normalizedA, normalizedB)));
 }
 
@@ -1359,7 +1359,8 @@ inline Vector<size, T>
 template<class U> inline typename std::enable_if<std::is_floating_point<U>::value, Vector<size, T>>::type
 #endif
 Vector<size, T>::projectedOntoNormalized(const Vector<size, T>& line) const {
-    CORRADE_ASSERT(line.isNormalized(), "Math::Vector::projectedOntoNormalized(): line must be normalized", {});
+    CORRADE_ASSERT(line.isNormalized(),
+        "Math::Vector::projectedOntoNormalized(): line" << line << "is not normalized", {});
     return line*Math::dot(*this, line);
 }
 

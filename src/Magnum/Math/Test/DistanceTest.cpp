@@ -43,6 +43,7 @@ struct DistanceTest: Corrade::TestSuite::Tester {
     void pointPlane();
     void pointPlaneScaled();
     void pointPlaneNormalized();
+    void pointPlaneNormalizedNotNormalized();
 };
 
 typedef Math::Vector2<Float> Vector2;
@@ -58,7 +59,8 @@ DistanceTest::DistanceTest() {
 
               &DistanceTest::pointPlane,
               &DistanceTest::pointPlaneScaled,
-              &DistanceTest::pointPlaneNormalized});
+              &DistanceTest::pointPlaneNormalized,
+              &DistanceTest::pointPlaneNormalizedNotNormalized});
 }
 
 void DistanceTest::linePoint2D() {
@@ -183,15 +185,18 @@ void DistanceTest::pointPlaneScaled() {
 
 void DistanceTest::pointPlaneNormalized() {
     Vector3 point{1.0f, 2.0f, 3.0f};
-    Vector4 invalidPlane{2.0f, 2.0f, 2.0f, 0.0f};
 
     const Vector4 plane{0.0f, 1.0f, 0.0f, 1.0f};
     CORRADE_COMPARE(Distance::pointPlaneNormalized(point, plane), 3.0f);
+}
 
-    std::ostringstream o;
-    Error redirectError{&o};
-    Distance::pointPlaneNormalized(point, invalidPlane);
-    CORRADE_COMPARE(o.str(), "Math::Geometry::Distance::pointPlaneNormalized(): plane normal is not an unit vector\n");
+void DistanceTest::pointPlaneNormalizedNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Vector4 invalidPlane{2.0f, 2.0f, 2.0f, 0.0f};
+    Distance::pointPlaneNormalized({}, invalidPlane);
+    CORRADE_COMPARE(out.str(), "Math::Distance::pointPlaneNormalized(): plane normal Vector(2, 2, 2) is not normalized\n");
 }
 
 }}}
