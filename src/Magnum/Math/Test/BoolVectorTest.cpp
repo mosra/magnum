@@ -246,6 +246,8 @@ void BoolVectorTest::convertBool() {
     /* The ! operation should *just work* using the bool conversion operator */
     CORRADE_VERIFY(BoolVector19(0xff, 0xff, 0x07));
     CORRADE_VERIFY(!BoolVector19(0xff, 0xff, 0x04));
+    CORRADE_VERIFY(!BoolVector19(0x00, 0x00, 0x00));
+    CORRADE_VERIFY(!!BoolVector19(0xff, 0xff, 0xff));
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<BoolVector19, bool>::value));
