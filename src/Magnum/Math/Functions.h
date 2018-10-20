@@ -129,15 +129,35 @@ template<class Integral> inline std::pair<Integral, Integral> div(Integral x, In
 
 @see @ref isNan(), @ref Constants::inf()
 */
-template<class T> bool isInf(T value) { return std::isinf(value); }
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, bool>::type isInf(T value) {
+    return std::isinf(value);
+}
+
+/** @overload */
+template<std::size_t size, class T> inline BoolVector<size> isInf(const Vector<size, T>& value) {
+    BoolVector<size> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out.set(i, std::isinf(value[i]));
+    return out;
+}
 
 /**
-@brief If given number is NaN
+@brief If given number is a NaN
 
 Equivalent to @cpp value != value @ce.
 @see @ref isInf(), @ref Constants::nan()
 */
-template<class T> bool isNan(T value) { return std::isnan(value); }
+template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, bool>::type isNan(T value) {
+    return std::isnan(value);
+}
+
+/** @overload */
+template<std::size_t size, class T> inline BoolVector<size> isNan(const Vector<size, T>& value) {
+    BoolVector<size> out;
+    for(std::size_t i = 0; i != size; ++i)
+        out.set(i, std::isnan(value[i]));
+    return out;
+}
 
 /** @todo Can't trigonometric functions be done with only one overload? */
 

@@ -68,7 +68,9 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void exp();
     void div();
     void isInf();
+    void isInfVector();
     void isNan();
+    void isNanfVector();
     void trigonometric();
     void trigonometricWithBase();
 };
@@ -118,7 +120,9 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::exp,
               &FunctionsTest::div,
               &FunctionsTest::isInf,
+              &FunctionsTest::isInfVector,
               &FunctionsTest::isNan,
+              &FunctionsTest::isNanfVector,
               &FunctionsTest::trigonometric,
               &FunctionsTest::trigonometricWithBase});
 }
@@ -385,11 +389,21 @@ void FunctionsTest::isInf() {
     CORRADE_VERIFY(!Math::isInf(5.3f));
 }
 
+void FunctionsTest::isInfVector() {
+    CORRADE_COMPARE(Math::isInf(Vector3{0.3f, -Constants::inf(), 1.0f}), Math::BoolVector<3>{0x02});
+    CORRADE_COMPARE(Math::isInf(Vector3{0.3f, 1.0f, -Constants::nan()}), Math::BoolVector<3>{0x00});
+}
+
 void FunctionsTest::isNan() {
     CORRADE_VERIFY(!Math::isNan(Constants::inf()));
     CORRADE_VERIFY(!Math::isNan(-Constants::inf()));
     CORRADE_VERIFY(Math::isNan(Constants::nan()));
     CORRADE_VERIFY(!Math::isNan(5.3f));
+}
+
+void FunctionsTest::isNanfVector() {
+    CORRADE_COMPARE(Math::isNan(Vector3{0.3f, 1.0f, -Constants::nan()}), Math::BoolVector<3>{0x04});
+    CORRADE_COMPARE(Math::isNan(Vector3{0.3f, -Constants::inf(), 1.0f}), Math::BoolVector<3>{0x00});
 }
 
 void FunctionsTest::trigonometric() {

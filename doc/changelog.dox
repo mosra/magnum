@@ -134,6 +134,7 @@ See also:
     access to underlying memory like with other math types
 -   New @ref Math::min(), @ref Math::max() and @ref Math::minmax() overloads
     taking plain C arrays
+-   Vector overloads for @ref Math::isInf() and @ref Math::isNan()
 
 @subsubsection changelog-latest-new-platform Platform libraries
 
