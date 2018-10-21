@@ -1230,7 +1230,7 @@ void PlayerTest::runFor100YearsFloat() {
 
     /* The track must fit an integer number of times into the day for this test
        to work (3 seconds do fit) */
-    CORRADE_COMPARE(player.duration().size()[0], 3.0f);
+    CORRADE_COMPARE(player.duration().size(), 3.0f);
 
     CORRADE_COMPARE(player.state(), State::Playing);
     CORRADE_COMPARE(value, -1.0f);
@@ -1277,7 +1277,7 @@ void PlayerTest::runFor100YearsChrono() {
 
     /* The track must fit an integer number of times into the day for this test
        to work (3 seconds do fit) */
-    CORRADE_COMPARE(player.duration().size()[0], 3.0f);
+    CORRADE_COMPARE(player.duration().size(), 3.0f);
 
     CORRADE_COMPARE(player.state(), State::Playing);
     CORRADE_COMPARE(value, -1.0f);

@@ -1795,7 +1795,7 @@ template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint leve
 
     const Math::Vector<dimensions, Int> size = range.size();
     const std::size_t dataSize = Magnum::Implementation::imageDataSizeFor(image, size);
-    const Vector3i paddedOffset = Vector3i::pad(range.min());
+    const Vector3i paddedOffset = Vector3i::pad<dimensions>(range.min());
     const Vector3i paddedSize = Vector3i::pad(size, 1);
 
     /* Reallocate only if needed */
@@ -1818,7 +1818,7 @@ template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint leve
 
     const Math::Vector<dimensions, Int> size = range.size();
     const std::size_t dataSize = Magnum::Implementation::imageDataSizeFor(image, size);
-    const Vector3i paddedOffset = Vector3i::pad(range.min());
+    const Vector3i paddedOffset = Vector3i::pad<dimensions>(range.min());
     const Vector3i paddedSize = Vector3i::pad(size, 1);
 
     /* Reallocate only if needed */
@@ -1848,7 +1848,7 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const 
     createIfNotAlready();
 
     const Math::Vector<dimensions, Int> size = range.size();
-    const Vector3i paddedOffset = Vector3i::pad(range.min());
+    const Vector3i paddedOffset = Vector3i::pad<dimensions>(range.min());
     const Vector3i paddedSize = Vector3i::pad(size, 1);
 
     /* Internal texture format */
@@ -1882,7 +1882,7 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const 
     createIfNotAlready();
 
     const Math::Vector<dimensions, Int> size = range.size();
-    const Vector3i paddedOffset = Vector3i::pad(range.min());
+    const Vector3i paddedOffset = Vector3i::pad<dimensions>(range.min());
     const Vector3i paddedSize = Vector3i::pad(size, 1);
 
     /* Internal texture format */

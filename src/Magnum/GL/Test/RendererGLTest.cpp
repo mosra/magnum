@@ -55,7 +55,7 @@ void RendererGLTest::maxLineWidth() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Renderer::setLineWidth(lineWidthRange.max()[0]);
+    Renderer::setLineWidth(lineWidthRange.max());
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }

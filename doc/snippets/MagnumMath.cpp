@@ -874,6 +874,19 @@ Debug{} << Math::Vector3<UnsignedShort>{a};  // prints {16968, 48552, 15993}
 }
 
 {
+Range1D range, a, b;
+constexpr UnsignedInt dimensions = 1;
+typedef Float T;
+/* [Range-generic] */
+Math::Vector<dimensions, T> min = range.min(); // works for 1D, 2D and 3D
+
+T c = Math::max<dimensions, T>(a.size(), b.size()).product(); // vector max()
+/* [Range-generic] */
+static_cast<void>(min);
+static_cast<void>(c);
+}
+
+{
 /* [Range-construct-minmax] */
 Vector3 a, b, c;
 Range3D bounds{Math::minmax({a, b, c})};

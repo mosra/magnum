@@ -528,6 +528,12 @@ See also:
     working to fail with an assertion. See the new
     @ref Math::Matrix3::rotationShear() and @ref Math::Matrix4::rotationShear()
     accessors for a possible solution.
+-   Since one-dimensional @ref Math::Range is now used on many new places such
+    as the @ref Animation library, its underlying type is just @cpp T @ce
+    instead of @ref Math::Vector "Math::Vector<1, T>" to make it easier to use.
+    This may break rare existing code that was using one-dimensional ranges or
+    generic code that's always expecting a vector type. See
+    @ref Math-Range-generic for possible solutions.
 -   @ref SceneGraph::Camera::setViewport() and @ref SceneGraph::Camera::draw()
     are no longer @cpp virtual @ce functions. If you need to override their
     functionality, simply call the subclass implementation directly instead of

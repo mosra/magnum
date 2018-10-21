@@ -250,7 +250,7 @@ template<class T, class K> std::pair<UnsignedInt, K> Player<T, K>::elapsed(const
     T startTime = _startTime;
     T pauseTime = _stopPauseTime;
     State state = _state;
-    const K duration = _duration.size()[0];
+    const K duration = _duration.size();
     const Containers::Optional<std::pair<UnsignedInt, K>> elapsed = Implementation::playerElapsed(duration, _playCount, _scaler, time, startTime, pauseTime, state);
     if(elapsed) return *elapsed;
 
@@ -282,12 +282,12 @@ template<class T, class K> std::pair<UnsignedInt, K> Player<T, K>::elapsed(const
 template<class T, class K> Player<T, K>& Player<T, K>::advance(const T time) {
     /* Get the elapsed time. If we shouldn't advance anything (player already
        stopped / not yet playing, quit */
-    Containers::Optional<std::pair<UnsignedInt, K>> elapsed = Implementation::playerElapsed(_duration.size()[0], _playCount, _scaler, time, _startTime, _stopPauseTime, _state);
+    Containers::Optional<std::pair<UnsignedInt, K>> elapsed = Implementation::playerElapsed(_duration.size(), _playCount, _scaler, time, _startTime, _stopPauseTime, _state);
     if(!elapsed) return *this;
 
     /* Advance all tracks. Properly handle durations that don't start at 0. */
     for(Track& t: _tracks)
-        t.advancer(t.track, _duration.min()[0] + elapsed->second, t.hint, t.destination, t.userCallback, t.userCallbackData);
+        t.advancer(t.track, _duration.min() + elapsed->second, t.hint, t.destination, t.userCallback, t.userCallbackData);
 
     return *this;
 }

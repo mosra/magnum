@@ -40,7 +40,7 @@ Range1D Renderer::lineWidthRange() {
     Range1D& value = state.lineWidthRange;
 
     /* Get the value, if not already cached */
-    if(value.max().isZero())
+    if(!value.max())
         value = state.lineWidthRangeImplementation();
 
     return value;
@@ -55,7 +55,7 @@ Range1D Renderer::lineWidthRangeImplementationDefault() {
 #ifndef MAGNUM_TARGET_GLES
 Range1D Renderer::lineWidthRangeImplementationMesaForwardCompatible() {
     Range1D value = lineWidthRangeImplementationDefault();
-    value.max() = Math::min(1.0f, value.max()[0]);
+    value.max() = Math::min(1.0f, value.max());
     return value;
 }
 #endif

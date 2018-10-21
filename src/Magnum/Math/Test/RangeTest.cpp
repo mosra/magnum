@@ -52,9 +52,9 @@ template<> struct RangeConverter<1, Float, Dim> {
     }
 
     constexpr static Dim to(const Range<1, Float>& other) {
-        return {other.min()[0],
+        return {other.min(),
                 /* Doing it this way to preserve constexpr */
-                other.max()[0] - other.min()[0]};
+                other.max() - other.min()};
     }
 };
 
@@ -113,15 +113,26 @@ struct RangeTest: Corrade::TestSuite::Tester {
     void size();
     void center();
 
-    void translated();
-    void padded();
-    void scaled();
-    void scaledFromCenter();
+    /* Testing 1D separately because it's a scalar, not vector. The above
+       functions test all dimensions explicitly. */
 
-    void containsVector();
+    void translated();
+    void translated1D();
+    void padded();
+    void padded1D();
+    void scaled();
+    void scaled1D();
+    void scaledFromCenter();
+    void scaledFromCenter1D();
+
+    void containsPoint();
+    void containsPoint1D();
     void containsRange();
+    void containsRange1D();
     void intersectIntersects();
+    void intersectIntersects1D();
     void join();
+    void join1D();
 
     void subclassTypes();
     void subclass();
@@ -157,14 +168,22 @@ RangeTest::RangeTest() {
               &RangeTest::center,
 
               &RangeTest::translated,
+              &RangeTest::translated1D,
               &RangeTest::padded,
+              &RangeTest::padded1D,
               &RangeTest::scaled,
+              &RangeTest::scaled1D,
               &RangeTest::scaledFromCenter,
+              &RangeTest::scaledFromCenter1D,
 
-              &RangeTest::containsVector,
+              &RangeTest::containsPoint,
+              &RangeTest::containsPoint1D,
               &RangeTest::containsRange,
+              &RangeTest::containsRange1D,
               &RangeTest::intersectIntersects,
+              &RangeTest::intersectIntersects1D,
               &RangeTest::join,
+              &RangeTest::join1D,
 
               &RangeTest::subclassTypes,
               &RangeTest::subclass,
@@ -255,11 +274,9 @@ void RangeTest::constructPair() {
     Vector2i b{30, 18};
     Vector2i c{20, 25};
 
-    Range1Di bounds1a{Math::minmax<Math::Vector<1, Int>>({a.x(), b.x(), c.x()})};
-    Range1Di bounds1b{std::pair<Math::Vector<1, Int>, Math::Vector<1, Int>>{10, 30}};
+    Range1Di bounds1a{Math::minmax({a.x(), b.x(), c.x()})};
     Range1Di bounds1c{10, 30};
     CORRADE_COMPARE(bounds1a, bounds1c);
-    CORRADE_COMPARE(bounds1b, bounds1c);
 
     Range2Di bounds2a{Math::minmax({a, b, c})};
     Range2Di bounds2b{std::pair<Math::Vector<2, Int>, Math::Vector<2, Int>>{{10, 18}, {30, 25}}};
@@ -371,6 +388,16 @@ void RangeTest::access() {
     constexpr Range1Di cline(34, 47);
     constexpr Range2Di crect({34, 23}, {47, 30});
     constexpr Range3Di ccube({34, 23, -17}, {47, 30, 12});
+
+    CORRADE_COMPARE(line.data(), static_cast<void*>(&line));
+    CORRADE_COMPARE(rect.data(), static_cast<void*>(&rect));
+    CORRADE_COMPARE(cube.data(), static_cast<void*>(&cube));
+    constexpr Int lineData = *cline.data();
+    constexpr Int rectData = *crect.data();
+    constexpr Int cubeData = *ccube.data();
+    CORRADE_COMPARE(lineData, 34);
+    CORRADE_COMPARE(rectData, 34);
+    CORRADE_COMPARE(cubeData, 34);
 
     CORRADE_COMPARE(line.min(), 34);
     CORRADE_COMPARE(cline.min(), 34);
@@ -520,11 +547,27 @@ void RangeTest::translated() {
     CORRADE_COMPARE(a.size(), b.size());
 }
 
+void RangeTest::translated1D() {
+    Range1Di a(34, 47);
+    Range1Di b(17, 30);
+
+    CORRADE_COMPARE(a.translated(-17), b);
+    CORRADE_COMPARE(a.size(), b.size());
+}
+
 void RangeTest::padded() {
     Range2Di a({34, 23}, {47, 30});
     Range2Di b({31, 28}, {50, 25});
 
     CORRADE_COMPARE(a.padded({3, -5}), b);
+    CORRADE_COMPARE(a.center(), b.center());
+}
+
+void RangeTest::padded1D() {
+    Range1Di a{34, 47};
+    Range1Di b{31, 50};
+
+    CORRADE_COMPARE(a.padded(3), b);
     CORRADE_COMPARE(a.center(), b.center());
 }
 
@@ -536,6 +579,14 @@ void RangeTest::scaled() {
     CORRADE_COMPARE((a.size()*Vector2i{2, -3}), b.size());
 }
 
+void RangeTest::scaled1D() {
+    Range1Di a{34, 47};
+    Range1Di b{68, 94};
+
+    CORRADE_COMPARE(a.scaled(2), b);
+    CORRADE_COMPARE(a.size()*2, b.size());
+}
+
 void RangeTest::scaledFromCenter() {
     Range2Di a{{34, 22}, {48, 30}};
     Range2Di b{{27, 38}, {55, 14}};
@@ -545,7 +596,16 @@ void RangeTest::scaledFromCenter() {
     CORRADE_COMPARE((a.size()*Vector2i{2, -3}), b.size());
 }
 
-void RangeTest::containsVector() {
+void RangeTest::scaledFromCenter1D() {
+    Range1Di a{34, 48};
+    Range1Di b{27, 55};
+
+    CORRADE_COMPARE(a.scaledFromCenter(2), b);
+    CORRADE_COMPARE(a.center(), b.center());
+    CORRADE_COMPARE(a.size()*2, b.size());
+}
+
+void RangeTest::containsPoint() {
     Range2Di a({34, 23}, {47, 30});
 
     CORRADE_VERIFY(a.contains({40, 23}));
@@ -555,6 +615,17 @@ void RangeTest::containsVector() {
     /* Contains a point at min, but not at max */
     CORRADE_VERIFY(a.contains({34, 23}));
     CORRADE_VERIFY(!a.contains({47, 30}));
+}
+
+void RangeTest::containsPoint1D() {
+    Range1Di a{34, 47};
+
+    CORRADE_VERIFY(a.contains(40));
+    CORRADE_VERIFY(!a.contains(33));
+
+    /* Contains a point at min, but not at max */
+    CORRADE_VERIFY(a.contains(34));
+    CORRADE_VERIFY(!a.contains(47));
 }
 
 void RangeTest::containsRange() {
@@ -589,6 +660,42 @@ void RangeTest::containsRange() {
     /* Doesn't contain a range touching the edges from the outside */
     Range2Di i{{20, 30}, {34, 40}};
     Range2Di j{{47, 20}, {60, 23}};
+    CORRADE_VERIFY(!a.contains(i));
+    CORRADE_VERIFY(!a.contains(j));
+}
+
+void RangeTest::containsRange1D() {
+    Range1Di a{34, 47};
+
+    /* Contains whole range with a gap, not the other way around */
+    Range1Di b{35, 40};
+    CORRADE_VERIFY(a.contains(b));
+    CORRADE_VERIFY(!b.contains(a));
+
+    /* Contains itself, empty range contains itself as well */
+    Range1Di c;
+    CORRADE_VERIFY(a.contains(a));
+    CORRADE_VERIFY(b.contains(b));
+    CORRADE_VERIFY(c.contains(c));
+
+    /* Contains zero-sized range inside but not outside */
+    Range1Di d{34, 34};
+    Range1Di e{33, 33};
+    Range1Di f{47, 47};
+    Range1Di g{48, 48};
+    CORRADE_VERIFY(a.contains(d));
+    CORRADE_VERIFY(!a.contains(e));
+    CORRADE_VERIFY(a.contains(f));
+    CORRADE_VERIFY(!a.contains(g));
+
+    /* Doesn't contain a range that overlaps */
+    Range1Di h{30, 35};
+    CORRADE_VERIFY(!a.contains(h));
+    CORRADE_VERIFY(!h.contains(a));
+
+    /* Doesn't contain a range touching the edges from the outside */
+    Range1Di i{20, 34};
+    Range1Di j{47, 60};
     CORRADE_VERIFY(!a.contains(i));
     CORRADE_VERIFY(!a.contains(j));
 }
@@ -645,11 +752,65 @@ void RangeTest::intersectIntersects() {
     CORRADE_COMPARE(Math::intersect(l, a), Range2Di{});
 }
 
+void RangeTest::intersectIntersects1D() {
+    Range1Di a(34, 47);
+
+    /* Intersects itself */
+    CORRADE_VERIFY(Math::intersects(a, a));
+    CORRADE_COMPARE(Math::intersect(a, a), a);
+
+    /* Non-empty intersection */
+    Range1Di b{30, 35};
+    Range1Di c{34, 35};
+    CORRADE_VERIFY(Math::intersects(a, b));
+    CORRADE_VERIFY(Math::intersects(b, a));
+    CORRADE_COMPARE(Math::intersect(a, b), c);
+    CORRADE_COMPARE(Math::intersect(b, a), c);
+
+    /* Intersecting with an empty range outside produces a default-constructed range */
+    Range1Di d{130, 130};
+    CORRADE_VERIFY(!Math::intersects(a, d));
+    CORRADE_VERIFY(!Math::intersects(d, a));
+    CORRADE_COMPARE(Math::intersect(a, d), Range1Di{});
+    CORRADE_COMPARE(Math::intersect(d, a), Range1Di{});
+
+    /* Intersecting with an empty range inside produces an empty range */
+    Range1Di e{40, 40};
+    CORRADE_VERIFY(Math::intersects(a, e));
+    CORRADE_VERIFY(Math::intersects(e, a));
+    CORRADE_COMPARE(Math::intersect(a, e), e);
+    CORRADE_COMPARE(Math::intersect(e, a), e);
+
+    /* Doesn't intersect a range touching the edges from the outside */
+    Range1Di i{20, 34};
+    Range1Di j{47, 60};
+    CORRADE_VERIFY(!Math::intersects(a, i));
+    CORRADE_VERIFY(!Math::intersects(a, j));
+    CORRADE_VERIFY(!Math::intersects(i, a));
+    CORRADE_VERIFY(!Math::intersects(j, a));
+    CORRADE_COMPARE(Math::intersect(a, i), Range1Di{});
+    CORRADE_COMPARE(Math::intersect(a, j), Range1Di{});
+    CORRADE_COMPARE(Math::intersect(i, a), Range1Di{});
+    CORRADE_COMPARE(Math::intersect(j, a), Range1Di{});
+}
+
 void RangeTest::join() {
     Range2Di a{{12, 20}, {15, 35}};
     Range2Di b{{10, 25}, {17, 105}};
     Range2Di c{{130, -15}, {130, -15}};
     Range2Di d{{10, 20}, {17, 105}};
+
+    CORRADE_COMPARE(Math::join(a, b), d);
+    CORRADE_COMPARE(Math::join(b, a), d);
+    CORRADE_COMPARE(Math::join(a, c), a);
+    CORRADE_COMPARE(Math::join(c, a), a);
+}
+
+void RangeTest::join1D() {
+    Range1Di a{12, 15};
+    Range1Di b{10, 17};
+    Range1Di c{130, 130};
+    Range1Di d{10, 17};
 
     CORRADE_COMPARE(Math::join(a, b), d);
     CORRADE_COMPARE(Math::join(b, a), d);

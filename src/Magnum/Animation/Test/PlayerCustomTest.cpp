@@ -67,7 +67,7 @@ void PlayerCustomTest::test() {
     player.add(Track, value)
         .play(2000000ull);
 
-    CORRADE_COMPARE(player.duration().size()[0], 24*3);
+    CORRADE_COMPARE(player.duration().size(), 24*3);
 
     /* 1.75 secs in */
     player.advance(3750000ull);
