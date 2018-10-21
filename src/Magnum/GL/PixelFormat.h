@@ -613,7 +613,7 @@ value is expected to be valid.
     extension. Such check is outside of the scope of this function and you are
     expected to verify extension availability before using such format.
 
-@see @ref pixelFormat(), @ref pixelType()
+@see @ref pixelFormat(), @ref pixelType(), @ref hasCompressedPixelFormat()
 */
 MAGNUM_GL_EXPORT bool hasPixelFormat(Magnum::PixelFormat format);
 
@@ -636,7 +636,7 @@ to query availability of given format.
     @gl_extension{EXT,texture_rg} being present or not. If you wish to use @ref PixelFormat::Red and @ref PixelFormat::RG instead, specify the GL-specific
     pixel format directly instead of using the generic enum.
 
-@see @ref pixelType()
+@see @ref pixelType(), @ref compressedPixelFormat()
 */
 MAGNUM_GL_EXPORT PixelFormat pixelFormat(Magnum::PixelFormat format);
 
@@ -652,7 +652,7 @@ In case @ref isPixelFormatImplementationSpecific() returns @cpp false @ce for
 Not all generic pixel formats may be available on all targets and this function
 expects that given format is available on the target. Use @ref hasPixelFormat()
 to query availability of given format.
-@see @ref pixelFormat()
+@see @ref pixelFormat(), @ref compressedPixelFormat()
 */
 MAGNUM_GL_EXPORT PixelType pixelType(Magnum::PixelFormat format, UnsignedInt extra = 0);
 
@@ -1333,7 +1333,7 @@ expected to be valid.
     extension. Such check is outside of the scope of this function and you are
     expected to verify extension availability before using such format.
 
-@see @ref pixelFormat(), @ref pixelType()
+@see @ref compressedPixelFormat(), @ref pixelFormat(), @ref pixelType()
 */
 MAGNUM_GL_EXPORT bool hasCompressedPixelFormat(Magnum::CompressedPixelFormat format);
 
