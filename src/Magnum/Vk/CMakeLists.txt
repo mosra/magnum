@@ -34,6 +34,7 @@ find_package(Vulkan REQUIRED)
 set(MagnumVk_SRCS )
 set(MagnumVk_HEADERS
     Vk.h
+    Vulkan.h
 
     visibility.h)
 set(MagnumVk_PRIVATE_HEADERS )
