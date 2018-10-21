@@ -141,7 +141,7 @@ enum class MeshPrimitive: GLenum {
 
 @see @ref meshIndexType()
 */
-MAGNUM_GL_EXPORT MeshPrimitive meshPrimitive(Magnum::MeshPrimitive);
+MAGNUM_GL_EXPORT MeshPrimitive meshPrimitive(Magnum::MeshPrimitive primitive);
 
 /**
 @brief Index type
@@ -169,7 +169,7 @@ enum class MeshIndexType: GLenum {
 
 @see @ref meshPrimitive(), @ref meshIndexTypeSize()
 */
-MAGNUM_GL_EXPORT MeshIndexType meshIndexType(Magnum::MeshIndexType);
+MAGNUM_GL_EXPORT MeshIndexType meshIndexType(Magnum::MeshIndexType type);
 
 namespace Implementation { struct MeshState; }
 
