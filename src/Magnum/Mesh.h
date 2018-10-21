@@ -104,47 +104,31 @@ enum class MeshPrimitive: UnsignedInt {
     #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     /**
      * Lines with adjacency information.
-     * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4}
-     * @requires_gles30 Not defined in OpenGL ES 2.0.
-     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
-     *      @gl_extension{EXT,geometry_shader}
-     * @requires_gles Geometry shaders are not available in WebGL.
+     * @deprecated Use @ref GL::MeshPrimitive::LinesAdjacency instead.
      */
-    LinesAdjacency CORRADE_DEPRECATED_ENUM("use GL::MeshPrimitive::Patches instead") = UnsignedInt(GL::MeshPrimitive::LinesAdjacency),
+    LinesAdjacency CORRADE_DEPRECATED_ENUM("use GL::MeshPrimitive::LinesAdjacency instead") = UnsignedInt(GL::MeshPrimitive::LinesAdjacency),
 
     /**
      * Line strip with adjacency information.
-     * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4}
-     * @requires_gles30 Not defined in OpenGL ES 2.0.
-     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
-     *      @gl_extension{EXT,geometry_shader}
-     * @requires_gles Geometry shaders are not available in WebGL.
+     * @deprecated Use @ref GL::MeshPrimitive::LineStripAdjacency instead.
      */
-    LineStripAdjacency CORRADE_DEPRECATED_ENUM("use GL::MeshPrimitive::Patches instead") = UnsignedInt(GL::MeshPrimitive::LineStripAdjacency),
+    LineStripAdjacency CORRADE_DEPRECATED_ENUM("use GL::MeshPrimitive::LineStripAdjacency instead") = UnsignedInt(GL::MeshPrimitive::LineStripAdjacency),
 
     /**
      * Triangles with adjacency information.
-     * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4}
-     * @requires_gles30 Not defined in OpenGL ES 2.0.
-     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
-     *      @gl_extension{EXT,geometry_shader}
-     * @requires_gles Geometry shaders are not available in WebGL.
+     * @deprecated Use @ref GL::MeshPrimitive::TrianglesAdjacency instead.
      */
-    TrianglesAdjacency CORRADE_DEPRECATED_ENUM("use GL::MeshPrimitive::Patches instead") = UnsignedInt(GL::MeshPrimitive::TrianglesAdjacency),
+    TrianglesAdjacency CORRADE_DEPRECATED_ENUM("use GL::MeshPrimitive::TrianglesAdjacency instead") = UnsignedInt(GL::MeshPrimitive::TrianglesAdjacency),
 
     /**
      * Triangle strip with adjacency information.
-     * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4}
-     * @requires_gles30 Not defined in OpenGL ES 2.0.
-     * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
-     *      @gl_extension{EXT,geometry_shader}
-     * @requires_gles Geometry shaders are not available in WebGL.
+     * @deprecated Use @ref GL::MeshPrimitive::TriangleStripAdjacency instead.
      */
-    TriangleStripAdjacency CORRADE_DEPRECATED_ENUM("use GL::MeshPrimitive::Patches instead") = UnsignedInt(GL::MeshPrimitive::TriangleStripAdjacency),
+    TriangleStripAdjacency CORRADE_DEPRECATED_ENUM("use GL::MeshPrimitive::TriangleStripAdjacency instead") = UnsignedInt(GL::MeshPrimitive::TriangleStripAdjacency),
 
     /**
      * Patches.
-     * @deprecated Use @ref GL::MeshPrimitive::Patches instead
+     * @deprecated Use @ref GL::MeshPrimitive::Patches instead.
      */
     Patches CORRADE_DEPRECATED_ENUM("use GL::MeshPrimitive::Patches instead") = UnsignedInt(GL::MeshPrimitive::Patches)
     #endif

@@ -440,6 +440,8 @@ See also:
     [mosra/magnum#261](https://github.com/mosra/magnum/issues/261))
 -   Documentation of @ref Primitives and @ref Shaders namespaces now has proper
     sRGB and HiDPi renderings of all primitives and shaders
+-   Deprecation status of GL-specific values of the generic @ref MeshPrimitive
+    enum was not properly reflected in the documentation
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
