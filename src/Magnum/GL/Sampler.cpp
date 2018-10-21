@@ -87,7 +87,7 @@ SamplerFilter samplerFilter(const Magnum::SamplerFilter filter) {
 
 SamplerMipmap samplerMipmap(const Magnum::SamplerMipmap mipmap) {
     CORRADE_ASSERT(UnsignedInt(mipmap) < Containers::arraySize(MipmapMapping),
-        "GL::samplerMipmap(): invalid filter" << mipmap, {});
+        "GL::samplerMipmap(): invalid mode" << mipmap, {});
     return MipmapMapping[UnsignedInt(mipmap)];
 }
 

@@ -104,7 +104,7 @@ void SamplerTest::mapMipmapInvalid() {
 
     samplerMipmap(Magnum::SamplerMipmap(0x123));
     CORRADE_COMPARE(out.str(),
-        "GL::samplerMipmap(): invalid filter SamplerMipmap(0x123)\n");
+        "GL::samplerMipmap(): invalid mode SamplerMipmap(0x123)\n");
 }
 
 void SamplerTest::mapWrapping() {
