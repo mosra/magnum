@@ -63,7 +63,7 @@ build() {
 check() {
     cd "$_rootdir/build-coverage"
     CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 || true
-    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_invalidate_subdata GL_ARB_multi_bind GL_ARB_robustness GL_ARB_separate_shader_objects GL_ARB_texture_storage GL_ARB_texture_storage_multisample GL_ARB_shading_language_420pack GL_ARB_explicit_uniform_location GL_ARB_explicit_attrib_location" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest || true
+    MAGNUM_DISABLE_EXTENSIONS="GL_ARB_invalidate_subdata GL_ARB_multi_bind GL_ARB_robustness GL_ARB_separate_shader_objects GL_ARB_texture_storage GL_ARB_texture_storage_multisample GL_ARB_shading_language_420pack GL_ARB_explicit_uniform_location GL_ARB_explicit_attrib_location GL_ARB_texture_filter_anisotropic" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest || true
     MAGNUM_DISABLE_EXTENSIONS="GL_ARB_direct_state_access" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest || true
     MAGNUM_DISABLE_EXTENSIONS="GL_EXT_direct_state_access" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest || true
     MAGNUM_DISABLE_EXTENSIONS="GL_ARB_get_texture_sub_image" CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest || true
