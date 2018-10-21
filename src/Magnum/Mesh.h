@@ -46,12 +46,18 @@ namespace Magnum {
 In case of OpenGL, corresponds to @ref GL::MeshPrimitive and is convertible to
 it using @ref GL::meshPrimitive(). See documentation of each value for more
 information about the mapping.
+
+In case of Vulkan, corresponds to @type_vk_keyword{PrimitiveTopology} and is
+convertible to it using @ref Vk::vkPrimitiveTopology(). See documentation of
+each value for more information about the mapping. Note that not every mode is available there, use @ref Vk::hasVkPrimitiveTopology() to check for its
+presence.
 */
 enum class MeshPrimitive: UnsignedInt {
     /**
      * Single points.
      *
-     * Corresponds to @ref GL::MeshPrimitive::Points.
+     * Corresponds to @ref GL::MeshPrimitive::Points /
+     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_POINT_LIST,PrimitiveTopology}.
      */
     Points,
 
@@ -59,14 +65,16 @@ enum class MeshPrimitive: UnsignedInt {
      * Each pair of vertices defines a single line, lines aren't
      * connected together.
      *
-     * Corresponds to @ref GL::MeshPrimitive::Lines.
+     * Corresponds to @ref GL::MeshPrimitive::Lines /
+     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_LINE_LIST,PrimitiveTopology}.
      */
     Lines,
 
     /**
      * Line strip, last and first vertex are connected together.
      *
-     * Corresponds to @ref GL::MeshPrimitive::LineLoop.
+     * Corresponds to @ref GL::MeshPrimitive::LineLoop. Not supported on
+     * Vulkan.
      */
     LineLoop,
 
@@ -74,14 +82,16 @@ enum class MeshPrimitive: UnsignedInt {
      * First two vertices define first line segment, each following
      * vertex defines another segment.
      *
-     * Corresponds to @ref GL::MeshPrimitive::LineStrip.
+     * Corresponds to @ref GL::MeshPrimitive::LineStrip /
+     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_LINE_STRIP,PrimitiveTopology}.
      */
     LineStrip,
 
     /**
      * Each three vertices define one triangle.
      *
-     * Corresponds to @ref GL::MeshPrimitive::Triangles.
+     * Corresponds to @ref GL::MeshPrimitive::Triangles /
+     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_TRIANGLE_LIST,PrimitiveTopology}.
      */
     Triangles,
 
@@ -89,7 +99,8 @@ enum class MeshPrimitive: UnsignedInt {
      * First three vertices define first triangle, each following
      * vertex defines another triangle.
      *
-     * Corresponds to @ref GL::MeshPrimitive::TriangleStrip.
+     * Corresponds to @ref GL::MeshPrimitive::TriangleStrip /
+     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,PrimitiveTopology}.
      */
     TriangleStrip,
 
@@ -97,7 +108,8 @@ enum class MeshPrimitive: UnsignedInt {
      * First vertex is center, each following vertex is connected to
      * previous and center vertex.
      *
-     * Corresponds to @ref GL::MeshPrimitive::TriangleFan.
+     * Corresponds to @ref GL::MeshPrimitive::TriangleFan /
+     * @def_vk_keyword{PRIMITIVE_TOPOLOGY_TRIANGLE_FAN,PrimitiveTopology}.
      */
     TriangleFan,
 
@@ -143,27 +155,35 @@ MAGNUM_EXPORT Debug& operator<<(Debug& debug, MeshPrimitive value);
 In case of OpenGL, corresponds to @ref GL::MeshIndexType and is convertible to
 it using @ref GL::meshIndexType(). See documentation of each value for more
 information about the mapping.
+
+In case of Vulkan, corresponds to @type_vk_keyword{IndexType} and is
+convertible to it using @ref Vk::vkIndexType(). See documentation of each value
+for more information about the mapping. Note that not every type is available
+there, use @ref Vk::hasVkIndexType() to check for its presence.
 @see @ref meshIndexTypeSize()
 */
 enum class MeshIndexType: UnsignedInt {
     /**
      * Unsigned byte
      *
-     * Corresponds to @ref GL::MeshIndexType::UnsignedByte.
+     * Corresponds to @ref GL::MeshIndexType::UnsignedByte. Not available on
+     * Vulkan.
      */
     UnsignedByte,
 
     /**
      * Unsigned short
      *
-     * Corresponds to @ref GL::MeshIndexType::UnsignedShort.
+     * Corresponds to @ref GL::MeshIndexType::UnsignedShort /
+     * @def_vk_keyword{INDEX_TYPE_UINT16,IndexType}.
      */
     UnsignedShort,
 
     /**
      * Unsigned int
      *
-     * Corresponds to @ref GL::MeshIndexType::UnsignedInt.
+     * Corresponds to @ref GL::MeshIndexType::UnsignedInt /
+     * @def_vk_keyword{INDEX_TYPE_UINT32,IndexType}.
      */
     UnsignedInt
 };

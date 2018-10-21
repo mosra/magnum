@@ -54,6 +54,11 @@ and is convertible to them using @ref GL::pixelFormat() and
 about the mapping. Note that not every format is available on all targets, use
 @ref GL::hasPixelFormat() to check for its presence.
 
+In case of Vulkan, corresponds to @type_vk_keyword{Format} and is convertible
+to it using @ref Vk::vkFormat(Magnum::PixelFormat). See documentation of each
+value for more information about the mapping. Note that not every format may be
+available, use @ref Vk::hasVkFormat(Magnum::PixelFormat) to check for its
+presence.
 @see @ref pixelSize(), @ref CompressedPixelFormat, @ref Image, @ref ImageView
 */
 enum class PixelFormat: UnsignedInt {
@@ -61,7 +66,8 @@ enum class PixelFormat: UnsignedInt {
      * Red component, normalized unsigned byte.
      *
      * Corresponds to @ref GL::PixelFormat::Red and
-     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::R8.
+     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::R8 /
+     * @def_vk_keyword{FORMAT_R8_UNORM,Format}.
      */
     R8Unorm,
 
@@ -69,7 +75,8 @@ enum class PixelFormat: UnsignedInt {
      * Red and green component, normalized unsigned byte.
      *
      * Corresponds to @ref GL::PixelFormat::RG and
-     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RG8.
+     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RG8 /
+     * @def_vk_keyword{FORMAT_R8G8_UNORM,Format}.
      */
     RG8Unorm,
 
@@ -77,7 +84,8 @@ enum class PixelFormat: UnsignedInt {
      * RGB, normalized unsigned byte.
      *
      * Corresponds to @ref GL::PixelFormat::RGB and
-     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RGB8.
+     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RGB8 /
+     * @def_vk_keyword{FORMAT_R8G8B8_UNORM,Format}.
      */
     RGB8Unorm,
 
@@ -85,7 +93,8 @@ enum class PixelFormat: UnsignedInt {
      * RGBA, normalized unsigned byte.
      *
      * Corresponds to @ref GL::PixelFormat::RGBA and
-     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RGBA8.
+     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RGBA8 /
+     * @def_vk_keyword{FORMAT_R8G8B8A8_UNORM,Format}.
      */
     RGBA8Unorm,
 
@@ -93,7 +102,8 @@ enum class PixelFormat: UnsignedInt {
      * Red component, normalized signed byte.
      *
      * Corresponds to @ref GL::PixelFormat::Red and
-     * @ref GL::PixelType::Byte, @ref GL::TextureFormat::R8Snorm.
+     * @ref GL::PixelType::Byte, @ref GL::TextureFormat::R8Snorm /
+     * @def_vk_keyword{FORMAT_R8_SNORM,Format}.
      */
     R8Snorm,
 
@@ -101,7 +111,8 @@ enum class PixelFormat: UnsignedInt {
      * Red and green component, normalized signed byte.
      *
      * Corresponds to @ref GL::PixelFormat::RG and
-     * @ref GL::PixelType::Byte, @ref GL::TextureFormat::RG8Snorm.
+     * @ref GL::PixelType::Byte, @ref GL::TextureFormat::RG8Snorm /
+     * @def_vk_keyword{FORMAT_R8G8_SNORM,Format}.
      */
     RG8Snorm,
 
@@ -109,7 +120,8 @@ enum class PixelFormat: UnsignedInt {
      * RGB, normalized signed byte.
      *
      * Corresponds to @ref GL::PixelFormat::RGB and
-     * @ref GL::PixelType::Byte, @ref GL::TextureFormat::RGB8Snorm.
+     * @ref GL::PixelType::Byte, @ref GL::TextureFormat::RGB8Snorm /
+     * @def_vk_keyword{FORMAT_R8G8B8_SNORM,Format}.
      */
     RGB8Snorm,
 
@@ -117,7 +129,8 @@ enum class PixelFormat: UnsignedInt {
      * RGBA, normalized signed byte.
      *
      * Corresponds to @ref GL::PixelFormat::RGBA and
-     * @ref GL::PixelType::Byte, @ref GL::TextureFormat::RGBA8Snorm.
+     * @ref GL::PixelType::Byte, @ref GL::TextureFormat::RGBA8Snorm /
+     * @def_vk_keyword{FORMAT_R8G8B8A8_SNORM,Format}.
      */
     RGBA8Snorm,
 
@@ -125,7 +138,8 @@ enum class PixelFormat: UnsignedInt {
      * Red component, integral unsigned byte.
      *
      * Corresponds to @ref GL::PixelFormat::RedInteger and
-     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::R8UI.
+     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::R8UI /
+     * @def_vk_keyword{FORMAT_R8_UINT,Format}.
      */
     R8UI,
 
@@ -133,7 +147,8 @@ enum class PixelFormat: UnsignedInt {
      * Red and green component, integral unsigned byte.
      *
      * Corresponds to @ref GL::PixelFormat::RGInteger and
-     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RG8UI.
+     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RG8UI /
+     * @def_vk_keyword{FORMAT_R8G8_UINT,Format}.
      */
     RG8UI,
 
@@ -141,7 +156,8 @@ enum class PixelFormat: UnsignedInt {
      * RGB, integral unsigned byte.
      *
      * Corresponds to @ref GL::PixelFormat::RGBInteger and
-     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RGB8UI.
+     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RGB8UI /
+     * @def_vk_keyword{FORMAT_R8G8B8_UINT,Format}.
      */
     RGB8UI,
 
@@ -149,7 +165,8 @@ enum class PixelFormat: UnsignedInt {
      * RGBA, integral unsigned byte.
      *
      * Corresponds to @ref GL::PixelFormat::RGBAInteger and
-     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RGBA8UI.
+     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::RGBA8UI /
+     * @def_vk_keyword{FORMAT_R8G8B8A8_UINT,Format}.
      */
     RGBA8UI,
 
@@ -157,7 +174,8 @@ enum class PixelFormat: UnsignedInt {
      * Red component, integral signed byte.
      *
      * Corresponds to @ref GL::PixelFormat::RedInteger and
-     * @ref GL::PixelType::Byte, @ref GL::TextureFormat::R8I.
+     * @ref GL::PixelType::Byte, @ref GL::TextureFormat::R8I /
+     * @def_vk_keyword{FORMAT_R8_SINT,Format}.
      */
     R8I,
 
@@ -165,7 +183,8 @@ enum class PixelFormat: UnsignedInt {
      * Red and green component, integral signed byte.
      *
      * Corresponds to @ref GL::PixelFormat::RGInteger and
-     * @ref GL::PixelType::Byte, @ref GL::TextureFormat::RG8I.
+     * @ref GL::PixelType::Byte, @ref GL::TextureFormat::RG8I /
+     * @def_vk_keyword{FORMAT_R8G8_SINT,Format}.
      */
     RG8I,
 
@@ -173,7 +192,8 @@ enum class PixelFormat: UnsignedInt {
      * RGB, integral signed byte.
      *
      * Corresponds to @ref GL::PixelFormat::RGBInteger and
-     * @ref GL::PixelType::Byte, @ref GL::TextureFormat::RGB8I.
+     * @ref GL::PixelType::Byte, @ref GL::TextureFormat::RGB8I /
+     * @def_vk_keyword{FORMAT_R8G8B8_SINT,Format}.
      */
     RGB8I,
 
@@ -181,7 +201,8 @@ enum class PixelFormat: UnsignedInt {
      * RGBA, integral signed byte.
      *
      * Corresponds to @ref GL::PixelFormat::RGBAInteger and
-     * @ref GL::PixelType::Byte, @ref GL::TextureFormat::RGBA8I.
+     * @ref GL::PixelType::Byte, @ref GL::TextureFormat::RGBA8I /
+     * @def_vk_keyword{FORMAT_R8G8B8A8_SINT,Format}.
      */
     RGBA8I,
 
@@ -189,7 +210,8 @@ enum class PixelFormat: UnsignedInt {
      * Red component, normalized unsigned short.
      *
      * Corresponds to @ref GL::PixelFormat::Red and
-     * @ref GL::PixelType::UnsignedShort, @ref GL::TextureFormat::R16.
+     * @ref GL::PixelType::UnsignedShort, @ref GL::TextureFormat::R16 /
+     * @def_vk_keyword{FORMAT_R16_UNORM,Format}.
      */
     R16Unorm,
 
@@ -197,7 +219,8 @@ enum class PixelFormat: UnsignedInt {
      * Red and green component, normalized unsigned short.
      *
      * Corresponds to @ref GL::PixelFormat::RG and
-     * @ref GL::PixelType::UnsignedShort, @ref GL::TextureFormat::RG16.
+     * @ref GL::PixelType::UnsignedShort, @ref GL::TextureFormat::RG16 /
+     * @def_vk_keyword{FORMAT_R16G16_UNORM,Format}.
      */
     RG16Unorm,
 
@@ -205,7 +228,8 @@ enum class PixelFormat: UnsignedInt {
      * RGB, normalized unsigned short.
      *
      * Corresponds to @ref GL::PixelFormat::RGB and
-     * @ref GL::PixelType::UnsignedShort, @ref GL::TextureFormat::RGB16.
+     * @ref GL::PixelType::UnsignedShort, @ref GL::TextureFormat::RGB16 /
+     * @def_vk_keyword{FORMAT_R16G16B16_UNORM,Format}.
      */
     RGB16Unorm,
 
@@ -213,7 +237,8 @@ enum class PixelFormat: UnsignedInt {
      * RGBA, normalized unsigned short.
      *
      * Corresponds to @ref GL::PixelFormat::RGBA and
-     * @ref GL::PixelType::UnsignedShort, @ref GL::TextureFormat::RGBA16.
+     * @ref GL::PixelType::UnsignedShort, @ref GL::TextureFormat::RGBA16 /
+     * @def_vk_keyword{FORMAT_R16G16B16A16_UNORM,Format}.
      */
     RGBA16Unorm,
 
@@ -221,7 +246,8 @@ enum class PixelFormat: UnsignedInt {
      * Red component, normalized signed short.
      *
      * Corresponds to @ref GL::PixelFormat::Red and
-     * @ref GL::PixelType::Short, @ref GL::TextureFormat::R16Snorm.
+     * @ref GL::PixelType::Short, @ref GL::TextureFormat::R16Snorm /
+     * @def_vk_keyword{FORMAT_R16_SNORM,Format}.
      */
     R16Snorm,
 
@@ -229,7 +255,8 @@ enum class PixelFormat: UnsignedInt {
      * Red and green component, normalized signed short.
      *
      * Corresponds to @ref GL::PixelFormat::RG and
-     * @ref GL::PixelType::Short, @ref GL::TextureFormat::RG16Snorm.
+     * @ref GL::PixelType::Short, @ref GL::TextureFormat::RG16Snorm /
+     * @def_vk_keyword{FORMAT_R16G16_SNORM,Format}.
      */
     RG16Snorm,
 
@@ -237,7 +264,8 @@ enum class PixelFormat: UnsignedInt {
      * RGB, normalized signed short.
      *
      * Corresponds to @ref GL::PixelFormat::RGB and
-     * @ref GL::PixelType::Short, @ref GL::TextureFormat::RGB16Snorm.
+     * @ref GL::PixelType::Short, @ref GL::TextureFormat::RGB16Snorm /
+     * @def_vk_keyword{FORMAT_R16G16B16_SNORM,Format}.
      */
     RGB16Snorm,
 
@@ -245,7 +273,8 @@ enum class PixelFormat: UnsignedInt {
      * RGBA, normalized signed short.
      *
      * Corresponds to @ref GL::PixelFormat::RGBA and
-     * @ref GL::PixelType::Short, @ref GL::TextureFormat::RGBA16Snorm.
+     * @ref GL::PixelType::Short, @ref GL::TextureFormat::RGBA16Snorm /
+     * @def_vk_keyword{FORMAT_R16G16B16A16_SNORM,Format}.
      */
     RGBA16Snorm,
 
@@ -253,7 +282,8 @@ enum class PixelFormat: UnsignedInt {
      * Red component, integral unsigned short.
      *
      * Corresponds to @ref GL::PixelFormat::RedInteger and
-     * @ref GL::PixelType::UnsignedShort, @ref GL::TextureFormat::R16UI.
+     * @ref GL::PixelType::UnsignedShort, @ref GL::TextureFormat::R16UI /
+     * @def_vk_keyword{FORMAT_R16_UINT,Format}.
      */
     R16UI,
 
@@ -261,7 +291,8 @@ enum class PixelFormat: UnsignedInt {
      * Red and green component, integral unsigned short.
      *
      * Corresponds to @ref GL::PixelFormat::RGInteger and
-     * @ref GL::PixelType::UnsignedShort, @ref GL::TextureFormat::RG16UI.
+     * @ref GL::PixelType::UnsignedShort, @ref GL::TextureFormat::RG16UI /
+     * @def_vk_keyword{FORMAT_R16G16_UINT,Format}.
      */
     RG16UI,
 
@@ -269,7 +300,8 @@ enum class PixelFormat: UnsignedInt {
      * RGB, integral unsigned short.
      *
      * Corresponds to @ref GL::PixelFormat::RGBInteger and
-     * @ref GL::PixelType::UnsignedShort, @ref GL::TextureFormat::RGB16UI.
+     * @ref GL::PixelType::UnsignedShort, @ref GL::TextureFormat::RGB16UI /
+     * @def_vk_keyword{FORMAT_R16G16B16_UINT,Format}.
      */
     RGB16UI,
 
@@ -277,7 +309,8 @@ enum class PixelFormat: UnsignedInt {
      * RGBA, integral unsigned short.
      *
      * Corresponds to @ref GL::PixelFormat::RGBAInteger and
-     * @ref GL::PixelType::UnsignedShort, @ref GL::TextureFormat::RGBA16UI.
+     * @ref GL::PixelType::UnsignedShort, @ref GL::TextureFormat::RGBA16UI /
+     * @def_vk_keyword{FORMAT_R16G16B16A16_UINT,Format}.
      */
     RGBA16UI,
 
@@ -285,7 +318,8 @@ enum class PixelFormat: UnsignedInt {
      * Red component, integral signed short.
      *
      * Corresponds to @ref GL::PixelFormat::RedInteger and
-     * @ref GL::PixelType::Short, @ref GL::TextureFormat::R16I.
+     * @ref GL::PixelType::Short, @ref GL::TextureFormat::R16I /
+     * @def_vk_keyword{FORMAT_R16_SINT,Format}.
      */
     R16I,
 
@@ -293,7 +327,8 @@ enum class PixelFormat: UnsignedInt {
      * Red and green component, integral signed short.
      *
      * Corresponds to @ref GL::PixelFormat::RGInteger and
-     * @ref GL::PixelType::Short, @ref GL::TextureFormat::RG16I.
+     * @ref GL::PixelType::Short, @ref GL::TextureFormat::RG16I /
+     * @def_vk_keyword{FORMAT_R16G16_SINT,Format}.
      */
     RG16I,
 
@@ -301,7 +336,8 @@ enum class PixelFormat: UnsignedInt {
      * RGB, integral signed short.
      *
      * Corresponds to @ref GL::PixelFormat::RGBInteger and
-     * @ref GL::PixelType::Short, @ref GL::TextureFormat::RGB16I.
+     * @ref GL::PixelType::Short, @ref GL::TextureFormat::RGB16I /
+     * @def_vk_keyword{FORMAT_R16G16B16_SINT,Format}.
      */
     RGB16I,
 
@@ -309,7 +345,8 @@ enum class PixelFormat: UnsignedInt {
      * RGBA, integral signed short.
      *
      * Corresponds to @ref GL::PixelFormat::RGBAInteger and
-     * @ref GL::PixelType::Short, @ref GL::TextureFormat::RGBA16I.
+     * @ref GL::PixelType::Short, @ref GL::TextureFormat::RGBA16I /
+     * @def_vk_keyword{FORMAT_R16G16B16A16_SINT,Format}.
      */
     RGBA16I,
 
@@ -317,7 +354,8 @@ enum class PixelFormat: UnsignedInt {
      * Red component, integral unsigned int.
      *
      * Corresponds to @ref GL::PixelFormat::RedInteger and
-     * @ref GL::PixelType::UnsignedInt, @ref GL::TextureFormat::R32UI.
+     * @ref GL::PixelType::UnsignedInt, @ref GL::TextureFormat::R32UI /
+     * @def_vk_keyword{FORMAT_R32_UINT,Format}.
      */
     R32UI,
 
@@ -325,7 +363,8 @@ enum class PixelFormat: UnsignedInt {
      * Red and green component, integral unsigned int.
      *
      * Corresponds to @ref GL::PixelFormat::RGInteger and
-     * @ref GL::PixelType::UnsignedInt, @ref GL::TextureFormat::RG32UI.
+     * @ref GL::PixelType::UnsignedInt, @ref GL::TextureFormat::RG32UI /
+     * @def_vk_keyword{FORMAT_R32G32_UINT,Format}.
      */
     RG32UI,
 
@@ -333,7 +372,8 @@ enum class PixelFormat: UnsignedInt {
      * RGB, integral unsigned int.
      *
      * Corresponds to @ref GL::PixelFormat::RGBInteger and
-     * @ref GL::PixelType::UnsignedInt, @ref GL::TextureFormat::RGB32UI.
+     * @ref GL::PixelType::UnsignedInt, @ref GL::TextureFormat::RGB32UI /
+     * @def_vk_keyword{FORMAT_R32G32B32_UINT,Format}.
      */
     RGB32UI,
 
@@ -341,7 +381,8 @@ enum class PixelFormat: UnsignedInt {
      * RGBA, integral unsigned int.
      *
      * Corresponds to @ref GL::PixelFormat::RGBAInteger and
-     * @ref GL::PixelType::UnsignedInt, @ref GL::TextureFormat::RGBA32UI.
+     * @ref GL::PixelType::UnsignedInt, @ref GL::TextureFormat::RGBA32UI /
+     * @def_vk_keyword{FORMAT_R32G32B32A32_UINT,Format}.
      */
     RGBA32UI,
 
@@ -349,7 +390,8 @@ enum class PixelFormat: UnsignedInt {
      * Red component, integral signed int.
      *
      * Corresponds to @ref GL::PixelFormat::RedInteger and
-     * @ref GL::PixelType::Int, @ref GL::TextureFormat::R32I.
+     * @ref GL::PixelType::Int, @ref GL::TextureFormat::R32I /
+     * @def_vk_keyword{FORMAT_R32_SINT,Format}.
      */
     R32I,
 
@@ -357,7 +399,8 @@ enum class PixelFormat: UnsignedInt {
      * Red and green component, integral signed int.
      *
      * Corresponds to @ref GL::PixelFormat::RGInteger and
-     * @ref GL::PixelType::Int, @ref GL::TextureFormat::RG32I.
+     * @ref GL::PixelType::Int, @ref GL::TextureFormat::RG32I /
+     * @def_vk_keyword{FORMAT_R32G32_SINT,Format}.
      */
     RG32I,
 
@@ -365,7 +408,8 @@ enum class PixelFormat: UnsignedInt {
      * RGB, integral signed int.
      *
      * Corresponds to @ref GL::PixelFormat::RGBInteger and
-     * @ref GL::PixelType::Int, @ref GL::TextureFormat::RGB32I.
+     * @ref GL::PixelType::Int, @ref GL::TextureFormat::RGB32I /
+     * @def_vk_keyword{FORMAT_R32G32B32_SINT,Format}.
      */
     RGB32I,
 
@@ -373,7 +417,8 @@ enum class PixelFormat: UnsignedInt {
      * RGBA, integral signed int.
      *
      * Corresponds to @ref GL::PixelFormat::RGBAInteger and
-     * @ref GL::PixelType::Int, @ref GL::TextureFormat::RGBA32I.
+     * @ref GL::PixelType::Int, @ref GL::TextureFormat::RGBA32I /
+     * @def_vk_keyword{FORMAT_R32G32B32A32_SINT,Format}.
      */
     RGBA32I,
 
@@ -381,7 +426,8 @@ enum class PixelFormat: UnsignedInt {
      * Red component, half float.
      *
      * Corresponds to @ref GL::PixelFormat::Red and
-     * @ref GL::PixelType::HalfFloat, @ref GL::TextureFormat::R16F.
+     * @ref GL::PixelType::HalfFloat, @ref GL::TextureFormat::R16F /
+     * @def_vk_keyword{FORMAT_R16_SFLOAT,Format}.
      * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      */
     R16F,
@@ -390,7 +436,8 @@ enum class PixelFormat: UnsignedInt {
      * Red and green component, half float.
      *
      * Corresponds to @ref GL::PixelFormat::RG and
-     * @ref GL::PixelType::HalfFloat, @ref GL::TextureFormat::RG16F.
+     * @ref GL::PixelType::HalfFloat, @ref GL::TextureFormat::RG16F /
+     * @def_vk_keyword{FORMAT_R16G16_SFLOAT,Format}.
      * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      */
     RG16F,
@@ -399,7 +446,8 @@ enum class PixelFormat: UnsignedInt {
      * RGB, half float.
      *
      * Corresponds to @ref GL::PixelFormat::RGB and
-     * @ref GL::PixelType::HalfFloat, @ref GL::TextureFormat::RGB16F.
+     * @ref GL::PixelType::HalfFloat, @ref GL::TextureFormat::RGB16F /
+     * @def_vk_keyword{FORMAT_R16G16B16_SFLOAT,Format}.
      * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      */
     RGB16F,
@@ -408,7 +456,8 @@ enum class PixelFormat: UnsignedInt {
      * RGBA, half float.
      *
      * Corresponds to @ref GL::PixelFormat::RGBA and
-     * @ref GL::PixelType::HalfFloat, @ref GL::TextureFormat::RGBA16F.
+     * @ref GL::PixelType::HalfFloat, @ref GL::TextureFormat::RGBA16F /
+     * @def_vk_keyword{FORMAT_R16G16B16A16_SFLOAT,Format}.
      * @see @ref Half, @ref Math::packHalf(), @ref Math::unpackHalf()
      */
     RGBA16F,
@@ -417,7 +466,8 @@ enum class PixelFormat: UnsignedInt {
      * Red component, half float.
      *
      * Corresponds to @ref GL::PixelFormat::Red and
-     * @ref GL::PixelType::Float, @ref GL::TextureFormat::R32F.
+     * @ref GL::PixelType::Float, @ref GL::TextureFormat::R32F /
+     * @def_vk_keyword{FORMAT_R32_SFLOAT,Format}.
      */
     R32F,
 
@@ -425,7 +475,8 @@ enum class PixelFormat: UnsignedInt {
      * Red and green component, half float.
      *
      * Corresponds to @ref GL::PixelFormat::RG and
-     * @ref GL::PixelType::Float, @ref GL::TextureFormat::RG32F.
+     * @ref GL::PixelType::Float, @ref GL::TextureFormat::RG32F /
+     * @def_vk_keyword{FORMAT_R32G32_SFLOAT,Format}.
      */
     RG32F,
 
@@ -433,7 +484,8 @@ enum class PixelFormat: UnsignedInt {
      * RGB, half float.
      *
      * Corresponds to @ref GL::PixelFormat::RGB and
-     * @ref GL::PixelType::Float, @ref GL::TextureFormat::RGB32F.
+     * @ref GL::PixelType::Float, @ref GL::TextureFormat::RGB32F /
+     * @def_vk_keyword{FORMAT_R32G32B32_SFLOAT,Format}.
      */
     RGB32F,
 
@@ -441,7 +493,8 @@ enum class PixelFormat: UnsignedInt {
      * RGBA, half float.
      *
      * Corresponds to @ref GL::PixelFormat::RGBA and
-     * @ref GL::PixelType::Float, @ref GL::TextureFormat::RGBA32F.
+     * @ref GL::PixelType::Float, @ref GL::TextureFormat::RGBA32F /
+     * @def_vk_keyword{FORMAT_R32G32B32A32_SFLOAT,Format}.
      */
     RGBA32F,
 
@@ -709,6 +762,11 @@ each value for more information about the mapping. Note that not every format
 is available on all targets, use @ref GL::hasCompressedPixelFormat() to check
 for its presence.
 
+In case of Vulkan, corresponds to @type_vk_keyword{Format} and is convertible
+to it using @ref Vk::vkFormat(Magnum::CompressedPixelFormat). See documentation
+of each value for more information about the mapping. Note that not every
+format may be available, use @ref Vk::hasVkFormat(Magnum::CompressedPixelFormat)
+to check for its presence.
 @see @ref PixelFormat, @ref CompressedImage, @ref CompressedImageView
 */
 enum class CompressedPixelFormat: UnsignedInt {
@@ -716,7 +774,8 @@ enum class CompressedPixelFormat: UnsignedInt {
      * S3TC BC1 compressed RGB (DXT1).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBS3tcDxt1,
-     * @ref GL::TextureFormat::RGBS3tcDxt1.
+     * @ref GL::TextureFormat::RGBS3tcDxt1 /
+     * @def_vk_keyword{FORMAT_BC1_RGB_UNORM_BLOCK,Format}.
      */
     Bc1RGBUnorm,
 
@@ -724,7 +783,8 @@ enum class CompressedPixelFormat: UnsignedInt {
      * S3TC BC1 compressed RGBA (DXT1).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAS3tcDxt1,
-     * @ref GL::TextureFormat::RGBAS3tcDxt1.
+     * @ref GL::TextureFormat::RGBAS3tcDxt1 /
+     * @def_vk_keyword{FORMAT_BC1_RGBA_UNORM_BLOCK,Format}.
      */
     Bc1RGBAUnorm,
 
@@ -732,7 +792,8 @@ enum class CompressedPixelFormat: UnsignedInt {
      * S3TC BC2 compressed RGBA (DXT3).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAS3tcDxt3,
-     * @ref GL::TextureFormat::RGBAS3tcDxt3.
+     * @ref GL::TextureFormat::RGBAS3tcDxt3 /
+     * @def_vk_keyword{FORMAT_BC2_UNORM_BLOCK,Format}.
      */
     Bc2RGBAUnorm,
 
@@ -740,7 +801,8 @@ enum class CompressedPixelFormat: UnsignedInt {
      * S3TC BC3 compressed RGBA (DXT5).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAS3tcDxt5,
-     * @ref GL::TextureFormat::RGBAS3tcDxt5.
+     * @ref GL::TextureFormat::RGBAS3tcDxt5 /
+     * @def_vk_keyword{FORMAT_BC3_UNORM_BLOCK,Format}.
      */
     Bc3RGBAUnorm,
 

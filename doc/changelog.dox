@@ -230,6 +230,19 @@ See also:
 -   @ref Trade::AnySceneImporter "AnySceneImporter" gained support for
     animation import
 
+@subsubsection changelog-latest-new-vk Vk library
+
+-   New @ref Vk library that'll be the home of a Vulkan graphics backend in the
+    future
+-   New functions @ref Vk::hasVkPrimitiveTopology(),
+    @ref Vk::vkPrimitiveTopology(), @ref Vk::hasVkIndexType(),
+    @ref Vk::vkIndexType(), @ref Vk::hasVkFormat(), @ref Vk::vkFormat(),
+    @ref Vk::vkFilter(), @ref Vk::vkSamplerMipmapMode(),
+    @ref Vk::hasVkSamplerAddressMode(), @ref Vk::vkSamplerAddressMode() for
+    converting generic @ref MeshPrimitive, @ref MeshIndexType,
+    @ref PixelFormat, @ref CompressedPixelFormat, @ref SamplerFilter,
+    @ref SamplerMipmap and @ref SamplerWrapping enums to Vulkan-specific values
+
 @subsection changelog-latest-changes Changes and improvements
 
 @subsubsection changelog-latest-changes-audio Audio library

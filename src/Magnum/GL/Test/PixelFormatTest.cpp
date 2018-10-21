@@ -237,7 +237,7 @@ void PixelFormatTest::mapFormatDeprecated() {
 
 void PixelFormatTest::mapFormatUnsupported() {
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_SKIP("All pixel formats are supported on ES3+");
+    CORRADE_SKIP("All pixel formats are supported on ES3+.");
     #else
     std::ostringstream out;
     Error redirectError{&out};
@@ -480,7 +480,7 @@ void PixelFormatTest::mapCompressedFormatDeprecated() {
 
 void PixelFormatTest::mapCompressedFormatUnsupported() {
     #if 1
-    CORRADE_SKIP("All compressed pixel formats are currently supported everywhere");
+    CORRADE_SKIP("All compressed pixel formats are currently supported everywhere.");
     #else
     CORRADE_VERIFY(!hasCompressedPixelFormat(Magnum::CompressedPixelFormat::Bc1RGBAUnorm));
 

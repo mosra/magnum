@@ -44,20 +44,26 @@ namespace Magnum {
 In case of OpenGL, corresponds to @ref GL::SamplerFilter and is convertible to
 it using @ref GL::samplerFilter(). See documentation of each value for more
 information about the mapping.
+
+In case of Vulkan, corresponds to @type_vk_keyword{Filter} and is convertible
+to it using @ref Vk::vkFilter(). See documentation of each value for more
+information about the mapping.
 @see @ref SamplerMipmap, @ref SamplerWrapping
 */
 enum class SamplerFilter: UnsignedInt {
     /**
      * Nearest neighbor filtering.
      *
-     * Corresponds to @ref GL::SamplerFilter::Nearest.
+     * Corresponds to @ref GL::SamplerFilter::Nearest /
+     * @def_vk_keyword{FILTER_NEAREST,Filter}.
      */
     Nearest,
 
     /**
      * Linear interpolation filtering.
      *
-     * Corresponds to @ref GL::SamplerFilter::Linear.
+     * Corresponds to @ref GL::SamplerFilter::Linear /
+     * @def_vk_keyword{FILTER_LINEAR,Filter}.
      */
     Linear
 };
@@ -68,27 +74,36 @@ enum class SamplerFilter: UnsignedInt {
 In case of OpenGL, corresponds to @ref GL::SamplerMipmap and is convertible to
 it using @ref GL::samplerMipmap(). See documentation of each value for more
 information about the mapping.
+
+In case of Vulkan, corresponds to @type_vk_keyword{SamplerMipmapMode} and is
+convertible to it using @ref Vk::vkSamplerMipmapMode(). See documentation of
+each value for more information about the mapping.
 @see @ref SamplerFilter, @ref SamplerWrapping
 */
 enum class SamplerMipmap: UnsignedInt {
     /**
      * Select base mip level
      *
-     * Corresponds to @ref GL::SamplerMipmap::Base.
+     * Corresponds to @ref GL::SamplerMipmap::Base. On Vulkan, the
+     * corresponding mode is
+     * @def_vk_keyword{SAMPLER_MIPMAP_MODE_NEAREST,SamplerMipmapMode} and you
+     * have to configure the sampler to use just a single mipmap level.
      */
     Base,
 
     /**
      * Select nearest mip level.
      *
-     * Corresponds to @ref GL::SamplerMipmap::Nearest.
+     * Corresponds to @ref GL::SamplerMipmap::Nearest /
+     * @def_vk_keyword{SAMPLER_MIPMAP_MODE_NEAREST,SamplerMipmapMode}.
      */
     Nearest,
 
     /**
      * Linear interpolation of nearest mip levels.
      *
-     * Corresponds to @ref GL::SamplerMipmap::Linear.
+     * Corresponds to @ref GL::SamplerMipmap::Linear /
+     * @def_vk_keyword{SAMPLER_MIPMAP_MODE_LINEAR,SamplerMipmapMode}.
      */
     Linear
 };
@@ -100,20 +115,27 @@ In case of OpenGL, corresponds to @ref GL::SamplerWrapping and is convertible
 to it using @ref GL::samplerWrapping(). See documentation of each value for
 more information about the mapping. Note that not every mode is available on
 all targets, use @ref GL::hasSamplerWrapping() to check for its presence.
+
+In case of Vulkan, corresponds to @type_vk_keyword{SamplerAddressMode} and is
+convertible to it using @ref Vk::vkSamplerAddressMode(). See documentation of
+each value for more information about the mapping. Note that not every mode is available there, use @ref Vk::hasVkSamplerAddressMode() to check for its
+presence.
 @see @ref SamplerFilter, @ref SamplerMipmap
 */
 enum class SamplerWrapping: UnsignedInt {
     /**
      * Repeat texture.
      *
-     * Corresponds to @ref GL::SamplerWrapping::Repeat.
+     * Corresponds to @ref GL::SamplerWrapping::Repeat /
+     * @def_vk_keyword{SAMPLER_ADDRESS_MODE_REPEAT,SamplerAddressMode}.
      */
     Repeat,
 
     /**
      * Repeat mirrored texture.
      *
-     * Corresponds to @ref GL::SamplerWrapping::MirroredRepeat.
+     * Corresponds to @ref GL::SamplerWrapping::MirroredRepeat /
+     * @def_vk_keyword{SAMPLER_ADDRESS_MODE_MIRRORED_REPEAT,SamplerAddressMode}.
      */
     MirroredRepeat,
 
@@ -121,7 +143,8 @@ enum class SamplerWrapping: UnsignedInt {
      * Clamp to edge. Coordinates out of the range will be clamped to
      * first / last column / row in given direction.
      *
-     * Corresponds to @ref GL::SamplerWrapping::ClampToEdge.
+     * Corresponds to @ref GL::SamplerWrapping::ClampToEdge /
+     * @def_vk_keyword{SAMPLER_ADDRESS_MODE_CLAMP_TO_EDGE,SamplerAddressMode}.
      */
     ClampToEdge,
 
@@ -129,7 +152,8 @@ enum class SamplerWrapping: UnsignedInt {
      * Clamp to border color. Coordinates out of range will be clamped
      * to border color.
      *
-     * Corresponds to @ref GL::SamplerWrapping::ClampToBorder.
+     * Corresponds to @ref GL::SamplerWrapping::ClampToBorder /
+     * @def_vk_keyword{SAMPLER_ADDRESS_MODE_CLAMP_TO_BORDER,SamplerAddressMode}.
      */
     ClampToBorder,
 
@@ -137,7 +161,8 @@ enum class SamplerWrapping: UnsignedInt {
      * Mirror the texture once in negative coordinates and clamp to
      * edge after that.
      *
-     * Corresponds to @ref GL::SamplerWrapping::MirrorClampToEdge.
+     * Corresponds to @ref GL::SamplerWrapping::MirrorClampToEdge. Not
+     * available on Vulkan.
      */
     MirrorClampToEdge
 };
