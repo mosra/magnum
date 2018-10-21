@@ -186,7 +186,7 @@ template<class T> class CubicHermite {
         constexpr explicit CubicHermite(ZeroInitT, void*) noexcept: _inTangent{T(0)}, _point{T(0)}, _outTangent{T(0)} {}
 
         /* Called from CubicHermite(NoInit), either using the NoInit
-           constructor (if available) or not doing oanything */
+           constructor (if available) or not doing anything */
         explicit CubicHermite(NoInitT, NoInitT*) noexcept: _inTangent{NoInit}, _point{NoInit}, _outTangent{NoInit} {}
         explicit CubicHermite(NoInitT, void*) noexcept {}
 
