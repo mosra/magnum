@@ -158,13 +158,7 @@ void PixelFormatTest::mapFormatType() {
                 case Magnum::PixelFormat::value: \
                     CORRADE_VERIFY(UnsignedInt(Magnum::PixelFormat::value) >= 0x1000); \
                     continue;
-            #ifdef __GNUC__
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-            #elif defined(_MSC_VER)
-            #pragma warning(push)
-            #pragma warning(disable: 4996)
-            #endif
+            CORRADE_IGNORE_DEPRECATED_PUSH
             #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
             _c(Red)
             #endif
@@ -213,11 +207,7 @@ void PixelFormatTest::mapFormatType() {
             #endif
             _c(DepthStencil)
             #undef _c
-            #ifdef __GNUC__
-            #pragma GCC diagnostic pop
-            #elif defined(_MSC_VER)
-            #pragma warning(pop)
-            #endif
+            CORRADE_IGNORE_DEPRECATED_POP
             #endif
         }
 
@@ -398,13 +388,7 @@ void PixelFormatTest::mapCompressedFormat() {
                 case Magnum::CompressedPixelFormat::value: \
                     CORRADE_VERIFY(UnsignedInt(Magnum::CompressedPixelFormat::value) >= 0x1000); \
                     continue;
-            #ifdef __GNUC__
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-            #elif defined(_MSC_VER)
-            #pragma warning(push)
-            #pragma warning(disable: 4996)
-            #endif
+            CORRADE_IGNORE_DEPRECATED_PUSH
             #ifndef MAGNUM_TARGET_GLES
             _c(Red)
             _c(RG)
@@ -466,11 +450,7 @@ void PixelFormatTest::mapCompressedFormat() {
             _c(SRGB8Alpha8Astc12x12)
             #endif
             #undef _c
-            #ifdef __GNUC__
-            #pragma GCC diagnostic pop
-            #elif defined(_MSC_VER)
-            #pragma warning(pop)
-            #endif
+            CORRADE_IGNORE_DEPRECATED_POP
             #endif
         }
 
