@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::GL::Sampler, enum @ref Magnum::GL::SamplerFilter, @ref Magnum::GL::SamplerMipmap, @ref Magnum::GL::SamplerWrapping, @ref Magnum::GL::SamplerCompareMode, @ref Magnum::GL::SamplerCompareFunction, @ref Magnum::GL::SamplerDepthStencilMode, function @ref Magnum::GL::samplerFilter(), @ref Magnum::GL::samplerMipmap(), @ref Magnum::GL::hasSamplerWrapping(), @ref Magnum::GL::samplerWrapping()
  */
 
+#include "Magnum/Array.h"
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/OpenGL.h"
 #include "Magnum/GL/visibility.h"
@@ -189,9 +190,9 @@ format, @cpp true @ce otherwise. The @p filter value is expected to be valid.
     extension. Such check is outside of the scope of this function and you are
     expected to verify extension availability before using such format.
 
-@see @ref samplerFilter(), @ref samplerMipmap()
+@see @see @ref samplerWrapping(), @ref samplerFilter(), @ref samplerMipmap()
  */
-MAGNUM_GL_EXPORT bool hasSamplerWrapping(Magnum::SamplerWrapping wrappomg);
+MAGNUM_GL_EXPORT bool hasSamplerWrapping(Magnum::SamplerWrapping wrapping);
 
 /**
 @brief Convert generic sampler filter mode to OpenGL filter mode
