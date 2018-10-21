@@ -393,8 +393,14 @@ void RangeTest::access() {
     CORRADE_COMPARE(rect.data(), static_cast<void*>(&rect));
     CORRADE_COMPARE(cube.data(), static_cast<void*>(&cube));
     constexpr Int lineData = *cline.data();
-    constexpr Int rectData = *crect.data();
-    constexpr Int cubeData = *ccube.data();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing a pointer is verboten */
+    constexpr
+    #endif
+    Int rectData = *crect.data();
+    #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing a pointer is verboten */
+    constexpr
+    #endif
+    Int cubeData = *ccube.data();
     CORRADE_COMPARE(lineData, 34);
     CORRADE_COMPARE(rectData, 34);
     CORRADE_COMPARE(cubeData, 34);
