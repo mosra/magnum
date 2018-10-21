@@ -114,7 +114,7 @@ template<UnsignedInt dimensions, class T> class Range {
         /** @overload */
         /** @todo std::pair constructors are not constexpr in C++11, make it so in C++14 */
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<UnsignedInt d = dimensions, class = std::enable_if<d != 1>>
+        template<UnsignedInt d = dimensions, class = typename std::enable_if<d != 1>::type>
         #endif
         /*implicit*/ Range(const std::pair<Vector<dimensions, T>, Vector<dimensions, T>>& minmax) noexcept: _min{minmax.first}, _max{minmax.second} {}
 
