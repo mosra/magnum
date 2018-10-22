@@ -830,7 +830,7 @@ inverse.
     or @m_span{m-label m-dim m-flat} no action needed @m_endspan label to wrap
     them up
 6.  Go through merged PRs (and the *most important* issues) and add new people
-    to `CREDITS.md` and http://magnum.graphics/about/, if they are not there
+    to `CREDITS.md` and https://magnum.graphics/about/, if they are not there
     yet
 7.  Update changelog for the next release:
     -   change section names for the latest release from `latest` to `20XY-ab`

@@ -30,7 +30,7 @@ namespace Magnum {
 
 This is a documentation for the Magnum Project. To see high-level feature
 overview, project goals or read the developer blog, head over to the
-[project homepage](http://magnum.graphics/).
+[project homepage](https://magnum.graphics/).
 
 @section mainpage-whats-new What's new?
 
@@ -62,8 +62,8 @@ right away! There is the already mentioned guide about
 @ref coding-style "coding style and best practices" which you should follow to
 keep the library as consistent and maintainable as possible.
 
--   Project homepage --- http://magnum.graphics/
--   Documentation --- http://doc.magnum.graphics/
+-   Project homepage --- https://magnum.graphics/
+-   Documentation --- https://doc.magnum.graphics/
 -   GitHub project page --- https://github.com/mosra/magnum
 -   Gitter community chat --- https://gitter.im/mosra/magnum
 -   E-mail --- info@magnum.graphics
@@ -71,7 +71,7 @@ keep the library as consistent and maintainable as possible.
 -   Google Groups mailing list --- magnum-engine@googlegroups.com ([archive](https://groups.google.com/forum/#!forum/magnum-engine))
 -   Author's personal Twitter --- https://twitter.com/czmosra
 
-See also the [Contact & Support page](http://magnum.graphics/contact/) on the
+See also the [Contact & Support page](https://magnum.graphics/contact/) on the
 project website for further information.
 
 @section mainpage-license License

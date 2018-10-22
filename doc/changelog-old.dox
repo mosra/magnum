@@ -39,7 +39,7 @@ See also:
 
 Released 2015-05-09, tagged as
 [v2015.05](https://github.com/mosra/magnum/releases/tag/v2015.05). See the
-[release announcement](http://blog.magnum.graphics/announcements/may-2015-updates/)
+[release announcement](https://blog.magnum.graphics/announcements/may-2015-updates/)
 for a high-level overview.
 
 @subsection changelog-2015-05-new New features
@@ -262,7 +262,7 @@ for a high-level overview.
 
 Released 2014-06-30, tagged as
 [v2014.06](https://github.com/mosra/magnum/releases/tag/v2014.06). See the
-[release announcement](http://blog.magnum.graphics/announcements/june-2014-updates/)
+[release announcement](https://blog.magnum.graphics/announcements/june-2014-updates/)
 for a high-level overview.
 
 @subsection changelog-2014-06-dependencies Dependency changes
@@ -444,7 +444,7 @@ for a high-level overview.
 
 Released 2014-01-21, tagged as
 [v2014.01](https://github.com/mosra/magnum/releases/tag/v2014.01). See the
-[release announcement](http://blog.magnum.graphics/announcements/january-2014-updates/)
+[release announcement](https://blog.magnum.graphics/announcements/january-2014-updates/)
 for a high-level overview.
 
 @subsection changelog-2014-01-dependencies Dependency changes
@@ -629,7 +629,7 @@ No dependency changes in this release.
 
 Released 2013-10-30, tagged as
 [v2013.10](https://github.com/mosra/magnum/releases/tag/v2013.10). See the
-[release announcement](http://blog.magnum.graphics/announcements/october-2013-updates/)
+[release announcement](https://blog.magnum.graphics/announcements/october-2013-updates/)
 for a high-level overview.
 
 @subsection changelog-2013-10-dependencies Dependency changes
@@ -734,7 +734,7 @@ No deprecated API was removed in this release.
 
 Released 2013-08-30, tagged as
 [v2013.08](https://github.com/mosra/magnum/releases/tag/v2013.08). See the
-[project announcement](http://blog.magnum.graphics/announcements/introducing-magnum/)
+[project announcement](https://blog.magnum.graphics/announcements/introducing-magnum/)
 for a high-level overview.
 
 */

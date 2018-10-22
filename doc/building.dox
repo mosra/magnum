@@ -688,7 +688,7 @@ generated output.
 The documentation can be also generated using the
 [m.css Doxygen theme](http://mcss.mosra.cz/doxygen/). Use `Doxyfile-mcss` for a
 local build, the `Doxyfile-public` is meant for the publicly available
-documentation at http://doc.magnum.graphics/magnum/. The resulting
+documentation at https://doc.magnum.graphics/magnum/. The resulting
 documentation will be either in `build/doc-mcss/` or `build/doc-public/`.
 
 @section building-windows-angle Building for ANGLE on Windows

@@ -17,9 +17,9 @@ Code contribution
     the [README](README.md) for details.
 -   Follow the project coding guidelines. In short — try to match style of the
     surrounding code and avoid any trailing whitespace. When in doubt, consult
-    [Coding Style](http://doc.magnum.graphics/magnum/coding-style.html)
+    [Coding Style](https://doc.magnum.graphics/magnum/coding-style.html)
     guidelines.
--   There's a [Developers Guide](http://doc.magnum.graphics/magnum/developers.html)
+-   There's a [Developers Guide](https://doc.magnum.graphics/magnum/developers.html)
     providing step-by-step checklists for almost every development aspect. It's
     not strictly required to follow it to the point, but doing so will save the
     maintainers a lot of time during review and merging.
