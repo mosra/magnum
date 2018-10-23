@@ -36,22 +36,28 @@ See also:
 -   @subpage changelog-extras "Extras changelog"
 -   @subpage changelog-examples "Examples changelog"
 
-@section changelog-latest Changes since 2018.04
+@anchor changelog-latest
 
-@subsection changelog-latest-new New features
+@section changelog-2018-10 2018.10
 
-@subsubsection changelog-latest-new-animation Animation library
+Released 2018-10-23, tagged as
+[v2018.10](https://github.com/mosra/magnum/releases/tag/v2018.10).
+
+@subsection changelog-2018-10-new New features
+
+@subsubsection changelog-2018-10-new-animation Animation library
 
 -   New experimental @ref Animation library for keyframe-based animation
-    playback
+    playback (see [mosra/magnum#191](https://github.com/mosra/magnum/pull/191),
+    [mosra/magnum#267](https://github.com/mosra/magnum/pull/267))
 
-@subsubsection changelog-latest-new-debugtools DebugTools library
+@subsubsection changelog-2018-10-new-debugtools DebugTools library
 
 -   New @ref DebugTools::CompareImageFile, @ref DebugTools::CompareImageToFile
     and @ref DebugTools::CompareFileToImage comparators extending
     @ref DebugTools::CompareImage with convenient image file loading
 
-@subsubsection changelog-latest-new-gl GL library
+@subsubsection changelog-2018-10-new-gl GL library
 
 -   Exposing @ref GL::Context::Flag::ForwardCompatible through
     @ref GL::Context::flags(), which was deliberately ignored before.
@@ -63,11 +69,12 @@ See also:
     equivalent functionality in OpenGL ES 3.2 / @gl_extension{OES,sample_shading}
     ES3 extension
 
-@subsubsection changelog-latest-new-math Math library
+@subsubsection changelog-2018-10-new-math Math library
 
 -   New @ref Math::CubicHermite class for cubic Hermite spline interpolation,
     convertible to and from cubic Bézier curves using
     @ref Math::Bezier::fromCubicHermite() and @ref Math::CubicHermite::fromBezier()
+    (see [mosra/magnum#267](https://github.com/mosra/magnum/pull/267))
 -   Added @ref Math::Intersection::rangeFrustum(),
     @ref Math::Intersection::aabbFrustum(),
     @ref Math::Intersection::sphereFrustum(),
@@ -76,7 +83,8 @@ See also:
     @ref Math::Intersection::sphereConeView(),
     @ref Math::Intersection::sphereCone(),
     @ref Math::Intersection::aabbCone(),
-    @ref Math::Intersection::rangeCone()
+    @ref Math::Intersection::rangeCone() (see
+    [mosra/magnum#226](https://github.com/mosra/magnum/pull/226))
 -   Added @ref Math::Matrix3::rotationShear(),
     @ref Math::Matrix4::rotationShear(), @ref Math::Matrix3::scalingSquared(),
     @ref Math::Matrix4::scalingSquared(), @ref Math::Matrix3::scaling() const
@@ -136,7 +144,7 @@ See also:
     taking plain C arrays
 -   Vector overloads for @ref Math::isInf() and @ref Math::isNan()
 
-@subsubsection changelog-latest-new-platform Platform libraries
+@subsubsection changelog-2018-10-new-platform Platform libraries
 
 -   Initial HiDPI support for Linux and Emscripten in
     @ref Platform::Sdl2Application and @ref Platform::GlfwApplication
@@ -146,7 +154,8 @@ See also:
     @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" app canvas using
     @ref Platform::Sdl2Application::setContainerCssClass()
 -   Implemented @ref Platform::GlfwApplication::MouseMoveEvent::buttons() for
-    feature parity with @ref Platform::Sdl2Application
+    feature parity with @ref Platform::Sdl2Application (see
+    [mosra/magnum#256](https://github.com/mosra/magnum/issues/256))
 -   Added @ref Platform::Sdl2Application::MouseScrollEvent::position() and
     @ref Platform::GlfwApplication::MouseScrollEvent::position()
 -   Added @ref Platform::Sdl2Application::GLConfiguration::setColorBufferSize() "GLConfiguration::setColorBufferSize()",
@@ -170,7 +179,7 @@ See also:
     and @ref Platform::WindowlessEglApplication::Configuration::clearFlags() "Configuration::clearFlags()"
     for easier flag handling
 
-@subsubsection changelog-latest-new-primitives Primitives library
+@subsubsection changelog-2018-10-new-primitives Primitives library
 
 -   New @ref Primitives::gradient2D(), @ref Primitives::gradient2DHorizontal(),
     @ref Primitives::gradient2DVertical(), @ref Primitives::gradient3D(),
@@ -181,7 +190,7 @@ See also:
     easier creation of arbitrary lines, as transforming the line identities is
     not worth the mental overhead
 
-@subsubsection changelog-latest-new-scenegraph SceneGraph library
+@subsubsection changelog-2018-10-new-scenegraph SceneGraph library
 
 -   New @ref SceneGraph::TranslationRotationScalingTransformation2D and
     @ref SceneGraph::TranslationRotationScalingTransformation3D transformation
@@ -190,7 +199,7 @@ See also:
 -   Ability to affect order of items drawn by @ref SceneGraph::Camera --- see
     @ref SceneGraph-Drawable-draw-order for more information
 
-@subsubsection changelog-latest-new-shaders Shaders library
+@subsubsection changelog-2018-10-new-shaders Shaders library
 
 -   New dedicated @ref Shaders::VertexColor::Color3 and
     @ref Shaders::VertexColor::Color4 attribute specifiers for more convenient
@@ -203,7 +212,7 @@ See also:
     and @ref Shaders::Phong::Flag / @ref Shaders::Phong::Flags enums / enum
     sets
 
-@subsubsection changelog-latest-new-trade Trade library
+@subsubsection changelog-2018-10-new-trade Trade library
 
 -   @ref Trade::AnimationData class and animation import interface in
     @ref Trade::AbstractImporter::animation() and related functions
@@ -230,7 +239,7 @@ See also:
 -   @ref Trade::AnySceneImporter "AnySceneImporter" gained support for
     animation import
 
-@subsubsection changelog-latest-new-vk Vk library
+@subsubsection changelog-2018-10-new-vk Vk library
 
 -   New @ref Vk library that'll be the home of a Vulkan graphics backend in the
     future
@@ -243,13 +252,14 @@ See also:
     @ref PixelFormat, @ref CompressedPixelFormat, @ref SamplerFilter,
     @ref SamplerMipmap and @ref SamplerWrapping enums to Vulkan-specific values
 
-@subsection changelog-latest-changes Changes and improvements
+@subsection changelog-2018-10-changes Changes and improvements
 
-@subsubsection changelog-latest-changes-audio Audio library
+@subsubsection changelog-2018-10-changes-audio Audio library
 
--   Ability to specify initial source direction using @ref Audio::Playable::Playable(SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, PlayableGroup<dimensions>*)
+-   Ability to specify initial source direction using
+    @ref Audio::Playable::Playable(SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, PlayableGroup<dimensions>*)
 
-@subsubsection changelog-latest-changes-gl GL library
+@subsubsection changelog-2018-10-changes-gl GL library
 
 -   To prevent nothing being rendered by accident, @ref GL::Mesh::setCount()
     and @ref GL::MeshView::setCount() now has always to be called, even just to
@@ -263,11 +273,8 @@ See also:
     possible as well
 -   The @ref GL::BufferUsage parameter in @ref GL::Buffer::setData() is now
     optional, defaults to @ref GL::BufferUsage::StaticDraw
--   Restored backwards compatibility to the templated @ref GL::Buffer::map()
-    overload --- it was not possible to call it with @cpp void @ce template
-    parameter
 
-@subsubsection changelog-latest-changes-math Math library
+@subsubsection changelog-2018-10-changes-math Math library
 
 -   All assertions in the @ref Math namespace now helpfully print the offending
     value that caused the assert for easier debugging
@@ -279,16 +286,17 @@ See also:
     @ref Math::Vector::projected(), @ref Math::Vector::projectedOntoNormalized()
     and @ref Math::Vector2::aspectRatio() are now enabled only for
     floating-point types to avoid errors when using these functions
-    accidentally on integral vectors
+    accidentally on integral vectors (see
+    [mosra/magnum#251](https://github.com/mosra/magnum/issues/251))
 
-@subsubsection changelog-latest-changes-meshtools MeshTools library
+@subsubsection changelog-2018-10-changes-meshtools MeshTools library
 
 -   @ref MeshTools::compile() API got simplified to make use of the new buffer
     ownership feature of @ref GL::Mesh
 -   @ref MeshTools::compile() learned to handle vertex color attributes as well
     (see [mosra/magnum#284](https://github.com/mosra/magnum/pull/284))
 
-@subsubsection changelog-latest-changes-platform Platform libraries
+@subsubsection changelog-2018-10-changes-platform Platform libraries
 
 -   @ref Platform::Sdl2Application::viewportEvent() "Platform::*Application::viewportEvent()"
     now gets all information needed for DPI-aware rendering instead of just
@@ -324,14 +332,14 @@ See also:
     no sense on Emscripten are not available there anymore
 -   When using SDL 2.0.8 and newer, @ref Platform::Sdl2Application no longer
     attempts to disable compositing on Linux. See @ref Platform-Sdl2Application-usage-linux
-    for more information.
+    for more information. See also [mosra/magnum#184](https://github.com/mosra/magnum/issues/184).
 -   New @cpp "swiftshader-no-empty-egl-context-flags" @ce and
     @cpp "swiftshader-egl-context-needs-pbuffer" @ce workarounds to make
     @ref Platform::WindowlessEglApplication working with
     [SwiftShader](https://github.com/google/swiftshader). See
     @ref opengl-workarounds for more information.
 
-@subsubsection changelog-latest-changes-shaders Shaders library
+@subsubsection changelog-2018-10-changes-shaders Shaders library
 
 -   All shaders now have reasonable default values for uniforms in order to
     further simplify and remove friction from quick prototyping use cases
@@ -345,31 +353,39 @@ See also:
     @cpp 0x00000000_rgbaf @ce in order to support alpha-masked drawing out of
     the box
 
-@subsubsection changelog-latest-changes-texturetools TextureTools library
+@subsubsection changelog-2018-10-changes-texturetools TextureTools library
 
 -   Fixed @ref TextureTools::distanceField() to not require more than 8 texture
     units, which is the limit on all iOS ES2 contexts, independently on the
     device (ES3 contexts have 16).
 
-@subsubsection changelog-latest-changes-trade Trade library
+@subsubsection changelog-2018-10-changes-trade Trade library
 
 -   @ref Trade::PhongMaterialData now contains well-defined color values
     instead of random memory after construction
 
-@subsection changelog-latest-buildsystem Build system
+@subsection changelog-2018-10-buildsystem Build system
 
 -   There's now a PPA for Ubuntu packages. See @ref building-packages-deb
-    for more information.
+    for more information. See also [mosra/magnum#248](https://github.com/mosra/magnum/issues/248)
+    and [mosra/magnum#249](https://github.com/mosra/magnum/pull/249).
 -   Fixed various issues preventing to build and use the base libraries with
     OpenGL support disabled (see [mosra/magnum#255](https://github.com/mosra/magnum/pull/255))
 -   Magnum now links to GLVND on Linux instead of the old libGL ABI if using
     CMake 3.11 and newer
+-   Using official Apple OpenGL include paths on iOS (see
+    [mosra/magnum#253](https://github.com/mosra/magnum/pull/253))
 -   @ref cmake "FindMagnum.cmake" now allows to use the @ref DebugTools library
     even if some of its optional dependencies are not compiled in
 -   `FindSDL2.cmake` now properly links to `dl` and `pthread` libraries when
     using a static build of SDL2 on Linux
 -   `FindSDL2.cmake` is now able to properly find a debug build of SDL, which
     enables Vcpkg to properly copy all dependency DLLs on Windows
+    (see [mosra/magnum-examples#42](https://github.com/mosra/magnum-examples/issues/42),
+    [mosra/magnum-examples#45](https://github.com/mosra/magnum-examples/pull/45))
+-   `FindGLFW.cmake` is now preferring GLFW CMake config file to pick up the
+    imported target, if available (see
+    [mosra/magnum#194](https://github.com/mosra/magnum/pull/194))
 -   `FindMagnum.cmake` now provides full paths to application JS/CSS files on
     @ref platforms-html5 "Emscripten" builds through new `MAGNUM_EMSCRIPTENAPPLICATION_JS`,
     `MAGNUM_WINDOWLESSEMSCRIPTENAPPLICATION_JS` and `MAGNUM_WEBAPPLICATION_CSS`
@@ -385,8 +401,10 @@ See also:
     @ref Trade::AnySceneImporter "AnySceneImporter" plugins were not correctly
     updated for subproject support after moving them out of the `magnum-plugins`
     repository
+-   Improved out-of-the-box behavior with Emscripten toolchains (see
+    [mosra/magnum#283](https://github.com/mosra/magnum/issues/283))
 
-@subsection changelog-latest-bugfixes Bug fixes
+@subsection changelog-2018-10-bugfixes Bug fixes
 
 -   MSVC 15.8 (released on Aug 14, 2018) has a regression causing the compiler
     to crash with an ICE (C1001) on @ref Math::Color4 constructors that have a
@@ -399,16 +417,22 @@ See also:
 -   An assert was firing during @ref Platform::GlfwApplication initialization
     due to a pointer not being properly initialized after the
     @ref Platform::GlfwApplication::GLConfiguration "GLConfiguration" rework in
-    2018.04 (see [mosra/magnum#246](https://github.com/mosra/magnum/pull/246))
+    2018.04 (see [mosra/magnum#246](https://github.com/mosra/magnum/pull/246),
+    [mosra/magnum#247](https://github.com/mosra/magnum/issue/247))
 -   Vertex attribute divisor in @ref GL::Mesh::addVertexBufferInstanced() was
     not properly cleaned up after when @gl_extension{ARB,vertex_array_object}
     was disabled, causing subsequent draws to misbehave
 -   Fixed @ref Shaders::DistanceFieldVector and @ref Shaders::Vector to be
     properly movable
+-   Restored backwards compatibility to the templated @ref GL::Buffer::map()
+    overload --- it was not possible to call it with @cpp void @ce template
+    parameter
 -   @gl_extension{ARB,direct_state_access} versions of
     @ref GL::Framebuffer::clearColor(), @ref GL::Framebuffer::clearDepth(),
     @ref GL::Framebuffer::clearStencil() and @ref GL::Framebuffer::clearDepthStencil()
     were binding the framebuffer for drawing, which was completely unnecessary
+-   Deprecation status of GL-specific values of the generic @ref MeshPrimitive
+    enum was not properly reflected in the documentation
 -   @ref Platform::GlfwApplication::InputEvent::Modifier::Super is properly
     reported for both left and right modifier (Windows/⌘) key instead of just
     the right one
@@ -426,10 +450,11 @@ See also:
     @ref SceneGraph::Object::addChild() were not properly forwarding reference
     arguments
 
-@subsection changelog-latest-docs Documentation
+@subsection changelog-2018-10-docs Documentation
 
 -   New @ref custom-buildsystems page listing the most important things to keep
-    in mind when using Magnum with custom buildsystems.
+    in mind when using Magnum with custom buildsystems. See also
+    [mosra/magnum#268](https://github.com/mosra/magnum/pull/268).
 -   Compiled code snippets for @ref Audio and @ref SceneGraph libraries, fixing
     cases where outdated or plain wrong API constructs were mentioned
 -   Extended documentation for @ref Math::Matrix3::rotation(),
@@ -453,10 +478,10 @@ See also:
     [mosra/magnum#261](https://github.com/mosra/magnum/issues/261))
 -   Documentation of @ref Primitives and @ref Shaders namespaces now has proper
     sRGB and HiDPi renderings of all primitives and shaders
--   Deprecation status of GL-specific values of the generic @ref MeshPrimitive
-    enum was not properly reflected in the documentation
+-   Various other fixes and updates (see
+    [mosra/magnum#281](https://github.com/mosra/magnum/pull/281))
 
-@subsection changelog-latest-deprecated Deprecated APIs
+@subsection changelog-2018-10-deprecated Deprecated APIs
 
 -   The @ref Magnum::Shapes library is a failed design experiment and is
     scheduled for removal in a future release, together with
@@ -514,7 +539,7 @@ See also:
     @ref Platform::Sdl2Application::GLConfiguration::isSrgbCapable() "Platform::*Application::GLConfiguration::isSrgbCapable()" instead as it
     has consistent naming with @ref Math::Color3 "Math::Color" APIs
 
-@subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
+@subsection changelog-2018-10-compatibility Potential compatibility breakages, removed APIs
 
 -   The @ref Magnum::Shapes library is not built by default anymore due to its
     deprecated status
@@ -1057,7 +1082,8 @@ a high-level overview.
 -   ANGLE ES2/ES3 support, ability to create desktop GLES contexts on Windows
 -   Windows Phone/Store support via ANGLE
 -   iOS support (see [mosra/magnum#82](https://github.com/mosra/magnum/issues/82))
--   WebAssembly support when building for Emscripten
+-   WebAssembly support when building for Emscripten (see also
+    [mosra/magnum-bootstrap#11](https://github.com/mosra/magnum-bootstrap/issues/11))
 -   WebGL 2.0 support
 -   New OpenGL extension support:
     -   @gl_extension{EXT,draw_buffers} ES2 extension
@@ -1260,7 +1286,8 @@ a high-level overview.
 
 -   New @ref Platform::GlfwApplication class (see
     [mosra/magnum#141](https://github.com/mosra/magnum/pull/141),
-    [mosra/magnum#160](https://github.com/mosra/magnum/pull/160))
+    [mosra/magnum#160](https://github.com/mosra/magnum/pull/160),
+    [mosra/magnum-bootstrap#6](https://github.com/mosra/magnum-bootstrap/pull/6))
 -   Text input support in @ref Platform::Sdl2Application and
     @ref Platform::GlfwApplication (see [mosra/magnum#129](https://github.com/mosra/magnum/issues/129))
 -   Added @ref Platform::WindowlessWindowsEglApplication and
@@ -1717,7 +1744,8 @@ a high-level overview.
     [mosra/magnum#94](https://github.com/mosra/magnum/pull/94),
     [mosra/magnum#135](https://github.com/mosra/magnum/pull/135),
     [mosra/magnum#170](https://github.com/mosra/magnum/issues/170),
-    [mosra/magnum-plugins#17](https://github.com/mosra/magnum-plugins/issues/17))
+    [mosra/magnum-plugins#17](https://github.com/mosra/magnum-plugins/issues/17),
+    [mosra/magnum-bootstrap#8](https://github.com/mosra/magnum-bootstrap/issues/8))
 
 Changelogs for previous versions are available in @ref changelog-old.
 

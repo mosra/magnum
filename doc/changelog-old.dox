@@ -641,7 +641,8 @@ for a high-level overview.
     [mosra/magnum#16](https://github.com/mosra/magnum/issues/16),
     [mosra/magnum#21](https://github.com/mosra/magnum/issues/21),
     [mosra/magnum#22](https://github.com/mosra/magnum/issues/22),
-    [mosra/magnum#23](https://github.com/mosra/magnum/pull/23).
+    [mosra/magnum#23](https://github.com/mosra/magnum/pull/23),
+    [mosra/magnum-bootstrap#2](https://github.com/mosra/magnum-bootstrap/issues/2).
 
 @subsection changelog-2013-10-new New features
 
@@ -701,6 +702,8 @@ for a high-level overview.
     [mosra/magnum#17](https://github.com/mosra/magnum/issues/17))
 -   Extension support queries depend on selected GLSL version (see
     [mosra/magnum-examples#3](https://github.com/mosra/magnum-examples/issues/3))
+-   Properly exporting `SceneGraph::AbstractCamera` symbols (see
+    [mosra/magnum-bootstrap#3](https://github.com/mosra/magnum-bootstrap/issues/3))
 
 @subsection changelog-2013-10-deprecated Deprecated APIs
 
@@ -725,6 +728,11 @@ for a high-level overview.
     @cpp Sampler::maxSupportedAnisotropy() @ce are deprecated in favor of less
     verbose @cpp AbstractShaderProgram::maxVertexAttributes() @ce,
     @cpp AbstractTexture::maxLayers() @ce and @cpp Sampler::maxAnisotropy() @ce
+
+@subsection changelog-2013-10-documentation Documentation
+
+-   Fixed @ref SceneGraph bootstrap branch name (see
+    [mosra/magnum-bootstrap#1](https://github.com/mosra/magnum-bootstrap/issues/1))
 
 @subsection changelog-2013-10-compatibility Potential compatibility breakages, removed APIs
 
