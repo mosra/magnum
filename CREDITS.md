@@ -23,13 +23,14 @@ Contributors to Magnum library
 Listing only people with code contributions, because otherwise there's too many
 :) Big thanks to everyone involved!
 
--   Alice Margatroid ([@Alicemargatroid](https://github.com/Alicemargatroid)) --
-    Multi-channel support in Audio library, standard conformance, float,
-    double, A-Law and μ-Law format support in `WavAudioImporter` plugin
+-   Alan ([@Alan-FGR](https://github.com/Alan-FGR)) -- documentation fixes
 -   Alexander F Rødseth ([@xyproto](https://github.com/xyproto)) -- packages in
     the ArchLinux community repository
 -   Alexey Yurchenko ([@alexesDev](https://github.com/alexesDev)) -- static
     analyis, bug reports
+-   Alice Margatroid ([@Alicemargatroid](https://github.com/Alicemargatroid)) --
+    Multi-channel support in Audio library, standard conformance, float,
+    double, A-Law and μ-Law format support in `WavAudioImporter` plugin
 -   Andy Somogyi ([@andysomogyi](https://github.com/andysomogyi)) -- bugreports,
     API design improvement suggestions
 -   [@ArEnSc](https://github.com/ArEnSc) -- initial implementation of
@@ -72,6 +73,8 @@ Listing only people with code contributions, because otherwise there's too many
     GLES fixes
 -   Samuel Kogler ([@skogler](https://github.com/skogler)) -- GLFW application
     crash fixes
+-   Séverin Lemaignan ([@severin-lemaignan](severin-lemaignan/)) -- lots of
+    feedback and bug reports for the initial releases
 -   [@sigman78](https://github.com/sigman78) -- Initial MSVC 2017 port, Vcpkg
     packages
 -   Siim Kallas ([@seemk](https://github.com/seemk)) -- Sdl2Application
