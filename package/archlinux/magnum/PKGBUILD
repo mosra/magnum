@@ -2,13 +2,13 @@
 # Contributor: mosra <mosra@centrum.cz>
 
 pkgname=magnum
-pkgver=2018.04
+pkgver=2018.10
 pkgrel=1
 pkgdesc='C++11/C++14 graphics middleware for games and data visualization'
 arch=('x86_64')
 url='http://magnum.graphics'
 license=('MIT')
-depends=("corrade>=$pkgver" 'openal' 'sdl2')
+depends=("corrade>=$pkgver" 'openal' 'sdl2' 'vulkan-icd-loader')
 optdepends=('magnum-plugins: import and export features')
 makedepends=('cmake' 'git' 'ninja')
 source=("git+https://github.com/mosra/magnum.git#tag=v$pkgver")
@@ -21,6 +21,7 @@ build() {
     -DCMAKE_CXX_FLAGS="$CXXFLAGS -Wfatal-errors" \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/usr \
+    -DWITH_AL_INFO=ON \
     -DWITH_ANYAUDIOIMPORTER=ON \
     -DWITH_ANYIMAGECONVERTER=ON \
     -DWITH_ANYIMAGEIMPORTER=ON \
@@ -29,6 +30,7 @@ build() {
     -DWITH_DISTANCEFIELDCONVERTER=ON \
     -DWITH_GLXAPPLICATION=ON \
     -DWITH_GLXCONTEXT=ON \
+    -DWITH_IMAGECONVERTER=ON \
     -DWITH_MAGNUMFONT=ON \
     -DWITH_MAGNUMFONTCONVERTER=ON \
     -DWITH_OBJIMPORTER=ON \
@@ -37,6 +39,7 @@ build() {
     -DWITH_SDL2APPLICATION=ON \
     -DWITH_TGAIMAGECONVERTER=ON \
     -DWITH_TGAIMPORTER=ON \
+    -DWITH_VK=ON \
     -DWITH_WAVAUDIOIMPORTER=ON \
     -DWITH_WINDOWLESSGLXAPPLICATION=ON \
     -GNinja
