@@ -1,0 +1,53 @@
+# Maintainer: Alexander F Rødseth <xyproto@archlinux.org>
+# Contributor: mosra <mosra@centrum.cz>
+
+pkgname=magnum
+pkgver=2018.04
+pkgrel=1
+pkgdesc='C++11/C++14 graphics middleware for games and data visualization'
+arch=('x86_64')
+url='http://magnum.graphics'
+license=('MIT')
+depends=("corrade>=$pkgver" 'openal' 'sdl2')
+optdepends=('magnum-plugins: import and export features')
+makedepends=('cmake' 'git' 'ninja')
+source=("git+https://github.com/mosra/magnum.git#tag=v$pkgver")
+sha1sums=('SKIP')
+
+build() {
+  mkdir -p build
+  cd build
+  cmake ../magnum \
+    -DCMAKE_CXX_FLAGS="$CXXFLAGS -Wfatal-errors" \
+    -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_INSTALL_PREFIX=/usr \
+    -DWITH_ANYAUDIOIMPORTER=ON \
+    -DWITH_ANYIMAGECONVERTER=ON \
+    -DWITH_ANYIMAGEIMPORTER=ON \
+    -DWITH_ANYSCENEIMPORTER=ON \
+    -DWITH_AUDIO=ON \
+    -DWITH_DISTANCEFIELDCONVERTER=ON \
+    -DWITH_GLXAPPLICATION=ON \
+    -DWITH_GLXCONTEXT=ON \
+    -DWITH_MAGNUMFONT=ON \
+    -DWITH_MAGNUMFONTCONVERTER=ON \
+    -DWITH_OBJIMPORTER=ON \
+    -DWITH_FONTCONVERTER=ON \
+    -DWITH_GL_INFO=ON \
+    -DWITH_SDL2APPLICATION=ON \
+    -DWITH_TGAIMAGECONVERTER=ON \
+    -DWITH_TGAIMPORTER=ON \
+    -DWITH_WAVAUDIOIMPORTER=ON \
+    -DWITH_WINDOWLESSGLXAPPLICATION=ON \
+    -GNinja
+  ninja
+}
+
+package() {
+  DESTDIR="$pkgdir" ninja -C build install
+  install -Dm644 "magnum/COPYING" \
+    "$pkgdir/usr/share/licenses/$pkgname/COPYING"
+}
+
+# vim: ts=2 sw=2 et:
+# getver: no
