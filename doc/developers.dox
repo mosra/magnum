@@ -837,6 +837,9 @@ inverse.
     -   change the title from `Changes since 20XY.aa` to `20XY.ab`
     -   add a paragraph stating date of release and referencing the to-be-added
         tag on GitHub
+    -   add a temporary <tt>\@<b></b>anchor changelog-latest</tt> (and
+        equivalent in other repos) on top so the links from main page work
+        properly
 8.  Bump `MAGNUM_LIBRARY_VERSION` and `MAGNUM_LIBRARY_SOVERSION` in all
     projects, if needed --- ensure all projects have the exact same version
 9.  Rebuild all projects with the new shared library version numbers, verify
@@ -849,6 +852,7 @@ inverse.
 13. Tag a new version using @cb{.sh} git tag -a v20XY.ab @ce, say just
     `Version 20XY.ab` as a message
 14. Push the tag, verify that the CIs are still green
+    -   to GitLab as well
 15. Update the Corrade and Magnum tagfiles on the website using the
     freshly-built *public* docs
 16. Write a release announcement for the blog
@@ -871,9 +875,10 @@ inverse.
         `r/gltf`; Hacker News (extended title + url)
     -   summarize the release to mailing list
     -   summarize the release highlighting GL- and Vulkan-related functionality
-        and submit that to Khronos
-    -   Add a message to the Gitter chat (title as heading, cover image,
-        summary in a blockquote and "read more" link)
+        and submit that to Khronos, with a 500x500 downsized cover image
+    -   send an e-mail to companies and universities on the private list
+    -   add a message to the Gitter chat (title as heading, cover image,
+        summary in a blockquote and "read more" link, `@` contributors)
 19. Reference Twitter, Reddit, Hacker News and mailing list in a "Discussion"
     note at the end of the article, reupload that change
 20. Update versions of ArchLinux AUR packages:
