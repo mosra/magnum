@@ -45,6 +45,9 @@ See also:
     as an alternative to `--magnum-dpi-scaling` command-line parameter. It was
     also not documented anywhere. Besides that, the default `--magnum-dpi-scaling`
     value should have been `default` as documented, not `virtual`.
+-   Don't assert in DPI scaling detection in @ref Platform::Sdl2Application and
+    @ref Platform::GlfwApplication on X11 DEs that don't create any
+    `RESOURCE_MANAGER` (see [mosra/magnum#290](https://github.com/mosra/magnum/issues/290))
 
 @section changelog-2018-10 2018.10
 

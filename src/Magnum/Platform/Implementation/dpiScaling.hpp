@@ -102,18 +102,19 @@ inline Float x11DpiScaling() {
     Containers::ScopedExit closeDisplay{display, xCloseDisplay};
 
     const char* rms = xResourceManagerString(display);
-    CORRADE_INTERNAL_ASSERT(rms);
-    XrmDatabase db = xrmGetStringDatabase(rms);
-    CORRADE_INTERNAL_ASSERT(db);
-    Containers::ScopedExit closeDb{db, xrmDestroyDatabase};
+    if(rms) {
+        XrmDatabase db = xrmGetStringDatabase(rms);
+        CORRADE_INTERNAL_ASSERT(db);
+        Containers::ScopedExit closeDb{db, xrmDestroyDatabase};
 
-    XrmValue value;
-    char* type{};
-    if(xrmGetResource(db, "Xft.dpi", "Xft.Dpi", &type, &value)) {
-        if(type && strcmp(type, "String") == 0) {
-            const float scaling = std::stof(value.addr)/96.0f;
-            CORRADE_INTERNAL_ASSERT(scaling);
-            return scaling;
+        XrmValue value;
+        char* type{};
+        if(xrmGetResource(db, "Xft.dpi", "Xft.Dpi", &type, &value)) {
+            if(type && strcmp(type, "String") == 0) {
+                const float scaling = std::stof(value.addr)/96.0f;
+                CORRADE_INTERNAL_ASSERT(scaling);
+                return scaling;
+            }
         }
     }
 
