@@ -103,7 +103,7 @@ separate repositories.
 -   **Magnum Bootstrap** — bootstrap projects for many use cases, helping you
     get up and running in no time: https://github.com/mosra/magnum-bootstrap
 -   **Magnum Plugins** — various importer plugins for image, font, audio and
-    3D model formats is at https://github.com/mosra/magnum-plugins-plugins/branch/master)
+    3D model formats are at https://github.com/mosra/magnum-plugins
 -   **Magnum Integration** — integration with various external math and
     physics, get it at https://github.com/mosra/magnum-integration
 -   **Magnum Examples** — examples of engine usage, varying from simple

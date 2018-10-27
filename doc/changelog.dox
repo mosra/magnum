@@ -49,6 +49,10 @@ See also:
     @ref Platform::GlfwApplication on X11 DEs that don't create any
     `RESOURCE_MANAGER` (see [mosra/magnum#290](https://github.com/mosra/magnum/issues/290))
 
+@subsection changelog-latest-docs Documentation
+
+-   Fixed various broken links (see [mosra/magnum#291](https://github.com/mosra/magnum/issues/291))
+
 @section changelog-2018-10 2018.10
 
 Released 2018-10-23, tagged as
