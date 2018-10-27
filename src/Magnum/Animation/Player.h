@@ -420,7 +420,7 @@ template<class T, class K
            a lambda to a function pointer and (besides being weird and
            annoying) it's also not portable because it doesn't work on MSVC
            2015 and older versions of MSVC 2017. OTOH, putting this in the docs
-           wouldn say nothing about how the callback signature should look. */
+           would say nothing about how the callback signature should look. */
         template<class V, class R, class Callback> Player<T, K>& addWithCallback(const TrackView<K, V, R>& track, Callback callback, void* userData = nullptr);
         #endif
 
