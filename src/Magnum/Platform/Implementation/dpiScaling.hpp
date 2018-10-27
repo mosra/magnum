@@ -46,8 +46,8 @@ namespace {
 
 inline Utility::Arguments windowScalingArguments() {
     Utility::Arguments args{"magnum"};
-    args.addOption("dpi-scaling", "virtual")
-        .setFromEnvironment("dpi-scaling", "default")
+    args.addOption("dpi-scaling", "default")
+        .setFromEnvironment("dpi-scaling")
         #ifdef CORRADE_TARGET_APPLE
         .setHelp("dpi-scaling", "\n      window DPI scaling", "default|framebuffer|<d>|\"<h> <v>\"")
         #elif !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_ANDROID)

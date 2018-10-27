@@ -36,7 +36,15 @@ See also:
 -   @subpage changelog-extras "Extras changelog"
 -   @subpage changelog-examples "Examples changelog"
 
-@anchor changelog-latest
+@section changelog-latest Changes since 2018.10
+
+@subsection changelog-latest-bugfixes Bug fixes
+
+-   Fixed @ref Platform::Sdl2Application and @ref Platform::GlfwApplication to
+    properly support the @cb{.sh} $MAGNUM_DPI_SCALING @ce environment variable
+    as an alternative to `--magnum-dpi-scaling` command-line parameter. It was
+    also not documented anywhere. Besides that, the default `--magnum-dpi-scaling`
+    value should have been `default` as documented, not `virtual`.
 
 @section changelog-2018-10 2018.10
 

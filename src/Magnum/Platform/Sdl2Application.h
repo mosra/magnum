@@ -277,7 +277,8 @@ size and the framebuffer pixels will match display pixels 1:1. On displays that
 have different DPI, there are three possible scenarios, listed below. It's
 possible to fine tune the behavior either using extra parameters passed to
 @ref Configuration::setSize() or via the `--magnum-dpi-scaling` command-line
-option.
+option (or the equivalent @cb{.sh} $MAGNUM_DPI_SCALING @ce environment
+variable).
 
 -   Framebuffer DPI scaling. The window is created with exactly the requested
     size and all event coordinates are reported also relative to that size.
@@ -285,7 +286,8 @@ option.
     supported on macOS and iOS. See @ref platforms-macos-hidpi for details how
     to enable it. Equivalent to passing
     @ref Configuration::DpiScalingPolicy::Framebuffer to
-    @ref Configuration::setSize() or `framebuffer` on command line.
+    @ref Configuration::setSize() or `framebuffer` via command line /
+    environment.
 -   Virtual DPI scaling. Scales the window based on DPI scaling setting in the
     system. For example if a 800x600 window is requested and DPI scaling is set
     to 200%, the resulting window will have 1600x1200 pixels. The backing
@@ -303,15 +305,16 @@ option.
     This is supported on Linux, Windows, all mobile platforms except iOS and
     Emscripten. Equivalent to passing
     @ref Configuration::DpiScalingPolicy::Physical to
-    @ref Configuration::setSize() or `physical` on command line.
+    @ref Configuration::setSize() or `physical` via command line / environment.
 
 Besides the above, it's possible to supply a custom DPI scaling value to
 @ref Configuration::setSize() or the `--magnum-dpi-scaling` command-line
-option. Using `--magnum-dpi-scaling &lt;number&gt;` will make the scaling
-same in both directions, with `--magnum-dpi-scaling "<horizontal> <vertical>"`
-the scaling will be different in each direction. On desktop systems custom DPI
-scaling value will affect physical window size (with the content being scaled),
-on mobile and web it will affect sharpness of the contents.
+option (or environment variable). Using `--magnum-dpi-scaling &lt;number&gt;`
+will make the scaling same in both directions, with
+`--magnum-dpi-scaling "<horizontal> <vertical>"` the scaling will be different
+in each direction. On desktop systems custom DPI scaling value will affect
+physical window size (with the content being scaled), on mobile and web it will
+affect sharpness of the contents.
 
 The default is depending on the platform:
 
