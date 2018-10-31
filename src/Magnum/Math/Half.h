@@ -163,4 +163,20 @@ MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug
 
 }}
 
+namespace Corrade { namespace Utility {
+
+/**
+@tweakableliteral{Magnum::Math::Half}
+
+Parses the @link Magnum::Math::Literals::operator""_h @endlink literal.
+*/
+template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Half> {
+    TweakableParser() = delete;
+
+    /** @brief Parse the value */
+    static std::pair<TweakableState, Magnum::Math::Half> parse(Containers::ArrayView<const char> value);
+};
+
+}}
+
 #endif

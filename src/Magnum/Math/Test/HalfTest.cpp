@@ -23,8 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <cstring>
+#include <algorithm>
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/Tweakable.h>
 
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Vector3.h"
@@ -59,6 +62,8 @@ struct HalfTest: Corrade::TestSuite::Tester {
 
     void literal();
     void debug();
+    void tweakable();
+    void tweakableError();
 
     private:
         /* Naive / ground-truth packing helpers */
@@ -78,6 +83,42 @@ struct HalfTest: Corrade::TestSuite::Tester {
 };
 
 typedef Math::Constants<Float> Constants;
+
+using namespace Literals;
+
+namespace {
+
+const struct {
+    const char* name;
+    const char* data;
+    Half result;
+} TweakableData[] {
+    {"fixed", "35.0_h", 35.0_h},
+    {"no zero before", ".5_h",  0.5_h},
+    {"no zero after", "35._h", 35.0_h},
+    {"exponential positive", "3.5e+1_h", 3.5e+1_h},
+    {"exponential negative", "350.0e-1_h", 350.0e-1_h},
+    {"positive", "+35.0_h", +35.0_h},
+    {"negative", "-35.0_h", -35.0_h}
+};
+
+constexpr struct {
+    const char* name;
+    const char* data;
+    Corrade::Utility::TweakableState state;
+    const char* error;
+} TweakableErrorData[] {
+    {"empty", "", Corrade::Utility::TweakableState::Recompile,
+        "Utility::TweakableParser:  is not a half literal\n"},
+    {"integral", "42_h", Corrade::Utility::TweakableState::Recompile,
+        "Utility::TweakableParser: 42_h is not a half literal\n"},
+    {"garbage after", "42.b_h", Corrade::Utility::TweakableState::Recompile,
+        "Utility::TweakableParser: unexpected characters b_h after a half literal\n"},
+    {"different suffix", "42.0u", Corrade::Utility::TweakableState::Recompile, /* not for double */
+        "Utility::TweakableParser: 42.0u has an unexpected suffix, expected _h\n"}
+};
+
+}
 
 HalfTest::HalfTest() {
     addTests({&HalfTest::unpack,
@@ -108,6 +149,12 @@ HalfTest::HalfTest() {
 
               &HalfTest::literal,
               &HalfTest::debug});
+
+    addInstancedTests({&HalfTest::tweakable},
+                      Corrade::Containers::arraySize(TweakableData));
+
+    addInstancedTests({&HalfTest::tweakableError},
+                      Corrade::Containers::arraySize(TweakableErrorData));
 
     /* Calculate tables for table-based benchmark */
     _mantissaTable[0] = 0;
@@ -597,16 +644,12 @@ void HalfTest::negation() {
 }
 
 void HalfTest::literal() {
-    using namespace Literals;
-
     Half a = 3.5_h;
     CORRADE_COMPARE(a, Half{UnsignedShort(0x4300)});
     CORRADE_COMPARE(a, Half{3.5f});
 }
 
 void HalfTest::debug() {
-    using namespace Literals;
-
     std::ostringstream out;
 
     Debug{&out} << -36.41_h << Half{Constants::inf()}
@@ -616,6 +659,28 @@ void HalfTest::debug() {
     #else
     CORRADE_COMPARE(out.str(), "-36.41 inf Vector(3.141, -1.414, 1.618)\n");
     #endif
+}
+
+void HalfTest::tweakable() {
+    auto&& data = TweakableData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    Corrade::Utility::TweakableState state;
+    Half result;
+    std::tie(state, result) = Corrade::Utility::TweakableParser<Half>::parse({data.data, std::strlen(data.data)});
+    CORRADE_COMPARE(state, Corrade::Utility::TweakableState::Success);
+    CORRADE_COMPARE(result, data.result);
+}
+
+void HalfTest::tweakableError() {
+    auto&& data = TweakableErrorData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    Error redirectError{&out};
+    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<Half>::parse({data.data, std::strlen(data.data)}).first;
+    CORRADE_COMPARE(out.str(), data.error);
+    CORRADE_COMPARE(state, data.state);
 }
 
 }}}

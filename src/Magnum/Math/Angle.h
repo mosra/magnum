@@ -282,6 +282,60 @@ template<class T> struct ConfigurationValue<Magnum::Math::Rad<T>> {
     }
 };
 
+#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
+/**
+@tweakableliteral{Magnum::Math::Deg}
+
+Parses the @link Magnum::Math::Literals::operator""_degf @endlink literal.
+@experimental
+*/
+template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Deg<Magnum::Float>> {
+    TweakableParser() = delete;
+
+    /** @brief Parse the value */
+    static std::pair<TweakableState, Magnum::Math::Deg<Magnum::Float>> parse(Containers::ArrayView<const char> value);
+};
+
+/**
+@tweakableliteral{Magnum::Math::Deg}
+
+Parses the @link Magnum::Math::Literals::operator""_deg @endlink literal.
+@experimental
+*/
+template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Deg<Magnum::Double>> {
+    TweakableParser() = delete;
+
+    /** @brief Parse the value */
+    static std::pair<TweakableState, Magnum::Math::Deg<Magnum::Double>> parse(Containers::ArrayView<const char> value);
+};
+
+/**
+@tweakableliteral{Magnum::Math::Rad}
+
+Parses the @link Magnum::Math::Literals::operator""_radf @endlink literal.
+@experimental
+*/
+template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Rad<Magnum::Float>> {
+    TweakableParser() = delete;
+
+    /** @brief Parse the value */
+    static std::pair<TweakableState, Magnum::Math::Rad<Magnum::Float>> parse(Containers::ArrayView<const char> value);
+};
+
+/**
+@tweakableliteral{Magnum::Math::Rad}
+
+Parses the @link Magnum::Math::Literals::operator""_rad @endlink literal.
+@experimental
+*/
+template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Rad<Magnum::Double>> {
+    TweakableParser() = delete;
+
+    /** @brief Parse the value */
+    static std::pair<TweakableState, Magnum::Math::Rad<Magnum::Double>> parse(Containers::ArrayView<const char> value);
+};
+
 }}
+#endif
 
 #endif

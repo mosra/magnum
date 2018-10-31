@@ -38,6 +38,14 @@ See also:
 
 @section changelog-latest Changes since 2018.10
 
+@subsection changelog-latest-new New features
+
+@subsubsection changelog-latest-new-math Math library
+
+-   Support for using the @ref Math::Deg, @ref Math::Rad, @ref Math::Half,
+    @ref Math::Color3 and @ref Math::Color4 literals with the new experimental
+    @ref Corrade::Utility::Tweakable utility. See also @ref tweakableliterals.
+
 @subsection changelog-latest-bugfixes Bug fixes
 
 -   Fixed @ref Platform::Sdl2Application and @ref Platform::GlfwApplication to

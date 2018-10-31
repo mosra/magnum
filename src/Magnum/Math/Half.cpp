@@ -28,6 +28,12 @@
 #include <iomanip>
 #include <sstream>
 
+#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
+#include <algorithm>
+#include <Corrade/Utility/String.h>
+#include <Corrade/Utility/TweakableParser.h>
+#endif
+
 namespace Magnum { namespace Math {
 
 Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, Half value) {
@@ -39,3 +45,31 @@ Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, Half value) 
 }
 
 }}
+
+#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
+namespace Corrade { namespace Utility {
+
+std::pair<TweakableState, Magnum::Math::Half> TweakableParser<Magnum::Math::Half>::parse(const Containers::ArrayView<const char> value) {
+    char* end;
+    const Magnum::Float result = std::strtof(value, &end);
+
+    if(end == value.begin() || std::find(value.begin(), value.end(), '.') == value.end()) {
+        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "is not a half literal";
+        return {TweakableState::Recompile, {}};
+    }
+
+    if(!String::viewEndsWith(value, "_h")) {
+        Warning{} << "Utility::TweakableParser:" << std::string{value, value.size()} << "has an unexpected suffix, expected _h";
+        return {TweakableState::Recompile, {}};
+    }
+
+    if(end != value.end() - 2) {
+        Warning{} << "Utility::TweakableParser: unexpected characters" << std::string{const_cast<const char*>(end), value.end()} <<  "after a half literal";
+        return {TweakableState::Recompile, {}};
+    }
+
+    return {TweakableState::Success, Magnum::Math::Half{result}};
+}
+
+}}
+#endif

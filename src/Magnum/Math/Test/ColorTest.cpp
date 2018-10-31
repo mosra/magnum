@@ -27,6 +27,8 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/Configuration.h>
+#include <Corrade/Utility/Format.h>
+#include <Corrade/Utility/Tweakable.h>
 
 #include "Magnum/Math/Color.h"
 
@@ -105,6 +107,24 @@ struct ColorTest: Corrade::TestSuite::Tester {
     void debug();
     void debugUb();
     void configuration();
+
+    void tweakableRgb();
+    void tweakableSrgb();
+    void tweakableRgbf();
+    void tweakableSrgbf();
+    void tweakableRgba();
+    void tweakableSrgba();
+    void tweakableRgbaf();
+    void tweakableSrgbaf();
+
+    void tweakableErrorRgb();
+    void tweakableErrorSrgb();
+    void tweakableErrorRgba();
+    void tweakableErrorSrgba();
+    void tweakableErrorRgbf();
+    void tweakableErrorSrgbf();
+    void tweakableErrorRgbaf();
+    void tweakableErrorSrgbaf();
 };
 
 typedef Math::Vector3<Float> Vector3;
@@ -116,6 +136,44 @@ typedef Math::Color4<Float> Color4;
 typedef Math::Color4<UnsignedByte> Color4ub;
 
 typedef Math::Deg<Float> Deg;
+
+using namespace Literals;
+
+namespace {
+
+const struct {
+    const char* name;
+    const char* dataRgb;
+    const char* dataRgba;
+    Color4 result;
+    Color4 resultSrgba;
+    Color4ub resultUb;
+} TweakableData[] {
+    {"lowercase", "0xff3366_{}", "0xff3366aa_{}", 0xff3366aa_rgbaf, 0xff3366aa_srgbaf, 0xff3366aa_rgba},
+    {"uppercase", "0XFF3366_{}", "0XFF3366AA_{}", 0xff3366aa_rgbaf, 0xff3366aa_srgbaf, 0xff3366aa_rgba}
+};
+
+constexpr struct {
+    const char* name;
+    const char* data;
+    Corrade::Utility::TweakableState state;
+    const char* error;
+} TweakableErrorData[] {
+    {"empty", "", Corrade::Utility::TweakableState::Recompile,
+        "Utility::TweakableParser:  is not a hexadecimal color literal\n"},
+    {"char", "'a'", Corrade::Utility::TweakableState::Recompile,
+        "Utility::TweakableParser: 'a' is not a hexadecimal color literal\n"},
+    {"not hex", "{}_{}", Corrade::Utility::TweakableState::Recompile,
+        "Utility::TweakableParser: {0}_{2}{1} is not a hexadecimal color literal\n"},
+    {"garbage after", "0x{}._{}", Corrade::Utility::TweakableState::Recompile,
+        "Utility::TweakableParser: unexpected characters ._{2}{1} after a color literal\n"},
+    {"different suffix", "0x{}f", Corrade::Utility::TweakableState::Recompile,
+        "Utility::TweakableParser: 0x{0}f has an unexpected suffix, expected _{1} or _s{1}\n"},
+    {"bad size", "0x333_{1}", Corrade::Utility::TweakableState::Error,
+        "Utility::TweakableParser: 0x333_{2}{1} doesn't have expected number of digits\n"},
+};
+
+}
 
 ColorTest::ColorTest() {
     addTests({&ColorTest::construct,
@@ -157,6 +215,26 @@ ColorTest::ColorTest() {
               &ColorTest::debug,
               &ColorTest::debugUb,
               &ColorTest::configuration});
+
+    addInstancedTests({&ColorTest::tweakableRgb,
+                       &ColorTest::tweakableSrgb,
+                       &ColorTest::tweakableRgba,
+                       &ColorTest::tweakableSrgba,
+                       &ColorTest::tweakableRgbf,
+                       &ColorTest::tweakableSrgbf,
+                       &ColorTest::tweakableRgbaf,
+                       &ColorTest::tweakableSrgbaf},
+                      Corrade::Containers::arraySize(TweakableData));
+
+    addInstancedTests({&ColorTest::tweakableErrorRgb,
+                       &ColorTest::tweakableErrorSrgb,
+                       &ColorTest::tweakableErrorRgba,
+                       &ColorTest::tweakableErrorSrgba,
+                       &ColorTest::tweakableErrorRgbf,
+                       &ColorTest::tweakableErrorSrgbf,
+                       &ColorTest::tweakableErrorRgbaf,
+                       &ColorTest::tweakableErrorSrgbaf},
+                      Corrade::Containers::arraySize(TweakableErrorData));
 }
 
 void ColorTest::construct() {
@@ -365,8 +443,6 @@ void ColorTest::data() {
 }
 
 void ColorTest::literals() {
-    using namespace Literals;
-
     constexpr Color3ub a = 0x33b27f_rgb;
     CORRADE_COMPARE(a, (Color3ub{0x33, 0xb2, 0x7f}));
 
@@ -423,8 +499,6 @@ void ColorTest::colors() {
 }
 
 void ColorTest::hue() {
-    using namespace Literals;
-
     CORRADE_COMPARE(Color3::fromHsv( 27.0_degf, 1.0f, 1.0f), (Color3{1.0f, 0.45f, 0.0f}));
     CORRADE_COMPARE(Color3::fromHsv( 86.0_degf, 1.0f, 1.0f), (Color3{0.566667f, 1.0f, 0.0f}));
     CORRADE_COMPARE(Color3::fromHsv(134.0_degf, 1.0f, 1.0f), (Color3{0.0f, 1.0f, 0.233333f}));
@@ -453,8 +527,6 @@ void ColorTest::hue() {
 }
 
 void ColorTest::saturation() {
-    using namespace Literals;
-
     CORRADE_COMPARE(Color3::fromHsv(0.0_degf, 0.702f, 1.0f), (Color3{1.0f, 0.298f, 0.298f}));
     CORRADE_COMPARE((Color3{1.0f, 0.298f, 0.298f}).saturation(), 0.702f);
 
@@ -476,8 +548,6 @@ void ColorTest::saturation() {
 }
 
 void ColorTest::value() {
-    using namespace Literals;
-
     CORRADE_COMPARE(Color3::fromHsv(0.0_degf, 1.0f, 0.522f), (Color3{0.522f, 0.0f, 0.0f}));
     CORRADE_COMPARE((Color3{0.522f, 0.0f, 0.0f}).value(), 0.522f);
 
@@ -499,8 +569,6 @@ void ColorTest::value() {
 }
 
 void ColorTest::hsv() {
-    using namespace Literals;
-
     CORRADE_COMPARE(Color3::fromHsv(std::make_tuple(230.0_degf, 0.749f, 0.427f)),
         (Color3{0.107177f, 0.160481f, 0.427f}));
     CORRADE_COMPARE(Color3::fromHsv(230.0_degf, 0.749f, 0.427f),
@@ -552,8 +620,6 @@ void ColorTest::hsv() {
 }
 
 void ColorTest::fromHsvHueOverflow() {
-    using namespace Literals;
-
     CORRADE_COMPARE(Color3::fromHsv( 27.0_degf - 360.0_degf, 1.0f, 1.0f), (Color3{1.0f, 0.45f, 0.0f}));
     CORRADE_COMPARE(Color3::fromHsv( 86.0_degf - 360.0_degf, 1.0f, 1.0f), (Color3{0.566667f, 1.0f, 0.0f}));
     CORRADE_COMPARE(Color3::fromHsv(134.0_degf - 360.0_degf, 1.0f, 1.0f), (Color3{0.0f, 1.0f, 0.233333f}));
@@ -570,8 +636,6 @@ void ColorTest::fromHsvHueOverflow() {
 }
 
 void ColorTest::fromHsvDefaultAlpha() {
-    using namespace Literals;
-
     CORRADE_COMPARE(Color4::fromHsv(std::make_tuple(230.0_degf, 0.749f, 0.427f)),
         (Color4{0.107177f, 0.160481f, 0.427f, 1.0f}));
     CORRADE_COMPARE(Color4::fromHsv(230.0_degf, 0.749f, 0.427f),
@@ -697,8 +761,6 @@ void ColorTest::srgbMonotonic() {
 }
 
 void ColorTest::srgbLiterals() {
-    using namespace Literals;
-
     constexpr Math::Vector3<UnsignedByte> a = 0x33b27f_srgb;
     CORRADE_COMPARE(a, (Math::Vector3<UnsignedByte>{0x33, 0xb2, 0x7f}));
 
@@ -808,8 +870,6 @@ void ColorTest::debug() {
 }
 
 void ColorTest::debugUb() {
-    using namespace Magnum::Math::Literals;
-
     std::ostringstream o;
     Debug(&o) << 0x123456_rgb << 0x789abc_rgb;
     CORRADE_COMPARE(o.str(), "#123456 #789abc\n");
@@ -835,6 +895,198 @@ void ColorTest::configuration() {
     c.setValue("color4", color4);
     CORRADE_COMPARE(c.value("color4"), value4);
     CORRADE_COMPARE(c.value<Color4>("color4"), color4);
+}
+
+void ColorTest::tweakableRgb() {
+    auto&& data = TweakableData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    std::string input = Corrade::Utility::formatString(data.dataRgb, "rgb");
+    Corrade::Utility::TweakableState state;
+    Color3ub result;
+    std::tie(state, result) = Corrade::Utility::TweakableParser<Color3ub>::parse({input.data(), input.size()});
+    CORRADE_COMPARE(state, Corrade::Utility::TweakableState::Success);
+    CORRADE_COMPARE(result, data.resultUb.rgb());
+}
+
+void ColorTest::tweakableSrgb() {
+    auto&& data = TweakableData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    std::string input = Corrade::Utility::formatString(data.dataRgb, "srgb");
+    Corrade::Utility::TweakableState state;
+    Math::Vector3<UnsignedByte> result;
+    std::tie(state, result) = Corrade::Utility::TweakableParser<Math::Vector3<UnsignedByte>>::parse({input.data(), input.size()});
+    CORRADE_COMPARE(state, Corrade::Utility::TweakableState::Success);
+    CORRADE_COMPARE(result, data.resultUb.rgb());
+}
+
+void ColorTest::tweakableRgba() {
+    auto&& data = TweakableData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    std::string input = Corrade::Utility::formatString(data.dataRgba, "rgba");
+    Corrade::Utility::TweakableState state;
+    Color4ub result;
+    std::tie(state, result) = Corrade::Utility::TweakableParser<Color4ub>::parse({input.data(), input.size()});
+    CORRADE_COMPARE(state, Corrade::Utility::TweakableState::Success);
+    CORRADE_COMPARE(result, data.resultUb);
+}
+
+void ColorTest::tweakableSrgba() {
+    auto&& data = TweakableData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    std::string input = Corrade::Utility::formatString(data.dataRgba, "srgba");
+    Corrade::Utility::TweakableState state;
+    Math::Vector4<UnsignedByte> result;
+    std::tie(state, result) = Corrade::Utility::TweakableParser<Math::Vector4<UnsignedByte>>::parse({input.data(), input.size()});
+    CORRADE_COMPARE(state, Corrade::Utility::TweakableState::Success);
+    CORRADE_COMPARE(result, data.resultUb);
+}
+
+void ColorTest::tweakableRgbf() {
+    auto&& data = TweakableData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    std::string input = Corrade::Utility::formatString(data.dataRgb, "rgbf");
+    Corrade::Utility::TweakableState state;
+    Color3 result;
+    std::tie(state, result) = Corrade::Utility::TweakableParser<Color3>::parse({input.data(), input.size()});
+    CORRADE_COMPARE(state, Corrade::Utility::TweakableState::Success);
+    CORRADE_COMPARE(result, data.result.rgb());
+}
+
+void ColorTest::tweakableSrgbf() {
+    auto&& data = TweakableData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    std::string input = Corrade::Utility::formatString(data.dataRgb, "srgbf");
+    Corrade::Utility::TweakableState state;
+    Color3 result;
+    std::tie(state, result) = Corrade::Utility::TweakableParser<Color3>::parse({input.data(), input.size()});
+    CORRADE_COMPARE(state, Corrade::Utility::TweakableState::Success);
+    CORRADE_COMPARE(result, data.resultSrgba.rgb());
+}
+
+void ColorTest::tweakableRgbaf() {
+    auto&& data = TweakableData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    std::string input = Corrade::Utility::formatString(data.dataRgba, "rgbaf");
+    Corrade::Utility::TweakableState state;
+    Color4 result;
+    std::tie(state, result) = Corrade::Utility::TweakableParser<Color4>::parse({input.data(), input.size()});
+    CORRADE_COMPARE(state, Corrade::Utility::TweakableState::Success);
+    CORRADE_COMPARE(result, data.result);
+}
+
+void ColorTest::tweakableSrgbaf() {
+    auto&& data = TweakableData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    std::string input = Corrade::Utility::formatString(data.dataRgba, "srgbaf");
+    Corrade::Utility::TweakableState state;
+    Color4 result;
+    std::tie(state, result) = Corrade::Utility::TweakableParser<Color4>::parse({input.data(), input.size()});
+    CORRADE_COMPARE(state, Corrade::Utility::TweakableState::Success);
+    CORRADE_COMPARE(result, data.resultSrgba);
+}
+
+void ColorTest::tweakableErrorRgb() {
+    auto&& data = TweakableErrorData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    std::string input = Corrade::Utility::formatString(data.data, "ff3366", "rgb");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    Error redirectError{&out};
+    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<Color3ub>::parse({input.data(), input.size()}).first;
+    CORRADE_COMPARE(out.str(), Corrade::Utility::formatString(data.error, "ff3366", "rgb", ""));
+    CORRADE_COMPARE(state, data.state);
+}
+
+void ColorTest::tweakableErrorSrgb() {
+    auto&& data = TweakableErrorData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    std::string input = Corrade::Utility::formatString(data.data, "ff3366", "srgb");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    Error redirectError{&out};
+    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<Math::Vector3<UnsignedByte>>::parse({input.data(), input.size()}).first;
+    CORRADE_COMPARE(out.str(), Corrade::Utility::formatString(data.error, "ff3366", "rgb", "s"));
+    CORRADE_COMPARE(state, data.state);
+}
+
+void ColorTest::tweakableErrorRgba() {
+    auto&& data = TweakableErrorData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    std::string input = Corrade::Utility::formatString(data.data, "ff3366aa", "rgba");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    Error redirectError{&out};
+    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<Color4ub>::parse({input.data(), input.size()}).first;
+    CORRADE_COMPARE(out.str(), Corrade::Utility::formatString(data.error, "ff3366aa", "rgba", ""));
+    CORRADE_COMPARE(state, data.state);
+}
+
+void ColorTest::tweakableErrorSrgba() {
+    auto&& data = TweakableErrorData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    std::string input = Corrade::Utility::formatString(data.data, "ff3366aa", "srgba");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    Error redirectError{&out};
+    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<Math::Vector4<UnsignedByte>>::parse({input.data(), input.size()}).first;
+    CORRADE_COMPARE(out.str(), Corrade::Utility::formatString(data.error, "ff3366aa", "rgba", "s"));
+    CORRADE_COMPARE(state, data.state);
+}
+
+void ColorTest::tweakableErrorRgbf() {
+    auto&& data = TweakableErrorData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    std::string input = Corrade::Utility::formatString(data.data, "ff3366", "rgbf");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    Error redirectError{&out};
+    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<Color3>::parse({input.data(), input.size()}).first;
+    CORRADE_COMPARE(out.str(), Corrade::Utility::formatString(data.error, "ff3366", "rgbf", ""));
+    CORRADE_COMPARE(state, data.state);
+}
+
+void ColorTest::tweakableErrorSrgbf() {
+    auto&& data = TweakableErrorData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    std::string input = Corrade::Utility::formatString(data.data, "ff3366", "srgbf");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    Error redirectError{&out};
+    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<Color3>::parse({input.data(), input.size()}).first;
+    CORRADE_COMPARE(out.str(), Corrade::Utility::formatString(data.error, "ff3366", "rgbf", "s"));
+    CORRADE_COMPARE(state, data.state);
+}
+
+void ColorTest::tweakableErrorRgbaf() {
+    auto&& data = TweakableErrorData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    std::string input = Corrade::Utility::formatString(data.data, "ff3366aa", "rgbaf");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    Error redirectError{&out};
+    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<Color4>::parse({input.data(), input.size()}).first;
+    CORRADE_COMPARE(out.str(), Corrade::Utility::formatString(data.error, "ff3366aa", "rgbaf", ""));
+    CORRADE_COMPARE(state, data.state);
+}
+
+void ColorTest::tweakableErrorSrgbaf() {
+    auto&& data = TweakableErrorData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+    std::string input = Corrade::Utility::formatString(data.data, "ff3366aa", "srgbaf");
+
+    std::ostringstream out;
+    Warning redirectWarning{&out};
+    Error redirectError{&out};
+    Corrade::Utility::TweakableState state = Corrade::Utility::TweakableParser<Color4>::parse({input.data(), input.size()}).first;
+    CORRADE_COMPARE(out.str(), Corrade::Utility::formatString(data.error, "ff3366aa", "rgbaf", "s"));
+    CORRADE_COMPARE(state, data.state);
 }
 
 }}}

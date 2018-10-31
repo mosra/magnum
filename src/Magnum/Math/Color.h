@@ -1277,11 +1277,77 @@ namespace Implementation {
 }}
 
 namespace Corrade { namespace Utility {
-    /** @configurationvalue{Magnum::Color3} */
-    template<class T> struct ConfigurationValue<Magnum::Math::Color3<T>>: public ConfigurationValue<Magnum::Math::Vector<3, T>> {};
 
-    /** @configurationvalue{Magnum::Color4} */
-    template<class T> struct ConfigurationValue<Magnum::Math::Color4<T>>: public ConfigurationValue<Magnum::Math::Vector<4, T>> {};
+/** @configurationvalue{Magnum::Color3} */
+template<class T> struct ConfigurationValue<Magnum::Math::Color3<T>>: ConfigurationValue<Magnum::Math::Vector<3, T>> {};
+
+/** @configurationvalue{Magnum::Color4} */
+template<class T> struct ConfigurationValue<Magnum::Math::Color4<T>>: ConfigurationValue<Magnum::Math::Vector<4, T>> {};
+
+/**
+@tweakableliteral{Magnum::Math::Color3}
+
+Parses the @link Magnum::Math::Literals::operator""_rgb @endlink and
+@link Magnum::Math::Literals::operator""_srgb @endlink literals.
+@experimental
+*/
+template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Color3<Magnum::UnsignedByte>> {
+    TweakableParser() = delete;
+
+    /** @brief Parse the value */
+    static std::pair<TweakableState, Magnum::Math::Color3<Magnum::UnsignedByte>> parse(Containers::ArrayView<const char> value);
+};
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Vector3<Magnum::UnsignedByte>>: TweakableParser<Magnum::Math::Color3<Magnum::UnsignedByte>> {};
+#endif
+
+/**
+@tweakableliteral{Magnum::Math::Color4}
+
+Parses the @link Magnum::Math::Literals::operator""_rgba @endlink and
+@link Magnum::Math::Literals::operator""_srgba @endlink literals.
+@experimental
+*/
+template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Color4<Magnum::UnsignedByte>> {
+    TweakableParser() = delete;
+
+    /** @brief Parse the value */
+    static std::pair<TweakableState, Magnum::Math::Color4<Magnum::UnsignedByte>> parse(Containers::ArrayView<const char> value);
+};
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Vector4<Magnum::UnsignedByte>>: TweakableParser<Magnum::Math::Color4<Magnum::UnsignedByte>> {};
+#endif
+
+/**
+@tweakableliteral{Magnum::Math::Color3}
+
+Parses the @link Magnum::Math::Literals::operator""_rgbf @endlink and
+@link Magnum::Math::Literals::operator""_srgbf @endlink literals.
+@experimental
+*/
+template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Color3<Magnum::Float>> {
+    TweakableParser() = delete;
+
+    /** @brief Parse the value */
+    static std::pair<TweakableState, Magnum::Math::Color3<Magnum::Float>> parse(Containers::ArrayView<const char> value);
+};
+
+/**
+@tweakableliteral{Magnum::Math::Color4}
+
+Parses the @link Magnum::Math::Literals::operator""_rgbaf @endlink and
+@link Magnum::Math::Literals::operator""_srgbaf @endlink literals.
+@experimental
+*/
+template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Color4<Magnum::Float>> {
+    TweakableParser() = delete;
+
+    /** @brief Parse the value */
+    static std::pair<TweakableState, Magnum::Math::Color4<Magnum::Float>> parse(Containers::ArrayView<const char> value);
+};
+
 }}
 
 #endif
