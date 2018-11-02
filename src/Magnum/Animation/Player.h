@@ -258,6 +258,13 @@ template<class T, class K
          */
         typedef std::pair<UnsignedInt, K>(*Scaler)(T, K);
 
+        /**
+         * @brief Advance multiple players at the same time
+         *
+         * Equivalent to calling @ref advance(T) for each item in @p players.
+         */
+        static void advance(T time, std::initializer_list<std::reference_wrapper<Player<T, K>>> players);
+
         /** @brief Constructor */
         explicit Player();
 

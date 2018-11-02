@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <functional>
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
@@ -57,6 +58,7 @@ struct PlayerTest: TestSuite::Tester {
     void advancePlayCount();
     void advancePlayCountInfinite();
     void advanceChrono();
+    void advanceList();
     void advanceZeroDurationStop();
     void advanceZeroDurationPause();
     void advanceZeroDurationInfinitePlayCount();
@@ -139,6 +141,7 @@ PlayerTest::PlayerTest() {
               &PlayerTest::advancePlayCount,
               &PlayerTest::advancePlayCountInfinite,
               &PlayerTest::advanceChrono,
+              &PlayerTest::advanceList,
               &PlayerTest::advanceZeroDurationStop,
               &PlayerTest::advanceZeroDurationPause,
               &PlayerTest::advanceZeroDurationInfinitePlayCount,
@@ -757,6 +760,26 @@ void PlayerTest::advanceChrono() {
     CORRADE_COMPARE(player.elapsed(std::chrono::milliseconds{3750}),
         std::make_pair(0, 1.75f));
     CORRADE_COMPARE(value, 4.0f);
+}
+
+void PlayerTest::advanceList() {
+    Float valueA = -1.0f, valueB = -1.0f;
+    Player<std::chrono::nanoseconds, Float> a, b;
+    a.add(Track, valueA)
+     .play(std::chrono::seconds{2});
+    b.add(Track, valueB)
+     .play(std::chrono::seconds{1});
+
+    /* 1.75 secs in for A, 2.75 seconds in for B */
+    Player<std::chrono::nanoseconds, Float>::advance(std::chrono::milliseconds{3750}, {a, b});
+    CORRADE_COMPARE(a.state(), State::Playing);
+    CORRADE_COMPARE(b.state(), State::Playing);
+    CORRADE_COMPARE(a.elapsed(std::chrono::milliseconds{3750}),
+        std::make_pair(0, 1.75f));
+    CORRADE_COMPARE(b.elapsed(std::chrono::milliseconds{3750}),
+        std::make_pair(0, 2.75f));
+    CORRADE_COMPARE(valueA, 4.0f);
+    CORRADE_COMPARE(valueB, 2.75f);
 }
 
 void PlayerTest::advanceZeroDurationStop() {

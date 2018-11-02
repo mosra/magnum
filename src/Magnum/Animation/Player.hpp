@@ -31,6 +31,7 @@
 
 #include "Player.h"
 
+#include <functional>
 #include <Corrade/Containers/Optional.h>
 
 namespace Magnum { namespace Animation {
@@ -69,6 +70,10 @@ template<class T, class K> struct Player<T, K>::Track  {
     std::size_t hint;
 };
 #endif
+
+template<class T, class K> void Player<T, K>::advance(const T time, const std::initializer_list<std::reference_wrapper<Player<T, K>>> players) {
+    for(Player<T, K>& p: players) p.advance(time);
+}
 
 template<class T, class K> Player<T, K>::Player(Player<T, K>&&) = default;
 
