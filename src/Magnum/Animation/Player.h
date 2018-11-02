@@ -638,6 +638,14 @@ template<class T, class K
         Player<T, K>& play(T startTime);
 
         /**
+         * @brief Resume
+         *
+         * Behaves similarly to @ref play(), but doesn't restart the animation
+         * from the beginning when @ref state() is already @ref State::Playing.
+         */
+        Player<T, K>& resume(T startTime);
+
+        /**
          * @brief Pause
          *
          * Pauses the currently playing animation at given @p pauseTime. If

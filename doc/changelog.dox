@@ -48,6 +48,9 @@ See also:
     @ref Animation::unpack(), @ref Animation::unpackEase() and
     @ref Animation::unpackEaseClamped() utilities for combining interpolators
     with easing functions and/or unpackers
+-   @ref Animation::Player::resume() that acts the same as
+    @ref Animation::Player::play() "play()" except it doesn't restart the
+    animation from the start if it is already playing
 
 @subsubsection changelog-latest-new-math Math library
 

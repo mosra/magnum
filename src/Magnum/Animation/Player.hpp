@@ -118,6 +118,11 @@ template<class T, class K> Player<T, K>& Player<T, K>::play(T startTime) {
     return *this;
 }
 
+template<class T, class K> Player<T, K>& Player<T, K>::resume(T startTime) {
+    if(_state == State::Playing) return *this;
+    return play(startTime);
+}
+
 template<class T, class K> Player<T, K>& Player<T, K>::pause(T pauseTime) {
     /* Avoid breaking the pause state when not playing */
     if(_state != State::Playing) return *this;

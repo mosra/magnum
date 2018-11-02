@@ -48,6 +48,7 @@ struct PlayerTest: TestSuite::Tester {
     void advanceNotRunning();
     void advancePlaying();
     void advanceRestart();
+    void advanceResume();
     void advanceStop();
     void advancePauseResume();
     void advancePauseStop();
@@ -129,6 +130,7 @@ PlayerTest::PlayerTest() {
               &PlayerTest::advanceNotRunning,
               &PlayerTest::advancePlaying,
               &PlayerTest::advanceRestart,
+              &PlayerTest::advanceResume,
               &PlayerTest::advanceStop,
               &PlayerTest::advancePauseResume,
               &PlayerTest::advancePauseStop,
@@ -428,6 +430,43 @@ void PlayerTest::advanceRestart() {
     CORRADE_COMPARE(player.state(), State::Playing);
     CORRADE_COMPARE(player.elapsed(5.0f), std::make_pair(0, 1.0f));
     CORRADE_COMPARE(value, 2.5f);
+}
+
+void PlayerTest::advanceResume() {
+    /* A variant of advanceRestart() that doesn't restart */
+
+    Float value = -1.0f;
+    Player<Float> player;
+    player.add(Track, value)
+        .resume(2.0f);
+
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(0.0f), std::make_pair(0, 0.0f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* Still before starting time, nothing is done */
+    player.advance(1.75f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(1.75f), std::make_pair(0, 0.0f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    /* 1.75 secs in */
+    player.advance(3.75f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(3.75f), std::make_pair(0, 1.75f));
+    CORRADE_COMPARE(value, 4.0f);
+
+    /* Calling resume() will not restart from the beginning */
+    value = -1.0f;
+    player.resume(4.0f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(4.0f), std::make_pair(0, 2.0f));
+    CORRADE_COMPARE(value, -1.0f);
+
+    player.advance(4.5f);
+    CORRADE_COMPARE(player.state(), State::Playing);
+    CORRADE_COMPARE(player.elapsed(4.5f), std::make_pair(0, 2.5f));
+    CORRADE_COMPARE(value, 3.5f);
 }
 
 void PlayerTest::advanceStop() {
