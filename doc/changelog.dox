@@ -58,6 +58,14 @@ See also:
     @ref Math::Color3 and @ref Math::Color4 literals with the new experimental
     @ref Corrade::Utility::Tweakable utility. See also @ref tweakableliterals.
 
+@subsection changelog-latest-changes Changes and improvements
+
+@subsubsection changelog-latest-changes-gl GL library
+
+-   New @ref GL::Context::State::BindScratchVao state to make external OpenGL
+    code that's not VAO-aware working on core GL profiles (which don't allow
+    default VAOs being used for drawing)
+
 @subsection changelog-latest-bugfixes Bug fixes
 
 -   Fixed @ref Platform::Sdl2Application and @ref Platform::GlfwApplication to

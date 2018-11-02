@@ -860,6 +860,20 @@ void Context::resetState(const States states) {
         _state->framebuffer->reset();
     if(states & State::Meshes)
         _state->mesh->reset();
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* Bind a scratch VAO for external GL code that is not VAO-aware and just
+       enables vertex attributes on the default VAO. Generate it on-demand as
+       we don't expect this case to be used very often. */
+    if(states & State::BindScratchVao) {
+        if(!_state->mesh->scratchVAO)
+            glGenVertexArrays(1, &_state->mesh->scratchVAO);
+
+        _state->mesh->bindVAOImplementation(_state->mesh->scratchVAO);
+
+    /* Otherwise just unbind the current VAO and leave the the default */
+    } else
+    #endif
     if(states & State::MeshVao)
         _state->mesh->bindVAOImplementation(0);
 

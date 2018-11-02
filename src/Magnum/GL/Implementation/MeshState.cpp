@@ -170,7 +170,11 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
 
     #ifndef MAGNUM_TARGET_GLES
     /* If we are on core profile and ARB_VAO was explicitly disabled by the
-       user, we need to bind a default VAO so we are still able to draw things */
+       user, we need to bind a default VAO so we are still able to draw things.
+       There's another "scratch" VAO that's used by Context::resetState() for
+       crappy external code if ARB_VAO *isn't* disabled, but that one is
+       generated on-demand as we optimistically hope crappy external code is
+       not a norm. */
     if(context.isExtensionDisabled<Extensions::ARB::vertex_array_object>() && context.isCoreProfileInternal(contextState)) {
         glGenVertexArrays(1, &defaultVAO);
         glBindVertexArray(defaultVAO);
@@ -182,8 +186,11 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
 
 MeshState::~MeshState() {
     #ifndef MAGNUM_TARGET_GLES
-    /* If the default VAO was created, we need to delete it to avoid leaks */
+    /* If the default VAO was created, we need to delete it to avoid leaks.
+       Delete also the scratch VAO if the engine was so unlucky to have to run
+       awful external GL code (it was created in Context::resetState()). */
     if(defaultVAO) glDeleteVertexArrays(1, &defaultVAO);
+    if(scratchVAO) glDeleteVertexArrays(1, &scratchVAO);
     #endif
 }
 

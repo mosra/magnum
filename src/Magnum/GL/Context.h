@@ -237,21 +237,34 @@ class MAGNUM_GL_EXPORT Context {
              */
             MeshVao = 1 << 3,
 
+            /**
+             * Bind a "scratch" VAO on core profile.
+             *
+             * Use if external code is not VAO-aware and would otherwise try to
+             * enable vertex attributes on the default (zero) VAO, causing GL
+             * errors. Meant to be used together with @ref State::MeshVao (or
+             * @ref State::EnterExternal).
+             *
+             * Does nothing on compatibility profile and ES / WebGL platforms,
+             * as using the default VAO is allowed there.
+             */
+            BindScratchVao = 1 << 4,
+
             /** Reset tracked pixel storage-related state */
-            PixelStorage = 1 << 4,
+            PixelStorage = 1 << 5,
 
             /** Reset tracked renderer-related state */
-            Renderer = 1 << 5,
+            Renderer = 1 << 6,
 
             /** Reset tracked shader-related bindings */
-            Shaders = 1 << 6,
+            Shaders = 1 << 7,
 
             /** Reset tracked texture-related bindings and state */
-            Textures = 1 << 7,
+            Textures = 1 << 8,
 
             #ifndef MAGNUM_TARGET_GLES2
             /** Reset tracked transform feedback-related bindings */
-            TransformFeedback = 1 << 8,
+            TransformFeedback = 1 << 9,
             #endif
 
             /**
@@ -259,6 +272,8 @@ class MAGNUM_GL_EXPORT Context {
              *
              * Resets all state that could cause external code to accidentally
              * modify Magnum objects. This includes only @ref State::MeshVao.
+             * In some pathological cases you may want to enable
+             * @ref State::BindScratchVao as well.
              */
             EnterExternal = MeshVao,
 

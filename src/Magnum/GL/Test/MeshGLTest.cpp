@@ -132,6 +132,7 @@ struct MeshGLTest: OpenGLTester {
 
     void unbindVAOWhenSettingIndexBufferData();
     void unbindVAOBeforeEnteringExternalSection();
+    void bindScratchVaoWhenEnteringExternalSection();
 
     #ifndef MAGNUM_TARGET_GLES
     void setBaseVertex();
@@ -251,6 +252,7 @@ MeshGLTest::MeshGLTest() {
 
               &MeshGLTest::unbindVAOWhenSettingIndexBufferData,
               &MeshGLTest::unbindVAOBeforeEnteringExternalSection,
+              &MeshGLTest::bindScratchVaoWhenEnteringExternalSection,
 
               #ifndef MAGNUM_TARGET_GLES
               &MeshGLTest::setBaseVertex,
@@ -2109,6 +2111,48 @@ void MeshGLTest::unbindVAOBeforeEnteringExternalSection() {
         Context::current().resetState(Context::State::MeshVao);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+        /* Be nice to the other tests */
+        Context::current().resetState(Context::State::ExitExternal);
+    }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(value, 92);
+}
+
+void MeshGLTest::bindScratchVaoWhenEnteringExternalSection() {
+    typedef Attribute<0, Float> Attribute;
+
+    const Float data[] = { -0.7f, Math::unpack<Float, UnsignedByte>(92), Math::unpack<Float, UnsignedByte>(32) };
+    Buffer buffer{Buffer::TargetHint::Array};
+    buffer.setData(data, BufferUsage::StaticDraw);
+
+    Buffer indices{Buffer::TargetHint::ElementArray};
+    indices.setData(std::vector<UnsignedByte>{5, 0}, BufferUsage::StaticDraw);
+
+    Mesh mesh;
+    mesh.addVertexBuffer(buffer, 4, Attribute{})
+        .setIndexBuffer(indices, 0, MeshIndexType::UnsignedByte);
+
+    {
+        /* Should bind a scratch VAO only on desktop with core profile and be
+           a no-op everywhere else */
+        Context::current().resetState(Context::State::EnterExternal
+            |Context::State::BindScratchVao /* Comment this out to watch the world burn */
+            );
+
+        /* Should throw no GL error if scratch VAO is bound */
+        glDrawArrays(GL_POINTS, 0, 0);
 
         /* Be nice to the other tests */
         Context::current().resetState(Context::State::ExitExternal);

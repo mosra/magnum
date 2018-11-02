@@ -65,7 +65,10 @@ struct MeshState {
     void(*bindVAOImplementation)(GLuint);
 
     #ifndef MAGNUM_TARGET_GLES
-    GLuint defaultVAO{}; /* Used on core profile in case ARB_VAO is disabled */
+    GLuint defaultVAO{}, /* Used on core profile in case ARB_VAO is disabled */
+        /* Used for non-VAO-aware external GL code on core profile in case
+           ARB_VAO is *not* disabled */
+        scratchVAO{};
     #endif
 
     GLuint currentVAO;
