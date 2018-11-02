@@ -692,6 +692,7 @@ class MAGNUM_GL_EXPORT Context {
 CORRADE_ENUMSET_OPERATORS(Context::Flags)
 #endif
 CORRADE_ENUMSET_OPERATORS(Context::DetectedDrivers)
+CORRADE_ENUMSET_OPERATORS(Context::States)
 
 #ifndef MAGNUM_TARGET_WEBGL
 /** @debugoperatorclassenum{Context,Context::Flag} */
