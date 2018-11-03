@@ -42,7 +42,7 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, c
     #elif !defined(MAGNUM_TARGET_WEBGL)
     /* Luminance is not renderable in most cases */
     GlyphCache(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>() ?
-        GL::TextureFormat::Red : GL::TextureFormat::RGB, originalSize, size, Vector2i(radius)),
+        GL::TextureFormat::R8 : GL::TextureFormat::RGB8, originalSize, size, Vector2i(radius)),
     #else
     GlyphCache(GL::TextureFormat::RGB, originalSize, size, Vector2i(radius)),
     #endif
