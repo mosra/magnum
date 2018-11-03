@@ -37,6 +37,7 @@ set_property(TARGET
 
 set_target_properties(
     AnimationBenchmark
+    AnimationEasingTest
     AnimationInterpolationTest
     AnimationPlayerTest
     AnimationPlayerCustomTest
