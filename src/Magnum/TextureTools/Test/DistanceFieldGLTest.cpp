@@ -41,6 +41,10 @@
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
 
+#ifndef MAGNUM_TARGET_WEBGL
+#include "Magnum/GL/DebugOutput.h"
+#endif
+
 #include "configure.h"
 
 namespace Magnum { namespace TextureTools { namespace Test {
@@ -49,6 +53,7 @@ struct DistanceFieldGLTest: GL::OpenGLTester {
     explicit DistanceFieldGLTest();
 
     void test();
+    void benchmark();
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager;
@@ -56,6 +61,10 @@ struct DistanceFieldGLTest: GL::OpenGLTester {
 
 DistanceFieldGLTest::DistanceFieldGLTest() {
     addTests({&DistanceFieldGLTest::test});
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    addBenchmarks({&DistanceFieldGLTest::benchmark}, 5, BenchmarkType::GpuTime);
+    #endif
 
     /* Load the plugin directly from the build tree. Otherwise it's either
        static and already loaded or not present in the build tree */
@@ -153,6 +162,80 @@ void DistanceFieldGLTest::test() {
     CORRADE_COMPARE_WITH((ImageView2D{actualOutputImage->storage(), PixelFormat::R8Unorm, actualOutputImage->size(), actualOutputImage->data()}), Utility::Directory::join(DISTANCEFIELDGLTEST_FILES_DIR, "output.tga"),
         DebugTools::CompareImageToFile{_manager});
 }
+
+#ifndef MAGNUM_TARGET_WEBGL
+void DistanceFieldGLTest::benchmark() {
+    std::unique_ptr<Trade::AbstractImporter> importer;
+    if(!(importer = _manager.loadAndInstantiate("TgaImporter")))
+        CORRADE_SKIP("TgaImporter plugin not found.");
+
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(DISTANCEFIELDGLTEST_FILES_DIR, "input.tga")));
+    CORRADE_COMPARE(importer->image2DCount(), 1);
+    Containers::Optional<Trade::ImageData2D> inputImage = importer->image2D(0);
+    CORRADE_VERIFY(inputImage);
+    CORRADE_COMPARE(inputImage->format(), PixelFormat::R8Unorm);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    const GL::TextureFormat inputFormat = GL::TextureFormat::R8;
+    #elif !defined(MAGNUM_TARGET_WEBGL)
+    GL::TextureFormat inputFormat;
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
+        inputFormat = GL::TextureFormat::R8;
+    else
+        inputFormat = GL::TextureFormat::Luminance; /** @todo Luminance8 */
+    #else
+    const GL::TextureFormat inputFormat = GL::TextureFormat::Luminance;
+    #endif
+
+    GL::Texture2D input;
+    input.setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
+        .setMagnificationFilter(GL::SamplerFilter::Nearest)
+        .setStorage(1, inputFormat, inputImage->size());
+
+    #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
+    input.setSubImage(0, {}, *inputImage);
+    #else
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
+        input.setSubImage(0, {}, ImageView2D{inputImage->storage(), GL::PixelFormat::Red, GL::PixelType::UnsignedByte, inputImage->size(), inputImage->data()});
+    else
+        input.setSubImage(0, {}, *inputImage);
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES2
+    const GL::TextureFormat outputFormat = GL::TextureFormat::R8;
+    #else
+    GL::TextureFormat outputFormat;
+    if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
+        outputFormat = GL::TextureFormat::R8;
+    else
+        outputFormat = GL::TextureFormat::Luminance; /** @todo Luminance8 */
+    #endif
+
+    GL::Texture2D output;
+    output.setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
+        .setMagnificationFilter(GL::SamplerFilter::Nearest)
+        .setStorage(1, outputFormat, Vector2i{64});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* So it doesn't spam too much */
+    GL::DebugOutput::setCallback(nullptr);
+
+    CORRADE_BENCHMARK(5) {
+        /* This is creating the shader from scratch every time, so no wonder
+           it's so freaking slow */
+        TextureTools::distanceField(input, output, {{}, Vector2i{64}}, 32
+            #ifdef MAGNUM_TARGET_GLES
+            , inputImage->size()
+            #endif
+            );
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+    }
+
+    GL::DebugOutput::setDefaultCallback();
+}
+#endif
 
 }}}
 
