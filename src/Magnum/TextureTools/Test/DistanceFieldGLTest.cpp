@@ -28,6 +28,7 @@
 
 #include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/DebugTools/CompareImage.h"
 #include "Magnum/DebugTools/TextureImage.h"
@@ -120,12 +121,8 @@ void DistanceFieldGLTest::test() {
     else
         outputFormat = GL::TextureFormat::Luminance; /** @todo Luminance8 */
     #else
-    const GL::TextureFormat outputFormat = GL::TextureFormat::Luminance;
+    const GL::TextureFormat outputFormat = GL::TextureFormat::RGBA;
     #endif
-
-    /** @todo luminance is usually not renderable, but with RGBA i would need
-        some TextureTools::swizzle() to get rid of the extra channels for an
-        image compare ... so at the moment, the test just blows up on WebGL 1 */
 
     GL::Texture2D output;
     output.setMinificationFilter(GL::SamplerFilter::Nearest, GL::SamplerMipmap::Base)
@@ -146,13 +143,15 @@ void DistanceFieldGLTest::test() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     Containers::Optional<Image2D> actualOutputImage;
-    #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
+    #ifndef MAGNUM_TARGET_GLES2
     actualOutputImage = Image2D{PixelFormat::R8Unorm};
-    #else
+    #elif !defined(MAGNUM_TARGET_WEBGL)
     if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
         actualOutputImage = Image2D{GL::PixelFormat::Red, GL::PixelType::UnsignedByte};
     else
         actualOutputImage = Image2D{PixelFormat::R8Unorm};
+    #else
+    actualOutputImage = Image2D{PixelFormat::RGBA8Unorm};
     #endif
 
     DebugTools::textureSubImage(output, 0, {{}, Vector2i{64}}, *actualOutputImage);
@@ -162,9 +161,28 @@ void DistanceFieldGLTest::test() {
     if(_manager.loadState("AnyImageImporter") == PluginManager::LoadState::NotFound)
         CORRADE_SKIP("AnyImageImporter plugin not found.");
 
+    /** @todo Do this via some TextureTools::pixelFormatTransform() */
+    if(actualOutputImage->format() == PixelFormat::RGBA8Unorm) {
+        /* Shrink the data */
+        Containers::ArrayView<const Color4ub> in = Containers::arrayCast<const Color4ub>(actualOutputImage->data());
+        Containers::ArrayView<UnsignedByte> out = Containers::arrayCast<UnsignedByte>(actualOutputImage->data());
+        for(std::size_t i = 0; i != in.size(); ++i) {
+            out[i] = in[i].r();
+        }
+
+        actualOutputImage = Image2D{PixelFormat::R8Unorm, actualOutputImage->size(), actualOutputImage->release()};
+    }
+
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     /* In some cases actualOutputImage might have GL-specific format,
        reinterpret as R8Unorm for the comparison to work */
-    CORRADE_COMPARE_WITH((ImageView2D{actualOutputImage->storage(), PixelFormat::R8Unorm, actualOutputImage->size(), actualOutputImage->data()}), Utility::Directory::join(DISTANCEFIELDGLTEST_FILES_DIR, "output.tga"),
+    if(actualOutputImage->format() == pixelFormatWrap(GL::PixelFormat::Red)) {
+        actualOutputImage = Image2D{actualOutputImage->storage(), PixelFormat::R8Unorm, actualOutputImage->size(), actualOutputImage->release()};
+    }
+    #endif
+
+    CORRADE_COMPARE_WITH(*actualOutputImage,
+        Utility::Directory::join(DISTANCEFIELDGLTEST_FILES_DIR, "output.tga"),
         DebugTools::CompareImageToFile{_manager});
 }
 
@@ -182,14 +200,12 @@ void DistanceFieldGLTest::benchmark() {
 
     #ifndef MAGNUM_TARGET_GLES2
     const GL::TextureFormat inputFormat = GL::TextureFormat::R8;
-    #elif !defined(MAGNUM_TARGET_WEBGL)
+    #else
     GL::TextureFormat inputFormat;
     if(GL::Context::current().isExtensionSupported<GL::Extensions::EXT::texture_rg>())
         inputFormat = GL::TextureFormat::R8;
     else
         inputFormat = GL::TextureFormat::Luminance; /** @todo Luminance8 */
-    #else
-    const GL::TextureFormat inputFormat = GL::TextureFormat::Luminance;
     #endif
 
     GL::Texture2D input;
