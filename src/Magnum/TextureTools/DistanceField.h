@@ -93,9 +93,6 @@ http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnifica
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
     for more information.
-
-@bug ES (and maybe GL < 3.20) implementation behaves slightly different
-    (jaggies, visible e.g. when rendering outlined fonts)
 */
 class MAGNUM_TEXTURETOOLS_EXPORT DistanceField {
     public:

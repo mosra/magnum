@@ -66,6 +66,14 @@ See also:
     code that's not VAO-aware working on core GL profiles (which don't allow
     default VAOs being used for drawing)
 
+@subsubsection changelog-latest-changes-texturetools TextureTools library
+
+-   Further performance and output quality improvements for
+    @ref TextureTools::DistanceField, making the ES2/WebGL 1 consistent with
+    desktop and speeding up the processing to take only 60% of the time
+    compared to before. It's now also possible to reuse the internal state for
+    batch processing.
+
 @subsection changelog-latest-bugfixes Bug fixes
 
 -   Fixed @ref Platform::Sdl2Application and @ref Platform::GlfwApplication to
