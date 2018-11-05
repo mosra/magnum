@@ -85,8 +85,8 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
         void setDistanceFieldImage(const Vector2i& offset, const ImageView2D& image);
 
     private:
-        const Vector2 scale;
-        const UnsignedInt radius;
+        const Vector2 _scale;
+        const UnsignedInt _radius;
 };
 
 }}
