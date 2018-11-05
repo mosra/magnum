@@ -30,6 +30,7 @@
  */
 
 #include "Magnum/Text/GlyphCache.h"
+#include "Magnum/TextureTools/DistanceField.h"
 
 namespace Magnum { namespace Text {
 
@@ -85,8 +86,8 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
         void setDistanceFieldImage(const Vector2i& offset, const ImageView2D& image);
 
     private:
-        const Vector2 _scale;
-        const UnsignedInt _radius;
+        Vector2 _scale;
+        TextureTools::DistanceField _distanceField;
 };
 
 }}

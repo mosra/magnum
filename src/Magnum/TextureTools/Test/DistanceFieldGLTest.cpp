@@ -132,7 +132,12 @@ void DistanceFieldGLTest::test() {
         .setMagnificationFilter(GL::SamplerFilter::Nearest)
         .setStorage(1, outputFormat, Vector2i{64});
 
-    TextureTools::distanceField(input, output, {{}, Vector2i{64}}, 32
+    TextureTools::DistanceField distanceField{32};
+    CORRADE_COMPARE(distanceField.radius(), 32);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    distanceField(input, output, {{}, Vector2i{64}}
         #ifdef MAGNUM_TARGET_GLES
         , inputImage->size()
         #endif
@@ -218,13 +223,15 @@ void DistanceFieldGLTest::benchmark() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    TextureTools::DistanceField distanceField{32};
+
     /* So it doesn't spam too much */
     GL::DebugOutput::setCallback(nullptr);
 
     CORRADE_BENCHMARK(5) {
         /* This is creating the shader from scratch every time, so no wonder
            it's so freaking slow */
-        TextureTools::distanceField(input, output, {{}, Vector2i{64}}, 32
+        distanceField(input, output, {{}, Vector2i{64}}
             #ifdef MAGNUM_TARGET_GLES
             , inputImage->size()
             #endif

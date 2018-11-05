@@ -82,6 +82,12 @@ See also:
 
 -   Fixed various broken links (see [mosra/magnum#291](https://github.com/mosra/magnum/issues/291))
 
+@subsection changelog-latest-deprecated Deprecated APIs
+
+-   `TextureTools::distanceField()` is deprecated due to inefficiency of its
+    statelessness when doing batch processing. Use the
+    @ref TextureTools::DistanceField class instead.
+
 @section changelog-2018-10 2018.10
 
 Released 2018-10-23, tagged as

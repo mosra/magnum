@@ -29,6 +29,8 @@
  * @brief Function @ref Magnum::TextureTools::distanceField()
  */
 
+#include <memory>
+
 #include "Magnum/configure.h"
 
 #ifdef MAGNUM_TARGET_GL
@@ -42,37 +44,29 @@
 namespace Magnum { namespace TextureTools {
 
 /**
-@brief Create signed distance field
-@param input        Input texture
-@param output       Output texture
-@param rectangle    Rectangle in output texture where to render
-@param radius       Max lookup radius in input texture
-@param imageSize    Input texture size. Needed only in OpenGL ES, in desktop
-    OpenGL the information is gathered automatically using
-    @ref GL::Texture2D::imageSize().
+@brief Create a signed distance field
 
-Converts binary image (stored in red channel of @p input) to signed distance
-field (stored in red channel in @p rectangle of @p output). The purpose of this
-function is to convert high-resolution binary image (such as vector artwork or
-font glyphs) to low-resolution grayscale image. The image will then occupy much
-less memory and can be scaled without aliasing issues. Additionally it provides
-foundation for features like outlining, glow or drop shadow essentially for
-free.
+Converts a binary black/white image (stored in the red channel of @p input) to
+a signed distance field (stored in the red channel of @p output @p rectangle).
+The purpose of this function is to convert a high-resolution binary image (such
+as vector artwork or font glyphs) to a low-resolution grayscale image. The
+image will then occupy much less memory and can be scaled without aliasing
+issues. Additionally it provides foundation for features like outlining, glow
+or drop shadow essentially for free.
 
 You can also use the @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
-utility to do distance field conversion on command-line. By extension, this
-functionality is also provided through @ref magnum-fontconverter "magnum-fontconverter"
-utility.
+utility to do distance field conversion on command-line. This functionality is
+also used inside the @ref magnum-fontconverter "magnum-fontconverter" utility.
 
-### The algorithm
+@section TextureTools-DistanceField-algorithm The algorithm
 
-For each pixel inside @p rectangle the algorithm looks at corresponding pixel in
-@p input and tries to find nearest pixel of opposite color in area given by
-@p radius. Signed distance between the points is then saved as value of given
-pixel in @p output. Value of 1.0 means that the pixel was originally colored
-white and nearest black pixel is farther than @p radius, value of 0.0 means
-that the pixel was originally black and nearest white pixel is farther than
-@p radius. Values around 0.5 are around edges.
+For each pixel inside the @p output sub-rectangle the algorithm looks at
+corresponding pixel in the input and tries to find nearest pixel of opposite
+color in an area defined @p radius. Signed distance between the points is then
+saved as value of given pixel in @p output. Value of 1.0 means that the pixel
+was originally colored white and nearest black pixel is farther than @p radius,
+value of 0.0 means that the pixel was originally black and nearest white pixel
+is farther than @p radius. Values around 0.5 are around edges.
 
 The resulting texture can be used with bilinear filtering. It can be converted
 back to binary form in shader using e.g. GLSL @glsl smoothstep() @ce function
@@ -84,13 +78,14 @@ Based on: *Chris Green - Improved Alpha-Tested Magnification for Vector Textures
 and Special Effects, SIGGRAPH 2007,
 http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnification.pdf*
 
-@attention This is GPU-only implementation, so it expects active context.
+@attention This is a GPU-only implementation, so it expects an active GL
+    context.
 
 @note If internal format of @p output texture is not renderable, this function
-    prints message to error output and does nothing. In desktop OpenGL and
-    OpenGL ES 3.0 it's common to render to @ref GL::TextureFormat::R8. In
+    prints a message to error output and does nothing. On desktop OpenGL and
+    OpenGL ES 3.0 it's common to render to @ref GL::TextureFormat::R8. On
     OpenGL ES 2.0 you can use @ref GL::TextureFormat::Red if
-    @gl_extension{EXT,texture_rg} is available, if not, the smallest but still
+    @gl_extension{EXT,texture_rg} is available; if not, the smallest but still
     inefficient supported format is in most cases @ref GL::TextureFormat::RGB,
     rendering to @ref GL::TextureFormat::Luminance is not supported in most
     cases.
@@ -102,10 +97,54 @@ http://www.valvesoftware.com/publications/2007/SIGGRAPH2007_AlphaTestedMagnifica
 @bug ES (and maybe GL < 3.20) implementation behaves slightly different
     (jaggies, visible e.g. when rendering outlined fonts)
 */
-#ifndef MAGNUM_TARGET_GLES
-void MAGNUM_TEXTURETOOLS_EXPORT distanceField(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, Int radius, const Vector2i& imageSize = Vector2i());
-#else
-void MAGNUM_TEXTURETOOLS_EXPORT distanceField(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, Int radius, const Vector2i& imageSize);
+class MAGNUM_TEXTURETOOLS_EXPORT DistanceField {
+    public:
+        /**
+         * @brief Constructor
+         * @param radius       Max lookup radius in the input texture
+         *
+         * Prepares the shader and other internal state for given @p radius.
+         */
+        explicit DistanceField(UnsignedInt radius);
+
+        ~DistanceField();
+
+        /** @brief Max lookup radius */
+        UnsignedInt radius() const;
+
+        /**
+         * @brief Calculate the distance field
+         * @param input        Input texture
+         * @param output       Output texture
+         * @param rectangle    Rectangle in output texture where to render
+         * @param imageSize    Input texture size. Needed only for OpenGL ES,
+         *      on desktop GL the information is gathered automatically using
+         *      @ref GL::Texture2D::imageSize().
+         */
+        void operator()(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, const Vector2i& imageSize
+            #ifndef MAGNUM_TARGET_GLES
+            = {}
+            #endif
+        );
+
+    private:
+        struct State;
+        std::unique_ptr<State> _state;
+};
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/**
+@brief Create a signed distance field
+@deprecated Deprecated due to inefficiency of its statelessness when doing
+    batch processing. Use the @ref DistanceField class instead.
+*/
+inline CORRADE_DEPRECATED("use the DistanceField class instead") void distanceField(GL::Texture2D& input, GL::Texture2D& output, const Range2Di& rectangle, Int radius, const Vector2i& imageSize
+    #ifndef MAGNUM_TARGET_GLES
+    = Vector2i{}
+    #endif
+) {
+    DistanceField{UnsignedInt(radius)}(input, output, rectangle, imageSize);
+}
 #endif
 
 }}

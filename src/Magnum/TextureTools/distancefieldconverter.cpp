@@ -203,7 +203,7 @@ int DistanceFieldConverter::exec() {
 
     /* Do it */
     Debug() << "Converting image of size" << image->size() << "to distance field...";
-    TextureTools::distanceField(input, output, {{}, args.value<Vector2i>("output-size")}, args.value<Int>("radius"), image->size());
+    TextureTools::DistanceField{args.value<UnsignedInt>("radius")}(input, output, {{}, args.value<Vector2i>("output-size")}, image->size());
 
     /* Save image */
     Image2D result{PixelFormat::R8Unorm};
