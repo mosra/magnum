@@ -29,7 +29,9 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Configuration.h>
 #include <Corrade/Utility/Format.h>
+#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <Corrade/Utility/TweakableParser.h>
+#endif
 
 #include "Magnum/Math/Angle.h"
 
@@ -51,8 +53,10 @@ struct AngleTest: Corrade::TestSuite::Tester {
     void debugRad();
     void configurationDeg();
     void configurationRad();
+    #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
     template<class T> void tweakable();
     template<class T> void tweakableError();
+    #endif
 };
 
 typedef Math::Deg<Float> Deg;
@@ -62,6 +66,7 @@ typedef Math::Rad<Double> Radd;
 
 using namespace Literals;
 
+#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 namespace {
 
 constexpr struct {
@@ -111,6 +116,7 @@ template<> struct TweakableTraits<Radd> {
 };
 
 }
+#endif
 
 AngleTest::AngleTest() {
     addTests({&AngleTest::construct,
@@ -127,6 +133,7 @@ AngleTest::AngleTest() {
               &AngleTest::configurationDeg,
               &AngleTest::configurationRad});
 
+    #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
     addInstancedTests<AngleTest>({
         &AngleTest::tweakable<Deg>,
         &AngleTest::tweakable<Degd>,
@@ -140,6 +147,7 @@ AngleTest::AngleTest() {
         &AngleTest::tweakableError<Rad>,
         &AngleTest::tweakableError<Radd>},
         Corrade::Containers::arraySize(TweakableErrorData));
+    #endif
 }
 
 void AngleTest::construct() {
@@ -304,6 +312,7 @@ void AngleTest::configurationRad() {
     CORRADE_COMPARE(c.value<Rad>("angle"), angle);
 }
 
+#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 template<class T> void AngleTest::tweakable() {
     auto&& data = TweakableData[testCaseInstanceId()];
     setTestCaseName(Corrade::Utility::formatString("tweakable<{}>", TweakableTraits<T>::name()));
@@ -329,6 +338,7 @@ template<class T> void AngleTest::tweakableError() {
     CORRADE_COMPARE(out.str(), Corrade::Utility::formatString(data.error, TweakableTraits<T>::literal()));
     CORRADE_COMPARE(state, data.state);
 }
+#endif
 
 }}}
 

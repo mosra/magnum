@@ -27,7 +27,9 @@
 #include <algorithm>
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <Corrade/Utility/Tweakable.h>
+#endif
 
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Vector3.h"
@@ -62,8 +64,10 @@ struct HalfTest: Corrade::TestSuite::Tester {
 
     void literal();
     void debug();
+    #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
     void tweakable();
     void tweakableError();
+    #endif
 
     private:
         /* Naive / ground-truth packing helpers */
@@ -86,6 +90,7 @@ typedef Math::Constants<Float> Constants;
 
 using namespace Literals;
 
+#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 namespace {
 
 const struct {
@@ -119,6 +124,7 @@ constexpr struct {
 };
 
 }
+#endif
 
 HalfTest::HalfTest() {
     addTests({&HalfTest::unpack,
@@ -150,11 +156,13 @@ HalfTest::HalfTest() {
               &HalfTest::literal,
               &HalfTest::debug});
 
+    #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
     addInstancedTests({&HalfTest::tweakable},
                       Corrade::Containers::arraySize(TweakableData));
 
     addInstancedTests({&HalfTest::tweakableError},
                       Corrade::Containers::arraySize(TweakableErrorData));
+    #endif
 
     /* Calculate tables for table-based benchmark */
     _mantissaTable[0] = 0;
@@ -661,6 +669,7 @@ void HalfTest::debug() {
     #endif
 }
 
+#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 void HalfTest::tweakable() {
     auto&& data = TweakableData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -682,8 +691,8 @@ void HalfTest::tweakableError() {
     CORRADE_COMPARE(out.str(), data.error);
     CORRADE_COMPARE(state, data.state);
 }
+#endif
 
 }}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::HalfTest)
-

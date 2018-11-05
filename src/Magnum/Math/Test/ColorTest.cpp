@@ -28,7 +28,9 @@
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/Configuration.h>
 #include <Corrade/Utility/Format.h>
+#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <Corrade/Utility/Tweakable.h>
+#endif
 
 #include "Magnum/Math/Color.h"
 
@@ -108,6 +110,7 @@ struct ColorTest: Corrade::TestSuite::Tester {
     void debugUb();
     void configuration();
 
+    #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
     void tweakableRgb();
     void tweakableSrgb();
     void tweakableRgbf();
@@ -125,6 +128,7 @@ struct ColorTest: Corrade::TestSuite::Tester {
     void tweakableErrorSrgbf();
     void tweakableErrorRgbaf();
     void tweakableErrorSrgbaf();
+    #endif
 };
 
 typedef Math::Vector3<Float> Vector3;
@@ -139,6 +143,7 @@ typedef Math::Deg<Float> Deg;
 
 using namespace Literals;
 
+#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 namespace {
 
 const struct {
@@ -174,6 +179,7 @@ constexpr struct {
 };
 
 }
+#endif
 
 ColorTest::ColorTest() {
     addTests({&ColorTest::construct,
@@ -216,6 +222,7 @@ ColorTest::ColorTest() {
               &ColorTest::debugUb,
               &ColorTest::configuration});
 
+    #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
     addInstancedTests({&ColorTest::tweakableRgb,
                        &ColorTest::tweakableSrgb,
                        &ColorTest::tweakableRgba,
@@ -235,6 +242,7 @@ ColorTest::ColorTest() {
                        &ColorTest::tweakableErrorRgbaf,
                        &ColorTest::tweakableErrorSrgbaf},
                       Corrade::Containers::arraySize(TweakableErrorData));
+    #endif
 }
 
 void ColorTest::construct() {
@@ -897,6 +905,7 @@ void ColorTest::configuration() {
     CORRADE_COMPARE(c.value<Color4>("color4"), color4);
 }
 
+#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 void ColorTest::tweakableRgb() {
     auto&& data = TweakableData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -1088,6 +1097,7 @@ void ColorTest::tweakableErrorSrgbaf() {
     CORRADE_COMPARE(out.str(), Corrade::Utility::formatString(data.error, "ff3366aa", "rgbaf", "s"));
     CORRADE_COMPARE(state, data.state);
 }
+#endif
 
 }}}
 

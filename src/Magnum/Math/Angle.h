@@ -334,8 +334,8 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Rad<Magnum::Double
     /** @brief Parse the value */
     static std::pair<TweakableState, Magnum::Math::Rad<Magnum::Double>> parse(Containers::ArrayView<const char> value);
 };
+#endif
 
 }}
-#endif
 
 #endif

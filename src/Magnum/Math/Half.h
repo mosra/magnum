@@ -163,6 +163,7 @@ MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug
 
 }}
 
+#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 namespace Corrade { namespace Utility {
 
 /**
@@ -178,5 +179,6 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Half> {
 };
 
 }}
+#endif
 
 #endif

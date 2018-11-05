@@ -1284,6 +1284,7 @@ template<class T> struct ConfigurationValue<Magnum::Math::Color3<T>>: Configurat
 /** @configurationvalue{Magnum::Color4} */
 template<class T> struct ConfigurationValue<Magnum::Math::Color4<T>>: ConfigurationValue<Magnum::Math::Vector<4, T>> {};
 
+#if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 /**
 @tweakableliteral{Magnum::Math::Color3}
 
@@ -1347,6 +1348,7 @@ template<> struct MAGNUM_EXPORT TweakableParser<Magnum::Math::Color4<Magnum::Flo
     /** @brief Parse the value */
     static std::pair<TweakableState, Magnum::Math::Color4<Magnum::Float>> parse(Containers::ArrayView<const char> value);
 };
+#endif
 
 }}
 
