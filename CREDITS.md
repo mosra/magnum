@@ -83,6 +83,8 @@ Listing only people with code contributions, because otherwise there's too many
     improvements
 -   Stefan Wasilewski ([@smw](https://github.com/smw)) -- macOS port
     improvements
+-   Thomas Tissot-Dupont ([@dolphineye](https://github.com/dolphineye)) ---
+    OpenGL ES compatiblity improvements
 -   Travis Watkins ([@amaranth](https://github.com/amaranth)) -- support for
     windowless applications under macOS
 

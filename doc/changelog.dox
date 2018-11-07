@@ -51,6 +51,9 @@ See also:
 -   @ref Animation::Player::resume() that acts the same as
     @ref Animation::Player::play() "play()" except it doesn't restart the
     animation from the start if it is already playing
+-   Added @ref Animation::Player::advance(T, std::initializer_list<std::reference_wrappe
+r<Player<T, K>>>)
+    for advancing multiple players at the same time
 
 @subsubsection changelog-latest-new-math Math library
 
@@ -85,6 +88,9 @@ See also:
     @ref Platform::GlfwApplication on X11 DEs that don't create any
     `RESOURCE_MANAGER` (see [mosra/magnum#290](https://github.com/mosra/magnum/issues/290))
 -   The @ref GL::Context::States enum set was missing value combining operators
+-   Fixed @ref Text::DistanceFieldGlyphCache internal formats on ES2 devices
+    that support @gl_extension{EXT,texture_storage} (see
+    [mosra/magnum#289](https://github.com/mosra/magnum/pull/289))
 
 @subsection changelog-latest-docs Documentation
 
