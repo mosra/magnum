@@ -126,7 +126,7 @@ you'll be prompted to verify your Developer Account. In the iPhone Settings,
 go to *General* -> *Profiles & Device Management* and *trust* your certificate
 there.
 
-@subsection platform-ios-deploying-target Deplyoyment target
+@subsection platform-ios-deploying-target Deployment target
 
 Generated Xcode projects by default require the iOS version to be matching the
 iPhone SDK version. If you need to make the app running on older devices, set
