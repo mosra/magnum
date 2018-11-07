@@ -59,7 +59,14 @@ if(BUILD_GL_TESTS)
                        ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
     endif()
 
-    corrade_add_test(TextureToolsDistanceFieldGLTest DistanceFieldGLTest.cpp
+    set(TextureToolsDistanceFieldGLTest_SRCS DistanceFieldGLTest.cpp)
+    if(CORRADE_TARGET_IOS)
+        # TODO: do this in a generic way in corrade_add_test()
+        set_source_files_properties(DistanceFieldGLTestFiles PROPERTIES
+            MACOSX_PACKAGE_LOCATION Resources)
+        list(APPEND TextureToolsDistanceFieldGLTest_SRCS DistanceFieldGLTestFiles)
+    endif()
+    corrade_add_test(TextureToolsDistanceFieldGLTest ${TextureToolsDistanceFieldGLTest_SRCS}
         LIBRARIES MagnumTextureTools MagnumGL MagnumTrade MagnumDebugTools MagnumOpenGLTester
         FILES
             DistanceFieldGLTestFiles/input.tga

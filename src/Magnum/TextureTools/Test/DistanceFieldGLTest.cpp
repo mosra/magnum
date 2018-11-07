@@ -58,6 +58,7 @@ struct DistanceFieldGLTest: GL::OpenGLTester {
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager;
+        std::string _testDir;
 };
 
 DistanceFieldGLTest::DistanceFieldGLTest() {
@@ -73,6 +74,20 @@ DistanceFieldGLTest::DistanceFieldGLTest() {
     CORRADE_INTERNAL_ASSERT(_manager.load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     CORRADE_INTERNAL_ASSERT(_manager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
+
+    #ifdef CORRADE_TARGET_APPLE
+    if(Utility::Directory::isSandboxed()
+        #if defined(CORRADE_TARGET_IOS) && defined(CORRADE_TESTSUITE_TARGET_XCTEST)
+        /** @todo Fix this once I persuade CMake to run XCTest tests properly */
+        && std::getenv("SIMULATOR_UDID")
+        #endif
+    ) {
+        _testDir = Utility::Directory::join(Utility::Directory::path(Utility::Directory::executableLocation()), "DistanceFieldGLTestFiles");
+    } else
+    #endif
+    {
+        _testDir = DISTANCEFIELDGLTEST_FILES_DIR;
+    }
 }
 
 void DistanceFieldGLTest::test() {
@@ -80,7 +95,7 @@ void DistanceFieldGLTest::test() {
     if(!(importer = _manager.loadAndInstantiate("TgaImporter")))
         CORRADE_SKIP("TgaImporter plugin not found.");
 
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(DISTANCEFIELDGLTEST_FILES_DIR, "input.tga")));
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "input.tga")));
     CORRADE_COMPARE(importer->image2DCount(), 1);
     Containers::Optional<Trade::ImageData2D> inputImage = importer->image2D(0);
     CORRADE_VERIFY(inputImage);
@@ -182,7 +197,7 @@ void DistanceFieldGLTest::test() {
     #endif
 
     CORRADE_COMPARE_WITH(*actualOutputImage,
-        Utility::Directory::join(DISTANCEFIELDGLTEST_FILES_DIR, "output.tga"),
+        Utility::Directory::join(_testDir, "output.tga"),
         DebugTools::CompareImageToFile{_manager});
 }
 
@@ -192,7 +207,7 @@ void DistanceFieldGLTest::benchmark() {
     if(!(importer = _manager.loadAndInstantiate("TgaImporter")))
         CORRADE_SKIP("TgaImporter plugin not found.");
 
-    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(DISTANCEFIELDGLTEST_FILES_DIR, "input.tga")));
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(_testDir, "input.tga")));
     CORRADE_COMPARE(importer->image2DCount(), 1);
     Containers::Optional<Trade::ImageData2D> inputImage = importer->image2D(0);
     CORRADE_VERIFY(inputImage);
