@@ -26,6 +26,7 @@
 #include "Sdl2Application.h"
 
 #include <cstring>
+#include <SDL.h>
 #ifndef CORRADE_TARGET_EMSCRIPTEN
 #include <tuple>
 #else

@@ -46,7 +46,10 @@
 #ifdef CORRADE_TARGET_WINDOWS /* Windows version of SDL2 redefines main(), we don't want that */
 #define SDL_MAIN_HANDLED
 #endif
-#include <SDL.h>
+/* SDL.h includes the world, adding 50k LOC. We don't want that either. */
+#include <SDL_keycode.h>
+#include <SDL_mouse.h>
+#include <SDL_video.h>
 #include <SDL_scancode.h>
 
 #ifdef CORRADE_TARGET_WINDOWS_RT
