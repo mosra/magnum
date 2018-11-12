@@ -273,6 +273,7 @@ class CORRADE_DEPRECATED("scheduled for removal, consider switching to Sdl2Appli
 
         /** @{ @name Screen handling */
 
+    public:
         /**
          * @brief Swap buffers
          *

@@ -69,6 +69,15 @@ r<Player<T, K>>>)
     code that's not VAO-aware working on core GL profiles (which don't allow
     default VAOs being used for drawing)
 
+@subsubsection changelog-latest-changes-platform Platform libraries
+
+-   @ref Platform::Sdl2Application::swapBuffers(), "Platform::*Application::swapBuffers()"
+    @ref Platform::Sdl2Application::swapInterval() "swapInterval() const" const,
+    @ref Platform::Sdl2Application::setSwapInterval() "setSwapInterval()",
+    @ref Platform::Sdl2Application::setMinimalLoopPeriod() "setMinimalLoopPeriod()" and
+    @ref Platform::Sdl2Application::redraw() "redraw()" were changed from
+    protected to public to allow calling them from outside
+
 @subsubsection changelog-latest-changes-texturetools TextureTools library
 
 -   Further performance and output quality improvements for

@@ -659,7 +659,6 @@ class Sdl2Application {
         void setContainerCssClass(const std::string& cssClass);
         #endif
 
-    protected:
         /**
          * @brief Swap buffers
          *

@@ -309,7 +309,6 @@ class AndroidApplication {
          */
         Vector2i windowSize() const;
 
-    protected:
         /**
          * @brief Swap buffers
          *

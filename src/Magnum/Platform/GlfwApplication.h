@@ -394,7 +394,6 @@ class GlfwApplication {
          */
         Vector2 dpiScaling(const Configuration& configuration) const;
 
-    protected:
         /**
          * @brief Swap buffers
          *
