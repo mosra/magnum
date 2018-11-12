@@ -32,6 +32,7 @@
 #include "Magnum/configure.h"
 
 #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
+#include <Corrade/Utility/Macros.h>
 #include "Magnum/GL/OpenGL.h"
 CORRADE_DEPRECATED_FILE("use Magnum/GL/OpenGL.h instead")
 #else
