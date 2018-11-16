@@ -55,6 +55,8 @@ namespace Magnum { namespace Audio {
 /**
 @brief Any audio importer plugin
 
+@m_keywords{AnyAudioImporter}
+
 Detects file type based on file extension, loads corresponding plugin and then
 tries to open the file with it.
 
