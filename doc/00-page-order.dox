@@ -42,6 +42,8 @@
 
 @page developers Developers guide
 @page coding-style Coding style
+@page credits-third-party Third-party components
+@page credits-contributors Contributors
 @page debugoperators Debug output operators for custom types
 
 See also and @ref configurationvalues, @ref tweakableliterals and a

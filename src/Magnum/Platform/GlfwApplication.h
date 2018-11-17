@@ -65,6 +65,14 @@ This application library is available on all platforms where GLFW is ported. It
 depends on the [GLFW](http://glfw.org) library and is built if
 `WITH_GLFWAPPLICATION` is enabled when building Magnum.
 
+@m_class{m-block m-success}
+
+@thirdparty This library makes use of [GLFW](https://www.glfw.org/), released
+    under the @m_class{m-label m-success} **zlib/libpng license**
+    ([license text](https://www.glfw.org/license.html),
+    [choosealicense.com](https://choosealicense.com/licenses/zlib/)).
+    Attribution is appreciated but not required.
+
 @section Platform-GlfwApplication-bootstrap Bootstrap application
 
 Fully contained base application using @ref GlfwApplication along with CMake

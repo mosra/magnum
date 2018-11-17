@@ -1,0 +1,148 @@
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+namespace Magnum {
+
+/** @page credits-third-party Third-party components
+@brief Third-party dependencies and their corresponding license information
+
+This page lists libraries, data files and other components that some Magnum
+libraries, plugins, executables or tests depend on. See the
+@ref mainpage-license "main page" for license of Magnum itself. For easier
+overview the dependencies are color-coded:
+
+-   A @m_class{m-label m-dim} **dim** or no label marks dependencies that have
+    no license requirements, such as usage of public APIs like Vulkan or OpenAL
+    or usage of platform-specific interfaces.
+-   A @m_class{m-label m-success} **green** label marks licenses that make the
+    dependency safe to use in a commerical setting without having to release
+    your source code, usually requiring you to give attribution.
+-   A @m_class{m-label m-primary} **light blue** label marks public domain
+    software. In some countries there's no notion of public domain, in which
+    case there might be a fallback license as well.
+-   A @m_class{m-label m-warning} **yellow** label marks licenses that require
+    you to either dynamically link to the software to be able to use it in a
+    commercial setting or release your source code as well. In some cases there
+    is an alternative commercial licensing option without this requirement.
+-   A @m_class{m-label m-danger} **red** label marks licenses that
+    unconditionally require you to publish your software together with its
+    source code. In some cases there is an alternative commercial licensing
+    option without this requirement.
+
+Documentation of each linked library / plugin / executable has more detailed
+information about the dependencies used. Especially in case of plugins in most
+cases there are alternative implementations with different licensing
+requirements. Please note that it's not guaranteed that the licensing info
+provided is in any way accurate or complete, you should always check with a
+lawyer to be sure.
+
+There's also a list of @ref credits-contributors "people and organizations that contributed to Magnum".
+
+- - -
+
+*/
+
+/** @page credits-contributors Contributors
+@brief People and organizations that contributed to Magnum
+
+Listing only people with code contributions or other significant work, because
+otherwise there's too many :) There's also a @ref corrade-credits-contributors "similar list for Corrade"
+and a list of @ref credits-third-party "third party components with their license info".
+Big thanks to everyone involved!
+
+@m_class{m-text-center m-text m-dim}
+
+Are the below lists missing your name or something's wrong?
+[Let us know!](https://magnum.graphics/contact/)
+
+-   **[\@Alan-FGR](https://github.com/Alan-FGR)** --- documentation fixes
+-   **Alexander F Rødseth** ([\@xyproto](https://github.com/xyproto)) ---
+    packages in the ArchLinux community repository
+-   **Alexey Yurchenko** ([\@alexesDev](https://github.com/alexesDev)) ---
+    static analyis, bug reports
+-   **Alice Margatroid** ([\@Alicemargatroid](https://github.com/Alicemargatroid))
+    --- Multi-channel support in the @ref Audio library, standard conformance;
+    float, double, A-Law and μ-Law format support in the
+    @ref Audio::WavImporter "WavAudioImporter" plugin
+-   **Andy Somogyi** ([\@andysomogyi](https://github.com/andysomogyi)) ---
+    bugreports, API design improvement suggestions
+-   **[\@ArEnSc](https://github.com/ArEnSc)** --- initial implementation of
+    windowless applications under macOS, macOS port improvements
+-   **Ashwin Ravichandran** ([\@ashrko619](https://github.com/ashrko619)) ---
+    Bézier curve implementation
+-   **Bill Robinson** ([\@wivlaro](https://github.com/wivlaroú) --- numerous
+    bug reports, macOS fixes, feature improvements
+-   **[\@biosek](https://github.com/biosek)** --- documentation fixes
+-   **Denis Igorevich Lobanov** ([\@denislobanov](https://github.com/denislobanov))
+    --- math fixes
+-   **[\@dlardi](https://github.com/dlardi)** --- WGL-related bugfixes
+-   **Eliot Saba** ([\@staticfloat](https://github.com/staticfloat)) ---
+    macOS-related updates to @ref Platform::GlfwApplication
+-   **Émile Grégoire** ([\@emgre](https://github.com/emgre)) --- documentation
+    updates, algorithm bugfixes
+-   **Gerhard de Clercq** --- Windows RT (Store/Phone) port
+-   **Guillaume Giraud** ([\@Guillaume227](https://github.com/Guillaume227)) ---
+    algorithm bugfixes
+-   **Ivan P.** ([\@uzername](https://github.com/uzername)) --- documentation
+    improvements
+-   **Jonathan Hale** ([\@Squareys](https://github.com/Squareys)) --- @ref Audio
+    library enhancements, @ref Platform::GlfwApplication implementation,
+    frustum and cone culling, bug reports, documentation improvements
+-   **Joel Clay** ([\@jclay](https://github.com/jclay)) --- Vcpkg packages
+-   **Konstantinos Chatzilygeroudis** ([\@costashatz](https://github.com/costashatz))
+    --- Debian package
+-   **Krzysztof Szenk** ([\@Crisspl](https://github.com/Crisspl)) --- math
+    fixes
+-   **Leon Moctezuma** ([\@leonidax](https://github.com/leonidax)) ---
+    bugreports, API design direction
+-   **Miguel Martin** ([\@miguelmartin75](https://github.com/miguelmartin75))
+    --- initial macOS port, various other improvements
+-   **Nathan Ollerenshaw** ([\@matjam](https://github.com/matjam)) --- Ubuntu
+    packages in a PPA repository
+-   **Nicholas "LB" Branden** ([\@LB--](https://github.com/LB--)) --- warning
+    fixes, Windows buildsystem improvements
+-   **Olga Turanksaya** ([\@olga-python](https://github.com/olga-python)) ---
+    Gentoo ebuild
+-   **Sam Spilsbury** ([\@smspillaz](https://github.com/smspillaz)) --- WebGL
+    and GLES fixes
+-   **Samuel Kogler** ([\@skogler](https://github.com/skogler)) ---
+    @ref Platform::GlfwApplication crash fixes
+-   **Séverin Lemaignan** ([\@severin-lemaignan](severin-lemaignan/)) --- lots
+    of feedback and bug reports for the initial releases
+-   **[\@sigman78](https://github.com/sigman78)** --- Initial MSVC 2017 port,
+    Vcpkg packages
+-   **Siim Kallas** ([\@seemk](https://github.com/seemk)) ---
+    @ref Platform::Sdl2Application improvements, bugfixes
+-   **Steeve Morin** ([\@steeve](https://github.com/steeve)) --- iOS
+    buildsystem improvements
+-   **Stefan Wasilewski** ([\@smw](https://github.com/smw)) --- macOS port
+    improvements
+-   **Thomas Tissot-Dupont** ([\@dolphineye](https://github.com/dolphineye))
+    --- OpenGL ES compatiblity improvements
+-   **Travis Watkins** ([\@amaranth](https://github.com/amaranth)) --- support
+    for windowless applications under macOS
+*/
+
+}

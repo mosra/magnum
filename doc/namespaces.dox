@@ -215,6 +215,11 @@ Additional plugins and utilities are built separately. See particular
 `Audio::*Importer` class documentation, the @ref magnum-al-info "magnum-al-info"
 utility documentation, @ref building, @ref building-plugins, @ref cmake,
 @ref cmake-plugins and @ref plugins for more information.
+
+@m_class{m-block m-default}
+
+@thirdparty This library makes use of the [OpenAL](https://www.openal.org/)
+    API.
 */
 
 /** @dir Magnum/DebugTools
@@ -261,6 +266,17 @@ target_link_libraries(your-app Magnum::GL)
 @endcode
 
 See @ref building, @ref cmake and @ref opengl for more information.
+
+@m_class{m-block m-success}
+
+@thirdparty This library makes use of the
+    [OpenGL](https://www.opengl.org/) and [WebGL](https://www.khronos.org/webgl/)
+    APIs. In addition, the library uses code generated using
+    [flextGL](https://github.com/mosra/flextgl), copyright © 2011--2018 Thomas
+    Weber, licensed under @m_class{m-label m-success} **MIT**
+    ([license text](https://github.com/mosra/flextgl/blog/master/LICENSE),
+    [choosealicense.com](https://choosealicense.com/licenses/mit/)). It
+    requires attribution for public use.
 */
 
 /** @dir Magnum/MeshTools
@@ -495,6 +511,17 @@ target_link_libraries(your-app Magnum::Vk)
 @endcode
 
 See @ref building, @ref cmake and @ref vulkan for more information.
+
+@m_class{m-block m-success}
+
+@thirdparty This library makes use of the
+    [Vulkan](https://www.khronos.org/vulkan/) API. In addition, the library
+    uses code generated using
+    [flextGL](https://github.com/mosra/flextgl), copyright © 2011--2018 Thomas
+    Weber, licensed under @m_class{m-label m-success} **MIT**
+    ([license text](https://github.com/mosra/flextgl/blog/master/LICENSE),
+    [choosealicense.com](https://choosealicense.com/licenses/mit/)). It
+    requires attribution for public use.
 */
 
 /** @dir magnum/src/MagnumPlugins

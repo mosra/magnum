@@ -100,5 +100,9 @@ Magnum is licensed under the MIT/Expat license:
 >   DEALINGS IN THE SOFTWARE.
 >
 
+All example code is released into public domain, see @ref example-index for
+more information. Some Magnum libraries depend on third-party components, see
+@ref credits-third-party for their respective licenses. There's also a
+@ref credits-contributors "list of contributors".
 */
 }

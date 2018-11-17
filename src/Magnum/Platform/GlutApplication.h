@@ -75,6 +75,14 @@ This application library is available only on desktop OpenGL (Linux, Windows,
 macOS). It depends on the [GLUT](http://freeglut.sourceforge.net/) library and
 is built if `WITH_GLUTAPPLICATION` is enabled when building Magnum.
 
+@m_class{m-block m-success}
+
+@thirdparty This plugin makes use of the [freeGLUT](http://freeglut.sourceforge.net/)
+    library, licensed under @m_class{m-label m-success} **MIT**
+    ([license text](https://github.com/dcnieho/FreeGLUT/blob/git_master/freeglut/freeglut/COPYING),
+    [choosealicense.com](https://choosealicense.com/licenses/mit/)).
+    It requires attribution for public use.
+
 @section Platform-GlutApplication-usage General usage
 
 In order to use this library from CMake, you need to request the

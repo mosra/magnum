@@ -76,6 +76,14 @@ respective sections in @ref building-corrade-cross-emscripten "Corrade's" and
 on the [SDL2](http://www.libsdl.org) library (Emscripten has it built in) and
 is built if `WITH_SDL2APPLICATION` is enabled in CMake.
 
+@m_class{m-block m-success}
+
+@thirdparty This plugin makes use of the [SDL2](https://www.libsdl.org/)
+    library, released under the @m_class{m-label m-success} **zlib license**
+    ([license text](http://www.gzip.org/zlib/zlib_license.html),
+    [choosealicense.com](https://choosealicense.com/licenses/zlib/)).
+    Attribution is appreciated but not required.
+
 @section Platform-Sdl2Application-bootstrap Bootstrap application
 
 Fully contained base application using @ref Sdl2Application along with
