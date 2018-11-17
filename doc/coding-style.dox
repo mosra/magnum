@@ -91,9 +91,9 @@ appropriately mark the class/function
 
 Additionally to @c \@todoc, @c \@debugoperator, @c \@debugoperatorenum,
 @c \@debugoperatorclassenum, @c \@configurationvalue, @c \@configurationvalueref,
-@c \@tweakableliteral, @c \@cb, @c \@ce, @c \@cpp, @c \@cmake defined
-@ref corrade-coding-style-documentation-commands "the same as in Corrade" and
-all @c \@m_* commands from the [m.css theme](http://mcss.mosra.cz/doxygen/#theme-specific-commands),
+@c \@tweakableliteral, @c \@thirdparty, @c \@cb, @c \@ce, @c \@cpp, @c \@cmake
+defined @ref corrade-coding-style-documentation-commands "the same as in Corrade"
+and all @c \@m_* commands from the [m.css theme](https://mcss.mosra.cz/doxygen/#theme-specific-commands),
 these are defined:
 
 @subsubsection coding-style-documentation-commands-code Code
