@@ -61,6 +61,14 @@ find_package(Corrade REQUIRED Utility)
 
 include(CMakeDependentOption)
 
+# For experimental Gradle-less Android APK creation. Only with CMake > 3.7 that
+# has builtin Android support -- Gradle uses 3.6 so this will nicely work in
+# both cases.
+if(CORRADE_TARGET_ANDROID AND CMAKE_ANDROID_NDK)
+    list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/toolchains/modules/")
+    include(UseAndroid)
+endif()
+
 # If targeting iOS, Android, Emscripten or Windows RT, set explicit OpenGL ES
 # support
 if(NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_WINDOWS_RT)
