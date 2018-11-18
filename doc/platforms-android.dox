@@ -108,7 +108,7 @@ Magnum provides Android application wrapper in @ref Platform::AndroidApplication
 See its documentation for more information about general usage. You can also
 use the Android Native Activity directly or any other way.
 
-@note The @ref Platform::AndroidApplication also contains a fully configured
+@note @ref Platform::AndroidApplication also contains a fully configured
     bootstrap project that's ready to build and deploy. Check its documentation
     for details.
 
@@ -339,6 +339,8 @@ even the simplest thing. Close your eyes and ignore that it happened.
 gradle build
 @endcode
 
+You can also use @cb{.sh} gradle assembleDebug @ce which is slightly faster as
+it doesn't build both Debug and Release and omits some unneeded checks.
 Installing on a connected device or emulator is then a matter of
 
 @code{.sh}
