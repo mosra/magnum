@@ -86,6 +86,11 @@ r<Player<T, K>>>)
     compared to before. It's now also possible to reuse the internal state for
     batch processing.
 
+@subsection changelog-latest-buildsystem Build system
+
+-   The `Magnum::AndroidApplication` target was missing a few dependency
+    libraries when Magnum was used as a CMake subproject
+
 @subsection changelog-latest-bugfixes Bug fixes
 
 -   Fixed @ref Platform::Sdl2Application and @ref Platform::GlfwApplication to

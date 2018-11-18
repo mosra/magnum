@@ -72,6 +72,7 @@ if(WITH_ANDROIDAPPLICATION)
         message(FATAL_ERROR "AndroidApplication is available only when targeting Android. Set WITH_ANDROIDAPPLICATION to OFF to skip building it.")
     endif()
 
+    find_package(EGL REQUIRED)
     set(NEED_EGLCONTEXT 1)
 
     set(MagnumAndroidApplication_SRCS
@@ -101,7 +102,10 @@ if(WITH_ANDROIDAPPLICATION)
         FOLDER "Magnum/Platform")
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
-    target_link_libraries(MagnumAndroidApplication PUBLIC MagnumGL)
+    target_link_libraries(MagnumAndroidApplication PUBLIC
+        MagnumGL
+        android
+        EGL::EGL)
 
     install(FILES ${MagnumAndroidApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumAndroidApplication
