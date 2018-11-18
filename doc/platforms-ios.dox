@@ -90,6 +90,9 @@ requesting OpenGL ES 2.0 and advertising Retina support:
 </plist>
 @endcode
 
+Again, see [the official Apple Property List file documentation](https://developer.apple.com/library/content/documentation/General/Reference/InfoPlistKeyReference/Articles/AboutInformationPropertyListFiles.html)
+for information about all options.
+
 @section platforms-ios-xcode Xcode
 
 @subsection platforms-ios-xcode-cmake CMake can't find a compiler

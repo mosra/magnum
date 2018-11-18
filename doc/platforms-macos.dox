@@ -37,6 +37,8 @@ With Apple decision to focus on Metal, macOS OpenGL support is stuck on version
 4.2 (i.e., a version before compute shaders are available). Moreover, OpenGL is
 deprecated since macOS 10.14.
 
+See also @ref platforms-ios.
+
 @section platforms-macos-bundle Bundle creation
 
 While graphical applications *can* run "as is", directly from the compiled
@@ -60,7 +62,7 @@ endif()
 The builtin file doesn't include all possible properties, however it's possible
 to supply your own. A minimal file can look like this:
 
-@code{.xml}
+@code{.xml-jinja}
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple Computer//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -70,20 +72,24 @@ to supply your own. A minimal file can look like this:
   <key>CFBundleExecutable</key>
   <string>${MACOSX_BUNDLE_EXECUTABLE_NAME}</string>
   <key>CFBundleIdentifier</key>
-  <string>cz.mosra.magnum.my-application</string>
+  <string>{{ package }}</string>
   <key>CFBundleInfoDictionaryVersion</key>
   <string>6.0</string>
   <key>CFBundleName</key>
-  <string>Magnum Triangle</string>
+  <string>{{ app_name }}</string>
   <key>CFBundlePackageType</key>
   <string>APPL</string>
 </dict>
 </plist>
 @endcode
 
-If you name it `MacOSXBundleInfo.plist.in`, it can be supplied to the bundle
-like below. The @cb{.cmake} ${MACOSX_BUNDLE_EXECUTABLE_NAME} @ce will get
-automatically replaced with the target executable name.
+Replace @cb{.jinja} {{ package }} @ce with Java-like package name for your app
+(in this case it could be e.g. @cpp "cz.mosra.magnum.my_application" @ce, for
+example), @cb{.jinja} {{ app_name }} @ce with human-readable app name that's
+displayed in the system (so e.g. @cpp "My Application" @ce). If you name it
+`MacOSXBundleInfo.plist.in`, it can be supplied to the bundle like below. The
+@cb{.cmake} ${MACOSX_BUNDLE_EXECUTABLE_NAME} @ce will get automatically
+replaced with the target executable name.
 
 @code{.cmake}
 if(CORRADE_TARGET_APPLE)
