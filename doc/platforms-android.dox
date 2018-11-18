@@ -142,8 +142,10 @@ version is:
 
 @code{.xml-jinja}
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="{{ package }}" android:versionCode="1" android:versionName="1.0">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="{{ package }}" android:versionCode="1" android:versionName="1.0">
   <uses-feature android:glEsVersion="0x00020000" />
+  <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="11" />
   <application android:label="{{ app_name }}" android:hasCode="false">
     <activity android:name="android.app.NativeActivity" android:label="{{ app_name }}">
       <meta-data android:name="android.app.lib_name" android:value="{{ lib_name }}" />
@@ -163,9 +165,22 @@ displayed in the system (so e.g. @cpp "My Application" @ce) and finally the
 @cb{.jinja} {{ lib_name }} @ce is name of the library that you compiled with
 CMake, which in this case would be @cpp "my-application" @ce.
 
-The @cb{.xml} <uses-feature android:glEsVersion="0x00020000" /> @ce says that
-the minimal OpenGL ES version is 2.0, change it in case you require a different
-version. Consult [the Android developer documentation](https://developer.android.com/guide/topics/manifest/manifest-intro.html)
+The @cb{.xml} <uses-feature android:glEsVersion="0x00020000" /> @ce line says
+that the minimal OpenGL ES version is 2.0, change it in case you require a
+different version.
+
+@anchor platforms-android-apps-manifest-screen-compatibility-mode
+
+The @cb{.xml} <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="11" /> @ce
+line requests the minimal and target Android SDK version. Setting the version
+lower than this (or accidentally omitting this element) will enable the
+[Screen Compatibility Mode](http://www.androiddocs.com/guide/practices/screen-compat-mode.html),
+which doesn't report events in coordinates that match underlying framebuffer
+pixel size. That is not supported by @ref Platform::AndroidApplication since
+there's [no reliable way](https://stackoverflow.com/q/17481341) to get the
+actual size used for events in that case.
+
+Consult [the Android developer documentation](https://developer.android.com/guide/topics/manifest/manifest-intro.html)
 for further information about the manifest file.
 
 With this set up, you have two options how to build the final APK, either using
