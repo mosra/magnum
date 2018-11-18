@@ -306,8 +306,45 @@ class AndroidApplication {
          * @brief Window size
          *
          * Window size to which all input event coordinates can be related.
+         * Expects that a window is already created, equivalent to
+         * @ref framebufferSize().
+         *
+         * @attention The reported value will be incorrect in case you use
+         *      the [Screen Compatibility Mode](http://www.androiddocs.com/guide/practices/screen-compat-mode.html).
+         *      See @ref platforms-android-apps-manifest-screen-compatibility-mode
+         *      for details.
          */
-        Vector2i windowSize() const;
+        Vector2i windowSize() const { return framebufferSize(); }
+
+        /**
+         * @brief Framebuffer size
+         *
+         * Size of the default framebuffer, equivalent to @ref windowSize().
+         * Expects that a window is already created.
+         * @see @ref dpiScaling()
+         */
+        Vector2i framebufferSize() const;
+
+        /**
+         * @brief DPI scaling
+         *
+         * Provided only for compatibility with other toolkits. Returns always
+         * @cpp {1.0f, 1.0f} @ce.
+         * @see @ref framebufferSize()
+         */
+        Vector2 dpiScaling() const { return Vector2{1.0f}; }
+
+        /**
+         * @brief DPI scaling for given configuration
+         *
+         * Provided only for compatibility with other toolkits. Returns always
+         * @cpp {1.0f, 1.0f} @ce.
+         * @see @ref framebufferSize()
+         */
+        Vector2 dpiScaling(const Configuration& configuration) const {
+            static_cast<void>(configuration);
+            return Vector2{1.0f};
+        }
 
         /**
          * @brief Swap buffers
@@ -521,17 +558,25 @@ class AndroidApplication::ViewportEvent {
         /**
          * @brief Window size
          *
-         * @see @ref AndroidApplication::windowSize()
+         * The same as @ref framebufferSize(). See
+         * @ref AndroidApplication::windowSize() for possible caveats.
          */
         Vector2i windowSize() const { return _windowSize; }
 
         /**
          * @brief Framebuffer size
          *
-         * The same as @ref windowSize().
-         * @todo this might not be true, implement properly!
+         * The same as @ref windowSize(). See
+         * @ref AndroidApplication::framebufferSize() for possible caveats.
          */
         Vector2i framebufferSize() const { return _windowSize; }
+
+        /**
+         * @brief DPI scaling
+         *
+         * Always @cpp {1.0f, 1.0f} @ce.
+         */
+        Vector2 dpiScaling() const { return Vector2{1.0f}; }
 
     private:
         friend AndroidApplication;

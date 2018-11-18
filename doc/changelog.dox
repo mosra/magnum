@@ -61,6 +61,13 @@ r<Player<T, K>>>)
     @ref Math::Color3 and @ref Math::Color4 literals with the new experimental
     @ref Corrade::Utility::Tweakable utility. See also @ref tweakableliterals.
 
+@subsubsection changelog-latest-new-platform Platform libraries
+
+-   Added @ref Platform::AndroidApplication::framebufferSize(),
+    @ref Platform::AndroidApplication::dpiScaling() and
+    @ref Platform::AndroidApplication::ViewportEvent::dpiScaling() for
+    compatibility with other application implementations
+
 @subsection changelog-latest-changes Changes and improvements
 
 @subsubsection changelog-latest-changes-gl GL library

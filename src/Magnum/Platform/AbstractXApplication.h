@@ -212,7 +212,21 @@ class AbstractXApplication {
     #else
     private:
     #endif
-        /** @copydoc GlfwApplication::viewportEvent(ViewportEvent&) */
+        /**
+         * @brief Viewport event
+         *
+         * Called when window size changes. The default implementation does
+         * nothing. If you want to respond to size changes, you should pass the
+         * new size to @ref GL::DefaultFramebuffer::setViewport() (if using
+         * OpenGL) and possibly elsewhere (to
+         * @ref SceneGraph::Camera::setViewport(), other framebuffers...).
+         *
+         * Note that this function might not get called at all if the window
+         * size doesn't change. You should configure the initial state of your
+         * cameras, framebuffers etc. in application constructor rather than
+         * relying on this function to be called. Size of the window can be
+         * retrieved using @ref windowSize().
+         */
         virtual void viewportEvent(ViewportEvent& event);
 
         #ifdef MAGNUM_BUILD_DEPRECATED
