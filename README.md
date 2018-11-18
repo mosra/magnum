@@ -129,7 +129,9 @@ possible.
 
 -   Project homepage — https://magnum.graphics/
 -   Documentation — https://doc.magnum.graphics/
--   GitHub project page — https://github.com/mosra/magnum
+-   GitHub — https://github.com/mosra/magnum and the
+    [#magnum](https://github.com/topics/magnum) topic
+-   GitLab — https://gitlab.com/mosra/magnum
 -   Gitter community chat — https://gitter.im/mosra/magnum
 -   E-mail — info@magnum.graphics
 -   Google Groups mailing list — magnum-engine@googlegroups.com ([archive](https://groups.google.com/forum/#!forum/magnum-engine))
