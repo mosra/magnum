@@ -39,10 +39,13 @@ command-line tools, without Android Studio involved.
 
 At the very least you need to have Android SDK and Android NDK installed.
 Running console utilities and tests on the device don't need much more, in case
-you want to develop actual applications, you need also Gradle and SDK platform +
-SDK platform build tools for version of your choice. Gradle is able to download
-all the dependencies on its own, however it's also possible to install system
-packages for a cleaner setup.
+you want to develop actual applications, you need also the SDK and a platform +
+SDK platform build tools for version of your choice.
+
+For APK building it's possible to use either an experimental support in CMake
+or the official way with Gradle. Gradle is able to download all the
+dependencies on its own, however it's also possible to install system packages
+for a cleaner setup.
 
 @note On ArchLinux it's the `gradle` package and the following AUR packages,
     adapt the version numbers as necessary:
@@ -95,14 +98,6 @@ information about OpenGL testing.
 
 @section platforms-android-apps Building and installing graphics apps
 
-Building of graphics applications is managed fully using Gradle, which also
-builds your CMake project internally. It's possible to use other means such as
-`ndk-build`, but CMake is the officially preferred way. The following guide
-assumes you have Gradle installed in a system-wide location available in
-@cb{.sh} $PATH @ce. See the [Gradle installation docs](https://docs.gradle.org/current/userguide/installation.html)
-for more information, @ref platforms-android-gradlew "see below" if you want to
-use the `gradlew` wrappers instead.
-
 In case you don't have an OpenGL ES build set up yet, you need to copy
 `FindEGL.cmake` and `FindOpenGLES2.cmake` (or `FindOpenGLES3.cmake`) from the
 [modules/](https://github.com/mosra/magnum/tree/master/modules) directory in
@@ -139,9 +134,134 @@ else()
 endif()
 @endcode
 
-Then you need to create a `build.gradle` file that references your root
-`CMakeLists.txt`. Assuming it's saved right next to your root `CMakeLists.txt`,
-the most minimal version might look like this:
+@subsection platforms-android-apps-manifest Android manifest file
+
+For Android you additionally need an `AndroidManifest.xml` file, which
+describes various properties of the Android package. A minimal stripped-down
+version is:
+
+@code{.xml-jinja}
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="{{ package }}" android:versionCode="1" android:versionName="1.0">
+  <uses-feature android:glEsVersion="0x00020000" />
+  <application android:label="{{ app_name }}" android:hasCode="false">
+    <activity android:name="android.app.NativeActivity" android:label="{{ app_name }}">
+      <meta-data android:name="android.app.lib_name" android:value="{{ lib_name }}" />
+      <intent-filter>
+        <action android:name="android.intent.action.MAIN" />
+        <category android:name="android.intent.category.LAUNCHER" />
+      </intent-filter>
+    </activity>
+  </application>
+</manifest>
+@endcode
+
+Replace @cb{.jinja} {{ package }} @ce with Java-like package name for your app
+(in this case it could be e.g. @cpp "cz.mosra.magnum.my_application" @ce, for
+example), @cb{.jinja} {{ app_name }} @ce with human-readable app name that's
+displayed in the system (so e.g. @cpp "My Application" @ce) and finally the
+@cb{.jinja} {{ lib_name }} @ce is name of the library that you compiled with
+CMake, which in this case would be @cpp "my-application" @ce.
+
+The @cb{.xml} <uses-feature android:glEsVersion="0x00020000" /> @ce says that
+the minimal OpenGL ES version is 2.0, change it in case you require a different
+version. Consult [the Android developer documentation](https://developer.android.com/guide/topics/manifest/manifest-intro.html)
+for further information about the manifest file.
+
+With this set up, you have two options how to build the final APK, either using
+plain CMake or using Gradle.
+
+@subsection platforms-android-apps-cmake Using CMake
+
+The `toolchains` repository contains an `UseAndroid.cmake` module that allows
+you to create an APK in a significantly faster and simpler way than when using
+Gradle.
+
+@attention This feature is in an experimental stage and at this time it doesn't
+    support compilation of any resources (such as icons) or Java sources. It
+    also builds only the ABI and configuration that corresponds to the
+    particular CMake build directory. It's thus recommended to employ this
+    approach for fast iteration during development alongside the classic Gradle
+    build @ref platforms-android-apps-gradle "described below" that will get
+    used for the final release builds.
+
+Download contents of the toolchains repository from https://github.com/mosra/toolchains
+or add it as a Git submodule, add its module path to `CMAKE_MODULE_PATH` and
+include the `UseAndroid` module. Wrapping it in a check for presence of
+`CMAKE_ANDROID_NDK` will make it possible to have the pure CMake and a Gradle
+build coexist --- because Gradle internally uses CMake 3.6 which doesn't know
+about `CMAKE_ANDROID_NDK` yet.
+
+@code{.cmake}
+if(CORRADE_TARGET_ANDROID AND CMAKE_ANDROID_NDK)
+    list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/toolchains/modules/")
+    include(UseAndroid)
+endif()
+@endcode
+
+On the first run, the macro will attempt to detect SDK location, Android Build
+Tools version and Android Platfrom version and it prints them to the output
+like this:
+
+@code{.shell-session}
+$ cmake .
+…
+-- ANDROID_SDK not set, detected /opt/android-sdk
+-- ANDROID_BUILD_TOOLS_VERSION not set, detected 27.0.3
+-- ANDROID_PLATFORM_VERSION not set, detected 27
+…
+@endcode
+
+If you don't like what it detected (or the detection failed), edit these values
+in CMake cache. After that, pass your library target name and location of the
+`AndroidManifest.xml` file to @cmake android_create_apk() @ce. Continuing from
+the above:
+
+@code{.cmake}
+add_library(my-application SHARED MyApplication.cpp)
+android_create_apk(my-application AndroidManifest.xml)
+@endcode
+
+Note that even thought it doesn't make any sense, the `aapt` tool *demands* the
+manifest file to be called exactly `AndroidManifest.xml`. It can be, however,
+in any location. This will create an APK named `my-application.apk` and
+additionally also provide a new target, `my-application-deploy`, that will use
+`adb install -r` to install the built APK on the device. Building and uploading
+the application can be then done in a single step:
+
+@code{.shell-session}
+$ ninja my-application-deploy
+[5/5] Installing my-application.apk
+Success
+@endcode
+
+(Or e.g. `cmake --build . --target my-application-deploy` if you don't use
+Ninja.)
+
+For full compatibility with the Gradle build wrap the call again in a check for
+`CMAKE_ANDROID_NDK` and put the manifest in the `src/main` subdirectory, where
+Gradle expects it:
+
+@code{.cmake}
+add_library(my-application SHARED MyApplication.cpp)
+if(CMAKE_ANDROID_NDK)
+    android_create_apk(my-application src/main/AndroidManifest.xml)
+endif()
+@endcode
+
+@subsection platforms-android-apps-gradle Using Gradle
+
+Besides plain CMake and Gradle it's also possible to use the classic
+`ndk-build`. but that's the least recommended way and it might not be supported
+in newer NDK builds. The following guide assumes you have Gradle installed in a
+system-wide location available in @cb{.sh} $PATH @ce. See the
+[Gradle installation docs](https://docs.gradle.org/current/userguide/installation.html)
+for more information, @ref platforms-android-gradlew "see below" if you want to
+use the `gradlew` wrappers instead.
+
+Create a `build.gradle` file that references your root `CMakeLists.txt`.
+Assuming it's saved right next to your root `CMakeLists.txt`, the most minimal
+version might look like this:
 
 @code{.gradle}
 buildscript {
@@ -207,38 +327,8 @@ android {
 The [official documentation](https://developer.android.com/studio/projects/gradle-external-native-builds.html#configure-gradle)
 contains a more complete overview of all possibilities.
 
-Another important file is `src/main/AndroidManifest.xml`, which says some
-properties about the Android package. The location is also important, it has to
-be placed inside `src/main` subdirectory, *not* straight besides the
-`build.gradle` file. A minimal stripped-down version is:
-
-@code{.xml-jinja}
-<?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="{{ package }}" android:versionCode="1" android:versionName="1.0">
-  <uses-feature android:glEsVersion="0x00020000" />
-  <application android:label="{{ app_name }}" android:hasCode="false">
-    <activity android:name="android.app.NativeActivity" android:label="{{ app_name }}">
-      <meta-data android:name="android.app.lib_name" android:value="{{ lib_name }}" />
-      <intent-filter>
-        <action android:name="android.intent.action.MAIN" />
-        <category android:name="android.intent.category.LAUNCHER" />
-      </intent-filter>
-    </activity>
-  </application>
-</manifest>
-@endcode
-
-Replace @cb{.jinja} {{ package }} @ce with Java-like package name for your app
-(in this case it could be e.g. @cpp "cz.mosra.magnum.my_application" @ce, for
-example), @cb{.jinja} {{ app_name }} @ce with human-readable app name that's
-displayed in the system (so e.g. @cpp "My Application" @ce) and finally the
-@cb{.jinja} {{ lib_name }} @ce is name of the library that you compiled with
-CMake, which in this case would be @cpp "my-application" @ce.
-
-The @cb{.xml} <uses-feature android:glEsVersion="0x00020000" /> @ce says that
-the minimal OpenGL ES version is 2.0, change it in case you require a different
-version. Consult [the Android developer documentation](https://developer.android.com/guide/topics/manifest/manifest-intro.html)
-for further information about the manifest file.
+For the `AndroidManifest.xml` file, Gradle expects it to be placed inside the
+`src/main` subdirectory, *not* straight besides the `build.gradle` file.
 
 With everything set up, you are now ready to build the project by simply
 executing the following from the directory with your `build.gradle`. During the
@@ -310,7 +400,10 @@ cmake .. \
 cmake --build . --target install
 @endcode
 
-And the `build.gradle` for your app then looks like this:
+The `build.gradle` for your app then looks like below.
+
+@attention Building multiple ABIs is currently not supported with the CMake
+    @cmake android_create_apk() @ce macro, using Gradle is the only way.
 
 @code{.gradle}
 buildscript {
@@ -617,6 +710,49 @@ gradle build
 @endcode
 
 @section platforms-android-troubleshooting Troubleshooting
+
+@subsection platforms-android-troubleshooting-signing-failed Signing the APK using CMake fails
+
+At the moment the location and passphrase for the Android signing keystore is
+implicitly set to @cb{.sh} $HOME/.android/debug.keystore @ce with `android` as
+a password, since that's the location (and password) that Gradle uses. If you
+see output similar to this:
+
+@code{.shell-session}
+[1/2] Signing my-application.apk
+FAILED: my-application.apk
+…
+Failed to load signer "signer #1"
+java.io.FileNotFoundException: <home>/.android/debug.keystore
+@endcode
+
+then you either don't have the keystore generated yet or it's in some other
+location. Similar error can happen if the password is incrrect, in which case
+it will say the following instead:
+
+@code{.shell-session}
+Failed to load signer "signer #1"
+java.io.IOException: Keystore was tampered with, or password was incorrect
+@endcode
+
+Generating a debug keystore can be done by running through the Gradle build at
+least once. It's also possible to create a keystore
+[using Android Studio](https://developer.android.com/studio/publish/app-signing#generate-key)
+or using the `keytool` utility that's bundled with Java SDK.
+
+The location and password is controlled via the `ANDROID_APKSIGNER_KEY`
+variable, edit your CMake cache to point it to a different location or
+password. Note that the command parameters have to be delimited by `;` instead
+of a space. For example, setting the location to `/etc/android.keystore` with a
+password `secret` can be done like this:
+
+@code{.sh}
+cmake . -DANDROID_APKSIGNER_KEY="--ks;/etc/android.keystore;--ks-pass;pass:secret"
+@endcode
+
+You can also add further arguments to `apksigner` here. See the
+[official documentaton for apksigner](https://developer.android.com/studio/command-line/apksigner)
+for details.
 
 @subsection platforms-android-troubleshooting-cant-find Gradle CMake can't find dependencies
 

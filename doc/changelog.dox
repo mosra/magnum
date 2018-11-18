@@ -88,6 +88,8 @@ r<Player<T, K>>>)
 
 @subsection changelog-latest-buildsystem Build system
 
+-   Experimental support for creating Android APKs directly using CMake without
+    Gradle involved. See @ref platforms-android-apps for more information.
 -   The `Magnum::AndroidApplication` target was missing a few dependency
     libraries when Magnum was used as a CMake subproject
 
