@@ -28,8 +28,21 @@
 namespace Magnum { namespace Platform { namespace Test {
 
 struct AndroidApplicationTest: Platform::Application {
-    explicit AndroidApplicationTest(const Arguments& arguments): Platform::Application{arguments} {}
+    explicit AndroidApplicationTest(const Arguments& arguments): Platform::Application{arguments} {
+        Debug{} << "window size" << windowSize() << framebufferSize() << dpiScaling();
+    }
+
     void drawEvent() override {}
+
+    /* For testing HiDPI resize events */
+    void viewportEvent(ViewportEvent& event) override {
+        Debug{} << "viewport event" << event.windowSize() << event.framebufferSize() << event.dpiScaling();
+    }
+
+    /* For testing event coordinates */
+    void mousePressEvent(MouseEvent& event) override {
+        Debug{} << event.position();
+    }
 };
 
 }}}
