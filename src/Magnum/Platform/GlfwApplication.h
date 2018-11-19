@@ -439,10 +439,10 @@ class GlfwApplication {
          * size doesn't change. You should configure the initial state of your
          * cameras, framebuffers etc. in application constructor rather than
          * relying on this function to be called. Size of the window can be
-         * retrieved also using @ref windowSize().
-         *
-         * @todoc make this a copydoc of Sdl2Application once both have
-         *      framebufferSize() and dpiScaling()
+         * retrieved using @ref windowSize(), size of the backing framebuffer
+         * via @ref framebufferSize() and DPI scaling using @ref dpiScaling().
+         * See @ref Platform-GlfwApplication-dpi for detailed info about these
+         * values.
          */
         virtual void viewportEvent(ViewportEvent& event);
 
