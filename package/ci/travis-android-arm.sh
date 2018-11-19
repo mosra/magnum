@@ -37,9 +37,13 @@ cd ..
 
 cd ..
 
+# Generate debug keystore for APK signing
+keytool -genkeypair -keystore $HOME/.android/debug.keystore -storepass android -alias androiddebugkey -keypass android -keyalg RSA -validity 10000 -dname CN=,OU=,O=,L=,S=,C=
+
 # Crosscompile
 mkdir build-android-arm && cd build-android-arm
 cmake .. \
+    -DANDROID_SDK=/usr/local/android-sdk \
     -DCMAKE_ANDROID_NDK=$TRAVIS_BUILD_DIR/android-ndk-r16b \
     -DCMAKE_SYSTEM_NAME=Android \
     -DCMAKE_SYSTEM_VERSION=22 \
