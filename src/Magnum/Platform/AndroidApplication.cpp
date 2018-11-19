@@ -228,6 +228,16 @@ void AndroidApplication::commandEvent(android_app* state, int32_t cmd) {
         case APP_CMD_LOST_FOCUS:
             /** @todo Make use of these */
             break;
+
+        case APP_CMD_CONFIG_CHANGED: {
+            /* This says "the current device configuration has changed", which
+               is about as vague as it can get. It seems to be that this gets
+               emitted when screen orientation changes, for example. Fire the
+               viewport event in this case. */
+            ViewportEvent e{{ANativeWindow_getWidth(data.instance->_state->window),
+                             ANativeWindow_getHeight(data.instance->_state->window)}};
+            data.instance->viewportEvent(e);
+        } break;
     }
 }
 

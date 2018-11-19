@@ -147,7 +147,10 @@ version is:
   <uses-feature android:glEsVersion="0x00020000" />
   <uses-sdk android:minSdkVersion="4" android:targetSdkVersion="11" />
   <application android:label="{{ app_name }}" android:hasCode="false">
-    <activity android:name="android.app.NativeActivity" android:label="{{ app_name }}">
+    <activity
+        android:name="android.app.NativeActivity"
+        android:label="{{ app_name }}"
+        android:configChanges="orientation|screenSize">
       <meta-data android:name="android.app.lib_name" android:value="{{ lib_name }}" />
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
@@ -179,6 +182,16 @@ which doesn't report events in coordinates that match underlying framebuffer
 pixel size. That is not supported by @ref Platform::AndroidApplication since
 there's [no reliable way](https://stackoverflow.com/q/17481341) to get the
 actual size used for events in that case.
+
+@anchor platforms-android-apps-manifest-screen-resize
+
+The @cb{.xml} <activity … android:configChanges="orientation|screenSize"> @ce
+attribute is needed in order to make the application properly receive a
+viewport event. By default it's being outright killed and recreated when device
+orientation changes for questionable "performance reasons". If you really want
+to handle orientation changes that way, remove `screenSize` from the set.
+Among other options is restricting the app to only portrait or landscape screen
+orientation.
 
 Consult [the Android developer documentation](https://developer.android.com/guide/topics/manifest/manifest-intro.html)
 for further information about the manifest file.
