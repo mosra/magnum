@@ -67,6 +67,9 @@ r<Player<T, K>>>)
     @ref Platform::AndroidApplication::dpiScaling() and
     @ref Platform::AndroidApplication::ViewportEvent::dpiScaling() for
     compatibility with other application implementations
+-   Clarified HiDPI behavior of Android apps and mentioning
+    @ref platforms-android-apps-manifest-screen-compatibility-mode "the necessary steps"
+    in the docs
 -   Implemented handling of @ref Platform::AndroidApplication::viewportEvent()
     and documenting how to get Android to call it instead of relaunching the
     app from scratch
