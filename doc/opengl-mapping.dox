@@ -213,11 +213,7 @@ OpenGL function                         | Matching API
 @fn_gl{GetProgramInterface}             | |
 @fn_gl{GetProgramPipeline}              | |
 @fn_gl{GetProgramPipelineInfoLog}       | |
-@fn_gl{GetProgramResource}              | |
-@fn_gl{GetProgramResourceIndex}         | |
-@fn_gl{GetProgramResourceLocation}      | |
-@fn_gl{GetProgramResourceLocationIndex} | |
-@fn_gl{GetProgramResourceName}          | |
+@fn_gl{GetProgramResource}, \n @fn_gl{GetProgramResourceIndex}, \n @fn_gl{GetProgramResourceLocation}, \n @fn_gl{GetProgramResourceLocationIndex}, \n @fn_gl{GetProgramResourceName} | not queryable, set them in shader code directly as described in @ref GL::AbstractShaderProgram docs
 @fn_gl{GetProgramStage}                 | |
 @fn_gl{GetQueryIndexed}                 | |
 @fn_gl{GetQueryObject}                  | @ref GL::AbstractQuery::result()

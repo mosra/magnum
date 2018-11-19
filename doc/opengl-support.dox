@@ -540,12 +540,17 @@ add any performance gains, is not supported in Magnum. See also
 -   Shader compiler is assumed to be present (`GL_SHADER_COMPILER` returning
     true), as all desktop GL implementations and also ES3 are required to
     support it.
--   Querying shader attribute locations (as opposed to setting them) is not
-    supported, as newer GL versions encourage setting them explicitly in shader
-    code.
+-   Querying shader attribute locations using @fn_gl_keyword{GetAttribLocation}
+    and other resources using @fn_gl_keyword{GetProgramResource},
+    @fn_gl_keyword{GetProgramResourceIndex},
+    @fn_gl_keyword{GetProgramResourceLocation},
+    @fn_gl_keyword{GetProgramResourceLocationIndex}
+    or @fn_gl_keyword{GetProgramResourceName} (as opposed to setting them) is
+    not supported, as newer GL versions encourage setting them explicitly in
+    shader code.
 -   Direct vertex data specification (as opposed to using buffers) is not
     supported, as it encourages bad practices.
--   @fn_gl{glPixelStore} with @def_gl{PACK_SWAP_BYTES} / @def_gl{UNPACK_SWAP_BYTES}.
+-   @fn_gl{PixelStore} with @def_gl{PACK_SWAP_BYTES} / @def_gl{UNPACK_SWAP_BYTES}.
     Too much burden imposed on every API that deals with pixel storage. Use
     @ref Corrade::Utility::Endianness instead. Note that this state is also not
     tracked, so it won't get reset in case a 3rd party code enables it.
