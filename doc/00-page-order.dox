@@ -36,6 +36,8 @@
 @page vulkan Vulkan
 @page opengl OpenGL
 @page openal OpenAL
+@page partialsupport List of partially supported features
+@m_keyword{Partially supported features,,}
 
 @page changelog Changelog
 @page changelog-old Archived changelogs

@@ -245,6 +245,7 @@ ALIASES                = \
     "tweakableliteral{1}=@brief Tweakable literal parser @xrefitem tweakableliterals \"Tweakable literal parser\" \"Tweakable literal parsers\" Allows using @ref \1 with @ref Corrade::Utility::Tweakable." \
     "collisionoccurenceoperator{2}=@relatesalso \1 @brief Collision occurence of @ref \1 and @ref \2 @see @ref \2::operator%(const \1&) const" \
     "collisionoperator{2}=@relatesalso \1 @brief Collision of @ref \1 and @ref \2 @see @ref \2::operator/(const \1&) const" \
+    "partialsupport=@xrefitem partialsupport \"Partially supported\" \"List of partially supported features\"" \
     "thirdparty=@xrefitem credits-third-party \"Third-party components\" \"Third-party components\"" \
     "todoc=@xrefitem todoc \"Documentation todo\" \"Documentation-related todo list\"" \
     "fn_gl{1}=<a href=\"https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl\1.xhtml\">gl\1()</a>" \
