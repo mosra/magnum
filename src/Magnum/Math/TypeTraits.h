@@ -133,7 +133,8 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
      * @brief Fuzzy compare
      *
      * Uses fuzzy compare for floating-point types (using @ref epsilon()
-     * value), pure equality comparison everywhere else.
+     * value), pure equality comparison everywhere else. Algorithm adapted from
+     * http://floating-point-gui.de/errors/comparison/.
      */
     static bool equals(T a, T b);
 
@@ -222,7 +223,6 @@ template<class T> struct TypeTraitsFloatingPoint: TypeTraitsName<T> {
     static bool equalsZero(T a, T epsilon);
 };
 
-/* Adapted from http://floating-point-gui.de/errors/comparison/ */
 template<class T> bool TypeTraitsFloatingPoint<T>::equals(const T a, const T b) {
     /* Shortcut for binary equality (also infinites) */
     if(a == b) return true;
