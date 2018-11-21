@@ -186,7 +186,7 @@ typedef CORRADE_DEPRECATED("use GL::TimeQuery instead") Magnum::GL::TimeQuery Ti
 
 }
 #else
-#error this header is not available in WebGL 1.0 build
+#error this header is not available in WebGL build
 #endif
 
 #endif
