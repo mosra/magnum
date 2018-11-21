@@ -163,33 +163,39 @@ if(BUILD_GL_TESTS)
         corrade_add_test(GLAbstractQueryGLTest AbstractQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLPixelStorageGLTest PixelStorageGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLSampleQueryGLTest SampleQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
-        corrade_add_test(GLTimeQueryGLTest TimeQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
 
         set_target_properties(
             GLAbstractQueryGLTest
             GLPixelStorageGLTest
             GLSampleQueryGLTest
-            GLTimeQueryGLTest
             PROPERTIES FOLDER "Magnum/GL/Test")
     endif()
 
     if(NOT MAGNUM_TARGET_GLES2)
         corrade_add_test(GLBufferImageGLTest BufferImageGLTest.cpp LIBRARIES MagnumGLTestLib MagnumOpenGLTester)
-        corrade_add_test(GLBufferTextureGLTest BufferTextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
-        corrade_add_test(GLCubeMapTextureArrayGLTest CubeMapTextureArrayGLTest.cpp LIBRARIES MagnumOpenGLTester)
-        corrade_add_test(GLMultisampleTextureGLTest MultisampleTextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLPrimitiveQueryGLTest PrimitiveQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLTextureArrayGLTest TextureArrayGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLTransformFeedbackGLTest TransformFeedbackGLTest.cpp LIBRARIES MagnumOpenGLTester)
 
         set_target_properties(
             GLBufferImageGLTest
-            GLBufferTextureGLTest
-            GLCubeMapTextureArrayGLTest
-            GLMultisampleTextureGLTest
             GLPrimitiveQueryGLTest
             GLTextureArrayGLTest
             GLTransformFeedbackGLTest
+            PROPERTIES FOLDER "Magnum/GL/Test")
+    endif()
+
+    if(NOT MAGNUM_TARGET_GLES2 AND NOT MAGNUM_TARGET_WEBGL)
+        corrade_add_test(GLBufferTextureGLTest BufferTextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
+        corrade_add_test(GLCubeMapTextureArrayGLTest CubeMapTextureArrayGLTest.cpp LIBRARIES MagnumOpenGLTester)
+        corrade_add_test(GLMultisampleTextureGLTest MultisampleTextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
+        corrade_add_test(GLTimeQueryGLTest TimeQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
+
+        set_target_properties(
+            GLBufferTextureGLTest
+            GLCubeMapTextureArrayGLTest
+            GLMultisampleTextureGLTest
+            GLTimeQueryGLTest
             PROPERTIES FOLDER "Magnum/GL/Test")
     endif()
 

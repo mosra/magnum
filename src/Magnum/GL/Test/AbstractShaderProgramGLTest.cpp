@@ -31,7 +31,7 @@
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 #include "Magnum/GL/ImageFormat.h"
 #endif
 #include "Magnum/GL/PixelFormat.h"
@@ -79,9 +79,11 @@ struct AbstractShaderProgramGLTest: OpenGLTester {
     void createUniformBlocks();
     void uniformBlockIndexNotFound();
     void uniformBlock();
-    #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
     void compute();
+    #endif
+    #endif
 };
 
 AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
@@ -117,7 +119,9 @@ AbstractShaderProgramGLTest::AbstractShaderProgramGLTest() {
               &AbstractShaderProgramGLTest::uniformBlockIndexNotFound,
               &AbstractShaderProgramGLTest::uniformBlock,
 
+              #ifndef MAGNUM_TARGET_WEBGL
               &AbstractShaderProgramGLTest::compute
+              #endif
               #endif
               });
 }
@@ -769,6 +773,7 @@ void AbstractShaderProgramGLTest::uniformBlock() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void AbstractShaderProgramGLTest::compute() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::compute_shader>())
@@ -846,6 +851,7 @@ void AbstractShaderProgramGLTest::compute() {
         TestSuite::Compare::Container);
     #endif
 }
+#endif
 #endif
 
 }}}

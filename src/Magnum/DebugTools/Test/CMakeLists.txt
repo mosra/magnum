@@ -98,7 +98,7 @@ if(TARGET_GL)
         corrade_add_test(DebugToolsTextureImageGLTest TextureImageGLTest.cpp LIBRARIES MagnumDebugTools MagnumOpenGLTester)
         set_target_properties(DebugToolsTextureImageGLTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
 
-        if(NOT (MAGNUM_TARGET_GLES2 AND MAGNUM_TARGET_WEBGL))
+        if(NOT MAGNUM_TARGET_WEBGL)
             corrade_add_test(DebugToolsBufferDataGLTest BufferDataGLTest.cpp LIBRARIES MagnumDebugTools MagnumOpenGLTester)
 
             set_target_properties(DebugToolsBufferDataGLTest PROPERTIES FOLDER "Magnum/DebugTools/Test")

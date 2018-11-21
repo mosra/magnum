@@ -40,10 +40,10 @@
 
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/GL/BufferImage.h"
-#include "Magnum/GL/MultisampleTexture.h"
 #include "Magnum/GL/TextureArray.h"
 #endif
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+#include "Magnum/GL/MultisampleTexture.h"
 #include "Magnum/GL/CubeMapTextureArray.h"
 #endif
 #ifndef MAGNUM_TARGET_GLES
@@ -80,9 +80,9 @@ struct FramebufferGLTest: OpenGLTester {
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     void attachTexture2DArray();
-    void attachTexture2DMultisample();
     #endif
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    void attachTexture2DMultisample();
     void attachTexture2DMultisampleArray();
     #endif
     #ifndef MAGNUM_TARGET_GLES
@@ -192,9 +192,9 @@ FramebufferGLTest::FramebufferGLTest() {
               #endif
               #ifndef MAGNUM_TARGET_GLES2
               &FramebufferGLTest::attachTexture2DArray,
-              &FramebufferGLTest::attachTexture2DMultisample,
               #endif
               #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+              &FramebufferGLTest::attachTexture2DMultisample,
               &FramebufferGLTest::attachTexture2DMultisampleArray,
               #endif
               #ifndef MAGNUM_TARGET_GLES
@@ -632,7 +632,7 @@ void FramebufferGLTest::attachTexture2DArray() {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES2
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void FramebufferGLTest::attachTexture2DMultisample() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
@@ -662,9 +662,7 @@ void FramebufferGLTest::attachTexture2DMultisample() {
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 }
-#endif
 
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 void FramebufferGLTest::attachTexture2DMultisampleArray() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
@@ -1211,6 +1209,7 @@ void FramebufferGLTest::clearDepth() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    #ifndef MAGNUM_TARGET_WEBGL
     #ifdef MAGNUM_TARGET_GLES
     if(Context::current().isExtensionSupported<Extensions::NV::read_depth>())
     #endif
@@ -1224,6 +1223,7 @@ void FramebufferGLTest::clearDepth() {
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE(depthImage.data<UnsignedShort>()[0], 48352);
     }
+    #endif
 }
 
 void FramebufferGLTest::clearStencil() {
@@ -1250,6 +1250,7 @@ void FramebufferGLTest::clearStencil() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    #ifndef MAGNUM_TARGET_WEBGL
     #ifdef MAGNUM_TARGET_GLES
     if(Context::current().isExtensionSupported<Extensions::NV::read_stencil>())
     #endif
@@ -1263,6 +1264,7 @@ void FramebufferGLTest::clearStencil() {
         MAGNUM_VERIFY_NO_GL_ERROR();
         CORRADE_COMPARE(stencilImage.data<UnsignedByte>()[0], 67);
     }
+    #endif
 }
 
 void FramebufferGLTest::clearDepthStencil() {
@@ -1289,6 +1291,7 @@ void FramebufferGLTest::clearDepthStencil() {
 
     framebuffer.clearDepthStencil(Math::unpack<Float, UnsignedShort>(48352), 67);
 
+    #ifndef MAGNUM_TARGET_WEBGL
     #ifdef MAGNUM_TARGET_GLES
     if(Context::current().isExtensionSupported<Extensions::NV::read_depth_stencil>())
     #endif
@@ -1304,6 +1307,7 @@ void FramebufferGLTest::clearDepthStencil() {
         CORRADE_COMPARE(depthStencilImage.data<UnsignedInt>()[0] >> 8, 12378300);
         CORRADE_COMPARE(depthStencilImage.data<UnsignedByte>()[0], 67);
     }
+    #endif
 }
 #endif
 

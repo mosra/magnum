@@ -49,7 +49,9 @@ struct TransformFeedbackGLTest: OpenGLTester {
     void constructMove();
     void wrap();
 
+    #ifndef MAGNUM_TARGET_WEBGL
     void label();
+    #endif
 
     void attachBase();
     void attachRange();
@@ -90,7 +92,9 @@ TransformFeedbackGLTest::TransformFeedbackGLTest() {
               &TransformFeedbackGLTest::constructMove,
               &TransformFeedbackGLTest::wrap,
 
+              #ifndef MAGNUM_TARGET_WEBGL
               &TransformFeedbackGLTest::label,
+              #endif
 
               &TransformFeedbackGLTest::attachBase,
               &TransformFeedbackGLTest::attachRange,
@@ -170,6 +174,7 @@ void TransformFeedbackGLTest::wrap() {
     glDeleteTransformFeedbacks(1, &id);
 }
 
+#ifndef MAGNUM_TARGET_WEBGL
 void TransformFeedbackGLTest::label() {
     /* No-Op version is tested in AbstractObjectGLTest */
     #ifndef MAGNUM_TARGET_GLES
@@ -205,6 +210,7 @@ void TransformFeedbackGLTest::label() {
         MAGNUM_VERIFY_NO_GL_ERROR(); /* Check for errors again to flush the error state */
     }
 }
+#endif
 
 namespace {
 
@@ -292,10 +298,14 @@ void TransformFeedbackGLTest::attachBase() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_SKIP("Can't map buffers on WebGL.");
+    #else
     auto data = Containers::arrayCast<const Vector2>(output.mapRead(0, 2*sizeof(Vector2)));
     CORRADE_COMPARE(data[0], Vector2(1.0f, -1.0f));
     CORRADE_COMPARE(data[1], Vector2(0.0f, 0.0f));
     output.unmap();
+    #endif
 }
 
 void TransformFeedbackGLTest::attachRange() {
@@ -335,10 +345,14 @@ void TransformFeedbackGLTest::attachRange() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_SKIP("Can't map buffers on WebGL.");
+    #else
     auto data = Containers::arrayCast<const Vector2>(output.mapRead(256, 2*sizeof(Vector2)));
     CORRADE_COMPARE(data[0], Vector2(1.0f, -1.0f));
     CORRADE_COMPARE(data[1], Vector2(0.0f, 0.0f));
     output.unmap();
+    #endif
 }
 
 namespace {
@@ -425,6 +439,9 @@ void TransformFeedbackGLTest::attachBases() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_SKIP("Can't map buffers on WebGL.");
+    #else
     auto data1 = Containers::arrayCast<const Vector2>(output1.mapRead(0, 2*sizeof(Vector2)));
     CORRADE_COMPARE(data1[0], Vector2(1.0f, -1.0f));
     CORRADE_COMPARE(data1[1], Vector2(0.0f, 0.0f));
@@ -434,6 +451,7 @@ void TransformFeedbackGLTest::attachBases() {
     CORRADE_COMPARE(data2[0], 0.0f);
     CORRADE_COMPARE(data2[1], -2.0f);
     output2.unmap();
+    #endif
 }
 
 void TransformFeedbackGLTest::attachRanges() {
@@ -477,6 +495,9 @@ void TransformFeedbackGLTest::attachRanges() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    #ifdef MAGNUM_TARGET_WEBGL
+    CORRADE_SKIP("Can't map buffers on WebGL.");
+    #else
     auto data1 = Containers::arrayCast<const Vector2>(output1.mapRead(256, 2*sizeof(Vector2)));
     CORRADE_COMPARE(data1[0], Vector2(1.0f, -1.0f));
     CORRADE_COMPARE(data1[1], Vector2(0.0f, 0.0f));
@@ -486,6 +507,7 @@ void TransformFeedbackGLTest::attachRanges() {
     CORRADE_COMPARE(data2[0], 0.0f);
     CORRADE_COMPARE(data2[1], -2.0f);
     output2.unmap();
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
