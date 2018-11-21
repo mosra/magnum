@@ -125,8 +125,12 @@ enum class SamplerFilter: GLint;
 enum class SamplerMipmap: GLint;
 enum class SamplerWrapping: GLint;
 enum class SamplerCompareMode: GLenum;
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 enum class SamplerCompareFunction: GLenum;
+#endif
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 enum class SamplerDepthStencilMode: GLenum;
+#endif
 
 class Sampler;
 class Shader;
