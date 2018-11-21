@@ -66,10 +66,12 @@ cmake .. \
     -DWITH_GL_INFO=ON \
     -DWITH_AL_INFO=ON \
     -DBUILD_TESTS=ON \
+    -DBUILD_AL_TESTS=ON \
+    -DBUILD_GL_TESTS=ON \
     -DTARGET_GLES2=$TARGET_GLES2 \
     -G Ninja
 # Otherwise the job gets killed (probably because using too much memory)
 ninja -j4
 
 # Test
-CORRADE_TEST_COLOR=ON ctest -V -E ALTest
+CORRADE_TEST_COLOR=ON ctest -V -E "(GL|AL)Test"
