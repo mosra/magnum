@@ -63,8 +63,10 @@ auto OpenGLFunctionLoader::load(const char* const name) -> FunctionPointer {
     return eglGetProcAddress(name);
 }
 
-/* CGL-specific implementation */
-#elif defined(CORRADE_TARGET_APPLE)
+/* CGL-specific implementation. Apple doesn't have any possibility of a
+   "desktop GLES" implementation (and never will have), so explicitly check
+   that we are *not* on GLES. */
+#elif defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_GLES)
 OpenGLFunctionLoader::OpenGLFunctionLoader() {
     CORRADE_INTERNAL_ASSERT_OUTPUT(library = dlopen("/System/Library/Frameworks/OpenGL.framework/Versions/Current/OpenGL", RTLD_LAZY));
 }
