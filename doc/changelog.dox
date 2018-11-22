@@ -76,6 +76,12 @@ r<Player<T, K>>>)
 
 @subsection changelog-latest-changes Changes and improvements
 
+@subsubsection changelog-latest-changes-audio Audio library
+
+-   @ref Audio::Source::play(), @ref Audio::Source::pause(),
+    @ref Audio::Source::rewind() and @ref Audio::Source::stop() now return
+    a self-reference like all other methods for easier method chaining
+
 @subsubsection changelog-latest-changes-gl GL library
 
 -   New @ref GL::Context::State::BindScratchVao state to make external OpenGL

@@ -586,39 +586,55 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Play
+         * @return Reference to self (for method chaining)
          *
          * @see @ref play(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref state(), @ref pause(), @ref stop(), @ref rewind(),
          *      @fn_al_keyword{SourcePlay}
          */
-        void play() { alSourcePlay(_id); }
+        Source& play() {
+            alSourcePlay(_id);
+            return *this;
+        }
 
         /**
          * @brief Pause
+         * @return Reference to self (for method chaining)
          *
          * @see @ref pause(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref state(), @ref play(), @ref stop(), @ref rewind(),
          *      @fn_al_keyword{SourcePause}
          */
-        void pause() { alSourcePause(_id); }
+        Source& pause() {
+            alSourcePause(_id);
+            return *this;
+        }
 
         /**
          * @brief Stop
+         * @return Reference to self (for method chaining)
          *
          * @see @ref stop(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref state(), @ref play(), @ref pause(), @ref rewind(),
          *      @fn_al_keyword{SourceStop}
          */
-        void stop() { alSourceStop(_id); }
+        Source& stop() {
+            alSourceStop(_id);
+            return *this;
+        }
 
         /**
          * @brief Rewind
+         * @return Reference to self (for method chaining)
          *
          * @see @ref rewind(std::initializer_list<std::reference_wrapper<Source>>),
          *      @ref state(), @ref play(), @ref pause(), @ref stop(),
          *      @fn_al_keyword{SourceRewind}
          */
-        void rewind() { alSourceRewind(_id); }
+        Source& rewind() {
+            alSourceRewind(_id);
+            return *this;
+        }
 
         /**
          * @brief Whether the source is looping
