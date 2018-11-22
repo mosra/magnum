@@ -314,6 +314,7 @@ void MeshGLTest::constructMove() {
     const Float data = Math::unpack<Float, UnsignedByte>(96);
     Buffer buffer1, buffer2;
     buffer1.setData({&data, 1}, BufferUsage::StaticDraw);
+    buffer2.setData({nullptr, 8}, BufferUsage::StaticDraw);
 
     Mesh a;
     a.addVertexBuffer(buffer1, 0, Attribute<0, Float>{});
@@ -338,7 +339,7 @@ void MeshGLTest::constructMove() {
 
     /* Move assign */
     Mesh c;
-    c.addVertexBuffer(buffer2, 1, Attribute<1, Float>{});
+    c.addVertexBuffer(buffer2, 4, Attribute<1, Float>{});
     const Int cId = c.id();
     c = std::move(b);
 
@@ -1879,7 +1880,7 @@ template<class T> void MeshGLTest::setIndexBuffer() {
     Mesh mesh;
     mesh.addVertexBuffer(vertices, 1*4,  MultipleShader::Position(),
                          MultipleShader::Normal(), MultipleShader::TextureCoordinates())
-        .setIndexBuffer(indices, 2, T::UnsignedByte);
+        .setIndexBuffer(indices, 1, T::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(mesh.indexType(), MeshIndexType::UnsignedByte);
