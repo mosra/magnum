@@ -427,8 +427,8 @@ void MeshGLTest::wrap() {
 
 template<class T> void MeshGLTest::primitive() {
     setTestCaseName(std::is_same<T, MeshPrimitive>::value ?
-        "setPrimitive<GL::MeshPrimitive>" :
-        "setPrimitive<Magnum::MeshPrimitive>");
+        "primitive<GL::MeshPrimitive>" :
+        "primitive<Magnum::MeshPrimitive>");
 
     {
         Mesh mesh{T::LineLoop};
