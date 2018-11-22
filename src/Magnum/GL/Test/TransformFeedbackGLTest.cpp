@@ -276,9 +276,9 @@ void TransformFeedbackGLTest::attachBase() {
 
     XfbShader shader;
 
-    Buffer input;
+    Buffer input{Buffer::TargetHint::Array};
     input.setData(inputData, BufferUsage::StaticDraw);
-    Buffer output;
+    Buffer output{Buffer::TargetHint::TransformFeedback};
     output.setData({nullptr, 2*sizeof(Vector2)}, BufferUsage::StaticRead);
 
     Mesh mesh;
@@ -323,9 +323,9 @@ void TransformFeedbackGLTest::attachRange() {
 
     XfbShader shader;
 
-    Buffer input;
+    Buffer input{Buffer::TargetHint::Array};
     input.setData(inputData, BufferUsage::StaticDraw);
-    Buffer output;
+    Buffer output{Buffer::TargetHint::TransformFeedback};
     output.setData({nullptr, 512 + 2*sizeof(Vector2)}, BufferUsage::StaticRead);
 
     Mesh mesh;
@@ -416,9 +416,10 @@ void TransformFeedbackGLTest::attachBases() {
 
     XfbMultiShader shader;
 
-    Buffer input;
+    Buffer input{Buffer::TargetHint::Array};
     input.setData(inputData, BufferUsage::StaticDraw);
-    Buffer output1, output2;
+    Buffer output1{Buffer::TargetHint::TransformFeedback},
+        output2{Buffer::TargetHint::TransformFeedback};
     output1.setData({nullptr, 2*sizeof(Vector2)}, BufferUsage::StaticRead);
     output2.setData({nullptr, 2*sizeof(Float)}, BufferUsage::StaticRead);
 
@@ -467,9 +468,10 @@ void TransformFeedbackGLTest::attachRanges() {
     fb.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color)
       .bind();
 
-    Buffer input;
+    Buffer input{Buffer::TargetHint::Array};
     input.setData(inputData, BufferUsage::StaticDraw);
-    Buffer output1, output2;
+    Buffer output1{Buffer::TargetHint::TransformFeedback},
+        output2{Buffer::TargetHint::TransformFeedback};
     output1.setData({nullptr, 512 + 2*sizeof(Vector2)}, BufferUsage::StaticRead);
     output2.setData({nullptr, 768 + 2*sizeof(Float)}, BufferUsage::StaticRead);
 
@@ -552,9 +554,9 @@ void TransformFeedbackGLTest::interleaved() {
         }
     } shader;
 
-    Buffer input;
+    Buffer input{Buffer::TargetHint::Array};
     input.setData(inputData, BufferUsage::StaticDraw);
-    Buffer output;
+    Buffer output{Buffer::TargetHint::TransformFeedback};
     output.setData({nullptr, 4*sizeof(Vector2)}, BufferUsage::StaticRead);
 
     Mesh mesh;

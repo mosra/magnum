@@ -290,7 +290,7 @@ void PrimitiveQueryGLTest::transformFeedbackPrimitivesWritten() {
         }
     } shader;
 
-    Buffer output;
+    Buffer output{Buffer::TargetHint::TransformFeedback};
     output.setData({nullptr, 9*sizeof(Vector2)}, BufferUsage::StaticDraw);
 
     Mesh mesh;

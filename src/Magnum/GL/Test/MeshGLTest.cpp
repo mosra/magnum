@@ -1982,7 +1982,7 @@ template<class T> void MeshGLTest::setIndexBufferTransferOwnership() {
         "setIndexBufferTransferOwnership<Magnum::MeshIndexType>");
 
     const UnsignedShort data = 0;
-    Buffer buffer;
+    Buffer buffer{Buffer::TargetHint::ElementArray};
     buffer.setData({&data, 1}, BufferUsage::StaticDraw);
 
     const GLuint id = buffer.id();
@@ -2015,7 +2015,7 @@ template<class T> void MeshGLTest::setIndexBufferRangeTransferOwnership() {
         "setIndexBufferRangeTransferOwnership<Magnum::MeshIndexType>");
 
     const UnsignedShort data = 0;
-    Buffer buffer;
+    Buffer buffer{Buffer::TargetHint::ElementArray};
     buffer.setData({&data, 1}, BufferUsage::StaticDraw);
 
     const GLuint id = buffer.id();
