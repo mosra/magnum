@@ -120,6 +120,8 @@ r<Player<T, K>>>)
 -   Fixed @ref Text::DistanceFieldGlyphCache internal formats on ES2 devices
     that support @gl_extension{EXT,texture_storage} (see
     [mosra/magnum#289](https://github.com/mosra/magnum/pull/289))
+-   @ref PixelStorage::imageHeight() and Z value of @ref PixelStorage::skip()
+    was not properly handled on ES3 / WebGL 2 builds.
 
 @subsection changelog-latest-docs Documentation
 

@@ -83,7 +83,9 @@ struct RendererState {
     void applyPixelStoragePack(const Magnum::PixelStorage& storage) {
         applyPixelStorageInternal(storage, false);
     }
-    void applyPixelStorageUnpack(const Magnum::PixelStorage& storage);
+    void applyPixelStorageUnpack(const Magnum::PixelStorage& storage) {
+        applyPixelStorageInternal(storage, true);
+    }
 
     /* Bool parameter is ugly, but this is implementation detail of internal
        API so who cares */

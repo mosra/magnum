@@ -168,14 +168,22 @@ void RendererState::applyPixelStorageInternal(const Magnum::PixelStorage& storag
         "GL: non-default PixelStorage::rowLength() is not supported in WebGL 1.0", );
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES
-    /* Image height (on ES for unpack only, taken care of below) */
-    if(state.imageHeight == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.imageHeight != storage.imageHeight())
+    /* Image height (not on ES2, on ES3 for unpack only) */
+    #ifndef MAGNUM_TARGET_GLES2
+    if(state.imageHeight == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.imageHeight != storage.imageHeight()) {
+        #ifndef MAGNUM_TARGET_GLES
         glPixelStorei(isUnpack ? GL_UNPACK_IMAGE_HEIGHT : GL_PACK_IMAGE_HEIGHT,
             state.imageHeight = storage.imageHeight());
+        #else
+        if(isUnpack) glPixelStorei(GL_UNPACK_IMAGE_HEIGHT,
+            state.imageHeight = storage.imageHeight());
+        else CORRADE_ASSERT(!storage.imageHeight(),
+            "GL: non-default PixelStorage::imageHeight() for pack is not supported in OpenGL ES", );
+        #endif
+    }
     #else
     CORRADE_ASSERT(!storage.imageHeight(),
-        "GL: non-default PixelStorage::imageHeight() is not supported in OpenGL ES", );
+        "GL: non-default PixelStorage::imageHeight() is not supported in OpenGL ES 2", );
     #endif
 
     /* On ES2 done by modifying data pointer */
@@ -190,28 +198,18 @@ void RendererState::applyPixelStorageInternal(const Magnum::PixelStorage& storag
         glPixelStorei(isUnpack ? GL_UNPACK_SKIP_ROWS : GL_PACK_SKIP_ROWS,
             state.skip.y() = storage.skip().y());
 
-    #ifndef MAGNUM_TARGET_GLES
-    /* Skip images (on ES for unpack only, taken care of below) */
-    if(state.skip.z() == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.z() != storage.skip().z())
+    /* Skip images (on ES3 for unpack only) */
+    if(state.skip.z() == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.z() != storage.skip().z()) {
+        #ifndef MAGNUM_TARGET_GLES
         glPixelStorei(isUnpack ? GL_UNPACK_SKIP_IMAGES : GL_PACK_SKIP_IMAGES,
             state.skip.z() = storage.skip().z());
-    #endif
-    #endif
-}
-
-void RendererState::applyPixelStorageUnpack(const Magnum::PixelStorage& storage) {
-    applyPixelStorageInternal(storage, true);
-
-    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
-    PixelStorage& state = unpackPixelStorage;
-
-    /* Image height (on ES for unpack only) */
-    if(state.imageHeight == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.imageHeight != storage.imageHeight())
-        glPixelStorei(GL_UNPACK_IMAGE_HEIGHT, state.imageHeight = storage.imageHeight());
-
-    /* Skip images (on ES for unpack only) */
-    if(state.skip.z() == GL::Implementation::RendererState::PixelStorage::DisengagedValue || state.skip.z() != storage.skip().z())
-        glPixelStorei(GL_UNPACK_SKIP_IMAGES, state.skip.z() = storage.skip().z());
+        #else
+        if(isUnpack) glPixelStorei(GL_UNPACK_SKIP_IMAGES,
+            state.skip.z() = storage.skip().z());
+        else CORRADE_ASSERT(!storage.skip().z(),
+            "GL: non-default PixelStorage::skip().z() for pack is not supported in OpenGL ES", );
+        #endif
+    }
     #endif
 }
 

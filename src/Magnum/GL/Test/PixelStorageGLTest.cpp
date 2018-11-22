@@ -83,16 +83,14 @@ PixelStorageGLTest::PixelStorageGLTest() {
 
 namespace {
     constexpr const char Data2D[] = {
-        /* Skip */
+        /* Row length ------------------------------------------------------ */ /* Alignment */
         '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
         '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
         '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
-        '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
-
-        /* Data */                                      /* Row length */        /* Alignment */
-        '\x00', '\x01', '\x02', '\x03', '\x04', '\x05', '\x00', '\x00', '\x00', '\x00',
-        '\x06', '\x07', '\x08', '\x09', '\x0a', '\x0b', '\x00', '\x00', '\x00', '\x00',
-        '\x0c', '\x0d', '\x0e', '\x0f', '\x10', '\x11', '\x00', '\x00', '\x00', '\x00'
+        /* ------------ Skip */ /* Data ------------------------------------ */ /* Alignment */
+        '\x00', '\x00', '\x00', '\x00', '\x01', '\x02', '\x03', '\x04', '\x05', '\x00',
+        '\x00', '\x00', '\x00', '\x06', '\x07', '\x08', '\x09', '\x0a', '\x0b', '\x00',
+        '\x00', '\x00', '\x00', '\x0c', '\x0d', '\x0e', '\x0f', '\x10', '\x11', '\x00',
     };
 
     constexpr const char ActualData[] = {
@@ -108,12 +106,11 @@ void PixelStorageGLTest::unpack2D() {
         CORRADE_SKIP(Extensions::EXT::unpack_subimage::string() + std::string(" is not supported."));
     #endif
 
-    PixelStorage storage;
-    storage.setAlignment(2)
+    ImageView2D image{PixelStorage{}
+        .setAlignment(2)
         .setRowLength(3)
-        .setSkip({2, 3, 0});
-
-    ImageView2D image{storage, PixelFormat::RGB, PixelType::UnsignedByte, {2, 3}, Data2D};
+        .setSkip({1, 3, 0}),
+        PixelFormat::RGB, PixelType::UnsignedByte, {2, 3}, Data2D};
 
     Texture2D texture;
     texture.setStorage(1, TextureFormat::RGB8, {2, 3})
@@ -158,7 +155,7 @@ void PixelStorageGLTest::pack2D() {
     Image2D image{PixelStorage{}
         .setAlignment(2)
         .setRowLength(3)
-        .setSkip({2, 3, 0}),
+        .setSkip({1, 3, 0}),
         PixelFormat::RGB, PixelType::UnsignedByte, {}, Containers::Array<char>{Containers::ValueInit, sizeof(Data2D)}};
 
     #ifndef MAGNUM_TARGET_GLES
@@ -178,22 +175,20 @@ void PixelStorageGLTest::pack2D() {
 #ifndef MAGNUM_TARGET_GLES2
 namespace {
     constexpr const char Data3D[] = {
-        /* Skip */
+        /* Row length ------------------------------------------------------ */ /* Alignment */
         '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
         '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
         '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
         '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
         '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
 
+        /* Row length ------------------------------------------------------ */ /* Alignment */
         '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
         '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
-        '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
-        '\x00', '\x00', '\x00', '\x00', '\x00', '\x00',
-
-        /* Data */                                      /* Row length */        /* Alignment */
-        '\x00', '\x01', '\x02', '\x03', '\x04', '\x05', '\x00', '\x00', '\x00', '\x00',
-        '\x06', '\x07', '\x08', '\x09', '\x0a', '\x0b', '\x00', '\x00', '\x00', '\x00',
-        '\x0c', '\x0d', '\x0e', '\x0f', '\x10', '\x11', '\x00', '\x00', '\x00', '\x00',
+        /* ------------ Skip */ /* Data ------------------------------------ */ /* Alignment */
+        '\x00', '\x00', '\x00', '\x00', '\x01', '\x02', '\x03', '\x04', '\x05', '\x00',
+        '\x00', '\x00', '\x00', '\x06', '\x07', '\x08', '\x09', '\x0a', '\x0b', '\x00',
+        '\x00', '\x00', '\x00', '\x0c', '\x0d', '\x0e', '\x0f', '\x10', '\x11', '\x00',
 
         /* Filling to image height not needed */
     };
@@ -204,7 +199,7 @@ void PixelStorageGLTest::unpack3D() {
     storage.setAlignment(2)
         .setRowLength(3)
         .setImageHeight(5)
-        .setSkip({2, 3, 1});
+        .setSkip({1, 2, 1});
 
     ImageView3D image{storage, PixelFormat::RGB, PixelType::UnsignedByte, {2, 3, 1}, Data3D};
 
@@ -253,7 +248,7 @@ void PixelStorageGLTest::pack3D() {
         .setAlignment(2)
         .setRowLength(3)
         .setImageHeight(5)
-        .setSkip({2, 3, 1}),
+        .setSkip({1, 2, 1}),
         PixelFormat::RGB, PixelType::UnsignedByte, {}, Containers::Array<char>{Containers::ValueInit, sizeof(Data3D)}};
     texture.image(0, image);
 
