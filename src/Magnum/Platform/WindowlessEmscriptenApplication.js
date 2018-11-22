@@ -33,12 +33,18 @@ var Module = {
 
     printErr: function(message) {
         var log = document.getElementById('log');
-        log.innerHTML += Array.prototype.slice.call(arguments).join(' ') + '\n';
+        log.innerHTML += Array.prototype.slice.call(arguments).join(' ')
+            .replace(/[\"&<>]/g, function (a) {
+                return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
+            }) + '\n';
     },
 
     print: function(message) {
         var log = document.getElementById('log');
-        log.innerHTML += Array.prototype.slice.call(arguments).join(' ') + '\n';
+        log.innerHTML += Array.prototype.slice.call(arguments).join(' ')
+            .replace(/[\"&<>]/g, function (a) {
+                return { '"': '&quot;', '&': '&amp;', '<': '&lt;', '>': '&gt;' }[a];
+            }) + '\n';
     },
 
     /* onAbort not handled here, as the output is printed directly on the page */

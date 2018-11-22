@@ -116,6 +116,7 @@ r<Player<T, K>>>)
 -   Don't assert in DPI scaling detection in @ref Platform::Sdl2Application and
     @ref Platform::GlfwApplication on X11 DEs that don't create any
     `RESOURCE_MANAGER` (see [mosra/magnum#290](https://github.com/mosra/magnum/issues/290))
+-   Properly escaping log output on Emscripten @ref Platform::WindowlessEglApplication
 -   The @ref GL::Context::States enum set was missing value combining operators
 -   Fixed @ref Text::DistanceFieldGlyphCache internal formats on ES2 devices
     that support @gl_extension{EXT,texture_storage} (see
