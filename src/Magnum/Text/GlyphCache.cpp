@@ -65,7 +65,7 @@ void GlyphCache::initialize(const GL::TextureFormat internalFormat, const Vector
         .setStorage(1, internalFormat, size);
 
     /* Default "Not Found" glyph */
-    glyphs.insert({0, {}});
+    glyphs.insert({0,  {{}, {}}  });
 }
 
 std::vector<Range2Di> GlyphCache::reserve(const std::vector<Vector2i>& sizes) {
