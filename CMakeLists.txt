@@ -49,7 +49,19 @@ endif()
 if(NOT CMAKE_VERSION VERSION_LESS 3.4.0 AND NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
     set(LANG CXX)
 endif()
+
+
+option(HUNTER_ENABLED "Get third parties (Corrade, glfw, SDL2) via hunter " OFF)
+if (HUNTER_ENABLED)
+    set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_CURRENT_LIST_DIR}/package/hunter")
+    include(HunterInit)
+endif()
+
 project(Magnum ${LANG})
+
+if(HUNTER_ENABLED)
+    include(HunterFetchDeps)
+endif()
 
 # Use folders for nice tree in Visual Studio and XCode
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
