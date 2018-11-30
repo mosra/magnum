@@ -49,7 +49,17 @@ endif()
 if(NOT CMAKE_VERSION VERSION_LESS 3.4.0 AND NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
     set(LANG CXX)
 endif()
+
+option(HUNTER_ENABLED "Get dependencies (Corrade, GLFW, SDL2, ...) via Hunter" OFF)
+if(HUNTER_ENABLED)
+    include(${CMAKE_CURRENT_LIST_DIR}/package/hunter/HunterInit.cmake)
+endif()
+
 project(Magnum ${LANG})
+
+if(HUNTER_ENABLED)
+    include(${CMAKE_CURRENT_LIST_DIR}/package/hunter/HunterAddPackages.cmake)
+endif()
 
 # Use folders for nice tree in Visual Studio and XCode
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
