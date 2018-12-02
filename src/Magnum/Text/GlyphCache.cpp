@@ -64,8 +64,9 @@ void GlyphCache::initialize(const GL::TextureFormat internalFormat, const Vector
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setStorage(1, internalFormat, size);
 
-    /* Default "Not Found" glyph */
-    glyphs.insert({0, {}});
+    /* Default "Not Found" glyph. Can't do just `.insert({0, {}})` because
+       that's ambiguous in C++17, due to a new insert(node_type&&) overload. */
+    glyphs.insert({0, std::pair<Vector2i, Range2Di>{}});
 }
 
 std::vector<Range2Di> GlyphCache::reserve(const std::vector<Vector2i>& sizes) {
