@@ -110,6 +110,9 @@ See also:
     Gradle involved. See @ref platforms-android-apps for more information.
 -   The `Magnum::AndroidApplication` target was missing a few dependency
     libraries when Magnum was used as a CMake subproject
+-   Fixed an ambiguous overload error in @ref Text::GlyphCache when compiling
+    this library under C++17 (see
+    [mosra/magnum#297](https://github.com/mosra/magnum/pull/297))
 
 @subsection changelog-latest-bugfixes Bug fixes
 

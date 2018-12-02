@@ -125,6 +125,8 @@ Are the below lists missing your name or something's wrong?
     fixes, Windows buildsystem improvements
 -   **Olga Turanksaya** ([\@olga-python](https://github.com/olga-python)) ---
     Gentoo ebuild
+-   **Pascal Thomet** ([\@pthom](https://github.com/pthom)) --- C++17
+    compilation fixes, buildsystem improvements
 -   **Sam Spilsbury** ([\@smspillaz](https://github.com/smspillaz)) --- WebGL
     and GLES fixes
 -   **Samuel Kogler** ([\@skogler](https://github.com/skogler)) ---
