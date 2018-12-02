@@ -51,8 +51,7 @@ See also:
 -   @ref Animation::Player::resume() that acts the same as
     @ref Animation::Player::play() "play()" except it doesn't restart the
     animation from the start if it is already playing
--   Added @ref Animation::Player::advance(T, std::initializer_list<std::reference_wrappe
-r<Player<T, K>>>)
+-   Added @ref Animation::Player::advance(T, std::initializer_list<std::reference_wrapper<Player<T, K>>>)
     for advancing multiple players at the same time
 
 @subsubsection changelog-latest-new-math Math library
