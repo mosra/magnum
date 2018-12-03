@@ -1,8 +1,10 @@
-file(
-  DOWNLOAD
-  https://raw.githubusercontent.com/hunter-packages/gate/master/cmake/HunterGate.cmake
-  ${CMAKE_CURRENT_LIST_DIR}//HunterGate.cmake
-)
+if(NOT EXISTS ${CMAKE_CURRENT_LIST_DIR}/HunterGate.cmake)
+  file(
+    DOWNLOAD
+    https://raw.githubusercontent.com/hunter-packages/gate/c4e5b3e4d1c97fb46ae86af7f59baac95f7f1cf0/cmake/HunterGate.cmake
+    ${CMAKE_CURRENT_LIST_DIR}//HunterGate.cmake
+  )
+endif()
 
 # FIXME : will need to replace this url with the main hunter url !
 include("${CMAKE_CURRENT_LIST_DIR}/HunterGate.cmake")
