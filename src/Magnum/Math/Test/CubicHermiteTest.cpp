@@ -30,6 +30,8 @@
 #include "Magnum/Math/CubicHermite.h"
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Vector2.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
+
 
 namespace Magnum { namespace Math { namespace Test {
 
@@ -111,6 +113,8 @@ struct CubicHermiteTest: Corrade::TestSuite::Tester {
     void splerpComplexNotNormalized();
     void splerpQuaternion();
     void splerpQuaternionNotNormalized();
+
+    void strictWeakOrdering();
 
     void debugScalar();
     void debugVector();
@@ -194,6 +198,8 @@ CubicHermiteTest::CubicHermiteTest() {
               &CubicHermiteTest::splerpComplexNotNormalized,
               &CubicHermiteTest::splerpQuaternion,
               &CubicHermiteTest::splerpQuaternionNotNormalized,
+
+              &CubicHermiteTest::strictWeakOrdering,
 
               &CubicHermiteTest::debugScalar,
               &CubicHermiteTest::debugVector,
@@ -1127,6 +1133,25 @@ void CubicHermiteTest::splerpQuaternionNotNormalized() {
     CORRADE_COMPARE(out.str(),
         "Math::splerp(): quaternion spline points Quaternion({0, 0, 0}, 1) and Quaternion({0, 0, 0}, 2) are not normalized\n"
         "Math::splerp(): quaternion spline points Quaternion({0, 0, 0}, 2) and Quaternion({0, 0, 0}, 1) are not normalized\n");
+}
+
+void CubicHermiteTest::strictWeakOrdering() {
+    StrictWeakOrdering o;
+    const CubicHermite1D a{1.0f, 2.0f, 3.0f};
+    const CubicHermite1D b{2.0f, 3.0f, 4.0f};
+    const CubicHermite1D c{1.0f, 2.0f, 4.0f};
+    const CubicHermite1D d{1.0f, 5.0f, 4.0f};
+
+    CORRADE_VERIFY( o(a, b));
+    CORRADE_VERIFY(!o(b, a));
+    CORRADE_VERIFY( o(a, c));
+    CORRADE_VERIFY(!o(c, a));
+    CORRADE_VERIFY( o(c, b));
+    CORRADE_VERIFY(!o(b, c));
+    CORRADE_VERIFY( o(a, d));
+    CORRADE_VERIFY(!o(d, a));
+
+    CORRADE_VERIFY(!o(a, a));
 }
 
 void CubicHermiteTest::debugScalar() {

@@ -620,6 +620,20 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Double>&);
 #endif
 
+/* Specialization of helper types*/
+namespace Implementation {
+template<class T> struct StrictWeakOrdering<Complex<T>> {
+    bool operator()(const Complex<T>& a, const Complex<T>& b) const {
+        if(a.real() < b.real())
+            return true;
+        if(a.real() > b.real())
+            return false;
+
+        return a.imaginary() < b.imaginary();
+    }
+};
+}
+
 }}
 
 namespace Corrade { namespace Utility {

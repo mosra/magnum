@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Vector4.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 struct Vec4 {
     float x, y, z, w;
@@ -71,6 +72,8 @@ struct Vector4Test: Corrade::TestSuite::Tester {
     void planeEquationThreePoints();
     void planeEquationNormalPoint();
 
+    void strictWeakOrdering();
+
     void swizzleType();
     void debug();
     void configuration();
@@ -98,6 +101,8 @@ Vector4Test::Vector4Test() {
 
               &Vector4Test::planeEquationThreePoints,
               &Vector4Test::planeEquationNormalPoint,
+
+              &Vector4Test::strictWeakOrdering,
 
               &Vector4Test::swizzleType,
               &Vector4Test::debug,
@@ -291,6 +296,22 @@ void Vector4Test::planeEquationNormalPoint() {
     CORRADE_COMPARE(Math::dot(b, eq.xyz()) + eq.w(), 0.0f);
     CORRADE_COMPARE(Math::dot(c, eq.xyz()) + eq.w(), 0.0f);
     CORRADE_COMPARE(eq, (Vector4{-0.9045340f, 0.3015113f, -0.3015113f, 1.658312f}));
+}
+
+void Vector4Test::strictWeakOrdering() {
+    StrictWeakOrdering o;
+    const Vector4 v4a{1.0f, 2.0f, 3.0f, 4.0f};
+    const Vector4 v4b{2.0f, 3.0f, 4.0f, 5.0f};
+    const Vector4 v4c{1.0f, 2.0f, 3.0f, 5.0f};
+
+    CORRADE_VERIFY( o(v4a, v4b));
+    CORRADE_VERIFY(!o(v4b, v4a));
+    CORRADE_VERIFY( o(v4a, v4c));
+    CORRADE_VERIFY(!o(v4c, v4a));
+    CORRADE_VERIFY( o(v4c, v4b));
+    CORRADE_VERIFY(!o(v4b, v4c));
+
+    CORRADE_VERIFY(!o(v4a, v4a));
 }
 
 void Vector4Test::swizzleType() {

@@ -739,6 +739,21 @@ template<class T> inline Vector3<T> Quaternion<T>::transformVectorNormalized(con
     return vector + _scalar*t + Math::cross(_vector, t);
 }
 
+/* Specialization of helper types*/
+namespace Implementation {
+template<class T> struct StrictWeakOrdering<Quaternion<T>> {
+    bool operator()(const Quaternion<T>& a, const Quaternion<T>& b) const {
+        StrictWeakOrdering<Vector3<T>> o;
+        if(o(a.vector(), b.vector()))
+            return true;
+        if(o(b.vector(), a.vector()))
+            return false;
+
+        return a.scalar() < b.scalar();
+    }
+};
+}
+
 }}
 
 namespace Corrade { namespace Utility {

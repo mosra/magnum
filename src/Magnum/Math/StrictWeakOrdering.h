@@ -1,0 +1,78 @@
+﻿#ifndef Magnum_Math_StrictWeakOrdering_h
+#define Magnum_Math_StrictWeakOrdering_h
+/*
+    This file is part of Magnum.
+
+    Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018
+              Vladimír Vondruš <mosra@centrum.cz>
+
+    Permission is hereby granted, free of charge, to any person obtaining a
+    copy of this software and associated documentation files (the "Software"),
+    to deal in the Software without restriction, including without limitation
+    the rights to use, copy, modify, merge, publish, distribute, sublicense,
+    and/or sell copies of the Software, and to permit persons to whom the
+    Software is furnished to do so, subject to the following conditions:
+
+    The above copyright notice and this permission notice shall be included
+    in all copies or substantial portions of the Software.
+
+    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+    THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+    FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+    DEALINGS IN THE SOFTWARE.
+*/
+
+/** @file
+ * @brief Class @ref Magnum::Math::StrictWeakOrdering
+ */
+
+namespace Magnum { namespace Math {
+
+namespace Implementation {
+template <class T> struct StrictWeakOrdering { // Specialized for supported types
+    bool operator()(const T& a, const T& b) const {
+        return a < b;
+    }
+};
+}
+
+/**
+@brief A functor which implements strict weak ordering for all types in the Math library.
+
+A strict weak ordering enables a comparison operator between to elements of a
+set. With it an ordering can be achieved between the elements.
+
+This is useful mainly for interoperability with ordering containers from the
+C++ standard library, like @ref std::map and @ref std::set.
+
+@snippet MagnumMath.cpp StrictWeakOrdering
+
+Check the source for defails if you want to create an implementation for your
+own types.
+ */
+struct StrictWeakOrdering {
+    /**
+     * @brief Compares two items.
+     *
+     * Returns true if a is less than b.
+     *
+     * Returns false if a is equivalent to b or greater.
+     *
+     * For scalar types this is equivalent to operator <
+     */
+    template <class T> bool operator()(const T& a, const T& b) const {
+        // Instantiate a specialization of Implementation::StrictWeakOrdering
+        // If users want to enable this for their own types, they must create
+        // a specialization of Magnum::Math::Implementation::StrictWeakOrdering
+        // for them.
+        Implementation::StrictWeakOrdering<T> o;
+        return o(a, b);
+    }
+};
+
+}}
+
+#endif

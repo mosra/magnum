@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 struct Mat3 {
     float a[9];
@@ -96,6 +97,8 @@ struct Matrix3Test: Corrade::TestSuite::Tester {
     void invertedRigidNotRigid();
     void transform();
 
+    void strictWeakOrdering();
+
     void debug();
     void configuration();
 };
@@ -144,6 +147,8 @@ Matrix3Test::Matrix3Test() {
               &Matrix3Test::invertedRigid,
               &Matrix3Test::invertedRigidNotRigid,
               &Matrix3Test::transform,
+
+              &Matrix3Test::strictWeakOrdering,
 
               &Matrix3Test::debug,
               &Matrix3Test::configuration});
@@ -590,6 +595,22 @@ void Matrix3Test::transform() {
 
     CORRADE_COMPARE(a.transformVector(v), Vector2(2.0f, 1.0f));
     CORRADE_COMPARE(a.transformPoint(v), Vector2(3.0f, -4.0f));
+}
+
+void Matrix3Test::strictWeakOrdering() {
+    StrictWeakOrdering o;
+    const Matrix3 a(Vector3{1.0f, 1.0f, 2.0f}, Vector3{5.0f, 5.0f, 5.0f}, Vector3{3.0f, 1.0f, 4.0f});
+    const Matrix3 b(Vector3{2.0f, 1.0f, 3.0f}, Vector3{5.0f, 5.0f, 5.0f}, Vector3{4.0f, 1.0f, 5.0f});
+    const Matrix3 c(Vector3{1.0f, 1.0f, 2.0f}, Vector3{5.0f, 5.0f, 5.0f}, Vector3{3.0f, 1.0f, 5.0f});
+
+    CORRADE_VERIFY( o(a, b));
+    CORRADE_VERIFY(!o(b, a));
+    CORRADE_VERIFY( o(a, c));
+    CORRADE_VERIFY(!o(c, a));
+    CORRADE_VERIFY( o(c, b));
+    CORRADE_VERIFY(!o(b, c));
+
+    CORRADE_VERIFY(!o(a, a));
 }
 
 void Matrix3Test::debug() {

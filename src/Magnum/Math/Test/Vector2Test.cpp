@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Vector3.h" /* Vector3 used in Vector2Test::cross() */
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 struct Vec2 {
     float x, y;
@@ -69,6 +70,8 @@ struct Vector2Test: Corrade::TestSuite::Tester {
     void perpendicular();
     void aspectRatio();
 
+    void strictWeakOrdering();
+
     void swizzleType();
     void debug();
     void configuration();
@@ -93,6 +96,8 @@ Vector2Test::Vector2Test() {
               &Vector2Test::scales,
               &Vector2Test::perpendicular,
               &Vector2Test::aspectRatio,
+
+              &Vector2Test::strictWeakOrdering,
 
               &Vector2Test::swizzleType,
               &Vector2Test::debug,
@@ -224,6 +229,22 @@ void Vector2Test::perpendicular() {
 
 void Vector2Test::aspectRatio() {
     CORRADE_COMPARE(Vector2(3.0f, 4.0f).aspectRatio(), 0.75f);
+}
+
+void Vector2Test::strictWeakOrdering() {
+    StrictWeakOrdering o;
+    const Vector2 v2a{1.0f, 2.0f};
+    const Vector2 v2b{2.0f, 3.0f};
+    const Vector2 v2c{1.0f, 3.0f};
+
+    CORRADE_VERIFY( o(v2a, v2b));
+    CORRADE_VERIFY(!o(v2b, v2a));
+    CORRADE_VERIFY( o(v2a, v2c));
+    CORRADE_VERIFY(!o(v2c, v2a));
+    CORRADE_VERIFY( o(v2c, v2b));
+    CORRADE_VERIFY(!o(v2b, v2c));
+
+    CORRADE_VERIFY(!o(v2a, v2a));
 }
 
 void Vector2Test::swizzleType() {

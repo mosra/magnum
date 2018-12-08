@@ -33,6 +33,7 @@
 
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 namespace Magnum { namespace Math { namespace Test {
 
@@ -61,6 +62,8 @@ struct HalfTest: Corrade::TestSuite::Tester {
 
     void promotion();
     void negation();
+
+    void strictWeakOrdering();
 
     void literal();
     void debug();
@@ -152,6 +155,8 @@ HalfTest::HalfTest() {
 
     addTests({&HalfTest::promotion,
               &HalfTest::negation,
+
+              &HalfTest::strictWeakOrdering,
 
               &HalfTest::literal,
               &HalfTest::debug});
@@ -649,6 +654,16 @@ void HalfTest::negation() {
 
     CORRADE_COMPARE(b, Half{-3.5f});
     CORRADE_COMPARE(-b, a);
+}
+
+void HalfTest::strictWeakOrdering() {
+    StrictWeakOrdering o;
+    constexpr Half a{UnsignedShort(0x4300)};
+    constexpr Half b{UnsignedShort(0x5100)};
+
+    CORRADE_VERIFY( o(a, b));
+    CORRADE_VERIFY(!o(b, a));
+    CORRADE_VERIFY(!o(a, a));
 }
 
 void HalfTest::literal() {

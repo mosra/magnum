@@ -32,6 +32,7 @@
 #include "Magnum/Math/CubicHermite.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Math/Functions.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 struct QBezier2D {
     float x0, x1, x2, y0, y1, y2;
@@ -85,6 +86,8 @@ struct BezierTest: Corrade::TestSuite::Tester {
     void subdivideQuadratic();
     void subdivideCubic();
 
+    void strictWeakOrdering();
+
     void debug();
     void configuration();
 };
@@ -108,6 +111,8 @@ BezierTest::BezierTest() {
               &BezierTest::subdivideLinear,
               &BezierTest::subdivideQuadratic,
               &BezierTest::subdivideCubic,
+
+              &BezierTest::strictWeakOrdering,
 
               &BezierTest::debug,
               &BezierTest::configuration});
@@ -310,6 +315,21 @@ void BezierTest::subdivideCubic() {
     CORRADE_COMPARE(right.value(0.33333f), bezier.value(0.5f));
     CORRADE_COMPARE(left, (CubicBezier2D{Vector2{0.0f, 0.0f}, Vector2{2.5f, 3.75f}, Vector2{5.0f, 5.875f}, Vector2{7.10938f, 6.57812f}}));
     CORRADE_COMPARE(right, (CubicBezier2D{Vector2{7.10938f, 6.57812f}, Vector2{13.4375f, 8.6875f}, Vector2{16.25f, -2.0f}, Vector2{5.0f, -20.0f}}));
+}
+
+void BezierTest::strictWeakOrdering() {
+    StrictWeakOrdering o;
+    CubicBezier2D a{Vector2{0.0f, 0.0f}, Vector2{10.0f, 15.0f}, Vector2{20.0f, 4.0f}, Vector2{5.0f, -20.0f}};
+    CubicBezier2D b{Vector2{1.0f, 0.0f}, Vector2{10.0f, 15.0f}, Vector2{20.0f, 4.0f}, Vector2{5.0f, -20.0f}};
+    CubicBezier2D c{Vector2{0.0f, 0.0f}, Vector2{10.0f, 15.0f}, Vector2{20.0f, 4.0f}, Vector2{5.0f, 20.0f}};
+
+    CORRADE_VERIFY( o(a, b));
+    CORRADE_VERIFY(!o(b, a));
+    CORRADE_VERIFY( o(a, c));
+    CORRADE_VERIFY(!o(c, a));
+    CORRADE_VERIFY( o(c, b));
+
+    CORRADE_VERIFY(!o(a, a));
 }
 
 void BezierTest::debug() {
