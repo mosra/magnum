@@ -29,6 +29,7 @@
 
 #include "Magnum/Math/Complex.h"
 #include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 struct Cmpl {
     float re, im;
@@ -98,6 +99,8 @@ struct ComplexTest: Corrade::TestSuite::Tester {
     void slerpNotNormalized();
     void transformVector();
 
+    void strictWeakOrdering();
+
     void debug();
     void configuration();
 };
@@ -149,6 +152,8 @@ ComplexTest::ComplexTest() {
               &ComplexTest::slerp,
               &ComplexTest::slerpNotNormalized,
               &ComplexTest::transformVector,
+
+              &ComplexTest::strictWeakOrdering,
 
               &ComplexTest::debug,
               &ComplexTest::configuration});
@@ -527,6 +532,21 @@ void ComplexTest::transformVector() {
     Vector2 rotated = a.transformVector(v);
     CORRADE_COMPARE(rotated, m.transformVector(v));
     CORRADE_COMPARE(rotated, Vector2(-3.58733f, -0.762279f));
+}
+
+void ComplexTest::strictWeakOrdering() {
+    StrictWeakOrdering o;
+    const Complex a{1.0f, 2.0f};
+    const Complex b{2.0f, 3.0f};
+    const Complex c{1.0f, 3.0f};
+
+    CORRADE_VERIFY( o(a, b));
+    CORRADE_VERIFY(!o(b, a));
+    CORRADE_VERIFY( o(a, c));
+    CORRADE_VERIFY(!o(c, a));
+    CORRADE_VERIFY( o(c, b));
+    CORRADE_VERIFY(!o(b, c));
+    CORRADE_VERIFY(!o(a, a));
 }
 
 void ComplexTest::debug() {

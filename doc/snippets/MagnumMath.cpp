@@ -32,6 +32,10 @@
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Math/Algorithms/GramSchmidt.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
+
+#include <map>
+#include <set>
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
@@ -900,6 +904,15 @@ Vector2i center, filterRadius;
 auto filterArea = Range2Di::fromSize(center, Vector2i{1}).padded(filterRadius);
 /* [Range-fromCenter-integer] */
 static_cast<void>(filterArea);
+}
+
+{
+/* [StrictWeakOrdering] */
+std::set<Magnum::Vector2, Magnum::Math::StrictWeakOrdering> mySet;
+std::map<Magnum::Vector4, int, Magnum::Math::StrictWeakOrdering> myMap;
+/* [StrictWeakOrdering] */
+static_cast<void>(myMap);
+static_cast<void>(mySet);
 }
 
 }

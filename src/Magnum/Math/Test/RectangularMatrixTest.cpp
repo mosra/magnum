@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/RectangularMatrix.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 struct Mat2x3 {
     float a[6];
@@ -90,6 +91,8 @@ struct RectangularMatrixTest: Corrade::TestSuite::Tester {
     void subclassTypes();
     void subclass();
 
+    void strictWeakOrdering();
+
     void debug();
     void configuration();
 };
@@ -141,6 +144,8 @@ RectangularMatrixTest::RectangularMatrixTest() {
 
               &RectangularMatrixTest::subclassTypes,
               &RectangularMatrixTest::subclass,
+
+              &RectangularMatrixTest::strictWeakOrdering,
 
               &RectangularMatrixTest::debug,
               &RectangularMatrixTest::configuration});
@@ -672,6 +677,22 @@ void RectangularMatrixTest::subclass() {
                                 Vector2{ 7.0f, -2.0f}}.flippedRows();
     CORRADE_COMPARE(flippedRows, (Mat2x2{Vector2{ 5.0f, -1.0f},
                                          Vector2{-2.0f,  7.0f}}));
+}
+
+void RectangularMatrixTest::strictWeakOrdering() {
+    StrictWeakOrdering o;
+    const Matrix2x2 a{Vector2{1.0f, 2.0f}, Vector2{3.0f, 4.0f}};
+    const Matrix2x2 b{Vector2{2.0f, 3.0f}, Vector2{4.0f, 5.0f}};
+    const Matrix2x2 c{Vector2{1.0f, 2.0f}, Vector2{3.0f, 5.0f}};
+
+    CORRADE_VERIFY( o(a, b));
+    CORRADE_VERIFY(!o(b, a));
+    CORRADE_VERIFY( o(a, c));
+    CORRADE_VERIFY(!o(c, a));
+    CORRADE_VERIFY( o(c, b));
+    CORRADE_VERIFY(!o(b, c));
+
+    CORRADE_VERIFY(!o(a, a));
 }
 
 void RectangularMatrixTest::debug() {

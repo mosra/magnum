@@ -317,6 +317,22 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 3, Double>&);
 #endif
 
+namespace Implementation {
+template<UnsignedInt order, UnsignedInt dimensions, class T> struct StrictWeakOrdering<Bezier<order, dimensions, T>> {
+    bool operator()(const Bezier<order, dimensions, T>& a, const Bezier<order, dimensions, T>& b) const {
+        StrictWeakOrdering<Vector<dimensions, T>> o;
+        for(std::size_t i = 0; i < order + 1; ++i) {
+            if(o(a[i], b[i]))
+                return true;
+            if(o(b[i], a[i]))
+                return false;
+        }
+
+        return false; // a and b are equivalent
+    }
+};
+}
+
 }}
 
 namespace Corrade { namespace Utility {

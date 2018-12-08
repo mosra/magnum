@@ -30,6 +30,7 @@
 
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Quaternion.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 struct Quat {
     float x, y, z, w;
@@ -111,6 +112,8 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
     void transformVectorNormalized();
     void transformVectorNormalizedNotNormalized();
 
+    void strictWeakOrdering();
+
     void debug();
     void configuration();
 };
@@ -184,6 +187,8 @@ QuaternionTest::QuaternionTest() {
               &QuaternionTest::transformVector,
               &QuaternionTest::transformVectorNormalized,
               &QuaternionTest::transformVectorNormalizedNotNormalized,
+
+              &QuaternionTest::strictWeakOrdering,
 
               &QuaternionTest::debug,
               &QuaternionTest::configuration});
@@ -714,6 +719,22 @@ void QuaternionTest::transformVectorNormalizedNotNormalized() {
     Quaternion a = Quaternion::rotation(23.0_degf, Vector3::xAxis());
     (a*2).transformVectorNormalized({});
     CORRADE_COMPARE(out.str(), "Math::Quaternion::transformVectorNormalized(): Quaternion({0.398736, 0, 0}, 1.95985) is not normalized\n");
+}
+
+void QuaternionTest::strictWeakOrdering() {
+    StrictWeakOrdering o;
+    const Quaternion a{{1.0f, 2.0f, 3.0f}, 4.0f};
+    const Quaternion b{{2.0f, 3.0f, 4.0f}, 5.0f};
+    const Quaternion c{{1.0f, 2.0f, 3.0f}, 5.0f};
+
+    CORRADE_VERIFY( o(a, b));
+    CORRADE_VERIFY(!o(b, a));
+    CORRADE_VERIFY( o(a, c));
+    CORRADE_VERIFY(!o(c, a));
+    CORRADE_VERIFY( o(c, b));
+    CORRADE_VERIFY(!o(b, c));
+
+    CORRADE_VERIFY(!o(a, a));
 }
 
 void QuaternionTest::debug() {

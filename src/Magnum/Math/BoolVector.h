@@ -33,6 +33,7 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/Types.h"
+#include "Magnum/Math/Math.h"
 #include "Magnum/Math/Tags.h"
 
 namespace Magnum { namespace Math {
@@ -301,6 +302,27 @@ template<std::size_t size> inline BoolVector<size> BoolVector<size>::operator~()
         out._data[i] = ~_data[i];
 
     return out;
+}
+
+/* Specialization of helper types*/
+namespace Implementation {
+template<std::size_t size> struct StrictWeakOrdering<BoolVector<size>> {
+    bool operator()(const BoolVector<size>& a, const BoolVector<size>& b) const {
+        auto ad = a.data();
+        auto bd = b.data();
+        for(std::size_t i = 0; i < BoolVector<size>::DataSize - 1; ++i) {
+            if(ad[i] < bd[i])
+                return true;
+            if(ad[i] > bd[i])
+                return false;
+        }
+
+        // mask last element with to hide unused bits
+        constexpr UnsignedByte mask = UnsignedByte(0xFF) >> (BoolVector<size>::DataSize * 8 - size);
+        constexpr std::size_t i = BoolVector<size>::DataSize - 1;
+        return (ad[i] & mask) < (bd[i] & mask);
+    }
+};
 }
 
 }}

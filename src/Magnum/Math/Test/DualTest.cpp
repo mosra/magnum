@@ -29,6 +29,7 @@
 #include "Magnum/Math/Dual.h"
 #include "Magnum/Math/Quaternion.h"
 #include "Magnum/Math/Vector2.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 namespace Magnum { namespace Math { namespace Test {
 
@@ -57,6 +58,8 @@ struct DualTest: Corrade::TestSuite::Tester {
 
     void sincos();
     void sincosWithBase();
+
+    void strictWeakOrdering();
 
     void subclassTypes();
     void subclass();
@@ -96,6 +99,8 @@ DualTest::DualTest() {
 
               &DualTest::sincos,
               &DualTest::sincosWithBase,
+
+              &DualTest::strictWeakOrdering,
 
               &DualTest::subclassTypes,
               &DualTest::subclass,
@@ -276,6 +281,21 @@ void DualTest::sincosWithBase() {
         Dual(0.8660254037844386f, -0.5f*Constants::pi()/2));
     CORRADE_COMPARE(Math::sincos(2*Math::Dual<Deg>(15.0_degf, 45.0_degf)), result);
     CORRADE_COMPARE(Math::sincos(2*Math::Dual<Rad>(Rad(Constants::pi()/12), Rad(Constants::pi()/4))), result);
+}
+
+void DualTest::strictWeakOrdering() {
+    StrictWeakOrdering o;
+    const Dual a{1.0f, 2.0f};
+    const Dual b{2.0f, 3.0f};
+    const Dual c{1.0f, 3.0f};
+
+    CORRADE_VERIFY( o(a, b));
+    CORRADE_VERIFY(!o(b, a));
+    CORRADE_VERIFY( o(a, c));
+    CORRADE_VERIFY(!o(c, a));
+    CORRADE_VERIFY( o(c, b));
+    CORRADE_VERIFY(!o(b, c));
+    CORRADE_VERIFY(!o(a, a));
 }
 
 namespace {

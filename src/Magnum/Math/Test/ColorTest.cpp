@@ -33,6 +33,7 @@
 #endif
 
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 struct Vec3 {
     float x, y, z;
@@ -104,6 +105,8 @@ struct ColorTest: Corrade::TestSuite::Tester {
     void xyz();
     void fromXyzDefaultAlpha();
     void xyY();
+
+    void strictWeakOrdering();
 
     void swizzleType();
     void debug();
@@ -216,6 +219,8 @@ ColorTest::ColorTest() {
               &ColorTest::xyz,
               &ColorTest::fromXyzDefaultAlpha,
               &ColorTest::xyY,
+
+              &ColorTest::strictWeakOrdering,
 
               &ColorTest::swizzleType,
               &ColorTest::debug,
@@ -848,6 +853,32 @@ void ColorTest::xyY() {
 
     CORRADE_COMPARE(xyzToXyY(xyz), xyY);
     CORRADE_COMPARE(xyYToXyz(xyY), xyz);
+}
+
+void ColorTest::strictWeakOrdering() {
+    StrictWeakOrdering o;
+
+    auto r = Color4::red();
+    auto g = Color4::green();
+    auto b = Color4::blue();
+
+    CORRADE_VERIFY( o(b, r));
+    CORRADE_VERIFY( o(g, r));
+    CORRADE_VERIFY( o(b, g));
+    CORRADE_VERIFY(!o(r, r));
+
+    auto ba = b;
+    ba.a() = 0.5f;
+    CORRADE_VERIFY(o(ba, b));
+
+    auto r3 = r.rgb();
+    auto g3 = g.rgb();
+    auto b3 = b.rgb();
+
+    CORRADE_VERIFY( o(b3, r3));
+    CORRADE_VERIFY( o(g3, r3));
+    CORRADE_VERIFY( o(b3, g3));
+    CORRADE_VERIFY(!o(r3, r3));
 }
 
 void ColorTest::swizzleType() {

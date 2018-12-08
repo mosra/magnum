@@ -1024,6 +1024,11 @@ template<class T> Matrix4<T> Matrix4<T>::invertedRigid() const {
     return from(inverseRotation, inverseRotation*-translation());
 }
 
+/* Specialization of helper types*/
+namespace Implementation {
+template<class T> struct StrictWeakOrdering<Matrix4<T>>: public StrictWeakOrdering<RectangularMatrix<4, 4, T>> {};
+}
+
 }}
 
 namespace Corrade { namespace Utility {

@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/DualQuaternion.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 struct DualQuat {
     struct { float x, y, z, w; } re;
@@ -98,6 +99,8 @@ struct DualQuaternionTest: Corrade::TestSuite::Tester {
     void sclerp();
     void sclerpShortestPath();
 
+    void strictWeakOrdering();
+
     void debug();
     void configuration();
 };
@@ -158,6 +161,8 @@ DualQuaternionTest::DualQuaternionTest() {
 
               &DualQuaternionTest::sclerp,
               &DualQuaternionTest::sclerpShortestPath,
+
+              &DualQuaternionTest::strictWeakOrdering,
 
               &DualQuaternionTest::debug,
               &DualQuaternionTest::configuration});
@@ -618,6 +623,21 @@ void DualQuaternionTest::sclerpShortestPath() {
        Translation in the XY plane is along a screw, so that's different. */
     CORRADE_COMPARE(sclerpShortestPath.translation().z(), 0.25f);
     CORRADE_COMPARE(sclerpShortestPath.translation().z(), 0.25f);
+}
+
+void DualQuaternionTest::strictWeakOrdering() {
+    StrictWeakOrdering o;
+    const DualQuaternion a{{{1.0f, 2.0f, 3.0f}, 0.0f}, {{1.0f, 2.0f, 3.0f}, 3.0f}};
+    const DualQuaternion b{{{1.0f, 2.0f, 3.0f}, 2.0f}, {{3.0f, 2.0f, 3.0f}, 4.0f}};
+    const DualQuaternion c{{{1.0f, 2.0f, 3.0f}, 0.0f}, {{1.0f, 2.0f, 3.0f}, 4.0f}};
+
+    CORRADE_VERIFY( o(a, b));
+    CORRADE_VERIFY(!o(b, a));
+    CORRADE_VERIFY( o(a, c));
+    CORRADE_VERIFY(!o(c, a));
+    CORRADE_VERIFY( o(c, b));
+    CORRADE_VERIFY(!o(b, c));
+    CORRADE_VERIFY(!o(a, a));
 }
 
 void DualQuaternionTest::debug() {

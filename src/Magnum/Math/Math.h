@@ -101,6 +101,10 @@ template<UnsignedInt, class> class Range;
 template<class T> using Range1D = Range<1, T>;
 template<class> class Range2D;
 template<class> class Range3D;
+
+namespace Implementation {
+template <class T> struct StrictWeakOrdering;
+}
 #endif
 
 }}

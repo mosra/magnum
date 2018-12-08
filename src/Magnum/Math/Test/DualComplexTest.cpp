@@ -29,6 +29,7 @@
 
 #include "Magnum/Math/DualComplex.h"
 #include "Magnum/Math/DualQuaternion.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 struct DualCmpl {
     float re, im, x, y;
@@ -91,6 +92,8 @@ struct DualComplexTest: Corrade::TestSuite::Tester {
     void matrixNotOrthogonal();
     void transformPoint();
 
+    void strictWeakOrdering();
+
     void debug();
     void configuration();
 };
@@ -146,6 +149,8 @@ DualComplexTest::DualComplexTest() {
               &DualComplexTest::matrix,
               &DualComplexTest::matrixNotOrthogonal,
               &DualComplexTest::transformPoint,
+
+              &DualComplexTest::strictWeakOrdering,
 
               &DualComplexTest::debug,
               &DualComplexTest::configuration});
@@ -443,6 +448,21 @@ void DualComplexTest::transformPoint() {
     Vector2 transformedB = b.transformPoint(v);
     CORRADE_COMPARE(transformedB, n.transformPoint(v));
     CORRADE_COMPARE(transformedB, Vector2(-2.918512f, 2.780698f));
+}
+
+void DualComplexTest::strictWeakOrdering() {
+    StrictWeakOrdering o;
+    const DualComplex a{{1.0f, 0.0f}, {1.0f, 3.0f}};
+    const DualComplex b{{1.0f, 2.0f}, {3.0f, 4.0f}};
+    const DualComplex c{{1.0f, 0.0f}, {1.0f, 4.0f}};
+
+    CORRADE_VERIFY( o(a, b));
+    CORRADE_VERIFY(!o(b, a));
+    CORRADE_VERIFY( o(a, c));
+    CORRADE_VERIFY(!o(c, a));
+    CORRADE_VERIFY( o(c, b));
+    CORRADE_VERIFY(!o(b, c));
+    CORRADE_VERIFY(!o(a, a));
 }
 
 void DualComplexTest::debug() {

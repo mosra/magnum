@@ -759,6 +759,19 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<3, Double>&);
 #endif
 
+namespace Implementation {
+template<UnsignedInt dimensions, class T> struct StrictWeakOrdering<Range<dimensions, T>> {
+    bool operator()(const Range<dimensions, T>& a, const Range<dimensions, T>& b) const {
+        StrictWeakOrdering<typename Range<dimensions, T>::VectorType> o;
+        if(o(a.min(), b.min()))
+            return true;
+        if(o(b.min(), a.min()))
+            return false;
+        return o(a.max(), b.max());
+    }
+};
+}
+
 }}
 
 namespace Corrade { namespace Utility {

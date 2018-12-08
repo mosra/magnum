@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/BoolVector.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 struct BVec3 {
     bool x, y, z;
@@ -73,6 +74,8 @@ struct BoolVectorTest: Corrade::TestSuite::Tester {
     void bitInverse();
     void bitAndOrXor();
 
+    void strictWeakOrdering();
+
     void debug();
 };
 
@@ -102,6 +105,8 @@ BoolVectorTest::BoolVectorTest() {
 
               &BoolVectorTest::bitInverse,
               &BoolVectorTest::bitAndOrXor,
+
+              &BoolVectorTest::strictWeakOrdering,
 
               &BoolVectorTest::debug});
 }
@@ -288,6 +293,38 @@ void BoolVectorTest::bitAndOrXor() {
     CORRADE_COMPARE(a & b, BoolVector19(0x25, 0x53, 0x02));
     CORRADE_COMPARE(a | b, BoolVector19(0xb7, 0xff, 0x07));
     CORRADE_COMPARE(a ^ b, BoolVector19(0x92, 0xac, 0x05));
+}
+
+void BoolVectorTest::strictWeakOrdering() {
+    BoolVector<11> a, b, c;
+
+    a.set(0, true);
+    a.set(1, true);
+
+    c.set(7, true);
+
+    b.set(8, true);
+
+    StrictWeakOrdering o;
+    CORRADE_VERIFY( o(b, a));
+    CORRADE_VERIFY(!o(a, b));
+    CORRADE_VERIFY(!o(c, b));
+    CORRADE_VERIFY( o(a, c));
+    CORRADE_VERIFY(!o(c, a));
+
+    CORRADE_VERIFY(!o(a, a));
+
+    // check uninitialized padding reads
+    a.set(8, true);
+    a.set(10, true);
+    b = a;
+    a.data()[1] |= 0x08;
+    b.data()[1] |= 0x20;
+    a.data()[1] |= 0x40;
+    b.data()[1] |= 0x80;
+
+    CORRADE_VERIFY(!o(a, b));
+    CORRADE_VERIFY(!o(b, a));
 }
 
 void BoolVectorTest::debug() {

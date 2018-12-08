@@ -161,6 +161,14 @@ Prints the value with 4 significant digits.
 */
 MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, Half value);
 
+namespace Implementation {
+template <> struct StrictWeakOrdering<Half> {
+    bool operator()(Half a, Half b) const {
+        return a.data() < b.data(); // Not mathematically equivalent to <, but does order
+    }
+};
+}
+
 }}
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)

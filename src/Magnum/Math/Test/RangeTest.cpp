@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Range.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 struct Dim {
     float offset, size;
@@ -134,6 +135,8 @@ struct RangeTest: Corrade::TestSuite::Tester {
     void join();
     void join1D();
 
+    void strictWeakOrdering();
+
     void subclassTypes();
     void subclass();
 
@@ -184,6 +187,8 @@ RangeTest::RangeTest() {
               &RangeTest::intersectIntersects1D,
               &RangeTest::join,
               &RangeTest::join1D,
+
+              &RangeTest::strictWeakOrdering,
 
               &RangeTest::subclassTypes,
               &RangeTest::subclass,
@@ -822,6 +827,22 @@ void RangeTest::join1D() {
     CORRADE_COMPARE(Math::join(b, a), d);
     CORRADE_COMPARE(Math::join(a, c), a);
     CORRADE_COMPARE(Math::join(c, a), a);
+}
+
+void RangeTest::strictWeakOrdering() {
+    StrictWeakOrdering o;
+    const Range1D a{1.0f, 2.0f};
+    const Range1D b{2.0f, 3.0f};
+    const Range1D c{1.0f, 3.0f};
+
+    CORRADE_VERIFY( o(a, b));
+    CORRADE_VERIFY(!o(b, a));
+    CORRADE_VERIFY( o(a, c));
+    CORRADE_VERIFY(!o(c, a));
+    CORRADE_VERIFY( o(c, b));
+    CORRADE_VERIFY(!o(b, c));
+
+    CORRADE_VERIFY(!o(a, a));
 }
 
 template<class T> class BasicRect: public Math::Range<2, T> {

@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Vector3.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 struct Vec3 {
     float x, y, z;
@@ -69,6 +70,8 @@ struct Vector3Test: Corrade::TestSuite::Tester {
     void scales();
     void twoComponent();
 
+    void strictWeakOrdering();
+
     void swizzleType();
     void debug();
     void configuration();
@@ -93,6 +96,8 @@ Vector3Test::Vector3Test() {
               &Vector3Test::axes,
               &Vector3Test::scales,
               &Vector3Test::twoComponent,
+
+              &Vector3Test::strictWeakOrdering,
 
               &Vector3Test::swizzleType,
               &Vector3Test::debug,
@@ -248,6 +253,22 @@ void Vector3Test::twoComponent() {
     constexpr Float d = b.xy().y();
     CORRADE_COMPARE(c, Vector2(1.0f, 2.0f));
     CORRADE_COMPARE(d, 2.0f);
+}
+
+void Vector3Test::strictWeakOrdering() {
+    StrictWeakOrdering o;
+    const Vector3 v3a{1.0f, 2.0f, 3.0f};
+    const Vector3 v3b{2.0f, 3.0f, 4.0f};
+    const Vector3 v3c{1.0f, 2.0f, 4.0f};
+
+    CORRADE_VERIFY( o(v3a, v3b));
+    CORRADE_VERIFY(!o(v3b, v3a));
+    CORRADE_VERIFY( o(v3a, v3c));
+    CORRADE_VERIFY(!o(v3c, v3a));
+    CORRADE_VERIFY( o(v3c, v3b));
+    CORRADE_VERIFY(!o(v3b, v3c));
+
+    CORRADE_VERIFY(!o(v3a, v3a));
 }
 
 void Vector3Test::swizzleType() {

@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Vector.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 struct Vec3 {
     float x, y, z;
@@ -107,11 +108,14 @@ struct VectorTest: Corrade::TestSuite::Tester {
     void subclassTypes();
     void subclass();
 
+    void strictWeakOrdering();
+
     void debug();
     void configuration();
 };
 
 typedef Math::Rad<Float> Rad;
+typedef Vector<2, Float> Vector2;
 typedef Vector<3, Float> Vector3;
 typedef Vector<4, Float> Vector4;
 typedef Vector<4, Int> Vector4i;
@@ -169,6 +173,8 @@ VectorTest::VectorTest() {
 
               &VectorTest::subclassTypes,
               &VectorTest::subclass,
+
+              &VectorTest::strictWeakOrdering,
 
               &VectorTest::debug,
               &VectorTest::configuration});
@@ -693,6 +699,49 @@ void VectorTest::subclass() {
     #endif
     Vec2 flipped = Vec2{1.0f, 0.4f}.flipped();
     CORRADE_COMPARE(flipped, (Vec2{0.4f, 1.0f}));
+}
+
+void VectorTest::strictWeakOrdering() {
+    StrictWeakOrdering o;
+
+    const Vector2 v2a{1.0f, 2.0f};
+    const Vector2 v2b{2.0f, 3.0f};
+    const Vector2 v2c{1.0f, 3.0f};
+
+    CORRADE_VERIFY( o(v2a, v2b));
+    CORRADE_VERIFY(!o(v2b, v2a));
+    CORRADE_VERIFY( o(v2a, v2c));
+    CORRADE_VERIFY(!o(v2c, v2a));
+    CORRADE_VERIFY( o(v2c, v2b));
+    CORRADE_VERIFY(!o(v2b, v2c));
+
+    CORRADE_VERIFY(!o(v2a, v2a));
+
+    const Vector3 v3a{1.0f, 2.0f, 3.0f};
+    const Vector3 v3b{2.0f, 3.0f, 4.0f};
+    const Vector3 v3c{1.0f, 2.0f, 4.0f};
+
+    CORRADE_VERIFY( o(v3a, v3b));
+    CORRADE_VERIFY(!o(v3b, v3a));
+    CORRADE_VERIFY( o(v3a, v3c));
+    CORRADE_VERIFY(!o(v3c, v3a));
+    CORRADE_VERIFY( o(v3c, v3b));
+    CORRADE_VERIFY(!o(v3b, v3c));
+
+    CORRADE_VERIFY(!o(v3a, v3a));
+
+    const Vector4 v4a{1.0f, 2.0f, 3.0f, 4.0f};
+    const Vector4 v4b{2.0f, 3.0f, 4.0f, 5.0f};
+    const Vector4 v4c{1.0f, 2.0f, 3.0f, 5.0f};
+
+    CORRADE_VERIFY( o(v4a, v4b));
+    CORRADE_VERIFY(!o(v4b, v4a));
+    CORRADE_VERIFY( o(v4a, v4c));
+    CORRADE_VERIFY(!o(v4c, v4a));
+    CORRADE_VERIFY( o(v4c, v4b));
+    CORRADE_VERIFY(!o(v4b, v4c));
+
+    CORRADE_VERIFY(!o(v4a, v4a));
 }
 
 void VectorTest::debug() {

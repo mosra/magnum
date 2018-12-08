@@ -538,6 +538,23 @@ template<class T> inline bool CubicHermite<T>::operator==(const CubicHermite<T>&
         TypeTraits<T>::equals(_outTangent, other._outTangent);
 }
 
+namespace Implementation {
+template<class T> struct StrictWeakOrdering<CubicHermite<T>> {
+    bool operator()(const CubicHermite<T>& a, const CubicHermite<T>& b) const {
+        StrictWeakOrdering<T> o;
+        if(o(a.inTangent(), b.inTangent()))
+            return true;
+        if(o(b.inTangent(), a.inTangent()))
+            return false;
+        if(o(a.point(), b.point()))
+            return true;
+        if(o(b.point(), a.point()))
+            return false;
+        return o(a.outTangent(), b.outTangent());
+    }
+};
+}
+
 }}
 
 #endif

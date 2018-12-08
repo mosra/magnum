@@ -692,6 +692,11 @@ template<class T> inline Matrix3<T> Matrix3<T>::invertedRigid() const {
     return from(inverseRotation, inverseRotation*-translation());
 }
 
+/* Specialization of helper types*/
+namespace Implementation {
+template<class T> struct StrictWeakOrdering<Matrix3<T>>: public StrictWeakOrdering<RectangularMatrix<3, 3, T>> {};
+}
+
 }}
 
 namespace Corrade { namespace Utility {
