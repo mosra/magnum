@@ -164,6 +164,9 @@ See also:
     @ref GL::OpenGLTester library instead. Note that the deprecated
     `Magnum/OpenGLTester.h` header is still present, along with all other
     deprecated GL-specific headers and APIs in the project root.
+-   Removed five-argument @ref Trade::MeshData2D and six-argument
+    @ref Trade::MeshData3D constructors that were deprecated since February
+    2017. Use the full six/seven-argument versions instead.
 
 @section changelog-2018-10 2018.10
 
