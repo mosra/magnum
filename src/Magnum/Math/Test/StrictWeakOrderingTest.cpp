@@ -82,12 +82,12 @@ void StrictWeakOrderingTest::set() {
     s.insert({1, 2});
     s.insert({2, 3});
 
-    CORRADE_VERIFY(s.size() == 2);
-    CORRADE_VERIFY(*s.begin() == Vector2(1, 2));
-    CORRADE_VERIFY(*s.rbegin() == Vector2(2, 3));
+    CORRADE_COMPARE(s.size(), 2);
+    CORRADE_COMPARE(*s.begin(), Vector2(1, 2));
+    CORRADE_COMPARE(*s.rbegin(), Vector2(2, 3));
 
     s.insert({1, 2});
-    CORRADE_VERIFY(s.size() == 2);
+    CORRADE_COMPARE(s.size(), 2);
 }
 
 void StrictWeakOrderingTest::setShort() {
@@ -96,12 +96,12 @@ void StrictWeakOrderingTest::setShort() {
     s.insert({1, 2});
     s.insert({2, 3});
 
-    CORRADE_VERIFY(s.size() == 2);
-    CORRADE_VERIFY(*s.begin() == Vector2(1, 2));
-    CORRADE_VERIFY(*s.rbegin() == Vector2(2, 3));
+    CORRADE_COMPARE(s.size(), 2);
+    CORRADE_COMPARE(*s.begin(), Vector2(1, 2));
+    CORRADE_COMPARE(*s.rbegin(), Vector2(2, 3));
 
     s.insert({1, 2});
-    CORRADE_VERIFY(s.size() == 2);
+    CORRADE_COMPARE(s.size(), 2);
 }
 
 void StrictWeakOrderingTest::setLess() {
@@ -110,12 +110,12 @@ void StrictWeakOrderingTest::setLess() {
     s.insert({1, 2});
     s.insert({2, 3});
 
-    CORRADE_VERIFY(s.size() == 2);
-    CORRADE_VERIFY(*s.begin() == Vector2(1, 2));
-    CORRADE_VERIFY(*s.rbegin() == Vector2(2, 3));
+    CORRADE_COMPARE(s.size(), 2);
+    CORRADE_COMPARE(*s.begin(), Vector2(1, 2));
+    CORRADE_COMPARE(*s.rbegin(), Vector2(2, 3));
 
     s.insert({1, 2});
-    CORRADE_VERIFY(s.size() == 2);
+    CORRADE_COMPARE(s.size(), 2);
 }
 
 void StrictWeakOrderingTest::map() {
@@ -124,13 +124,13 @@ void StrictWeakOrderingTest::map() {
     m[Vector2{1, 2}] = 23;
     m[Vector2{4, 5}] = 55;
 
-    CORRADE_VERIFY(m.size() == 2);
-    CORRADE_VERIFY(m.begin()->second == 23);
-    CORRADE_VERIFY(m.rbegin()->second == 55);
+    CORRADE_COMPARE(m.size(), 2);
+    CORRADE_COMPARE(m.begin()->second, 23);
+    CORRADE_COMPARE(m.rbegin()->second, 55);
 
     m[Vector2{1, 2}] = 99;
-    CORRADE_VERIFY(m.size() == 2);
-    CORRADE_VERIFY(m.begin()->second == 99);
+    CORRADE_COMPARE(m.size(), 2);
+    CORRADE_COMPARE(m.begin()->second, 99);
 }
 
 void StrictWeakOrderingTest::mapShort() {
@@ -139,13 +139,13 @@ void StrictWeakOrderingTest::mapShort() {
     m[Vector2{1, 2}] = 23;
     m[Vector2{4, 5}] = 55;
 
-    CORRADE_VERIFY(m.size() == 2);
-    CORRADE_VERIFY(m.begin()->second == 23);
-    CORRADE_VERIFY(m.rbegin()->second == 55);
+    CORRADE_COMPARE(m.size(), 2);
+    CORRADE_COMPARE(m.begin()->second, 23);
+    CORRADE_COMPARE(m.rbegin()->second, 55);
 
     m[Vector2{1, 2}] = 99;
-    CORRADE_VERIFY(m.size() == 2);
-    CORRADE_VERIFY(m.begin()->second == 99);
+    CORRADE_COMPARE(m.size(), 2);
+    CORRADE_COMPARE(m.begin()->second, 99);
 }
 
 void StrictWeakOrderingTest::mapLess() {
@@ -154,13 +154,13 @@ void StrictWeakOrderingTest::mapLess() {
     m[Vector2{1, 2}] = 23;
     m[Vector2{4, 5}] = 55;
 
-    CORRADE_VERIFY(m.size() == 2);
-    CORRADE_VERIFY(m.begin()->second == 23);
-    CORRADE_VERIFY(m.rbegin()->second == 55);
+    CORRADE_COMPARE(m.size(), 2);
+    CORRADE_COMPARE(m.begin()->second, 23);
+    CORRADE_COMPARE(m.rbegin()->second, 55);
 
     m[Vector2{1, 2}] = 99;
-    CORRADE_VERIFY(m.size() == 2);
-    CORRADE_VERIFY(m.begin()->second == 99);
+    CORRADE_COMPARE(m.size(), 2);
+    CORRADE_COMPARE(m.begin()->second, 99);
 }
 
 }}}
