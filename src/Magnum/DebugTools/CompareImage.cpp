@@ -375,10 +375,8 @@ void printPixelDeltas(Debug& out, const std::vector<Float>& delta, const ImageVi
     /* Find first maxCount values above mean threshold and put them into a
        sorted map */
     std::multimap<Float, std::size_t> large;
-    for(std::size_t i = 0; i != delta.size(); ++i) {
-        /* GCC 4.7 std::multimap doesn't have emplace() */
-        if(delta[i] > meanThreshold) large.insert({delta[i], i});
-    }
+    for(std::size_t i = 0; i != delta.size(); ++i)
+        if(delta[i] > meanThreshold) large.emplace(delta[i], i);
 
     CORRADE_INTERNAL_ASSERT(!large.empty());
 

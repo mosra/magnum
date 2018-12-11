@@ -38,6 +38,11 @@ See also:
 
 @section changelog-latest Changes since 2018.10
 
+@subsection changelog-latest-dependencies Dependency changes
+
+-   Minimal supported GCC version is now 4.8.1, GCC 4.7 is not supported
+    anymore.
+
 @subsection changelog-latest-new New features
 
 @subsubsection changelog-latest-new-animation Animation library

@@ -77,7 +77,7 @@ namespace {
 void AbstractFontConverterTest::convertGlyphs() {
     class GlyphExporter: public AbstractFontConverter {
         public:
-            /* GCC 4.7 apparently can't handle {} here */
+            /* GCC 4.8 apparently can't handle {} here */
             GlyphExporter(std::u32string& characters): _characters(characters) {}
 
         private:

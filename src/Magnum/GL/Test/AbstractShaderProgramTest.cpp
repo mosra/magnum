@@ -44,11 +44,7 @@ AbstractShaderProgramTest::AbstractShaderProgramTest() {
 void AbstractShaderProgramTest::constructNoCreate() {
     {
         struct Shader: AbstractShaderProgram {
-            #ifndef CORRADE_GCC47_COMPATIBILITY
             using AbstractShaderProgram::AbstractShaderProgram;
-            #else
-            explicit Shader(NoCreateT) noexcept: AbstractShaderProgram{NoCreate} {}
-            #endif
         } shader{NoCreate};
 
         CORRADE_COMPARE(shader.id(), 0);

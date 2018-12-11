@@ -314,8 +314,9 @@ template<class T> class BasicTranslationRotationScalingTransformation3D: public 
 
         Math::Vector3<T> _translation;
         Math::Quaternion<T> _rotation;
-        /* Can't {} on GCC 4.7, _scaling(T(1)) fails on the most vexing parse
-           (what the ... eh???) */
+        /* Can't {} on GCC 4.8 because it complains about the constructor being
+           explicit, _scaling(T(1)) fails on the most vexing parse (what the
+           ... eh???) */
         Math::Vector3<T> _scaling = Math::Vector3<T>(T(1));
 };
 

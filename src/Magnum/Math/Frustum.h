@@ -116,7 +116,7 @@ template<class T> class Frustum {
 
         /** @brief Frustum planes */
         constexpr Corrade::Containers::StaticArrayView<6, const Vector4<T>> planes() const {
-            /* GCC 4.7 needs explicit construction */
+            /* GCC 4.8 needs explicit construction */
             return Corrade::Containers::StaticArrayView<6, const Vector4<T>>{_data};
         }
 

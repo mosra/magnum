@@ -357,24 +357,12 @@ template<UnsignedInt dimensions> class ImageData {
          *
          * @see @ref release()
          */
-        Containers::ArrayView<char> data()
-            #ifndef CORRADE_GCC47_COMPATIBILITY
-            &
-            #endif
-            { return _data; }
-        #ifndef CORRADE_GCC47_COMPATIBILITY
+        Containers::ArrayView<char> data() & { return _data; }
         Containers::ArrayView<char> data() && = delete; /**< @overload */
-        #endif
 
         /** @overload */
-        Containers::ArrayView<const char> data() const
-            #ifndef CORRADE_GCC47_COMPATIBILITY
-            &
-            #endif
-            { return _data; }
-        #ifndef CORRADE_GCC47_COMPATIBILITY
+        Containers::ArrayView<const char> data() const & { return _data; }
         Containers::ArrayView<const char> data() const && = delete; /**< @overload */
-        #endif
 
         /** @overload */
         template<class T> T* data() {

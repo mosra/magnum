@@ -433,7 +433,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
 
 namespace {
     #ifdef MAGNUM_BUILD_MULTITHREADED
-    #if !defined(CORRADE_GCC47_COMPATIBILITY) && !defined(CORRADE_TARGET_APPLE)
+    #ifndef CORRADE_TARGET_APPLE
     thread_local
     #else
     __thread

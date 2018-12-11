@@ -328,24 +328,12 @@ class MAGNUM_TRADE_EXPORT AnimationData {
          * Contains data for all tracks contained in this clip.
          * @see @ref release()
          */
-        Containers::ArrayView<char> data()
-            #ifndef CORRADE_GCC47_COMPATIBILITY
-            &
-            #endif
-            { return _data; }
-        #ifndef CORRADE_GCC47_COMPATIBILITY
+        Containers::ArrayView<char> data() & { return _data; }
         Containers::ArrayView<char> data() && = delete; /**< @overload */
-        #endif
 
         /** @overload */
-        Containers::ArrayView<const char> data() const
-            #ifndef CORRADE_GCC47_COMPATIBILITY
-            &
-            #endif
-            { return _data; }
-        #ifndef CORRADE_GCC47_COMPATIBILITY
+        Containers::ArrayView<const char> data() const & { return _data; }
         Containers::ArrayView<const char> data() const && = delete; /**< @overload */
-        #endif
 
         /** @brief Duration */
         Range1D duration() const { return _duration; }

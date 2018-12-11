@@ -268,8 +268,8 @@ There are also Homebrew packages for @ref building-plugins-packages-brew "Magnum
 Minimal set of tools and libraries required for building is:
 
 -   C++ compiler with good C++11 support. Compilers which are tested to have
-    everything needed are **GCC** >= 4.7, **Clang** >= 3.1 and **MSVC** >= 2015.
-    On Windows you can also use **MinGW-w64**.
+    everything needed are **GCC** >= 4.8.1, **Clang** >= 3.1 and **MSVC**
+    >= 2015. On Windows you can also use **MinGW-w64**.
 -   **CMake** >= 2.8.12
 -   **Corrade** --- Plugin management and utility library. See
     @ref building-corrade "Corrade download and installation guide" for more

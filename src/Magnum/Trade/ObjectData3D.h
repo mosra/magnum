@@ -136,7 +136,7 @@ class MAGNUM_TRADE_EXPORT ObjectData3D {
         /** @brief Move constructor */
         ObjectData3D(ObjectData3D&&)
             /* GCC 4.9.0 (the one from Android NDK) thinks this does not match
-               the implicit signature so it can't be defaulted. Works on 4.7,
+               the implicit signature so it can't be defaulted. Works on 4.8,
                5.0 and everywhere else, so I don't bother. */
             #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
             noexcept
@@ -152,7 +152,7 @@ class MAGNUM_TRADE_EXPORT ObjectData3D {
         /** @brief Move assignment */
         ObjectData3D& operator=(ObjectData3D&&)
             /* GCC 4.9.0 (the one from Android NDK) thinks this does not match
-               the implicit signature so it can't be defaulted. Works on 4.7,
+               the implicit signature so it can't be defaulted. Works on 4.8,
                5.0 and everywhere else, so I don't bother. */
             #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
             noexcept

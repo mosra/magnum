@@ -150,7 +150,7 @@ void AnyImageImporterTest::detect() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!importer->openFile(Utility::Directory::join(TEST_FILE_DIR, data.filename)));
-    /* Can't use raw string literals in macros on GCC 4.7 */
+    /* Can't use raw string literals in macros on GCC 4.8 */
     #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     CORRADE_COMPARE(out.str(), Utility::formatString(
 "PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nTrade::AnyImageImporter::{1}(): cannot load {0} plugin\n", data.plugin, data.callback ? "openData" : "openFile"));

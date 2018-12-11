@@ -58,7 +58,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         /** @brief Move constructor */
         SceneData(SceneData&&)
             /* GCC 4.9.0 (the one from Android NDK) thinks this does not match
-               the implicit signature so it can't be defaulted. Works on 4.7,
+               the implicit signature so it can't be defaulted. Works on 4.8,
                5.0 and everywhere else, so I don't bother. */
             #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
             noexcept
@@ -71,7 +71,7 @@ class MAGNUM_TRADE_EXPORT SceneData {
         /** @brief Move assignment */
         SceneData& operator=(SceneData&&)
             /* GCC 4.9.0 (the one from Android NDK) thinks this does not match
-               the implicit signature so it can't be defaulted. Works on 4.7,
+               the implicit signature so it can't be defaulted. Works on 4.8,
                5.0 and everywhere else, so I don't bother. */
             #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
             noexcept

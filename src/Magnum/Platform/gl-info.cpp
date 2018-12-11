@@ -231,9 +231,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #error no windowless application available on this platform
     #endif
     Debug() << "Compilation flags:";
-    #ifdef CORRADE_GCC47_COMPATIBILITY
-    Debug() << "    CORRADE_GCC47_COMPATIBILITY";
-    #endif
     #ifdef CORRADE_BUILD_DEPRECATED
     Debug() << "    CORRADE_BUILD_DEPRECATED";
     #endif
