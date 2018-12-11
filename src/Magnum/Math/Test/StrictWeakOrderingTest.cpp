@@ -26,46 +26,42 @@
 #include <map>
 #include <set>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
 
 namespace std {
-    template<> struct less<Magnum::Math::Vector2<float>>: public Magnum::Math::Implementation::StrictWeakOrdering<Magnum::Math::Vector2<float>> {};
+    template<> struct less<Magnum::Math::Vector2<int>>: Magnum::Math::Implementation::StrictWeakOrdering<Magnum::Math::Vector2<int>> {};
 }
 
 namespace Magnum { namespace Math { namespace Test {
-
-using Vector2 = Magnum::Math::Vector2<float>;
 
 struct StrictWeakOrderingTest: Corrade::TestSuite::Tester {
     explicit StrictWeakOrderingTest();
 
     void base();
 
-    void set();
-    void setShort();
-    void setLess();
-
-    void map();
-    void mapShort();
-    void mapLess();
+    template<class Set> void set();
+    template<class Map> void map();
 };
+
+using Vector2i = Magnum::Math::Vector2<Int>;
 
 StrictWeakOrderingTest::StrictWeakOrderingTest() {
     addTests({&StrictWeakOrderingTest::base,
 
-              &StrictWeakOrderingTest::set,
-              &StrictWeakOrderingTest::setShort,
-              &StrictWeakOrderingTest::setLess,
+              &StrictWeakOrderingTest::set<std::set<Vector2i, Implementation::StrictWeakOrdering<Vector2i>>>,
+              &StrictWeakOrderingTest::set<std::set<Vector2i, StrictWeakOrdering>>,
+              &StrictWeakOrderingTest::set<std::set<Vector2i>>,
 
-              &StrictWeakOrderingTest::map,
-              &StrictWeakOrderingTest::mapShort,
-              &StrictWeakOrderingTest::mapLess});
+              &StrictWeakOrderingTest::map<std::map<Vector2i, Int, Implementation::StrictWeakOrdering<Vector2i>>>,
+              &StrictWeakOrderingTest::map<std::map<Vector2i, Int, StrictWeakOrdering>>,
+              &StrictWeakOrderingTest::map<std::map<Vector2i, Int>>});
 }
 
 void StrictWeakOrderingTest::base() {
-    Implementation::StrictWeakOrdering<int> o;
+    Implementation::StrictWeakOrdering<Int> o;
     CORRADE_VERIFY(o(1, 2));
     CORRADE_VERIFY(!o(2, 2));
     CORRADE_VERIFY(!o(3, 2));
@@ -76,89 +72,46 @@ void StrictWeakOrderingTest::base() {
     CORRADE_VERIFY(!of('z', 'h'));
 }
 
-void StrictWeakOrderingTest::set() {
-    std::set<Vector2, Implementation::StrictWeakOrdering<Vector2>> s;
+namespace {
+    template<class> struct Compare;
+    template<> struct Compare<Implementation::StrictWeakOrdering<Vector2i>> {
+        static const char* name() { return "Implementation::StrictWeakOrdering<Vector2i>"; }
+    };
+    template<> struct Compare<StrictWeakOrdering> {
+        static const char* name() { return "StrictWeakOrdering"; }
+    };
+    template<> struct Compare<std::less<Vector2i>> {
+        static const char* name() { return "std::less<Vector2i>"; }
+    };
+}
+
+template<class Set> void StrictWeakOrderingTest::set() {
+    setTestCaseName(Corrade::Utility::formatString("set<{}>", Compare<typename Set::key_compare>::name()));
+    Set s;
 
     s.insert({1, 2});
     s.insert({2, 3});
 
     CORRADE_COMPARE(s.size(), 2);
-    CORRADE_COMPARE(*s.begin(), Vector2(1, 2));
-    CORRADE_COMPARE(*s.rbegin(), Vector2(2, 3));
+    CORRADE_COMPARE(*s.begin(), (Vector2i{1, 2}));
+    CORRADE_COMPARE(*s.rbegin(), (Vector2i{2, 3}));
 
     s.insert({1, 2});
     CORRADE_COMPARE(s.size(), 2);
 }
 
-void StrictWeakOrderingTest::setShort() {
-    std::set<Vector2, StrictWeakOrdering> s;
+template<class Map> void StrictWeakOrderingTest::map() {
+    setTestCaseName(Corrade::Utility::formatString("map<{}>", Compare<typename Map::key_compare>::name()));
+    Map m;
 
-    s.insert({1, 2});
-    s.insert({2, 3});
-
-    CORRADE_COMPARE(s.size(), 2);
-    CORRADE_COMPARE(*s.begin(), Vector2(1, 2));
-    CORRADE_COMPARE(*s.rbegin(), Vector2(2, 3));
-
-    s.insert({1, 2});
-    CORRADE_COMPARE(s.size(), 2);
-}
-
-void StrictWeakOrderingTest::setLess() {
-    std::set<Vector2> s;
-
-    s.insert({1, 2});
-    s.insert({2, 3});
-
-    CORRADE_COMPARE(s.size(), 2);
-    CORRADE_COMPARE(*s.begin(), Vector2(1, 2));
-    CORRADE_COMPARE(*s.rbegin(), Vector2(2, 3));
-
-    s.insert({1, 2});
-    CORRADE_COMPARE(s.size(), 2);
-}
-
-void StrictWeakOrderingTest::map() {
-    std::map<Vector2, int, Implementation::StrictWeakOrdering<Vector2>> m;
-
-    m[Vector2{1, 2}] = 23;
-    m[Vector2{4, 5}] = 55;
+    m[{1, 2}] = 23;
+    m[{4, 5}] = 55;
 
     CORRADE_COMPARE(m.size(), 2);
     CORRADE_COMPARE(m.begin()->second, 23);
     CORRADE_COMPARE(m.rbegin()->second, 55);
 
-    m[Vector2{1, 2}] = 99;
-    CORRADE_COMPARE(m.size(), 2);
-    CORRADE_COMPARE(m.begin()->second, 99);
-}
-
-void StrictWeakOrderingTest::mapShort() {
-    std::map<Vector2, int, StrictWeakOrdering> m;
-
-    m[Vector2{1, 2}] = 23;
-    m[Vector2{4, 5}] = 55;
-
-    CORRADE_COMPARE(m.size(), 2);
-    CORRADE_COMPARE(m.begin()->second, 23);
-    CORRADE_COMPARE(m.rbegin()->second, 55);
-
-    m[Vector2{1, 2}] = 99;
-    CORRADE_COMPARE(m.size(), 2);
-    CORRADE_COMPARE(m.begin()->second, 99);
-}
-
-void StrictWeakOrderingTest::mapLess() {
-    std::map<Vector2, int> m;
-
-    m[Vector2{1, 2}] = 23;
-    m[Vector2{4, 5}] = 55;
-
-    CORRADE_COMPARE(m.size(), 2);
-    CORRADE_COMPARE(m.begin()->second, 23);
-    CORRADE_COMPARE(m.rbegin()->second, 55);
-
-    m[Vector2{1, 2}] = 99;
+    m[{1, 2}] = 99;
     CORRADE_COMPARE(m.size(), 2);
     CORRADE_COMPARE(m.begin()->second, 99);
 }
