@@ -62,8 +62,6 @@
 #
 # Features of found Corrade library are exposed in these variables:
 #
-#  CORRADE_GCC47_COMPATIBILITY  - Defined if compiled with compatibility mode
-#   for GCC 4.7
 #  CORRADE_MSVC2017_COMPATIBILITY - Defined if compiled with compatibility
 #   mode for MSVC 2017
 #  CORRADE_MSVC2015_COMPATIBILITY - Defined if compiled with compatibility
@@ -94,6 +92,7 @@
 #  CORRADE_INCLUDE_DIR          - Root include dir
 #  CORRADE_*_LIBRARY_DEBUG      - Debug version of given library, if found
 #  CORRADE_*_LIBRARY_RELEASE    - Release version of given library, if found
+#  CORRADE_*_EXECUTABLE         - Location of given executable, if found
 #  CORRADE_USE_MODULE           - Path to UseCorrade.cmake module (included
 #   automatically)
 #  CORRADE_TESTSUITE_XCTEST_RUNNER - Path to XCTestRunner.mm.in file
@@ -108,8 +107,6 @@
 # following variables are included just for backwards compatibility and only if
 # :variable:`CORRADE_BUILD_DEPRECATED` is enabled:
 #
-#  CORRADE_*_LIBRARIES          - Expands to ``Corrade::*`` target. Use
-#   ``Corrade::*`` target directly instead.
 #  CORRADE_CXX_FLAGS            - Pedantic compile flags. Use
 #   :prop_tgt:`CORRADE_USE_PEDANTIC_FLAGS` property or
 #   :variable:`CORRADE_PEDANTIC_COMPILER_DEFINITIONS` /
@@ -285,7 +282,6 @@ endif()
 # Read flags from configuration
 file(READ ${_CORRADE_CONFIGURE_FILE} _corradeConfigure)
 set(_corradeFlags
-    GCC47_COMPATIBILITY
     MSVC2015_COMPATIBILITY
     MSVC2017_COMPATIBILITY
     BUILD_DEPRECATED
@@ -448,26 +444,10 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
                 INTERFACE_INCLUDE_DIRECTORIES ${CORRADE_INCLUDE_DIR})
 
             # Require (at least) C++11 for users
-            if(NOT CMAKE_VERSION VERSION_LESS 3.0.0)
-                set_property(TARGET Corrade::${_component} PROPERTY
-                    INTERFACE_CORRADE_CXX_STANDARD 11)
-                set_property(TARGET Corrade::${_component} APPEND PROPERTY
-                    COMPATIBLE_INTERFACE_NUMBER_MAX CORRADE_CXX_STANDARD)
-            else()
-                # 2.8.12 is fucking buggy shit. Besides the fact that it
-                # doesn't know COMPATIBLE_INTERFACE_NUMBER_MAX, if I
-                # define_property() so I can inherit it from directory on a
-                # target, then I can't use it in COMPATIBLE_INTERFACE_STRING
-                # to inherit it from interfaces BECAUSE!! it thinks that it is
-                # not an user-defined property anymore. So I need to have two
-                # sets of properties, CORRADE_CXX_STANDARD_ used silently for
-                # inheritance from interfaces and CORRADE_CXX_STANDARD used
-                # publicly for inheritance from directories. AAAAAAAAARGH.
-                set_property(TARGET Corrade::${_component} PROPERTY
-                    INTERFACE_CORRADE_CXX_STANDARD_ 11)
-                set_property(TARGET Corrade::${_component} APPEND PROPERTY
-                    COMPATIBLE_INTERFACE_STRING CORRADE_CXX_STANDARD_)
-            endif()
+            set_property(TARGET Corrade::${_component} PROPERTY
+                INTERFACE_CORRADE_CXX_STANDARD 11)
+            set_property(TARGET Corrade::${_component} APPEND PROPERTY
+                COMPATIBLE_INTERFACE_NUMBER_MAX CORRADE_CXX_STANDARD)
 
             # AndroidLogStreamBuffer class needs to be linked to log library
             if(CORRADE_TARGET_ANDROID)
@@ -484,11 +464,10 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
             mark_as_advanced(_CORRADE_${_COMPONENT}_INCLUDE_DIR)
         endif()
 
-        # Add inter-library dependencies (except for the header-only libraries
-        # on 2.8.12)
-        if(_component MATCHES ${_CORRADE_LIBRARY_COMPONENTS} AND (NOT CMAKE_VERSION VERSION_LESS 3.0.0 OR NOT _component MATCHES ${_CORRADE_HEADER_ONLY_COMPONENTS}))
+        # Add inter-library dependencies
+        if(_component MATCHES ${_CORRADE_LIBRARY_COMPONENTS} OR _component MATCHES ${_CORRADE_HEADER_ONLY_COMPONENTS})
             foreach(_dependency ${_CORRADE_${_COMPONENT}_DEPENDENCIES})
-                if(_dependency MATCHES ${_CORRADE_LIBRARY_COMPONENTS} AND (NOT CMAKE_VERSION VERSION_LESS 3.0.0 OR NOT _dependency MATCHES ${_CORRADE_HEADER_ONLY_COMPONENTS}))
+                if(_dependency MATCHES ${_CORRADE_LIBRARY_COMPONENTS} OR _dependency MATCHES ${_CORRADE_HEADER_ONLY_COMPONENTS})
                     set_property(TARGET Corrade::${_component} APPEND PROPERTY
                         INTERFACE_LINK_LIBRARIES Corrade::${_dependency})
                 endif()
@@ -501,11 +480,6 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
         else()
             set(Corrade_${_component}_FOUND FALSE)
         endif()
-    endif()
-
-    # Deprecated variables
-    if(CORRADE_BUILD_DEPRECATED AND _component MATCHES ${_CORRADE_LIBRARY_COMPONENTS} AND NOT _component MATCHES ${_CORRADE_HEADER_ONLY_COMPONENTS})
-        set(CORRADE_${_COMPONENT}_LIBRARIES Corrade::${_component})
     endif()
 endforeach()
 
