@@ -687,6 +687,9 @@ unless it doesn't affect public API at all.
 
 1.  Verify that there are no important clients stuck on the old version with no
     easy way to upgrade
+    -   Corrade's root `CMakeLists.txt` (and `UseCorrade.cmake`) contains
+        checks for minimal CMake and compiler version, together with a comment
+        explaining which distribution / system has the minimal version.
 2.  In case of CMake:
     -   it's usually possible to jump more than one version, check what's the
         version on the oldest supported system
