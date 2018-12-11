@@ -1,0 +1,76 @@
+# Author: mosra <mosra@centrum.cz>
+pkgname=magnum
+pkgver=dev.gcc48
+pkgrel=1
+pkgdesc="C++11/C++14 graphics middleware for games and data visualization (built with GCC 4.8)"
+arch=('i686' 'x86_64')
+url="https://magnum.graphics"
+license=('MIT')
+depends=('corrade' 'openal' 'freeglut' 'sdl2' 'glfw')
+makedepends=('cmake' 'ninja' 'gcc48')
+options=('!strip')
+provides=('magnum-git')
+
+_rootdir=$startdir/../../
+
+build() {
+    # Disable flags unknown to GCC 4.8
+    newcxxflags=$(echo $CXXFLAGS | sed s/-fstack-protector-strong.//g | sed s/.-fno-plt//g)
+    export CXXFLAGS="$newcxxflags"
+
+    if [ ! -d "$_rootdir/build-gcc48" ] ; then
+        mkdir "$_rootdir/build-gcc48"
+        cd "$_rootdir/build-gcc48"
+
+        cmake .. \
+            -DCMAKE_CXX_COMPILER=g++-4.8 \
+            -G Ninja
+    fi
+
+    cd "$_rootdir/build-gcc48"
+
+    cmake .. \
+        -DCMAKE_BUILD_TYPE=Debug \
+        -DCMAKE_INSTALL_PREFIX=/usr \
+        -DWITH_AUDIO=ON \
+        -DWITH_SHAPES=ON \
+        -DWITH_GLFWAPPLICATION=ON \
+        -DWITH_GLUTAPPLICATION=ON \
+        -DWITH_GLXAPPLICATION=ON \
+        -DWITH_SDL2APPLICATION=ON \
+        -DWITH_XEGLAPPLICATION=ON \
+        -DWITH_WINDOWLESSGLXAPPLICATION=ON \
+        -DWITH_EGLCONTEXT=ON \
+        -DWITH_GLXCONTEXT=ON \
+        -DWITH_OPENGLTESTER=ON \
+        -DWITH_ANYAUDIOIMPORTER=ON \
+        -DWITH_ANYIMAGECONVERTER=ON \
+        -DWITH_ANYIMAGEIMPORTER=ON \
+        -DWITH_ANYSCENEIMPORTER=ON \
+        -DWITH_MAGNUMFONT=ON \
+        -DWITH_MAGNUMFONTCONVERTER=ON \
+        -DWITH_OBJIMPORTER=ON \
+        -DWITH_TGAIMAGECONVERTER=ON \
+        -DWITH_TGAIMPORTER=ON \
+        -DWITH_WAVAUDIOIMPORTER=ON \
+        -DWITH_DISTANCEFIELDCONVERTER=ON \
+        -DWITH_FONTCONVERTER=ON \
+        -DWITH_IMAGECONVERTER=ON \
+        -DWITH_GL_INFO=ON \
+        -DWITH_AL_INFO=ON \
+        -DBUILD_TESTS=ON \
+        -DBUILD_GL_TESTS=ON
+    ninja
+}
+
+check() {
+    cd "$_rootdir/build-gcc48"
+    CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5
+}
+
+package() {
+    cd "$_rootdir/build-gcc48"
+    DESTDIR="$pkgdir/" ninja install
+}
+
+# kate: hl bash
