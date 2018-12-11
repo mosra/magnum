@@ -443,14 +443,6 @@ class Sdl2Application {
          */
         explicit Sdl2Application(const Arguments& arguments, NoCreateT);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief Sdl2Application(const Arguments&, NoCreateT)
-         * @deprecated Use @ref Sdl2Application(const Arguments&, NoCreateT) instead.
-         */
-        CORRADE_DEPRECATED("use Sdl2Application(const Arguments&, NoCreateT) instead") explicit Sdl2Application(const Arguments& arguments, std::nullptr_t): Sdl2Application{arguments, NoCreate} {}
-        #endif
-
         /** @brief Copying is not allowed */
         Sdl2Application(const Sdl2Application&) = delete;
 

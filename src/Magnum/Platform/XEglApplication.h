@@ -103,14 +103,6 @@ class XEglApplication: public AbstractXApplication {
         /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, NoCreateT) */
         explicit XEglApplication(const Arguments& arguments, NoCreateT);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief XEglApplication(const Arguments&, NoCreateT)
-         * @deprecated Use @ref XEglApplication(const Arguments&, NoCreateT) instead.
-         */
-        CORRADE_DEPRECATED("use XEglApplication(const Arguments&, NoCreateT) instead") explicit XEglApplication(const Arguments& arguments, std::nullptr_t): XEglApplication{arguments, NoCreate} {}
-        #endif
-
     protected:
         /* Nobody will need to have (and delete) XEglApplication*, thus this is
            faster than public pure virtual destructor */

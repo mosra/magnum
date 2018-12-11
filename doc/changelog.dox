@@ -167,6 +167,9 @@ See also:
 -   Removed five-argument @ref Trade::MeshData2D and six-argument
     @ref Trade::MeshData3D constructors that were deprecated since February
     2017. Use the full six/seven-argument versions instead.
+-   Removed @ref Platform application constructors taking @cpp nullptr @ce,
+    deprecated in June 2016 for windowless apps and in March 2017 for windowed
+    apps. Use constructors taking the @ref NoCreate tag instead.
 
 @section changelog-2018-10 2018.10
 

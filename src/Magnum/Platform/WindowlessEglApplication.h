@@ -381,14 +381,6 @@ class WindowlessEglApplication {
          */
         explicit WindowlessEglApplication(const Arguments& arguments, NoCreateT);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief WindowlessEglApplication(const Arguments&, NoCreateT)
-         * @deprecated Use @ref WindowlessEglApplication(const Arguments&, NoCreateT) instead.
-         */
-        CORRADE_DEPRECATED("use WindowlessEglApplication(const Arguments&, NoCreateT) instead") explicit WindowlessEglApplication(const Arguments& arguments, std::nullptr_t): WindowlessEglApplication{arguments, NoCreate} {}
-        #endif
-
         /** @brief Copying is not allowed */
         WindowlessEglApplication(const WindowlessEglApplication&) = delete;
 

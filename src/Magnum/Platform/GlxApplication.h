@@ -102,14 +102,6 @@ class GlxApplication: public AbstractXApplication {
         /** @copydoc Sdl2Application::Sdl2Application(const Arguments&, NoCreateT) */
         explicit GlxApplication(const Arguments& arguments, NoCreateT);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief GlxApplication(const Arguments&, NoCreateT)
-         * @deprecated Use @ref GlxApplication(const Arguments&, NoCreateT) instead.
-         */
-        CORRADE_DEPRECATED("use GlxApplication(const Arguments&, NoCreateT) instead") explicit GlxApplication(const Arguments& arguments, std::nullptr_t): GlxApplication{arguments, NoCreate} {}
-        #endif
-
     protected:
         /* Nobody will need to have (and delete) GlxApplication*, thus this is
            faster than public pure virtual destructor */
