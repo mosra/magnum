@@ -82,9 +82,6 @@ if(NOT TARGET OpenGLES3::OpenGLES3)
                 IMPORTED_LOCATION ${OPENGLES3_LIBRARY})
         endif()
     else()
-        # This won't work in CMake 2.8.12, but that affects Emscripten only so
-        # I assume people building for that are not on that crap old Ubuntu
-        # 14.04 LTS
         add_library(OpenGLES3::OpenGLES3 INTERFACE IMPORTED)
     endif()
 

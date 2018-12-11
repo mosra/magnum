@@ -78,9 +78,6 @@ if(NOT TARGET OpenGLES2::OpenGLES2)
                 IMPORTED_LOCATION ${OPENGLES2_LIBRARY})
         endif()
     else()
-        # This won't work in CMake 2.8.12, but that affects Emscripten only so
-        # I assume people building for that are not on that crap old Ubuntu
-        # 14.04 LTS
         add_library(OpenGLES2::OpenGLES2 INTERFACE IMPORTED)
     endif()
 
