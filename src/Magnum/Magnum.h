@@ -51,15 +51,6 @@ namespace Magnum {
 namespace Math {
     #ifndef DOXYGEN_GENERATING_OUTPUT
     template<class> struct Constants;
-
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    namespace Literals {
-        constexpr Rad<Double> operator "" _rad(long double);
-        constexpr Deg<Double> operator "" _deg(long double);
-        constexpr Rad<Float> operator "" _radf(long double);
-        constexpr Deg<Float> operator "" _degf(long double);
-    }
-    #endif
     #endif
 }
 
@@ -709,13 +700,6 @@ typedef Math::Range3D<Double> Range3Dd;
 typedef Math::Frustum<Double> Frustumd;
 
 /*@}*/
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-using Math::Literals::operator "" _deg;
-using Math::Literals::operator "" _rad;
-using Math::Literals::operator "" _degf;
-using Math::Literals::operator "" _radf;
-#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<UnsignedInt, class T> class Array;

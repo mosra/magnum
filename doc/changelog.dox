@@ -170,6 +170,9 @@ See also:
 -   Removed @ref Platform application constructors taking @cpp nullptr @ce,
     deprecated in June 2016 for windowless apps and in March 2017 for windowed
     apps. Use constructors taking the @ref NoCreate tag instead.
+-   Removed availability of @ref Math::Color3 and @ref Math::Color4 literals in
+    the root namespace, deprecated since April 2016. Explicitly call
+    @cpp using namespace Math::Literals; @ce instead.
 
 @section changelog-2018-10 2018.10
 
