@@ -768,7 +768,15 @@ java.io.IOException: Keystore was tampered with, or password was incorrect
 Generating a debug keystore can be done by running through the Gradle build at
 least once. It's also possible to create a keystore
 [using Android Studio](https://developer.android.com/studio/publish/app-signing#generate-key)
-or using the `keytool` utility that's bundled with Java SDK.
+or using the `keytool` utility that's bundled with Java SDK. The following
+creates a key equivalent to the Gradle-generated one, adapt the location as
+necessary:
+
+@code{.sh}
+keytool -genkeypair -keystore $HOME/.android/debug.keystore \
+    -storepass android -alias androiddebugkey -keypass android \
+    -keyalg RSA -validity 10000 -dname CN=,OU=,O=,L=,S=,C=
+@endcode
 
 The location and password is controlled via the `ANDROID_APKSIGNER_KEY`
 variable, edit your CMake cache to point it to a different location or
