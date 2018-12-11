@@ -59,6 +59,9 @@ See also:
 -   Support for using the @ref Math::Deg, @ref Math::Rad, @ref Math::Half,
     @ref Math::Color3 and @ref Math::Color4 literals with the new experimental
     @ref Corrade::Utility::Tweakable utility. See also @ref tweakableliterals.
+-   New @ref Math::StrictWeakOrdering functor making it possible to use Magnum
+    math types as keys in ordered STL containers such as @ref std::map or
+    @ref std::set
 
 @subsubsection changelog-latest-new-platform Platform libraries
 

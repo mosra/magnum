@@ -95,6 +95,8 @@ Are the below lists missing your name or something's wrong?
 -   **Bill Robinson** ([\@wivlaro](https://github.com/wivlaroú) --- numerous
     bug reports, macOS fixes, feature improvements
 -   **[\@biosek](https://github.com/biosek)** --- documentation fixes
+-   **Borislav Stanimirov** ([\@iboB](https://github.com/iboB)) --- strict
+    weak ordering for @ref Math types
 -   **Denis Igorevich Lobanov** ([\@denislobanov](https://github.com/denislobanov))
     --- math fixes
 -   **[\@dlardi](https://github.com/dlardi)** --- WGL-related bugfixes
