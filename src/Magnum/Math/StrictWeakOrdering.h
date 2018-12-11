@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Math::StrictWeakOrdering
+ * @brief Struct @ref Magnum::Math::StrictWeakOrdering
  */
 
 namespace Magnum { namespace Math {
@@ -42,28 +42,25 @@ template<class T> struct StrictWeakOrdering { /* Specialized for supported types
 }
 
 /**
-@brief A functor which implements strict weak ordering for all types in the Math library.
+@brief A functor which implements strict weak ordering
 
-A strict weak ordering enables a comparison operator between to elements of a
-set. With it an ordering can be achieved between the elements.
-
-This is useful mainly for interoperability with ordering containers from the
-C++ standard library, like @ref std::map and @ref std::set.
+A strict weak ordering enables a comparison operator between two elements of a
+set. With it an ordering can be achieved between the elements. This is useful
+mainly for interoperability with ordering containers from the C++ standard
+library, like @ref std::map and @link std::set @endlink:
 
 @snippet MagnumMath.cpp StrictWeakOrdering
 
-Check the source for defails if you want to create an implementation for your
-own types.
+The implementation is done for all types in the @ref Math library, check the
+source for defails if you want to create an implementation for your own types.
  */
 struct StrictWeakOrdering {
     /**
-     * @brief Compares two items.
+     * @brief Compares two items
      *
-     * Returns true if a is less than b.
-     *
-     * Returns false if a is equivalent to b or greater.
-     *
-     * For scalar types this is equivalent to operator <
+     * Returns @cpp true @ce if @p a is less than @p b, returns @cpp false @ce
+     * if @p a is equivalent to @p b or greater. For scalar types this is
+     * equivalent to @cpp operator< @ce.
      */
     template<class T> bool operator()(const T& a, const T& b) const {
         /* Instantiate a specialization of Implementation::StrictWeakOrdering.
