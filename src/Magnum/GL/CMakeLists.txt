@@ -244,14 +244,10 @@ if(WITH_OPENGLTESTER)
 
     set(MagnumOpenGLTester_SRCS OpenGLTester.cpp)
     set(MagnumOpenGLTester_HEADERS OpenGLTester.h)
-    if(BUILD_DEPRECATED)
-        set(MagnumOpenGLTester_DEPRECATED_HEADERS ../Test/AbstractOpenGLTester.h)
-    endif()
 
     add_library(MagnumOpenGLTester STATIC
         ${MagnumOpenGLTester_SRCS}
-        ${MagnumOpenGLTester_HEADERS}
-        ${MagnumOpenGLTester_DEPRECATED_HEADERS}) # TODO: remove when the header is removed
+        ${MagnumOpenGLTester_HEADERS})
     set_target_properties(MagnumOpenGLTester PROPERTIES
         DEBUG_POSTFIX "-d"
         FOLDER "Magnum/GL")

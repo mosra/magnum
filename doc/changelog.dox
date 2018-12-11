@@ -157,6 +157,14 @@ See also:
     statelessness when doing batch processing. Use the
     @ref TextureTools::DistanceField class instead.
 
+@subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
+
+-   Removed the `Magnum/Test/AbstractOpenGLTester.h` header that was deprecated
+    in January 2017. Use @ref Magnum/GL/OpenGLTester.h and the
+    @ref GL::OpenGLTester library instead. Note that the deprecated
+    `Magnum/OpenGLTester.h` header is still present, along with all other
+    deprecated GL-specific headers and APIs in the project root.
+
 @section changelog-2018-10 2018.10
 
 Released 2018-10-23, tagged as
