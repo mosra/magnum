@@ -385,9 +385,8 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualComplex<Double>&);
 #endif
 
-/* Specialization of helper types*/
 namespace Implementation {
-template<class T> struct StrictWeakOrdering<DualComplex<T>>: public StrictWeakOrdering<Dual<Complex<T>>> {};
+    template<class T> struct StrictWeakOrdering<DualComplex<T>>: StrictWeakOrdering<Dual<Complex<T>>> {};
 }
 
 }}

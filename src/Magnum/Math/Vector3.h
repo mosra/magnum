@@ -246,7 +246,7 @@ MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(3, Vector3)
 namespace Implementation {
     template<class T> struct TypeForSize<3, T> { typedef Math::Vector3<typename T::Type> Type; };
 
-    template<class T> struct StrictWeakOrdering<Vector3<T>>: public StrictWeakOrdering<Vector<3, T>> {};
+    template<class T> struct StrictWeakOrdering<Vector3<T>>: StrictWeakOrdering<Vector<3, T>> {};
 }
 
 }}

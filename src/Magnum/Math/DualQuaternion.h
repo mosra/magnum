@@ -545,9 +545,8 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualQuaternion<Double>&);
 #endif
 
-/* Specialization of helper types*/
 namespace Implementation {
-template<class T> struct StrictWeakOrdering<DualQuaternion<T>>: public StrictWeakOrdering<Dual<Quaternion<T>>> {};
+    template<class T> struct StrictWeakOrdering<DualQuaternion<T>>: StrictWeakOrdering<Dual<Quaternion<T>>> {};
 }
 
 }}

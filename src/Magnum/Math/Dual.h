@@ -395,8 +395,8 @@ template<class T> std::pair<Dual<T>, Dual<T>> sincos(const Dual<Unit<Rad, T>>& a
 template<class T> std::pair<Dual<T>, Dual<T>> sincos(const Dual<Unit<Deg, T>>& angle) { return sincos(Dual<Rad<T>>(angle)); }
 #endif
 
-/* Specialization of helper types*/
 namespace Implementation {
+
 template<class T> struct StrictWeakOrdering<Dual<T>> {
     bool operator()(const Dual<T>& a, const Dual<T>& b) const {
         StrictWeakOrdering<T> o;
@@ -408,6 +408,7 @@ template<class T> struct StrictWeakOrdering<Dual<T>> {
         return o(a.dual(), b.dual());
     }
 };
+
 }
 
 }}

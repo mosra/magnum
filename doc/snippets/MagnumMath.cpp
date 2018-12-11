@@ -23,6 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <map>
+#include <set>
+
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Bezier.h"
@@ -33,9 +36,6 @@
 #include "Magnum/Math/Range.h"
 #include "Magnum/Math/Algorithms/GramSchmidt.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
-
-#include <map>
-#include <set>
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;

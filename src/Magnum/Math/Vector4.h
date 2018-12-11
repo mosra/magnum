@@ -255,7 +255,7 @@ MAGNUM_VECTORn_OPERATOR_IMPLEMENTATION(4, Vector4)
 namespace Implementation {
     template<class T> struct TypeForSize<4, T> { typedef Math::Vector4<typename T::Type> Type; };
 
-    template<class T> struct StrictWeakOrdering<Vector4<T>>: public StrictWeakOrdering<Vector<4, T>> {};
+    template<class T> struct StrictWeakOrdering<Vector4<T>>: StrictWeakOrdering<Vector<4, T>> {};
 }
 
 }}

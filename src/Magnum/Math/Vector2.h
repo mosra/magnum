@@ -191,7 +191,7 @@ namespace Implementation {
     template<std::size_t, class> struct TypeForSize;
     template<class T> struct TypeForSize<2, T> { typedef Math::Vector2<typename T::Type> Type; };
 
-    template<class T> struct StrictWeakOrdering<Vector2<T>>: public StrictWeakOrdering<Vector<2, T>> {};
+    template<class T> struct StrictWeakOrdering<Vector2<T>>: StrictWeakOrdering<Vector<2, T>> {};
 }
 
 }}

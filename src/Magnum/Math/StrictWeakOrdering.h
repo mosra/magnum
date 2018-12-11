@@ -32,11 +32,13 @@
 namespace Magnum { namespace Math {
 
 namespace Implementation {
-template <class T> struct StrictWeakOrdering { // Specialized for supported types
+
+template<class T> struct StrictWeakOrdering { /* Specialized for supported types */
     bool operator()(const T& a, const T& b) const {
         return a < b;
     }
 };
+
 }
 
 /**
@@ -63,11 +65,11 @@ struct StrictWeakOrdering {
      *
      * For scalar types this is equivalent to operator <
      */
-    template <class T> bool operator()(const T& a, const T& b) const {
-        // Instantiate a specialization of Implementation::StrictWeakOrdering
-        // If users want to enable this for their own types, they must create
-        // a specialization of Magnum::Math::Implementation::StrictWeakOrdering
-        // for them.
+    template<class T> bool operator()(const T& a, const T& b) const {
+        /* Instantiate a specialization of Implementation::StrictWeakOrdering.
+           If users want to enable this for their own types, they must create
+           a specialization of Magnum::Math::Implementation::StrictWeakOrdering
+           for them. */
         Implementation::StrictWeakOrdering<T> o;
         return o(a, b);
     }

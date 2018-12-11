@@ -26,26 +26,19 @@
 #include <map>
 #include <set>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
 
-namespace std
-{
-    template <> struct less<Magnum::Math::Vector2<float>>
-        : public Magnum::Math::Implementation::StrictWeakOrdering<Magnum::Math::Vector2<float>>
-    {};
+namespace std {
+    template<> struct less<Magnum::Math::Vector2<float>>: public Magnum::Math::Implementation::StrictWeakOrdering<Magnum::Math::Vector2<float>> {};
 }
 
-namespace Magnum {
-namespace Math {
-
-namespace Test {
+namespace Magnum { namespace Math { namespace Test {
 
 using Vector2 = Magnum::Math::Vector2<float>;
 
-struct StrictWeakOrderingTest : Corrade::TestSuite::Tester {
+struct StrictWeakOrderingTest: Corrade::TestSuite::Tester {
     explicit StrictWeakOrderingTest();
 
     void base();
@@ -57,11 +50,10 @@ struct StrictWeakOrderingTest : Corrade::TestSuite::Tester {
     void map();
     void mapShort();
     void mapLess();
-
 };
 
 StrictWeakOrderingTest::StrictWeakOrderingTest() {
-    addTests({ &StrictWeakOrderingTest::base,
+    addTests({&StrictWeakOrderingTest::base,
 
               &StrictWeakOrderingTest::set,
               &StrictWeakOrderingTest::setShort,
@@ -171,8 +163,6 @@ void StrictWeakOrderingTest::mapLess() {
     CORRADE_VERIFY(m.begin()->second == 99);
 }
 
-}
-}
-}
+}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::StrictWeakOrderingTest)

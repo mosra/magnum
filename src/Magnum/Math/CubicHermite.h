@@ -539,6 +539,7 @@ template<class T> inline bool CubicHermite<T>::operator==(const CubicHermite<T>&
 }
 
 namespace Implementation {
+
 template<class T> struct StrictWeakOrdering<CubicHermite<T>> {
     bool operator()(const CubicHermite<T>& a, const CubicHermite<T>& b) const {
         StrictWeakOrdering<T> o;
@@ -553,6 +554,7 @@ template<class T> struct StrictWeakOrdering<CubicHermite<T>> {
         return o(a.outTangent(), b.outTangent());
     }
 };
+
 }
 
 }}

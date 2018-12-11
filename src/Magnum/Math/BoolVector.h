@@ -304,8 +304,8 @@ template<std::size_t size> inline BoolVector<size> BoolVector<size>::operator~()
     return out;
 }
 
-/* Specialization of helper types*/
 namespace Implementation {
+
 template<std::size_t size> struct StrictWeakOrdering<BoolVector<size>> {
     bool operator()(const BoolVector<size>& a, const BoolVector<size>& b) const {
         auto ad = a.data();
@@ -317,12 +317,13 @@ template<std::size_t size> struct StrictWeakOrdering<BoolVector<size>> {
                 return false;
         }
 
-        // mask last element with to hide unused bits
+        /* Mask last element with to hide padding bits */
         constexpr UnsignedByte mask = UnsignedByte(0xFF) >> (BoolVector<size>::DataSize * 8 - size);
         constexpr std::size_t i = BoolVector<size>::DataSize - 1;
         return (ad[i] & mask) < (bd[i] & mask);
     }
 };
+
 }
 
 }}

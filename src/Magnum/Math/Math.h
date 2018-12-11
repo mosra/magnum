@@ -103,7 +103,7 @@ template<class> class Range2D;
 template<class> class Range3D;
 
 namespace Implementation {
-template <class T> struct StrictWeakOrdering;
+    template<class> struct StrictWeakOrdering;
 }
 #endif
 

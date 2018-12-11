@@ -1413,8 +1413,8 @@ template<std::size_t size, class T> inline std::pair<T, T> Vector<size, T>::minm
     return {min, max};
 }
 
-/* Specialization of helper types*/
 namespace Implementation {
+
 template<std::size_t size, class T> struct StrictWeakOrdering<Vector<size, T>> {
     bool operator()(const Vector<size, T>& a, const Vector<size, T>& b) const {
         for(std::size_t i = 0; i < size; ++i) {
@@ -1424,9 +1424,10 @@ template<std::size_t size, class T> struct StrictWeakOrdering<Vector<size, T>> {
                 return false;
         }
 
-        return false; // a and b are equivalent
+        return false; /* a and b are equivalent */
     }
 };
+
 }
 
 }}

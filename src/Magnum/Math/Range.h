@@ -760,6 +760,7 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 #endif
 
 namespace Implementation {
+
 template<UnsignedInt dimensions, class T> struct StrictWeakOrdering<Range<dimensions, T>> {
     bool operator()(const Range<dimensions, T>& a, const Range<dimensions, T>& b) const {
         StrictWeakOrdering<typename Range<dimensions, T>::VectorType> o;
@@ -770,6 +771,7 @@ template<UnsignedInt dimensions, class T> struct StrictWeakOrdering<Range<dimens
         return o(a.max(), b.max());
     }
 };
+
 }
 
 }}

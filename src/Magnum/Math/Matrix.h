@@ -321,7 +321,7 @@ template<class T> struct MatrixDeterminant<1, T> {
     }
 };
 
-template<std::size_t size, class T> struct StrictWeakOrdering<Matrix<size, T>>: public StrictWeakOrdering<RectangularMatrix<size, size, T>> {};
+template<std::size_t size, class T> struct StrictWeakOrdering<Matrix<size, T>>: StrictWeakOrdering<RectangularMatrix<size, size, T>> {};
 
 }
 #endif

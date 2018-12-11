@@ -760,8 +760,8 @@ template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...se
 }
 #endif
 
-/* Specialization of helper types*/
 namespace Implementation {
+
 template<std::size_t cols, std::size_t rows, class T> struct StrictWeakOrdering<RectangularMatrix<cols, rows, T>> {
     bool operator()(const RectangularMatrix<cols, rows, T>& a, const RectangularMatrix<cols, rows, T>& b) const {
         StrictWeakOrdering<Vector<rows, T>> o;
@@ -772,9 +772,10 @@ template<std::size_t cols, std::size_t rows, class T> struct StrictWeakOrdering<
                 return false;
         }
 
-        return false; // a and b are equivalent
+        return false; /* a and b are equivalent */
     }
 };
+
 }
 
 }}
