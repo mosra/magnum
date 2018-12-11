@@ -529,6 +529,30 @@ void Matrix4Test::perspectiveProjectionFovInfiniteFar() {
     CORRADE_COMPARE(Matrix4::perspectiveProjection(Deg(27.0f), 2.35f, 32.0f, Constants::inf()), expected);
 }
 
+void Matrix4Test::lookAt() {
+    Vector3 translation{5.3f, -8.9f, -10.0f};
+    Vector3 target{19.0f, 29.3f, 0.0f};
+    Matrix4 a = Matrix4::lookAt(translation, target, Vector3::xAxis());
+
+    /* It's just a translation and rotation */
+    CORRADE_VERIFY(a.isRigidTransformation());
+
+    /* The matrix should translate to the position */
+    CORRADE_COMPARE(a.translation(), translation);
+
+    /* Forward vector should point in direction of the target */
+    CORRADE_COMPARE(dot(-a.backward(), (target - translation).normalized()), 1.0f);
+
+    /* Up vector should be in the same direction as X axis */
+    CORRADE_COMPARE_AS(dot(Vector3::xAxis(), a.up()), 0.0f, Corrade::TestSuite::Compare::Greater);
+
+    /* Just to be sure */
+    CORRADE_COMPARE(a, Matrix4({     0.0f,  0.253247f,  -0.967402f, 0.0f},
+                               {0.944754f, -0.317095f, -0.0830092f, 0.0f},
+                               {-0.32778f, -0.913957f,  -0.239256f, 0.0f},
+                               {     5.3f,      -8.9f,      -10.0f, 1.0f}));
+}
+
 void Matrix4Test::fromParts() {
     #ifndef CORRADE_MSVC2017_COMPATIBILITY
     constexpr Matrix3x3 rotationScaling(Vector3(3.0f,  5.0f, 8.0f),
@@ -789,30 +813,6 @@ void Matrix4Test::strictWeakOrdering() {
     CORRADE_VERIFY(!o(b, c));
 
     CORRADE_VERIFY(!o(a, a));
-}
-
-void Matrix4Test::lookAt() {
-    Vector3 translation{5.3f, -8.9f, -10.0f};
-    Vector3 target{19.0f, 29.3f, 0.0f};
-    Matrix4 a = Matrix4::lookAt(translation, target, Vector3::xAxis());
-
-    /* It's just a translation and rotation */
-    CORRADE_VERIFY(a.isRigidTransformation());
-
-    /* The matrix should translate to the position */
-    CORRADE_COMPARE(a.translation(), translation);
-
-    /* Forward vector should point in direction of the target */
-    CORRADE_COMPARE(dot(-a.backward(), (target - translation).normalized()), 1.0f);
-
-    /* Up vector should be in the same direction as X axis */
-    CORRADE_COMPARE_AS(dot(Vector3::xAxis(), a.up()), 0.0f, Corrade::TestSuite::Compare::Greater);
-
-    /* Just to be sure */
-    CORRADE_COMPARE(a, Matrix4({     0.0f,  0.253247f,  -0.967402f, 0.0f},
-                               {0.944754f, -0.317095f, -0.0830092f, 0.0f},
-                               {-0.32778f, -0.913957f,  -0.239256f, 0.0f},
-                               {     5.3f,      -8.9f,      -10.0f, 1.0f}));
 }
 
 void Matrix4Test::debug() {
