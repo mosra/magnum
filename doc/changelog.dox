@@ -41,7 +41,8 @@ See also:
 @subsection changelog-latest-dependencies Dependency changes
 
 -   Minimal supported GCC version is now 4.8.1, GCC 4.7 is not supported
-    anymore.
+    anymore. Minimal Clang version is now 3.3, since that's the first version
+    with a complete C++11 support.
 
 @subsection changelog-latest-new New features
 
