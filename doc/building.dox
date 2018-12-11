@@ -35,6 +35,24 @@ namespace Magnum {
 @tableofcontents
 @m_footernavigation
 
+Minimal set of tools and libraries required for building is:
+
+-   C++ compiler with good C++11 support. Compilers which are tested to have
+    everything needed are **GCC** >= 4.8.1, **Clang** >= 3.1 and **MSVC**
+    >= 2015. On Windows you can also use **MinGW-w64**.
+-   **CMake** >= 2.8.12
+-   **Corrade** --- Plugin management and utility library. See
+    @ref building-corrade "Corrade download and installation guide" for more
+    information.
+
+CMake is not a strict requirement, it's also possible to use (and even build)
+Magnum with custom buildsystems. See @ref custom-buildsystems for more
+information. Additional functionality is provided separately in
+@ref building-plugins "Magnum Plugins",
+@ref building-integration "Magnum Integration",
+@ref building-extras "Magnum Extras" and
+@ref building-examples "Magnum Examples".
+
 @section building-packages Prepared packages
 
 The easiest way to install Magnum is to use one of the ready-made packages for
@@ -264,22 +282,6 @@ There are also Homebrew packages for @ref building-plugins-packages-brew "Magnum
 @ref building-examples-packages-brew "Magnum Examples".
 
 @section building-manual Manual build
-
-Minimal set of tools and libraries required for building is:
-
--   C++ compiler with good C++11 support. Compilers which are tested to have
-    everything needed are **GCC** >= 4.8.1, **Clang** >= 3.1 and **MSVC**
-    >= 2015. On Windows you can also use **MinGW-w64**.
--   **CMake** >= 2.8.12
--   **Corrade** --- Plugin management and utility library. See
-    @ref building-corrade "Corrade download and installation guide" for more
-    information.
-
-Additional functionality is provided separately in
-@ref building-plugins "Magnum Plugins",
-@ref building-integration "Magnum Integration",
-@ref building-extras "Magnum Extras" and
-@ref building-examples "Magnum Examples".
 
 @subsection building-download Downloading the sources
 
