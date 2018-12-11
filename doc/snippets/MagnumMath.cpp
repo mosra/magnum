@@ -908,8 +908,8 @@ static_cast<void>(filterArea);
 
 {
 /* [StrictWeakOrdering] */
-std::set<Magnum::Vector2, Magnum::Math::StrictWeakOrdering> mySet;
-std::map<Magnum::Vector4, int, Magnum::Math::StrictWeakOrdering> myMap;
+std::set<Vector2, Math::StrictWeakOrdering> mySet;
+std::map<Vector4, Int, Math::StrictWeakOrdering> myMap;
 /* [StrictWeakOrdering] */
 static_cast<void>(myMap);
 static_cast<void>(mySet);
