@@ -38,6 +38,8 @@ namespace Magnum { namespace Animation {
 /**
 @brief Easing functions
 
+@m_keywords{Tweening Inbetweening}
+
 A collection of predefined [easing / tweening](https://en.wikipedia.org/wiki/Inbetweening)
 functions for adding life to animation interpolation.
 
