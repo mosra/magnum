@@ -992,7 +992,7 @@ for Android.
 
 @subsection building-ci-travis Travis
 
-In `package/ci/` there is a `travis.yml` file with Linux GCC 4.7, macOS, Linux
+In `package/ci/` there is a `travis.yml` file with Linux GCC 4.8, macOS, Linux
 desktop GLES2/GLES3, iOS GLES2/GLES3, Emscripten WebGL1/WebGL2, Android
 GLES2/GLES3, AddressSanitizer and ThreadSanitizer configuration. Online at
 https://travis-ci.org/mosra/magnum.
