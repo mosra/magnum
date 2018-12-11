@@ -111,6 +111,8 @@ See also:
 
 -   Experimental support for creating Android APKs directly using CMake without
     Gradle involved. See @ref platforms-android-apps for more information.
+-   Initial scaffolding for [Hunter](https://hunter.sh) package support (see
+    [mosra/magnum#298](https://github.com/mosra/magnum/pull/298))
 -   The `Magnum::AndroidApplication` target was missing a few dependency
     libraries when Magnum was used as a CMake subproject
 -   Fixed an ambiguous overload error in @ref Text::GlyphCache when compiling
