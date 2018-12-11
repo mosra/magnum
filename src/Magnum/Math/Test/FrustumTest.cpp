@@ -29,6 +29,7 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/Math/Frustum.h"
+#include "Magnum/Math/StrictWeakOrdering.h"
 
 struct Frstm {
     float data[24];
@@ -77,6 +78,8 @@ struct FrustumTest: Corrade::TestSuite::Tester {
 
     void compare();
 
+    void strictWeakOrdering();
+
     void debug();
 };
 
@@ -97,6 +100,8 @@ FrustumTest::FrustumTest() {
               &FrustumTest::data,
 
               &FrustumTest::compare,
+
+              &FrustumTest::strictWeakOrdering,
 
               &FrustumTest::debug});
 }
@@ -308,6 +313,40 @@ void FrustumTest::compare() {
     CORRADE_VERIFY(a == a);
     CORRADE_VERIFY(a == b);
     CORRADE_VERIFY(a != c);
+}
+
+void FrustumTest::strictWeakOrdering() {
+    StrictWeakOrdering o;
+    const Frustum a{
+        {1.0f, 1.0f, 2.0f, 2.0f},
+        {5.0f, 5.0f, 6.0f, 5.0f},
+        {5.0f, 5.0f, 6.0f, 5.0f},
+        {5.0f, 5.0f, 6.0f, 5.0f},
+        {5.0f, 5.0f, 6.0f, 5.0f},
+        {3.0f, 1.0f, 2.0f, 4.0f}};
+    const Frustum b{
+        {2.0f, 1.0f, 2.0f, 3.0f},
+        {5.0f, 5.0f, 6.0f, 5.0f},
+        {5.0f, 5.0f, 6.0f, 5.0f},
+        {5.0f, 5.0f, 6.0f, 5.0f},
+        {5.0f, 5.0f, 6.0f, 5.0f},
+        {4.0f, 1.0f, 2.0f, 5.0f}};
+    const Frustum c{
+        {1.0f, 1.0f, 2.0f, 2.0f},
+        {5.0f, 5.0f, 6.0f, 5.0f},
+        {5.0f, 5.0f, 6.0f, 5.0f},
+        {5.0f, 5.0f, 6.0f, 5.0f},
+        {5.0f, 5.0f, 6.0f, 5.0f},
+        {3.0f, 1.0f, 2.0f, 5.0f}};
+
+    CORRADE_VERIFY( o(a, b));
+    CORRADE_VERIFY(!o(b, a));
+    CORRADE_VERIFY( o(a, c));
+    CORRADE_VERIFY(!o(c, a));
+    CORRADE_VERIFY( o(c, b));
+    CORRADE_VERIFY(!o(b, c));
+
+    CORRADE_VERIFY(!o(a, a));
 }
 
 void FrustumTest::debug() {
