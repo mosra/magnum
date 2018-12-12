@@ -41,7 +41,7 @@ namespace Magnum { namespace Math {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::size_t> class BoolVector;
 
-/* Class Constants used only statically */
+template<class> class Constants;
 
 template<class> class Complex;
 template<class> class Dual;

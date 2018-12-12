@@ -48,12 +48,6 @@ typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
 
 namespace Magnum {
 
-namespace Math {
-    #ifndef DOXYGEN_GENERATING_OUTPUT
-    template<class> struct Constants;
-    #endif
-}
-
 /* Bring whole Corrade namespace */
 using namespace Corrade;
 
