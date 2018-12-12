@@ -186,6 +186,9 @@ See also:
 -   Removed @cpp Platform::GlfwApplication::Configuration::WindowFlag::Resizeable @ce,
     deprecated since February 2017. Use @ref Platform::GlfwApplication::Configuration::WindowFlag::Resizable
     instead.
+-   Removed `MAGNUM_*_LIBRARIES` and `MAGNUM_*_INCLUDE_DIRS` CMake variables,
+    which were deprecated in favor of `Magnum::*` imported targets in
+    February 2016.
 
 @section changelog-2018-10 2018.10
 

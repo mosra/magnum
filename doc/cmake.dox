@@ -242,21 +242,6 @@ are also available as preprocessor variables if including
 -   `MAGNUM_TARGET_VK` --- Defined if compiled with Vulkan interoperability
     enabled
 
-Workflows without imported targets are deprecated and the following variables
-are included just for backwards compatibility and only if
-@ref MAGNUM_BUILD_DEPRECATED is enabled:
-
--   `MAGNUM_LIBRARIES` --- Expands to `Magnum::Magnum` target. Use `Magnum::Magnum`
-    target directly instead.
--   `MAGNUM_*_LIBRARIES` --- Expands to `Magnum::*` target. Use `Magnum::*`
-    target directly instead.
--   `MAGNUM_APPLICATION_LIBRARIES` / `MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES`
-    --- Expands to `Magnum::Application` / `Magnum::WindowlessApplication`
-    target. Use `Magnum::Application` / `Magnum::WindowlessApplication` target
-    directly instead.
--   `MAGNUM_CONTEXT_LIBRARIES` --- Expands to `Magnum::Context` target. Use
-    `Magnum::Context` target directly instead.
-
 Corrade library provides also its own set of CMake macros and variables, see
 @ref corrade-cmake "its documentation" for more information.
 @ref cmake-plugins "Plugins repository", @ref cmake-integration "Integration repository"

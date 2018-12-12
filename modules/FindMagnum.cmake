@@ -178,21 +178,6 @@
 #  MAGNUM_INCLUDE_INSTALL_DIR   - Header installation directory
 #  MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR - Plugin header installation directory
 #
-# Workflows without imported targets are deprecated and the following variables
-# are included just for backwards compatibility and only if
-# :variable:`MAGNUM_BUILD_DEPRECATED` is enabled:
-#
-#  MAGNUM_LIBRARIES             - Expands to ``Magnum::Magnum`` target. Use
-#   ``Magnum::Magnum`` target directly instead.
-#  MAGNUM_*_LIBRARIES           - Expands to ``Magnum::*`` target. Use
-#   ``Magnum::*`` target directly instead.
-#  MAGNUM_APPLICATION_LIBRARIES / MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES
-#                               - Expands to ``Magnum::Application`` /
-#   ``Magnum::WindowlessApplication`` target. Use ``Magnum::Application`` /
-#   ``Magnum::WindowlessApplication`` target directly instead.
-#  MAGNUM_CONTEXT_LIBRARIES     - Expands to ``Magnum::Context`` target. Use
-#   ``Magnum::Context`` target directly instead.
-#
 
 #
 #   This file is part of Magnum.
@@ -967,11 +952,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             unset(_MAGNUM_GLCONTEXT_ALIAS)
         endif()
     endif()
-
-    # Deprecated variables
-    if(MAGNUM_BUILD_DEPRECATED AND _component MATCHES ${_MAGNUM_LIBRARY_COMPONENTS} OR _component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS})
-        set(MAGNUM_${_COMPONENT}_LIBRARIES Magnum::${_component})
-    endif()
 endforeach()
 
 # Emscripten-specific files
@@ -1035,9 +1015,6 @@ if(_MAGNUM_WINDOWLESSAPPLICATION_ALIAS AND NOT TARGET Magnum::WindowlessApplicat
                 IMPORTED_LOCATION_DEBUG ${_MAGNUM_WINDOWLESSAPPLICATION_IMPORTED_LOCATION_DEBUG})
         endif()
     endif()
-    if(MAGNUM_BUILD_DEPRECATED)
-        set(MAGNUM_WINDOWLESSAPPLICATION_LIBRARIES Magnum::WindowlessApplication)
-    endif()
     # Prevent creating the alias again
     unset(_MAGNUM_WINDOWLESSAPPLICATION_ALIAS)
 endif()
@@ -1064,9 +1041,6 @@ if(_MAGNUM_APPLICATION_ALIAS AND NOT TARGET Magnum::Application)
             set_target_properties(Magnum::Application PROPERTIES
                 IMPORTED_LOCATION_DEBUG ${_MAGNUM_APPLICATION_IMPORTED_LOCATION_DEBUG})
         endif()
-    endif()
-    if(MAGNUM_BUILD_DEPRECATED)
-        set(MAGNUM_APPLICATION_LIBRARIES Magnum::Application)
     endif()
     # Prevent creating the alias again
     unset(_MAGNUM_APPLICATION_ALIAS)
@@ -1162,8 +1136,3 @@ set(MAGNUM_PLUGINS_IMPORTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/importers)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_DIR ${MAGNUM_PLUGINS_DIR}/audioimporters)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_DEBUG_DIR ${MAGNUM_PLUGINS_DEBUG_DIR}/audioimporters)
 set(MAGNUM_PLUGINS_AUDIOIMPORTER_RELEASE_DIR ${MAGNUM_PLUGINS_RELEASE_DIR}/audioimporters)
-
-# Deprecated variables
-if(MAGNUM_BUILD_DEPRECATED)
-    set(MAGNUM_LIBRARIES Magnum::Magnum)
-endif()
