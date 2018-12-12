@@ -173,6 +173,8 @@ See also:
 -   Removed availability of @ref Math::Color3 and @ref Math::Color4 literals in
     the root namespace, deprecated since April 2016. Explicitly call
     @cpp using namespace Math::Literals; @ce instead.
+-   Removed uppercase `*HSV` APIs from @ref Math::Color3 and @ref Math::Color4,
+    deprecated since December 2016. Use the CamelCased `*Hsv` APIs instead.
 -   Removed @cpp Math::normalize() @ce and @cpp Math::denormalize() @ce
     functions, deprecated since December 2016. Use @ref Math::pack() and
     @ref Math::unpack() instead.

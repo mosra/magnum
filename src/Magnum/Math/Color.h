@@ -328,13 +328,6 @@ template<class T> class Color3: public Vector3<T> {
          */
         typedef std::tuple<Deg<FloatingPointType>, FloatingPointType, FloatingPointType> Hsv;
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief Hsv
-         * @deprecated Use @ref Hsv instead.
-         */
-        typedef CORRADE_DEPRECATED("use Hsv instead") Hsv HSV;
-        #endif
-
         /**
          * @brief Create RGB color from HSV representation
          * @param hsv   Color in HSV color space
@@ -349,22 +342,6 @@ template<class T> class Color3: public Vector3<T> {
         static Color3<T> fromHsv(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value) {
             return fromHsv(std::make_tuple(hue, saturation, value));
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief fromHsv(const Hsv&)
-         * @deprecated Use @ref fromHsv(const Hsv&) instead.
-         */
-        CORRADE_DEPRECATED("use fromHsv() instead") static Color3<T> fromHSV(const Hsv& hsv) {
-            return fromHsv(hsv);
-        }
-        /** @brief @copybrief fromHsv(Deg<FloatingPointType>, FloatingPointType, FloatingPointType)
-         * @deprecated Use @ref fromHsv(Deg<FloatingPointType>, FloatingPointType, FloatingPointType)
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use fromHsv() instead") static Color3<T> fromHSV(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value) {
-            return fromHsv(hue, saturation, value);
-        }
-        #endif
 
         /**
          * @brief Create linear RGB color from sRGB representation
@@ -515,13 +492,6 @@ template<class T> class Color3: public Vector3<T> {
             return Implementation::toHsv<T>(*this);
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief toHsv()
-         * @deprecated Use @ref toHsv() instead.
-         */
-        CORRADE_DEPRECATED("use toHsv() instead") Hsv toHSV() const { return toHsv(); }
-        #endif
-
         /**
          * @brief Hue
          * @return Hue in range @f$ [0.0, 360.0] @f$.
@@ -649,13 +619,6 @@ class Color4: public Vector4<T> {
         /** @copydoc Color3::Hsv */
         typedef typename Color3<T>::Hsv Hsv;
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief Hsv
-         * @deprecated Use @ref Hsv instead.
-         */
-        typedef CORRADE_DEPRECATED("use Hsv instead") Hsv HSV;
-        #endif
-
         /**
          * @brief Red color
          *
@@ -733,22 +696,6 @@ class Color4: public Vector4<T> {
         static Color4<T> fromHsv(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value, T alpha = Implementation::fullChannel<T>()) {
             return fromHsv(std::make_tuple(hue, saturation, value), alpha);
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief fromHsv(const Hsv&, T)
-         * @deprecated Use @ref fromHsv(const Hsv&, T) instead.
-         */
-        CORRADE_DEPRECATED("use fromHsv() instead") static Color4<T> fromHSV(const Hsv& hsv, T a = Implementation::fullChannel<T>()) {
-            return fromHsv(hsv, a);
-        }
-        /** @brief @copybrief fromHsv(Deg<FloatingPointType>, FloatingPointType, FloatingPointType, T)
-         * @deprecated Use @ref fromHsv(Deg<FloatingPointType>, FloatingPointType, FloatingPointType, T)
-         *      instead.
-         */
-        CORRADE_DEPRECATED("use fromHsv() instead") static Color4<T> fromHSV(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value, T a = Implementation::fullChannel<T>()) {
-            return fromHsv(hue, saturation, value, a);
-        }
-        #endif
 
         /**
          * @brief Create linear RGBA color from sRGB + alpha representation
@@ -961,13 +908,6 @@ class Color4: public Vector4<T> {
         Hsv toHsv() const {
             return Implementation::toHsv<T>(Vector4<T>::rgb());
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief toHsv()
-         * @deprecated Use @ref toHsv() instead.
-         */
-        CORRADE_DEPRECATED("use toHsv() instead") Hsv toHSV() const { return toHsv(); }
-        #endif
 
         /** @copydoc Color3::hue() */
         Deg<FloatingPointType> hue() const {
