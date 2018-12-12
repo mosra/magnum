@@ -712,11 +712,4 @@ template<std::size_t size, class T> inline Vector<size, T> fma(const Vector<size
 
 }}
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* In order to make the deprecated normalize() / denormalize() functions
-   available in the original header. The Packing.h header depends on this file
-   so it needs to be included after it. */
-#include "Magnum/Math/Packing.h"
-#endif
-
 #endif

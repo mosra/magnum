@@ -121,15 +121,6 @@ template<class FloatingPoint, UnsignedInt bits, std::size_t size, class Integral
 }
 #endif
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/** @brief @copybrief unpack()
- * @deprecated Use @ref unpack() instead.
- */
-template<class FloatingPoint, class Integral> CORRADE_DEPRECATED("use unpack() instead") inline FloatingPoint normalize(const Integral& value) {
-    return unpack<FloatingPoint, Integral>(value);
-}
-#endif
-
 /**
 @brief Pack floating-point value into an integer representation
 
@@ -186,15 +177,6 @@ template<class Integral, UnsignedInt bits, class FloatingPoint> inline typename 
 }
 template<class Integral, UnsignedInt bits, std::size_t size, class FloatingPoint> inline Integral pack(const Vector<size, FloatingPoint>& value) {
     return pack<Integral, size, FloatingPoint, bits>(value);
-}
-#endif
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/** @brief @copybrief pack()
- * @deprecated Use @ref pack() instead.
- */
-template<class Integral, class FloatingPoint> CORRADE_DEPRECATED("use pack() instead") inline Integral denormalize(const FloatingPoint& value) {
-    return pack<Integral, FloatingPoint>(value);
 }
 #endif
 
