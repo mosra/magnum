@@ -70,7 +70,7 @@ Debug& operator<<(Debug& debug, MeshPrimitive value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "MeshPrimitive(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "MeshPrimitive(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, MeshIndexType value) {
@@ -84,7 +84,7 @@ Debug& operator<<(Debug& debug, MeshIndexType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "MeshIndexType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "MeshIndexType(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
 }
 #endif
 

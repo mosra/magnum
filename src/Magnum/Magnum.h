@@ -42,10 +42,6 @@
 #endif
 #endif
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
-#endif
-
 namespace Magnum {
 
 /* Bring whole Corrade namespace */
