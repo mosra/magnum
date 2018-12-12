@@ -838,14 +838,6 @@ class GlfwApplication::Configuration {
         enum class WindowFlag: UnsignedShort {
             Fullscreen = 1 << 0,   /**< Fullscreen window */
             Resizable = 1 << 1,    /**< Resizable window */
-
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /** @copydoc WindowFlag::Resizable
-             * @deprecated Use @ref WindowFlag::Resizable instead.
-             */
-            Resizeable CORRADE_DEPRECATED_ENUM("use WindowFlag::Resizable instead") = UnsignedShort(WindowFlag::Resizable),
-            #endif
-
             Hidden = 1 << 2,       /**< Hidden window */
 
             #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(GLFW_MAXIMIZED)

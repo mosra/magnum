@@ -183,6 +183,9 @@ See also:
     since June 2016. Use the dedicated
     @ref Platform::Sdl2Application::mouseScrollEvent() "mouseScrollEvent()"
     API instead.
+-   Removed @cpp Platform::GlfwApplication::Configuration::WindowFlag::Resizeable @ce,
+    deprecated since February 2017. Use @ref Platform::GlfwApplication::Configuration::WindowFlag::Resizable
+    instead.
 
 @section changelog-2018-10 2018.10
 
