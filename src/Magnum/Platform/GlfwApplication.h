@@ -1488,20 +1488,6 @@ class GlfwApplication::MouseEvent: public GlfwApplication::InputEvent {
             Button6 = GLFW_MOUSE_BUTTON_6,        /**< Mouse button 6 */
             Button7 = GLFW_MOUSE_BUTTON_7,        /**< Mouse button 7 */
             Button8 = GLFW_MOUSE_BUTTON_8,        /**< Mouse button 8 */
-
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /**
-             * Wheel up
-             * @deprecated Use @ref MouseScrollEvent and @ref mouseScrollEvent() instead.
-             */
-            WheelUp CORRADE_DEPRECATED_ENUM("use mouseScrollEvent() and MouseScrollEvent instead") = GLFW_MOUSE_BUTTON_LAST + 1,
-
-            /**
-             * Wheel down
-             * @deprecated Use @ref MouseScrollEvent and @ref mouseScrollEvent() instead.
-             */
-            WheelDown CORRADE_DEPRECATED_ENUM("use mouseScrollEvent() and MouseScrollEvent instead") = GLFW_MOUSE_BUTTON_LAST + 2
-            #endif
         };
 
         /** @brief Button */

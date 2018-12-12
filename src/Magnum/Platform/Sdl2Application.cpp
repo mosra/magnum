@@ -687,24 +687,6 @@ void Sdl2Application::mainLoopIteration() {
             case SDL_MOUSEWHEEL: {
                 MouseScrollEvent e{{Float(event.wheel.x), Float(event.wheel.y)}};
                 mouseScrollEvent(e);
-
-                #ifdef MAGNUM_BUILD_DEPRECATED
-                if(event.wheel.y != 0) {
-                    #ifdef __GNUC__
-                    #pragma GCC diagnostic push
-                    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-                    #endif
-                    MouseEvent ew(event.wheel.y > 0 ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {event.wheel.x, event.wheel.y}
-                        #ifndef CORRADE_TARGET_EMSCRIPTEN
-                        , 0
-                        #endif
-                        );
-                    #ifdef __GNUC__
-                    #pragma GCC diagnostic pop
-                    #endif
-                    mousePressEvent(ew);
-                }
-                #endif
             } break;
 
             case SDL_MOUSEMOTION: {

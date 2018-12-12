@@ -2000,20 +2000,6 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
 
             /** Second extra button (e.g. wheel right) */
             X2 = SDL_BUTTON_X2,
-
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /**
-             * Wheel up
-             * @deprecated Use @ref MouseScrollEvent and @ref mouseScrollEvent() instead.
-             */
-            WheelUp CORRADE_DEPRECATED_ENUM("use mouseScrollEvent() and MouseScrollEvent instead") = SDL_BUTTON_X2 + 1,
-
-            /**
-             * Wheel down
-             * @deprecated Use @ref MouseScrollEvent and @ref mouseScrollEvent() instead.
-             */
-            WheelDown CORRADE_DEPRECATED_ENUM("use mouseScrollEvent() and MouseScrollEvent instead") = SDL_BUTTON_X2 + 2
-            #endif
         };
 
         /** @brief Button */

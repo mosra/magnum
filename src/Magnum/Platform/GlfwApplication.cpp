@@ -497,20 +497,6 @@ void GlfwApplication::setupCallbacks() {
 
         MouseScrollEvent e(window, Vector2{Float(xoffset), Float(yoffset)});
         instance->mouseScrollEvent(e);
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        if(yoffset != 0.0) {
-            #ifdef __GNUC__
-            #pragma GCC diagnostic push
-            #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-            #endif
-            MouseEvent e1((yoffset > 0.0) ? MouseEvent::Button::WheelUp : MouseEvent::Button::WheelDown, {}, currentGlfwModifiers(window));
-            #ifdef __GNUC__
-            #pragma GCC diagnostic pop
-            #endif
-            instance->mousePressEvent(e1);
-        }
-        #endif
     });
     glfwSetCharCallback(_window, [](GLFWwindow* window, unsigned int codepoint) {
         const auto instance = static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));

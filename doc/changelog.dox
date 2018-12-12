@@ -178,6 +178,11 @@ See also:
 -   Removed @cpp Math::normalize() @ce and @cpp Math::denormalize() @ce
     functions, deprecated since December 2016. Use @ref Math::pack() and
     @ref Math::unpack() instead.
+-   Removed @cpp Platform::*Application::MouseEvent::BUtton::WheelUp @ce and
+    @cpp Platform::*Application::MouseEvent::BUtton::WheelDown @ce, deprecated
+    since June 2016. Use the dedicated
+    @ref Platform::Sdl2Application::mouseScrollEvent() "mouseScrollEvent()"
+    API instead.
 
 @section changelog-2018-10 2018.10
 
