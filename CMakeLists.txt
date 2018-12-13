@@ -122,6 +122,10 @@ option(WITH_EGLCONTEXT "Build EglContext library" OFF)
 if(CORRADE_TARGET_ANDROID)
     option(WITH_ANDROIDAPPLICATION "Build AndroidApplication library" OFF)
 
+# Emscripten-specific application libraries
+elseif(CORRADE_TARGET_EMSCRIPTEN)
+    option(WITH_EMSCRIPTENAPPLICATION "Build EmscriptenApplication library" OFF)
+
 # iOS-specific application libraries
 elseif(CORRADE_TARGET_IOS)
     option(WITH_WINDOWLESSIOSAPPLICATION "Build WindowlessIosApplication library" OFF)

@@ -67,6 +67,8 @@
 #  TextureTools                 - TextureTools library
 #  Trade                        - Trade library
 #  Vk                           - Vk library
+#  AndroidApplication           - Android application
+#  EmscriptenApplication        - Emscripten application
 #  GlfwApplication              - GLFW application
 #  GlxApplication               - GLX application
 #  Sdl2Application              - SDL2 application
@@ -338,10 +340,10 @@ endif()
 set(_MAGNUM_LIBRARY_COMPONENT_LIST
     Audio DebugTools GL MeshTools Primitives SceneGraph Shaders Text
     TextureTools Trade Vk
-    AndroidApplication GlfwApplication GlxApplication Sdl2Application
-    XEglApplication WindowlessCglApplication WindowlessEglApplication
-    WindowlessGlxApplication WindowlessIosApplication WindowlessWglApplication
-    WindowlessWindowsEglApplication
+    AndroidApplication EmscriptenApplication GlfwApplication GlxApplication
+    Sdl2Application XEglApplication WindowlessCglApplication
+    WindowlessEglApplication WindowlessGlxApplication WindowlessIosApplication
+    WindowlessWglApplication WindowlessWindowsEglApplication
     CglContext EglContext GlxContext WglContext
     OpenGLTester)
 set(_MAGNUM_PLUGIN_COMPONENT_LIST
@@ -410,6 +412,10 @@ endif()
 
 set(_MAGNUM_Trade_DEPENDENCIES )
 set(_MAGNUM_AndroidApplication_DEPENDENCIES GL)
+set(_MAGNUM_EmscriptenApplication_DEPENDENCIES)
+if(MAGNUM_TARGET_GL)
+    list(APPEND _MAGNUM_EmscriptenApplication_DEPENDENCIES GL)
+endif()
 
 set(_MAGNUM_GlfwApplication_DEPENDENCIES )
 if(MAGNUM_TARGET_GL)

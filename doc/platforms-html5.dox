@@ -97,14 +97,14 @@ In case you don't have an OpenGL ES build set up yet, you need to copy
 Magnum source to the `modules/` dir in your project so it is able to find the
 WebGL libraries.
 
-Magnum provides an Emscripten application wrapper in
-@ref Platform::Sdl2Application. See its documentation for more information
+Magnum provides Emscripten application wrappers in @ref Platform::Sdl2Application
+and @ref Platform::EmscriptenApplication. See their documentation for more information
 about general usage. You can also use the Emscripten APIs directly or any other
 way.
 
-@note The @ref Platform::Sdl2Application also contains a fully configured
-    bootstrap project that's ready to build and deploy. Check its documentation
-    for details.
+@note @ref Platform::Sdl2Application and @ref Platform::EmscriptenApplication
+    also contains a fully configured bootstrap projects that are ready to build
+    and deploy. Check their documentation for details.
 
 To target the web browser, you need to provide a HTML markup for your
 application. Template one is below. The markup references two files,
@@ -350,8 +350,11 @@ Module.doNotCaptureKeyboard = true;
 </script>
 @endcode
 
-The above is implicitly set for windowless apps, because these don't have any
-event loop.
+The above is implicitly set for @ref Platform::WindowlessEglApplicaiton, because
+it does not have an event loop.
+
+@cb{.js} Module.doNotCaptureKeyboard @ce is not supported by
+@ref Platform::EmscriptenApplication.
 
 Another solution is to specify the element on which it should capture keybard
 using @cb{.js} Module.keyboardListeningElement @ce --- it requires the actual
@@ -367,7 +370,7 @@ like this:
 
 After that, the canvas can be focused with a @m_class{m-label m-default} **Tab**
 key. But because Emscripten eats all mouse input, the `mousedown` event won't
-be propagated to focus the canvas unlesss you do that manually:
+be propagated to focus the canvas unless you do that manually:
 
 @code{.js}
 Module.keyboardListeningElement = Module.canvas;

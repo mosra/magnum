@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Magnum EmscriptenApplication Test</title>
+  <link rel="stylesheet" href="WebApplication.css" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+</head>
+<body>
+  <h1>Magnum EmscriptenApplication Test</h1>
+  <div id="container" class="">
+    <div id="sizer"><div id="expander"><div id="listener">
+      <canvas id="canvas" tabindex="0"></canvas>
+      <div id="status">Initialization...</div>
+      <div id="status-description"></div>
+      <script src="EmscriptenApplication.js"></script>
+      <script async="async" src="PlatformEmscriptenApplicationTest.js"></script>
+      <script>
+      /* To test keyboard capture directly on the canvas */
+      Module.keyboardListeningElement = Module.canvas;
+      Module.canvas.addEventListener('mousedown', function(event) {
+          event.target.focus();
+      });
+      </script>
+    </div></div></div>
+  </div>
+</body>
+</html>
