@@ -459,7 +459,8 @@ void GlfwApplication::setupCallbacks() {
         static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->drawEvent();
     });
     glfwSetFramebufferSizeCallback(_window, [](GLFWwindow* const window, const int w, const int h) {
-        ViewportEvent e{{w, h}};
+        auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
+        ViewportEvent e{{w, h}, app.framebufferSize(), app.dpiScaling()};
         static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->viewportEvent(e);
     });
     glfwSetKeyCallback(_window, [](GLFWwindow* const window, const int key, int, const int action, const int mods) {

@@ -76,9 +76,11 @@ See also:
 @subsubsection changelog-latest-new-platform Platform libraries
 
 -   Added @ref Platform::AndroidApplication::framebufferSize(),
-    @ref Platform::AndroidApplication::dpiScaling() and
-    @ref Platform::AndroidApplication::ViewportEvent::dpiScaling() for
-    compatibility with other application implementations
+    @ref Platform::AndroidApplication::dpiScaling(),
+    @ref Platform::AndroidApplication::ViewportEvent::dpiScaling(),
+    @ref Platform::GlfwApplication::ViewportEvent::framebufferSize() and
+    @ref Platform::GlfwApplication::ViewportEvent::dpiScaling() to ensure
+    feature parity with @ref Sdl2Application
 -   Clarified HiDPI behavior of Android apps and mentioning
     @ref platforms-android-apps-manifest-screen-compatibility-mode "the necessary steps"
     in the docs

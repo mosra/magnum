@@ -987,6 +987,8 @@ class GlfwApplication::Configuration {
          * value. The `--magnum-dpi-scaling` command-line option has a priority
          * over any application-set value.
          * @see @ref setSize(const Vector2i&, const Vector2&)
+         * @todo change this on a DPI change event (GLFW 3.3 has a callback:
+         *  https://github.com/mosra/magnum/issues/243#issuecomment-388384089)
          */
         Vector2 dpiScaling() const { return _dpiScaling; }
 
@@ -1138,16 +1140,41 @@ class GlfwApplication::ViewportEvent {
         /**
          * @brief Window size
          *
+         * On some platforms with HiDPI displays, window size can be different
+         * from @ref framebufferSize(). See @ref Platform-GlfwApplication-dpi
+         * for more information.
          * @see @ref GlfwApplication::windowSize()
          */
         Vector2i windowSize() const { return _windowSize; }
 
+        /**
+         * @brief Framebuffer size
+         *
+         * On some platforms with HiDPI displays, framebuffer size can be
+         * different from @ref windowSize(). See
+         * @ref Platform-GlfwApplication-dpi for more information.
+         * @see @ref GlfwApplication::framebufferSize()
+         */
+        Vector2i framebufferSize() const { return _framebufferSize; }
+
+        /**
+         * @brief DPI scaling
+         *
+         * On some platforms moving an app between displays can result in DPI
+         * scaling value being changed in tandem with a window/framebuffer
+         * size. Simply resizing a window doesn't change the DPI scaling value.
+         * See @ref Platform-GlfwApplication-dpi for more information.
+         * @see @ref GlfwApplication::dpiScaling()
+         */
+        Vector2 dpiScaling() const { return _dpiScaling; }
+
     private:
         friend GlfwApplication;
 
-        explicit ViewportEvent(const Vector2i& windowSize): _windowSize{windowSize} {}
+        explicit ViewportEvent(const Vector2i& windowSize, const Vector2i& framebufferSize, const Vector2& dpiScaling): _windowSize{windowSize}, _framebufferSize{framebufferSize}, _dpiScaling{dpiScaling} {}
 
-        Vector2i _windowSize;
+        Vector2i _windowSize, _framebufferSize;
+        Vector2 _dpiScaling;
 };
 
 /**
