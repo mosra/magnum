@@ -91,14 +91,16 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
     args.parse(arguments.argc, arguments.argv);
     #endif
 
+    /* Available since 2.0.8, disables compositor bypass on X11, which causes
+       flickering on KWin as the compositor gets shut down on every startup */
+    #ifdef SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR
+    SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
+    #endif
+
     if(SDL_Init(SDL_INIT_VIDEO) < 0) {
         Error() << "Cannot initialize SDL.";
         std::exit(1);
     }
-
-    #ifdef SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR /* Available since 2.0.8 */
-    SDL_SetHint(SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR, "0");
-    #endif
 
     /* Save command-line arguments */
     if(args.value("log") == "verbose") _verboseLog = true;
