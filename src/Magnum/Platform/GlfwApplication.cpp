@@ -464,50 +464,44 @@ void GlfwApplication::setupCallbacks() {
         static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->viewportEvent(e);
     });
     glfwSetKeyCallback(_window, [](GLFWwindow* const window, const int key, int, const int action, const int mods) {
-        const auto instance = static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
+        auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
 
         KeyEvent e(static_cast<KeyEvent::Key>(key), {static_cast<InputEvent::Modifier>(mods)}, action == GLFW_REPEAT);
 
-        if(action == GLFW_PRESS) {
-            instance->keyPressEvent(e);
-        } else if(action == GLFW_RELEASE) {
-            instance->keyReleaseEvent(e);
-        } else if(action == GLFW_REPEAT) {
-            instance->keyPressEvent(e);
-        }
+        if(action == GLFW_PRESS || action == GLFW_REPEAT)
+            app.keyPressEvent(e);
+        else if(action == GLFW_RELEASE)
+            app.keyReleaseEvent(e);
     });
     glfwSetMouseButtonCallback(_window, [](GLFWwindow* const window, const int button, const int action, const int mods) {
-        const auto instance = static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
+        auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
 
         double x, y;
         glfwGetCursorPos(window, &x, &y);
         MouseEvent e(static_cast<MouseEvent::Button>(button), {Int(x), Int(y)}, {static_cast<InputEvent::Modifier>(mods)});
 
-        if(action == GLFW_PRESS) {
-            instance->mousePressEvent(e);
-        } else if(action == GLFW_RELEASE) {
-            instance->mouseReleaseEvent(e);
-        } /* we don't handle GLFW_REPEAT */
+        if(action == GLFW_PRESS) /* we don't handle GLFW_REPEAT */
+            app.mousePressEvent(e);
+        else if(action == GLFW_RELEASE)
+            app.mouseReleaseEvent(e);
     });
     glfwSetCursorPosCallback(_window, [](GLFWwindow* const window, const double x, const double y) {
         MouseMoveEvent e{window, Vector2i{Int(x), Int(y)}};
         static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->mouseMoveEvent(e);
     });
     glfwSetScrollCallback(_window, [](GLFWwindow* window, double xoffset, double yoffset) {
-        const auto instance = static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
-
         MouseScrollEvent e(window, Vector2{Float(xoffset), Float(yoffset)});
-        instance->mouseScrollEvent(e);
+        static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->mouseScrollEvent(e);
     });
     glfwSetCharCallback(_window, [](GLFWwindow* window, unsigned int codepoint) {
-        const auto instance = static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
+        auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
 
-        if(!(instance->_flags & Flag::TextInputActive)) return;
+        if(!(app._flags & Flag::TextInputActive)) return;
 
         char utf8[4];
         const std::size_t size = Utility::Unicode::utf8(codepoint, utf8);
         TextInputEvent e{{utf8, size}};
-        instance->textInputEvent(e);
+        app.textInputEvent(e);
     });
 }
 
