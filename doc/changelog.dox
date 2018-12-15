@@ -126,7 +126,8 @@ See also:
 @subsection changelog-latest-buildsystem Build system
 
 -   Experimental support for creating Android APKs directly using CMake without
-    Gradle involved. See @ref platforms-android-apps for more information.
+    Gradle involved. See @ref platforms-android-apps for more information. See
+    also [mosra/toolchains#5](https://github.com/mosra/toolchains/pull/5).
 -   Initial scaffolding for [Hunter](https://hunter.sh) package support (see
     [mosra/magnum#298](https://github.com/mosra/magnum/pull/298))
 -   The `Magnum::AndroidApplication` target was missing a few dependency
@@ -134,6 +135,8 @@ See also:
 -   Fixed an ambiguous overload error in @ref Text::GlyphCache when compiling
     this library under C++17 (see
     [mosra/magnum#297](https://github.com/mosra/magnum/pull/297))
+-   Imroved initial Emscripten setup on Windows to be more frictionless (see
+    [mosra/toolchains#4](https://github.com/mosra/toolchains/pull/4))
 
 @subsection changelog-latest-bugfixes Bug fixes
 
@@ -1677,6 +1680,9 @@ a high-level overview.
     [mosra/magnum-examples#9](https://github.com/mosra/magnum-examples/issues/9))
 -   Bundling a patched version of `FindOpenAL.cmake` to make it working on
     Emscripten
+-   Fixed `EMSCRIPTEN` environment variable handling in Emscripten toolchains
+    (see [mosra/toolchains#2](https://github.com/mosra/toolchains/pull/2),
+    [mosra/toolchains#3](https://github.com/mosra/toolchains/issues/3))
 
 @subsection changelog-2018-02-bugfixes Bug fixes
 

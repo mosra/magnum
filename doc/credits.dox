@@ -111,7 +111,8 @@ Are the below lists missing your name or something's wrong?
     improvements
 -   **Jonathan Hale** ([\@Squareys](https://github.com/Squareys)) --- @ref Audio
     library enhancements, @ref Platform::GlfwApplication implementation,
-    frustum and cone culling, bug reports, documentation improvements
+    frustum and cone culling, bug reports, Windows build improvements,
+    documentation improvements and tons of other stuff
 -   **Joel Clay** ([\@jclay](https://github.com/jclay)) --- Vcpkg packages
 -   **Konstantinos Chatzilygeroudis** ([\@costashatz](https://github.com/costashatz))
     --- Debian package
