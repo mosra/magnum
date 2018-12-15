@@ -454,6 +454,11 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
 
 void GlfwApplication::setupCallbacks() {
     glfwSetWindowUserPointer(_window, this);
+    glfwSetWindowCloseCallback(_window, [](GLFWwindow* const window){
+        ExitEvent e;
+        static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->exitEvent(e);
+        if(!e.isAccepted()) glfwSetWindowShouldClose(window, false);
+    });
     glfwSetWindowRefreshCallback(_window, [](GLFWwindow* const window){
         /* Properly redraw after the window is restored from minimized state */
         static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->drawEvent();
@@ -575,6 +580,10 @@ Vector2i GlfwApplication::MouseScrollEvent::position() {
 auto GlfwApplication::MouseScrollEvent::modifiers() -> Modifiers {
     if(!_modifiers) _modifiers = currentGlfwModifiers(_window);
     return *_modifiers;
+}
+
+void GlfwApplication::exitEvent(ExitEvent& event) {
+    event.setAccepted();
 }
 
 void GlfwApplication::viewportEvent(ViewportEvent& event) {

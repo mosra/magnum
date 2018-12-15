@@ -80,13 +80,17 @@ See also:
     @ref Platform::AndroidApplication::ViewportEvent::dpiScaling(),
     @ref Platform::GlfwApplication::ViewportEvent::framebufferSize() and
     @ref Platform::GlfwApplication::ViewportEvent::dpiScaling() to ensure
-    feature parity with @ref Sdl2Application
+    feature parity with @ref Platform::Sdl2Application
 -   Clarified HiDPI behavior of Android apps and mentioning
     @ref platforms-android-apps-manifest-screen-compatibility-mode "the necessary steps"
     in the docs
 -   Implemented handling of @ref Platform::AndroidApplication::viewportEvent()
     and documenting how to get Android to call it instead of relaunching the
     app from scratch
+-   New @ref Platform::Sdl2Application::exitEvent() and
+    @ref Platform::GlfwApplication::exitEvent() events for responding to
+    application window close and possibility to cancel it (for example to
+    show an exit confirmation dialog)
 
 @subsection changelog-latest-changes Changes and improvements
 

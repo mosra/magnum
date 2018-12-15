@@ -239,13 +239,35 @@ If no other application header is included, this class is also aliased to
 @cpp Platform::Application @ce and the macro is aliased to @cpp MAGNUM_APPLICATION_MAIN() @ce
 to simplify porting.
 
+@subsection Platform-Sdl2Application-usage-posix POSIX specifics
+
+On POSIX systems, SDL by default intercepts the `SIGTERM` signal and generates
+an exit event for it, instead of doing the usual application exit. This would
+mean that if the application fails to set @ref ExitEvent::setAccepted() in an
+@ref exitEvent() override for some reason, pressing
+@m_class{m-label m-warning} **Ctrl** @m_class{m-label m-default} **C** would
+not terminate it either and you'd have to forcibly kill it instead. When using
+SDL >= 2.0.4, @ref Sdl2Application turns this behavior off, making
+@ref exitEvent() behave consistently with other application implementations
+such as @ref GlfwApplication. You can turn this behavior back on by enabling
+the [corresponding SDL hint](https://wiki.libsdl.org/SDL_HINT_NO_SIGNAL_HANDLERS)
+through an environment variable:
+
+@code{.sh}
+SDL_NO_SIGNAL_HANDLERS=1 ./your-app
+@endcode
+
+See also the [SDL Wiki](https://wiki.libsdl.org/SDL_EventType#SDL_QUIT) for
+details.
+
 @subsection Platform-Sdl2Application-usage-linux Linux specifics
 
 SDL by default attempts to disable compositing, which may cause ugly flickering
 for non-fullscreen apps (KWin, among others, is known to respect this setting).
 When using SDL >= 2.0.8, @ref Sdl2Application turns this behavior off, keeping
 the compositor running to avoid the flicker. You can turn this behavior back on
-by enabling the [corresponding SDL hint](https://wiki.libsdl.org/CategoryHints) through an environment variable:
+by enabling the [corresponding SDL hint](https://wiki.libsdl.org/CategoryHints)
+through an environment variable:
 
 @code{.sh}
 SDL_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR=1 ./your-app
@@ -381,6 +403,7 @@ class Sdl2Application {
         #ifdef MAGNUM_TARGET_GL
         class GLConfiguration;
         #endif
+        class ExitEvent;
         class ViewportEvent;
         class InputEvent;
         class KeyEvent;
@@ -715,6 +738,21 @@ class Sdl2Application {
     #else
     private:
     #endif
+        /**
+         * @brief Exit event
+         *
+         * If implemented, it allows the application to react to an application
+         * exit (for example to save its internal state) and suppress it as
+         * well (for example to show a exit confirmation dialog). The default
+         * implementation calls @ref ExitEvent::setAccepted() on @p event,
+         * which tells the application that it's safe to exit.
+         *
+         * SDL has special behavior on POSIX systems regarding `SIGINT` and
+         * `SIGTERM` handling, see @ref Platform-Sdl2Application-usage-posix
+         * for more information.
+         */
+        virtual void exitEvent(ExitEvent& event);
+
         /**
          * @brief Tick event
          *
@@ -1604,6 +1642,45 @@ class Sdl2Application::Configuration {
         bool _srgbCapable;
         #endif
         #endif
+};
+
+/**
+@brief Exit event
+
+@see @ref exitEvent()
+*/
+class Sdl2Application::ExitEvent {
+    public:
+        /** @brief Copying is not allowed */
+        ExitEvent(const ExitEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        ExitEvent(ExitEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        ExitEvent& operator=(const ExitEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        ExitEvent& operator=(ExitEvent&&) = delete;
+
+        /** @brief Whether the event is accepted */
+        bool isAccepted() const { return _accepted; }
+
+        /**
+         * @brief Set event as accepted
+         *
+         * If the event is ignored (i.e., not set as accepted) in
+         * @ref exitEvent(), the application won't exit. Default implementation
+         * of @ref exitEvent() accepts the event.
+         */
+        void setAccepted(bool accepted = true) { _accepted = accepted; }
+
+    private:
+        friend Sdl2Application;
+
+        explicit ExitEvent(): _accepted(false) {}
+
+        bool _accepted;
 };
 
 /**

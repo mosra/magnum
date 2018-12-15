@@ -29,6 +29,12 @@ namespace Magnum { namespace Platform { namespace Test {
 
 struct GlfwApplicationTest: Platform::Application {
     explicit GlfwApplicationTest(const Arguments& arguments): Platform::Application{arguments} {}
+
+    void exitEvent(ExitEvent& event) override {
+        Debug{} << "application exiting";
+        event.setAccepted(); /* Comment-out to test app exit suppression */
+    }
+
     void drawEvent() override {}
 };
 

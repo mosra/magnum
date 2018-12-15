@@ -149,6 +149,7 @@ class GlfwApplication {
         #ifdef MAGNUM_TARGET_GL
         class GLConfiguration;
         #endif
+        class ExitEvent;
         class ViewportEvent;
         class InputEvent;
         class KeyEvent;
@@ -426,6 +427,17 @@ class GlfwApplication {
     #else
     private:
     #endif
+        /**
+         * @brief Exit event
+         *
+         * If implemented, it allows the application to react to an application
+         * exit (for example to save its internal state) and suppress it as
+         * well (for example to show a exit confirmation dialog). The default
+         * implementation calls @ref ExitEvent::setAccepted() on @p event,
+         * which tells the application that it's safe to exit.
+         */
+        virtual void exitEvent(ExitEvent& event);
+
         /**
          * @brief Viewport event
          *
@@ -1129,6 +1141,45 @@ class GlfwApplication::Configuration {
 };
 
 CORRADE_ENUMSET_OPERATORS(GlfwApplication::Configuration::WindowFlags)
+
+/**
+@brief Exit event
+
+@see @ref exitEvent()
+*/
+class GlfwApplication::ExitEvent {
+    public:
+        /** @brief Copying is not allowed */
+        ExitEvent(const ExitEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        ExitEvent(ExitEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        ExitEvent& operator=(const ExitEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        ExitEvent& operator=(ExitEvent&&) = delete;
+
+        /** @brief Whether the event is accepted */
+        bool isAccepted() const { return _accepted; }
+
+        /**
+         * @brief Set event as accepted
+         *
+         * If the event is ignored (i.e., not set as accepted) in
+         * @ref exitEvent(), the application won't exit. Default implementation
+         * of @ref exitEvent() accepts the event.
+         */
+        void setAccepted(bool accepted = true) { _accepted = accepted; }
+
+    private:
+        friend GlfwApplication;
+
+        explicit ExitEvent(): _accepted(false) {}
+
+        bool _accepted;
+};
 
 /**
 @brief Viewport event

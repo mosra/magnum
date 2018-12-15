@@ -91,6 +91,12 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
     args.parse(arguments.argc, arguments.argv);
     #endif
 
+    /* Available since 2.0.4, disables interception of SIGINT and SIGTERM so
+       it's possible to Ctrl-C the application even if exitEvent() doesn't set
+       event.setAccepted(). */
+    #ifdef SDL_HINT_NO_SIGNAL_HANDLERS
+    SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
+    #endif
     /* Available since 2.0.8, disables compositor bypass on X11, which causes
        flickering on KWin as the compositor gets shut down on every startup */
     #ifdef SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR
@@ -713,13 +719,18 @@ void Sdl2Application::mainLoopIteration() {
                 textEditingEvent(e);
             } break;
 
-            case SDL_QUIT:
-                #ifndef CORRADE_TARGET_EMSCRIPTEN
-                _flags |= Flag::Exit;
-                #else
-                emscripten_cancel_main_loop();
-                #endif
-                return;
+            case SDL_QUIT: {
+                ExitEvent e;
+                exitEvent(e);
+                if(e.isAccepted()) {
+                    #ifndef CORRADE_TARGET_EMSCRIPTEN
+                    _flags |= Flag::Exit;
+                    #else
+                    emscripten_cancel_main_loop();
+                    #endif
+                    return;
+                }
+            } break;
         }
     }
 
@@ -793,6 +804,10 @@ void Sdl2Application::stopTextInput() {
 void Sdl2Application::setTextInputRect(const Range2Di& rect) {
     SDL_Rect r{rect.min().x(), rect.min().y(), rect.sizeX(), rect.sizeY()};
     SDL_SetTextInputRect(&r);
+}
+
+void Sdl2Application::exitEvent(ExitEvent& event) {
+    event.setAccepted();
 }
 
 void Sdl2Application::tickEvent() {

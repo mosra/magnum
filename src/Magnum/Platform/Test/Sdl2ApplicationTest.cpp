@@ -31,6 +31,11 @@ struct Sdl2ApplicationTest: Platform::Application {
     /* For testing resize events */
     explicit Sdl2ApplicationTest(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setWindowFlags(Configuration::WindowFlag::Resizable)} {}
 
+    void exitEvent(ExitEvent& event) override {
+        Debug{} << "application exiting";
+        event.setAccepted(); /* Comment-out to test app exit suppression */
+    }
+
     void drawEvent() override {}
 
     /* For testing HiDPI resize events */
