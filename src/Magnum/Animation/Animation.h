@@ -33,6 +33,7 @@
 
 namespace Magnum { namespace Animation {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 namespace Implementation {
     template<class V> struct ResultTraits;
     template<class, class> struct TypeTraits;
@@ -48,6 +49,7 @@ template<class T, class K = T> class Player;
 template<class K, class V, class R = ResultOf<V>> class Track;
 template<class K> class TrackViewStorage;
 template<class K, class V, class R = ResultOf<V>> class TrackView;
+#endif
 
 }}
 

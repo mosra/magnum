@@ -127,7 +127,8 @@ See also:
 
 -   Experimental support for creating Android APKs directly using CMake without
     Gradle involved. See @ref platforms-android-apps for more information. See
-    also [mosra/toolchains#5](https://github.com/mosra/toolchains/pull/5).
+    also [mosra/toolchains#5](https://github.com/mosra/toolchains/pull/5) and
+    [mosra/toolchains#6](https://github.com/mosra/toolchains/pull/6).
 -   Initial scaffolding for [Hunter](https://hunter.sh) package support (see
     [mosra/magnum#298](https://github.com/mosra/magnum/pull/298))
 -   The `Magnum::AndroidApplication` target was missing a few dependency

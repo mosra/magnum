@@ -421,7 +421,7 @@ for a high-level overview.
         @cpp ImageFormat @ce/@cpp ImageType @ce enums, use `Magnum/ColorFormat.h`
         header and @cpp ColorFormat @ce/@cpp ColorType @ce enums instead
     -   Removed deprecated @cpp Matrix2 @ce and @cpp Matrix2d @ce typedefs, use
-        :ref:`Matrix2x2` and :ref:`Matrix2x2d` instead
+        @ref Matrix2x2 and @ref Matrix2x2d instead
     -   Removed deprecated `Magnum/Swizzle.h` header and @cpp Magnum::swizzle() @ce
         function, use @ref Magnum/Math/Swizzle.h and @ref Math::swizzle()
         instead

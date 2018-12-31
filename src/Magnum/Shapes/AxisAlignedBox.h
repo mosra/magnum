@@ -26,7 +26,7 @@
 */
 
 /** @file
-@brief Class @ref Magnum::Shapes::AxisAlignedBox, typedef @ref Magnum::Shapes::AxisAlignedBox2D, @ref Magnum::Shapes.:AxisAlignedBox3D
+@brief Class @ref Magnum::Shapes::AxisAlignedBox, typedef @ref Magnum::Shapes::AxisAlignedBox2D, @ref Magnum::Shapes::AxisAlignedBox3D
 
 @deprecated The @ref Magnum::Shapes library is a failed design experiment and
     is scheduled for removal in a future release. Related geometry algorithms

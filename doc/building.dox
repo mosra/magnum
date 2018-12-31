@@ -325,7 +325,7 @@ want to set `CMAKE_INSTALL_RPATH` to `lib/` subdir of given prefix (e.g.
 @subsection building-windows Building on Windows
 
 On Windows you can use either MSVC or the MinGW-w64 compiler. It's then up to
-you whether you will use QtCreator, Visual Studio or anoother IDE or do the
+you whether you will use QtCreator, Visual Studio or another IDE or do the
 build from a command line. Note that for most convenient usage it's best use
 some dedicated directory (e.g. `C:/Sys`) for installing dependencies instead of
 putting each dependency to its own directory in `C:/Program Files` or

@@ -418,7 +418,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * Has effect only if the source is directional. Default is
          * @cpp 360.0_degf @ce.
          * @see @ref setInnerConeAngle(), @ref setDirection(),
-         *      @ref setOuterConeGain() @fn_al_keyword{Sourcef} with
+         *      @ref setOuterConeGain(), @fn_al_keyword{Sourcef} with
          *      @def_al{CONE_OUTER_ANGLE}
          */
         Source& setOuterConeAngle(Deg angle) {

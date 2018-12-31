@@ -30,6 +30,7 @@ namespace Magnum {
 
 @tableofcontents
 @m_footernavigation
+@m_keywords{android_create_apk()}
 
 @todoc code coverage
 @todoc static plugins
