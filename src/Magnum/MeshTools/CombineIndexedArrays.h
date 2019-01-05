@@ -39,10 +39,6 @@
 
 namespace Magnum { namespace MeshTools {
 
-namespace Implementation {
-    MAGNUM_MESHTOOLS_EXPORT std::vector<UnsignedInt> combineIndexArrays(const std::reference_wrapper<std::vector<UnsignedInt>>* begin, const std::reference_wrapper<std::vector<UnsignedInt>>* end);
-}
-
 /**
 @brief Combine index arrays
 @param[in,out] arrays   Index arrays to combine. These arrays are updated
@@ -85,14 +81,10 @@ This function calls @ref combineIndexArrays(const std::vector<UnsignedInt>&, Uns
 internally. See also @ref combineIndexedArrays() which does the vertex data
 reordering automatically.
 */
-inline std::vector<UnsignedInt> combineIndexArrays(const std::vector<std::reference_wrapper<std::vector<UnsignedInt>>>& arrays) {
-    return Implementation::combineIndexArrays(&arrays[0], &arrays[0] + arrays.size());
-}
+MAGNUM_MESHTOOLS_EXPORT std::vector<UnsignedInt> combineIndexArrays(const std::vector<std::reference_wrapper<std::vector<UnsignedInt>>>& arrays);
 
 /** @overload */
-inline std::vector<UnsignedInt> combineIndexArrays(std::initializer_list<std::reference_wrapper<std::vector<UnsignedInt>>> arrays) {
-    return Implementation::combineIndexArrays(arrays.begin(), arrays.end());
-}
+MAGNUM_MESHTOOLS_EXPORT std::vector<UnsignedInt> combineIndexArrays(std::initializer_list<std::reference_wrapper<std::vector<UnsignedInt>>> arrays);
 
 /**
 @brief Combine interleaved index arrays

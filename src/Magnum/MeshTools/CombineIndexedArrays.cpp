@@ -60,6 +60,10 @@ std::pair<std::vector<UnsignedInt>, std::vector<UnsignedInt>> interleaveAndCombi
     return {combinedIndices, interleavedArrays};
 }
 
+}
+
+namespace {
+
 std::vector<UnsignedInt> combineIndexArrays(const std::reference_wrapper<std::vector<UnsignedInt>>* const begin, const std::reference_wrapper<std::vector<UnsignedInt>>* const end) {
     /* Interleave and combine the arrays */
     std::vector<UnsignedInt> combinedIndices;
@@ -82,10 +86,6 @@ std::vector<UnsignedInt> combineIndexArrays(const std::reference_wrapper<std::ve
 
     return combinedIndices;
 }
-
-}
-
-namespace {
 
 class IndexHash {
     public:
@@ -113,6 +113,14 @@ class IndexEqual {
         UnsignedInt stride;
 };
 
+}
+
+std::vector<UnsignedInt> combineIndexArrays(const std::vector<std::reference_wrapper<std::vector<UnsignedInt>>>& arrays) {
+    return combineIndexArrays(&arrays[0], &arrays[0] + arrays.size());
+}
+
+std::vector<UnsignedInt> combineIndexArrays(std::initializer_list<std::reference_wrapper<std::vector<UnsignedInt>>> arrays) {
+    return combineIndexArrays(arrays.begin(), arrays.end());
 }
 
 std::pair<std::vector<UnsignedInt>, std::vector<UnsignedInt>> combineIndexArrays(const std::vector<UnsignedInt>& interleavedArrays, const UnsignedInt stride) {
