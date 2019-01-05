@@ -39,7 +39,7 @@ namespace Magnum { namespace Audio {
 
 Each extension is a @cpp struct @ce named hierarchically by prefix, vendor and
 extension name taken from list at @ref openal-support, for example
-@cpp ALC::SOFTX::HRTF @ce.
+@cpp Audio::Extensions::ALC::SOFTX::HRTF @ce.
 
 Each struct has the same public methods as @ref Extension class (currently just
 @ref Extension::string() "string()"), but these structs are better suited for
@@ -59,7 +59,6 @@ target_link_libraries(your-app Magnum::Audio)
 
 See @ref building and @ref cmake for more information.
 @see @ref MAGNUM_ASSERT_AUDIO_EXTENSION_SUPPORTED()
-@todo Manual indices for extensions, this has gaps
 */
 namespace Extensions {
 
