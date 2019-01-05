@@ -153,7 +153,7 @@ Official Apple documentation:
     integer type and the filtering is not @ref SamplerFilter::Nearest. Yes, it
     shouldn't matter, but it does.
 
-@todoc https://cmake.org/cmake/help/v3.8/prop_gbl/XCODE_EMIT_EFFECTIVE_PLATFORM_NAME.html and $<TARGET_FILE> property and https://gitlab.kitware.com/cmake/cmake/merge_requests/404, doesn't work for me on 3.10 and xcode 9.2 on Travis :/
+@todoc https://cmake.org/cmake/help/v3.8/prop_gbl/XCODE_EMIT_EFFECTIVE_PLATFORM_NAME.html and `$<TARGET_FILE>` property and https://gitlab.kitware.com/cmake/cmake/merge_requests/404, doesn't work for me on 3.10 and xcode 9.2 on Travis :/
 @todoc CMake -G Xcode, testsuite integration, bundling, controlling xcode properties from cmake
 @todoc CORRADE_TESTSUITE_BUNDLE_IDENTIFIER_PREFIX
 @todoc alternatives - including *.a files manually in your xcode project
