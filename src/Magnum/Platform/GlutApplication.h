@@ -292,11 +292,7 @@ class CORRADE_DEPRECATED("scheduled for removal, consider switching to Sdl2Appli
         /** @copydoc Sdl2Application::redraw() */
         void redraw() { glutPostRedisplay(); }
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /**
          * @brief Viewport event
          *
@@ -373,11 +369,7 @@ class CORRADE_DEPRECATED("scheduled for removal, consider switching to Sdl2Appli
             glutWarpPointer(position.x(), position.y());
         }
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /** @copydoc Sdl2Application::mousePressEvent() */
         virtual void mousePressEvent(MouseEvent& event);
 

@@ -289,11 +289,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          */
         std::unique_ptr<GlyphCache> importGlyphCacheFromFile(const std::string& filename) const;
 
-    #ifndef DOXYGEN_GENERATING_OUTPUT
     private:
-    #else
-    protected:
-    #endif
         /** @brief Implementation for @ref features() */
         virtual Features doFeatures() const = 0;
 

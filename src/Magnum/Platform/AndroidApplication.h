@@ -365,11 +365,7 @@ class AndroidApplication {
         /** @copydoc Sdl2Application::redraw() */
         void redraw() { _flags |= Flag::Redraw; }
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /**
          * @brief Viewport event
          *
@@ -410,11 +406,7 @@ class AndroidApplication {
 
         /** @{ @name Mouse handling */
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /**
          * @brief Mouse press event
          *

@@ -233,11 +233,7 @@ class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::Abstract
          */
         bool exportToFile(const ImageData2D& image, const std::string& filename);
 
-    #ifndef DOXYGEN_GENERATING_OUTPUT
     private:
-    #else
-    protected:
-    #endif
         /** @brief Implementation of @ref features() */
         virtual Features doFeatures() const = 0;
 

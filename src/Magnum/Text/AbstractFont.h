@@ -297,11 +297,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
             Float lineHeight;
         };
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /** @brief Implementation for @ref features() */
         virtual Features doFeatures() const = 0;
 

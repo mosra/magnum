@@ -207,11 +207,7 @@ class AbstractXApplication {
         /** @copydoc Sdl2Application::redraw() */
         void redraw() { _flags |= Flag::Redraw; }
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /**
          * @brief Viewport event
          *

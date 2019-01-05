@@ -422,11 +422,7 @@ class GlfwApplication {
         /** @copydoc Sdl2Application::redraw() */
         void redraw() { _flags |= Flag::Redraw; }
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /**
          * @brief Exit event
          *
@@ -493,11 +489,7 @@ class GlfwApplication {
             glfwSetCursorPos(_window, Double(position.x()), Double(position.y()));
         }
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /** @copydoc Sdl2Application::mousePressEvent() */
         virtual void mousePressEvent(MouseEvent& event);
 
@@ -545,11 +537,7 @@ class GlfwApplication {
          */
         void stopTextInput() { _flags &= ~Flag::TextInputActive; }
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /**
          * @brief Text input event
          *

@@ -840,11 +840,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          */
         virtual void doOpenFile(const std::string& filename);
 
-    #ifndef DOXYGEN_GENERATING_OUTPUT
     private:
-    #else
-    protected:
-    #endif
         /** @brief Implementation for @ref features() */
         virtual Features doFeatures() const = 0;
 

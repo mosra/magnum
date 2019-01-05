@@ -733,11 +733,7 @@ class Sdl2Application {
          */
         void redraw() { _flags |= Flag::Redraw; }
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /**
          * @brief Exit event
          *
@@ -844,11 +840,7 @@ class Sdl2Application {
          */
         void setMouseLocked(bool enabled);
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /**
          * @brief Mouse press event
          *
@@ -937,11 +929,7 @@ class Sdl2Application {
          */
         void setTextInputRect(const Range2Di& rect);
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /**
          * @brief Text input event
          *
