@@ -138,6 +138,9 @@ See also:
     [mosra/magnum#297](https://github.com/mosra/magnum/pull/297))
 -   Imroved initial Emscripten setup on Windows to be more frictionless (see
     [mosra/toolchains#4](https://github.com/mosra/toolchains/pull/4))
+-   @ref DebugTools no longer unconditionally requires the @ref Trade library
+    in case @ref Corrade::TestSuite is found. The @ref DebugTools::CompareImage
+    documentation was updated to mention the optionality.
 
 @subsection changelog-latest-bugfixes Bug fixes
 

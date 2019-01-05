@@ -23,7 +23,7 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-if(Corrade_TestSuite_FOUND)
+if(WITH_TRADE)
     # Otherwise CMake complains that Corrade::PluginManager is not found, wtf
     find_package(Corrade REQUIRED PluginManager)
 

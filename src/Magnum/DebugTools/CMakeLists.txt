@@ -110,7 +110,7 @@ endif()
 
 # Build the TestSuite-related functionality only if it is present
 find_package(Corrade COMPONENTS TestSuite)
-if(Corrade_TestSuite_FOUND)
+if(Corrade_TestSuite_FOUND AND WITH_TRADE)
     list(APPEND MagnumDebugTools_GracefulAssert_SRCS
         CompareImage.cpp)
 
@@ -148,7 +148,7 @@ elseif(BUILD_STATIC_PIC)
     set_target_properties(MagnumDebugTools PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
 target_link_libraries(MagnumDebugTools PUBLIC Magnum)
-if(Corrade_TestSuite_FOUND)
+if(Corrade_TestSuite_FOUND AND WITH_TRADE)
     target_link_libraries(MagnumDebugTools PUBLIC
         Corrade::TestSuite
         MagnumTrade)
@@ -189,7 +189,7 @@ if(BUILD_TESTS)
         set_target_properties(MagnumDebugToolsTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
     target_link_libraries(MagnumDebugToolsTestLib PUBLIC Magnum)
-    if(Corrade_TestSuite_FOUND)
+    if(Corrade_TestSuite_FOUND AND WITH_TRADE)
         target_link_libraries(MagnumDebugToolsTestLib PUBLIC
             Corrade::TestSuite
             MagnumTrade)
