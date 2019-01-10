@@ -119,6 +119,7 @@ const struct {
 PlayerTest::PlayerTest() {
     addTests({&PlayerTest::constructEmpty,
               &PlayerTest::construct,
+              &PlayerTest::constructChrono,
               &PlayerTest::constructCopy,
               &PlayerTest::constructMove,
 

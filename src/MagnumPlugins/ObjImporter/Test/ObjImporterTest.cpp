@@ -129,6 +129,7 @@ ObjImporterTest::ObjImporterTest() {
               &ObjImporterTest::wrongPointIndexData,
               &ObjImporterTest::wrongLineIndexData,
               &ObjImporterTest::wrongTriangleIndexData,
+              &ObjImporterTest::polygonIndexData,
 
               &ObjImporterTest::missingPositionData,
               &ObjImporterTest::missingNormalData,
