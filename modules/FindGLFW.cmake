@@ -42,11 +42,9 @@
 #
 
 # GLFW installs cmake package config files to shared/ folder which handles
-# dependencies in case GLFW is built statically. We're making an INTERFACE
-# target for it, which is supported only since CMake 3.0.
-if(NOT CMAKE_VERSION VERSION_LESS 3.0.0)
-    find_package(glfw3 CONFIG)
-endif()
+# dependencies in case GLFW is built statically. Try to find first, quietly, so
+# it doesn't print loud messages when it's not found, since that's okay.
+find_package(glfw3 CONFIG QUIET)
 
 if(TARGET glfw)
     if(NOT TARGET GLFW::GLFW)
