@@ -27,6 +27,9 @@ namespace Magnum {
 /** @page custom-buildsystems Using Magnum with custom buildsystems
 @brief Guide and troubleshooting when you don't want to use CMake.
 
+@m_keyword{Using custom buildsystems,,}
+@m_keyword{Custom buildsystems,,}
+
 While Magnum uses CMake as its primary buildsystem, it's possible to use Magnum
 with a custom buildsystem as well. The following guide will highlight the most
 important concepts for both using and building Magnum.
