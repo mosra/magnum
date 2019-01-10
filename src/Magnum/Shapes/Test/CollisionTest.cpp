@@ -30,7 +30,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Shapes/Collision.h"
 
-namespace Magnum { namespace Shapes { namespace Test {
+namespace Magnum { namespace Shapes { namespace Test { namespace {
 
 struct CollisionTest: TestSuite::Tester {
     explicit CollisionTest();
@@ -60,6 +60,6 @@ void CollisionTest::flipped() {
 }
 CORRADE_IGNORE_DEPRECATED_POP
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shapes::Test::CollisionTest)

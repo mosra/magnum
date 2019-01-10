@@ -35,7 +35,7 @@
 
 #include "Magnum/Math/Angle.h"
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math { namespace Test { namespace {
 
 struct AngleTest: Corrade::TestSuite::Tester {
     explicit AngleTest();
@@ -67,8 +67,6 @@ typedef Math::Rad<Double> Radd;
 using namespace Literals;
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
-namespace {
-
 constexpr struct {
     const char* name;
     const char* data;
@@ -114,8 +112,6 @@ template<> struct TweakableTraits<Radd> {
     static const char* name() { return "Radd"; }
     static const char* literal() { return "rad"; }
 };
-
-}
 #endif
 
 AngleTest::AngleTest() {
@@ -340,6 +336,6 @@ template<class T> void AngleTest::tweakableError() {
 }
 #endif
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::AngleTest)

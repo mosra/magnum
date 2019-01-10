@@ -25,7 +25,7 @@
 
 #include "Magnum/Platform/GlfwApplication.h"
 
-namespace Magnum { namespace Platform { namespace Test {
+namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct GlfwApplicationTest: Platform::Application {
     explicit GlfwApplicationTest(const Arguments& arguments): Platform::Application{arguments} {}
@@ -38,6 +38,6 @@ struct GlfwApplicationTest: Platform::Application {
     void drawEvent() override {}
 };
 
-}}}
+}}}}
 
 MAGNUM_APPLICATION_MAIN(Magnum::Platform::Test::GlfwApplicationTest)

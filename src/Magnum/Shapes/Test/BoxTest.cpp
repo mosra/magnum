@@ -31,7 +31,7 @@
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shapes/Box.h"
 
-namespace Magnum { namespace Shapes { namespace Test {
+namespace Magnum { namespace Shapes { namespace Test { namespace {
 
 struct BoxTest: TestSuite::Tester {
     explicit BoxTest();
@@ -51,6 +51,6 @@ void BoxTest::transformed() {
 }
 CORRADE_IGNORE_DEPRECATED_POP
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shapes::Test::BoxTest)

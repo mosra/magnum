@@ -34,7 +34,7 @@
 #include "Magnum/SceneGraph/MatrixTransformation3D.h"
 #include "Magnum/SceneGraph/Scene.h"
 
-namespace Magnum { namespace SceneGraph { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 
 struct CameraTest: TestSuite::Tester {
     explicit CameraTest();
@@ -267,6 +267,6 @@ void CameraTest::drawOrdered() {
     }), TestSuite::Compare::Container);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::CameraTest)

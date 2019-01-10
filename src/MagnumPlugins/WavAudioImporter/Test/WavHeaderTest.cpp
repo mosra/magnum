@@ -30,7 +30,7 @@
 #include "Magnum/Magnum.h"
 #include "MagnumPlugins/WavAudioImporter/WavHeader.h"
 
-namespace Magnum { namespace Audio { namespace Test {
+namespace Magnum { namespace Audio { namespace Test { namespace {
 
 struct WavHeaderTest: TestSuite::Tester {
     explicit WavHeaderTest();
@@ -49,7 +49,7 @@ void WavHeaderTest::debugAudioFormat() {
     CORRADE_COMPARE(out.str(), "Audio::WavAudioFormat::IeeeFloat Audio::WavAudioFormat(0xdead)\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Audio::Test::WavHeaderTest)
 

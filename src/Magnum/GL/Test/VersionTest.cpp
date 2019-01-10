@@ -28,7 +28,7 @@
 
 #include "Magnum/GL/Version.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct VersionTest: TestSuite::Tester {
     explicit VersionTest();
@@ -126,6 +126,6 @@ void VersionTest::debugES() {
 }
 #endif
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::VersionTest)

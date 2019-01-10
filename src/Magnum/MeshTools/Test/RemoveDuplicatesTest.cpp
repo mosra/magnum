@@ -28,7 +28,7 @@
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 
-namespace Magnum { namespace MeshTools { namespace Test {
+namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
 struct RemoveDuplicatesTest: TestSuite::Tester {
     explicit RemoveDuplicatesTest();
@@ -59,6 +59,6 @@ void RemoveDuplicatesTest::removeDuplicates() {
     }));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::RemoveDuplicatesTest)

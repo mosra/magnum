@@ -27,7 +27,7 @@
 
 #include "Magnum/Shaders/Vector.h"
 
-namespace Magnum { namespace Shaders { namespace Test {
+namespace Magnum { namespace Shaders { namespace Test { namespace {
 
 struct VectorTest: TestSuite::Tester {
     explicit VectorTest();
@@ -75,6 +75,6 @@ void VectorTest::constructCopy3D() {
     CORRADE_VERIFY(!(std::is_assignable<Vector3D, const Vector3D&>{}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shaders::Test::VectorTest)

@@ -29,7 +29,7 @@
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/MeshTools/Subdivide.h"
 
-namespace Magnum { namespace MeshTools { namespace Test {
+namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
 struct SubdivideTest: TestSuite::Tester {
     explicit SubdivideTest();
@@ -38,13 +38,9 @@ struct SubdivideTest: TestSuite::Tester {
     void subdivide();
 };
 
-namespace {
-
 typedef Math::Vector<1, Int> Vector1;
 
 inline Vector1 interpolator(Vector1 a, Vector1 b) { return (a[0]+b[0])/2; }
-
-}
 
 SubdivideTest::SubdivideTest() {
     addTests({&SubdivideTest::wrongIndexCount,
@@ -72,6 +68,6 @@ void SubdivideTest::subdivide() {
     CORRADE_COMPARE(indices, (std::vector<UnsignedInt>{4, 5, 6, 7, 8, 9, 0, 4, 6, 4, 1, 5, 6, 5, 2, 1, 7, 9, 7, 2, 8, 9, 8, 3}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::SubdivideTest)

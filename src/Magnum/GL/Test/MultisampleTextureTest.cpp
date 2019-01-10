@@ -27,7 +27,7 @@
 
 #include "Magnum/GL/MultisampleTexture.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct MultisampleTextureTest: TestSuite::Tester {
     explicit MultisampleTextureTest();
@@ -75,6 +75,6 @@ void MultisampleTextureTest::constructCopy2DArray() {
     CORRADE_VERIFY(!(std::is_assignable<MultisampleTexture2DArray, const MultisampleTexture2DArray&>{}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::MultisampleTextureTest)

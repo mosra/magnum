@@ -69,7 +69,7 @@ template<> struct VectorConverter<4, float, Vec4> {
 
 }
 
-namespace Test {
+namespace Test { namespace {
 
 struct ColorTest: Corrade::TestSuite::Tester {
     explicit ColorTest();
@@ -147,8 +147,6 @@ typedef Math::Deg<Float> Deg;
 using namespace Literals;
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
-namespace {
-
 const struct {
     const char* name;
     const char* dataRgb;
@@ -180,8 +178,6 @@ constexpr struct {
     {"bad size", "0x333_{1}", Corrade::Utility::TweakableState::Error,
         "Utility::TweakableParser: 0x333_{2}{1} doesn't have expected number of digits\n"},
 };
-
-}
 #endif
 
 ColorTest::ColorTest() {
@@ -1130,6 +1126,6 @@ void ColorTest::tweakableErrorSrgbaf() {
 }
 #endif
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::ColorTest)

@@ -26,7 +26,7 @@
 #include "Magnum/Math/Tags.h"
 #include "Corrade/TestSuite/Tester.h"
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math { namespace Test { namespace {
 
 struct TagsTest: Corrade::TestSuite::Tester {
     explicit TagsTest();
@@ -44,6 +44,6 @@ void TagsTest::noDefaultConstructor() {
     CORRADE_VERIFY(!std::is_default_constructible<IdentityInitT>::value);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::TagsTest)

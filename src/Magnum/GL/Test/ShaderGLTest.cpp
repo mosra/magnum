@@ -32,7 +32,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct ShaderGLTest: OpenGLTester {
     explicit ShaderGLTest();
@@ -298,6 +298,6 @@ void ShaderGLTest::compileNoVersion() {
     CORRADE_VERIFY(shader.compile());
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::ShaderGLTest)

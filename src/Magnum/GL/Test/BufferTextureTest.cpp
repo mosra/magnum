@@ -27,7 +27,7 @@
 
 #include "Magnum/GL/BufferTexture.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct BufferTextureTest: TestSuite::Tester {
     explicit BufferTextureTest();
@@ -55,6 +55,6 @@ void BufferTextureTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_assignable<BufferTexture, const BufferTexture&>{}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::BufferTextureTest)

@@ -28,7 +28,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/MeshTools/Tipsify.h"
 
-namespace Magnum { namespace MeshTools { namespace Test {
+namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
 struct TipsifyTest: TestSuite::Tester {
     explicit TipsifyTest();
@@ -52,34 +52,32 @@ struct TipsifyTest: TestSuite::Tester {
 
 */
 
-namespace {
-    const std::vector<UnsignedInt> Indices{
-        4, 1, 0,
-        10, 9, 13,
-        6, 3, 2,
-        9, 5, 4,
-        12, 9, 8,
-        11, 7, 6,
+const std::vector<UnsignedInt> Indices{
+    4, 1, 0,
+    10, 9, 13,
+    6, 3, 2,
+    9, 5, 4,
+    12, 9, 8,
+    11, 7, 6,
 
-        14, 15, 11,
-        2, 1, 5,
-        10, 6, 5,
-        10, 5, 9,
-        13, 14, 10,
-        1, 4, 5,
+    14, 15, 11,
+    2, 1, 5,
+    10, 6, 5,
+    10, 5, 9,
+    13, 14, 10,
+    1, 4, 5,
 
-        7, 3, 6,
-        6, 2, 5,
-        9, 4, 8,
-        6, 10, 11,
-        13, 9, 12,
-        14, 11, 10,
+    7, 3, 6,
+    6, 2, 5,
+    9, 4, 8,
+    6, 10, 11,
+    13, 9, 12,
+    14, 11, 10,
 
-        16, 17, 18
-    };
+    16, 17, 18
+};
 
-    constexpr std::size_t VertexCount = 19;
-}
+constexpr std::size_t VertexCount = 19;
 
 TipsifyTest::TipsifyTest() {
     addTests({&TipsifyTest::buildAdjacency,
@@ -159,6 +157,6 @@ void TipsifyTest::tipsify() {
     }));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::TipsifyTest)

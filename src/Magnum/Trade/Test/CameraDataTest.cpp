@@ -28,7 +28,7 @@
 
 #include "Magnum/Trade/CameraData.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct CameraDataTest: TestSuite::Tester {
     explicit CameraDataTest();
@@ -168,6 +168,6 @@ void CameraDataTest::debugType() {
     CORRADE_COMPARE(out.str(), "Trade::CameraType::Orthographic3D Trade::CameraType(0xde)\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::CameraDataTest)

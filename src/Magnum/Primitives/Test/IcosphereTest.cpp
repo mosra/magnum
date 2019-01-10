@@ -29,7 +29,7 @@
 #include "Magnum/Primitives/Icosphere.h"
 #include "Magnum/Trade/MeshData3D.h"
 
-namespace Magnum { namespace Primitives { namespace Test {
+namespace Magnum { namespace Primitives { namespace Test { namespace {
 
 struct IcosphereTest: TestSuite::Tester {
     explicit IcosphereTest();
@@ -52,6 +52,6 @@ void IcosphereTest::count() {
     CORRADE_COMPARE(data.normals(0).size(), 162);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Primitives::Test::IcosphereTest)

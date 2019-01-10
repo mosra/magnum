@@ -40,7 +40,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace DebugTools { namespace Test {
+namespace Magnum { namespace DebugTools { namespace Test { namespace {
 
 struct CompareImageTest: TestSuite::Tester {
     explicit CompareImageTest();
@@ -166,27 +166,26 @@ CompareImageTest::CompareImageTest() {
               &CompareImageTest::fileToImageActualIsCompressed});
 }
 
-namespace {
-    const Float ActualRedData[] = {
-         0.3f, 1.0f, 0.9f,
-         0.9f, 0.6f, 0.2f,
-        -0.1f, 1.0f, 0.0f
-    };
+const Float ActualRedData[] = {
+        0.3f, 1.0f, 0.9f,
+        0.9f, 0.6f, 0.2f,
+    -0.1f, 1.0f, 0.0f
+};
 
-    const Float ExpectedRedData[] = {
-        0.65f, 1.0f, 0.6f,
-        0.91f, 0.6f, 0.1f,
-        0.02f, 0.0f, 0.0f
-    };
+const Float ExpectedRedData[] = {
+    0.65f, 1.0f, 0.6f,
+    0.91f, 0.6f, 0.1f,
+    0.02f, 0.0f, 0.0f
+};
 
-    const std::vector<Float> DeltaRed{
-        0.35f, 0.0f, 0.3f,
-        0.01f, 0.0f, 0.1f,
-        0.12f, 1.0f, 0.0f};
+const std::vector<Float> DeltaRed{
+    0.35f, 0.0f, 0.3f,
+    0.01f, 0.0f, 0.1f,
+    0.12f, 1.0f, 0.0f
+};
 
-    const ImageView2D ActualRed{PixelFormat::R32F, {3, 3}, ActualRedData};
-    const ImageView2D ExpectedRed{PixelFormat::R32F, {3, 3}, ExpectedRedData};
-}
+const ImageView2D ActualRed{PixelFormat::R32F, {3, 3}, ActualRedData};
+const ImageView2D ExpectedRed{PixelFormat::R32F, {3, 3}, ExpectedRedData};
 
 void CompareImageTest::formatUnknown() {
     std::ostringstream out;
@@ -242,25 +241,23 @@ void CompareImageTest::calculateDelta() {
     CORRADE_COMPARE(mean, 0.208889f);
 }
 
-namespace {
-    /* Different storage for each */
-    const UnsignedByte ActualRgbData[] = {
-           0,    0,    0,    0,    0,    0,    0,    0,
-        0x56, 0xf8, 0x3a, 0x56, 0x47, 0xec,    0,    0,
-        0x23, 0x57, 0x10, 0xab, 0xcd, 0x85,    0,    0
-    };
+/* Different storage for each */
+const UnsignedByte ActualRgbData[] = {
+       0,    0,    0,    0,    0,    0,    0,    0,
+    0x56, 0xf8, 0x3a, 0x56, 0x47, 0xec,    0,    0,
+    0x23, 0x57, 0x10, 0xab, 0xcd, 0x85,    0,    0
+};
 
-    const UnsignedByte ExpectedRgbData[] = {
-        0, 0, 0, 0x55, 0xf8, 0x3a, 0x56, 0x10, 0xed, 0, 0, 0,
-        0, 0, 0, 0x23, 0x27, 0x10, 0xab, 0xcd, 0xfa, 0, 0, 0
-    };
+const UnsignedByte ExpectedRgbData[] = {
+    0, 0, 0, 0x55, 0xf8, 0x3a, 0x56, 0x10, 0xed, 0, 0, 0,
+    0, 0, 0, 0x23, 0x27, 0x10, 0xab, 0xcd, 0xfa, 0, 0, 0
+};
 
-    const ImageView2D ActualRgb{PixelStorage{}.setSkip({0, 1, 0}),
-        PixelFormat::RGB8Unorm, {2, 2}, ActualRgbData};
-    const ImageView2D ExpectedRgb{
-        PixelStorage{}.setSkip({1, 0, 0}).setRowLength(3),
-        PixelFormat::RGB8Unorm, {2, 2}, ExpectedRgbData};
-}
+const ImageView2D ActualRgb{PixelStorage{}.setSkip({0, 1, 0}),
+    PixelFormat::RGB8Unorm, {2, 2}, ActualRgbData};
+const ImageView2D ExpectedRgb{
+    PixelStorage{}.setSkip({1, 0, 0}).setRowLength(3),
+    PixelFormat::RGB8Unorm, {2, 2}, ExpectedRgbData};
 
 void CompareImageTest::calculateDeltaStorage() {
     std::vector<Float> delta;
@@ -489,15 +486,13 @@ void CompareImageTest::teardownExternalPluginManager() {
     _manager = Containers::NullOpt;
 }
 
-namespace {
-    constexpr const char* ImageCompareError =
-        "Images a and b have both max and mean delta above threshold, actual 39/18.5 but at most 20/10 expected. Delta image:\n"
-        "          |?M|\n"
-        "        Pixels above max/mean threshold:\n"
-        "          [1,1] #abcd85, expected #abcdfa (Δ = 39)\n"
-        "          [1,0] #5647ec, expected #5610ed (Δ = 18.6667)\n"
-        "          [0,1] #235710, expected #232710 (Δ = 16)\n";
-}
+constexpr const char* ImageCompareError =
+    "Images a and b have both max and mean delta above threshold, actual 39/18.5 but at most 20/10 expected. Delta image:\n"
+    "          |?M|\n"
+    "        Pixels above max/mean threshold:\n"
+    "          [1,1] #abcd85, expected #abcdfa (Δ = 39)\n"
+    "          [1,0] #5647ec, expected #5610ed (Δ = 18.6667)\n"
+    "          [0,1] #235710, expected #232710 (Δ = 16)\n";
 
 void CompareImageTest::image() {
     CORRADE_COMPARE_WITH(ActualRgb, ExpectedRgb, (CompareImage{40.0f, 20.0f}));
@@ -936,6 +931,6 @@ void CompareImageTest::fileToImageActualIsCompressed() {
         "Actual image a (.../CompareImageCompressed.dds) is compressed, comparison not possible.\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::DebugTools::Test::CompareImageTest)

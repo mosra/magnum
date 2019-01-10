@@ -52,7 +52,7 @@ template<> struct QuaternionConverter<Float, Quat> {
 
 }
 
-namespace Test {
+namespace Test { namespace {
 
 struct QuaternionTest: Corrade::TestSuite::Tester {
     explicit QuaternionTest();
@@ -763,6 +763,6 @@ void QuaternionTest::configuration() {
     CORRADE_COMPARE(c.value<Quaternion>("overflow"), (Quaternion{{2.0f, 1.0f, 8.0f}, 9.0f}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::QuaternionTest)

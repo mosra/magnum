@@ -54,7 +54,7 @@ template<> struct BezierConverter<2, 2, Float, QBezier2D> {
 
 }
 
-namespace Test {
+namespace Test { namespace {
 
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector2<Double> Vector2d;
@@ -349,6 +349,6 @@ void BezierTest::configuration() {
     CORRADE_COMPARE(c.value<CubicBezier2D>("bezier"), bezier);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::BezierTest)

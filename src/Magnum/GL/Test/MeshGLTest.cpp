@@ -44,7 +44,7 @@
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Vector4.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 /* Tests also the MeshView class. */
 
@@ -304,11 +304,9 @@ void MeshGLTest::construct() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-namespace {
-    struct FloatShader: AbstractShaderProgram {
-        explicit FloatShader(const std::string& type, const std::string& conversion);
-    };
-}
+struct FloatShader: AbstractShaderProgram {
+    explicit FloatShader(const std::string& type, const std::string& conversion);
+};
 
 void MeshGLTest::constructMove() {
     const Float data = Math::unpack<Float, UnsignedByte>(96);
@@ -467,28 +465,26 @@ void MeshGLTest::label() {
 }
 #endif
 
-namespace {
-    #ifndef MAGNUM_TARGET_GLES2
-    struct IntegerShader: AbstractShaderProgram {
-        explicit IntegerShader(const std::string& type);
-    };
-    #endif
+#ifndef MAGNUM_TARGET_GLES2
+struct IntegerShader: AbstractShaderProgram {
+    explicit IntegerShader(const std::string& type);
+};
+#endif
 
-    #ifndef MAGNUM_TARGET_GLES
-    struct DoubleShader: AbstractShaderProgram {
-        explicit DoubleShader(const std::string& type, const std::string& outputType, const std::string& conversion);
-    };
-    #endif
+#ifndef MAGNUM_TARGET_GLES
+struct DoubleShader: AbstractShaderProgram {
+    explicit DoubleShader(const std::string& type, const std::string& outputType, const std::string& conversion);
+};
+#endif
 
-    struct Checker {
-        Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh& mesh);
+struct Checker {
+    Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh& mesh);
 
-        template<class T> T get(PixelFormat format, PixelType type);
+    template<class T> T get(PixelFormat format, PixelType type);
 
-        Renderbuffer renderbuffer;
-        Framebuffer framebuffer;
-    };
-}
+    Renderbuffer renderbuffer;
+    Framebuffer framebuffer;
+};
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 FloatShader::FloatShader(const std::string& type, const std::string& conversion) {
@@ -1520,15 +1516,13 @@ void MeshGLTest::addVertexBufferBGRA() {
 }
 #endif
 
-namespace {
-    struct MultipleShader: AbstractShaderProgram {
-        typedef Attribute<0, Vector3> Position;
-        typedef Attribute<1, Vector3> Normal;
-        typedef Attribute<2, Vector2> TextureCoordinates;
+struct MultipleShader: AbstractShaderProgram {
+    typedef Attribute<0, Vector3> Position;
+    typedef Attribute<1, Vector3> Normal;
+    typedef Attribute<2, Vector2> TextureCoordinates;
 
-        explicit MultipleShader();
-    };
-}
+    explicit MultipleShader();
+};
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 MultipleShader::MultipleShader() {
@@ -1811,59 +1805,57 @@ void MeshGLTest::addVertexBufferInstancedDynamicTransferOwnwership() {
     CORRADE_VERIFY(!glIsBuffer(id));
 }
 
-namespace {
-    const Float indexedVertexData[] = {
-        0.0f, /* Offset */
+const Float indexedVertexData[] = {
+    0.0f, /* Offset */
 
-        /* First vertex */
-        Math::unpack<Float, UnsignedByte>(64),
+    /* First vertex */
+    Math::unpack<Float, UnsignedByte>(64),
+        Math::unpack<Float, UnsignedByte>(17),
+            Math::unpack<Float, UnsignedByte>(56),
+    Math::unpack<Float, UnsignedByte>(15),
+        Math::unpack<Float, UnsignedByte>(164),
             Math::unpack<Float, UnsignedByte>(17),
-                Math::unpack<Float, UnsignedByte>(56),
-        Math::unpack<Float, UnsignedByte>(15),
-            Math::unpack<Float, UnsignedByte>(164),
-                Math::unpack<Float, UnsignedByte>(17),
-        Math::unpack<Float, UnsignedByte>(97),
-            Math::unpack<Float, UnsignedByte>(28),
+    Math::unpack<Float, UnsignedByte>(97),
+        Math::unpack<Float, UnsignedByte>(28),
 
-        /* Second vertex */
-        0.3f, 0.1f, 0.5f,
-            0.4f, 0.0f, -0.9f,
-                1.0f, -0.5f
-    };
+    /* Second vertex */
+    0.3f, 0.1f, 0.5f,
+        0.4f, 0.0f, -0.9f,
+            1.0f, -0.5f
+};
 
-    #ifndef MAGNUM_TARGET_GLES
-    const Float indexedVertexDataBaseVertex[] = {
-        0.0f, 0.0f, /* Offset */
+#ifndef MAGNUM_TARGET_GLES
+const Float indexedVertexDataBaseVertex[] = {
+    0.0f, 0.0f, /* Offset */
 
-        /* First vertex */
+    /* First vertex */
+    0.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 0.0f,
-                0.0f, 0.0f,
+            0.0f, 0.0f,
 
-        /* Second vertex */
+    /* Second vertex */
+    0.0f, 0.0f, 0.0f,
         0.0f, 0.0f, 0.0f,
-            0.0f, 0.0f, 0.0f,
-                0.0f, 0.0f,
+            0.0f, 0.0f,
 
-        /* Third vertex */
-        Math::unpack<Float, UnsignedByte>(64),
+    /* Third vertex */
+    Math::unpack<Float, UnsignedByte>(64),
+        Math::unpack<Float, UnsignedByte>(17),
+            Math::unpack<Float, UnsignedByte>(56),
+    Math::unpack<Float, UnsignedByte>(15),
+        Math::unpack<Float, UnsignedByte>(164),
             Math::unpack<Float, UnsignedByte>(17),
-                Math::unpack<Float, UnsignedByte>(56),
-        Math::unpack<Float, UnsignedByte>(15),
-            Math::unpack<Float, UnsignedByte>(164),
-                Math::unpack<Float, UnsignedByte>(17),
-        Math::unpack<Float, UnsignedByte>(97),
-            Math::unpack<Float, UnsignedByte>(28),
+    Math::unpack<Float, UnsignedByte>(97),
+        Math::unpack<Float, UnsignedByte>(28),
 
-        /* Fourth vertex */
-        0.3f, 0.1f, 0.5f,
-            0.4f, 0.0f, -0.9f,
-                1.0f, -0.5f
-    };
-    #endif
+    /* Fourth vertex */
+    0.3f, 0.1f, 0.5f,
+        0.4f, 0.0f, -0.9f,
+            1.0f, -0.5f
+};
+#endif
 
-    constexpr Color4ub indexedResult(64 + 15 + 97, 17 + 164 + 28, 56 + 17, 255);
-}
+constexpr Color4ub indexedResult(64 + 15 + 97, 17 + 164 + 28, 56 + 17, 255);
 
 template<class T> void MeshGLTest::setIndexBuffer() {
     setTestCaseName(std::is_same<T, MeshIndexType>::value ?
@@ -2648,16 +2640,14 @@ void MeshGLTest::resetDivisorAfterInstancedDraw() {
     }
 }
 
-namespace {
-    struct MultiChecker {
-        MultiChecker(AbstractShaderProgram&& shader, Mesh& mesh);
+struct MultiChecker {
+    MultiChecker(AbstractShaderProgram&& shader, Mesh& mesh);
 
-        template<class T> T get(PixelFormat format, PixelType type);
+    template<class T> T get(PixelFormat format, PixelType type);
 
-        Renderbuffer renderbuffer;
-        Framebuffer framebuffer;
-    };
-}
+    Renderbuffer renderbuffer;
+    Framebuffer framebuffer;
+};
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 MultiChecker::MultiChecker(AbstractShaderProgram&& shader, Mesh& mesh): framebuffer({{}, Vector2i(1)}) {
@@ -2775,6 +2765,6 @@ void MeshGLTest::multiDrawBaseVertex() {
 }
 #endif
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::MeshGLTest)

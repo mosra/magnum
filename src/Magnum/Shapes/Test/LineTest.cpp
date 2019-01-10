@@ -31,7 +31,7 @@
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shapes/Line.h"
 
-namespace Magnum { namespace Shapes { namespace Test {
+namespace Magnum { namespace Shapes { namespace Test { namespace {
 
 struct LineTest: TestSuite::Tester {
     explicit LineTest();
@@ -52,6 +52,6 @@ void LineTest::transformed() {
 }
 CORRADE_IGNORE_DEPRECATED_POP
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shapes::Test::LineTest)

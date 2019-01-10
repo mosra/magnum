@@ -28,7 +28,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Trade/SceneData.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct SceneDataTest: TestSuite::Tester {
     explicit SceneDataTest();
@@ -77,6 +77,6 @@ void SceneDataTest::constructMove() {
     CORRADE_COMPARE(d.importerState(), &a);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::SceneDataTest)

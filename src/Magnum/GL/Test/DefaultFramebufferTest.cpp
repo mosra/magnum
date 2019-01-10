@@ -28,7 +28,7 @@
 
 #include "Magnum/GL/DefaultFramebuffer.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct DefaultFramebufferTest: TestSuite::Tester {
     explicit DefaultFramebufferTest();
@@ -47,6 +47,6 @@ void DefaultFramebufferTest::debugStatus() {
     CORRADE_COMPARE(out.str(), "GL::DefaultFramebuffer::Status::Complete GL::DefaultFramebuffer::Status(0xdead)\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::DefaultFramebufferTest)

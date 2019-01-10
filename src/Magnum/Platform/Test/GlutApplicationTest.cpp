@@ -28,14 +28,14 @@
 #include "Magnum/Platform/GlutApplication.h"
 
 CORRADE_IGNORE_DEPRECATED_PUSH
-namespace Magnum { namespace Platform { namespace Test {
+namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct GlutApplicationTest: Platform::Application {
     explicit GlutApplicationTest(const Arguments& arguments): Platform::Application{arguments} {}
     void drawEvent() override {}
 };
 
-}}}
+}}}}
 
 MAGNUM_APPLICATION_MAIN(Magnum::Platform::Test::GlutApplicationTest)
 CORRADE_IGNORE_DEPRECATED_POP

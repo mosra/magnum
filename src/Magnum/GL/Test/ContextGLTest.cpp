@@ -29,7 +29,7 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct ContextGLTest: OpenGLTester {
     explicit ContextGLTest();
@@ -127,6 +127,6 @@ void ContextGLTest::isExtensionDisabled() {
     #endif
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::ContextGLTest)

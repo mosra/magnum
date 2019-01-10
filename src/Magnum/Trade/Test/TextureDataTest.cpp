@@ -28,7 +28,7 @@
 
 #include "Magnum/Trade/TextureData.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 class TextureDataTest: public TestSuite::Tester {
     public:
@@ -119,6 +119,6 @@ void TextureDataTest::debugType() {
     CORRADE_COMPARE(out.str(), "Trade::TextureData::Type::Texture3D Trade::TextureData::Type(0xbe)\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::TextureDataTest)

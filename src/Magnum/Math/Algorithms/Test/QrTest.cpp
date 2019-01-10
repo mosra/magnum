@@ -30,7 +30,7 @@
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Algorithms/Qr.h"
 
-namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
+namespace Magnum { namespace Math { namespace Algorithms { namespace Test { namespace {
 
 struct QrTest: Corrade::TestSuite::Tester {
     explicit QrTest();
@@ -84,6 +84,6 @@ void QrTest::decomposeRotationShear() {
     CORRADE_COMPARE(r4.rotationShear(), Matrix4::shearingXZ(0.274077f, 0.0f).rotationShear());
 }
 
-}}}}
+}}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Algorithms::Test::QrTest)

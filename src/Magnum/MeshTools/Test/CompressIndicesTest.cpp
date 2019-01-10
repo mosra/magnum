@@ -31,7 +31,7 @@
 
 #include "Magnum/MeshTools/CompressIndices.h"
 
-namespace Magnum { namespace MeshTools { namespace Test {
+namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
 struct CompressIndicesTest: TestSuite::Tester {
     explicit CompressIndicesTest();
@@ -125,6 +125,6 @@ void CompressIndicesTest::compressAsShort() {
     CORRADE_COMPARE(out.str(), "MeshTools::compressIndicesAs(): type too small to represent value 65536\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::CompressIndicesTest)

@@ -48,7 +48,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace TextureTools { namespace Test {
+namespace Magnum { namespace TextureTools { namespace Test { namespace {
 
 struct DistanceFieldGLTest: GL::OpenGLTester {
     explicit DistanceFieldGLTest();
@@ -279,6 +279,6 @@ void DistanceFieldGLTest::benchmark() {
 }
 #endif
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::TextureTools::Test::DistanceFieldGLTest)

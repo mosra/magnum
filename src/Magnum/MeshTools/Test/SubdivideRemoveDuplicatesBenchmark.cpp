@@ -32,7 +32,7 @@
 #include "Magnum/Primitives/Icosphere.h"
 #include "Magnum/Trade/MeshData3D.h"
 
-namespace Magnum { namespace MeshTools { namespace Test {
+namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
 struct SubdivideRemoveDuplicatesBenchmark: TestSuite::Tester {
     explicit SubdivideRemoveDuplicatesBenchmark();
@@ -89,7 +89,7 @@ void SubdivideRemoveDuplicatesBenchmark::subdivideAndRemoveDuplicatesInBetween()
     }
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::SubdivideRemoveDuplicatesBenchmark)
 

@@ -28,7 +28,7 @@
 
 #include "Magnum/Sampler.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace Test { namespace {
 
 struct SamplerTest: TestSuite::Tester {
     explicit SamplerTest();
@@ -65,6 +65,6 @@ void SamplerTest::debugWrapping() {
     CORRADE_COMPARE(out.str(), "SamplerWrapping::ClampToEdge SamplerWrapping(0xdead)\n");
 }
 
-}}
+}}}
 
 CORRADE_TEST_MAIN(Magnum::Test::SamplerTest)

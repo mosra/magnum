@@ -37,7 +37,7 @@
 #include "Magnum/Magnum.h"
 #include "MagnumExternal/Optional/OptionalWrapper.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace Test { namespace {
 
 struct StdOptionalTest: TestSuite::Tester {
     explicit StdOptionalTest();
@@ -102,7 +102,7 @@ void StdOptionalTest::conversion() {
 #pragma GCC diagnostic pop
 #endif
 
-}}
+}}}
 
 CORRADE_TEST_MAIN(Magnum::Test::StdOptionalTest)
 

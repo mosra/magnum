@@ -30,7 +30,7 @@
 #include "Magnum/SceneGraph/MatrixTransformation3D.h"
 #include "Magnum/SceneGraph/Scene.h"
 
-namespace Magnum { namespace SceneGraph { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 
 struct ObjectTest: TestSuite::Tester {
     explicit ObjectTest();
@@ -515,6 +515,6 @@ void ObjectTest::rangeBasedForFeatures() {
     CORRADE_COMPARE(features, (std::vector<AbstractFeature3D*>{&a, &b, &c}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::ObjectTest)

@@ -40,7 +40,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace Text { namespace Test {
+namespace Magnum { namespace Text { namespace Test { namespace {
 
 struct MagnumFontConverterGLTest: GL::OpenGLTester {
     explicit MagnumFontConverterGLTest();
@@ -139,6 +139,6 @@ void MagnumFontConverterGLTest::exportFont() {
     CORRADE_COMPARE(image->format(), PixelFormat::R8Unorm);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Text::Test::MagnumFontConverterGLTest)

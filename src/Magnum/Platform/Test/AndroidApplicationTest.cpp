@@ -25,7 +25,7 @@
 
 #include "Magnum/Platform/AndroidApplication.h"
 
-namespace Magnum { namespace Platform { namespace Test {
+namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct AndroidApplicationTest: Platform::Application {
     explicit AndroidApplicationTest(const Arguments& arguments): Platform::Application{arguments} {
@@ -45,6 +45,6 @@ struct AndroidApplicationTest: Platform::Application {
     }
 };
 
-}}}
+}}}}
 
 MAGNUM_APPLICATION_MAIN(Magnum::Platform::Test::AndroidApplicationTest)

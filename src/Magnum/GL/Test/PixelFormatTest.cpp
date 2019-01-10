@@ -33,7 +33,7 @@
 #include "Magnum/PixelStorage.h"
 #endif
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct PixelFormatTest: TestSuite::Tester {
     explicit PixelFormatTest();
@@ -523,6 +523,6 @@ void PixelFormatTest::debugCompressedPixelFormat() {
     CORRADE_COMPARE(out.str(), "GL::CompressedPixelFormat::RGBS3tcDxt1 GL::CompressedPixelFormat(0xdead)\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::PixelFormatTest)

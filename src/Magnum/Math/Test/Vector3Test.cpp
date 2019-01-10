@@ -50,7 +50,7 @@ template<> struct VectorConverter<3, float, Vec3> {
 
 }
 
-namespace Test {
+namespace Test { namespace {
 
 struct Vector3Test: Corrade::TestSuite::Tester {
     explicit Vector3Test();
@@ -294,6 +294,6 @@ void Vector3Test::configuration() {
     CORRADE_COMPARE(c.value<Vector3>("vector"), vec);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::Vector3Test)

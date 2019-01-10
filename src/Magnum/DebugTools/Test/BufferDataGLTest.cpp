@@ -28,7 +28,7 @@
 #include "Magnum/DebugTools/BufferData.h"
 #include "Magnum/GL/OpenGLTester.h"
 
-namespace Magnum { namespace DebugTools { namespace Test {
+namespace Magnum { namespace DebugTools { namespace Test { namespace {
 
 struct BufferDataGLTest: Magnum::GL::OpenGLTester {
     explicit BufferDataGLTest();
@@ -42,9 +42,7 @@ BufferDataGLTest::BufferDataGLTest() {
               &BufferDataGLTest::subData});
 }
 
-namespace {
-    constexpr Int Data[] = {2, 7, 5, 13, 25};
-}
+constexpr Int Data[] = {2, 7, 5, 13, 25};
 
 void BufferDataGLTest::data() {
     GL::Buffer buffer;
@@ -64,6 +62,6 @@ void BufferDataGLTest::subData() {
         TestSuite::Compare::Container);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::DebugTools::Test::BufferDataGLTest)

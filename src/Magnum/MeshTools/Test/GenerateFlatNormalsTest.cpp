@@ -29,7 +29,7 @@
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/GenerateFlatNormals.h"
 
-namespace Magnum { namespace MeshTools { namespace Test {
+namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
 struct GenerateFlatNormalsTest: TestSuite::Tester {
     explicit GenerateFlatNormalsTest();
@@ -81,6 +81,6 @@ void GenerateFlatNormalsTest::generate() {
     }));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::GenerateFlatNormalsTest)

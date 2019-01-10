@@ -28,7 +28,7 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Math/Range.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct RendererGLTest: OpenGLTester {
     explicit RendererGLTest();
@@ -60,6 +60,6 @@ void RendererGLTest::maxLineWidth() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::RendererGLTest)

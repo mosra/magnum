@@ -34,7 +34,7 @@
 
 #include "ShapeTestBase.h"
 
-namespace Magnum { namespace Shapes { namespace Test {
+namespace Magnum { namespace Shapes { namespace Test { namespace {
 
 struct SphereTest: TestSuite::Tester {
     explicit SphereTest();
@@ -176,6 +176,6 @@ void SphereTest::collisionSphereInverted() {
 }
 CORRADE_IGNORE_DEPRECATED_POP
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shapes::Test::SphereTest)

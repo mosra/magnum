@@ -35,7 +35,7 @@
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math { namespace Test { namespace {
 
 struct HalfTest: Corrade::TestSuite::Tester {
     explicit HalfTest();
@@ -94,8 +94,6 @@ typedef Math::Constants<Float> Constants;
 using namespace Literals;
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
-namespace {
-
 const struct {
     const char* name;
     const char* data;
@@ -125,8 +123,6 @@ constexpr struct {
     {"different suffix", "42.0u", Corrade::Utility::TweakableState::Recompile, /* not for double */
         "Utility::TweakableParser: 42.0u has an unexpected suffix, expected _h\n"}
 };
-
-}
 #endif
 
 HalfTest::HalfTest() {
@@ -221,8 +217,6 @@ HalfTest::HalfTest() {
     }
 }
 
-namespace {
-
 union FloatBits {
     UnsignedInt u;
     Float f;
@@ -241,8 +235,6 @@ union HalfBits {
         UnsignedShort sign:1;
     } bits;
 };
-
-}
 
 /* float_to_half_full() from https://gist.github.com/rygorous/2156668,
    originally from ISPC */
@@ -708,6 +700,6 @@ void HalfTest::tweakableError() {
 }
 #endif
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::HalfTest)

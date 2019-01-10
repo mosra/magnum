@@ -28,7 +28,7 @@
 
 #include "Magnum/Array.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace Test { namespace {
 
 struct ArrayTest: TestSuite::Tester {
     explicit ArrayTest();
@@ -121,6 +121,6 @@ void ArrayTest::debug() {
     CORRADE_COMPARE(out.str(), "Array(5, 6, 7, 8) Array(13) Array(71, 2) Array(1, 2, 3)\n");
 }
 
-}}
+}}}
 
 CORRADE_TEST_MAIN(Magnum::Test::ArrayTest)

@@ -27,7 +27,7 @@
 
 #include "Magnum/GL/CubeMapTexture.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct CubeMapTextureTest: TestSuite::Tester {
     explicit CubeMapTextureTest();
@@ -55,6 +55,6 @@ void CubeMapTextureTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_assignable<CubeMapTexture, const CubeMapTexture&>{}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::CubeMapTextureTest)

@@ -27,7 +27,7 @@
 
 #include "Magnum/GL/Renderbuffer.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct RenderbufferTest: TestSuite::Tester {
     explicit RenderbufferTest();
@@ -55,6 +55,6 @@ void RenderbufferTest::constructNoCreate() {
     CORRADE_VERIFY(true);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::RenderbufferTest)

@@ -29,7 +29,7 @@
 #include "Magnum/Math/Range.h"
 #include "Magnum/TextureTools/Atlas.h"
 
-namespace Magnum { namespace TextureTools { namespace Test {
+namespace Magnum { namespace TextureTools { namespace Test { namespace {
 
 struct AtlasTest: TestSuite::Tester {
     explicit AtlasTest();
@@ -93,6 +93,6 @@ void AtlasTest::createTooSmall() {
     CORRADE_COMPARE(o.str(), "TextureTools::atlas(): requested atlas size Vector(64, 32) is too small to fit 3 Vector(25, 31) textures. Generated atlas will be empty.\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::TextureTools::Test::AtlasTest)

@@ -28,7 +28,7 @@
 
 #include "Magnum/Trade/MeshObjectData2D.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 class ObjectData2DTest: public TestSuite::Tester {
     public:
@@ -249,6 +249,6 @@ void ObjectData2DTest::debugFlags() {
     CORRADE_COMPARE(o.str(), "Trade::ObjectFlag2D::HasTranslationRotationScaling Trade::ObjectFlags2D{}\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::ObjectData2DTest)

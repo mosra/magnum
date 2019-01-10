@@ -55,7 +55,7 @@ template<> struct RectangularMatrixConverter<3, 3, float, Mat3> {
 
 }
 
-namespace Test {
+namespace Test { namespace {
 
 struct MatrixTest: Corrade::TestSuite::Tester {
     explicit MatrixTest();
@@ -503,6 +503,6 @@ void MatrixTest::configuration() {
     CORRADE_COMPARE(c.value<Matrix4x4>("matrix"), m);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::MatrixTest)

@@ -31,7 +31,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace Audio { namespace Test {
+namespace Magnum { namespace Audio { namespace Test { namespace {
 
 struct AnyImporterTest: TestSuite::Tester {
     explicit AnyImporterTest();
@@ -82,6 +82,6 @@ void AnyImporterTest::unknown() {
     CORRADE_COMPARE(output.str(), "Audio::AnyImporter::openFile(): cannot determine type of file sound.mid\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Audio::Test::AnyImporterTest)

@@ -29,7 +29,7 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/PixelStorage.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace Test { namespace {
 
 struct PixelStorageTest: TestSuite::Tester {
     explicit PixelStorageTest();
@@ -283,6 +283,6 @@ void PixelStorageTest::dataOffsetSizeCompressed() {
         (std::pair<std::size_t, std::size_t>{16*4*4 + 16*2 + 16, 16}));
 }
 
-}}
+}}}
 
 CORRADE_TEST_MAIN(Magnum::Test::PixelStorageTest)

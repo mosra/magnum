@@ -32,7 +32,7 @@
 #include "Magnum/GL/TextureFormat.h"
 #include "Magnum/Shaders/Phong.h"
 
-namespace Magnum { namespace Shaders { namespace Test {
+namespace Magnum { namespace Shaders { namespace Test { namespace {
 
 struct PhongGLTest: GL::OpenGLTester {
     explicit PhongGLTest();
@@ -222,6 +222,6 @@ void PhongGLTest::setWrongLightId() {
         "Shaders::Phong::setLightPosition(): light ID 3 is out of bounds for 3 lights\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shaders::Test::PhongGLTest)

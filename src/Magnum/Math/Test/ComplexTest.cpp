@@ -51,7 +51,7 @@ template<> struct ComplexConverter<Float, Cmpl> {
 
 }
 
-namespace Test {
+namespace Test { namespace {
 
 struct ComplexTest: Corrade::TestSuite::Tester {
     explicit ComplexTest();
@@ -575,6 +575,6 @@ void ComplexTest::configuration() {
     CORRADE_COMPARE(c.value<Complex>("overflow"), (Complex{2.0f, 9.0f}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::ComplexTest)

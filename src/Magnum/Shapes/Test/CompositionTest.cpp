@@ -34,7 +34,7 @@
 
 #include "ShapeTestBase.h"
 
-namespace Magnum { namespace Shapes { namespace Test {
+namespace Magnum { namespace Shapes { namespace Test { namespace {
 
 struct CompositionTest: TestSuite::Tester {
     explicit CompositionTest();
@@ -187,6 +187,6 @@ void CompositionTest::transformed() {
 }
 CORRADE_IGNORE_DEPRECATED_POP
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shapes::Test::CompositionTest)

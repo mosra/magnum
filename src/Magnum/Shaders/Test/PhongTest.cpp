@@ -28,7 +28,7 @@
 
 #include "Magnum/Shaders/Phong.h"
 
-namespace Magnum { namespace Shaders { namespace Test {
+namespace Magnum { namespace Shaders { namespace Test { namespace {
 
 struct PhongTest: TestSuite::Tester {
     explicit PhongTest();
@@ -76,6 +76,6 @@ void PhongTest::debugFlags() {
     CORRADE_COMPARE(out.str(), "Shaders::Phong::Flag::DiffuseTexture|Shaders::Phong::Flag::SpecularTexture Shaders::Phong::Flags{}\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shaders::Test::PhongTest)

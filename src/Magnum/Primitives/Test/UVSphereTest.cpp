@@ -30,7 +30,7 @@
 #include "Magnum/Primitives/UVSphere.h"
 #include "Magnum/Trade/MeshData3D.h"
 
-namespace Magnum { namespace Primitives { namespace Test {
+namespace Magnum { namespace Primitives { namespace Test { namespace {
 
 struct UVSphereTest: TestSuite::Tester {
     explicit UVSphereTest();
@@ -184,6 +184,6 @@ void UVSphereTest::wireframe() {
     }), TestSuite::Compare::Container);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Primitives::Test::UVSphereTest)

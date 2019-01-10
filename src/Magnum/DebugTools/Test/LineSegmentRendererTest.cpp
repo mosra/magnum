@@ -31,7 +31,7 @@
 
 #include "Magnum/DebugTools/Implementation/LineSegmentRendererTransformation.h"
 
-namespace Magnum { namespace DebugTools { namespace Test {
+namespace Magnum { namespace DebugTools { namespace Test { namespace {
 
 struct LineSegmentRendererTest: TestSuite::Tester {
     explicit LineSegmentRendererTest();
@@ -65,6 +65,6 @@ void LineSegmentRendererTest::line3D() {
 }
 CORRADE_IGNORE_DEPRECATED_POP
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::DebugTools::Test::LineSegmentRendererTest)

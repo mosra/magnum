@@ -25,7 +25,7 @@
 
 #include "Magnum/Platform/Sdl2Application.h"
 
-namespace Magnum { namespace Platform { namespace Test {
+namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct Sdl2ApplicationTest: Platform::Application {
     /* For testing resize events */
@@ -54,6 +54,6 @@ struct Sdl2ApplicationTest: Platform::Application {
     }
 };
 
-}}}
+}}}}
 
 MAGNUM_APPLICATION_MAIN(Magnum::Platform::Test::Sdl2ApplicationTest)

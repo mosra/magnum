@@ -31,7 +31,7 @@
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/MeshView.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 /* Tests MeshView as well */
 
@@ -131,11 +131,9 @@ void MeshTest::constructMoveNoCreate() {
     CORRADE_VERIFY(true);
 }
 
-namespace {
-    struct Shader: AbstractShaderProgram {
-        explicit Shader(NoCreateT): AbstractShaderProgram{NoCreate} {}
-    };
-}
+struct Shader: AbstractShaderProgram {
+    explicit Shader(NoCreateT): AbstractShaderProgram{NoCreate} {}
+};
 
 void MeshTest::drawCountNotSet() {
     std::ostringstream out;
@@ -225,6 +223,6 @@ void MeshTest::debugIndexType() {
     CORRADE_COMPARE(o.str(), "GL::MeshIndexType::UnsignedShort GL::MeshIndexType(0xdead)\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::MeshTest)

@@ -30,7 +30,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/MeshTools/CombineIndexedArrays.h"
 
-namespace Magnum { namespace MeshTools { namespace Test {
+namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
 struct CombineIndexedArraysTest: TestSuite::Tester {
     explicit CombineIndexedArraysTest();
@@ -87,6 +87,6 @@ void CombineIndexedArraysTest::indexedArrays() {
     CORRADE_COMPARE(array3, (std::vector<UnsignedInt>{6, 7}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::CombineIndexedArraysTest)

@@ -26,7 +26,7 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Shaders/DistanceFieldVector.h"
 
-namespace Magnum { namespace Shaders { namespace Test {
+namespace Magnum { namespace Shaders { namespace Test { namespace {
 
 struct DistanceFieldVectorGLTest: GL::OpenGLTester {
     explicit DistanceFieldVectorGLTest();
@@ -102,6 +102,6 @@ void DistanceFieldVectorGLTest::constructMove3D() {
     CORRADE_VERIFY(!b.id());
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shaders::Test::DistanceFieldVectorGLTest)

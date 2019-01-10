@@ -31,7 +31,7 @@
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
 
-namespace Magnum { namespace Primitives { namespace Test {
+namespace Magnum { namespace Primitives { namespace Test { namespace {
 
 struct AxisTest: TestSuite::Tester {
     explicit AxisTest();
@@ -63,6 +63,6 @@ void AxisTest::threeDimensions() {
     CORRADE_COMPARE(axis.colors(0).size(), 12);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Primitives::Test::AxisTest)

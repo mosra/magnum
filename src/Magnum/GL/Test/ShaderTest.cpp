@@ -28,7 +28,7 @@
 
 #include "Magnum/GL/Shader.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct ShaderTest: TestSuite::Tester {
     explicit ShaderTest();
@@ -54,6 +54,6 @@ void ShaderTest::debugType() {
     CORRADE_COMPARE(out.str(), "GL::Shader::Type::Fragment GL::Shader::Type(0xdead)\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::ShaderTest)

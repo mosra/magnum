@@ -32,7 +32,7 @@
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/Renderer.h"
 
-namespace Magnum { namespace Text { namespace Test {
+namespace Magnum { namespace Text { namespace Test { namespace {
 
 struct RendererGLTest: GL::OpenGLTester {
     explicit RendererGLTest();
@@ -53,8 +53,6 @@ RendererGLTest::RendererGLTest() {
 
               &RendererGLTest::multiline});
 }
-
-namespace {
 
 class TestLayouter: public Text::AbstractLayouter {
     public:
@@ -89,8 +87,6 @@ class TestFont: public Text::AbstractFont {
 /* *static_cast<GlyphCache*>(nullptr) makes Clang Analyzer grumpy */
 char glyphCacheData;
 GlyphCache& nullGlyphCache = *reinterpret_cast<GlyphCache*>(&glyphCacheData);
-
-}
 
 void RendererGLTest::renderData() {
     TestFont font;
@@ -435,6 +431,6 @@ void RendererGLTest::multiline() {
     }), TestSuite::Compare::Container);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Text::Test::RendererGLTest)

@@ -61,7 +61,7 @@ template<> struct FrustumConverter<Float, Frstm> {
 
 }
 
-namespace Test {
+namespace Test { namespace {
 
 struct FrustumTest: Corrade::TestSuite::Tester {
     explicit FrustumTest();
@@ -368,6 +368,6 @@ void FrustumTest::debug() {
                                "        {7, -8, 9, 0.6})\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::FrustumTest)

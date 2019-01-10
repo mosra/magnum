@@ -29,7 +29,7 @@
 #include "Magnum/Math/Packing.h"
 #include "Magnum/Math/Vector3.h"
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math { namespace Test { namespace {
 
 struct PackingTest: Corrade::TestSuite::Tester {
     explicit PackingTest();
@@ -279,6 +279,6 @@ void PackingTest::unpackTypeDeduction() {
     CORRADE_COMPARE((Math::unpack<Float, Byte>('\x7F')), 1.0f);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::PackingTest)

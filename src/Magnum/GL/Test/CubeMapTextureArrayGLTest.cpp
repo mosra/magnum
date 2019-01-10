@@ -37,7 +37,7 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct CubeMapTextureArrayGLTest: OpenGLTester {
     explicit CubeMapTextureArrayGLTest();
@@ -83,196 +83,194 @@ struct CubeMapTextureArrayGLTest: OpenGLTester {
     void invalidateSubImage();
 };
 
-namespace {
-    struct GenericSampler {
-        typedef Magnum::SamplerFilter Filter;
-        typedef Magnum::SamplerMipmap Mipmap;
-        typedef Magnum::SamplerWrapping Wrapping;
-    };
-    struct GLSampler {
-        typedef GL::SamplerFilter Filter;
-        typedef GL::SamplerMipmap Mipmap;
-        typedef GL::SamplerWrapping Wrapping;
-    };
+struct GenericSampler {
+    typedef Magnum::SamplerFilter Filter;
+    typedef Magnum::SamplerMipmap Mipmap;
+    typedef Magnum::SamplerWrapping Wrapping;
+};
+struct GLSampler {
+    typedef GL::SamplerFilter Filter;
+    typedef GL::SamplerMipmap Mipmap;
+    typedef GL::SamplerWrapping Wrapping;
+};
 
-    constexpr UnsignedByte Data[]{
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+constexpr UnsignedByte Data[]{
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
 
-        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
-        0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
+    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+    0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
 
-        0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
-        0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
+    0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
+    0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
 
-        0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-        0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f,
+    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+    0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f,
 
-        0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x16, 0x47,
-        0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x1e, 0x4f,
+    0x40, 0x41, 0x42, 0x43, 0x44, 0x45, 0x16, 0x47,
+    0x48, 0x49, 0x4a, 0x4b, 0x4c, 0x4d, 0x1e, 0x4f,
 
-        0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57,
-        0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f
-    };
+    0x50, 0x51, 0x52, 0x53, 0x54, 0x55, 0x56, 0x57,
+    0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f
+};
 
-    enum: std::size_t { PixelStorageDataCount = 2 };
+enum: std::size_t { PixelStorageDataCount = 2 };
 
-    const struct {
-        const char* name;
-        Containers::ArrayView<const UnsignedByte> data;
-        PixelStorage storage;
-        Containers::ArrayView<const UnsignedByte> dataSparse;
-        std::size_t offset;
-    } PixelStorageData[PixelStorageDataCount]{
-        {"default pixel storage",
-            Containers::arrayView(Data).suffix(16), {},
-            Containers::arrayView(Data).suffix(16), 0},
-        {"skip Z",
-            Containers::arrayView(Data).suffix(16), PixelStorage{}.setSkip({0, 0, 1}),
-            Containers::arrayView(Data), 16}
-    };
+const struct {
+    const char* name;
+    Containers::ArrayView<const UnsignedByte> data;
+    PixelStorage storage;
+    Containers::ArrayView<const UnsignedByte> dataSparse;
+    std::size_t offset;
+} PixelStorageData[PixelStorageDataCount]{
+    {"default pixel storage",
+        Containers::arrayView(Data).suffix(16), {},
+        Containers::arrayView(Data).suffix(16), 0},
+    {"skip Z",
+        Containers::arrayView(Data).suffix(16), PixelStorage{}.setSkip({0, 0, 1}),
+        Containers::arrayView(Data), 16}
+};
 
-    /* Just 4x4 0x00 - 0x3f compressed using RGBA DXT3 by the driver, repeated
-       six times */
-    constexpr UnsignedByte CompressedData[]{
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/* Just 4x4 0x00 - 0x3f compressed using RGBA DXT3 by the driver, repeated
+   six times */
+constexpr UnsignedByte CompressedData[]{
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 
-          0,  17, 17,  34,  34,  51,  51,  67,
-        232,  57,  0,   0, 213, 255, 170,   2,
-          0,  17, 17,  34,  34,  51,  51,  67,
-        232,  57,  0,   0, 213, 255, 170,   2,
-          0,  17, 17,  34,  34,  51,  51,  67,
-        232,  57,  0,   0, 213, 255, 170,   2,
+      0,  17, 17,  34,  34,  51,  51,  67,
+    232,  57,  0,   0, 213, 255, 170,   2,
+      0,  17, 17,  34,  34,  51,  51,  67,
+    232,  57,  0,   0, 213, 255, 170,   2,
+      0,  17, 17,  34,  34,  51,  51,  67,
+    232,  57,  0,   0, 213, 255, 170,   2,
 
-          0,  17, 17,  34,  34,  51,  51,  67,
-        232,  57,  0,   0, 213, 255, 170,   2,
-          0,  17, 17,  34,  34,  51,  51,  67,
-        232,  57,  0,   0, 213, 255, 170,   2,
-          0,  17, 17,  34,  34,  51,  51,  67,
-        232,  57,  0,   0, 213, 255, 170,   2
-    };
+      0,  17, 17,  34,  34,  51,  51,  67,
+    232,  57,  0,   0, 213, 255, 170,   2,
+      0,  17, 17,  34,  34,  51,  51,  67,
+    232,  57,  0,   0, 213, 255, 170,   2,
+      0,  17, 17,  34,  34,  51,  51,  67,
+    232,  57,  0,   0, 213, 255, 170,   2
+};
 
-    enum: std::size_t { CompressedPixelStorageDataCount =
+enum: std::size_t { CompressedPixelStorageDataCount =
+    #ifndef MAGNUM_TARGET_GLES
+    2
+    #else
+    1
+    #endif
+};
+
+const struct {
+    const char* name;
+    Containers::ArrayView<const UnsignedByte> data;
+    #ifndef MAGNUM_TARGET_GLES
+    CompressedPixelStorage storage;
+    #endif
+    Containers::ArrayView<const UnsignedByte> dataSparse;
+    std::size_t offset;
+} CompressedPixelStorageData[CompressedPixelStorageDataCount]{
+    {"default pixel storage",
+        Containers::arrayView(CompressedData).suffix(16*4),
         #ifndef MAGNUM_TARGET_GLES
-        2
-        #else
-        1
+        {},
         #endif
-    };
+        Containers::arrayView(CompressedData).suffix(16*4), 0},
+    #ifndef MAGNUM_TARGET_GLES
+    {"skip Z",
+        Containers::arrayView(CompressedData).suffix(16*4),
+        CompressedPixelStorage{}
+            .setCompressedBlockSize({4, 4, 1})
+            .setCompressedBlockDataSize(16)
+            .setSkip({0, 0, 4}),
+        Containers::arrayView(CompressedData), 16*4}
+    #endif
+};
 
-    const struct {
-        const char* name;
-        Containers::ArrayView<const UnsignedByte> data;
+constexpr UnsignedByte SubData[]{
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+
+    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+    0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
+
+    0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
+    0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
+
+    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+    0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f
+};
+
+enum: std::size_t { SubPixelStorageDataCount = 2 };
+
+const struct {
+    const char* name;
+    Containers::ArrayView<const UnsignedByte> data;
+    PixelStorage storage;
+    Containers::ArrayView<const UnsignedByte> dataSparse;
+    std::size_t offset;
+} SubPixelStorageData[SubPixelStorageDataCount]{
+    {"default pixel storage",
+        Containers::arrayView(SubData).suffix(16), {},
+        Containers::arrayView(SubData).suffix(16), 0},
+    {"skip Z",
+        Containers::arrayView(SubData).suffix(16), PixelStorage{}.setSkip({0, 0, 1}),
+        Containers::arrayView(SubData), 16}
+};
+
+/* Just 4x4x4 0x00 - 0xff compressed using RGBA DXT3 by the driver */
+constexpr UnsignedByte CompressedSubData[] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+      0,  17,  17,  34,  34,  51,  51,  67,
+    232,  57,   0,   0, 213, 255, 170,   2,
+     68,  84,  85, 101, 102, 118, 119, 119,
+    239, 123,   8,  66, 213, 255, 170,   2,
+    136, 136, 153, 153, 170, 170, 187, 187,
+    247, 189,  16, 132, 213, 255, 170,   2,
+    203, 204, 220, 221, 237, 238, 254, 255,
+    255, 255,  24, 190, 213, 255, 170,   2
+};
+
+enum: std::size_t { CompressedSubPixelStorageDataCount =
+    #ifndef MAGNUM_TARGET_GLES
+    2
+    #else
+    1
+    #endif
+};
+
+const struct {
+    const char* name;
+    Containers::ArrayView<const UnsignedByte> data;
+    #ifndef MAGNUM_TARGET_GLES
+    CompressedPixelStorage storage;
+    #endif
+    Containers::ArrayView<const UnsignedByte> dataSparse;
+    std::size_t offset;
+} CompressedSubPixelStorageData[CompressedSubPixelStorageDataCount]{
+    {"default pixel storage",
+        Containers::arrayView(CompressedSubData).suffix(16*4),
         #ifndef MAGNUM_TARGET_GLES
-        CompressedPixelStorage storage;
+        {},
         #endif
-        Containers::ArrayView<const UnsignedByte> dataSparse;
-        std::size_t offset;
-    } CompressedPixelStorageData[CompressedPixelStorageDataCount]{
-        {"default pixel storage",
-            Containers::arrayView(CompressedData).suffix(16*4),
-            #ifndef MAGNUM_TARGET_GLES
-            {},
-            #endif
-            Containers::arrayView(CompressedData).suffix(16*4), 0},
-        #ifndef MAGNUM_TARGET_GLES
-        {"skip Z",
-            Containers::arrayView(CompressedData).suffix(16*4),
-            CompressedPixelStorage{}
-                .setCompressedBlockSize({4, 4, 1})
-                .setCompressedBlockDataSize(16)
-                .setSkip({0, 0, 4}),
-            Containers::arrayView(CompressedData), 16*4}
-        #endif
-    };
-
-    constexpr UnsignedByte SubData[]{
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-
-        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
-        0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f,
-
-        0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27,
-        0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f,
-
-        0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
-        0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f
-    };
-
-    enum: std::size_t { SubPixelStorageDataCount = 2 };
-
-    const struct {
-        const char* name;
-        Containers::ArrayView<const UnsignedByte> data;
-        PixelStorage storage;
-        Containers::ArrayView<const UnsignedByte> dataSparse;
-        std::size_t offset;
-    } SubPixelStorageData[SubPixelStorageDataCount]{
-        {"default pixel storage",
-            Containers::arrayView(SubData).suffix(16), {},
-            Containers::arrayView(SubData).suffix(16), 0},
-        {"skip Z",
-            Containers::arrayView(SubData).suffix(16), PixelStorage{}.setSkip({0, 0, 1}),
-            Containers::arrayView(SubData), 16}
-    };
-
-    /* Just 4x4x4 0x00 - 0xff compressed using RGBA DXT3 by the driver */
-    constexpr UnsignedByte CompressedSubData[] = {
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-
-          0,  17,  17,  34,  34,  51,  51,  67,
-        232,  57,   0,   0, 213, 255, 170,   2,
-         68,  84,  85, 101, 102, 118, 119, 119,
-        239, 123,   8,  66, 213, 255, 170,   2,
-        136, 136, 153, 153, 170, 170, 187, 187,
-        247, 189,  16, 132, 213, 255, 170,   2,
-        203, 204, 220, 221, 237, 238, 254, 255,
-        255, 255,  24, 190, 213, 255, 170,   2
-    };
-
-    enum: std::size_t { CompressedSubPixelStorageDataCount =
-        #ifndef MAGNUM_TARGET_GLES
-        2
-        #else
-        1
-        #endif
-    };
-
-    const struct {
-        const char* name;
-        Containers::ArrayView<const UnsignedByte> data;
-        #ifndef MAGNUM_TARGET_GLES
-        CompressedPixelStorage storage;
-        #endif
-        Containers::ArrayView<const UnsignedByte> dataSparse;
-        std::size_t offset;
-    } CompressedSubPixelStorageData[CompressedSubPixelStorageDataCount]{
-        {"default pixel storage",
-            Containers::arrayView(CompressedSubData).suffix(16*4),
-            #ifndef MAGNUM_TARGET_GLES
-            {},
-            #endif
-            Containers::arrayView(CompressedSubData).suffix(16*4), 0},
-        #ifndef MAGNUM_TARGET_GLES
-        {"skip Z",
-            Containers::arrayView(CompressedSubData).suffix(16*4),
-            CompressedPixelStorage{}
-                .setCompressedBlockSize({4, 4, 1})
-                .setCompressedBlockDataSize(16)
-                .setSkip({0, 0, 4}),
-            Containers::arrayView(CompressedSubData), 16*4}
-        #endif
-    };
-}
+        Containers::arrayView(CompressedSubData).suffix(16*4), 0},
+    #ifndef MAGNUM_TARGET_GLES
+    {"skip Z",
+        Containers::arrayView(CompressedSubData).suffix(16*4),
+        CompressedPixelStorage{}
+            .setCompressedBlockSize({4, 4, 1})
+            .setCompressedBlockDataSize(16)
+            .setSkip({0, 0, 4}),
+        Containers::arrayView(CompressedSubData), 16*4}
+    #endif
+};
 
 CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
     addTests({&CubeMapTextureArrayGLTest::construct,
@@ -725,42 +723,40 @@ void CubeMapTextureArrayGLTest::compressedImageBuffer() {
     #endif
 }
 
-namespace {
-    constexpr UnsignedByte Zero[4*4*4*6]{};
-    #ifndef MAGNUM_TARGET_GLES
-    constexpr UnsignedByte SubDataComplete[]{
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+constexpr UnsignedByte Zero[4*4*4*6]{};
+#ifndef MAGNUM_TARGET_GLES
+constexpr UnsignedByte SubDataComplete[]{
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
 
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
+    0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
 
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0, 0, 0, 0,
+    0, 0, 0, 0, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
 
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0, 0, 0, 0,
+    0, 0, 0, 0, 0x28, 0x29, 0x2a, 0x2b, 0x2c, 0x2d, 0x2e, 0x2f, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
 
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37, 0, 0, 0, 0,
+    0, 0, 0, 0, 0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
 
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
-    };
-    #endif
-}
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
+};
+#endif
 
 void CubeMapTextureArrayGLTest::subImage() {
     setTestCaseDescription(SubPixelStorageData[testCaseInstanceId()].name);
@@ -886,73 +882,71 @@ void CubeMapTextureArrayGLTest::subImageQueryBuffer() {
 }
 #endif
 
-namespace {
-    /* Just 12x12x6 zeros compressed using RGBA DXT3 by the driver */
-    constexpr UnsignedByte CompressedZero[9*16*6]{};
+/* Just 12x12x6 zeros compressed using RGBA DXT3 by the driver */
+constexpr UnsignedByte CompressedZero[9*16*6]{};
 
-    #ifndef MAGNUM_TARGET_GLES
-    /* Combination of CompressedZero and CompressedSubData */
-    constexpr UnsignedByte CompressedSubDataComplete[] = {
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+#ifndef MAGNUM_TARGET_GLES
+/* Combination of CompressedZero and CompressedSubData */
+constexpr UnsignedByte CompressedSubDataComplete[] = {
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
 
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-                          0,  17,  17,  34,  34,  51,  51,  67,
-                        232,  57,   0,   0, 213, 255, 170,   2,
-                                                          0, 0, 0, 0, 0, 0, 0, 0,
-                                                          0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+                      0,  17,  17,  34,  34,  51,  51,  67,
+                    232,  57,   0,   0, 213, 255, 170,   2,
+                                                      0, 0, 0, 0, 0, 0, 0, 0,
+                                                      0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
 
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-                         68,  84,  85, 101, 102, 118, 119, 119,
-                        239, 123,   8,  66, 213, 255, 170,   2,
-                                                          0, 0, 0, 0, 0, 0, 0, 0,
-                                                          0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+                     68,  84,  85, 101, 102, 118, 119, 119,
+                    239, 123,   8,  66, 213, 255, 170,   2,
+                                                      0, 0, 0, 0, 0, 0, 0, 0,
+                                                      0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
 
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-                        136, 136, 153, 153, 170, 170, 187, 187,
-                        247, 189,  16, 132, 213, 255, 170,   2,
-                                                          0, 0, 0, 0, 0, 0, 0, 0,
-                                                          0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+                    136, 136, 153, 153, 170, 170, 187, 187,
+                    247, 189,  16, 132, 213, 255, 170,   2,
+                                                      0, 0, 0, 0, 0, 0, 0, 0,
+                                                      0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
 
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-                        203, 204, 220, 221, 237, 238, 254, 255,
-                        255, 255,  24, 190, 213, 255, 170,   2,
-                                                          0, 0, 0, 0, 0, 0, 0, 0,
-                                                          0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+                    203, 204, 220, 221, 237, 238, 254, 255,
+                    255, 255,  24, 190, 213, 255, 170,   2,
+                                                      0, 0, 0, 0, 0, 0, 0, 0,
+                                                      0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
 
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0
-    };
-    #endif
-}
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0,  0, 0, 0, 0, 0, 0, 0, 0
+};
+#endif
 
 void CubeMapTextureArrayGLTest::compressedSubImage() {
     setTestCaseDescription(CompressedSubPixelStorageData[testCaseInstanceId()].name);
@@ -1173,6 +1167,6 @@ void CubeMapTextureArrayGLTest::invalidateSubImage() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::CubeMapTextureArrayGLTest)

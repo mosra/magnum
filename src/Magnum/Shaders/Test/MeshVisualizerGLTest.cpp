@@ -28,7 +28,7 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Shaders/MeshVisualizer.h"
 
-namespace Magnum { namespace Shaders { namespace Test {
+namespace Magnum { namespace Shaders { namespace Test { namespace {
 
 struct MeshVisualizerGLTest: GL::OpenGLTester {
     explicit MeshVisualizerGLTest();
@@ -122,6 +122,6 @@ void MeshVisualizerGLTest::constructMove() {
     CORRADE_VERIFY(!b.id());
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shaders::Test::MeshVisualizerGLTest)

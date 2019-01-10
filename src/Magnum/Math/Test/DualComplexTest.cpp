@@ -51,7 +51,7 @@ template<> struct DualComplexConverter<Float, DualCmpl> {
 
 }
 
-namespace Test {
+namespace Test { namespace {
 
 struct DualComplexTest: Corrade::TestSuite::Tester {
     explicit DualComplexTest();
@@ -318,15 +318,13 @@ void DualComplexTest::normalized() {
     CORRADE_COMPARE(a.normalized(), b);
 }
 
-namespace {
-    template<class> struct NormalizedIterativeData;
-    template<> struct NormalizedIterativeData<Float> {
-        static Math::Vector2<Float> translation() { return {10000.0f, -50.0f}; }
-    };
-    template<> struct NormalizedIterativeData<Double> {
-        static Math::Vector2<Double> translation() { return {10000000.0, -500.0}; }
-    };
-}
+template<class> struct NormalizedIterativeData;
+template<> struct NormalizedIterativeData<Float> {
+    static Math::Vector2<Float> translation() { return {10000.0f, -50.0f}; }
+};
+template<> struct NormalizedIterativeData<Double> {
+    static Math::Vector2<Double> translation() { return {10000000.0, -500.0}; }
+};
 
 template<class T> void DualComplexTest::normalizedIterative() {
     setTestCaseName(std::string{"normalizedIterative<"} + TypeTraits<T>::name() + ">");
@@ -491,6 +489,6 @@ void DualComplexTest::configuration() {
     CORRADE_COMPARE(c.value<DualComplex>("overflow"), (DualComplex{{2.0f, 1.0f}, {8.0f, 9.0f}}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::DualComplexTest)

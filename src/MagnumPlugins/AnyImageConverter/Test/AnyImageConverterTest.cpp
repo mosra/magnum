@@ -34,7 +34,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct AnyImageConverterTest: TestSuite::Tester {
     explicit AnyImageConverterTest();
@@ -66,15 +66,13 @@ AnyImageConverterTest::AnyImageConverterTest() {
     CORRADE_INTERNAL_ASSERT(Utility::Directory::mkpath(ANYIMAGECONVERTER_TEST_DIR));
 }
 
-namespace {
-    constexpr const char Data[] = {
-        1, 2, 3, 2, 3, 4, 0, 0,
-        3, 4, 5, 4, 5, 6, 0, 0,
-        5, 6, 7, 6, 7, 8, 0, 0
-    };
+constexpr const char Data[] = {
+    1, 2, 3, 2, 3, 4, 0, 0,
+    3, 4, 5, 4, 5, 6, 0, 0,
+    5, 6, 7, 6, 7, 8, 0, 0
+};
 
-    const ImageView2D Image{PixelFormat::RGB8Unorm, {2, 3}, Data};
-}
+const ImageView2D Image{PixelFormat::RGB8Unorm, {2, 3}, Data};
 
 void AnyImageConverterTest::tga() {
     if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
@@ -101,6 +99,6 @@ void AnyImageConverterTest::unknown() {
     CORRADE_COMPARE(output.str(), "Trade::AnyImageConverter::exportToFile(): cannot determine type of file image.xcf\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::AnyImageConverterTest)

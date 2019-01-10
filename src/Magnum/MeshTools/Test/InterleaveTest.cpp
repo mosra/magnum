@@ -30,7 +30,7 @@
 
 #include "Magnum/MeshTools/Interleave.h"
 
-namespace Magnum { namespace MeshTools { namespace Test {
+namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
 struct InterleaveTest: Corrade::TestSuite::Tester {
     explicit InterleaveTest();
@@ -157,6 +157,6 @@ void InterleaveTest::interleaveInto() {
     }
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::InterleaveTest)

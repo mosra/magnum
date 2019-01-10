@@ -30,7 +30,7 @@
 #include "Magnum/Primitives/Cylinder.h"
 #include "Magnum/Trade/MeshData3D.h"
 
-namespace Magnum { namespace Primitives { namespace Test {
+namespace Magnum { namespace Primitives { namespace Test { namespace {
 
 struct CylinderTest: TestSuite::Tester {
     explicit CylinderTest();
@@ -241,6 +241,6 @@ void CylinderTest::wireframe() {
     }), TestSuite::Compare::Container);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Primitives::Test::CylinderTest)

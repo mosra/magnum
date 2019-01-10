@@ -53,7 +53,7 @@ template<> struct DualQuaternionConverter<Float, DualQuat> {
 
 }
 
-namespace Test {
+namespace Test { namespace {
 
 struct DualQuaternionTest: Corrade::TestSuite::Tester {
     explicit DualQuaternionTest();
@@ -348,15 +348,13 @@ void DualQuaternionTest::normalized() {
     CORRADE_COMPARE(a.normalized(), b);
 }
 
-namespace {
-    template<class> struct NormalizedIterativeData;
-    template<> struct NormalizedIterativeData<Float> {
-        static Math::Vector3<Float> translation() { return {10000.0f, -50.0f, 20000.0f}; }
-    };
-    template<> struct NormalizedIterativeData<Double> {
-        static Math::Vector3<Double> translation() { return {10000000000000.0, -500.0, 20000000000000.0}; }
-    };
-}
+template<class> struct NormalizedIterativeData;
+template<> struct NormalizedIterativeData<Float> {
+    static Math::Vector3<Float> translation() { return {10000.0f, -50.0f, 20000.0f}; }
+};
+template<> struct NormalizedIterativeData<Double> {
+    static Math::Vector3<Double> translation() { return {10000000000000.0, -500.0, 20000000000000.0}; }
+};
 
 template<class T> void DualQuaternionTest::normalizedIterative() {
     setTestCaseName(std::string{"normalizedIterative<"} + TypeTraits<T>::name() + ">");
@@ -666,6 +664,6 @@ void DualQuaternionTest::configuration() {
     CORRADE_COMPARE(c.value<DualQuaternion>("overflow"), (DualQuaternion{{{2.0f, 1.0f, 8.0f}, 9.0f}, {{16.0f, 33.0f, -1.0f}, 5.0f}}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::DualQuaternionTest)

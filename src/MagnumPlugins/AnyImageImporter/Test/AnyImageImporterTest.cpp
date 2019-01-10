@@ -34,7 +34,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct AnyImageImporterTest: TestSuite::Tester {
     explicit AnyImageImporterTest();
@@ -50,8 +50,6 @@ struct AnyImageImporterTest: TestSuite::Tester {
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
-
-namespace {
 
 Containers::Optional<Containers::ArrayView<const char>> fileCallback(const std::string& filename, Trade::ImporterFileCallbackPolicy, Containers::Array<char>& storage) {
     storage = Utility::Directory::read(filename);
@@ -90,8 +88,6 @@ constexpr struct {
     {"TIFF", "image.tiff", nullptr, "TiffImporter"}
     /* Not testing everything, just the most important ones */
 };
-
-}
 
 AnyImageImporterTest::AnyImageImporterTest() {
     addInstancedTests({&AnyImageImporterTest::load},
@@ -192,6 +188,6 @@ void AnyImageImporterTest::emptyData() {
     CORRADE_COMPARE(output.str(), "Trade::AnyImageImporter::openData(): file is empty\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::AnyImageImporterTest)

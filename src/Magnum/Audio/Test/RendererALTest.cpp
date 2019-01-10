@@ -28,7 +28,7 @@
 #include "Magnum/Audio/Context.h"
 #include "Magnum/Audio/Renderer.h"
 
-namespace Magnum { namespace Audio { namespace Test {
+namespace Magnum { namespace Audio { namespace Test { namespace {
 
 struct RendererALTest: TestSuite::Tester {
     explicit RendererALTest();
@@ -105,6 +105,6 @@ void RendererALTest::distanceModel() {
     CORRADE_COMPARE(Renderer::distanceModel(), model);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Audio::Test::RendererALTest)

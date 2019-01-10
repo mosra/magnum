@@ -32,7 +32,7 @@
 
 #include "ShapeTestBase.h"
 
-namespace Magnum { namespace Shapes { namespace Test {
+namespace Magnum { namespace Shapes { namespace Test { namespace {
 
 struct PlaneTest: TestSuite::Tester {
     explicit PlaneTest();
@@ -81,6 +81,6 @@ void PlaneTest::collisionLineSegment() {
 }
 CORRADE_IGNORE_DEPRECATED_POP
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shapes::Test::PlaneTest)

@@ -27,7 +27,7 @@
 
 #include "Magnum/GL/Texture.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct TextureTest: TestSuite::Tester {
     explicit TextureTest();
@@ -119,6 +119,6 @@ void TextureTest::constructCopy3D() {
 }
 #endif
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::TextureTest)

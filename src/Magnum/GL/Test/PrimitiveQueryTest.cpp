@@ -27,7 +27,7 @@
 
 #include "Magnum/GL/PrimitiveQuery.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct PrimitiveQueryTest: TestSuite::Tester {
     explicit PrimitiveQueryTest();
@@ -55,6 +55,6 @@ void PrimitiveQueryTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_assignable<PrimitiveQuery, const PrimitiveQuery&>{}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::PrimitiveQueryTest)

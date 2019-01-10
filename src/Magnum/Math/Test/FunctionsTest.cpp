@@ -29,7 +29,7 @@
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Vector4.h"
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math { namespace Test { namespace {
 
 struct FunctionsTest: Corrade::TestSuite::Tester {
     explicit FunctionsTest();
@@ -445,6 +445,6 @@ void FunctionsTest::trigonometricWithBase() {
     CORRADE_COMPARE(Math::tan(2*Rad(Constants::pi()/8)), 1.0f);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::FunctionsTest)

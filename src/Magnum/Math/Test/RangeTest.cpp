@@ -93,7 +93,7 @@ template<> struct RangeConverter<3, Float, Box> {
 
 }
 
-namespace Test {
+namespace Test { namespace {
 
 struct RangeTest: Corrade::TestSuite::Tester {
     explicit RangeTest();
@@ -898,6 +898,6 @@ void RangeTest::configuration() {
     CORRADE_COMPARE(c.value<Range2D>("rectangle"), rect);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::RangeTest)

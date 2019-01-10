@@ -25,13 +25,13 @@
 
 #include "Magnum/Platform/WindowlessIosApplication.h"
 
-namespace Magnum { namespace Platform { namespace Test {
+namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct WindowlessIosApplicationTest: Platform::WindowlessApplication {
     explicit WindowlessIosApplicationTest(const Arguments& arguments): Platform::WindowlessApplication{arguments} {}
     int exec() override { return 0; }
 };
 
-}}}
+}}}}
 
 MAGNUM_WINDOWLESSAPPLICATION_MAIN(Magnum::Platform::Test::WindowlessIosApplicationTest)

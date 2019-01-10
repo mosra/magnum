@@ -36,7 +36,7 @@
 #include "Magnum/SceneGraph/MatrixTransformation3D.h"
 #include "Magnum/SceneGraph/Scene.h"
 
-namespace Magnum { namespace Shapes { namespace Test {
+namespace Magnum { namespace Shapes { namespace Test { namespace {
 
 struct ShapeTest: TestSuite::Tester {
     explicit ShapeTest();
@@ -226,6 +226,6 @@ void ShapeTest::shapeGroup() {
 }
 CORRADE_IGNORE_DEPRECATED_POP
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shapes::Test::ShapeTest)

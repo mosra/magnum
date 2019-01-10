@@ -28,7 +28,7 @@
 #include "Magnum/Math/Constants.h"
 #include "Magnum/Math/Unit.h"
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math { namespace Test { namespace {
 
 struct UnitTest: Corrade::TestSuite::Tester {
     explicit UnitTest();
@@ -198,6 +198,6 @@ void UnitTest::multiplyDivide() {
     CORRADE_COMPARE(h, a);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::UnitTest)

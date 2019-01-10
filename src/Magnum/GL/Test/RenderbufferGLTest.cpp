@@ -30,7 +30,7 @@
 #include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/Math/Vector2.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct RenderbufferGLTest: OpenGLTester {
     explicit RenderbufferGLTest();
@@ -191,6 +191,6 @@ void RenderbufferGLTest::setStorageMultisample() {
 }
 #endif
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::RenderbufferGLTest)

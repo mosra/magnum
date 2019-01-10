@@ -36,7 +36,7 @@ namespace std {
     template<> struct less<Magnum::Math::Vector2<int>>: Magnum::Math::Implementation::StrictWeakOrdering<Magnum::Math::Vector2<int>> {};
 }
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math { namespace Test { namespace {
 
 struct StrictWeakOrderingTest: Corrade::TestSuite::Tester {
     explicit StrictWeakOrderingTest();
@@ -73,18 +73,16 @@ void StrictWeakOrderingTest::base() {
     CORRADE_VERIFY(!of('z', 'h'));
 }
 
-namespace {
-    template<class> struct Compare;
-    template<> struct Compare<Implementation::StrictWeakOrdering<Vector2i>> {
-        static const char* name() { return "Implementation::StrictWeakOrdering<Vector2i>"; }
-    };
-    template<> struct Compare<StrictWeakOrdering> {
-        static const char* name() { return "StrictWeakOrdering"; }
-    };
-    template<> struct Compare<std::less<Vector2i>> {
-        static const char* name() { return "std::less<Vector2i>"; }
-    };
-}
+template<class> struct Compare;
+template<> struct Compare<Implementation::StrictWeakOrdering<Vector2i>> {
+    static const char* name() { return "Implementation::StrictWeakOrdering<Vector2i>"; }
+};
+template<> struct Compare<StrictWeakOrdering> {
+    static const char* name() { return "StrictWeakOrdering"; }
+};
+template<> struct Compare<std::less<Vector2i>> {
+    static const char* name() { return "std::less<Vector2i>"; }
+};
 
 template<class Set> void StrictWeakOrderingTest::set() {
     setTestCaseName(Corrade::Utility::formatString("set<{}>", Compare<typename Set::key_compare>::name()));
@@ -117,6 +115,6 @@ template<class Map> void StrictWeakOrderingTest::map() {
     CORRADE_COMPARE(m.begin()->second, 99);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::StrictWeakOrderingTest)

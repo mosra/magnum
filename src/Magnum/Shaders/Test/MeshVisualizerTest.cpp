@@ -28,7 +28,7 @@
 
 #include "Magnum/Shaders/MeshVisualizer.h"
 
-namespace Magnum { namespace Shaders { namespace Test {
+namespace Magnum { namespace Shaders { namespace Test { namespace {
 
 struct MeshVisualizerTest: TestSuite::Tester {
     explicit MeshVisualizerTest();
@@ -80,6 +80,6 @@ void MeshVisualizerTest::debugFlags() {
     #endif
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shaders::Test::MeshVisualizerTest)

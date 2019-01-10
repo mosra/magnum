@@ -31,7 +31,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace Audio { namespace Test {
+namespace Magnum { namespace Audio { namespace Test { namespace {
 
 struct AbstractImporterTest: TestSuite::Tester {
     explicit AbstractImporterTest();
@@ -71,6 +71,6 @@ void AbstractImporterTest::openFile() {
     CORRADE_VERIFY(importer.isOpened());
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Audio::Test::AbstractImporterTest)

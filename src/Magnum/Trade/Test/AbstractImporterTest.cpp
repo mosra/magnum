@@ -43,7 +43,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 class AbstractImporterTest: public TestSuite::Tester {
     public:
@@ -927,9 +927,7 @@ void AbstractImporterTest::defaultSceneNoFile() {
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::defaultScene(): no file opened\n");
 }
 
-namespace {
-    int state;
-}
+int state;
 
 void AbstractImporterTest::scene() {
     class Importer: public Trade::AbstractImporter {
@@ -3279,6 +3277,6 @@ void AbstractImporterTest::debugFileCallbackPolicy() {
     CORRADE_COMPARE(out.str(), "Trade::ImporterFileCallbackPolicy::Close Trade::ImporterFileCallbackPolicy(0xf0)\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::AbstractImporterTest)

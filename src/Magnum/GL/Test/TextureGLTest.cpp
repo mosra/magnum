@@ -41,7 +41,7 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct TextureGLTest: OpenGLTester {
     explicit TextureGLTest();
@@ -234,202 +234,200 @@ struct TextureGLTest: OpenGLTester {
     void srgbAlphaStorage();
 };
 
-namespace {
-    struct GenericSampler {
-        typedef Magnum::SamplerFilter Filter;
-        typedef Magnum::SamplerMipmap Mipmap;
-        typedef Magnum::SamplerWrapping Wrapping;
-    };
-    struct GLSampler {
-        typedef GL::SamplerFilter Filter;
-        typedef GL::SamplerMipmap Mipmap;
-        typedef GL::SamplerWrapping Wrapping;
-    };
+struct GenericSampler {
+    typedef Magnum::SamplerFilter Filter;
+    typedef Magnum::SamplerMipmap Mipmap;
+    typedef Magnum::SamplerWrapping Wrapping;
+};
+struct GLSampler {
+    typedef GL::SamplerFilter Filter;
+    typedef GL::SamplerMipmap Mipmap;
+    typedef GL::SamplerWrapping Wrapping;
+};
 
-    #ifndef MAGNUM_TARGET_GLES
-    constexpr UnsignedByte Data1D[]{
-        0, 0, 0, 0,
-        0x00, 0x01, 0x02, 0x03,
-        0x04, 0x05, 0x06, 0x07
-    };
+#ifndef MAGNUM_TARGET_GLES
+constexpr UnsignedByte Data1D[]{
+    0, 0, 0, 0,
+    0x00, 0x01, 0x02, 0x03,
+    0x04, 0x05, 0x06, 0x07
+};
 
-    enum: std::size_t { PixelStorage1DDataCount = 2 };
+enum: std::size_t { PixelStorage1DDataCount = 2 };
 
-    const struct {
-        const char* name;
-        Containers::ArrayView<const UnsignedByte> data;
-        PixelStorage storage;
-        Containers::ArrayView<const UnsignedByte> dataSparse;
-        std::size_t offset;
-    } PixelStorage1DData[PixelStorage1DDataCount]{
-        {"default pixel storage",
-            Containers::arrayView(Data1D).suffix(4), {},
-            Containers::arrayView(Data1D).suffix(4), 0},
-        {"skip X",
-            Containers::arrayView(Data1D).suffix(4), PixelStorage{}.setSkip({1, 0, 0}),
-            Containers::arrayView(Data1D), 4}};
+const struct {
+    const char* name;
+    Containers::ArrayView<const UnsignedByte> data;
+    PixelStorage storage;
+    Containers::ArrayView<const UnsignedByte> dataSparse;
+    std::size_t offset;
+} PixelStorage1DData[PixelStorage1DDataCount]{
+    {"default pixel storage",
+        Containers::arrayView(Data1D).suffix(4), {},
+        Containers::arrayView(Data1D).suffix(4), 0},
+    {"skip X",
+        Containers::arrayView(Data1D).suffix(4), PixelStorage{}.setSkip({1, 0, 0}),
+        Containers::arrayView(Data1D), 4}};
+#endif
+
+constexpr UnsignedByte Data2D[]{
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+};
+
+enum: std::size_t { PixelStorage2DDataCount =
+    #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
+    2
+    #else
+    1
     #endif
+};
 
-    constexpr UnsignedByte Data2D[]{
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
-    };
+const struct {
+    const char* name;
+    Containers::ArrayView<const UnsignedByte> data;
+    PixelStorage storage;
+    Containers::ArrayView<const UnsignedByte> dataSparse;
+    std::size_t offset;
+} PixelStorage2DData[PixelStorage2DDataCount]{
+    {"default pixel storage",
+        Containers::arrayView(Data2D).suffix(8), {},
+        Containers::arrayView(Data2D).suffix(8), 0},
+    #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
+    {"skip Y",
+        Containers::arrayView(Data2D).suffix(8), PixelStorage{}.setSkip({0, 1, 0}),
+        Containers::arrayView(Data2D), 8}
+    #endif
+};
 
-    enum: std::size_t { PixelStorage2DDataCount =
-        #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
-        2
-        #else
-        1
-        #endif
-    };
+/* Just 4x8 0x00 - 0x3f compressed using RGBA DXT3 by the driver */
+constexpr UnsignedByte CompressedData2D[]{
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+      0,  17, 17,  34,  34,  51,  51,  67,
+    232,  57,  0,   0, 213, 255, 170,   2
+};
 
-    const struct {
-        const char* name;
-        Containers::ArrayView<const UnsignedByte> data;
-        PixelStorage storage;
-        Containers::ArrayView<const UnsignedByte> dataSparse;
-        std::size_t offset;
-    } PixelStorage2DData[PixelStorage2DDataCount]{
-        {"default pixel storage",
-            Containers::arrayView(Data2D).suffix(8), {},
-            Containers::arrayView(Data2D).suffix(8), 0},
-        #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
-        {"skip Y",
-            Containers::arrayView(Data2D).suffix(8), PixelStorage{}.setSkip({0, 1, 0}),
-            Containers::arrayView(Data2D), 8}
-        #endif
-    };
+enum: std::size_t { CompressedPixelStorage2DDataCount =
+    #ifndef MAGNUM_TARGET_GLES
+    2
+    #else
+    1
+    #endif
+};
 
-    /* Just 4x8 0x00 - 0x3f compressed using RGBA DXT3 by the driver */
-    constexpr UnsignedByte CompressedData2D[]{
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-          0,  17, 17,  34,  34,  51,  51,  67,
-        232,  57,  0,   0, 213, 255, 170,   2
-    };
-
-    enum: std::size_t { CompressedPixelStorage2DDataCount =
+const struct {
+    const char* name;
+    Containers::ArrayView<const UnsignedByte> data;
+    #ifndef MAGNUM_TARGET_GLES
+    CompressedPixelStorage storage;
+    #endif
+    Containers::ArrayView<const UnsignedByte> dataSparse;
+    std::size_t offset;
+} CompressedPixelStorage2DData[CompressedPixelStorage2DDataCount]{
+    {"default pixel storage",
+        Containers::arrayView(CompressedData2D).suffix(16),
         #ifndef MAGNUM_TARGET_GLES
-        2
-        #else
-        1
+        {},
         #endif
-    };
+        Containers::arrayView(CompressedData2D).suffix(16), 0},
+    #ifndef MAGNUM_TARGET_GLES
+    {"skip Y",
+        Containers::arrayView(CompressedData2D).suffix(16),
+        CompressedPixelStorage{}
+            .setCompressedBlockSize({4, 4, 1})
+            .setCompressedBlockDataSize(16)
+            .setSkip({0, 4, 0}),
+        Containers::arrayView(CompressedData2D), 16}
+    #endif
+};
 
-    const struct {
-        const char* name;
-        Containers::ArrayView<const UnsignedByte> data;
+constexpr UnsignedByte Data3D[]{
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0,
+
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
+
+    0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
+    0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f };
+
+enum: std::size_t { PixelStorage3DDataCount =
+    #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
+    2
+    #else
+    1
+    #endif
+};
+
+const struct {
+    const char* name;
+    Containers::ArrayView<const UnsignedByte> data;
+    PixelStorage storage;
+    Containers::ArrayView<const UnsignedByte> dataSparse;
+    std::size_t offset;
+} PixelStorage3DData[PixelStorage3DDataCount]{
+    {"default pixel storage",
+        Containers::arrayView(Data3D).suffix(16), {},
+        Containers::arrayView(Data3D).suffix(16), 0},
+    #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
+    {"skip Z",
+        Containers::arrayView(Data3D).suffix(16), PixelStorage{}.setSkip({0, 0, 1}),
+        Containers::arrayView(Data3D), 16}
+    #endif
+};
+
+/* Just 4x4x8 0x00 - 0xff compressed using RGBA BPTC Unorm by the driver */
+constexpr UnsignedByte CompressedData3D[]{
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+    144, 224, 128,   3,  80,   0, 129, 170,
+     84, 253,  73,  36, 109, 100, 107, 255,
+    144, 232, 161, 135,  94, 244, 129, 170,
+     84, 253,  65,  34, 109, 100, 107, 255,
+
+    144, 240, 194,  11,  47, 248, 130, 170,
+     84, 253,  65,  34, 109, 100, 107, 251,
+    144, 247, 223, 143,  63, 252, 131, 170,
+     84, 253,  73,  34, 109, 100,  91, 251
+};
+
+enum: std::size_t { CompressedPixelStorage3DDataCount =
+    #ifndef MAGNUM_TARGET_GLES
+    2
+    #else
+    1
+    #endif
+};
+
+const struct {
+    const char* name;
+    Containers::ArrayView<const UnsignedByte> data;
+    #ifndef MAGNUM_TARGET_GLES
+    CompressedPixelStorage storage;
+    #endif
+    Containers::ArrayView<const UnsignedByte> dataSparse;
+    std::size_t offset;
+} CompressedPixelStorage3DData[CompressedPixelStorage3DDataCount]{
+    {"default pixel storage",
+        Containers::arrayView(CompressedData3D).suffix(16*4),
         #ifndef MAGNUM_TARGET_GLES
-        CompressedPixelStorage storage;
+        {},
         #endif
-        Containers::ArrayView<const UnsignedByte> dataSparse;
-        std::size_t offset;
-    } CompressedPixelStorage2DData[CompressedPixelStorage2DDataCount]{
-        {"default pixel storage",
-            Containers::arrayView(CompressedData2D).suffix(16),
-            #ifndef MAGNUM_TARGET_GLES
-            {},
-            #endif
-            Containers::arrayView(CompressedData2D).suffix(16), 0},
-        #ifndef MAGNUM_TARGET_GLES
-        {"skip Y",
-            Containers::arrayView(CompressedData2D).suffix(16),
-            CompressedPixelStorage{}
-                .setCompressedBlockSize({4, 4, 1})
-                .setCompressedBlockDataSize(16)
-                .setSkip({0, 4, 0}),
-            Containers::arrayView(CompressedData2D), 16}
-        #endif
-    };
-
-    constexpr UnsignedByte Data3D[]{
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0,
-
-        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f,
-
-        0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17,
-        0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f };
-
-    enum: std::size_t { PixelStorage3DDataCount =
-        #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
-        2
-        #else
-        1
-        #endif
-    };
-
-    const struct {
-        const char* name;
-        Containers::ArrayView<const UnsignedByte> data;
-        PixelStorage storage;
-        Containers::ArrayView<const UnsignedByte> dataSparse;
-        std::size_t offset;
-    } PixelStorage3DData[PixelStorage3DDataCount]{
-        {"default pixel storage",
-            Containers::arrayView(Data3D).suffix(16), {},
-            Containers::arrayView(Data3D).suffix(16), 0},
-        #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
-        {"skip Z",
-            Containers::arrayView(Data3D).suffix(16), PixelStorage{}.setSkip({0, 0, 1}),
-            Containers::arrayView(Data3D), 16}
-        #endif
-    };
-
-    /* Just 4x4x8 0x00 - 0xff compressed using RGBA BPTC Unorm by the driver */
-    constexpr UnsignedByte CompressedData3D[]{
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-
-        144, 224, 128,   3,  80,   0, 129, 170,
-         84, 253,  73,  36, 109, 100, 107, 255,
-        144, 232, 161, 135,  94, 244, 129, 170,
-         84, 253,  65,  34, 109, 100, 107, 255,
-
-        144, 240, 194,  11,  47, 248, 130, 170,
-         84, 253,  65,  34, 109, 100, 107, 251,
-        144, 247, 223, 143,  63, 252, 131, 170,
-         84, 253,  73,  34, 109, 100,  91, 251
-    };
-
-    enum: std::size_t { CompressedPixelStorage3DDataCount =
-        #ifndef MAGNUM_TARGET_GLES
-        2
-        #else
-        1
-        #endif
-    };
-
-    const struct {
-        const char* name;
-        Containers::ArrayView<const UnsignedByte> data;
-        #ifndef MAGNUM_TARGET_GLES
-        CompressedPixelStorage storage;
-        #endif
-        Containers::ArrayView<const UnsignedByte> dataSparse;
-        std::size_t offset;
-    } CompressedPixelStorage3DData[CompressedPixelStorage3DDataCount]{
-        {"default pixel storage",
-            Containers::arrayView(CompressedData3D).suffix(16*4),
-            #ifndef MAGNUM_TARGET_GLES
-            {},
-            #endif
-            Containers::arrayView(CompressedData3D).suffix(16*4), 0},
-        #ifndef MAGNUM_TARGET_GLES
-        {"skip Z",
-            Containers::arrayView(CompressedData3D).suffix(16*4),
-            CompressedPixelStorage{}
-                .setCompressedBlockSize({4, 4, 4})
-                .setCompressedBlockDataSize(16*4)
-                .setSkip({0, 0, 4}),
-            Containers::arrayView(CompressedData3D), 16*4}
-        #endif
-    };
-}
+        Containers::arrayView(CompressedData3D).suffix(16*4), 0},
+    #ifndef MAGNUM_TARGET_GLES
+    {"skip Z",
+        Containers::arrayView(CompressedData3D).suffix(16*4),
+        CompressedPixelStorage{}
+            .setCompressedBlockSize({4, 4, 4})
+            .setCompressedBlockDataSize(16*4)
+            .setSkip({0, 0, 4}),
+        Containers::arrayView(CompressedData3D), 16*4}
+    #endif
+};
 
 TextureGLTest::TextureGLTest() {
     addTests({
@@ -1302,10 +1300,6 @@ void TextureGLTest::storage3D() {
 }
 #endif
 
-namespace {
-
-}
-
 #ifndef MAGNUM_TARGET_GLES
 void TextureGLTest::image1D() {
     setTestCaseDescription(PixelStorage1DData[testCaseInstanceId()].name);
@@ -1353,12 +1347,10 @@ void TextureGLTest::image1DBuffer() {
         TestSuite::Compare::Container);
 }
 
-namespace {
-    constexpr UnsignedByte Zero1D[4*4] = {};
-    constexpr UnsignedByte SubData1DComplete[]{
-        0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0
-    };
-}
+constexpr UnsignedByte Zero1D[4*4] = {};
+constexpr UnsignedByte SubData1DComplete[]{
+    0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0
+};
 
 void TextureGLTest::subImage1D() {
     setTestCaseDescription(PixelStorage1DData[testCaseInstanceId()].name);
@@ -1552,18 +1544,16 @@ void TextureGLTest::image2DBuffer() {
 }
 #endif
 
-namespace {
-    constexpr UnsignedByte Zero2D[4*4*4]{};
+constexpr UnsignedByte Zero2D[4*4*4]{};
 
-    #ifndef MAGNUM_TARGET_GLES
-    constexpr UnsignedByte SubData2DComplete[]{
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
-    };
-    #endif
-}
+#ifndef MAGNUM_TARGET_GLES
+constexpr UnsignedByte SubData2DComplete[]{
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
+    0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
+};
+#endif
 
 void TextureGLTest::subImage2D() {
     setTestCaseDescription(PixelStorage2DData[testCaseInstanceId()].name);
@@ -1765,22 +1755,20 @@ void TextureGLTest::compressedImage2DBuffer() {
 }
 #endif
 
-namespace {
-    /* Just 12x4 zeros compressed using RGBA DXT3 by the driver */
-    constexpr UnsignedByte CompressedZero2D[3*16]{};
+/* Just 12x4 zeros compressed using RGBA DXT3 by the driver */
+constexpr UnsignedByte CompressedZero2D[3*16]{};
 
-    #ifndef MAGNUM_TARGET_GLES
-    /* Combination of CompressedZero2D and CompressedData2D */
-    constexpr UnsignedByte CompressedSubData2DComplete[]{
-          0,   0,   0,   0,   0,   0,   0,   0,
-          0,   0,   0,   0,   0,   0,   0,   0,
-          0,  17,  17,  34,  34,  51,  51,  67,
-        232,  57,   0,   0, 213, 255, 170,   2,
-          0,   0,   0,   0,   0,   0,   0,   0,
-          0,   0,   0,   0,   0,   0,   0,   0
-    };
-    #endif
-}
+#ifndef MAGNUM_TARGET_GLES
+/* Combination of CompressedZero2D and CompressedData2D */
+constexpr UnsignedByte CompressedSubData2DComplete[]{
+      0,   0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   0,   0,
+      0,  17,  17,  34,  34,  51,  51,  67,
+    232,  57,   0,   0, 213, 255, 170,   2,
+      0,   0,   0,   0,   0,   0,   0,   0,
+      0,   0,   0,   0,   0,   0,   0,   0
+};
+#endif
 
 void TextureGLTest::compressedSubImage2D() {
     setTestCaseDescription(CompressedPixelStorage2DData[testCaseInstanceId()].name);
@@ -1990,33 +1978,31 @@ void TextureGLTest::image3DBuffer() {
 }
 #endif
 
-namespace {
-    constexpr UnsignedByte Zero3D[4*4*4*4]{};
+constexpr UnsignedByte Zero3D[4*4*4*4]{};
 
-    #ifndef MAGNUM_TARGET_GLES
-    constexpr UnsignedByte SubData3DComplete[]{
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+#ifndef MAGNUM_TARGET_GLES
+constexpr UnsignedByte SubData3DComplete[]{
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
 
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
+    0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
 
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16, 0x17, 0, 0, 0, 0,
+    0, 0, 0, 0, 0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
 
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
-    };
-    #endif
-}
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
+};
+#endif
 
 void TextureGLTest::subImage3D() {
     setTestCaseDescription(PixelStorage3DData[testCaseInstanceId()].name);
@@ -2205,51 +2191,49 @@ void TextureGLTest::compressedImage3DBuffer() {
 }
 #endif
 
-namespace {
-    #ifndef MAGNUM_TARGET_GLES
-    /* Just 12x4x4 zeros compressed using RGBA BPTC Unorm by the driver */
-    constexpr UnsignedByte CompressedZero3D[3*4*16]{
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+#ifndef MAGNUM_TARGET_GLES
+/* Just 12x4x4 zeros compressed using RGBA BPTC Unorm by the driver */
+constexpr UnsignedByte CompressedZero3D[3*4*16]{
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-    };
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
 
-    /* Combination of CompressedZero3D and CompressedData3D. Note that, in
-       contrast to array textures, the data are ordered in "cubes" instead of
-       slices. */
-    constexpr UnsignedByte CompressedSubData3DComplete[]{
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+/* Combination of CompressedZero3D and CompressedData3D. Note that, in
+   contrast to array textures, the data are ordered in "cubes" instead of
+   slices. */
+constexpr UnsignedByte CompressedSubData3DComplete[]{
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 
-        144, 224, 128,   3,  80,   0, 129, 170,
-         84, 253,  73,  36, 109, 100, 107, 255,
-        144, 232, 161, 135,  94, 244, 129, 170,
-         84, 253,  65,  34, 109, 100, 107, 255,
-        144, 240, 194,  11,  47, 248, 130, 170,
-         84, 253,  65,  34, 109, 100, 107, 251,
-        144, 247, 223, 143,  63, 252, 131, 170,
-         84, 253,  73,  34, 109, 100,  91, 251,
+    144, 224, 128,   3,  80,   0, 129, 170,
+     84, 253,  73,  36, 109, 100, 107, 255,
+    144, 232, 161, 135,  94, 244, 129, 170,
+     84, 253,  65,  34, 109, 100, 107, 255,
+    144, 240, 194,  11,  47, 248, 130, 170,
+     84, 253,  65,  34, 109, 100, 107, 251,
+    144, 247, 223, 143,  63, 252, 131, 170,
+     84, 253,  73,  34, 109, 100,  91, 251,
 
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
-    };
-    #endif
-}
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+};
+#endif
 
 void TextureGLTest::compressedSubImage3D() {
     setTestCaseDescription(CompressedPixelStorage3DData[testCaseInstanceId()].name);
@@ -2657,6 +2641,6 @@ void TextureGLTest::srgbAlphaStorage() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::TextureGLTest)

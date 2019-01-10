@@ -33,7 +33,7 @@
 #include "Magnum/GL/ImageFormat.h"
 #include "Magnum/GL/OpenGLTester.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct BufferTextureGLTest: OpenGLTester {
     explicit BufferTextureGLTest();
@@ -215,6 +215,6 @@ void BufferTextureGLTest::setBufferOffset() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::BufferTextureGLTest)

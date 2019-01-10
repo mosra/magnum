@@ -31,7 +31,7 @@
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shapes/Point.h"
 
-namespace Magnum { namespace Shapes { namespace Test {
+namespace Magnum { namespace Shapes { namespace Test { namespace {
 
 struct PointTest: TestSuite::Tester {
     explicit PointTest();
@@ -51,6 +51,6 @@ void PointTest::transformed() {
 }
 CORRADE_IGNORE_DEPRECATED_POP
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shapes::Test::PointTest)

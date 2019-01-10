@@ -29,7 +29,7 @@
 
 #include "Magnum/Audio/Context.h"
 
-namespace Magnum { namespace Audio { namespace Test {
+namespace Magnum { namespace Audio { namespace Test { namespace {
 
 struct ContextTest: TestSuite::Tester {
     explicit ContextTest();
@@ -94,6 +94,6 @@ void ContextTest::debugHrtfStatus() {
     CORRADE_COMPARE(out.str(), "Audio::Context::HrtfStatus::Denied Audio::Context::HrtfStatus(0xdead)\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Audio::Test::ContextTest)

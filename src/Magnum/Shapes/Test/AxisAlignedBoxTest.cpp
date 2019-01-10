@@ -32,7 +32,7 @@
 
 #include "ShapeTestBase.h"
 
-namespace Magnum { namespace Shapes { namespace Test {
+namespace Magnum { namespace Shapes { namespace Test { namespace {
 
 struct AxisAlignedBoxTest: TestSuite::Tester {
     explicit AxisAlignedBoxTest();
@@ -64,6 +64,6 @@ void AxisAlignedBoxTest::collisionPoint() {
 }
 CORRADE_IGNORE_DEPRECATED_POP
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shapes::Test::AxisAlignedBoxTest)

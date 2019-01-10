@@ -26,7 +26,7 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Shaders/Vector.h"
 
-namespace Magnum { namespace Shaders { namespace Test {
+namespace Magnum { namespace Shaders { namespace Test { namespace {
 
 struct VectorGLTest: GL::OpenGLTester {
     explicit VectorGLTest();
@@ -102,6 +102,6 @@ void VectorGLTest::constructMove3D() {
     CORRADE_VERIFY(!b.id());
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shaders::Test::VectorGLTest)

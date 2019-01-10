@@ -27,7 +27,7 @@
 
 #include "Magnum/DebugTools/Implementation/CylinderRendererTransformation.h"
 
-namespace Magnum { namespace DebugTools { namespace Test {
+namespace Magnum { namespace DebugTools { namespace Test { namespace {
 
 struct CylinderRendererTest: TestSuite::Tester {
     explicit CylinderRendererTest();
@@ -122,6 +122,6 @@ void CylinderRendererTest::common3D() {
 }
 CORRADE_IGNORE_DEPRECATED_POP
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::DebugTools::Test::CylinderRendererTest)

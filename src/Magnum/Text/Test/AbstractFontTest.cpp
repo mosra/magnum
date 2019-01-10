@@ -32,7 +32,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace Text { namespace Test {
+namespace Magnum { namespace Text { namespace Test { namespace {
 
 struct AbstractFontTest: TestSuite::Tester {
     explicit AbstractFontTest();
@@ -45,8 +45,6 @@ AbstractFontTest::AbstractFontTest() {
     addTests({&AbstractFontTest::openSingleData,
               &AbstractFontTest::openFile});
 }
-
-namespace {
 
 class SingleDataFont: public Text::AbstractFont {
     public:
@@ -72,8 +70,6 @@ class SingleDataFont: public Text::AbstractFont {
         bool opened;
 };
 
-}
-
 void AbstractFontTest::openSingleData() {
     /* doOpenData() should call doOpenSingleData() */
     SingleDataFont font;
@@ -91,6 +87,6 @@ void AbstractFontTest::openFile() {
     CORRADE_VERIFY(font.isOpened());
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Text::Test::AbstractFontTest)

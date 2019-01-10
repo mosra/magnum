@@ -29,7 +29,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Algorithms/KahanSum.h"
 
-namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
+namespace Magnum { namespace Math { namespace Algorithms { namespace Test { namespace {
 
 struct KahanSumTest: TestSuite::Tester {
     explicit KahanSumTest();
@@ -51,8 +51,6 @@ KahanSumTest::KahanSumTest() {
     addBenchmarks({&KahanSumTest::accumulate100k,
                    &KahanSumTest::kahan100k}, 50);
 }
-
-namespace {
 
 /* Custom iterator class to avoid allocating half a gigabyte for hundred
    million values */
@@ -83,8 +81,6 @@ template<class T> struct Iterator
         T _value{};
         std::size_t _i{};
 };
-
-}
 
 void KahanSumTest::floats() {
     Iterator<Float> begin{1.0f};
@@ -165,6 +161,6 @@ void KahanSumTest::kahan100k() {
     CORRADE_COMPARE(Float(a), 100000.0f);
 }
 
-}}}}
+}}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Algorithms::Test::KahanSumTest)

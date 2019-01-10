@@ -30,7 +30,7 @@
 #include "Magnum/Primitives/Grid.h"
 #include "Magnum/Trade/MeshData3D.h"
 
-namespace Magnum { namespace Primitives { namespace Test {
+namespace Magnum { namespace Primitives { namespace Test { namespace {
 
 struct GridTest: TestSuite::Tester {
     explicit GridTest();
@@ -372,6 +372,6 @@ void GridTest::wireframe3D() {
     }), TestSuite::Compare::Container);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Primitives::Test::GridTest)

@@ -29,7 +29,7 @@
 #include "Magnum/AbstractResourceLoader.h"
 #include "Magnum/ResourceManager.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace Test { namespace {
 
 struct ResourceManagerTest: TestSuite::Tester {
     explicit ResourceManagerTest();
@@ -339,6 +339,6 @@ void ResourceManagerTest::debugResourceState() {
     CORRADE_COMPARE(out.str(), "ResourceState::Loading ResourceState(0xbe)\n");
 }
 
-}}
+}}}
 
 CORRADE_TEST_MAIN(Magnum::Test::ResourceManagerTest)

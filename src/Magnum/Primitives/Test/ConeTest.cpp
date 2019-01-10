@@ -30,7 +30,7 @@
 #include "Magnum/Primitives/Cone.h"
 #include "Magnum/Trade/MeshData3D.h"
 
-namespace Magnum { namespace Primitives { namespace Test {
+namespace Magnum { namespace Primitives { namespace Test { namespace {
 
 struct ConeTest: TestSuite::Tester {
     explicit ConeTest();
@@ -195,6 +195,6 @@ void ConeTest::wireframe() {
     }), TestSuite::Compare::Container);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Primitives::Test::ConeTest)

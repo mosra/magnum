@@ -29,7 +29,7 @@
 
 #include "Magnum/Mesh.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace Test { namespace {
 
 struct MeshTest: TestSuite::Tester {
     explicit MeshTest();
@@ -93,6 +93,6 @@ void MeshTest::configurationIndexType() {
     CORRADE_COMPARE(c.value<MeshIndexType>("invalid"), MeshIndexType::UnsignedInt);
 }
 
-}}
+}}}
 
 CORRADE_TEST_MAIN(Magnum::Test::MeshTest)

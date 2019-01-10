@@ -29,7 +29,7 @@
 #include "Magnum/SceneGraph/RigidMatrixTransformation3D.h"
 #include "Magnum/SceneGraph/Scene.h"
 
-namespace Magnum { namespace SceneGraph { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 
 typedef Object<RigidMatrixTransformation3D> Object3D;
 typedef Scene<RigidMatrixTransformation3D> Scene3D;
@@ -211,6 +211,6 @@ void RigidMatrixTransformation3DTest::normalizeRotation() {
     CORRADE_COMPARE(o.transformationMatrix(), Matrix4::rotationX(Deg(17.0f)));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::RigidMatrixTransformation3DTest)

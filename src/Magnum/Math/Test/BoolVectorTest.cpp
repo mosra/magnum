@@ -49,7 +49,7 @@ template<> struct BoolVectorConverter<3, BVec3> {
 
 }
 
-namespace Test {
+namespace Test { namespace {
 
 struct BoolVectorTest: Corrade::TestSuite::Tester {
     explicit BoolVectorTest();
@@ -335,6 +335,6 @@ void BoolVectorTest::debug() {
     CORRADE_COMPARE(o.str(), "BoolVector(10100100 11001010 010)\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::BoolVectorTest)

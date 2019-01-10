@@ -26,7 +26,7 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Shaders/VertexColor.h"
 
-namespace Magnum { namespace Shaders { namespace Test {
+namespace Magnum { namespace Shaders { namespace Test { namespace {
 
 struct VertexColorGLTest: GL::OpenGLTester {
     explicit VertexColorGLTest();
@@ -102,6 +102,6 @@ void VertexColorGLTest::constructMove3D() {
     CORRADE_VERIFY(!b.id());
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shaders::Test::VertexColorGLTest)

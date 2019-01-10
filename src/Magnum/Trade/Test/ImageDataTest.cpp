@@ -29,7 +29,7 @@
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/ImageData.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct ImageDataTest: TestSuite::Tester {
     explicit ImageDataTest();
@@ -95,8 +95,6 @@ ImageDataTest::ImageDataTest() {
               &ImageDataTest::releaseCompressed});
 }
 
-namespace {
-
 namespace GL {
     enum class PixelFormat { RGB = 666 };
     enum class PixelType { UnsignedShort = 1337 };
@@ -123,8 +121,6 @@ namespace Vk {
     }
 
     enum class CompressedPixelFormat { Bc1SRGBAlpha = 42 };
-}
-
 }
 
 void ImageDataTest::constructGeneric() {
@@ -582,6 +578,6 @@ void ImageDataTest::releaseCompressed() {
     CORRADE_COMPARE(a.size(), Vector2i());
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::ImageDataTest)

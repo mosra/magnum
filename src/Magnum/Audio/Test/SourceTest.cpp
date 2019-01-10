@@ -28,7 +28,7 @@
 
 #include "Magnum/Audio/Source.h"
 
-namespace Magnum { namespace Audio { namespace Test {
+namespace Magnum { namespace Audio { namespace Test { namespace {
 
 struct SourceTest: TestSuite::Tester {
     explicit SourceTest();
@@ -46,6 +46,6 @@ void SourceTest::debugState() {
     CORRADE_COMPARE(out.str(), "Audio::Source::State::Playing Audio::Source::State(0xdead)\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Audio::Test::SourceTest)

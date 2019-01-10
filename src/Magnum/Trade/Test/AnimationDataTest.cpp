@@ -29,7 +29,7 @@
 #include "Magnum/Math/Quaternion.h"
 #include "Magnum/Trade/AnimationData.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct AnimationDataTest: TestSuite::Tester {
     explicit AnimationDataTest();
@@ -396,6 +396,6 @@ void AnimationDataTest::debugAnimationTrackTargetType() {
     CORRADE_COMPARE(out.str(), "Trade::AnimationTrackTargetType::Rotation3D Trade::AnimationTrackTargetType::Custom(135) Trade::AnimationTrackTargetType(0x42)\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::AnimationDataTest)

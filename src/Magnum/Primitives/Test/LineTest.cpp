@@ -31,7 +31,7 @@
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
 
-namespace Magnum { namespace Primitives { namespace Test {
+namespace Magnum { namespace Primitives { namespace Test { namespace {
 
 struct LineTest: TestSuite::Tester {
     explicit LineTest();
@@ -61,6 +61,6 @@ void LineTest::threeDimensions() {
     CORRADE_COMPARE(line.positions(0).size(), 2);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Primitives::Test::LineTest)

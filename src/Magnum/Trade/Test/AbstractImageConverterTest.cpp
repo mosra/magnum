@@ -37,7 +37,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 class AbstractImageConverterTest: public TestSuite::Tester {
     public:
@@ -308,8 +308,6 @@ void AbstractImageConverterTest::exportCompressedToDataNotImplemented() {
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::exportToData(): feature advertised but not implemented\n");
 }
 
-namespace {
-
 class ImageDataExporter: public Trade::AbstractImageConverter {
     private:
         Features doFeatures() const override { return Feature::ConvertData|Feature::ConvertCompressedData; }
@@ -322,8 +320,6 @@ class ImageDataExporter: public Trade::AbstractImageConverter {
             return Containers::Array<char>{Containers::InPlaceInit, {'C'}};
         };
 };
-
-}
 
 void AbstractImageConverterTest::exportImageDataToData() {
     ImageDataExporter exporter;
@@ -541,6 +537,6 @@ void AbstractImageConverterTest::debugFeatures() {
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::Feature::ConvertData|Trade::AbstractImageConverter::Feature::ConvertCompressedFile Trade::AbstractImageConverter::Features{}\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::AbstractImageConverterTest)

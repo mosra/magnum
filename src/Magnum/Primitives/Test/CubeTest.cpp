@@ -30,7 +30,7 @@
 #include "Magnum/Primitives/Cube.h"
 #include "Magnum/Trade/MeshData3D.h"
 
-namespace Magnum { namespace Primitives { namespace Test {
+namespace Magnum { namespace Primitives { namespace Test { namespace {
 
 struct CubeTest: TestSuite::Tester {
     explicit CubeTest();
@@ -72,6 +72,6 @@ void CubeTest::wireframe() {
     CORRADE_COMPARE(cube.positions(0).size(), 8);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Primitives::Test::CubeTest)

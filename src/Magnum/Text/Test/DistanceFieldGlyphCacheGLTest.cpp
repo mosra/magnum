@@ -26,7 +26,7 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Text/DistanceFieldGlyphCache.h"
 
-namespace Magnum { namespace Text { namespace Test {
+namespace Magnum { namespace Text { namespace Test { namespace {
 
 struct DistanceFieldGlyphCacheGLTest: GL::OpenGLTester {
     explicit DistanceFieldGlyphCacheGLTest();
@@ -47,6 +47,6 @@ void DistanceFieldGlyphCacheGLTest::initialize() {
     #endif
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Text::Test::DistanceFieldGlyphCacheGLTest)

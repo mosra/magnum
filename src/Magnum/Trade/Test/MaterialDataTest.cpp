@@ -28,7 +28,7 @@
 
 #include "Magnum/Trade/PhongMaterialData.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 class MaterialDataTest: public TestSuite::Tester {
     public:
@@ -345,6 +345,6 @@ void MaterialDataTest::debugPhongFlags() {
     CORRADE_COMPARE(out.str(), "Trade::PhongMaterialData::Flag::DiffuseTexture|Trade::PhongMaterialData::Flag::SpecularTexture Trade::PhongMaterialData::Flags{}\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::MaterialDataTest)

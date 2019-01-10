@@ -29,7 +29,7 @@
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace Test { namespace {
 
 struct ImageViewTest: TestSuite::Tester {
     explicit ImageViewTest();
@@ -83,8 +83,6 @@ ImageViewTest::ImageViewTest() {
               &ImageViewTest::setDataCompressedInvalidSize});
 }
 
-namespace {
-
 namespace GL {
     enum class PixelFormat { RGB = 666 };
     enum class PixelType { UnsignedShort = 1337 };
@@ -111,8 +109,6 @@ namespace Vk {
     }
 
     enum class CompressedPixelFormat { Bc1SRGBAlpha = 42 };
-}
-
 }
 
 void ImageViewTest::constructGeneric() {
@@ -584,6 +580,6 @@ void ImageViewTest::setDataCompressedInvalidSize() {
     }
 }
 
-}}
+}}}
 
 CORRADE_TEST_MAIN(Magnum::Test::ImageViewTest)

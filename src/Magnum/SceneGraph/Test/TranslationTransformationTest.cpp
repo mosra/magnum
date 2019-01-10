@@ -30,7 +30,7 @@
 #include "Magnum/SceneGraph/TranslationTransformation.h"
 #include "Magnum/SceneGraph/Scene.h"
 
-namespace Magnum { namespace SceneGraph { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 
 typedef Object<TranslationTransformation2D> Object2D;
 typedef Scene<TranslationTransformation2D> Scene2D;
@@ -139,6 +139,6 @@ void TranslationTransformationTest::integral() {
     CORRADE_COMPARE(o.transformationMatrix(), Matrix3::translation({3.0f, -7.0f}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::TranslationTransformationTest)

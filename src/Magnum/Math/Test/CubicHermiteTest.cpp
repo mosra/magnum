@@ -33,7 +33,7 @@
 #include "Magnum/Math/StrictWeakOrdering.h"
 
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math { namespace Test { namespace {
 
 struct CubicHermiteTest: Corrade::TestSuite::Tester {
     explicit CubicHermiteTest();
@@ -1181,6 +1181,6 @@ void CubicHermiteTest::debugQuaternion() {
     CORRADE_COMPARE(out.str(), "CubicHermite(Quaternion({2, 1.5, 0.3}, 1.1), Quaternion({3, 0.1, 2.3}, 0.7), Quaternion({-1, 0, 0.3}, 0.4))\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::CubicHermiteTest)

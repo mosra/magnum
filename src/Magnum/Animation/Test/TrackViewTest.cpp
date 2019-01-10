@@ -29,7 +29,7 @@
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Vector3.h"
 
-namespace Magnum { namespace Animation { namespace Test {
+namespace Magnum { namespace Animation { namespace Test { namespace {
 
 struct TrackViewTest: TestSuite::Tester {
     explicit TrackViewTest();
@@ -55,8 +55,6 @@ struct TrackViewTest: TestSuite::Tester {
     void atDifferentResultType();
     void atDifferentResultTypeStrict();
 };
-
-namespace {
 
 /* Reduced version from InterpolateTest, keep in sync with TrackTest */
 const struct {
@@ -92,8 +90,6 @@ const struct {
         Extrapolation::DefaultConstructed, Extrapolation::Extrapolated,
         6.0f, -1.5f, -1.5f, 2}
 };
-
-}
 
 TrackViewTest::TrackViewTest() {
     addTests({&TrackViewTest::constructEmpty,
@@ -204,9 +200,7 @@ void TrackViewTest::constructInterpolationDefaults() {
     CORRADE_COMPARE(a[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
 }
 
-namespace {
-    Vector3 customLerp(const Vector3&, const Vector3&, Float) { return {}; }
-}
+Vector3 customLerp(const Vector3&, const Vector3&, Float) { return {}; }
 
 void TrackViewTest::constructInterpolationInterpolator() {
     constexpr Float keys[]{1.0f, 5.0f};
@@ -381,13 +375,12 @@ void TrackViewTest::constructCopyStorage() {
     CORRADE_COMPARE(bv[1], (std::pair<Float, Vector3>{5.0f, {0.3f, 0.6f, 1.0f}}));
 }
 
-namespace {
-    const std::pair<Float, Float> Keyframes[]{
-        {0.0f, 3.0f},
-        {2.0f, 1.0f},
-        {4.0f, 2.5f},
-        {5.0f, 0.5f}};
-}
+const std::pair<Float, Float> Keyframes[]{
+    {0.0f, 3.0f},
+    {2.0f, 1.0f},
+    {4.0f, 2.5f},
+    {5.0f, 0.5f}
+};
 
 void TrackViewTest::at() {
     const auto& data = AtData[testCaseInstanceId()];
@@ -414,14 +407,12 @@ void TrackViewTest::atStrict() {
     CORRADE_COMPARE(hint, data.expectedHint);
 }
 
-namespace {
-    using namespace Math::Literals;
+using namespace Math::Literals;
 
-    const Half HalfValues[]{3.0_h, 1.0_h, 2.5_h, 0.5_h};
+const Half HalfValues[]{3.0_h, 1.0_h, 2.5_h, 0.5_h};
 
-    Float lerpHalf(const Half& a, const Half& b, Float t) {
-        return Math::lerp(Float(a), Float(b), t);
-    }
+Float lerpHalf(const Half& a, const Half& b, Float t) {
+    return Math::lerp(Float(a), Float(b), t);
 }
 
 void TrackViewTest::atDifferentResultType() {
@@ -445,6 +436,6 @@ void TrackViewTest::atDifferentResultTypeStrict() {
     CORRADE_COMPARE(hint, 2);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Animation::Test::TrackViewTest)

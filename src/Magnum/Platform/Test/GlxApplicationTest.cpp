@@ -25,13 +25,13 @@
 
 #include "Magnum/Platform/GlxApplication.h"
 
-namespace Magnum { namespace Platform { namespace Test {
+namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct GlxApplicationTest: Platform::Application {
     explicit GlxApplicationTest(const Arguments& arguments): Platform::Application{arguments} {}
     void drawEvent() override {}
 };
 
-}}}
+}}}}
 
 MAGNUM_APPLICATION_MAIN(Magnum::Platform::Test::GlxApplicationTest)

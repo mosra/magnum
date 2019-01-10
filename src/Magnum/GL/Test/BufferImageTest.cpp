@@ -27,7 +27,7 @@
 
 #include "Magnum/GL/BufferImage.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct BufferImageTest: TestSuite::Tester {
     explicit BufferImageTest();
@@ -75,6 +75,6 @@ void BufferImageTest::constructCopyCompressed() {
     CORRADE_VERIFY(!(std::is_assignable<CompressedBufferImage2D, const CompressedBufferImage2D&>{}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::BufferImageTest)

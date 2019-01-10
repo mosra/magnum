@@ -36,7 +36,7 @@
 #include "Magnum/SceneGraph/MatrixTransformation2D.h"
 #include "Magnum/SceneGraph/MatrixTransformation3D.h"
 
-namespace Magnum { namespace Audio { namespace Test {
+namespace Magnum { namespace Audio { namespace Test { namespace {
 
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation2D> Scene2D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation2D> Object2D;
@@ -106,6 +106,6 @@ void ListenerALTest::updateGroups() {
     CORRADE_COMPARE(playable.source().position(), offset*13.0f);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Audio::Test::ListenerALTest)

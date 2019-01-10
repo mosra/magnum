@@ -27,7 +27,7 @@
 
 #include "Magnum/Animation/Player.hpp"
 
-namespace Magnum { namespace Animation { namespace Test {
+namespace Magnum { namespace Animation { namespace Test { namespace {
 
 struct PlayerCustomTest: TestSuite::Tester {
     explicit PlayerCustomTest();
@@ -43,14 +43,12 @@ PlayerCustomTest::PlayerCustomTest() {
 typedef std::uint64_t UnsignedLong; /** @todo what about this? */
 #endif
 
-namespace {
-    const Animation::Track<UnsignedShort, Float> Track{{
-        {24, 1.5f}, /* 1.0 sec */
-        {60, 3.0f}, /* 2.5 sec */
-        {72, 5.0f}, /* 3.0 sec */
-        {96, 2.0f}  /* 4.0 sec */
-    }, Math::lerp};
-}
+const Animation::Track<UnsignedShort, Float> Track{{
+    {24, 1.5f}, /* 1.0 sec */
+    {60, 3.0f}, /* 2.5 sec */
+    {72, 5.0f}, /* 3.0 sec */
+    {96, 2.0f}  /* 4.0 sec */
+}, Math::lerp};
 
 void PlayerCustomTest::test() {
     Player<UnsignedLong, UnsignedShort> player{
@@ -75,6 +73,6 @@ void PlayerCustomTest::test() {
     CORRADE_COMPARE(value, 4.0f);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Animation::Test::PlayerCustomTest)

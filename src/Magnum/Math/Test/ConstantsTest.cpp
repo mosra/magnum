@@ -29,7 +29,7 @@
 #include "Magnum/Math/Constants.h"
 #include "Magnum/Math/Functions.h"
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math { namespace Test { namespace {
 
 struct ConstantsTest: Corrade::TestSuite::Tester {
     explicit ConstantsTest();
@@ -87,6 +87,6 @@ template<class T> void ConstantsTest::specials() {
     CORRADE_VERIFY(h != h);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::ConstantsTest)

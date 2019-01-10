@@ -27,7 +27,7 @@
 
 #include "Magnum/GL/TimeQuery.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct TimeQueryTest: TestSuite::Tester {
     explicit TimeQueryTest();
@@ -55,6 +55,6 @@ void TimeQueryTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_assignable<TimeQuery, const TimeQuery&>{}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::TimeQueryTest)

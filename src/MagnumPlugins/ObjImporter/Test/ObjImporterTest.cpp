@@ -34,7 +34,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct ObjImporterTest: TestSuite::Tester {
     explicit ObjImporterTest();
@@ -738,6 +738,6 @@ void ObjImporterTest::unknownKeyword() {
     CORRADE_COMPARE(out.str(), "Trade::ObjImporter::mesh3D(): unknown keyword bleh\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::ObjImporterTest)

@@ -28,7 +28,7 @@
 #include "Magnum/Audio/Buffer.h"
 #include "Magnum/Audio/Context.h"
 
-namespace Magnum { namespace Audio { namespace Test {
+namespace Magnum { namespace Audio { namespace Test { namespace {
 
 struct BufferALTest: TestSuite::Tester {
     explicit BufferALTest();
@@ -47,6 +47,6 @@ void BufferALTest::construct() {
     CORRADE_VERIFY(buf.id() != 0);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Audio::Test::BufferALTest)

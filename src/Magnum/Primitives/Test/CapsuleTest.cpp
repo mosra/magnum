@@ -31,7 +31,7 @@
 #include "Magnum/Trade/MeshData3D.h"
 #include "Magnum/Primitives/Capsule.h"
 
-namespace Magnum { namespace Primitives { namespace Test {
+namespace Magnum { namespace Primitives { namespace Test { namespace {
 
 struct CapsuleTest: TestSuite::Tester {
     explicit CapsuleTest();
@@ -320,6 +320,6 @@ void CapsuleTest::wireframe3D() {
     }), TestSuite::Compare::Container);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Primitives::Test::CapsuleTest)

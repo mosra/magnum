@@ -38,7 +38,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct TgaImageConverterTest: TestSuite::Tester {
     explicit TgaImageConverterTest();
@@ -53,32 +53,30 @@ struct TgaImageConverterTest: TestSuite::Tester {
     PluginManager::Manager<AbstractImporter> _importerManager{"nonexistent"};
 };
 
-namespace {
-    /* Padded to four byte alignment (the resulting file is *not* padded) */
-    constexpr char OriginalDataRGB[] = {
-        /* Skip */
-        0, 0, 0, 0, 0, 0, 0, 0,
+/* Padded to four byte alignment (the resulting file is *not* padded) */
+constexpr char OriginalDataRGB[] = {
+    /* Skip */
+    0, 0, 0, 0, 0, 0, 0, 0,
 
-        1, 2, 3, 2, 3, 4, 0, 0,
-        3, 4, 5, 4, 5, 6, 0, 0,
-        5, 6, 7, 6, 7, 8, 0, 0
-    };
-    constexpr char ConvertedDataRGB[] = {
-        1, 2, 3, 2, 3, 4,
-        3, 4, 5, 4, 5, 6,
-        5, 6, 7, 6, 7, 8
-    };
+    1, 2, 3, 2, 3, 4, 0, 0,
+    3, 4, 5, 4, 5, 6, 0, 0,
+    5, 6, 7, 6, 7, 8, 0, 0
+};
+constexpr char ConvertedDataRGB[] = {
+    1, 2, 3, 2, 3, 4,
+    3, 4, 5, 4, 5, 6,
+    5, 6, 7, 6, 7, 8
+};
 
-    const ImageView2D OriginalRGB{PixelStorage{}.setSkip({0, 1, 0}),
-        PixelFormat::RGB8Unorm, {2, 3}, OriginalDataRGB};
+const ImageView2D OriginalRGB{PixelStorage{}.setSkip({0, 1, 0}),
+    PixelFormat::RGB8Unorm, {2, 3}, OriginalDataRGB};
 
-    constexpr char OriginalDataRGBA[] = {
-        1, 2, 3, 4, 2, 3, 4, 5,
-        3, 4, 5, 6, 4, 5, 6, 7,
-        5, 6, 7, 8, 6, 7, 8, 9
-    };
-    const ImageView2D OriginalRGBA{PixelFormat::RGBA8Unorm, {2, 3}, OriginalDataRGBA};
-}
+constexpr char OriginalDataRGBA[] = {
+    1, 2, 3, 4, 2, 3, 4, 5,
+    3, 4, 5, 6, 4, 5, 6, 7,
+    5, 6, 7, 8, 6, 7, 8, 9
+};
+const ImageView2D OriginalRGBA{PixelFormat::RGBA8Unorm, {2, 3}, OriginalDataRGBA};
 
 TgaImageConverterTest::TgaImageConverterTest() {
     addTests({&TgaImageConverterTest::wrongFormat,
@@ -149,6 +147,6 @@ void TgaImageConverterTest::rgba() {
         TestSuite::Compare::Container);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::TgaImageConverterTest)

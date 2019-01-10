@@ -38,7 +38,7 @@
 #include "Magnum/GL/SampleQuery.h"
 #include "Magnum/GL/Shader.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct SampleQueryGLTest: OpenGLTester {
     explicit SampleQueryGLTest();
@@ -89,13 +89,11 @@ void SampleQueryGLTest::wrap() {
     #endif
 }
 
-namespace {
-    struct MyShader: public AbstractShaderProgram {
-        typedef Attribute<0, Vector2> Position;
+struct MyShader: public AbstractShaderProgram {
+    typedef Attribute<0, Vector2> Position;
 
-        explicit MyShader();
-    };
-}
+    explicit MyShader();
+};
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 MyShader::MyShader() {
@@ -268,6 +266,6 @@ void SampleQueryGLTest::conditionalRender() {
 }
 #endif
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::SampleQueryGLTest)

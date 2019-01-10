@@ -28,7 +28,7 @@
 #include "Magnum/SceneGraph/MatrixTransformation3D.h"
 #include "Magnum/SceneGraph/Scene.h"
 
-namespace Magnum { namespace SceneGraph { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 
 struct SceneTest: TestSuite::Tester {
     explicit SceneTest();
@@ -65,6 +65,6 @@ void SceneTest::parent() {
     CORRADE_VERIFY(object.children().isEmpty());
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::SceneTest)

@@ -28,7 +28,7 @@
 #include "Magnum/Audio/Context.h"
 #include "Magnum/Audio/Source.h"
 
-namespace Magnum { namespace Audio { namespace Test {
+namespace Magnum { namespace Audio { namespace Test { namespace {
 
 struct SourceALTest: TestSuite::Tester {
     explicit SourceALTest();
@@ -168,6 +168,6 @@ void SourceALTest::rolloffFactor() {
     CORRADE_COMPARE(source.rolloffFactor(), fact);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Audio::Test::SourceALTest)

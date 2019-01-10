@@ -28,7 +28,7 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct AbstractObjectGLTest: OpenGLTester {
     explicit AbstractObjectGLTest();
@@ -52,6 +52,6 @@ void AbstractObjectGLTest::labelNoOp() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::AbstractObjectGLTest)

@@ -30,7 +30,7 @@
 #include "Magnum/SceneGraph/AnimableGroup.h"
 #include "Magnum/SceneGraph/MatrixTransformation3D.h"
 
-namespace Magnum { namespace SceneGraph { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 
 struct AnimableTest: TestSuite::Tester {
     explicit AnimableTest();
@@ -383,6 +383,6 @@ void AnimableTest::debug() {
     CORRADE_COMPARE(o.str(), "SceneGraph::AnimationState::Running SceneGraph::AnimationState(0xbe)\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::AnimableTest)

@@ -28,7 +28,7 @@
 
 #include "Magnum/DebugTools/Implementation/ForceRendererTransformation.h"
 
-namespace Magnum { namespace DebugTools { namespace Implementation { namespace Test {
+namespace Magnum { namespace DebugTools { namespace Implementation { namespace Test { namespace {
 
 struct ForceRendererTest: TestSuite::Tester {
     explicit ForceRendererTest();
@@ -115,6 +115,6 @@ void ForceRendererTest::arbitrary3D() {
         TestSuite::Compare::Less);
 }
 
-}}}}
+}}}}}
 
 CORRADE_TEST_MAIN(Magnum::DebugTools::Implementation::Test::ForceRendererTest)

@@ -35,7 +35,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct TgaImporterTest: TestSuite::Tester {
     explicit TgaImporterTest();
@@ -216,6 +216,6 @@ void TgaImporterTest::useTwice() {
     }
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::TgaImporterTest)

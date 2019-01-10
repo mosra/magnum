@@ -27,7 +27,7 @@
 
 #include "Magnum/Shaders/DistanceFieldVector.h"
 
-namespace Magnum { namespace Shaders { namespace Test {
+namespace Magnum { namespace Shaders { namespace Test { namespace {
 
 struct DistanceFieldVectorTest: TestSuite::Tester {
     explicit DistanceFieldVectorTest();
@@ -75,6 +75,6 @@ void DistanceFieldVectorTest::constructCopy3D() {
     CORRADE_VERIFY(!(std::is_assignable<DistanceFieldVector3D, const DistanceFieldVector3D&>{}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shaders::Test::DistanceFieldVectorTest)

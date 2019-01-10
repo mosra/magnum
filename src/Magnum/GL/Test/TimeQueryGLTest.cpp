@@ -30,7 +30,7 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/TimeQuery.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct TimeQueryGLTest: OpenGLTester {
     explicit TimeQueryGLTest();
@@ -134,6 +134,6 @@ void TimeQueryGLTest::queryTimestamp() {
     CORRADE_COMPARE_AS(result2 - result1, result, TestSuite::Compare::GreaterOrEqual);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::TimeQueryGLTest)

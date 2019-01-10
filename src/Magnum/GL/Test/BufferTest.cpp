@@ -29,7 +29,7 @@
 
 #include "Magnum/GL/Buffer.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct BufferTest: TestSuite::Tester {
     explicit BufferTest();
@@ -82,6 +82,6 @@ void BufferTest::debugTarget() {
 }
 #endif
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::BufferTest)

@@ -28,7 +28,7 @@
 
 #include "Magnum/Audio/BufferFormat.h"
 
-namespace Magnum { namespace Audio { namespace Test {
+namespace Magnum { namespace Audio { namespace Test { namespace {
 
 struct BufferFormatTest: TestSuite::Tester {
     explicit BufferFormatTest();
@@ -46,6 +46,6 @@ void BufferFormatTest::debugFormat() {
     CORRADE_COMPARE(out.str(), "Audio::BufferFormat::Stereo16 Audio::BufferFormat(0xdead)\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Audio::Test::BufferFormatTest)

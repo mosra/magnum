@@ -31,7 +31,7 @@
 #include "Magnum/Math/TypeTraits.h"
 #include "Magnum/Math/Constants.h"
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math { namespace Test { namespace {
 
 struct TypeTraitsTest: Corrade::TestSuite::Tester {
     explicit TypeTraitsTest();
@@ -51,8 +51,6 @@ struct TypeTraitsTest: Corrade::TestSuite::Tester {
     template<class T> void equalsZeroFloatingPointSmall();
     template<class T> void equalsZeroFloatingPointLarge();
 };
-
-namespace {
 
 enum: std::size_t { EqualsZeroDataCount = 3 };
 
@@ -91,8 +89,6 @@ struct {
         #endif
         0.2l},
 };
-
-}
 
 TypeTraitsTest::TypeTraitsTest() {
     addTests({&TypeTraitsTest::sizeOfLongDouble,
@@ -212,14 +208,12 @@ template<class T> void TypeTraitsTest::equalsFloatingPointNaN() {
                                           Constants<T>::nan()));
 }
 
-namespace {
-    /* Argh! Why there is no standard std::abs() for unsigned types? */
-    template<class T, class U = typename std::enable_if<std::is_unsigned<T>::value>::type> T abs(T value) {
-        return value;
-    }
-    template<class T, class U = T, class V = typename std::enable_if<!std::is_unsigned<T>::value>::type> T abs(T value) {
-        return std::abs(value);
-    }
+/* Argh! Why there is no standard std::abs() for unsigned types? */
+template<class T, class U = typename std::enable_if<std::is_unsigned<T>::value>::type> T abs(T value) {
+    return value;
+}
+template<class T, class U = T, class V = typename std::enable_if<!std::is_unsigned<T>::value>::type> T abs(T value) {
+    return std::abs(value);
 }
 
 template<class T> void TypeTraitsTest::equalsZeroIntegral() {
@@ -248,6 +242,6 @@ template<class T> void TypeTraitsTest::equalsZeroFloatingPoint() {
     CORRADE_VERIFY(!TypeTraits<T>::equalsZero(a - step*T(2.0) - a, magnitude));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::TypeTraitsTest)

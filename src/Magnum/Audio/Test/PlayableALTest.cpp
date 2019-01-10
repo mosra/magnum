@@ -33,7 +33,7 @@
 #include "Magnum/SceneGraph/Object.h"
 #include "Magnum/SceneGraph/MatrixTransformation3D.h"
 
-namespace Magnum { namespace Audio { namespace Test {
+namespace Magnum { namespace Audio { namespace Test { namespace {
 
 typedef SceneGraph::Scene<SceneGraph::MatrixTransformation3D> Scene3D;
 typedef SceneGraph::Object<SceneGraph::MatrixTransformation3D> Object3D;
@@ -100,6 +100,6 @@ void PlayableALTest::group() {
     group.stop();
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Audio::Test::PlayableALTest)

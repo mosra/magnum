@@ -29,7 +29,7 @@
 
 #include "Magnum/Math/Intersection.h"
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math { namespace Test { namespace {
 
 using namespace Literals;
 
@@ -451,6 +451,6 @@ void IntersectionTest::aabbCone() {
     CORRADE_VERIFY(!Intersection::aabbCone(-15.0f*normal, Vector3{1.0f}, center, normal, angle));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::IntersectionTest)

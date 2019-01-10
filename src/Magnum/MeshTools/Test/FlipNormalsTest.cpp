@@ -29,7 +29,7 @@
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/MeshTools/FlipNormals.h"
 
-namespace Magnum { namespace MeshTools { namespace Test {
+namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
 struct FlipNormalsTest: TestSuite::Tester {
     explicit FlipNormalsTest();
@@ -75,6 +75,6 @@ void FlipNormalsTest::flipNormals() {
                                                    -Vector3::zAxis()}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::FlipNormalsTest)

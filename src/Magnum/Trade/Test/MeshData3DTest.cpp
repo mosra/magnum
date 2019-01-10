@@ -29,7 +29,7 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Trade/MeshData3D.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct MeshData3DTest: TestSuite::Tester {
     explicit MeshData3DTest();
@@ -195,6 +195,6 @@ void MeshData3DTest::constructMove() {
     CORRADE_COMPARE(d.importerState(), &a);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::MeshData3DTest)

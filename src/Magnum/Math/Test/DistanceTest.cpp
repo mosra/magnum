@@ -30,7 +30,7 @@
 #include "Magnum/Math/Constants.h"
 #include "Magnum/Math/Distance.h"
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math { namespace Test { namespace {
 
 struct DistanceTest: Corrade::TestSuite::Tester {
     explicit DistanceTest();
@@ -199,6 +199,6 @@ void DistanceTest::pointPlaneNormalizedNotNormalized() {
     CORRADE_COMPARE(out.str(), "Math::Distance::pointPlaneNormalized(): plane normal Vector(2, 2, 2) is not normalized\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::DistanceTest)

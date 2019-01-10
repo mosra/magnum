@@ -28,7 +28,7 @@
 
 #include "Magnum/Trade/LightData.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct LightDataTest: TestSuite::Tester {
     explicit LightDataTest();
@@ -96,6 +96,6 @@ void LightDataTest::debugType() {
     CORRADE_COMPARE(out.str(), "Trade::LightData::Type::Spot Trade::LightData::Type(0xbe)\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::LightDataTest)

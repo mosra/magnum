@@ -28,7 +28,7 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Text/GlyphCache.h"
 
-namespace Magnum { namespace Text { namespace Test {
+namespace Magnum { namespace Text { namespace Test { namespace {
 
 struct GlyphCacheGLTest: GL::OpenGLTester {
     explicit GlyphCacheGLTest();
@@ -91,6 +91,6 @@ void GlyphCacheGLTest::reserve() {
     CORRADE_VERIFY(!cache.reserve({{5, 3}}).empty());
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Text::Test::GlyphCacheGLTest)

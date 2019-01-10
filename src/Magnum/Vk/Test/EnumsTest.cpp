@@ -38,7 +38,7 @@
 #include "Magnum/Sampler.h"
 #include "Magnum/Vk/Enums.h"
 
-namespace Magnum { namespace Vk { namespace Test {
+namespace Magnum { namespace Vk { namespace Test { namespace {
 
 /* Tests MeshView as well */
 
@@ -401,6 +401,6 @@ void EnumsTest::mapVkSamplerAddressModeInvalid() {
         "Vk::vkSamplerAddressMode(): invalid wrapping SamplerWrapping(0x123)\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Vk::Test::EnumsTest)

@@ -28,7 +28,7 @@
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Algorithms/Svd.h"
 
-namespace Magnum { namespace Math { namespace Algorithms { namespace Test {
+namespace Magnum { namespace Math { namespace Algorithms { namespace Test { namespace {
 
 struct SvdTest: Corrade::TestSuite::Tester {
     explicit SvdTest();
@@ -116,6 +116,6 @@ void SvdTest::decomposeRotationShear() {
     CORRADE_COMPARE(Matrix4::from(u*v.transposed(), {}), Matrix4::rotationZ(35.0_degf));
 }
 
-}}}}
+}}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Algorithms::Test::SvdTest)

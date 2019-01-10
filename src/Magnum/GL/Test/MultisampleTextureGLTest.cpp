@@ -34,7 +34,7 @@
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Math/Functions.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct MultisampleTextureGLTest: OpenGLTester {
     explicit MultisampleTextureGLTest();
@@ -411,6 +411,6 @@ void MultisampleTextureGLTest::invalidateSubImage2DArray() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::MultisampleTextureGLTest)

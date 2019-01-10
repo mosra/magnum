@@ -28,7 +28,7 @@
 #define CORRADE_NO_ASSERT
 #include "Magnum/Math/DualQuaternion.h"
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math { namespace Test { namespace {
 
 struct InterpolationBenchmark: Corrade::TestSuite::Tester {
     explicit InterpolationBenchmark();
@@ -147,6 +147,6 @@ void InterpolationBenchmark::dualQuaternionSclerpShortestPath() {
     CORRADE_VERIFY(!c.isNormalized());
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::InterpolationBenchmark)

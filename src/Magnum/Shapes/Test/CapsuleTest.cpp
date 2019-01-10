@@ -34,7 +34,7 @@
 
 #include "ShapeTestBase.h"
 
-namespace Magnum { namespace Shapes { namespace Test {
+namespace Magnum { namespace Shapes { namespace Test { namespace {
 
 struct CapsuleTest: TestSuite::Tester {
     explicit CapsuleTest();
@@ -84,6 +84,6 @@ void CapsuleTest::collisionSphere() {
 }
 CORRADE_IGNORE_DEPRECATED_POP
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shapes::Test::CapsuleTest)

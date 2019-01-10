@@ -38,7 +38,7 @@
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Range.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct RectangleTextureGLTest: OpenGLTester {
     explicit RectangleTextureGLTest();
@@ -74,40 +74,38 @@ struct RectangleTextureGLTest: OpenGLTester {
     void invalidateSubImage();
 };
 
-namespace {
-    struct GenericSampler {
-        typedef Magnum::SamplerFilter Filter;
-        typedef Magnum::SamplerWrapping Wrapping;
-    };
-    struct GLSampler {
-        typedef GL::SamplerFilter Filter;
-        typedef GL::SamplerWrapping Wrapping;
-    };
+struct GenericSampler {
+    typedef Magnum::SamplerFilter Filter;
+    typedef Magnum::SamplerWrapping Wrapping;
+};
+struct GLSampler {
+    typedef GL::SamplerFilter Filter;
+    typedef GL::SamplerWrapping Wrapping;
+};
 
-    constexpr UnsignedByte Data[]{
-        0, 0, 0, 0, 0, 0, 0, 0,
-        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
-        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
+constexpr UnsignedByte Data[]{
+    0, 0, 0, 0, 0, 0, 0, 0,
+    0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+    0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
 
-    enum: std::size_t { PixelStorageDataCount = 2 };
+enum: std::size_t { PixelStorageDataCount = 2 };
 
-    const struct {
-        const char* name;
-        Containers::ArrayView<const UnsignedByte> data;
-        PixelStorage storage;
-        Containers::ArrayView<const UnsignedByte> dataSparse;
-        std::size_t offset;
-    } PixelStorageData[PixelStorageDataCount]{
-        {"default pixel storage",
-            Containers::arrayView(Data).suffix(8), {},
-            Containers::arrayView(Data).suffix(8), 0},
-        #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
-        {"skip Y",
-            Containers::arrayView(Data).suffix(8), PixelStorage{}.setSkip({0, 1, 0}),
-            Containers::arrayView(Data), 8}
-        #endif
-    };
-}
+const struct {
+    const char* name;
+    Containers::ArrayView<const UnsignedByte> data;
+    PixelStorage storage;
+    Containers::ArrayView<const UnsignedByte> dataSparse;
+    std::size_t offset;
+} PixelStorageData[PixelStorageDataCount]{
+    {"default pixel storage",
+        Containers::arrayView(Data).suffix(8), {},
+        Containers::arrayView(Data).suffix(8), 0},
+    #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
+    {"skip Y",
+        Containers::arrayView(Data).suffix(8), PixelStorage{}.setSkip({0, 1, 0}),
+        Containers::arrayView(Data), 8}
+    #endif
+};
 
 RectangleTextureGLTest::RectangleTextureGLTest() {
     addTests({&RectangleTextureGLTest::construct,
@@ -361,15 +359,13 @@ void RectangleTextureGLTest::imageBuffer() {
         TestSuite::Compare::Container);
 }
 
-namespace {
-    constexpr UnsignedByte Zero[4*4*4]{};
-    constexpr UnsignedByte SubDataComplete[]{
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
-        0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
-        0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
-    };
-}
+constexpr UnsignedByte Zero[4*4*4]{};
+constexpr UnsignedByte SubDataComplete[]{
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07, 0, 0, 0, 0,
+    0, 0, 0, 0, 0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f, 0, 0, 0, 0,
+    0, 0, 0, 0,    0,    0,    0,    0,    0,    0,    0,    0, 0, 0, 0, 0
+};
 
 void RectangleTextureGLTest::subImage() {
     setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
@@ -523,6 +519,6 @@ void RectangleTextureGLTest::invalidateSubImage() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::RectangleTextureGLTest)

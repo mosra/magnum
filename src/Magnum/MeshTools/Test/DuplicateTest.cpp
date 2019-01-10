@@ -28,7 +28,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/MeshTools/Duplicate.h"
 
-namespace Magnum { namespace MeshTools { namespace Test {
+namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
 struct DuplicateTest: TestSuite::Tester {
     explicit DuplicateTest();
@@ -45,6 +45,6 @@ void DuplicateTest::duplicate() {
                     (std::vector<Int>{35, 35, -7, -18, 12, 12}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::DuplicateTest)

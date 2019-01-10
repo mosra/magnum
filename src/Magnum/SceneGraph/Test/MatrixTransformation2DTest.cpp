@@ -28,7 +28,7 @@
 #include "Magnum/SceneGraph/MatrixTransformation2D.h"
 #include "Magnum/SceneGraph/Scene.h"
 
-namespace Magnum { namespace SceneGraph { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 
 typedef Object<MatrixTransformation2D> Object2D;
 typedef Scene<MatrixTransformation2D> Scene2D;
@@ -182,6 +182,6 @@ void MatrixTransformation2DTest::reflect() {
     }
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::MatrixTransformation2DTest)

@@ -28,7 +28,7 @@
 #include "Magnum/SceneGraph/TranslationRotationScalingTransformation3D.h"
 #include "Magnum/SceneGraph/Scene.h"
 
-namespace Magnum { namespace SceneGraph { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 
 typedef Object<TranslationRotationScalingTransformation3D> Object3D;
 typedef Scene<TranslationRotationScalingTransformation3D> Scene3D;
@@ -234,6 +234,6 @@ void TranslationRotationScalingTransformation3DTest::scale() {
     }
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::TranslationRotationScalingTransformation3DTest)

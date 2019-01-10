@@ -27,7 +27,7 @@
 
 #include "ResourceManagerLocalInstanceTestLib.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace Test { namespace {
 
 struct ResourceManagerLocalInstanceTest: TestSuite::Tester {
     explicit ResourceManagerLocalInstanceTest();
@@ -49,6 +49,6 @@ void ResourceManagerLocalInstanceTest::instance() {
     CORRADE_COMPARE(manager.state<Int>("integer"), ResourceState::Final);
 }
 
-}}
+}}}
 
 CORRADE_TEST_MAIN(Magnum::Test::ResourceManagerLocalInstanceTest)

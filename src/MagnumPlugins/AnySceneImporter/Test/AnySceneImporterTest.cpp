@@ -33,7 +33,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace Trade { namespace Test {
+namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct AnySceneImporterTest: TestSuite::Tester {
     explicit AnySceneImporterTest();
@@ -85,6 +85,6 @@ void AnySceneImporterTest::unknown() {
     CORRADE_COMPARE(output.str(), "Trade::AnySceneImporter::openFile(): cannot determine type of file mesh.wtf\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Trade::Test::AnySceneImporterTest)

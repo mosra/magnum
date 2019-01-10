@@ -34,7 +34,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace Text { namespace Test {
+namespace Magnum { namespace Text { namespace Test { namespace {
 
 struct AbstractFontConverterTest: TestSuite::Tester {
     explicit AbstractFontConverterTest();
@@ -67,12 +67,10 @@ AbstractFontConverterTest::AbstractFontConverterTest() {
     Utility::Directory::mkpath(TEXT_TEST_OUTPUT_DIR);
 }
 
-namespace {
-    /* *static_cast<GlyphCache*>(nullptr) makes Clang Analyzer grumpy */
-    char nullData;
-    AbstractFont& nullFont = *reinterpret_cast<AbstractFont*>(nullData);
-    GlyphCache& nullGlyphCache = *reinterpret_cast<GlyphCache*>(nullData);
-}
+/* *static_cast<GlyphCache*>(nullptr) makes Clang Analyzer grumpy */
+char nullData;
+AbstractFont& nullFont = *reinterpret_cast<AbstractFont*>(nullData);
+GlyphCache& nullGlyphCache = *reinterpret_cast<GlyphCache*>(nullData);
 
 void AbstractFontConverterTest::convertGlyphs() {
     class GlyphExporter: public AbstractFontConverter {
@@ -196,8 +194,6 @@ void AbstractFontConverterTest::exportGlyphCacheToFile() {
                        "\xfe\xed", TestSuite::Compare::FileToString);
 }
 
-namespace {
-
 class SingleGlyphCacheDataImporter: public Text::AbstractFontConverter {
     private:
         Features doFeatures() const override { return Feature::ConvertData|Feature::ImportGlyphCache; }
@@ -208,8 +204,6 @@ class SingleGlyphCacheDataImporter: public Text::AbstractFontConverter {
             return nullptr;
         }
 };
-
-}
 
 void AbstractFontConverterTest::importGlyphCacheFromSingleData() {
     /* doImportFromData() should call doImportFromSingleData() */
@@ -232,6 +226,6 @@ void AbstractFontConverterTest::importGlyphCacheFromFile() {
     cache.release();
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Text::Test::AbstractFontConverterTest)

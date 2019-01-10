@@ -30,7 +30,7 @@
 
 #include "Magnum/Shapes/shapeImplementation.h"
 
-namespace Magnum { namespace Shapes { namespace Test {
+namespace Magnum { namespace Shapes { namespace Test { namespace {
 
 struct ShapeImplementationTest: TestSuite::Tester {
     explicit ShapeImplementationTest();
@@ -54,6 +54,6 @@ void ShapeImplementationTest::debug() {
 }
 CORRADE_IGNORE_DEPRECATED_POP
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shapes::Test::ShapeImplementationTest)

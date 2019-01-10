@@ -28,7 +28,7 @@
 
 #include "Magnum/PixelFormat.h"
 
-namespace Magnum { namespace Test {
+namespace Magnum { namespace Test { namespace {
 
 struct PixelFormatTest: TestSuite::Tester {
     explicit PixelFormatTest();
@@ -211,6 +211,6 @@ void PixelFormatTest::compressedDebugImplementationSpecific() {
     CORRADE_COMPARE(out.str(), "CompressedPixelFormat::ImplementationSpecific(0xdead)\n");
 }
 
-}}
+}}}
 
 CORRADE_TEST_MAIN(Magnum::Test::PixelFormatTest)

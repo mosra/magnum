@@ -30,7 +30,7 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct DebugOutputGLTest: OpenGLTester {
     explicit DebugOutputGLTest();
@@ -173,6 +173,6 @@ void DebugOutputGLTest::groupFallback() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::DebugOutputGLTest)

@@ -30,7 +30,7 @@
 #include "Magnum/Primitives/Square.h"
 #include "Magnum/Trade/MeshData2D.h"
 
-namespace Magnum { namespace Primitives { namespace Test {
+namespace Magnum { namespace Primitives { namespace Test { namespace {
 
 struct SquareTest: TestSuite::Tester {
     explicit SquareTest();
@@ -73,7 +73,7 @@ void SquareTest::wireframe() {
     CORRADE_COMPARE(square.positions(0).size(), 4);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Primitives::Test::SquareTest)
 

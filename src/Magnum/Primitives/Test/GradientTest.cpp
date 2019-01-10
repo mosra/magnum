@@ -34,7 +34,7 @@
 #include "Magnum/Primitives/Square.h"
 #include "Magnum/Primitives/Plane.h"
 
-namespace Magnum { namespace Primitives { namespace Test {
+namespace Magnum { namespace Primitives { namespace Test { namespace {
 
 struct GradientTest: TestSuite::Tester {
     explicit GradientTest();
@@ -162,6 +162,6 @@ void GradientTest::gradient3DVertical() {
     }), TestSuite::Compare::Container);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Primitives::Test::GradientTest)

@@ -28,7 +28,7 @@
 
 #include "Magnum/Shaders/Flat.h"
 
-namespace Magnum { namespace Shaders { namespace Test {
+namespace Magnum { namespace Shaders { namespace Test { namespace {
 
 struct FlatTest: TestSuite::Tester {
     explicit FlatTest();
@@ -96,6 +96,6 @@ void FlatTest::debugFlags() {
     CORRADE_COMPARE(out.str(), "Shaders::Flat::Flag::Textured|Shaders::Flat::Flag::AlphaMask Shaders::Flat::Flags{}\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shaders::Test::FlatTest)

@@ -30,7 +30,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/MeshTools/Transform.h"
 
-namespace Magnum { namespace MeshTools { namespace Test {
+namespace Magnum { namespace MeshTools { namespace Test { namespace {
 
 struct TransformTest: TestSuite::Tester {
     explicit TransformTest();
@@ -116,6 +116,6 @@ void TransformTest::transformPoints3D() {
     CORRADE_COMPARE(quaternion, points3DRotatedTranslated);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::MeshTools::Test::TransformTest)

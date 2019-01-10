@@ -27,7 +27,7 @@
 
 #include "Magnum/GL/TextureArray.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct TextureArrayTest: TestSuite::Tester {
     explicit TextureArrayTest();
@@ -88,6 +88,6 @@ void TextureArrayTest::constructCopy2D() {
     CORRADE_VERIFY(!(std::is_assignable<Texture2DArray, const Texture2DArray&>{}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::TextureArrayTest)

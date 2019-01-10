@@ -40,7 +40,7 @@
 #include "Magnum/GL/TransformFeedback.h"
 #include "Magnum/Math/Vector2.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct PrimitiveQueryGLTest: OpenGLTester {
     explicit PrimitiveQueryGLTest();
@@ -404,6 +404,6 @@ void PrimitiveQueryGLTest::transformFeedbackOverflow() {
 }
 #endif
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::PrimitiveQueryGLTest)

@@ -34,7 +34,7 @@
 
 #include "configure.h"
 
-namespace Magnum { namespace Audio { namespace Test {
+namespace Magnum { namespace Audio { namespace Test { namespace {
 
 struct WavImporterTest: TestSuite::Tester {
     explicit WavImporterTest();
@@ -421,6 +421,6 @@ void WavImporterTest::surround71Channel24() {
     CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): unsupported format Audio::WavAudioFormat::Extensible\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Audio::Test::WavImporterTest)

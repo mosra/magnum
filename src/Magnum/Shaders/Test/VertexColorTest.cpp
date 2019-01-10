@@ -27,7 +27,7 @@
 
 #include "Magnum/Shaders/VertexColor.h"
 
-namespace Magnum { namespace Shaders { namespace Test {
+namespace Magnum { namespace Shaders { namespace Test { namespace {
 
 struct VertexColorTest: TestSuite::Tester {
     explicit VertexColorTest();
@@ -75,6 +75,6 @@ void VertexColorTest::constructCopy3D() {
     CORRADE_VERIFY(!(std::is_assignable<VertexColor3D, const VertexColor3D&>{}));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shaders::Test::VertexColorTest)

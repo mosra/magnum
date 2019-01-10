@@ -33,7 +33,7 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Shaders/Flat.h"
 
-namespace Magnum { namespace Shaders { namespace Test {
+namespace Magnum { namespace Shaders { namespace Test { namespace {
 
 struct FlatGLTest: GL::OpenGLTester {
     explicit FlatGLTest();
@@ -49,8 +49,6 @@ struct FlatGLTest: GL::OpenGLTester {
     template<UnsignedInt dimensions> void setAlphaMaskNotEnabled();
 };
 
-namespace {
-
 constexpr struct {
     const char* name;
     Flat2D::Flags flags;
@@ -58,8 +56,6 @@ constexpr struct {
     {"", {}},
     {"textured", Flat2D::Flag::Textured}
 };
-
-}
 
 FlatGLTest::FlatGLTest() {
     addInstancedTests<FlatGLTest>({
@@ -173,6 +169,6 @@ template<UnsignedInt dimensions> void FlatGLTest::setAlphaMaskNotEnabled() {
         "Shaders::Flat::setAlphaMask(): the shader was not created with alpha mask enabled\n");
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Shaders::Test::FlatGLTest)

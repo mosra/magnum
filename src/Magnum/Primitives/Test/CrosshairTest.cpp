@@ -31,7 +31,7 @@
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
 
-namespace Magnum { namespace Primitives { namespace Test {
+namespace Magnum { namespace Primitives { namespace Test { namespace {
 
 struct CrosshairTest: TestSuite::Tester {
     explicit CrosshairTest();
@@ -61,6 +61,6 @@ void CrosshairTest::threeDimensions() {
     CORRADE_COMPARE(crosshair.positions(0).size(), 6);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Primitives::Test::CrosshairTest)

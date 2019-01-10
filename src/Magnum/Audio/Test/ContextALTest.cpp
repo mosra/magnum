@@ -29,7 +29,7 @@
 #include "Magnum/Audio/Extensions.h"
 #include "Magnum/Audio/Context.h"
 
-namespace Magnum { namespace Audio { namespace Test {
+namespace Magnum { namespace Audio { namespace Test { namespace {
 
 struct ContextALTest: TestSuite::Tester {
     explicit ContextALTest();
@@ -87,6 +87,6 @@ void ContextALTest::isExtensionEnabled() {
     CORRADE_VERIFY(Context::current().isExtensionSupported<Extensions::ALC::EXT::ENUMERATION>());
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Audio::Test::ContextALTest)

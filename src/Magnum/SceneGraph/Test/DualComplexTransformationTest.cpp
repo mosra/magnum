@@ -29,7 +29,7 @@
 #include "Magnum/SceneGraph/DualComplexTransformation.h"
 #include "Magnum/SceneGraph/Scene.h"
 
-namespace Magnum { namespace SceneGraph { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 
 typedef Object<DualComplexTransformation> Object2D;
 typedef Scene<DualComplexTransformation> Scene2D;
@@ -175,6 +175,6 @@ void DualComplexTransformationTest::normalizeRotation() {
     CORRADE_COMPARE(o.transformationMatrix(), Matrix3::rotation(Deg(17.0f)));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::DualComplexTransformationTest)

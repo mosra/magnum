@@ -27,7 +27,7 @@
 
 #include "Magnum/Math/Swizzle.h"
 
-namespace Magnum { namespace Math { namespace Test {
+namespace Magnum { namespace Math { namespace Test { namespace {
 
 struct SwizzleTest: Corrade::TestSuite::Tester {
     explicit SwizzleTest();
@@ -73,6 +73,6 @@ void SwizzleTest::sizes() {
     CORRADE_COMPARE(c, (Vector<7, Int>(3, 1, 4, 2, 3, 2, 1)));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Math::Test::SwizzleTest)

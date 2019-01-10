@@ -27,7 +27,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
-namespace Magnum { namespace Shapes { namespace Test {
+namespace Magnum { namespace Shapes { namespace Test { namespace {
 
 #define VERIFY_COLLIDES(a, b)                                               \
     CORRADE_VERIFY(a % b);                                                  \
@@ -37,6 +37,6 @@ namespace Magnum { namespace Shapes { namespace Test {
     CORRADE_VERIFY(!(a % b));                                               \
     CORRADE_VERIFY(!(b % a));
 
-}}}
+}}}}
 
 #endif

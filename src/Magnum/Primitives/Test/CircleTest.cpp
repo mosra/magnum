@@ -31,7 +31,7 @@
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
 
-namespace Magnum { namespace Primitives { namespace Test {
+namespace Magnum { namespace Primitives { namespace Test { namespace {
 
 struct CircleTest: TestSuite::Tester {
     explicit CircleTest();
@@ -117,6 +117,6 @@ void CircleTest::wireframe3D() {
     }));
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Primitives::Test::CircleTest)

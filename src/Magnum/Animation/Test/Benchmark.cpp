@@ -27,7 +27,7 @@
 
 #include "Magnum/Animation/Player.h"
 
-namespace Magnum { namespace Animation { namespace Test {
+namespace Magnum { namespace Animation { namespace Test { namespace {
 
 struct Benchmark: TestSuite::Tester {
     explicit Benchmark();
@@ -260,6 +260,6 @@ void Benchmark::playerAdvanceRawCallbackDirectInterpolator() {
     CORRADE_COMPARE(result, 125000);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::Animation::Test::Benchmark)

@@ -25,13 +25,13 @@
 
 #include "Magnum/Platform/XEglApplication.h"
 
-namespace Magnum { namespace Platform { namespace Test {
+namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct XEglApplicationTest: Platform::Application {
     explicit XEglApplicationTest(const Arguments& arguments): Platform::Application{arguments} {}
     void drawEvent() override {}
 };
 
-}}}
+}}}}
 
 MAGNUM_APPLICATION_MAIN(Magnum::Platform::Test::XEglApplicationTest)

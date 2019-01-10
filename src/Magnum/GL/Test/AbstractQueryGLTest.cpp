@@ -28,7 +28,7 @@
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/GL/SampleQuery.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct AbstractQueryGLTest: OpenGLTester {
     explicit AbstractQueryGLTest();
@@ -143,6 +143,6 @@ void AbstractQueryGLTest::label() {
 }
 #endif
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::AbstractQueryGLTest)

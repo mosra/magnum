@@ -32,7 +32,7 @@
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/OpenGLTester.h"
 
-namespace Magnum { namespace GL { namespace Test {
+namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct BufferImageGLTest: OpenGLTester {
     explicit BufferImageGLTest();
@@ -606,6 +606,6 @@ void BufferImageGLTest::releaseCompressed() {
     CORRADE_COMPARE(b.id(), id);
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::GL::Test::BufferImageGLTest)

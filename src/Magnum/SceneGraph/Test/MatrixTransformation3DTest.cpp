@@ -28,7 +28,7 @@
 #include "Magnum/SceneGraph/MatrixTransformation3D.h"
 #include "Magnum/SceneGraph/Scene.h"
 
-namespace Magnum { namespace SceneGraph { namespace Test {
+namespace Magnum { namespace SceneGraph { namespace Test { namespace {
 
 typedef Object<MatrixTransformation3D> Object3D;
 typedef Scene<MatrixTransformation3D> Scene3D;
@@ -198,6 +198,6 @@ void MatrixTransformation3DTest::reflect() {
     }
 }
 
-}}}
+}}}}
 
 CORRADE_TEST_MAIN(Magnum::SceneGraph::Test::MatrixTransformation3DTest)
