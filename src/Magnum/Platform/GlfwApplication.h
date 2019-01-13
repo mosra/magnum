@@ -1408,7 +1408,15 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
             Slash = GLFW_KEY_SLASH,             /**< Slash */
             /* Note: This may only be represented as SHIFT + 5 */
             Percent = '%',                      /**< Percent */
-            Smicolon = GLFW_KEY_SEMICOLON,      /**< Semicolon */
+            Semicolon = GLFW_KEY_SEMICOLON,     /**< Semicolon */
+
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            /** Semicolon
+             * @deprecated Use @ref Key::Semicolon instead.
+             */
+            Smicolon CORRADE_DEPRECATED_ENUM("use Key::Semicolon instead") = Semicolon,
+            #endif
+
             Equal = GLFW_KEY_EQUAL,             /**< Equal */
 
             Zero = GLFW_KEY_0,                  /**< Zero */

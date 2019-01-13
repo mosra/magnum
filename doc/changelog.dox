@@ -166,9 +166,12 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
--   `TextureTools::distanceField()` is deprecated due to inefficiency of its
-    statelessness when doing batch processing. Use the
+-   @cpp TextureTools::distanceField() @ce is deprecated due to inefficiency of
+    its statelessness when doing batch processing. Use the
     @ref TextureTools::DistanceField class instead.
+-   @cpp Platform::GlfwApplication::KeyEvent::Key::Smicolon @ce has a typo and
+    so is deprecated in favor of
+    @ref Platform::GlfwApplication::KeyEvent::Key::Semicolon
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
