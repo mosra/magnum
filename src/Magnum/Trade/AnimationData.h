@@ -224,8 +224,8 @@ class AnimationTrackData {
          * @brief Default constructor
          *
          * Leaves contents at unspecified values. Provided as a convenience for
-         * initialization of @ref AnimationData structure, expected to be
-         * replaced with concrete values later.
+         * initialization of the track array for @ref AnimationData, expected
+         * to be replaced with concrete values later.
          */
         /*implicit*/ AnimationTrackData() noexcept: _type{}, _resultType{}, _targetType{}, _target{}, _view{} {}
 
