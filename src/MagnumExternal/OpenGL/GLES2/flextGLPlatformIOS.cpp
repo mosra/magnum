@@ -152,7 +152,7 @@
 
 #include <OpenGLES/ES2/glext.h>
 
-void flextGLInit() {
+void flextGLInit(Magnum::GL::Context&) {
     /* Work around missing glTexStorage3D (can't be used anyway because GLES2
        on iOS doesn't support OES_texture_3D) */
     constexpr void(*glTexStorage3DEXT)() = nullptr;

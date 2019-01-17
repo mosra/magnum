@@ -30,7 +30,7 @@
 
 #include "Magnum/Platform/Implementation/OpenGLFunctionLoader.h"
 
-void flextGLInit() {
+void flextGLInit(Magnum::GL::Context&) {
     Magnum::Platform::Implementation::OpenGLFunctionLoader loader;
 
     /* GL_ANGLE_framebuffer_blit */

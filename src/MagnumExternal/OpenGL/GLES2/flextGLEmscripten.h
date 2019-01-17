@@ -25,6 +25,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Magnum/GL/GL.h"
+
 /* Defensive include guards */
 
 #if defined(__gl2_h_)
@@ -45,7 +47,7 @@
 extern "C" {
 #endif
 
-void flextGLInit();
+void flextGLInit(Magnum::GL::Context& context);
 
 /* Function declaration macros */
 #define APIENTRY

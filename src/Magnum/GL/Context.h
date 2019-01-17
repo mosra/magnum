@@ -667,9 +667,9 @@ class MAGNUM_GL_EXPORT Context {
         friend Platform::GLContext;
         #endif
 
-        explicit Context(NoCreateT, Int argc, const char** argv, void functionLoader());
-        explicit Context(NoCreateT, Utility::Arguments&& args, Int argc, const char** argv, void functionLoader()): Context{NoCreate, args, argc, argv, functionLoader} {}
-        explicit Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader());
+        explicit Context(NoCreateT, Int argc, const char** argv, void functionLoader(Context&));
+        explicit Context(NoCreateT, Utility::Arguments&& args, Int argc, const char** argv, void functionLoader(Context&)): Context{NoCreate, args, argc, argv, functionLoader} {}
+        explicit Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader(Context&));
 
         bool tryCreate();
         void create();
@@ -683,7 +683,7 @@ class MAGNUM_GL_EXPORT Context {
         MAGNUM_GL_LOCAL bool isCoreProfileImplementationNV();
         #endif
 
-        void(*_functionLoader)(){};
+        void(*_functionLoader)(Context&){};
         Version _version;
         #ifndef MAGNUM_TARGET_WEBGL
         Flags _flags;

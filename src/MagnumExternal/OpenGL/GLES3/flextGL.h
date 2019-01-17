@@ -28,6 +28,7 @@
 #include <Corrade/Utility/VisibilityMacros.h>
 
 #include "Magnum/configure.h"
+#include "Magnum/GL/GL.h"
 
 /* Defensive include guards */
 
@@ -54,7 +55,7 @@
 extern "C" {
 #endif
 
-void flextGLInit();
+void flextGLInit(Magnum::GL::Context& context);
 
 /* Function declaration macros */
 

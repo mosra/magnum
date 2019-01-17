@@ -30,7 +30,7 @@
 
 #include "Magnum/Platform/Implementation/OpenGLFunctionLoader.h"
 
-void flextGLInit() {
+void flextGLInit(Magnum::GL::Context&) {
     Magnum::Platform::Implementation::OpenGLFunctionLoader loader;
 
     /* GL_ES_VERSION_3_1 */

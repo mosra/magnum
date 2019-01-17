@@ -28,6 +28,7 @@
 #include <Corrade/Utility/VisibilityMacros.h>
 
 #include "Magnum/configure.h"
+#include "Magnum/GL/GL.h"
 
 /* Defensive include guards */
 
@@ -63,7 +64,7 @@ extern "C" {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT /* So the macro names are preserved in the docs */
 
-void flextGLInit();
+void flextGLInit(Magnum::GL::Context& context);
 
 /* Function declaration macros */
 

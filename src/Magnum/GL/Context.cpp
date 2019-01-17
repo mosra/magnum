@@ -449,9 +449,9 @@ Context& Context::current() {
     return *currentContext;
 }
 
-Context::Context(NoCreateT, Int argc, const char** argv, void functionLoader()): Context{NoCreate, Utility::Arguments{"magnum"}, argc, argv, functionLoader} {}
+Context::Context(NoCreateT, Int argc, const char** argv, void functionLoader(Context&)): Context{NoCreate, Utility::Arguments{"magnum"}, argc, argv, functionLoader} {}
 
-Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader()): _functionLoader{functionLoader}, _version{Version::None} {
+Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader(Context&)): _functionLoader{functionLoader}, _version{Version::None} {
     /* Parse arguments */
     CORRADE_INTERNAL_ASSERT(args.prefix() == "magnum");
     args.addOption("disable-workarounds")
@@ -504,8 +504,9 @@ bool Context::tryCreate() {
     CORRADE_ASSERT(_version == Version::None,
         "Platform::Context::tryCreate(): context already created", false);
 
-    /* Load GL function pointers */
-    if(_functionLoader) _functionLoader();
+    /* Load GL function pointers. Pass this instance to it so it can use it for
+       potential driver-specific workarounds. */
+    if(_functionLoader) _functionLoader(*this);
 
     /* Initialize to something predictable to avoid crashes on improperly
        created contexts */

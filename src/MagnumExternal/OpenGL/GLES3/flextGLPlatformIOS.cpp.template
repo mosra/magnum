@@ -36,7 +36,7 @@
 
 #include <OpenGLES/ES3/glext.h>
 
-void flextGLInit() {
+void flextGLInit(Magnum::GL::Context&) {
     @for category,funcs in functions:
     @if funcs and category not in ['ES_VERSION_2_0', 'ES_VERSION_3_0']:
 

@@ -253,7 +253,7 @@
 
 #include <OpenGLES/ES3/glext.h>
 
-void flextGLInit() {
+void flextGLInit(Magnum::GL::Context&) {
 
     /* GL_ES_VERSION_3_1 */
     #if GL_ES_VERSION_3_1
