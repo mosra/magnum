@@ -86,23 +86,17 @@ typedef unsigned int GLenum;
 typedef unsigned char GLboolean;
 typedef unsigned int GLbitfield;
 typedef void GLvoid;
-typedef short GLshort;
+typedef khronos_uint8_t GLubyte;
 typedef int GLint;
-typedef unsigned short GLushort;
 typedef unsigned int GLuint;
 typedef int GLsizei;
-typedef char GLchar;
-typedef struct __GLsync *GLsync;
-typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar *message,const void *userParam);
-typedef khronos_int8_t GLbyte;
-typedef khronos_uint8_t GLubyte;
 typedef khronos_float_t GLfloat;
-typedef khronos_float_t GLclampf;
-typedef khronos_int32_t GLfixed;
-typedef khronos_int64_t GLint64;
-typedef khronos_uint64_t GLuint64;
+typedef char GLchar;
 typedef khronos_intptr_t GLintptr;
 typedef khronos_ssize_t GLsizeiptr;
+typedef khronos_int64_t GLint64;
+typedef khronos_uint64_t GLuint64;
+typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLenum severity,GLsizei length,const GLchar *message,const void *userParam);
 
 /* Enums */
 

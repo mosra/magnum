@@ -23,13 +23,12 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+add_subdirectory(KHR)
+
 if(NOT TARGET_GLES)
     add_subdirectory(GL)
+elseif(TARGET_GLES2)
+    add_subdirectory(GLES2)
 else()
-    add_subdirectory(KHR)
-    if(TARGET_GLES2)
-        add_subdirectory(GLES2)
-    else()
-        add_subdirectory(GLES3)
-    endif()
+    add_subdirectory(GLES3)
 endif()
