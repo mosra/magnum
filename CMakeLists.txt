@@ -116,7 +116,7 @@ cmake_dependent_option(TARGET_VK "Build libraries with Vulkan interoperability" 
 cmake_dependent_option(WITH_AL_INFO "Build magnum-al-info utility" OFF "WITH_AUDIO" OFF)
 
 # EGL context and windowless EGL application, available everywhere
-cmake_dependent_option(WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "NOT TARGET_GLES OR TARGET_DESKTOP_GLES OR NOT WITH_GL_INFO" ON)
+cmake_dependent_option(WITH_WINDOWLESSEGLAPPLICATION "Build WindowlessEglApplication library" OFF "NOT TARGET_GLES OR TARGET_DESKTOP_GLES OR NOT WITH_GL_INFO;NOT TARGET_HEADLESS" ON)
 option(WITH_EGLCONTEXT "Build EglContext library" OFF)
 
 # Android-specific application libraries
