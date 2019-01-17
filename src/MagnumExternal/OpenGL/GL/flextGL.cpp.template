@@ -30,12 +30,28 @@
 extern "C" {
 #endif
 @for category,funcs in functions:
-@if len(funcs) > 0 and category not in ['VERSION_1_0', 'VERSION_1_1']:
+@if len(funcs) > 0:
+@if category in ['VERSION_1_0', 'VERSION_1_1']:
+
+/* GL_@category */
+@for f in funcs:
+#undef gl@f.name
+@end
+@for f in funcs:
+GLAPI @f.returntype APIENTRY gl@f.name\
+(@f.param_type_list_string());
+@end
+@for f in funcs:
+FLEXTGL_EXPORT @f.returntype\
+(APIENTRY *flextgl@f.name)(@f.param_type_list_string()) = gl@f.name;
+@end
+@else:
 
 /* GL_@category */
 @for f in funcs:
 FLEXTGL_EXPORT @f.returntype\
 (APIENTRY *flextgl@f.name)(@f.param_type_list_string()) = nullptr;
+@end
 @end
 @end
 @end

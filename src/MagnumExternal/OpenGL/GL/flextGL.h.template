@@ -108,17 +108,10 @@ void flextGLInit(Magnum::GL::Context& context);
 
 /* GL_@cat */
 
-    @if cat in ['VERSION_1_0', 'VERSION_1_1']:
-        @for f in funcs:
-GLAPI FLEXTGL_EXPORT @f.returntype APIENTRY gl@f.name\
-(@f.param_type_list_string());
-        @end
-    @else:
-        @for f in funcs:
+    @for f in funcs:
 GLAPI FLEXTGL_EXPORT @f.returntype\
 (APIENTRY *flextgl@f.name)(@f.param_type_list_string());
 #define gl@f.name flextgl@f.name
-        @end
     @end
 @end
 @end

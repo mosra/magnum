@@ -31,8 +31,38 @@
 
 #include "Magnum/Platform/Implementation/OpenGLFunctionLoader.h"
 
+#ifdef MAGNUM_PLATFORM_USE_EGL
+#include <cstring>
+#include <EGL/egl.h>
+#include "Magnum/GL/Context.h"
+#endif
+
 void flextGLInit(Magnum::GL::Context& context) {
     Magnum::Platform::Implementation::OpenGLFunctionLoader loader;
+
+    #ifdef MAGNUM_PLATFORM_USE_EGL
+    {
+        /* EGL contexts on NVidia 390 drivers don't have correct statically
+           linked GL 1.0 and 1.1 functions (such as glGetString()) and one has
+           to retrieve them explicitly using eglGetProcAddress(). */
+        EGLDisplay display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+        const char* vendor = eglQueryString(display, EGL_VENDOR);
+        if(std::strcmp(vendor, "NVIDIA") == 0 && !context.isDriverWorkaroundDisabled("nv-egl-incorrect-gl11-function-pointers")) {
+            @for category,funcs in functions:
+            @if funcs and category in ['VERSION_1_0', 'VERSION_1_1']:
+
+            /* GL_@category */
+            @for f in funcs:
+            flextgl@f.name = reinterpret_cast<@f.returntype\
+(APIENTRY*)(@f.param_type_list_string())>(loader.load("gl@f.name"));
+            @end
+            @end
+            @end
+        }
+    }
+    #else
+    static_cast<void>(context);
+    #endif
     @for category,funcs in functions:
     @if funcs and category not in ['VERSION_1_0', 'VERSION_1_1']:
 

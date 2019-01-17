@@ -91,6 +91,14 @@ namespace {
         /* NVidia drivers return 0 when asked for GL_CONTEXT_PROFILE_MASK,
            so it needs to be worked around by asking for GL_ARB_compatibility */
         "nv-zero-context-profile-mask",
+
+        /* (Headless) EGL contexts for desktop GL on NVidia 384 and 390 drivers
+           don't have correct statically linked GL 1.0 and 1.1 functions (such
+           as glGetString()) and one has to retrieve them explicitly using
+           eglGetProcAddress(). Doesn't seem to happen on pre-384 and 396, but
+           it's not possible to get driver version through EGL, so enabling
+           this unconditionally on all EGL NV contexts. */
+        "nv-egl-incorrect-gl11-function-pointers",
         #endif
 
         #ifndef MAGNUM_TARGET_GLES

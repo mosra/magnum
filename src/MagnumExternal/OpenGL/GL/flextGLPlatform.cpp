@@ -30,8 +30,93 @@
 
 #include "Magnum/Platform/Implementation/OpenGLFunctionLoader.h"
 
+#ifdef MAGNUM_PLATFORM_USE_EGL
+#include <cstring>
+#include <EGL/egl.h>
+#include "Magnum/GL/Context.h"
+#endif
+
 void flextGLInit(Magnum::GL::Context& context) {
     Magnum::Platform::Implementation::OpenGLFunctionLoader loader;
+
+    #ifdef MAGNUM_PLATFORM_USE_EGL
+    {
+        /* EGL contexts on NVidia 390 drivers don't have correct statically
+           linked GL 1.0 and 1.1 functions (such as glGetString()) and one has
+           to retrieve them explicitly using eglGetProcAddress(). */
+        EGLDisplay display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+        const char* vendor = eglQueryString(display, EGL_VENDOR);
+        if(std::strcmp(vendor, "NVIDIA") == 0 && !context.isDriverWorkaroundDisabled("nv-egl-incorrect-gl11-function-pointers")) {
+
+            /* GL_VERSION_1_0 */
+            flextglBlendFunc = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(loader.load("glBlendFunc"));
+            flextglClear = reinterpret_cast<void(APIENTRY*)(GLbitfield)>(loader.load("glClear"));
+            flextglClearColor = reinterpret_cast<void(APIENTRY*)(GLfloat, GLfloat, GLfloat, GLfloat)>(loader.load("glClearColor"));
+            flextglClearDepth = reinterpret_cast<void(APIENTRY*)(GLdouble)>(loader.load("glClearDepth"));
+            flextglClearStencil = reinterpret_cast<void(APIENTRY*)(GLint)>(loader.load("glClearStencil"));
+            flextglColorMask = reinterpret_cast<void(APIENTRY*)(GLboolean, GLboolean, GLboolean, GLboolean)>(loader.load("glColorMask"));
+            flextglCullFace = reinterpret_cast<void(APIENTRY*)(GLenum)>(loader.load("glCullFace"));
+            flextglDepthFunc = reinterpret_cast<void(APIENTRY*)(GLenum)>(loader.load("glDepthFunc"));
+            flextglDepthMask = reinterpret_cast<void(APIENTRY*)(GLboolean)>(loader.load("glDepthMask"));
+            flextglDepthRange = reinterpret_cast<void(APIENTRY*)(GLdouble, GLdouble)>(loader.load("glDepthRange"));
+            flextglDisable = reinterpret_cast<void(APIENTRY*)(GLenum)>(loader.load("glDisable"));
+            flextglDrawBuffer = reinterpret_cast<void(APIENTRY*)(GLenum)>(loader.load("glDrawBuffer"));
+            flextglEnable = reinterpret_cast<void(APIENTRY*)(GLenum)>(loader.load("glEnable"));
+            flextglFinish = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glFinish"));
+            flextglFlush = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glFlush"));
+            flextglFrontFace = reinterpret_cast<void(APIENTRY*)(GLenum)>(loader.load("glFrontFace"));
+            flextglGetBooleanv = reinterpret_cast<void(APIENTRY*)(GLenum, GLboolean *)>(loader.load("glGetBooleanv"));
+            flextglGetDoublev = reinterpret_cast<void(APIENTRY*)(GLenum, GLdouble *)>(loader.load("glGetDoublev"));
+            flextglGetError = reinterpret_cast<GLenum(APIENTRY*)(void)>(loader.load("glGetError"));
+            flextglGetFloatv = reinterpret_cast<void(APIENTRY*)(GLenum, GLfloat *)>(loader.load("glGetFloatv"));
+            flextglGetIntegerv = reinterpret_cast<void(APIENTRY*)(GLenum, GLint *)>(loader.load("glGetIntegerv"));
+            flextglGetString = reinterpret_cast<const GLubyte *(APIENTRY*)(GLenum)>(loader.load("glGetString"));
+            flextglGetTexImage = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLenum, GLenum, void *)>(loader.load("glGetTexImage"));
+            flextglGetTexLevelParameterfv = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLenum, GLfloat *)>(loader.load("glGetTexLevelParameterfv"));
+            flextglGetTexLevelParameteriv = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLenum, GLint *)>(loader.load("glGetTexLevelParameteriv"));
+            flextglGetTexParameterfv = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLfloat *)>(loader.load("glGetTexParameterfv"));
+            flextglGetTexParameteriv = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLint *)>(loader.load("glGetTexParameteriv"));
+            flextglHint = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(loader.load("glHint"));
+            flextglIsEnabled = reinterpret_cast<GLboolean(APIENTRY*)(GLenum)>(loader.load("glIsEnabled"));
+            flextglLineWidth = reinterpret_cast<void(APIENTRY*)(GLfloat)>(loader.load("glLineWidth"));
+            flextglLogicOp = reinterpret_cast<void(APIENTRY*)(GLenum)>(loader.load("glLogicOp"));
+            flextglPixelStoref = reinterpret_cast<void(APIENTRY*)(GLenum, GLfloat)>(loader.load("glPixelStoref"));
+            flextglPixelStorei = reinterpret_cast<void(APIENTRY*)(GLenum, GLint)>(loader.load("glPixelStorei"));
+            flextglPointSize = reinterpret_cast<void(APIENTRY*)(GLfloat)>(loader.load("glPointSize"));
+            flextglPolygonMode = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum)>(loader.load("glPolygonMode"));
+            flextglReadBuffer = reinterpret_cast<void(APIENTRY*)(GLenum)>(loader.load("glReadBuffer"));
+            flextglReadPixels = reinterpret_cast<void(APIENTRY*)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, void *)>(loader.load("glReadPixels"));
+            flextglScissor = reinterpret_cast<void(APIENTRY*)(GLint, GLint, GLsizei, GLsizei)>(loader.load("glScissor"));
+            flextglStencilFunc = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLuint)>(loader.load("glStencilFunc"));
+            flextglStencilMask = reinterpret_cast<void(APIENTRY*)(GLuint)>(loader.load("glStencilMask"));
+            flextglStencilOp = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLenum)>(loader.load("glStencilOp"));
+            flextglTexImage1D = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLint, GLsizei, GLint, GLenum, GLenum, const void *)>(loader.load("glTexImage1D"));
+            flextglTexImage2D = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLint, GLsizei, GLsizei, GLint, GLenum, GLenum, const void *)>(loader.load("glTexImage2D"));
+            flextglTexParameterf = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLfloat)>(loader.load("glTexParameterf"));
+            flextglTexParameterfv = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, const GLfloat *)>(loader.load("glTexParameterfv"));
+            flextglTexParameteri = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLint)>(loader.load("glTexParameteri"));
+            flextglTexParameteriv = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, const GLint *)>(loader.load("glTexParameteriv"));
+            flextglViewport = reinterpret_cast<void(APIENTRY*)(GLint, GLint, GLsizei, GLsizei)>(loader.load("glViewport"));
+
+            /* GL_VERSION_1_1 */
+            flextglBindTexture = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint)>(loader.load("glBindTexture"));
+            flextglCopyTexImage1D = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLenum, GLint, GLint, GLsizei, GLint)>(loader.load("glCopyTexImage1D"));
+            flextglCopyTexImage2D = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLenum, GLint, GLint, GLsizei, GLsizei, GLint)>(loader.load("glCopyTexImage2D"));
+            flextglCopyTexSubImage1D = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLint, GLint, GLint, GLsizei)>(loader.load("glCopyTexSubImage1D"));
+            flextglCopyTexSubImage2D = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLint, GLint, GLint, GLint, GLsizei, GLsizei)>(loader.load("glCopyTexSubImage2D"));
+            flextglDeleteTextures = reinterpret_cast<void(APIENTRY*)(GLsizei, const GLuint *)>(loader.load("glDeleteTextures"));
+            flextglDrawArrays = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLsizei)>(loader.load("glDrawArrays"));
+            flextglDrawElements = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, const void *)>(loader.load("glDrawElements"));
+            flextglGenTextures = reinterpret_cast<void(APIENTRY*)(GLsizei, GLuint *)>(loader.load("glGenTextures"));
+            flextglIsTexture = reinterpret_cast<GLboolean(APIENTRY*)(GLuint)>(loader.load("glIsTexture"));
+            flextglPolygonOffset = reinterpret_cast<void(APIENTRY*)(GLfloat, GLfloat)>(loader.load("glPolygonOffset"));
+            flextglTexSubImage1D = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLint, GLsizei, GLenum, GLenum, const void *)>(loader.load("glTexSubImage1D"));
+            flextglTexSubImage2D = reinterpret_cast<void(APIENTRY*)(GLenum, GLint, GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, const void *)>(loader.load("glTexSubImage2D"));
+        }
+    }
+    #else
+    static_cast<void>(context);
+    #endif
 
     /* GL_ARB_ES3_2_compatibility */
     flextglPrimitiveBoundingBoxARB = reinterpret_cast<void(APIENTRY*)(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat)>(loader.load("glPrimitiveBoundingBoxARB"));
