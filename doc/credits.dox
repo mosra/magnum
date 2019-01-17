@@ -67,6 +67,8 @@ There's also a list of @ref credits-contributors "people and organizations that 
 /** @page credits-contributors Contributors
 @brief People and organizations that contributed to Magnum
 
+@m_keywords{Credits}
+
 Listing only people with code contributions or other significant work, because
 otherwise there's too many :) There's also a @ref corrade-credits-contributors "similar list for Corrade"
 and a list of @ref credits-third-party "third party components with their license info".
