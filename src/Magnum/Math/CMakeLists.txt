@@ -48,6 +48,7 @@ set(MagnumMath_HEADERS
     Packing.h
     Range.h
     RectangularMatrix.h
+    Simd.h
     StrictWeakOrdering.h
     Swizzle.h
     Tags.h
