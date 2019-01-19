@@ -878,6 +878,40 @@ Debug{} << Math::Vector3<UnsignedShort>{a};  // prints {16968, 48552, 15993}
 }
 
 {
+/* [unpack-template-explicit] */
+// Literal type is (signed) char, but we assumed unsigned char, a != 1.0f
+Float a = Math::unpack<Float>('\xFF');
+
+// b = 1.0f
+Float b = Math::unpack<Float, UnsignedByte>('\xFF');
+/* [unpack-template-explicit] */
+static_cast<void>(a);
+static_cast<void>(b);
+}
+
+{
+/* [unpack] */
+Float a = Math::unpack<Float, UnsignedShort>(8191);     // 0.124987f
+Float b = Math::unpack<Float, UnsignedShort, 14>(8191); // 0.499969f
+Float c = Math::unpack<Float, 14>(8191u);               // 0.499969f
+Float d = Math::unpack<Float, 14>(8191);                // 1.0f
+/* [unpack] */
+static_cast<void>(a);
+static_cast<void>(b);
+static_cast<void>(c);
+static_cast<void>(d);
+}
+
+{
+/* [pack] */
+auto a = Math::pack<UnsignedShort>(0.5f);     // 32767
+auto b = Math::pack<UnsignedShort, 14>(0.5f); // 8191
+/* [pack] */
+static_cast<void>(a);
+static_cast<void>(b);
+}
+
+{
 Range1D range, a, b;
 constexpr UnsignedInt dimensions = 1;
 typedef Float T;

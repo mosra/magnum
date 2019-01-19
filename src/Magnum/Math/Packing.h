@@ -57,13 +57,7 @@ value in range @f$ [0, 1] @f$ or from *signed* integral to range @f$ [-1, 1] @f$
     To ensure the integral type is correctly detected when using literals, this
     function should be called with both template parameters explicit, e.g.:
 @attention
-    @code{.cpp}
-    // Literal type is (signed) char, but we assumed unsigned char, a != 1.0f
-    Float a = Math::unpack<Float>('\xFF');
-
-    // b = 1.0f
-    Float b = Math::unpack<Float, UnsignedByte>('\xFF');
-    @endcode
+    @snippet MagnumMath.cpp unpack-template-explicit
 
 @see @ref pack()
 */
@@ -75,12 +69,7 @@ template<class FloatingPoint, class Integral> inline FloatingPoint unpack(const 
 Alternative to the above with ability to specify how many bits of the integral
 representation to use. Example usage:
 
-@code{.cpp}
-Float a = Math::unpack<Float, UnsignedShort>(8191);     // 0.124987f
-Float b = Math::unpack<Float, UnsignedShort, 14>(8191); // 0.499969f
-Float b = Math::unpack<Float, 14>(8191u);               // 0.499969f
-Float b = Math::unpack<Float, 14>(8191);                // 1.0f
-@endcode
+@snippet MagnumMath.cpp unpack
 */
 template<class FloatingPoint, class Integral, UnsignedInt bits> inline FloatingPoint unpack(const Integral& value);
 #else
@@ -124,14 +113,14 @@ template<class FloatingPoint, UnsignedInt bits, std::size_t size, class Integral
 /**
 @brief Pack floating-point value into an integer representation
 
-Converts floating-point value in range @f$ [0, 1] @f$ to full range of given
-*unsigned* integral type or range @f$ [-1, 1] @f$ to full range of given *signed*
-integral type.
+Converts floating-point value in range @f$ [0, 1] @f$ to full range of
+given *unsigned* integral type or range @f$ [-1, 1] @f$ to full range of
+given *signed* integral type.
 
 @note For best precision, `FloatingPoint` type should be always larger that
     resulting `Integral` type (e.g. @ref Magnum::Float "Float" to
-    @ref Magnum::Short "Short", @ref Magnum::Double "Double" to @ref Magnum::Int "Int"
-    and similarly for vector types).
+    @ref Magnum::Short "Short", @ref Magnum::Double "Double" to
+    @ref Magnum::Int "Int" and similarly for vector types).
 
 @attention Return value for floating point numbers outside the normalized
     range is undefined.
@@ -164,10 +153,7 @@ template<class Integral, std::size_t size, class FloatingPoint, UnsignedInt bits
 Alternative to the above with ability to specify how many bits of the integral
 representation to use. Example usage:
 
-@code{.cpp}
-auto a = Math::pack<UnsignedShort>(0.5f);     // 32767
-auto b = Math::pack<UnsignedShort, 14>(0.5f); // 8191
-@endcode
+@snippet MagnumMath.cpp pack
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class Integral, UnsignedInt bits, class FloatingPoint> inline Integral pack(FloatingPoint value);
