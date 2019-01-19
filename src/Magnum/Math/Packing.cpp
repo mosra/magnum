@@ -25,6 +25,10 @@
 
 #include "Packing.h"
 
+#include <emmintrin.h>
+#include <smmintrin.h>
+#include <immintrin.h>
+
 namespace Magnum { namespace Math {
 
 namespace {
@@ -99,6 +103,73 @@ UnsignedShort packHalf(const Float value) {
 
     h |= sign >> 16;
     return h;
+}
+
+namespace Implementation {
+
+void unpackUnsignedByteToShort(Simd::NoneT, const Corrade::Containers::ArrayView<const UnsignedByte> in, const Corrade::Containers::ArrayView<UnsignedShort> out) {
+    for(std::size_t i = 0; i < in.size(); ++i) out[i] = in[i];
+}
+
+void unpackUnsignedByteToShort(Simd::Sse2T, const Corrade::Containers::ArrayView<const UnsignedByte> in, const Corrade::Containers::ArrayView<UnsignedShort> out) {
+    const __m128i* in128 = reinterpret_cast<const __m128i*>(in.data());
+    __m128i* out128 = reinterpret_cast<__m128i*>(out.data());
+    for(std::size_t i = 0; i < in.size()/16; ++i) {
+        __m128i a = _mm_loadu_si128(in128 + i);
+        _mm_storeu_si128(out128 + i*2 + 0, _mm_unpacklo_epi8(a, _mm_setzero_si128()));
+        _mm_storeu_si128(out128 + i*2 + 1, _mm_unpacklo_epi8(a, _mm_setzero_si128()));
+    }
+}
+
+void unpackUnsignedByteToShort(Simd::Sse41T, const Corrade::Containers::ArrayView<const UnsignedByte> in, const Corrade::Containers::ArrayView<UnsignedShort> out) {
+    const __m128i* in128 = reinterpret_cast<const __m128i*>(in.data());
+    __m128i* out128 = reinterpret_cast<__m128i*>(out.data());
+    for(std::size_t i = 0; i < in.size()/16; ++i) {
+        __m128i a = _mm_loadu_si128(in128 + i);
+        _mm_storeu_si128(out128 + i*2 + 0, _mm_cvtepu8_epi16(a));
+        _mm_storeu_si128(out128 + i*2 + 1, _mm_cvtepu8_epi16(_mm_srli_si128(a, 8)));
+    }
+}
+
+void unpackUnsignedByteToShort(Simd::Avx2T, const Corrade::Containers::ArrayView<const UnsignedByte> in, const Corrade::Containers::ArrayView<UnsignedShort> out) {
+    const __m128i* in128 = reinterpret_cast<const __m128i*>(in.data());
+    __m256i* out256 = reinterpret_cast<__m256i*>(out.data());
+    for(std::size_t i = 0; i < in.size()/16; ++i) {
+        __m128i a = _mm_load_si128(in128 + i);
+        _mm256_store_si256(out256 + i, _mm256_cvtepu8_epi16(a));
+    }
+}
+
+}
+
+namespace {
+
+__attribute__ ((target ("default"))) void unpackUnsignedByteToShortDispatch(const Corrade::Containers::ArrayView<const UnsignedByte> in, const Corrade::Containers::ArrayView<UnsignedShort> out) {
+    Implementation::unpackUnsignedByteToShort(Simd::Sse2, in, out);
+}
+
+// TODO: why gcc complains about unused functions here?!
+__attribute__ ((target ("sse2"))) void unpackUnsignedByteToShortDispatch(const Corrade::Containers::ArrayView<const UnsignedByte> in, const Corrade::Containers::ArrayView<UnsignedShort> out) {
+    Implementation::unpackUnsignedByteToShort(Simd::Sse2, in, out);
+}
+
+__attribute__ ((target ("sse4.1"))) void unpackUnsignedByteToShortDispatch(const Corrade::Containers::ArrayView<const UnsignedByte> in, const Corrade::Containers::ArrayView<UnsignedShort> out) {
+    Implementation::unpackUnsignedByteToShort(Simd::Sse41, in, out);
+}
+
+__attribute__ ((target ("avx2"))) void unpackUnsignedByteToShortDispatch(const Corrade::Containers::ArrayView<const UnsignedByte> in, const Corrade::Containers::ArrayView<UnsignedShort> out) {
+    Implementation::unpackUnsignedByteToShort(Simd::Sse41, in, out);
+}
+
+}
+
+void unpackUnsignedByteToShort(const Corrade::Containers::ArrayView<const UnsignedByte> in, const Corrade::Containers::ArrayView<UnsignedShort> out) {
+    CORRADE_ASSERT(in.size() == out.size(), "Math::unpackUnsignedByteToShort(): input has" << in.size() << "elements while output has" << out.size(), );
+    CORRADE_ASSERT(!(reinterpret_cast<std::uintptr_t>(in.data())%16) && !(reinterpret_cast<std::uintptr_t>(in.data())%16), "Math::unpackUnsignedByteToShort(): the data are not 16-byte aligned", );
+
+    /** @todo run only for a multiple of 16, do the rest scalar */
+    CORRADE_INTERNAL_ASSERT(!(in.size()%16));
+    unpackUnsignedByteToShortDispatch(in, out);
 }
 
 }}

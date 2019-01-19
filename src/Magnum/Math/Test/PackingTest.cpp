@@ -24,6 +24,7 @@
 */
 
 #include <limits>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Packing.h"
@@ -46,6 +47,9 @@ struct PackingTest: Corrade::TestSuite::Tester {
 
     /* Half (un)pack functions are tested and benchmarked in HalfTest.cpp,
        because there's involved comparison and benchmarks to ground truth */
+
+    void unpackUnsignedByteToShortBenchmark();
+    template<class T> void unpackUnsignedByteToShortBenchmark();
 };
 
 typedef Math::Vector3<Float> Vector3;
@@ -62,6 +66,14 @@ PackingTest::PackingTest() {
               &PackingTest::reunpackUnsinged,
               &PackingTest::reunpackSinged,
               &PackingTest::unpackTypeDeduction});
+
+    addBenchmarks<PackingTest>({
+        &PackingTest::unpackUnsignedByteToShortBenchmark,
+        &PackingTest::unpackUnsignedByteToShortBenchmark<Simd::NoneT>,
+        &PackingTest::unpackUnsignedByteToShortBenchmark<Simd::Sse2T>,
+        &PackingTest::unpackUnsignedByteToShortBenchmark<Simd::Sse41T>,
+        &PackingTest::unpackUnsignedByteToShortBenchmark<Simd::Avx2T>
+    }, 1000);
 }
 
 void PackingTest::bitMax() {
@@ -277,6 +289,44 @@ void PackingTest::unpackTypeDeduction() {
         CORRADE_COMPARE(Math::unpack<Float>('\x7F'), 0.498039f);
     }
     CORRADE_COMPARE((Math::unpack<Float, Byte>('\x7F')), 1.0f);
+}
+
+void PackingTest::unpackUnsignedByteToShortBenchmark() {
+    Corrade::Containers::Array<UnsignedByte> in{20000};
+    Corrade::Containers::Array<UnsignedShort> out{20000};
+    UnsignedByte a = 0;
+    for(auto& i: in) i = a++;
+
+    CORRADE_BENCHMARK(100)
+        unpackUnsignedByteToShort(in, out);
+}
+
+// TODO: uh provide this elsewhere
+template<class> struct SimdTraits;
+template<> struct SimdTraits<Simd::NoneT> {
+    static const char* name() { return "unpackUnsignedByteToShortBenchmark<Simd::NoneT>"; }
+};
+template<> struct SimdTraits<Simd::Sse2T> {
+    static const char* name() { return "unpackUnsignedByteToShortBenchmark<Simd::Sse2T>"; }
+};
+template<> struct SimdTraits<Simd::Sse41T> {
+    static const char* name() { return "unpackUnsignedByteToShortBenchmark<Simd::Sse41T>"; }
+};
+template<> struct SimdTraits<Simd::Avx2T> {
+    static const char* name() { return "unpackUnsignedByteToShortBenchmark<Simd::Avx2T>"; }
+};
+
+template<class T> void PackingTest::unpackUnsignedByteToShortBenchmark() {
+    setTestCaseName(SimdTraits<T>::name());
+
+    Corrade::Containers::Array<UnsignedByte> in{20000};
+    Corrade::Containers::Array<UnsignedShort> out{20000};
+    UnsignedByte a = 0;
+    for(auto& i: in) i = a++;
+
+    CORRADE_BENCHMARK(100)
+        // TODO: uh the typename wat
+        Implementation::unpackUnsignedByteToShort(T{typename T::Init{}}, in, out);
 }
 
 }}}}
