@@ -59,7 +59,7 @@ given key doesn't exist, default fallback is used.
 Example usage: visualizing object position, rotation and scaling using
 @ref DebugTools::ObjectRenderer :
 
-@snippet MagnumDebugTools.cpp debug-tools-renderers
+@snippet MagnumDebugTools-gl.cpp debug-tools-renderers
 
 See @ref DebugTools::ObjectRenderer and @ref DebugTools::ShapeRenderer for more
 information.

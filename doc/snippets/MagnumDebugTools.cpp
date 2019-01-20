@@ -25,15 +25,12 @@
 
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/PluginManager/Manager.h>
-#include <Magnum/Image.h>
-#include <Magnum/PixelFormat.h>
-#include <Magnum/DebugTools/CompareImage.h>
-#include <Magnum/DebugTools/ResourceManager.h>
-#include <Magnum/DebugTools/ObjectRenderer.h>
-#include <Magnum/SceneGraph/Drawable.h>
-#include <Magnum/SceneGraph/Object.h>
-#include <Magnum/SceneGraph/MatrixTransformation3D.h>
-#include <Magnum/Trade/AbstractImporter.h>
+
+#include "Magnum/Image.h"
+#include "Magnum/PixelFormat.h"
+#include "Magnum/DebugTools/CompareImage.h"
+#include "Magnum/Math/Color.h"
+#include "Magnum/Trade/AbstractImporter.h"
 
 using namespace Magnum;
 
@@ -92,23 +89,3 @@ CORRADE_COMPARE_WITH("actual.png", expected,
 }
 }
 };
-
-int main() {
-{
-SceneGraph::Object<SceneGraph::MatrixTransformation3D>* object{};
-/* [debug-tools-renderers] */
-// Global instance of debug resource manager, drawable group for the renderers
-DebugTools::ResourceManager manager;
-SceneGraph::DrawableGroup3D debugDrawables;
-
-// Create renderer options which will be referenced later by "my" resource key
-DebugTools::ResourceManager::instance().set("my",
-    DebugTools::ObjectRendererOptions{}.setSize(0.3f));
-
-// Create debug renderer for given object, use "my" options for it. The
-// renderer is automatically added to the object features and also to
-// specified drawable group.
-new DebugTools::ObjectRenderer3D{*object, "my", &debugDrawables};
-/* [debug-tools-renderers] */
-}
-}

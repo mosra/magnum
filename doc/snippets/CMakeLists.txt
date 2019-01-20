@@ -92,24 +92,31 @@ if(WITH_DEBUGTOOLS)
         MagnumDebugTools.cpp)
     target_link_libraries(snippets-MagnumDebugTools PRIVATE MagnumDebugTools)
     set_target_properties(snippets-MagnumDebugTools PROPERTIES FOLDER "Magnum/doc/snippets")
-endif()
 
-# TODO: causes spurious linker errors on Travis iOS build, so I'm disabling it
-if(WITH_DEBUGTOOLS AND Corrade_TestSuite_FOUND AND NOT CORRADE_TARGET_IOS)
-    set(SNIPPETS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+    # TODO: causes spurious linker errors on Travis iOS build, so I'm disabling it
+    if(NOT CORRADE_TARGET_IOS)
+        set(SNIPPETS_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                       ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
-    # CompareImage documentation snippet. I need it executable so I can
-    # copy&paste the output to the documentation. Also not using
-    # corrade_add_test() because it shouldn't be run as part of CTest as it
-    # purposedly fails.
-    add_executable(debugtools-compareimage debugtools-compareimage.cpp)
-    target_link_libraries(debugtools-compareimage PRIVATE
-        MagnumDebugTools
-        MagnumTrade)
-    target_include_directories(debugtools-compareimage PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-    set_target_properties(debugtools-compareimage PROPERTIES FOLDER "Magnum/doc/snippets")
+        # CompareImage documentation snippet. I need it executable so I can
+        # copy&paste the output to the documentation. Also not using
+        # corrade_add_test() because it shouldn't be run as part of CTest as it
+        # purposedly fails.
+        add_executable(debugtools-compareimage debugtools-compareimage.cpp)
+        target_link_libraries(debugtools-compareimage PRIVATE
+            MagnumDebugTools
+            MagnumTrade)
+        target_include_directories(debugtools-compareimage PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+        set_target_properties(debugtools-compareimage PROPERTIES FOLDER "Magnum/doc/snippets")
+    endif()
+
+    if(TARGET_GL)
+        add_library(snippets-MagnumDebugTools-gl STATIC
+            MagnumDebugTools-gl.cpp)
+        target_link_libraries(snippets-MagnumDebugTools-gl PRIVATE MagnumDebugTools)
+        set_target_properties(snippets-MagnumDebugTools-gl PROPERTIES FOLDER "Magnum/doc/snippets")
+    endif()
 endif()
 
 if(WITH_PRIMITIVES)

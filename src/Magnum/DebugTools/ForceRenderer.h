@@ -97,16 +97,7 @@ See @ref debug-tools-renderers for more information.
 
 Example code:
 
-@code{.cpp}
-DebugTools::ResourceManager::instance().set("my", DebugTools::ForceRendererOptions()
-    .setScale(5.0f)
-    .setColor(Color3::fromHSV(120.0_degf, 1.0f, 0.7f));
-
-// Create debug renderer for given object, use "my" options for it
-Object3D* object;
-Vector3 force;
-new DebugTools::ForceRenderer2D(object, {0.3f, 1.5f, -0.7f}, &force, "my", debugDrawables);
-@endcode
+@snippet MagnumDebugTools-gl.cpp ForceRenderer
 
 @note This class is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL "TARGET_GL" and `WITH_SCENEGRAPH` enabled (done by
