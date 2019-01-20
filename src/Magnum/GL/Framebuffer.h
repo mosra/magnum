@@ -490,10 +490,7 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * used, you can achieve the same by passing @ref Framebuffer::DrawAttachment::None
          * as color attachment ID. Example usage:
          *
-         * @code{.cpp}
-         * framebuffer.mapForDraw({{MyShader::ColorOutput, Framebuffer::ColorAttachment(0)},
-         *                         {MyShader::NormalOutput, Framebuffer::DrawAttachment::None}});
-         * @endcode
+         * @snippet MagnumGL.cpp Framebuffer-mapForDraw
          *
          * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
          * nor @gl_extension{EXT,direct_state_access} desktop extension is

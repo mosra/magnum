@@ -40,7 +40,8 @@ void viewportEvent(ViewportEvent& event) override {
 
 /* [DefaultFramebuffer-usage-clear] */
 void drawEvent() override {
-    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth);
+    GL::defaultFramebuffer.clear(GL::FramebufferClear::Color|
+                                 GL::FramebufferClear::Depth);
 
     // ...
 }
@@ -54,7 +55,9 @@ GL::Framebuffer framebuffer;
 /* [Framebuffer-usage-draw] */
 void drawEvent() override {
     GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
-    framebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth|GL::FramebufferClear::Stencil);
+    framebuffer.clear(GL::FramebufferClear::Color|
+                      GL::FramebufferClear::Depth|
+                      GL::FramebufferClear::Stencil);
 
     framebuffer.bind();
     // ...

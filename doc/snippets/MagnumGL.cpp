@@ -894,7 +894,8 @@ GL::Renderbuffer depthStencil;
 
 framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{0}, color, 0);
 framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{1}, normal, 0);
-framebuffer.attachRenderbuffer(GL::Framebuffer::BufferAttachment::DepthStencil, depthStencil);
+framebuffer.attachRenderbuffer(
+    GL::Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 /* [Framebuffer-usage-attach] */
 }
 #endif
@@ -908,9 +909,16 @@ struct MyShader {
 };
 GL::Framebuffer framebuffer{{}};
 /* [Framebuffer-usage-map] */
-framebuffer.mapForDraw({{MyShader::ColorOutput, GL::Framebuffer::ColorAttachment(0)},
-                        {MyShader::NormalOutput, GL::Framebuffer::ColorAttachment(1)}});
+framebuffer.mapForDraw({
+    {MyShader::ColorOutput, GL::Framebuffer::ColorAttachment(0)},
+    {MyShader::NormalOutput, GL::Framebuffer::ColorAttachment(1)}});
 /* [Framebuffer-usage-map] */
+
+/* [Framebuffer-mapForDraw] */
+framebuffer.mapForDraw({
+    {MyShader::ColorOutput, GL::Framebuffer::ColorAttachment(0)},
+    {MyShader::NormalOutput, GL::Framebuffer::DrawAttachment::None}});
+/* [Framebuffer-mapForDraw] */
 }
 
 {
@@ -1234,6 +1242,15 @@ GL::CompressedBufferImage2D image = texture.compressedSubImage(range, {},
 /* [RectangleTexture-compressedSubImage2] */
 }
 #endif
+
+{
+GL::Renderer::Feature feature = GL::Renderer::Feature::Blending;
+bool enabled{};
+/* [Renderer-setFeature] */
+enabled ? GL::Renderer::enable(feature) : GL::Renderer::disable(feature)
+/* [Renderer-setFeature] */
+;
+}
 
 #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 {

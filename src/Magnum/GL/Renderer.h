@@ -331,9 +331,7 @@ class MAGNUM_GL_EXPORT Renderer {
          *
          * Convenience equivalent to the following:
          *
-         * @code{.cpp}
-         * enabled ? Renderer::enable(feature) : Renderer::disable(feature)
-         * @endcode
+         * @snippet MagnumGL.cpp Renderer-setFeature
          *
          * Prefer to use @ref enable() and @ref disable() directly to avoid
          * unnecessary branching.
