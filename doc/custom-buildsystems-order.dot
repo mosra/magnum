@@ -76,7 +76,8 @@ digraph "Magnum library dependency order" {
 
     MagnumGL -> Magnum
 
-    MagnumMeshTools -> Magnum
+    MagnumMeshTools -> MagnumTrade
+    MagnumMeshTools -> MagnumGL [style=dotted]
 
     MagnumOpenGLTester -> MagnumWindowlessApplication
 

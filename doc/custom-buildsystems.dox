@@ -58,9 +58,12 @@ libraries are extra functionality. Some libraries have cyclic dependencies, in
 which case they are both compiled into a single library, the other part of the
 cyclic dependency marked with a dotted rectangle. Deprecated libraries that are
 scheduled for removal are marked with a @m_span{m-text m-dim} dim @m_endspan
-color. In some cases a dependency is optional and you can remove the dependency
-by not disabling parts or configuration options that require given dependency.
-See documentation of each library for more information.
+color. In some cases a dependency is optional (marked with a dotted line) and
+you can remove the dependency by disabling parts or configuration options that
+require given dependency. See documentation of each library for more
+information.
+
+@todo make this diagram clickable once [the dumpster fire](https://github.com/mosra/m.css/pull/69) is fixed
 
 @m_div{m-container-inflate} @m_div{m-row} @m_div{m-col-m-12 m-nopadt}
 @dotfile custom-buildsystems-order.dot
@@ -130,6 +133,7 @@ https://github.com/mosra/toolchains.
 @todoc mention configure.h generation from .cmake templates
 @todoc mention resources for shaders etc.
 @todoc mention various platform-specific
+@todoc mention dependency on GL, AL; `dl` for GLFW and SDL apps on Linux (and various frameworks on mac+iOS)
 
 */
 
