@@ -134,12 +134,12 @@ but there is no need to change the above code, as it will work for both dynamic
 and static case.
 
 The static plugin needs to be explicitly registered so the plugin manager is
-aware it's there. If you use CMake 3.1 and newer it's done automatically.
-Otherwise, you can achieve the same if you explicitly @cpp #include @ce the
-static plugin import file (named `importStaticPlugin.cpp`, residing in plugin's
-include directory) in a source file that gets compiled into your main
-application. The static import file contains just a simple call to
-@ref CORRADE_PLUGIN_IMPORT(), see its documentation for further information.
+aware it's there. If you use CMake, it's done automatically. Otherwise, you can
+achieve the same if you explicitly @cpp #include @ce the static plugin import
+file (named `importStaticPlugin.cpp`, residing in plugin's include directory)
+in a source file that gets compiled into your main application. The static
+import file contains just a simple call to @ref CORRADE_PLUGIN_IMPORT(), see
+its documentation for further information.
 
 @snippet plugins.cpp static-import
 

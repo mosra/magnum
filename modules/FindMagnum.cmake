@@ -889,10 +889,9 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
             mark_as_advanced(_MAGNUM_${_COMPONENT}_INCLUDE_DIR)
         endif()
 
-        # Automatic import of static plugins on CMake >= 3.1. Skip in case the
-        # include dir was not found -- that'll fail later with a proper
-        # message.
-        if(_component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS} AND NOT CMAKE_VERSION VERSION_LESS 3.1 AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
+        # Automatic import of static plugins. Skip in case the include dir was
+        # not found -- that'll fail later with a proper message.
+        if(_component MATCHES ${_MAGNUM_PLUGIN_COMPONENTS} AND _MAGNUM_${_COMPONENT}_INCLUDE_DIR)
             # Automatic import of static plugins
             file(READ ${_MAGNUM_${_COMPONENT}_INCLUDE_DIR}/configure.h _magnum${_component}Configure)
             string(FIND "${_magnum${_component}Configure}" "#define MAGNUM_${_COMPONENT}_BUILD_STATIC" _magnum${_component}_BUILD_STATIC)

@@ -165,13 +165,6 @@ if(WITH_SDL2APPLICATION)
         getting-started-blue
         snippets-MagnumPlatform
         PROPERTIES FOLDER "Magnum/doc/snippets")
-    # Otherwise it's not linked correctly. I have no idea why, but whatever.
-    if(CMAKE_VERSION VERSION_LESS 3.0)
-        find_package(SDL2 REQUIRED)
-        target_link_libraries(getting-started PRIVATE SDL2::SDL2)
-        target_link_libraries(getting-started-blue PRIVATE SDL2::SDL2)
-        target_link_libraries(snippets-MagnumPlatform PRIVATE SDL2::SDL2)
-    endif()
 endif()
 
 if((NOT TARGET_GLES AND WITH_SDL2APPLICATION) OR (TARGET_GLES AND WITH_XEGLAPPLICATION))
@@ -185,11 +178,6 @@ if((NOT TARGET_GLES AND WITH_SDL2APPLICATION) OR (TARGET_GLES AND WITH_XEGLAPPLI
     set_target_properties(
         snippets-MagnumPlatform-portability
         PROPERTIES FOLDER "Magnum/doc/snippets")
-    # Otherwise it's not linked correctly. I have no idea why, but whatever.
-    if(CMAKE_VERSION VERSION_LESS 3.0)
-        find_package(SDL2 REQUIRED)
-        target_link_libraries(snippets-MagnumPlatform-portability PRIVATE SDL2::SDL2)
-    endif()
 endif()
 
 if(WITH_WINDOWLESSEGLAPPLICATION)

@@ -53,9 +53,7 @@ install(FILES MagnumFont.h ${CMAKE_CURRENT_BINARY_DIR}/configure.h
 # Automatic static plugin import
 if(BUILD_PLUGINS_STATIC)
     install(FILES importStaticPlugin.cpp DESTINATION ${MAGNUM_PLUGINS_INCLUDE_INSTALL_DIR}/MagnumFont)
-    if(NOT CMAKE_VERSION VERSION_LESS 3.1)
-        target_sources(MagnumFont INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/importStaticPlugin.cpp)
-    endif()
+    target_sources(MagnumFont INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/importStaticPlugin.cpp)
 endif()
 
 if(BUILD_GL_TESTS)
