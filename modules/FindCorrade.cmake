@@ -387,8 +387,8 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
             endif()
         endif()
 
-        # Header-only library components (CMake >= 3.0)
-        if(_component MATCHES ${_CORRADE_HEADER_ONLY_COMPONENTS} AND NOT CMAKE_VERSION VERSION_LESS 3.0.0)
+        # Header-only library components
+        if(_component MATCHES ${_CORRADE_HEADER_ONLY_COMPONENTS})
             add_library(Corrade::${_component} INTERFACE IMPORTED)
         endif()
 
