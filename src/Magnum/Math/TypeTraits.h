@@ -147,11 +147,7 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
      * the magnitude of original values so the epsilon can be properly scaled.
      * In other words, the following lines are equivalent:
      *
-     * @code{.cpp}
-     * Float a, b;
-     * Math::TypeTraits<Float>::equals(a, b);
-     * Math::TypeTraits<Float>::equalsZero(a - b, Math::max(Math::abs(a), Math::abs(b)));
-     * @endcode
+     * @snippet MagnumMath.cpp TypeTraits-equalsZero
      */
     static bool equalsZero(T a, T magnitude);
     #endif

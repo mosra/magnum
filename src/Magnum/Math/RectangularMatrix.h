@@ -142,11 +142,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:
          *
-         * @code{.cpp}
-         * RectangularMatrix<4, 1, Float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
-         * RectangularMatrix<4, 1, Byte> integral(floatingPoint);
-         * // integral == {1, 2, -15, 7}
-         * @endcode
+         * @snippet MagnumMath.cpp RectangularMatrix-conversion
          */
         template<class U> constexpr explicit RectangularMatrix(const RectangularMatrix<cols, rows, U>& other) noexcept: RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), other) {}
 
@@ -177,10 +173,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          * Particular elements can be accessed using @ref Vector::operator[](),
          * e.g.:
          *
-         * @code{.cpp}
-         * RectangularMatrix<4, 3, Float> m;
-         * Float a = m[2][1];
-         * @endcode
+         * @snippet MagnumMath.cpp RectangularMatrix-access
          *
          * @see @ref row(), @ref data()
          */

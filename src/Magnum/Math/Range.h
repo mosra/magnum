@@ -134,10 +134,7 @@ template<UnsignedInt dimensions, class T> class Range {
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:
          *
-         * @code{.cpp}
-         * Range2D<Float> floatingPoint({1.3f, 2.7f}, {-15.0f, 7.0f});
-         * Range2D<Byte> integral(floatingPoint); // {{1, 2}, {-15, 7}}
-         * @endcode
+         * @snippet MagnumMath.cpp Range-conversion
          */
         template<class U> constexpr explicit Range(const Range<dimensions, U>& other) noexcept: _min(other._min), _max(other._max) {}
 

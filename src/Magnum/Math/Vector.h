@@ -183,11 +183,7 @@ template<std::size_t size, class T> class Vector {
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:
          *
-         * @code{.cpp}
-         * Vector<4, Float> floatingPoint(1.3f, 2.7f, -15.0f, 7.0f);
-         * Vector<4, Byte> integral(floatingPoint);
-         * // integral == {1, 2, -15, 7}
-         * @endcode
+         * @snippet MagnumMath.cpp Vector-conversion
          */
         template<class U> constexpr explicit Vector(const Vector<size, U>& other) noexcept: Vector(typename Implementation::GenerateSequence<size>::Type(), other) {}
 
@@ -509,9 +505,7 @@ template<std::size_t size, class T> class Vector {
          * this function is faster than the obvious way of sizing
          * a @ref normalized() vector. Enabled only for floating-point types.
          *
-         * @code{.cpp}
-         * vec*(vec.lengthInverted()*length) // the parentheses are important
-         * @endcode
+         * @snippet MagnumMath.cpp Vector-resized
          *
          * @see @ref normalized()
          */

@@ -106,17 +106,11 @@ template<class T> inline T exp(T exponent) { return std::exp(exponent); }
 
 Example usage:
 
-@code{.cpp}
-Int quotient, remainder;
-std::tie(quotient, remainder) = Math::div(57, 6); // {9, 3}
-@endcode
+@snippet MagnumMath.cpp div
 
 Equivalent to the following, but possibly done in a single CPU instruction:
 
-@code{.cpp}
-Int quotient = 57/6;
-Int remainder = 57%6;
-@endcode
+@snippet MagnumMath.cpp div-equivalent
 */
 template<class Integral> inline std::pair<Integral, Integral> div(Integral x, Integral y) {
     static_assert(std::is_integral<Integral>{}, "Math::div(): not an integral type");
@@ -438,9 +432,7 @@ template<class T, std::size_t size> inline std::pair<T, T> minmax(const T(&array
 Values smaller than @p min are set to @p min, values larger than @p max are
 set to @p max. Equivalent to:
 
-@code{.cpp}
-Math::min(Math::max(value, min), max)
-@endcode
+@snippet MagnumMath.cpp clamp
 
 <em>NaN</em>s passed in @p value parameter are propagated.
 @see @ref min(), @ref max()

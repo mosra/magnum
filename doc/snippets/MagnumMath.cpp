@@ -858,6 +858,37 @@ static_cast<void>(endPoint);
 }
 
 {
+/* [Dual-conversion] */
+Math::Dual<Float> floatingPoint{1.3f, 2.7f};
+Math::Dual<Byte> integral{floatingPoint}; // {1, 2}
+/* [Dual-conversion] */
+}
+
+{
+/* [div] */
+Int quotient, remainder;
+std::tie(quotient, remainder) = Math::div(57, 6); // {9, 3}
+/* [div] */
+}
+
+{
+/* [div-equivalent] */
+Int quotient = 57/6;
+Int remainder = 57%6;
+/* [div-equivalent] */
+static_cast<void>(quotient);
+static_cast<void>(remainder);
+}
+
+{
+Float value{}, min{}, max{};
+/* [clamp] */
+Math::min(Math::max(value, min), max)
+/* [clamp] */
+;
+}
+
+{
 /* [Half-usage] */
 using namespace Math::Literals;
 
@@ -875,6 +906,44 @@ Vector3 b{a};                                // converts to 32-bit floats
 Debug{} << a;                                // prints {3.14159, -1.4142, 1.618}
 Debug{} << Math::Vector3<UnsignedShort>{a};  // prints {16968, 48552, 15993}
 /* [Half-usage-vector] */
+}
+
+{
+Rad angle{};
+typedef Float T;
+/* [Intersection-tanAngleSqPlusOne] */
+T tanAngleSqPlusOne = Math::pow<2>(Math::tan(angle*T(0.5))) + T(1);
+/* [Intersection-tanAngleSqPlusOne] */
+static_cast<void>(tanAngleSqPlusOne);
+}
+
+{
+Rad angle{};
+typedef Float T;
+/* [Intersection-sinAngle-tanAngle] */
+T sinAngle = Math::sin(angle*T(0.5));
+T tanAngle = Math::tan(angle*T(0.5));
+/* [Intersection-sinAngle-tanAngle] */
+static_cast<void>(sinAngle);
+static_cast<void>(tanAngle);
+}
+
+{
+Rad angle{};
+typedef Float T;
+/* [Intersection-sinAngle-tanAngleSqPlusOne] */
+T sinAngle = Math::sin(angle*T(0.5));
+T tanAngleSqPlusOne = Math::pow<2>(Math::tan(angle*T(0.5))) + T(1);
+/* [Intersection-sinAngle-tanAngleSqPlusOne] */
+static_cast<void>(sinAngle);
+static_cast<void>(tanAngleSqPlusOne);
+}
+
+{
+/* [Matrix-conversion] */
+Matrix2x2 floatingPoint{Vector2{1.3f, 2.7f}, Vector2{-15.0f, 7.0f}};
+Math::Matrix2x2<Byte> integral{floatingPoint}; // {{1, 2}, {-15, 7}}
+/* [Matrix-conversion] */
 }
 
 {
@@ -941,12 +1010,99 @@ static_cast<void>(filterArea);
 }
 
 {
+/* [Range-conversion] */
+Range2D floatingPoint{{1.3f, 2.7f}, {-15.0f, 7.0f}};
+Range2Di integral{floatingPoint}; // {{1, 2}, {-15, 7}}
+/* [Range-conversion] */
+}
+
+{
+/* [RectangularMatrix-conversion] */
+Math::RectangularMatrix<4, 1, Float> floatingPoint{1.3f, 2.7f, -15.0f, 7.0f};
+Math::RectangularMatrix<4, 1, Byte> integral{floatingPoint}; // {1, 2, -15, 7}
+/* [RectangularMatrix-conversion] */
+}
+
+{
+/* [RectangularMatrix-access] */
+Matrix4x3 m;
+Float a = m[2][1];
+/* [RectangularMatrix-access] */
+static_cast<void>(a);
+}
+
+{
 /* [StrictWeakOrdering] */
 std::set<Vector2, Math::StrictWeakOrdering> mySet;
 std::map<Vector4, Int, Math::StrictWeakOrdering> myMap;
 /* [StrictWeakOrdering] */
 static_cast<void>(myMap);
 static_cast<void>(mySet);
+}
+
+{
+/* [swizzle] */
+Vector4i original(-1, 2, 3, 4);
+
+auto vec = Math::swizzle<'w', '1', '0', 'x', 'y', 'z'>(original);
+        // vec == { 4, 1, 0, -1, 2, 3 }
+/* [swizzle] */
+static_cast<void>(vec);
+}
+
+{
+Float a{}, b{};
+/* [TypeTraits-equalsZero] */
+Math::TypeTraits<Float>::equals(a, b);
+Math::TypeTraits<Float>::equalsZero(a - b,
+    Math::max(Math::abs(a), Math::abs(b)));
+/* [TypeTraits-equalsZero] */
+}
+
+{
+/* [Vector-conversion] */
+Vector4 floatingPoint{1.3f, 2.7f, -15.0f, 7.0f};
+Vector4i integral{floatingPoint}; // {1, 2, -15, 7}
+/* [Vector-conversion] */
+}
+
+{
+Vector2 vec;
+Float length{};
+/* [Vector-resized] */
+vec*(vec.lengthInverted()*length) // the parentheses are important
+/* [Vector-resized] */
+;
+}
+
+{
+/* [Vector2-xAxis] */
+Matrix3::translation(Vector2::xAxis(5.0f));
+        // same as Matrix3::translation({5.0f, 0.0f});
+/* [Vector2-xAxis] */
+}
+
+{
+/* [Vector2-xScale] */
+Matrix3::scaling(Vector2::xScale(-2.0f));
+        // same as Matrix3::scaling({-2.0f, 1.0f});
+/* [Vector2-xScale] */
+}
+
+{
+/* [Vector3-xAxis] */
+Matrix4::translation(Vector3::xAxis(5.0f));
+        // same as Matrix4::translation({5.0f, 0.0f, 0.0f});
+Matrix4::rotation(30.0_degf, Vector3::xAxis());
+        // same as Matrix4::rotation(30.0_degf, {1.0f, 0.0f, 0.0f});
+/* [Vector3-xAxis] */
+}
+
+{
+/* [Vector3-xScale] */
+Matrix4::scaling(Vector3::xScale(-2.0f));
+        // same as Matrix4::scaling({-2.0f, 1.0f, 1.0f});
+/* [Vector3-xScale] */
 }
 
 }

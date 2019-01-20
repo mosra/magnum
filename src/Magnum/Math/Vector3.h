@@ -71,10 +71,7 @@ template<class T> class Vector3: public Vector<3, T> {
          *
          * Usable for translation or rotation along given axis, for example:
          *
-         * @code{.cpp}
-         * Matrix4::translation(Vector3::xAxis(5.0f)); // same as Matrix4::translation({5.0f, 0.0f, 0.0f});
-         * Matrix4::rotation(30.0_degf, Vector3::xAxis()); // same as Matrix::rotation(30.0_degf, {1.0f, 0.0f, 0.0f});
-         * @endcode
+         * @snippet MagnumMath.cpp Vector3-xAxis
          *
          * @see @ref yAxis(), @ref zAxis(), @ref xScale(), @ref Color3::red(),
          *      @ref Matrix4::right()
@@ -102,9 +99,7 @@ template<class T> class Vector3: public Vector<3, T> {
          *
          * Usable for scaling along given direction, for example:
          *
-         * @code{.cpp}
-         * Matrix4::scaling(Vector3::xScale(-2.0f)); // same as Matrix4::scaling({-2.0f, 1.0f, 1.0f});
-         * @endcode
+         * @snippet MagnumMath.cpp Vector3-xScale
          *
          * @see @ref yScale(), @ref zScale(), @ref Color3::cyan(), @ref xAxis()
          */

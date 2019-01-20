@@ -67,9 +67,7 @@ template<class T> class Vector2: public Vector<2, T> {
          *
          * Usable for translation in given axis, for example:
          *
-         * @code{.cpp}
-         * Matrix3::translation(Vector2::xAxis(5.0f)); // same as Matrix3::translation({5.0f, 0.0f});
-         * @endcode
+         * @snippet MagnumMath.cpp Vector2-xAxis
          *
          * @see @ref yAxis(), @ref xScale(), @ref Matrix3::right()
          */
@@ -88,9 +86,7 @@ template<class T> class Vector2: public Vector<2, T> {
          *
          * Usable for scaling along given direction, for example:
          *
-         * @code{.cpp}
-         * Matrix3::scaling(Vector2::xScale(-2.0f)); // same as Matrix3::scaling({-2.0f, 1.0f});
-         * @endcode
+         * @snippet MagnumMath.cpp Vector2-xScale
          *
          * @see @ref yScale(), @ref xAxis()
          */
