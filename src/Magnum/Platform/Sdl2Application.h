@@ -513,7 +513,8 @@ class Sdl2Application {
         /**
          * @brief Underlying window handle
          *
-         * Use in case you need to call SDL functionality directly.
+         * Use in case you need to call SDL functionality directly. Returns
+         * @cpp nullptr @ce in case the window was not created yet.
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
         SDL_Window* window() { return _window; }

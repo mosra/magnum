@@ -202,7 +202,7 @@ enum class AnimationTrackTargetType: UnsignedByte {
     /**
      * This and all higher values are for importer-specific targets. Can be of
      * any type, @ref AnimationData::trackTarget() might or might not point to
-     * an existing object. See documentation of particular importer for
+     * an existing object. See documentation of a particular importer for
      * details.
      */
     Custom = 128
@@ -214,8 +214,8 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, AnimationTrackTargetType val
 /**
 @brief Animation track data
 
-Used when constructing @ref AnimationData. Fields can be accessed through its
-API.
+Convenience type for populating @ref AnimationData. Has no accessors, as the
+data are then accessible through @ref AnimationData APIs.
 @experimental
 */
 class AnimationTrackData {
@@ -453,7 +453,7 @@ template<class V, class R = Animation::ResultOf<V>> MAGNUM_TRADE_EXPORT auto ani
 #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
 namespace Implementation {
     /* LCOV_EXCL_START */
-    template<class T> constexpr AnimationTrackType animationTypeFor();
+    template<class> constexpr AnimationTrackType animationTypeFor();
     template<> constexpr AnimationTrackType animationTypeFor<bool>() { return AnimationTrackType::Bool; }
     template<> constexpr AnimationTrackType animationTypeFor<Float>() { return AnimationTrackType::Float; }
     template<> constexpr AnimationTrackType animationTypeFor<UnsignedInt>() { return AnimationTrackType::UnsignedInt; }
