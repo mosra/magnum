@@ -665,7 +665,7 @@ void Sdl2Application::mainLoopIteration() {
                            https://github.com/kripken/emscripten/issues/1731 */
                         CORRADE_ASSERT_UNREACHABLE();
                         #else
-                        ViewportEvent e{{event.window.data1, event.window.data2}, framebufferSize(), _dpiScaling};
+                        ViewportEvent e{event, {event.window.data1, event.window.data2}, framebufferSize(), _dpiScaling};
                         /** @todo handle also WM_DPICHANGED events when a window is moved between displays with different DPI */
                         viewportEvent(e);
                         _flags |= Flag::Redraw;
@@ -678,49 +678,49 @@ void Sdl2Application::mainLoopIteration() {
 
             case SDL_KEYDOWN:
             case SDL_KEYUP: {
-                KeyEvent e(static_cast<KeyEvent::Key>(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod), event.key.repeat != 0);
+                KeyEvent e{event, static_cast<KeyEvent::Key>(event.key.keysym.sym), fixedModifiers(event.key.keysym.mod), event.key.repeat != 0};
                 event.type == SDL_KEYDOWN ? keyPressEvent(e) : keyReleaseEvent(e);
             } break;
 
             case SDL_MOUSEBUTTONDOWN:
             case SDL_MOUSEBUTTONUP: {
-                MouseEvent e(static_cast<MouseEvent::Button>(event.button.button), {event.button.x, event.button.y}
+                MouseEvent e{event, static_cast<MouseEvent::Button>(event.button.button), {event.button.x, event.button.y}
                     #ifndef CORRADE_TARGET_EMSCRIPTEN
                     , event.button.clicks
                     #endif
-                    );
+                    };
                 event.type == SDL_MOUSEBUTTONDOWN ? mousePressEvent(e) : mouseReleaseEvent(e);
             } break;
 
             case SDL_MOUSEWHEEL: {
-                MouseScrollEvent e{{Float(event.wheel.x), Float(event.wheel.y)}};
+                MouseScrollEvent e{event, {Float(event.wheel.x), Float(event.wheel.y)}};
                 mouseScrollEvent(e);
             } break;
 
             case SDL_MOUSEMOTION: {
-                MouseMoveEvent e({event.motion.x, event.motion.y}, {event.motion.xrel, event.motion.yrel}, static_cast<MouseMoveEvent::Button>(event.motion.state));
+                MouseMoveEvent e{event, {event.motion.x, event.motion.y}, {event.motion.xrel, event.motion.yrel}, static_cast<MouseMoveEvent::Button>(event.motion.state)};
                 mouseMoveEvent(e);
                 break;
             }
 
             case SDL_MULTIGESTURE: {
-                MultiGestureEvent e({event.mgesture.x, event.mgesture.y}, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.numFingers);
+                MultiGestureEvent e{event, {event.mgesture.x, event.mgesture.y}, event.mgesture.dTheta, event.mgesture.dDist, event.mgesture.numFingers};
                 multiGestureEvent(e);
                 break;
             }
 
             case SDL_TEXTINPUT: {
-                TextInputEvent e{{event.text.text, std::strlen(event.text.text)}};
+                TextInputEvent e{event, {event.text.text, std::strlen(event.text.text)}};
                 textInputEvent(e);
             } break;
 
             case SDL_TEXTEDITING: {
-                TextEditingEvent e{{event.edit.text, std::strlen(event.text.text)}, event.edit.start, event.edit.length};
+                TextEditingEvent e{event, {event.edit.text, std::strlen(event.text.text)}, event.edit.start, event.edit.length};
                 textEditingEvent(e);
             } break;
 
             case SDL_QUIT: {
-                ExitEvent e;
+                ExitEvent e{event};
                 exitEvent(e);
                 if(e.isAccepted()) {
                     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -731,6 +731,10 @@ void Sdl2Application::mainLoopIteration() {
                     return;
                 }
             } break;
+
+            /* Direct everything else to anyEvent(), so users can implement
+               event handling for things not present in the Application APIs */
+            default: if(!(_flags & Flag::NoAnyEvent)) anyEvent(event);
         }
     }
 
@@ -814,6 +818,12 @@ void Sdl2Application::tickEvent() {
     /* If this got called, the tick event is not implemented by user and thus
        we don't need to call it ever again */
     _flags |= Flag::NoTickEvent;
+}
+
+void Sdl2Application::anyEvent(SDL_Event&) {
+    /* If this got called, the any event is not implemented by user and thus
+       we don't need to call it ever again */
+    _flags |= Flag::NoAnyEvent;
 }
 
 void Sdl2Application::viewportEvent(ViewportEvent& event) {

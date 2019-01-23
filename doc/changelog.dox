@@ -91,6 +91,9 @@ See also:
     @ref Platform::GlfwApplication::exitEvent() events for responding to
     application window close and possibility to cancel it (for example to
     show an exit confirmation dialog)
+-   New @ref Platform::Sdl2Application::anyEvent() event together with
+    @ref Platform::Sdl2Application::InputEvent::event() "event()" accessors to
+    make it possible to access raw `SDL_Event` data
 
 @subsection changelog-latest-changes Changes and improvements
 

@@ -57,6 +57,10 @@
 #include <wrl.h> /* For the WinMain entrypoint */
 #endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+union SDL_Event; /* for anyEvent() */
+#endif
+
 namespace Magnum { namespace Platform {
 
 namespace Implementation {
@@ -949,6 +953,17 @@ class Sdl2Application {
          */
         virtual void tickEvent();
 
+        /**
+         * @brief Any event
+         *
+         * Called in case a SDL event is not handled by any other event
+         * functions above.
+         * @see @ref ViewportEvent::event(), @ref InputEvent::event(),
+         *      @ref MultiGestureEvent::event(), @ref TextInputEvent::event(),
+         *      @ref TextEditingEvent::event(), @ref ExitEvent::event()
+         */
+        virtual void anyEvent(SDL_Event& event);
+
         /*@}*/
 
     private:
@@ -956,12 +971,13 @@ class Sdl2Application {
             Redraw = 1 << 0,
             VSyncEnabled = 1 << 1,
             NoTickEvent = 1 << 2,
+            NoAnyEvent = 1 << 3,
             #ifndef CORRADE_TARGET_EMSCRIPTEN
-            Exit = 1 << 3
+            Exit = 1 << 4
             #endif
             #ifdef CORRADE_TARGET_EMSCRIPTEN
-            TextInputActive = 1 << 4,
-            Resizable = 1 << 5
+            TextInputActive = 1 << 5,
+            Resizable = 1 << 6
             #endif
         };
 
@@ -1667,11 +1683,20 @@ class Sdl2Application::ExitEvent {
          */
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
+        /**
+         * @brief Underlying SDL event
+         *
+         * Of type `SDL_QUIT`.
+         * @see @ref Sdl2Application::anyEvent()
+         */
+        const SDL_Event& event() const { return _event; }
+
     private:
         friend Sdl2Application;
 
-        explicit ExitEvent(): _accepted(false) {}
+        explicit ExitEvent(const SDL_Event& event): _event(event), _accepted(false) {}
 
+        const SDL_Event& _event;
         bool _accepted;
 };
 
@@ -1725,11 +1750,33 @@ class Sdl2Application::ViewportEvent {
          */
         Vector2 dpiScaling() const { return _dpiScaling; }
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Underlying SDL event
+         *
+         * Of type `SDL_WINDOWEVENT`.
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         * @see @ref Sdl2Application::anyEvent()
+         */
+        const SDL_Event& event() const { return _event; }
+        #endif
+
     private:
         friend Sdl2Application;
 
-        explicit ViewportEvent(const Vector2i& windowSize, const Vector2i& framebufferSize, const Vector2& dpiScaling): _windowSize{windowSize}, _framebufferSize{framebufferSize}, _dpiScaling{dpiScaling} {}
+        explicit ViewportEvent(
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            const SDL_Event& event,
+            #endif
+            const Vector2i& windowSize, const Vector2i& framebufferSize, const Vector2& dpiScaling):
+                #ifndef CORRADE_TARGET_EMSCRIPTEN
+                _event(event),
+                #endif
+                _windowSize{windowSize}, _framebufferSize{framebufferSize}, _dpiScaling{dpiScaling} {}
 
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        const SDL_Event& _event;
+        #endif
         const Vector2i _windowSize;
         const Vector2i _framebufferSize;
         const Vector2 _dpiScaling;
@@ -1823,14 +1870,26 @@ class Sdl2Application::InputEvent {
          */
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
+        /**
+         * @brief Underlying SDL event
+         *
+         * Of type `SDL_KEYDOWN` / `SDL_KEYUP` for @ref KeyEvent,
+         * `SDL_MOUSEBUTTONUP` / `SDL_MOUSEBUTTONDOWN` for @ref MouseEvent,
+         * `SDL_MOUSEWHEEL` for @ref MouseScrollEvent and `SDL_MOUSEMOTION` for
+         * @ref MouseMoveEvent.
+         * @see @ref Sdl2Application::anyEvent()
+         */
+        const SDL_Event& event() const { return _event; }
+
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
-        explicit InputEvent(): _accepted(false) {}
+        explicit InputEvent(const SDL_Event& event): _event(event), _accepted(false) {}
 
         ~InputEvent() = default;
     #endif
 
     private:
+        const SDL_Event& _event;
         bool _accepted;
 };
 
@@ -2050,7 +2109,7 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
         bool isRepeated() const { return _repeated; }
 
     private:
-        explicit KeyEvent(Key key, Modifiers modifiers, bool repeated): _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
+        explicit KeyEvent(const SDL_Event& event, Key key, Modifiers modifiers, bool repeated): InputEvent{event}, _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
 
         const Key _key;
         const Modifiers _modifiers;
@@ -2107,11 +2166,11 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        explicit MouseEvent(Button button, const Vector2i& position
+        explicit MouseEvent(const SDL_Event& event, Button button, const Vector2i& position
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             , Int clickCount
             #endif
-            ): _button{button}, _position{position},
+            ): InputEvent{event}, _button{button}, _position{position},
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             _clickCount{clickCount},
             #endif
@@ -2180,7 +2239,7 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        explicit MouseMoveEvent(const Vector2i& position, const Vector2i& relativePosition, Buttons buttons): _position{position}, _relativePosition{relativePosition}, _buttons{buttons}, _modifiersLoaded{false} {}
+        explicit MouseMoveEvent(const SDL_Event& event, const Vector2i& position, const Vector2i& relativePosition, Buttons buttons): InputEvent{event}, _position{position}, _relativePosition{relativePosition}, _buttons{buttons}, _modifiersLoaded{false} {}
 
         const Vector2i _position, _relativePosition;
         const Buttons _buttons;
@@ -2215,7 +2274,7 @@ class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
-        explicit MouseScrollEvent(const Vector2& offset): _offset{offset}, _positionLoaded{false}, _modifiersLoaded{false} {}
+        explicit MouseScrollEvent(const SDL_Event& event, const Vector2& offset): InputEvent{event}, _offset{offset}, _positionLoaded{false}, _modifiersLoaded{false} {}
 
         const Vector2 _offset;
         bool _positionLoaded;
@@ -2283,9 +2342,18 @@ class Sdl2Application::MultiGestureEvent {
          */
         Int fingerCount() const { return _fingerCount; }
 
-    private:
-        explicit MultiGestureEvent(const Vector2& center, Float relativeRotation, Float relativeDistance, Int fingerCount): _center{center}, _relativeRotation{relativeRotation}, _relativeDistance{relativeDistance}, _fingerCount{fingerCount}, _accepted{false} {}
+        /**
+         * @brief Underlying SDL event
+         *
+         * Of type `SDL_MULTIGESTURE`.
+         * @see @ref Sdl2Application::anyEvent()
+         */
+        const SDL_Event& event() const { return _event; }
 
+    private:
+        explicit MultiGestureEvent(const SDL_Event& event, const Vector2& center, Float relativeRotation, Float relativeDistance, Int fingerCount): _event(event), _center{center}, _relativeRotation{relativeRotation}, _relativeDistance{relativeDistance}, _fingerCount{fingerCount}, _accepted{false} {}
+
+        const SDL_Event& _event;
         const Vector2 _center;
         const Float _relativeRotation;
         const Float _relativeDistance;
@@ -2330,9 +2398,18 @@ class Sdl2Application::TextInputEvent {
         /** @brief Input text in UTF-8 */
         Containers::ArrayView<const char> text() const { return _text; }
 
-    private:
-        explicit TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
+        /**
+         * @brief Underlying SDL event
+         *
+         * Of type `SDL_TEXTINPUT`.
+         * @see @ref Sdl2Application::anyEvent()
+         */
+        const SDL_Event& event() const { return _event; }
 
+    private:
+        explicit TextInputEvent(const SDL_Event& event, Containers::ArrayView<const char> text): _event(event), _text{text}, _accepted{false} {}
+
+        const SDL_Event& _event;
         const Containers::ArrayView<const char> _text;
         bool _accepted;
 };
@@ -2380,9 +2457,18 @@ class Sdl2Application::TextEditingEvent {
         /** @brief Number of characters to edit from the start point */
         Int length() const { return _length; }
 
-    private:
-        explicit TextEditingEvent(Containers::ArrayView<const char> text, Int start, Int length): _text{text}, _start{start}, _length{length}, _accepted{false} {}
+        /**
+         * @brief Underlying SDL event
+         *
+         * Of type `SDL_TEXTEDITING`.
+         * @see @ref Sdl2Application::anyEvent()
+         */
+        const SDL_Event& event() const { return _event; }
 
+    private:
+        explicit TextEditingEvent(const SDL_Event& event, Containers::ArrayView<const char> text, Int start, Int length): _event(event), _text{text}, _start{start}, _length{length}, _accepted{false} {}
+
+        const SDL_Event& _event;
         const Containers::ArrayView<const char> _text;
         const Int _start;
         const Int _length;

@@ -25,6 +25,8 @@
 
 #include "Magnum/Platform/Sdl2Application.h"
 
+#include <SDL_events.h>
+
 namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct Sdl2ApplicationTest: Platform::Application {
@@ -51,6 +53,12 @@ struct Sdl2ApplicationTest: Platform::Application {
     /* For testing keyboard capture */
     void keyPressEvent(KeyEvent& event) override {
         Debug{} << event.keyName();
+    }
+
+    /* Should fire on currently not handled events, such as minimize/maximize.
+       Comment out to verify correct behavior with the override not present. */
+    void anyEvent(SDL_Event& event) override {
+        Debug{} << "any event" << event.type;
     }
 };
 
