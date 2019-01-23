@@ -424,17 +424,6 @@ class GlfwApplication {
 
     private:
         /**
-         * @brief Exit event
-         *
-         * If implemented, it allows the application to react to an application
-         * exit (for example to save its internal state) and suppress it as
-         * well (for example to show a exit confirmation dialog). The default
-         * implementation calls @ref ExitEvent::setAccepted() on @p event,
-         * which tells the application that it's safe to exit.
-         */
-        virtual void exitEvent(ExitEvent& event);
-
-        /**
          * @brief Viewport event
          *
          * Called when window size changes. The default implementation does
@@ -545,6 +534,21 @@ class GlfwApplication {
          * @see @ref isTextInputActive()
          */
         virtual void textInputEvent(TextInputEvent& event);
+
+        /*@}*/
+
+        /** @{ @name Special events */
+
+        /**
+         * @brief Exit event
+         *
+         * If implemented, it allows the application to react to an application
+         * exit (for example to save its internal state) and suppress it as
+         * well (for example to show a exit confirmation dialog). The default
+         * implementation calls @ref ExitEvent::setAccepted() on @p event,
+         * which tells the application that it's safe to exit.
+         */
+        virtual void exitEvent(ExitEvent& event);
 
         /*@}*/
 

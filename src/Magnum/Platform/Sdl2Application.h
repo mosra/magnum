@@ -735,32 +735,6 @@ class Sdl2Application {
 
     private:
         /**
-         * @brief Exit event
-         *
-         * If implemented, it allows the application to react to an application
-         * exit (for example to save its internal state) and suppress it as
-         * well (for example to show a exit confirmation dialog). The default
-         * implementation calls @ref ExitEvent::setAccepted() on @p event,
-         * which tells the application that it's safe to exit.
-         *
-         * SDL has special behavior on POSIX systems regarding `SIGINT` and
-         * `SIGTERM` handling, see @ref Platform-Sdl2Application-usage-posix
-         * for more information.
-         */
-        virtual void exitEvent(ExitEvent& event);
-
-        /**
-         * @brief Tick event
-         *
-         * If implemented, this function is called periodically after
-         * processing all input events and before draw event even though there
-         * might be no input events and redraw is not requested. Useful e.g.
-         * for asynchronous task polling. Use @ref setMinimalLoopPeriod()/
-         * @ref setSwapInterval() to control main loop frequency.
-         */
-        virtual void tickEvent();
-
-        /**
          * @brief Viewport event
          *
          * Called when window size changes. The default implementation does
@@ -944,6 +918,36 @@ class Sdl2Application {
          * Called when text input is active and the text is being edited.
          */
         virtual void textEditingEvent(TextEditingEvent& event);
+
+        /*@}*/
+
+        /** @{ @name Special events */
+
+        /**
+         * @brief Exit event
+         *
+         * If implemented, it allows the application to react to an application
+         * exit (for example to save its internal state) and suppress it as
+         * well (for example to show a exit confirmation dialog). The default
+         * implementation calls @ref ExitEvent::setAccepted() on @p event,
+         * which tells the application that it's safe to exit.
+         *
+         * SDL has special behavior on POSIX systems regarding `SIGINT` and
+         * `SIGTERM` handling, see @ref Platform-Sdl2Application-usage-posix
+         * for more information.
+         */
+        virtual void exitEvent(ExitEvent& event);
+
+        /**
+         * @brief Tick event
+         *
+         * If implemented, this function is called periodically after
+         * processing all input events and before draw event even though there
+         * might be no input events and redraw is not requested. Useful e.g.
+         * for asynchronous task polling. Use @ref setMinimalLoopPeriod()/
+         * @ref setSwapInterval() to control main loop frequency.
+         */
+        virtual void tickEvent();
 
         /*@}*/
 
