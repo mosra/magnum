@@ -1180,6 +1180,18 @@ class GlfwApplication::ExitEvent {
 */
 class GlfwApplication::ViewportEvent {
     public:
+        /** @brief Copying is not allowed */
+        ViewportEvent(const ViewportEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        ViewportEvent(ViewportEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        ViewportEvent& operator=(const ViewportEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        ViewportEvent& operator=(ViewportEvent&&) = delete;
+
         /**
          * @brief Window size
          *
@@ -1216,8 +1228,9 @@ class GlfwApplication::ViewportEvent {
 
         explicit ViewportEvent(const Vector2i& windowSize, const Vector2i& framebufferSize, const Vector2& dpiScaling): _windowSize{windowSize}, _framebufferSize{framebufferSize}, _dpiScaling{dpiScaling} {}
 
-        Vector2i _windowSize, _framebufferSize;
-        Vector2 _dpiScaling;
+        const Vector2i _windowSize;
+        const Vector2i _framebufferSize;
+        const Vector2 _dpiScaling;
 };
 
 /**
@@ -1624,9 +1637,9 @@ class GlfwApplication::MouseMoveEvent: public GlfwApplication::InputEvent {
     private:
         explicit MouseMoveEvent(GLFWwindow* window, const Vector2i& position): _window{window}, _position{position} {}
 
-        GLFWwindow* _window;
-        Containers::Optional<Buttons> _buttons;
+        GLFWwindow* const _window;
         const Vector2i _position;
+        Containers::Optional<Buttons> _buttons;
         Containers::Optional<Modifiers> _modifiers;
 };
 
@@ -1659,7 +1672,7 @@ class GlfwApplication::MouseScrollEvent: public GlfwApplication::InputEvent {
     private:
         explicit MouseScrollEvent(GLFWwindow* window, const Vector2& offset): _window{window}, _offset{offset} {}
 
-        GLFWwindow* _window;
+        GLFWwindow* const _window;
         const Vector2 _offset;
         Containers::Optional<Vector2i> _position;
         Containers::Optional<Modifiers> _modifiers;
@@ -1705,7 +1718,7 @@ class GlfwApplication::TextInputEvent {
     private:
         explicit TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
 
-        Containers::ArrayView<const char> _text;
+        const Containers::ArrayView<const char> _text;
         bool _accepted;
 };
 

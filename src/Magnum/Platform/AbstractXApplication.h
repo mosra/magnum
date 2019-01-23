@@ -386,6 +386,18 @@ class AbstractXApplication::Configuration {
 */
 class AbstractXApplication::ViewportEvent {
     public:
+        /** @brief Copying is not allowed */
+        ViewportEvent(const ViewportEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        ViewportEvent(ViewportEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        ViewportEvent& operator=(const ViewportEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        ViewportEvent& operator=(ViewportEvent&&) = delete;
+
         /**
          * @brief Window size
          *
@@ -407,7 +419,7 @@ class AbstractXApplication::ViewportEvent {
 
         explicit ViewportEvent(const Vector2i& size): _size{size} {}
 
-        Vector2i _size;
+        const Vector2i _size;
 };
 
 /**

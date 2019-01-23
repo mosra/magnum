@@ -581,6 +581,18 @@ class AndroidApplication::Configuration {
 */
 class AndroidApplication::ViewportEvent {
     public:
+        /** @brief Copying is not allowed */
+        ViewportEvent(const ViewportEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        ViewportEvent(ViewportEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        ViewportEvent& operator=(const ViewportEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        ViewportEvent& operator=(ViewportEvent&&) = delete;
+
         /**
          * @brief Window size
          *
@@ -609,7 +621,7 @@ class AndroidApplication::ViewportEvent {
 
         explicit ViewportEvent(const Vector2i& windowSize): _windowSize{windowSize} {}
 
-        Vector2i _windowSize;
+        const Vector2i _windowSize;
 };
 
 /**
@@ -651,7 +663,7 @@ class AndroidApplication::InputEvent {
 
         ~InputEvent() = default;
 
-        AInputEvent* _event;
+        AInputEvent* const _event;
     #endif
 
     private:

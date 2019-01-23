@@ -1682,6 +1682,18 @@ class Sdl2Application::ExitEvent {
 */
 class Sdl2Application::ViewportEvent {
     public:
+        /** @brief Copying is not allowed */
+        ViewportEvent(const ViewportEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        ViewportEvent(ViewportEvent&&) = delete;
+
+        /** @brief Copying is not allowed */
+        ViewportEvent& operator=(const ViewportEvent&) = delete;
+
+        /** @brief Moving is not allowed */
+        ViewportEvent& operator=(ViewportEvent&&) = delete;
+
         /**
          * @brief Window size
          *
@@ -1718,8 +1730,9 @@ class Sdl2Application::ViewportEvent {
 
         explicit ViewportEvent(const Vector2i& windowSize, const Vector2i& framebufferSize, const Vector2& dpiScaling): _windowSize{windowSize}, _framebufferSize{framebufferSize}, _dpiScaling{dpiScaling} {}
 
-        Vector2i _windowSize, _framebufferSize;
-        Vector2 _dpiScaling;
+        const Vector2i _windowSize;
+        const Vector2i _framebufferSize;
+        const Vector2 _dpiScaling;
 };
 
 /**
@@ -2273,10 +2286,10 @@ class Sdl2Application::MultiGestureEvent {
     private:
         explicit MultiGestureEvent(const Vector2& center, Float relativeRotation, Float relativeDistance, Int fingerCount): _center{center}, _relativeRotation{relativeRotation}, _relativeDistance{relativeDistance}, _fingerCount{fingerCount}, _accepted{false} {}
 
-        Vector2 _center;
-        Float _relativeRotation,
-            _relativeDistance;
-        Int _fingerCount;
+        const Vector2 _center;
+        const Float _relativeRotation;
+        const Float _relativeDistance;
+        const Int _fingerCount;
         bool _accepted;
 };
 
@@ -2320,7 +2333,7 @@ class Sdl2Application::TextInputEvent {
     private:
         explicit TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
 
-        Containers::ArrayView<const char> _text;
+        const Containers::ArrayView<const char> _text;
         bool _accepted;
 };
 
@@ -2370,8 +2383,9 @@ class Sdl2Application::TextEditingEvent {
     private:
         explicit TextEditingEvent(Containers::ArrayView<const char> text, Int start, Int length): _text{text}, _start{start}, _length{length}, _accepted{false} {}
 
-        Containers::ArrayView<const char> _text;
-        Int _start, _length;
+        const Containers::ArrayView<const char> _text;
+        const Int _start;
+        const Int _length;
         bool _accepted;
 };
 
