@@ -64,8 +64,10 @@ struct {
     Float getStep(Float) const { return aStep; }
     Double get(Double) const { return b; }
     Double getStep(Double) const { return bStep; }
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     long double get(long double) const { return c; }
     long double getStep(long double) const { return cStep; }
+    #endif
 } EqualsZeroData[EqualsZeroDataCount] = {
     {"", -3.141592653589793f, 5.0e-5f, -3.141592653589793, 5.0e-14, -3.141592653589793l,
         #if !defined(_MSC_VER) && (!defined(CORRADE_TARGET_ANDROID) || __LP64__)
