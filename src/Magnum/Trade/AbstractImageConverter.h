@@ -29,16 +29,11 @@
  * @brief Class @ref Magnum::Trade::AbstractImageConverter
  */
 
-#include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Trade/Trade.h"
 #include "Magnum/Trade/visibility.h"
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include "MagnumExternal/Optional/OptionalWrapper.h"
-#endif
 
 namespace Magnum { namespace Trade {
 

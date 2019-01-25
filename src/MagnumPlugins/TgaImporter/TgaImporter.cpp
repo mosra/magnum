@@ -28,8 +28,9 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
-#include <Corrade/Utility/Endianness.h>
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/Optional.h>
+#include <Corrade/Utility/Endianness.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Swizzle.h"

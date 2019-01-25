@@ -32,7 +32,3 @@ endif()
 if(WITH_VK)
     add_subdirectory(Vulkan)
 endif()
-
-if(MAGNUM_BUILD_DEPRECATED)
-    add_subdirectory(Optional)
-endif()

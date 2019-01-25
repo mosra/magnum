@@ -186,6 +186,10 @@ See also:
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
+-   Removed deprecated implicit conversion @ref Corrade::Containers::Optional
+    to @cpp std::optional @ce, deprecated in January 2018. The class now
+    contains an *explicit* and opt-in STL compatibility, see its documentation
+    for more information.
 -   Removed the `Magnum/Test/AbstractOpenGLTester.h` header that was deprecated
     in January 2017. Use @ref Magnum/GL/OpenGLTester.h and the
     @ref GL::OpenGLTester library instead. Note that the deprecated

@@ -24,6 +24,7 @@
 */
 
 #include <unordered_map>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/PixelFormat.h"

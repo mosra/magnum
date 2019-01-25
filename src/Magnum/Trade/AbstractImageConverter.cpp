@@ -27,6 +27,7 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/EnumSet.hpp>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Directory.h>
 

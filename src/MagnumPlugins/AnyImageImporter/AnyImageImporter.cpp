@@ -25,6 +25,7 @@
 
 #include "AnyImageImporter.h"
 
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/String.h>
