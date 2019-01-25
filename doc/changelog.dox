@@ -186,6 +186,10 @@ See also:
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
+-   The @ref MeshTools::fullScreenTriangle() function now returns just a
+    @ref GL::Mesh instead of @ref std::pair of a mesh and a buffer, as the
+    buffer is now owned by the mesh. This change was not possible to be done in
+    a backwards-compatible way.
 -   Removed deprecated implicit conversion @ref Corrade::Containers::Optional
     to @cpp std::optional @ce, deprecated in January 2018. The class now
     contains an *explicit* and opt-in STL compatibility, see its documentation

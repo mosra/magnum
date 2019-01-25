@@ -34,34 +34,31 @@
 
 namespace Magnum { namespace MeshTools {
 
-std::pair<std::unique_ptr<GL::Buffer>, GL::Mesh> fullScreenTriangle(GL::Version version) {
+GL::Mesh fullScreenTriangle(const GL::Version version) {
     GL::Mesh mesh;
     mesh.setPrimitive(GL::MeshPrimitive::Triangles)
         .setCount(3);
 
-    std::unique_ptr<GL::Buffer> buffer;
     #ifndef MAGNUM_TARGET_GLES
     if(version < GL::Version::GL300)
     #else
     if(version < GL::Version::GLES300)
     #endif
     {
-        buffer.reset(new GL::Buffer);
-        constexpr Vector2 triangle[] = {
+        constexpr Vector2 triangle[]{
             {-1.0f,  1.0f},
             {-1.0f, -3.0f},
             { 3.0f,  1.0f}
         };
-        buffer->setData(triangle, GL::BufferUsage::StaticDraw);
-        /** @todo Is it possible to attach moveable buffer here to avoid heap
-           allocation? OTOH this is more effective in most (modern) cases */
-        mesh.addVertexBuffer(*buffer, 0, GL::Attribute<0, Vector2>{});
+        GL::Buffer buffer{GL::Buffer::TargetHint::Array};
+        buffer.setData(triangle, GL::BufferUsage::StaticDraw);
+        mesh.addVertexBuffer(std::move(buffer), 0, GL::Attribute<0, Vector2>{});
     }
 
-    return {std::move(buffer), std::move(mesh)};
+    return mesh;
 }
 
-std::pair<std::unique_ptr<GL::Buffer>, GL::Mesh> fullScreenTriangle() {
+GL::Mesh fullScreenTriangle() {
     return fullScreenTriangle(GL::Context::current().version());
 }
 
