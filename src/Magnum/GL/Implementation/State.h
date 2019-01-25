@@ -27,8 +27,8 @@
 
 #include <memory>
 
+#include "Magnum/Magnum.h"
 #include "Magnum/GL/GL.h"
-#include "Magnum/GL/OpenGL.h"
 
 namespace Magnum { namespace GL { namespace Implementation {
 

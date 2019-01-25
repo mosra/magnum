@@ -34,6 +34,7 @@
 #ifndef DOXYGEN_GENERATING_OUTPUT
 typedef int GLint; /* Needed for sampler enums */
 typedef unsigned int GLenum; /* Needed for *Format and *Type enums */
+typedef unsigned int GLuint; /* Needed by Implementation/State.h */
 #endif
 
 namespace Magnum { namespace GL {
