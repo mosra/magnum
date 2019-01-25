@@ -36,6 +36,10 @@
 #include "Magnum/Trade/Trade.h"
 #include "Magnum/Trade/visibility.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Containers/PointerStl.h>
+#endif
+
 namespace Magnum { namespace Trade {
 
 /**

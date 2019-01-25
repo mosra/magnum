@@ -189,6 +189,15 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
+-   All uses of @ref std::unique_ptr in @ref Text::AbstractFont,
+    @ref Text::AbstractFontConverter and @ref Trade::AbstractImporter are
+    replaced with @ref Corrade::Containers::Pointer. The types are implicitly
+    move-convertible to each other if the
+    @ref Corrade/Containers/PointerStl.h header is included. The header is
+    included where needed if @ref MAGNUM_BUILD_DEPRECATED is enabled. To ensure
+    your code keeps with future versions of Magnum, either switch your
+    code to use @ref Corrade::Containers::Pointer as well or include the
+    @ref Corrade/Containers/PointerStl.h header explicitly.
 -   @cpp TextureTools::distanceField() @ce is deprecated due to inefficiency of
     its statelessness when doing batch processing. Use the
     @ref TextureTools::DistanceField class instead.
