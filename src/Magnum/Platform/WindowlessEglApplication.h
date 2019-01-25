@@ -29,15 +29,15 @@
  * @brief Class @ref Magnum::Platform::WindowlessEglApplication, @ref Magnum::Platform::WindowlessEglContext, macro @ref MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN()
  */
 
-#include <memory>
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
-#include <Corrade/Containers/EnumSet.h>
 /* undef Xlib nonsense to avoid conflicts */
 #undef Always
 #undef Complex
 #undef None
 #undef Status
+#include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/OpenGL.h"
@@ -434,7 +434,7 @@ class WindowlessEglApplication {
 
     private:
         WindowlessEglContext _glContext;
-        std::unique_ptr<Platform::GLContext> _context;
+        Containers::Pointer<Platform::GLContext> _context;
 };
 
 /** @hideinitializer

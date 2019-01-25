@@ -34,8 +34,8 @@
     as soon as possible.
 */
 
-#include <memory>
 #include <string>
+#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -406,7 +406,7 @@ class CORRADE_DEPRECATED("scheduled for removal, consider switching to Sdl2Appli
 
         static GlutApplication* _instance;
 
-        std::unique_ptr<Platform::GLContext> _context;
+        Containers::Pointer<Platform::GLContext> _context;
 };
 
 /**

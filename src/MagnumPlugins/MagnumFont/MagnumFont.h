@@ -143,8 +143,8 @@ class MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {
 
         MAGNUM_MAGNUMFONT_LOCAL UnsignedInt doGlyphId(char32_t character) override;
         MAGNUM_MAGNUMFONT_LOCAL Vector2 doGlyphAdvance(UnsignedInt glyph) override;
-        MAGNUM_MAGNUMFONT_LOCAL std::unique_ptr<GlyphCache> doCreateGlyphCache() override;
-        MAGNUM_MAGNUMFONT_LOCAL std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache& cache, Float size, const std::string& text) override;
+        MAGNUM_MAGNUMFONT_LOCAL Containers::Pointer<GlyphCache> doCreateGlyphCache() override;
+        MAGNUM_MAGNUMFONT_LOCAL Containers::Pointer<AbstractLayouter> doLayout(const GlyphCache& cache, Float size, const std::string& text) override;
 
         MAGNUM_MAGNUMFONT_LOCAL Metrics openInternal(Utility::Configuration&& conf, Trade::ImageData2D&& image);
 

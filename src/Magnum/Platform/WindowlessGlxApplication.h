@@ -29,8 +29,8 @@
  * @brief Class @ref Magnum::Platform::WindowlessGlxApplication, @ref Magnum::Platform::WindowlessGlxContext, macro @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN()
  */
 
-#include <memory>
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Containers/Pointer.h>
 
 /* Include our GL headers first to avoid conflicts */
 #include "Magnum/Magnum.h"
@@ -390,7 +390,7 @@ class WindowlessGlxApplication {
 
     private:
         WindowlessGlxContext _glContext;
-        std::unique_ptr<Platform::GLContext> _context;
+        Containers::Pointer<Platform::GLContext> _context;
 };
 
 /** @hideinitializer

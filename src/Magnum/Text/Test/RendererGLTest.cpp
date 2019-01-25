@@ -79,8 +79,8 @@ class TestFont: public Text::AbstractFont {
     UnsignedInt doGlyphId(char32_t) override { return 0; }
     Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
-    std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache&, const Float size, const std::string& text) override {
-        return std::unique_ptr<AbstractLayouter>(new TestLayouter(size, text.size()));
+    Containers::Pointer<AbstractLayouter> doLayout(const GlyphCache&, const Float size, const std::string& text) override {
+        return Containers::Pointer<AbstractLayouter>(new TestLayouter(size, text.size()));
     }
 };
 
@@ -353,8 +353,8 @@ void RendererGLTest::multiline() {
             UnsignedInt doGlyphId(char32_t) override { return 0; }
             Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
-            std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache&, Float, const std::string& text) override {
-                return std::unique_ptr<AbstractLayouter>(new Layouter(text.size()));
+            Containers::Pointer<AbstractLayouter> doLayout(const GlyphCache&, Float, const std::string& text) override {
+                return Containers::Pointer<AbstractLayouter>(new Layouter(text.size()));
             }
 
             bool _opened;

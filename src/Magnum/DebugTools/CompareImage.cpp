@@ -485,7 +485,7 @@ bool ImageComparatorBase::operator()(const std::string& actual, const std::strin
     _fileState->actualFilename = actual;
     _fileState->expectedFilename = expected;
 
-    std::unique_ptr<Trade::AbstractImporter> importer;
+    Containers::Pointer<Trade::AbstractImporter> importer;
     if(!(importer = _fileState->manager->loadAndInstantiate("AnyImageImporter"))) {
         _state = State::PluginLoadFailed;
         return false;
@@ -521,7 +521,7 @@ bool ImageComparatorBase::operator()(const ImageView2D& actual, const std::strin
 
     _fileState->expectedFilename = expected;
 
-    std::unique_ptr<Trade::AbstractImporter> importer;
+    Containers::Pointer<Trade::AbstractImporter> importer;
     if(!(importer = _fileState->manager->loadAndInstantiate("AnyImageImporter"))) {
         _state = State::PluginLoadFailed;
         return false;
@@ -546,7 +546,7 @@ bool ImageComparatorBase::operator()(const std::string& actual, const ImageView2
 
     _fileState->actualFilename = actual;
 
-    std::unique_ptr<Trade::AbstractImporter> importer;
+    Containers::Pointer<Trade::AbstractImporter> importer;
     if(!(importer = _fileState->manager->loadAndInstantiate("AnyImageImporter"))) {
         _state = State::PluginLoadFailed;
         return false;

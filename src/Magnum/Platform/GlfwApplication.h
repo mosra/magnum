@@ -30,10 +30,10 @@
  * @brief Class @ref Magnum::Platform::GlfwApplication, macro @ref MAGNUM_GLFWAPPLICATION_MAIN()
  */
 
-#include <memory>
 #include <string>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -572,7 +572,7 @@ class GlfwApplication {
         GLFWwindow* _window{nullptr};
         Flags _flags;
         #ifdef MAGNUM_TARGET_GL
-        std::unique_ptr<Platform::GLContext> _context;
+        Containers::Pointer<Platform::GLContext> _context;
         #endif
 };
 

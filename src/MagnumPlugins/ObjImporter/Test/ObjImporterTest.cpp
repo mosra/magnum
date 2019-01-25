@@ -151,7 +151,7 @@ ObjImporterTest::ObjImporterTest() {
 }
 
 void ObjImporterTest::pointMesh() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "pointMesh.obj")));
     CORRADE_COMPARE(importer->mesh3DCount(), 1);
 
@@ -170,7 +170,7 @@ void ObjImporterTest::pointMesh() {
 }
 
 void ObjImporterTest::lineMesh() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "lineMesh.obj")));
     CORRADE_COMPARE(importer->mesh3DCount(), 1);
 
@@ -189,7 +189,7 @@ void ObjImporterTest::lineMesh() {
 }
 
 void ObjImporterTest::triangleMesh() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "triangleMesh.obj")));
     CORRADE_COMPARE(importer->mesh3DCount(), 1);
 
@@ -209,7 +209,7 @@ void ObjImporterTest::triangleMesh() {
 }
 
 void ObjImporterTest::mixedPrimitives() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "mixedPrimitives.obj")));
     CORRADE_COMPARE(importer->mesh3DCount(), 1);
 
@@ -220,7 +220,7 @@ void ObjImporterTest::mixedPrimitives() {
 }
 
 void ObjImporterTest::positionsOnly() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "triangleMesh.obj")));
     CORRADE_COMPARE(importer->mesh3DCount(), 1);
 
@@ -232,7 +232,7 @@ void ObjImporterTest::positionsOnly() {
 }
 
 void ObjImporterTest::textureCoordinates() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "textureCoordinates.obj")));
     CORRADE_COMPARE(importer->mesh3DCount(), 1);
 
@@ -260,7 +260,7 @@ void ObjImporterTest::textureCoordinates() {
 }
 
 void ObjImporterTest::normals() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "normals.obj")));
     CORRADE_COMPARE(importer->mesh3DCount(), 1);
 
@@ -288,7 +288,7 @@ void ObjImporterTest::normals() {
 }
 
 void ObjImporterTest::textureCoordinatesNormals() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "textureCoordinatesNormals.obj")));
     CORRADE_COMPARE(importer->mesh3DCount(), 1);
 
@@ -325,13 +325,13 @@ void ObjImporterTest::textureCoordinatesNormals() {
 }
 
 void ObjImporterTest::emptyFile() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "emptyFile.obj")));
     CORRADE_COMPARE(importer->mesh3DCount(), 1);
 }
 
 void ObjImporterTest::unnamedMesh() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "emptyFile.obj")));
     CORRADE_COMPARE(importer->mesh3DCount(), 1);
     CORRADE_COMPARE(importer->mesh3DName(0), "");
@@ -339,7 +339,7 @@ void ObjImporterTest::unnamedMesh() {
 }
 
 void ObjImporterTest::namedMesh() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "namedMesh.obj")));
     CORRADE_COMPARE(importer->mesh3DCount(), 1);
     CORRADE_COMPARE(importer->mesh3DName(0), "MyMesh");
@@ -347,7 +347,7 @@ void ObjImporterTest::namedMesh() {
 }
 
 void ObjImporterTest::moreMeshes() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "moreMeshes.obj")));
     CORRADE_COMPARE(importer->mesh3DCount(), 3);
 
@@ -396,7 +396,7 @@ void ObjImporterTest::moreMeshes() {
 }
 
 void ObjImporterTest::unnamedFirstMesh() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "unnamedFirstMesh.obj")));
     CORRADE_COMPARE(importer->mesh3DCount(), 2);
 
@@ -408,7 +408,7 @@ void ObjImporterTest::unnamedFirstMesh() {
 }
 
 void ObjImporterTest::wrongFloat() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "wrongNumbers.obj")));
     const Int id = importer->mesh3DForName("WrongFloat");
     CORRADE_VERIFY(id > -1);
@@ -420,7 +420,7 @@ void ObjImporterTest::wrongFloat() {
 }
 
 void ObjImporterTest::wrongInteger() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "wrongNumbers.obj")));
     const Int id = importer->mesh3DForName("WrongInteger");
     CORRADE_VERIFY(id > -1);
@@ -432,7 +432,7 @@ void ObjImporterTest::wrongInteger() {
 }
 
 void ObjImporterTest::unmergedIndexOutOfRange() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "wrongNumbers.obj")));
     const Int id = importer->mesh3DForName("PositionIndexOutOfRange");
     CORRADE_VERIFY(id > -1);
@@ -444,7 +444,7 @@ void ObjImporterTest::unmergedIndexOutOfRange() {
 }
 
 void ObjImporterTest::mergedIndexOutOfRange() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "wrongNumbers.obj")));
     const Int id = importer->mesh3DForName("TextureIndexOutOfRange");
     CORRADE_VERIFY(id > -1);
@@ -456,7 +456,7 @@ void ObjImporterTest::mergedIndexOutOfRange() {
 }
 
 void ObjImporterTest::zeroIndex() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "wrongNumbers.obj")));
     const Int id = importer->mesh3DForName("ZeroIndex");
     CORRADE_VERIFY(id > -1);
@@ -468,7 +468,7 @@ void ObjImporterTest::zeroIndex() {
 }
 
 void ObjImporterTest::explicitOptionalPositionCoordinate() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "optionalCoordinates.obj")));
     const Int id = importer->mesh3DForName("SupportedPositionW");
     CORRADE_VERIFY(id > -1);
@@ -482,7 +482,7 @@ void ObjImporterTest::explicitOptionalPositionCoordinate() {
 }
 
 void ObjImporterTest::explicitOptionalTextureCoordinate() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "optionalCoordinates.obj")));
     const Int id = importer->mesh3DForName("SupportedTextureW");
     CORRADE_VERIFY(id > -1);
@@ -496,7 +496,7 @@ void ObjImporterTest::explicitOptionalTextureCoordinate() {
 }
 
 void ObjImporterTest::unsupportedOptionalPositionCoordinate() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "optionalCoordinates.obj")));
     const Int id = importer->mesh3DForName("UnsupportedPositionW");
     CORRADE_VERIFY(id > -1);
@@ -508,7 +508,7 @@ void ObjImporterTest::unsupportedOptionalPositionCoordinate() {
 }
 
 void ObjImporterTest::unsupportedOptionalTextureCoordinate() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "optionalCoordinates.obj")));
     const Int id = importer->mesh3DForName("UnsupportedTextureW");
     CORRADE_VERIFY(id > -1);
@@ -520,7 +520,7 @@ void ObjImporterTest::unsupportedOptionalTextureCoordinate() {
 }
 
 void ObjImporterTest::shortFloatData() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "wrongNumberCount.obj")));
     const Int id = importer->mesh3DForName("ShortFloat");
     CORRADE_VERIFY(id > -1);
@@ -532,7 +532,7 @@ void ObjImporterTest::shortFloatData() {
 }
 
 void ObjImporterTest::longFloatData() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "wrongNumberCount.obj")));
     const Int id = importer->mesh3DForName("LongFloat");
     CORRADE_VERIFY(id > -1);
@@ -544,7 +544,7 @@ void ObjImporterTest::longFloatData() {
 }
 
 void ObjImporterTest::longOptionalFloatData() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "wrongNumberCount.obj")));
     const Int id = importer->mesh3DForName("LongOptionalFloat");
     CORRADE_VERIFY(id > -1);
@@ -556,7 +556,7 @@ void ObjImporterTest::longOptionalFloatData() {
 }
 
 void ObjImporterTest::longIndexData() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "wrongNumberCount.obj")));
     const Int id = importer->mesh3DForName("InvalidIndices");
     CORRADE_VERIFY(id > -1);
@@ -568,7 +568,7 @@ void ObjImporterTest::longIndexData() {
 }
 
 void ObjImporterTest::wrongPointIndexData() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "wrongNumberCount.obj")));
     const Int id = importer->mesh3DForName("WrongPointIndices");
     CORRADE_VERIFY(id > -1);
@@ -580,7 +580,7 @@ void ObjImporterTest::wrongPointIndexData() {
 }
 
 void ObjImporterTest::wrongLineIndexData() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "wrongNumberCount.obj")));
     const Int id = importer->mesh3DForName("WrongLineIndices");
     CORRADE_VERIFY(id > -1);
@@ -592,7 +592,7 @@ void ObjImporterTest::wrongLineIndexData() {
 }
 
 void ObjImporterTest::wrongTriangleIndexData() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "wrongNumberCount.obj")));
     const Int id = importer->mesh3DForName("WrongTriangleIndices");
     CORRADE_VERIFY(id > -1);
@@ -604,7 +604,7 @@ void ObjImporterTest::wrongTriangleIndexData() {
 }
 
 void ObjImporterTest::polygonIndexData() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "wrongNumberCount.obj")));
     const Int id = importer->mesh3DForName("PolygonIndices");
     CORRADE_VERIFY(id > -1);
@@ -616,7 +616,7 @@ void ObjImporterTest::polygonIndexData() {
 }
 
 void ObjImporterTest::missingPositionData() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "missingData.obj")));
     const Int id = importer->mesh3DForName("MissingPositionData");
     CORRADE_VERIFY(id > -1);
@@ -628,7 +628,7 @@ void ObjImporterTest::missingPositionData() {
 }
 
 void ObjImporterTest::missingPositionIndices() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "missingData.obj")));
     const Int id = importer->mesh3DForName("MissingPositionIndices");
     CORRADE_VERIFY(id > -1);
@@ -640,7 +640,7 @@ void ObjImporterTest::missingPositionIndices() {
 }
 
 void ObjImporterTest::missingNormalData() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "missingData.obj")));
     const Int id = importer->mesh3DForName("MissingNormalData");
     CORRADE_VERIFY(id > -1);
@@ -652,7 +652,7 @@ void ObjImporterTest::missingNormalData() {
 }
 
 void ObjImporterTest::missingNormalIndices() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "missingData.obj")));
     const Int id = importer->mesh3DForName("MissingNormalIndices");
     CORRADE_VERIFY(id > -1);
@@ -664,7 +664,7 @@ void ObjImporterTest::missingNormalIndices() {
 }
 
 void ObjImporterTest::missingTextureCoordinateData() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "missingData.obj")));
     const Int id = importer->mesh3DForName("MissingTextureData");
     CORRADE_VERIFY(id > -1);
@@ -676,7 +676,7 @@ void ObjImporterTest::missingTextureCoordinateData() {
 }
 
 void ObjImporterTest::missingTextureCoordinateIndices() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "missingData.obj")));
     const Int id = importer->mesh3DForName("MissingTextureIndices");
     CORRADE_VERIFY(id > -1);
@@ -688,7 +688,7 @@ void ObjImporterTest::missingTextureCoordinateIndices() {
 }
 
 void ObjImporterTest::wrongNormalIndexCount() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "wrongIndexCount.obj")));
     const Int id = importer->mesh3DForName("ShortNormalIndices");
     CORRADE_VERIFY(id > -1);
@@ -700,7 +700,7 @@ void ObjImporterTest::wrongNormalIndexCount() {
 }
 
 void ObjImporterTest::wrongTextureCoordinateIndexCount() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "wrongIndexCount.obj")));
     const Int id = importer->mesh3DForName("ShortTextureIndices");
     CORRADE_VERIFY(id > -1);
@@ -712,7 +712,7 @@ void ObjImporterTest::wrongTextureCoordinateIndexCount() {
 }
 
 void ObjImporterTest::unsupportedKeyword() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "keywords.obj")));
     const Int id = importer->mesh3DForName("UnsupportedKeyword");
     CORRADE_VERIFY(id > -1);
@@ -729,7 +729,7 @@ void ObjImporterTest::unsupportedKeyword() {
 }
 
 void ObjImporterTest::unknownKeyword() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("ObjImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("ObjImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(OBJIMPORTER_TEST_DIR, "keywords.obj")));
     const Int id = importer->mesh3DForName("UnknownKeyword");
     CORRADE_VERIFY(id > -1);

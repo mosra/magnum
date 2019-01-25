@@ -144,7 +144,7 @@ namespace {
 
 int PrimitiveVisualizer::exec() {
     PluginManager::Manager<Trade::AbstractImageConverter> converterManager;
-    std::unique_ptr<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate("PngImageConverter");
+    Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate("PngImageConverter");
     if(!converter) {
         Error() << "Cannot load image converter plugin";
         std::exit(1);

@@ -165,7 +165,7 @@ void AbstractFont::doFillGlyphCache(GlyphCache&, const std::u32string&) {
     CORRADE_ASSERT(false, "Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented", );
 }
 
-std::unique_ptr<GlyphCache> AbstractFont::createGlyphCache() {
+Containers::Pointer<GlyphCache> AbstractFont::createGlyphCache() {
     CORRADE_ASSERT(isOpened(),
         "Text::AbstractFont::createGlyphCache(): no font opened", nullptr);
     CORRADE_ASSERT(features() & Feature::PreparedGlyphCache,
@@ -174,12 +174,12 @@ std::unique_ptr<GlyphCache> AbstractFont::createGlyphCache() {
     return doCreateGlyphCache();
 }
 
-std::unique_ptr<GlyphCache> AbstractFont::doCreateGlyphCache() {
+Containers::Pointer<GlyphCache> AbstractFont::doCreateGlyphCache() {
     CORRADE_ASSERT(false, "Text::AbstractFont::createGlyphCache(): feature advertised but not implemented", nullptr);
     return nullptr;
 }
 
-std::unique_ptr<AbstractLayouter> AbstractFont::layout(const GlyphCache& cache, const Float size, const std::string& text) {
+Containers::Pointer<AbstractLayouter> AbstractFont::layout(const GlyphCache& cache, const Float size, const std::string& text) {
     CORRADE_ASSERT(isOpened(), "Text::AbstractFont::layout(): no font opened", nullptr);
 
     return doLayout(cache, size, text);

@@ -29,8 +29,8 @@
  * @brief Class @ref Magnum::Platform::WindowlessIosApplication, @ref Magnum::Platform::WindowlessIosContext, macro @ref MAGNUM_WINDOWLESSIOSAPPLICATION_MAIN()
  */
 
-#include <memory>
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -293,7 +293,7 @@ class WindowlessIosApplication {
 
     private:
         WindowlessIosContext _glContext;
-        std::unique_ptr<Platform::GLContext> _context;
+        Containers::Pointer<Platform::GLContext> _context;
 };
 
 /** @hideinitializer

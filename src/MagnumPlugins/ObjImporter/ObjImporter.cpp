@@ -45,7 +45,7 @@ struct ObjImporter::File {
     std::unordered_map<std::string, UnsignedInt> meshesForName;
     std::vector<std::string> meshNames;
     std::vector<std::tuple<std::streampos, std::streampos, UnsignedInt, UnsignedInt, UnsignedInt>> meshes;
-    std::unique_ptr<std::istream> in;
+    Containers::Pointer<std::istream> in;
 };
 
 namespace {
@@ -102,7 +102,7 @@ void ObjImporter::doClose() { _file.reset(); }
 bool ObjImporter::doIsOpened() const { return !!_file; }
 
 void ObjImporter::doOpenFile(const std::string& filename) {
-    std::unique_ptr<std::istream> in{new std::ifstream{filename, std::ios::binary}};
+    Containers::Pointer<std::istream> in{new std::ifstream{filename, std::ios::binary}};
     if(!in->good()) {
         Error() << "Trade::ObjImporter::openFile(): cannot open file" << filename;
         return;

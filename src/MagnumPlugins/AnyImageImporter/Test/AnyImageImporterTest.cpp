@@ -119,7 +119,7 @@ void AnyImageImporterTest::load() {
     if(!(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImporter plugin not enabled, cannot test");
 
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
 
     Containers::Array<char> storage;
     importer->setFileCallback(data.callback, storage);
@@ -139,7 +139,7 @@ void AnyImageImporterTest::detect() {
     auto&& data = DetectData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
 
     Containers::Array<char> storage;
     importer->setFileCallback(data.callback, storage);
@@ -161,7 +161,7 @@ void AnyImageImporterTest::unknownExtension() {
     std::ostringstream output;
     Error redirectError{&output};
 
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
     CORRADE_VERIFY(!importer->openFile("image.xcf"));
 
     CORRADE_COMPARE(output.str(), "Trade::AnyImageImporter::openFile(): cannot determine type of file image.xcf\n");
@@ -173,7 +173,7 @@ void AnyImageImporterTest::unknownSignature() {
 
     constexpr const char data[]{ 0x25, 0x3a };
 
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
     CORRADE_VERIFY(!importer->openData(data));
 
     CORRADE_COMPARE(output.str(), "Trade::AnyImageImporter::openData(): cannot determine type from signature 0x253a0000\n");
@@ -183,7 +183,7 @@ void AnyImageImporterTest::emptyData() {
     std::ostringstream output;
     Error redirectError{&output};
 
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyImageImporter");
     CORRADE_VERIFY(!importer->openData(nullptr));
 
     CORRADE_COMPARE(output.str(), "Trade::AnyImageImporter::openData(): file is empty\n");

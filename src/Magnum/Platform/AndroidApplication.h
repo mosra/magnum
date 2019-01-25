@@ -31,8 +31,8 @@
  */
 #endif
 
-#include <memory>
 #include <EGL/egl.h>
+#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -162,11 +162,11 @@ class AndroidApplication {
          *
          * See @ref MAGNUM_ANDROIDAPPLICATION_MAIN() for usage information.
          */
-        static void exec(android_app* state, std::unique_ptr<AndroidApplication>(*instancer)(const Arguments&));
+        static void exec(android_app* state, Containers::Pointer<AndroidApplication>(*instancer)(const Arguments&));
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
-        template<class T> static std::unique_ptr<AndroidApplication> instancer(const Arguments& arguments) {
-            return std::unique_ptr<AndroidApplication>{new T{arguments}};
+        template<class T> static Containers::Pointer<AndroidApplication> instancer(const Arguments& arguments) {
+            return Containers::Pointer<AndroidApplication>{new T{arguments}};
         }
         #endif
 
@@ -450,8 +450,8 @@ class AndroidApplication {
         EGLSurface _surface;
         EGLContext _glContext;
 
-        std::unique_ptr<Platform::GLContext> _context;
-        std::unique_ptr<LogOutput> _logOutput;
+        Containers::Pointer<Platform::GLContext> _context;
+        Containers::Pointer<LogOutput> _logOutput;
 
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 };

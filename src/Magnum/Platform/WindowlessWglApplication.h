@@ -29,13 +29,13 @@
  * @brief Class @ref Magnum::Platform::WindowlessWglApplication, @ref Magnum::Platform::WindowlessWglContext, macro @ref MAGNUM_WINDOWLESSWGLAPPLICATION_MAIN()
  */
 
-#include <memory>
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define WIN32_LEAN_AND_MEAN 1
 #define VC_EXTRALEAN
 #endif
 #include <windows.h>
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -388,7 +388,7 @@ class WindowlessWglApplication {
 
     private:
         WindowlessWglContext _glContext;
-        std::unique_ptr<Platform::GLContext> _context;
+        Containers::Pointer<Platform::GLContext> _context;
 };
 
 /** @hideinitializer

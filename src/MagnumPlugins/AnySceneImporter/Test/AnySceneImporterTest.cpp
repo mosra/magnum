@@ -67,7 +67,7 @@ void AnySceneImporterTest::obj() {
     if(!(_manager.loadState("ObjImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("ObjImporter plugin not enabled, cannot test");
 
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
     CORRADE_VERIFY(importer->openFile(OBJ_FILE));
 
     /* Check only size, as it is good enough proof that it is working */
@@ -80,7 +80,7 @@ void AnySceneImporterTest::unknown() {
     std::ostringstream output;
     Error redirectError{&output};
 
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
     CORRADE_VERIFY(!importer->openFile("mesh.wtf"));
 
     CORRADE_COMPARE(output.str(), "Trade::AnySceneImporter::openFile(): cannot determine type of file mesh.wtf\n");

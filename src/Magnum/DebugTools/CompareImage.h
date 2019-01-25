@@ -29,8 +29,8 @@
  * @brief Class @ref Magnum::DebugTools::CompareImage
  */
 
-#include <memory>
 #include <vector>
+#include <Corrade/Containers/Pointer.h>
 #include <Corrade/PluginManager/PluginManager.h>
 #include <Corrade/TestSuite/Comparator.h>
 
@@ -80,7 +80,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT ImageComparatorBase {
 
         enum class State: UnsignedByte;
 
-        std::unique_ptr<FileState> _fileState;
+        Containers::Pointer<FileState> _fileState;
         Float _maxThreshold, _meanThreshold;
 
         State _state{};

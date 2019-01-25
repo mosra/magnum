@@ -1649,8 +1649,8 @@ void AbstractImporterTest::object2D() {
             if(id == 7) return "eighth";
             else return {};
         }
-        std::unique_ptr<ObjectData2D> doObject2D(UnsignedInt id) override {
-            if(id == 7) return std::unique_ptr<ObjectData2D>{new ObjectData2D{{}, {}, &state}};
+        Containers::Pointer<ObjectData2D> doObject2D(UnsignedInt id) override {
+            if(id == 7) return Containers::pointer(new ObjectData2D{{}, {}, &state});
             else return {};
         }
     };
@@ -1825,8 +1825,8 @@ void AbstractImporterTest::object3D() {
             if(id == 7) return "eighth";
             else return {};
         }
-        std::unique_ptr<ObjectData3D> doObject3D(UnsignedInt id) override {
-            if(id == 7) return std::unique_ptr<ObjectData3D>{new ObjectData3D{{}, {}, &state}};
+        Containers::Pointer<ObjectData3D> doObject3D(UnsignedInt id) override {
+            if(id == 7) return Containers::pointer(new ObjectData3D{{}, {}, &state});
             else return {};
         }
     };
@@ -2353,8 +2353,8 @@ void AbstractImporterTest::material() {
             if(id == 7) return "eighth";
             else return {};
         }
-        std::unique_ptr<AbstractMaterialData> doMaterial(UnsignedInt id) override {
-            if(id == 7) return std::unique_ptr<PhongMaterialData>{new PhongMaterialData{{}, {}, {}, {}, &state}};
+        Containers::Pointer<AbstractMaterialData> doMaterial(UnsignedInt id) override {
+            if(id == 7) return Containers::pointer(new PhongMaterialData{{}, {}, {}, {}, &state});
             else return {};
         }
     };

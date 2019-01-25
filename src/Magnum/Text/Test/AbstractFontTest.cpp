@@ -63,7 +63,7 @@ class SingleDataFont: public Text::AbstractFont {
 
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
 
-        std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache&, Float, const std::string&) override {
+        Containers::Pointer<AbstractLayouter> doLayout(const GlyphCache&, Float, const std::string&) override {
             return nullptr;
         }
 

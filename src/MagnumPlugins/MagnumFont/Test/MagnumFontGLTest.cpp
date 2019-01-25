@@ -63,7 +63,7 @@ MagnumFontGLTest::MagnumFontGLTest() {
 }
 
 void MagnumFontGLTest::nonexistent() {
-    std::unique_ptr<AbstractFont> font = _fontManager.instantiate("MagnumFont");
+    Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -72,7 +72,7 @@ void MagnumFontGLTest::nonexistent() {
 }
 
 void MagnumFontGLTest::properties() {
-    std::unique_ptr<AbstractFont> font = _fontManager.instantiate("MagnumFont");
+    Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
 
     CORRADE_VERIFY(font->openFile(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
     CORRADE_COMPARE(font->size(), 16.0f);
@@ -83,7 +83,7 @@ void MagnumFontGLTest::properties() {
 }
 
 void MagnumFontGLTest::layout() {
-    std::unique_ptr<AbstractFont> font = _fontManager.instantiate("MagnumFont");
+    Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
 
     CORRADE_VERIFY(font->openFile(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
 
@@ -127,12 +127,12 @@ void MagnumFontGLTest::layout() {
 }
 
 void MagnumFontGLTest::createGlyphCache() {
-    std::unique_ptr<AbstractFont> font = _fontManager.instantiate("MagnumFont");
+    Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
 
     CORRADE_VERIFY(font->openFile(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"), 0.0f));
 
     /* Just testing that nothing crashes, asserts or errors */
-    std::unique_ptr<GlyphCache> cache = font->createGlyphCache();
+    Containers::Pointer<GlyphCache> cache = font->createGlyphCache();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(cache);

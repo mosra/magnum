@@ -23,8 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <memory>
 #include <sstream>
+#include <Corrade/Containers/Pointer.h>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/SceneGraph/MatrixTransformation3D.h"
@@ -94,14 +94,14 @@ ObjectTest::ObjectTest() {
 void ObjectTest::addFeature() {
     class MyFeature: public AbstractFeature3D {
         public:
-            explicit MyFeature(AbstractObject3D& object, Int&, std::unique_ptr<int>&&): AbstractFeature3D{object} {}
+            explicit MyFeature(AbstractObject3D& object, Int&, Containers::Pointer<int>&&): AbstractFeature3D{object} {}
     };
 
     Object3D o;
     CORRADE_VERIFY(o.features().isEmpty());
     /* Test perfect forwarding as well */
     int a = 0;
-    MyFeature& f = o.addFeature<MyFeature>(a, std::unique_ptr<int>{});
+    MyFeature& f = o.addFeature<MyFeature>(a, Containers::Pointer<int>{});
     CORRADE_VERIFY(!o.features().isEmpty());
     CORRADE_COMPARE(&f.object(), &o);
 }
@@ -139,14 +139,14 @@ void ObjectTest::parenting() {
 void ObjectTest::addChild() {
     class MyObject: public Object3D {
         public:
-            explicit MyObject(Int&, std::unique_ptr<int>&&, Object3D* parent = nullptr): Object3D{parent} {}
+            explicit MyObject(Int&, Containers::Pointer<int>&&, Object3D* parent = nullptr): Object3D{parent} {}
     };
 
     Object3D o;
     CORRADE_VERIFY(o.children().isEmpty());
     /* Test perfect forwarding as well */
     int a = 0;
-    MyObject& p = o.addChild<MyObject>(a, std::unique_ptr<int>{});
+    MyObject& p = o.addChild<MyObject>(a, Containers::Pointer<int>{});
     CORRADE_VERIFY(!o.children().isEmpty());
     CORRADE_COMPARE(p.parent(), &o);
 }

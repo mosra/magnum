@@ -29,7 +29,6 @@
  * @brief Class @ref Magnum::Platform::WindowlessWindowsEglApplication, @ref Magnum::Platform::WindowlessWindowsEglContext, macro @ref MAGNUM_WINDOWLESSWINDOWSEGLAPPLICATION_MAIN()
  */
 
-#include <memory>
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #define WIN32_LEAN_AND_MEAN 1
 #define VC_EXTRALEAN
@@ -38,6 +37,7 @@
 #include <EGL/egl.h>
 #include <EGL/eglext.h>
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -359,7 +359,7 @@ class WindowlessWindowsEglApplication {
 
     private:
         WindowlessWindowsEglContext _glContext;
-        std::unique_ptr<Platform::GLContext> _context;
+        Containers::Pointer<Platform::GLContext> _context;
 };
 
 /** @hideinitializer

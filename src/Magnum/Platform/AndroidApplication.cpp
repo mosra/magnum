@@ -194,10 +194,10 @@ void AndroidApplication::mouseMoveEvent(MouseMoveEvent&) {}
 
 namespace {
     struct Data {
-        Data(std::unique_ptr<AndroidApplication>(*instancer)(const AndroidApplication::Arguments&), void(*nativeActivity)(ANativeActivity*,void*,size_t)): instancer(instancer), nativeActivity{nativeActivity} {}
+        Data(Containers::Pointer<AndroidApplication>(*instancer)(const AndroidApplication::Arguments&), void(*nativeActivity)(ANativeActivity*,void*,size_t)): instancer(instancer), nativeActivity{nativeActivity} {}
 
-        std::unique_ptr<AndroidApplication>(*instancer)(const AndroidApplication::Arguments&);
-        std::unique_ptr<AndroidApplication> instance;
+        Containers::Pointer<AndroidApplication>(*instancer)(const AndroidApplication::Arguments&);
+        Containers::Pointer<AndroidApplication> instance;
 
         void(*nativeActivity)(ANativeActivity*,void*,size_t);
     };
@@ -270,7 +270,7 @@ std::int32_t AndroidApplication::inputEvent(android_app* state, AInputEvent* eve
 AndroidApplication::GLConfiguration::GLConfiguration():
     _colorBufferSize{8, 8, 8, 0}, _depthBufferSize{24}, _stencilBufferSize{0} {}
 
-void AndroidApplication::exec(android_app* state, std::unique_ptr<AndroidApplication>(*instancer)(const Arguments&)) {
+void AndroidApplication::exec(android_app* state, Containers::Pointer<AndroidApplication>(*instancer)(const Arguments&)) {
     state->onAppCmd = commandEvent;
     state->onInputEvent = inputEvent;
 

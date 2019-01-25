@@ -102,21 +102,21 @@ void TgaImageConverterTest::wrongFormat() {
     std::ostringstream out;
     Error redirectError{&out};
 
-    std::unique_ptr<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+    Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
     const auto data = converter->exportToData(image);
     CORRADE_VERIFY(!data);
     CORRADE_COMPARE(out.str(), "Trade::TgaImageConverter::exportToData(): unsupported pixel format PixelFormat::RG8Unorm\n");
 }
 
 void TgaImageConverterTest::rgb() {
-    std::unique_ptr<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+    Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
     const auto data = converter->exportToData(OriginalRGB);
     CORRADE_VERIFY(data);
 
     if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
 
-    std::unique_ptr<AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
+    Containers::Pointer<AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
     CORRADE_VERIFY(importer->openData(data));
     Containers::Optional<Trade::ImageData2D> converted = importer->image2D(0);
     CORRADE_VERIFY(converted);
@@ -129,14 +129,14 @@ void TgaImageConverterTest::rgb() {
 }
 
 void TgaImageConverterTest::rgba() {
-    std::unique_ptr<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
+    Containers::Pointer<AbstractImageConverter> converter = _converterManager.instantiate("TgaImageConverter");
     const auto data = converter->exportToData(OriginalRGBA);
     CORRADE_VERIFY(data);
 
     if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImporter plugin not enabled, can't test the result");
 
-    std::unique_ptr<AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
+    Containers::Pointer<AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
     CORRADE_VERIFY(importer->openData(data));
     Containers::Optional<Trade::ImageData2D> converted = importer->image2D(0);
     CORRADE_VERIFY(converted);

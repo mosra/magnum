@@ -123,6 +123,12 @@ See also:
     @ref Platform::Sdl2Application::redraw() "redraw()" were changed from
     protected to public to allow calling them from outside
 
+@subsubsection changelog-latest-changes-text Text library
+
+-   The @ref Text::AbstractFont and @ref Text::AbstractFontConverter plugin
+    APIs now return @ref Corrade::Containers::Pointer instead of
+    @ref std::unique_ptr for improved compile times
+
 @subsubsection changelog-latest-changes-texturetools TextureTools library
 
 -   Further performance and output quality improvements for
@@ -130,6 +136,12 @@ See also:
     desktop and speeding up the processing to take only 60% of the time
     compared to before. It's now also possible to reuse the internal state for
     batch processing.
+
+@subsubsection changelog-latest-changes-trade Trade library
+
+-   The @ref Trade::AbstractImporter plugin API now returns
+    @ref Corrade::Containers::Pointer instead of @ref std::unique_ptr for
+    improved compile times
 
 @subsection changelog-latest-buildsystem Build system
 

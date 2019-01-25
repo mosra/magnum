@@ -164,14 +164,14 @@ int FontConverter::exec() {
     PluginManager::Manager<Text::AbstractFont> fontManager{
         args.value("plugin-dir").empty() ? std::string{} :
         Utility::Directory::join(args.value("plugin-dir"), Text::AbstractFont::pluginSearchPaths()[0])};
-    std::unique_ptr<Text::AbstractFont> font = fontManager.loadAndInstantiate(args.value("font"));
+    Containers::Pointer<Text::AbstractFont> font = fontManager.loadAndInstantiate(args.value("font"));
     if(!font) return 1;
 
     /* Load font converter */
     PluginManager::Manager<Text::AbstractFontConverter> converterManager{
         args.value("plugin-dir").empty() ? std::string{} :
         Utility::Directory::join(args.value("plugin-dir"), Text::AbstractFontConverter::pluginSearchPaths()[0])};
-    std::unique_ptr<Text::AbstractFontConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
+    Containers::Pointer<Text::AbstractFontConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
     if(!converter) return 2;
 
     /* Open font */
@@ -181,7 +181,7 @@ int FontConverter::exec() {
     }
 
     /* Create distance field glyph cache if radius is specified */
-    std::unique_ptr<Text::GlyphCache> cache;
+    Containers::Pointer<Text::GlyphCache> cache;
     if(!args.value<Vector2i>("output-size").isZero()) {
         Debug() << "Populating distance field glyph cache...";
 

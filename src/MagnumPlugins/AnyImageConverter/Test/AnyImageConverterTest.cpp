@@ -84,7 +84,7 @@ void AnyImageConverterTest::tga() {
         CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     /* Just test that the exported file exists */
-    std::unique_ptr<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
     CORRADE_VERIFY(converter->exportToFile(Image, filename));
     CORRADE_VERIFY(Utility::Directory::fileExists(filename));
 }
@@ -93,7 +93,7 @@ void AnyImageConverterTest::unknown() {
     std::ostringstream output;
     Error redirectError{&output};
 
-    std::unique_ptr<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
     CORRADE_VERIFY(!converter->exportToFile(Image, "image.xcf"));
 
     CORRADE_COMPARE(output.str(), "Trade::AnyImageConverter::exportToFile(): cannot determine type of file image.xcf\n");

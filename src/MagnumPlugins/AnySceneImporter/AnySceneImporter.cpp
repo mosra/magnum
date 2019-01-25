@@ -132,7 +132,7 @@ void AnySceneImporter::doOpenFile(const std::string& filename) {
 
     /* Try to open the file (error output should be printed by the plugin
        itself) */
-    std::unique_ptr<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
+    Containers::Pointer<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
     if(!importer->openFile(filename)) return;
 
     /* Success, save the instance */
@@ -164,12 +164,12 @@ Containers::Optional<CameraData> AnySceneImporter::doCamera(const UnsignedInt id
 UnsignedInt AnySceneImporter::doObject2DCount() const { return _in->object2DCount(); }
 Int AnySceneImporter::doObject2DForName(const std::string& name) { return _in->object2DForName(name); }
 std::string AnySceneImporter::doObject2DName(const UnsignedInt id) { return _in->object2DName(id); }
-std::unique_ptr<ObjectData2D> AnySceneImporter::doObject2D(const UnsignedInt id) { return _in->object2D(id); }
+Containers::Pointer<ObjectData2D> AnySceneImporter::doObject2D(const UnsignedInt id) { return _in->object2D(id); }
 
 UnsignedInt AnySceneImporter::doObject3DCount() const { return _in->object3DCount(); }
 Int AnySceneImporter::doObject3DForName(const std::string& name) { return _in->object3DForName(name); }
 std::string AnySceneImporter::doObject3DName(const UnsignedInt id) { return _in->object3DName(id); }
-std::unique_ptr<ObjectData3D> AnySceneImporter::doObject3D(const UnsignedInt id) { return _in->object3D(id); }
+Containers::Pointer<ObjectData3D> AnySceneImporter::doObject3D(const UnsignedInt id) { return _in->object3D(id); }
 
 UnsignedInt AnySceneImporter::doMesh2DCount() const { return _in->mesh2DCount(); }
 Int AnySceneImporter::doMesh2DForName(const std::string& name) { return _in->mesh2DForName(name); }
@@ -184,7 +184,7 @@ Containers::Optional<MeshData3D> AnySceneImporter::doMesh3D(const UnsignedInt id
 UnsignedInt AnySceneImporter::doMaterialCount() const { return _in->materialCount(); }
 Int AnySceneImporter::doMaterialForName(const std::string& name) { return _in->materialForName(name); }
 std::string AnySceneImporter::doMaterialName(const UnsignedInt id) { return _in->materialName(id); }
-std::unique_ptr<AbstractMaterialData> AnySceneImporter::doMaterial(const UnsignedInt id) { return _in->material(id); }
+Containers::Pointer<AbstractMaterialData> AnySceneImporter::doMaterial(const UnsignedInt id) { return _in->material(id); }
 
 UnsignedInt AnySceneImporter::doTextureCount() const { return _in->textureCount(); }
 Int AnySceneImporter::doTextureForName(const std::string& name) { return _in->textureForName(name); }

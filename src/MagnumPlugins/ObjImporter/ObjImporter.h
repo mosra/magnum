@@ -100,7 +100,7 @@ class MAGNUM_OBJIMPORTER_EXPORT ObjImporter: public AbstractImporter {
 
         MAGNUM_OBJIMPORTER_LOCAL void parseMeshNames();
 
-        std::unique_ptr<File> _file;
+        Containers::Pointer<File> _file;
 };
 
 }}

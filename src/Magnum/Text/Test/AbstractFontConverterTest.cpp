@@ -198,9 +198,9 @@ class SingleGlyphCacheDataImporter: public Text::AbstractFontConverter {
     private:
         Features doFeatures() const override { return Feature::ConvertData|Feature::ImportGlyphCache; }
 
-        std::unique_ptr<GlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayView<const char> data) const override {
+        Containers::Pointer<GlyphCache> doImportGlyphCacheFromSingleData(const Containers::ArrayView<const char> data) const override {
             if(data.size() == 1 && data[0] == '\xa5')
-                return std::unique_ptr<GlyphCache>(reinterpret_cast<GlyphCache*>(0xdeadbeef));
+                return Containers::Pointer<GlyphCache>(reinterpret_cast<GlyphCache*>(0xdeadbeef));
             return nullptr;
         }
 };
@@ -209,7 +209,7 @@ void AbstractFontConverterTest::importGlyphCacheFromSingleData() {
     /* doImportFromData() should call doImportFromSingleData() */
     SingleGlyphCacheDataImporter importer;
     const char data[] = {'\xa5'};
-    std::unique_ptr<GlyphCache> cache = importer.importGlyphCacheFromData({{{}, data}});
+    Containers::Pointer<GlyphCache> cache = importer.importGlyphCacheFromData({{{}, data}});
     CORRADE_COMPARE(cache.get(), reinterpret_cast<GlyphCache*>(0xdeadbeef));
 
     /* The pointer is invalid, avoid deletion */
@@ -219,7 +219,7 @@ void AbstractFontConverterTest::importGlyphCacheFromSingleData() {
 void AbstractFontConverterTest::importGlyphCacheFromFile() {
     /* doImportFromFile() should call doImportFromSingleData() */
     SingleGlyphCacheDataImporter importer;
-    std::unique_ptr<GlyphCache> cache = importer.importGlyphCacheFromFile(Utility::Directory::join(TEXT_TEST_DIR, "data.bin"));
+    Containers::Pointer<GlyphCache> cache = importer.importGlyphCacheFromFile(Utility::Directory::join(TEXT_TEST_DIR, "data.bin"));
     CORRADE_COMPARE(cache.get(), reinterpret_cast<GlyphCache*>(0xdeadbeef));
 
     /* The pointer is invalid, avoid deletion */

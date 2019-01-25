@@ -81,7 +81,7 @@ struct ShaderVisualizer: Platform::WindowlessApplication {
     std::string vector();
     std::string distanceFieldVector();
 
-    std::unique_ptr<Trade::AbstractImporter> _importer;
+    Containers::Pointer<Trade::AbstractImporter> _importer;
 };
 
 namespace {
@@ -90,7 +90,7 @@ namespace {
 
 int ShaderVisualizer::exec() {
     PluginManager::Manager<Trade::AbstractImageConverter> converterManager;
-    std::unique_ptr<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate("PngImageConverter");
+    Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate("PngImageConverter");
     if(!converter) {
         Error() << "Cannot load image converter plugin";
         std::exit(1);

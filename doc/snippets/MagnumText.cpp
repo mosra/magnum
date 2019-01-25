@@ -35,7 +35,7 @@ int main() {
 
 {
 /* [DistanceFieldGlyphCache-usage] */
-std::unique_ptr<Text::AbstractFont> font;
+Containers::Pointer<Text::AbstractFont> font;
 Text::DistanceFieldGlyphCache cache{Vector2i{2048}, Vector2i{384}, 16};
 font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -45,7 +45,7 @@ font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
 
 {
 /* [GlyphCache-usage] */
-std::unique_ptr<Text::AbstractFont> font;
+Containers::Pointer<Text::AbstractFont> font;
 Text::GlyphCache cache{Vector2i{512}};
 font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
                             "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -57,7 +57,7 @@ font->fillGlyphCache(cache, "abcdefghijklmnopqrstuvwxyz"
 Matrix3 projectionMatrix;
 /* [Renderer-usage1] */
 /* Font instance, received from a plugin manager */
-std::unique_ptr<Text::AbstractFont> font;
+Containers::Pointer<Text::AbstractFont> font;
 
 /* Configured glyph cache */
 Text::GlyphCache cache{Vector2i{512}};

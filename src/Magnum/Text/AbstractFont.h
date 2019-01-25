@@ -29,7 +29,6 @@
  * @brief Class @ref Magnum::Text::AbstractFont, @ref Magnum::Text::AbstractLayouter
  */
 
-#include <memory>
 #include <string>
 #include <vector>
 #include <tuple>
@@ -251,7 +250,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * Other fonts support only partial glyph cache filling, see
          * @ref fillGlyphCache().
          */
-        std::unique_ptr<GlyphCache> createGlyphCache();
+        Containers::Pointer<GlyphCache> createGlyphCache();
 
         /**
          * @brief Layout the text using font's own layouter
@@ -263,7 +262,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * See @ref Renderer class for more advanced text layouting.
          * @see @ref fillGlyphCache(), @ref createGlyphCache()
          */
-        std::unique_ptr<AbstractLayouter> layout(const GlyphCache& cache, Float size, const std::string& text);
+        Containers::Pointer<AbstractLayouter> layout(const GlyphCache& cache, Float size, const std::string& text);
 
     protected:
         /**
@@ -349,10 +348,10 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
         virtual void doFillGlyphCache(GlyphCache& cache, const std::u32string& characters);
 
         /** @brief Implementation for @ref createGlyphCache() */
-        virtual std::unique_ptr<GlyphCache> doCreateGlyphCache();
+        virtual Containers::Pointer<GlyphCache> doCreateGlyphCache();
 
         /** @brief Implementation for @ref layout() */
-        virtual std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache& cache, Float size, const std::string& text) = 0;
+        virtual Containers::Pointer<AbstractLayouter> doLayout(const GlyphCache& cache, Float size, const std::string& text) = 0;
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:

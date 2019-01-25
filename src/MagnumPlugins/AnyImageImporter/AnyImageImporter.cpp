@@ -113,7 +113,7 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
 
     /* Try to open the file (error output should be printed by the plugin
        itself) */
-    std::unique_ptr<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
+    Containers::Pointer<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
     if(!importer->openFile(filename)) return;
 
     /* Success, save the instance */
@@ -181,7 +181,7 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
 
     /* Try to open the file (error output should be printed by the plugin
        itself) */
-    std::unique_ptr<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
+    Containers::Pointer<AbstractImporter> importer = static_cast<PluginManager::Manager<AbstractImporter>*>(manager())->instantiate(plugin);
     if(!importer->openData(data)) return;
 
     /* Success, save the instance */

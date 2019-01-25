@@ -25,7 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <memory>
+#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/GL.h"
@@ -58,22 +58,22 @@ struct State {
 
     enum: GLuint { DisengagedBinding = ~0u };
 
-    std::unique_ptr<BufferState> buffer;
-    std::unique_ptr<ContextState> context;
+    Containers::Pointer<BufferState> buffer;
+    Containers::Pointer<ContextState> context;
     #ifndef MAGNUM_TARGET_WEBGL
-    std::unique_ptr<DebugState> debug;
+    Containers::Pointer<DebugState> debug;
     #endif
-    std::unique_ptr<FramebufferState> framebuffer;
-    std::unique_ptr<MeshState> mesh;
+    Containers::Pointer<FramebufferState> framebuffer;
+    Containers::Pointer<MeshState> mesh;
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    std::unique_ptr<QueryState> query;
+    Containers::Pointer<QueryState> query;
     #endif
-    std::unique_ptr<RendererState> renderer;
-    std::unique_ptr<ShaderState> shader;
-    std::unique_ptr<ShaderProgramState> shaderProgram;
-    std::unique_ptr<TextureState> texture;
+    Containers::Pointer<RendererState> renderer;
+    Containers::Pointer<ShaderState> shader;
+    Containers::Pointer<ShaderProgramState> shaderProgram;
+    Containers::Pointer<TextureState> texture;
     #ifndef MAGNUM_TARGET_GLES2
-    std::unique_ptr<TransformFeedbackState> transformFeedback;
+    Containers::Pointer<TransformFeedbackState> transformFeedback;
     #endif
 };
 

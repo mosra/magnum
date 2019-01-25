@@ -29,7 +29,6 @@
  * @brief Class @ref Magnum::Text::AbstractFontConverter
  */
 
-#include <memory>
 #include <vector>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/PluginManager/AbstractPlugin.h>
@@ -262,7 +261,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * @see @ref features(), @ref importGlyphCacheFromFile(),
          *      @ref exportGlyphCacheToData()
          */
-        std::unique_ptr<GlyphCache> importGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data) const;
+        Containers::Pointer<GlyphCache> importGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data) const;
 
         /**
          * @brief Import glyph cache from single raw data
@@ -274,7 +273,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * @see @ref features(), @ref importGlyphCacheFromFile(),
          *      @ref exportFontToSingleData()
          */
-        std::unique_ptr<GlyphCache> importGlyphCacheFromSingleData(Containers::ArrayView<const char> data) const;
+        Containers::Pointer<GlyphCache> importGlyphCacheFromSingleData(Containers::ArrayView<const char> data) const;
 
         /**
          * @brief Import glyph cache from file
@@ -287,7 +286,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * @see @ref features(), @ref importGlyphCacheFromData(),
          *      @ref exportGlyphCacheToFile()
          */
-        std::unique_ptr<GlyphCache> importGlyphCacheFromFile(const std::string& filename) const;
+        Containers::Pointer<GlyphCache> importGlyphCacheFromFile(const std::string& filename) const;
 
     private:
         /** @brief Implementation for @ref features() */
@@ -339,10 +338,10 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * If the plugin doesn't have @ref Feature::MultiFile, default
          * implementation calls @ref doImportGlyphCacheFromSingleData().
          */
-        virtual std::unique_ptr<GlyphCache> doImportGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data) const;
+        virtual Containers::Pointer<GlyphCache> doImportGlyphCacheFromData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data) const;
 
         /** @brief Implementation for @ref importGlyphCacheFromSingleData() */
-        virtual std::unique_ptr<GlyphCache> doImportGlyphCacheFromSingleData(Containers::ArrayView<const char> data) const;
+        virtual Containers::Pointer<GlyphCache> doImportGlyphCacheFromSingleData(Containers::ArrayView<const char> data) const;
 
         /**
          * @brief Implementation for @ref importGlyphCacheFromFile()
@@ -351,7 +350,7 @@ class MAGNUM_TEXT_EXPORT AbstractFontConverter: public PluginManager::AbstractPl
          * have @ref Feature::MultiFile, default implementation opens the file
          * and calls @ref doImportGlyphCacheFromSingleData() with its contents.
          */
-        virtual std::unique_ptr<GlyphCache> doImportGlyphCacheFromFile(const std::string& filename) const;
+        virtual Containers::Pointer<GlyphCache> doImportGlyphCacheFromFile(const std::string& filename) const;
 };
 
 CORRADE_ENUMSET_OPERATORS(AbstractFontConverter::Features)

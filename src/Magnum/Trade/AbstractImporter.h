@@ -29,7 +29,6 @@
  * @brief Class @ref Magnum::Trade::AbstractImporter
  */
 
-#include <memory>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/PluginManager/AbstractManagingPlugin.h>
 
@@ -168,7 +167,7 @@ about concrete types returned and accepted by these functions.
 
 @subsection Trade-AbstractImporter-usage-casting Polymorphic imported data types
 
-Some data access functions return @ref std::unique_ptr instead of
+Some data access functions return @ref Corrade::Containers::Pointer instead of
 @ref Corrade::Containers::Optional because the result might be a particular
 subclass of given type. Those functions are @ref material(), @ref object2D()
 and @ref object3D(). You can cast the abstract base to a concrete type
@@ -176,8 +175,9 @@ depending on its reported type, for example:
 
 @snippet MagnumTrade.cpp AbstractImporter-usage-cast
 
-Another option is making use of the @ref std::static_pointer_cast() family of utilities, but note that in that case your @ref std::unique_ptr will be *moved
-into* a @ref std::shared_ptr instance and that might not be desirable.
+Another option is making use of the @ref Containers::pointerCast() utility, but
+note that in that case the original @ref Corrade::Containers::Pointer will be
+* *moved into* a new instance and that might not be desirable.
 
 @section Trade-AbstractImporter-subclassing Subclassing
 
@@ -581,7 +581,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given object or @cpp nullptr @ce if importing failed.
          */
-        std::unique_ptr<ObjectData2D> object2D(UnsignedInt id);
+        Containers::Pointer<ObjectData2D> object2D(UnsignedInt id);
 
         /** @brief Three-dimensional object count */
         UnsignedInt object3DCount() const;
@@ -608,7 +608,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given object or @cpp nullptr @ce if importing failed.
          */
-        std::unique_ptr<ObjectData3D> object3D(UnsignedInt id);
+        Containers::Pointer<ObjectData3D> object3D(UnsignedInt id);
 
         /** @brief Two-dimensional mesh count */
         UnsignedInt mesh2DCount() const;
@@ -689,7 +689,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given material or @cpp nullptr @ce if importing failed.
          */
-        std::unique_ptr<AbstractMaterialData> material(UnsignedInt id);
+        Containers::Pointer<AbstractMaterialData> material(UnsignedInt id);
 
         /** @brief Texture count */
         UnsignedInt textureCount() const;
@@ -987,7 +987,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         virtual std::string doObject2DName(UnsignedInt id);
 
         /** @brief Implementation for @ref object2D() */
-        virtual std::unique_ptr<ObjectData2D> doObject2D(UnsignedInt id);
+        virtual Containers::Pointer<ObjectData2D> doObject2D(UnsignedInt id);
 
         /**
          * @brief Implementation for @ref object3DCount()
@@ -1011,7 +1011,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         virtual std::string doObject3DName(UnsignedInt id);
 
         /** @brief Implementation for @ref object3D() */
-        virtual std::unique_ptr<ObjectData3D> doObject3D(UnsignedInt id);
+        virtual Containers::Pointer<ObjectData3D> doObject3D(UnsignedInt id);
 
         /**
          * @brief Implementation for @ref mesh2DCount()
@@ -1083,7 +1083,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         virtual std::string doMaterialName(UnsignedInt id);
 
         /** @brief Implementation for @ref material() */
-        virtual std::unique_ptr<AbstractMaterialData> doMaterial(UnsignedInt id);
+        virtual Containers::Pointer<AbstractMaterialData> doMaterial(UnsignedInt id);
 
         /**
          * @brief Implementation for @ref textureCount()

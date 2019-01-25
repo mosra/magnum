@@ -22,7 +22,7 @@ int main() {
 /* [loading] */
 {
     PluginManager::Manager<Trade::AbstractImporter> manager;
-    std::unique_ptr<Trade::AbstractImporter> importer =
+    Containers::Pointer<Trade::AbstractImporter> importer =
         manager.loadAndInstantiate("TgaImporter");
     if(!importer) Fatal{} << "Cannot load the TgaImporter plugin";
 
@@ -53,7 +53,7 @@ manager.setPreferredPlugins("TrueTypeFont", {"HarfBuzzFont", "FreeTypeFont"});
 {
 PluginManager::Manager<Trade::AbstractImporter> manager;
 /* [anyimporter] */
-std::unique_ptr<Trade::AbstractImporter> importer =
+Containers::Pointer<Trade::AbstractImporter> importer =
     manager.instantiate("AnyImageImporter");
 importer->openFile("texture.dds"); /* Delegates to the DdsImporter plugin */
 /* [anyimporter] */
@@ -62,7 +62,7 @@ importer->openFile("texture.dds"); /* Delegates to the DdsImporter plugin */
 {
 PluginManager::Manager<Trade::AbstractImporter> manager;
 /* [configuration] */
-std::unique_ptr<Trade::AbstractImporter> importer =
+Containers::Pointer<Trade::AbstractImporter> importer =
     manager.instantiate("AssimpImporter");
 importer->configuration().group("postprocess")->setValue("PreTransformVertices", true);
 /* [configuration] */

@@ -31,7 +31,7 @@
  * @brief Class @ref Magnum::Platform::WindowlessCglApplication, @ref Magnum::Platform::WindowlessCglContext, macro @ref MAGNUM_WINDOWLESSCGLAPPLICATION_MAIN()
  */
 
-#include <memory>
+#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -295,7 +295,7 @@ class WindowlessCglApplication {
 
     private:
         WindowlessCglContext _glContext;
-        std::unique_ptr<Platform::GLContext> _context;
+        Containers::Pointer<Platform::GLContext> _context;
 };
 
 /** @hideinitializer

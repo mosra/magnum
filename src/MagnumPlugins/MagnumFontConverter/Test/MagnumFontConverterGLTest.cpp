@@ -86,7 +86,7 @@ void MagnumFontConverterGLTest::exportFont() {
                 return {16.0f, 25.0f, -10.0f, 39.7333f};
             }
             Features doFeatures() const { return {}; }
-            std::unique_ptr<AbstractLayouter> doLayout(const GlyphCache&, Float, const std::string&) { return nullptr; }
+            Containers::Pointer<AbstractLayouter> doLayout(const GlyphCache&, Float, const std::string&) { return nullptr; }
 
             UnsignedInt doGlyphId(const char32_t character) {
                 switch(character) {
@@ -118,7 +118,7 @@ void MagnumFontConverterGLTest::exportFont() {
     cache.insert(font.glyphId(U'e'), {25, 12}, {{16, 4}, {64, 32}});
 
     /* Convert the file */
-    std::unique_ptr<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
+    Containers::Pointer<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
     converter->exportFontToFile(font, cache, Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave");
 
     /* Verify font parameters */
@@ -131,7 +131,7 @@ void MagnumFontConverterGLTest::exportFont() {
         CORRADE_SKIP("TgaImporter plugin not enabled, not testing glyph cache contents");
 
     /* Verify font image, no need to test image contents, as the image is garbage anyway */
-    std::unique_ptr<Trade::AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
+    Containers::Pointer<Trade::AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.tga")));
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);

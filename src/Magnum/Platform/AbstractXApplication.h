@@ -29,8 +29,8 @@
  * @brief Class @ref Magnum::Platform::AbstractXApplication
  */
 
-#include <memory>
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Containers/Pointer.h>
 
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>
@@ -280,8 +280,8 @@ class AbstractXApplication {
         Window _window{};
         Atom _deleteWindow{};
 
-        std::unique_ptr<Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>> _contextHandler;
-        std::unique_ptr<Platform::GLContext> _context;
+        Containers::Pointer<Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>> _contextHandler;
+        Containers::Pointer<Platform::GLContext> _context;
 
         /** @todo Get this from the created window */
         Vector2i _windowSize;

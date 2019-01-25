@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::Audio::AnyImporter
  */
 
-#include <memory>
+#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Audio/AbstractImporter.h"
 #include "MagnumPlugins/AnyAudioImporter/configure.h"
@@ -98,7 +98,7 @@ class MAGNUM_ANYAUDIOIMPORTER_EXPORT AnyImporter: public AbstractImporter {
         MAGNUM_ANYAUDIOIMPORTER_LOCAL UnsignedInt doFrequency() const override;
         MAGNUM_ANYAUDIOIMPORTER_LOCAL Containers::Array<char> doData() override;
 
-        std::unique_ptr<AbstractImporter> _in;
+        Containers::Pointer<AbstractImporter> _in;
 };
 
 }}

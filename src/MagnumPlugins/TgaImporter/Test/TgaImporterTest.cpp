@@ -80,7 +80,7 @@ TgaImporterTest::TgaImporterTest() {
 }
 
 void TgaImporterTest::openShort() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     CORRADE_VERIFY(importer->openData(data));
 
@@ -91,7 +91,7 @@ void TgaImporterTest::openShort() {
 }
 
 void TgaImporterTest::paletted() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     CORRADE_VERIFY(importer->openData(data));
 
@@ -102,7 +102,7 @@ void TgaImporterTest::paletted() {
 }
 
 void TgaImporterTest::compressed() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = { 0, 0, 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     CORRADE_VERIFY(importer->openData(data));
 
@@ -113,7 +113,7 @@ void TgaImporterTest::compressed() {
 }
 
 void TgaImporterTest::colorBits16() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = { 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0 };
     CORRADE_VERIFY(importer->openData(data));
 
@@ -124,7 +124,7 @@ void TgaImporterTest::colorBits16() {
 }
 
 void TgaImporterTest::colorBits24() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = {
         0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
         1, 2, 3, 2, 3, 4,
@@ -148,7 +148,7 @@ void TgaImporterTest::colorBits24() {
 }
 
 void TgaImporterTest::colorBits32() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = {
         0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 32, 0,
         1, 2, 3, 1, 2, 3, 4, 1,
@@ -172,7 +172,7 @@ void TgaImporterTest::colorBits32() {
 }
 
 void TgaImporterTest::grayscaleBits8() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = {
         0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 8, 0,
         1, 2,
@@ -191,7 +191,7 @@ void TgaImporterTest::grayscaleBits8() {
 }
 
 void TgaImporterTest::grayscaleBits16() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = { 0, 0, 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 0 };
     CORRADE_VERIFY(importer->openData(data));
 
@@ -202,7 +202,7 @@ void TgaImporterTest::grayscaleBits16() {
 }
 
 void TgaImporterTest::useTwice() {
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(TGAIMPORTER_TEST_DIR, "file.tga")));
 
     /* Verify that the file is rewinded for second use */

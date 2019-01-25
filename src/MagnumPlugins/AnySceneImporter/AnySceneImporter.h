@@ -149,12 +149,12 @@ class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doObject2DCount() const override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doObject2DForName(const std::string& name) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doObject2DName(UnsignedInt id) override;
-        MAGNUM_ANYSCENEIMPORTER_LOCAL std::unique_ptr<ObjectData2D> doObject2D(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Pointer<ObjectData2D> doObject2D(UnsignedInt id) override;
 
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doObject3DCount() const override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doObject3DForName(const std::string& name) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doObject3DName(UnsignedInt id) override;
-        MAGNUM_ANYSCENEIMPORTER_LOCAL std::unique_ptr<ObjectData3D> doObject3D(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Pointer<ObjectData3D> doObject3D(UnsignedInt id) override;
 
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doMesh2DCount() const override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doMesh2DForName(const std::string& name) override;
@@ -169,7 +169,7 @@ class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doMaterialCount() const override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doMaterialForName(const std::string& name) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doMaterialName(UnsignedInt id) override;
-        MAGNUM_ANYSCENEIMPORTER_LOCAL std::unique_ptr<AbstractMaterialData> doMaterial(UnsignedInt id) override;
+        MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Pointer<AbstractMaterialData> doMaterial(UnsignedInt id) override;
 
         MAGNUM_ANYSCENEIMPORTER_LOCAL UnsignedInt doTextureCount() const override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Int doTextureForName(const std::string& name) override;
@@ -191,7 +191,7 @@ class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
         MAGNUM_ANYSCENEIMPORTER_LOCAL std::string doImage3DName(UnsignedInt id) override;
         MAGNUM_ANYSCENEIMPORTER_LOCAL Containers::Optional<ImageData3D> doImage3D(UnsignedInt id) override;
 
-        std::unique_ptr<AbstractImporter> _in;
+        Containers::Pointer<AbstractImporter> _in;
 };
 
 }}

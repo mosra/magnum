@@ -64,7 +64,7 @@ void AnyImporterTest::wav() {
     if(!(_manager.loadState("WavAudioImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("WavAudioImporter plugin not enabled, cannot test");
 
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
     CORRADE_VERIFY(importer->openFile(WAV_FILE));
 
     /* Check only parameters, as it is good enough proof that it is working */
@@ -76,7 +76,7 @@ void AnyImporterTest::unknown() {
     std::ostringstream output;
     Error redirectError{&output};
 
-    std::unique_ptr<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
     CORRADE_VERIFY(!importer->openFile("sound.mid"));
 
     CORRADE_COMPARE(output.str(), "Audio::AnyImporter::openFile(): cannot determine type of file sound.mid\n");

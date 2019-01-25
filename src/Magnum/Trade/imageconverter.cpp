@@ -101,14 +101,14 @@ int main(int argc, char** argv) {
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
         args.value("plugin-dir").empty() ? std::string{} :
         Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractImporter::pluginSearchPaths()[0])};
-    std::unique_ptr<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
+    Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
     if(!importer) return 1;
 
     /* Load converter plugin */
     PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
         args.value("plugin-dir").empty() ? std::string{} :
         Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths()[0])};
-    std::unique_ptr<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
+    Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
     if(!converter) return 2;
 
     /* Open input file */

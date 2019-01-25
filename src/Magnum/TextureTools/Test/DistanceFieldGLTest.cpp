@@ -91,7 +91,7 @@ DistanceFieldGLTest::DistanceFieldGLTest() {
 }
 
 void DistanceFieldGLTest::test() {
-    std::unique_ptr<Trade::AbstractImporter> importer;
+    Containers::Pointer<Trade::AbstractImporter> importer;
     if(!(importer = _manager.loadAndInstantiate("TgaImporter")))
         CORRADE_SKIP("TgaImporter plugin not found.");
 
@@ -207,7 +207,7 @@ void DistanceFieldGLTest::test() {
 
 #ifndef MAGNUM_TARGET_WEBGL
 void DistanceFieldGLTest::benchmark() {
-    std::unique_ptr<Trade::AbstractImporter> importer;
+    Containers::Pointer<Trade::AbstractImporter> importer;
     if(!(importer = _manager.loadAndInstantiate("TgaImporter")))
         CORRADE_SKIP("TgaImporter plugin not found.");
 

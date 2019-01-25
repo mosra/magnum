@@ -50,7 +50,7 @@ int main() {
 {
 /* [AbstractImporter-usage] */
 PluginManager::Manager<Trade::AbstractImporter> manager;
-std::unique_ptr<Trade::AbstractImporter> importer =
+Containers::Pointer<Trade::AbstractImporter> importer =
     manager.loadAndInstantiate("AnyImageImporter");
 if(!importer || !importer->openFile("image.png"))
     Fatal{} << "Can't open image.png with AnyImageImporter";
@@ -64,7 +64,7 @@ if(!image) Fatal{} << "Importing the image failed";
 
 #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
 {
-std::unique_ptr<Trade::AbstractImporter> importer;
+Containers::Pointer<Trade::AbstractImporter> importer;
 /* [AbstractImporter-usage-callbacks] */
 struct Data {
     std::unordered_map<std::string,
@@ -96,10 +96,10 @@ importer->openFile("scene.gltf"); // memory-maps all files
 #endif
 
 {
-std::unique_ptr<Trade::AbstractImporter> importer;
+Containers::Pointer<Trade::AbstractImporter> importer;
 Float shininess;
 /* [AbstractImporter-usage-cast] */
-std::unique_ptr<Trade::AbstractMaterialData> data = importer->material(12);
+Containers::Pointer<Trade::AbstractMaterialData> data = importer->material(12);
 if(data && data->type() == Trade::MaterialType::Phong) {
     auto& phong = static_cast<Trade::PhongMaterialData&>(*data);
 
@@ -111,7 +111,7 @@ static_cast<void>(shininess);
 }
 
 {
-std::unique_ptr<Trade::AbstractImporter> importer;
+Containers::Pointer<Trade::AbstractImporter> importer;
 /* [AbstractImporter-setFileCallback] */
 importer->setFileCallback([](const std::string& filename,
     Trade::ImporterFileCallbackPolicy, void*) {
@@ -122,7 +122,7 @@ importer->setFileCallback([](const std::string& filename,
 }
 
 {
-std::unique_ptr<Trade::AbstractImporter> importer;
+Containers::Pointer<Trade::AbstractImporter> importer;
 /* [AbstractImporter-setFileCallback-template] */
 struct Data {
     std::unordered_map<std::string, Containers::Array<char>> files;
@@ -145,7 +145,7 @@ importer->setFileCallback([](const std::string& filename,
 
 {
 UnsignedInt id{};
-std::unique_ptr<Trade::AbstractImporter> importer;
+Containers::Pointer<Trade::AbstractImporter> importer;
 /* [AnimationData-usage] */
 
 Containers::Optional<Trade::AnimationData> data = importer->animation(id);
@@ -184,7 +184,7 @@ Trade::ImageData2D image{CompressedPixelFormat::Bc1RGBUnorm,
 #ifdef MAGNUM_TARGET_GL
 {
 /* [ImageData-usage] */
-std::unique_ptr<Trade::AbstractImporter> importer;
+Containers::Pointer<Trade::AbstractImporter> importer;
 Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
 if(!image) Fatal{} << "Oopsie!";
 

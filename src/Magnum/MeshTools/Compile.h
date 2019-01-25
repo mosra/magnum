@@ -38,7 +38,7 @@
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <tuple>
-#include <memory>
+#include <memory> /* deliberately kept here */
 #include <Corrade/Utility/Macros.h>
 #endif
 

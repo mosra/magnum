@@ -29,11 +29,11 @@
  * @brief Function @ref Magnum::TextureTools::distanceField()
  */
 
-#include <memory>
-
 #include "Magnum/configure.h"
 
 #ifdef MAGNUM_TARGET_GL
+#include <Corrade/Containers/Pointer.h>
+
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/GL.h"
 #ifndef MAGNUM_TARGET_GLES
@@ -126,7 +126,7 @@ class MAGNUM_TEXTURETOOLS_EXPORT DistanceField {
 
     private:
         struct State;
-        std::unique_ptr<State> _state;
+        Containers::Pointer<State> _state;
 };
 
 #ifdef MAGNUM_BUILD_DEPRECATED

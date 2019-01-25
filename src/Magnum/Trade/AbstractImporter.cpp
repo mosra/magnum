@@ -336,13 +336,13 @@ std::string AbstractImporter::object2DName(const UnsignedInt id) {
 
 std::string AbstractImporter::doObject2DName(UnsignedInt) { return {}; }
 
-std::unique_ptr<ObjectData2D> AbstractImporter::object2D(const UnsignedInt id) {
+Containers::Pointer<ObjectData2D> AbstractImporter::object2D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object2D(): no file opened", {});
     CORRADE_ASSERT(id < doObject2DCount(), "Trade::AbstractImporter::object2D(): index out of range", {});
     return doObject2D(id);
 }
 
-std::unique_ptr<ObjectData2D> AbstractImporter::doObject2D(UnsignedInt) {
+Containers::Pointer<ObjectData2D> AbstractImporter::doObject2D(UnsignedInt) {
     CORRADE_ASSERT(false, "Trade::AbstractImporter::object2D(): not implemented", {});
 }
 
@@ -368,13 +368,13 @@ std::string AbstractImporter::object3DName(const UnsignedInt id) {
 
 std::string AbstractImporter::doObject3DName(UnsignedInt) { return {}; }
 
-std::unique_ptr<ObjectData3D> AbstractImporter::object3D(const UnsignedInt id) {
+Containers::Pointer<ObjectData3D> AbstractImporter::object3D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object3D(): no file opened", {});
     CORRADE_ASSERT(id < doObject3DCount(), "Trade::AbstractImporter::object3D(): index out of range", {});
     return doObject3D(id);
 }
 
-std::unique_ptr<ObjectData3D> AbstractImporter::doObject3D(UnsignedInt) {
+Containers::Pointer<ObjectData3D> AbstractImporter::doObject3D(UnsignedInt) {
     CORRADE_ASSERT(false, "Trade::AbstractImporter::object3D(): not implemented", {});
 }
 
@@ -464,13 +464,13 @@ std::string AbstractImporter::materialName(const UnsignedInt id) {
 
 std::string AbstractImporter::doMaterialName(UnsignedInt) { return {}; }
 
-std::unique_ptr<AbstractMaterialData> AbstractImporter::material(const UnsignedInt id) {
+Containers::Pointer<AbstractMaterialData> AbstractImporter::material(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::material(): no file opened", {});
     CORRADE_ASSERT(id < doMaterialCount(), "Trade::AbstractImporter::material(): index out of range", {});
     return doMaterial(id);
 }
 
-std::unique_ptr<AbstractMaterialData> AbstractImporter::doMaterial(UnsignedInt) {
+Containers::Pointer<AbstractMaterialData> AbstractImporter::doMaterial(UnsignedInt) {
     CORRADE_ASSERT(false, "Trade::AbstractImporter::material(): not implemented", {});
 }
 

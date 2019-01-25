@@ -29,10 +29,9 @@
  * @brief Class @ref Magnum::Platform::Sdl2Application, macro @ref MAGNUM_SDL2APPLICATION_MAIN()
  */
 
-#include <memory>
-#include <Corrade/Corrade.h>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -1005,7 +1004,7 @@ class Sdl2Application {
         #else
         SDL_Surface* _glContext{};
         #endif
-        std::unique_ptr<Platform::GLContext> _context;
+        Containers::Pointer<Platform::GLContext> _context;
         #endif
 
         Flags _flags;

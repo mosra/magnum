@@ -95,7 +95,7 @@ std::tuple<std::vector<Vertex>, Range2D> renderVerticesInternal(AbstractFont& fo
         line.assign(text, prevPos, pos-prevPos);
 
         /* Layout the line */
-        const auto layouter = font.layout(cache, size, line);
+        Containers::Pointer<AbstractLayouter> layouter = font.layout(cache, size, line);
 
         /* Verify that we don't reallocate anything. The only problem might
            arise when the layouter decides to compose one character from more
