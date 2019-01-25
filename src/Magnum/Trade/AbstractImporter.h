@@ -584,7 +584,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Two-dimensional object
          * @param id        Object ID, from range [0, @ref object2DCount()).
          *
-         * Returns given object or `nullptr` if importing failed.
+         * Returns given object or @cpp nullptr @ce if importing failed.
          */
         std::unique_ptr<ObjectData2D> object2D(UnsignedInt id);
 
@@ -611,7 +611,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Three-dimensional object
          * @param id        Object ID, from range [0, @ref object3DCount()).
          *
-         * Returns given object or `nullptr` if importing failed.
+         * Returns given object or @cpp nullptr @ce if importing failed.
          */
         std::unique_ptr<ObjectData3D> object3D(UnsignedInt id);
 
@@ -692,7 +692,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Material
          * @param id        Material ID, from range [0, @ref materialCount()).
          *
-         * Returns given material or `nullptr` if importing failed.
+         * Returns given material or @cpp nullptr @ce if importing failed.
          */
         std::unique_ptr<AbstractMaterialData> material(UnsignedInt id);
 
@@ -812,7 +812,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * The importer might provide access to its internal data structures
          * for currently opened document through this function. See
          * documentation of a particular plugin for more information about
-         * returned type and contents. Returns `nullptr` by default.
+         * returned type and contents. Returns @cpp nullptr @ce by default.
          * @see @ref AbstractMaterialData::importerState(),
          *      @ref AnimationData::importerState(), @ref CameraData::importerState(),
          *      @ref ImageData::importerState(), @ref LightData::importerState(),

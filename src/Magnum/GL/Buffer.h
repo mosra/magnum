@@ -656,14 +656,15 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @brief Bind ranges of buffers to given range of indexed targets
          *
          * Binds first buffer in the list to @p firstIndex, second to
-         * `firstIndex + 1` etc. Second parameter is offset, third is size. If
-         * any buffer is `nullptr`, given indexed target is unbound. The range
-         * of indices must respect limits for given @p target. The offsets must
-         * respect alignment, which is 4 bytes for @ref Target::AtomicCounter
-         * and implementation-defined for other targets. All the buffers must
-         * have allocated data store. If @gl_extension{ARB,multi_bind} (part of
-         * OpenGL 4.4) is not available, the feature is emulated with sequence
-         * of @ref bind(Target, UnsignedInt, GLintptr, GLsizeiptr) /
+         * @cpp firstIndex + 1 @ce etc. Second parameter is offset, third is
+         * size. If any buffer is @cpp nullptr @ce, given indexed target is
+         * unbound. The range of indices must respect limits for given
+         * @p target. The offsets must respect alignment, which is 4 bytes for
+         * @ref Target::AtomicCounter and implementation-defined for other
+         * targets. All the buffers must have allocated data store. If
+         * @gl_extension{ARB,multi_bind} (part of OpenGL 4.4) is not available,
+         * the feature is emulated with sequence of
+         * @ref bind(Target, UnsignedInt, GLintptr, GLsizeiptr) /
          * @ref unbind(Target, UnsignedInt) calls.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
@@ -690,12 +691,13 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @brief Bind buffers to given range of indexed targets
          *
          * Binds first buffer in the list to @p firstIndex, second to
-         * `firstIndex + 1` etc. If any buffer is `nullptr`, given indexed
-         * target is unbound. The range of indices must respect limits for
-         * given @p target. All the buffers must have allocated data store. If
-         * @gl_extension{ARB,multi_bind} (part of OpenGL 4.4) is not available,
-         * the feature is emulated with sequence of @ref bind(Target, UnsignedInt)
-         * / @ref unbind(Target, UnsignedInt) calls.
+         * @cpp firstIndex + 1 @ce etc. If any buffer is @cpp nullptr @ce,
+         * given indexed target is unbound. The range of indices must respect
+         * limits for given @p target. All the buffers must have allocated data
+         * store. If @gl_extension{ARB,multi_bind} (part of OpenGL 4.4) is not
+         * available, the feature is emulated with sequence of
+         * @ref bind(Target, UnsignedInt) / @ref unbind(Target, UnsignedInt)
+         * calls.
          * @note This function is meant to be used only internally from
          *      @ref AbstractShaderProgram subclasses. See its documentation
          *      for more information.
@@ -1134,7 +1136,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @param length    Length of the mapped memory in bytes
          * @param flags     Flags. At least @ref MapFlag::Read or
          *      @ref MapFlag::Write must be specified.
-         * @return Sized view to buffer data or `nullptr` on error
+         * @return Sized view to buffer data or @cpp nullptr @ce on error
          *
          * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
          * nor @gl_extension{EXT,direct_state_access} desktop extension is

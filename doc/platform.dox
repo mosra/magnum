@@ -144,8 +144,8 @@ this:
 @snippet MagnumPlatform.cpp configuration
 
 However, sometimes you would need to configure the application based on some
-configuration file or system introspection. In that case you can pass `nullptr`
-instead of @ref Platform::Sdl2Application::Configuration "Configuration"
+configuration file or system introspection. In that case you can pass
+@ref NoCreate instead of @ref Platform::Sdl2Application::Configuration "Configuration"
 instance and then specify it later with @ref Platform::Sdl2Application::create() "create()":
 
 @snippet MagnumPlatform.cpp createcontext
