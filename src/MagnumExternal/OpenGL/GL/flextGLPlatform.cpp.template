@@ -45,7 +45,7 @@ void flextGLInit(Magnum::GL::Context& context) {
         /* EGL contexts on NVidia 390 drivers don't have correct statically
            linked GL 1.0 and 1.1 functions (such as glGetString()) and one has
            to retrieve them explicitly using eglGetProcAddress(). */
-        EGLDisplay display = eglGetDisplay(EGL_DEFAULT_DISPLAY);
+        EGLDisplay display = eglGetCurrentDisplay();
         const char* vendor = eglQueryString(display, EGL_VENDOR);
         if(std::strcmp(vendor, "NVIDIA") == 0 && !context.isDriverWorkaroundDisabled("nv-egl-incorrect-gl11-function-pointers")) {
             @for category,funcs in functions:
