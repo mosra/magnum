@@ -32,7 +32,7 @@
 #ifdef _MAGNUM_PLATFORM_USE_X11
 #include <dlfcn.h>
 #include <X11/Xresource.h>
-#include <Corrade/Containers/ScopedExit.h>
+#include <Corrade/Containers/ScopeGuard.h>
 #undef None
 #endif
 
@@ -68,7 +68,7 @@ inline Float x11DpiScaling() {
        scope and we can use that to query the DPI. If not, then those symbols
        won't be and that's okay -- it may be using Wayland or something else. */
     void* xlib = dlopen(nullptr, RTLD_NOW|RTLD_GLOBAL);
-    Containers::ScopedExit closeXlib{xlib, dlclose};
+    Containers::ScopeGuard closeXlib{xlib, dlclose};
     #ifdef __GNUC__ /* http://www.mr-edd.co.uk/blog/supressing_gcc_warnings */
     __extension__
     #endif
@@ -99,13 +99,13 @@ inline Float x11DpiScaling() {
     }
 
     Display* display = xOpenDisplay(nullptr);
-    Containers::ScopedExit closeDisplay{display, xCloseDisplay};
+    Containers::ScopeGuard closeDisplay{display, xCloseDisplay};
 
     const char* rms = xResourceManagerString(display);
     if(rms) {
         XrmDatabase db = xrmGetStringDatabase(rms);
         CORRADE_INTERNAL_ASSERT(db);
-        Containers::ScopedExit closeDb{db, xrmDestroyDatabase};
+        Containers::ScopeGuard closeDb{db, xrmDestroyDatabase};
 
         XrmValue value;
         char* type{};
