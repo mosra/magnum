@@ -105,10 +105,11 @@ See also:
 
 @subsubsection changelog-latest-changes-gl GL library
 
-.   Added a @cpp "nv-egl-incorrect-gl11-function-pointers" @ce workaround that
+-   Added a @cpp "nv-egl-incorrect-gl11-function-pointers" @ce workaround that
     explicitly loads OpenGL 1.0 and 1.1 function pointers on contexts created
     using EGL on NVidia drivers, because there functions such as
-    @fn_gl{GetString()} behave incorrectly when linked statically.
+    @fn_gl{GetString} behave incorrectly when linked statically. See also
+    [mosra/magnum#308](https://github.com/mosra/magnum/pull/308).
 -   New @ref GL::Context::State::BindScratchVao state to make external OpenGL
     code that's not VAO-aware working on core GL profiles (which don't allow
     default VAOs being used for drawing)
@@ -138,6 +139,9 @@ See also:
     [mosra/toolchains#6](https://github.com/mosra/toolchains/pull/6).
 -   Initial scaffolding for [Hunter](https://hunter.sh) package support (see
     [mosra/magnum#298](https://github.com/mosra/magnum/pull/298))
+-   The `package/msys` directory now contains `PKGBUILD`s for
+    [MSYS2](https://www.msys2.org/). See @ref building-packages-msys for more
+    information. See also [mosra/magnum#307](https://github.com/mosra/magnum/pull/307).
 -   The `Magnum::AndroidApplication` target was missing a few dependency
     libraries when Magnum was used as a CMake subproject
 -   Fixed an ambiguous overload error in @ref Text::GlyphCache when compiling

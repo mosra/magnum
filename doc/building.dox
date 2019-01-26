@@ -61,6 +61,7 @@ control and @ref building-cross for cross-compiling to other platforms.
 
 -   @ref building-packages-vcpkg
 -   @ref building-packages-arch
+-   @ref building-packages-msys
 -   @ref building-packages-deb
 -   @ref building-packages-gentoo
 -   @ref building-packages-brew
@@ -183,6 +184,36 @@ There are also ArchLinux packages for @ref building-plugins-packages-arch "Magnu
 @ref building-integration-packages-arch "Magnum Integration",
 @ref building-extras-packages-arch "Magnum Extras" and
 @ref building-examples-packages-arch "Magnum Examples".
+
+@subsection building-packages-msys MSYS2 packages
+
+`PKGBUILD`s for [MSYS2](https://www.msys2.org/) are in the `package/msys`
+directory. Similarly to ArchLinux, there is one package in the
+`package/msys/magnum` directory, which will download and package latest stable
+release; and then a development `PKGBUILD`, allowing you to package and install
+the currently checked out source tree. Both depend on a corresponding
+@ref building-corrade-packages-msys "Corrade MSYS2 package". Example usage:
+
+@code{.sh}
+git clone git://github.com/mosra/magnum && cd magnum
+cd package/msys
+makepkg -fp PKGBUILD
+@endcode
+
+The above works in a 32/64bit MinGW shell, from a MSYS shell the equivalent
+command is
+
+@code{.sh}
+makepkg-mingw -fp PKGBUILD
+@endcode
+
+@m_class{m-noindent}
+
+which will build both a 32bit and a 64bit version. See the
+[MSYS2 Wiki](https://github.com/msys2/msys2/wiki/Creating-Packages) for more
+information.
+
+There is also a MSYS2 package for @ref building-plugins-packages-msys "Magnum Plugins".
 
 @subsection building-packages-deb Packages for Debian, Ubuntu and derivatives
 

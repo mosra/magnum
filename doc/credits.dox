@@ -106,9 +106,13 @@ Are the below lists missing your name or something's wrong?
     macOS-related updates to @ref Platform::GlfwApplication
 -   **Émile Grégoire** ([\@emgre](https://github.com/emgre)) --- documentation
     updates, algorithm bugfixes
+-   **Erik Wijmans** ([\@erikwijmans](https://github.com/erikwijmans)) ---
+    NVidia-specific workarounds for headless EGL contexts
 -   **Gerhard de Clercq** --- Windows RT (Store/Phone) port
 -   **Guillaume Giraud** ([\@Guillaume227](https://github.com/Guillaume227)) ---
     algorithm bugfixes
+-   **Guillaume Jacquemin** ([\@williamjcm](https://github.com/williamjcm)) ---
+    MSYS2 packages
 -   **Ivan P.** ([\@uzername](https://github.com/uzername)) --- documentation
     improvements
 -   **Jonathan Hale** ([\@Squareys](https://github.com/Squareys)) --- @ref Audio
