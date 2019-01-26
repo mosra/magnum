@@ -1,0 +1,72 @@
+# Author: williamjcm <w.jcm59@gmail.com>
+# Contributor: mosra <mosra@centrum.cz>
+# Based on the Magnum Arch Linux PKGBUILD maintained by xyproto and the MSYS2/MinGW PKGBUILD templates
+
+_realname=magnum
+pkgbase=mingw-w64-${_realname}
+pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
+pkgver=2018.10
+pkgrel=1
+pkgdesc='C++11/C++14 graphics middleware for games and data visualization'
+arch=('any')
+url='https://magnum.graphics/'
+license=('MIT')
+depends=("${MINGW_PACKAGE_PREFIX}-corrade>=$pkgver"
+         "${MINGW_PACKAGE_PREFIX}-openal"
+         "${MINGW_PACKAGE_PREFIX}-SDL2"
+         "${MINGW_PACKAGE_PREFIX}-vulkan-loader")
+makedepends=("${MINGW_PACKAGE_PREFIX}-cmake" "${MINGW_PACKAGE_PREFIX}-ninja" 'git')
+optdepends=("${MINGW_PACKAGE_PREFIX}-magnum-plugins: import and export features")
+# The .tar.gz / .zip download contains symlinks (.travis.yml), making tar and
+# unzip on Windows grumpy because dangling symlinks are created. Could be fixed
+# by manually extracting everything except symlinks, but that's hard to
+# maintain. Downloading a Git tag works.
+source=("${_realname}-${pkgver}"::"git+https://github.com/mosra/magnum.git#tag=v$pkgver")
+sha1sums=('SKIP')
+
+build() {
+    mkdir -p "${srcdir}"/build-${CARCH} && cd "${srcdir}"/build-${CARCH}
+
+    declare -a extra_config
+    if check_option "debug" "n"; then
+        extra_config+=("-DCMAKE_BUILD_TYPE=Release")
+    else
+        extra_config+=("-DCMAKE_BUILD_TYPE=Debug")
+    fi
+
+    MSYS2_ARG_CONV_EXCL="-DCMAKE_INSTALL_PREFIX=" \
+        ${MINGW_PREFIX}/bin/cmake \
+            -G'Ninja' \
+            -DCMAKE_INSTALL_PREFIX=${MINGW_PREFIX} \
+            -DWITH_AL_INFO=ON \
+            -DWITH_ANYAUDIOIMPORTER=ON \
+            -DWITH_ANYIMAGECONVERTER=ON \
+            -DWITH_ANYIMAGEIMPORTER=ON \
+            -DWITH_ANYSCENEIMPORTER=ON \
+            -DWITH_AUDIO=ON \
+            -DWITH_DISTANCEFIELDCONVERTER=ON \
+            -DWITH_WGLCONTEXT=ON \
+            -DWITH_IMAGECONVERTER=ON \
+            -DWITH_MAGNUMFONT=ON \
+            -DWITH_MAGNUMFONTCONVERTER=ON \
+            -DWITH_OBJIMPORTER=ON \
+            -DWITH_FONTCONVERTER=ON \
+            -DWITH_GL_INFO=ON \
+            -DWITH_SDL2APPLICATION=ON \
+            -DWITH_TGAIMAGECONVERTER=ON \
+            -DWITH_TGAIMPORTER=ON \
+            -DWITH_VK=ON \
+            -DWITH_WAVAUDIOIMPORTER=ON \
+            -DWITH_WINDOWLESSWGLAPPLICATION=ON \
+            "${extra_config[@]}" \
+            ../${_realname}-${pkgver}
+    ninja
+}
+
+package() {
+    cd "${srcdir}"/build-${CARCH}
+    DESTDIR="${pkgdir}" ninja install
+
+    install -Dm644 "${srcdir}/${_realname}-${pkgver}/COPYING" \
+        "${pkgdir}${MINGW_PREFIX}/share/licenses/${_realname}/COPYING"
+}
