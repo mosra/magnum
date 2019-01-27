@@ -71,7 +71,7 @@ See also:
     @ref Corrade::Utility::Tweakable utility. See also @ref tweakableliterals.
 -   New @ref Math::StrictWeakOrdering functor making it possible to use Magnum
     math types as keys in ordered STL containers such as @ref std::map or
-    @ref std::set
+    @ref std::set (see also [mosra/magnum#299](https://github.com/mosra/magnum/pull/299))
 
 @subsubsection changelog-latest-new-platform Platform libraries
 
