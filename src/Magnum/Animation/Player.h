@@ -263,7 +263,7 @@ template<class T, class K
          *
          * Equivalent to calling @ref advance(T) for each item in @p players.
          */
-        static void advance(T time, std::initializer_list<std::reference_wrapper<Player<T, K>>> players);
+        static void advance(T time, std::initializer_list<Containers::Reference<Player<T, K>>> players);
 
         /** @brief Constructor */
         explicit Player();

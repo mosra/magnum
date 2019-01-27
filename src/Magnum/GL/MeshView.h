@@ -29,9 +29,10 @@
  * @brief Class @ref Magnum::GL::MeshView
  */
 
-#include <functional>
 #include <initializer_list>
+#include <Corrade/Containers/Reference.h>
 
+#include "Magnum/Magnum.h"
 #include "Magnum/GL/GL.h"
 #include "Magnum/GL/OpenGL.h"
 #include "Magnum/GL/visibility.h"
@@ -88,10 +89,10 @@ class MAGNUM_GL_EXPORT MeshView {
          * @requires_gl Specifying base vertex for indexed meshes is not
          *      available in OpenGL ES or WebGL.
          */
-        static void draw(AbstractShaderProgram& shader, std::initializer_list<std::reference_wrapper<MeshView>> meshes);
+        static void draw(AbstractShaderProgram& shader, std::initializer_list<Containers::Reference<MeshView>> meshes);
 
         /** @overload */
-        static void draw(AbstractShaderProgram&& shader, std::initializer_list<std::reference_wrapper<MeshView>> meshes) {
+        static void draw(AbstractShaderProgram&& shader, std::initializer_list<Containers::Reference<MeshView>> meshes) {
             draw(shader, meshes);
         }
 
@@ -238,7 +239,7 @@ class MAGNUM_GL_EXPORT MeshView {
          * @return Reference to self (for method chaining)
          *
          * See @ref Mesh::draw(AbstractShaderProgram&) for more information.
-         * @see @ref draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>),
+         * @see @ref draw(AbstractShaderProgram&, std::initializer_list<Containers::Reference<MeshView>>),
          *      @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
          * @requires_gl32 Extension @gl_extension{ARB,draw_elements_base_vertex}
          *      if the mesh is indexed and @ref baseVertex() is not `0`.
@@ -286,11 +287,11 @@ class MAGNUM_GL_EXPORT MeshView {
 
     private:
         #ifndef MAGNUM_TARGET_WEBGL
-        static MAGNUM_GL_LOCAL void multiDrawImplementationDefault(std::initializer_list<std::reference_wrapper<MeshView>> meshes);
+        static MAGNUM_GL_LOCAL void multiDrawImplementationDefault(std::initializer_list<Containers::Reference<MeshView>> meshes);
         #endif
-        static MAGNUM_GL_LOCAL void multiDrawImplementationFallback(std::initializer_list<std::reference_wrapper<MeshView>> meshes);
+        static MAGNUM_GL_LOCAL void multiDrawImplementationFallback(std::initializer_list<Containers::Reference<MeshView>> meshes);
 
-        std::reference_wrapper<Mesh> _original;
+        Containers::Reference<Mesh> _original;
 
         bool _countSet{};
         Int _count{}, _baseVertex{}, _instanceCount{1};

@@ -25,6 +25,7 @@
 
 #include "DistanceField.h"
 
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Resource.h>
 

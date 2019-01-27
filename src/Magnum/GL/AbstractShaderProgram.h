@@ -29,7 +29,6 @@
  * @brief Class @ref Magnum::GL::AbstractShaderProgram
  */
 
-#include <functional>
 #include <string>
 #include <Corrade/Containers/ArrayView.h>
 
@@ -757,7 +756,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          *      @def_gl{LINK_STATUS} and @def_gl{INFO_LOG_LENGTH},
          *      @fn_gl_keyword{GetProgramInfoLog}
          */
-        static bool link(std::initializer_list<std::reference_wrapper<AbstractShaderProgram>> shaders);
+        static bool link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders);
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
@@ -810,7 +809,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * than one shader at once. Other than that there is no other
          * (performance) difference when using this function.
          */
-        void attachShaders(std::initializer_list<std::reference_wrapper<Shader>> shaders);
+        void attachShaders(std::initializer_list<Containers::Reference<Shader>> shaders);
 
         /**
          * @brief Bind attribute to given location
@@ -930,11 +929,11 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @brief Link the shader
          *
          * Links single shader. If possible, prefer to link multiple shaders
-         * at once using @ref link(std::initializer_list<std::reference_wrapper<AbstractShaderProgram>>)
+         * at once using @ref link(std::initializer_list<Containers::Reference<AbstractShaderProgram>>)
          * for improved performance, see its documentation for more
          * information.
          */
-        bool link() { return link({*this}); }
+        bool link();
 
         /**
          * @brief Get uniform location

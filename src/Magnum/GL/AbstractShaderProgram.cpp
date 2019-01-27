@@ -26,6 +26,7 @@
 #include "AbstractShaderProgram.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Reference.h>
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
@@ -348,7 +349,7 @@ void AbstractShaderProgram::attachShader(Shader& shader) {
     glAttachShader(_id, shader.id());
 }
 
-void AbstractShaderProgram::attachShaders(std::initializer_list<std::reference_wrapper<Shader>> shaders) {
+void AbstractShaderProgram::attachShaders(std::initializer_list<Containers::Reference<Shader>> shaders) {
     for(Shader& s: shaders) attachShader(s);
 }
 
@@ -394,7 +395,9 @@ void AbstractShaderProgram::transformFeedbackVaryingsImplementationDanglingWorka
 #endif
 #endif
 
-bool AbstractShaderProgram::link(std::initializer_list<std::reference_wrapper<AbstractShaderProgram>> shaders) {
+bool AbstractShaderProgram::link() { return link({*this}); }
+
+bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<AbstractShaderProgram>> shaders) {
     bool allSuccess = true;
 
     /* Invoke (possibly parallel) linking on all shaders */

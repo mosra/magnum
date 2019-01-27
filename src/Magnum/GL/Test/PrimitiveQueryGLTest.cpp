@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Resource.h>
 

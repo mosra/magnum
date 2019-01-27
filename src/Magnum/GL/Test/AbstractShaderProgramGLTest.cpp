@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
 #include <Corrade/TestSuite/Compare/Container.h>
 

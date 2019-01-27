@@ -26,6 +26,7 @@
 #include "Flat.h"
 
 #include <Corrade/Containers/EnumSet.hpp>
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/GL/Context.h"

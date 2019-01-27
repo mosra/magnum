@@ -61,7 +61,7 @@ See also:
 -   @ref Animation::Player::resume() that acts the same as
     @ref Animation::Player::play() "play()" except it doesn't restart the
     animation from the start if it is already playing
--   Added @ref Animation::Player::advance(T, std::initializer_list<std::reference_wrapper<Player<T, K>>>)
+-   Added @ref Animation::Player::advance(T, std::initializer_list<Containers::Reference<Player<T, K>>>)
     for advancing multiple players at the same time
 
 @subsubsection changelog-latest-new-math Math library
@@ -211,6 +211,13 @@ See also:
     @ref GL::Mesh instead of @ref std::pair of a mesh and a buffer, as the
     buffer is now owned by the mesh. This change was not possible to be done in
     a backwards-compatible way.
+-   @ref Animation::Player, @ref Audio::Listener, @ref GL::AbstractShaderProgram,
+    @ref GL::MeshView and @ref GL::Shader APIs that take a
+    @ref std::initializer_list of references were changed to use
+    @ref Corrade::Containers::Reference instead of a @ref std::reference_wrapper.
+    This change should be fully transparent to the user as the type conversion
+    is done implicitly in both cases, but you may need to add an
+    @cpp #include <Corrade/Containers/Reference.h> @ce where appropriate.
 -   Removed deprecated implicit conversion @ref Corrade::Containers::Optional
     to @cpp std::optional @ce, deprecated in January 2018. The class now
     contains an *explicit* and opt-in STL compatibility, see its documentation

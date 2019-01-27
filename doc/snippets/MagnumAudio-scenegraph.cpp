@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Reference.h>
+
 #include "Magnum/Audio/Buffer.h"
 #include "Magnum/Audio/Listener.h"
 #include "Magnum/Audio/Playable.h"

@@ -24,6 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Audio/Context.h"

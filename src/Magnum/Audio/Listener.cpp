@@ -26,6 +26,8 @@
 
 #include "Listener.h"
 
+#include <Corrade/Containers/Reference.h>
+
 #include "Magnum/Audio/Playable.h"
 #include "Magnum/Audio/PlayableGroup.h"
 #include "Magnum/Audio/Renderer.h"
@@ -69,7 +71,7 @@ template<UnsignedInt dimensions> void Listener<dimensions>::clean(const MatrixTy
     /** @todo velocity */
 }
 
-template<UnsignedInt dimensions> void Listener<dimensions>::update(std::initializer_list<std::reference_wrapper<PlayableGroup<dimensions>>> groups) {
+template<UnsignedInt dimensions> void Listener<dimensions>::update(std::initializer_list<Containers::Reference<PlayableGroup<dimensions>>> groups) {
     /* Check if active listener just changed to this */
     if(this != activeListener) {
         /* Ensure that clean() is called also when switching between (clean)

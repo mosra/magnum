@@ -23,8 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <functional>
 #include <sstream>
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 

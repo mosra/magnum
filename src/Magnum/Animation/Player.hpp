@@ -31,8 +31,8 @@
 
 #include "Player.h"
 
-#include <functional>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/Reference.h>
 
 namespace Magnum { namespace Animation {
 
@@ -71,7 +71,7 @@ template<class T, class K> struct Player<T, K>::Track  {
 };
 #endif
 
-template<class T, class K> void Player<T, K>::advance(const T time, const std::initializer_list<std::reference_wrapper<Player<T, K>>> players) {
+template<class T, class K> void Player<T, K>::advance(const T time, const std::initializer_list<Containers::Reference<Player<T, K>>> players) {
     for(Player<T, K>& p: players) p.advance(time);
 }
 

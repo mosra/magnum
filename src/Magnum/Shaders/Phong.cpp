@@ -29,6 +29,7 @@
 #include <Corrade/Containers/Array.h>
 #endif
 #include <Corrade/Containers/EnumSet.hpp>
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Format.h>
 #include <Corrade/Utility/Resource.h>
 

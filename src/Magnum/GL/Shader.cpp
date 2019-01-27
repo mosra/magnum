@@ -26,6 +26,7 @@
 #include "Shader.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/Directory.h>
@@ -746,7 +747,9 @@ Shader& Shader::addFile(const std::string& filename) {
     return *this;
 }
 
-bool Shader::compile(std::initializer_list<std::reference_wrapper<Shader>> shaders) {
+bool Shader::compile() { return compile({*this}); }
+
+bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shaders) {
     bool allSuccess = true;
 
     /* Allocate large enough array for source pointers and sizes (to avoid

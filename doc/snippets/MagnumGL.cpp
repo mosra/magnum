@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Reference.h>
+
 #include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/GL/AbstractShaderProgram.h"

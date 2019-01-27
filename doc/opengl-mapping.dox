@@ -291,7 +291,7 @@ OpenGL function                         | Matching API
 @fn_gl{MapBuffer}, \n `glMapNamedBuffer()`, \n @fn_gl_extension{MapNamedBuffer,EXT,direct_state_access}, \n @fn_gl{MapBufferRange}, \n `glMapNamedBufferRange()`, \n @fn_gl_extension{MapNamedBufferRange,EXT,direct_state_access}, \n @fn_gl{UnmapBuffer}, \n `glUnmapNamedBuffer()`, \n @fn_gl_extension{UnmapNamedBuffer,EXT,direct_state_access} | @ref GL::Buffer::map(), @ref GL::Buffer::unmap()
 @fn_gl{MemoryBarrier}, \n `glMemoryBarrierByRegion()` | @ref GL::Renderer::setMemoryBarrier(), \n @ref GL::Renderer::setMemoryBarrierByRegion()
 @fn_gl{MinSampleShading}                | @ref GL::Renderer::setMinSampleShading()
-@fn_gl{MultiDrawArrays}, \n @fn_gl{MultiDrawElements}, \n @fn_gl{MultiDrawElementsBaseVertex} | @ref GL::MeshView::draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>)
+@fn_gl{MultiDrawArrays}, \n @fn_gl{MultiDrawElements}, \n @fn_gl{MultiDrawElementsBaseVertex} | @ref GL::MeshView::draw(AbstractShaderProgram&, std::initializer_list<Containers::Reference<MeshView>>)
 @fn_gl{MultiDrawArraysIndirectCount}, \n @fn_gl{MultiDrawElementsIndirectCount} | |
 
 @subsection opengl-mapping-functions-o O

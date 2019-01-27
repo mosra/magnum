@@ -926,7 +926,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @see @ref setCount(), @ref setInstanceCount(),
          *      @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt),
          *      @ref MeshView::draw(AbstractShaderProgram&),
-         *      @ref MeshView::draw(AbstractShaderProgram&, std::initializer_list<std::reference_wrapper<MeshView>>),
+         *      @ref MeshView::draw(AbstractShaderProgram&, std::initializer_list<Containers::Reference<MeshView>>),
          *      @fn_gl_keyword{UseProgram}, @fn_gl_keyword{EnableVertexAttribArray},
          *      @fn_gl{BindBuffer}, @fn_gl_keyword{VertexAttribPointer},
          *      @fn_gl_keyword{DisableVertexAttribArray} or @fn_gl_keyword{BindVertexArray},

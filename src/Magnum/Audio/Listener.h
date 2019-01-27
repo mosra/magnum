@@ -119,7 +119,7 @@ template<UnsignedInt dimensions> class Listener: public SceneGraph::AbstractFeat
          * listener-related configuration for @ref Renderer (position,
          * orientation, gain).
          */
-        void update(std::initializer_list<std::reference_wrapper<PlayableGroup<dimensions>>> groups);
+        void update(std::initializer_list<Containers::Reference<PlayableGroup<dimensions>>> groups);
 
         /** @brief Listener gain */
         Float gain() const { return _gain; }

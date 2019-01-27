@@ -36,7 +36,7 @@
 
 namespace Magnum { namespace GL {
 
-void MeshView::draw(AbstractShaderProgram& shader, std::initializer_list<std::reference_wrapper<MeshView>> meshes) {
+void MeshView::draw(AbstractShaderProgram& shader, std::initializer_list<Containers::Reference<MeshView>> meshes) {
     /* Why std::initializer_list doesn't have empty()? */
     if(!meshes.size()) return;
 
@@ -56,7 +56,7 @@ void MeshView::draw(AbstractShaderProgram& shader, std::initializer_list<std::re
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
-void MeshView::multiDrawImplementationDefault(std::initializer_list<std::reference_wrapper<MeshView>> meshes) {
+void MeshView::multiDrawImplementationDefault(std::initializer_list<Containers::Reference<MeshView>> meshes) {
     CORRADE_INTERNAL_ASSERT(meshes.size());
 
     const Implementation::MeshState& state = *Context::current().state().mesh;
@@ -123,7 +123,7 @@ void MeshView::multiDrawImplementationDefault(std::initializer_list<std::referen
 #endif
 
 #ifdef MAGNUM_TARGET_GLES
-void MeshView::multiDrawImplementationFallback(std::initializer_list<std::reference_wrapper<MeshView>> meshes) {
+void MeshView::multiDrawImplementationFallback(std::initializer_list<Containers::Reference<MeshView>> meshes) {
     for(MeshView& mesh: meshes) {
         /* Nothing to draw in this mesh */
         if(!mesh._count) continue;
