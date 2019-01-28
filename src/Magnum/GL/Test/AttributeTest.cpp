@@ -104,7 +104,7 @@ AttributeTest::AttributeTest() {
               &AttributeTest::debugComponentsMatrix4,
               &AttributeTest::debugComponentsVector4,
               &AttributeTest::debugDataTypeFloat,
-              #ifndef MAGNUM_TARGET_GLES
+              #ifndef MAGNUM_TARGET_GLES2
               &AttributeTest::debugDataTypeInt,
               #endif
               #ifndef MAGNUM_TARGET_GLES
