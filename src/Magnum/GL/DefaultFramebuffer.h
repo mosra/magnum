@@ -306,7 +306,13 @@ class MAGNUM_GL_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
         };
         #endif
 
-        explicit MAGNUM_GL_LOCAL DefaultFramebuffer();
+        /**
+         * @brief Constructor
+         *
+         * Not meant to be constructed on the application side, use the
+         * @ref GL::defaultFramebuffer instance directly.
+         */
+        constexpr explicit DefaultFramebuffer(): AbstractFramebuffer{0, {}, ObjectFlag::Created|ObjectFlag::DeleteOnDestruction} {}
 
         /** @brief Copying is not allowed */
         DefaultFramebuffer(const DefaultFramebuffer&) = delete;
@@ -504,6 +510,9 @@ class MAGNUM_GL_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 };
 
 /** @brief Default framebuffer instance */
+/* Even though the constructor is constexpr, this variable can't -- all
+   framebuffer APIs are non-const since they modify global GL state and besides
+   that we also need to modify its private _viewport member quite a lot */
 extern DefaultFramebuffer MAGNUM_GL_EXPORT defaultFramebuffer;
 
 /** @debugoperatorclassenum{DefaultFramebuffer,DefaultFramebuffer::Status} */

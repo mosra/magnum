@@ -97,7 +97,7 @@ Int Framebuffer::maxColorAttachments() {
     return value;
 }
 
-Framebuffer::Framebuffer(const Range2Di& viewport) {
+Framebuffer::Framebuffer(const Range2Di& viewport): AbstractFramebuffer{0, viewport, ObjectFlag::DeleteOnDestruction} {
     CORRADE_INTERNAL_ASSERT(viewport != Implementation::FramebufferState::DisengagedViewport);
     _viewport = viewport;
     (this->*Context::current().state().framebuffer->createImplementation)();

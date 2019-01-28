@@ -46,11 +46,6 @@ namespace GL {
 
 DefaultFramebuffer defaultFramebuffer;
 
-DefaultFramebuffer::DefaultFramebuffer() {
-    _id = 0;
-    _flags |= ObjectFlag::Created;
-}
-
 DefaultFramebuffer::Status DefaultFramebuffer::checkStatus(const FramebufferTarget target) {
     return Status((this->*Context::current().state().framebuffer->checkStatusImplementation)(target));
 }

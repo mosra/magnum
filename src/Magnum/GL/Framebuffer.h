@@ -361,14 +361,13 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * destructing) objects even without any OpenGL context being active.
          * @see @ref Framebuffer(const Range2Di&), @ref wrap()
          */
-        explicit Framebuffer(NoCreateT) noexcept { _id = 0; }
+        explicit Framebuffer(NoCreateT) noexcept: AbstractFramebuffer{{}, {}, {}} {}
 
         /** @brief Copying is not allowed */
         Framebuffer(const Framebuffer&) = delete;
 
         /** @brief Move constructor */
-        /* MinGW complains loudly if the declaration doesn't also have inline */
-        inline Framebuffer(Framebuffer&& other) noexcept;
+        Framebuffer(Framebuffer&&) noexcept = default;
 
         /**
          * @brief Destructor
@@ -382,8 +381,7 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
         Framebuffer& operator=(const Framebuffer&) = delete;
 
         /** @brief Move assignment */
-        /* MinGW complains loudly if the declaration doesn't also have inline */
-        inline Framebuffer& operator=(Framebuffer&& other) noexcept;
+        Framebuffer& operator=(Framebuffer&&) noexcept = default;
 
         /** @brief OpenGL framebuffer ID */
         GLuint id() const { return _id; }
@@ -938,22 +936,6 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
 
 /** @debugoperatorclassenum{Framebuffer,Framebuffer::Status} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Framebuffer::Status value);
-
-inline Framebuffer::Framebuffer(Framebuffer&& other) noexcept {
-    _id = other._id;
-    _viewport = other._viewport;
-    _flags = other._flags;
-    other._id = 0;
-    other._viewport = {};
-}
-
-inline Framebuffer& Framebuffer::operator=(Framebuffer&& other) noexcept {
-    using std::swap;
-    swap(_id, other._id);
-    swap(_viewport, other._viewport);
-    swap(_flags, other._flags);
-    return *this;
-}
 
 inline GLuint Framebuffer::release() {
     const GLuint id = _id;

@@ -707,10 +707,25 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
     #else
     protected:
     #endif
-        explicit AbstractFramebuffer(): _flags{ObjectFlag::DeleteOnDestruction} {}
-        explicit AbstractFramebuffer(GLuint id, const Range2Di& viewport, ObjectFlags flags) noexcept: _id{id}, _viewport{viewport}, _flags{flags} {}
+        /* Used by the (constexpr) DefaultFramebuffer constructor and both
+           the NoCreate and normal constructor of Framebuffer */
+        constexpr explicit AbstractFramebuffer(GLuint id, const Range2Di& viewport, ObjectFlags flags) noexcept: _id{id}, _viewport{viewport}, _flags{flags} {}
 
         ~AbstractFramebuffer() = default;
+
+        AbstractFramebuffer(const AbstractFramebuffer&) = delete;
+        AbstractFramebuffer(AbstractFramebuffer&& other) noexcept: _id{other._id}, _viewport{other._viewport}, _flags{other._flags} {
+            other._id = 0;
+            other._viewport = {};
+        }
+        AbstractFramebuffer& operator=(const AbstractFramebuffer&) = delete;
+        AbstractFramebuffer& operator=(AbstractFramebuffer&& other) noexcept {
+            using std::swap;
+            swap(_id, other._id);
+            swap(_viewport, other._viewport);
+            swap(_flags, other._flags);
+            return *this;
+        }
 
         void MAGNUM_GL_LOCAL createIfNotAlready();
 
