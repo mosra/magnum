@@ -246,7 +246,7 @@ extern "C" {
 // Vulkan 1.1 version number
 #define VK_API_VERSION_1_1 VK_MAKE_VERSION(1, 1, 0)// Patch version should always be set to 0
 // Version of this file
-#define VK_HEADER_VERSION 83
+#define VK_HEADER_VERSION 98
 #define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
 #if !defined(VK_DEFINE_NON_DISPATCHABLE_HANDLE)
 #if defined(__LP64__) || defined(_WIN64) || (defined(__x86_64__) && !defined(__ILP32__) ) || defined(_M_X64) || defined(__ia64) || defined (_M_IA64) || defined(__aarch64__) || defined(__powerpc64__)
@@ -417,6 +417,8 @@ typedef enum {
     VK_BORDER_COLOR_FLOAT_OPAQUE_WHITE = 4,
     VK_BORDER_COLOR_INT_OPAQUE_WHITE = 5
 } VkBorderColor;
+
+typedef int VkSamplerCreateFlagBits;
 
 typedef enum {
     VK_PIPELINE_CACHE_HEADER_VERSION_ONE = 1
@@ -907,6 +909,8 @@ typedef enum {
     VK_IMAGE_USAGE_TRANSIENT_ATTACHMENT_BIT = 1 << 6,
     VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT = 1 << 7
 } VkImageUsageFlagBits;
+
+typedef int VkImageViewCreateFlagBits;
 
 typedef enum {
     VK_IMAGE_VIEW_TYPE_1D = 0,
@@ -3049,7 +3053,7 @@ typedef struct VkDescriptorUpdateTemplateEntry {
 
 typedef struct VkDescriptorUpdateTemplateCreateInfo {
     VkStructureType sType;
-    void*                                   pNext;
+    const void*                               pNext;
     VkDescriptorUpdateTemplateCreateFlags    flags;
     uint32_t                 descriptorUpdateEntryCount;
     const VkDescriptorUpdateTemplateEntry* pDescriptorUpdateEntries;
