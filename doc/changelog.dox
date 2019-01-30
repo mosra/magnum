@@ -95,6 +95,11 @@ See also:
     @ref Platform::Sdl2Application::InputEvent::event() "event()" accessors to
     make it possible to access raw `SDL_Event` data
 
+@subsubsection changelog-latest-new-vk Vk library
+
+-   Conversion between Magnum math types and math-related Vulkan types in a
+    new @ref Magnum/Vk/Integration.h header
+
 @subsection changelog-latest-changes Changes and improvements
 
 @subsubsection changelog-latest-changes-audio Audio library

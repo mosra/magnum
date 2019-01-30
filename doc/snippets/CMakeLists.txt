@@ -149,6 +149,13 @@ if(WITH_SCENEGRAPH)
     endif()
 endif()
 
+if(WITH_VK)
+    add_library(snippets-MagnumVk STATIC MagnumVk.cpp)
+    target_link_libraries(snippets-MagnumVk PRIVATE MagnumVk)
+    set_target_properties(snippets-MagnumVk
+        PROPERTIES FOLDER "Magnum/doc/snippets")
+endif()
+
 if(WITH_SDL2APPLICATION)
     add_executable(getting-started getting-started.cpp)
     add_executable(getting-started-blue getting-started-blue.cpp)

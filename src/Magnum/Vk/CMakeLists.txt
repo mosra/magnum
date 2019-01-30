@@ -36,6 +36,7 @@ set(MagnumVk_GracefulAssert_SRCS
     Enums.cpp)
 set(MagnumVk_HEADERS
     Enums.h
+    Integration.h
     Vk.h
     Vulkan.h
 

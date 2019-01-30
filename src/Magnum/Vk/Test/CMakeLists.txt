@@ -25,3 +25,4 @@
 #
 
 corrade_add_test(VkEnumsTest EnumsTest.cpp LIBRARIES MagnumVkTestLib)
+corrade_add_test(VkIntegrationTest IntegrationTest.cpp LIBRARIES MagnumVk)
