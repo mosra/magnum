@@ -1,5 +1,5 @@
-#ifndef Magnum_GL_Enums_h
-#define Magnum_GL_Enums_h
+#ifndef Magnum_Vk_Enums_h
+#define Magnum_Vk_Enums_h
 /*
     This file is part of Magnum.
 
