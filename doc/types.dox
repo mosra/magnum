@@ -24,14 +24,15 @@
 */
 
 namespace Magnum {
-/** @page types Type system
-@brief Type aliases, naming and compatibility with OpenGL and GLSL types.
+/** @page types Math type system
+@brief Type aliases, naming and compatibility with OpenGL, Vulkan and GLSL types.
 
 @tableofcontents
 @m_footernavigation
+@m_keyword{Type system,,}
 
-The root @ref Magnum namespace defines a few aliases for essential types. See
-its documentation for more information about usage with CMake.
+The root @ref Magnum namespace defines a few aliases for essential math types.
+See its documentation for more information about usage.
 
 @section types-builtin Builtin types
 
@@ -205,5 +206,26 @@ explicit:
 Example:
 
 @snippet MagnumMath.cpp types-literals-init
+
+@section types-thirdparty-integration Integration with types from 3rd party APIs
+
+To simplify the workflow when interacting with 3rd party APIs, all Magnum math
+types can be made explicitly convertible to and from types coming from external
+libraries. Currently, various Magnum libraries provide these conversion, see
+documentation of each `Integration.h` header for details:
+
+-   Math-related Vulkan structures --- @ref Magnum/Vk/Integration.h, part of
+    the @ref Vk library
+-   All GLM types --- @ref Magnum/GlmIntegration/Integration.h,
+    @ref Magnum/GlmIntegration/GtcIntegration.h and
+    @ref Magnum/GlmIntegration/GtxIntegration.h, part of the
+    @ref GlmIntegration library
+-   Bullet Physics math types --- @ref Magnum/BulletIntegration/Integration.h,
+    part of the @ref BulletIntegration library
+-   Oculus VR SDK math types -- @ref Magnum/OvrIntegration/Integration.h, part
+    of the @ref OvrIntegration library
+-   ImGui math types --- @ref Magnum/ImGuiIntegration/Integration.h, part of
+    the @ref ImGuiIntegration library
+
 */
 }

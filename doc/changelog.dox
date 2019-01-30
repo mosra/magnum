@@ -191,6 +191,8 @@ See also:
 @subsection changelog-latest-docs Documentation
 
 -   Fixed various broken links (see [mosra/magnum#291](https://github.com/mosra/magnum/issues/291))
+-   A dedicated @ref types-thirdparty-integration section listing all
+    provided integrations with 3rd party math APIs
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
