@@ -58,13 +58,7 @@ namespace Magnum { namespace Trade {
 @brief TGA importer plugin
 
 Supports Truevision TGA (`*.tga`, `*.vda`, `*.icb`, `*.vst`) BGR, BGRA or
-grayscale images with 8 bits per channel. RLE compression is supported,
-paletted images are not.
-
-The images are imported with @ref PixelFormat::RGB8Unorm,
-@ref PixelFormat::RGBA8Unorm or @ref PixelFormat::R8Unorm, respectively. Images
-are imported with default @ref PixelStorage parameters except for alignment,
-which may be changed to `1` if the data require it.
+grayscale images with 8 bits per channel.
 
 @section Trade-TgaImporter-usage Usage
 
@@ -93,7 +87,17 @@ find_package(Magnum REQUIRED TgaImporter)
 target_link_libraries(your-app PRIVATE Magnum::TgaImporter)
 @endcode
 
-See @ref building, @ref cmake and @ref plugins for more information.
+See @ref building, @ref cmake, @ref plugins and @ref file-formats for more
+information.
+
+@section Trade-TgaImporter-behavior Behavior and limitations
+
+The images are imported with @ref PixelFormat::RGB8Unorm,
+@ref PixelFormat::RGBA8Unorm or @ref PixelFormat::R8Unorm, respectively. Images
+are imported with default @ref PixelStorage parameters except for alignment,
+which may be changed to `1` if the data require it.
+
+RLE compression is supported, paletted images are not.
 */
 class MAGNUM_TGAIMPORTER_EXPORT TgaImporter: public AbstractImporter {
     public:

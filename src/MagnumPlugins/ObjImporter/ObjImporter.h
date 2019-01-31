@@ -87,9 +87,10 @@ find_package(Magnum REQUIRED ObjImporter)
 target_link_libraries(your-app PRIVATE Magnum::ObjImporter)
 @endcode
 
-See @ref building, @ref cmake and @ref plugins for more information.
+See @ref building, @ref cmake, @ref plugins and @ref file-formats for more
+information.
 
-@section Trade-ObjImporter-limitations Behavior and limitations
+@section Trade-ObjImporter-behavior Behavior and limitations
 
 Meshes are imported as @ref MeshPrimitive::Triangles with
 @ref MeshIndexType::UnsignedInt indices, interleaved @ref VertexFormat::Vector3

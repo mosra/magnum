@@ -123,7 +123,8 @@ find_package(Magnum REQUIRED AnyImageImporter)
 target_link_libraries(your-app PRIVATE Magnum::AnyImageImporter)
 @endcode
 
-See @ref building, @ref cmake and @ref plugins for more information.
+See @ref building, @ref cmake, @ref plugins and @ref file-formats for more
+information.
 */
 class MAGNUM_ANYIMAGEIMPORTER_EXPORT AnyImageImporter: public AbstractImporter {
     public:

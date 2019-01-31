@@ -125,7 +125,8 @@ find_package(Magnum REQUIRED AnySceneImporter)
 target_link_libraries(your-app PRIVATE Magnum::AnySceneImporter)
 @endcode
 
-See @ref building, @ref cmake and @ref plugins for more information.
+See @ref building, @ref cmake, @ref plugins and @ref file-formats for more
+information.
 */
 class MAGNUM_ANYSCENEIMPORTER_EXPORT AnySceneImporter: public AbstractImporter {
     public:
