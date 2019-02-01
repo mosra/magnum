@@ -309,5 +309,23 @@ normalizing them reduces the drift.
 
 @snippet MagnumMath.cpp transformations-normalization-quat
 
+@section transformations-modelview Model/view terminology and Magnum
+
+The model / view matrix terminology, originating in the design of classical
+fixed-function GPU pipelines, is not used in Magnum. Instead, the matrix/vector
+APIs provide basic building blocks for creating transformations and
+concatenating them. No particular convention is enforced and you're free to
+create helper functions, if you need them.
+
+The @ref SceneGraph API provides a hierarchical transformation hierarchy and a
+correct camera-relative transformation is calculated  automatically in the
+background, avoiding the need for manualy handling of  model / view
+transformations. In particular, camera position is always specified as relative
+to scene root and it gets inverted when calculating the final per-object
+transformation. See @ref scenegraph for detailed description.
+
+There's also a @ref Math::Matrix4::lookAt() function, but compared to the
+classical @cpp gluLookAt() @ce function it's an inverse, as that makes more
+sense together with the @ref SceneGraph API.
 */
 }
