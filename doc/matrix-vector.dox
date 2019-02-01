@@ -275,5 +275,9 @@ implications and it may differ from what is common in mathematics:
     to operate with transposed matrices or use the slower non-transposed
     alternative of the algorithm.
 </li></ul>
+
+Note that the @ref Corrade::Utility::Debug utility always prints the matrices
+in the expected layout --- rows are rows and columns are columns. You are
+encouraged to use it for data visualization purposes.
 */
 }
