@@ -112,6 +112,9 @@ separate repositories.
 -   **Magnum Extras** — playground for testing new APIs, specialized stuff
     that doesn't necessarily need to be a part of main Magnum repository or
     mutually exclusive functionality: https://github.com/mosra/magnum-extras
+-   **Magnum Singles** — various functionality from Magnum available as
+    easy-to-integrate fast-to-compile single-header libraries:
+    https://github.com/mosra/magnum-singles
 
 Outside of the project itself, there's also a lot of community contributions
 — [check them out on the website](https://magnum.graphics/features/community/).
