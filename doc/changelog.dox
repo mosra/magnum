@@ -42,11 +42,13 @@ See also:
 
 -   Minimal supported GCC version is now 4.8.1, GCC 4.7 is not supported
     anymore. Minimal Clang version is now 3.3, since that's the first version
-    with a complete C++11 support.
+    with a complete C++11 support. See also
+    [mosra/magnum#274](https://github.com/mosra/magnum/issues/274).
 -   Minimal supported CMake version is now 3.1. Older versions are not
     supported anymore and all workarounds for them were removed. Download a
     prebuilt release of a newer version if you need to use Corrade on older
-    systems (such as Ubuntu 14.04 or Debian 8).
+    systems (such as Ubuntu 14.04 or Debian 8). See also
+    [mosra/magnum#274](https://github.com/mosra/magnum/issues/274).
 
 @subsection changelog-latest-new New features
 
@@ -249,7 +251,7 @@ See also:
     functions, deprecated since December 2016. Use @ref Math::pack() and
     @ref Math::unpack() instead.
 -   Removed @cpp Platform::*Application::MouseEvent::BUtton::WheelUp @ce and
-    @cpp Platform::*Application::MouseEvent::BUtton::WheelDown @ce, deprecated
+    @cpp Platform::*Application::MouseEvent::Button::WheelDown @ce, deprecated
     since June 2016. Use the dedicated
     @ref Platform::Sdl2Application::mouseScrollEvent() "mouseScrollEvent()"
     API instead.
