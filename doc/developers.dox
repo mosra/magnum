@@ -834,8 +834,8 @@ inverse.
     them up
     -   Don't forget about the bootstrap repository and toolchains as well
 6.  Go through merged PRs (and the *most important* issues) and add new people
-    to `CREDITS.md` and https://magnum.graphics/about/, if they are not there
-    yet
+    to `dox/credits.md` (and similar files in other repositories) and
+    https://magnum.graphics/about/, if they are not there yet
 7.  Update changelog for the next release:
     -   change section names for the latest release from `latest` to `20XY-ab`
     -   change the title from `Changes since 20XY.aa` to `20XY.ab`
@@ -853,13 +853,19 @@ inverse.
 11. Push all new changes to a temporary branch (e.g., `next`), don't forget the
     `ports` branch in examples
 12. Wait for the CIs to get green
-13. Tag a new version using @cb{.sh} git tag -a v20XY.ab @ce, say just
+13. Update `conanfile.py` in all projects that have it with a new version ---
+    this *has to be* done before the version is tagged.
+14. Update Debian package changelog in `package/debian/changelog`, copypasting
+    the last entry, updating it and using @cb{.sh} date -R @ce for a date ---
+    again, this *should be* done before the version is tagged so stable
+    releases in PPAs can be done directly from the tag with no extra patching
+15. Tag a new version using @cb{.sh} git tag -a v20XY.ab @ce, say just
     `Version 20XY.ab` as a message
-14. Push the tag, verify that the CIs are still green
+16. Push the tag, verify that the CIs are still green
     -   to GitLab as well
-15. Update the Corrade and Magnum tagfiles on the website using the
+17. Update the Corrade and Magnum tagfiles on the website using the
     freshly-built *public* docs
-16. Write a release announcement for the blog
+18. Write a release announcement for the blog
     -   highlight the most prominent features, mention detailed blog posts
         about them, if any
     -   reference detailed changelogs for all projects at the end
@@ -867,8 +873,8 @@ inverse.
     -   create some fancy eye-catchy cover image featuring nice screenshots of
         new functionality
     -   add release annoucement link under the button on front page
-17. Publish the release announcement, verify it looks correct
-18. Advertise the release announcement, preferrably Monday 5 PM, never Friday
+19. Publish the release announcement, verify it looks correct
+20. Advertise the release announcement, preferrably Monday 5 PM, never Friday
     or weekends
     -   come up with some 100-character-long extended title
     -   Twitter (extended title + url and some hashtags), first dry-run the
@@ -883,9 +889,9 @@ inverse.
     -   send an e-mail to companies and universities on the private list
     -   add a message to the Gitter chat (title as heading, cover image,
         summary in a blockquote and "read more" link, `@` contributors)
-19. Reference Twitter, Reddit, Hacker News and mailing list in a "Discussion"
+21. Reference Twitter, Reddit, Hacker News and mailing list in a "Discussion"
     note at the end of the article, reupload that change
-20. Update versions of ArchLinux AUR packages:
+22. Update versions of ArchLinux AUR packages:
     -   run `makepkg` in `package/archlinux/magnum*-git`, verify it builds and
         says correct version, ideally with `r0` at the ennd
     -   copy the updated `PKGBUILD` to the AUR package repo, run
@@ -893,15 +899,12 @@ inverse.
     -   commit the updated `PKGBUILD` and `.SRCINFO`, push
     -   after pushing all, verify that the version is updated in the AUR web
         interface as well
-21. Update Debian package changelog in `package/debian/changelog`, copypasting
-    the last entry, updating it and using the Git tag date+time for it (note
-    that the date format is slightly different)
-22. Update Homebrew package versions
-23. Ask someone to update the Ubuntu PPA
-24. Ask someone to update Vcpkg packages
-25. Close the 20XY.ab GitHub milestone
-26. Add link to the release notes to the tag on GitHub
-27. Have a drink and take two days off
+23. Update Homebrew package versions
+24. Ask someone to update the Ubuntu PPA
+25. Ask someone to update Vcpkg packages
+26. Close the 20XY.ab GitHub milestone
+27. Add link to the release notes to the tag on GitHub
+28. Have a drink and take two days off
 
 */
 }
