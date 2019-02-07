@@ -66,6 +66,7 @@ constexpr struct {
     {"HDR", "file.hdr", "HdrImageConverter"},
     {"JPEG", "file.jpg", "JpegImageConverter"},
     {"JPEG weird extension", "file.jpe", "JpegImageConverter"},
+    {"JPEG uppercase", "output.JPG", "JpegImageConverter"},
     {"PNG", "file.png", "PngImageConverter"}
 };
 

@@ -68,6 +68,7 @@ constexpr struct {
     {"glTF binary", "khronos.glb", "GlbImporter"},
     {"OpenGEX", "eric.ogex", "OpenGexImporter"},
     {"Stanford PLY", "bunny.ply", "StanfordImporter"},
+    {"Stanford PLY uppercase", "ARMADI~1.PLY", "StanfordImporter"},
     {"STL", "robot.stl", "StlImporter"},
     /* Not testing everything, only the most important ones */
 };

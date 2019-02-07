@@ -61,63 +61,65 @@ void AnySceneImporter::doClose() {
 void AnySceneImporter::doOpenFile(const std::string& filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
+    std::string normalized = Utility::String::lowercase(filename);
+
     /* Detect type from extension */
     std::string plugin;
-    if(Utility::String::endsWith(filename, ".3ds") ||
-       Utility::String::endsWith(filename, ".ase"))
+    if(Utility::String::endsWith(normalized, ".3ds") ||
+       Utility::String::endsWith(normalized, ".ase"))
         plugin = "3dsImporter";
-    else if(Utility::String::endsWith(filename, ".ac"))
+    else if(Utility::String::endsWith(normalized, ".ac"))
         plugin = "Ac3dImporter";
-    else if(Utility::String::endsWith(filename, ".blend"))
+    else if(Utility::String::endsWith(normalized, ".blend"))
         plugin = "BlenderImporter";
-    else if(Utility::String::endsWith(filename, ".bvh"))
+    else if(Utility::String::endsWith(normalized, ".bvh"))
         plugin = "BvhImporter";
-    else if(Utility::String::endsWith(filename, ".csm"))
+    else if(Utility::String::endsWith(normalized, ".csm"))
         plugin = "CsmImporter";
-    else if(Utility::String::endsWith(filename, ".dae"))
+    else if(Utility::String::endsWith(normalized, ".dae"))
         plugin = "ColladaImporter";
-    else if(Utility::String::endsWith(filename, ".x"))
+    else if(Utility::String::endsWith(normalized, ".x"))
         plugin = "DirectXImporter";
-    else if(Utility::String::endsWith(filename, ".dxf"))
+    else if(Utility::String::endsWith(normalized, ".dxf"))
         plugin = "DxfImporter";
-    else if(Utility::String::endsWith(filename, ".fbx"))
+    else if(Utility::String::endsWith(normalized, ".fbx"))
         plugin = "FbxImporter";
-    else if(Utility::String::endsWith(filename, ".gltf"))
+    else if(Utility::String::endsWith(normalized, ".gltf"))
         plugin = "GltfImporter";
-    else if(Utility::String::endsWith(filename, ".glb"))
+    else if(Utility::String::endsWith(normalized, ".glb"))
         plugin = "GlbImporter";
-    else if(Utility::String::endsWith(filename, ".ifc"))
+    else if(Utility::String::endsWith(normalized, ".ifc"))
         plugin = "IfcImporter";
-    else if(Utility::String::endsWith(filename, ".irrmesh") ||
-            Utility::String::endsWith(filename, ".irr"))
+    else if(Utility::String::endsWith(normalized, ".irrmesh") ||
+            Utility::String::endsWith(normalized, ".irr"))
         plugin = "IrrlichtImporter";
-    else if(Utility::String::endsWith(filename, ".lwo") ||
-            Utility::String::endsWith(filename, ".lws"))
+    else if(Utility::String::endsWith(normalized, ".lwo") ||
+            Utility::String::endsWith(normalized, ".lws"))
         plugin = "LightWaveImporter";
-    else if(Utility::String::endsWith(filename, ".lxo"))
+    else if(Utility::String::endsWith(normalized, ".lxo"))
         plugin = "ModoImporter";
-    else if(Utility::String::endsWith(filename, ".ms3d"))
+    else if(Utility::String::endsWith(normalized, ".ms3d"))
         plugin = "MilkshapeImporter";
-    else if(Utility::String::endsWith(filename, ".obj"))
+    else if(Utility::String::endsWith(normalized, ".obj"))
         plugin = "ObjImporter";
-    else if(Utility::String::endsWith(filename, ".xml"))
+    else if(Utility::String::endsWith(normalized, ".xml"))
         plugin = "OgreImporter";
-    else if(Utility::String::endsWith(filename, ".ogex"))
+    else if(Utility::String::endsWith(normalized, ".ogex"))
         plugin = "OpenGexImporter";
-    else if(Utility::String::endsWith(filename, ".ply"))
+    else if(Utility::String::endsWith(normalized, ".ply"))
         plugin = "StanfordImporter";
-    else if(Utility::String::endsWith(filename, ".stl"))
+    else if(Utility::String::endsWith(normalized, ".stl"))
         plugin = "StlImporter";
-    else if(Utility::String::endsWith(filename, ".cob") ||
-            Utility::String::endsWith(filename, ".scn"))
+    else if(Utility::String::endsWith(normalized, ".cob") ||
+            Utility::String::endsWith(normalized, ".scn"))
         plugin = "TrueSpaceImporter";
-    else if(Utility::String::endsWith(filename, ".3d"))
+    else if(Utility::String::endsWith(normalized, ".3d"))
         plugin = "UnrealImporter";
-    else if(Utility::String::endsWith(filename, ".smd") ||
-            Utility::String::endsWith(filename, ".vta"))
+    else if(Utility::String::endsWith(normalized, ".smd") ||
+            Utility::String::endsWith(normalized, ".vta"))
         plugin = "ValveImporter";
-    else if(Utility::String::endsWith(filename, ".xgl") ||
-            Utility::String::endsWith(filename, ".zgl"))
+    else if(Utility::String::endsWith(normalized, ".xgl") ||
+            Utility::String::endsWith(normalized, ".zgl"))
         plugin = "XglImporter";
     else {
         Error() << "Trade::AnySceneImporter::openFile(): cannot determine type of file" << filename;

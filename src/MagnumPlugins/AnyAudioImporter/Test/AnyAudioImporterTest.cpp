@@ -59,6 +59,7 @@ constexpr struct {
     const char* plugin;
 } DetectData[]{
     {"OGG", "thunder.ogg", "VorbisAudioImporter"},
+    {"OGG uppercase", "YELL.OGG", "VorbisAudioImporter"},
     {"FLAC", "symphony.flac", "FlacAudioImporter"}
 };
 
