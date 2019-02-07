@@ -46,24 +46,26 @@ auto AnyImageConverter::doFeatures() const -> Features {
 bool AnyImageConverter::doExportToFile(const ImageView2D& image, const std::string& filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
+    std::string normalized = Utility::String::lowercase(filename);
+
     /* Detect type from extension */
     std::string plugin;
-    if(Utility::String::endsWith(filename, ".bmp"))
+    if(Utility::String::endsWith(normalized, ".bmp"))
         plugin = "BmpImageConverter";
-    else if(Utility::String::endsWith(filename, ".exr"))
+    else if(Utility::String::endsWith(normalized, ".exr"))
         plugin = "OpenExrImageConverter";
-    else if(Utility::String::endsWith(filename, ".hdr"))
+    else if(Utility::String::endsWith(normalized, ".hdr"))
         plugin = "HdrImageConverter";
-    else if(Utility::String::endsWith(filename, ".jpg") ||
-            Utility::String::endsWith(filename, ".jpeg") ||
-            Utility::String::endsWith(filename, ".jpe"))
+    else if(Utility::String::endsWith(normalized, ".jpg") ||
+            Utility::String::endsWith(normalized, ".jpeg") ||
+            Utility::String::endsWith(normalized, ".jpe"))
         plugin = "JpegImageConverter";
-    else if(Utility::String::endsWith(filename, ".png"))
+    else if(Utility::String::endsWith(normalized, ".png"))
         plugin = "PngImageConverter";
-    else if(Utility::String::endsWith(filename, ".tga") ||
-            Utility::String::endsWith(filename, ".vda") ||
-            Utility::String::endsWith(filename, ".icb") ||
-            Utility::String::endsWith(filename, ".vst"))
+    else if(Utility::String::endsWith(normalized, ".tga") ||
+            Utility::String::endsWith(normalized, ".vda") ||
+            Utility::String::endsWith(normalized, ".icb") ||
+            Utility::String::endsWith(normalized, ".vst"))
         plugin = "TgaImageConverter";
     else {
         Error() << "Trade::AnyImageConverter::exportToFile(): cannot determine type of file" << filename;
