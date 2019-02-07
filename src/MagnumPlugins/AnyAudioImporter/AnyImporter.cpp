@@ -47,13 +47,15 @@ void AnyImporter::doClose() { _in = nullptr; }
 void AnyImporter::doOpenFile(const std::string& filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
+    std::string normalized = Utility::String::lowercase(filename);
+
     /* Detect type from extension */
     std::string plugin;
-    if(Utility::String::endsWith(filename, ".ogg"))
+    if(Utility::String::endsWith(normalized, ".ogg"))
         plugin = "VorbisAudioImporter";
-    else if(Utility::String::endsWith(filename, ".wav"))
+    else if(Utility::String::endsWith(normalized, ".wav"))
         plugin = "WavAudioImporter";
-    else if(Utility::String::endsWith(filename, ".flac"))
+    else if(Utility::String::endsWith(normalized, ".flac"))
         plugin = "FlacAudioImporter";
     else {
         Error() << "Audio::AnyImporter::openFile(): cannot determine type of file" << filename;
