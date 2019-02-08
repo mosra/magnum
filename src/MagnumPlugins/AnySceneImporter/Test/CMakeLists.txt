@@ -25,8 +25,10 @@
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(OBJ_FILE pointMesh.obj)
+    set(UPPERCASE_OBJ_FILE uppercase.OBJ)
 else()
     set(OBJ_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/ObjImporter/Test/pointMesh.obj)
+    set(UPPERCASE_OBJ_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/ObjImporter/Test/uppercase.OBJ)
 endif()
 
 # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
@@ -52,7 +54,8 @@ endif()
 corrade_add_test(AnySceneImporterTest AnySceneImporterTest.cpp
     LIBRARIES MagnumTrade
     FILES
-        ../../ObjImporter/Test/pointMesh.obj)
+        ../../ObjImporter/Test/pointMesh.obj
+        ../../ObjImporter/Test/uppercase.OBJ)
 if(NOT BUILD_PLUGINS_STATIC)
     target_include_directories(AnySceneImporterTest PRIVATE $<TARGET_FILE_DIR:AnySceneImporterTest>)
 else()

@@ -41,6 +41,8 @@ struct AnySceneImporterTest: TestSuite::Tester {
 
     void obj();
 
+    void uppercase();
+
     void unknown();
 
     /* Explicitly forbid system-wide plugin dependencies */
@@ -49,7 +51,7 @@ struct AnySceneImporterTest: TestSuite::Tester {
 
 AnySceneImporterTest::AnySceneImporterTest() {
     addTests({&AnySceneImporterTest::obj,
-
+              &AnySceneImporterTest::uppercase,
               &AnySceneImporterTest::unknown});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
@@ -69,6 +71,19 @@ void AnySceneImporterTest::obj() {
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
     CORRADE_VERIFY(importer->openFile(OBJ_FILE));
+
+    /* Check only size, as it is good enough proof that it is working */
+    Containers::Optional<MeshData3D> mesh = importer->mesh3D(0);
+    CORRADE_VERIFY(mesh);
+    CORRADE_COMPARE(mesh->positions(0).size(), 3);
+}
+
+void AnySceneImporterTest::uppercase() {
+    if(!(_manager.loadState("ObjImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("ObjImporter plugin not enabled, cannot test");
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
+    CORRADE_VERIFY(importer->openFile(UPPERCASE_OBJ_FILE));
 
     /* Check only size, as it is good enough proof that it is working */
     Containers::Optional<MeshData3D> mesh = importer->mesh3D(0);
