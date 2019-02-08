@@ -41,6 +41,8 @@ struct AnyImageConverterTest: TestSuite::Tester {
 
     void tga();
 
+    void uppercase();
+
     void unknown();
 
     /* Explicitly forbid system-wide plugin dependencies */
@@ -49,7 +51,7 @@ struct AnyImageConverterTest: TestSuite::Tester {
 
 AnyImageConverterTest::AnyImageConverterTest() {
     addTests({&AnyImageConverterTest::tga,
-
+              &AnyImageConverterTest::uppercase,
               &AnyImageConverterTest::unknown});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
@@ -79,6 +81,21 @@ void AnyImageConverterTest::tga() {
         CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_DIR, "output.tga");
+
+    if(Utility::Directory::fileExists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    /* Just test that the exported file exists */
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+    CORRADE_VERIFY(converter->exportToFile(Image, filename));
+    CORRADE_VERIFY(Utility::Directory::fileExists(filename));
+}
+
+void AnyImageConverterTest::uppercase() {
+    if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
+
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_DIR, "output.TGA");
 
     if(Utility::Directory::fileExists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
