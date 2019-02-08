@@ -25,7 +25,7 @@
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(WAV_FILE stereo8.wav)
-    set(UPPERCASE_WAV_FILE uppercase.wav)
+    set(UPPERCASE_WAV_FILE uppercase.WAV)
 else()
     set(WAV_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/WavAudioImporter/Test/stereo8.wav)
     set(UPPERCASE_WAV_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/WavAudioImporter/Test/uppercase.WAV)
