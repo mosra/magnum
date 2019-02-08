@@ -25,8 +25,10 @@
 
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(WAV_FILE stereo8.wav)
+    set(UPPERCASE_WAV_FILE uppercase.wav)
 else()
     set(WAV_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/WavAudioImporter/Test/stereo8.wav)
+    set(UPPERCASE_WAV_FILE ${PROJECT_SOURCE_DIR}/src/MagnumPlugins/WavAudioImporter/Test/uppercase.WAV)
 endif()
 
 # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
@@ -52,7 +54,8 @@ endif()
 corrade_add_test(AnyAudioImporterTest AnyAudioImporterTest.cpp
     LIBRARIES MagnumAudio
     FILES
-        ../../WavAudioImporter/Test/stereo8.wav)
+        ../../WavAudioImporter/Test/stereo8.wav
+        ../../WavAudioImporter/Test/uppercase.WAV)
 if(NOT BUILD_PLUGINS_STATIC)
     target_include_directories(AnyAudioImporterTest PRIVATE $<TARGET_FILE_DIR:AnyAudioImporterTest>)
 else()

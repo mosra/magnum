@@ -38,6 +38,8 @@ struct AnyImporterTest: TestSuite::Tester {
 
     void wav();
 
+    void uppercase();
+
     void unknown();
 
     /* Explicitly forbid system-wide plugin dependencies */
@@ -46,7 +48,7 @@ struct AnyImporterTest: TestSuite::Tester {
 
 AnyImporterTest::AnyImporterTest() {
     addTests({&AnyImporterTest::wav,
-
+              &AnyImporterTest::uppercase,
               &AnyImporterTest::unknown});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
@@ -66,6 +68,18 @@ void AnyImporterTest::wav() {
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
     CORRADE_VERIFY(importer->openFile(WAV_FILE));
+
+    /* Check only parameters, as it is good enough proof that it is working */
+    CORRADE_COMPARE(importer->format(), BufferFormat::Stereo8);
+    CORRADE_COMPARE(importer->frequency(), 96000);
+}
+
+void AnyImporterTest::uppercase() {
+    if(!(_manager.loadState("WavAudioImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("WavAudioImporter plugin not enabled, cannot test");
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
+    CORRADE_VERIFY(importer->openFile(UPPERCASE_WAV_FILE));
 
     /* Check only parameters, as it is good enough proof that it is working */
     CORRADE_COMPARE(importer->format(), BufferFormat::Stereo8);
