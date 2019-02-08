@@ -76,6 +76,7 @@ constexpr struct {
     {"PNG data", "rgb.png", fileCallback, "PngImporter"},
     {"JPEG", "gray.jpg", nullptr, "JpegImporter"},
     {"JPEG data", "gray.jpg", fileCallback, "JpegImporter"},
+    {"JPEG uppercase", "gray.JPG", nullptr, "JpegImporter"},
     {"JPEG2000", "image.jp2", nullptr, "Jpeg2000Importer"},
     {"EXR", "image.exr", nullptr, "OpenExrImporter"},
     {"EXR data", "image.exr", fileCallback, "OpenExrImporter"},
