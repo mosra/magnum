@@ -59,6 +59,7 @@ The easiest way to install Magnum is to use one of the ready-made packages for
 your platform of choice. See @ref building-manual if you want to have more
 control and @ref building-cross for cross-compiling to other platforms.
 
+-   @ref building-packages-hunter
 -   @ref building-packages-vcpkg
 -   @ref building-packages-arch
 -   @ref building-packages-msys
@@ -74,6 +75,13 @@ plugins for image, audio and 3D model formats are maintained in the
 physics libraries is provided by @ref building-integration "Integration libraries"
 and other extra features are in the @ref building-extras "Extra libraries".
 Various examples are provided by the @ref building-examples "Example repository".
+
+@subsection building-packages-hunter Hunter package
+
+Starting from version 2019.01, stable releases of Magnum are available in the
+[Hunter](https://hunter.sh) CMake-driven package manager. See the
+[magnum package documentation](https://docs.hunter.sh/en/latest/packages/pkg/magnum.html)
+for details.
 
 @subsection building-packages-vcpkg Vcpkg packages on Windows
 
