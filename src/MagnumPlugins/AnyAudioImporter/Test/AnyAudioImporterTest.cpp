@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Format.h>
@@ -93,9 +94,13 @@ void AnyImporterTest::load() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
     CORRADE_VERIFY(importer->openFile(data.filename));
 
-    /* Check only parameters, as it is good enough proof that it is working */
+    /* Check only roughly, as it is good enough proof that it is working */
     CORRADE_COMPARE(importer->format(), BufferFormat::Stereo8);
     CORRADE_COMPARE(importer->frequency(), 96000);
+    CORRADE_COMPARE(importer->data().size(), 4);
+
+    importer->close();
+    CORRADE_VERIFY(!importer->isOpened());
 }
 
 void AnyImporterTest::detect() {

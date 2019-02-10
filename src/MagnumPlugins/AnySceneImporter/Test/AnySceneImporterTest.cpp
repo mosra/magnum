@@ -107,6 +107,9 @@ void AnySceneImporterTest::load() {
     Containers::Optional<MeshData3D> mesh = importer->mesh3D(0);
     CORRADE_VERIFY(mesh);
     CORRADE_COMPARE(mesh->positions(0).size(), 3);
+
+    importer->close();
+    CORRADE_VERIFY(!importer->isOpened());
 }
 
 void AnySceneImporterTest::detect() {
