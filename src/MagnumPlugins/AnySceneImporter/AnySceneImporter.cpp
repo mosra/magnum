@@ -61,7 +61,8 @@ void AnySceneImporter::doClose() {
 void AnySceneImporter::doOpenFile(const std::string& filename) {
     CORRADE_INTERNAL_ASSERT(manager());
 
-    std::string normalized = Utility::String::lowercase(filename);
+    /** @todo lowercase only the extension, once Directory::split() is done */
+    const std::string normalized = Utility::String::lowercase(filename);
 
     /* Detect type from extension */
     std::string plugin;

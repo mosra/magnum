@@ -36,7 +36,23 @@ See also:
 -   @subpage changelog-extras "Extras changelog"
 -   @subpage changelog-examples "Examples changelog"
 
-@anchor changelog-latest
+@section changelog-latest Changes since 2019.01
+
+@subsection changelog-latest-changes Changes and improvements
+
+@subsubsection changelog-latest-changes-audio Audio library
+
+-   The @ref Audio::AnyImporter "AnyAudioImporter" plugin now correctly
+    recognizes also uppercase file extensions (see
+    [mosra/magnum#312](https://github.com/mosra/magnum/pull/312))
+
+@subsubsection changelog-latest-changes-trade Trade library
+
+-   The @ref Trade::AnyImageImporter "AnyImageImporter",
+    @ref Trade::AnyImageConverter "AnyImageConverter" and
+    @ref Trade::AnySceneImporter "AnySceneImporter" plugins now correctly
+    recognize also uppercase file extensions (see
+    [mosra/magnum#312](https://github.com/mosra/magnum/pull/312))
 
 @section changelog-2019-01 2019.01
 
