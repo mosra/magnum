@@ -24,9 +24,10 @@
 */
 
 #include <sstream>
+#include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
-#include <Corrade/PluginManager/Manager.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
@@ -39,7 +40,8 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct AnyImageConverterTest: TestSuite::Tester {
     explicit AnyImageConverterTest();
 
-    void tga();
+    void convert();
+    void detect();
 
     void unknown();
 
@@ -47,10 +49,34 @@ struct AnyImageConverterTest: TestSuite::Tester {
     PluginManager::Manager<AbstractImageConverter> _manager{"nonexistent"};
 };
 
-AnyImageConverterTest::AnyImageConverterTest() {
-    addTests({&AnyImageConverterTest::tga,
+constexpr struct {
+    const char* name;
+    const char* filename;
+} ConvertData[]{
+    {"TGA", "output.tga"}
+};
 
-              &AnyImageConverterTest::unknown});
+constexpr struct {
+    const char* name;
+    const char* filename;
+    const char* plugin;
+} DetectData[]{
+    {"BMP", "file.bmp", "BmpImageConverter"},
+    {"EXR", "file.exr", "OpenExrImageConverter"},
+    {"HDR", "file.hdr", "HdrImageConverter"},
+    {"JPEG", "file.jpg", "JpegImageConverter"},
+    {"JPEG weird extension", "file.jpe", "JpegImageConverter"},
+    {"PNG", "file.png", "PngImageConverter"}
+};
+
+AnyImageConverterTest::AnyImageConverterTest() {
+    addInstancedTests({&AnyImageConverterTest::convert},
+        Containers::arraySize(ConvertData));
+
+    addInstancedTests({&AnyImageConverterTest::detect},
+        Containers::arraySize(DetectData));
+
+    addTests({&AnyImageConverterTest::unknown});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -74,11 +100,14 @@ constexpr const char Data[] = {
 
 const ImageView2D Image{PixelFormat::RGB8Unorm, {2, 3}, Data};
 
-void AnyImageConverterTest::tga() {
+void AnyImageConverterTest::convert() {
+    auto&& data = ConvertData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     if(!(_manager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImageConverter plugin not enabled, cannot test");
 
-    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_DIR, "output.tga");
+    const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_DIR, data.filename);
 
     if(Utility::Directory::fileExists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
@@ -87,6 +116,25 @@ void AnyImageConverterTest::tga() {
     Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
     CORRADE_VERIFY(converter->exportToFile(Image, filename));
     CORRADE_VERIFY(Utility::Directory::fileExists(filename));
+}
+
+void AnyImageConverterTest::detect() {
+    auto&& data = DetectData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->exportToFile(Image, data.filename));
+    /* Can't use raw string literals in macros on GCC 4.8 */
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nTrade::AnyImageConverter::exportToFile(): cannot load {0} plugin\n", data.plugin));
+    #else
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+"PluginManager::Manager::load(): plugin {0} was not found\nTrade::AnyImageConverter::exportToFile(): cannot load {0} plugin\n", data.plugin));
+    #endif
 }
 
 void AnyImageConverterTest::unknown() {

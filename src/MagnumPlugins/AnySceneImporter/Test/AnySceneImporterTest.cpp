@@ -27,6 +27,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Trade/AbstractImporter.h"
@@ -39,7 +40,8 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct AnySceneImporterTest: TestSuite::Tester {
     explicit AnySceneImporterTest();
 
-    void obj();
+    void load();
+    void detect();
 
     void unknown();
 
@@ -47,10 +49,37 @@ struct AnySceneImporterTest: TestSuite::Tester {
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
 
-AnySceneImporterTest::AnySceneImporterTest() {
-    addTests({&AnySceneImporterTest::obj,
+constexpr struct {
+    const char* name;
+    const char* filename;
+} LoadData[]{
+    {"OBJ", OBJ_FILE},
+};
 
-              &AnySceneImporterTest::unknown});
+constexpr struct {
+    const char* name;
+    const char* filename;
+    const char* plugin;
+} DetectData[]{
+    {"Blender", "suzanne.blend", "BlenderImporter"},
+    {"COLLADA", "xml.dae", "ColladaImporter"},
+    {"FBX", "autodesk.fbx", "FbxImporter"},
+    {"glTF", "khronos.gltf", "GltfImporter"},
+    {"glTF binary", "khronos.glb", "GlbImporter"},
+    {"OpenGEX", "eric.ogex", "OpenGexImporter"},
+    {"Stanford PLY", "bunny.ply", "StanfordImporter"},
+    {"STL", "robot.stl", "StlImporter"},
+    /* Not testing everything, only the most important ones */
+};
+
+AnySceneImporterTest::AnySceneImporterTest() {
+    addInstancedTests({&AnySceneImporterTest::load},
+        Containers::arraySize(LoadData));
+
+    addInstancedTests({&AnySceneImporterTest::detect},
+        Containers::arraySize(DetectData));
+
+    addTests({&AnySceneImporterTest::unknown});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -63,17 +92,39 @@ AnySceneImporterTest::AnySceneImporterTest() {
     #endif
 }
 
-void AnySceneImporterTest::obj() {
+void AnySceneImporterTest::load() {
+    auto&& data = LoadData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     if(!(_manager.loadState("ObjImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("ObjImporter plugin not enabled, cannot test");
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
-    CORRADE_VERIFY(importer->openFile(OBJ_FILE));
+    CORRADE_VERIFY(importer->openFile(data.filename));
 
     /* Check only size, as it is good enough proof that it is working */
     Containers::Optional<MeshData3D> mesh = importer->mesh3D(0);
     CORRADE_VERIFY(mesh);
     CORRADE_COMPARE(mesh->positions(0).size(), 3);
+}
+
+void AnySceneImporterTest::detect() {
+    auto&& data = DetectData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer->openFile(data.filename));
+    /* Can't use raw string literals in macros on GCC 4.8 */
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nTrade::AnySceneImporter::openFile(): cannot load {0} plugin\n", data.plugin));
+    #else
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+"PluginManager::Manager::load(): plugin {0} was not found\nTrade::AnySceneImporter::openFile(): cannot load {0} plugin\n", data.plugin));
+    #endif
 }
 
 void AnySceneImporterTest::unknown() {

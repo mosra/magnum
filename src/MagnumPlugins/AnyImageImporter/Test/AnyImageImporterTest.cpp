@@ -41,7 +41,6 @@ struct AnyImageImporterTest: TestSuite::Tester {
     explicit AnyImageImporterTest();
 
     void load();
-
     void detect();
 
     void unknownExtension();

@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/Format.h>
 
 #include "Magnum/Audio/AbstractImporter.h"
 
@@ -36,7 +37,8 @@ namespace Magnum { namespace Audio { namespace Test { namespace {
 struct AnyImporterTest: TestSuite::Tester {
     explicit AnyImporterTest();
 
-    void wav();
+    void load();
+    void detect();
 
     void unknown();
 
@@ -44,10 +46,30 @@ struct AnyImporterTest: TestSuite::Tester {
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
 
-AnyImporterTest::AnyImporterTest() {
-    addTests({&AnyImporterTest::wav,
+constexpr struct {
+    const char* name;
+    const char* filename;
+} LoadData[]{
+    {"WAV", WAV_FILE}
+};
 
-              &AnyImporterTest::unknown});
+constexpr struct {
+    const char* name;
+    const char* filename;
+    const char* plugin;
+} DetectData[]{
+    {"OGG", "thunder.ogg", "VorbisAudioImporter"},
+    {"FLAC", "symphony.flac", "FlacAudioImporter"}
+};
+
+AnyImporterTest::AnyImporterTest() {
+    addInstancedTests({&AnyImporterTest::load},
+        Containers::arraySize(LoadData));
+
+    addInstancedTests({&AnyImporterTest::detect},
+        Containers::arraySize(DetectData));
+
+    addTests({&AnyImporterTest::unknown});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
@@ -60,16 +82,38 @@ AnyImporterTest::AnyImporterTest() {
     #endif
 }
 
-void AnyImporterTest::wav() {
+void AnyImporterTest::load() {
+    auto&& data = LoadData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
     if(!(_manager.loadState("WavAudioImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("WavAudioImporter plugin not enabled, cannot test");
 
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
-    CORRADE_VERIFY(importer->openFile(WAV_FILE));
+    CORRADE_VERIFY(importer->openFile(data.filename));
 
     /* Check only parameters, as it is good enough proof that it is working */
     CORRADE_COMPARE(importer->format(), BufferFormat::Stereo8);
     CORRADE_COMPARE(importer->frequency(), 96000);
+}
+
+void AnyImporterTest::detect() {
+    auto&& data = DetectData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnyAudioImporter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!importer->openFile(data.filename));
+    /* Can't use raw string literals in macros on GCC 4.8 */
+    #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+"PluginManager::Manager::load(): plugin {0} is not static and was not found in nonexistent\nAudio::AnyImporter::openFile(): cannot load {0} plugin\n", data.plugin));
+    #else
+    CORRADE_COMPARE(out.str(), Utility::formatString(
+"PluginManager::Manager::load(): plugin {0} was not found\nAudio::AnyImporter::openFile(): cannot load {0} plugin\n", data.plugin));
+    #endif
 }
 
 void AnyImporterTest::unknown() {
