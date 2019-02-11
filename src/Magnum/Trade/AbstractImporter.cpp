@@ -162,7 +162,7 @@ void AbstractImporter::doOpenFile(const std::string& filename) {
 
     /* Otherwise open the file directly */
     } else {
-        if(!Utility::Directory::fileExists(filename)) {
+        if(!Utility::Directory::exists(filename)) {
             Error() << "Trade::AbstractImporter::openFile(): cannot open file" << filename;
             return;
         }

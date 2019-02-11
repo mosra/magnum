@@ -740,7 +740,7 @@ void Shader::addSourceImplementationEmscriptenPthread(std::string source) {
 #endif
 
 Shader& Shader::addFile(const std::string& filename) {
-    CORRADE_ASSERT(Utility::Directory::fileExists(filename),
+    CORRADE_ASSERT(Utility::Directory::exists(filename),
         "GL::Shader file " << '\'' + filename + '\'' << " cannot be read.", *this);
 
     addSource(Utility::Directory::readString(filename));

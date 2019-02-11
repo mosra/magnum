@@ -110,13 +110,13 @@ void AnyImageConverterTest::convert() {
 
     const std::string filename = Utility::Directory::join(ANYIMAGECONVERTER_TEST_DIR, data.filename);
 
-    if(Utility::Directory::fileExists(filename))
+    if(Utility::Directory::exists(filename))
         CORRADE_VERIFY(Utility::Directory::rm(filename));
 
     /* Just test that the exported file exists */
     Containers::Pointer<AbstractImageConverter> converter = _manager.instantiate("AnyImageConverter");
     CORRADE_VERIFY(converter->exportToFile(Image, filename));
-    CORRADE_VERIFY(Utility::Directory::fileExists(filename));
+    CORRADE_VERIFY(Utility::Directory::exists(filename));
 }
 
 void AnyImageConverterTest::detect() {

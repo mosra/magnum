@@ -82,7 +82,7 @@ void AbstractImporter::doOpenFile(const std::string& filename) {
     CORRADE_ASSERT(features() & Feature::OpenData, "Audio::AbstractImporter::openFile(): not implemented", );
 
     /* Open file */
-    if(!Utility::Directory::fileExists(filename)) {
+    if(!Utility::Directory::exists(filename)) {
         Error() << "Trade::AbstractImporter::openFile(): cannot open file" << filename;
         return;
     }

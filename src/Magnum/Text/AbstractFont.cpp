@@ -123,7 +123,7 @@ auto AbstractFont::doOpenFile(const std::string& filename, const Float size) -> 
         "Text::AbstractFont::openFile(): not implemented", {});
 
     /* Open file */
-    if(!Utility::Directory::fileExists(filename)) {
+    if(!Utility::Directory::exists(filename)) {
         Error() << "Trade::AbstractFont::openFile(): cannot open file" << filename;
         return {};
     }

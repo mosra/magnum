@@ -134,7 +134,7 @@ importer->setFileCallback([](const std::string& filename,
     {
         auto found = data.files.find(filename);
         if(found == data.files.end()) {
-            if(!Utility::Directory::fileExists(filename))
+            if(!Utility::Directory::exists(filename))
                 return Containers::NullOpt;
             found = data.files.emplace(filename, Utility::Directory::read(filename)).first;
         }
