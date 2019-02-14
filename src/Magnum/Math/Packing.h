@@ -30,6 +30,7 @@
  */
 
 #include "Magnum/Math/Functions.h"
+#include "Magnum/Math/Simd.h"
 
 namespace Magnum { namespace Math {
 
@@ -208,6 +209,39 @@ template<std::size_t size> Vector<size, Float> unpackHalf(const Vector<size, Uns
         out[i] = unpackHalf(value[i]);
     return out;
 }
+
+namespace Implementation {
+    // TODO: expose these publicly? would make sense, otherwise the tags are useless
+    MAGNUM_EXPORT void unpackUnsignedByteToShort(Simd::NoneT, Corrade::Containers::ArrayView<const UnsignedByte> in, Corrade::Containers::ArrayView<UnsignedShort> out);
+    MAGNUM_EXPORT void unpackUnsignedByteToShort(Simd::Sse2T, Corrade::Containers::ArrayView<const UnsignedByte> in, Corrade::Containers::ArrayView<UnsignedShort> out);
+    MAGNUM_EXPORT void unpackUnsignedByteToShort(Simd::Sse41T, Corrade::Containers::ArrayView<const UnsignedByte> in, Corrade::Containers::ArrayView<UnsignedShort> out);
+    MAGNUM_EXPORT void unpackUnsignedByteToShort(Simd::Avx2T, Corrade::Containers::ArrayView<const UnsignedByte> in, Corrade::Containers::ArrayView<UnsignedShort> out);
+}
+
+/**
+@brief Unpack an array of 8-bit unsigned integers to 16-bit
+
+The @p in and @p out are expected to have the same size and be aligned to 16
+bytes.
+*/
+// TODO: mention SIMD?
+MAGNUM_EXPORT void unpackUnsignedByteToShort(Corrade::Containers::ArrayView<const UnsignedByte> in, Corrade::Containers::ArrayView<UnsignedShort> out);
+
+/**
+@brief Unpack an array of 8-bit unsigned integers to 32-bit
+
+The @p in and @p out are expected to have the same size and be aligned to 16
+bytes.
+*/
+MAGNUM_EXPORT void unpackUnsignedByteToInt(Corrade::Containers::ArrayView<const UnsignedByte> in, Corrade::Containers::ArrayView<UnsignedInt> out);
+
+/**
+@brief Unpack an array of 16-bit unsigned integers to 32-bit
+
+The @p in and @p out are expected to have the same size and be aligned to 16
+bytes.
+*/
+MAGNUM_EXPORT void unpackUnsignedShortToInt(Corrade::Containers::ArrayView<const UnsignedShort> in, Corrade::Containers::ArrayView<UnsignedInt> out);
 
 }}
 
