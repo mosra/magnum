@@ -736,11 +736,12 @@ documentation will be either in `build/doc-mcss/` or `build/doc-public/`.
 
 Magnum is able to run on the ANGLE OpenGL-to-D3D translator. Download the code
 from https://github.com/MSOpenTech/angle and use the provided Visual Studio
-solution to build it. Put the resulting `libGLESv2`/`libEGL` libraries and
-`GLES2`/`GLES3`/`EGL` includes to a location where CMake can find them or set
-`CMAKE_PREFIX_PATH` accordingly. ANGLE supports only OpenGL ES, thus you need
-to enable `TARGET_GLES`. The engine is built for OpenGL ES 2.0 by default,
-switch to 3.0 by disabling `TARGET_GLES2`.
+solution to build it. Alternatively, you can get an up-to-date version from any
+browser distribution --- both Firefox and all Chromium-based browsers ship with
+it. Put the `libGLESv2`/`libEGL` libraries to a location where CMake can find
+them or set `CMAKE_PREFIX_PATH` accordingly. ANGLE supports only OpenGL ES,
+thus you need to enable `TARGET_GLES`. The engine is built for OpenGL ES 2.0 by
+default, switch to 3.0 by disabling `TARGET_GLES2`.
 
 @code{.bat}
 mkdir build-angle && cd build-angle
