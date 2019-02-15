@@ -97,6 +97,12 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
     #ifdef SDL_HINT_NO_SIGNAL_HANDLERS
     SDL_SetHint(SDL_HINT_NO_SIGNAL_HANDLERS, "1");
     #endif
+    /* Available since 2.0.6, uses dedicated OpenGL ES drivers by default and a
+       desktop GLES context only if MAGNUM_TARGET_DESKTOP_GLES is defined as
+       well. */
+    #if !defined(MAGNUM_TARGET_DESKTOP_GLES) && defined(SDL_HINT_OPENGL_ES_DRIVER)
+    SDL_SetHint(SDL_HINT_OPENGL_ES_DRIVER, "1");
+    #endif
     /* Available since 2.0.8, disables compositor bypass on X11, which causes
        flickering on KWin as the compositor gets shut down on every startup */
     #ifdef SDL_HINT_VIDEO_X11_NET_WM_BYPASS_COMPOSITOR

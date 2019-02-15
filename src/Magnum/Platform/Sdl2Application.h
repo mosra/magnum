@@ -305,6 +305,17 @@ If you enable @ref Configuration::WindowFlag::Resizable, the canvas will be
 resized when size of the canvas changes and you get @ref viewportEvent(). If
 the flag is not enabled, no canvas resizing is performed.
 
+@subsection Platform-Sdl2Application-usage-gles OpenGL ES specifics
+
+For OpenGL ES, SDL2 defaults to a "desktop GLES" context of the system driver.
+Because Magnum has the opposite default behavior, if @ref MAGNUM_TARGET_GLES is
+not defined and SDL >= 2.0.6 is used, @ref Sdl2Application sets the
+`SDL_HINT_OPENGL_ES_DRIVER` hint to 1, forcing it to load symbols from a
+dedicated libGLES library instead, making SDL and Magnum consistently use the
+same OpenGL entrypoints. This change also allows @ref platforms-gl-es-angle "ANGLE"
+to be used on Windows simply by placing the corresponding `libEGL.dll` and
+`libGLESv2.dll` files next to the application executable.
+
 @section Platform-Sdl2Application-dpi DPI awareness
 
 On displays that match the platform default DPI (96 or 72),
