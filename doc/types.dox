@@ -224,8 +224,8 @@ documentation of each `Integration.h` header for details:
     part of the @ref BulletIntegration library
 -   Oculus VR SDK math types -- @ref Magnum/OvrIntegration/Integration.h, part
     of the @ref OvrIntegration library
--   ImGui math types --- @ref Magnum/ImGuiIntegration/Integration.h, part of
-    the @ref ImGuiIntegration library
+-   Dear ImGui math types --- @ref Magnum/ImGuiIntegration/Integration.h, part
+    of the @ref ImGuiIntegration library
 
 */
 }
