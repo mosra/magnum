@@ -54,6 +54,10 @@ See also:
     recognize also uppercase file extensions (see
     [mosra/magnum#312](https://github.com/mosra/magnum/pull/312))
 
+@subsection changelog-latest-bugfixes Bug fixes
+
+-   Fixed compilation of the @ref Vk library on 32-bit Windows
+
 @section changelog-2019-01 2019.01
 
 Released 2019-02-04, tagged as

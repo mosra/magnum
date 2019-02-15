@@ -48,7 +48,7 @@ void flextVkInit() {
     @for f in funcs:
     @if f.name in ['EnumerateInstanceVersion']:
     flextvk@f.name = reinterpret_cast<@f.returntype\
-(*)(@f.param_type_list_string())>(vkGetInstanceProcAddr(nullptr, "vk@f.name"));
+(VKAPI_PTR*)(@f.param_type_list_string())>(vkGetInstanceProcAddr(nullptr, "vk@f.name"));
     @end
     @end
     @end

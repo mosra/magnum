@@ -33,7 +33,7 @@ FlextVkInstance flextVkInstance{};
 FlextVkDevice flextVkDevice{};
 
 void flextVkInit() {
-    flextvkEnumerateInstanceVersion = reinterpret_cast<VkResult(*)(uint32_t*)>(vkGetInstanceProcAddr(nullptr, "vkEnumerateInstanceVersion"));
+    flextvkEnumerateInstanceVersion = reinterpret_cast<VkResult(VKAPI_PTR*)(uint32_t*)>(vkGetInstanceProcAddr(nullptr, "vkEnumerateInstanceVersion"));
 }
 
 void flextVkInitInstance(VkInstance instance, FlextVkInstance* data) {
