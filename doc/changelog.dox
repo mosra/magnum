@@ -249,9 +249,9 @@ Released 2019-02-04, tagged as
     is done implicitly in both cases, but you may need to add an
     @cpp #include <Corrade/Containers/Reference.h> @ce where appropriate.
 -   Removed deprecated implicit conversion @ref Corrade::Containers::Optional
-    to @cpp std::optional @ce, deprecated in January 2018. The class now
-    contains an *explicit* and opt-in STL compatibility, see its documentation
-    for more information.
+    to @ref std::optional, deprecated in January 2018. The class now contains
+    an *explicit* and opt-in STL compatibility, see its documentation for more
+    information.
 -   Removed the `Magnum/Test/AbstractOpenGLTester.h` header that was deprecated
     in January 2017. Use @ref Magnum/GL/OpenGLTester.h and the
     @ref GL::OpenGLTester library instead. Note that the deprecated
@@ -1908,11 +1908,10 @@ a high-level overview.
     `colors` parameter are deprecated, use the full ones instead
 -   @ref Shaders::Generic::Color vertex attribute implicit constructor is
     deprecated, use a constructor with explicit component count instead
--   The bundled `std::optional` implementation was causing serious conflicts
+-   The bundled @ref std::optional implementation was causing serious conflicts
     with C++17 and it's now deprecated in favor of
-    @ref Corrade::Containers::Optional.
-    (Deprecated) aliases and conversion operators are provided for backwards
-    compatibility.
+    @ref Corrade::Containers::Optional. (Deprecated) aliases and conversion
+    operators are provided for backwards compatibility.
 -   `Audio::Context::hrtfSpecifier()` is deprecated, use
     @ref Audio::Context::hrtfSpecifierString() instead
 

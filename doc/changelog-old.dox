@@ -667,7 +667,7 @@ for a high-level overview.
     by @ref magnum-gl-info "magnum-info" utility.
 -   @cpp Context::isExtensionSupported() @ce is now able to query extension
     availability on particular GLSL version
--   Using @ref std::unique_ptr and C++1y @cpp std::optional @ce for resources
+-   Using @ref std::unique_ptr and C++1y @ref std::optional for resources
     returned from @ref Trade::AbstractImporter for better usability and to
     avoid accidental memory leaks
 -   New translation-only transformation in @ref SceneGraph supporting also
