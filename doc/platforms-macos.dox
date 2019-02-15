@@ -124,6 +124,30 @@ advertised programmatically. In case of CMake, you have to supply a custom
 </plist>
 @endcode
 
+@section platforms-macos-clang-version-mapping Clang version mapping
+
+Apple Clang has a different versioning scheme from upstream Clang, making it
+hard to know which Clang version corresponds to which Apple Clang version.
+Wikipedia has a [handy version mapping table](https://en.wikipedia.org/wiki/Xcode#Latest_versions).
+
+CMake exposes Apple Clang as `AppleClang`, so a complete check for e.g.
+upstream version 5 needs to look like this:
+
+@code{.cmake}
+if((CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT
+    CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.0") OR
+   (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" AND NOT
+    CMAKE_CXX_COMPILER_VERSION VERSION_LESS "9.3"))
+    # Code requiring Clang 5 and newer
+endif()
+@endcode
+
+@note CMake supports `VERSION_GREATER_EQUAL` in the @cb{.cmake} if() @ce
+    statement only [since version 3.7](https://cmake.org/cmake/help/latest/release/3.7.html#commands),
+    use a negated `VERSION_LESS` like above in older versions.
+
+@see @ref platforms-windows-msvc-version-mapping
+
 @section platforms-macos-opengl-best-practices Best practices
 
 Official Apple documentation:

@@ -88,6 +88,27 @@ property and optionally set their location with `VS_DEPLOYMENT_LOCATION`. If
 you are using `*.resw` files, these need to have the `VS_TOOL_OVERRIDE`
 property set to `PRIResource`.
 
+@section platforms-windows-msvc-version-mapping MSVC version mapping
+
+MSVC and Visual Studio use three, er, four different versioning schemes. CMake
+exposes compiler version equivalent to the `_MSC_VER` macro, see this
+[handy Wikipedia table](https://en.wikipedia.org/wiki/Microsoft_Visual_C%2B%2B#Internal_version_numbering)
+for mapping to Visual Studio versions. For example, a check for MSVC 2017
+would look like this:
+
+@code{.cmake}
+if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" AND NOT
+   CMAKE_CXX_COMPILER_VERSION VERSION_LESS "19.10")
+    # Code requiring MSVC 2017
+endif()
+@endcode
+
+@note CMake supports `VERSION_GREATER_EQUAL` in the @cb{.cmake} if() @ce
+    statement only [since version 3.7](https://cmake.org/cmake/help/latest/release/3.7.html#commands),
+    use a negated `VERSION_LESS` like above in older versions.
+
+@see @ref platforms-macos-clang-version-mapping
+
 @todoc DLL paths
 @todoc vcpkg
 @todoc desktop ES
