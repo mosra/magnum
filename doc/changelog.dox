@@ -59,6 +59,13 @@ See also:
     recognizes also uppercase file extensions (see
     [mosra/magnum#312](https://github.com/mosra/magnum/pull/312))
 
+@subsubsection changelog-latest-changes-debugtools DebugTools library
+
+-   @ref DebugTools::CompareImage, @ref DebugTools::CompareImageToFile and
+    other variants are now usable directly through @ref CORRADE_COMPARE_AS(),
+    no need to pass an explicit instance to @ref CORRADE_COMPARE_WITH() when
+    just the default parameters are needed
+
 @subsubsection changelog-latest-changes-platform Platform libraries
 
 -   On OpenGL ES builds, @ref Platform::Sdl2Application now tells SDL whether

@@ -100,6 +100,8 @@ template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::Compare
     public:
         explicit Comparator(Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{nullptr, maxThreshold, meanThreshold} {}
 
+        /*implicit*/ Comparator(): Comparator{0.0f, 0.0f} {}
+
         bool operator()(const Magnum::ImageView2D& actual, const Magnum::ImageView2D& expected) {
             return Magnum::DebugTools::Implementation::ImageComparatorBase::operator()(actual, expected);
         }
@@ -120,6 +122,8 @@ template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::Compare
     public:
         explicit Comparator(PluginManager::Manager<Magnum::Trade::AbstractImporter>* manager, Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{manager, maxThreshold, meanThreshold} {}
 
+        /*implicit*/ Comparator(): Comparator{nullptr, 0.0f, 0.0f} {}
+
         bool operator()(const Magnum::ImageView2D& actual, const std::string& expected) {
             return Magnum::DebugTools::Implementation::ImageComparatorBase::operator()(actual, expected);
         }
@@ -128,6 +132,8 @@ template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::Compare
 template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::CompareFileToImage>: public Magnum::DebugTools::Implementation::ImageComparatorBase {
     public:
         explicit Comparator(PluginManager::Manager<Magnum::Trade::AbstractImporter>* manager, Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{manager, maxThreshold, meanThreshold} {}
+
+        /*implicit*/ Comparator(): Comparator{nullptr, 0.0f, 0.0f} {}
 
         bool operator()(const std::string& actual, const Magnum::ImageView2D& expected) {
             return Magnum::DebugTools::Implementation::ImageComparatorBase::operator()(actual, expected);
