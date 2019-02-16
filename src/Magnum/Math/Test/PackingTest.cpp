@@ -173,8 +173,8 @@ void PackingTest::packUnsigned() {
     #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_COMPARE(Math::pack<UnsignedLong>(0.0l), 0);
     {
-        #if defined(_MSC_VER) || (defined(CORRADE_TARGET_ANDROID) && !__LP64__)
-        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC and 32-bit Android.");
+        #ifdef _MSC_VER
+        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC.");
         #endif
         CORRADE_COMPARE(Math::pack<UnsignedLong>(1.0l), std::numeric_limits<UnsignedLong>::max());
     }
@@ -248,8 +248,8 @@ void PackingTest::reunpackUnsigned() {
     #ifndef MAGNUM_TARGET_WEBGL
     CORRADE_COMPARE(Math::unpack<long double>(Math::pack<UnsignedLong>(0.0l)), 0.0l);
     {
-        #if defined(_MSC_VER) || (defined(CORRADE_TARGET_ANDROID) && !__LP64__)
-        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC and 32-bit Android.");
+        #ifdef _MSC_VER
+        CORRADE_EXPECT_FAIL("Long double (de)normalization is broken on MSVC.");
         #endif
         CORRADE_COMPARE(Math::unpack<long double>(Math::pack<UnsignedLong>(1.0l)), 1.0l);
     }
