@@ -40,6 +40,11 @@ See also:
 
 @subsection changelog-latest-new New features
 
+@subsubsection changelog-latest-new-debugtools DebugTools library
+
+-   New @ref DebugTools::screenshot() function for convenient saving of
+    screenshots
+
 @subsubsection changelog-latest-new-gl GL library
 
 -   New @ref GL::AbstractFramebuffer::implementationColorReadFormat() and

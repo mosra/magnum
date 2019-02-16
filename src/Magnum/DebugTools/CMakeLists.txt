@@ -38,10 +38,12 @@ set(MagnumDebugTools_PRIVATE_HEADERS )
 if(TARGET_GL)
     list(APPEND MagnumDebugTools_SRCS
         ResourceManager.cpp
+        Screenshot.cpp
         TextureImage.cpp)
 
     list(APPEND MagnumDebugTools_HEADERS
         ResourceManager.h
+        Screenshot.h
         TextureImage.h
         visibility.h)
 

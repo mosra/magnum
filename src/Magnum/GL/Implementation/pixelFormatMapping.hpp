@@ -23,7 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/* See Magnum/GL/PixelFormat.cpp and Magnum/GL/Test/PixelFormatTest.cpp */
+/* See Magnum/GL/PixelFormat.cpp, Magnum/GL/Test/PixelFormatTest.cpp and
+   DebugTools/Screenshot.cpp. _c() is a mapping, _s() denotes a skipped value
+   (so the enum numbering is preserved) */
 #ifdef _c
 #ifndef MAGNUM_TARGET_GLES2
 _c(R8Unorm, Red, UnsignedByte)
