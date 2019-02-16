@@ -82,7 +82,9 @@ struct TextureArrayGLTest: OpenGLTester {
     #ifndef MAGNUM_TARGET_GLES
     void samplingSwizzle1D();
     #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     void samplingSwizzle2D();
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     void samplingBorderInteger1D();

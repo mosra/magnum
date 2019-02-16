@@ -40,7 +40,6 @@ struct CapsuleTest: TestSuite::Tester {
     explicit CapsuleTest();
 
     void transformed();
-    void transformedAverageScaling();
     void collisionPoint();
     void collisionSphere();
 };

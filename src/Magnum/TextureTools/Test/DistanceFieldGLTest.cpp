@@ -54,7 +54,9 @@ struct DistanceFieldGLTest: GL::OpenGLTester {
     explicit DistanceFieldGLTest();
 
     void test();
+    #ifndef MAGNUM_TARGET_WEBGL
     void benchmark();
+    #endif
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager;

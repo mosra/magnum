@@ -40,7 +40,6 @@ struct CylinderTest: TestSuite::Tester {
     explicit CylinderTest();
 
     void transformed();
-    void transformedAverageScaling();
     void collisionPoint();
     void collisionSphere();
 };
