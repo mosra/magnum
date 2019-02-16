@@ -30,7 +30,7 @@
 
 namespace Magnum { namespace DebugTools { namespace Test { namespace {
 
-struct BufferDataGLTest: Magnum::GL::OpenGLTester {
+struct BufferDataGLTest: GL::OpenGLTester {
     explicit BufferDataGLTest();
 
     void data();
