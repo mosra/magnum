@@ -113,6 +113,8 @@ Are the below lists missing your name or something's wrong?
     algorithm bugfixes
 -   **Guillaume Jacquemin** ([\@williamjcm](https://github.com/williamjcm)) ---
     MSYS2 packages
+-   **Hilario Pérez Corona** ([\@hpcorona](https://github.com/hpcorona)) ---
+    improvements to @cb{.cmake} android_create_apk() @ce
 -   **Ivan P.** ([\@uzername](https://github.com/uzername)) --- documentation
     improvements
 -   **Jonathan Hale** ([\@Squareys](https://github.com/Squareys)) --- @ref Audio

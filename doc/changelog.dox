@@ -81,6 +81,9 @@ See also:
 -   @ref Math::pack() was incorrectly not selecting the nearest integral value,
     causing @ref Math::Color3::toSrgbInt() to not roundtrip, among other
     things.
+-   The @cb{.cmake} android_create_apk() @ce macro for
+    @ref platforms-android-apps-cmake "Gradle-less Android builds" now properly
+    creates the library output directory beforehand
 
 @section changelog-2019-01 2019.01
 
