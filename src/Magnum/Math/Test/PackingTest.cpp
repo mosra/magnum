@@ -44,6 +44,9 @@ struct PackingTest: Corrade::TestSuite::Tester {
     void reunpackSinged();
     void unpackTypeDeduction();
 
+    void pack8bitRoundtrip();
+    void pack16bitRoundtrip();
+
     /* Half (un)pack functions are tested and benchmarked in HalfTest.cpp,
        because there's involved comparison and benchmarks to ground truth */
 };
@@ -62,6 +65,9 @@ PackingTest::PackingTest() {
               &PackingTest::reunpackUnsinged,
               &PackingTest::reunpackSinged,
               &PackingTest::unpackTypeDeduction});
+
+    addRepeatedTests({&PackingTest::pack8bitRoundtrip}, 256);
+    addRepeatedTests({&PackingTest::pack16bitRoundtrip}, 65536);
 }
 
 void PackingTest::bitMax() {
@@ -277,6 +283,14 @@ void PackingTest::unpackTypeDeduction() {
         CORRADE_COMPARE(Math::unpack<Float>('\x7F'), 0.498039f);
     }
     CORRADE_COMPARE((Math::unpack<Float, Byte>('\x7F')), 1.0f);
+}
+
+void PackingTest::pack8bitRoundtrip() {
+    CORRADE_COMPARE(Math::pack<UnsignedByte>(Math::unpack<Float, UnsignedByte>(testCaseRepeatId())), testCaseRepeatId());
+}
+
+void PackingTest::pack16bitRoundtrip() {
+    CORRADE_COMPARE(Math::pack<UnsignedShort>(Math::unpack<Float, UnsignedShort>(testCaseRepeatId())), testCaseRepeatId());
 }
 
 }}}}

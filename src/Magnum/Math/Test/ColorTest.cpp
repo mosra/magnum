@@ -99,7 +99,11 @@ struct ColorTest: Corrade::TestSuite::Tester {
 
     void srgb();
     void fromSrgbDefaultAlpha();
+    void srgbToIntegral();
+    void fromIntegralSrgb();
+    void integralSrgbToIntegral();
     void srgbMonotonic();
+    void srgb8bitRoundtrip();
     void srgbLiterals();
 
     void xyz();
@@ -204,13 +208,18 @@ ColorTest::ColorTest() {
               &ColorTest::fromHsvHueOverflow,
               &ColorTest::fromHsvDefaultAlpha,
 
-              &ColorTest::srgb});
+              &ColorTest::srgb,
+              &ColorTest::fromSrgbDefaultAlpha,
+              &ColorTest::srgbToIntegral,
+              &ColorTest::fromIntegralSrgb,
+              &ColorTest::integralSrgbToIntegral});
 
     /* Comparing with the previous one, so not 65536 */
     addRepeatedTests({&ColorTest::srgbMonotonic}, 65535);
 
-    addTests({&ColorTest::fromSrgbDefaultAlpha,
-              &ColorTest::srgbLiterals,
+    addRepeatedTests({&ColorTest::srgb8bitRoundtrip}, 256);
+
+    addTests({&ColorTest::srgbLiterals,
 
               &ColorTest::xyz,
               &ColorTest::fromXyzDefaultAlpha,
@@ -659,87 +668,45 @@ void ColorTest::fromHsvDefaultAlpha() {
 
 void ColorTest::srgb() {
     /* Linear start */
-    CORRADE_COMPARE(Color3::fromSrgb({0.01292f, 0.01938f, 0.0437875f}), (Color3{0.001f, 0.0015f, 0.0034f}));
-    CORRADE_COMPARE(Color3::fromSrgb({0.02584f, 0.03876f, 0.0768655f}), (Color3{0.002f, 0.0030f, 0.0068f}));
-    CORRADE_COMPARE((Color3{0.001f, 0.0015f, 0.0034f}).toSrgb(), (Vector3{0.01292f, 0.01938f, 0.0437875f}));
-    CORRADE_COMPARE((Color3{0.002f, 0.0030f, 0.0068f}).toSrgb(), (Vector3{0.02584f, 0.03876f, 0.0768655f}));
+    {
+        Vector3 srgb1{0.01292f, 0.01938f, 0.0437875f};
+        Vector3 srgb2{0.02584f, 0.03876f, 0.0768655f};
+        Color3 linear1{0.001f, 0.0015f, 0.0034f};
+        Color3 linear2{0.002f, 0.0030f, 0.0068f};
+        CORRADE_COMPARE(Color3::fromSrgb(srgb1), linear1);
+        CORRADE_COMPARE(Color3::fromSrgb(srgb2), linear2);
+        CORRADE_COMPARE(linear1.toSrgb(), srgb1);
+        CORRADE_COMPARE(linear2.toSrgb(), srgb2);
+    }
 
     /* Power series */
-    CORRADE_COMPARE((Color3{0.0005f, 0.135f, 0.278f}).toSrgb(), (Vector3{0.00646f, 0.403027f, 0.563877f}));
-    CORRADE_COMPARE((Color3{0.0020f, 0.352f, 0.895f}).toSrgb(), (Vector3{0.02584f, 0.627829f, 0.952346f}));
+    {
+        Vector3 srgb1{0.00646f, 0.403027f, 0.563877f};
+        Vector3 srgb2{0.02584f, 0.627829f, 0.952346f};
+        Color3 linear1{0.0005f, 0.135f, 0.278f};
+        Color3 linear2{0.0020f, 0.352f, 0.895f};
+        CORRADE_COMPARE(Color3::fromSrgb(srgb1), linear1);
+        CORRADE_COMPARE(Color3::fromSrgb(srgb2), linear2);
+        CORRADE_COMPARE(linear1.toSrgb(), srgb1);
+        CORRADE_COMPARE(linear2.toSrgb(), srgb2);
+    }
 
     /* Extremes */
-    CORRADE_COMPARE((Color3{0.0f, 1.0f, 0.5f}).toSrgb(), (Vector3{0.0f, 1.0f, 0.735357f}));
+    {
+        Color3 linear{0.0f, 1.0f, 0.5f};
+        Vector3 srgb{0.0f, 1.0f, 0.735357f};
+        CORRADE_COMPARE(Color3::fromSrgb(srgb), linear);
+        CORRADE_COMPARE(linear.toSrgb(), srgb);
+    }
 
     /* RGBA */
-    CORRADE_COMPARE(Color4::fromSrgbAlpha({0.625398f, 0.02584f, 0.823257f, 0.175f}),
-        (Color4{0.349f, 0.0020f, 0.644f, 0.175f}));
-    CORRADE_COMPARE(Color4::fromSrgb({0.625398f, 0.02584f, 0.823257f}, 0.175f),
-        (Color4{0.349f, 0.0020f, 0.644f, 0.175f}));
-    CORRADE_COMPARE((Color4{0.349f, 0.0020f, 0.644f, 0.175f}).toSrgbAlpha(),
-        (Vector4{0.625398f, 0.02584f, 0.823257f, 0.175f}));
-
-    /* Integral RGB */
-    CORRADE_COMPARE(Math::Color3<UnsignedShort>::fromSrgb({0.1523f, 0.00125f, 0.9853f}),
-        (Math::Color3<UnsignedShort>{1319, 6, 63364}));
-    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgbAlpha({0.1523f, 0.00125f, 0.9853f, 0.175f}),
-        (Math::Color4<UnsignedShort>{1319, 6, 63364, 11468}));
-    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgb({0.1523f, 0.00125f, 0.9853f}, 15299),
-        (Math::Color4<UnsignedShort>{1319, 6, 63364, 15299}));
-    CORRADE_COMPARE((Math::Color3<UnsignedShort>{1319, 6, 63364}).toSrgb(),
-        (Vector3{0.152248f, 0.00118288f, 0.985295f}));
-    CORRADE_COMPARE((Math::Color4<UnsignedShort>{1319, 6, 63364, 11468}).toSrgbAlpha(),
-        (Vector4{0.152248f, 0.00118288f, 0.985295f, 0.175f}));
-
-    /* Integral 8bit sRGB -- slight precision loss */
-    CORRADE_COMPARE(Color3::fromSrgb<UnsignedByte>({0xf3, 0x2a, 0x80}),
-        (Color3{0.896269f, 0.0231534f, 0.215861f}));
-    CORRADE_COMPARE(Color3::fromSrgb(0xf32a80),
-        (Color3{0.896269f, 0.0231534f, 0.215861f}));
-    CORRADE_COMPARE(Color4::fromSrgbAlpha<UnsignedByte>({0xf3, 0x2a, 0x80, 0x23}),
-        (Color4{0.896269f, 0.0231534f, 0.215861f, 0.137255f}));
-    CORRADE_COMPARE(Color4::fromSrgbAlpha(0xf32a8023),
-        (Color4{0.896269f, 0.0231534f, 0.215861f, 0.137255f}));
-    CORRADE_COMPARE(Color4::fromSrgb<UnsignedByte>({0xf3, 0x2a, 0x80}, 0.175f),
-        (Color4{0.896269f, 0.0231534f, 0.215861f, 0.175f}));
-    CORRADE_COMPARE(Color4::fromSrgb(0xf32a80, 0.175f),
-        (Color4{0.896269f, 0.0231534f, 0.215861f, 0.175f}));
-    CORRADE_COMPARE((Color3{0.896269f, 0.0231534f, 0.215861f}).toSrgb<UnsignedByte>(),
-        (Math::Vector3<UnsignedByte>{0xf2, 0x2a, 0x80}));
-    CORRADE_COMPARE((Color3{0.896269f, 0.0231534f, 0.215861f}).toSrgbInt(),
-        0xf22a80);
-    CORRADE_COMPARE((Color4{0.896269f, 0.0231534f, 0.215861f, 0.137255f}).toSrgbAlpha<UnsignedByte>(),
-        (Math::Vector4<UnsignedByte>{0xf2, 0x2a, 0x80, 0x23}));
-    CORRADE_COMPARE((Color4{0.896269f, 0.0231534f, 0.215861f, 0.137255f}).toSrgbAlphaInt(),
-        0xf22a8023);
-
-    /* Integral both -- larger precision loss */
-    CORRADE_COMPARE(Math::Color3<UnsignedShort>::fromSrgb<UnsignedByte>({0xf3, 0x2a, 0x80}),
-        (Math::Color3<UnsignedShort>{58737, 1517, 14146}));
-    CORRADE_COMPARE(Math::Color3<UnsignedShort>::fromSrgb(0xf32a80),
-        (Math::Color3<UnsignedShort>{58737, 1517, 14146}));
-    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgbAlpha<UnsignedByte>({0xf3, 0x2a, 0x80, 0x23}),
-        (Math::Color4<UnsignedShort>{58737, 1517, 14146, 8995}));
-    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgbAlpha(0xf32a8023),
-        (Math::Color4<UnsignedShort>{58737, 1517, 14146, 8995}));
-    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgb<UnsignedByte>({0xf3, 0x2a, 0x80}, 15299),
-        (Math::Color4<UnsignedShort>{58737, 1517, 14146, 15299}));
-    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgb(0xf32a80, 15299),
-        (Math::Color4<UnsignedShort>{58737, 1517, 14146, 15299}));
-    CORRADE_COMPARE((Math::Color3<UnsignedShort>{58737, 1517, 14146}).toSrgb<UnsignedByte>(),
-        (Math::Vector3<UnsignedByte>{0xf2, 0x29, 0x7f}));
-    CORRADE_COMPARE((Math::Color3<UnsignedShort>{58737, 1517, 14146}).toSrgbInt(),
-        0xf2297f);
-    CORRADE_COMPARE((Math::Color4<UnsignedShort>{58737, 1517, 14146, 8995}).toSrgbAlpha<UnsignedByte>(),
-        (Math::Vector4<UnsignedByte>{0xf2, 0x29, 0x7f, 0x23}));
-    CORRADE_COMPARE((Math::Color4<UnsignedShort>{58737, 1517, 14146, 8995}).toSrgbAlphaInt(),
-        0xf2297f23);
-
-    /* Round-trip */
-    CORRADE_COMPARE(Color3::fromSrgb({0.00646f, 0.403027f, 0.563877f}).toSrgb(),
-        (Vector3{0.00646f, 0.403027f, 0.563877f}));
-    CORRADE_COMPARE(Color4::fromSrgbAlpha({0.00646f, 0.403027f, 0.563877f, 0.175f}).toSrgbAlpha(),
-        (Vector4{0.00646f, 0.403027f, 0.563877f, 0.175f}));
+    {
+        Vector4 srgb{0.625398f, 0.02584f, 0.823257f, 0.175f};
+        Color4 linear{0.349f, 0.0020f, 0.644f, 0.175f};
+        CORRADE_COMPARE(Color4::fromSrgbAlpha(srgb), linear);
+        CORRADE_COMPARE(Color4::fromSrgb(srgb.rgb(), 0.15f), (Color4{linear.rgb(), 0.15f}));
+        CORRADE_COMPARE(linear.toSrgbAlpha(), srgb);
+    }
 }
 
 void ColorTest::fromSrgbDefaultAlpha() {
@@ -751,6 +718,53 @@ void ColorTest::fromSrgbDefaultAlpha() {
         (Math::Color4<UnsignedShort>{1319, 6, 63364, 65535}));
     CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgb<UnsignedByte>({0xf3, 0x2a, 0x80}),
         (Math::Color4<UnsignedShort>{58737, 1517, 14146, 65535}));
+}
+
+void ColorTest::srgbToIntegral() {
+    Vector4 srgb{0.152314f, 0.00118288f, 0.985301f, 0.175f};
+    Math::Color4<UnsignedShort> linear{1320, 6, 63365, 11469};
+
+    CORRADE_COMPARE(Math::Color3<UnsignedShort>::fromSrgb(srgb.rgb()), linear.rgb());
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgbAlpha(srgb), linear);
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgb(srgb.rgb(), 15299),
+        (Math::Color4<UnsignedShort>{linear.rgb(), 15299}));
+    CORRADE_COMPARE(linear.rgb().toSrgb(), srgb.rgb());
+    CORRADE_COMPARE(linear.toSrgbAlpha(), srgb);
+}
+
+void ColorTest::fromIntegralSrgb() {
+    Math::Vector4<UnsignedByte> srgb{0xf3, 0x2a, 0x80, 0x23};
+    Color4 linear{0.896269f, 0.0231534f, 0.215861f, 0.137255f};
+
+    CORRADE_COMPARE(Color3::fromSrgb<UnsignedByte>(srgb.rgb()), linear.rgb());
+    CORRADE_COMPARE(Color3::fromSrgb(0xf32a80), linear.rgb());
+    CORRADE_COMPARE(Color4::fromSrgbAlpha(srgb), linear);
+    CORRADE_COMPARE(Color4::fromSrgbAlpha(0xf32a8023), linear);
+    CORRADE_COMPARE(Color4::fromSrgb(srgb.rgb(), 0.175f), (Color4{linear.rgb(), 0.175f}));
+    CORRADE_COMPARE(Color4::fromSrgb(0xf32a80, 0.175f), (Color4{linear.rgb(), 0.175f}));
+
+    CORRADE_COMPARE(linear.rgb().toSrgb<UnsignedByte>(), srgb.rgb());
+    CORRADE_COMPARE(linear.rgb().toSrgbInt(), 0xf32a80);
+    CORRADE_COMPARE(linear.toSrgbAlpha<UnsignedByte>(), srgb);
+    CORRADE_COMPARE(linear.toSrgbAlphaInt(), 0xf32a8023);
+}
+
+void ColorTest::integralSrgbToIntegral() {
+    Math::Vector4<UnsignedByte> srgb{0xf3, 0x2a, 0x80, 0x23};
+    Math::Color4<UnsignedShort> linear{58737, 1517, 14146, 8995};
+
+    CORRADE_COMPARE(Math::Color3<UnsignedShort>::fromSrgb(srgb.rgb()), linear.rgb());
+    CORRADE_COMPARE(Math::Color3<UnsignedShort>::fromSrgb(0xf32a80), linear.rgb());
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgbAlpha(srgb), linear);
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgbAlpha(0xf32a8023), linear);
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgb(srgb.rgb(), 15299),
+        (Math::Color4<UnsignedShort>{linear.rgb(), 15299}));
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgb(0xf32a80, 15299),
+        (Math::Color4<UnsignedShort>{linear.rgb(), 15299}));
+    CORRADE_COMPARE(linear.rgb().toSrgb<UnsignedByte>(), srgb.rgb());
+    CORRADE_COMPARE(linear.rgb().toSrgbInt(), 0xf32a80);
+    CORRADE_COMPARE(linear.toSrgbAlpha<UnsignedByte>(), srgb);
+    CORRADE_COMPARE(linear.toSrgbAlphaInt(), 0xf32a8023);
 }
 
 void ColorTest::srgbMonotonic() {
@@ -767,6 +781,10 @@ void ColorTest::srgbMonotonic() {
         #endif
         CORRADE_COMPARE_AS(rgb, Color3(1.0f), Corrade::TestSuite::Compare::LessOrEqual);
     }
+}
+
+void ColorTest::srgb8bitRoundtrip() {
+    CORRADE_COMPARE(Color3::fromSrgb(testCaseRepeatId()).toSrgbInt(), testCaseRepeatId());
 }
 
 void ColorTest::srgbLiterals() {
@@ -787,19 +805,19 @@ void ColorTest::xyz() {
        precision differences, because most of the code out there uses just the
        rounded matrices from Wikipedia which don't round-trip perfectly. I'm
        having Y in 0-1 instead of 0-100, thus the values are 100 times smaller. */
-    CORRADE_COMPARE(Color3::fromSrgb<UnsignedByte>({232, 157, 16}).toXyz(),
-        (Vector3{0.454279f, 0.413092f, 0.0607124f}));
-    CORRADE_COMPARE(Color3::fromXyz({0.454279f, 0.413092f, 0.0607124f}).toSrgb<UnsignedByte>(),
-        (Math::Vector3<UnsignedByte>{231, 156, 16}));
-    CORRADE_COMPARE(Color3::fromXyz({0.454279f, 0.413092f, 0.0607124f}),
-        (Color3{0.806952f, 0.337163f, 0.0051861f}));
+    Math::Vector3<UnsignedByte> a8s{232, 157, 16};
+    Vector3 aXyz{0.454279f, 0.413092f, 0.0607124f};
+    Color3 aLinear{0.806952f, 0.337163f, 0.0051861f};
+    CORRADE_COMPARE(Color3::fromSrgb<UnsignedByte>(a8s).toXyz(), aXyz);
+    CORRADE_COMPARE(Color3::fromXyz(aXyz).toSrgb<UnsignedByte>(), a8s);
+    CORRADE_COMPARE(Color3::fromXyz(aXyz), aLinear);
 
-    CORRADE_COMPARE(Color3::fromSrgb<UnsignedByte>({96, 43, 193}).toXyz(),
-        (Vector3{0.153122f, 0.0806478f, 0.512037f}));
-    CORRADE_COMPARE(Color3::fromXyz({0.153122f, 0.0806478f, 0.512037f}).toSrgb<UnsignedByte>(),
-        (Math::Vector3<UnsignedByte>{95, 43, 192}));
-    CORRADE_COMPARE(Color3::fromXyz({0.153122f, 0.0806478f, 0.512037f}),
-        (Color3{0.11697f, 0.0241579f, 0.533276f}));
+    Math::Vector3<UnsignedByte> b8s{96, 43, 193};
+    Vector3 bXyz{0.153122f, 0.0806478f, 0.512037f};
+    Color3 bLinear{0.11697f, 0.0241579f, 0.533276f};
+    CORRADE_COMPARE(Color3::fromSrgb<UnsignedByte>(b8s).toXyz(), bXyz);
+    CORRADE_COMPARE(Color3::fromXyz(bXyz).toSrgb<UnsignedByte>(), b8s);
+    CORRADE_COMPARE(Color3::fromXyz(bXyz), bLinear);
 
     /* Extremes -- for black it should be zeros, for white roughly X = 0.95,
        Y = 1, Z = 1.09 corresponding to white point in D65 */
@@ -809,28 +827,23 @@ void ColorTest::xyz() {
         (Vector3{0.950456f, 1.0f, 1.08906f}));
 
     /* RGBA */
-    CORRADE_COMPARE(Color4::fromXyz({0.454279f, 0.413092f, 0.0607124f}, 0.175f),
-        (Color4{0.806952f, 0.337163f, 0.0051861f, 0.175f}));
-    CORRADE_COMPARE(Color4::fromSrgb<UnsignedByte>({232, 157, 16}, 0.175f).toXyz(),
-        (Vector3{0.454279f, 0.413092f, 0.0607124f}));
+    CORRADE_COMPARE(Color4::fromXyz(aXyz, 0.175f), (Color4{aLinear, 0.175f}));
+    CORRADE_COMPARE(Color4::fromSrgb<UnsignedByte>(a8s, 0.175f).toXyz(), aXyz);
 
-    /* Integral -- slight precision loss */
-    CORRADE_COMPARE(Math::Color3<UnsignedShort>::fromXyz({0.454279f, 0.413092f, 0.0607124f}),
-        (Math::Color3<UnsignedShort>{52883, 22095, 339}));
-    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromXyz({0.454279f, 0.413092f, 0.0607124f}, 15299),
-        (Math::Color4<UnsignedShort>{52883, 22095, 339, 15299}));
-    CORRADE_COMPARE((Math::Color3<UnsignedShort>{52883, 22095, 339}).toXyz(),
-        (Vector3{0.454268f, 0.413079f, 0.0607021f}));
-    CORRADE_COMPARE((Math::Color4<UnsignedShort>{52883, 22095, 339, 15299}).toXyz(),
-        (Vector3{0.454268f, 0.413079f, 0.0607021f}));
+    /* Integral */
+    Math::Color3<UnsignedShort> c16{52884, 22096, 340};
+    Vector3 cXyz{0.454283f, 0.413094f, 0.0607178f};
+    CORRADE_COMPARE(Math::Color3<UnsignedShort>::fromXyz(cXyz), c16);
+    CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromXyz(cXyz, 15299),
+        (Math::Color4<UnsignedShort>{c16, 15299}));
+    CORRADE_COMPARE(c16.toXyz(), cXyz);
+    CORRADE_COMPARE((Math::Color4<UnsignedShort>{c16, 15299}).toXyz(), cXyz);
 
     /* Round-trip */
-    CORRADE_COMPARE(Color3::fromXyz({0.454279f, 0.413092f, 0.0607124f}).toXyz(),
-        (Vector3{0.454279f, 0.413092f, 0.0607124f}));
-    CORRADE_COMPARE(Color3::fromXyz({0.153122f, 0.0806478f, 0.512037f}).toXyz(),
-        (Vector3{0.153122f, 0.0806478f, 0.512037f}));
-    CORRADE_COMPARE(Color4::fromXyz({0.454279f, 0.413092f, 0.0607124f}, 0.175f).toXyz(),
-        (Vector3{0.454279f, 0.413092f, 0.0607124f}));
+    CORRADE_COMPARE(Color3::fromXyz(aXyz).toXyz(), aXyz);
+    CORRADE_COMPARE(Color3::fromXyz(bXyz).toXyz(), bXyz);
+    CORRADE_COMPARE(Color3::fromXyz(cXyz).toXyz(), cXyz);
+    CORRADE_COMPARE(Color4::fromXyz(aXyz, 0.175f).toXyz(), aXyz);
 }
 
 void ColorTest::fromXyzDefaultAlpha() {
