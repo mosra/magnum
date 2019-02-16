@@ -65,6 +65,9 @@ See also:
 @subsection changelog-latest-bugfixes Bug fixes
 
 -   Fixed compilation of the @ref Vk library on 32-bit Windows
+-   @ref Math::pack() was incorrectly not selecting the nearest integral value,
+    causing @ref Math::Color3::toSrgbInt() to not roundtrip, among other
+    things.
 
 @section changelog-2019-01 2019.01
 

@@ -135,7 +135,7 @@ template<class Integral, class FloatingPoint, UnsignedInt bits = sizeof(Integral
         "packing must be done from floating-point to integral type");
     static_assert(bits <= sizeof(Integral)*8,
         "bit count larger than size of the integral type");
-    return Integral(value*Implementation::bitMax<Integral, bits>());
+    return Integral(round(value*Implementation::bitMax<Integral, bits>()));
 }
 template<class Integral, std::size_t size, class FloatingPoint, UnsignedInt bits = sizeof(typename Integral::Type)*8> Integral pack(const Vector<size, FloatingPoint>& value) {
     static_assert(Integral::Size == size,

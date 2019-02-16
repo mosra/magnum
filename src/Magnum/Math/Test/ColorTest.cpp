@@ -370,11 +370,11 @@ void ColorTest::constructConversion() {
 void ColorTest::constructPacking() {
     constexpr Color3 a(1.0f, 0.5f, 0.75f);
     auto b = Math::pack<Color3ub>(a);
-    CORRADE_COMPARE(b, Color3ub(255, 127, 191));
+    CORRADE_COMPARE(b, Color3ub(255, 128, 191));
 
     constexpr Color4 c(1.0f, 0.5f, 0.75f, 0.25f);
     auto d = Math::pack<Color4ub>(c);
-    CORRADE_COMPARE(d, Color4ub(255, 127, 191, 63));
+    CORRADE_COMPARE(d, Color4ub(255, 128, 191, 64));
 }
 
 void ColorTest::constructCopy() {
@@ -537,9 +537,9 @@ void ColorTest::hue() {
 
     /* Integral -- little precision loss */
     CORRADE_COMPARE(Math::Color3<UnsignedShort>::fromHsv(27.0_degf, 1.0f, 1.0f),
-        (Math::Color3<UnsignedShort>{65535, 29490, 0}));
+        (Math::Color3<UnsignedShort>{65535, 29491, 0}));
     CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromHsv(27.0_degf, 1.0f, 1.0f, 15239),
-        (Math::Color4<UnsignedShort>{65535, 29490, 0, 15239}));
+        (Math::Color4<UnsignedShort>{65535, 29491, 0, 15239}));
     CORRADE_COMPARE((Math::Color3<UnsignedShort>{65535, 29490, 0}).hue(), 26.9993_degf);
     CORRADE_COMPARE((Math::Color4<UnsignedShort>{65535, 29490, 0, 15239}.hue()), 26.9993_degf);
 }
@@ -612,13 +612,13 @@ void ColorTest::hsv() {
 
     /* Integral -- little precision loss */
     CORRADE_COMPARE(Math::Color3<UnsignedShort>::fromHsv(std::make_tuple(230.0_degf, 0.749f, 0.427f)),
-        (Math::Color3<UnsignedShort>{7023, 10517, 27983}));
+        (Math::Color3<UnsignedShort>{7024, 10517, 27983}));
     CORRADE_COMPARE(Math::Color3<UnsignedShort>::fromHsv(230.0_degf, 0.749f, 0.427f),
-        (Math::Color3<UnsignedShort>{7023, 10517, 27983}));
+        (Math::Color3<UnsignedShort>{7024, 10517, 27983}));
     CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromHsv(std::make_tuple(230.0_degf, 0.749f, 0.427f), 15239),
-        (Math::Color4<UnsignedShort>{7023, 10517, 27983, 15239}));
+        (Math::Color4<UnsignedShort>{7024, 10517, 27983, 15239}));
     CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromHsv(230.0_degf, 0.749f, 0.427f, 15239),
-        (Math::Color4<UnsignedShort>{7023, 10517, 27983, 15239}));
+        (Math::Color4<UnsignedShort>{7024, 10517, 27983, 15239}));
 
     std::tie(hue, saturation, value) = Math::Color3<UnsignedShort>{7023, 10517, 27983}.toHsv();
     CORRADE_COMPARE(hue, 230.0_degf);
@@ -661,9 +661,9 @@ void ColorTest::fromHsvDefaultAlpha() {
 
     /* Integral */
     CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromHsv(std::make_tuple(230.0_degf, 0.749f, 0.427f)),
-        (Math::Color4<UnsignedShort>{7023, 10517, 27983, 65535}));
+        (Math::Color4<UnsignedShort>{7024, 10517, 27983, 65535}));
     CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromHsv(230.0_degf, 0.749f, 0.427f),
-        (Math::Color4<UnsignedShort>{7023, 10517, 27983, 65535}));
+        (Math::Color4<UnsignedShort>{7024, 10517, 27983, 65535}));
 }
 
 void ColorTest::srgb() {
@@ -715,7 +715,7 @@ void ColorTest::fromSrgbDefaultAlpha() {
 
     /* Integral */
     CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgb({0.1523f, 0.00125f, 0.9853f}),
-        (Math::Color4<UnsignedShort>{1319, 6, 63364, 65535}));
+        (Math::Color4<UnsignedShort>{1320, 6, 63365, 65535}));
     CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromSrgb<UnsignedByte>({0xf3, 0x2a, 0x80}),
         (Math::Color4<UnsignedShort>{58737, 1517, 14146, 65535}));
 }
@@ -852,7 +852,7 @@ void ColorTest::fromXyzDefaultAlpha() {
 
     /* Integral */
     CORRADE_COMPARE(Math::Color4<UnsignedShort>::fromXyz({0.454279f, 0.413092f, 0.0607124f}),
-        (Math::Color4<UnsignedShort>{52883, 22095, 339, 65535}));
+        (Math::Color4<UnsignedShort>{52884, 22096, 340, 65535}));
 }
 
 void ColorTest::xyY() {

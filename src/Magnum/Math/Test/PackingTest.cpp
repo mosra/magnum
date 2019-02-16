@@ -152,12 +152,20 @@ void PackingTest::unpackSigned() {
 }
 
 void PackingTest::packUnsigned() {
+    /* Close extremes should work too */
     CORRADE_COMPARE(Math::pack<UnsignedByte>(0.0f), 0);
+    CORRADE_COMPARE(Math::pack<UnsignedByte>(0.0000001f), 0);
     CORRADE_COMPARE(Math::pack<UnsignedByte>(0.4357f), 111);
+    CORRADE_COMPARE(Math::pack<UnsignedByte>(0.5f), 128);
     CORRADE_COMPARE(Math::pack<UnsignedByte>(1.0f), 255);
+    CORRADE_COMPARE(Math::pack<UnsignedByte>(0.9999999f), 255);
 
     CORRADE_COMPARE(Math::pack<UnsignedShort>(0.0f), 0);
-    CORRADE_COMPARE(Math::pack<UnsignedShort>(1.0f), std::numeric_limits<UnsignedShort>::max());
+    CORRADE_COMPARE(Math::pack<UnsignedShort>(0.000001f), 0);
+    CORRADE_COMPARE(Math::pack<UnsignedShort>(0.4357f), 28554);
+    CORRADE_COMPARE(Math::pack<UnsignedShort>(0.5f), 32768);
+    CORRADE_COMPARE(Math::pack<UnsignedShort>(1.0f), 65535);
+    CORRADE_COMPARE(Math::pack<UnsignedShort>(0.999999f), 65535);
 
     CORRADE_COMPARE(Math::pack<UnsignedInt>(0.0), 0);
     CORRADE_COMPARE(Math::pack<UnsignedInt>(1.0), std::numeric_limits<UnsignedInt>::max());
@@ -172,21 +180,21 @@ void PackingTest::packUnsigned() {
     }
     #endif
 
-    CORRADE_COMPARE(Math::pack<UnsignedShort>(0.33f), 21626);
+    CORRADE_COMPARE(Math::pack<UnsignedShort>(0.33f), 21627);
     CORRADE_COMPARE(Math::pack<UnsignedShort>(0.66f), 43253);
 
     /* Bits */
-    CORRADE_COMPARE((Math::pack<UnsignedShort>(0.5f)), 32767);
-    CORRADE_COMPARE((Math::pack<UnsignedShort, 14>(0.5f)), 8191);
+    CORRADE_COMPARE((Math::pack<UnsignedShort>(0.5f)), 32768);
+    CORRADE_COMPARE((Math::pack<UnsignedShort, 14>(0.5f)), 8192);
 
     /* Vector overloads */
-    CORRADE_COMPARE(Math::pack<Vector3ub>(Vector3(0.0f, 0.5f, 1.0f)), Vector3ub(0, 127, 255));
-    CORRADE_COMPARE((Math::pack<Vector3ub, 6>(Vector3(0.0f, 0.5f, 1.0f))), Vector3ub(0, 31, 63));
+    CORRADE_COMPARE(Math::pack<Vector3ub>(Vector3(0.0f, 0.5f, 1.0f)), Vector3ub(0, 128, 255));
+    CORRADE_COMPARE((Math::pack<Vector3ub, 6>(Vector3(0.0f, 0.5f, 1.0f))), Vector3ub(0, 32, 63));
 }
 
 void PackingTest::packSigned() {
     CORRADE_COMPARE(Math::pack<Byte>(-1.0f), -127);
-    CORRADE_COMPARE(Math::pack<Byte>(-0.732f), -92);
+    CORRADE_COMPARE(Math::pack<Byte>(-0.732f), -93);
     CORRADE_COMPARE(Math::pack<Byte>(0.0f), 0);
     CORRADE_COMPARE(Math::pack<Byte>(0.1357f), 17);
     CORRADE_COMPARE(Math::pack<Byte>(1.0f), 127);
@@ -219,13 +227,12 @@ void PackingTest::packSigned() {
     CORRADE_COMPARE(Math::pack<Short>(0.66f), 21626);
 
     /* Bits */
-    CORRADE_COMPARE((Math::pack<Short>(-0.5f)), -16383);
-    CORRADE_COMPARE((Math::pack<Short, 14>(-0.5f)), -4095);
+    CORRADE_COMPARE((Math::pack<Short>(-0.5f)), -16384);
+    CORRADE_COMPARE((Math::pack<Short, 14>(-0.5f)), -4096);
 
     /* Vector overloads */
-    CORRADE_COMPARE(Math::pack<Vector3b>(Vector3(0.0f, -1.0f, 0.5f)), Vector3b(0, -127, 63));
-    CORRADE_COMPARE((Math::pack<Vector3b, 6>(Vector3(0.0f, -1.0f, 0.5f))), Vector3b(0, -31, 15));
-
+    CORRADE_COMPARE(Math::pack<Vector3b>(Vector3(0.0f, -1.0f, 0.5f)), Vector3b(0, -127, 64));
+    CORRADE_COMPARE((Math::pack<Vector3b, 6>(Vector3(0.0f, -1.0f, 0.5f))), Vector3b(0, -31, 16));
 }
 
 void PackingTest::reunpackUnsinged() {
