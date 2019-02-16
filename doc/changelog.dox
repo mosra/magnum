@@ -38,6 +38,19 @@ See also:
 
 @section changelog-latest Changes since 2019.01
 
+@subsection changelog-latest-new New features
+
+@subsubsection changelog-latest-new-gl GL library
+
+-   New @ref GL::AbstractFramebuffer::implementationColorReadFormat() and
+    @ref GL::AbstractFramebuffer::implementationColorReadType() queries for
+    more robust checks when doing framebuffer readbacks; together with three
+    new workarounds @cpp "nv-implementation-color-read-format-dsa-broken" @ce,
+    @cpp "intel-windows-implementation-color-read-format-completely-broken" @ce
+    and @cpp "mesa-implementation-color-read-format-dsa-explicit-binding" @ce,
+    because it's 2019 and GL drivers are *still* awful. See
+    @ref opengl-workarounds for more information.
+
 @subsection changelog-latest-changes Changes and improvements
 
 @subsubsection changelog-latest-changes-audio Audio library

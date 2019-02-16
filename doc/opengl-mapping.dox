@@ -450,8 +450,8 @@ glGet() parameter                       | Matching API
 @def_gl{DRAW_BUFFERi}, \n @def_gl{DRAW_BUFFER}, \n @def_gl{READ_BUFFER} | not queryable, @ref GL::DefaultFramebuffer::mapForDraw(), \n @ref GL::DefaultFramebuffer::mapForRead(), \n @ref GL::Framebuffer::mapForDraw() and \n @ref GL::Framebuffer::mapForRead() setters only
 @def_gl{DRAW_FRAMEBUFFER_BINDING}, \n @def_gl{READ_FRAMEBUFFER_BINDING} | not queryable but tracked internally
 @def_gl{FRAGMENT_SHADER_DERIVATIVE_HINT}, \n @def_gl{LINE_SMOOTH_HINT}, \n @def_gl{POLYGON_SMOOTH_HINT}, \n @def_gl{TEXTURE_COMPRESSION_HINT} | not queryable
-@def_gl{IMPLEMENTATION_COLOR_READ_FORMAT} | |
-@def_gl{IMPLEMENTATION_COLOR_READ_TYPE} | |
+@def_gl{IMPLEMENTATION_COLOR_READ_FORMAT} | @ref GL::AbstractFramebuffer::implementationColorReadFormat()
+@def_gl{IMPLEMENTATION_COLOR_READ_TYPE} | @ref GL::AbstractFramebuffer::implementationColorReadType()
 @def_gl{LAYER_PROVOKING_VERTEX}         | |
 @def_gl{LINE_SMOOTH}, \n @def_gl{POLYGON_SMOOTH} | not supported (@ref opengl-unsupported "details")
 @def_gl{LINE_WIDTH}                     | not queryable, @ref GL::Renderer::setLineWidth() setter only

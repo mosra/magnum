@@ -233,6 +233,54 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     #endif
     #endif
 
+    /* Implementation-specific color read format/type implementation */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>() && context.isExtensionSupported<Extensions::ARB::ES3_1_compatibility>()) {
+        #ifdef CORRADE_TARGET_WINDOWS
+        if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
+            !context.isDriverWorkaroundDisabled("intel-windows-implementation-color-read-format-completely-broken")) {
+            implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationDefault;
+
+        } else
+        #endif
+        {
+            /* DSA extension added above */
+            extensions.push_back(Extensions::ARB::ES3_1_compatibility::string());
+
+            if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
+                !context.isDriverWorkaroundDisabled("nv-implementation-color-read-format-dsa-broken")) {
+                implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationES31;
+            } else if((context.detectedDriver() & Context::DetectedDriver::Mesa) &&
+                !context.isDriverWorkaroundDisabled("mesa-implementation-color-read-format-dsa-explicit-binding")) {
+                implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationES31DSAMesa;
+            } else {
+                implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationES31DSA;
+            }
+        }
+    } else
+    #endif
+    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    /* Checks for 3.1 on ES and for ARB_ES3_1_compatibility on desktop */
+    if(context.isVersionSupported(Version::GLES310)) {
+        #ifdef CORRADE_TARGET_WINDOWS
+        if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
+            !context.isDriverWorkaroundDisabled("intel-windows-implementation-color-read-format-completely-broken")) {
+            implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationDefault;
+        } else
+        #endif
+        {
+            #ifndef MAGNUM_TARGET_GLES
+            extensions.push_back(Extensions::ARB::ES3_1_compatibility::string());
+            #endif
+
+            implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationES31;
+        }
+    } else
+    #endif
+    {
+        implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationDefault;
+    }
+
     /* Framebuffer reading implementation in desktop/ES */
     #ifndef MAGNUM_TARGET_WEBGL
     #ifndef MAGNUM_TARGET_GLES

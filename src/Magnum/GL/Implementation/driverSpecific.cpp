@@ -139,6 +139,36 @@ namespace {
            EGL_NO_SURFACE. Supplying a 32x32 PBuffer to work around that. */
         "swiftshader-egl-context-needs-pbuffer",
         #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /* Even with the DSA variant, where GL_IMPLEMENTATION_COLOR_READ_* is
+           passed to glGetNamedFramebufferParameter(), Mesa complains that the
+           framebuffer is not bound for reading. Relevant code:
+           https://github.com/mesa3d/mesa/blob/212c0c630a849e4737e2808a993d708cbb2f18f7/src/mesa/main/framebuffer.c#L841-L843
+           Workaround is to explicitly bind the framebuffer for reading. */
+        "mesa-implementation-color-read-format-dsa-explicit-binding",
+        #endif
+
+        #if !defined(MAGNUM_TARGET_GLES2) && defined(CORRADE_TARGET_WINDOWS)
+        /* Intel drivers on Windows return GL_UNSIGNED_BYTE for *both*
+           GL_IMPLEMENTATION_COLOR_READ_FORMAT and _TYPE when using either glGetNamedFramebufferParameter() or glGetFramebufferParameter(),
+           independently on what's the actual framebuffer format. Using
+           glGetInteger() makes it return GL_RGBA and GL_UNSIGNED_BYTE for
+           RGBA8 framebuffers, and cause a "Error has been generated. GL error
+           GL_INVALID_OPERATION in GetIntegerv: (ID: 2576729458) Generic error"
+           when it is not. Since glGetInteger() is actually able to return a
+           correct value in *one circumstance*, it's preferrable to the other
+           random shit the driver is doing. */
+        "intel-windows-implementation-color-read-format-completely-broken",
+        #endif
+
+        #ifndef MAGNUM_TARGET_GLES
+        /* NVidia seems to be returning values for the default framebuffer when
+           GL_IMPLEMENTATION_COLOR_READ_FORMAT and _TYPE is queried using
+           glGetNamedFramebufferParameter(). Using either glGetInteger() or
+           glGetFramebufferParameter() works correctly. */
+        "nv-implementation-color-read-format-dsa-broken",
+        #endif
         /* [workarounds] */
     };
 }

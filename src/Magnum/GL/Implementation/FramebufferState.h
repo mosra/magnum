@@ -84,6 +84,8 @@ struct FramebufferState {
     FramebufferTarget(AbstractFramebuffer::*bindInternalImplementation)();
     #endif
 
+    GLenum(AbstractFramebuffer::*implementationColorReadFormatTypeImplementation)(GLenum what);
+
     void(Framebuffer::*createImplementation)();
     void(Framebuffer::*renderbufferImplementation)(Framebuffer::BufferAttachment, GLuint);
     #ifndef MAGNUM_TARGET_GLES

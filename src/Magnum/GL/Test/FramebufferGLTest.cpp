@@ -160,9 +160,36 @@ struct FramebufferGLTest: OpenGLTester {
     void blit();
     #endif
 
+    void implementationColorReadFormat();
+
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     private:
         TextureFormat rgbaFormatES2, depthStencilFormatES2;
+    #endif
+};
+
+constexpr struct {
+    const char* name;
+    RenderbufferFormat renderbufferFormat;
+    PixelFormat expectedFormat;
+    PixelType expectedType;
+} ImplementationColorReadFormatData[]{
+    {"classic",
+        #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        PixelFormat::RGBA,
+        #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
+        PixelType::UnsignedByte
+        #else
+        GL::PixelType::UnsignedShort4444
+        #endif
+        },
+    #ifndef MAGNUM_TARGET_GLES2
+    {"integer", RenderbufferFormat::RG32UI, PixelFormat::RGInteger, PixelType::UnsignedInt},
+    {"float", RenderbufferFormat::RGBA16F, PixelFormat::RGBA, PixelType::HalfFloat}
     #endif
 };
 
@@ -272,6 +299,8 @@ FramebufferGLTest::FramebufferGLTest() {
               &FramebufferGLTest::blit
               #endif
               });
+
+    addInstancedTests({&FramebufferGLTest::implementationColorReadFormat}, Containers::arraySize(ImplementationColorReadFormatData));
 
     #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if(Context::current().isExtensionSupported<Extensions::EXT::texture_storage>()) {
@@ -2091,6 +2120,22 @@ void FramebufferGLTest::blit() {
     CORRADE_COMPARE(imageAfter.data<Color4ub>()[0], Color4ub(128, 64, 32, 17));
 }
 #endif
+
+void FramebufferGLTest::implementationColorReadFormat() {
+    auto&& data = ImplementationColorReadFormatData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    Renderbuffer color;
+    color.setStorage(data.renderbufferFormat, {32, 32});
+    Framebuffer framebuffer{{{}, {32, 32}}};
+    framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, color);
+
+    PixelFormat format = framebuffer.implementationColorReadFormat();
+    PixelType type = framebuffer.implementationColorReadType();
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(format, data.expectedFormat);
+    CORRADE_COMPARE(type, data.expectedType);
+}
 
 }}}}
 

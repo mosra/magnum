@@ -213,6 +213,46 @@ FramebufferTarget AbstractFramebuffer::bindImplementationDefault() {
     return FramebufferTarget::Read;
 }
 
+PixelFormat AbstractFramebuffer::implementationColorReadFormat() {
+    return PixelFormat((this->*Context::current().state().framebuffer->implementationColorReadFormatTypeImplementation)(GL_IMPLEMENTATION_COLOR_READ_FORMAT));
+}
+
+PixelType AbstractFramebuffer::implementationColorReadType() {
+    return PixelType((this->*Context::current().state().framebuffer->implementationColorReadFormatTypeImplementation)(GL_IMPLEMENTATION_COLOR_READ_TYPE));
+}
+
+GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationDefault(const GLenum what) {
+    bindInternal(FramebufferTarget::Read);
+    GLint formatType;
+    glGetIntegerv(what, &formatType);
+    return formatType;
+}
+
+#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationES31(const GLenum what) {
+    const FramebufferTarget target = bindInternal();
+    GLint formatType;
+    glGetFramebufferParameteriv(GLenum(target), what, &formatType);
+    return formatType;
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES
+GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationES31DSA(const GLenum what) {
+    GLint formatType;
+    glGetNamedFramebufferParameteriv(_id, what, &formatType);
+    return formatType;
+}
+
+GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationES31DSAMesa(const GLenum what) {
+    /* Mesa needs the framebuffer bound for read even with DSA. See the
+       "mesa-implementation-color-read-format-dsa-explicit-binding" workaround
+       for details. */
+    bindInternal(FramebufferTarget::Read);
+    return implementationColorReadFormatTypeImplementationES31DSA(what);
+}
+#endif
+
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 void AbstractFramebuffer::blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, const FramebufferBlitMask mask, const FramebufferBlitFilter filter) {
     Context::current().state().framebuffer->blitImplementation(source, destination, sourceRectangle, destinationRectangle, mask, filter);

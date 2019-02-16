@@ -264,6 +264,38 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         Range2Di viewport() const { return _viewport; }
 
         /**
+         * @brief Implementation-specific color read format
+         *
+         * The result is not cached in any way. If
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, the framebuffer is bound to some target before the
+         * operation (if not already).
+         * @see @ref implementationColorReadType(),
+         *      @fn_gl{GetNamedFramebufferParameter} with
+         *      @def_gl_keyword{IMPLEMENTATION_COLOR_READ_FORMAT},
+         *      eventually @fn_gl{BindFramebuffer} and either
+         *      @fn_gl{GetFramebufferParameter} or @fn_gl{Get} with
+         *      @def_gl{IMPLEMENTATION_COLOR_READ_FORMAT}
+         */
+        PixelFormat implementationColorReadFormat();
+
+        /**
+         * @brief Implementation-specific color read type
+         *
+         * The result is not cached in any way. If
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, the framebuffer is bound to some target before the
+         * operation (if not already).
+         * @see @ref implementationColorReadFormat(),
+         *      @fn_gl{GetNamedFramebufferParameter} with
+         *      @def_gl_keyword{IMPLEMENTATION_COLOR_READ_TYPE}, eventually
+         *      @fn_gl{BindFramebuffer} and either
+         *      @fn_gl{GetFramebufferParameter} or @fn_gl{Get} with
+         *      @def_gl{IMPLEMENTATION_COLOR_READ_TYPE}
+         */
+        PixelType implementationColorReadType();
+
+        /**
          * @brief Set viewport
          * @return Reference to self (for method chaining)
          *
@@ -753,6 +785,15 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         #ifdef MAGNUM_TARGET_GLES2
         void MAGNUM_GL_LOCAL bindImplementationSingle(FramebufferTarget);
         FramebufferTarget MAGNUM_GL_LOCAL bindImplementationSingle();
+        #endif
+
+        GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationDefault(GLenum what);
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationES31(GLenum what);
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
+        GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationES31DSA(GLenum what);
+        GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationES31DSAMesa(GLenum what);
         #endif
 
         GLenum MAGNUM_GL_LOCAL checkStatusImplementationDefault(FramebufferTarget target);
