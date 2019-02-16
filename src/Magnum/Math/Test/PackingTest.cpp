@@ -40,8 +40,8 @@ struct PackingTest: Corrade::TestSuite::Tester {
     void unpackSigned();
     void packUnsigned();
     void packSigned();
-    void reunpackUnsinged();
-    void reunpackSinged();
+    void reunpackUnsigned();
+    void reunpackSigned();
     void unpackTypeDeduction();
 
     void pack8bitRoundtrip();
@@ -62,8 +62,8 @@ PackingTest::PackingTest() {
               &PackingTest::unpackSigned,
               &PackingTest::packUnsigned,
               &PackingTest::packSigned,
-              &PackingTest::reunpackUnsinged,
-              &PackingTest::reunpackSinged,
+              &PackingTest::reunpackUnsigned,
+              &PackingTest::reunpackSigned,
               &PackingTest::unpackTypeDeduction});
 
     addRepeatedTests({&PackingTest::pack8bitRoundtrip}, 256);
@@ -235,7 +235,7 @@ void PackingTest::packSigned() {
     CORRADE_COMPARE((Math::pack<Vector3b, 6>(Vector3(0.0f, -1.0f, 0.5f))), Vector3b(0, -31, 16));
 }
 
-void PackingTest::reunpackUnsinged() {
+void PackingTest::reunpackUnsigned() {
     CORRADE_COMPARE(Math::unpack<Float>(Math::pack<UnsignedByte>(0.0f)), 0.0f);
     CORRADE_COMPARE(Math::unpack<Float>(Math::pack<UnsignedByte>(1.0f)), 1.0f);
 
@@ -256,7 +256,7 @@ void PackingTest::reunpackUnsinged() {
     #endif
 }
 
-void PackingTest::reunpackSinged() {
+void PackingTest::reunpackSigned() {
     CORRADE_COMPARE(Math::unpack<Float>(Math::pack<Byte>(-1.0f)), -1.0f);
     CORRADE_COMPARE(Math::unpack<Float>(Math::pack<Byte>(0.0f)), 0.0f);
     CORRADE_COMPARE(Math::unpack<Float>(Math::pack<Byte>(1.0f)), 1.0f);
