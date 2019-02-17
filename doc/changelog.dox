@@ -100,6 +100,12 @@ See also:
     @ref platforms-android-apps-cmake "Gradle-less Android builds" now properly
     creates the library output directory beforehand
 
+@subsection changelog-latest-deprecated Deprecated APIs
+
+-   @cpp DebugTools::ForceRendererOptions::scale() @ce is deprecated in favor
+    of @ref DebugTools::ForceRendererOptions::size(), as that's more consistent
+    with the documentation and the corresponding setter.
+
 @section changelog-2019-01 2019.01
 
 Released 2019-02-04, tagged as

@@ -68,8 +68,16 @@ class ForceRendererOptions {
             return *this;
         }
 
-        /** @brief Scale of rendered arrow */
-        constexpr Float scale() const { return _size; }
+        /** @brief Size of rendered arrow */
+        constexpr Float size() const { return _size; }
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief @copybrief size()
+         * @deprecated Use @ref size() instead.
+         */
+        constexpr CORRADE_DEPRECATED("use size() instead") Float scale() const { return _size; }
+        #endif
 
         /**
          * @brief Set scale of rendered arrow
