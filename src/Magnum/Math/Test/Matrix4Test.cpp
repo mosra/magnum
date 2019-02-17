@@ -713,6 +713,7 @@ void Matrix4Test::scalingPart() {
         Matrix4::scaling({0.5f, 3.5f, 1.2f});
 
     CORRADE_COMPARE(translationRotationScaling.scaling(), (Vector3{0.5f, 3.5f, 1.2f}));
+    CORRADE_COMPARE(translationRotationScaling.scalingSquared(), (Vector3{0.25f, 12.25f, 1.44f}));
 }
 
 void Matrix4Test::uniformScalingPart() {

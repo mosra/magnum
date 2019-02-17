@@ -525,6 +525,7 @@ void Matrix3Test::scalingPart() {
         Matrix3::scaling({0.5f, 3.5f});
 
     CORRADE_COMPARE(translationRotationScaling.scaling(), (Vector2{0.5f, 3.5f}));
+    CORRADE_COMPARE(translationRotationScaling.scalingSquared(), (Vector2{0.25f, 12.25f}));
 }
 
 void Matrix3Test::uniformScalingPart() {
