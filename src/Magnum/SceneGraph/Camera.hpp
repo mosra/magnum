@@ -108,7 +108,7 @@ template<UnsignedInt dimensions, class T> std::vector<std::pair<std::reference_w
 
 template<UnsignedInt dimensions, class T> void Camera<dimensions, T>::draw(DrawableGroup<dimensions, T>& group) {
     AbstractObject<dimensions, T>* scene = AbstractFeature<dimensions, T>::object().scene();
-    CORRADE_ASSERT(scene, "Camera::draw(): cannot draw when camera is not part of any scene", );
+    CORRADE_ASSERT(scene, "SceneGraph::Camera::draw(): cannot draw when camera is not part of any scene", );
 
     /* Compute camera matrix */
     AbstractFeature<dimensions, T>::object().setClean();
