@@ -71,10 +71,10 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneG
     GL::Buffer* vertexBuffer = new GL::Buffer{GL::Buffer::TargetHint::Array};
     GL::Buffer* indexBuffer = new GL::Buffer{GL::Buffer::TargetHint::ElementArray};
 
-    _vertexBuffer->setData(positions, GL::BufferUsage::StaticDraw);
+    vertexBuffer->setData(positions, GL::BufferUsage::StaticDraw);
     ResourceManager::instance().set(_vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
-    _indexBuffer->setData(indices, GL::BufferUsage::StaticDraw);
+    indexBuffer->setData(indices, GL::BufferUsage::StaticDraw);
     ResourceManager::instance().set(_indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
 
     GL::Mesh* mesh = new GL::Mesh;
