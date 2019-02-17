@@ -257,10 +257,8 @@ MeshGLTest::MeshGLTest() {
               #ifndef MAGNUM_TARGET_GLES
               &MeshGLTest::setBaseVertex,
               #endif
-              #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
               &MeshGLTest::setInstanceCount,
               &MeshGLTest::setInstanceCountIndexed,
-              #endif
               #ifndef MAGNUM_TARGET_GLES
               &MeshGLTest::setInstanceCountBaseInstance,
               &MeshGLTest::setInstanceCountBaseInstanceIndexed,
