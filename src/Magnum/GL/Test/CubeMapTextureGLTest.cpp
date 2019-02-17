@@ -133,21 +133,13 @@ constexpr UnsignedByte Data[]{
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
     0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
 
-enum: std::size_t { PixelStorageDataCount =
-    #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
-    2
-    #else
-    1
-    #endif
-};
-
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
     PixelStorage storage;
     Containers::ArrayView<const UnsignedByte> dataSparse;
     std::size_t offset;
-} PixelStorageData[PixelStorageDataCount]{
+} PixelStorageData[]{
     {"default pixel storage",
         Containers::arrayView(Data).suffix(8), {},
         Containers::arrayView(Data).suffix(8), 0},
@@ -165,14 +157,6 @@ constexpr UnsignedByte CompressedData[]{
     232,  57,  0,   0, 213, 255, 170,   2
 };
 
-enum: std::size_t { CompressedPixelStorageDataCount =
-    #ifndef MAGNUM_TARGET_GLES
-    2
-    #else
-    1
-    #endif
-};
-
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
@@ -181,7 +165,7 @@ const struct {
     #endif
     Containers::ArrayView<const UnsignedByte> dataSparse;
     std::size_t offset;
-} CompressedPixelStorageData[CompressedPixelStorageDataCount]{
+} CompressedPixelStorageData[]{
     {"default pixel storage",
         Containers::arrayView(CompressedData).suffix(16),
         #ifndef MAGNUM_TARGET_GLES
@@ -222,14 +206,12 @@ constexpr UnsignedByte FullData[]{
     0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f
 };
 
-enum: std::size_t { FullPixelStorageDataCount = 2 };
-
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
     PixelStorage storage;
     std::size_t offset;
-} FullPixelStorageData[FullPixelStorageDataCount]{
+} FullPixelStorageData[]{
     {"default pixel storage",
         Containers::arrayView(FullData).suffix(16), {}, 0},
     #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
@@ -261,14 +243,6 @@ constexpr UnsignedByte CompressedFullData[]{
     232,  57,  0,   0, 213, 255, 170,   2
 };
 
-enum: std::size_t { CompressedFullPixelStorageDataCount =
-    #ifndef MAGNUM_TARGET_GLES
-    2
-    #else
-    1
-    #endif
-};
-
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
@@ -276,7 +250,7 @@ const struct {
     CompressedPixelStorage storage;
     #endif
     std::size_t offset;
-} CompressedFullPixelStorageData[CompressedFullPixelStorageDataCount]{
+} CompressedFullPixelStorageData[]{
     {"default pixel storage",
         Containers::arrayView(CompressedFullData).suffix(16*4),
         #ifndef MAGNUM_TARGET_GLES
@@ -329,10 +303,16 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
         #ifndef MAGNUM_TARGET_GLES2
         &CubeMapTextureGLTest::imageBuffer,
         #endif
-        #ifndef MAGNUM_TARGET_GLES
+        }, Containers::arraySize(PixelStorageData));
+
+    #ifndef MAGNUM_TARGET_GLES
+    addInstancedTests({
         &CubeMapTextureGLTest::fullImageQuery,
-        &CubeMapTextureGLTest::fullImageQueryBuffer,
-        #endif
+        &CubeMapTextureGLTest::fullImageQueryBuffer},
+        Containers::arraySize(FullPixelStorageData));
+    #endif
+
+    addInstancedTests({
         &CubeMapTextureGLTest::subImage,
         #ifndef MAGNUM_TARGET_GLES2
         &CubeMapTextureGLTest::subImageBuffer,
@@ -341,7 +321,7 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
         &CubeMapTextureGLTest::subImageQuery,
         &CubeMapTextureGLTest::subImageQueryBuffer
         #endif
-        }, PixelStorageDataCount);
+        }, Containers::arraySize(PixelStorageData));
 
     addInstancedTests({
         &CubeMapTextureGLTest::compressedImage,
@@ -351,10 +331,16 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         &CubeMapTextureGLTest::immutableCompressedImage,
         #endif
-        #ifndef MAGNUM_TARGET_GLES
+        }, Containers::arraySize(CompressedPixelStorageData));
+
+    #ifndef MAGNUM_TARGET_GLES
+    addInstancedTests({
         &CubeMapTextureGLTest::compressedFullImageQuery,
-        &CubeMapTextureGLTest::compressedFullImageQueryBuffer,
-        #endif
+        &CubeMapTextureGLTest::compressedFullImageQueryBuffer},
+        Containers::arraySize(CompressedFullPixelStorageData));
+    #endif
+
+    addInstancedTests({
         &CubeMapTextureGLTest::compressedSubImage,
         #ifndef MAGNUM_TARGET_GLES2
         &CubeMapTextureGLTest::compressedSubImageBuffer,
@@ -363,7 +349,7 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
         &CubeMapTextureGLTest::compressedSubImageQuery,
         &CubeMapTextureGLTest::compressedSubImageQueryBuffer
         #endif
-        }, CompressedPixelStorageDataCount);
+        }, Containers::arraySize(CompressedPixelStorageData));
 
     addTests({&CubeMapTextureGLTest::generateMipmap,
 

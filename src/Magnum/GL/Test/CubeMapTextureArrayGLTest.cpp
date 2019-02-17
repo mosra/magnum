@@ -115,15 +115,13 @@ constexpr UnsignedByte Data[]{
     0x58, 0x59, 0x5a, 0x5b, 0x5c, 0x5d, 0x5e, 0x5f
 };
 
-enum: std::size_t { PixelStorageDataCount = 2 };
-
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
     PixelStorage storage;
     Containers::ArrayView<const UnsignedByte> dataSparse;
     std::size_t offset;
-} PixelStorageData[PixelStorageDataCount]{
+} PixelStorageData[]{
     {"default pixel storage",
         Containers::arrayView(Data).suffix(16), {},
         Containers::arrayView(Data).suffix(16), 0},
@@ -155,14 +153,6 @@ constexpr UnsignedByte CompressedData[]{
     232,  57,  0,   0, 213, 255, 170,   2
 };
 
-enum: std::size_t { CompressedPixelStorageDataCount =
-    #ifndef MAGNUM_TARGET_GLES
-    2
-    #else
-    1
-    #endif
-};
-
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
@@ -171,7 +161,7 @@ const struct {
     #endif
     Containers::ArrayView<const UnsignedByte> dataSparse;
     std::size_t offset;
-} CompressedPixelStorageData[CompressedPixelStorageDataCount]{
+} CompressedPixelStorageData[]{
     {"default pixel storage",
         Containers::arrayView(CompressedData).suffix(16*4),
         #ifndef MAGNUM_TARGET_GLES
@@ -204,15 +194,13 @@ constexpr UnsignedByte SubData[]{
     0x38, 0x39, 0x3a, 0x3b, 0x3c, 0x3d, 0x3e, 0x3f
 };
 
-enum: std::size_t { SubPixelStorageDataCount = 2 };
-
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
     PixelStorage storage;
     Containers::ArrayView<const UnsignedByte> dataSparse;
     std::size_t offset;
-} SubPixelStorageData[SubPixelStorageDataCount]{
+} SubPixelStorageData[]{
     {"default pixel storage",
         Containers::arrayView(SubData).suffix(16), {},
         Containers::arrayView(SubData).suffix(16), 0},
@@ -238,14 +226,6 @@ constexpr UnsignedByte CompressedSubData[] = {
     255, 255,  24, 190, 213, 255, 170,   2
 };
 
-enum: std::size_t { CompressedSubPixelStorageDataCount =
-    #ifndef MAGNUM_TARGET_GLES
-    2
-    #else
-    1
-    #endif
-};
-
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
@@ -254,7 +234,7 @@ const struct {
     #endif
     Containers::ArrayView<const UnsignedByte> dataSparse;
     std::size_t offset;
-} CompressedSubPixelStorageData[CompressedSubPixelStorageDataCount]{
+} CompressedSubPixelStorageData[]{
     {"default pixel storage",
         Containers::arrayView(CompressedSubData).suffix(16*4),
         #ifndef MAGNUM_TARGET_GLES
@@ -293,25 +273,31 @@ CubeMapTextureArrayGLTest::CubeMapTextureArrayGLTest() {
 
     addInstancedTests({
         &CubeMapTextureArrayGLTest::image,
-        &CubeMapTextureArrayGLTest::imageBuffer,
+        &CubeMapTextureArrayGLTest::imageBuffer},
+        Containers::arraySize(PixelStorageData));
+
+    addInstancedTests({
         &CubeMapTextureArrayGLTest::subImage,
         &CubeMapTextureArrayGLTest::subImageBuffer,
         #ifndef MAGNUM_TARGET_GLES
         &CubeMapTextureArrayGLTest::subImageQuery,
         &CubeMapTextureArrayGLTest::subImageQueryBuffer
         #endif
-        }, PixelStorageDataCount);
+        }, Containers::arraySize(SubPixelStorageData));
 
     addInstancedTests({
         &CubeMapTextureArrayGLTest::compressedImage,
-        &CubeMapTextureArrayGLTest::compressedImageBuffer,
+        &CubeMapTextureArrayGLTest::compressedImageBuffer},
+        Containers::arraySize(CompressedPixelStorageData));
+
+    addInstancedTests({
         &CubeMapTextureArrayGLTest::compressedSubImage,
         &CubeMapTextureArrayGLTest::compressedSubImageBuffer,
         #ifndef MAGNUM_TARGET_GLES
         &CubeMapTextureArrayGLTest::compressedSubImageQuery,
         &CubeMapTextureArrayGLTest::compressedSubImageQueryBuffer,
         #endif
-        }, CompressedPixelStorageDataCount);
+        }, Containers::arraySize(CompressedSubPixelStorageData));
 
     addTests({&CubeMapTextureArrayGLTest::generateMipmap,
 

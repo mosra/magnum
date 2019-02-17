@@ -175,15 +175,13 @@ constexpr UnsignedByte Data1D[]{
     0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
 };
 
-enum: std::size_t { PixelStorage1DDataCount = 2 };
-
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
     PixelStorage storage;
     Containers::ArrayView<const UnsignedByte> dataSparse;
     std::size_t offset;
-} PixelStorage1DData[PixelStorage1DDataCount]{
+} PixelStorage1DData[]{
     {"default pixel storage",
         Containers::arrayView(Data1D).suffix(8), {},
         Containers::arrayView(Data1D).suffix(8), 0},
@@ -201,15 +199,13 @@ constexpr UnsignedByte Data2D[]{
     0x18, 0x19, 0x1a, 0x1b, 0x1c, 0x1d, 0x1e, 0x1f
 };
 
-enum: std::size_t { PixelStorage2DDataCount = 2 };
-
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
     PixelStorage storage;
     Containers::ArrayView<const UnsignedByte> dataSparse;
     std::size_t offset;
-} PixelStorage2DData[PixelStorage2DDataCount]{
+} PixelStorage2DData[]{
     {"default pixel storage",
         Containers::arrayView(Data2D).suffix(16), {},
         Containers::arrayView(Data2D).suffix(16), 0},
@@ -227,14 +223,6 @@ constexpr UnsignedByte CompressedData2D[]{
     239, 123,   8,  66, 213, 255, 170,   2
 };
 
-enum: std::size_t { CompressedPixelStorage2DDataCount =
-    #ifndef MAGNUM_TARGET_GLES
-    2
-    #else
-    1
-    #endif
-};
-
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
@@ -243,7 +231,7 @@ const struct {
     #endif
     Containers::ArrayView<const UnsignedByte> dataSparse;
     std::size_t offset;
-} CompressedPixelStorage2DData[CompressedPixelStorage2DDataCount]{
+} CompressedPixelStorage2DData[]{
     {"default pixel storage",
         Containers::arrayView(CompressedData2D).suffix(16),
         #ifndef MAGNUM_TARGET_GLES
@@ -335,7 +323,7 @@ TextureArrayGLTest::TextureArrayGLTest() {
         &TextureArrayGLTest::subImage1DBuffer,
         &TextureArrayGLTest::subImage1DQuery,
         &TextureArrayGLTest::subImage1DQueryBuffer},
-        PixelStorage1DDataCount);
+        Containers::arraySize(PixelStorage1DData));
 
     addTests({&TextureArrayGLTest::compressedImage1D,
               &TextureArrayGLTest::compressedImage1DBuffer,
@@ -354,7 +342,7 @@ TextureArrayGLTest::TextureArrayGLTest() {
         &TextureArrayGLTest::subImage2DQuery,
         &TextureArrayGLTest::subImage2DQueryBuffer
         #endif
-        }, PixelStorage2DDataCount);
+        }, Containers::arraySize(PixelStorage2DData));
 
     addInstancedTests({
         &TextureArrayGLTest::compressedImage2D,
@@ -365,7 +353,7 @@ TextureArrayGLTest::TextureArrayGLTest() {
         &TextureArrayGLTest::compressedSubImage2DQuery,
         &TextureArrayGLTest::compressedSubImage2DQueryBuffer
         #endif
-        }, CompressedPixelStorage2DDataCount);
+        }, Containers::arraySize(CompressedPixelStorage2DData));
 
     addTests({
         #ifndef MAGNUM_TARGET_GLES

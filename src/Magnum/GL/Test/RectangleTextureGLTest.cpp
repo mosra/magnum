@@ -88,15 +88,13 @@ constexpr UnsignedByte Data[]{
     0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
     0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f };
 
-enum: std::size_t { PixelStorageDataCount = 2 };
-
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
     PixelStorage storage;
     Containers::ArrayView<const UnsignedByte> dataSparse;
     std::size_t offset;
-} PixelStorageData[PixelStorageDataCount]{
+} PixelStorageData[]{
     {"default pixel storage",
         Containers::arrayView(Data).suffix(8), {},
         Containers::arrayView(Data).suffix(8), 0},
@@ -130,7 +128,7 @@ RectangleTextureGLTest::RectangleTextureGLTest() {
         &RectangleTextureGLTest::subImageBuffer,
         &RectangleTextureGLTest::subImageQuery,
         &RectangleTextureGLTest::subImageQueryBuffer},
-        PixelStorageDataCount);
+        Containers::arraySize(PixelStorageData));
 
     addTests({&RectangleTextureGLTest::compressedImage,
               &RectangleTextureGLTest::compressedImageBuffer,
