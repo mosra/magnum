@@ -65,22 +65,7 @@ keys.
 
 Example implementation for synchronous mesh loader:
 
-@code{.cpp}
-class MeshResourceLoader: public AbstractResourceLoader<Mesh> {
-    void doLoad(ResourceKey key) override {
-        // Load the mesh...
-
-        // Not found
-        if(!found) {
-            setNotFound(key);
-            return;
-        }
-
-        // Found, pass it to resource manager
-        set(key, mesh, state, policy);
-    }
-};
-@endcode
+@snippet Magnum.cpp AbstractResourceLoader-implementation
 
 You can then add it to resource manager instance like this. Note that the
 manager automatically deletes the all loaders on destruction before unloading
@@ -89,18 +74,7 @@ having to delete the loader explicitly to ensure proper resource unloading. In
 the following code, however, the loader destroys itself (and removes itself
 from the manager) before the manager is destroyed.
 
-@code{.cpp}
-MyResourceManager manager;
-MeshResourceLoader loader;
-
-manager->setLoader(&loader);
-
-// This will now automatically request the mesh from loader by calling load()
-Resource<Mesh> myMesh = manager->get<Mesh>("my-mesh");
-@endcode
-
-@todoc How about working with resources of different data types (i.e. mesh
-    buffers), should that be allowed?
+@snippet Magnum.cpp AbstractResourceLoader-use
 */
 template<class T> class AbstractResourceLoader {
     public:

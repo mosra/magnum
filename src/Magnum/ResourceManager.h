@@ -218,10 +218,7 @@ Basic usage is:
 <li>
     Typedef'ing manager of desired types, creating its instance.
 
-    @code{.cpp}
-    typedef ResourceManager<Mesh, Texture2D, AbstractShaderProgram> MyResourceManager;
-    MyResourceManager manager;
-    @endcode
+    @snippet Magnum.cpp ResourceManager-typedef
 </li>
 <li>
     Filling the manager with resource data and acquiring the resources. Note
@@ -229,27 +226,12 @@ Basic usage is:
     contains the data for it, as long as the resource data are not accessed (or
     fallback is provided).
 
-    @code{.cpp}
-    MyResourceManager& manager = MyResourceManager::instance();
-    Resource<Texture2D> texture{manager.get<Texture2D>("texture")};
-    Resource<AbstractShaderProgram, MyShader> shader{manager.get<AbstractShaderProgram, MyShader>("shader")};
-    Resource<Mesh> cube{manager.get<Mesh>("cube")};
-
-    // The manager doesn't have data for the cube yet, add them
-        if(!cube) {
-        Mesh* mesh = new Mesh;
-        // ...
-        manager.set(cube.key(), mesh, ResourceDataState::Final, ResourcePolicy::Resident);
-    }
-    @endcode
+    @snippet Magnum.cpp ResourceManager-fill
 </li>
 <li>
     Using the resource data.
 
-    @code{.cpp}
-    shader->setTexture(*texture);
-    cube->draw(*shader);
-    @endcode
+    @snippet Magnum.cpp ResourceManager-use
 </li>
 <li>
     Destroying resource references and deleting manager instance when nothing
@@ -303,9 +285,7 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * can be defined to cast the type automatically when accessing the
          * data. This is commonly used for shaders, e.g.:
          *
-         * @code{.cpp}
-         * Resource<AbstractShaderProgram, MyShader> shader = manager->get<AbstractShaderProgram, MyShader>("shader");
-         * @endcode
+         * @snippet Magnum.cpp ResourceManager-get-derived
          */
         template<class T, class U = T> Resource<T, U> get(ResourceKey key) {
             return this->Implementation::ResourceManagerData<T>::template get<U>(key);

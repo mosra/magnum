@@ -26,12 +26,37 @@
 #include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"
 #ifdef MAGNUM_TARGET_GL
+#include "Magnum/ResourceManager.h"
+#include "Magnum/GL/AbstractShaderProgram.h"
+#include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/Texture.h"
 #endif
 
 using namespace Magnum;
 using namespace Magnum::Math::Literals;
+
+#ifdef MAGNUM_TARGET_GL
+Containers::Pointer<GL::Mesh> mesh;
+bool found = false;
+
+/* [AbstractResourceLoader-implementation] */
+class MeshResourceLoader: public AbstractResourceLoader<GL::Mesh> {
+    void doLoad(ResourceKey key) override {
+        // Load the mesh...
+
+        // Not found
+        if(!found) {
+            setNotFound(key);
+            return;
+        }
+
+        // Found, pass it to resource manager
+        set(key, std::move(mesh));
+    }
+};
+/* [AbstractResourceLoader-implementation] */
+#endif
 
 int main() {
 
@@ -173,6 +198,65 @@ CompressedImage2D image{CompressedPixelFormat::Bc1RGBUnorm,
 GL::Texture2D texture;
 CompressedImage2D image = texture.compressedImage(0, {});
 /* [CompressedImage-usage-query] */
+}
+#endif
+
+#ifdef MAGNUM_TARGET_GL
+{
+/* [ResourceManager-typedef] */
+typedef ResourceManager<GL::Mesh, GL::Texture2D, GL::AbstractShaderProgram>
+    MyResourceManager;
+MyResourceManager manager;
+/* [ResourceManager-typedef] */
+}
+
+{
+typedef ResourceManager<GL::Mesh, GL::Texture2D, GL::AbstractShaderProgram>
+    MyResourceManager;
+struct MyShader: GL::AbstractShaderProgram {
+    void bindTexture(GL::Texture2D&) {}
+};
+/* [ResourceManager-fill] */
+MyResourceManager& manager = MyResourceManager::instance();
+Resource<GL::Texture2D> texture{manager.get<GL::Texture2D>("texture")};
+Resource<GL::AbstractShaderProgram, MyShader> shader =
+    manager.get<GL::AbstractShaderProgram, MyShader>("shader");
+Resource<GL::Mesh> cube = manager.get<GL::Mesh>("cube");
+
+// The manager doesn't have data for the cube yet, add them
+if(!cube) {
+    GL::Mesh mesh;
+    // ...
+    manager.set(cube.key(), std::move(mesh));
+}
+/* [ResourceManager-fill] */
+
+/* [ResourceManager-use] */
+shader->bindTexture(*texture);
+cube->draw(*shader);
+/* [ResourceManager-use] */
+}
+
+{
+ResourceManager<GL::AbstractShaderProgram> manager;
+struct MyShader: GL::AbstractShaderProgram {};
+/* [ResourceManager-get-derived] */
+Resource<GL::AbstractShaderProgram, MyShader> shader =
+    manager.get<GL::AbstractShaderProgram, MyShader>("shader");
+/* [ResourceManager-get-derived] */
+}
+
+{
+typedef ResourceManager<GL::Mesh> MyResourceManager;
+/* [AbstractResourceLoader-use] */
+MyResourceManager manager;
+Containers::Pointer<MeshResourceLoader> loader;
+
+manager.setLoader<GL::Mesh>(std::move(loader));
+
+// This will now automatically request the mesh from loader by calling load()
+Resource<GL::Mesh> myMesh = manager.get<GL::Mesh>("my-mesh");
+/* [AbstractResourceLoader-use] */
 }
 #endif
 
