@@ -25,7 +25,6 @@
 
 #include "ForceRenderer.h"
 
-#include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/DebugTools/ResourceManager.h"
 #include "Magnum/SceneGraph/Camera.h"
@@ -63,27 +62,19 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneG
 
     /* Mesh and vertex buffer */
     _mesh = ResourceManager::instance().get<GL::Mesh>("force");
-    _vertexBuffer = ResourceManager::instance().get<GL::Buffer>("force-vertices");
-    _indexBuffer = ResourceManager::instance().get<GL::Buffer>("force-indices");
     if(_mesh) return;
 
     /* Create the mesh */
-    GL::Buffer* vertexBuffer = new GL::Buffer{GL::Buffer::TargetHint::Array};
-    GL::Buffer* indexBuffer = new GL::Buffer{GL::Buffer::TargetHint::ElementArray};
-
-    vertexBuffer->setData(positions, GL::BufferUsage::StaticDraw);
-    ResourceManager::instance().set(_vertexBuffer.key(), vertexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
-
-    indexBuffer->setData(indices, GL::BufferUsage::StaticDraw);
-    ResourceManager::instance().set(_indexBuffer.key(), indexBuffer, ResourceDataState::Final, ResourcePolicy::Manual);
-
-    GL::Mesh* mesh = new GL::Mesh;
-    mesh->setPrimitive(GL::MeshPrimitive::Lines)
-        .setCount(indices.size())
-        .addVertexBuffer(*vertexBuffer, 0,
+    GL::Buffer vertexBuffer{GL::Buffer::TargetHint::Array};
+    vertexBuffer.setData(positions, GL::BufferUsage::StaticDraw);
+    GL::Buffer indexBuffer{GL::Buffer::TargetHint::ElementArray};
+    indexBuffer.setData(indices, GL::BufferUsage::StaticDraw);
+    GL::Mesh mesh{GL::MeshPrimitive::Lines};
+    mesh.setCount(indices.size())
+        .addVertexBuffer(std::move(vertexBuffer), 0,
             typename Shaders::Flat<dimensions>::Position(Shaders::Flat<dimensions>::Position::Components::Two))
-        .setIndexBuffer(*indexBuffer, 0, GL::MeshIndexType::UnsignedByte, 0, positions.size());
-    ResourceManager::instance().set(_mesh.key(), mesh, ResourceDataState::Final, ResourcePolicy::Manual);
+        .setIndexBuffer(std::move(indexBuffer), 0, GL::MeshIndexType::UnsignedByte, 0, positions.size());
+    ResourceManager::instance().set(_mesh.key(), std::move(mesh), ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
 /* To avoid deleting pointers to incomplete type on destruction of Resource members */

@@ -111,7 +111,6 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: 
         Resource<ObjectRendererOptions> _options;
         Resource<GL::AbstractShaderProgram, Shaders::VertexColor<dimensions>> _shader;
         Resource<GL::Mesh> _mesh;
-        Resource<GL::Buffer> _vertexBuffer, _indexBuffer;
 };
 
 /** @brief Two-dimensional object renderer */

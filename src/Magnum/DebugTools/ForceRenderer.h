@@ -140,7 +140,6 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: p
         Resource<ForceRendererOptions> _options;
         Resource<GL::AbstractShaderProgram, Shaders::Flat<dimensions>> _shader;
         Resource<GL::Mesh> _mesh;
-        Resource<GL::Buffer> _vertexBuffer, _indexBuffer;
 };
 
 /** @brief Two-dimensional force renderer */
