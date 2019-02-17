@@ -165,6 +165,11 @@ template<class T> class AbstractResourceLoader {
         void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy);
 
         /** @overload */
+        void set(ResourceKey key, Containers::Pointer<T> data, ResourceDataState state, ResourcePolicy policy) {
+            return set(key, data.release(), state, policy);
+        }
+
+        /** @overload */
         template<class U> void set(ResourceKey key, U&& data, ResourceDataState state, ResourcePolicy policy) {
             set(key, new typename std::decay<U>::type(std::forward<U>(data)), state, policy);
         }
@@ -177,6 +182,11 @@ template<class T> class AbstractResourceLoader {
          */
         void set(ResourceKey key, T* data) {
             set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);
+        }
+
+        /** @overload */
+        void set(ResourceKey key, Containers::Pointer<T> data) {
+            set(key, data.release());
         }
 
         /** @overload */

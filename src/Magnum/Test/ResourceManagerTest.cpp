@@ -101,7 +101,7 @@ void ResourceManagerTest::state() {
 void ResourceManagerTest::stateFallback() {
     {
         ResourceManager rm;
-        rm.setFallback(new Data);
+        rm.setFallback(Containers::pointer<Data>());
 
         Resource<Data> data = rm.get<Data>("data");
         CORRADE_VERIFY(data);
@@ -174,15 +174,15 @@ void ResourceManagerTest::basic() {
 }
 
 void ResourceManagerTest::residentPolicy() {
-    ResourceManager* rm = new ResourceManager;
+    {
+        ResourceManager rm;
 
-    rm->set("blah", new Data, ResourceDataState::Mutable, ResourcePolicy::Resident);
-    CORRADE_COMPARE(Data::count, 1);
+        rm.set("blah", Containers::pointer<Data>(), ResourceDataState::Mutable, ResourcePolicy::Resident);
+        CORRADE_COMPARE(Data::count, 1);
 
-    rm->free();
-    CORRADE_COMPARE(Data::count, 1);
-
-    delete rm;
+        rm.free();
+        CORRADE_COMPARE(Data::count, 1);
+    }
     CORRADE_COMPARE(Data::count, 0);
 }
 
@@ -192,7 +192,7 @@ void ResourceManagerTest::referenceCountedPolicy() {
     ResourceKey dataRefCountKey("dataRefCount");
 
     /* Resource is deleted after all references are removed */
-    rm.set(dataRefCountKey, new Data, ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
+    rm.set(dataRefCountKey, Containers::pointer<Data>(), ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
     CORRADE_COMPARE(rm.count<Data>(), 1);
     {
         Resource<Data> data = rm.get<Data>(dataRefCountKey);
@@ -205,7 +205,7 @@ void ResourceManagerTest::referenceCountedPolicy() {
 
     /* Reference counted resources which were not used once will stay loaded
        until free() is called */
-    rm.set(dataRefCountKey, new Data, ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
+    rm.set(dataRefCountKey, Containers::pointer<Data>(), ResourceDataState::Final, ResourcePolicy::ReferenceCounted);
     CORRADE_COMPARE(rm.count<Data>(), 1);
     CORRADE_COMPARE(rm.state<Data>(dataRefCountKey), ResourceState::Final);
     CORRADE_COMPARE(rm.referenceCount<Data>(dataRefCountKey), 0);
@@ -223,7 +223,7 @@ void ResourceManagerTest::manualPolicy() {
 
     /* Manual free */
     {
-        rm.set(dataKey, new Data, ResourceDataState::Mutable, ResourcePolicy::Manual);
+        rm.set(dataKey, Containers::pointer<Data>(), ResourceDataState::Mutable, ResourcePolicy::Manual);
         Resource<Data> data = rm.get<Data>(dataKey);
         rm.free();
     }
@@ -234,21 +234,21 @@ void ResourceManagerTest::manualPolicy() {
     CORRADE_COMPARE(rm.count<Data>(), 0);
     CORRADE_COMPARE(Data::count, 0);
 
-    rm.set(dataKey, new Data, ResourceDataState::Mutable, ResourcePolicy::Manual);
+    rm.set(dataKey, Containers::pointer<Data>(), ResourceDataState::Mutable, ResourcePolicy::Manual);
     CORRADE_COMPARE(rm.count<Data>(), 1);
     CORRADE_COMPARE(Data::count, 1);
 }
 
 void ResourceManagerTest::defaults() {
     ResourceManager rm;
-    rm.set("data", new Data);
+    rm.set("data", Containers::pointer<Data>());
     CORRADE_COMPARE(rm.state<Data>("data"), ResourceState::Final);
 }
 
 void ResourceManagerTest::clear() {
     ResourceManager rm;
 
-    rm.set("blah", new Data);
+    rm.set("blah", Containers::pointer<Data>());
     CORRADE_COMPARE(Data::count, 1);
 
     rm.free();
@@ -281,7 +281,7 @@ void ResourceManagerTest::loader() {
             IntResourceLoader(): resource(ResourceManager::instance().get<Data>("data")) {}
 
             void load() {
-                set("hello", 773, ResourceDataState::Final, ResourcePolicy::Resident);
+                set("hello", Containers::pointer<Int>(773), ResourceDataState::Final, ResourcePolicy::Resident);
                 setNotFound("world");
             }
 
@@ -298,38 +298,38 @@ void ResourceManagerTest::loader() {
             Resource<Data> resource;
     };
 
-    auto rm = new ResourceManager;
-    auto loader = new IntResourceLoader;
-    rm->setLoader(loader);
-
     {
-        Resource<Data> data = rm->get<Data>("data");
-        Resource<Int> hello = rm->get<Int>("hello");
-        Resource<Int> world = rm->get<Int>("world");
+        ResourceManager rm;
+        Containers::Pointer<IntResourceLoader> loaderPtr{Containers::InPlaceInit};
+        IntResourceLoader& loader = *loaderPtr;
+        rm.setLoader<Int>(std::move(loaderPtr));
+
+        Resource<Data> data = rm.get<Data>("data");
+        Resource<Int> hello = rm.get<Int>("hello");
+        Resource<Int> world = rm.get<Int>("world");
         CORRADE_COMPARE(data.state(), ResourceState::NotLoaded);
         CORRADE_COMPARE(hello.state(), ResourceState::Loading);
         CORRADE_COMPARE(world.state(), ResourceState::Loading);
 
-        CORRADE_COMPARE(loader->requestedCount(), 2);
-        CORRADE_COMPARE(loader->loadedCount(), 0);
-        CORRADE_COMPARE(loader->notFoundCount(), 0);
-        CORRADE_COMPARE(loader->name(ResourceKey("hello")), "hello");
+        CORRADE_COMPARE(loader.requestedCount(), 2);
+        CORRADE_COMPARE(loader.loadedCount(), 0);
+        CORRADE_COMPARE(loader.notFoundCount(), 0);
+        CORRADE_COMPARE(loader.name(ResourceKey("hello")), "hello");
 
-        loader->load();
+        loader.load();
         CORRADE_COMPARE(hello.state(), ResourceState::Final);
         CORRADE_COMPARE(*hello, 773);
         CORRADE_COMPARE(world.state(), ResourceState::NotFound);
 
-        CORRADE_COMPARE(loader->requestedCount(), 2);
-        CORRADE_COMPARE(loader->loadedCount(), 1);
-        CORRADE_COMPARE(loader->notFoundCount(), 1);
+        CORRADE_COMPARE(loader.requestedCount(), 2);
+        CORRADE_COMPARE(loader.loadedCount(), 1);
+        CORRADE_COMPARE(loader.notFoundCount(), 1);
 
         /* Verify that the loader is deleted at proper time */
-        rm->set("data", new Data);
+        rm.set("data", Containers::pointer<Data>());
         CORRADE_COMPARE(Data::count, 1);
     }
 
-    delete rm;
     CORRADE_COMPARE(Data::count, 0);
 }
 

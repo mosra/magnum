@@ -30,6 +30,7 @@
  */
 
 #include <unordered_map>
+#include <Corrade/Containers/Pointer.h>
 
 #include "Magnum/Resource.h"
 
@@ -346,6 +347,12 @@ template<class... Types> class ResourceManager: private Implementation::Resource
         }
 
         /** @overload */
+        template<class T> ResourceManager<Types...>& set(ResourceKey key, Containers::Pointer<T>&& data, ResourceDataState state, ResourcePolicy policy) {
+            set(key, data.release(), state, policy);
+            return *this;
+        }
+
+        /** @overload */
         template<class U> ResourceManager<Types...>& set(ResourceKey key, U&& data, ResourceDataState state, ResourcePolicy policy) {
             return set(key, new typename std::decay<U>::type(std::forward<U>(data)), state, policy);
         }
@@ -359,6 +366,11 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          */
         template<class T> ResourceManager<Types...>& set(ResourceKey key, T* data) {
             return set(key, data, ResourceDataState::Final, ResourcePolicy::Resident);
+        }
+
+        /** @overload */
+        template<class T> ResourceManager<Types...>& set(ResourceKey key, Containers::Pointer<T>&& data) {
+            return set(key, data.release());
         }
 
         /** @overload */
@@ -382,6 +394,12 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          */
         template<class T> ResourceManager<Types...>& setFallback(T* data) {
             this->Implementation::ResourceManagerData<T>::setFallback(data);
+            return *this;
+        }
+
+        /** @overload */
+        template<class T> ResourceManager<Types...>& setFallback(Containers::Pointer<T>&& data) {
+            setFallback(data.release());
             return *this;
         }
 
@@ -455,6 +473,11 @@ template<class... Types> class ResourceManager: private Implementation::Resource
         template<class T> ResourceManager<Types...>& setLoader(AbstractResourceLoader<T>* loader) {
             this->Implementation::ResourceManagerData<T>::setLoader(loader);
             return *this;
+        }
+
+        /** @overload */
+        template<class T> ResourceManager<Types...>& setLoader(Containers::Pointer<AbstractResourceLoader<T>>&& loader) {
+            return setLoader(loader.release());
         }
 
     private:

@@ -58,6 +58,9 @@ See also:
 
 @subsection changelog-latest-changes Changes and improvements
 
+-   The @ref ResourceManager class now accepts also
+    @ref Corrade::Containers::Pointer instances in addition to raw pointers
+
 @subsubsection changelog-latest-changes-audio Audio library
 
 -   The @ref Audio::AnyImporter "AnyAudioImporter" plugin now correctly
