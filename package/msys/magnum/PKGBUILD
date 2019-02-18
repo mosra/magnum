@@ -16,7 +16,8 @@ depends=("${MINGW_PACKAGE_PREFIX}-corrade>=$pkgver"
          "${MINGW_PACKAGE_PREFIX}-SDL2"
          "${MINGW_PACKAGE_PREFIX}-vulkan-loader")
 makedepends=("${MINGW_PACKAGE_PREFIX}-cmake" "${MINGW_PACKAGE_PREFIX}-ninja" 'git')
-optdepends=("${MINGW_PACKAGE_PREFIX}-magnum-plugins: import and export features")
+optdepends=("${MINGW_PACKAGE_PREFIX}-magnum-plugins: import and export features"
+            "${MINGW_PACKAGE_PREFIX}-magnum-integration: integrations with third-party math and physics libraries")
 # The .tar.gz / .zip download contains symlinks (.travis.yml), making tar and
 # unzip on Windows grumpy because dangling symlinks are created. Could be fixed
 # by manually extracting everything except symlinks, but that's hard to
