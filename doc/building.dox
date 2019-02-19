@@ -221,7 +221,8 @@ which will build both a 32bit and a 64bit version. See the
 [MSYS2 Wiki](https://github.com/msys2/msys2/wiki/Creating-Packages) for more
 information.
 
-There is also a MSYS2 package for @ref building-plugins-packages-msys "Magnum Plugins".
+There are also MSYS2 packages for @ref building-plugins-packages-msys "Magnum Plugins"
+and @ref building-integration-packages-msys "Magnum Integration".
 
 @subsection building-packages-deb Packages for Debian, Ubuntu and derivatives
 
