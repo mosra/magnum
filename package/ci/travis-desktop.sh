@@ -21,7 +21,6 @@ mkdir build && cd build
 cmake .. \
     -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
     -DCMAKE_INSTALL_PREFIX=$HOME/deps \
-    -DCMAKE_PREFIX_PATH=$HOME/glfw \
     -DCMAKE_BUILD_TYPE=Debug \
     -DWITH_AUDIO=ON \
     -DWITH_SHAPES=$BUILD_DEPRECATED \
