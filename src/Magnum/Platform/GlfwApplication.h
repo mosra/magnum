@@ -416,6 +416,10 @@ class GlfwApplication {
          * Set @cpp 0 @ce for no VSync, @cpp 1 @ce for enabled VSync. Some
          * platforms support @cpp -1 @ce for late swap tearing. Default is
          * driver-dependent.
+         *
+         * @note Unlike SDL2, GLFW doesn't provide any getter for the swap
+         *      interval, so this class doesn't provide any equivalent to
+         *      @ref Sdl2Application::swapInterval().
          */
         void setSwapInterval(Int interval);
 
