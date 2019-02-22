@@ -29,6 +29,7 @@ namespace Magnum {
 
 @tableofcontents
 @m_footernavigation
+@m_keywords{Plugins}
 
 The base Magnum libraries contain math support, scene graph implementation and
 are able to interact with graphics and audio hardware. However, they don't
