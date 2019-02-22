@@ -30,6 +30,24 @@ namespace Magnum { namespace Platform { namespace Test { namespace {
 struct GlfwApplicationTest: Platform::Application {
     explicit GlfwApplicationTest(const Arguments& arguments): Platform::Application{arguments} {}
 
+    void keyPressEvent(KeyEvent& event) override {
+        #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
+        Debug{} << "key press event:" << event.keyName();
+        #endif
+
+        if(event.key() == KeyEvent::Key::F1) {
+            Debug{} << "starting text input";
+            startTextInput();
+        } else if(event.key() == KeyEvent::Key::Esc) {
+            Debug{} << "stopping text input";
+            stopTextInput();
+        }
+    }
+
+    void textInputEvent(TextInputEvent& event) override {
+        Debug{} << "text input event:" << std::string{event.text(), event.text().size()};
+    }
+
     void exitEvent(ExitEvent& event) override {
         Debug{} << "application exiting";
         event.setAccepted(); /* Comment-out to test app exit suppression */

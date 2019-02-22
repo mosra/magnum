@@ -47,18 +47,29 @@ struct Sdl2ApplicationTest: Platform::Application {
 
     /* For testing event coordinates */
     void mousePressEvent(MouseEvent& event) override {
-        Debug{} << event.position();
+        Debug{} << "mouse press event:" << event.position();
     }
 
-    /* For testing keyboard capture */
     void keyPressEvent(KeyEvent& event) override {
-        Debug{} << event.keyName();
+        Debug{} << "key press event:" << event.keyName();
+
+        if(event.key() == KeyEvent::Key::F1) {
+            Debug{} << "starting text input";
+            startTextInput();
+        } else if(event.key() == KeyEvent::Key::Esc) {
+            Debug{} << "stopping text input";
+            stopTextInput();
+        }
+    }
+
+    void textInputEvent(TextInputEvent& event) override {
+        Debug{} << "text input event:" << std::string{event.text(), event.text().size()};
     }
 
     /* Should fire on currently not handled events, such as minimize/maximize.
        Comment out to verify correct behavior with the override not present. */
     void anyEvent(SDL_Event& event) override {
-        Debug{} << "any event" << event.type;
+        Debug{} << "any event:" << event.type;
     }
 };
 
