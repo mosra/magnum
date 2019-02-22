@@ -316,6 +316,15 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
     #ifndef DOXYGEN_GENERATING_OUTPUT
     public:
         virtual bool isScene() const { return false; }
+
+        /* Since the class inherits from both in order to implement a tree,
+           the compilers complain that erase() is ambiguous (because each is
+           from a different base, *not* because both have the same signature).
+           Fixing that by bringing them both locally, then the overload works
+           because of a different signature. */
+        using Containers::LinkedList<Object<Transformation>>::erase;
+    private:
+        using Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::erase;
     #endif
 
     private:
