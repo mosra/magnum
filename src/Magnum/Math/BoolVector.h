@@ -338,7 +338,7 @@ template<std::size_t size> inline bool BoolVector<size>::none() const {
 }
 
 template<std::size_t size> inline BoolVector<size> BoolVector<size>::operator~() const {
-    BoolVector<size> out;
+    BoolVector<size> out{NoInit};
 
     for(std::size_t i = 0; i != DataSize; ++i)
         out._data[i] = ~_data[i];
