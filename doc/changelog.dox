@@ -60,6 +60,10 @@ See also:
 
 -   The @ref ResourceManager class now accepts also
     @ref Corrade::Containers::Pointer instances in addition to raw pointers
+-   Default extrapolation of @ref Animation::TrackView was changed from
+    @ref Animation::Extrapolation::Extrapolated to
+    @ref Animation::Extrapolation::Constant to be consistent with
+    @ref Animation::Track
 
 @subsubsection changelog-latest-changes-audio Audio library
 
