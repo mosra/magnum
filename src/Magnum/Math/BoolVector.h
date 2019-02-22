@@ -66,6 +66,20 @@ stored as bits in array of unsigned bytes, unused bits have undefined value
 which doesn't affect comparison or @ref all() / @ref none() / @ref any()
 functions. See also @ref matrix-vector for brief introduction.
 
+@section Math-BoolVector-boolean Boolean operations
+
+The class implements @cpp && @ce, @cpp || @ce and @cpp ! @ce operators
+component-wise, in other words equivalently to @cpp & @ce, @cpp | @ce and
+@cpp ~ @ce. This is done in order to have consistent behavior with boolean
+operations on scalar types --- in the following example, it causes the final
+conversion to @cpp bool @ce done at the end (instead of it happening already in
+the boolean subexpressions). Combined with @ref operator bool() returning
+@cpp true @ce only if all bits are set, this means the condition will be passed
+only if @cpp b @ce is around @cpp a @ce in *all dimensions*, and work the same
+way as if the variables were just scalars:
+
+@snippet MagnumMath.cpp BoolVector-boolean
+
 @m_keyword{bvec2,GLSL bvec2,}
 @m_keyword{bvec3,GLSL bvec3,}
 @m_keyword{bvec4,GLSL bvec4,}
@@ -176,6 +190,14 @@ template<std::size_t size> class BoolVector {
         BoolVector<size> operator~() const;
 
         /**
+         * @brief Component-wise boolean negation
+         *
+         * Equivalent to @ref operator~(). See @ref Math-BoolVector-boolean for
+         * more information.
+         */
+        BoolVector<size> operator!() const { return operator~(); }
+
+        /**
          * @brief Bitwise AND and assign
          *
          * The computation is done in-place.
@@ -197,6 +219,16 @@ template<std::size_t size> class BoolVector {
         }
 
         /**
+         * @brief Component-wise boolean AND
+         *
+         * Equivalent to @ref operator&(). See @ref Math-BoolVector-boolean for
+         * more information.
+         */
+        BoolVector<size> operator&&(const BoolVector<size>& other) const {
+            return BoolVector<size>(*this) &= other;
+        }
+
+        /**
          * @brief Bitwise OR and assign
          *
          * The computation is done in-place.
@@ -214,6 +246,16 @@ template<std::size_t size> class BoolVector {
          * @see @ref operator|=()
          */
         BoolVector<size> operator|(const BoolVector<size>& other) const {
+            return BoolVector<size>(*this) |= other;
+        }
+
+        /**
+         * @brief Component-wise boolean OR
+         *
+         * Equivalent to @ref operator&(). See @ref Math-BoolVector-boolean for
+         * more information.
+         */
+        BoolVector<size> operator||(const BoolVector<size>& other) const {
             return BoolVector<size>(*this) |= other;
         }
 

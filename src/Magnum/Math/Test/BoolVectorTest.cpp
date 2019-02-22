@@ -73,6 +73,7 @@ struct BoolVectorTest: Corrade::TestSuite::Tester {
 
     void bitInverse();
     void bitAndOrXor();
+    void booleanOperationEquivalents();
 
     void strictWeakOrdering();
 
@@ -105,6 +106,7 @@ BoolVectorTest::BoolVectorTest() {
 
               &BoolVectorTest::bitInverse,
               &BoolVectorTest::bitAndOrXor,
+              &BoolVectorTest::booleanOperationEquivalents,
 
               &BoolVectorTest::strictWeakOrdering,
 
@@ -248,11 +250,15 @@ void BoolVectorTest::compareUndefined() {
 }
 
 void BoolVectorTest::convertBool() {
-    /* The ! operation should *just work* using the bool conversion operator */
     CORRADE_VERIFY(BoolVector19(0xff, 0xff, 0x07));
-    CORRADE_VERIFY(!BoolVector19(0xff, 0xff, 0x04));
-    CORRADE_VERIFY(!BoolVector19(0x00, 0x00, 0x00));
-    CORRADE_VERIFY(!!BoolVector19(0xff, 0xff, 0xff));
+    CORRADE_VERIFY(!bool(BoolVector19(0xff, 0xff, 0x04)));
+    CORRADE_VERIFY(!bool(BoolVector19(0x00, 0x00, 0x00)));
+    CORRADE_VERIFY(BoolVector19(0xff, 0xff, 0xff));
+
+    /* Using ! before and after bool conversion will produce a different
+       result -- first is equivalent to !a.all(), while second is (~a).all() */
+    CORRADE_COMPARE(!bool(BoolVector19(0xff, 0xff, 0x04)), true);
+    CORRADE_COMPARE(bool(!BoolVector19(0xff, 0xff, 0x04)), false);
 
     /* Implicit conversion is not allowed */
     CORRADE_VERIFY(!(std::is_convertible<BoolVector19, bool>::value));
@@ -284,6 +290,7 @@ void BoolVectorTest::any() {
 
 void BoolVectorTest::bitInverse() {
     CORRADE_COMPARE(~BoolVector19(0xa5, 0x5f, 0x03), BoolVector19(0x5a, 0xa0, 0x04));
+    CORRADE_COMPARE(!BoolVector19(0xa5, 0x5f, 0x03), BoolVector19(0x5a, 0xa0, 0x04));
 }
 
 void BoolVectorTest::bitAndOrXor() {
@@ -291,8 +298,21 @@ void BoolVectorTest::bitAndOrXor() {
     BoolVector19 b(0x37, 0xf3, 0x06);
 
     CORRADE_COMPARE(a & b, BoolVector19(0x25, 0x53, 0x02));
+    CORRADE_COMPARE(a && b, BoolVector19(0x25, 0x53, 0x02));
+
     CORRADE_COMPARE(a | b, BoolVector19(0xb7, 0xff, 0x07));
+    CORRADE_COMPARE(a || b, BoolVector19(0xb7, 0xff, 0x07));
+
     CORRADE_COMPARE(a ^ b, BoolVector19(0x92, 0xac, 0x05));
+}
+
+void BoolVectorTest::booleanOperationEquivalents() {
+    Math::BoolVector<2> a{0x3};
+    Math::BoolVector<2> b{0x2};
+
+    CORRADE_COMPARE(!(a || b), !a && !b);
+    CORRADE_COMPARE(!(a || b), ~(a | b));
+    CORRADE_COMPARE(!a && !b, ~a & ~b);
 }
 
 void BoolVectorTest::strictWeakOrdering() {

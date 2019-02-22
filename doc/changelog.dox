@@ -64,6 +64,9 @@ See also:
     @ref Animation::Extrapolation::Extrapolated to
     @ref Animation::Extrapolation::Constant to be consistent with
     @ref Animation::Track
+-   @ref Math::BoolVector now implements component-wise @cpp && @ce,
+    @cpp || @ce and @cpp ! @ce for better consistency with boolean operations
+    done on scalar types
 
 @subsubsection changelog-latest-changes-audio Audio library
 

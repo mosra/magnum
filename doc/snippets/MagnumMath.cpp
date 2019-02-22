@@ -691,6 +691,17 @@ static_cast<void>(tan2);
 }
 
 {
+Vector3 epsilon;
+/* [BoolVector-boolean] */
+Vector3 a, b;
+
+if(!(b < a - epsilon || a + epsilon < b)) {
+    // b is around a
+}
+/* [BoolVector-boolean] */
+}
+
+{
 /* [Color3-pack] */
 Color3 a{1.0f, 0.5f, 0.75f};
 auto b = Math::pack<Color3ub>(a); // b == {255, 127, 191}
