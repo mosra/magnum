@@ -334,7 +334,7 @@ void BoolVectorTest::strictWeakOrdering() {
 
     CORRADE_VERIFY(!o(a, a));
 
-    // check uninitialized padding reads
+    /* Check uninitialized padding reads */
     a.set(8, true);
     a.set(10, true);
     b = a;
