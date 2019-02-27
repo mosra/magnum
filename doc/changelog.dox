@@ -55,6 +55,10 @@ See also:
     and @cpp "mesa-implementation-color-read-format-dsa-explicit-binding" @ce,
     because it's 2019 and GL drivers are *still* awful. See
     @ref opengl-workarounds for more information.
+-   Ability to control GPU preference (integrated/dedicated) using the
+    `--magnum-gpu-preference` command-line option and environment variables on
+    Windows and Linux/BSD systems. See @ref GL-Context-command-line for more
+    information.
 
 @subsection changelog-latest-changes Changes and improvements
 

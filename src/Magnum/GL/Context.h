@@ -134,11 +134,30 @@ Arguments:
     (environment: `MAGNUM_DISABLE_EXTENSIONS`)
 -   `--magnum-log default|quiet|verbose` --- console logging
     (environment: `MAGNUM_LOG`) (default: `default`)
+-   `--magnum-gpu-preference none|integrated|dedicated`  GPU preference
+    (environment: `MAGNUM_GPU_PREFERENCE`) (default: `none`)
 
 Note that all options are prefixed with `--magnum-` to avoid conflicts with
 options passed to the application itself. Options that don't have this prefix
 are completely ignored, see documentation of the
 @ref Utility-Arguments-delegating "Utility::Arguments" class for details.
+
+The GPU preference allows you to request either the integrated or dedicated GPU
+on systems having both onboard and dedicated GPUs. Currently this works only
+on Windows and Linux / BSD systems, on other systems this option prints a
+warning and otherwise does nothing.
+
+-   On Windows this is done by querying the `NvOptimusEnablement` and
+    `AmdPowerXpressRequestHighPerformance` symbols in the application
+    executable and, if they exist, setting them to either `0` for the
+    `integrated` option or `1` for the `dedicated` option. The symbols have to
+    be exported by the application executable (not a dynamic library). These
+    symbols are exported by default when you link to one of the (static)
+    `*Context` or `*Application` libraries, and can be controlled using the
+    `BUILD_GPU_PREFERENCE_SYMBOLS` CMake option when building Magnum (see
+    @ref building-features for more information).
+-   On Linux and BSD this affects the `DRI_PRIME` environment variable that's
+    used by Mesa drivers that support PRIME.
 */
 class MAGNUM_GL_EXPORT Context {
     public:

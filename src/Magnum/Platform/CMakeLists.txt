@@ -662,6 +662,15 @@ endif()
 set(MagnumContext_SRCS )
 if(NOT CORRADE_TARGET_IOS)
     list(APPEND MagnumContext_SRCS Implementation/OpenGLFunctionLoader.cpp)
+
+    if(CORRADE_TARGET_WINDOWS)
+        # GPU preference symbol export in OpenGLFunctionLoader.cpp
+        if(BUILD_GPU_PREFERENCE_SYMBOLS)
+            set(_MAGNUM_BUILD_GPU_PREFERENCE_SYMBOLS 1)
+        endif()
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Implementation/configure.h.cmake
+                       ${CMAKE_CURRENT_BINARY_DIR}/Implementation/configure.h)
+    endif()
 endif()
 if(NOT MAGNUM_TARGET_GLES)
     list(APPEND MagnumContext_SRCS ../../MagnumExternal/OpenGL/GL/flextGLPlatform.cpp)

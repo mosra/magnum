@@ -480,13 +480,20 @@ available for desktop OpenGL only, see @ref requires-gl.
     enabled.
 -   `TARGET_VK` --- Build libraries with Vulkan interoperability enabled.
     Enabled by default when `WITH_VK` is enabled. Disabling this will cause
-    libraries to not depend on the @ref Vk library, but  doesn't affect the
+    libraries to not depend on the @ref Vk library, but doesn't affect the
     @ref Vk library itself.
 
-By default the engine is built in a way that allows having multiple independent
-thread-local Magnum contents. This might cause some performance penalties ---
-if you are sure that you will never need such feature, you can disable it via
-the `BUILD_MULTITHREADED` option.
+There are further options affecting to engine behavior, all enabled by default:
+
+-   `BUILD_MULTITHREADED` --- Allow having multiple independent thread-local
+    Magnum contents. This might cause some performance penalties --- if you are
+    sure that you will never need such feature, disable this option.
+-   `BUILD_GPU_PREFERENCE_SYMBOLS` --- Export symbols used to control GPU
+    preference on Windows, using the `--magnum-gpu-preference`
+    @ref GL-Context-command-line "command-line option". If your application (or
+    another 3rd party lib you use) already exports symbols like
+    `NvOptimusEnablement` and you're getting linker errors due to that, disable
+    this option.
 
 The features used can be conveniently detected in depending projects both in
 CMake and C++ sources, see @ref cmake and @ref Magnum/Magnum.h for more
