@@ -41,7 +41,9 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 struct TgaImporterTest: TestSuite::Tester {
     explicit TgaImporterTest();
 
+    void openEmpty();
     void openShort();
+
     void paletted();
     void compressed();
 
@@ -52,14 +54,17 @@ struct TgaImporterTest: TestSuite::Tester {
     void grayscaleBits8();
     void grayscaleBits16();
 
-    void useTwice();
+    void openTwice();
+    void importTwice();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
 
 TgaImporterTest::TgaImporterTest() {
-    addTests({&TgaImporterTest::openShort,
+    addTests({&TgaImporterTest::openEmpty,
+              &TgaImporterTest::openShort,
+
               &TgaImporterTest::paletted,
               &TgaImporterTest::compressed,
 
@@ -70,13 +75,25 @@ TgaImporterTest::TgaImporterTest() {
               &TgaImporterTest::grayscaleBits8,
               &TgaImporterTest::grayscaleBits16,
 
-              &TgaImporterTest::useTwice});
+              &TgaImporterTest::openTwice,
+              &TgaImporterTest::importTwice});
 
     /* Load the plugin directly from the build tree. Otherwise it's static and
        already loaded. */
     #ifdef TGAIMPORTER_PLUGIN_FILENAME
     CORRADE_INTERNAL_ASSERT(_manager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
+}
+
+void TgaImporterTest::openEmpty() {
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    char a{};
+    /* Explicitly checking non-null but empty view */
+    CORRADE_VERIFY(!importer->openData({&a, 0}));
+    CORRADE_COMPARE(out.str(), "Trade::TgaImporter::openData(): the file is empty\n");
 }
 
 void TgaImporterTest::openShort() {
@@ -201,11 +218,20 @@ void TgaImporterTest::grayscaleBits16() {
     CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): unsupported grayscale bits-per-pixel: 16\n");
 }
 
-void TgaImporterTest::useTwice() {
+void TgaImporterTest::openTwice() {
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(TGAIMPORTER_TEST_DIR, "file.tga")));
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(TGAIMPORTER_TEST_DIR, "file.tga")));
+
+    /* Shouldn't crash, leak or anything */
+}
+
+void TgaImporterTest::importTwice() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(TGAIMPORTER_TEST_DIR, "file.tga")));
 
-    /* Verify that the file is rewinded for second use */
+    /* Verify that everything is working the same way on second use */
     {
         Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
         CORRADE_VERIFY(image);
