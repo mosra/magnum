@@ -144,6 +144,8 @@ Are the below lists missing your name or something's wrong?
     and GLES fixes
 -   **Samuel Kogler** ([\@skogler](https://github.com/skogler)) ---
     @ref Platform::GlfwApplication crash fixes
+-   **[\@Selot](https://github.com/Selot)** --- Fixes in the `base-qt`
+    bootstrap project
 -   **Séverin Lemaignan** ([\@severin-lemaignan](severin-lemaignan/)) --- lots
     of feedback and bug reports for the initial releases
 -   **[\@sigman78](https://github.com/sigman78)** --- Initial MSVC 2017 port,
