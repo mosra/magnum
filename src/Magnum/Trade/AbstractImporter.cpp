@@ -88,6 +88,9 @@ bool AbstractImporter::openData(Containers::ArrayView<const char> data) {
     CORRADE_ASSERT(features() & Feature::OpenData,
         "Trade::AbstractImporter::openData(): feature not supported", {});
 
+    /* We accept empty data here (instead of checking for them and failing so
+       the check doesn't be done on the plugin side) because for some file
+       formats it could be valid (e.g. OBJ or JSON-based formats). */
     close();
     doOpenData(data);
     return isOpened();
