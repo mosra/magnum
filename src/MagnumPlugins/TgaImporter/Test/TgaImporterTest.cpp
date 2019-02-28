@@ -151,14 +151,14 @@ void TgaImporterTest::colorBits32() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = {
         0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 32, 0,
-        1, 2, 3, 1, 2, 3, 4, 1,
-        3, 4, 5, 1, 4, 5, 6, 1,
-        5, 6, 7, 1, 6, 7, 8, 1
+        1, 2, 3, 4, 2, 3, 4, 5,
+        3, 4, 5, 6, 4, 5, 6, 7,
+        5, 6, 7, 8, 6, 7, 8, 9
     };
     const char pixels[] = {
-        3, 2, 1, 1, 4, 3, 2, 1,
-        5, 4, 3, 1, 6, 5, 4, 1,
-        7, 6, 5, 1, 8, 7, 6, 1
+        3, 2, 1, 4, 4, 3, 2, 5,
+        5, 4, 3, 6, 6, 5, 4, 7,
+        7, 6, 5, 8, 8, 7, 6, 9
     };
     CORRADE_VERIFY(importer->openData(data));
 
