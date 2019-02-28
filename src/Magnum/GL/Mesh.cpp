@@ -340,6 +340,11 @@ Mesh& Mesh::setIndexBuffer(Buffer&& buffer, GLintptr offset, MeshIndexType type,
         "GL::Mesh::setIndexBuffer(): the buffer has unexpected target hint, expected" << Buffer::TargetHint::ElementArray << "but got" << buffer.targetHint(), *this);
     #endif
 
+    /* It's IMPORTANT to do this *before* the _indexBuffer is set, since the
+       bindVAO() function called from here is resetting element buffer state
+       tracker to _indexBuffer.id(). */
+    (this->*Context::current().state().mesh->bindIndexBufferImplementation)(buffer);
+
     _indexBuffer = std::move(buffer);
     _indexOffset = offset;
     _indexType = type;
@@ -350,7 +355,6 @@ Mesh& Mesh::setIndexBuffer(Buffer&& buffer, GLintptr offset, MeshIndexType type,
     static_cast<void>(start);
     static_cast<void>(end);
     #endif
-    (this->*Context::current().state().mesh->bindIndexBufferImplementation)(_indexBuffer);
     return *this;
 }
 
@@ -547,9 +551,11 @@ void Mesh::bindVAO() {
 
         /* Reset element buffer binding, because binding a different VAO with a
            different index buffer will change that binding as well. (GL state,
-           what the hell.) We could also theoretically reset the binding
-           directly to _indexBuffer->id(), but let's play safe and force the
-           rebind every time. */
+           what the hell.). The _indexBuffer.id() is the index buffer that's
+           already attached to this particular VAO (or 0, if there's none). In
+           particular, the setIndexBuffer() buffers call this function *and
+           then* sets the _indexBuffer, which means at this point the ID will
+           be still 0. */
         Context::current().state().buffer->bindings[Implementation::BufferState::indexForTarget(Buffer::TargetHint::ElementArray)] = _indexBuffer.id();
     }
 }
