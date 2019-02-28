@@ -57,12 +57,16 @@ crashes on GL calls, you might want to try these things:
     @ref GL::Context::isExtensionSupported() "available on your system".
 -   Check that you didn't exceed any implementation-defined limit (see
     @ref magnum-gl-info output for list of all of them).
--   Enable @ref GL::DebugMessage "debug output" to see more detailed errors,
-    warnings and performance hints.
+-   Enable @ref GL::DebugOutput "debug output" to see more detailed errors,
+    warnings and performance hints. You can do that easily through the
+    `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
+    or an environment variable.
 -   If using framebuffer objects,
     @ref GL::Framebuffer::checkStatus() "check that they are complete".
 -   Change @ref GL::Renderer::setClearColor() "framebuffer clear color" to
-    something else than black to verify that at least something is drawn.
+    something else than black to verify that at least something is drawn. The
+    engine sets it to @cpp 0x1f1f1f_rgbf @ce by default to help you a bit in
+    this regard.
 -   If nothing is drawn, use @ref GL::PrimitiveQuery to check that at least
     some primitives were generated. Use @ref GL::SampleQuery to check whether
     fragments were drawn.
@@ -91,8 +95,6 @@ crashes on GL calls, you might want to try these things:
 
 @section troubleshooting-debugging Debugging rendering
 
--   Enable @ref GL::DebugMessage "debug output" to see additional performance
-    hints and implementation-dependent information.
 -   Use @ref GL::TimeQuery to find hot spots in the rendering code.
 -   @ref GL::DebugMessage::insert() "Mark relevant parts of code" to find them
     easier in the debugger.

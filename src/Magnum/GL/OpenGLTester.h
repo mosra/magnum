@@ -125,6 +125,10 @@ upon encountering a GL error --- this should be done explicitly with
 @ref MAGNUM_VERIFY_NO_GL_ERROR() instead, as the debug output is not available
 on all platforms and not all GL errors are fatal.
 
+@note This overrides the `--magnum-gpu-validation`
+    @ref GL-Context-command-line "command line option", making it always
+    enabled.
+
 @section GL-OpenGLTester-benchmarks GPU time benchmarks
 
 This class adds @ref BenchmarkType::GpuTime to the benchmark type enum,

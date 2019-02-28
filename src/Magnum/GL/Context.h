@@ -121,6 +121,7 @@ either from the `Platform::*Application` classes or from the
 @code{.sh}
 <application> [--magnum-help] [--magnum-disable-workarounds LIST]
               [--magnum-disable-extensions LIST]
+              [--magnum-gpu-validation off|on]
               [--magnum-log default|quiet|verbose] ...
 @endcode
 
@@ -129,9 +130,13 @@ Arguments:
 -   `...` --- main application arguments (see `-h` or `--help` for details)
 -   `--magnum-help` --- display this help message and exit
 -   `--magnum-disable-workarounds LIST` --- driver workarounds to disable (see
-    @ref opengl-workarounds for detailed info) (environment: `MAGNUM_DISABLE_WORKAROUNDS`)
+    @ref opengl-workarounds for detailed info) (environment:
+    `MAGNUM_DISABLE_WORKAROUNDS`)
 -   `--magnum-disable-extensions LIST` --- OpenGL extensions to disable
     (environment: `MAGNUM_DISABLE_EXTENSIONS`)
+-   `--magnum-gpu-validation off|on` --- GPU validation using
+    @gl_extension{KHR,debug}, if present (environment:
+    `MAGNUM_GPU_VALIDATION`) (default: `off`)
 -   `--magnum-log default|quiet|verbose` --- console logging
     (environment: `MAGNUM_LOG`) (default: `default`)
 
@@ -668,7 +673,8 @@ class MAGNUM_GL_EXPORT Context {
         #endif
 
         enum class InternalFlag: UnsignedByte {
-            DisplayInitializationLog = 1 << 0
+            DisplayInitializationLog = 1 << 0,
+            GpuValidation = 1 << 1
         };
         typedef Containers::EnumSet<InternalFlag> InternalFlags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(InternalFlags)

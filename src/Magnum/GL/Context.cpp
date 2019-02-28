@@ -43,6 +43,9 @@
 #ifndef MAGNUM_TARGET_GLES
 #include "Magnum/GL/BufferTexture.h"
 #endif
+#ifndef MAGNUM_TARGET_WEBGL
+#include "Magnum/GL/DebugOutput.h"
+#endif
 #include "Magnum/GL/DefaultFramebuffer.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Framebuffer.h"
@@ -457,15 +460,21 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
     args.addOption("disable-workarounds")
         .setHelp("disable-workarounds", "driver workarounds to disable\n      (see https://doc.magnum.graphics/magnum/opengl-workarounds.html for detailed info)", "LIST")
         .addOption("disable-extensions").setHelp("disable-extensions", "OpenGL extensions to disable", "LIST")
+        .addOption("gpu-validation", "off").setHelp("gpu-validation", "GPU validation using KHR_debug (if present)", "off|on")
         .addOption("log", "default").setHelp("log", "console logging", "default|quiet|verbose")
         .setFromEnvironment("disable-workarounds")
         .setFromEnvironment("disable-extensions")
+        .setFromEnvironment("gpu-validation")
         .setFromEnvironment("log")
         .parse(argc, argv);
 
     /* Decide whether to display initialization log */
     if(!(args.value("log") == "quiet" || args.value("log") == "QUIET"))
         _internalFlags |= InternalFlag::DisplayInitializationLog;
+
+    /* Decide whether to enable GPU validation */
+    if(args.value("gpu-validation") == "on" || args.value("gpu-validation") == "ON")
+        _internalFlags |= InternalFlag::GpuValidation;
 
     /* Disable driver workarounds */
     for(auto&& workaround: Utility::String::splitWithoutEmptyParts(args.value("disable-workarounds")))
@@ -728,6 +737,19 @@ bool Context::tryCreate() {
     /** @todo Get rid of these */
     DefaultFramebuffer::initializeContextBasedFunctionality(*this);
     Renderer::initializeContextBasedFunctionality();
+
+    /* Enable GPU validation, if requested */
+    if(_internalFlags & InternalFlag::GpuValidation) {
+        #ifndef MAGNUM_TARGET_WEBGL
+        if(Context::current().isExtensionSupported<Extensions::KHR::debug>()) {
+            Renderer::enable(Renderer::Feature::DebugOutput);
+            Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
+            DebugOutput::setDefaultCallback();
+        } else Warning{} << "GL::Context: GPU validation requested, but GL_KHR_debug not supported";
+        #else
+        Warning{} << "GL::Context: GPU validation is not available on WebGL";
+        #endif
+    }
 
     /* Everything okay */
     return true;
