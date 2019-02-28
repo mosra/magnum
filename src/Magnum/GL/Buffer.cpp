@@ -247,7 +247,7 @@ auto Buffer::bindSomewhereInternal(const TargetHint hint) -> TargetHint {
     /* Sorry, this is ugly because GL is also ugly. Blame GL, not me.
 
        If the buffer target hint is ElementArray and some VAO is bound (or our
-       state tracker is not sure), we have to unbound the VAO first in order to
+       state tracker is not sure), we have to unbind the VAO first in order to
        prevent accidental modification of that VAO. See
        Test::MeshGLTest::unbindVAOwhenSettingIndexBufferData() for details. */
     if(hint == TargetHint::ElementArray) {
