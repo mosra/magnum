@@ -667,6 +667,12 @@ class MAGNUM_GL_EXPORT Context {
         friend Platform::GLContext;
         #endif
 
+        enum class InternalFlag: UnsignedByte {
+            DisplayInitializationLog = 1 << 0
+        };
+        typedef Containers::EnumSet<InternalFlag> InternalFlags;
+        CORRADE_ENUMSET_FRIEND_OPERATORS(InternalFlags)
+
         explicit Context(NoCreateT, Int argc, const char** argv, void functionLoader(Context&));
         explicit Context(NoCreateT, Utility::Arguments&& args, Int argc, const char** argv, void functionLoader(Context&)): Context{NoCreate, args, argc, argv, functionLoader} {}
         explicit Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader(Context&));
@@ -700,7 +706,7 @@ class MAGNUM_GL_EXPORT Context {
         /* True means known and disabled, false means known */
         std::vector<std::pair<std::string, bool>> _driverWorkarounds;
         std::vector<std::string> _disabledExtensions;
-        bool _displayInitializationLog;
+        InternalFlags _internalFlags;
 };
 
 #ifndef MAGNUM_TARGET_WEBGL
@@ -708,6 +714,7 @@ CORRADE_ENUMSET_OPERATORS(Context::Flags)
 #endif
 CORRADE_ENUMSET_OPERATORS(Context::DetectedDrivers)
 CORRADE_ENUMSET_OPERATORS(Context::States)
+CORRADE_ENUMSET_OPERATORS(Context::InternalFlags)
 
 #ifndef MAGNUM_TARGET_WEBGL
 /** @debugoperatorclassenum{Context,Context::Flag} */

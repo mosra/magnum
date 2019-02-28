@@ -464,7 +464,8 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
         .parse(argc, argv);
 
     /* Decide whether to display initialization log */
-    _displayInitializationLog = !(args.value("log") == "quiet" || args.value("log") == "QUIET");
+    if(!(args.value("log") == "quiet" || args.value("log") == "QUIET"))
+        _internalFlags |= InternalFlag::DisplayInitializationLog;
 
     /* Disable driver workarounds */
     for(auto&& workaround: Utility::String::splitWithoutEmptyParts(args.value("disable-workarounds")))
@@ -685,7 +686,7 @@ bool Context::tryCreate() {
     currentContext = this;
 
     /* Decide whether to print the initialization output or not */
-    std::ostream* output = _displayInitializationLog ? Debug::output() : nullptr;
+    std::ostream* output = _internalFlags & InternalFlag::DisplayInitializationLog ? Debug::output() : nullptr;
 
     /* Print some info and initialize state tracker (which also prints some
        more info) */
