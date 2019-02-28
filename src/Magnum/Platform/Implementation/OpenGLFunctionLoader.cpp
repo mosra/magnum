@@ -51,6 +51,30 @@
 #error unsupported platform
 #endif
 
+#ifdef CORRADE_TARGET_WINDOWS
+#include "Magnum/Platform/Implementation/configure.h"
+
+#ifdef _MAGNUM_BUILD_GPU_PREFERENCE_SYMBOLS
+static_assert(sizeof(int) == 4, "int is not 32bit?!");
+
+extern "C" {
+
+/* Exported symbols. Default to the iGPU. These symbols are fetched from
+   GL::Context and set to 1 if `--magnum-gpu-preference` is set to `dedicated`.
+   In case the application already exports these and the symbols are
+   conflicting, compile Magnum with the BUILD_GPU_PREFERENCE_SYMBOLS option
+   disabled. */
+
+/* https://community.amd.com/thread/169965 */
+__declspec(dllexport) int AmdPowerXpressRequestHighPerformance = 0;
+
+/* http://developer.download.nvidia.com/devzone/devcenter/gamegraphics/files/OptimusRenderingPolicies.pdf */
+__declspec(dllexport) int NvOptimusEnablement = 0;
+
+}
+#endif
+#endif
+
 namespace Magnum { namespace Platform { namespace Implementation {
 
 /* EGL-specific implementation */
@@ -83,6 +107,12 @@ auto OpenGLFunctionLoader::load(const char* const name) -> FunctionPointer {
 #elif defined(CORRADE_TARGET_WINDOWS)
 OpenGLFunctionLoader::OpenGLFunctionLoader() {
     library = GetModuleHandleA("OpenGL32.dll");
+
+    /* Make sure the linker doesn't discard these symbols */
+    #ifdef _MAGNUM_BUILD_GPU_PREFERENCE_SYMBOLS
+    NvOptimusEnablement &= 0xffff;
+    AmdPowerXpressRequestHighPerformance &= 0xffff;
+    #endif
 }
 
 /** @todo closing the library is not needed? */

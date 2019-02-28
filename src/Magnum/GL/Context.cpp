@@ -61,6 +61,31 @@
 #include "Magnum/GL/Implementation/TransformFeedbackState.h"
 #endif
 
+#ifdef CORRADE_TARGET_WINDOWS
+/* We *don't* want to #include <windows.h>. Kindly borrowed from
+   https://github.com/Leandros/WindowsHModular; uncomment the include below
+   to check that the declarations match. */
+extern "C" {
+    #define WINAPI __stdcall
+    typedef char                CHAR;
+    typedef const CHAR *        LPCSTR;
+    typedef void *              LPVOID;
+    typedef LPVOID              HANDLE;
+    typedef HANDLE              HINSTANCE;
+    typedef HINSTANCE HMODULE;
+    HMODULE WINAPI GetModuleHandleA(LPCSTR lpModuleName);
+
+    #if defined(_WIN64)
+    typedef int64_t             INT_PTR;
+    typedef INT_PTR (WINAPI *FARPROC)(void);
+    #else
+    typedef int (WINAPI *FARPROC)(void);
+    #endif
+    FARPROC WINAPI GetProcAddress(HMODULE hModule, LPCSTR lProcName);
+}
+// #include <windows.h>
+#endif
+
 namespace Magnum { namespace GL {
 
 const std::vector<Extension>& Extension::extensions(Version version) {
@@ -458,9 +483,11 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
         .setHelp("disable-workarounds", "driver workarounds to disable\n      (see https://doc.magnum.graphics/magnum/opengl-workarounds.html for detailed info)", "LIST")
         .addOption("disable-extensions").setHelp("disable-extensions", "OpenGL extensions to disable", "LIST")
         .addOption("log", "default").setHelp("log", "console logging", "default|quiet|verbose")
+        .addOption("gpu-preference", "none").setHelp("gpu-preference", "GPU preference", "none|integrated|dedicated")
         .setFromEnvironment("disable-workarounds")
         .setFromEnvironment("disable-extensions")
         .setFromEnvironment("log")
+        .setFromEnvironment("gpu-preference")
         .parse(argc, argv);
 
     /* Decide whether to display initialization log */
@@ -473,6 +500,47 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
     /* Disable extensions */
     for(auto&& extension: Utility::String::splitWithoutEmptyParts(args.value("disable-extensions")))
         _disabledExtensions.push_back(extension);
+
+    /* GPU preference on Windows or Unix-like systems (except Apple platforms
+       and Android) */
+    if(args.value("gpu-preference") != "none") {
+        #if defined(CORRADE_TARGET_WINDOWS) || (defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_ANDROID))
+        Int enable = 0;
+        if(args.value("gpu-preference") == "integrated") enable = 0;
+        else if(args.value("gpu-preference") == "dedicated") enable = 1;
+        else Fatal{} << "Unsupported value for --magnum-gpu-preference. Allowed values are none|integrated|dedicated.";
+
+        std::ostream* verbose = args.value("log") == "verbose" ? Debug::output() : nullptr;
+
+        /* On Windows we'll try to access the NvOptimusEnablement /
+           AmdPowerXpressRequestHighPerformance defined by the executable --
+           GetModuleHandle(nullptr) is supposed to open a handle to the exe
+           (and not the DLL) */
+        #ifdef CORRADE_TARGET_WINDOWS
+        HMODULE const self = GetModuleHandleA(nullptr);
+        Int* const nvOptimusEnablement = reinterpret_cast<Int*>(GetProcAddress(self, "NvOptimusEnablement"));
+        Int* const amdPowerXpressRequestHighPerformance = reinterpret_cast<Int*>(GetProcAddress(self, "AmdPowerXpressRequestHighPerformance"));
+        if(!nvOptimusEnablement && !amdPowerXpressRequestHighPerformance)
+            Warning{} << "GL::Context: neither NvOptimusEnablement nor AmdPowerXpressRequestHighPerformance symbols found, can't set GPU preference";
+        if(nvOptimusEnablement) *nvOptimusEnablement = enable;
+        if(amdPowerXpressRequestHighPerformance) *amdPowerXpressRequestHighPerformance = enable;
+        Debug{verbose} << "GL::Context: setting NvOptimusEnablement / AmdPowerXpressRequestHighPerformance symbols to" << enable;
+
+        /* On Linux (BSD, etc., except Apple platforms or Android) we'll try to
+           set the DRI_PRIME environment variable. If the system is running on
+           Mesa drivers supporting PRIME, it'll cause it to switch. The
+           variable is only set for the lifetime of the application, thus
+           doesn't affect other apps. */
+        #elif defined(CORRADE_TARGET_UNIX) && !defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_ANDROID)
+        setenv("DRI_PRIME", enable ? "1" : "0", 1);
+        Debug{verbose} << "GL::Context: setting DRI_PRIME environment variable to" << enable;
+        #else
+        #error unhandled platform for GPU preference setup
+        #endif
+        #else
+        Warning{} << "GL::Context: setting GPU preference is not supported on this platform";
+        #endif
+    }
 }
 
 Context::Context(Context&& other): _version{other._version},

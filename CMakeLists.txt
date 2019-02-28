@@ -198,6 +198,14 @@ endif()
 # OpenGLTester library, built by default only if GL tests are enabled
 cmake_dependent_option(WITH_OPENGLTESTER "Build OpenGLTester library" OFF "NOT BUILD_GL_TESTS" ON)
 
+# GPU preference symbols (NvOptimusEnablement etc.) on Windows, enabled by
+# default so the --magnum-gpu-preference switching works out of the box. The
+# application or a 3rd party library might be already defining these, in which
+# case we want to be able to disable them.
+if(CORRADE_TARGET_WINDOWS)
+    option(BUILD_GPU_PREFERENCE_SYMBOLS "Build context and application libraries with exported GPU preference symbols" ON)
+endif()
+
 # Dynamic linking is meaningless on Emscripten and too inconvenient on Android
 if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
     set(BUILD_STATIC ON)
