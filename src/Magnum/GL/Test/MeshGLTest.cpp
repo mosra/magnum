@@ -131,6 +131,7 @@ struct MeshGLTest: OpenGLTester {
     template<class T> void setIndexBufferRangeTransferOwnership();
 
     void unbindVAOWhenSettingIndexBufferData();
+    void unbindIndexBufferWhenBindingVao();
     void unbindVAOBeforeEnteringExternalSection();
     void bindScratchVaoWhenEnteringExternalSection();
 
@@ -251,6 +252,7 @@ MeshGLTest::MeshGLTest() {
               &MeshGLTest::setIndexBufferRangeTransferOwnership<Magnum::MeshIndexType>,
 
               &MeshGLTest::unbindVAOWhenSettingIndexBufferData,
+              &MeshGLTest::unbindIndexBufferWhenBindingVao,
               &MeshGLTest::unbindVAOBeforeEnteringExternalSection,
               &MeshGLTest::bindScratchVaoWhenEnteringExternalSection,
 
@@ -2070,6 +2072,57 @@ void MeshGLTest::unbindVAOWhenSettingIndexBufferData() {
         RenderbufferFormat::RGBA4,
         #endif
         mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(value, 92);
+}
+
+void MeshGLTest::unbindIndexBufferWhenBindingVao() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::vertex_array_object>())
+        CORRADE_SKIP(Extensions::ARB::vertex_array_object::string() + std::string(" is not available."));
+    if(Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
+        CORRADE_SKIP(Extensions::ARB::direct_state_access::string() + std::string(" is active with circumvents the issue tested here."));
+    if(Context::current().isExtensionSupported<Extensions::EXT::direct_state_access>())
+        CORRADE_SKIP(Extensions::EXT::direct_state_access::string() + std::string(" is active with circumvents the issue tested here."));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current().isExtensionSupported<Extensions::OES::vertex_array_object>())
+        CORRADE_SKIP(Extensions::OES::vertex_array_object::string() + std::string(" is not available."));
+    #endif
+
+    typedef Attribute<0, Float> Attribute;
+
+    const Float data[] = { -0.7f, Math::unpack<Float, UnsignedByte>(92), Math::unpack<Float, UnsignedByte>(32) };
+    Buffer vertices{Buffer::TargetHint::Array};
+    vertices.setData(data, BufferUsage::StaticDraw);
+
+    Buffer indices{Buffer::TargetHint::ElementArray};
+    /* Just reserve the memory first */
+    indices.setData({nullptr, 2}, BufferUsage::StaticDraw);
+
+    /* Create an indexed mesh first */
+    Mesh indexed;
+    indexed.addVertexBuffer(vertices, 0, Attribute{})
+        .setIndexBuffer(indices, 0, MeshIndexType::UnsignedByte);
+
+    /* Now bind an nonindexed mesh */
+    Mesh nonindexed;
+    nonindexed.addVertexBuffer(vertices, 0, Attribute{});
+
+    /* Fill index buffer for the indexed mesh */
+    indices.setData(std::vector<UnsignedByte>{5, 1}, BufferUsage::StaticDraw);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Draw the indexed mesh. The index buffer should be correctly updated,
+       picking the second vertex with value of 92. */
+    const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        indexed).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, 92);
