@@ -544,6 +544,13 @@ void Mesh::bindVAO() {
         /* Binding the VAO finally creates it */
         _flags |= ObjectFlag::Created;
         bindVAOImplementationVAO(_id);
+
+        /* Reset element buffer binding, because binding a different VAO with a
+           different index buffer will change that binding as well. (GL state,
+           what the hell.) We could also theoretically reset the binding
+           directly to _indexBuffer->id(), but let's play safe and force the
+           rebind every time. */
+        Context::current().state().buffer->bindings[Implementation::BufferState::indexForTarget(Buffer::TargetHint::ElementArray)] = _indexBuffer.id();
     }
 }
 
@@ -769,10 +776,8 @@ void Mesh::bindIndexBufferImplementationDefault(Buffer&) {}
 void Mesh::bindIndexBufferImplementationVAO(Buffer& buffer) {
     bindVAO();
 
-    /* Reset ElementArray binding to force explicit glBindBuffer call later */
-    /** @todo Do this cleaner way */
-    Context::current().state().buffer->bindings[Implementation::BufferState::indexForTarget(Buffer::TargetHint::ElementArray)] = 0;
-
+    /* Binding the VAO in the above function resets element buffer binding,
+       meaning the following will always cause the glBindBuffer() to be called */
     buffer.bindInternal(Buffer::TargetHint::ElementArray);
 }
 
