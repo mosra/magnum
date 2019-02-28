@@ -132,6 +132,7 @@ struct MeshGLTest: OpenGLTester {
 
     void unbindVAOWhenSettingIndexBufferData();
     void unbindIndexBufferWhenBindingVao();
+    void resetIndexBufferBindingWhenBindingVao();
     void unbindVAOBeforeEnteringExternalSection();
     void bindScratchVaoWhenEnteringExternalSection();
 
@@ -253,6 +254,7 @@ MeshGLTest::MeshGLTest() {
 
               &MeshGLTest::unbindVAOWhenSettingIndexBufferData,
               &MeshGLTest::unbindIndexBufferWhenBindingVao,
+              &MeshGLTest::resetIndexBufferBindingWhenBindingVao,
               &MeshGLTest::unbindVAOBeforeEnteringExternalSection,
               &MeshGLTest::bindScratchVaoWhenEnteringExternalSection,
 
@@ -2115,6 +2117,55 @@ void MeshGLTest::unbindIndexBufferWhenBindingVao() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* Draw the indexed mesh. The index buffer should be correctly updated,
+       picking the second vertex with value of 92. */
+    const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
+        #ifndef MAGNUM_TARGET_GLES2
+        RenderbufferFormat::RGBA8,
+        #else
+        RenderbufferFormat::RGBA4,
+        #endif
+        indexed).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(value, 92);
+}
+
+void MeshGLTest::resetIndexBufferBindingWhenBindingVao() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::vertex_array_object>())
+        CORRADE_SKIP(Extensions::ARB::vertex_array_object::string() + std::string(" is not available."));
+    if(Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
+        CORRADE_SKIP(Extensions::ARB::direct_state_access::string() + std::string(" is active with circumvents the issue tested here."));
+    if(Context::current().isExtensionSupported<Extensions::EXT::direct_state_access>())
+        CORRADE_SKIP(Extensions::EXT::direct_state_access::string() + std::string(" is active with circumvents the issue tested here."));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current().isExtensionSupported<Extensions::OES::vertex_array_object>())
+        CORRADE_SKIP(Extensions::OES::vertex_array_object::string() + std::string(" is not available."));
+    #endif
+
+    typedef Attribute<0, Float> Attribute;
+
+    const Float data[] = { -0.7f, Math::unpack<Float, UnsignedByte>(92), Math::unpack<Float, UnsignedByte>(32) };
+    Buffer vertices{Buffer::TargetHint::Array};
+    vertices.setData(data);
+
+    /* Create an indexed mesh */
+    Mesh indexed;
+    indexed.addVertexBuffer(vertices, 0, Attribute{});
+
+    /* Create an index buffer and fill it (the VAO is bound now, so it'll get
+       unbound to avoid messing with its state). */
+    Buffer indices{Buffer::TargetHint::ElementArray};
+    indices.setData(std::vector<UnsignedByte>{5, 1});
+
+    /* Add the index buffer. The VAO is unbound, so it gets bound. That resets
+       the element array buffer binding and then the buffer gets bound to the
+       VAO. */
+    indexed.setIndexBuffer(indices, 0, MeshIndexType::UnsignedByte);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /* Draw the indexed mesh. The index buffer should be correctly bound,
        picking the second vertex with value of 92. */
     const auto value = Checker(FloatShader("float", "vec4(valueInterpolated, 0.0, 0.0, 0.0)"),
         #ifndef MAGNUM_TARGET_GLES2
