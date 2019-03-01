@@ -197,7 +197,7 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
         .addBooleanOption("all-extensions").setHelp("all-extensions", "display extensions also for fully supported versions")
         .addBooleanOption("limits").setHelp("limits", "display also limits and implementation-defined values")
         .addSkippedPrefix("magnum", "engine-specific options")
-        .setHelp("Displays information about Magnum engine and OpenGL capabilities.");
+        .setGlobalHelp("Displays information about Magnum engine and OpenGL capabilities.");
 
     #ifdef CORRADE_TARGET_IOS
     {

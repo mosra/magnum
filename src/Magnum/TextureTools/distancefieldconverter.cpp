@@ -147,7 +147,7 @@ DistanceFieldConverter::DistanceFieldConverter(const Arguments& arguments): Plat
         .addNamedArgument("output-size").setHelp("output-size", "size of output image", "\"X Y\"")
         .addNamedArgument("radius").setHelp("radius", "distance field computation radius", "N")
         .addSkippedPrefix("magnum", "engine-specific options")
-        .setHelp("Converts red channel of an image to distance field representation.")
+        .setGlobalHelp("Converts red channel of an image to distance field representation.")
         .parse(arguments.argc, arguments.argv);
 
     createContext();

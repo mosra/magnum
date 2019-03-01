@@ -148,7 +148,7 @@ FontConverter::FontConverter(const Arguments& arguments): Platform::WindowlessAp
         .addOption("output-size", "256 256").setHelp("output-size", "output atlas size. If set to zero size, distance field computation will not be used.", "\"X Y\"")
         .addOption("radius", "24").setHelp("radius", "distance field computation radius", "N")
         .addSkippedPrefix("magnum", "engine-specific options")
-        .setHelp("Converts font to raster one of given atlas size.")
+        .setGlobalHelp("Converts font to raster one of given atlas size.")
         .parse(arguments.argc, arguments.argv);
 
     createContext();

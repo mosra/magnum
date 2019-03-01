@@ -94,7 +94,7 @@ int main(int argc, char** argv) {
         .addOption("importer", "AnyImageImporter").setHelp("importer", "image importer plugin")
         .addOption("converter", "AnyImageConverter").setHelp("converter", "image converter plugin")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
-        .setHelp("Converts images of different formats.")
+        .setGlobalHelp("Converts images of different formats.")
         .parse(argc, argv);
 
     /* Load importer plugin */
