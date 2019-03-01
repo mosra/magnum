@@ -287,6 +287,8 @@ MeshGLTest::MeshGLTest() {
               });
 }
 
+using namespace Math::Literals;
+
 void MeshGLTest::construct() {
     {
         const Mesh mesh;
@@ -311,7 +313,16 @@ struct FloatShader: AbstractShaderProgram {
 };
 
 void MeshGLTest::constructMove() {
-    const Float data = Math::unpack<Float, UnsignedByte>(96);
+    const Float data = Math::unpack<Float, UnsignedByte>(
+        #ifndef MAGNUM_TARGET_GLES2
+        96
+        #else
+        /* Using only RGBA4, supply less precision. This has to be one on the
+           input because SwiftShader stores RGBA4 as RGBA8 internally, thus
+           preserving the full precision of the input. */
+        85
+        #endif
+    );
     Buffer buffer1, buffer2;
     buffer1.setData({&data, 1}, BufferUsage::StaticDraw);
     buffer2.setData({nullptr, 8}, BufferUsage::StaticDraw);
@@ -390,7 +401,11 @@ void MeshGLTest::constructMove() {
 
         MAGNUM_VERIFY_NO_GL_ERROR();
 
+        #ifndef MAGNUM_TARGET_GLES2
         CORRADE_COMPARE(framebuffer.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data<UnsignedByte>()[0], 96);
+        #else /* RGBA4, so less precision */
+        CORRADE_COMPARE(framebuffer.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data<UnsignedByte>()[0], 85);
+        #endif
     }
 }
 
@@ -725,7 +740,16 @@ void MeshGLTest::addVertexBufferInt() {
 #endif
 
 void MeshGLTest::addVertexBufferFloat() {
-    const Float data[] = { 0.0f, -0.7f, Math::unpack<Float, UnsignedByte>(96) };
+    const Float data[] = { 0.0f, -0.7f, Math::unpack<Float, UnsignedByte>(
+        #ifndef MAGNUM_TARGET_GLES2
+        96
+        #else
+        /* Using only RGBA4, supply less precision. This has to be one on the
+           input because SwiftShader stores RGBA4 as RGBA8 internally, thus
+           preserving the full precision of the input. */
+        85
+        #endif
+    ) };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
@@ -754,7 +778,11 @@ void MeshGLTest::addVertexBufferFloat() {
         mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(value, 96);
+    #else /* RGBA4, so less precision */
+    CORRADE_COMPARE(value, 85);
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -859,7 +887,16 @@ void MeshGLTest::addVertexBufferVectorNi() {
 #endif
 
 void MeshGLTest::addVertexBufferVectorN() {
-    const Vector3 data[] = { {}, {0.0f, -0.9f, 1.0f}, Math::unpack<Vector3>(Color3ub(96, 24, 156)) };
+    const Vector3 data[] = { {}, {0.0f, -0.9f, 1.0f},
+        #ifndef MAGNUM_TARGET_GLES2
+        0x60189c_rgbf
+        #else
+        /* Using only RGBA4, supply less precision. This has to be one on the
+           input because SwiftShader stores RGBA4 as RGBA8 internally, thus
+           preserving the full precision of the input. */
+        0x551199_rgbf
+        #endif
+    };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
@@ -888,7 +925,11 @@ void MeshGLTest::addVertexBufferVectorN() {
         mesh).get<Color3ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(value, Color3ub(96, 24, 156));
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(value, 0x60189c_rgb);
+    #else /* RGBA4, so less precision */
+    CORRADE_COMPARE(value, 0x551199_rgb);
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -931,7 +972,16 @@ void MeshGLTest::addVertexBufferMatrixNxN() {
     const Matrix3x3 data[] = {
         {},
         Matrix3x3::fromDiagonal({0.0f, -0.9f, 1.0f}),
-        Matrix3x3::fromDiagonal(Math::unpack<Vector3>(Color3ub(96, 24, 156)))
+        Matrix3x3::fromDiagonal(
+            #ifndef MAGNUM_TARGET_GLES2
+            0x60189c_rgbf
+            #else
+            /* Using only RGBA4, supply less precision. This has to be one on
+               the input because SwiftShader stores RGBA4 as RGBA8 internally,
+               thus preserving the full precision of the input. */
+            0x551199_rgbf
+            #endif
+        )
     };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -970,7 +1020,11 @@ void MeshGLTest::addVertexBufferMatrixNxN() {
         mesh).get<Color3ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(value, Color3ub(96, 24, 156));
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(value, 0x60189c_rgb);
+    #else /* RGBA4, so less precision */
+    CORRADE_COMPARE(value, 0x551199_rgb);
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -1270,8 +1324,6 @@ void MeshGLTest::addVertexBufferFloatWithHalfFloat() {
         CORRADE_SKIP(Extensions::OES::vertex_half_float::string() + std::string(" is not supported."));
     #endif
 
-    using namespace Math::Literals;
-
     const Half data[] = { 0.0_h, -0.7_h, Half(Math::unpack<Float, UnsignedByte>(186)) };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -1417,7 +1469,14 @@ void MeshGLTest::addVertexBufferVector4WithInt2101010Rev() {
 void MeshGLTest::addVertexBufferLessVectorComponents() {
     const Vector3 data[] = {
         {}, {0.0f, -0.9f, 1.0f},
-        Math::unpack<Vector3>(Color3ub(96, 24, 156))
+        #ifndef MAGNUM_TARGET_GLES2
+        0x60189c_rgbf
+        #else
+        /* Using only RGBA4, supply less precision. This has to be one on the
+           input because SwiftShader stores RGBA4 as RGBA8 internally, thus
+           preserving the full precision of the input. */
+        0x551199_rgbf
+        #endif
     };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
@@ -1447,11 +1506,24 @@ void MeshGLTest::addVertexBufferLessVectorComponents() {
         mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(value, Color4ub(96, 24, 156, 255));
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(value, 0x60189cff_rgba);
+    #else /* RGBA4, so less precision */
+    CORRADE_COMPARE(value, 0x551199ff_rgba);
+    #endif
 }
 
 void MeshGLTest::addVertexBufferNormalized() {
-    constexpr Color4ub data[] = { {}, {0, 128, 64}, {32, 156, 228} };
+    constexpr Color4ub data[] = { {}, {0, 128, 64},
+        #ifndef MAGNUM_TARGET_GLES2
+        0x209ce4_rgb
+        #else
+        /* Using only RGBA4, supply less precision. This has to be one on the
+           input because SwiftShader stores RGBA4 as RGBA8 internally, thus
+           preserving the full precision of the input. */
+        0x1199dd_rgb
+        #endif
+    };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
@@ -1481,7 +1553,11 @@ void MeshGLTest::addVertexBufferNormalized() {
         mesh).get<Color3ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(value, Color3ub(32, 156, 228));
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(value, 0x209ce4_rgb);
+    #else /* RGBA4, so less precision */
+    CORRADE_COMPARE(value, 0x1199dd_rgb);
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -1603,9 +1679,18 @@ void MeshGLTest::addVertexBufferMultiple() {
         Math::unpack<Float, UnsignedByte>(64),
             Math::unpack<Float, UnsignedByte>(17),
                 Math::unpack<Float, UnsignedByte>(56),
+        #ifndef MAGNUM_TARGET_GLES2
         Math::unpack<Float, UnsignedByte>(15),
             Math::unpack<Float, UnsignedByte>(164),
                 Math::unpack<Float, UnsignedByte>(17),
+        #else
+        /* Using only RGBA4, supply less precision. This has to be one on the
+           input because SwiftShader stores RGBA4 as RGBA8 internally, thus
+           preserving the full precision of the input. */
+        Math::unpack<Float, UnsignedByte>(9),
+            Math::unpack<Float, UnsignedByte>(159),
+                Math::unpack<Float, UnsignedByte>(12),
+        #endif
         Math::unpack<Float, UnsignedByte>(97),
             Math::unpack<Float, UnsignedByte>(28)
     };
@@ -1629,7 +1714,11 @@ void MeshGLTest::addVertexBufferMultiple() {
         mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(value, Color4ub(64 + 15 + 97, 17 + 164 + 28, 56 + 17, 255));
+    #else /* RGBA4, so less precision */
+    CORRADE_COMPARE(value, 0xaacc44ff_rgba);
+    #endif
 }
 
 void MeshGLTest::addVertexBufferMultipleGaps() {
@@ -1645,9 +1734,18 @@ void MeshGLTest::addVertexBufferMultipleGaps() {
         Math::unpack<Float, UnsignedByte>(64),
             Math::unpack<Float, UnsignedByte>(17),
                 Math::unpack<Float, UnsignedByte>(56), 0.0f,
+        #ifndef MAGNUM_TARGET_GLES2
         Math::unpack<Float, UnsignedByte>(15),
             Math::unpack<Float, UnsignedByte>(164),
                 Math::unpack<Float, UnsignedByte>(17), 0.0f,
+        #else
+        /* Using only RGBA4, supply less precision. This has to be one on the
+           input because SwiftShader stores RGBA4 as RGBA8 internally, thus
+           preserving the full precision of the input. */
+        Math::unpack<Float, UnsignedByte>(9),
+            Math::unpack<Float, UnsignedByte>(159),
+                Math::unpack<Float, UnsignedByte>(12), 0.0f,
+        #endif
         Math::unpack<Float, UnsignedByte>(97),
             Math::unpack<Float, UnsignedByte>(28), 0.0f, 0.0f
     };
@@ -1672,7 +1770,11 @@ void MeshGLTest::addVertexBufferMultipleGaps() {
         mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(value, Color4ub(64 + 15 + 97, 17 + 164 + 28, 56 + 17, 255));
+    #else /* RGBA4, so less precision */
+    CORRADE_COMPARE(value, 0xaacc44ff_rgba);
+    #endif
 }
 
 void MeshGLTest::addVertexBufferMovedOutInstance() {
@@ -1844,9 +1946,18 @@ const Float indexedVertexData[] = {
     Math::unpack<Float, UnsignedByte>(64),
         Math::unpack<Float, UnsignedByte>(17),
             Math::unpack<Float, UnsignedByte>(56),
+    #ifndef MAGNUM_TARGET_GLES2
     Math::unpack<Float, UnsignedByte>(15),
         Math::unpack<Float, UnsignedByte>(164),
             Math::unpack<Float, UnsignedByte>(17),
+    #else
+    /* Using only RGBA4, supply less precision. This has to be one on the input
+       because SwiftShader stores RGBA4 as RGBA8 internally, thus preserving
+       the full precision of the input. */
+    Math::unpack<Float, UnsignedByte>(9),
+        Math::unpack<Float, UnsignedByte>(159),
+            Math::unpack<Float, UnsignedByte>(12),
+    #endif
     Math::unpack<Float, UnsignedByte>(97),
         Math::unpack<Float, UnsignedByte>(28),
 
@@ -1887,7 +1998,11 @@ const Float indexedVertexDataBaseVertex[] = {
 };
 #endif
 
-constexpr Color4ub indexedResult(64 + 15 + 97, 17 + 164 + 28, 56 + 17, 255);
+#ifndef MAGNUM_TARGET_GLES2
+constexpr Color4ub indexedResult{64 + 15 + 97, 17 + 164 + 28, 56 + 17, 255};
+#else /* RGBA4, so less precision */
+constexpr Color4ub indexedResult{0xaa, 0xcc, 0x44, 0xff};
+#endif
 
 template<class T> void MeshGLTest::setIndexBuffer() {
     setTestCaseName(std::is_same<T, MeshIndexType>::value ?
@@ -2080,7 +2195,16 @@ void MeshGLTest::unbindVAOWhenSettingIndexBufferData() {
 
     typedef Attribute<0, Float> Attribute;
 
-    const Float data[] = { -0.7f, Math::unpack<Float, UnsignedByte>(92), Math::unpack<Float, UnsignedByte>(32) };
+    const Float data[] = { -0.7f, Math::unpack<Float, UnsignedByte>(
+        #ifndef MAGNUM_TARGET_GLES2
+        92
+        #else
+        /* Using only RGBA4, supply less precision. This has to be one on the
+           input because SwiftShader stores RGBA4 as RGBA8 internally, thus
+           preserving the full precision of the input. */
+        85
+        #endif
+    ), Math::unpack<Float, UnsignedByte>(32) };
     Buffer buffer{Buffer::TargetHint::Array};
     buffer.setData(data, BufferUsage::StaticDraw);
 
@@ -2106,7 +2230,11 @@ void MeshGLTest::unbindVAOWhenSettingIndexBufferData() {
         mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(value, 92);
+    #else /* RGBA4, so less precision */
+    CORRADE_COMPARE(value, 85);
+    #endif
 }
 
 void MeshGLTest::unbindIndexBufferWhenBindingVao() {
@@ -2124,7 +2252,16 @@ void MeshGLTest::unbindIndexBufferWhenBindingVao() {
 
     typedef Attribute<0, Float> Attribute;
 
-    const Float data[] = { -0.7f, Math::unpack<Float, UnsignedByte>(92), Math::unpack<Float, UnsignedByte>(32) };
+    const Float data[] = { -0.7f, Math::unpack<Float, UnsignedByte>(
+        #ifndef MAGNUM_TARGET_GLES2
+        92
+        #else
+        /* Using only RGBA4, supply less precision. This has to be one on the
+           input because SwiftShader stores RGBA4 as RGBA8 internally, thus
+           preserving the full precision of the input. */
+        85
+        #endif
+    ), Math::unpack<Float, UnsignedByte>(32) };
     Buffer vertices{Buffer::TargetHint::Array};
     vertices.setData(data, BufferUsage::StaticDraw);
 
@@ -2157,7 +2294,11 @@ void MeshGLTest::unbindIndexBufferWhenBindingVao() {
         indexed).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(value, 92);
+    #else /* RGBA4, so less precision */
+    CORRADE_COMPARE(value, 85);
+    #endif
 }
 
 void MeshGLTest::resetIndexBufferBindingWhenBindingVao() {
@@ -2175,7 +2316,16 @@ void MeshGLTest::resetIndexBufferBindingWhenBindingVao() {
 
     typedef Attribute<0, Float> Attribute;
 
-    const Float data[] = { -0.7f, Math::unpack<Float, UnsignedByte>(92), Math::unpack<Float, UnsignedByte>(32) };
+    const Float data[] = { -0.7f, Math::unpack<Float, UnsignedByte>(
+        #ifndef MAGNUM_TARGET_GLES2
+        92
+        #else
+        /* Using only RGBA4, supply less precision. This has to be one on the
+           input because SwiftShader stores RGBA4 as RGBA8 internally, thus
+           preserving the full precision of the input. */
+        85
+        #endif
+    ), Math::unpack<Float, UnsignedByte>(32) };
     Buffer vertices{Buffer::TargetHint::Array};
     vertices.setData(data);
 
@@ -2206,7 +2356,11 @@ void MeshGLTest::resetIndexBufferBindingWhenBindingVao() {
         indexed).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(value, 92);
+    #else /* RGBA4, so less precision */
+    CORRADE_COMPARE(value, 85);
+    #endif
 }
 
 void MeshGLTest::unbindVAOBeforeEnteringExternalSection() {
@@ -2220,7 +2374,16 @@ void MeshGLTest::unbindVAOBeforeEnteringExternalSection() {
 
     typedef Attribute<0, Float> Attribute;
 
-    const Float data[] = { -0.7f, Math::unpack<Float, UnsignedByte>(92), Math::unpack<Float, UnsignedByte>(32) };
+    const Float data[] = { -0.7f, Math::unpack<Float, UnsignedByte>(
+        #ifndef MAGNUM_TARGET_GLES2
+        92
+        #else
+        /* Using only RGBA4, supply less precision. This has to be one on the
+           input because SwiftShader stores RGBA4 as RGBA8 internally, thus
+           preserving the full precision of the input. */
+        85
+        #endif
+    ), Math::unpack<Float, UnsignedByte>(32) };
     Buffer buffer{Buffer::TargetHint::Array};
     buffer.setData(data, BufferUsage::StaticDraw);
 
@@ -2252,13 +2415,26 @@ void MeshGLTest::unbindVAOBeforeEnteringExternalSection() {
         mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(value, 92);
+    #else /* RGBA4, so less precision */
+    CORRADE_COMPARE(value, 85);
+    #endif
 }
 
 void MeshGLTest::bindScratchVaoWhenEnteringExternalSection() {
     typedef Attribute<0, Float> Attribute;
 
-    const Float data[] = { -0.7f, Math::unpack<Float, UnsignedByte>(92), Math::unpack<Float, UnsignedByte>(32) };
+    const Float data[] = { -0.7f, Math::unpack<Float, UnsignedByte>(
+        #ifndef MAGNUM_TARGET_GLES2
+        92
+        #else
+        /* Using only RGBA4, supply less precision. This has to be one on the
+           input because SwiftShader stores RGBA4 as RGBA8 internally, thus
+           preserving the full precision of the input. */
+        85
+        #endif
+    ), Math::unpack<Float, UnsignedByte>(32) };
     Buffer buffer{Buffer::TargetHint::Array};
     buffer.setData(data, BufferUsage::StaticDraw);
 
@@ -2294,7 +2470,11 @@ void MeshGLTest::bindScratchVaoWhenEnteringExternalSection() {
         mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(value, 92);
+    #else /* RGBA4, so less precision */
+    CORRADE_COMPARE(value, 85);
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES
@@ -2824,7 +3004,16 @@ void MeshGLTest::multiDraw() {
 
     typedef Attribute<0, Float> Attribute;
 
-    const Float data[] = { 0.0f, -0.7f, Math::unpack<Float, UnsignedByte>(96) };
+    const Float data[] = { 0.0f, -0.7f, Math::unpack<Float, UnsignedByte>(
+        #ifndef MAGNUM_TARGET_GLES2
+        96
+        #else
+        /* Using only RGBA4, supply less precision. This has to be one on the
+           input because SwiftShader stores RGBA4 as RGBA8 internally, thus
+           preserving the full precision of the input. */
+        85
+        #endif
+    ) };
     Buffer buffer;
     buffer.setData(data, BufferUsage::StaticDraw);
 
@@ -2837,7 +3026,11 @@ void MeshGLTest::multiDraw() {
         mesh).get<UnsignedByte>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+    #ifndef MAGNUM_TARGET_GLES2
     CORRADE_COMPARE(value, 96);
+    #else /* RGBA4, so less precision */
+    CORRADE_COMPARE(value, 85);
+    #endif
 }
 
 void MeshGLTest::multiDrawIndexed() {

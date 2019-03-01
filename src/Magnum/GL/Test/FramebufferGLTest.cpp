@@ -1401,6 +1401,8 @@ const auto DataStorage = PixelStorage{}.setSkip({0, 16, 0});
 const std::size_t DataOffset = 16*8;
 
 void FramebufferGLTest::read() {
+    using namespace Math::Literals;
+
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::framebuffer_object>())
         CORRADE_SKIP(Extensions::ARB::framebuffer_object::string() + std::string(" is not available."));
@@ -1450,7 +1452,14 @@ void FramebufferGLTest::read() {
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Read), Framebuffer::Status::Complete);
     CORRADE_COMPARE(framebuffer.checkStatus(FramebufferTarget::Draw), Framebuffer::Status::Complete);
 
-    Renderer::setClearColor(Math::unpack<Color4>(Color4ub(128, 64, 32, 17)));
+    #ifndef MAGNUM_TARGET_GLES2
+    Renderer::setClearColor(0x80402011_rgbaf);
+    #else
+    /* Using only RGBA4, supply less precision. This has to be one on the input
+       because SwiftShader stores RGBA4 as RGBA8 internally, thus preserving
+       the full precision of the input. */
+    Renderer::setClearColor(0x88442211_rgbaf);
+    #endif
     Renderer::setClearDepth(Math::unpack<Float, UnsignedShort>(48352));
     Renderer::setClearStencil(67);
     framebuffer.clear(FramebufferClear::Color|FramebufferClear::Depth|FramebufferClear::Stencil);
@@ -1461,7 +1470,11 @@ void FramebufferGLTest::read() {
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
     CORRADE_COMPARE(colorImage.data().size(), (DataOffset + 8*16)*sizeof(Color4ub));
-    CORRADE_COMPARE(colorImage.data<Color4ub>()[DataOffset], Color4ub(128, 64, 32, 17));
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_COMPARE(colorImage.data<Color4ub>()[DataOffset], 0x80402011_rgba);
+    #else /* using only RGBA4, less precision */
+    CORRADE_COMPARE(colorImage.data<Color4ub>()[DataOffset], 0x88442211_rgba);
+    #endif
 
     #ifndef MAGNUM_TARGET_WEBGL
     #ifdef MAGNUM_TARGET_GLES
