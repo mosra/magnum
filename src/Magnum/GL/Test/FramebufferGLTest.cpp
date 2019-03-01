@@ -1051,12 +1051,15 @@ void FramebufferGLTest::multipleColorOutputs() {
     Renderbuffer depth;
     depth.setStorage(RenderbufferFormat::DepthComponent16, Vector2i(128));
 
+    /* According to EXT_draw_buffers, the <i>th value in <bufs> has to be
+       either COLOR_ATTACHMENT<i>_EXT or NONE, so watch out -- list them in
+       order. */
     Framebuffer framebuffer({{}, Vector2i(128)});
-    framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color1, 0)
-               .attachTexture(Framebuffer::ColorAttachment(1), color2, 0)
+    framebuffer.attachTexture(Framebuffer::ColorAttachment(0), color2, 0)
+               .attachTexture(Framebuffer::ColorAttachment(1), color1, 0)
                .attachRenderbuffer(Framebuffer::BufferAttachment::Depth, depth)
-               .mapForDraw({{0, Framebuffer::ColorAttachment(1)},
-                            {1, Framebuffer::ColorAttachment(0)},
+               .mapForDraw({{0, Framebuffer::ColorAttachment(0)},
+                            {1, Framebuffer::ColorAttachment(1)},
                             {2, Framebuffer::DrawAttachment::None}});
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
