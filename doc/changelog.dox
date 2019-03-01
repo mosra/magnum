@@ -137,6 +137,8 @@ See also:
     @gl_extension{EXT,instanced_arrays}, @gl_extension{EXT,draw_instanced},
     @gl_extension{NV,instanced_arrays} and @gl_extension{NV,draw_instanced}
     extensions
+-   Reading of float textures on ES3 contexts using
+    @ref DebugTools::textureSubImage() returned a zero-sized image by accident
 -   Updated the `base-qt` bootstrap project to correctly reset state tracker
     when going from and back to Qt code, and to use the framebuffer provided by
     Qt instead of @ref GL::defaultFramebuffer (see

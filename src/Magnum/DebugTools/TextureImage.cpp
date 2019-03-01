@@ -152,7 +152,7 @@ void textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& ra
         const Vector2i imageSize = image.size();
         Image2D temp{image.storage(), reinterpretFormat, GL::PixelType::UnsignedInt, imageSize, image.release()};
         fb.read(range, temp);
-        image = Image2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), imageSize, temp.release()};
+        image = Image2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), range.size(), temp.release()};
         return;
     }
     #endif
