@@ -106,7 +106,8 @@ void ObjectRendererGLTest::render2D() {
     CORRADE_COMPARE_WITH(
         framebuffer.read({{}, {64, 64}}, {PixelFormat::RGBA8Unorm}),
         Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "ObjectRenderer2D.tga"),
-        CompareImageToFile{_manager});
+        /* SwiftShader misplaces two pixels here. Nothing serious. */
+        (CompareImageToFile{_manager, 71.6f, 0.07f}));
 }
 
 void ObjectRendererGLTest::render3D() {
