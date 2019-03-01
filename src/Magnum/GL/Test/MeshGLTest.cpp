@@ -1715,6 +1715,21 @@ void MeshGLTest::addVertexBufferTransferOwnwership() {
 }
 
 void MeshGLTest::addVertexBufferInstancedTransferOwnwership() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::draw_instanced>())
+        CORRADE_SKIP(Extensions::ARB::draw_instanced::string() + std::string(" is not available."));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::instanced_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::instanced_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::NV::instanced_arrays>())
+        CORRADE_SKIP("Required extension is not available.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::instanced_arrays>())
+        CORRADE_SKIP(Extensions::ANGLE::instanced_arrays::string() + std::string(" is not available."));
+    #endif
+    #endif
+
     const Float data = 1.0f;
     Buffer buffer;
     buffer.setData({&data, 1}, BufferUsage::StaticDraw);
@@ -1775,6 +1790,21 @@ void MeshGLTest::addVertexBufferDynamicTransferOwnwership() {
 }
 
 void MeshGLTest::addVertexBufferInstancedDynamicTransferOwnwership() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::draw_instanced>())
+        CORRADE_SKIP(Extensions::ARB::draw_instanced::string() + std::string(" is not available."));
+    #elif defined(MAGNUM_TARGET_GLES2)
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::instanced_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::instanced_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::NV::instanced_arrays>())
+        CORRADE_SKIP("Required extension is not available.");
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::instanced_arrays>())
+        CORRADE_SKIP(Extensions::ANGLE::instanced_arrays::string() + std::string(" is not available."));
+    #endif
+    #endif
+
     const Float data = 1.0f;
     Buffer buffer;
     buffer.setData({&data, 1}, BufferUsage::StaticDraw);
