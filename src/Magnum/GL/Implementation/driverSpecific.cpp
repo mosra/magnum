@@ -140,6 +140,26 @@ namespace {
         "swiftshader-egl-context-needs-pbuffer",
         #endif
 
+        #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /* SwiftShader 4.1.0 on ES2 contexts reports GL_ANGLE_instanced_arrays
+           and GL_EXT_instanced_arrays but has no glDrawArraysInstancedANGLE /
+           glDrawArraysInstancedEXT nor glDrawElementsInstancedANGLE /
+           glDrawElementsInstancedEXT entrypoints, only the unsuffixed versions
+           for ES3. OTOH, glVertexAttribDivisor is there for both ANGLE and
+           EXT. Relevant code:
+           https://github.com/google/swiftshader/blob/ad5c2952ca88730c07e04f6f1566194b66860c26/src/OpenGL/libGLESv2/libGLESv2.cpp#L6352-L6357
+           Disabling the two extensions on ES2 contexts to avoid nullptr
+           crashes. */
+        "swiftshader-no-es2-draw-instanced-entrypoints",
+
+        /* SwiftShader 4.1.0 on ES2 contexts reports GL_OES_texture_3D but from
+           all its entrypoints only glTexImage3DOES is present, all others are
+           present only in the ES3 unsuffixed versions. Relevant code:
+           https://github.com/google/swiftshader/blob/ad5c2952ca88730c07e04f6f1566194b66860c26/src/OpenGL/libGLESv2/libGLESv2.cpp#L6504
+           Disabling the extension on ES2 contexts to avoid nullptr crashes. */
+        "swiftshader-no-es2-oes-texture-3d-entrypoints",
+        #endif
+
         #ifndef MAGNUM_TARGET_GLES
         /* Even with the DSA variant, where GL_IMPLEMENTATION_COLOR_READ_* is
            passed to glGetNamedFramebufferParameter(), Mesa complains that the
@@ -309,6 +329,21 @@ void Context::setupDriverWorkarounds() {
        isExtensionSupported<Extensions::ARB::get_texture_sub_image>() &&
        !isDriverWorkaroundDisabled("svga3d-gettexsubimage-oob-write"))
         _setRequiredVersion(ARB::get_texture_sub_image, None);
+    #endif
+
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if(detectedDriver() & Context::DetectedDriver::SwiftShader) {
+        if((isExtensionSupported<Extensions::ANGLE::instanced_arrays>() ||
+            isExtensionSupported<Extensions::EXT::instanced_arrays>()) &&
+           !isDriverWorkaroundDisabled("swiftshader-no-es2-draw-instanced-entrypoints")) {
+            _setRequiredVersion(ANGLE::instanced_arrays, None);
+            _setRequiredVersion(EXT::instanced_arrays, None);
+        }
+
+        if(isExtensionSupported<Extensions::OES::texture_3D>() &&
+           !isDriverWorkaroundDisabled("swiftshader-no-es2-oes-texture-3d-entrypoints"))
+            _setRequiredVersion(OES::texture_3D, None);
+    }
     #endif
 
     #undef _setRequiredVersion

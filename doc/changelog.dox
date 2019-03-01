@@ -55,6 +55,11 @@ See also:
     and @cpp "mesa-implementation-color-read-format-dsa-explicit-binding" @ce,
     because it's 2019 and GL drivers are *still* awful. See
     @ref opengl-workarounds for more information.
+-   New @cpp "swiftshader-no-es2-draw-instanced-entrypoints" @ce and
+    @cpp "swiftshader-no-es2-oes-texture-3d-entrypoints" @ce workarounds
+    disabling @gl_extension{ANGLE,instanced_arrays} and
+    @gl_extension{OES,texture_3D} extensions on SwiftShader due to missing
+    suffixed entry points. See @ref opengl-workarounds for more information.
 -   New `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
     and a corresponding environment variable to conveniently enable
     @gl_extension{KHR,debug} debug output
