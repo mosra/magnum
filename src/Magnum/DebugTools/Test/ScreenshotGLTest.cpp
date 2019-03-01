@@ -114,6 +114,8 @@ void ScreenshotGLTest::rgba8() {
     GL::Framebuffer framebuffer{{{}, {4, 3}}};
     framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{0}, texture, 0);
 
+    CORRADE_COMPARE(framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+
     std::string file = Utility::Directory::join(SCREENSHOT_TEST_DIR, "image.tga");
     if(Utility::Directory::exists(file))
         CORRADE_VERIFY(Utility::Directory::rm(file));
@@ -162,6 +164,8 @@ void ScreenshotGLTest::r8() {
     GL::Framebuffer framebuffer{{{}, {4, 3}}};
     framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{0}, texture, 0);
 
+    CORRADE_COMPARE(framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+
     std::string file = Utility::Directory::join(SCREENSHOT_TEST_DIR, "image.tga");
     if(Utility::Directory::exists(file))
         CORRADE_VERIFY(Utility::Directory::rm(file));
@@ -198,6 +202,8 @@ void ScreenshotGLTest::unknownFormat() {
     GL::Framebuffer framebuffer{{{}, {4, 3}}};
     framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{0}, texture, 0);
 
+    CORRADE_COMPARE(framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+
     std::ostringstream out;
     bool succeeded;
     {
@@ -224,6 +230,8 @@ void ScreenshotGLTest::pluginLoadFailed() {
         .setSubImage(0, {}, rgba);
     GL::Framebuffer framebuffer{{{}, {4, 3}}};
     framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{0}, texture, 0);
+
+    CORRADE_COMPARE(framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
 
     std::ostringstream out;
     bool succeeded;
@@ -256,6 +264,8 @@ void ScreenshotGLTest::saveFailed() {
         .setSubImage(0, {}, rgba);
     GL::Framebuffer framebuffer{{{}, {4, 3}}};
     framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{0}, texture, 0);
+
+    CORRADE_COMPARE(framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
 
     std::ostringstream out;
     bool succeeded;
