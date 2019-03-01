@@ -45,14 +45,16 @@ bool screenshot(PluginManager::Manager<Trade::AbstractImageConverter>& manager, 
     /* Get the implementation-specific color read format for given framebuffer */
     const GL::PixelFormat format = framebuffer.implementationColorReadFormat();
     const GL::PixelType type = framebuffer.implementationColorReadType();
-    Containers::Optional<PixelFormat> genericFormat;
-    #ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */
-    #define _c(generic, glFormat, glType) if(format == GL::PixelFormat::glFormat && type == GL::PixelType::glType) genericFormat = PixelFormat::generic;
-    #define _s(generic)
-    #include "Magnum/GL/Implementation/pixelFormatMapping.hpp"
-    #undef _c
-    #undef _s
-    #endif
+    auto genericFormat = [](GL::PixelFormat format, GL::PixelType type) -> Containers::Optional<PixelFormat> {
+        #ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */
+        #define _c(generic, glFormat, glType) if(format == GL::PixelFormat::glFormat && type == GL::PixelType::glType) return PixelFormat::generic;
+        #define _s(generic) return {};
+        #include "Magnum/GL/Implementation/pixelFormatMapping.hpp"
+        #undef _c
+        #undef _s
+        #endif
+        return {};
+    }(format, type);
     if(!genericFormat) {
         Error{} << "DebugTools::screenshot(): can't map (" << Debug::nospace << format << Debug::nospace << "," << type << Debug::nospace << ") to a generic pixel format";
         return false;
