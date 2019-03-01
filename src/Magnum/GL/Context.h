@@ -323,12 +323,14 @@ class MAGNUM_GL_EXPORT Context {
             #endif
             #endif
 
-            #ifdef MAGNUM_TARGET_GLES
+            #if defined(MAGNUM_TARGET_GLES) || defined(DOXYGEN_GENERATING_OUTPUT)
             /**
              * OpenGL ES implementation by ANGLE (translated to D3D), used by
              * browsers on Windows for WebGL. As the WebGL specification
              * explicitly disallows exposing driver information to the
-             * application, this check cannot be done reliably.
+             * application, this check cannot be done reliably. See also
+             * @ref DetectedDriver::SwiftShader.
+             * @requires_gles ANGLE doesn't support desktop OpenGL contexts.
              */
             Angle = 1 << 1,
 
@@ -362,9 +364,7 @@ class MAGNUM_GL_EXPORT Context {
              *      intentionally hide most of the driver information.
              */
             NVidia = 1 << 4,
-            #endif
 
-            #ifndef MAGNUM_TARGET_WEBGL
             /**
              * VMware guest GL driver SVGA3D, implemented using Mesa, both
              * Windows and Linux guests. See https://www.mesa3d.org/vmware-guest.html
@@ -373,7 +373,19 @@ class MAGNUM_GL_EXPORT Context {
              * @requires_gles Not detectable on WebGL, as browsers
              *      intentionally hide most of the driver information.
              */
-            Svga3D = 1 << 5
+            Svga3D = 1 << 5,
+
+            #if defined(MAGNUM_TARGET_GLES) || defined(DOXYGEN_GENERATING_OUTPUT)
+            /**
+             * [SwiftShader](https://github.com/google/swiftshader) software
+             * renderer for OpenGL ES. Usually used by browsers in cases where
+             * a GPU isn't available. See also @ref DetectedDriver::Angle.
+             * @requires_gles SwiftShader doesn't support desktop OpenGL
+             *      contexts. Not detectable on WebGL, as browsers
+             *      intentionally hide most of the driver information.
+             */
+            SwiftShader = 1 << 6
+            #endif
             #endif
         };
 

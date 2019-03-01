@@ -254,6 +254,13 @@ auto Context::detectedDriver() -> DetectedDrivers {
     }
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    /* SwiftShader */
+    if(renderer.find("SwiftShader") != std::string::npos)
+        return *_detectedDrivers |= DetectedDriver::SwiftShader;
+    #endif
+    #endif
+
     return *_detectedDrivers;
 }
 

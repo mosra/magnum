@@ -970,9 +970,10 @@ Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
         _c(IntelWindows)
         _c(Mesa)
         _c(NVidia)
-        #endif
-        #ifndef MAGNUM_TARGET_WEBGL
         _c(Svga3D)
+        #ifdef MAGNUM_TARGET_GLES
+        _c(SwiftShader)
+        #endif
         #endif
         #undef _c
         /* LCOV_EXCL_STOP */
@@ -993,9 +994,10 @@ Debug& operator<<(Debug& debug, const Context::DetectedDrivers value) {
         Context::DetectedDriver::IntelWindows,
         Context::DetectedDriver::Mesa,
         Context::DetectedDriver::NVidia,
+        Context::DetectedDriver::Svga3D,
+        #ifdef MAGNUM_TARGET_GLES
+        Context::DetectedDriver::SwiftShader
         #endif
-        #ifndef MAGNUM_TARGET_WEBGL
-        Context::DetectedDriver::Svga3D
         #endif
     });
 }

@@ -58,6 +58,8 @@ See also:
 -   New `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
     and a corresponding environment variable to conveniently enable
     @gl_extension{KHR,debug} debug output
+-   Detection of SwiftShader drivers with
+    @ref GL::Context::DetectedDriver::SwiftShader
 
 @subsection changelog-latest-changes Changes and improvements
 
