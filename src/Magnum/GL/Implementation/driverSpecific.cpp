@@ -242,10 +242,12 @@ auto Context::detectedDriver() -> DetectedDrivers {
 
     /** @todo there is also D3D9/D3D11 distinction on webglreport.com, is it useful? */
     #ifdef MAGNUM_TARGET_GLES
-    /* OpenGL ES implementation using ANGLE. Taken from these sources:
-       http://stackoverflow.com/a/20149090
-       http://webglreport.com
-    */
+    /* ANGLE. Can detect easily on ES, have to resort to hacks on WebGL.
+       Sources: http://stackoverflow.com/a/20149090 + http://webglreport.com */
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(renderer.find("ANGLE") != std::string::npos)
+        return *_detectedDrivers |= DetectedDriver::Angle;
+    #else
     {
         Range1Di range;
         glGetIntegerv(GL_ALIASED_LINE_WIDTH_RANGE, range.data());
