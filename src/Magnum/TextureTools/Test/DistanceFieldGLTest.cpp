@@ -194,7 +194,8 @@ void DistanceFieldGLTest::test() {
     /* In some cases actualOutputImage might have GL-specific format,
        reinterpret as R8Unorm for the comparison to work */
     if(actualOutputImage->format() == pixelFormatWrap(GL::PixelFormat::Red)) {
-        actualOutputImage = Image2D{actualOutputImage->storage(), PixelFormat::R8Unorm, actualOutputImage->size(), actualOutputImage->release()};
+        const Vector2i imageSize = actualOutputImage->size();
+        actualOutputImage = Image2D{actualOutputImage->storage(), PixelFormat::R8Unorm, imageSize, actualOutputImage->release()};
     }
     #endif
 
