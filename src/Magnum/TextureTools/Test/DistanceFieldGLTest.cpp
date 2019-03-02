@@ -209,6 +209,11 @@ void DistanceFieldGLTest::test() {
 
 #ifndef MAGNUM_TARGET_WEBGL
 void DistanceFieldGLTest::benchmark() {
+    #ifdef MAGNUM_TARGET_GLES
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::EXT::disjoint_timer_query>())
+        CORRADE_SKIP(GL::Extensions::EXT::disjoint_timer_query::string() + std::string{" is not supported, can't benchmark"});
+    #endif
+
     Containers::Pointer<Trade::AbstractImporter> importer;
     if(!(importer = _manager.loadAndInstantiate("TgaImporter")))
         CORRADE_SKIP("TgaImporter plugin not found.");
