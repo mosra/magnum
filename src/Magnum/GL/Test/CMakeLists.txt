@@ -152,10 +152,12 @@ if(BUILD_GL_TESTS)
     if(NOT MAGNUM_TARGET_WEBGL)
         corrade_add_test(GLAbstractObjectGLTest AbstractObjectGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLDebugOutputGLTest DebugOutputGLTest.cpp LIBRARIES MagnumOpenGLTester)
+        corrade_add_test(GLTimeQueryGLTest TimeQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
 
         set_target_properties(
             GLAbstractObjectGLTest
             GLDebugOutputGLTest
+            GLTimeQueryGLTest
             PROPERTIES FOLDER "Magnum/GL/Test")
     endif()
 
@@ -189,13 +191,11 @@ if(BUILD_GL_TESTS)
         corrade_add_test(GLBufferTextureGLTest BufferTextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLCubeMapTextureArrayGLTest CubeMapTextureArrayGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLMultisampleTextureGLTest MultisampleTextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
-        corrade_add_test(GLTimeQueryGLTest TimeQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
 
         set_target_properties(
             GLBufferTextureGLTest
             GLCubeMapTextureArrayGLTest
             GLMultisampleTextureGLTest
-            GLTimeQueryGLTest
             PROPERTIES FOLDER "Magnum/GL/Test")
     endif()
 
