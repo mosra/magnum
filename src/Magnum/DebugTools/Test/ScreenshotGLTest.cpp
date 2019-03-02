@@ -46,6 +46,11 @@
 #include "Magnum/GL/DebugOutput.h"
 #endif
 
+#ifdef MAGNUM_TARGET_GLES2
+#include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
+#endif
+
 #include "configure.h"
 
 namespace Magnum { namespace DebugTools { namespace Test { namespace {
@@ -54,9 +59,7 @@ struct ScreenshotGLTest: GL::OpenGLTester {
     explicit ScreenshotGLTest();
 
     void rgba8();
-    #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
     void r8();
-    #endif
     void unknownFormat();
     void pluginLoadFailed();
     void saveFailed();
@@ -68,9 +71,7 @@ struct ScreenshotGLTest: GL::OpenGLTester {
 
 ScreenshotGLTest::ScreenshotGLTest() {
     addTests({&ScreenshotGLTest::rgba8,
-              #if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
               &ScreenshotGLTest::r8,
-              #endif
               &ScreenshotGLTest::unknownFormat,
               &ScreenshotGLTest::pluginLoadFailed,
               &ScreenshotGLTest::saveFailed});
@@ -142,24 +143,22 @@ void ScreenshotGLTest::rgba8() {
     CORRADE_COMPARE_WITH(file, rgba, CompareFileToImage{_importerManager});
 }
 
-#if !defined(MAGNUM_TARGET_GLES2) || !defined(MAGNUM_TARGET_WEBGL)
+#ifndef MAGNUM_TARGET_GLES2
 constexpr unsigned char DataR8[]{
     0x11, 0x22, 0x33, 0x44,
     0x55, 0x66, 0x77, 0x88,
     0x99, 0xaa, 0xbb, 0xcc
 };
+#endif
 
 void ScreenshotGLTest::r8() {
+    #ifdef MAGNUM_TARGET_GLES2
+    CORRADE_SKIP("Lumimance isn't renderable and the API doesn't support forcing a specific GL pixel format for EXT_texture_rg, can't test.");
+    #else
     ImageView2D r{PixelFormat::R8Unorm, {4, 3}, DataR8};
 
     GL::Texture2D texture;
-    texture.setStorage(1,
-        #ifndef MAGNUM_TARGET_GLES2
-        GL::TextureFormat::R8,
-        #else
-        GL::TextureFormat::Luminance,
-        #endif
-        {4, 3})
+    texture.setStorage(1, GL::TextureFormat::R8, {4, 3})
         .setSubImage(0, {}, r);
     GL::Framebuffer framebuffer{{{}, {4, 3}}};
     framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{0}, texture, 0);
@@ -190,8 +189,8 @@ void ScreenshotGLTest::r8() {
     CORRADE_COMPARE(out.str(),
         Utility::formatString("DebugTools::screenshot(): saved a PixelFormat::R8Unorm image of size Vector(4, 3) to {}\n", file));
     CORRADE_COMPARE_WITH(file, r, CompareFileToImage{_importerManager});
+    #endif
 }
-#endif
 
 void ScreenshotGLTest::unknownFormat() {
     ImageView2D rgba{GL::PixelFormat::RGB, GL::PixelType::UnsignedShort565, {4, 3}, DataRgba8};
