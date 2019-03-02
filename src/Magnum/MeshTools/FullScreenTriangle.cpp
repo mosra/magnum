@@ -28,6 +28,7 @@
 #include "Magnum/GL/Attribute.h"
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/Version.h"
 #include "Magnum/Math/Vector2.h"
@@ -39,12 +40,7 @@ GL::Mesh fullScreenTriangle(const GL::Version version) {
     mesh.setPrimitive(GL::MeshPrimitive::Triangles)
         .setCount(3);
 
-    #ifndef MAGNUM_TARGET_GLES
-    if(version < GL::Version::GL300)
-    #else
-    if(version < GL::Version::GLES300)
-    #endif
-    {
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>(version)) {
         constexpr Vector2 triangle[]{
             {-1.0f,  1.0f},
             {-1.0f, -3.0f},

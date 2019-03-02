@@ -81,13 +81,19 @@ FloatReinterpretShader::FloatReinterpretShader() {
 
     GL::Shader vert{GL::Version::GLES300, GL::Shader::Type::Vertex};
     GL::Shader frag{GL::Version::GLES300, GL::Shader::Type::Fragment};
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+        vert.addSource("#define DISABLE_GL_MAGNUM_shader_vertex_id\n");
     vert.addSource(rs.get("TextureImage.vert"));
     frag.addSource(rs.get("TextureImage.frag"));
 
-    CORRADE_INTERNAL_ASSERT(GL::Shader::compile({vert, frag}));
+    CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
     attachShaders({vert, frag});
 
-    CORRADE_INTERNAL_ASSERT(link());
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>()) {
+        bindAttributeLocation(0, "position");
+    }
+
+    CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
     levelUniform = uniformLocation("level");
     setUniform(uniformLocation("textureData"), 0);
@@ -145,8 +151,20 @@ void textureSubImage(GL::Texture2D& texture, const Int level, const Range2Di& ra
         shader.setTexture(texture, level);
 
         GL::Mesh mesh;
-        mesh.setCount(3)
-            .draw(shader);
+        mesh.setCount(3);
+
+        if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>()) {
+            constexpr Vector2 triangle[]{
+                {-1.0f,  1.0f},
+                {-1.0f, -3.0f},
+                { 3.0f,  1.0f}
+            };
+            GL::Buffer buffer{GL::Buffer::TargetHint::Array};
+            buffer.setData(triangle, GL::BufferUsage::StaticDraw);
+            mesh.addVertexBuffer(std::move(buffer), 0, GL::Attribute<0, Vector2>{});
+        }
+
+        mesh.draw(shader);
 
         /* release() needs to be called after querying the size to avoid zeroing it out */
         const Vector2i imageSize = image.size();

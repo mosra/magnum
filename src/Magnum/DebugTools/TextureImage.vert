@@ -23,7 +23,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#ifdef DISABLE_GL_MAGNUM_shader_vertex_id
+in lowp vec4 position;
+#endif
+
 void main() {
+    #ifndef DISABLE_GL_MAGNUM_shader_vertex_id
     gl_Position = vec4((gl_VertexID == 2) ?  3.0 : -1.0,
                        (gl_VertexID == 1) ? -3.0 :  1.0, 0.0, 1.0);
+    #else
+    gl_Position = position;
+    #endif
 }

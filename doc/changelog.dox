@@ -101,6 +101,18 @@ See also:
     other variants are now usable directly through @ref CORRADE_COMPARE_AS(),
     no need to pass an explicit instance to @ref CORRADE_COMPARE_WITH() when
     just the default parameters are needed
+-   @ref DebugTools::textureSubImage() for float textures was updated to work
+    with SwiftShader (which has broken @glsl gl_VertexID @ce)
+
+@subsubsection changelog-latest-changes-meshtools MeshTools library
+
+-   @ref MeshTools::fullScreenTriangle() was updated to work on ES3 SwiftShader
+    contexts (which have broken @glsl gl_VertexID @ce)
+
+@subsubsection changelog-latest-changes-texturetools TextureTools library
+
+-   @ref TextureTools::distanceField() was updated to work on ES3 SwiftShader
+    contexts (which have broken @glsl gl_VertexID @ce)
 
 @subsubsection changelog-latest-changes-platform Platform libraries
 

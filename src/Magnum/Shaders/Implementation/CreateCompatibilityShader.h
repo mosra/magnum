@@ -53,6 +53,11 @@ inline GL::Shader createCompatibilityShader(const Utility::Resource& rs, GL::Ver
         shader.addSource("#define DISABLE_GL_ARB_explicit_uniform_location\n");
     #endif
 
+    #ifndef MAGNUM_TARGET_GLES2
+    if(type == GL::Shader::Type::Vertex && GL::Context::current().isExtensionDisabled<GL::Extensions::MAGNUM::shader_vertex_id>(version))
+        shader.addSource("#define DISABLE_GL_MAGNUM_shader_vertex_id\n");
+    #endif
+
     /* My Android emulator (running on NVidia) doesn't define GL_ES
        preprocessor macro, thus *all* the stock shaders fail to compile */
     /** @todo remove this when Android emulator is sane */
