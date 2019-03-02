@@ -212,7 +212,11 @@ void ScreenshotGLTest::unknownFormat() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(!succeeded);
-    CORRADE_COMPARE(out.str(), "DebugTools::screenshot(): can't map (GL::PixelFormat::RGB, GL::PixelType::UnsignedShort565) to a generic pixel format\n");
+
+    if(framebuffer.implementationColorReadFormat() == GL::PixelFormat::RGBA)
+        CORRADE_COMPARE(out.str(), "DebugTools::screenshot(): can't map (GL::PixelFormat::RGBA, GL::PixelType::UnsignedShort565) to a generic pixel format\n");
+    else
+        CORRADE_COMPARE(out.str(), "DebugTools::screenshot(): can't map (GL::PixelFormat::RGB, GL::PixelType::UnsignedShort565) to a generic pixel format\n");
 }
 
 void ScreenshotGLTest::pluginLoadFailed() {
