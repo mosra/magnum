@@ -126,6 +126,9 @@ void PixelStorageGLTest::unpack2D() {
     #else
     Framebuffer fb{{{}, {2, 3}}};
     fb.attachTexture(Framebuffer::ColorAttachment{0}, texture, 0);
+
+    CORRADE_EXPECT_FAIL_IF(fb.implementationColorReadFormat() != PixelFormat::RGB, "Implementation-defined framebuffer read format is not RGB, reading will fail.");
+
     fb.read(fb.viewport(), actual);
     #endif
 
@@ -161,6 +164,9 @@ void PixelStorageGLTest::pack2D() {
     #else
     Framebuffer fb{{{}, {2, 3}}};
     fb.attachTexture(Framebuffer::ColorAttachment{0}, texture, 0);
+
+    CORRADE_EXPECT_FAIL_IF(fb.implementationColorReadFormat() != PixelFormat::RGB, "Implementation-defined framebuffer read format is not RGB, reading will fail.");
+
     fb.read(fb.viewport(), image);
     #endif
 
