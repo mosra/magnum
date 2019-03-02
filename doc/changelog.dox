@@ -60,6 +60,10 @@ See also:
     disabling @gl_extension{ANGLE,instanced_arrays} and
     @gl_extension{OES,texture_3D} extensions on SwiftShader due to missing
     suffixed entry points. See @ref opengl-workarounds for more information.
+-   New @cpp "swiftshader-broken-xfb-buffer-binding-target" @ce workaround
+    that's fixing misbehaving buffers when using
+    @ref GL::Buffer::TargetHint::TransformFeedback. See @ref opengl-workarounds
+    for more information.
 -   New `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
     and a corresponding environment variable to conveniently enable
     @gl_extension{KHR,debug} debug output

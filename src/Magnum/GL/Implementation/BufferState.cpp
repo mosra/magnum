@@ -183,6 +183,17 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     #endif
 
     #ifdef MAGNUM_TARGET_GLES
+    if((context.detectedDriver() & Context::DetectedDriver::SwiftShader) &&
+      !context.isDriverWorkaroundDisabled("swiftshader-broken-xfb-buffer-binding-target"))
+    {
+        setTargetHintImplementation = &Buffer::setTargetHintImplementationSwiftShader;
+    } else
+    #endif
+    {
+        setTargetHintImplementation = &Buffer::setTargetHintImplementationDefault;
+    }
+
+    #ifdef MAGNUM_TARGET_GLES
     static_cast<void>(context);
     static_cast<void>(extensions);
     #endif

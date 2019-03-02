@@ -878,10 +878,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * to @fn_gl{BindBuffer}. Default target hint is @ref TargetHint::Array.
          * @see @ref setData(), @ref setSubData()
          */
-        Buffer& setTargetHint(TargetHint hint) {
-            _targetHint = hint;
-            return *this;
-        }
+        Buffer& setTargetHint(TargetHint hint);
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
@@ -1251,11 +1248,16 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         #endif
         #endif
 
-        explicit Buffer(GLuint id, TargetHint targetHint, ObjectFlags flags) noexcept: _id{id}, _targetHint{targetHint}, _flags{flags} {}
+        explicit Buffer(GLuint id, TargetHint targetHint, ObjectFlags flags) noexcept;
 
         void MAGNUM_GL_LOCAL createImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL createImplementationDSA();
+        #endif
+
+        void MAGNUM_GL_LOCAL setTargetHintImplementationDefault(TargetHint hint);
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+        void MAGNUM_GL_LOCAL setTargetHintImplementationSwiftShader(TargetHint hint);
         #endif
 
         void MAGNUM_GL_LOCAL createIfNotAlready();

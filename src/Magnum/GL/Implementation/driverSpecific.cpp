@@ -160,6 +160,16 @@ namespace {
         "swiftshader-no-es2-oes-texture-3d-entrypoints",
         #endif
 
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        /* SwiftShader 4.1.0 has special handling for binding buffers to the
+           transform feedback target, requiring an XFB object to be active when
+           a buffer is bound to GL_TRANSFORM_FEEDBACK_BUFFER and ignoring the
+           glBindBuffer() call otherwise. No other driver does that. As a
+           workaround, setting Buffer::TargetHint::TransformFeedback will make
+           it use Buffer::TargetHint::Array instead, as that works okay. */
+        "swiftshader-broken-xfb-buffer-binding-target",
+        #endif
+
         #ifndef MAGNUM_TARGET_GLES
         /* Even with the DSA variant, where GL_IMPLEMENTATION_COLOR_READ_* is
            passed to glGetNamedFramebufferParameter(), Mesa complains that the

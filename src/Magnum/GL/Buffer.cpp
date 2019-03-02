@@ -157,9 +157,15 @@ void Buffer::copy(Buffer& read, Buffer& write, const GLintptr readOffset, const 
 }
 #endif
 
-Buffer::Buffer(const TargetHint targetHint): _targetHint{targetHint}, _flags{ObjectFlag::DeleteOnDestruction} {
-    (this->*Context::current().state().buffer->createImplementation)();
+Buffer::Buffer(const TargetHint targetHint): _flags{ObjectFlag::DeleteOnDestruction} {
+    Implementation::BufferState& state = *Context::current().state().buffer;
+    (this->*state.createImplementation)();
+    (this->*state.setTargetHintImplementation)(targetHint);
     CORRADE_INTERNAL_ASSERT(_id != Implementation::State::DisengagedBinding);
+}
+
+Buffer::Buffer(GLuint id, TargetHint targetHint, ObjectFlags flags) noexcept: _id{id}, _flags{flags} {
+    (this->*Context::current().state().buffer->setTargetHintImplementation)(targetHint);
 }
 
 void Buffer::createImplementationDefault() {
@@ -185,6 +191,23 @@ Buffer::~Buffer() {
 
     glDeleteBuffers(1, &_id);
 }
+
+Buffer& Buffer::setTargetHint(TargetHint hint) {
+    (this->*Context::current().state().buffer->setTargetHintImplementation)(hint);
+    return *this;
+}
+
+void Buffer::setTargetHintImplementationDefault(const TargetHint hint) {
+    _targetHint = hint;
+}
+
+#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
+void Buffer::setTargetHintImplementationSwiftShader(const TargetHint hint) {
+    /* See the "swiftshader-broken-xfb-buffer-binding-target" workaround for
+       details */
+    _targetHint = hint == TargetHint::TransformFeedback ? TargetHint::Array : hint;
+}
+#endif
 
 inline void Buffer::createIfNotAlready() {
     if(_flags & ObjectFlag::Created) return;

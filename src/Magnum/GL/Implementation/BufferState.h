@@ -54,6 +54,7 @@ struct BufferState {
     void(*copyImplementation)(Buffer&, Buffer&, GLintptr, GLintptr, GLsizeiptr);
     #endif
     void(Buffer::*createImplementation)();
+    void(Buffer::*setTargetHintImplementation)(Buffer::TargetHint);
     void(Buffer::*getParameterImplementation)(GLenum, GLint*);
     #ifndef MAGNUM_TARGET_GLES2
     void(Buffer::*getSubDataImplementation)(GLintptr, GLsizeiptr, GLvoid*);
