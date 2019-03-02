@@ -59,3 +59,12 @@ if(WITH_PRIMITIVES)
 
     set_target_properties(MeshToolsSubdivideRemov___Benchmark PROPERTIES FOLDER "Magnum/MeshTools/Test")
 endif()
+
+if(BUILD_GL_TESTS)
+    corrade_add_resource(FullScreenTriangleGLTest_RESOURCES resources.conf)
+    set_target_properties(FullScreenTriangleGLTest_RESOURCES-dependencies PROPERTIES FOLDER "Magnum/MeshTools/Test")
+
+    corrade_add_test(MeshToolsFullScreenTriangleGLTest
+        FullScreenTriangleGLTest.cpp ${FullScreenTriangleGLTest_RESOURCES}
+        LIBRARIES MagnumMeshTools MagnumGL MagnumOpenGLTester)
+endif()
