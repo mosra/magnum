@@ -1210,6 +1210,11 @@ void MeshGLTest::addVertexBufferUnsignedIntWithUnsignedShort() {
     const auto value = Checker(IntegerShader("uint"), RenderbufferFormat::R16UI, mesh)
         .get<UnsignedShort>(PixelFormat::RedInteger, PixelType::UnsignedShort);
 
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::SwiftShader,
+        "SwiftShader doesn't like integer buffers with anything else than (Unsigned)Int");
+    #endif
+
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, 16583);
 }
@@ -1242,6 +1247,11 @@ void MeshGLTest::addVertexBufferUnsignedIntWithShort() {
 
     const auto value = Checker(IntegerShader("uint"), RenderbufferFormat::R16I, mesh)
         .get<Short>(PixelFormat::RedInteger, PixelType::Short);
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::SwiftShader,
+        "SwiftShader doesn't like integer buffers with anything else than (Unsigned)Int");
+    #endif
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, 16583);
@@ -1276,6 +1286,11 @@ void MeshGLTest::addVertexBufferIntWithUnsignedShort() {
     const auto value = Checker(IntegerShader("int"), RenderbufferFormat::R16UI, mesh)
         .get<UnsignedShort>(PixelFormat::RedInteger, PixelType::UnsignedShort);
 
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::SwiftShader,
+        "SwiftShader doesn't like integer buffers with anything else than (Unsigned)Int");
+    #endif
+
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, 16583);
 }
@@ -1308,6 +1323,11 @@ void MeshGLTest::addVertexBufferIntWithShort() {
 
     const auto value = Checker(IntegerShader("int"), RenderbufferFormat::R16I, mesh)
         .get<Short>(PixelFormat::RedInteger, PixelType::Short);
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & Context::DetectedDriver::SwiftShader,
+        "SwiftShader doesn't like integer buffers with anything else than (Unsigned)Int");
+    #endif
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(value, -16583);
