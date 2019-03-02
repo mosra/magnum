@@ -255,6 +255,8 @@ namespace AMD {
     _extension(170,NV,depth_buffer_float,               GL210, GL300) // #334
     _extension(171,NV,conditional_render,               GL210, GL300) // #346
     /* NV_draw_texture not supported */                               // #430
+} namespace MAGNUM {
+    _extension(180,MAGNUM,shader_vertex_id,             GL300, GL300)
 }
 #elif defined(MAGNUM_TARGET_WEBGL)
 namespace ANGLE {
@@ -295,6 +297,8 @@ namespace ANGLE {
     _extension(19,WEBGL,color_buffer_float,         GLES200,    None) // #14
     _extension(20,WEBGL,draw_buffers,               GLES200, GLES300) // #18
     #endif
+} namespace MAGNUM {
+    _extension(30,MAGNUM,shader_vertex_id,          GLES300, GLES300)
 }
 #else
 namespace ANDROID {
@@ -465,6 +469,8 @@ namespace ANDROID {
     #ifndef MAGNUM_TARGET_GLES2
     _extension(126,OES,texture_storage_multisample_2d_array, GLES310, GLES320) // #174
     #endif
+} namespace MAGNUM {
+    _extension(130,MAGNUM,shader_vertex_id,         GLES300, GLES300)
 }
 #endif
 #undef _extension

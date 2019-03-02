@@ -64,6 +64,13 @@ See also:
     that's fixing misbehaving buffers when using
     @ref GL::Buffer::TargetHint::TransformFeedback. See @ref opengl-workarounds
     for more information.
+-   New pseudo-extension `GL_MAGNUM_shader_vertex_id` denoting support of the
+    @glsl gl_VertexID @ce shader builtin. Present on all GL 3.0+, GLES 3.0+ and
+    WebGL 2 contexts, but disabled for SwiftShader as its support is broken
+    (see the @cpp "swiftshader-broken-shader-vertex-id" @ce workaround in
+    @ref opengl-workarounds for more information). This pseudo-extension can be
+    also explicitly disabled using the usual `--magnum-disable-extensions`
+    @ref GL-Context-command-line "command-line option" for testing purposes.
 -   New `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
     and a corresponding environment variable to conveniently enable
     @gl_extension{KHR,debug} debug output

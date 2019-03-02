@@ -182,7 +182,7 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     }
     #endif
 
-    #ifdef MAGNUM_TARGET_GLES
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
     if((context.detectedDriver() & Context::DetectedDriver::SwiftShader) &&
       !context.isDriverWorkaroundDisabled("swiftshader-broken-xfb-buffer-binding-target"))
     {

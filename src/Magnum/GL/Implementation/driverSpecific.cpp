@@ -168,6 +168,13 @@ namespace {
            workaround, setting Buffer::TargetHint::TransformFeedback will make
            it use Buffer::TargetHint::Array instead, as that works okay. */
         "swiftshader-broken-xfb-buffer-binding-target",
+
+        /* SwiftShader 4.1.0 does implement gl_VertexID for ES3 contexts, but
+           in practice it doesn't work, returning a constant value. In order to
+           make this easier to check, there's a dummy MAGNUM_shader_vertex_id
+           extension that's defined on all GL 3.0+ and GLES 3.0+ / WebGL 2+
+           contexts *except* for SwiftShader. */
+        "swiftshader-broken-shader-vertex-id",
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -354,6 +361,12 @@ void Context::setupDriverWorkarounds() {
            !isDriverWorkaroundDisabled("swiftshader-no-es2-oes-texture-3d-entrypoints"))
             _setRequiredVersion(OES::texture_3D, None);
     }
+    #endif
+
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    if((detectedDriver() & Context::DetectedDriver::SwiftShader) &&
+       !isDriverWorkaroundDisabled("swiftshader-broken-shader-vertex-id"))
+        _setRequiredVersion(MAGNUM::shader_vertex_id, None);
     #endif
 
     #undef _setRequiredVersion

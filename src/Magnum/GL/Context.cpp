@@ -118,6 +118,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(EXT,draw_buffers2),
         _extension(EXT,texture_integer),
         _extension(EXT,transform_feedback),
+        _extension(MAGNUM,shader_vertex_id),
         _extension(NV,depth_buffer_float),
         _extension(NV,conditional_render)};
     static const std::vector<Extension> extensions310{
@@ -247,13 +248,16 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(EXT,color_buffer_float),
         _extension(OES,texture_float_linear),
         _extension(WEBGL,compressed_texture_s3tc)};
-    #ifdef MAGNUM_TARGET_GLES2
     static const std::vector<Extension> extensionsES300{
+        #ifdef MAGNUM_TARGET_GLES2
         _extension(ANGLE,instanced_arrays),
         _extension(EXT,color_buffer_half_float),
         _extension(EXT,sRGB),
         _extension(EXT,blend_minmax),
         _extension(EXT,shader_texture_lod),
+        #endif
+        _extension(MAGNUM,shader_vertex_id),
+        #ifdef MAGNUM_TARGET_GLES2
         _extension(OES,texture_float),
         _extension(OES,texture_half_float),
         _extension(OES,standard_derivatives),
@@ -263,8 +267,9 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(OES,fbo_render_mipmap),
         _extension(WEBGL,depth_texture),
         _extension(WEBGL,color_buffer_float),
-        _extension(WEBGL,draw_buffers)};
-    #endif
+        _extension(WEBGL,draw_buffers)
+        #endif
+    };
     #else
     static const std::vector<Extension> extensions{
         #ifndef MAGNUM_TARGET_GLES2
@@ -309,8 +314,8 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(OES,stencil1),
         _extension(OES,stencil4),
         _extension(OES,texture_float_linear)};
-    #ifdef MAGNUM_TARGET_GLES2
     static const std::vector<Extension> extensionsES300{
+        #ifdef MAGNUM_TARGET_GLES2
         _extension(ANGLE,framebuffer_blit),
         _extension(ANGLE,framebuffer_multisample),
         _extension(ANGLE,instanced_arrays),
@@ -332,6 +337,9 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(EXT,draw_buffers),
         _extension(EXT,instanced_arrays),
         _extension(EXT,draw_instanced),
+        #endif
+        _extension(MAGNUM,shader_vertex_id),
+        #ifdef MAGNUM_TARGET_GLES2
         _extension(NV,draw_buffers),
         _extension(NV,fbo_color_attachments),
         _extension(NV,read_buffer),
@@ -357,8 +365,9 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(OES,standard_derivatives),
         _extension(OES,vertex_array_object),
         _extension(OES,required_internalformat),
-        _extension(OES,surfaceless_context)};
-    #endif
+        _extension(OES,surfaceless_context)
+        #endif
+        };
     static const std::vector<Extension> extensionsES320{
         _extension(EXT,color_buffer_half_float),
         #ifndef MAGNUM_TARGET_GLES2
@@ -418,12 +427,7 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         case Version::GLES320: return empty;
         #else
         case Version::GLES200: return empty;
-        case Version::GLES300:
-            #ifdef MAGNUM_TARGET_GLES2
-            return extensionsES300;
-            #else
-            return empty;
-            #endif
+        case Version::GLES300: return extensionsES300;
         #ifndef MAGNUM_TARGET_WEBGL
         case Version::GLES310: return empty;
         case Version::GLES320: return extensionsES320;

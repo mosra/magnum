@@ -58,9 +58,9 @@ namespace Implementation {
             #ifndef MAGNUM_TARGET_GLES
             192
             #elif !defined(MAGNUM_TARGET_WEBGL)
-            128
+            144
             #else
-            24
+            32
             #endif
     };
 }
