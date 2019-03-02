@@ -1132,7 +1132,7 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
 
     const Matrix3x4d data[] = {
         {},
-        Matrix3x4d::fromDiagonal({0.0f, -0.9f, 1.0f}),
+        Matrix3x4d::fromDiagonal({0.0, -0.9, 1.0}),
         Matrix3x4d::fromDiagonal(Math::unpack<Vector3d>(Math::Vector3<UnsignedShort>(315, 65201, 2576)))
     };
     Buffer buffer;
