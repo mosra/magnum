@@ -132,6 +132,11 @@ See also:
     @ref Trade::TgaImporter "TgaImporter" now properly reports an error message
     when opening an empty file
 
+@subsection changelog-latest-buildsystem Build system
+
+-   ES 2.0 and ES 3.0 subset of tests requiring GL context is now run on Travis
+    CI using SwiftShader for better code coverage
+
 @subsection changelog-latest-bugfixes Bug fixes
 
 -   Fixed compilation of the @ref Vk library on 32-bit Windows

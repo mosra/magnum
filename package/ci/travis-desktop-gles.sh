@@ -20,9 +20,12 @@ cmake .. \
     -DCMAKE_CXX_FLAGS="$CMAKE_CXX_FLAGS" \
     -DCMAKE_PREFIX_PATH="$HOME/deps" \
     -DCMAKE_BUILD_TYPE=Debug \
+    -DEGL_LIBRARY=$HOME/swiftshader/libEGL.so \
+    -DOPENGLES2_LIBRARY=$HOME/swiftshader/libGLESv2.so \
+    -DOPENGLES3_LIBRARY=$HOME/swiftshader/libGLESv2.so \
+    -DCMAKE_INSTALL_RPATH=$HOME/swiftshader \
     -DTARGET_GLES=ON \
     -DTARGET_GLES2=$TARGET_GLES2 \
-    -DTARGET_DESKTOP_GLES=ON \
     -DWITH_AUDIO=ON \
     -DWITH_SHAPES=ON \
     -DWITH_VK=OFF \
@@ -51,4 +54,7 @@ cmake .. \
     -G Ninja
 # Otherwise the job gets killed (probably because using too much memory)
 ninja -j4
-CORRADE_TEST_COLOR=ON ctest -V -E GLTest
+CORRADE_TEST_COLOR=ON ctest -V
+if [ "$TARGET_GLES2" == "ON" ]; then CORRADE_TEST_COLOR=ON MAGNUM_DISABLE_EXTENSIONS="OES_vertex_array_object" ctest -V -R GLTest; fi
+src/Magnum/Audio/magnum-al-info > /dev/null
+src/Magnum/Platform/magnum-gl-info > /dev/null
