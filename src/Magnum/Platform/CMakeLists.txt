@@ -169,6 +169,12 @@ if(WITH_GLFWAPPLICATION)
         endif()
     endif()
 
+    # Link also EGL library, if on ES (and not on WebGL)
+    if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES AND NOT MAGNUM_TARGET_WEBGL)
+        find_package(EGL REQUIRED)
+        target_link_libraries(MagnumGlfwApplication PUBLIC EGL::EGL)
+    endif()
+
     install(FILES ${MagnumGlfwApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
     install(TARGETS MagnumGlfwApplication
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -270,6 +276,12 @@ if(WITH_SDL2APPLICATION)
             target_link_libraries(MagnumSdl2Application PUBLIC ${CMAKE_DL_LIBS})
             target_compile_definitions(MagnumSdl2Application PRIVATE "_MAGNUM_PLATFORM_USE_X11")
         endif()
+    endif()
+
+    # Link also EGL library, if on ES (and not on WebGL)
+    if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES AND NOT MAGNUM_TARGET_WEBGL)
+        find_package(EGL REQUIRED)
+        target_link_libraries(MagnumSdl2Application PUBLIC EGL::EGL)
     endif()
 
     install(FILES ${MagnumSdl2Application_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
