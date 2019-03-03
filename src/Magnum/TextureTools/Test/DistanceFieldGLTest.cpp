@@ -59,7 +59,7 @@ struct DistanceFieldGLTest: GL::OpenGLTester {
     #endif
 
     private:
-        PluginManager::Manager<Trade::AbstractImporter> _manager;
+        PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
         std::string _testDir;
 };
 
