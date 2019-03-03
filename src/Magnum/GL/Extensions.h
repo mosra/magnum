@@ -46,10 +46,12 @@ namespace Magnum { namespace GL {
 
 Each extension is a @cpp struct @ce named hierarchically by prefix, vendor and
 extension name taken from list at @ref opengl-support, for example
-`GL::Extensions::ARB::texture_storage`. Note that desktop extensions are
-available only on desktop build, OpenGL ES 2.0 extensions which are part of ES
-3.0 are available only on @ref MAGNUM_TARGET_GLES2 "OpenGL ES 2.0 build",
-vendor OpenGL ES extensions are available only on
+`GL::Extensions::ARB::texture_storage`. Note that, unless said otherwise,
+desktop extensions are available only on desktop build, OpenGL ES 2.0
+extensions which are part of ES 3.0 are available only on
+@ref MAGNUM_TARGET_GLES2 "OpenGL ES 2.0 builds", WebGL 1.0 extensions which are
+part of WebGL 2.0 are available only on @ref MAGNUM_TARGET_GLES2 "WebGL 1.0"
+builds, OpenGL ES extensions are available only on
 @ref MAGNUM_TARGET_GLES "OpenGL ES builds" and WebGL extensions are available
 only on @ref MAGNUM_TARGET_WEBGL "WebGL builds".
 
@@ -254,7 +256,6 @@ namespace AMD {
     _extension(171,NV,conditional_render,               GL210, GL300) // #346
     /* NV_draw_texture not supported */                               // #430
 }
-/* IMPORTANT: if this line is > 329 (73 + size), don't forget to update array size in Context.h */
 #elif defined(MAGNUM_TARGET_WEBGL)
 namespace ANGLE {
     #ifdef MAGNUM_TARGET_GLES2
