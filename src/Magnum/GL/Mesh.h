@@ -618,7 +618,9 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @requires_gl42 Extension @gl_extension{ARB,transform_feedback_instanced}
          *      if using @ref draw(AbstractShaderProgram&, TransformFeedback&, UnsignedInt)
          * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
-         *      @gl_extension2{EXT,draw_instanced,draw_instanced} or
+         *      @gl_extension{EXT,instanced_arrays},
+         *      @gl_extension{EXT,draw_instanced},
+         *      @gl_extension{NV,instanced_arrays},
          *      @gl_extension{NV,draw_instanced} in OpenGL ES 2.0.
          * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
          *      in WebGL 1.0.
@@ -944,8 +946,10 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @requires_gl42 Extension @gl_extension{ARB,base_instance} if
          *      @ref baseInstance() is not `0`.
          * @requires_gles30 Extension @gl_extension{ANGLE,instanced_arrays},
-         *      @gl_extension{EXT,instanced_arrays} or
-         *      @gl_extension{NV,instanced_arrays} in OpenGL ES 2.0 if
+         *      @gl_extension{EXT,instanced_arrays},
+         *      @gl_extension{EXT,draw_instanced},
+         *      @gl_extension{NV,instanced_arrays},
+         *      @gl_extension{NV,draw_instanced} in OpenGL ES 2.0 if
          *      @ref instanceCount() is more than `1`.
          * @requires_webgl20 Extension @webgl_extension{ANGLE,instanced_arrays}
          *      in WebGL 1.0 if @ref instanceCount() is more than `1`.

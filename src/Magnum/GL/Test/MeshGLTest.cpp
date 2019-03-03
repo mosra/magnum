@@ -2307,7 +2307,9 @@ void MeshGLTest::setInstanceCount() {
     #elif defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_WEBGL
     if(!Context::current().isExtensionSupported<Extensions::ANGLE::instanced_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::instanced_arrays>() &&
        !Context::current().isExtensionSupported<Extensions::EXT::draw_instanced>() &&
+       !Context::current().isExtensionSupported<Extensions::NV::instanced_arrays>() &&
        !Context::current().isExtensionSupported<Extensions::NV::draw_instanced>())
         CORRADE_SKIP("Required extension is not available.");
     #else
@@ -2353,7 +2355,9 @@ void MeshGLTest::setInstanceCountIndexed() {
     #elif defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_WEBGL
     if(!Context::current().isExtensionSupported<Extensions::ANGLE::instanced_arrays>() &&
+       !Context::current().isExtensionSupported<Extensions::EXT::instanced_arrays>() &&
        !Context::current().isExtensionSupported<Extensions::EXT::draw_instanced>() &&
+       !Context::current().isExtensionSupported<Extensions::NV::instanced_arrays>() &&
        !Context::current().isExtensionSupported<Extensions::NV::draw_instanced>())
         CORRADE_SKIP("Required extension is not available.");
     #else
@@ -2540,11 +2544,7 @@ void MeshGLTest::addVertexBufferInstancedFloat() {
     if(!Context::current().isExtensionSupported<Extensions::ANGLE::instanced_arrays>() &&
        !Context::current().isExtensionSupported<Extensions::EXT::instanced_arrays>() &&
        !Context::current().isExtensionSupported<Extensions::NV::instanced_arrays>())
-        CORRADE_SKIP("Required instancing extension is not available.");
-    if(!Context::current().isExtensionSupported<Extensions::ANGLE::instanced_arrays>() &&
-       !Context::current().isExtensionSupported<Extensions::EXT::draw_instanced>() &&
-       !Context::current().isExtensionSupported<Extensions::NV::draw_instanced>())
-        CORRADE_SKIP("Required drawing extension is not available.");
+        CORRADE_SKIP("Required extension is not available.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::ANGLE::instanced_arrays>())
         CORRADE_SKIP(Extensions::ANGLE::instanced_arrays::string() + std::string(" is not available."));
@@ -2664,11 +2664,7 @@ void MeshGLTest::resetDivisorAfterInstancedDraw() {
     if(!Context::current().isExtensionSupported<Extensions::ANGLE::instanced_arrays>() &&
        !Context::current().isExtensionSupported<Extensions::EXT::instanced_arrays>() &&
        !Context::current().isExtensionSupported<Extensions::NV::instanced_arrays>())
-        CORRADE_SKIP("Required instancing extension is not available.");
-    if(!Context::current().isExtensionSupported<Extensions::ANGLE::instanced_arrays>() &&
-       !Context::current().isExtensionSupported<Extensions::EXT::draw_instanced>() &&
-       !Context::current().isExtensionSupported<Extensions::NV::draw_instanced>())
-        CORRADE_SKIP("Required drawing extension is not available.");
+        CORRADE_SKIP("Required extension is not available.");
     #else
     if(!Context::current().isExtensionSupported<Extensions::ANGLE::instanced_arrays>())
         CORRADE_SKIP(Extensions::ANGLE::instanced_arrays::string() + std::string(" is not available."));

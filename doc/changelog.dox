@@ -116,6 +116,11 @@ See also:
 -   Fixed a bad interaction of @ref GL::Mesh and @ref GL::Buffer state trackers
     resulting in corrupted rendering on ES/WebGL platforms and systems without
     @gl_extension{ARB,direct_state_access} / @gl_extension{EXT,direct_state_access}
+-   Fixed @ref GL::Mesh instanced drawing to properly take into account all
+    five @gl_extension{ANGLE,instanced_arrays},
+    @gl_extension{EXT,instanced_arrays}, @gl_extension{EXT,draw_instanced},
+    @gl_extension{NV,instanced_arrays} and @gl_extension{NV,draw_instanced}
+    extensions
 -   Updated the `base-qt` bootstrap project to correctly reset state tracker
     when going from and back to Qt code, and to use the framebuffer provided by
     Qt instead of @ref GL::defaultFramebuffer (see
