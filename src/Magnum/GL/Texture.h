@@ -595,7 +595,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @requires_es_extension OpenGL ES 3.0 or extension
          *      @gl_extension{EXT,sRGB} and
          *      @gl_extension{ANDROID,extension_pack_es31a} /
-         *      @gl_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
+         *      @gl_extension{EXT,texture_sRGB_decode}
          * @requires_gles sRGB decode is not available in WebGL.
          */
         Texture<dimensions>& setSrgbDecode(bool decode) {

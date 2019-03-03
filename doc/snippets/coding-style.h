@@ -22,7 +22,7 @@ inline Collision operator/(const Point& a, const Sphere& b) { return (b/a).rever
 /* [extension] */
 
 /* [extension2] */
-/** @gl_extension2{NV,read_buffer_front,GL_NV_read_buffer} */
+/** @gl_extension2{NV,read_buffer_front,NV_read_buffer} */
 /* [extension2] */
 
 /* [webgl_extension] */

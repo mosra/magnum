@@ -379,7 +379,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          * See @ref Texture::setSrgbDecode() for more information.
          * @requires_extension Extension @gl_extension{EXT,texture_sRGB_decode}
          * @requires_es_extension Extension @gl_extension{ANDROID,extension_pack_es31a} /
-         *      @gl_extension2{EXT,texture_sRGB_decode,texture_sRGB_decode}
+         *      @gl_extension{EXT,texture_sRGB_decode}
          */
         CubeMapTextureArray& setSrgbDecode(bool decode) {
             AbstractTexture::setSrgbDecode(decode);

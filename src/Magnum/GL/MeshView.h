@@ -68,8 +68,8 @@ class MAGNUM_GL_EXPORT MeshView {
         /**
          * @brief Draw multiple meshes at once
          *
-         * In OpenGL ES, if @gl_extension2{EXT,multi_draw_arrays,multi_draw_arrays}
-         * is not present, the functionality is emulated using sequence of
+         * In OpenGL ES, if @gl_extension{EXT,multi_draw_arrays} is not
+         * present, the functionality is emulated using sequence of
          * @ref draw(AbstractShaderProgram&) calls.
          *
          * If @gl_extension{ARB,vertex_array_object} (part of OpenGL 3.0), OpenGL

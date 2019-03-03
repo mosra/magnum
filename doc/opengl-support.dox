@@ -285,10 +285,10 @@ Extension                                   | Status
 @gl_extension{ARB,sparse_texture}           | |
 @gl_extension{ARB,sparse_buffer}            | |
 @gl_extension{ARB,ES3_2_compatibility}      | |
-@gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | done
+@gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr} | done
 @gl_extension{KHR,robust_buffer_access_behavior} | done (nothing to do)
 @gl_extension{KHR,blend_equation_advanced}  | done
-@gl_extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | done
+@gl_extension2{KHR,blend_equation_advanced_coherent,KHR_blend_equation_advanced} | done
 
 @subsection opengl-support-extensions-vendor Vendor OpenGL extensions
 
@@ -348,9 +348,9 @@ Extension                                   | Status
 @gl_extension{EXT,texture_buffer}           | done
 @gl_extension{EXT,texture_cube_map_array}   | done
 @gl_extension{EXT,primitive_bounding_box}   | |
-@gl_extension2{KHR,texture_compression_astc_ldr,texture_compression_astc_hdr} | done
+@gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr} | done
 @gl_extension{KHR,debug}                    | see above
-@gl_extension2{KHR,blend_equation_advanced,blend_equation_advanced}  | done
+@gl_extension{KHR,blend_equation_advanced}  | done
 @gl_extension{KHR,robustness}               | |
 @gl_extension{KHR,robust_buffer_access_behavior} | done (nothing to do)
 @gl_extension{OES,sample_shading}           | done
@@ -375,7 +375,7 @@ Extension                                   | Status
 @gl_extension{ARM,rgba8}                    | done
 @gl_extension{EXT,texture_type_2_10_10_10_REV} | done
 @gl_extension{EXT,discard_framebuffer}      | done
-@gl_extension2{EXT,blend_minmax,blend_minmax} | done
+@gl_extension{EXT,blend_minmax}             | done
 @gl_extension{EXT,shader_texture_lod}       | done (shading language only)
 @gl_extension{EXT,unpack_subimage}          | done
 @gl_extension{EXT,occlusion_query_boolean}  | done
@@ -386,7 +386,7 @@ Extension                                   | Status
 @gl_extension{EXT,map_buffer_range}         | done
 @gl_extension{EXT,draw_buffers}             | done
 @gl_extension{EXT,instanced_arrays}         | done
-@gl_extension2{EXT,draw_instanced,draw_instanced} | done
+@gl_extension{EXT,draw_instanced}           | done
 @gl_extension{NV,draw_buffers}              | done
 @gl_extension{NV,fbo_color_attachments}     | done
 @gl_extension{NV,read_buffer}               | done
@@ -431,22 +431,22 @@ Extension                                   | Status
 @gl_extension{EXT,texture_filter_anisotropic} | done
 @gl_extension{EXT,texture_format_BGRA8888}  | done
 @gl_extension{EXT,read_format_bgra}         | done
-@gl_extension2{EXT,multi_draw_arrays,multi_draw_arrays} | done
+@gl_extension{EXT,multi_draw_arrays}        | done
 @gl_extension{EXT,debug_label}              | see above
 @gl_extension{EXT,debug_marker}             | done
-@gl_extension2{EXT,separate_shader_objects,separate_shader_objects.gles} | only direct uniform binding
+@gl_extension2{EXT,separate_shader_objects,EXT_separate_shader_objects.gles} | only direct uniform binding
 @gl_extension{EXT,multisampled_render_to_texture} | only renderbuffer storage
 @gl_extension{EXT,robustness}               | done
 @gl_extension{EXT,shader_framebuffer_fetch} | missing limit query
 @gl_extension{EXT,disjoint_timer_query}     | only time elapsed query
 @gl_extension{EXT,texture_sRGB_decode}      | done
 @gl_extension{EXT,sRGB_write_control}       | done
-@gl_extension2{EXT,texture_compression_s3tc,texture_compression_s3tc} | done
+@gl_extension{EXT,texture_compression_s3tc} | done
 @gl_extension{EXT,shader_integer_mix}       | done (shading language only)
-@gl_extension2{KHR,texture_compression_astc_hdr,texture_compression_astc_hdr} | done
-@gl_extension2{KHR,blend_equation_advanced_coherent,blend_equation_advanced} | done
+@gl_extension2{KHR,texture_compression_astc_hdr,KHR_texture_compression_astc_hdr} | done
+@gl_extension2{KHR,blend_equation_advanced_coherent,KHR_blend_equation_advanced} | done
 @gl_extension{KHR,context_flush_control}    | |
-@gl_extension2{KHR,no_error,no_error}       | done
+@gl_extension{KHR,no_error}                 | done
 @gl_extension2{NV,read_buffer_front,NV_read_buffer} | done
 @gl_extension2{NV,read_depth,NV_read_depth_stencil} | done
 @gl_extension2{NV,read_stencil,NV_read_depth_stencil} | done

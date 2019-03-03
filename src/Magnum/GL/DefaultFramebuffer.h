@@ -164,8 +164,8 @@ class MAGNUM_GL_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *
          * @see @ref mapForRead()
          * @m_enum_values_as_keywords
-         * @requires_gles30 Extension @gl_extension2{NV,read_buffer,GL_NV_read_buffer}
-         *      in OpenGL ES 2.0.
+         * @requires_gles30 Extension @gl_extension{NV,read_buffer} in OpenGL
+         *      ES 2.0.
          * @requires_webgl20 Framebuffer read mapping is not available in WebGL
          *      1.0.
          */
@@ -222,7 +222,7 @@ class MAGNUM_GL_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
 
             /**
              * Read from front buffer.
-             * @requires_es_extension Extension @gl_extension2{NV,read_buffer_front,GL_NV_read_buffer}
+             * @requires_es_extension Extension @gl_extension2{NV,read_buffer_front,NV_read_buffer}
              * @requires_gles Reading from front buffer is not available in
              *      WebGL.
              */
@@ -430,8 +430,8 @@ class MAGNUM_GL_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @see @ref mapForDraw(), @fn_gl2_keyword{NamedFramebufferReadBuffer,ReadBuffer},
          *      @fn_gl_extension_keyword{FramebufferReadBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{ReadBuffer}
-         * @requires_gles30 Extension @gl_extension2{NV,read_buffer,GL_NV_read_buffer}
-         *      in OpenGL ES 2.0.
+         * @requires_gles30 Extension @gl_extension{NV,read_buffer} in OpenGL
+         *      ES 2.0.
          * @requires_webgl20 Framebuffer read mapping is not available in WebGL
          *      1.0.
          */

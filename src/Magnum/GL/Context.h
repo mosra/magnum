@@ -161,7 +161,7 @@ class MAGNUM_GL_EXPORT Context {
              * Debug context
              * @requires_gl43 Extension @gl_extension{KHR,debug}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
-             *      @gl_extension2{KHR,debug,debug}
+             *      @gl_extension{KHR,debug}
              */
             #ifndef MAGNUM_TARGET_GLES2
             Debug = GL_CONTEXT_FLAG_DEBUG_BIT,
@@ -182,7 +182,7 @@ class MAGNUM_GL_EXPORT Context {
             /**
              * Context without error reporting
              * @requires_gl46 Extension @gl_extension{KHR,no_error}
-             * @requires_es_extension Extension @gl_extension2{KHR,no_error,no_error}
+             * @requires_es_extension Extension @gl_extension{KHR,no_error}
              */
             #ifndef MAGNUM_TARGET_GLES
             NoError = GL_CONTEXT_FLAG_NO_ERROR_BIT,
