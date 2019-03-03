@@ -224,7 +224,10 @@ constexpr Float Data2DFloat[] = { 1.0f,
 
 void TextureImageGLTest::subImage2DFloat() {
     GL::Texture2D texture;
-    texture.setStorage(1, GL::TextureFormat::R32F, Vector2i{2})
+    texture
+        /* if I don't set this, SwiftShader will return all zeros */
+        .setMinificationFilter(GL::SamplerFilter::Nearest)
+        .setStorage(1, GL::TextureFormat::R32F, Vector2i{2})
         .setSubImage(0, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::Float, Vector2i{2}, Data2DFloat});
 
     Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {GL::PixelFormat::Red, GL::PixelType::Float});
@@ -240,7 +243,10 @@ void TextureImageGLTest::subImage2DFloat() {
 
 void TextureImageGLTest::subImage2DFloatGeneric() {
     GL::Texture2D texture;
-    texture.setStorage(1, GL::TextureFormat::R32F, Vector2i{2})
+    texture
+        /* if I don't set this, SwiftShader will return all zeros */
+        .setMinificationFilter(GL::SamplerFilter::Nearest)
+        .setStorage(1, GL::TextureFormat::R32F, Vector2i{2})
         .setSubImage(0, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::Float, Vector2i{2}, Data2DFloat});
 
     Image2D image = textureSubImage(texture, 0, {{}, Vector2i{2}}, {PixelFormat::R32F});
