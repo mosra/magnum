@@ -34,14 +34,10 @@ struct GlyphCacheGLTest: GL::OpenGLTester {
     explicit GlyphCacheGLTest();
 
     void initialize();
-    void access();
-    void reserve();
 };
 
 GlyphCacheGLTest::GlyphCacheGLTest() {
-    addTests({&GlyphCacheGLTest::initialize,
-              &GlyphCacheGLTest::access,
-              &GlyphCacheGLTest::reserve});
+    addTests({&GlyphCacheGLTest::initialize});
 }
 
 void GlyphCacheGLTest::initialize() {
@@ -51,44 +47,6 @@ void GlyphCacheGLTest::initialize() {
     #ifndef MAGNUM_TARGET_GLES
     CORRADE_COMPARE(cache.texture().imageSize(0), Vector2i(1024, 2048));
     #endif
-}
-
-void GlyphCacheGLTest::access() {
-    Text::GlyphCache cache(Vector2i(236));
-    Vector2i position;
-    Range2Di rectangle;
-
-    /* Default "Not Found" glyph */
-    CORRADE_COMPARE(cache.glyphCount(), 1);
-    std::tie(position, rectangle) = cache[0];
-    CORRADE_COMPARE(position, Vector2i(0, 0));
-    CORRADE_COMPARE(rectangle, Range2Di({0, 0}, {0, 0}));
-
-    /* Overwrite "Not Found" glyph */
-    cache.insert(0, {3, 5}, {{10, 10}, {23, 45}});
-    CORRADE_COMPARE(cache.glyphCount(), 1);
-    std::tie(position, rectangle) = cache[0];
-    CORRADE_COMPARE(position, Vector2i(3, 5));
-    CORRADE_COMPARE(rectangle, Range2Di({10, 10}, {23, 45}));
-
-    /* Querying available glyph */
-    cache.insert(25, {3, 4}, {{15, 30}, {45, 35}});
-    CORRADE_COMPARE(cache.glyphCount(), 2);
-    std::tie(position, rectangle) = cache[25];
-    CORRADE_COMPARE(position, Vector2i(3, 4));
-    CORRADE_COMPARE(rectangle, Range2Di({15, 30}, {45, 35}));
-
-    /* Querying not available glyph falls back to "Not Found" */
-    std::tie(position, rectangle) = cache[42];
-    CORRADE_COMPARE(position, Vector2i(3, 5));
-    CORRADE_COMPARE(rectangle, Range2Di({10, 10}, {23, 45}));
-}
-
-void GlyphCacheGLTest::reserve() {
-    Text::GlyphCache cache(Vector2i(236));
-
-    /* Verify that this works for "empty" cache */
-    CORRADE_VERIFY(!cache.reserve({{5, 3}}).empty());
 }
 
 }}}}

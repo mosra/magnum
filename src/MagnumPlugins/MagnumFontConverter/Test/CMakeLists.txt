@@ -37,23 +37,23 @@ if(NOT BUILD_PLUGINS_STATIC)
     # First replace ${} variables, then $<> generator expressions
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
-    file(GENERATE OUTPUT $<TARGET_FILE_DIR:MagnumFontConverterGLTest>/configure.h
+    file(GENERATE OUTPUT $<TARGET_FILE_DIR:MagnumFontConverterTest>/configure.h
         INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 else()
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 endif()
 
-corrade_add_test(MagnumFontConverterGLTest MagnumFontConverterGLTest.cpp
-    LIBRARIES MagnumText MagnumTrade MagnumOpenGLTester)
+corrade_add_test(MagnumFontConverterTest MagnumFontConverterTest.cpp
+    LIBRARIES MagnumText MagnumTrade)
 if(NOT BUILD_PLUGINS_STATIC)
-    target_include_directories(MagnumFontConverterGLTest PRIVATE $<TARGET_FILE_DIR:MagnumFontConverterGLTest>)
+    target_include_directories(MagnumFontConverterTest PRIVATE $<TARGET_FILE_DIR:MagnumFontConverterTest>)
 else()
-    target_include_directories(MagnumFontConverterGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-    target_link_libraries(MagnumFontConverterGLTest PRIVATE
+    target_include_directories(MagnumFontConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(MagnumFontConverterTest PRIVATE
         MagnumFontConverter) # TgaImageConverter should get linked transitively
     if(WITH_TGAIMPORTER)
-        target_link_libraries(MagnumFontConverterGLTest PRIVATE TgaImporter)
+        target_link_libraries(MagnumFontConverterTest PRIVATE TgaImporter)
     endif()
 endif()
-set_target_properties(MagnumFontConverterGLTest PROPERTIES FOLDER "MagnumPlugins/MagnumFontConverter/Test")
+set_target_properties(MagnumFontConverterTest PROPERTIES FOLDER "MagnumPlugins/MagnumFontConverter/Test")

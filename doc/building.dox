@@ -502,7 +502,7 @@ specify which parts will be built and which not:
     [OpenAL](https://www.openal.org/), not built by default.
 -   `WITH_DEBUGTOOLS` --- Build the @ref DebugTools library.
 -   `WITH_GL` --- Build the @ref GL library. Enabled automatically if
-    `WITH_SHADERS` or `WITH_TEXT` is enabled.
+    `WITH_SHADERS` is enabled.
 -   `WITH_MESHTOOLS` --- Build the @ref MeshTools library. Enables also
     building of the Trade library.
 -   `WITH_PRIMITIVES` --- Build the @ref Primitives library. Enables also
@@ -514,7 +514,7 @@ specify which parts will be built and which not:
 -   `WITH_SHAPES` @m_class{m-label m-danger} **deprecated** --- Build the
     @ref Shapes library. Enables also building of the SceneGraph library.
 -   `WITH_TEXT` --- Build the @ref Text library. Enables also building of
-    the TextureTools and GL libraries.
+    the TextureTools library.
 -   `WITH_TEXTURETOOLS` --- Build the @ref TextureTools library. Enabled
     automatically if `WITH_TEXT` or `WITH_DISTANCEFIELDCONVERTER` is enabled.
 -   `WITH_TRADE` --- Build the @ref Trade library.

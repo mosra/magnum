@@ -30,7 +30,7 @@
 #include <Corrade/Utility/Unicode.h>
 
 #include "Magnum/Math/Functions.h"
-#include "Magnum/Text/GlyphCache.h"
+#include "Magnum/Text/AbstractGlyphCache.h"
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 #include "Magnum/Text/configure.h"
@@ -39,7 +39,7 @@
 namespace Magnum { namespace Text {
 
 std::string AbstractFont::pluginInterface() {
-    return "cz.mosra.magnum.Text.AbstractFont/0.2.4";
+    return "cz.mosra.magnum.Text.AbstractFont/0.3";
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
@@ -125,7 +125,7 @@ auto AbstractFont::doOpenFile(const std::string& filename, const Float size) -> 
 
     /* Open file */
     if(!Utility::Directory::exists(filename)) {
-        Error() << "Trade::AbstractFont::openFile(): cannot open file" << filename;
+        Error() << "Text::AbstractFont::openFile(): cannot open file" << filename;
         return {};
     }
 
@@ -153,20 +153,20 @@ Vector2 AbstractFont::glyphAdvance(const UnsignedInt glyph) {
     return doGlyphAdvance(glyph);
 }
 
-void AbstractFont::fillGlyphCache(GlyphCache& cache, const std::string& characters) {
+void AbstractFont::fillGlyphCache(AbstractGlyphCache& cache, const std::string& characters) {
     CORRADE_ASSERT(isOpened(),
-        "Text::AbstractFont::createGlyphCache(): no font opened", );
+        "Text::AbstractFont::fillGlyphCache(): no font opened", );
     CORRADE_ASSERT(!(features() & Feature::PreparedGlyphCache),
         "Text::AbstractFont::fillGlyphCache(): feature not supported", );
 
     doFillGlyphCache(cache, Utility::Unicode::utf32(characters));
 }
 
-void AbstractFont::doFillGlyphCache(GlyphCache&, const std::u32string&) {
+void AbstractFont::doFillGlyphCache(AbstractGlyphCache&, const std::u32string&) {
     CORRADE_ASSERT(false, "Text::AbstractFont::fillGlyphCache(): feature advertised but not implemented", );
 }
 
-Containers::Pointer<GlyphCache> AbstractFont::createGlyphCache() {
+Containers::Pointer<AbstractGlyphCache> AbstractFont::createGlyphCache() {
     CORRADE_ASSERT(isOpened(),
         "Text::AbstractFont::createGlyphCache(): no font opened", nullptr);
     CORRADE_ASSERT(features() & Feature::PreparedGlyphCache,
@@ -175,12 +175,12 @@ Containers::Pointer<GlyphCache> AbstractFont::createGlyphCache() {
     return doCreateGlyphCache();
 }
 
-Containers::Pointer<GlyphCache> AbstractFont::doCreateGlyphCache() {
+Containers::Pointer<AbstractGlyphCache> AbstractFont::doCreateGlyphCache() {
     CORRADE_ASSERT(false, "Text::AbstractFont::createGlyphCache(): feature advertised but not implemented", nullptr);
     return nullptr;
 }
 
-Containers::Pointer<AbstractLayouter> AbstractFont::layout(const GlyphCache& cache, const Float size, const std::string& text) {
+Containers::Pointer<AbstractLayouter> AbstractFont::layout(const AbstractGlyphCache& cache, const Float size, const std::string& text) {
     CORRADE_ASSERT(isOpened(), "Text::AbstractFont::layout(): no font opened", nullptr);
 
     return doLayout(cache, size, text);

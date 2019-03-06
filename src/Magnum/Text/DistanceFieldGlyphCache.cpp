@@ -59,7 +59,7 @@ DistanceFieldGlyphCache::DistanceFieldGlyphCache(const Vector2i& originalSize, c
     #endif
 }
 
-void DistanceFieldGlyphCache::setImage(const Vector2i& offset, const ImageView2D& image) {
+void DistanceFieldGlyphCache::doSetImage(const Vector2i& offset, const ImageView2D& image) {
     GL::Texture2D input;
     input.setWrapping(GL::SamplerWrapping::ClampToEdge)
         .setMinificationFilter(GL::SamplerFilter::Linear)

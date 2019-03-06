@@ -29,6 +29,9 @@
  * @brief Class @ref Magnum::Text::AbstractRenderer, @ref Magnum::Text::Renderer, typedef @ref Magnum::Text::Renderer2D, @ref Magnum::Text::Renderer3D
  */
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include <string>
 #include <tuple>
 #include <vector>
@@ -241,5 +244,8 @@ typedef Renderer<2> Renderer2D;
 typedef Renderer<3> Renderer3D;
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

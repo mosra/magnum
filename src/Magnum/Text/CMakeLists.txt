@@ -25,32 +25,62 @@
 
 find_package(Corrade REQUIRED PluginManager)
 
+# Files shared between main library and unit test library
 set(MagnumText_SRCS
+    AbstractFontConverter.cpp)
+
+# Files compiled with different flags for main library and unit test library
+set(MagnumText_GracefulAssert_SRCS
     AbstractFont.cpp
-    AbstractFontConverter.cpp
-    DistanceFieldGlyphCache.cpp
-    GlyphCache.cpp
-    Renderer.cpp)
+    AbstractGlyphCache.cpp)
+
 set(MagnumText_HEADERS
     AbstractFont.h
     AbstractFontConverter.h
+    AbstractGlyphCache.h
     Alignment.h
-    DistanceFieldGlyphCache.h
-    GlyphCache.h
-    Renderer.h
     Text.h
 
     visibility.h)
+
+if(TARGET_GL)
+    list(APPEND MagnumText_SRCS
+        DistanceFieldGlyphCache.cpp
+        GlyphCache.cpp
+        Renderer.cpp)
+    list(APPEND MagnumText_HEADERS
+        DistanceFieldGlyphCache.h
+        GlyphCache.h
+        Renderer.h)
+endif()
 
 if(NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 endif()
 
-# Text library
-add_library(MagnumText ${SHARED_OR_STATIC}
+# Objects shared between main and test library
+add_library(MagnumTextObjects OBJECT
     ${MagnumText_SRCS}
     ${MagnumText_HEADERS})
+target_include_directories(MagnumTextObjects PUBLIC
+    $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
+if(TARGET_GL)
+    target_include_directories(MagnumTextObjects PUBLIC $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
+endif()
+if(NOT BUILD_STATIC)
+    target_compile_definitions(MagnumTextObjects PRIVATE "MagnumTextObjects_EXPORTS")
+endif()
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(MagnumTextObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+set_target_properties(MagnumTextObjects PROPERTIES FOLDER "Magnum/Text")
+
+# Text library
+add_library(MagnumText ${SHARED_OR_STATIC}
+    $<TARGET_OBJECTS:MagnumTextObjects>
+    ${MagnumText_GracefulAssert_SRCS})
 set_target_properties(MagnumText PROPERTIES
     DEBUG_POSTFIX "-d"
     FOLDER "Magnum/Text")
@@ -61,9 +91,11 @@ elseif(BUILD_STATIC_PIC)
 endif()
 target_link_libraries(MagnumText PUBLIC
     Magnum
-    MagnumGL
     MagnumTextureTools
     Corrade::PluginManager)
+if(TARGET_GL)
+    target_link_libraries(MagnumText PUBLIC MagnumGL)
+endif()
 
 install(TARGETS MagnumText
     RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
@@ -107,6 +139,35 @@ if(WITH_FONTCONVERTER)
 endif()
 
 if(BUILD_TESTS)
+    # Library with graceful assert for testing
+    add_library(MagnumTextTestLib ${SHARED_OR_STATIC}
+        $<TARGET_OBJECTS:MagnumTextObjects>
+        ${MagnumText_GracefulAssert_SRCS})
+    set_target_properties(MagnumTextTestLib PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum/Text")
+    target_compile_definitions(MagnumTextTestLib PRIVATE
+        "CORRADE_GRACEFUL_ASSERT" "MagnumText_EXPORTS")
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumTextTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
+    target_link_libraries(MagnumTextTestLib PUBLIC
+        Magnum
+        MagnumTextureTools
+        Corrade::PluginManager)
+    if(TARGET_GL)
+        target_link_libraries(MagnumText PUBLIC MagnumGL)
+    endif()
+
+    # On Windows we need to install first and then run the tests to avoid "DLL
+    # not found" hell, thus we need to install this too
+    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING AND NOT BUILD_STATIC)
+        install(TARGETS MagnumTextTestLib
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    endif()
+
     add_subdirectory(Test)
 endif()
 

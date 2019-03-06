@@ -29,6 +29,9 @@
  * @brief Class @ref Magnum::Text::MagnumFont
  */
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Trade/Trade.h"
 
@@ -143,8 +146,8 @@ class MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {
 
         MAGNUM_MAGNUMFONT_LOCAL UnsignedInt doGlyphId(char32_t character) override;
         MAGNUM_MAGNUMFONT_LOCAL Vector2 doGlyphAdvance(UnsignedInt glyph) override;
-        MAGNUM_MAGNUMFONT_LOCAL Containers::Pointer<GlyphCache> doCreateGlyphCache() override;
-        MAGNUM_MAGNUMFONT_LOCAL Containers::Pointer<AbstractLayouter> doLayout(const GlyphCache& cache, Float size, const std::string& text) override;
+        MAGNUM_MAGNUMFONT_LOCAL Containers::Pointer<AbstractGlyphCache> doCreateGlyphCache() override;
+        MAGNUM_MAGNUMFONT_LOCAL Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache& cache, Float size, const std::string& text) override;
 
         MAGNUM_MAGNUMFONT_LOCAL Metrics openInternal(Utility::Configuration&& conf, Trade::ImageData2D&& image);
 
@@ -152,5 +155,8 @@ class MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {
 };
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

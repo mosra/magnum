@@ -90,7 +90,7 @@ digraph "Magnum library dependency order" {
     MagnumShapes -> MagnumSceneGraph [class="m-dim"]
 
     MagnumText -> MagnumTextureTools
-    MagnumText -> MagnumGL
+    MagnumText -> MagnumGL [style=dotted]
 
     MagnumTextureTools -> Magnum
     MagnumTextureTools -> MagnumGL [style=dotted]

@@ -77,6 +77,15 @@ See also:
 -   Detection of SwiftShader drivers with
     @ref GL::Context::DetectedDriver::SwiftShader
 
+@subsubsection changelog-latest-new-text Text library
+
+-   A new @ref Text::AbstractGlyphCache base now makes @ref Text::AbstractFont
+    and @ref Text::AbstractFontConverter independent on the graphics API used,
+    meaning the @ref Text library now has just an optional dependency on
+    @ref GL. The @ref Text::Renderer, @ref Text::GlyphCache and
+    @ref Text::DistanceFieldGlyphCache classes are now built only if
+    `TARGET_GL` is enabled (done by default).
+
 @subsection changelog-latest-changes Changes and improvements
 
 -   The @ref ResourceManager class now accepts also

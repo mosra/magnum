@@ -398,7 +398,10 @@ set(_MAGNUM_Shaders_DEPENDENCIES GL)
 if(MAGNUM_BUILD_DEPRECATED)
     set(_MAGNUM_Shapes_DEPENDENCIES SceneGraph)
 endif()
-set(_MAGNUM_Text_DEPENDENCIES TextureTools GL)
+set(_MAGNUM_Text_DEPENDENCIES TextureTools)
+if(MAGNUM_TARGET_GL)
+    list(APPEND _MAGNUM_Text_DEPENDENCIES GL)
+endif()
 
 set(_MAGNUM_TextureTools_DEPENDENCIES )
 if(MAGNUM_TARGET_GL)
@@ -433,7 +436,7 @@ set(_MAGNUM_EglContext_DEPENDENCIES GL)
 set(_MAGNUM_GlxContext_DEPENDENCIES GL)
 set(_MAGNUM_WglContext_DEPENDENCIES GL)
 
-set(_MAGNUM_MagnumFont_DEPENDENCIES Trade TgaImporter) # and below
+set(_MAGNUM_MagnumFont_DEPENDENCIES Trade TgaImporter GL) # and below
 set(_MAGNUM_MagnumFontConverter_DEPENDENCIES Trade TgaImageConverter) # and below
 set(_MAGNUM_ObjImporter_DEPENDENCIES MeshTools) # and below
 foreach(_component ${_MAGNUM_PLUGIN_COMPONENT_LIST})
@@ -442,7 +445,7 @@ foreach(_component ${_MAGNUM_PLUGIN_COMPONENT_LIST})
     elseif(_component MATCHES ".+(Importer|ImageConverter)")
         list(APPEND _MAGNUM_${_component}_DEPENDENCIES Trade)
     elseif(_component MATCHES ".+(Font|FontConverter)")
-        list(APPEND _MAGNUM_${_component}_DEPENDENCIES Text TextureTools GL)
+        list(APPEND _MAGNUM_${_component}_DEPENDENCIES Text TextureTools)
     endif()
 endforeach()
 

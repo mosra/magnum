@@ -34,6 +34,7 @@
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Shaders/AbstractVector.h"
 #include "Magnum/Text/AbstractFont.h"
+#include "Magnum/Text/GlyphCache.h"
 
 namespace Magnum { namespace Text {
 

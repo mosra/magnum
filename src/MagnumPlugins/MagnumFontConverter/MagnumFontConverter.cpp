@@ -32,8 +32,8 @@
 
 #include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"
-#include "Magnum/Text/GlyphCache.h"
 #include "Magnum/Text/AbstractFont.h"
+#include "Magnum/Text/AbstractGlyphCache.h"
 #include "MagnumPlugins/TgaImageConverter/TgaImageConverter.h"
 
 namespace Magnum { namespace Text {
@@ -46,7 +46,7 @@ auto MagnumFontConverter::doFeatures() const -> Features {
     return Feature::ExportFont|Feature::ConvertData|Feature::MultiFile;
 }
 
-std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter::doExportFontToData(AbstractFont& font, GlyphCache& cache, const std::string& filename, const std::u32string& characters) const {
+std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter::doExportFontToData(AbstractFont& font, AbstractGlyphCache& cache, const std::string& filename, const std::u32string& characters) const {
     Utility::Configuration configuration;
 
     configuration.setValue("version", 1);
@@ -102,9 +102,7 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
     std::copy(confStr.begin(), confStr.end(), confData.begin());
 
     /* Save cache image */
-    Image2D image{PixelFormat::R8Unorm};
-    cache.texture().image(0, image);
-    auto tgaData = Trade::TgaImageConverter().exportToData(image);
+    auto tgaData = Trade::TgaImageConverter().exportToData(cache.image());
 
     std::vector<std::pair<std::string, Containers::Array<char>>> out;
     out.emplace_back(filename + ".conf", std::move(confData));
@@ -115,4 +113,4 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
 }}
 
 CORRADE_PLUGIN_REGISTER(MagnumFontConverter, Magnum::Text::MagnumFontConverter,
-    "cz.mosra.magnum.Text.AbstractFontConverter/0.1.2")
+    "cz.mosra.magnum.Text.AbstractFontConverter/0.2")

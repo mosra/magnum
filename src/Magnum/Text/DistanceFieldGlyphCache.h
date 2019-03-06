@@ -29,6 +29,9 @@
  * @brief Class @ref Magnum::Text::DistanceFieldGlyphCache
  */
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include "Magnum/Text/GlyphCache.h"
 #include "Magnum/TextureTools/DistanceField.h"
 
@@ -47,6 +50,10 @@ Usage is similar to @ref GlyphCache, additionally you need to specify size of
 resulting distance field texture.
 
 @snippet MagnumText.cpp DistanceFieldGlyphCache-usage
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 
 @see @ref TextureTools::distanceField()
 */
@@ -70,14 +77,6 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
         explicit DistanceFieldGlyphCache(const Vector2i& originalSize, const Vector2i& size, UnsignedInt radius);
 
         /**
-         * @brief Set cache image
-         *
-         * Uploads image for one or more glyphs to given offset in original
-         * cache texture. The texture is then converted to distance field.
-         */
-        void setImage(const Vector2i& offset, const ImageView2D& image) override;
-
-        /**
          * @brief Set distance field cache image
          *
          * Uploads already computed distance field image to given offset in
@@ -86,10 +85,15 @@ class MAGNUM_TEXT_EXPORT DistanceFieldGlyphCache: public GlyphCache {
         void setDistanceFieldImage(const Vector2i& offset, const ImageView2D& image);
 
     private:
+        void doSetImage(const Vector2i& offset, const ImageView2D& image) override;
+
         Vector2 _scale;
         TextureTools::DistanceField _distanceField;
 };
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

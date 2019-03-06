@@ -56,7 +56,7 @@ if(BUILD_PLUGINS_STATIC)
     target_sources(MagnumFontConverter INTERFACE ${CMAKE_CURRENT_SOURCE_DIR}/importStaticPlugin.cpp)
 endif()
 
-if(BUILD_GL_TESTS)
+if(BUILD_TESTS)
     add_subdirectory(Test)
 endif()
 

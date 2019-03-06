@@ -48,13 +48,13 @@ struct MagnumFont::Data {
 namespace {
     class MagnumFontLayouter: public AbstractLayouter {
         public:
-            explicit MagnumFontLayouter(const std::vector<Vector2>& glyphAdvance, const GlyphCache& cache, Float fontSize, Float textSize, std::vector<UnsignedInt>&& glyphs);
+            explicit MagnumFontLayouter(const std::vector<Vector2>& glyphAdvance, const AbstractGlyphCache& cache, Float fontSize, Float textSize, std::vector<UnsignedInt>&& glyphs);
 
         private:
             std::tuple<Range2D, Range2D, Vector2> doRenderGlyph(UnsignedInt i) override;
 
             const std::vector<Vector2>& glyphAdvance;
-            const GlyphCache& cache;
+            const AbstractGlyphCache& cache;
             const Float fontSize, textSize;
             const std::vector<UnsignedInt> glyphs;
     };
@@ -184,9 +184,9 @@ Vector2 MagnumFont::doGlyphAdvance(const UnsignedInt glyph) {
     return glyph < _opened->glyphAdvance.size() ? _opened->glyphAdvance[glyph] : Vector2();
 }
 
-Containers::Pointer<GlyphCache> MagnumFont::doCreateGlyphCache() {
+Containers::Pointer<AbstractGlyphCache> MagnumFont::doCreateGlyphCache() {
     /* Set cache image */
-    Containers::Pointer<GlyphCache> cache(new Text::GlyphCache(
+    Containers::Pointer<AbstractGlyphCache> cache(new Text::GlyphCache(
         _opened->conf.value<Vector2i>("originalImageSize"),
         _opened->image.size(),
         _opened->conf.value<Vector2i>("padding")));
@@ -200,7 +200,7 @@ Containers::Pointer<GlyphCache> MagnumFont::doCreateGlyphCache() {
     return cache;
 }
 
-Containers::Pointer<AbstractLayouter> MagnumFont::doLayout(const GlyphCache& cache, Float size, const std::string& text) {
+Containers::Pointer<AbstractLayouter> MagnumFont::doLayout(const AbstractGlyphCache& cache, Float size, const std::string& text) {
     /* Get glyph codes from characters */
     std::vector<UnsignedInt> glyphs;
     glyphs.reserve(text.size());
@@ -216,7 +216,7 @@ Containers::Pointer<AbstractLayouter> MagnumFont::doLayout(const GlyphCache& cac
 
 namespace {
 
-MagnumFontLayouter::MagnumFontLayouter(const std::vector<Vector2>& glyphAdvance, const GlyphCache& cache, const Float fontSize, const Float textSize, std::vector<UnsignedInt>&& glyphs): AbstractLayouter(glyphs.size()), glyphAdvance(glyphAdvance), cache(cache), fontSize(fontSize), textSize(textSize), glyphs(std::move(glyphs)) {}
+MagnumFontLayouter::MagnumFontLayouter(const std::vector<Vector2>& glyphAdvance, const AbstractGlyphCache& cache, const Float fontSize, const Float textSize, std::vector<UnsignedInt>&& glyphs): AbstractLayouter(glyphs.size()), glyphAdvance(glyphAdvance), cache(cache), fontSize(fontSize), textSize(textSize), glyphs(std::move(glyphs)) {}
 
 std::tuple<Range2D, Range2D, Vector2> MagnumFontLayouter::doRenderGlyph(const UnsignedInt i) {
     /* Position of the texture in the resulting glyph, texture coordinates */
@@ -242,4 +242,4 @@ std::tuple<Range2D, Range2D, Vector2> MagnumFontLayouter::doRenderGlyph(const Un
 }}
 
 CORRADE_PLUGIN_REGISTER(MagnumFont, Magnum::Text::MagnumFont,
-    "cz.mosra.magnum.Text.AbstractFont/0.2.4")
+    "cz.mosra.magnum.Text.AbstractFont/0.3")

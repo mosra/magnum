@@ -23,15 +23,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Directory.h>
+#include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/File.h>
 
+#include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"
-#include "Magnum/GL/Context.h"
-#include "Magnum/GL/Extensions.h"
-#include "Magnum/GL/TextureFormat.h"
-#include "Magnum/GL/OpenGLTester.h"
-#include "Magnum/Text/GlyphCache.h"
+#include "Magnum/Text/AbstractGlyphCache.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractFontConverter.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
@@ -42,8 +42,8 @@
 
 namespace Magnum { namespace Text { namespace Test { namespace {
 
-struct MagnumFontConverterGLTest: GL::OpenGLTester {
-    explicit MagnumFontConverterGLTest();
+struct MagnumFontConverterTest: TestSuite::Tester {
+    explicit MagnumFontConverterTest();
 
     void exportFont();
 
@@ -53,8 +53,8 @@ struct MagnumFontConverterGLTest: GL::OpenGLTester {
     PluginManager::Manager<Trade::AbstractImporter> _importerManager{"nonexistent"};
 };
 
-MagnumFontConverterGLTest::MagnumFontConverterGLTest() {
-    addTests({&MagnumFontConverterGLTest::exportFont});
+MagnumFontConverterTest::MagnumFontConverterTest() {
+    addTests({&MagnumFontConverterTest::exportFont});
 
     /* Load the plugins directly from the build tree. Otherwise they are static
        and already loaded. */
@@ -68,7 +68,7 @@ MagnumFontConverterGLTest::MagnumFontConverterGLTest() {
     #endif
 }
 
-void MagnumFontConverterGLTest::exportFont() {
+void MagnumFontConverterTest::exportFont() {
     /* Remove previously created files */
     Utility::Directory::rm(Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.conf"));
     Utility::Directory::rm(Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.tga"));
@@ -86,7 +86,7 @@ void MagnumFontConverterGLTest::exportFont() {
                 return {16.0f, 25.0f, -10.0f, 39.7333f};
             }
             Features doFeatures() const { return {}; }
-            Containers::Pointer<AbstractLayouter> doLayout(const GlyphCache&, Float, const std::string&) { return nullptr; }
+            Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) { return nullptr; }
 
             UnsignedInt doGlyphId(const char32_t character) {
                 switch(character) {
@@ -112,8 +112,15 @@ void MagnumFontConverterGLTest::exportFont() {
     font.openFile({}, {});
 
     /* Create fake cache */
-    MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);
-    GlyphCache cache(GL::TextureFormat::R8, Vector2i(1536), Vector2i(256), Vector2i(24));
+    struct MyCache: AbstractGlyphCache {
+        explicit MyCache(): AbstractGlyphCache{Vector2i{1536}, Vector2i{24}} {}
+
+        GlyphCacheFeatures doFeatures() const override { return GlyphCacheFeature::ImageDownload; }
+        void doSetImage(const Vector2i&, const ImageView2D&) override {}
+        Image2D doImage() override {
+            return Image2D{PixelFormat::R8Unorm, Vector2i{256}, Containers::Array<char>{Containers::ValueInit, 256*256}};
+        }
+    } cache;
     cache.insert(font.glyphId(U'W'), {25, 34}, {{0, 8}, {16, 128}});
     cache.insert(font.glyphId(U'e'), {25, 12}, {{16, 4}, {64, 32}});
 
@@ -130,7 +137,8 @@ void MagnumFontConverterGLTest::exportFont() {
     if(!(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("TgaImporter plugin not enabled, not testing glyph cache contents");
 
-    /* Verify font image, no need to test image contents, as the image is garbage anyway */
+    /* Verify font image, no need to test image contents, as the image is
+       garbage anyway */
     Containers::Pointer<Trade::AbstractImporter> importer = _importerManager.instantiate("TgaImporter");
     CORRADE_VERIFY(importer->openFile(Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font.tga")));
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
@@ -141,4 +149,4 @@ void MagnumFontConverterGLTest::exportFont() {
 
 }}}}
 
-CORRADE_TEST_MAIN(Magnum::Text::Test::MagnumFontConverterGLTest)
+CORRADE_TEST_MAIN(Magnum::Text::Test::MagnumFontConverterTest)

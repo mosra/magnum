@@ -35,27 +35,30 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
 corrade_add_test(TextAbstractFontTest AbstractFontTest.cpp
-    LIBRARIES Magnum MagnumText
+    LIBRARIES Magnum MagnumTextTestLib
     FILES data.bin)
 target_include_directories(TextAbstractFontTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(TextAbstractFontConverterTest AbstractFontConverterTest.cpp
     LIBRARIES Magnum MagnumText
     FILES data.bin)
 target_include_directories(TextAbstractFontConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+corrade_add_test(TextAbstractGlyphCacheTest AbstractGlyphCacheTest.cpp LIBRARIES MagnumTextTestLib)
 corrade_add_test(TextAbstractLayouterTest AbstractLayouterTest.cpp LIBRARIES Magnum MagnumText)
 
 set_target_properties(
     TextAbstractFontTest
     TextAbstractFontConverterTest
+    TextAbstractGlyphCacheTest
     TextAbstractLayouterTest
     PROPERTIES FOLDER "Magnum/Text/Test")
 
-if(BUILD_GL_TESTS)
+if(TARGET_GL AND BUILD_GL_TESTS)
     corrade_add_test(TextDistanceFieldGlyphCacheGLTest DistanceFieldGlyphCacheGLTest.cpp LIBRARIES MagnumText MagnumOpenGLTester)
     corrade_add_test(TextGlyphCacheGLTest GlyphCacheGLTest.cpp LIBRARIES MagnumText MagnumOpenGLTester)
     corrade_add_test(TextRendererGLTest RendererGLTest.cpp LIBRARIES MagnumText MagnumOpenGLTester)
 
     set_target_properties(
+        TextDistanceFieldGlyphCacheGLTest
         TextGlyphCacheGLTest
         TextRendererGLTest
         PROPERTIES FOLDER "Magnum/Text/Test")

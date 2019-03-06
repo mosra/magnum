@@ -26,6 +26,7 @@
 #include "GlyphCache.h"
 
 #include "Magnum/Image.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/TextureFormat.h"
@@ -35,60 +36,46 @@ namespace Magnum { namespace Text {
 
 GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& size, const Vector2i& padding): GlyphCache{internalFormat, size, size, padding} {}
 
-GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding): _size(originalSize), _padding(padding) {
-    initialize(internalFormat, size);
-}
-
-GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& padding): GlyphCache{size, size, padding} {}
-
-GlyphCache::GlyphCache(const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding): _size(originalSize), _padding(padding) {
-    #ifndef MAGNUM_TARGET_GLES
-    MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES2
-    const GL::TextureFormat internalFormat = GL::TextureFormat::R8;
-    #else
-    const GL::TextureFormat internalFormat = GL::TextureFormat::Luminance;
-    #endif
-
-    initialize(internalFormat, size);
-}
-
-GlyphCache::~GlyphCache() = default;
-
-void GlyphCache::initialize(const GL::TextureFormat internalFormat, const Vector2i& size) {
-    /* Initialize texture */
+GlyphCache::GlyphCache(const GL::TextureFormat internalFormat, const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding): AbstractGlyphCache{originalSize, padding} {
+    /* Initialize the texture */
     _texture.setWrapping(GL::SamplerWrapping::ClampToEdge)
         .setMinificationFilter(GL::SamplerFilter::Linear)
         .setMagnificationFilter(GL::SamplerFilter::Linear)
         .setStorage(1, internalFormat, size);
-
-    /* Default "Not Found" glyph. Can't do just `.insert({0, {}})` because
-       that's ambiguous in C++17, due to a new insert(node_type&&) overload. */
-    glyphs.insert({0, std::pair<Vector2i, Range2Di>{}});
 }
 
-std::vector<Range2Di> GlyphCache::reserve(const std::vector<Vector2i>& sizes) {
-    CORRADE_ASSERT((glyphs.size() == 1 && glyphs.at(0) == std::pair<Vector2i, Range2Di>()),
-        "Text::GlyphCache::reserve(): reserving space in non-empty cache is not yet implemented", {});
-    glyphs.reserve(glyphs.size() + sizes.size());
-    return TextureTools::atlas(_size, sizes, _padding);
+GlyphCache::GlyphCache(const Vector2i& size, const Vector2i& padding): GlyphCache{size, size, padding} {}
+
+GlyphCache::GlyphCache(const Vector2i& originalSize, const Vector2i& size, const Vector2i& padding): GlyphCache{
+    #ifndef MAGNUM_TARGET_GLES2
+    GL::TextureFormat::R8,
+    #else
+    GL::TextureFormat::Luminance,
+    #endif
+    originalSize, size, padding}
+{
+    #ifndef MAGNUM_TARGET_GLES
+    MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(GL::Extensions::ARB::texture_rg);
+    #endif
 }
 
-void GlyphCache::insert(const UnsignedInt glyph, const Vector2i& position, const Range2Di& rectangle) {
-    const std::pair<Vector2i, Range2Di> glyphData = {position-_padding, rectangle.padded(_padding)};
+GlyphCache::~GlyphCache() = default;
 
-    /* Overwriting "Not Found" glyph */
-    if(glyph == 0) glyphs[0] = glyphData;
-
-    /* Inserting new glyph */
-    else CORRADE_INTERNAL_ASSERT_OUTPUT(glyphs.insert({glyph, glyphData}).second);
+GlyphCacheFeatures GlyphCache::doFeatures() const {
+    #ifndef MAGNUM_TARGET_GLES
+    return GlyphCacheFeature::ImageDownload;
+    #else
+    return {};
+    #endif
 }
 
-void GlyphCache::setImage(const Vector2i& offset, const ImageView2D& image) {
+void GlyphCache::doSetImage(const Vector2i& offset, const ImageView2D& image) {
     /** @todo some internalformat/format checking also here (if querying internal format is not slow) */
     _texture.setSubImage(0, offset, image);
 }
+
+#ifndef MAGNUM_TARGET_GLES
+Image2D GlyphCache::doImage() { return _texture.image(0, PixelFormat::R8Unorm); }
+#endif
 
 }}

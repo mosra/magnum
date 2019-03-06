@@ -40,22 +40,37 @@ if(NOT BUILD_PLUGINS_STATIC)
     # First replace ${} variables, then $<> generator expressions
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
-    file(GENERATE OUTPUT $<TARGET_FILE_DIR:MagnumFontGLTest>/configure.h
+    file(GENERATE OUTPUT $<TARGET_FILE_DIR:MagnumFontTest>/configure.h
         INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 else()
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 endif()
 
-corrade_add_test(MagnumFontGLTest MagnumFontGLTest.cpp
-    LIBRARIES MagnumText MagnumTrade MagnumOpenGLTester
+corrade_add_test(MagnumFontTest MagnumFontTest.cpp
+    LIBRARIES MagnumText MagnumTrade
     FILES
         font.conf
         font.tga)
 if(NOT BUILD_PLUGINS_STATIC)
-    target_include_directories(MagnumFontGLTest PRIVATE $<TARGET_FILE_DIR:MagnumFontGLTest>)
+    target_include_directories(MagnumFontTest PRIVATE $<TARGET_FILE_DIR:MagnumFontTest>)
 else()
-    target_include_directories(MagnumFontGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-    target_link_libraries(MagnumFontGLTest PRIVATE MagnumFont TgaImporter)
+    target_include_directories(MagnumFontTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_link_libraries(MagnumFontTest PRIVATE MagnumFont TgaImporter)
 endif()
-set_target_properties(MagnumFontGLTest PROPERTIES FOLDER "MagnumPlugins/MagnumFont/Test")
+set_target_properties(MagnumFontTest PROPERTIES FOLDER "MagnumPlugins/MagnumFont/Test")
+
+if(BUILD_GL_TESTS)
+    corrade_add_test(MagnumFontGLTest MagnumFontGLTest.cpp
+        LIBRARIES MagnumText MagnumTrade MagnumOpenGLTester
+        FILES
+            font.conf
+            font.tga)
+    if(NOT BUILD_PLUGINS_STATIC)
+        target_include_directories(MagnumFontGLTest PRIVATE $<TARGET_FILE_DIR:MagnumFontTest>)
+    else()
+        target_include_directories(MagnumFontGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+        target_link_libraries(MagnumFontGLTest PRIVATE MagnumFont TgaImporter)
+    endif()
+    set_target_properties(MagnumFontGLTest PROPERTIES FOLDER "MagnumPlugins/MagnumFont/Test")
+endif()

@@ -108,7 +108,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @brief Plugin interface
          *
          * @code{.cpp}
-         * "cz.mosra.magnum.Text.AbstractFont/0.2.4"
+         * "cz.mosra.magnum.Text.AbstractFont/0.3"
          * @endcode
          */
         static std::string pluginInterface();
@@ -244,7 +244,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @ref Feature::PreparedGlyphCache do not support partial glyph cache
          * filling, use @ref createGlyphCache() instead.
          */
-        void fillGlyphCache(GlyphCache& cache, const std::string& characters);
+        void fillGlyphCache(AbstractGlyphCache& cache, const std::string& characters);
 
         /**
          * @brief Create glyph cache
@@ -254,7 +254,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * Other fonts support only partial glyph cache filling, see
          * @ref fillGlyphCache().
          */
-        Containers::Pointer<GlyphCache> createGlyphCache();
+        Containers::Pointer<AbstractGlyphCache> createGlyphCache();
 
         /**
          * @brief Layout the text using font's own layouter
@@ -266,7 +266,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * See @ref Renderer class for more advanced text layouting.
          * @see @ref fillGlyphCache(), @ref createGlyphCache()
          */
-        Containers::Pointer<AbstractLayouter> layout(const GlyphCache& cache, Float size, const std::string& text);
+        Containers::Pointer<AbstractLayouter> layout(const AbstractGlyphCache& cache, Float size, const std::string& text);
 
     protected:
         /**
@@ -349,13 +349,13 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * The string is converted from UTF-8 to UTF-32, unique characters are
          * *not* removed.
          */
-        virtual void doFillGlyphCache(GlyphCache& cache, const std::u32string& characters);
+        virtual void doFillGlyphCache(AbstractGlyphCache& cache, const std::u32string& characters);
 
         /** @brief Implementation for @ref createGlyphCache() */
-        virtual Containers::Pointer<GlyphCache> doCreateGlyphCache();
+        virtual Containers::Pointer<AbstractGlyphCache> doCreateGlyphCache();
 
         /** @brief Implementation for @ref layout() */
-        virtual Containers::Pointer<AbstractLayouter> doLayout(const GlyphCache& cache, Float size, const std::string& text) = 0;
+        virtual Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache& cache, Float size, const std::string& text) = 0;
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
