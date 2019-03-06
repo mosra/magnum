@@ -63,9 +63,10 @@ AbstractFont::AbstractFont(PluginManager::AbstractManager& manager, const std::s
 bool AbstractFont::openData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, const Float size) {
     CORRADE_ASSERT(features() & Feature::OpenData,
         "Text::AbstractFont::openData(): feature not supported", false);
-    CORRADE_ASSERT(!data.empty(),
-        "Text::AbstractFont::openData(): no data passed", false);
 
+    /* We accept empty data here (instead of checking for them and failing so
+       the check doesn't be done on the plugin side) because for some file
+       formats it could be valid (MagnumFont in particular). */
     close();
     const Metrics metrics = doOpenData(data, size);
     _size = metrics.size;

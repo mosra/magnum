@@ -122,6 +122,12 @@ See also:
     experience for example when using ANGLE on Windows. See
     @ref Platform-Sdl2Application-usage-gles for more information.
 
+@subsubsection changelog-latest-changes-text Text library
+
+-   For consistency with @ref Trade::AbstractImporter, @ref Text::AbstractFont
+    now doesn't fail when opening empty files --- instead this is handled in
+    the particular plugin implementations
+
 @subsubsection changelog-latest-changes-trade Trade library
 
 -   The @ref Trade::AnyImageImporter "AnyImageImporter",
