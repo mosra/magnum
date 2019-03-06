@@ -504,6 +504,7 @@ void GlfwApplication::setupCallbacks() {
         if(!(app._flags & Flag::TextInputActive)) return;
 
         char utf8[4];
+        memset(utf8, 0, 4);
         const std::size_t size = Utility::Unicode::utf8(codepoint, utf8);
         TextInputEvent e{{utf8, size}};
         app.textInputEvent(e);
