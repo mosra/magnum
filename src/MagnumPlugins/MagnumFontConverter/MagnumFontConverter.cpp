@@ -47,6 +47,11 @@ auto MagnumFontConverter::doFeatures() const -> Features {
 }
 
 std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter::doExportFontToData(AbstractFont& font, AbstractGlyphCache& cache, const std::string& filename, const std::u32string& characters) const {
+    if(!(cache.features() & GlyphCacheFeature::ImageDownload)) {
+        Error{} << "Text::MagnumFontConverter::exportFontToData(): passed glyph cache doesn't support image download";
+        return {};
+    }
+
     Utility::Configuration configuration;
 
     configuration.setValue("version", 1);

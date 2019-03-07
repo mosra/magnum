@@ -46,6 +46,7 @@ struct MagnumFontConverterTest: TestSuite::Tester {
     explicit MagnumFontConverterTest();
 
     void exportFont();
+    void exportFontNoGlyphCacheImageDownload();
 
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<Trade::AbstractImageConverter> _imageConverterManager{"nonexistent"};
@@ -54,7 +55,8 @@ struct MagnumFontConverterTest: TestSuite::Tester {
 };
 
 MagnumFontConverterTest::MagnumFontConverterTest() {
-    addTests({&MagnumFontConverterTest::exportFont});
+    addTests({&MagnumFontConverterTest::exportFont,
+              &MagnumFontConverterTest::exportFontNoGlyphCacheImageDownload});
 
     /* Load the plugins directly from the build tree. Otherwise they are static
        and already loaded. */
@@ -145,6 +147,35 @@ void MagnumFontConverterTest::exportFont() {
     CORRADE_VERIFY(image);
     CORRADE_COMPARE(image->size(), Vector2i(256));
     CORRADE_COMPARE(image->format(), PixelFormat::R8Unorm);
+}
+
+void MagnumFontConverterTest::exportFontNoGlyphCacheImageDownload() {
+    struct MyFont: AbstractFont {
+        /* Supports neither file nor data opening */
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+    } font;
+
+    struct DummyGlyphCache: AbstractGlyphCache {
+        using AbstractGlyphCache::AbstractGlyphCache;
+
+        GlyphCacheFeatures doFeatures() const override { return {}; }
+        void doSetImage(const Vector2i&, const ImageView2D&) override {}
+    } cache{{100, 100}};
+
+    Containers::Pointer<AbstractFontConverter> converter = _fontConverterManager.instantiate("MagnumFontConverter");
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!converter->exportFontToFile(font, cache, Utility::Directory::join(MAGNUMFONTCONVERTER_TEST_WRITE_DIR, "font"), "Wave"));
+    CORRADE_COMPARE(out.str(), "Text::MagnumFontConverter::exportFontToData(): passed glyph cache doesn't support image download\n");
 }
 
 }}}}
