@@ -657,7 +657,7 @@ class Sdl2Application {
          *      @ref MAGNUM_TARGET_GL enabled (done by default). See
          *      @ref building-features for more information.
          *
-         * @see @ref dpiScaling()
+         * @see @ref Sdl2Application::framebufferSize(), @ref dpiScaling()
          */
         Vector2i framebufferSize() const;
         #endif
@@ -670,7 +670,7 @@ class Sdl2Application {
          * zero vector, use @ref dpiScaling(const Configuration&) const for
          * calculating a value independently. See @ref Platform-Sdl2Application-dpi
          * for more information.
-         * @see @ref framebufferSize()
+         * @see @ref Sdl2Application::dpiScaling(), @ref framebufferSize()
          */
         Vector2 dpiScaling() const { return _dpiScaling; }
 
@@ -1740,15 +1740,22 @@ class Sdl2Application::ViewportEvent {
          */
         Vector2i windowSize() const { return _windowSize; }
 
+        #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
          * @brief Framebuffer size
          *
          * On some platforms with HiDPI displays, framebuffer size can be
          * different from @ref windowSize(). See
          * @ref Platform-Sdl2Application-dpi for more information.
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
+         *
          * @see @ref Sdl2Application::framebufferSize()
          */
         Vector2i framebufferSize() const { return _framebufferSize; }
+        #endif
 
         /**
          * @brief DPI scaling
@@ -1779,17 +1786,27 @@ class Sdl2Application::ViewportEvent {
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             const SDL_Event& event,
             #endif
-            const Vector2i& windowSize, const Vector2i& framebufferSize, const Vector2& dpiScaling):
+            const Vector2i& windowSize,
+            #ifdef MAGNUM_TARGET_GL
+            const Vector2i& framebufferSize,
+            #endif
+            const Vector2& dpiScaling):
                 #ifndef CORRADE_TARGET_EMSCRIPTEN
                 _event(event),
                 #endif
-                _windowSize{windowSize}, _framebufferSize{framebufferSize}, _dpiScaling{dpiScaling} {}
+                _windowSize{windowSize},
+                #ifdef MAGNUM_TARGET_GL
+                _framebufferSize{framebufferSize},
+                #endif
+                _dpiScaling{dpiScaling} {}
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         const SDL_Event& _event;
         #endif
         const Vector2i _windowSize;
+        #ifdef MAGNUM_TARGET_GL
         const Vector2i _framebufferSize;
+        #endif
         const Vector2 _dpiScaling;
 };
 

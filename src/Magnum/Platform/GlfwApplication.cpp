@@ -465,7 +465,11 @@ void GlfwApplication::setupCallbacks() {
     });
     glfwSetFramebufferSizeCallback(_window, [](GLFWwindow* const window, const int w, const int h) {
         auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
-        ViewportEvent e{{w, h}, app.framebufferSize(), app.dpiScaling()};
+        ViewportEvent e{{w, h}
+            #ifdef MAGNUM_TARGET_GL
+            , app.framebufferSize()
+            #endif
+            , app.dpiScaling()};
         static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->viewportEvent(e);
     });
     glfwSetKeyCallback(_window, [](GLFWwindow* const window, const int key, int, const int action, const int mods) {
@@ -523,6 +527,7 @@ Vector2i GlfwApplication::windowSize() const {
     return size;
 }
 
+#ifdef MAGNUM_TARGET_GL
 Vector2i GlfwApplication::framebufferSize() const {
     CORRADE_ASSERT(_window, "Platform::GlfwApplication::framebufferSize(): no window opened", {});
 
@@ -530,6 +535,7 @@ Vector2i GlfwApplication::framebufferSize() const {
     glfwGetFramebufferSize(_window, &size.x(), &size.y());
     return size;
 }
+#endif
 
 void GlfwApplication::setSwapInterval(const Int interval) {
     glfwSwapInterval(interval);

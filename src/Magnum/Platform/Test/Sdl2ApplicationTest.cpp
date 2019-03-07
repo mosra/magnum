@@ -42,7 +42,11 @@ struct Sdl2ApplicationTest: Platform::Application {
 
     /* For testing HiDPI resize events */
     void viewportEvent(ViewportEvent& event) override {
-        Debug{} << "viewport event" << event.windowSize() << event.framebufferSize() << event.dpiScaling();
+        Debug{} << "viewport event" << event.windowSize()
+            #ifdef MAGNUM_TARGET_GL
+            << event.framebufferSize()
+            #endif
+            << event.dpiScaling();
     }
 
     /* For testing event coordinates */

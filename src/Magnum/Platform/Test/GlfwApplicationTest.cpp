@@ -30,6 +30,15 @@ namespace Magnum { namespace Platform { namespace Test { namespace {
 struct GlfwApplicationTest: Platform::Application {
     explicit GlfwApplicationTest(const Arguments& arguments): Platform::Application{arguments} {}
 
+    /* For testing HiDPI resize events */
+    void viewportEvent(ViewportEvent& event) override {
+        Debug{} << "viewport event" << event.windowSize()
+            #ifdef MAGNUM_TARGET_GL
+            << event.framebufferSize()
+            #endif
+            << event.dpiScaling();
+    }
+
     void keyPressEvent(KeyEvent& event) override {
         #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
         Debug{} << "key press event:" << event.keyName();

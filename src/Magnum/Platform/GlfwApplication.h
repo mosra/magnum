@@ -1206,15 +1206,22 @@ class GlfwApplication::ViewportEvent {
          */
         Vector2i windowSize() const { return _windowSize; }
 
+        #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
          * @brief Framebuffer size
          *
          * On some platforms with HiDPI displays, framebuffer size can be
          * different from @ref windowSize(). See
          * @ref Platform-GlfwApplication-dpi for more information.
-         * @see @ref GlfwApplication::framebufferSize()
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
+         *
+         * @see @ref GlfwApplication::framebufferSize(), @ref dpiScaling()
          */
         Vector2i framebufferSize() const { return _framebufferSize; }
+        #endif
 
         /**
          * @brief DPI scaling
@@ -1223,17 +1230,27 @@ class GlfwApplication::ViewportEvent {
          * scaling value being changed in tandem with a window/framebuffer
          * size. Simply resizing a window doesn't change the DPI scaling value.
          * See @ref Platform-GlfwApplication-dpi for more information.
-         * @see @ref GlfwApplication::dpiScaling()
+         * @see @ref GlfwApplication::dpiScaling(), @ref framebufferSize()
          */
         Vector2 dpiScaling() const { return _dpiScaling; }
 
     private:
         friend GlfwApplication;
 
-        explicit ViewportEvent(const Vector2i& windowSize, const Vector2i& framebufferSize, const Vector2& dpiScaling): _windowSize{windowSize}, _framebufferSize{framebufferSize}, _dpiScaling{dpiScaling} {}
+        explicit ViewportEvent(const Vector2i& windowSize,
+            #ifdef MAGNUM_TARGET_GL
+            const Vector2i& framebufferSize,
+            #endif
+            const Vector2& dpiScaling): _windowSize{windowSize},
+                #ifdef MAGNUM_TARGET_GL
+                _framebufferSize{framebufferSize},
+                #endif
+                _dpiScaling{dpiScaling} {}
 
         const Vector2i _windowSize;
+        #ifdef MAGNUM_TARGET_GL
         const Vector2i _framebufferSize;
+        #endif
         const Vector2 _dpiScaling;
 };
 

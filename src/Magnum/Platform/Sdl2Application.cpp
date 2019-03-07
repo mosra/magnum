@@ -547,6 +547,7 @@ Vector2i Sdl2Application::windowSize() const {
     return size;
 }
 
+#ifdef MAGNUM_TARGET_GL
 Vector2i Sdl2Application::framebufferSize() const {
     Vector2i size;
     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -558,6 +559,7 @@ Vector2i Sdl2Application::framebufferSize() const {
     #endif
     return size;
 }
+#endif
 
 #ifdef CORRADE_TARGET_EMSCRIPTEN
 void Sdl2Application::setContainerCssClass(const std::string& cssClass) {
@@ -671,7 +673,11 @@ void Sdl2Application::mainLoopIteration() {
                            https://github.com/kripken/emscripten/issues/1731 */
                         CORRADE_ASSERT_UNREACHABLE();
                         #else
-                        ViewportEvent e{event, {event.window.data1, event.window.data2}, framebufferSize(), _dpiScaling};
+                        ViewportEvent e{event, {event.window.data1, event.window.data2},
+                            #ifdef MAGNUM_TARGET_GL
+                            framebufferSize(),
+                            #endif
+                            _dpiScaling};
                         /** @todo handle also WM_DPICHANGED events when a window is moved between displays with different DPI */
                         viewportEvent(e);
                         _flags |= Flag::Redraw;
@@ -835,7 +841,13 @@ void Sdl2Application::anyEvent(SDL_Event&) {
 void Sdl2Application::viewportEvent(ViewportEvent& event) {
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH
-    viewportEvent(event.framebufferSize());
+    viewportEvent(
+        #ifdef MAGNUM_TARGET_GL
+        event.framebufferSize()
+        #else
+        event.windowSize()
+        #endif
+    );
     CORRADE_IGNORE_DEPRECATED_POP
     #else
     static_cast<void>(event);
