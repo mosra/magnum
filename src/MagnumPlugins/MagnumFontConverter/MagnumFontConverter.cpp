@@ -25,6 +25,7 @@
 
 #include "MagnumFontConverter.h"
 
+#include <algorithm>
 #include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Configuration.h>
@@ -63,12 +64,22 @@ std::vector<std::pair<std::string, Containers::Array<char>>> MagnumFontConverter
     configuration.setValue("descent", font.descent());
     configuration.setValue("lineHeight", font.lineHeight());
 
-    /* Compress glyph IDs so the glyphs are in consecutive array, glyph 0
+    /* Get the glyphs and sort them for predictable output */
+    std::vector<std::pair<UnsignedInt, std::pair<Vector2i, Range2Di>>> sortedGlyphs;
+    for(const std::pair<UnsignedInt, std::pair<Vector2i, Range2Di>>& glyph: cache)
+        sortedGlyphs.emplace_back(glyph);
+    std::sort(sortedGlyphs.begin(), sortedGlyphs.end(),
+        [](const std::pair<UnsignedInt, std::pair<Vector2i, Range2Di>>& a,
+           const std::pair<UnsignedInt, std::pair<Vector2i, Range2Di>>& b) {
+            return a.first < b.first;
+        });
+
+    /* Compress glyph IDs so the glyphs are in a consecutive array, glyph 0
        should stay at position 0 */
     std::unordered_map<UnsignedInt, UnsignedInt> glyphIdMap;
     glyphIdMap.reserve(cache.glyphCount());
     glyphIdMap.emplace(0, 0);
-    for(const std::pair<UnsignedInt, std::pair<Vector2i, Range2Di>>& glyph: cache)
+    for(const std::pair<UnsignedInt, std::pair<Vector2i, Range2Di>>& glyph: sortedGlyphs)
         glyphIdMap.emplace(glyph.first, glyphIdMap.size());
 
     /** @todo Save only glyphs contained in @p characters */
