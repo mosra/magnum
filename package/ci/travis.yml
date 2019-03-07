@@ -183,7 +183,7 @@ install:
 - if [ "$BUILD_DEPRECATED" != "OFF" ]; then export BUILD_DEPRECATED=ON; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop" ] && [ "$BUILD_DEPRECATED" == "ON" ]; then export WITH_GLUTAPPLICATION=ON; fi
 - if [ "$WITH_GLUTAPPLICATION" != "ON" ]; then export WITH_GLUTAPPLICATION=OFF; fi
-- if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop" ]; then export PLATFORM_GL_API=GLX; fi
+- if [ "$TRAVIS_OS_NAME" == "linux" ] && ( [ "$TARGET" == "desktop" ] || [ "$TARGET" == "desktop-sanitizers" ] ); then export PLATFORM_GL_API=GLX; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "desktop-gles" ]; then export PLATFORM_GL_API=EGL; fi
 - if [ "$TRAVIS_OS_NAME" == "linux" ] && [ "$TARGET" == "android" ]; then wget -nc https://dl.google.com/android/repository/android-ndk-r16b-linux-x86_64.zip && unzip -q android-*.zip; fi
 # Download CMake 3.1.3 to ensure we're still compatible with it (Travis has
