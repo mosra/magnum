@@ -44,9 +44,11 @@ struct AbstractFontConverterTest: TestSuite::Tester {
 
     void exportFontToSingleData();
     void exportFontToFile();
+    void exportFontToFileFailed();
 
     void exportGlyphCacheToSingleData();
     void exportGlyphCacheToFile();
+    void exportGlyphCacheToFileFailed();
 
     void importGlyphCacheFromSingleData();
     void importGlyphCacheFromFile();
@@ -57,9 +59,11 @@ AbstractFontConverterTest::AbstractFontConverterTest() {
 
               &AbstractFontConverterTest::exportFontToSingleData,
               &AbstractFontConverterTest::exportFontToFile,
+              &AbstractFontConverterTest::exportFontToFileFailed,
 
               &AbstractFontConverterTest::exportGlyphCacheToSingleData,
               &AbstractFontConverterTest::exportGlyphCacheToFile,
+              &AbstractFontConverterTest::exportGlyphCacheToFileFailed,
 
               &AbstractFontConverterTest::importGlyphCacheFromSingleData,
               &AbstractFontConverterTest::importGlyphCacheFromFile});
@@ -160,6 +164,16 @@ void AbstractFontConverterTest::exportFontToFile() {
                        "\xfe\xed", TestSuite::Compare::FileToString);
 }
 
+void AbstractFontConverterTest::exportFontToFileFailed() {
+    struct: AbstractFontConverter {
+        Features doFeatures() const override { return Feature::ConvertData|Feature::ExportFont|Feature::MultiFile; }
+
+        std::vector<std::pair<std::string, Containers::Array<char>>> doExportFontToData(AbstractFont&, AbstractGlyphCache&, const std::string&, const std::u32string&) const override { return {}; }
+    } exporter;
+
+    CORRADE_VERIFY(!exporter.exportFontToFile(dummyFont, dummyGlyphCache, "nonexistent.dat", {}));
+}
+
 void AbstractFontConverterTest::exportGlyphCacheToSingleData() {
     struct: Text::AbstractFontConverter {
         Features doFeatures() const override { return Feature::ConvertData|Feature::ExportGlyphCache; }
@@ -205,6 +219,17 @@ void AbstractFontConverterTest::exportGlyphCacheToFile() {
                        "\xf0", TestSuite::Compare::FileToString);
     CORRADE_COMPARE_AS(Utility::Directory::join(TEXT_TEST_OUTPUT_DIR, "glyphcache.out.data"),
                        "\xfe\xed", TestSuite::Compare::FileToString);
+}
+
+void AbstractFontConverterTest::exportGlyphCacheToFileFailed() {
+    struct: Text::AbstractFontConverter {
+        Features doFeatures() const override { return Feature::ConvertData|Feature::ExportGlyphCache|Feature::MultiFile; }
+
+        std::vector<std::pair<std::string, Containers::Array<char>>> doExportGlyphCacheToData(AbstractGlyphCache&, const std::string&) const override { return {}; }
+    } exporter;
+
+    /* doExportGlyphCacheToFile() should call doExportGlyphCacheToData() */
+    CORRADE_VERIFY(!exporter.exportGlyphCacheToFile(dummyGlyphCache, "nonexistent.dat"));
 }
 
 class SingleGlyphCacheDataImporter: public Text::AbstractFontConverter {

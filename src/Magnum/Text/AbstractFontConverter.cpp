@@ -121,6 +121,8 @@ bool AbstractFontConverter::doExportFontToFile(AbstractFont& font, AbstractGlyph
 
     /* Export all data */
     const auto data = doExportFontToData(font, cache, filename, characters);
+    if(data.empty()) return false;
+
     for(const auto& d: data) if(!Utility::Directory::write(d.first, d.second)) {
         Error() << "Text::AbstractFontConverter::exportFontToFile(): cannot write to file" << d.first;
         return false;
@@ -173,6 +175,8 @@ bool AbstractFontConverter::doExportGlyphCacheToFile(AbstractGlyphCache& cache, 
 
     /* Export all data */
     const auto data = doExportGlyphCacheToData(cache, filename);
+    if(data.empty()) return false;
+
     for(const auto& d: data) if(!Utility::Directory::write(d.first, d.second)) {
         Error() << "Text::AbstractFontConverter::exportGlyphCacheToFile(): cannot write to file" << d.first;
         return false;
