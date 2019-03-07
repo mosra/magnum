@@ -241,6 +241,9 @@ endif()
 # Read flags from configuration
 file(READ ${_MAGNUM_CONFIGURE_FILE} _magnumConfigure)
 set(_magnumFlags
+    # WARNING: CAREFUL HERE, the string(FIND) succeeds even if a subset is
+    # found -- so e.g. looking for TARGET_GL will match TARGET_GLES2 as well.
+    # So far that's not a problem, but might become an issue for new flags.
     BUILD_DEPRECATED
     BUILD_STATIC
     BUILD_MULTITHREADED
