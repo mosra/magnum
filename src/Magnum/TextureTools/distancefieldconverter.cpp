@@ -124,6 +124,9 @@ This will open monochrome `logo-src.png` image using any plugin that can open
 PNG files and converts it to 256x256 distance field `logo.png` using any plugin
 that can write PNG files.
 
+@note This executable is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 
 namespace TextureTools {

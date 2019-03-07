@@ -29,6 +29,9 @@
  * @brief Class @ref Magnum::Platform::AbstractXApplication
  */
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Pointer.h>
 
@@ -59,6 +62,10 @@ Supports keyboard and mouse handling. See @ref platform for brief introduction.
 
 @note Not meant to be used directly, see the @ref GlxApplication and
     @ref XEglApplication subclasses instead.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 class AbstractXApplication {
     public:
@@ -663,5 +670,8 @@ class AbstractXApplication::MouseMoveEvent: public AbstractXApplication::InputEv
 };
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

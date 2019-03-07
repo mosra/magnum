@@ -23,6 +23,10 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(NOT WITH_GL)
+    message(SEND_ERROR "Shaders are available only if WITH_GL is enabled")
+endif()
+
 corrade_add_resource(MagnumShaders_RCS resources.conf)
 set_target_properties(MagnumShaders_RCS-dependencies PROPERTIES FOLDER "Magnum/Shaders")
 

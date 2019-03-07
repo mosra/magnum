@@ -29,6 +29,9 @@
  * @brief Class @ref Magnum::Platform::WindowlessGlxApplication, @ref Magnum::Platform::WindowlessGlxContext, macro @ref MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN()
  */
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Pointer.h>
 
@@ -61,6 +64,10 @@ Meant to be used when there is a need to manage (multiple) GL contexts
 manually. See @ref platform-windowless-contexts for more information. If no
 other application header is included, this class is also aliased to
 @cpp Platform::WindowlessGLContext @ce.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 class WindowlessGlxContext {
     public:
@@ -289,6 +296,10 @@ MAGNUM_WINDOWLESSGLXAPPLICATION_MAIN(MyApplication)
 If no other application header is included, this class is also aliased to
 @cpp Platform::WindowlessApplication @ce and the macro is aliased to
 @cpp MAGNUM_WINDOWLESSAPPLICATION_MAIN() @ce to simplify porting.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 class WindowlessGlxApplication {
     public:
@@ -429,5 +440,8 @@ typedef WindowlessGlxContext WindowlessGLContext;
 #endif
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

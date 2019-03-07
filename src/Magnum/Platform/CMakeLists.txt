@@ -308,6 +308,10 @@ endif()
 
 # GLX application
 if(WITH_GLXAPPLICATION)
+    if(NOT TARGET_GL)
+        message(SEND_ERROR "GlxApplication is available only if TARGET_GL is enabled")
+    endif()
+
     set(NEED_ABSTRACTXAPPLICATION 1)
     set(NEED_GLXCONTEXTHANDLER 1)
     set(NEED_GLXCONTEXT 1)
@@ -351,6 +355,10 @@ endif()
 
 # X/EGL application
 if(WITH_XEGLAPPLICATION)
+    if(NOT TARGET_GL)
+        message(SEND_ERROR "XEglApplication is available only if TARGET_GL is enabled")
+    endif()
+
     set(NEED_ABSTRACTXAPPLICATION 1)
     set(NEED_EGLCONTEXTHANDLER 1)
     set(NEED_EGLCONTEXT 1)
@@ -394,6 +402,10 @@ endif()
 
 # Windowless EGL application
 if(WITH_WINDOWLESSEGLAPPLICATION)
+    if(NOT TARGET_GL)
+        message(SEND_ERROR "WindowlessEglApplication is available only if TARGET_GL is enabled")
+    endif()
+
     set(NEED_EGLCONTEXT 1)
 
     set(MagnumWindowlessEglApplication_SRCS
@@ -429,6 +441,10 @@ endif()
 
 # Windowless GLX application
 if(WITH_WINDOWLESSGLXAPPLICATION)
+    if(NOT TARGET_GL)
+        message(SEND_ERROR "WindowlessGlxApplication is available only if TARGET_GL is enabled")
+    endif()
+
     set(NEED_GLXCONTEXT 1)
 
     find_package(X11)
@@ -471,6 +487,10 @@ endif()
 
 # Windowless iOS application
 if(WITH_WINDOWLESSIOSAPPLICATION)
+    if(NOT TARGET_GL)
+        message(SEND_ERROR "WindowlessIosApplication is available only if TARGET_GL is enabled")
+    endif()
+
     set(NEED_EGLCONTEXT 1)
 
     # We need to link to Foundation framework to use ObjC
@@ -509,6 +529,10 @@ endif()
 
 # Windowless WGL application
 if(WITH_WINDOWLESSWGLAPPLICATION)
+    if(NOT TARGET_GL)
+        message(SEND_ERROR "WindowlessWglApplication is available only if TARGET_GL is enabled")
+    endif()
+
     set(NEED_WGLCONTEXT 1)
 
     set(MagnumWindowlessWglApplication_SRCS
@@ -540,6 +564,10 @@ endif()
 
 # Windowless Windows/EGL application
 if(WITH_WINDOWLESSWINDOWSEGLAPPLICATION)
+    if(NOT TARGET_GL)
+        message(SEND_ERROR "WindowlessWindowsEglApplication is available only if TARGET_GL is enabled")
+    endif()
+
     set(NEED_EGLCONTEXT 1)
 
     set(MagnumWindowlessWindowsEglApplication_SRCS
@@ -575,6 +603,10 @@ endif()
 
 # Windowless CGL application
 if(WITH_WINDOWLESSCGLAPPLICATION)
+    if(NOT TARGET_GL)
+        message(SEND_ERROR "WindowlessCglApplication is available only if TARGET_GL is enabled")
+    endif()
+
     set(NEED_CGLCONTEXT 1)
 
     set(MagnumWindowlessCglApplication_SRCS
@@ -706,6 +738,10 @@ if(NEED_CGLCONTEXT OR WITH_CGLCONTEXT)
 
     # Also create proper static library, if requested
     if(WITH_CGLCONTEXT)
+        if(NOT TARGET_GL)
+            message(SEND_ERROR "CglContext is available only if TARGET_GL is enabled")
+        endif()
+
         # CMake-generated XCode projects had some problems when library
         # consisted only of $<TARGET_OBJECTS> entries, thus compiling the
         # sources again in this case
@@ -747,6 +783,10 @@ if(NEED_EGLCONTEXT OR WITH_EGLCONTEXT)
 
     # Also create proper static library, if requested
     if(WITH_EGLCONTEXT)
+        if(NOT TARGET_GL)
+            message(SEND_ERROR "EglContext is available only if TARGET_GL is enabled")
+        endif()
+
         add_library(MagnumEglContext STATIC
             $<TARGET_OBJECTS:MagnumEglContextObjects>
             ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
@@ -782,6 +822,10 @@ if(NEED_GLXCONTEXT OR WITH_GLXCONTEXT)
 
     # Also create proper static library, if requested
     if(WITH_GLXCONTEXT)
+        if(NOT TARGET_GL)
+            message(SEND_ERROR "GlxContext is available only if TARGET_GL is enabled")
+        endif()
+
         add_library(MagnumGlxContext STATIC $<TARGET_OBJECTS:MagnumGlxContextObjects>)
         set_target_properties(MagnumGlxContext PROPERTIES
             DEBUG_POSTFIX "-d"
@@ -816,6 +860,10 @@ if(NEED_WGLCONTEXT OR WITH_WGLCONTEXT)
 
     # Also create proper static library, if requested
     if(WITH_WGLCONTEXT)
+        if(NOT TARGET_GL)
+            message(SEND_ERROR "WglContext is available only if TARGET_GL is enabled")
+        endif()
+
         add_library(MagnumWglContext STATIC $<TARGET_OBJECTS:MagnumWglContextObjects>)
         set_target_properties(MagnumWglContext PROPERTIES
             DEBUG_POSTFIX "-d"
@@ -837,6 +885,10 @@ endif()
 
 # Magnum GL Info
 if(WITH_GL_INFO)
+    if(NOT TARGET_GL)
+        message(SEND_ERROR "magnum-gl-info is available only if TARGET_GL is enabled")
+    endif()
+
     add_executable(magnum-gl-info gl-info.cpp)
     target_link_libraries(magnum-gl-info PRIVATE MagnumGL)
     if(MAGNUM_TARGET_HEADLESS OR CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)

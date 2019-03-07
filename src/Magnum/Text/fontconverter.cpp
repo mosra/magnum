@@ -120,6 +120,10 @@ According to @ref Text::MagnumFontConverter "MagnumFontConverter" plugin
 documentation, this will generate files `myfont.conf` and `myfont.tga` in
 current directory. You can then load and use them via the
 @ref Text::MagnumFont "MagnumFont" plugin.
+
+@note This executable is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 
 namespace Text {

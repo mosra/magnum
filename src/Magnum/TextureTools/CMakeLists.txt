@@ -67,6 +67,10 @@ install(TARGETS MagnumTextureTools
 install(FILES ${MagnumTextureTools_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/TextureTools)
 
 if(WITH_DISTANCEFIELDCONVERTER)
+    if(NOT TARGET_GL)
+        message(SEND_ERROR "magnum-distancefieldconverter is available only if TARGET_GL is enabled")
+    endif()
+
     add_executable(magnum-distancefieldconverter distancefieldconverter.cpp)
     target_link_libraries(magnum-distancefieldconverter PRIVATE
         Magnum

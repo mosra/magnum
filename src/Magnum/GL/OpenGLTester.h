@@ -29,6 +29,9 @@
  * @brief Class @ref Magnum::GL::OpenGLTester, macro @ref MAGNUM_VERIFY_NO_GL_ERROR()
  */
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/GL/Renderer.h"
@@ -134,6 +137,10 @@ on all platforms and not all GL errors are fatal.
 This class adds @ref BenchmarkType::GpuTime to the benchmark type enum,
 allowing you to measure time spent on GPU as opposed to CPU or wall clock time.
 @requires_gles GPU time benchmarking is not available on WebGL.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 class OpenGLTester: public TestSuite::Tester {
     public:
@@ -297,5 +304,8 @@ typedef CORRADE_DEPRECATED("use GL::OpenGLTester instead") Magnum::GL::OpenGLTes
 #endif
 
 }
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

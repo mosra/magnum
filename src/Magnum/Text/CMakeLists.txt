@@ -104,6 +104,10 @@ install(TARGETS MagnumText
 install(FILES ${MagnumText_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Text)
 
 if(WITH_FONTCONVERTER)
+    if(NOT TARGET_GL)
+        message(SEND_ERROR "magnum-fontconverter is available only if TARGET_GL is enabled")
+    endif()
+
     add_executable(magnum-fontconverter fontconverter.cpp)
     target_link_libraries(magnum-fontconverter PRIVATE
         Magnum

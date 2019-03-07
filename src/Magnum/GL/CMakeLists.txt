@@ -240,6 +240,10 @@ install(FILES ${MagnumGL_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/GL)
 
 # OpenGLTester class
 if(WITH_OPENGLTESTER)
+    if(NOT TARGET_GL)
+        message(SEND_ERROR "OpenGLTester is available only if TARGET_GL is enabled")
+    endif()
+
     find_package(Corrade REQUIRED TestSuite)
 
     set(MagnumOpenGLTester_SRCS OpenGLTester.cpp)

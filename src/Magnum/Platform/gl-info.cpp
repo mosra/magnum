@@ -181,6 +181,9 @@ Vendor extension support:
     ...
 @endcode
 
+@note This executable is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 
 class MagnumInfo: public Platform::WindowlessApplication {

@@ -29,6 +29,9 @@
  * @brief Class @ref Magnum::Platform::XEglApplication, macro @ref MAGNUM_XEGLAPPLICATION_MAIN()
  */
 
+#include "Magnum/configure.h"
+
+#ifdef MAGNUM_TARGET_GL
 #include "Magnum/Platform/Platform.h"
 #include "Magnum/Platform/AbstractXApplication.h"
 
@@ -83,6 +86,10 @@ MAGNUM_XEGLAPPLICATION_MAIN(MyApplication)
 If no other application header is included, this class is also aliased to
 @cpp Platform::Application @ce and the macro is aliased to
 @cpp MAGNUM_APPLICATION_MAIN() @ce to simplify porting.
+
+@note This class is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
 */
 class XEglApplication: public AbstractXApplication {
     public:
@@ -146,5 +153,8 @@ typedef BasicScreenedApplication<XEglApplication> ScreenedApplication;
 #endif
 
 }}
+#else
+#error this header is available only in the OpenGL build
+#endif
 
 #endif

@@ -23,6 +23,12 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+if(NOT TARGET_GL)
+    # TODO: remove (and update all other docs) when we have better
+    # createGlyphCache() APIs
+    message(SEND_ERROR "MagnumFont is available only if TARGET_GL is enabled")
+endif()
+
 find_package(Corrade REQUIRED PluginManager)
 
 if(BUILD_PLUGINS_STATIC)

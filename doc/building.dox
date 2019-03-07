@@ -543,11 +543,11 @@ going to build any of the @ref example-index "examples", you'll need it.
     [GLFW](http://glfw.org).
 -   `WITH_GLUTAPPLICATION` @m_class{m-label m-danger} **deprecated** --- Build
     the @ref Platform::GlutApplication "GlutApplication" library. Depends on
-    [GLUT](http://freeglut.sourceforge.net/). Enables also building of the GL
-    library.
+    [GLUT](http://freeglut.sourceforge.net/). Requires `TARGET_GL` to be
+    enabled.
 -   `WITH_GLXAPPLICATION` --- Build the
     @ref Platform::GlxApplication "GlxApplication" library. Depends on **X11**.
-    Enables also building of the GL library.
+    Requires `TARGET_GL` to be enabled.
 -   `WITH_SDL2APPLICATION` --- Build the
     @ref Platform::Sdl2Application "Sdl2Application" library. Depends on
     [SDL2](http://www.libsdl.org).
@@ -556,43 +556,43 @@ going to build any of the @ref example-index "examples", you'll need it.
     building of the GL library.
 -   `WITH_WINDOWLESSCGLAPPLICATION` --- Build the
     @ref Platform::WindowlessCglApplication "WindowlessCglApplication" library.
-    Enables also building of the GL library.
+    Requires `TARGET_GL` to be enabled.
 -   `WITH_WINDOWLESSEGLAPPLICATION` --- Build the
     @ref Platform::WindowlessEglApplication "WindowlessEglApplication" library.
-    Enables also building of the GL library.
+    Requires `TARGET_GL` to be enabled.
 -   `WITH_WINDOWLESSGLXAPPLICATION` --- Build the
     @ref Platform::WindowlessGlxApplication "WindowlessGlxApplication" library.
-    Enables also building of the GL library.
+    Requires `TARGET_GL` to be enabled.
 -   `WITH_WINDOWLESSIOSAPPLICATION` --- Build the
     @ref Platform::WindowlessIosApplication "WindowlessIosApplication" library.
-    Enables also building of the GL library.
+    Requires `TARGET_GL` to be enabled.
 -   `WITH_WINDOWLESSWGLAPPLICATION` --- Build the
     @ref Platform::WindowlessWglApplication "WindowlessWglApplication" library.
-    Enables also building of the GL library.
+    Requires `TARGET_GL` to be enabled.
 -   `WITH_WINDOWLESSWINDOWSEGLAPPLICATION` --- Build the
     @ref Platform::WindowlessWindowsEglApplication "WindowlessWindowsEglApplication"
-    library. Enables also building of the GL library.
+    library. Requires `TARGET_GL` to be enabled.
 
 None of the context libraries is built by default. Similarly to the application
 libraries, they are always built as static. You need them only if you chose to
 not use any of the application libraries above (see @ref platform-custom for
 more information):
 
--   `WITH_CGLCONTEXT` --- Build the CGL context handling library. Enables also
-    building of the GL library.
--   `WITH_EGLCONTEXT` --- Build the EGL context handling library. Enables also
-    building of the GL library.
--   `WITH_GLXCONTEXT` --- Build the GLX context handling library. Enables also
-    building of the GL library.
--   `WITH_WGLCONTEXT` --- Build the WGL context handling library. Enables also
-    building of the GL library.
+-   `WITH_CGLCONTEXT` --- Build the CGL context handling library. Requires
+    `TARGET_GL` to be enabled.
+-   `WITH_EGLCONTEXT` --- Build the EGL context handling library. Requires
+    `TARGET_GL` to be enabled.
+-   `WITH_GLXCONTEXT` --- Build the GLX context handling library. Requires
+    `TARGET_GL` to be enabled.
+-   `WITH_WGLCONTEXT` --- Build the WGL context handling library. Requires
+    `TARGET_GL` to be enabled.
 
 There are also extensions to @ref Corrade::TestSuite::Tester for testing GPU
 code:
 
--   `WITH_OPENGLTESTER` --- The @ref GL::OpenGLTester class. Enables also
-    building of the GL library and one of the windowless application libraries
-    based on the target platform.
+-   `WITH_OPENGLTESTER` --- The @ref GL::OpenGLTester class. Requires
+    `TARGET_GL` to be enabled; enables building of one of the windowless
+    application libraries based on the target platform.
 
 Magnum also contains a set of dependency-less plugins for importing essential
 file formats. Additional plugins are provided in a separate plugin repository,
@@ -610,7 +610,8 @@ default.
     plugin. Enables also building of the @ref Trade library.
 -   `WITH_MAGNUMFONT` --- Build the @ref Text::MagnumFont "MagnumFont" plugin.
     Enables also building of the @ref Text library and the
-    @ref Trade::TgaImporter "TgaImporter" plugin.
+    @ref Trade::TgaImporter "TgaImporter" plugin. Requires `TARGET_GL` to be
+    enabled.
 -   `WITH_MAGNUMFONTCONVERTER` --- Build the
     @ref Text::MagnumFontConverter "MagnumFontConverter" plugin. Enables also
     building of the @ref Text library and the
@@ -629,8 +630,8 @@ There are also a few command-line utilities, also all disabled by default:
 
 -   `WITH_GL_INFO` --- Build the @ref magnum-gl-info "magnum-gl-info"
     executable, which provides information about the engine OpenGL
-    capabilities. Enables building of one of the windowless application
-    libraries based on the target platform.
+    capabilities. Requires `TARGET_GL` to be enabled; enables building of one
+    of the windowless application libraries based on the target platform.
 -   `WITH_AL_INFO` --- Build the @ref magnum-al-info "magnum-al-info"
     executable, which provides information about the engine OpenAL
     capabilities.
@@ -638,12 +639,13 @@ There are also a few command-line utilities, also all disabled by default:
     @ref magnum-distancefieldconverter "magnum-distancefieldconverter"
     executable for converting black&white images to distance field textures.
     Enables also building of the @ref TextureTools library. Available only on
-    desktop GL. Enables building of one of the windowless application libraries
-    based on the target platform.
+    desktop GL. Requires `TARGET_GL` to be enabled; enables building of one of
+    the windowless application libraries based on the target platform.
 -   `WITH_FONTCONVERTER` --- Build the @ref magnum-fontconverter "magnum-fontconverter"
     executable for converting fonts of different formats. Enables also building
-    of the @ref Text library. Available only on desktop GL. Enables building of
-    one of the windowless application libraries based on the target platform.
+    of the @ref Text library. Available only on desktop GL. Requires
+    `TARGET_GL` to be enabled; enables building of one of the windowless
+    application libraries based on the target platform.
 -   `WITH_IMAGECONVERTER` --- Build the @ref magnum-imageconverter "magnum-imageconverter"
     executable for converting images of different formats.
 
