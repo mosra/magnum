@@ -57,4 +57,4 @@ ninja -j4
 CORRADE_TEST_COLOR=ON ctest -V
 if [ "$TARGET_GLES2" == "ON" ]; then CORRADE_TEST_COLOR=ON MAGNUM_DISABLE_EXTENSIONS="OES_vertex_array_object" ctest -V -R GLTest; fi
 src/Magnum/Audio/magnum-al-info > /dev/null
-src/Magnum/Platform/magnum-gl-info > /dev/null
+src/Magnum/Platform/magnum-gl-info --limits > /dev/null
