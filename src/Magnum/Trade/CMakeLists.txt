@@ -126,9 +126,6 @@ if(BUILD_TESTS)
     add_library(MagnumTradeTestLib ${SHARED_OR_STATIC}
         $<TARGET_OBJECTS:MagnumTradeObjects>
         ${MagnumTrade_GracefulAssert_SRCS})
-    target_include_directories(MagnumTradeTestLib PUBLIC
-        ${PROJECT_SOURCE_DIR}/src
-        ${PROJECT_BINARY_DIR}/src)
     target_compile_definitions(MagnumTradeTestLib PRIVATE
         "CORRADE_GRACEFUL_ASSERT" "MagnumTrade_EXPORTS")
     set_target_properties(MagnumTradeTestLib PROPERTIES
