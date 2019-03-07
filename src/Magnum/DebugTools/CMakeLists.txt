@@ -30,7 +30,9 @@ set(MagnumDebugTools_GracefulAssert_SRCS )
 
 set(MagnumDebugTools_HEADERS
     DebugTools.h
-    Profiler.h)
+    Profiler.h
+
+    visibility.h)
 
 # Header files to display in project view of IDEs only
 set(MagnumDebugTools_PRIVATE_HEADERS )
@@ -44,8 +46,7 @@ if(TARGET_GL)
     list(APPEND MagnumDebugTools_HEADERS
         ResourceManager.h
         Screenshot.h
-        TextureImage.h
-        visibility.h)
+        TextureImage.h)
 
     if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_GLES2)
         corrade_add_resource(MagnumDebugTools_RESOURCES resources.conf)
