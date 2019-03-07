@@ -156,7 +156,7 @@ if(WITH_VK)
         PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
 
-if(WITH_SDL2APPLICATION)
+if(WITH_SDL2APPLICATION AND TARGET_GL)
     add_executable(getting-started getting-started.cpp)
     add_executable(getting-started-blue getting-started-blue.cpp)
     target_link_libraries(getting-started PRIVATE MagnumSdl2Application)
