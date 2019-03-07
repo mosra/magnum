@@ -372,6 +372,7 @@ constexpr UnsignedByte CompressedData3D[]{
      84, 253,  73,  34, 109, 100,  91, 251
 };
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
@@ -397,6 +398,7 @@ const struct {
         Containers::arrayView(CompressedData3D), 16*4}
     #endif
 };
+#endif
 
 TextureGLTest::TextureGLTest() {
     addTests({
