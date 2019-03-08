@@ -53,6 +53,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void construct();
     void constructWithPluginManagerReference();
 
+    void openData();
     void openFileAsData();
     void openFileAsDataNotFound();
 
@@ -246,6 +247,7 @@ AbstractImporterTest::AbstractImporterTest() {
     addTests({&AbstractImporterTest::construct,
               &AbstractImporterTest::constructWithPluginManagerReference,
 
+              &AbstractImporterTest::openData,
               &AbstractImporterTest::openFileAsData,
               &AbstractImporterTest::openFileAsDataNotFound,
 
@@ -460,6 +462,28 @@ void AbstractImporterTest::constructWithPluginManagerReference() {
         void doClose() override {}
     } importer{manager};
 
+    CORRADE_VERIFY(!importer.isOpened());
+}
+
+void AbstractImporterTest::openData() {
+    struct Importer: AbstractImporter {
+        Features doFeatures() const override { return Feature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        void doOpenData(Containers::ArrayView<const char> data) override {
+            _opened = (data.size() == 1 && data[0] == '\xa5');
+        }
+
+        bool _opened = false;
+    } importer;
+
+    CORRADE_VERIFY(!importer.isOpened());
+    const char a5 = '\xa5';
+    CORRADE_VERIFY(importer.openData({&a5, 1}));
+    CORRADE_VERIFY(importer.isOpened());
+
+    importer.close();
     CORRADE_VERIFY(!importer.isOpened());
 }
 
