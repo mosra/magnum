@@ -530,6 +530,20 @@ class Sdl2Application {
         SDL_Window* window() { return _window; }
         #endif
 
+        #if defined(MAGNUM_TARGET_GL) && !defined(CORRADE_TARGET_EMSCRIPTEN)
+        /**
+         * @brief Underlying OpenGL context
+         *
+         * Use in case you need to call SDL functionality directly. Returns
+         * @cpp nullptr @ce in case the context was not created yet.
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information. Not available in
+         *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
+        SDL_GLContext glContext() { return _glContext; }
+        #endif
+
     protected:
         /* Nobody will need to have (and delete) Sdl2Application*, thus this is
            faster than public pure virtual destructor */
