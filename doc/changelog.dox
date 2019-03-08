@@ -188,8 +188,8 @@ See also:
 -   Properly zero-initializing the UTF-8 buffer in
     @ref Platform::GlfwApplication::textInputEvent() (see
     [mosra/magnum#324](https://github.com/mosra/magnum/pull/324))
--   @ref Trade::AbstractFontConverter::exportFontToFile() and
-    @ref Trade::AbstractFontConverter::exportGlyphCacheToFile() now properly
+-   @ref Text::AbstractFontConverter::exportFontToFile() and
+    @ref Text::AbstractFontConverter::exportGlyphCacheToFile() now properly
     returns failure when the underlying data export function returns an empty
     list of files
 -   Updated the `base-qt` bootstrap project to correctly reset state tracker
