@@ -1,5 +1,3 @@
-#ifndef Magnum_Trade_Trade_h
-#define Magnum_Trade_Trade_h
 /*
     This file is part of Magnum.
 
@@ -25,55 +23,24 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Trade namespace
- */
+#include "FileCallback.h"
 
-#include "Magnum/Types.h"
+#include <Corrade/Utility/Debug.h>
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include "Magnum/Magnum.h"
-#endif
+namespace Magnum {
 
-namespace Magnum { namespace Trade {
+Debug& operator<<(Debug& debug, const InputFileCallbackPolicy value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case InputFileCallbackPolicy::v: return debug << "InputFileCallbackPolicy::" #v;
+        _c(LoadTemporary)
+        _c(LoadPernament)
+        _c(Close)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class AbstractImageConverter;
-class AbstractImporter;
+    return debug << "InputFileCallbackPolicy(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-typedef CORRADE_DEPRECATED("use InputFileCallbackPolicy instead") InputFileCallbackPolicy ImporterFileCallbackPolicy;
-#endif
-
-enum class MaterialType: UnsignedByte;
-enum class MaterialAlphaMode: UnsignedByte;
-class AbstractMaterialData;
-
-enum class AnimationTrackTargetType: UnsignedByte;
-enum class AnimationTrackType: UnsignedByte;
-class AnimationTrackData;
-class AnimationData;
-
-enum class CameraType: UnsignedByte;
-class CameraData;
-
-template<UnsignedInt> class ImageData;
-typedef ImageData<1> ImageData1D;
-typedef ImageData<2> ImageData2D;
-typedef ImageData<3> ImageData3D;
-
-class LightData;
-class MeshData2D;
-class MeshData3D;
-class MeshObjectData2D;
-class MeshObjectData3D;
-class ObjectData2D;
-class ObjectData3D;
-class PhongMaterialData;
-class TextureData;
-class SceneData;
-#endif
-
-}}
-
-#endif
+}

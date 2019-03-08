@@ -29,6 +29,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
 
+#include "Magnum/FileCallback.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/CameraData.h"
@@ -240,7 +241,6 @@ class AbstractImporterTest: public TestSuite::Tester {
 
         void debugFeature();
         void debugFeatures();
-        void debugFileCallbackPolicy();
 };
 
 AbstractImporterTest::AbstractImporterTest() {
@@ -433,8 +433,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::importerStateNoFile,
 
               &AbstractImporterTest::debugFeature,
-              &AbstractImporterTest::debugFeatures,
-              &AbstractImporterTest::debugFileCallbackPolicy});
+              &AbstractImporterTest::debugFeatures});
 }
 
 void AbstractImporterTest::construct() {
@@ -593,14 +592,14 @@ void AbstractImporterTest::setFileCallback() {
         Features doFeatures() const override { return Feature::OpenData|Feature::FileCallback; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
-        void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, ImporterFileCallbackPolicy, void*), void* userData) override {
+        void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void* userData) override {
             *static_cast<int*>(userData) = 1337;
         }
     };
 
     int a = 0;
     Importer importer;
-    auto lambda = [](const std::string&, ImporterFileCallbackPolicy, void*) {
+    auto lambda = [](const std::string&, InputFileCallbackPolicy, void*) {
         return Containers::Optional<Containers::ArrayView<const char>>{};
     };
     importer.setFileCallback(lambda, &a);
@@ -614,7 +613,7 @@ void AbstractImporterTest::setFileCallbackTemplate() {
         Features doFeatures() const override { return Feature::OpenData|Feature::FileCallback; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
-        void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, ImporterFileCallbackPolicy, void*), void*) override {
+        void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) override {
             called = true;
         }
 
@@ -622,7 +621,7 @@ void AbstractImporterTest::setFileCallbackTemplate() {
     };
 
     int a = 0;
-    auto lambda = [](const std::string&, ImporterFileCallbackPolicy, int&) {
+    auto lambda = [](const std::string&, InputFileCallbackPolicy, int&) {
         return Containers::Optional<Containers::ArrayView<const char>>{};
     };
     Importer importer;
@@ -632,7 +631,7 @@ void AbstractImporterTest::setFileCallbackTemplate() {
     CORRADE_VERIFY(importer.called);
 
     /* The data pointers should be wrapped, thus not the same */
-    CORRADE_VERIFY(reinterpret_cast<void(*)()>(importer.fileCallback()) != reinterpret_cast<void(*)()>(static_cast<Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, ImporterFileCallbackPolicy, int&)>(lambda)));
+    CORRADE_VERIFY(reinterpret_cast<void(*)()>(importer.fileCallback()) != reinterpret_cast<void(*)()>(static_cast<Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, int&)>(lambda)));
     CORRADE_VERIFY(importer.fileCallbackUserData() != &a);
 }
 
@@ -641,7 +640,7 @@ void AbstractImporterTest::setFileCallbackTemplateNull() {
         Features doFeatures() const override { return Feature::OpenData|Feature::FileCallback; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
-        void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, ImporterFileCallbackPolicy, void*), void* userData) override {
+        void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* userData) override {
             called = !callback && !userData;
         }
 
@@ -650,7 +649,7 @@ void AbstractImporterTest::setFileCallbackTemplateNull() {
 
     int a = 0;
     Importer importer;
-    importer.setFileCallback(static_cast<Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, ImporterFileCallbackPolicy, int&)>(nullptr), a);
+    importer.setFileCallback(static_cast<Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, int&)>(nullptr), a);
     CORRADE_VERIFY(!importer.fileCallback());
     CORRADE_VERIFY(!importer.fileCallbackUserData());
     CORRADE_VERIFY(importer.called);
@@ -667,7 +666,7 @@ void AbstractImporterTest::setFileCallbackFileOpened() {
     Error redirectError{&out};
 
     Importer importer;
-    importer.setFileCallback([](const std::string&, ImporterFileCallbackPolicy, void*) {
+    importer.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
         return Containers::Optional<Containers::ArrayView<const char>>{};
     });
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::setFileCallback(): can't be set while a file is opened\n");
@@ -681,7 +680,7 @@ void AbstractImporterTest::setFileCallbackNotImplemented() {
     };
 
     int a;
-    auto lambda = [](const std::string&, ImporterFileCallbackPolicy, void*) {
+    auto lambda = [](const std::string&, InputFileCallbackPolicy, void*) {
         return Containers::Optional<Containers::ArrayView<const char>>{};
     };
     Importer importer;
@@ -703,7 +702,7 @@ void AbstractImporterTest::setFileCallbackNotSupported() {
 
     int a;
     Importer importer;
-    importer.setFileCallback([](const std::string&, ImporterFileCallbackPolicy, void*) {
+    importer.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
         return Containers::Optional<Containers::ArrayView<const char>>{};
     }, &a);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::setFileCallback(): importer supports neither loading from data nor via callbacks, callbacks can't be used\n");
@@ -731,7 +730,7 @@ void AbstractImporterTest::setFileCallbackOpenFileDirectly() {
 
     bool calledNotSureWhy = false;
     Importer importer;
-    importer.setFileCallback([](const std::string&, ImporterFileCallbackPolicy, bool& calledNotSureWhy) -> Containers::Optional<Containers::ArrayView<const char>> {
+    importer.setFileCallback([](const std::string&, InputFileCallbackPolicy, bool& calledNotSureWhy) -> Containers::Optional<Containers::ArrayView<const char>> {
         calledNotSureWhy = true;
         return {};
     }, calledNotSureWhy);
@@ -767,13 +766,13 @@ void AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementation() {
         bool calledNotSureWhy = false;
     } state;
     Importer importer;
-    importer.setFileCallback([](const std::string& filename, ImporterFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
-        if(filename == "file.dat" && policy == ImporterFileCallbackPolicy::LoadTemporary) {
+    importer.setFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(filename == "file.dat" && policy == InputFileCallbackPolicy::LoadTemporary) {
             state.loaded = true;
             return Containers::arrayView(&state.data, 1);
         }
 
-        if(filename == "file.dat" && policy == ImporterFileCallbackPolicy::Close) {
+        if(filename == "file.dat" && policy == InputFileCallbackPolicy::Close) {
             state.closed = true;
             return {};
         }
@@ -804,7 +803,7 @@ void AbstractImporterTest::setFileCallbackOpenFileThroughBaseImplementationFaile
     };
 
     Importer importer;
-    importer.setFileCallback([](const std::string&, ImporterFileCallbackPolicy, void*) -> Containers::Optional<Containers::ArrayView<const char>> {
+    importer.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) -> Containers::Optional<Containers::ArrayView<const char>> {
         return {};
     });
 
@@ -841,13 +840,13 @@ void AbstractImporterTest::setFileCallbackOpenFileAsData() {
         bool calledNotSureWhy = false;
     } state;
     Importer importer;
-    importer.setFileCallback([](const std::string& filename, ImporterFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
-        if(filename == "file.dat" && policy == ImporterFileCallbackPolicy::LoadTemporary) {
+    importer.setFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(filename == "file.dat" && policy == InputFileCallbackPolicy::LoadTemporary) {
             state.loaded = true;
             return Containers::arrayView(&state.data, 1);
         }
 
-        if(filename == "file.dat" && policy == ImporterFileCallbackPolicy::Close) {
+        if(filename == "file.dat" && policy == InputFileCallbackPolicy::Close) {
             state.closed = true;
             return {};
         }
@@ -877,7 +876,7 @@ void AbstractImporterTest::setFileCallbackOpenFileAsDataFailed() {
     };
 
     Importer importer;
-    importer.setFileCallback([](const std::string&, ImporterFileCallbackPolicy, void*) {
+    importer.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
         return Containers::Optional<Containers::ArrayView<const char>>{};
     });
 
@@ -3269,13 +3268,6 @@ void AbstractImporterTest::debugFeatures() {
 
     Debug{&out} << (AbstractImporter::Feature::OpenData|AbstractImporter::Feature::OpenState) << AbstractImporter::Features{};
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::Feature::OpenData|Trade::AbstractImporter::Feature::OpenState Trade::AbstractImporter::Features{}\n");
-}
-
-void AbstractImporterTest::debugFileCallbackPolicy() {
-    std::ostringstream out;
-
-    Debug{&out} << ImporterFileCallbackPolicy::Close << ImporterFileCallbackPolicy(0xf0);
-    CORRADE_COMPARE(out.str(), "Trade::ImporterFileCallbackPolicy::Close Trade::ImporterFileCallbackPolicy(0xf0)\n");
 }
 
 }}}}

@@ -697,6 +697,8 @@ template<class T> class Array1D;
 template<class T> class Array2D;
 template<class T> class Array3D;
 
+enum class InputFileCallbackPolicy: UnsignedByte;
+
 template<UnsignedInt> class Image;
 typedef Image<1> Image1D;
 typedef Image<2> Image2D;

@@ -27,6 +27,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Directory.h>
 
+#include "Magnum/FileCallback.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Animation/Player.h"
 #include "Magnum/MeshTools/Transform.h"
@@ -72,13 +73,13 @@ struct Data {
 } data;
 
 importer->setFileCallback([](const std::string& filename,
-    Trade::ImporterFileCallbackPolicy policy, Data& data)
+    InputFileCallbackPolicy policy, Data& data)
         -> Containers::Optional<Containers::ArrayView<const char>>
     {
         auto found = data.files.find(filename);
 
         /* Discard the memory mapping, if not needed anymore */
-        if(policy == Trade::ImporterFileCallbackPolicy::Close) {
+        if(policy == InputFileCallbackPolicy::Close) {
             if(found != data.files.end()) data.files.erase(found);
             return {};
         }
@@ -114,7 +115,7 @@ static_cast<void>(shininess);
 Containers::Pointer<Trade::AbstractImporter> importer;
 /* [AbstractImporter-setFileCallback] */
 importer->setFileCallback([](const std::string& filename,
-    Trade::ImporterFileCallbackPolicy, void*) {
+    InputFileCallbackPolicy, void*) {
         Utility::Resource rs("data");
         return Containers::optional(rs.getRaw(filename));
     });
@@ -129,7 +130,7 @@ struct Data {
 } data;
 
 importer->setFileCallback([](const std::string& filename,
-    Trade::ImporterFileCallbackPolicy, Data& data)
+    InputFileCallbackPolicy, Data& data)
         -> Containers::Optional<Containers::ArrayView<const char>>
     {
         auto found = data.files.find(filename);

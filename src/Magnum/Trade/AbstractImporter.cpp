@@ -31,6 +31,7 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Directory.h>
 
+#include "Magnum/FileCallback.h"
 #include "Magnum/Trade/AbstractMaterialData.h"
 #include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/CameraData.h"
@@ -73,7 +74,7 @@ AbstractImporter::AbstractImporter(PluginManager::Manager<AbstractImporter>& man
 
 AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager, plugin} {}
 
-void AbstractImporter::setFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, ImporterFileCallbackPolicy, void*), void* const userData) {
+void AbstractImporter::setFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* const userData) {
     CORRADE_ASSERT(!isOpened(), "Trade::AbstractImporter::setFileCallback(): can't be set while a file is opened", );
     CORRADE_ASSERT(features() & (Feature::FileCallback|Feature::OpenData), "Trade::AbstractImporter::setFileCallback(): importer supports neither loading from data nor via callbacks, callbacks can't be used", );
 
@@ -82,7 +83,7 @@ void AbstractImporter::setFileCallback(Containers::Optional<Containers::ArrayVie
     doSetFileCallback(callback, userData);
 }
 
-void AbstractImporter::doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, ImporterFileCallbackPolicy, void*), void*) {}
+void AbstractImporter::doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) {}
 
 bool AbstractImporter::openData(Containers::ArrayView<const char> data) {
     CORRADE_ASSERT(features() & Feature::OpenData,
@@ -135,13 +136,13 @@ bool AbstractImporter::openFile(const std::string& filename) {
               file loading to the default implementation (callback used in the
               base doOpenFile() implementation, because this branch is never
               taken in that case) */
-        const Containers::Optional<Containers::ArrayView<const char>> data = _fileCallback(filename, ImporterFileCallbackPolicy::LoadTemporary, _fileCallbackUserData);
+        const Containers::Optional<Containers::ArrayView<const char>> data = _fileCallback(filename, InputFileCallbackPolicy::LoadTemporary, _fileCallbackUserData);
         if(!data) {
             Error() << "Trade::AbstractImporter::openFile(): cannot open file" << filename;
             return isOpened();
         }
         doOpenData(*data);
-        _fileCallback(filename, ImporterFileCallbackPolicy::Close, _fileCallbackUserData);
+        _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
 
     /* Shouldn't get here, the assert is fired already in setFileCallback() */
     } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
@@ -155,13 +156,13 @@ void AbstractImporter::doOpenFile(const std::string& filename) {
     /* If callbacks are set, use them. This is the same implementation as in
        openFile(), see the comment there for details. */
     if(_fileCallback) {
-        const Containers::Optional<Containers::ArrayView<const char>> data = _fileCallback(filename, ImporterFileCallbackPolicy::LoadTemporary, _fileCallbackUserData);
+        const Containers::Optional<Containers::ArrayView<const char>> data = _fileCallback(filename, InputFileCallbackPolicy::LoadTemporary, _fileCallbackUserData);
         if(!data) {
             Error() << "Trade::AbstractImporter::openFile(): cannot open file" << filename;
             return;
         }
         doOpenData(*data);
-        _fileCallback(filename, ImporterFileCallbackPolicy::Close, _fileCallbackUserData);
+        _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
 
     /* Otherwise open the file directly */
     } else {
@@ -630,20 +631,6 @@ Debug& operator<<(Debug& debug, const AbstractImporter::Features value) {
         AbstractImporter::Feature::OpenData,
         AbstractImporter::Feature::OpenState,
         AbstractImporter::Feature::FileCallback});
-}
-
-Debug& operator<<(Debug& debug, const ImporterFileCallbackPolicy value) {
-    switch(value) {
-        /* LCOV_EXCL_START */
-        #define _c(v) case ImporterFileCallbackPolicy::v: return debug << "Trade::ImporterFileCallbackPolicy::" #v;
-        _c(LoadTemporary)
-        _c(LoadPernament)
-        _c(Close)
-        #undef _c
-        /* LCOV_EXCL_STOP */
-    }
-
-    return debug << "Trade::ImporterFileCallbackPolicy(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 }}

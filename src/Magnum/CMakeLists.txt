@@ -28,6 +28,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
 
 # Files shared between main library and unit test library
 set(Magnum_SRCS
+    FileCallback.cpp
     Mesh.cpp
     PixelStorage.cpp
     Resource.cpp
@@ -46,6 +47,7 @@ set(Magnum_HEADERS
     AbstractResourceLoader.h
     Array.h
     DimensionTraits.h
+    FileCallback.h
     Image.h
     ImageView.h
     Magnum.h

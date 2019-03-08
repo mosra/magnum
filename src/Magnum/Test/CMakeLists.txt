@@ -24,6 +24,7 @@
 #
 
 corrade_add_test(ArrayTest ArrayTest.cpp LIBRARIES Magnum)
+corrade_add_test(FileCallbackTest FileCallbackTest.cpp LIBRARIES Magnum)
 corrade_add_test(ImageTest ImageTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(ImageViewTest ImageViewTest.cpp LIBRARIES MagnumTestLib)
 corrade_add_test(MeshTest MeshTest.cpp LIBRARIES Magnum)

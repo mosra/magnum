@@ -51,7 +51,7 @@ struct AnyImageImporterTest: TestSuite::Tester {
     PluginManager::Manager<AbstractImporter> _manager{"nonexistent"};
 };
 
-Containers::Optional<Containers::ArrayView<const char>> fileCallback(const std::string& filename, Trade::ImporterFileCallbackPolicy, Containers::Array<char>& storage) {
+Containers::Optional<Containers::ArrayView<const char>> fileCallback(const std::string& filename, InputFileCallbackPolicy, Containers::Array<char>& storage) {
     storage = Utility::Directory::read(filename);
     return Containers::ArrayView<const char>{storage};
 }
@@ -59,7 +59,7 @@ Containers::Optional<Containers::ArrayView<const char>> fileCallback(const std::
 constexpr struct {
     const char* name;
     const char* filename;
-    Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, Trade::ImporterFileCallbackPolicy, Containers::Array<char>&);
+    Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, Containers::Array<char>&);
 } LoadData[]{
     {"TGA", TGA_FILE, nullptr},
     {"TGA data", TGA_FILE, fileCallback}
@@ -68,7 +68,7 @@ constexpr struct {
 constexpr struct {
     const char* name;
     const char* filename;
-    Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, Trade::ImporterFileCallbackPolicy, Containers::Array<char>&);
+    Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, Containers::Array<char>&);
     const char* plugin;
 } DetectData[]{
     {"PNG", "rgb.png", nullptr, "PngImporter"},

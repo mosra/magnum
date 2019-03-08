@@ -1,5 +1,3 @@
-#ifndef Magnum_Trade_Trade_h
-#define Magnum_Trade_Trade_h
 /*
     This file is part of Magnum.
 
@@ -25,55 +23,30 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-/** @file
- * @brief Forward declarations for the @ref Magnum::Trade namespace
- */
+#include <sstream>
+#include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/Types.h"
+#include "Magnum/FileCallback.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include "Magnum/Magnum.h"
-#endif
+namespace Magnum { namespace Test { namespace {
 
-namespace Magnum { namespace Trade {
+struct FileCallbackTest: TestSuite::Tester {
+    explicit FileCallbackTest();
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class AbstractImageConverter;
-class AbstractImporter;
+    void debugInputFileCallbackPolicy();
+};
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-typedef CORRADE_DEPRECATED("use InputFileCallbackPolicy instead") InputFileCallbackPolicy ImporterFileCallbackPolicy;
-#endif
+FileCallbackTest::FileCallbackTest() {
+    addTests({&FileCallbackTest::debugInputFileCallbackPolicy});
+}
 
-enum class MaterialType: UnsignedByte;
-enum class MaterialAlphaMode: UnsignedByte;
-class AbstractMaterialData;
+void FileCallbackTest::debugInputFileCallbackPolicy() {
+    std::ostringstream out;
 
-enum class AnimationTrackTargetType: UnsignedByte;
-enum class AnimationTrackType: UnsignedByte;
-class AnimationTrackData;
-class AnimationData;
+    Debug{&out} << InputFileCallbackPolicy::Close << InputFileCallbackPolicy(0xf0);
+    CORRADE_COMPARE(out.str(), "InputFileCallbackPolicy::Close InputFileCallbackPolicy(0xf0)\n");
+}
 
-enum class CameraType: UnsignedByte;
-class CameraData;
+}}}
 
-template<UnsignedInt> class ImageData;
-typedef ImageData<1> ImageData1D;
-typedef ImageData<2> ImageData2D;
-typedef ImageData<3> ImageData3D;
-
-class LightData;
-class MeshData2D;
-class MeshData3D;
-class MeshObjectData2D;
-class MeshObjectData3D;
-class ObjectData2D;
-class ObjectData3D;
-class PhongMaterialData;
-class TextureData;
-class SceneData;
-#endif
-
-}}
-
-#endif
+CORRADE_TEST_MAIN(Magnum::Test::FileCallbackTest)

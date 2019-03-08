@@ -198,6 +198,9 @@ See also:
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
+-   @cpp Trade::ImporterFileCallbackPolicy @ce is deprecated as it was moved
+    to @ref InputFileCallbackPolicy in the root namespace to be shared with
+    APIs outside of the @ref Trade namespace
 -   @cpp DebugTools::ForceRendererOptions::scale() @ce is deprecated in favor
     of @ref DebugTools::ForceRendererOptions::size(), as that's more consistent
     with the documentation and the corresponding setter.
