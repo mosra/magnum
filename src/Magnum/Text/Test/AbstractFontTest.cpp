@@ -140,7 +140,7 @@ void AbstractFontTest::openFileAsData() {
 }
 
 void AbstractFontTest::openFileAsDataNotFound() {
-    struct MyFont: AbstractFont {
+    struct: AbstractFont {
         Features doFeatures() const override { return Feature::OpenData; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
@@ -159,7 +159,7 @@ void AbstractFontTest::openFileAsDataNotFound() {
 }
 
 void AbstractFontTest::openFileNotImplemented() {
-    struct MyFont: AbstractFont {
+    struct: AbstractFont {
         /* Supports neither file nor data opening */
         Features doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
@@ -179,7 +179,7 @@ void AbstractFontTest::openFileNotImplemented() {
 }
 
 void AbstractFontTest::openDataNotSupported() {
-    struct MyFont: AbstractFont {
+    struct: AbstractFont {
         /* Supports neither file nor data opening */
         Features doFeatures() const override { return {}; }
         bool doIsOpened() const override { return false; }
@@ -201,7 +201,7 @@ void AbstractFontTest::openDataNotSupported() {
 }
 
 void AbstractFontTest::openDataNotImplemented() {
-    struct MyFont: AbstractFont {
+    struct: AbstractFont {
         Features doFeatures() const override { return Feature::OpenData; }
         bool doIsOpened() const override { return false; }
         void doClose() override {}
