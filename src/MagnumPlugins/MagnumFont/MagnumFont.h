@@ -32,9 +32,9 @@
 #include "Magnum/configure.h"
 
 #ifdef MAGNUM_TARGET_GL
-#include "Magnum/Text/AbstractFont.h"
-#include "Magnum/Trade/Trade.h"
+#include <Corrade/Containers/Pointer.h>
 
+#include "Magnum/Text/AbstractFont.h"
 #include "MagnumPlugins/MagnumFont/configure.h"
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -136,11 +136,9 @@ class MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {
         ~MagnumFont();
 
     private:
-        struct Data;
-
         MAGNUM_MAGNUMFONT_LOCAL Features doFeatures() const override;
         MAGNUM_MAGNUMFONT_LOCAL bool doIsOpened() const override;
-        MAGNUM_MAGNUMFONT_LOCAL Metrics doOpenData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, Float) override;
+        MAGNUM_MAGNUMFONT_LOCAL Metrics doOpenData(Containers::ArrayView<const char> data, Float) override;
         MAGNUM_MAGNUMFONT_LOCAL Metrics doOpenFile(const std::string& filename, Float) override;
         MAGNUM_MAGNUMFONT_LOCAL void doClose() override;
 
@@ -149,9 +147,8 @@ class MAGNUM_MAGNUMFONT_EXPORT MagnumFont: public AbstractFont {
         MAGNUM_MAGNUMFONT_LOCAL Containers::Pointer<AbstractGlyphCache> doCreateGlyphCache() override;
         MAGNUM_MAGNUMFONT_LOCAL Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache& cache, Float size, const std::string& text) override;
 
-        MAGNUM_MAGNUMFONT_LOCAL Metrics openInternal(Utility::Configuration&& conf, Trade::ImageData2D&& image);
-
-        Data* _opened;
+        struct Data;
+        Containers::Pointer<Data> _opened;
 };
 
 }}

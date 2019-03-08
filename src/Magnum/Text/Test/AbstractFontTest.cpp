@@ -25,9 +25,11 @@
 
 #include <sstream>
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Directory.h>
 
+#include "Magnum/FileCallback.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
@@ -39,14 +41,31 @@ namespace Magnum { namespace Text { namespace Test { namespace {
 struct AbstractFontTest: TestSuite::Tester {
     explicit AbstractFontTest();
 
-    void openSingleData();
-
+    void openData();
     void openFileAsData();
     void openFileAsDataNotFound();
 
     void openFileNotImplemented();
     void openDataNotSupported();
     void openDataNotImplemented();
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void openSingleDataDeprecated();
+    void openMultiDataDeprecated();
+    #endif
+
+    void setFileCallback();
+    void setFileCallbackTemplate();
+    void setFileCallbackTemplateNull();
+    void setFileCallbackTemplateConst();
+    void setFileCallbackFileOpened();
+    void setFileCallbackNotImplemented();
+    void setFileCallbackNotSupported();
+    void setFileCallbackOpenFileDirectly();
+    void setFileCallbackOpenFileThroughBaseImplementation();
+    void setFileCallbackOpenFileThroughBaseImplementationFailed();
+    void setFileCallbackOpenFileAsData();
+    void setFileCallbackOpenFileAsDataFailed();
 
     void glyphId();
     void glyphIdNoFont();
@@ -69,14 +88,31 @@ struct AbstractFontTest: TestSuite::Tester {
 };
 
 AbstractFontTest::AbstractFontTest() {
-    addTests({&AbstractFontTest::openSingleData,
-
+    addTests({&AbstractFontTest::openData,
               &AbstractFontTest::openFileAsData,
               &AbstractFontTest::openFileAsDataNotFound,
 
               &AbstractFontTest::openFileNotImplemented,
               &AbstractFontTest::openDataNotSupported,
               &AbstractFontTest::openDataNotImplemented,
+
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractFontTest::openSingleDataDeprecated,
+              &AbstractFontTest::openMultiDataDeprecated,
+              #endif
+
+              &AbstractFontTest::setFileCallback,
+              &AbstractFontTest::setFileCallbackTemplate,
+              &AbstractFontTest::setFileCallbackTemplateNull,
+              &AbstractFontTest::setFileCallbackTemplateConst,
+              &AbstractFontTest::setFileCallbackFileOpened,
+              &AbstractFontTest::setFileCallbackNotImplemented,
+              &AbstractFontTest::setFileCallbackNotSupported,
+              &AbstractFontTest::setFileCallbackOpenFileDirectly,
+              &AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation,
+              &AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailed,
+              &AbstractFontTest::setFileCallbackOpenFileAsData,
+              &AbstractFontTest::setFileCallbackOpenFileAsDataFailed,
 
               &AbstractFontTest::glyphId,
               &AbstractFontTest::glyphIdNoFont,
@@ -98,45 +134,64 @@ AbstractFontTest::AbstractFontTest() {
               &AbstractFontTest::createGlyphCacheNoFont});
 }
 
-class SingleDataFont: public Text::AbstractFont {
-    public:
-        explicit SingleDataFont(): opened(false) {}
-
+void AbstractFontTest::openData() {
+    struct: AbstractFont {
         Features doFeatures() const override { return Feature::OpenData; }
-        bool doIsOpened() const override { return opened; }
+        bool doIsOpened() const override { return _opened; }
         void doClose() override {}
 
-        Metrics doOpenSingleData(const Containers::ArrayView<const char> data, Float) override {
-            opened = (data.size() == 1 && data[0] == '\xa5');
-            return {};
+        Metrics doOpenData(const Containers::ArrayView<const char> data, Float size) override {
+            _opened = (data.size() == 1 && data[0] == '\xa5');
+            return {size, 1.0f, 2.0f, 3.0f};
         }
 
-        UnsignedInt doGlyphId(char32_t) override { return 0; }
-
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
         Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
-
         Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
             return nullptr;
         }
 
-        bool opened;
-};
+        bool _opened = false;
+    } font;
 
-void AbstractFontTest::openSingleData() {
-    /* doOpenData() should call doOpenSingleData() */
-    SingleDataFont font;
-    const char data[] = {'\xa5'};
     CORRADE_VERIFY(!font.isOpened());
-    font.openData({{{}, data}}, 3.0f);
+    const char a5 = '\xa5';
+    font.openData({&a5, 1}, 13.0f);
     CORRADE_VERIFY(font.isOpened());
+    CORRADE_COMPARE(font.size(), 13.0f);
+    CORRADE_COMPARE(font.ascent(), 1.0f);
+    CORRADE_COMPARE(font.descent(), 2.0f);
+    CORRADE_COMPARE(font.lineHeight(), 3.0f);
 }
 
 void AbstractFontTest::openFileAsData() {
-    /* doOpenFile() should call doOpenSingleData() */
-    SingleDataFont font;
+    struct: AbstractFont {
+        Features doFeatures() const override { return Feature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {}
+
+        Metrics doOpenData(const Containers::ArrayView<const char> data, Float size) override {
+            _opened = (data.size() == 1 && data[0] == '\xa5');
+            return {size, 1.0f, 2.0f, 3.0f};
+        }
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+
+        bool _opened = false;
+    } font;
+
+    /* doOpenFile() should call doOpenData() */
     CORRADE_VERIFY(!font.isOpened());
-    font.openFile(Utility::Directory::join(TEXT_TEST_DIR, "data.bin"), 3.0f);
+    font.openFile(Utility::Directory::join(TEXT_TEST_DIR, "data.bin"), 13.0f);
     CORRADE_VERIFY(font.isOpened());
+    CORRADE_COMPARE(font.size(), 13.0f);
+    CORRADE_COMPARE(font.ascent(), 1.0f);
+    CORRADE_COMPARE(font.descent(), 2.0f);
+    CORRADE_COMPARE(font.lineHeight(), 3.0f);
 }
 
 void AbstractFontTest::openFileAsDataNotFound() {
@@ -194,9 +249,7 @@ void AbstractFontTest::openDataNotSupported() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    /** @todo replace this with nullptr once multi-file support is done
-        properly via callbacks */
-    font.openData({}, 34.0f);
+    font.openData(nullptr, 34.0f);
     CORRADE_COMPARE(out.str(), "Text::AbstractFont::openData(): feature not supported\n");
 }
 
@@ -215,10 +268,482 @@ void AbstractFontTest::openDataNotImplemented() {
 
     std::ostringstream out;
     Error redirectError{&out};
-    /** @todo replace this with nullptr and openSingleData() once multi-file
-        support is done properly via callbacks */
-    font.openData({{}}, 34.0f);
-    CORRADE_COMPARE(out.str(), "Text::AbstractFont::openSingleData(): feature advertised but not implemented\n");
+    font.openData(nullptr, 34.0f);
+    CORRADE_COMPARE(out.str(), "Text::AbstractFont::openData(): feature advertised but not implemented\n");
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractFontTest::openSingleDataDeprecated() {
+    struct: AbstractFont {
+        Features doFeatures() const override { return Feature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {}
+
+        Metrics doOpenData(const Containers::ArrayView<const char> data, Float size) override {
+            _opened = (data.size() == 1 && data[0] == '\xa5');
+            return {size, 1.0f, 2.0f, 3.0f};
+        }
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+
+        bool _opened = false;
+    } font;
+
+    CORRADE_VERIFY(!font.isOpened());
+    const char a5 = '\xa5';
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    font.openSingleData({&a5, 1}, 13.0f);
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_VERIFY(font.isOpened());
+    CORRADE_COMPARE(font.size(), 13.0f);
+    CORRADE_COMPARE(font.ascent(), 1.0f);
+    CORRADE_COMPARE(font.descent(), 2.0f);
+    CORRADE_COMPARE(font.lineHeight(), 3.0f);
+}
+
+void AbstractFontTest::openMultiDataDeprecated() {
+    struct: AbstractFont {
+        Features doFeatures() const override { return Feature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {}
+
+        Metrics doOpenData(const Containers::ArrayView<const char> data, Float size) override {
+            if(!fileCallback()) return {};
+            Containers::Optional<Containers::ArrayView<const char>> dataExt = fileCallback()("data.ext", InputFileCallbackPolicy::LoadPernament, fileCallbackUserData());
+            _opened = (data.size() == 1 && data[0] == '\xa5' && dataExt &&
+                       dataExt->size() == 2 && (*dataExt)[1] == '\xee');
+            return {size, 1.0f, 2.0f, 3.0f};
+        }
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+
+        bool _opened = false;
+    } font;
+
+    CORRADE_VERIFY(!font.isOpened());
+    const char a5 = '\xa5';
+    const char ee[] = { '\xff', '\xee' };
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    font.openData({{"data.bin", {&a5, 1}},
+                   {"data.ext", ee}}, 13.0f);
+    CORRADE_IGNORE_DEPRECATED_POP
+    CORRADE_VERIFY(font.isOpened());
+    CORRADE_COMPARE(font.size(), 13.0f);
+    CORRADE_COMPARE(font.ascent(), 1.0f);
+    CORRADE_COMPARE(font.descent(), 2.0f);
+    CORRADE_COMPARE(font.lineHeight(), 3.0f);
+}
+#endif
+
+void AbstractFontTest::setFileCallback() {
+    struct: AbstractFont {
+        Features doFeatures() const override { return Feature::OpenData|Feature::FileCallback; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+        void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void* userData) override {
+            *static_cast<int*>(userData) = 1337;
+        }
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+    } font;
+
+    int a = 0;
+    auto lambda = [](const std::string&, InputFileCallbackPolicy, void*) {
+        return Containers::Optional<Containers::ArrayView<const char>>{};
+    };
+    font.setFileCallback(lambda, &a);
+    CORRADE_COMPARE(font.fileCallback(), lambda);
+    CORRADE_COMPARE(font.fileCallbackUserData(), &a);
+    CORRADE_COMPARE(a, 1337);
+}
+
+void AbstractFontTest::setFileCallbackTemplate() {
+    struct: AbstractFont {
+        Features doFeatures() const override { return Feature::OpenData|Feature::FileCallback; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+        void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) override {
+            called = true;
+        }
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+
+        bool called = false;
+    } font;
+
+    int a = 0;
+    auto lambda = [](const std::string&, InputFileCallbackPolicy, int&) {
+        return Containers::Optional<Containers::ArrayView<const char>>{};
+    };
+    font.setFileCallback(lambda, a);
+    CORRADE_VERIFY(font.fileCallback());
+    CORRADE_VERIFY(font.fileCallbackUserData());
+    CORRADE_VERIFY(font.called);
+
+    /* The data pointers should be wrapped, thus not the same */
+    CORRADE_VERIFY(reinterpret_cast<void(*)()>(font.fileCallback()) != reinterpret_cast<void(*)()>(static_cast<Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, int&)>(lambda)));
+    CORRADE_VERIFY(font.fileCallbackUserData() != &a);
+}
+
+void AbstractFontTest::setFileCallbackTemplateNull() {
+    struct: AbstractFont {
+        Features doFeatures() const override { return Feature::OpenData|Feature::FileCallback; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+        void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* userData) override {
+            called = !callback && !userData;
+        }
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+
+        bool called = false;
+    } font;
+
+    int a = 0;
+    font.setFileCallback(static_cast<Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, int&)>(nullptr), a);
+    CORRADE_VERIFY(!font.fileCallback());
+    CORRADE_VERIFY(!font.fileCallbackUserData());
+    CORRADE_VERIFY(font.called);
+}
+
+void AbstractFontTest::setFileCallbackTemplateConst() {
+    struct: AbstractFont {
+        Features doFeatures() const override { return Feature::OpenData|Feature::FileCallback; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+        void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) override {
+            called = true;
+        }
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+
+        bool called = false;
+    } font;
+
+    const int a = 0;
+    auto lambda = [](const std::string&, InputFileCallbackPolicy, const int&) {
+        return Containers::Optional<Containers::ArrayView<const char>>{};
+    };
+    font.setFileCallback(lambda, a);
+    CORRADE_VERIFY(font.fileCallback());
+    CORRADE_VERIFY(font.fileCallbackUserData());
+    CORRADE_VERIFY(font.called);
+}
+
+void AbstractFontTest::setFileCallbackFileOpened() {
+    struct: AbstractFont {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+    } font;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    font.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
+        return Containers::Optional<Containers::ArrayView<const char>>{};
+    });
+    CORRADE_COMPARE(out.str(), "Text::AbstractFont::setFileCallback(): can't be set while a font is opened\n");
+}
+
+void AbstractFontTest::setFileCallbackNotImplemented() {
+    struct: AbstractFont {
+        Features doFeatures() const override { return Feature::FileCallback; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+    } font;
+
+    int a;
+    auto lambda = [](const std::string&, InputFileCallbackPolicy, void*) {
+        return Containers::Optional<Containers::ArrayView<const char>>{};
+    };
+    font.setFileCallback(lambda, &a);
+    CORRADE_COMPARE(font.fileCallback(), lambda);
+    CORRADE_COMPARE(font.fileCallbackUserData(), &a);
+    /* Should just work, no need to implement the function */
+}
+
+void AbstractFontTest::setFileCallbackNotSupported() {
+    struct: AbstractFont {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+    } font;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    int a;
+    font.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
+        return Containers::Optional<Containers::ArrayView<const char>>{};
+    }, &a);
+    CORRADE_COMPARE(out.str(), "Text::AbstractFont::setFileCallback(): font plugin supports neither loading from data nor via callbacks, callbacks can't be used\n");
+}
+
+void AbstractFontTest::setFileCallbackOpenFileDirectly() {
+    struct: AbstractFont {
+        Features doFeatures() const override { return Feature::FileCallback|Feature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        Metrics doOpenFile(const std::string& filename, Float size) override {
+            /* Called because FileCallback is supported */
+            _opened = filename == "file.dat" && fileCallback() && fileCallbackUserData();
+            return {size, 1.0f, 2.0f, 3.0f};
+        }
+
+        Metrics doOpenData(Containers::ArrayView<const char>, Float) override {
+            /* Shouldn't be called because FileCallback is supported */
+            openDataCalledNotSureWhy = true;
+            return {};
+        }
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+
+        bool _opened = false;
+        bool openDataCalledNotSureWhy = false;
+    } font;
+
+    bool calledNotSureWhy = false;
+    font.setFileCallback([](const std::string&, InputFileCallbackPolicy, bool& calledNotSureWhy) -> Containers::Optional<Containers::ArrayView<const char>> {
+        calledNotSureWhy = true;
+        return {};
+    }, calledNotSureWhy);
+
+    CORRADE_VERIFY(font.openFile("file.dat", 42.0f));
+    CORRADE_VERIFY(!calledNotSureWhy);
+    CORRADE_VERIFY(!font.openDataCalledNotSureWhy);
+    CORRADE_COMPARE(font.size(), 42.0f);
+    CORRADE_COMPARE(font.ascent(), 1.0f);
+    CORRADE_COMPARE(font.descent(), 2.0f);
+    CORRADE_COMPARE(font.lineHeight(), 3.0f);
+}
+
+void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementation() {
+    struct: AbstractFont {
+        Features doFeatures() const override { return Feature::FileCallback|Feature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        Metrics doOpenFile(const std::string& filename, Float size) override {
+            openFileCalled = filename == "file.dat" && fileCallback() && fileCallbackUserData();
+            return AbstractFont::doOpenFile(filename, size);
+        }
+
+        Metrics doOpenData(Containers::ArrayView<const char> data, Float size) override {
+            _opened = (data.size() == 1 && data[0] == '\xb0');
+            return {size, 1.0f, 2.0f, 3.0f};
+        }
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+
+        bool _opened = false;
+        bool openFileCalled = false;
+    } font;
+
+    struct State {
+        const char data = '\xb0';
+        bool loaded = false;
+        bool closed = false;
+        bool calledNotSureWhy = false;
+    } state;
+    font.setFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(filename == "file.dat" && policy == InputFileCallbackPolicy::LoadTemporary) {
+            state.loaded = true;
+            return Containers::arrayView(&state.data, 1);
+        }
+
+        if(filename == "file.dat" && policy == InputFileCallbackPolicy::Close) {
+            state.closed = true;
+            return {};
+        }
+
+        state.calledNotSureWhy = true;
+        return {};
+    }, state);
+
+    CORRADE_VERIFY(font.openFile("file.dat", 42.0f));
+    CORRADE_VERIFY(font.openFileCalled);
+    CORRADE_VERIFY(state.loaded);
+    CORRADE_VERIFY(state.closed);
+    CORRADE_VERIFY(!state.calledNotSureWhy);
+    CORRADE_COMPARE(font.size(), 42.0f);
+    CORRADE_COMPARE(font.ascent(), 1.0f);
+    CORRADE_COMPARE(font.descent(), 2.0f);
+    CORRADE_COMPARE(font.lineHeight(), 3.0f);
+}
+
+void AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailed() {
+    struct: AbstractFont {
+        Features doFeatures() const override { return Feature::FileCallback|Feature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        Metrics doOpenFile(const std::string& filename, Float size) override {
+            openFileCalled = true;
+            return AbstractFont::doOpenFile(filename, size);
+        }
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+
+         bool openFileCalled = false;
+    } font;
+
+    font.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) -> Containers::Optional<Containers::ArrayView<const char>> {
+        return {};
+    });
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_VERIFY(!font.openFile("file.dat", 42.0f));
+    CORRADE_VERIFY(font.openFileCalled);
+    CORRADE_COMPARE(out.str(), "Text::AbstractFont::openFile(): cannot open file file.dat\n");
+}
+
+void AbstractFontTest::setFileCallbackOpenFileAsData() {
+    struct: AbstractFont {
+        Features doFeatures() const override { return Feature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        Metrics doOpenFile(const std::string&, Float) override {
+            openFileCalled = true;
+            return {};
+        }
+
+        Metrics doOpenData(Containers::ArrayView<const char> data, Float size) override {
+            _opened = (data.size() == 1 && data[0] == '\xb0');
+            return {size, 1.0f, 2.0f, 3.0f};
+        }
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+
+        bool _opened = false;
+        bool openFileCalled = false;
+    } font;
+
+    struct State {
+        const char data = '\xb0';
+        bool loaded = false;
+        bool closed = false;
+        bool calledNotSureWhy = false;
+    } state;
+
+    font.setFileCallback([](const std::string& filename, InputFileCallbackPolicy policy, State& state) -> Containers::Optional<Containers::ArrayView<const char>> {
+        if(filename == "file.dat" && policy == InputFileCallbackPolicy::LoadTemporary) {
+            state.loaded = true;
+            return Containers::arrayView(&state.data, 1);
+        }
+
+        if(filename == "file.dat" && policy == InputFileCallbackPolicy::Close) {
+            state.closed = true;
+            return {};
+        }
+
+        state.calledNotSureWhy = true;
+        return {};
+    }, state);
+
+    CORRADE_VERIFY(font.openFile("file.dat", 13.0f));
+    CORRADE_VERIFY(!font.openFileCalled);
+    CORRADE_VERIFY(state.loaded);
+    CORRADE_VERIFY(state.closed);
+    CORRADE_VERIFY(!state.calledNotSureWhy);
+    CORRADE_COMPARE(font.size(), 13.0f);
+    CORRADE_COMPARE(font.ascent(), 1.0f);
+    CORRADE_COMPARE(font.descent(), 2.0f);
+    CORRADE_COMPARE(font.lineHeight(), 3.0f);
+}
+
+void AbstractFontTest::setFileCallbackOpenFileAsDataFailed() {
+    struct: AbstractFont {
+        Features doFeatures() const override { return Feature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        Metrics doOpenFile(const std::string&, Float) override {
+            openFileCalled = true;
+            return {};
+        }
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+
+        bool openFileCalled = false;
+    } font;
+
+    font.setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
+        return Containers::Optional<Containers::ArrayView<const char>>{};
+    });
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_VERIFY(!font.openFile("file.dat", 132.0f));
+    CORRADE_VERIFY(!font.openFileCalled);
+    CORRADE_COMPARE(out.str(), "Text::AbstractFont::openFile(): cannot open file file.dat\n");
 }
 
 void AbstractFontTest::glyphId() {

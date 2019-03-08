@@ -24,9 +24,12 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/TestSuite/Tester.h>
 
+#include "Magnum/FileCallback.h"
 #include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
@@ -43,6 +46,9 @@ struct MagnumFontTest: TestSuite::Tester {
     void properties();
     void layout();
 
+    void fileCallbackImage();
+    void fileCallbackImageNotFound();
+
     /* Explicitly forbid system-wide plugin dependencies */
     PluginManager::Manager<Trade::AbstractImporter> _importerManager{"nonexistent"};
     PluginManager::Manager<AbstractFont> _fontManager{"nonexistent"};
@@ -51,7 +57,10 @@ struct MagnumFontTest: TestSuite::Tester {
 MagnumFontTest::MagnumFontTest() {
     addTests({&MagnumFontTest::nonexistent,
               &MagnumFontTest::properties,
-              &MagnumFontTest::layout});
+              &MagnumFontTest::layout,
+
+              &MagnumFontTest::fileCallbackImage,
+              &MagnumFontTest::fileCallbackImageNotFound});
 
     /* Load the plugins directly from the build tree. Otherwise they're static
        and already loaded. */
@@ -67,7 +76,7 @@ void MagnumFontTest::nonexistent() {
     std::ostringstream out;
     Error redirectError{&out};
     CORRADE_VERIFY(!font->openFile("nonexistent.conf", 0.0f));
-    CORRADE_COMPARE(out.str(), "Text::MagnumFont::openFile(): cannot open file nonexistent.conf\n");
+    CORRADE_COMPARE(out.str(), "Text::AbstractFont::openFile(): cannot open file nonexistent.conf\n");
 }
 
 void MagnumFontTest::properties() {
@@ -128,6 +137,41 @@ void MagnumFontTest::layout() {
     CORRADE_COMPARE(position, Range2D({0.78125f, 0.375f}, {2.28125f, 1.25f}));
     CORRADE_COMPARE(textureCoordinates, Range2D({0.0625f, 0.015625f}, {0.25f, 0.125f}));
     CORRADE_COMPARE(cursorPosition, Vector2(0.375f, 0.0f));
+}
+
+void MagnumFontTest::fileCallbackImage() {
+    Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
+    CORRADE_VERIFY(font->features() & AbstractFont::Feature::FileCallback);
+
+    std::unordered_map<std::string, Containers::Array<char>> files;
+    files["not/a/path/font.conf"] = Utility::Directory::read(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf"));
+    files["not/a/path/font.tga"] = Utility::Directory::read(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.tga"));
+    font->setFileCallback([](const std::string& filename, InputFileCallbackPolicy policy,
+        std::unordered_map<std::string, Containers::Array<char>>& files) {
+            Debug{} << "Loading" << filename << "with" << policy;
+            return Containers::optional(Containers::ArrayView<const char>(files.at(filename)));
+        }, files);
+
+    CORRADE_VERIFY(font->openFile("not/a/path/font.conf", 13.0f));
+    CORRADE_COMPARE(font->size(), 16.0f);
+    CORRADE_COMPARE(font->ascent(), 25.0f);
+    CORRADE_COMPARE(font->descent(), -10.0f);
+    CORRADE_COMPARE(font->lineHeight(), 39.7333f);
+    CORRADE_COMPARE(font->glyphAdvance(font->glyphId(U'W')), Vector2(23.0f, 0.0f));
+}
+
+void MagnumFontTest::fileCallbackImageNotFound() {
+    Containers::Pointer<AbstractFont> font = _fontManager.instantiate("MagnumFont");
+    CORRADE_VERIFY(font->features() & AbstractFont::Feature::FileCallback);
+
+    font->setFileCallback([](const std::string&, InputFileCallbackPolicy, void*) {
+            return Containers::Optional<Containers::ArrayView<const char>>{};
+        });
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    CORRADE_VERIFY(!font->openData(Utility::Directory::read(Utility::Directory::join(MAGNUMFONT_TEST_DIR, "font.conf")), 13.0f));
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::openFile(): cannot open file font.tga\n");
 }
 
 }}}}

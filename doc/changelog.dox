@@ -90,6 +90,8 @@ See also:
     @ref GL. The @ref Text::Renderer, @ref Text::GlyphCache and
     @ref Text::DistanceFieldGlyphCache classes are now built only if
     `TARGET_GL` is enabled (done by default).
+-   New @ref Text::AbstractFont::setFileCallback() to allow opening multi-file
+    fonts with an API similar to @ref Trade::AbstractImporter
 
 @subsection changelog-latest-changes Changes and improvements
 
@@ -206,6 +208,11 @@ See also:
 -   @cpp DebugTools::ForceRendererOptions::scale() @ce is deprecated in favor
     of @ref DebugTools::ForceRendererOptions::size(), as that's more consistent
     with the documentation and the corresponding setter.
+-   @cpp Text::AbstractFont::openSingleData() @ce and
+    @cpp Text::AbstractFont::openData() @ce taking a list of files are
+    deprecated in favor of
+    @ref Text::AbstractFont::openData(Containers::ArrayView<const char>, Float)
+    and @ref Text::AbstractFont::setFileCallback()
 
 @section changelog-2019-01 2019.01
 

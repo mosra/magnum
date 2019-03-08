@@ -26,9 +26,12 @@
 #include "AbstractFont.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/EnumSet.hpp>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/Unicode.h>
 
+#include "Magnum/FileCallback.h"
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
 
@@ -60,7 +63,18 @@ AbstractFont::AbstractFont() = default;
 
 AbstractFont::AbstractFont(PluginManager::AbstractManager& manager, const std::string& plugin): AbstractPlugin{manager, plugin} {}
 
-bool AbstractFont::openData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, const Float size) {
+void AbstractFont::setFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* const userData) {
+    CORRADE_ASSERT(!isOpened(), "Text::AbstractFont::setFileCallback(): can't be set while a font is opened", );
+    CORRADE_ASSERT(features() & (Feature::FileCallback|Feature::OpenData), "Text::AbstractFont::setFileCallback(): font plugin supports neither loading from data nor via callbacks, callbacks can't be used", );
+
+    _fileCallback = callback;
+    _fileCallbackUserData = userData;
+    doSetFileCallback(callback, userData);
+}
+
+void AbstractFont::doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) {}
+
+bool AbstractFont::openData(Containers::ArrayView<const char> data, const Float size) {
     CORRADE_ASSERT(features() & Feature::OpenData,
         "Text::AbstractFont::openData(): feature not supported", false);
 
@@ -77,40 +91,62 @@ bool AbstractFont::openData(const std::vector<std::pair<std::string, Containers:
     return isOpened();
 }
 
-auto AbstractFont::doOpenData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, const Float size) -> Metrics {
-    CORRADE_ASSERT(!(features() & Feature::MultiFile),
-        "Text::AbstractFont::openData(): feature advertised but not implemented", {});
-    CORRADE_ASSERT(data.size() == 1,
-        "Text::AbstractFont::openData(): expected just one file for single-file format", {});
-
-    close();
-    return doOpenSingleData(data[0].second, size);
-}
-
-bool AbstractFont::openSingleData(const Containers::ArrayView<const char> data, const Float size) {
-    CORRADE_ASSERT(features() & Feature::OpenData,
-        "Text::AbstractFont::openSingleData(): feature not supported", false);
-    CORRADE_ASSERT(!(features() & Feature::MultiFile),
-        "Text::AbstractFont::openSingleData(): the format is not single-file", false);
-
-    close();
-    const Metrics metrics = doOpenSingleData(data, size);
-    _size = metrics.size;
-    _ascent = metrics.ascent;
-    _descent = metrics.descent;
-    _lineHeight = metrics.lineHeight;
-    CORRADE_INTERNAL_ASSERT(isOpened() || (!_size && !_ascent && !_descent && !_lineHeight));
-    return isOpened();
-}
-
-auto AbstractFont::doOpenSingleData(Containers::ArrayView<const char>, Float) -> Metrics {
-    CORRADE_ASSERT(false, "Text::AbstractFont::openSingleData(): feature advertised but not implemented", {});
+auto AbstractFont::doOpenData(Containers::ArrayView<const char>, Float) -> Metrics {
+    CORRADE_ASSERT(false, "Text::AbstractFont::openData(): feature advertised but not implemented", {});
     return {};
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+bool AbstractFont::openData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, const Float size) {
+    close();
+
+    setFileCallback([](const std::string& file, InputFileCallbackPolicy, const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data) -> Containers::Optional<Containers::ArrayView<const char>> {
+        for(auto&& i: data) if(i.first == file) return i.second;
+        return {};
+    }, data);
+
+    return !data.empty() && openData(data.front().second, size);
+}
+
+bool AbstractFont::openSingleData(const Containers::ArrayView<const char> data, const Float size) {
+    return openData(data, size);
+}
+#endif
+
 bool AbstractFont::openFile(const std::string& filename, const Float size) {
     close();
-    const Metrics metrics = doOpenFile(filename, size);
+    Metrics metrics;
+
+    /* If file loading callbacks are not set or the font implementation
+       supports handling them directly, call into the implementation */
+    if(!_fileCallback || (doFeatures() & Feature::FileCallback)) {
+        metrics = doOpenFile(filename, size);
+
+    /* Otherwise, if loading from data is supported, use the callback and pass
+       the data through to openData(). Mark the file as ready to be closed once
+       opening is finished. */
+    } else if(doFeatures() & Feature::OpenData) {
+        /* This needs to be duplicated here and in the doOpenFile()
+           implementation in order to support both following cases:
+            - plugins that don't support FileCallback but have their own
+              doOpenFile() implementation (callback needs to be used here,
+              because the base doOpenFile() implementation might never get
+              called)
+            - plugins that support FileCallback but want to delegate the actual
+              file loading to the default implementation (callback used in the
+              base doOpenFile() implementation, because this branch is never
+              taken in that case) */
+        const Containers::Optional<Containers::ArrayView<const char>> data = _fileCallback(filename, InputFileCallbackPolicy::LoadTemporary, _fileCallbackUserData);
+        if(!data) {
+            Error() << "Text::AbstractFont::openFile(): cannot open file" << filename;
+            return isOpened();
+        }
+        metrics = doOpenData(*data, size);
+        _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
+
+    /* Shouldn't get here, the assert is fired already in setFileCallback() */
+    } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+
     _size = metrics.size;
     _ascent = metrics.ascent;
     _descent = metrics.descent;
@@ -120,16 +156,32 @@ bool AbstractFont::openFile(const std::string& filename, const Float size) {
 }
 
 auto AbstractFont::doOpenFile(const std::string& filename, const Float size) -> Metrics {
-    CORRADE_ASSERT(features() & Feature::OpenData && !(features() & Feature::MultiFile),
-        "Text::AbstractFont::openFile(): not implemented", {});
+    CORRADE_ASSERT(features() & Feature::OpenData, "Text::AbstractFont::openFile(): not implemented", {});
 
-    /* Open file */
-    if(!Utility::Directory::exists(filename)) {
-        Error() << "Text::AbstractFont::openFile(): cannot open file" << filename;
-        return {};
+    Metrics metrics;
+
+    /* If callbacks are set, use them. This is the same implementation as in
+       openFile(), see the comment there for details. */
+    if(_fileCallback) {
+        const Containers::Optional<Containers::ArrayView<const char>> data = _fileCallback(filename, InputFileCallbackPolicy::LoadTemporary, _fileCallbackUserData);
+        if(!data) {
+            Error() << "Text::AbstractFont::openFile(): cannot open file" << filename;
+            return {};
+        }
+        metrics = doOpenData(*data, size);
+        _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
+
+    /* Otherwise open the file directly */
+    } else {
+        if(!Utility::Directory::exists(filename)) {
+            Error() << "Text::AbstractFont::openFile(): cannot open file" << filename;
+            return {};
+        }
+
+        metrics = doOpenData(Utility::Directory::read(filename), size);
     }
 
-    return doOpenSingleData(Utility::Directory::read(filename), size);
+    return metrics;
 }
 
 void AbstractFont::close() {
