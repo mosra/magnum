@@ -528,6 +528,12 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
 
 CORRADE_ENUMSET_OPERATORS(AbstractFont::Features)
 
+/** @debugoperatorclassenum{AbstractFont,AbstractFont::Feature} */
+MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, AbstractFont::Feature value);
+
+/** @debugoperatorclassenum{AbstractFont,AbstractFont::Features} */
+MAGNUM_TEXT_EXPORT Debug& operator<<(Debug& debug, AbstractFont::Features value);
+
 /**
 @brief Base for text layouters
 

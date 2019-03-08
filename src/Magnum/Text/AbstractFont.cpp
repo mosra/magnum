@@ -238,6 +238,27 @@ Containers::Pointer<AbstractLayouter> AbstractFont::layout(const AbstractGlyphCa
     return doLayout(cache, size, text);
 }
 
+Debug& operator<<(Debug& debug, const AbstractFont::Feature value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case AbstractFont::Feature::v: return debug << "Text::AbstractFont::Feature::" #v;
+        _c(OpenData)
+        _c(FileCallback)
+        _c(PreparedGlyphCache)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Text::AbstractFont::Feature(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const AbstractFont::Features value) {
+    return Containers::enumSetDebugOutput(debug, value, "Text::AbstractFont::Features{}", {
+        AbstractFont::Feature::OpenData,
+        AbstractFont::Feature::FileCallback,
+        AbstractFont::Feature::PreparedGlyphCache});
+}
+
 AbstractLayouter::AbstractLayouter(UnsignedInt glyphCount): _glyphCount(glyphCount) {}
 
 AbstractLayouter::~AbstractLayouter() = default;

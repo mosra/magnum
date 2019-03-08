@@ -85,6 +85,9 @@ struct AbstractFontTest: TestSuite::Tester {
     void createGlyphCacheNotSupported();
     void createGlyphCacheNotImplemented();
     void createGlyphCacheNoFont();
+
+    void debugFeature();
+    void debugFeatures();
 };
 
 AbstractFontTest::AbstractFontTest() {
@@ -131,7 +134,10 @@ AbstractFontTest::AbstractFontTest() {
               &AbstractFontTest::createGlyphCache,
               &AbstractFontTest::createGlyphCacheNotSupported,
               &AbstractFontTest::createGlyphCacheNotImplemented,
-              &AbstractFontTest::createGlyphCacheNoFont});
+              &AbstractFontTest::createGlyphCacheNoFont,
+
+              &AbstractFontTest::debugFeature,
+              &AbstractFontTest::debugFeatures});
 }
 
 void AbstractFontTest::openData() {
@@ -1020,6 +1026,20 @@ void AbstractFontTest::createGlyphCacheNoFont() {
     Error redirectError{&out};
     font.createGlyphCache();
     CORRADE_COMPARE(out.str(), "Text::AbstractFont::createGlyphCache(): no font opened\n");
+}
+
+void AbstractFontTest::debugFeature() {
+    std::ostringstream out;
+
+    Debug{&out} << AbstractFont::Feature::OpenData << AbstractFont::Feature(0xf0);
+    CORRADE_COMPARE(out.str(), "Text::AbstractFont::Feature::OpenData Text::AbstractFont::Feature(0xf0)\n");
+}
+
+void AbstractFontTest::debugFeatures() {
+    std::ostringstream out;
+
+    Debug{&out} << (AbstractFont::Feature::OpenData|AbstractFont::Feature::PreparedGlyphCache) << AbstractFont::Features{};
+    CORRADE_COMPARE(out.str(), "Text::AbstractFont::Feature::OpenData|Text::AbstractFont::Feature::PreparedGlyphCache Text::AbstractFont::Features{}\n");
 }
 
 }}}}
