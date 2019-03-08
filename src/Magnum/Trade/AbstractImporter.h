@@ -1239,7 +1239,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /* Used by the templated version only */
         struct FileCallbackTemplate {
             void(*callback)();
-            void* userData;
+            const void* userData;
         } _fileCallbackTemplate{};
 };
 
@@ -1250,10 +1250,10 @@ template<class Callback, class T> void AbstractImporter::setFileCallback(Callbac
     const auto callbackPtr = static_cast<Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, T&)>(callback);
     if(!callbackPtr) return setFileCallback(nullptr);
 
-    _fileCallbackTemplate = { reinterpret_cast<void(*)()>(callbackPtr), &userData };
+    _fileCallbackTemplate = { reinterpret_cast<void(*)()>(callbackPtr), static_cast<const void*>(&userData) };
     setFileCallback([](const std::string& filename, const InputFileCallbackPolicy flags, void* const userData) {
         auto& s = *reinterpret_cast<FileCallbackTemplate*>(userData);
-        return reinterpret_cast<Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, T&)>(s.callback)(filename, flags, *static_cast<T*>(s.userData));
+        return reinterpret_cast<Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, T&)>(s.callback)(filename, flags, *static_cast<T*>(const_cast<void*>(s.userData)));
     }, &_fileCallbackTemplate);
 }
 #endif

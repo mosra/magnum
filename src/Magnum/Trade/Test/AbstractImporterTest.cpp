@@ -66,6 +66,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void setFileCallback();
     void setFileCallbackTemplate();
     void setFileCallbackTemplateNull();
+    void setFileCallbackTemplateConst();
     void setFileCallbackFileOpened();
     void setFileCallbackNotImplemented();
     void setFileCallbackNotSupported();
@@ -260,6 +261,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::setFileCallback,
               &AbstractImporterTest::setFileCallbackTemplate,
               &AbstractImporterTest::setFileCallbackTemplateNull,
+              &AbstractImporterTest::setFileCallbackTemplateConst,
               &AbstractImporterTest::setFileCallbackFileOpened,
               &AbstractImporterTest::setFileCallbackNotImplemented,
               &AbstractImporterTest::setFileCallbackNotSupported,
@@ -662,6 +664,29 @@ void AbstractImporterTest::setFileCallbackTemplateNull() {
     importer.setFileCallback(static_cast<Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, int&)>(nullptr), a);
     CORRADE_VERIFY(!importer.fileCallback());
     CORRADE_VERIFY(!importer.fileCallbackUserData());
+    CORRADE_VERIFY(importer.called);
+}
+
+void AbstractImporterTest::setFileCallbackTemplateConst() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return Feature::OpenData|Feature::FileCallback; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+        void doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) override {
+            called = true;
+        }
+
+        bool called = false;
+    } importer;
+
+    /* Just verify we can have const parameters */
+    const int a = 0;
+    auto lambda = [](const std::string&, InputFileCallbackPolicy, const int&) {
+        return Containers::Optional<Containers::ArrayView<const char>>{};
+    };
+    importer.setFileCallback(lambda, a);
+    CORRADE_VERIFY(importer.fileCallback());
+    CORRADE_VERIFY(importer.fileCallbackUserData());
     CORRADE_VERIFY(importer.called);
 }
 

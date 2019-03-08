@@ -155,6 +155,8 @@ See also:
     [mosra/magnum#312](https://github.com/mosra/magnum/pull/312))
     @ref Trade::TgaImporter "TgaImporter" now properly reports an error message
     when opening an empty file
+-   @ref Trade::AbstractImporter::setFileCallback() now accepts callbacks with
+    @cpp const @ce references to user data as well
 
 @subsection changelog-latest-buildsystem Build system
 
