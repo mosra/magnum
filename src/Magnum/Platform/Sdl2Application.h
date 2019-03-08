@@ -529,6 +529,18 @@ class Sdl2Application {
          */
         SDL_Window* window() { return _window; }
         #endif
+    
+        #ifdef MAGNUM_TARGET_GL
+        /**
+         * @brief Underlying context
+         *
+         * Use in case you need to call SDL functionality directly.
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+         *      for more information.
+         */
+        SDL_GLContext glContext() { return _glContext; }
+        #endif
 
     protected:
         /* Nobody will need to have (and delete) Sdl2Application*, thus this is
