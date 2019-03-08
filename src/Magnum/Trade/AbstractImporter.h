@@ -402,20 +402,26 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Default scene
          *
          * When there is more than one scene, returns ID of the default one.
-         * If there is no default scene, returns @cpp -1 @ce.
+         * If there is no default scene, returns @cpp -1 @ce. Expects that a
+         * file is opened.
          *
          * @note The function is not const, because the value will probably
          *      be lazy-populated.
          */
         Int defaultScene();
 
-        /** @brief Scene count */
+        /**
+         * @brief Scene count
+         *
+         * Expects that a file is opened.
+         */
         UnsignedInt sceneCount() const;
 
         /**
          * @brief Scene ID for given name
          *
-         * If no scene for given name exists, returns @cpp -1 @ce.
+         * If no scene for given name exists, returns @cpp -1 @ce. Expects that
+         * a file is opened.
          * @see @ref sceneName()
          */
         Int sceneForName(const std::string& name);
@@ -424,6 +430,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Scene name
          * @param id        Scene ID, from range [0, @ref sceneCount()).
          *
+         * Expects that a file is opened.
          * @see @ref sceneForName()
          */
         std::string sceneName(UnsignedInt id);
@@ -433,16 +440,22 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Scene ID, from range [0, @ref sceneCount()).
          *
          * Returns given scene or @ref Containers::NullOpt if import failed.
+         * Expects that a file is opened.
          */
         Containers::Optional<SceneData> scene(UnsignedInt id);
 
-        /** @brief Animation count */
+        /**
+         * @brief Animation count
+         *
+         * Expects that a file is opened.
+         */
         UnsignedInt animationCount() const;
 
         /**
          * @brief Animation ID for given name
          *
-         * If no animation for given name exists, returns @cpp -1 @ce.
+         * If no animation for given name exists, returns @cpp -1 @ce. Expects
+         * that a file is opened.
          * @see @ref animationName()
          */
         Int animationForName(const std::string& name);
@@ -451,6 +464,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Animation name
          * @param id    Animation ID, from range [0, @ref animationCount()).
          *
+         * Expects that a file is opened.
          * @see @ref animationForName()
          */
         std::string animationName(UnsignedInt id);
@@ -460,17 +474,22 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id    Animation ID, from range [0, @ref animationCount()).
          *
          * Returns given animation or @ref Containers::NullOpt if importing
-         * failed.
+         * failed. Expects that a file is opened.
          */
         Containers::Optional<AnimationData> animation(UnsignedInt id);
 
-        /** @brief Light count */
+        /**
+         * @brief Light count
+         *
+         * Expects that a file is opened.
+         */
         UnsignedInt lightCount() const;
 
         /**
          * @brief Light ID for given name
          *
-         * If no light for given name exists, returns @cpp -1 @ce.
+         * If no light for given name exists, returns @cpp -1 @ce. Expects that
+         * a file is opened.
          * @see @ref lightName()
          */
         Int lightForName(const std::string& name);
@@ -479,6 +498,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Light name
          * @param id        Light ID, from range [0, @ref lightCount()).
          *
+         * Expects that a file is opened.
          * @see @ref lightForName()
          */
         std::string lightName(UnsignedInt id);
@@ -488,16 +508,22 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Light ID, from range [0, @ref lightCount()).
          *
          * Returns given light or @ref Containers::NullOpt if importing failed.
+         * Expects that a file is opened.
          */
         Containers::Optional<LightData> light(UnsignedInt id);
 
-        /** @brief Camera count */
+        /**
+         * @brief Camera count
+         *
+         * Expects that a file is opened.
+         */
         UnsignedInt cameraCount() const;
 
         /**
          * @brief Camera ID for given name
          *
-         * If no camera for given name exists, returns @cpp -1 @ce.
+         * If no camera for given name exists, returns @cpp -1 @ce. Expects
+         * that a file is opened.
          * @see @ref cameraName()
          */
         Int cameraForName(const std::string& name);
@@ -506,6 +532,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Camera name
          * @param id        Camera ID, from range [0, @ref cameraCount()).
          *
+         * Expects that a file is opened.
          * @see @ref cameraForName()
          */
         std::string cameraName(UnsignedInt id);
@@ -514,17 +541,23 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Camera
          * @param id        Camera ID, from range [0, @ref cameraCount()).
          *
-         * Returns given camera or @ref Containers::NullOpt if importing failed.
+         * Returns given camera or @ref Containers::NullOpt if importing
+         * failed. Expects that a file is opened.
          */
         Containers::Optional<CameraData> camera(UnsignedInt id);
 
-        /** @brief Two-dimensional object count */
+        /**
+         * @brief Two-dimensional object count
+         *
+         * Expects that a file is opened.
+         */
         UnsignedInt object2DCount() const;
 
         /**
          * @brief Two-dimensional object ID for given name
          *
-         * If no scene for given name exists, returns @cpp -1 @ce.
+         * If no scene for given name exists, returns @cpp -1 @ce. Expects that
+         * a file is opened.
          * @see @ref object2DName()
          */
         Int object2DForName(const std::string& name);
@@ -533,6 +566,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Two-dimensional object name
          * @param id        Object ID, from range [0, @ref object2DCount()).
          *
+         * Expects that a file is opened.
          * @see @ref object2DForName()
          */
         std::string object2DName(UnsignedInt id);
@@ -542,16 +576,22 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Object ID, from range [0, @ref object2DCount()).
          *
          * Returns given object or @cpp nullptr @ce if importing failed.
+         * Expects that a file is opened.
          */
         Containers::Pointer<ObjectData2D> object2D(UnsignedInt id);
 
-        /** @brief Three-dimensional object count */
+        /**
+         * @brief Three-dimensional object count
+         *
+         * Expects that a file is opened.
+         */
         UnsignedInt object3DCount() const;
 
         /**
          * @brief Three-dimensional object ID for given name
          *
-         * If no scene for given name exists, returns @cpp -1 @ce.
+         * If no scene for given name exists, returns @cpp -1 @ce. Expects that
+         * a file is opened.
          * @see @ref object3DName()
          */
         Int object3DForName(const std::string& name);
@@ -560,6 +600,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Three-dimensional object name
          * @param id        Object ID, from range [0, @ref object3DCount()).
          *
+         * Expects that a file is opened.
          * @see @ref object3DForName()
          */
         std::string object3DName(UnsignedInt id);
@@ -569,16 +610,22 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Object ID, from range [0, @ref object3DCount()).
          *
          * Returns given object or @cpp nullptr @ce if importing failed.
+         * Expects that a file is opened.
          */
         Containers::Pointer<ObjectData3D> object3D(UnsignedInt id);
 
-        /** @brief Two-dimensional mesh count */
+        /**
+         * @brief Two-dimensional mesh count
+         *
+         * Expects that a file is opened.
+         */
         UnsignedInt mesh2DCount() const;
 
         /**
          * @brief Two-dimensional mesh ID for given name
          *
-         * If no mesh for given name exists, returns @cpp -1 @ce.
+         * If no mesh for given name exists, returns @cpp -1 @ce. Expects that
+         * a file is opened.
          * @see @ref mesh2DName()
          */
         Int mesh2DForName(const std::string& name);
@@ -587,6 +634,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Two-dimensional mesh name
          * @param id        Mesh ID, from range [0, @ref mesh2DCount()).
          *
+         * Expects that a file is opened.
          * @see @ref mesh2DForName()
          */
         std::string mesh2DName(UnsignedInt id);
@@ -596,6 +644,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Mesh ID, from range [0, @ref mesh2DCount()).
          *
          * Returns given mesh or @ref Containers::NullOpt if importing failed.
+         * Expects that a file is opened.
          */
         Containers::Optional<MeshData2D> mesh2D(UnsignedInt id);
 
@@ -605,7 +654,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /**
          * @brief Three-dimensional mesh ID for given name
          *
-         * If no mesh for given name exists, returns @cpp -1 @ce.
+         * If no mesh for given name exists, returns @cpp -1 @ce. Expects that
+         * a file is opened.
          * @see @ref mesh3DName()
          */
         Int mesh3DForName(const std::string& name);
@@ -614,6 +664,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Three-dimensional mesh name
          * @param id        Mesh ID, from range [0, @ref mesh3DCount()).
          *
+         * Expects that a file is opened.
          * @see @ref mesh3DForName()
          */
         std::string mesh3DName(UnsignedInt id);
@@ -623,16 +674,22 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Mesh ID, from range [0, @ref mesh3DCount()).
          *
          * Returns given mesh or @ref Containers::NullOpt if importing failed.
+         * Expects that a file is opened.
          */
         Containers::Optional<MeshData3D> mesh3D(UnsignedInt id);
 
-        /** @brief Material count */
+        /**
+         * @brief Material count
+         *
+         * Expects that a file is opened.
+         */
         UnsignedInt materialCount() const;
 
         /**
          * @brief Material ID for given name
          *
-         * If no material for given name exists, returns @cpp -1 @ce.
+         * If no material for given name exists, returns @cpp -1 @ce. Expects
+         * that a file is opened.
          * @see @ref materialName()
          */
         Int materialForName(const std::string& name);
@@ -641,6 +698,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Material name
          * @param id        Material ID, from range [0, @ref materialCount()).
          *
+         * Expects that a file is opened.
          * @see @ref materialForName()
          */
         std::string materialName(UnsignedInt id);
@@ -650,16 +708,22 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Material ID, from range [0, @ref materialCount()).
          *
          * Returns given material or @cpp nullptr @ce if importing failed.
+         * Expects that a file is opened.
          */
         Containers::Pointer<AbstractMaterialData> material(UnsignedInt id);
 
-        /** @brief Texture count */
+        /**
+         * @brief Texture count
+         *
+         * Expects that a file is opened.
+         */
         UnsignedInt textureCount() const;
 
         /**
          * @brief Texture ID for given name
          *
-         * If no texture for given name exists, returns @cpp -1 @ce.
+         * If no texture for given name exists, returns @cpp -1 @ce. Expects
+         * that a file is opened.
          * @see @ref textureName()
          */
         Int textureForName(const std::string& name);
@@ -668,6 +732,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Texture name
          * @param id        Texture ID, from range [0, @ref textureCount()).
          *
+         * Expects that a file is opened.
          * @see @ref textureForName()
          */
         std::string textureName(UnsignedInt id);
@@ -676,17 +741,23 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Texture
          * @param id        Texture ID, from range [0, @ref textureCount()).
          *
-         * Returns given texture or @ref Containers::NullOpt if importing failed.
+         * Returns given texture or @ref Containers::NullOpt if importing
+         * failed. Expects that a file is opened.
          */
         Containers::Optional<TextureData> texture(UnsignedInt id);
 
-        /** @brief One-dimensional image count */
+        /**
+         * @brief One-dimensional image count
+         *
+         * Expects that a file is opened.
+         */
         UnsignedInt image1DCount() const;
 
         /**
          * @brief One-dimensional image ID for given name
          *
-         * If no image for given name exists, returns @cpp -1 @ce.
+         * If no image for given name exists, returns @cpp -1 @ce. Expects that
+         * a file is opened.
          * @see @ref image1DName()
          */
         Int image1DForName(const std::string& name);
@@ -695,6 +766,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief One-dimensional image name
          * @param id        Image ID, from range [0, @ref image1DCount()).
          *
+         * Expects that a file is opened.
          * @see @ref image1DForName()
          */
         std::string image1DName(UnsignedInt id);
@@ -704,16 +776,22 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Image ID, from range [0, @ref image1DCount()).
          *
          * Returns given image or @ref Containers::NullOpt if importing failed.
+         * Expects that a file is opened.
          */
         Containers::Optional<ImageData1D> image1D(UnsignedInt id);
 
-        /** @brief Two-dimensional image count */
+        /**
+         * @brief Two-dimensional image count
+         *
+         * Expects that a file is opened.
+         */
         UnsignedInt image2DCount() const;
 
         /**
          * @brief Two-dimensional image ID for given name
          *
-         * If no image for given name exists, returns @cpp -1 @ce.
+         * If no image for given name exists, returns @cpp -1 @ce. Expects that
+         * a file is opened.
          * @see @ref image2DName()
          */
         Int image2DForName(const std::string& name);
@@ -722,6 +800,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Two-dimensional image name
          * @param id        Image ID, from range [0, @ref image2DCount()).
          *
+         * Expects that a file is opened.
          * @see @ref image2DForName()
          */
         std::string image2DName(UnsignedInt id);
@@ -731,16 +810,22 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Image ID, from range [0, @ref image2DCount()).
          *
          * Returns given image or @ref Containers::NullOpt if importing failed.
+         * Expects that a file is opened.
          */
         Containers::Optional<ImageData2D> image2D(UnsignedInt id);
 
-        /** @brief Three-dimensional image count */
+        /**
+         * @brief Three-dimensional image count
+         *
+         * Expects that a file is opened.
+         */
         UnsignedInt image3DCount() const;
 
         /**
          * @brief Three-dimensional image ID for given name
          *
-         * If no image for given name exists, returns @cpp -1 @ce.
+         * If no image for given name exists, returns @cpp -1 @ce. Expects that
+         * a file is opened.
          * @see @ref image3DName()
          */
         Int image3DForName(const std::string& name);
@@ -749,6 +834,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Three-dimensional image name
          * @param id        Image ID, from range [0, @ref image3DCount()).
          *
+         * Expects that a file is opened.
          * @see @ref image3DForName()
          */
         std::string image3DName(UnsignedInt id);
@@ -758,6 +844,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @param id        Image ID, from range [0, @ref image3DCount()).
          *
          * Returns given image or @ref Containers::NullOpt if importing failed.
+         * Expects that a file is opened.
          */
         Containers::Optional<ImageData3D> image3D(UnsignedInt id);
 
@@ -784,16 +871,15 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          * @brief Implementation for @ref openFile()
          *
          * If @ref Feature::OpenData is supported, default implementation opens
-         * the file and calls @ref Magnum::Trade::AbstractImporter::doOpenData() "doOpenData()"
-         * with its contents. It is allowed to call this function from your
-         * @ref Magnum::Trade::AbstractImporter::doOpenFile() "doOpenFile()"
+         * the file and calls @ref doOpenData() with its contents. It is
+         * allowed to call this function from your @ref doOpenFile()
          * implementation --- in particular, this implementation will also
          * correctly handle callbacks set through @ref setFileCallback().
          *
          * This function is not called when file callbacks are set through
          * @ref setFileCallback() and @ref Feature::FileCallback is not
          * supported --- instead, file is loaded though the callback and data
-         * passed through to @ref Magnum::Trade::AbstractImporter::doOpenData() "doOpenData()".
+         * passed through to @ref doOpenData().
          */
         virtual void doOpenFile(const std::string& filename);
 
