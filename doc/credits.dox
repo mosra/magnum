@@ -112,7 +112,7 @@ Are the below lists missing your name or something's wrong?
 -   **Guillaume Giraud** ([\@Guillaume227](https://github.com/Guillaume227)) ---
     algorithm bugfixes
 -   **Guillaume Jacquemin** ([\@williamjcm](https://github.com/williamjcm)) ---
-    MSYS2 packages
+    MSYS2 packages, additions to @ref Platform::Sdl2Application
 -   **Hilario Pérez Corona** ([\@hpcorona](https://github.com/hpcorona)) ---
     improvements to @cb{.cmake} android_create_apk() @ce
 -   **Ivan P.** ([\@uzername](https://github.com/uzername)) --- documentation

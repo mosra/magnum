@@ -77,6 +77,11 @@ See also:
 -   Detection of SwiftShader drivers with
     @ref GL::Context::DetectedDriver::SwiftShader
 
+@subsubsection changelog-latest-new-platform Platform libraries
+
+-   Added @ref Platform::Sdl2Application::glContext() to access the underlying
+    `SDL_GLContext` (see [mosra/magnum#325](https://github.com/mosra/magnum/pull/325))
+
 @subsubsection changelog-latest-new-text Text library
 
 -   A new @ref Text::AbstractGlyphCache base now makes @ref Text::AbstractFont
