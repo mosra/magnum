@@ -41,6 +41,8 @@ namespace Magnum { namespace Text { namespace Test { namespace {
 struct AbstractFontTest: TestSuite::Tester {
     explicit AbstractFontTest();
 
+    void construct();
+
     void openData();
     void openFileAsData();
     void openFileAsDataNotFound();
@@ -91,7 +93,9 @@ struct AbstractFontTest: TestSuite::Tester {
 };
 
 AbstractFontTest::AbstractFontTest() {
-    addTests({&AbstractFontTest::openData,
+    addTests({&AbstractFontTest::construct,
+
+              &AbstractFontTest::openData,
               &AbstractFontTest::openFileAsData,
               &AbstractFontTest::openFileAsDataNotFound,
 
@@ -138,6 +142,26 @@ AbstractFontTest::AbstractFontTest() {
 
               &AbstractFontTest::debugFeature,
               &AbstractFontTest::debugFeatures});
+}
+
+void AbstractFontTest::construct() {
+    struct: AbstractFont {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+    } font;
+
+    CORRADE_COMPARE(font.features(), AbstractFont::Features{});
+    CORRADE_VERIFY(!font.isOpened());
+
+    font.close();
+    CORRADE_VERIFY(!font.isOpened());
 }
 
 void AbstractFontTest::openData() {
