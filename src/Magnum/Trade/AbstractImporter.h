@@ -1232,7 +1232,6 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         /** @brief Implementation for @ref importerState() */
         virtual const void* doImporterState() const;
 
-    private:
         Containers::Optional<Containers::ArrayView<const char>>(*_fileCallback)(const std::string&, InputFileCallbackPolicy, void*){};
         void* _fileCallbackUserData{};
 
