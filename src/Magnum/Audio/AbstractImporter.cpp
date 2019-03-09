@@ -26,8 +26,11 @@
 #include "AbstractImporter.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Directory.h>
+
+#include "Magnum/FileCallback.h"
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 #include "Magnum/Audio/configure.h"
@@ -36,7 +39,7 @@
 namespace Magnum { namespace Audio {
 
 std::string AbstractImporter::pluginInterface() {
-    return "cz.mosra.magnum.Audio.AbstractImporter/0.1";
+    return "cz.mosra.magnum.Audio.AbstractImporter/0.2";
 }
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
@@ -59,10 +62,24 @@ AbstractImporter::AbstractImporter(PluginManager::Manager<AbstractImporter>& man
 
 AbstractImporter::AbstractImporter(PluginManager::AbstractManager& manager, const std::string& plugin): PluginManager::AbstractManagingPlugin<AbstractImporter>{manager, plugin} {}
 
+void AbstractImporter::setFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*callback)(const std::string&, InputFileCallbackPolicy, void*), void* const userData) {
+    CORRADE_ASSERT(!isOpened(), "Audio::AbstractImporter::setFileCallback(): can't be set while a file is opened", );
+    CORRADE_ASSERT(features() & Feature::OpenData, "Audio::AbstractImporter::setFileCallback(): importer doesn't support loading from data, callbacks can't be used", );
+
+    _fileCallback = callback;
+    _fileCallbackUserData = userData;
+    doSetFileCallback(callback, userData);
+}
+
+void AbstractImporter::doSetFileCallback(Containers::Optional<Containers::ArrayView<const char>>(*)(const std::string&, InputFileCallbackPolicy, void*), void*) {}
+
 bool AbstractImporter::openData(Containers::ArrayView<const char> data) {
     CORRADE_ASSERT(features() & Feature::OpenData,
         "Audio::AbstractImporter::openData(): feature not supported", {});
 
+    /* We accept empty data here (instead of checking for them and failing so
+       the check doesn't be done on the plugin side) because for some file
+       formats it could be valid. */
     close();
     doOpenData(data);
     return isOpened();
@@ -74,20 +91,63 @@ void AbstractImporter::doOpenData(Containers::ArrayView<const char>) {
 
 bool AbstractImporter::openFile(const std::string& filename) {
     close();
-    doOpenFile(filename);
+
+    /* If file loading callbacks are not set or the importer supports handling
+       them directly, call into the implementation */
+    if(!_fileCallback || (doFeatures() & Feature::FileCallback)) {
+        doOpenFile(filename);
+
+    /* Otherwise, if loading from data is supported, use the callback and pass
+       the data through to openData(). Mark the file as ready to be closed once
+       opening is finished. */
+    } else if(doFeatures() & Feature::OpenData) {
+        /* This needs to be duplicated here and in the doOpenFile()
+           implementation in order to support both following cases:
+            - plugins that don't support FileCallback but have their own
+              doOpenFile() implementation (callback needs to be used here,
+              because the base doOpenFile() implementation might never get
+              called)
+            - plugins that support FileCallback but want to delegate the actual
+              file loading to the default implementation (callback used in the
+              base doOpenFile() implementation, because this branch is never
+              taken in that case) */
+        const Containers::Optional<Containers::ArrayView<const char>> data = _fileCallback(filename, InputFileCallbackPolicy::LoadTemporary, _fileCallbackUserData);
+        if(!data) {
+            Error() << "Audio::AbstractImporter::openFile(): cannot open file" << filename;
+            return isOpened();
+        }
+        doOpenData(*data);
+        _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
+
+    /* Shouldn't get here, the assert is fired already in setFileCallback() */
+    } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+
     return isOpened();
 }
 
 void AbstractImporter::doOpenFile(const std::string& filename) {
     CORRADE_ASSERT(features() & Feature::OpenData, "Audio::AbstractImporter::openFile(): not implemented", );
 
-    /* Open file */
-    if(!Utility::Directory::exists(filename)) {
-        Error() << "Trade::AbstractImporter::openFile(): cannot open file" << filename;
-        return;
-    }
+    /* If callbacks are set, use them. This is the same implementation as in
+       openFile(), see the comment there for details. */
+    if(_fileCallback) {
+        const Containers::Optional<Containers::ArrayView<const char>> data = _fileCallback(filename, InputFileCallbackPolicy::LoadTemporary, _fileCallbackUserData);
+        if(!data) {
+            Error() << "Audio::AbstractImporter::openFile(): cannot open file" << filename;
+            return;
+        }
+        doOpenData(*data);
+        _fileCallback(filename, InputFileCallbackPolicy::Close, _fileCallbackUserData);
 
-    doOpenData(Utility::Directory::read(filename));
+    /* Otherwise open the file directly */
+    } else {
+        if(!Utility::Directory::exists(filename)) {
+            Error() << "Audio::AbstractImporter::openFile(): cannot open file" << filename;
+            return;
+        }
+
+        doOpenData(Utility::Directory::read(filename));
+    }
 }
 
 void AbstractImporter::close() {
