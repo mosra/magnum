@@ -58,6 +58,7 @@ if(TARGET glfw)
 
     # Just to make FPHSA print some meaningful location, nothing else
     get_target_property(_GLFW_INTERFACE_INCLUDE_DIRECTORIES glfw INTERFACE_INCLUDE_DIRECTORIES)
+    include(FindPackageHandleStandardArgs)
     find_package_handle_standard_args("GLFW" DEFAULT_MSG
         _GLFW_INTERFACE_INCLUDE_DIRECTORIES)
     return()
