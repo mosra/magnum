@@ -1240,7 +1240,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         struct FileCallbackTemplate {
             void(*callback)();
             const void* userData;
-        } _fileCallbackTemplate{};
+        /* GCC 4.8 complains loudly about missing initializers otherwise */
+        } _fileCallbackTemplate{nullptr, nullptr};
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
