@@ -70,10 +70,13 @@ struct Sdl2ApplicationTest: Platform::Application {
         Debug{} << "text input event:" << std::string{event.text(), event.text().size()};
     }
 
-    /* Should fire on currently not handled events, such as minimize/maximize.
-       Comment out to verify correct behavior with the override not present. */
+    /* Should fire on currently not handled events, such as minimize/maximize
+       or window focus/blur. Comment out to verify correct behavior with the
+       override not present. */
     void anyEvent(SDL_Event& event) override {
-        Debug{} << "any event:" << event.type;
+        Debug d;
+        d << "any event:" << event.type;
+        if(event.type == SDL_WINDOWEVENT) d << event.window.event;
     }
 };
 

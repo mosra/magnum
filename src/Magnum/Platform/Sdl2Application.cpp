@@ -683,9 +683,15 @@ void Sdl2Application::mainLoopIteration() {
                         _flags |= Flag::Redraw;
                         #endif
                     } break;
+                    /* Direct everything that wasn't exposed via a callback to
+                       anyEvent(), so users can implement event handling for
+                       things not present in the Application APIs */
                     case SDL_WINDOWEVENT_EXPOSED:
                         _flags |= Flag::Redraw;
+                        if(!(_flags & Flag::NoAnyEvent)) anyEvent(event);
                         break;
+                    default:
+                        if(!(_flags & Flag::NoAnyEvent)) anyEvent(event);
                 } break;
 
             case SDL_KEYDOWN:

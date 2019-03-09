@@ -130,6 +130,10 @@ See also:
 
 @subsubsection changelog-latest-changes-platform Platform libraries
 
+-   @ref Platform::Sdl2Application::anyEvent() is now fired also for window
+    events that are not exposed through
+    @ref Platform::Sdl2Application::viewportEvent() "viewportEvent()" or
+    @ref Platform::Sdl2Application::exitEvent() "exitEvent()"
 -   On OpenGL ES builds, @ref Platform::Sdl2Application now tells SDL whether
     to use a system GL driver or a dedicated GLES driver based on whether
     @ref MAGNUM_TARGET_DESKTOP_GLES is defined. This allows for a smoother
