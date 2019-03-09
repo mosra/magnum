@@ -324,38 +324,42 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @brief Font size
          *
          * Returns scale in which @ref lineHeight(), @ref ascent(),
-         * @ref descent() and @ref glyphAdvance() is returned.
+         * @ref descent() and @ref glyphAdvance() is returned. Expects that a
+         * font is opened.
          */
-        Float size() const { return _size; }
+        Float size() const;
 
         /**
          * @brief Font ascent
          *
          * Distance from baseline to top, scaled to font size. Positive value.
+         * Expects that a font is opened.
          * @see @ref size(), @ref descent(), @ref lineHeight()
          */
-        Float ascent() const { return _ascent; }
+        Float ascent() const;
 
         /**
          * @brief Font descent
          *
          * Distance from baseline to bottom, scalled to font size. Negative
-         * value.
+         * value. Expects that a font is opened.
          * @see @ref size(), @ref ascent(), @ref lineHeight()
          */
-        Float descent() const { return _descent; }
+        Float descent() const;
 
         /**
          * @brief Line height
          *
-         * Returns line height scaled to font size.
+         * Returns line height scaled to font size. Expects that a font is
+         * opened.
          * @see @ref size(), @ref ascent(), @ref descent()
          */
-        Float lineHeight() const { return _lineHeight; }
+        Float lineHeight() const;
 
         /**
          * @brief Glyph ID for given character
          *
+         * Expects that a font is opened.
          * @note This function is meant to be used only for font observations
          *      and conversions. In performance-critical code the @ref layout()
          *      function should be used instead.
@@ -366,7 +370,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @brief Glyph advance
          * @param glyph     Glyph ID
          *
-         * Returns glyph advance scaled to font size.
+         * Returns glyph advance scaled to font size. Expects that a font is
+         * opened.
          * @note This function is meant to be used only for font observations
          *      and conversions. In performance-critical code the @ref layout()
          *      function should be used instead.
@@ -381,7 +386,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          *
          * Fills the cache with given characters. Fonts having
          * @ref Feature::PreparedGlyphCache do not support partial glyph cache
-         * filling, use @ref createGlyphCache() instead.
+         * filling, use @ref createGlyphCache() instead. Expects that a font is
+         * opened.
          */
         void fillGlyphCache(AbstractGlyphCache& cache, const std::string& characters);
 
@@ -391,7 +397,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * Configures and fills glyph cache with the contents of whole font.
          * Available only if @ref Feature::PreparedGlyphCache is supported.
          * Other fonts support only partial glyph cache filling, see
-         * @ref fillGlyphCache().
+         * @ref fillGlyphCache(). Expects that a font is opened.
          */
         Containers::Pointer<AbstractGlyphCache> createGlyphCache();
 
@@ -402,7 +408,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
          * @param text      Text to layout
          *
          * Note that the layouters support rendering of single-line text only.
-         * See @ref Renderer class for more advanced text layouting.
+         * See @ref Renderer class for more advanced text layouting. Expects
+         * that a font is opened.
          * @see @ref fillGlyphCache(), @ref createGlyphCache()
          */
         Containers::Pointer<AbstractLayouter> layout(const AbstractGlyphCache& cache, Float size, const std::string& text);

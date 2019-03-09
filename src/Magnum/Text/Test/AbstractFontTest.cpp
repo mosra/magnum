@@ -69,6 +69,9 @@ struct AbstractFontTest: TestSuite::Tester {
     void setFileCallbackOpenFileAsData();
     void setFileCallbackOpenFileAsDataFailed();
 
+    void properties();
+    void propertiesNoFont();
+
     void glyphId();
     void glyphIdNoFont();
 
@@ -120,6 +123,9 @@ AbstractFontTest::AbstractFontTest() {
               &AbstractFontTest::setFileCallbackOpenFileThroughBaseImplementationFailed,
               &AbstractFontTest::setFileCallbackOpenFileAsData,
               &AbstractFontTest::setFileCallbackOpenFileAsDataFailed,
+
+              &AbstractFontTest::properties,
+              &AbstractFontTest::propertiesNoFont,
 
               &AbstractFontTest::glyphId,
               &AbstractFontTest::glyphIdNoFont,
@@ -774,6 +780,59 @@ void AbstractFontTest::setFileCallbackOpenFileAsDataFailed() {
     CORRADE_VERIFY(!font.openFile("file.dat", 132.0f));
     CORRADE_VERIFY(!font.openFileCalled);
     CORRADE_COMPARE(out.str(), "Text::AbstractFont::openFile(): cannot open file file.dat\n");
+}
+
+void AbstractFontTest::properties() {
+    struct: AbstractFont {
+        Features doFeatures() const override { return Feature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override {}
+
+        Metrics doOpenData(const Containers::ArrayView<const char>, Float size) override {
+            _opened = true;
+            return {size, 1.0f, 2.0f, 3.0f};
+        }
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+
+        bool _opened = false;
+    } font;
+
+    CORRADE_VERIFY(font.openData(nullptr, 13.0f));
+    CORRADE_COMPARE(font.size(), 13.0f);
+    CORRADE_COMPARE(font.ascent(), 1.0f);
+    CORRADE_COMPARE(font.descent(), 2.0f);
+    CORRADE_COMPARE(font.lineHeight(), 3.0f);
+}
+
+void AbstractFontTest::propertiesNoFont() {
+    struct MyFont: AbstractFont {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        UnsignedInt doGlyphId(char32_t) override { return {}; }
+        Vector2 doGlyphAdvance(UnsignedInt) override { return {}; }
+        Containers::Pointer<AbstractLayouter> doLayout(const AbstractGlyphCache&, Float, const std::string&) override {
+            return nullptr;
+        }
+    } font;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    font.size();
+    font.ascent();
+    font.descent();
+    font.lineHeight();
+    CORRADE_COMPARE(out.str(),
+        "Text::AbstractFont::size(): no font opened\n"
+        "Text::AbstractFont::ascent(): no font opened\n"
+        "Text::AbstractFont::descent(): no font opened\n"
+        "Text::AbstractFont::lineHeight(): no font opened\n");
 }
 
 void AbstractFontTest::glyphId() {

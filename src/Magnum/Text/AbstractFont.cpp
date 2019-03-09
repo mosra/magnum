@@ -193,6 +193,26 @@ void AbstractFont::close() {
     }
 }
 
+Float AbstractFont::size() const {
+    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::size(): no font opened", {});
+    return _size;
+}
+
+Float AbstractFont::ascent() const {
+    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::ascent(): no font opened", {});
+    return _ascent;
+}
+
+Float AbstractFont::descent() const {
+    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::descent(): no font opened", {});
+    return _descent;
+}
+
+Float AbstractFont::lineHeight() const {
+    CORRADE_ASSERT(isOpened(), "Text::AbstractFont::lineHeight(): no font opened", {});
+    return _lineHeight;
+}
+
 UnsignedInt AbstractFont::glyphId(const char32_t character) {
     CORRADE_ASSERT(isOpened(), "Text::AbstractFont::glyphId(): no font opened", 0);
 

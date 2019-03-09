@@ -147,6 +147,10 @@ See also:
 -   For consistency with @ref Trade::AbstractImporter, @ref Text::AbstractFont
     now doesn't fail when opening empty files --- instead this is handled in
     the particular plugin implementations
+-   @ref Text::AbstractFont::size(), @ref Text::AbstractFont::ascent(),
+    @ref Text::AbstractFont::descent() and @ref Text::AbstractFont::lineHeight()
+    now expect that a font is opened, consistently with other accessor
+    functions
 
 @subsubsection changelog-latest-changes-trade Trade library
 
