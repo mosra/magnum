@@ -87,4 +87,14 @@ if(NOT TARGET OpenGLES3::OpenGLES3)
 
     set_property(TARGET OpenGLES3::OpenGLES3 PROPERTY
         INTERFACE_INCLUDE_DIRECTORIES ${OPENGLES3_INCLUDE_DIR})
+
+    # Emscripten needs a special flag to use WebGL 2. CMake 3.13 allows to set
+    # this via INTERFACE_LINK_OPTIONS, for older versions we modify the global
+    # CMAKE_EXE_LINKER_FLAGS inside FindMagnum.cmake.
+    if(CORRADE_TARGET_EMSCRIPTEN AND NOT CMAKE_VERSION VERSION_LESS 3.13)
+        # I could probably use target_link_options() here, but let's be
+        # consistent with the rest
+        set_property(TARGET OpenGLES3::OpenGLES3 APPEND PROPERTY
+            INTERFACE_LINK_OPTIONS "SHELL:-s USE_WEBGL2=1")
+    endif()
 endif()
