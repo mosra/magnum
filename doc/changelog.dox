@@ -210,6 +210,13 @@ See also:
     [mosra/magnum#322](https://github.com/mosra/magnum/issues/322) and
     [mosra/magnum-bootstrap#15](https://github.com/mosra/magnum-bootstrap/pull/15))
 
+@subsection changelog-latest-docs Documentation
+
+-   Extended @ref platforms-html5-code-size "Emscripten" documentation with
+    available compiler switches for code size / compile time tradeoffs (instead
+    of unconditionally enabling them by default, see
+    [mosra/magnum#211](https://github.com/mosra/magnum/issues/211))
+
 @subsection changelog-latest-deprecated Deprecated APIs
 
 -   @cpp Trade::ImporterFileCallbackPolicy @ce is deprecated as it was moved

@@ -34,7 +34,6 @@ namespace Magnum {
 
 @todoc testing, gl tests, coverage, travis setup
 @todoc static plugins
-@todoc speeding up compilation
 
 The following guide explains basic workflow of using
 [Emscripten](http://kripken.github.io/emscripten-site/) for deploying HTML5
@@ -330,6 +329,9 @@ Besides the canvas, there's minimal styling for @cb{.html} <h1> @ce,
 the @cb{.css} div#sizer @ce will center it, following the canvas width. If you
 need more advanced styling, check out [m.css](http://mcss.mosra.cz).
 
+@note It's also possible to modify the container CSS classes from the C++ side
+    using @ref Platform::Sdl2Application::setContainerCssClass().
+
 @section platforms-html5-events Controlling event behavior
 
 @subsection platforms-html5-events-keyboard Keyboard events
@@ -432,6 +434,57 @@ WebGL specification provide even more detail:
 
 -   [Differences Between WebGL and OpenGL ES 2.0](http://www.khronos.org/registry/webgl/specs/latest/1.0/#6)
 -   [Differences Between WebGL and OpenGL ES 3.0](https://www.khronos.org/registry/webgl/specs/latest/2.0/#5)
+
+@section platforms-html5-code-size Compilation time / code size tradeoffs
+
+By default, the toolchain configures the compiler and linker to use `-O3` in
+`Release` builds, together with enabling `--llvm-lto 1` for the linker. When
+deploying, ensure your `CMAKE_BUILD_TYPE` is set to `Release`, otherwise the
+generated file sizes will be huge due to the additional debug information and
+non-minified JS driver file. Also, unless you need compatibility with
+non-WebAssembly-capable browsers, ensure you're compiling with the
+`Emscripten-wasm.cmake` toolchain. Further optimizations are possible but are
+not enabled by default in the toolchain file due to the features either slowing
+down the build significantly or being very recent:
+
+-   use [`-Os`](https://emscripten.org/docs/tools_reference/emcc.html#emcc-os)
+    or [`-Oz`](https://emscripten.org/docs/tools_reference/emcc.html#emcc-oz)
+    to compile and link with optimizations for code size at the expense of
+    performance and increased compile times
+-   enable [`--closure 1`](https://emscripten.org/docs/tools_reference/emcc.html#emcc-closure)
+    for further minification of the JavaScript driver file (the @ref Audio
+    library needs at least Emscripten 1.38.21, see
+    [emscripten-core/emscripten#7558](https://github.com/emscripten-core/emscripten/pull/7558)
+    for more information) --- however, be prepared for *serious* increase in
+    compile times and memory usage of the Closure Compiler
+-   disable assertions with [`-s ASSERTIONS=0`](https://emscripten.org/docs/tools_reference/emcc.html#emcc-s-option-value)
+    (enabled by default)
+-   [`-s MINIMAL_RUNTIME=1`](https://github.com/emscripten-core/emscripten/pull/7923)
+    (new since 1.38.27) --- note that, while this leads to significant size
+    savings, it currently requires significant amount of work on the
+    application side and Magnum was not yet tested with this option enabled
+-   [`-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1`](https://github.com/emscripten-core/emscripten/pull/7977)
+    (new since 1.38.27) --- leads to minor code size savings as well
+
+On the other hand, if you need shorter compile times and don't care much about
+code size (for example when testing on the CIs), consider *removing* some of
+these flags --- especially removing `-O3` and `--llvm-lto` can result in
+significant compile speed gains.
+
+@subsection platforms-html5-code-size-server Server-side compression
+
+Servers are usually configured to apply GZip compression to plain text files
+(CSS, JS and HTML), but the WebAssembly binary is nicely compressible as well.
+With Apache, for example, adding this line to `.htaccess` will make the `*.wasm`
+files compressed on-the-fly as well:
+
+    AddOutputFilter DEFLATE wasm
+
+@todoc use .htaccess extension for the code here once Pygments know it
+
+Apart from GZip, some modern browsers support Brotli compression, which leads
+to much bigger size savings. Details in this
+[Qt blog post](https://blog.qt.io/blog/2018/11/19/getting-started-qt-webassembly/).
 
 @section platforms-html5-troubleshooting Troubleshooting
 
