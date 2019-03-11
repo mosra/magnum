@@ -64,6 +64,12 @@ struct Sdl2ApplicationTest: Platform::Application {
             Debug{} << "stopping text input";
             stopTextInput();
         }
+        #ifdef CORRADE_TARGET_EMSCRIPTEN
+        else if(event.key() == KeyEvent::Key::F) {
+            Debug{} << "toggling fullscreen";
+            setContainerCssClass((_fullscreen ^= true) ? "fullsize" : "");
+        }
+        #endif
     }
 
     void textInputEvent(TextInputEvent& event) override {
@@ -78,6 +84,11 @@ struct Sdl2ApplicationTest: Platform::Application {
         d << "any event:" << event.type;
         if(event.type == SDL_WINDOWEVENT) d << event.window.event;
     }
+
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
+    private:
+        bool _fullscreen = false;
+    #endif
 };
 
 }}}}
