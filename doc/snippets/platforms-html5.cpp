@@ -33,7 +33,7 @@ int main() {
 #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
 std::string title;
 EM_ASM_({document.getElementById('title').innerHTML =
-    Pointer_stringify($0, $1)}, title.data(), title.size());
+    UTF8ToString($0)}, title.data());
 #pragma GCC diagnostic pop
 /* [emasm-dollar] */
 }

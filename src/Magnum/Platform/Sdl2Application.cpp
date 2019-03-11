@@ -565,7 +565,7 @@ Vector2i Sdl2Application::framebufferSize() const {
 void Sdl2Application::setContainerCssClass(const std::string& cssClass) {
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
-    EM_ASM_({document.getElementById('container').className = Pointer_stringify($0, $1);}, cssClass.data(), cssClass.size());
+    EM_ASM_({document.getElementById('container').className = AsciiToString($0);}, cssClass.data());
     #pragma GCC diagnostic pop
 }
 #endif

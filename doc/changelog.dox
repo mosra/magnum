@@ -141,6 +141,8 @@ See also:
     @ref MAGNUM_TARGET_DESKTOP_GLES is defined. This allows for a smoother
     experience for example when using ANGLE on Windows. See
     @ref Platform-Sdl2Application-usage-gles for more information.
+-   Replaced uses of `Pointer_stringify()` in @ref Platform::Sdl2Application
+    which was removed in Emscripten 1.38.27
 
 @subsubsection changelog-latest-changes-text Text library
 
