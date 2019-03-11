@@ -49,7 +49,7 @@ var Module = {
 
     /* onAbort not handled here, as the output is printed directly on the page */
 
-    canvas: document.getElementById('module'),
+    canvas: document.getElementById('canvas'),
 
     setStatus: function(message) {
         var status = document.getElementById('status');

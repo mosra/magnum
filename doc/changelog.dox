@@ -143,6 +143,10 @@ See also:
     @ref Platform-Sdl2Application-usage-gles for more information.
 -   Replaced uses of `Pointer_stringify()` in @ref Platform::Sdl2Application
     which was removed in Emscripten 1.38.27
+-   @ref Platform::Sdl2Application and all Emscripten markup was updated to
+    work correctly both with the
+    [`-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1`](https://github.com/emscripten-core/emscripten/pull/7977)
+    option available since Emscripten 1.38.27 and with older versions
 
 @subsubsection changelog-latest-changes-text Text library
 
@@ -219,6 +223,20 @@ See also:
     deprecated in favor of
     @ref Text::AbstractFont::openData(Containers::ArrayView<const char>, Float)
     and @ref Text::AbstractFont::setFileCallback()
+
+@subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
+
+-   In order to be compatible with both Emscripten 1.38.27 and the versions
+    before, all Emscripten markup is now expected to have the HTML @cb{.html} <canvas> @ce element identified by @cb{.css} #canvas @ce. You need to:
+    -   update your HTML markup to use
+        @cb{.html} <canvas id="canvas"> @ce instead of
+        @cb{.html} <canvas id="module"> @ce
+    -   in case you have a copy or a fork of the JS driver file, it needs to
+        define @cb{.js} Module.canvas @ce as
+        @cb{.js} document.getElementById('canvas') @ce (instead of
+        @cb{.js} 'module' @ce)
+    -   and for CSS files, all references to @cb{.css} #module @ce need to be
+        @cb{.css} #canvas @ce now
 
 @section changelog-2019-01 2019.01
 

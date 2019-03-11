@@ -477,10 +477,17 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     /* Get CSS canvas size. This is used later to detect canvas resizes and
        fire viewport events, because Emscripten doesn't do that. Related info:
        https://github.com/kripken/emscripten/issues/1731 */
-    /** @todo don't hardcode "module" here, make it configurable from outside */
+    /** @todo don't hardcode "#canvas" here, make it configurable from outside */
     {
         Vector2d canvasSize;
-        emscripten_get_element_css_size("module", &canvasSize.x(), &canvasSize.y());
+        /* Emscripten 1.38.27 changed to generic CSS selectors from element
+           IDs depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1
+           being set (which we can't detect at compile time). Fortunately,
+           using #canvas works the same way both in the previous versions and
+           the current one. Unfortunately, this is also the only value that
+           works the same way for both. Further details at
+           https://github.com/emscripten-core/emscripten/pull/7977 */
+        emscripten_get_element_css_size("#canvas", &canvasSize.x(), &canvasSize.y());
         _lastKnownCanvasSize = Vector2i{canvasSize};
     }
 
@@ -542,7 +549,7 @@ Vector2i Sdl2Application::windowSize() const {
     SDL_GetWindowSize(_window, &size.x(), &size.y());
     #else
     CORRADE_ASSERT(_glContext, "Platform::Sdl2Application::windowSize(): no window opened", {});
-    emscripten_get_canvas_element_size(nullptr, &size.x(), &size.y());
+    emscripten_get_canvas_element_size("#canvas", &size.x(), &size.y());
     #endif
     return size;
 }
@@ -555,7 +562,7 @@ Vector2i Sdl2Application::framebufferSize() const {
     SDL_GL_GetDrawableSize(_window, &size.x(), &size.y());
     #else
     CORRADE_ASSERT(_glContext, "Platform::Sdl2Application::framebufferSize(): no window opened", {});
-    emscripten_get_canvas_element_size(nullptr, &size.x(), &size.y());
+    emscripten_get_canvas_element_size("#canvas", &size.x(), &size.y());
     #endif
     return size;
 }
@@ -646,14 +653,18 @@ void Sdl2Application::mainLoopIteration() {
        avoid resizing the canvas when the user doesn't want that. Related
        issue: https://github.com/kripken/emscripten/issues/1731 */
     if(_flags & Flag::Resizable) {
-        /** @todo don't hardcode "module" here, make it configurable from outside */
         Vector2d canvasSize;
-        emscripten_get_element_css_size("module", &canvasSize.x(), &canvasSize.y());
+        /* Emscripten 1.38.27 changed to generic CSS selectors from element
+           IDs depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1
+           being set (which we can't detect at compile time). See above for the
+           reason why we hardcode #canvas here. */
+        emscripten_get_element_css_size("#canvas", &canvasSize.x(), &canvasSize.y());
+
         const Vector2i canvasSizei{canvasSize};
         if(canvasSizei != _lastKnownCanvasSize) {
             _lastKnownCanvasSize = canvasSizei;
             const Vector2i size = _dpiScaling*canvasSizei;
-            emscripten_set_canvas_element_size(nullptr, size.x(), size.y());
+            emscripten_set_canvas_element_size("#canvas", size.x(), size.y());
             ViewportEvent e{size, size, _dpiScaling};
             viewportEvent(e);
             _flags |= Flag::Redraw;

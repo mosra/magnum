@@ -109,15 +109,15 @@ body {
 #container.aspect-2-1 #expander { padding-bottom: 50%; }
 #container.aspect-1-2 #expander { padding-bottom: 200%; }
 
-#module, pre#log {
+#canvas, pre#log {
   max-width: 100%;
   width: 100%;
   height: 100%;
   z-index: 10;
   border-radius: 0.2rem; /*var(--border-radius)*/
 }
-#module:focus { outline-color: #5b9dd9; } /*var(--header-link-current-color)*/
-#module {
+#canvas:focus { outline-color: #5b9dd9; } /*var(--header-link-current-color)*/
+#canvas {
   margin-bottom: -0.25rem; /* otherwise there's scrollbar w/ fullsize (why?) */
 }
 #status, #status-description {
@@ -136,7 +136,7 @@ body {
   padding-left: 2rem;
   padding-right: 2rem;
 }
-#module.hidden {
+#canvas.hidden {
   display: none;
 }
 pre#log {

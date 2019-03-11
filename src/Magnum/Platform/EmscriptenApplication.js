@@ -46,7 +46,7 @@ var Module = {
         Module.setStatusDescription("The app crashed. Refresh the page or check the browser console for details.");
     },
 
-    canvas: document.getElementById('module'),
+    canvas: document.getElementById('canvas'),
 
     setStatus: function(message) {
         var status = document.getElementById('status');
