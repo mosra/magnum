@@ -97,13 +97,13 @@ See also:
 
 -   The @ref ResourceManager class now accepts also
     @ref Corrade::Containers::Pointer instances in addition to raw pointers
+
+@subsubsection changelog-latest-changes-animation Animation library
+
 -   Default extrapolation of @ref Animation::TrackView was changed from
     @ref Animation::Extrapolation::Extrapolated to
     @ref Animation::Extrapolation::Constant to be consistent with
     @ref Animation::Track
--   @ref Math::BoolVector now implements component-wise @cpp && @ce,
-    @cpp || @ce and @cpp ! @ce for better consistency with boolean operations
-    done on scalar types
 
 @subsubsection changelog-latest-changes-audio Audio library
 
@@ -119,6 +119,12 @@ See also:
     just the default parameters are needed
 -   @ref DebugTools::textureSubImage() for float textures was updated to work
     with SwiftShader (which has broken @glsl gl_VertexID @ce)
+
+@subsubsection changelog-latest-changes-math Math library
+
+-   @ref Math::BoolVector now implements component-wise @cpp && @ce,
+    @cpp || @ce and @cpp ! @ce for better consistency with boolean operations
+    done on scalar types
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 
