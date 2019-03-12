@@ -300,6 +300,14 @@ else()
     set(SHARED_OR_STATIC STATIC)
 endif()
 
+# If we're in a CMake subproject, find_package(Magnum) will be looking for
+# these when targeting Emscripten, so supply their in-source location
+if(CORRADE_TARGET_EMSCRIPTEN AND NOT PROJECT_SOURCE_DIR STREQUAL CMAKE_SOURCE_DIR)
+    set(MAGNUM_EMSCRIPTENAPPLICATION_JS ${PROJECT_SOURCE_DIR}/src/Magnum/Platform/EmscriptenApplication.js CACHE INTERNAL "" FORCE)
+    set(MAGNUM_WINDOWLESSEMSCRIPTENAPPLICATION_JS ${PROJECT_SOURCE_DIR}/src/Magnum/Platform/WindowlessEmscriptenApplication.js CACHE INTERNAL "" FORCE)
+    set(MAGNUM_WEBAPPLICATION_CSS ${PROJECT_SOURCE_DIR}/src/Magnum/Platform/WebApplication.css CACHE INTERNAL "" FORCE)
+endif()
+
 # Installation paths
 include(${CORRADE_LIB_SUFFIX_MODULE})
 set(MAGNUM_BINARY_INSTALL_DIR bin)

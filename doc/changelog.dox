@@ -181,6 +181,8 @@ See also:
     flag in particular) is now handled by the `FindOpenGLES3.cmake` module
     and the new `INTERFACE_LINK_OPTIONS` property instead of `FindMagnum.cmake`. On older versions this is handled in `FindMagnum.cmake` by modifying the
     global `CMAKE_EXE_LINKER_FLAGS` variable.
+-   It's now possible to use Magnum as a CMake subproject also when building
+    for Emscripten (see [mosra/magnum#219](https://github.com/mosra/magnum/issues/219))
 
 @subsection changelog-latest-bugfixes Bug fixes
 

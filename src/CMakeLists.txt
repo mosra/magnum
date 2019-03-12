@@ -58,4 +58,4 @@ add_subdirectory(Magnum)
 add_subdirectory(MagnumPlugins)
 
 # Magnum include dir for superprojects
-set(MAGNUM_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "")
+set(MAGNUM_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} CACHE INTERNAL "" FORCE)
