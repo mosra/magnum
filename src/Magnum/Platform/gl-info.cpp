@@ -256,7 +256,10 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     Debug() << "    CORRADE_TARGET_WINDOWS_RT";
     #endif
     #ifdef CORRADE_TARGET_EMSCRIPTEN
-    Debug() << "    CORRADE_TARGET_EMSCRIPTEN";
+    Debug() << "    CORRADE_TARGET_EMSCRIPTEN (" << Debug::nospace
+        << __EMSCRIPTEN_major__ << Debug::nospace << "." << Debug::nospace
+        << __EMSCRIPTEN_minor__ << Debug::nospace << "." << Debug::nospace
+        << __EMSCRIPTEN_tiny__ << Debug::nospace << ")";
     #endif
     #ifdef CORRADE_TARGET_ANDROID
     Debug() << "    CORRADE_TARGET_ANDROID";
@@ -266,6 +269,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #endif
     #ifdef CORRADE_TARGET_ARM
     Debug() << "    CORRADE_TARGET_ARM";
+    #endif
+    #ifdef CORRADE_TARGET_POWERPC
+    Debug() << "    CORRADE_TARGET_POWERPC";
     #endif
     #ifdef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     Debug() << "    CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT";
