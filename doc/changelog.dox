@@ -153,6 +153,8 @@ See also:
     work correctly both with the
     [`-s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1`](https://github.com/emscripten-core/emscripten/pull/7977)
     option available since Emscripten 1.38.27 and with older versions
+-   @ref Platform::WindowlessEglApplication was adapted to properly create
+    WebGL 2 contexts both in Emscripten 1.38.24 and in older versions
 
 @subsubsection changelog-latest-changes-text Text library
 

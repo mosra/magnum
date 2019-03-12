@@ -66,8 +66,9 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
         EGL_RENDERABLE_TYPE, EGL_OPENGL_BIT,
         #elif defined(MAGNUM_TARGET_GLES2) || defined(CORRADE_TARGET_EMSCRIPTEN)
         /* Emscripten doesn't know about EGL_OPENGL_ES3_BIT_KHR for WebGL 2 and
-           the whole thing is controlled by -s USE_WEBGL2=1 flag anyway, so it
-           doesn't matter that we ask for ES2 on WebGL 2 as well. */
+           the whole thing is controlled only by EGL_CONTEXT_CLIENT_VERSION and
+           the `-s USE_WEBGL2=1` flag anyway, so it doesn't matter that we ask
+           for ES2 on WebGL 2 as well. */
         EGL_RENDERABLE_TYPE, EGL_OPENGL_ES2_BIT,
         #elif defined(MAGNUM_TARGET_GLES3)
         EGL_RENDERABLE_TYPE, EGL_OPENGL_ES3_BIT_KHR,
@@ -94,10 +95,11 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     EGLint attributes[] = {
         #ifdef MAGNUM_TARGET_GLES
         EGL_CONTEXT_CLIENT_VERSION,
-            #if defined(MAGNUM_TARGET_GLES2) || defined(CORRADE_TARGET_EMSCRIPTEN)
-            /* Emscripten doesn't know about version 3 for WebGL 2 and the
-               whole thing is controlled by -s USE_WEBGL2=1 flag anyway, so it
-               doesn't matter that we ask for ES2 on WebGL 2 as well. */
+            #if defined(MAGNUM_TARGET_GLES2) || (defined(CORRADE_TARGET_EMSCRIPTEN) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 13824)
+            /* Emscripten before 1.38.24 doesn't know about version 3 for WebGL
+               2 and the whole thing is controlled by -s USE_WEBGL2=1 flag
+               anyway, so it doesn't matter that we ask for ES2 on WebGL 2 as
+               well. https://github.com/emscripten-core/emscripten/pull/7858 */
             2,
             #elif defined(MAGNUM_TARGET_GLES3)
             3,
