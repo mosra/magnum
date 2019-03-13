@@ -1,3 +1,5 @@
+#ifndef Magnum_Platform_Implementation_DpiScaling_h
+#define Magnum_Platform_Implementation_DpiScaling_h
 /*
     This file is part of Magnum.
 
@@ -23,18 +25,29 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#import "Foundation/NSBundle.h"
+#include <Corrade/Utility/Utility.h>
 
-#include "dpiScaling.hpp"
+#include "Magnum/Magnum.h"
 
 namespace Magnum { namespace Platform { namespace Implementation {
 
-/* HiDPI is available only for bundles, so if the executable is not a bundle,
-   return false */
-bool isAppleBundleHiDpiEnabled() {
-    NSBundle* bundle = [NSBundle mainBundle];
-    if(!bundle) return false;
-    return bool([bundle objectForInfoDictionaryKey:@"NSHighResolutionCapable"]);
-}
+Utility::Arguments windowScalingArguments();
+
+#ifdef _MAGNUM_PLATFORM_USE_X11
+/* Returns DPI scaling for current X11 instance. Because X11 (as opposed to
+   Wayland) doesn't have per-monitor scaling, it's fetched from the default
+   display. */
+Float x11DpiScaling();
+#endif
+
+#ifdef CORRADE_TARGET_EMSCRIPTEN
+Float emscriptenDpiScaling();
+#endif
+
+#ifdef CORRADE_TARGET_APPLE
+bool isAppleBundleHiDpiEnabled();
+#endif
 
 }}}
+
+#endif

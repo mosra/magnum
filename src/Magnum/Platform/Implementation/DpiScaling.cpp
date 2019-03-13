@@ -25,26 +25,29 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "DpiScaling.h"
+
 #include <Corrade/Utility/Arguments.h>
 
 #include "Magnum/Magnum.h"
 
 #ifdef _MAGNUM_PLATFORM_USE_X11
+#include <cstring>
 #include <dlfcn.h>
 #include <X11/Xresource.h>
 #include <Corrade/Containers/ScopeGuard.h>
+#include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/Debug.h>
 #undef None
 #endif
 
 #ifdef CORRADE_TARGET_EMSCRIPTEN
-#include <emscripten/html5.h>
+#include <emscripten/emscripten.h>
 #endif
 
 namespace Magnum { namespace Platform { namespace Implementation {
 
-namespace {
-
-inline Utility::Arguments windowScalingArguments() {
+Utility::Arguments windowScalingArguments() {
     Utility::Arguments args{"magnum"};
     args.addOption("dpi-scaling", "default")
         .setFromEnvironment("dpi-scaling")
@@ -60,10 +63,7 @@ inline Utility::Arguments windowScalingArguments() {
 }
 
 #ifdef _MAGNUM_PLATFORM_USE_X11
-/* Returns DPI scaling for current X11 instance. Because X11 (as opposed to
-   Wayland) doesn't have per-monitor scaling, it's fetched from the default
-   display. */
-inline Float x11DpiScaling() {
+Float x11DpiScaling() {
     /* If the end app links to X11, these symbols will be available in a global
        scope and we can use that to query the DPI. If not, then those symbols
        won't be and that's okay -- it may be using Wayland or something else. */
@@ -124,15 +124,9 @@ inline Float x11DpiScaling() {
 #endif
 
 #ifdef CORRADE_TARGET_EMSCRIPTEN
-inline Float emscriptenDpiScaling() {
+Float emscriptenDpiScaling() {
     return Float(emscripten_get_device_pixel_ratio());
 }
-#endif
-
-}
-
-#ifdef CORRADE_TARGET_APPLE
-bool isAppleBundleHiDpiEnabled();
 #endif
 
 }}}

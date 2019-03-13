@@ -28,11 +28,12 @@
 
 #include <cstring>
 #include <tuple>
+#include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/String.h>
 #include <Corrade/Utility/Unicode.h>
 
 #include "Magnum/Platform/ScreenedApplication.hpp"
-#include "Magnum/Platform/Implementation/dpiScaling.hpp"
+#include "Magnum/Platform/Implementation/DpiScaling.h"
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Version.h"

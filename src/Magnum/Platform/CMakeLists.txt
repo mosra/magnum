@@ -23,7 +23,9 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-# Headers
+# Code shared by more application/context implementations
+set(MagnumPlatform_SRCS )
+
 set(MagnumPlatform_HEADERS
     GLContext.h
     Platform.h
@@ -31,8 +33,61 @@ set(MagnumPlatform_HEADERS
     ScreenedApplication.h
     ScreenedApplication.hpp)
 
+set(MagnumPlatform_PRIVATE_HEADERS )
+
 if(BUILD_DEPRECATED AND TARGET_GL)
     list(APPEND MagnumPlatform_HEADERS Context.h)
+endif()
+
+# DPI scaling queries only for Sdl2Application and GlfwApplication at the
+# moment, build the files only then
+if(WITH_GLFWAPPLICATION OR WITH_SDL2APPLICATION)
+    # List of libraries to link when using the MagnumPlatformObjects target
+    # TODO: use target_link_libraries() when we are on a CMake version that
+    # supports it (3.12?)
+    set(MagnumPlatform_LINK_LIBRARIES )
+    set(MagnumPlatform_COMPILE_DEFINITIONS )
+
+    list(APPEND MagnumPlatform_PRIVATE_HEADERS Implementation/DpiScaling.h)
+    if(CORRADE_TARGET_APPLE)
+        # We can't build both DpiScaling.cpp and DpiScaling.mm as they both
+        # result in DpiScaling.o and Xcode/CMake gets confused, so including
+        # the cpp from the mm instead
+        list(APPEND MagnumPlatform_SRCS Implementation/DpiScaling.mm)
+    else()
+        list(APPEND MagnumPlatform_SRCS Implementation/DpiScaling.cpp)
+    endif()
+
+    add_library(MagnumPlatformObjects OBJECT
+        ${MagnumPlatform_SRCS}
+        ${MagnumPlatform_HEADERS}
+        ${MagnumPlatform_PRIVATE_HEADERS})
+    target_include_directories(MagnumPlatformObjects PUBLIC $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumPlatformObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
+    set_target_properties(MagnumPlatformObjects PROPERTIES FOLDER "Magnum/Platform")
+
+    # Use the Foundation framework on Apple to query the DPI awareness
+    if(CORRADE_TARGET_APPLE)
+        find_library(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY Foundation)
+        find_path(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR NAMES NSBundle.h)
+        mark_as_advanced(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY
+            _MAGNUM_APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR)
+        list(APPEND MagnumPlatform_LINK_LIBRARIES ${_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY})
+        target_include_directories(MagnumPlatformObjects PRIVATE ${_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR})
+
+    # If there is X11, ask it for DPI
+    elseif(CORRADE_TARGET_UNIX)
+        find_package(X11)
+        if(X11_FOUND)
+            # Not linking to X11, we dlopen() instead
+            target_include_directories(MagnumPlatformObjects PRIVATE ${X11_X11_INCLUDE_PATH})
+            target_compile_definitions(MagnumPlatformObjects PUBLIC "_MAGNUM_PLATFORM_USE_X11")
+            list(APPEND MagnumPlatform_LINK_LIBRARIES ${CMAKE_DL_LIBS})
+            list(APPEND MagnumPlatform_COMPILE_DEFINITIONS "_MAGNUM_PLATFORM_USE_X11")
+        endif()
+    endif()
 endif()
 
 # Files to display in project view of IDEs only (filled in below)
@@ -124,13 +179,12 @@ if(WITH_GLFWAPPLICATION)
         message(FATAL_ERROR "GLFW library, required by GlfwApplication, was not found. Set WITH_GLFWAPPLICATION to OFF to skip building it.")
     endif()
 
-    set(MagnumGlfwApplication_SRCS GlfwApplication.cpp)
+    set(MagnumGlfwApplication_SRCS
+        $<TARGET_OBJECTS:MagnumPlatformObjects>
+        GlfwApplication.cpp)
     set(MagnumGlfwApplication_HEADERS GlfwApplication.h)
     if(TARGET_GL)
         list(APPEND MagnumGlfwApplication_SRCS ${MagnumSomeContext_OBJECTS})
-    endif()
-    if(CORRADE_TARGET_APPLE)
-        list(APPEND MagnumGlfwApplication_SRCS Implementation/dpiScaling.mm)
     endif()
 
     add_library(MagnumGlfwApplication STATIC
@@ -141,32 +195,17 @@ if(WITH_GLFWAPPLICATION)
         FOLDER "Magnum/Platform")
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
-    target_link_libraries(MagnumGlfwApplication PUBLIC Magnum GLFW::GLFW)
+    # TODO: use MagnumPlatformObjects instead of ${MagnumPlatform_*} when
+    # CMake supports it
+    target_link_libraries(MagnumGlfwApplication PUBLIC Magnum GLFW::GLFW
+        ${MagnumPlatform_LINK_LIBRARIES})
+    target_compile_definitions(MagnumGlfwApplication PRIVATE
+        ${MagnumPlatform_COMPILE_DEFINITIONS})
     if(TARGET_GL)
         target_link_libraries(MagnumGlfwApplication PUBLIC
             MagnumGL
             # need to link to GLX explicitly if using GLVND (CMake 3.11+)
             ${MagnumSomeContext_LIBRARY})
-    endif()
-
-    # Use the Foundation framework on Apple to query the DPI awareness
-    if(CORRADE_TARGET_APPLE)
-        find_library(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY Foundation)
-        mark_as_advanced(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY)
-        find_path(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR NAMES NSBundle.h)
-        mark_as_advanced(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR)
-        target_link_libraries(MagnumGlfwApplication PUBLIC ${_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY})
-        target_include_directories(MagnumGlfwApplication PRIVATE ${_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR})
-
-    # If there is X11, ask it for DPI
-    elseif(CORRADE_TARGET_UNIX)
-        find_package(X11)
-        if(X11_FOUND)
-            # Not linking to X11, we dlopen() instead
-            target_include_directories(MagnumGlfwApplication PRIVATE ${X11_X11_INCLUDE_PATH})
-            target_link_libraries(MagnumGlfwApplication PUBLIC ${CMAKE_DL_LIBS})
-            target_compile_definitions(MagnumGlfwApplication PRIVATE "_MAGNUM_PLATFORM_USE_X11")
-        endif()
     endif()
 
     # Link also EGL library, if on ES (and not on WebGL)
@@ -233,13 +272,12 @@ if(WITH_SDL2APPLICATION)
         message(FATAL_ERROR "SDL2 library, required by Sdl2Application, was not found. Set WITH_SDL2APPLICATION to OFF to skip building it.")
     endif()
 
-    set(MagnumSdl2Application_SRCS Sdl2Application.cpp)
+    set(MagnumSdl2Application_SRCS
+        $<TARGET_OBJECTS:MagnumPlatformObjects>
+        Sdl2Application.cpp)
     set(MagnumSdl2Application_HEADERS Sdl2Application.h)
     if(TARGET_GL)
         list(APPEND MagnumSdl2Application_SRCS ${MagnumSomeContext_OBJECTS})
-    endif()
-    if(CORRADE_TARGET_APPLE)
-        list(APPEND MagnumSdl2Application_SRCS Implementation/dpiScaling.mm)
     endif()
 
     add_library(MagnumSdl2Application STATIC
@@ -250,32 +288,17 @@ if(WITH_SDL2APPLICATION)
         FOLDER "Magnum/Platform")
     # Assuming that PIC is not needed because the Application lib is always
     # linked to the executable and not to any intermediate shared lib
-    target_link_libraries(MagnumSdl2Application PUBLIC Magnum SDL2::SDL2)
+    # TODO: use MagnumPlatformObjects instead of ${MagnumPlatform_*} when
+    # CMake supports it
+    target_link_libraries(MagnumSdl2Application PUBLIC Magnum SDL2::SDL2
+        ${MagnumPlatform_LINK_LIBRARIES})
+    target_compile_definitions(MagnumSdl2Application PRIVATE
+        ${MagnumPlatform_COMPILE_DEFINITIONS})
     if(TARGET_GL)
         target_link_libraries(MagnumSdl2Application PUBLIC
             MagnumGL
             # need to link to GLX explicitly if using GLVND (CMake 3.11+)
             ${MagnumSomeContext_LIBRARY})
-    endif()
-
-    # Use the Foundation framework on Apple to query the DPI awareness
-    if(CORRADE_TARGET_APPLE)
-        find_library(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY Foundation)
-        mark_as_advanced(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY)
-        find_path(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR NAMES NSBundle.h)
-        mark_as_advanced(_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR)
-        target_link_libraries(MagnumSdl2Application PUBLIC ${_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_LIBRARY})
-        target_include_directories(MagnumSdl2Application PRIVATE ${_MAGNUM_APPLE_FOUNDATION_FRAMEWORK_INCLUDE_DIR})
-
-    # If there is X11, ask it for DPI
-    elseif(CORRADE_TARGET_UNIX)
-        find_package(X11)
-        if(X11_FOUND)
-            # Not linking to X11, we dlopen() instead
-            target_include_directories(MagnumSdl2Application PRIVATE ${X11_X11_INCLUDE_PATH})
-            target_link_libraries(MagnumSdl2Application PUBLIC ${CMAKE_DL_LIBS})
-            target_compile_definitions(MagnumSdl2Application PRIVATE "_MAGNUM_PLATFORM_USE_X11")
-        endif()
     endif()
 
     # Link also EGL library, if on ES (and not on WebGL)

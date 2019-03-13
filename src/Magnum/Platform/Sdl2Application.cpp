@@ -31,11 +31,13 @@
 #include <tuple>
 #else
 #include <emscripten/emscripten.h>
+#include <emscripten/html5.h>
 #endif
+#include <Corrade/Utility/Arguments.h>
 
 #include "Magnum/Math/Range.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
-#include "Magnum/Platform/Implementation/dpiScaling.hpp"
+#include "Magnum/Platform/Implementation/DpiScaling.h"
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Version.h"
