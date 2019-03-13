@@ -688,7 +688,33 @@ void Mesh::attributePointerImplementationVAO(AttributeLayout&& attribute) {
 }
 
 #ifndef MAGNUM_TARGET_GLES
-void Mesh::attributePointerImplementationDSAEXT(AttributeLayout&& attribute) {
+void Mesh::attributePointerImplementationVAODSA(AttributeLayout&& attribute) {
+    _flags |= ObjectFlag::Created;
+    glEnableVertexArrayAttrib(_id, attribute.location);
+
+
+    #ifndef MAGNUM_TARGET_GLES2
+    if(attribute.kind == DynamicAttribute::Kind::Integral)
+        glVertexArrayAttribIFormat(_id, attribute.location, attribute.size, attribute.type, 0);
+    #ifndef MAGNUM_TARGET_GLES
+    else if(attribute.kind == DynamicAttribute::Kind::Long)
+        glVertexArrayAttribLFormat(_id, attribute.location, attribute.size, attribute.type, 0);
+    #endif
+    else
+    #endif
+    {
+        glVertexArrayAttribFormat(_id, attribute.location, attribute.size, attribute.type, attribute.kind == DynamicAttribute::Kind::GenericNormalized, 0);
+    }
+
+    glVertexArrayAttribBinding(_id, attribute.location, attribute.location);
+    CORRADE_INTERNAL_ASSERT(attribute.stride != 0);
+    glVertexArrayVertexBuffer(_id, attribute.location, attribute.buffer.id(), attribute.offset, attribute.stride);
+
+    if(attribute.divisor)
+        (this->*Context::current().state().mesh->vertexAttribDivisorImplementation)(attribute.location, attribute.divisor);
+}
+
+void Mesh::attributePointerImplementationVAODSAEXT(AttributeLayout&& attribute) {
     _flags |= ObjectFlag::Created;
     glEnableVertexArrayAttribEXT(_id, attribute.location);
 
@@ -741,7 +767,10 @@ void Mesh::vertexAttribDivisorImplementationVAO(const GLuint index, const GLuint
     bindVAO();
     glVertexAttribDivisor(index, divisor);
 }
-void Mesh::vertexAttribDivisorImplementationDSAEXT(const GLuint index, const GLuint divisor) {
+void Mesh::vertexAttribDivisorImplementationVAODSA(const GLuint index, const GLuint divisor) {
+    glVertexArrayBindingDivisor(_id, index, divisor);
+}
+void Mesh::vertexAttribDivisorImplementationVAODSAEXT(const GLuint index, const GLuint divisor) {
     glVertexArrayVertexAttribDivisorEXT(_id, index, divisor);
 }
 #elif defined(MAGNUM_TARGET_GLES2)
@@ -786,6 +815,12 @@ void Mesh::bindIndexBufferImplementationVAO(Buffer& buffer) {
        meaning the following will always cause the glBindBuffer() to be called */
     buffer.bindInternal(Buffer::TargetHint::ElementArray);
 }
+
+#ifndef MAGNUM_TARGET_GLES
+void Mesh::bindIndexBufferImplementationVAODSA(Buffer& buffer) {
+    glVertexArrayElementBuffer(_id, buffer.id());
+}
+#endif
 
 void Mesh::bindImplementationDefault() {
     /* Specify vertex attributes */

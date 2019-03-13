@@ -53,24 +53,31 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
         extensions.push_back(Extensions::OES::vertex_array_object::string());
         #endif
 
-        createImplementation = &Mesh::createImplementationVAO;
-        moveConstructImplementation = &Mesh::moveConstructImplementationVAO;
-        moveAssignImplementation = &Mesh::moveAssignImplementationVAO;
-        destroyImplementation = &Mesh::destroyImplementationVAO;
-
         #ifndef MAGNUM_TARGET_GLES
-        if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
+        if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
+            extensions.emplace_back(Extensions::ARB::direct_state_access::string());
+
+            createImplementation = &Mesh::createImplementationVAODSA;
+            attributePointerImplementation = &Mesh::attributePointerImplementationVAODSA;
+            bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationVAODSA;
+        } else if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
             extensions.emplace_back(Extensions::EXT::direct_state_access::string());
 
-            attributePointerImplementation = &Mesh::attributePointerImplementationDSAEXT;
+            createImplementation = &Mesh::createImplementationVAO;
+            attributePointerImplementation = &Mesh::attributePointerImplementationVAODSAEXT;
+            bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationVAO;
         } else
         #endif
         {
+            createImplementation = &Mesh::createImplementationVAO;
             attributePointerImplementation = &Mesh::attributePointerImplementationVAO;
+            bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationVAO;
         }
 
+        moveConstructImplementation = &Mesh::moveConstructImplementationVAO;
+        moveAssignImplementation = &Mesh::moveAssignImplementationVAO;
+        destroyImplementation = &Mesh::destroyImplementationVAO;
         acquireVertexBufferImplementation = &Mesh::acquireVertexBufferImplementationVAO;
-        bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationVAO;
         bindVAOImplementation = &Mesh::bindVAOImplementationVAO;
         bindImplementation = &Mesh::bindImplementationVAO;
         unbindImplementation = &Mesh::unbindImplementationVAO;
@@ -87,14 +94,6 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
         bindVAOImplementation = &Mesh::bindVAOImplementationDefault;
         bindImplementation = &Mesh::bindImplementationDefault;
         unbindImplementation = &Mesh::unbindImplementationDefault;
-    }
-    #endif
-
-    #ifndef MAGNUM_TARGET_GLES
-    /* DSA create implementation (other cases handled above) */
-    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>() && context.isExtensionSupported<Extensions::ARB::vertex_array_object>()) {
-        extensions.emplace_back(Extensions::ARB::direct_state_access::string());
-        createImplementation = &Mesh::createImplementationVAODSA;
     }
     #endif
 
@@ -147,9 +146,11 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
 
     #ifndef MAGNUM_TARGET_GLES
     /* Partial EXT_DSA implementation of vertex attrib divisor */
-    if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
+        vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationVAODSA;
+    } else if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
         if(glVertexArrayVertexAttribDivisorEXT)
-            vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationDSAEXT;
+            vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationVAODSAEXT;
         else vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationVAO;
     } else vertexAttribDivisorImplementation = nullptr;
     #elif defined(MAGNUM_TARGET_GLES2)
