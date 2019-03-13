@@ -809,17 +809,6 @@ inline GLuint AbstractTexture::release() {
     return id;
 }
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::AbstractTexture
- * @deprecated Use @ref GL::AbstractTexture instead.
- */
-typedef CORRADE_DEPRECATED("use GL::AbstractTexture instead") Magnum::GL::AbstractTexture AbstractTexture;
-#endif
-
-}
+}}
 
 #endif

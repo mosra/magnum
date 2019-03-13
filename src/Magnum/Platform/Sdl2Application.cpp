@@ -300,36 +300,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
 }
 
 #ifdef MAGNUM_TARGET_GL
-bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConfiguration&
-    #ifndef MAGNUM_BUILD_DEPRECATED
-    glConfiguration
-    #else
-    _glConfiguration
-    #endif
-) {
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    GLConfiguration glConfiguration{_glConfiguration};
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
-    #ifndef MAGNUM_TARGET_GLES
-    if(configuration.flags() && glConfiguration.flags() == GLConfiguration::Flag::ForwardCompatible)
-        glConfiguration.setFlags(configuration.flags()|GLConfiguration::Flag::ForwardCompatible);
-    #else
-    if(configuration.flags() && !glConfiguration.flags())
-        glConfiguration.setFlags(configuration.flags());
-    #endif
-    if(configuration.version() != GL::Version::None && glConfiguration.version() == GL::Version::None)
-        glConfiguration.setVersion(configuration.version());
-    #endif
-    if(configuration.sampleCount() && !glConfiguration.sampleCount())
-        glConfiguration.setSampleCount(configuration.sampleCount());
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
-    if(configuration.isSRGBCapable() && !glConfiguration.isSRGBCapable())
-        glConfiguration.setSRGBCapable(configuration.isSRGBCapable());
-    #endif
-    CORRADE_IGNORE_DEPRECATED_POP
-    #endif
-
+bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration) {
     CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::Sdl2Application::tryCreate(): context already created", false);
 
     /* Enable double buffering, set up buffer sizes */
@@ -936,17 +907,7 @@ Sdl2Application::Configuration::Configuration():
     #else
     _size{}, /* SDL2 detects someting for us */
     #endif
-    _dpiScalingPolicy{DpiScalingPolicy::Default}
-    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-    , _sampleCount(0)
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
-    /* Deliberately not setting _flags to ForwardCompatible to avoid them
-       having higher priority over GLConfiguration flags, appending that flag
-       later */
-    , _version(GL::Version::None), _srgbCapable{false}
-    #endif
-    #endif
-    {}
+    _dpiScalingPolicy{DpiScalingPolicy::Default} {}
 
 Sdl2Application::Configuration::~Configuration() = default;
 

@@ -71,25 +71,7 @@ bool GlutApplication::tryCreate(const Configuration& configuration) {
     return tryCreate(configuration, GLConfiguration{});
 }
 
-bool GlutApplication::tryCreate(const Configuration& configuration, const GLConfiguration&
-    #ifndef MAGNUM_BUILD_DEPRECATED
-    glConfiguration
-    #else
-    _glConfiguration
-    #endif
-) {
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    GLConfiguration glConfiguration{_glConfiguration};
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    if(configuration.flags() && !glConfiguration.flags())
-        glConfiguration.setFlags(configuration.flags());
-    if(configuration.version() != GL::Version::None && glConfiguration.version() == GL::Version::None)
-        glConfiguration.setVersion(configuration.version());
-    if(configuration.sampleCount() && !glConfiguration.sampleCount())
-        glConfiguration.setSampleCount(configuration.sampleCount());
-    CORRADE_IGNORE_DEPRECATED_POP
-    #endif
-
+bool GlutApplication::tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration) {
     CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::GlutApplication::tryCreate(): context already created", false);
 
     unsigned int flags = GLUT_DOUBLE|GLUT_RGBA|GLUT_DEPTH|GLUT_STENCIL;
@@ -195,11 +177,7 @@ GlutApplication::GLConfiguration::GLConfiguration(): _sampleCount(0), _version(G
 GlutApplication::GLConfiguration::~GLConfiguration() = default;
 
 GlutApplication::Configuration::Configuration():
-    _title("Magnum GLUT Application"), _size(800, 600)
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    , _sampleCount(0), _version(GL::Version::None)
-    #endif
-    {}
+    _title("Magnum GLUT Application"), _size(800, 600) {}
 GlutApplication::Configuration::~Configuration() = default;
 
 template class BasicScreen<GlutApplication>;

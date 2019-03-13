@@ -302,14 +302,6 @@ template<UnsignedInt dimensions> class Image {
          */
         UnsignedInt formatExtra() const { return _formatExtra; }
 
-        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-        /**
-         * @brief Data type of pixel data
-         * @deprecated Cast @ref formatExtra() to @ref GL::PixelType instead.
-         */
-        CORRADE_DEPRECATED("cast formatExtra() to GL::PixelType instead") GL::PixelType type() const { return GL::PixelType(_formatExtra); }
-        #endif
-
         /**
          * @brief Pixel size (in bytes)
          *
@@ -350,42 +342,6 @@ template<UnsignedInt dimensions> class Image {
         template<class T = char> const T* data() const {
             return reinterpret_cast<const T*>(_data.data());
         }
-
-        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-        /**
-         * @brief Set image data
-         * @param storage           Storage of pixel data
-         * @param format            Format of pixel data
-         * @param formatExtra       Additional pixel format specifier
-         * @param size              Image size
-         * @param data              Image data
-         *
-         * @deprecated Move-assign a new instance instead.
-         *
-         * Deletes previous data and replaces them with new. The @p data array
-         * is expected to be of proper size for given parameters.
-         * @see @ref release()
-         */
-        template<class T, class U> CORRADE_DEPRECATED("move-assign a new instance instead") void setData(PixelStorage storage, T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
-            *this = Image<dimensions>{storage, format, formatExtra, size, std::move(data)};
-        }
-
-        /**
-         * @brief Set image data
-         * @param format            Format of pixel data
-         * @param formatExtra       Additional pixel format specifier
-         * @param size              Image size
-         * @param data              Image data
-         *
-         * @deprecated Move-assign a new instance instead.
-         *
-         * Equivalent to calling @ref setData(PixelStorage, T, U, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
-         * with default-constructed @ref PixelStorage.
-         */
-        template<class T, class U> CORRADE_DEPRECATED("move-assign a new instance instead") void setData(T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
-            *this = Image<dimensions>{format, formatExtra, size, std::move(data)};
-        }
-        #endif
 
         /**
          * @brief Release data storage
@@ -575,39 +531,6 @@ template<UnsignedInt dimensions> class CompressedImage {
             return reinterpret_cast<const T*>(_data.data());
         }
 
-        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-        /**
-         * @brief Set image data
-         * @param storage           Storage of compressed pixel data
-         * @param format            Format of compressed pixel data
-         * @param size              Image size
-         * @param data              Image data
-         *
-         * @deprecated Move-assign a new instance instead.
-         *
-         * Deletes previous data and replaces it with @p data.
-         * @see @ref release()
-         */
-        CORRADE_DEPRECATED("move-assign a new instance instead") void setData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
-            *this = CompressedImage<dimensions>{storage, GL::CompressedPixelFormat(format), size, std::move(data)};
-        }
-
-        /**
-         * @brief Set image data
-         * @param format            Format of compressed pixel data
-         * @param size              Image size
-         * @param data              Image data
-         *
-         * @deprecated Move-assign a new instance instead.
-         *
-         * Equivalent to calling @ref setData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&)
-         * with default-constructed @ref CompressedPixelStorage.
-         */
-        CORRADE_DEPRECATED("move-assign a new instance instead") void setData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) {
-            *this = CompressedImage<dimensions>{GL::CompressedPixelFormat(format), size, std::move(data)};
-        }
-        #endif
-
         /**
          * @brief Release data storage
          *
@@ -688,13 +611,7 @@ template<UnsignedInt dimensions> inline Containers::Array<char> CompressedImage<
     return data;
 }
 
-template<UnsignedInt dimensions> template<class T, class U> inline Image<dimensions>::Image(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{storage,
-    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-    Implementation::wrapPixelFormatIfNotGLSpecific(format),
-    #else
-    UnsignedInt(format),
-    #endif
-    UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra), size, std::move(data)} {
+template<UnsignedInt dimensions> template<class T, class U> inline Image<dimensions>::Image(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra), size, std::move(data)} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
@@ -704,13 +621,7 @@ template<UnsignedInt dimensions> template<class T> inline  Image<dimensions>::Im
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions> template<class T, class U> inline Image<dimensions>::Image(const PixelStorage storage, const T format, const U formatExtra) noexcept: Image{storage,
-    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-    Implementation::wrapPixelFormatIfNotGLSpecific(format),
-    #else
-    UnsignedInt(format),
-    #endif
-    UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra)} {
+template<UnsignedInt dimensions> template<class T, class U> inline Image<dimensions>::Image(const PixelStorage storage, const T format, const U formatExtra) noexcept: Image{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra)} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }

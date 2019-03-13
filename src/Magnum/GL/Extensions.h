@@ -477,17 +477,6 @@ namespace ANDROID {
 
 }
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/** @brief @copybrief GL::Extensions
- * @deprecated Use @ref GL::Extensions instead.
- */
-namespace CORRADE_DEPRECATED_NAMESPACE("use GL::Extensions instead") Extensions {
-    namespace GL = Magnum::GL::Extensions;
-}
-#endif
-
-}
+}}
 
 #endif

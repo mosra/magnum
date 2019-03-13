@@ -152,7 +152,7 @@ class MAGNUM_GL_EXPORT Context {
          * @brief Context flag
          *
          * @see @ref Flags, @ref flags(),
-         *      @ref Platform::Sdl2Application::Configuration::setFlags() "Platform::*Application::Configuration::setFlags()"
+         *      @ref Platform::Sdl2Application::GLConfiguration::setFlags() "Platform::*Application::GLConfiguration::setFlags()"
          * @m_enum_values_as_keywords
          * @requires_gles Context flags are not available in WebGL.
          */
@@ -806,36 +806,6 @@ Example usage:
     } while(0)
 #endif
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::Extension
- * @deprecated Use @ref GL::Extension instead.
- */
-typedef CORRADE_DEPRECATED("use GL::Extension instead") Magnum::GL::Extension Extension;
-
-/** @brief @copybrief GL::Context
- * @deprecated Use @ref GL::Context instead.
- */
-typedef CORRADE_DEPRECATED("use GL::Context instead") Magnum::GL::Context Context;
-
-/** @brief @copybrief MAGNUM_ASSERT_GL_VERSION_SUPPORTED()
- * @deprecated Use @ref MAGNUM_ASSERT_GL_VERSION_SUPPORTED()
- */
-#define MAGNUM_ASSERT_VERSION_SUPPORTED(version) \
-    CORRADE_DEPRECATED_MACRO(MAGNUM_ASSERT_VERSION_SUPPORTED(), "use MAGNUM_ASSERT_GL_VERSION_SUPPORTED() instead") \
-    MAGNUM_ASSERT_GL_VERSION_SUPPORTED(version)
-
-/** @brief @copybrief MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED()
- * @deprecated Use @ref MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED()
- */
-#define MAGNUM_ASSERT_EXTENSION_SUPPORTED(extension) \
-    CORRADE_DEPRECATED_MACRO(MAGNUM_ASSERT_EXTENSION_SUPPORTED(), "use MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED() instead") \
-    MAGNUM_ASSERT_GL_EXTENSION_SUPPORTED(extension)
-#endif
-
-}
+}}
 
 #endif

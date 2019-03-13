@@ -907,32 +907,7 @@ typedef TextureArray<1> Texture1DArray;
 */
 typedef TextureArray<2> Texture2DArray;
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::TextureArray
- * @deprecated Use @ref GL::TextureArray instead.
- */
-#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
-template<UnsignedInt dimensions> using TextureArray CORRADE_DEPRECATED_ALIAS("use GL::TextureArray instead") = Magnum::GL::TextureArray<dimensions>;
-#endif
-
-#ifndef MAGNUM_TARGET_GLES
-/** @brief @copybrief GL::Texture1DArray
- * @deprecated Use @ref GL::Texture1DArray instead.
- */
-typedef CORRADE_DEPRECATED("use GL::Texture1DArray instead") Magnum::GL::Texture1DArray Texture1DArray;
-#endif
-
-/** @brief @copybrief GL::Texture2DArray
- * @deprecated Use @ref GL::Texture2DArray instead.
- */
-typedef CORRADE_DEPRECATED("use GL::Texture2DArray instead") Magnum::GL::Texture2DArray Texture2DArray;
-#endif
-
-}
+}}
 #else
 #error this header is not available in OpenGL ES 2.0 build
 #endif

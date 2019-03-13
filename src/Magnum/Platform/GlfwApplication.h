@@ -303,22 +303,6 @@ class GlfwApplication {
          */
         void create();
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief create(const Configuration&, const GLConfiguration&)
-         * @deprecated Use @ref create(const Configuration&, const GLConfiguration&) instead.
-         */
-        CORRADE_DEPRECATED("use create(const Configuration&, const GLConfiguration&) instead") void createContext(const Configuration& configuration) {
-            create(configuration);
-        }
-
-        /** @brief @copybrief create()
-         * @deprecated Use @ref create() instead.
-         */
-        CORRADE_DEPRECATED("use create() instead") void createContext() {
-            create();
-        }
-        #endif
-
         #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Try to create context with given configuration for OpenGL context
@@ -341,15 +325,6 @@ class GlfwApplication {
          * the context cannot be created, @cpp true @ce otherwise.
          */
         bool tryCreate(const Configuration& configuration);
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief tryCreate(const Configuration&, const GLConfiguration&)
-         * @deprecated Use @ref tryCreate(const Configuration&, const GLConfiguration&) instead.
-         */
-        CORRADE_DEPRECATED("use tryCreate(const Configuration&) instead") bool tryCreateContext(const Configuration& configuration) {
-            return tryCreate(configuration);
-        }
-        #endif
 
         /** @{ @name Screen handling */
 
@@ -828,18 +803,6 @@ namespace Implementation {
 */
 class GlfwApplication::Configuration {
     public:
-        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-        /** @brief @copybrief GLConfiguration::Flag
-         * @deprecated Use @ref GLConfiguration::Flag instead.
-         */
-        typedef GLConfiguration::Flag Flag;
-
-        /** @brief @copybrief GLConfiguration::Flags
-         * @deprecated Use @ref GLConfiguration::Flags instead.
-         */
-        typedef GLConfiguration::Flags Flags;
-        #endif
-
         /**
          * @brief Window flag
          *
@@ -1067,62 +1030,6 @@ class GlfwApplication::Configuration {
             return *this;
         }
 
-        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-        /** @brief @copybrief GLConfiguration::flags()
-         * @deprecated Use @ref GLConfiguration::flags() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::flags() instead") GLConfiguration::Flags flags() const { return _flags; }
-
-        /** @brief @copybrief GLConfiguration::setFlags()
-         * @deprecated Use @ref GLConfiguration::setFlags() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::setFlags() instead") Configuration& setFlags(GLConfiguration::Flags flags) {
-            _flags = flags;
-            return *this;
-        }
-
-        /** @brief @copybrief GLConfiguration::version()
-         * @deprecated Use @ref GLConfiguration::version() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::version() instead") GL::Version version() const { return _version; }
-
-        /** @brief @copybrief GLConfiguration::setVersion()
-         * @deprecated Use @ref GLConfiguration::setVersion() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::setVersion() instead") Configuration& setVersion(GL::Version version) {
-            _version = version;
-            return *this;
-        }
-
-        /** @brief @copybrief GLConfiguration::sampleCount()
-         * @deprecated Use @ref GLConfiguration::sampleCount() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::sampleCount() instead") Int sampleCount() const { return _sampleCount; }
-
-        /** @brief @copybrief GLConfiguration::setSampleCount()
-         * @deprecated Use @ref GLConfiguration::setSampleCount() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::setSampleCount() instead") Configuration& setSampleCount(Int count) {
-            _sampleCount = count;
-            return *this;
-        }
-
-        /** @brief @copybrief GLConfiguration::isSrgbCapable()
-         * @deprecated Use @ref GLConfiguration::isSrgbCapable() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::isSRGBCapable() instead") bool isSRGBCapable() const {
-            return _srgbCapable;
-        }
-
-        /** @brief @copybrief GLConfiguration::setSrgbCapable()
-         * @deprecated Use @ref GLConfiguration::setSrgbCapable() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::setSrgbCapable() instead") Configuration& setSRGBCapable(bool enabled) {
-            _srgbCapable = enabled;
-            return *this;
-        }
-        #endif
-
     private:
         std::string _title;
         Vector2i _size;
@@ -1130,12 +1037,6 @@ class GlfwApplication::Configuration {
         DpiScalingPolicy _dpiScalingPolicy;
         Vector2 _dpiScaling;
         CursorMode _cursorMode;
-        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-        Int _sampleCount;
-        GL::Version _version;
-        Flags _flags;
-        bool _srgbCapable;
-        #endif
 };
 
 CORRADE_ENUMSET_OPERATORS(GlfwApplication::Configuration::WindowFlags)

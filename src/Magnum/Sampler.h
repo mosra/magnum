@@ -32,10 +32,6 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
 
-#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-#include "Magnum/GL/Sampler.h"
-#endif
-
 namespace Magnum {
 
 /**

@@ -335,35 +335,7 @@ typedef MultisampleTexture<2> MultisampleTexture2D;
 */
 typedef MultisampleTexture<3> MultisampleTexture2DArray;
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::MultisampleTextureSampleLocations
- * @deprecated Use @ref GL::MultisampleTextureSampleLocations instead.
- */
-typedef CORRADE_DEPRECATED("use GL::MultisampleTextureSampleLocations instead") Magnum::GL::MultisampleTextureSampleLocations MultisampleTextureSampleLocations;
-
-/** @brief @copybrief GL::MultisampleTexture
- * @deprecated Use @ref GL::MultisampleTexture instead.
- */
-#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
-template<UnsignedInt dimensions> using MultisampleTexture CORRADE_DEPRECATED_ALIAS("use GL::MultisampleTexture instead") = Magnum::GL::MultisampleTexture<dimensions>;
-#endif
-
-/** @brief @copybrief GL::MultisampleTexture2D
- * @deprecated Use @ref GL::MultisampleTexture2D instead.
- */
-typedef CORRADE_DEPRECATED("use GL::MultisampleTexture2D instead") Magnum::GL::MultisampleTexture2D MultisampleTexture2D;
-
-/** @brief @copybrief GL::MultisampleTexture2DArray
- * @deprecated Use @ref GL::MultisampleTexture2DArray instead.
- */
-typedef CORRADE_DEPRECATED("use GL::MultisampleTexture2DArray instead") Magnum::GL::MultisampleTexture2DArray MultisampleTexture2DArray;
-#endif
-
-}
+}}
 #else
 #error this header is not available in OpenGL ES 2.0 and WebGL build
 #endif

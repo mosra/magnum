@@ -296,27 +296,7 @@ GlfwApplication::InputEvent::Modifiers currentGlfwModifiers(GLFWwindow* window) 
 }
 
 #ifdef MAGNUM_TARGET_GL
-bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConfiguration&
-    #ifndef MAGNUM_BUILD_DEPRECATED
-    glConfiguration
-    #else
-    _glConfiguration
-    #endif
-) {
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    GLConfiguration glConfiguration{_glConfiguration};
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    if(configuration.flags() && !glConfiguration.flags())
-        glConfiguration.setFlags(configuration.flags());
-    if(configuration.version() != GL::Version::None && glConfiguration.version() == GL::Version::None)
-        glConfiguration.setVersion(configuration.version());
-    if(configuration.sampleCount() && !glConfiguration.sampleCount())
-        glConfiguration.setSampleCount(configuration.sampleCount());
-    if(configuration.isSRGBCapable() && !glConfiguration.isSRGBCapable())
-        glConfiguration.setSRGBCapable(configuration.isSRGBCapable());
-    CORRADE_IGNORE_DEPRECATED_POP
-    #endif
-
+bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration) {
     CORRADE_ASSERT(!_window && _context->version() == GL::Version::None, "Platform::GlfwApplication::tryCreate(): window with OpenGL context already created", false);
 
     /* Scale window based on DPI */
@@ -659,14 +639,7 @@ GlfwApplication::Configuration::Configuration():
     _size{800, 600},
     _windowFlags{WindowFlag::Focused},
     _dpiScalingPolicy{DpiScalingPolicy::Default},
-    _cursorMode{CursorMode::Normal}
-    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-    /* Deliberately not setting _flags to ForwardCompatible to avoid them
-       having higher priority over GLConfiguration flags, appending that flag
-       later */
-    , _sampleCount{0}, _version{GL::Version::None}, _srgbCapable{false}
-    #endif
-    {}
+    _cursorMode{CursorMode::Normal} {}
 
 GlfwApplication::Configuration::~Configuration() = default;
 

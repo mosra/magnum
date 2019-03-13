@@ -659,18 +659,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         explicit RectangleTexture(GLuint id, ObjectFlags flags) noexcept: AbstractTexture{id, GL_TEXTURE_RECTANGLE, flags} {}
 };
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::RectangleTexture
- * @deprecated Use @ref GL::RectangleTexture instead.
- */
-typedef CORRADE_DEPRECATED("use GL::RectangleTexture instead") Magnum::GL::RectangleTexture RectangleTexture;
-#endif
-
-}
+}}
 #else
 #error this header is not available in OpenGL ES build
 #endif

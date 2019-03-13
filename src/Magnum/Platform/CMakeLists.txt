@@ -35,10 +35,6 @@ set(MagnumPlatform_HEADERS
 
 set(MagnumPlatform_PRIVATE_HEADERS )
 
-if(BUILD_DEPRECATED AND TARGET_GL)
-    list(APPEND MagnumPlatform_HEADERS Context.h)
-endif()
-
 # DPI scaling queries only for Sdl2Application and GlfwApplication at the
 # moment, build the files only then
 if(WITH_GLFWAPPLICATION OR WITH_SDL2APPLICATION)

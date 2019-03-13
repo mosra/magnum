@@ -165,22 +165,6 @@ template<UnsignedInt dimensions> class ImageData {
          */
         template<class T> explicit ImageData(PixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
 
-        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-        /**
-         * @brief Construct uncompressed image data
-         * @param format            Format of pixel data
-         * @param type              Data type of pixel data
-         * @param size              Image size
-         * @param data              Image data
-         * @param importerState     Importer-specific state
-         *
-         * @deprecated Use the generic @ref ImageData(PixelStorage, T, U, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
-         *      instead --- the pixel storage parameter is used to distinguish
-         *      between compressed and uncompressed data.
-         */
-        template<class = void> explicit CORRADE_DEPRECATED("use Image(PixelStorage, T, U, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*) instead") ImageData(PixelFormat format, GL::PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
-        #endif
-
         /**
          * @brief Construct compressed image data
          * @param storage           Storage of compressed pixel data
@@ -297,15 +281,6 @@ template<UnsignedInt dimensions> class ImageData {
          */
         UnsignedInt formatExtra() const;
 
-        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-        /**
-         * @brief Data type of pixel data
-         *
-         * @deprecated Cast @ref formatExtra() to @ref GL::PixelType instead.
-         */
-        CORRADE_DEPRECATED("cast formatExtra() to GL::PixelType instead") GL::PixelType type() const { return GL::PixelType(formatExtra()); } /* LCOV_EXCL_LINE */
-        #endif
-
         /**
          * @brief Storage of compressed pixel data
          *
@@ -418,22 +393,10 @@ typedef ImageData<2> ImageData2D;
 /** @brief Three-dimensional image */
 typedef ImageData<3> ImageData3D;
 
-template<UnsignedInt dimensions> template<class T, class U> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage,
-    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-    Magnum::Implementation::wrapPixelFormatIfNotGLSpecific(format),
-    #else
-    UnsignedInt(format),
-    #endif
-    UnsignedInt(formatExtra), Magnum::Implementation::pixelSizeAdl(format, formatExtra), size, std::move(data), importerState} {
+template<UnsignedInt dimensions> template<class T, class U> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), UnsignedInt(formatExtra), Magnum::Implementation::pixelSizeAdl(format, formatExtra), size, std::move(data), importerState} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
-
-#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-CORRADE_IGNORE_DEPRECATED_PUSH
-template<UnsignedInt dimensions> template<class> inline ImageData<dimensions>::ImageData(const PixelFormat format, const GL::PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{PixelStorage{}, format, type, size, std::move(data), importerState} {}
-CORRADE_IGNORE_DEPRECATED_POP
-#endif
 
 template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), {}, Magnum::Implementation::pixelSizeAdl(format), size, std::move(data), importerState} {
     static_assert(sizeof(T) <= 4,

@@ -347,56 +347,6 @@ class MAGNUM_GL_EXPORT Sampler {
         /* This class is currently a placeholder for GL sampler objects */
 };
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/** @brief Texture sampler
- * @deprecated Use @ref GL::Sampler, @ref SamplerFilter, @ref GL::SamplerFilter, @ref SamplerMipmap, @ref GL::SamplerMipmap, @ref SamplerWrapping, @ref GL::SamplerWrapping, @ref GL::SamplerCompareMode, @ref GL::SamplerCompareFunction or @ref GL::SamplerDepthStencilMode instead.
- */
-struct CORRADE_DEPRECATED("use GL::Sampler, SamplerFilter, GL::SamplerFilter,  SamplerMipmap, GL::SamplerMipmap, SamplerWrapping, GL::SamplerWrapping, GL::SamplerCompareMode, GL::SamplerCompareFunction or GL::SamplerDepthStencilMode instead") Sampler {
-    /** @brief @copybrief SamplerFilter
-     * @deprecated Use @ref SamplerFilter or @ref GL::SamplerFilter instead.
-     */
-    typedef CORRADE_DEPRECATED("use SamplerFilter or GL::SamplerFilter instead") SamplerFilter Filter;
-
-    /** @brief @copybrief SamplerMipmap
-     * @deprecated Use @ref SamplerMipmap or @ref GL::SamplerMipmap instead.
-     */
-    typedef CORRADE_DEPRECATED("use SamplerMipmap or GL::SamplerMipmap instead") SamplerMipmap Mipmap;
-
-    /** @brief @copybrief SamplerWrapping
-     * @deprecated Use @ref SamplerMipmap or @ref GL::SamplerWrapping instead.
-     */
-    typedef CORRADE_DEPRECATED("use SamplerWrapping or GL::SamplerWrapping instead") SamplerWrapping Wrapping;
-
-    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-    /** @brief @copybrief GL::SamplerCompareMode
-     * @deprecated Use @ref GL::SamplerCompareMode instead.
-     */
-    typedef CORRADE_DEPRECATED("use GL::SamplerCompareMode instead") GL::SamplerCompareMode CompareMode;
-
-    /** @brief @copybrief GL::SamplerCompareFunction
-     * @deprecated Use @ref GL::SamplerCompareFunction instead.
-     */
-    typedef CORRADE_DEPRECATED("use GL::SamplerCompareFunction instead") GL::SamplerCompareFunction CompareFunction;
-    #endif
-
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    /** @brief @copybrief GL::SamplerDepthStencilMode
-     * @deprecated Use @ref GL::SamplerDepthStencilMode instead.
-     */
-    typedef CORRADE_DEPRECATED("use GL::SamplerDepthStencilMode instead") GL::SamplerDepthStencilMode DepthStencilMode;
-    #endif
-
-    /** @brief @copybrief GL::Sampler::maxMaxAnisotropy()
-     * @deprecated Use @ref GL::Sampler::maxMaxAnisotropy() instead.
-     */
-    static Float maxMaxAnisotropy() {
-        return GL::Sampler::maxMaxAnisotropy();
-    }
-};
-#endif
-
-}
+}}
 
 #endif

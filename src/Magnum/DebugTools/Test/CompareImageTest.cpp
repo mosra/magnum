@@ -49,9 +49,6 @@ struct CompareImageTest: TestSuite::Tester {
     void formatUnknown();
     void formatHalf();
     void formatImplementationSpecific();
-    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-    void formatDeprecated();
-    #endif
 
     void calculateDelta();
     void calculateDeltaStorage();
@@ -101,9 +98,6 @@ CompareImageTest::CompareImageTest() {
     addTests({&CompareImageTest::formatUnknown,
               &CompareImageTest::formatHalf,
               &CompareImageTest::formatImplementationSpecific,
-              #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-              &CompareImageTest::formatDeprecated,
-              #endif
 
               &CompareImageTest::calculateDelta,
               &CompareImageTest::calculateDeltaStorage,
@@ -217,20 +211,6 @@ void CompareImageTest::formatImplementationSpecific() {
 
     CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: can't compare implementation-specific pixel formats\n");
 }
-
-#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-void CompareImageTest::formatDeprecated() {
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    ImageView2D image{PixelFormat::RGB, PixelType::UnsignedByte, {}};
-    CORRADE_IGNORE_DEPRECATED_POP
-    Implementation::calculateImageDelta(image, image);
-
-    CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: deprecated GL-specific formats are not supported\n");
-}
-#endif
 
 void CompareImageTest::calculateDelta() {
     std::vector<Float> delta;

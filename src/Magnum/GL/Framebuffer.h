@@ -915,17 +915,6 @@ inline GLuint Framebuffer::release() {
     return id;
 }
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::Framebuffer
- * @deprecated Use @ref GL::Framebuffer instead.
- */
-typedef CORRADE_DEPRECATED("use GL::Framebuffer instead") Magnum::GL::Framebuffer Framebuffer;
-#endif
-
-}
+}}
 
 #endif

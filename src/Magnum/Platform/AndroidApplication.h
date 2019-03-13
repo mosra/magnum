@@ -266,22 +266,6 @@ class AndroidApplication {
          */
         void create();
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief create(const Configuration&, const GLConfiguration&)
-         * @deprecated Use @ref create(const Configuration&, const GLConfiguration&) instead.
-         */
-        CORRADE_DEPRECATED("use create(const Configuration&, const GLConfiguration&) instead") void createContext(const Configuration& configuration) {
-            create(configuration);
-        }
-
-        /** @brief @copybrief create()
-         * @deprecated Use @ref create() instead.
-         */
-        CORRADE_DEPRECATED("use create() instead") void createContext() {
-            create();
-        }
-        #endif
-
         /**
          * @brief Try to create context with given configuration for OpenGL context
          *
@@ -298,15 +282,6 @@ class AndroidApplication {
          * the context cannot be created, @cpp true @ce otherwise.
          */
         bool tryCreate(const Configuration& configuration);
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief tryCreate(const Configuration&, const GLConfiguration&)
-         * @deprecated Use @ref tryCreate(const Configuration&, const GLConfiguration&) instead.
-         */
-        CORRADE_DEPRECATED("use tryCreate(const Configuration&) instead") bool tryCreateContext(const Configuration& configuration) {
-            return tryCreate(configuration);
-        }
-        #endif
 
         /** @{ @name Screen handling */
 
@@ -562,13 +537,6 @@ class AndroidApplication::Configuration {
             _size = size;
             return *this;
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief GLConfiguration::setVersion()
-         * @deprecated Use @ref GLConfiguration::setVersion() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::setVersion() instead") Configuration& setVersion(GL::Version) { return *this; }
-        #endif
 
     private:
         Vector2i _size;

@@ -247,18 +247,7 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
         #endif
 };
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::BufferTexture
- * @deprecated Use @ref GL::BufferTexture instead.
- */
-typedef CORRADE_DEPRECATED("use GL::BufferTexture instead") Magnum::GL::BufferTexture BufferTexture;
-#endif
-
-}
+}}
 #else
 #error this header is not available in OpenGL ES 2.0 and WebGL build
 #endif

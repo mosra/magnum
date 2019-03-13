@@ -663,16 +663,6 @@ MAGNUM_GL_EXPORT PixelType pixelType(Magnum::PixelFormat format, UnsignedInt ext
 */
 MAGNUM_GL_EXPORT UnsignedInt pixelSize(PixelFormat format, PixelType type);
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/** @brief @copybrief pixelSize(PixelFormat, PixelType)
- * @deprecated Use either @ref GL::PixelFormat together with
- *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
- */
-inline CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") UnsignedInt pixelSize(Magnum::PixelFormat format, PixelType type) {
-    return pixelSize(PixelFormat(UnsignedInt(format)), type);
-}
-#endif
-
 /** @debugoperatorenum{PixelFormat} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, PixelFormat value);
 
@@ -1356,17 +1346,6 @@ MAGNUM_GL_EXPORT CompressedPixelFormat compressedPixelFormat(Magnum::CompressedP
 /** @debugoperatorenum{CompressedPixelFormat} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, CompressedPixelFormat value);
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::PixelType
- * @deprecated Use @ref GL::PixelType instead.
- */
-typedef CORRADE_DEPRECATED("use GL::PixelType instead") Magnum::GL::PixelType PixelType;
-#endif
-
-}
+}}
 
 #endif

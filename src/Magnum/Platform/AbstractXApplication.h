@@ -143,22 +143,6 @@ class AbstractXApplication {
          */
         void create();
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief create(const Configuration&, const GLConfiguration&)
-         * @deprecated Use @ref create(const Configuration&, const GLConfiguration&) instead.
-         */
-        CORRADE_DEPRECATED("use create(const Configuration&, const GLConfiguration&) instead") void createContext(const Configuration& configuration) {
-            create(configuration);
-        }
-
-        /** @brief @copybrief create()
-         * @deprecated Use @ref create() instead.
-         */
-        CORRADE_DEPRECATED("use create() instead") void createContext() {
-            create();
-        }
-        #endif
-
         /**
          * @brief Try to create context with given configuration for OpenGL context
          *
@@ -175,15 +159,6 @@ class AbstractXApplication {
          * the context cannot be created, @cpp true @ce otherwise.
          */
         bool tryCreate(const Configuration& configuration);
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief tryCreate(const Configuration&, const GLConfiguration&)
-         * @deprecated Use @ref tryCreate(const Configuration&, const GLConfiguration&) instead.
-         */
-        CORRADE_DEPRECATED("use tryCreate(const Configuration&) instead") bool tryCreateContext(const Configuration& configuration) {
-            return tryCreate(configuration);
-        }
-        #endif
 
         /** @{ @name Screen handling */
 
@@ -363,27 +338,9 @@ class AbstractXApplication::Configuration {
             return *this;
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief GLConfiguration::version()
-         * @deprecated Use @ref GLConfiguration::version() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::version() instead") GL::Version version() const { return _version; }
-
-        /** @brief @copybrief GLConfiguration::setVersion()
-         * @deprecated Use @ref GLConfiguration::setVersion() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::setVersion() instead") Configuration& setVersion(GL::Version version) {
-            _version = version;
-            return *this;
-        }
-        #endif
-
     private:
         std::string _title;
         Vector2i _size;
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        GL::Version _version;
-        #endif
 };
 
 /**

@@ -115,23 +115,6 @@ template<UnsignedInt dimensions> class BufferImage {
          */
         explicit BufferImage(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage): BufferImage{{}, format, type, size, data, usage} {}
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Constructor
-         * @deprecated Use either @ref GL::PixelFormat together with
-         *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
-         */
-        explicit CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") BufferImage(PixelStorage storage, Magnum::PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage): BufferImage{storage, PixelFormat(UnsignedInt(format)), type, size, data, usage} {}
-
-        /**
-         * @brief Constructor
-         *
-         * @deprecated Use either @ref GL::PixelFormat together with
-         *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
-         */
-        explicit CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") BufferImage(Magnum::PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage): BufferImage{PixelFormat(UnsignedInt(format)), type, size, data, usage} {}
-        #endif
-
         /**
          * @brief Constructor
          * @param storage           Storage of pixel data
@@ -185,22 +168,6 @@ template<UnsignedInt dimensions> class BufferImage {
          */
         explicit BufferImage(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: BufferImage{{}, format, type, size, std::move(buffer), dataSize} {}
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Construct from existing buffer
-         * @deprecated Use either @ref GL::PixelFormat together with
-         *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
-         */
-        explicit CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") BufferImage(PixelStorage storage, Magnum::PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: BufferImage{storage, PixelFormat(UnsignedInt(format)), type, size, std::move(buffer), dataSize} {}
-
-        /**
-         * @brief Construct from existing buffer
-         * @deprecated Use either @ref GL::PixelFormat together with
-         *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
-         */
-        explicit CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") BufferImage(Magnum::PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Buffer&& buffer, std::size_t dataSize) noexcept: BufferImage{PixelFormat(UnsignedInt(format)), type, size, std::move(buffer), dataSize} {}
-        #endif
-
         /**
          * @brief Construct from existing buffer
          * @param storage           Storage of pixel data
@@ -247,22 +214,6 @@ template<UnsignedInt dimensions> class BufferImage {
          * with default-constructed @ref PixelStorage.
          */
         /*implicit*/ BufferImage(PixelFormat format, PixelType type): BufferImage{{}, format, type} {}
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Construct an image placeholder
-         * @deprecated Use either @ref GL::PixelFormat together with
-         *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
-         */
-        /*implicit*/ CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") BufferImage(PixelStorage storage, Magnum::PixelFormat format, PixelType type): BufferImage{storage, PixelFormat(UnsignedInt(format)), type} {}
-
-        /**
-         * @brief Construct an image placeholder
-         * @deprecated Use either @ref GL::PixelFormat together with
-         *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
-         */
-        /*implicit*/ CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") BufferImage(Magnum::PixelFormat format, PixelType type): BufferImage{PixelFormat(UnsignedInt(format)), type} {}
-        #endif
 
         /**
          * @brief Construct an image placeholder
@@ -370,26 +321,6 @@ template<UnsignedInt dimensions> class BufferImage {
         void setData(PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage) {
             setData({}, format, type, size, data, usage);
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Set image data
-         * @deprecated Use either @ref GL::PixelFormat together with
-         *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
-         */
-        CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") void setData(PixelStorage storage, Magnum::PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage) {
-            setData(storage, PixelFormat(UnsignedInt(format)), type, size, data, usage);
-        }
-
-        /**
-         * @brief Set image data
-         * @deprecated Use either @ref GL::PixelFormat together with
-         *      @ref GL::PixelType or just @ref Magnum::PixelFormat instead
-         */
-        CORRADE_DEPRECATED("use either GL::PixelFormat together with GL::PixelType or just Magnum::PixelFormat instead") void setData(Magnum::PixelFormat format, PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> data, BufferUsage usage) {
-            setData({}, PixelFormat(UnsignedInt(format)), type, size, data, usage);
-        }
-        #endif
 
         /**
          * @brief Set image data
@@ -794,57 +725,7 @@ template<UnsignedInt dimensions> inline CompressedBufferImage<dimensions>& Compr
     return *this;
 }
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::BufferImage
- * @deprecated Use @ref GL::BufferImage instead.
- */
-#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
-template<UnsignedInt dimensions> using BufferImage CORRADE_DEPRECATED_ALIAS("use GL::BufferImage instead") = Magnum::GL::BufferImage<dimensions>;
-#endif
-
-/** @brief @copybrief GL::BufferImage1D
- * @deprecated Use @ref GL::BufferImage1D instead.
- */
-typedef CORRADE_DEPRECATED("use GL::BufferImage1D instead") Magnum::GL::BufferImage1D BufferImage1D;
-
-/** @brief @copybrief GL::BufferImage2D
- * @deprecated Use @ref GL::BufferImage2D instead.
- */
-typedef CORRADE_DEPRECATED("use GL::BufferImage2D instead") Magnum::GL::BufferImage2D BufferImage2D;
-
-/** @brief @copybrief GL::BufferImage3D
- * @deprecated Use @ref GL::BufferImage3D instead.
- */
-typedef CORRADE_DEPRECATED("use GL::BufferImage3D instead") Magnum::GL::BufferImage3D BufferImage3D;
-
-/** @brief @copybrief GL::CompressedBufferImage
- * @deprecated Use @ref GL::CompressedBufferImage instead.
- */
-#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
-template<UnsignedInt dimensions> using CompressedBufferImage CORRADE_DEPRECATED_ALIAS("use GL::CompressedBufferImage instead") = Magnum::GL::BufferImage<dimensions>;
-#endif
-
-/** @brief @copybrief GL::CompressedBufferImage1D
- * @deprecated Use @ref GL::CompressedBufferImage1D instead.
- */
-typedef CORRADE_DEPRECATED("use GL::CompressedBufferImage1D instead") Magnum::GL::CompressedBufferImage1D CompressedBufferImage1D;
-
-/** @brief @copybrief GL::CompressedBufferImage2D
- * @deprecated Use @ref GL::CompressedBufferImage2D instead.
- */
-typedef CORRADE_DEPRECATED("use GL::CompressedBufferImage2D instead") Magnum::GL::CompressedBufferImage2D CompressedBufferImage2D;
-
-/** @brief @copybrief GL::CompressedBufferImage3D
- * @deprecated Use @ref GL::CompressedBufferImage3D instead.
- */
-typedef CORRADE_DEPRECATED("use GL::CompressedBufferImage3D instead") Magnum::GL::CompressedBufferImage3D CompressedBufferImage3D;
-#endif
-
-}
+}}
 #else
 #error this header is not available in OpenGL ES 2.0 build
 #endif

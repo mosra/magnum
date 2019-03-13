@@ -53,9 +53,6 @@ struct MeshTest: TestSuite::Tester {
     #endif
 
     void mapPrimitive();
-    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    void mapPrimitiveDeprecated();
-    #endif
     void mapPrimitiveInvalid();
     void mapIndexType();
     void mapIndexTypeInvalid();
@@ -79,9 +76,6 @@ MeshTest::MeshTest() {
               #endif
 
               &MeshTest::mapPrimitive,
-              #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-              &MeshTest::mapPrimitiveDeprecated,
-              #endif
               &MeshTest::mapPrimitiveInvalid,
               &MeshTest::mapIndexType,
               &MeshTest::mapIndexTypeInvalid,
@@ -177,15 +171,6 @@ void MeshTest::mapPrimitive() {
     CORRADE_COMPARE(meshPrimitive(Magnum::MeshPrimitive::TriangleStrip), MeshPrimitive::TriangleStrip);
     CORRADE_COMPARE(meshPrimitive(Magnum::MeshPrimitive::TriangleFan), MeshPrimitive::TriangleFan);
 }
-
-#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-void MeshTest::mapPrimitiveDeprecated() {
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    CORRADE_COMPARE(meshPrimitive(Magnum::MeshPrimitive::TriangleStripAdjacency),
-        MeshPrimitive::TriangleStripAdjacency);
-    CORRADE_IGNORE_DEPRECATED_POP
-}
-#endif
 
 void MeshTest::mapPrimitiveInvalid() {
     std::ostringstream out;

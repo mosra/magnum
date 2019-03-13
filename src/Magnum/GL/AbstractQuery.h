@@ -226,18 +226,7 @@ inline GLuint AbstractQuery::release() {
     return id;
 }
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::AbstractQuery
- * @deprecated Use @ref GL::AbstractQuery instead.
- */
-typedef CORRADE_DEPRECATED("use GL::AbstractQuery instead") Magnum::GL::AbstractQuery AbstractQuery;
-#endif
-
-}
+}}
 #else
 #error this header is not available in WebGL 1.0 build
 #endif

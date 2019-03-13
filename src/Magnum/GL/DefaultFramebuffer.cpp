@@ -35,14 +35,7 @@
 #include "Magnum/Math/Color.h"
 #endif
 
-namespace Magnum {
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Variable defined in Magnum/DefaultFramebuffer.h */
-MAGNUM_GL_EXPORT GL::DefaultFramebuffer& defaultFramebuffer = GL::defaultFramebuffer;
-#endif
-
-namespace GL {
+namespace Magnum { namespace GL {
 
 DefaultFramebuffer defaultFramebuffer;
 

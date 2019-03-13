@@ -37,10 +37,6 @@
 #include "Magnum/GL/OpenGL.h"
 #include "Magnum/GL/visibility.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum { namespace GL {
 
 namespace Implementation { struct MeshState; }
@@ -322,17 +318,6 @@ inline MeshView& MeshView::setIndexRange(Int first, UnsignedInt start, UnsignedI
     return *this;
 }
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::MeshView
- * @deprecated Use @ref GL::MeshView instead.
- */
-typedef CORRADE_DEPRECATED("use GL::MeshView instead") Magnum::GL::MeshView MeshView;
-#endif
-
-}
+}}
 
 #endif

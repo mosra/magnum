@@ -264,6 +264,8 @@ See also:
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
+-   Removed all aliases to @ref GL library functionality in the root namespace
+    (and root include path) which were deprecated in 2018.04
 -   In order to be compatible with both Emscripten 1.38.27 and the versions
     before, all Emscripten markup is now expected to have the HTML @cb{.html} <canvas> @ce element identified by @cb{.css} #canvas @ce. You need to:
     -   update your HTML markup to use
@@ -1410,8 +1412,8 @@ Released 2018-05-01, tagged as
 -   Removed the @cpp Buffer::Usage @ce enum that was deprecated in 2014.01, use
     the global @ref GL::BufferUsage enum instead
 -   Removed the `Magnum/Query.h` header that was deprecated in 2015.05, use one
-    of @ref Magnum/PrimitiveQuery.h, @ref Magnum/SampleQuery.h or
-    @ref Magnum/TimeQuery.h instead
+    of `Magnum/PrimitiveQuery.h`, `Magnum/SampleQuery.h` or
+    `Magnum/TimeQuery.h` instead
 -   Removed ability to use @ref GL::Buffer::Target as constructor or
     @ref GL::Buffer::setTargetHint() parameter that was deprecated in 2015.05,
     use @ref GL::Buffer::TargetHint instead
@@ -2145,7 +2147,7 @@ a high-level overview.
 -   Removed `Context::majorVersion()` and `Context::minorVersion()` functions,
     use @ref Context::version() instead
 -   Removed deprecated `Magnum/DebugMarker.h` header, use
-    @ref Magnum/DebugOutput.h and @ref GL::DebugMessage "DebugMessage" class
+    `Magnum/DebugOutput.h` and @ref GL::DebugMessage "DebugMessage" class
     instead
 -   Removed deprecated `*Buffer` values from
     @ref GL::FramebufferBlit "FramebufferBlit", use values without the `Buffer`

@@ -639,17 +639,6 @@ enum class RenderbufferFormat: GLenum {
     #endif
 };
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::RenderbufferFormat
- * @deprecated Use @ref GL::RenderbufferFormat instead.
- */
-typedef CORRADE_DEPRECATED("use GL::RenderbufferFormat instead") Magnum::GL::RenderbufferFormat RenderbufferFormat;
-#endif
-
-}
+}}
 
 #endif

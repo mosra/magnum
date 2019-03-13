@@ -66,17 +66,6 @@ constexpr MeshIndexType IndexTypeMapping[]{
 }
 
 MeshPrimitive meshPrimitive(const Magnum::MeshPrimitive primitive) {
-    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    if(primitive == Magnum::MeshPrimitive::LinesAdjacency ||
-       primitive == Magnum::MeshPrimitive::LineStripAdjacency ||
-       primitive == Magnum::MeshPrimitive::TrianglesAdjacency ||
-       primitive == Magnum::MeshPrimitive::TriangleStripAdjacency ||
-       primitive == Magnum::MeshPrimitive::Patches)
-        return MeshPrimitive(UnsignedInt(primitive));
-    CORRADE_IGNORE_DEPRECATED_POP
-    #endif
-
     CORRADE_ASSERT(UnsignedInt(primitive) < Containers::arraySize(PrimitiveMapping),
         "GL::meshPrimitive(): invalid primitive" << primitive, {});
     return PrimitiveMapping[UnsignedInt(primitive)];

@@ -244,22 +244,6 @@ class CORRADE_DEPRECATED("scheduled for removal, consider switching to Sdl2Appli
          */
         void create();
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief create(const Configuration&, const GLConfiguration&)
-         * @deprecated Use @ref create(const Configuration&, const GLConfiguration&) instead.
-         */
-        CORRADE_DEPRECATED("use create(const Configuration&, const GLConfiguration&) instead") void createContext(const Configuration& configuration) {
-            create(configuration);
-        }
-
-        /** @brief @copybrief create()
-         * @deprecated Use @ref create() instead.
-         */
-        CORRADE_DEPRECATED("use create() instead") void createContext() {
-            create();
-        }
-        #endif
-
         /**
          * @brief Try to create context with given configuration for OpenGL context
          *
@@ -276,15 +260,6 @@ class CORRADE_DEPRECATED("scheduled for removal, consider switching to Sdl2Appli
          * the context cannot be created, @cpp true @ce otherwise.
          */
         bool tryCreate(const Configuration& configuration);
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief tryCreate(const Configuration&, const GLConfiguration&)
-         * @deprecated Use @ref tryCreate(const Configuration&, const GLConfiguration&) instead.
-         */
-        CORRADE_DEPRECATED("use tryCreate(const Configuration&) instead") bool tryCreateContext(const Configuration& configuration) {
-            return tryCreate(configuration);
-        }
-        #endif
 
         /** @{ @name Screen handling */
 
@@ -555,55 +530,9 @@ class GlutApplication::Configuration {
             return *this;
         }
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief GLConfiguration::flags()
-         * @deprecated Use @ref GLConfiguration::flags() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::flags() instead") GLConfiguration::Flags flags() const { return _flags; }
-
-        /** @brief @copybrief GLConfiguration::setFlags()
-         * @deprecated Use @ref GLConfiguration::setFlags() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::setFlags() instead") Configuration& setFlags(GLConfiguration::Flags flags) {
-            _flags = flags;
-            return *this;
-        }
-
-        /** @brief @copybrief GLConfiguration::version()
-         * @deprecated Use @ref GLConfiguration::version() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::version() instead") GL::Version version() const { return _version; }
-
-        /** @brief @copybrief GLConfiguration::setVersion()
-         * @deprecated Use @ref GLConfiguration::setVersion() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::setVersion() instead") Configuration& setVersion(GL::Version version) {
-            _version = version;
-            return *this;
-        }
-
-        /** @brief @copybrief GLConfiguration::sampleCount()
-         * @deprecated Use @ref GLConfiguration::sampleCount() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::sampleCount() instead") Int sampleCount() const { return _sampleCount; }
-
-        /** @brief @copybrief GLConfiguration::setSampleCount()
-         * @deprecated Use @ref GLConfiguration::setSampleCount() instead.
-         */
-        CORRADE_DEPRECATED("use GLConfiguration::setSampleCount() instead") Configuration& setSampleCount(Int count) {
-            _sampleCount = count;
-            return *this;
-        }
-        #endif
-
     private:
         std::string _title;
         Vector2i _size;
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        Int _sampleCount;
-        GL::Version _version;
-        Flags _flags;
-        #endif
 };
 
 /**

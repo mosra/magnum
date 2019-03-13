@@ -50,6 +50,9 @@ endif()
 
 add_library(snippets-Magnum STATIC ${snippets_Magnum_SRCS})
 target_link_libraries(snippets-Magnum PRIVATE Magnum)
+if(MAGNUM_TARGET_GL)
+    target_link_libraries(snippets-Magnum PRIVATE MagnumGL)
+endif()
 set_target_properties(snippets-Magnum PROPERTIES FOLDER "Magnum/doc/snippets")
 
 if(WITH_AUDIO)
@@ -82,6 +85,9 @@ if(WITH_TRADE)
         plugins.cpp
         MagnumTrade.cpp)
     target_link_libraries(snippets-MagnumTrade PRIVATE MagnumTrade)
+    if(MAGNUM_TARGET_GL)
+        target_link_libraries(snippets-MagnumTrade PRIVATE MagnumGL)
+    endif()
     set_target_properties(snippets-MagnumTrade PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
 

@@ -36,6 +36,10 @@
 #include "Magnum/GL/OpenGL.h"
 #include "Magnum/GL/visibility.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace GL {
 
 namespace Implementation { struct RendererState; }
@@ -1706,17 +1710,6 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Renderer::ResetNotificationStra
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, Renderer::GraphicsResetStatus value);
 #endif
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::Renderer
- * @deprecated Use @ref GL::Renderer instead.
- */
-typedef CORRADE_DEPRECATED("use GL::Renderer instead") Magnum::GL::Renderer Renderer;
-#endif
-
-}
+}}
 
 #endif

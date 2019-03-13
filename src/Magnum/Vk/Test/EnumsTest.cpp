@@ -26,13 +26,6 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
-#include "Magnum/configure.h"
-
-#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-/* So we don't need to care about the deprecated (Compressed)PixelFormat values */
-#undef MAGNUM_TARGET_GL
-#endif
-
 #include "Magnum/Mesh.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Sampler.h"

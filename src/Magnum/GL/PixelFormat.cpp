@@ -54,13 +54,6 @@ bool hasPixelFormat(const Magnum::PixelFormat format) {
     if(isPixelFormatImplementationSpecific(format))
         return true;
 
-    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-    /* See GL/Test/PixelFormatTest.cpp for more information. Returning true
-       unconditionally here as unsupported enum values shouldn't even be
-       compiled. */
-    if(UnsignedInt(format) > 0x1000) return true;
-    #endif
-
     CORRADE_ASSERT(UnsignedInt(format) < Containers::arraySize(FormatMapping),
         "GL::hasPixelFormat(): invalid format" << format, {});
     return UnsignedInt(FormatMapping[UnsignedInt(format)].format);
@@ -69,12 +62,6 @@ bool hasPixelFormat(const Magnum::PixelFormat format) {
 PixelFormat pixelFormat(const Magnum::PixelFormat format) {
     if(isPixelFormatImplementationSpecific(format))
         return pixelFormatUnwrap<GL::PixelFormat>(format);
-
-    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-    /* See GL/Test/PixelFormatTest.cpp for more information */
-    if(UnsignedInt(format) > 0x1000)
-        return PixelFormat(UnsignedInt(format));
-    #endif
 
     CORRADE_ASSERT(UnsignedInt(format) < Containers::arraySize(FormatMapping),
         "GL::pixelFormat(): invalid format" << format, {});
@@ -85,12 +72,7 @@ PixelFormat pixelFormat(const Magnum::PixelFormat format) {
 }
 
 PixelType pixelType(const Magnum::PixelFormat format, const UnsignedInt extra) {
-    if(isPixelFormatImplementationSpecific(format)
-        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-        /* See GL/Test/PixelFormatTest.cpp for more information */
-        || UnsignedInt(format) > 0x1000
-        #endif
-    ) {
+    if(isPixelFormatImplementationSpecific(format)) {
         CORRADE_ASSERT(extra,
             "GL::pixelType(): format is implementation-specific, but no additional type specifier was passed", {});
         return PixelType(extra);
@@ -363,13 +345,6 @@ bool hasCompressedPixelFormat(const Magnum::CompressedPixelFormat format) {
     if(isCompressedPixelFormatImplementationSpecific(format))
         return true;
 
-    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-    /* See GL/Test/PixelFormatTest.cpp for more information. Returning true
-       unconditionally here as unsupported enum values shouldn't even be
-       compiled. */
-    if(UnsignedInt(format) > 0x1000) return true;
-    #endif
-
     CORRADE_ASSERT(UnsignedInt(format) < Containers::arraySize(CompressedFormatMapping),
         "GL::hasCompressedPixelFormat(): invalid format" << format, {});
     return UnsignedInt(CompressedFormatMapping[UnsignedInt(format)]);
@@ -378,12 +353,6 @@ bool hasCompressedPixelFormat(const Magnum::CompressedPixelFormat format) {
 CompressedPixelFormat compressedPixelFormat(const Magnum::CompressedPixelFormat format) {
     if(isCompressedPixelFormatImplementationSpecific(format))
         return compressedPixelFormatUnwrap<GL::CompressedPixelFormat>(format);
-
-    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-    /* See GL/Test/PixelFormatTest.cpp for more information */
-    if(UnsignedInt(format) > 0x1000)
-        return CompressedPixelFormat(UnsignedInt(format));
-    #endif
 
     CORRADE_ASSERT(UnsignedInt(format) < Containers::arraySize(CompressedFormatMapping),
         "GL::compressedPixelFormat(): invalid format" << format, {});

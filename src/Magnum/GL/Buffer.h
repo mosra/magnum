@@ -1354,22 +1354,6 @@ template<class T> Containers::Array<T> inline Buffer::subData(const GLintptr off
 CORRADE_IGNORE_DEPRECATED_POP
 #endif
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::BufferUsage
- * @deprecated Use @ref GL::BufferUsage instead.
- */
-typedef CORRADE_DEPRECATED("use GL::BufferUsage instead") Magnum::GL::BufferUsage BufferUsage;
-
-/** @brief @copybrief GL::Buffer
- * @deprecated Use @ref GL::Buffer instead.
- */
-typedef CORRADE_DEPRECATED("use GL::Buffer instead") Magnum::GL::Buffer Buffer;
-#endif
-
-}
+}}
 
 #endif

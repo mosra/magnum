@@ -644,17 +644,6 @@ inline Shader& Shader::operator=(Shader&& other) noexcept {
     return *this;
 }
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::Shader
- * @deprecated Use @ref GL::Shader instead.
- */
-typedef CORRADE_DEPRECATED("use GL::Shader instead") Magnum::GL::Shader Shader;
-#endif
-
-}
+}}
 
 #endif

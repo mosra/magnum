@@ -151,13 +151,6 @@ class GLContext: public GL::Context {
         bool tryCreate() { return GL::Context::tryCreate(); }
 };
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/** @brief @copybrief Platform::GLContext
- * @deprecated Use @ref Platform::GLContext instead.
- */
-typedef CORRADE_DEPRECATED("use Platform::GLContext instead") GLContext Context;
-#endif
-
 }}
 #else
 #error this header is available only in the OpenGL build

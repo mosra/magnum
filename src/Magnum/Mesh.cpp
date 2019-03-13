@@ -53,20 +53,6 @@ Debug& operator<<(Debug& debug, MeshPrimitive value) {
         _c(TriangleStrip)
         _c(TriangleFan)
         #undef _c
-
-        /* Here mainly to suppress compiler warnings about unhandled cases and
-           also to check that there are no accidentally conflicting values. */
-        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        CORRADE_IGNORE_DEPRECATED_PUSH
-        #define _c(value) case MeshPrimitive::value: return debug << "GL::MeshPrimitive::" #value;
-        _c(LinesAdjacency)
-        _c(LineStripAdjacency)
-        _c(TrianglesAdjacency)
-        _c(TriangleStripAdjacency)
-        _c(Patches)
-        #undef _c
-        CORRADE_IGNORE_DEPRECATED_POP
-        #endif
         /* LCOV_EXCL_STOP */
     }
 
@@ -104,17 +90,6 @@ std::string ConfigurationValue<Magnum::MeshPrimitive>::toString(Magnum::MeshPrim
         _c(TriangleStrip)
         _c(TriangleFan)
         #undef _c
-
-        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        CORRADE_IGNORE_DEPRECATED_PUSH
-        case Magnum::MeshPrimitive::LinesAdjacency:
-        case Magnum::MeshPrimitive::LineStripAdjacency:
-        case Magnum::MeshPrimitive::TrianglesAdjacency:
-        case Magnum::MeshPrimitive::TriangleStripAdjacency:
-        case Magnum::MeshPrimitive::Patches:
-            return {};
-        CORRADE_IGNORE_DEPRECATED_POP
-        #endif
         /* LCOV_EXCL_STOP */
     }
 

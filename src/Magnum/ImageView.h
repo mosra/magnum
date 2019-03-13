@@ -35,10 +35,6 @@
 #include "Magnum/PixelStorage.h"
 #include "Magnum/Math/Vector3.h"
 
-#if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-#include "Magnum/PixelFormat.h"
-#endif
-
 namespace Magnum {
 
 /**
@@ -350,14 +346,6 @@ template<UnsignedInt dimensions> class ImageView {
          */
         UnsignedInt formatExtra() const { return _formatExtra; }
 
-        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-        /**
-         * @brief Data type of pixel data
-         * @deprecated Cast @ref formatExtra() to @ref GL::PixelType instead.
-         */
-        CORRADE_DEPRECATED("cast formatExtra() to GL::PixelType instead") GL::PixelType type() const { return GL::PixelType(_formatExtra); }
-        #endif
-
         /**
          * @brief Pixel size (in bytes)
          *
@@ -639,22 +627,11 @@ namespace Implementation {
     }
 
     template<class T, class U> inline UnsignedInt pixelSizeAdl(T format, U formatExtra) {
-        /* So it doesn't warn when the deprecated
-           pixelSize(PixelFormat, GL::PixelType) overload is called
-           indirectly */
-        CORRADE_IGNORE_DEPRECATED_PUSH
         return pixelSize(format, formatExtra);
-        CORRADE_IGNORE_DEPRECATED_POP
     }
 }
 
-template<UnsignedInt dimensions> template<class T, class U> inline ImageView<dimensions>::ImageView(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data) noexcept: ImageView{storage,
-    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-    Implementation::wrapPixelFormatIfNotGLSpecific(format),
-    #else
-    UnsignedInt(format),
-    #endif
-    UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra), size, data} {
+template<UnsignedInt dimensions> template<class T, class U> inline ImageView<dimensions>::ImageView(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data) noexcept: ImageView{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra), size, data} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
@@ -664,13 +641,7 @@ template<UnsignedInt dimensions> template<class T> inline ImageView<dimensions>:
         "format types larger than 32bits are not supported");
 }
 
-template<UnsignedInt dimensions> template<class T, class U> inline ImageView<dimensions>::ImageView(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{storage,
-    #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-    Implementation::wrapPixelFormatIfNotGLSpecific(format),
-    #else
-    UnsignedInt(format),
-    #endif
-    UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra), size} {
+template<UnsignedInt dimensions> template<class T, class U> inline ImageView<dimensions>::ImageView(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra), size} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }

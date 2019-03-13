@@ -1195,17 +1195,6 @@ inline GLuint Mesh::release() {
     return id;
 }
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::Mesh
- * @deprecated Use @ref GL::Mesh instead.
- */
-typedef CORRADE_DEPRECATED("use GL::Mesh instead") Magnum::GL::Mesh Mesh;
-#endif
-
-}
+}}
 
 #endif

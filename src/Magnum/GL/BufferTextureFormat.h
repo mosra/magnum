@@ -171,18 +171,7 @@ enum class BufferTextureFormat: GLenum {
     RGBA32F = GL_RGBA32F
 };
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::BufferTextureFormat
- * @deprecated Use @ref GL::BufferTextureFormat instead.
- */
-typedef CORRADE_DEPRECATED("use GL::BufferTextureFormat instead") Magnum::GL::BufferTextureFormat BufferTextureFormat;
-#endif
-
-}
+}}
 #else
 #error this header is not available in OpenGL ES 2.0 and WebGL build
 #endif

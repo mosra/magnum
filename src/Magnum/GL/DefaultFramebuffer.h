@@ -509,22 +509,6 @@ extern DefaultFramebuffer MAGNUM_GL_EXPORT defaultFramebuffer;
 /** @debugoperatorclassenum{DefaultFramebuffer,DefaultFramebuffer::Status} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DefaultFramebuffer::Status value);
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::DefaultFramebuffer
- * @deprecated Use @ref GL::DefaultFramebuffer instead.
- */
-typedef CORRADE_DEPRECATED("use GL::DefaultFramebuffer instead") Magnum::GL::DefaultFramebuffer DefaultFramebuffer;
-
-/** @brief @copybrief GL::defaultFramebuffer
- * @deprecated Use @ref GL::defaultFramebuffer instead.
- */
-extern CORRADE_DEPRECATED("use GL::defaultFramebuffer instead") MAGNUM_EXPORT Magnum::GL::DefaultFramebuffer& defaultFramebuffer;
-#endif
-
-}
+}}
 
 #endif

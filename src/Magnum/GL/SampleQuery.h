@@ -262,18 +262,7 @@ class SampleQuery: public AbstractQuery {
         explicit SampleQuery(GLuint id, Target target, ObjectFlags flags) noexcept: AbstractQuery{id, GLenum(target), flags} {}
 };
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::SampleQuery
- * @deprecated Use @ref GL::SampleQuery instead.
- */
-typedef CORRADE_DEPRECATED("use GL::SampleQuery instead") Magnum::GL::SampleQuery SampleQuery;
-#endif
-
-}
+}}
 #else
 #error this header is not available in WebGL 1.0 build
 #endif

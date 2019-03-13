@@ -459,18 +459,7 @@ inline GLuint TransformFeedback::release() {
     return id;
 }
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::TransformFeedback
- * @deprecated Use @ref GL::TransformFeedback instead.
- */
-typedef CORRADE_DEPRECATED("use GL::TransformFeedback instead") Magnum::GL::TransformFeedback TransformFeedback;
-#endif
-
-}
+}}
 #else
 #error this header is not available in OpenGL ES 2.0 build
 #endif

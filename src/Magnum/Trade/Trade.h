@@ -32,6 +32,8 @@
 #include "Magnum/Types.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+
 #include "Magnum/Magnum.h"
 #endif
 

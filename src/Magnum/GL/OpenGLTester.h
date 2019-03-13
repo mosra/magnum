@@ -285,25 +285,7 @@ Equivalent to
 */
 #define MAGNUM_VERIFY_NO_GL_ERROR() CORRADE_COMPARE(Magnum::GL::Renderer::error(), Magnum::GL::Renderer::Error::NoError)
 
-}
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* Note: needs to be prefixed with Magnum:: otherwise Doxygen can't find it */
-
-/** @brief @copybrief GL::OpenGLTester
- * @deprecated Use @ref GL::OpenGLTester instead.
- */
-typedef CORRADE_DEPRECATED("use GL::OpenGLTester instead") Magnum::GL::OpenGLTester OpenGLTester;
-
-/** @brief @copybrief MAGNUM_VERIFY_NO_GL_ERROR()
- * @deprecated Use @ref MAGNUM_VERIFY_NO_GL_ERROR() instead.
-*/
-#define MAGNUM_VERIFY_NO_ERROR() \
-    CORRADE_DEPRECATED_MACRO(MAGNUM_VERIFY_NO_ERROR(),"use MAGNUM_VERIFY_NO_GL_ERROR() instead") \
-    MAGNUM_VERIFY_NO_GL_ERROR()
-#endif
-
-}
+}}
 #else
 #error this header is available only in the OpenGL build
 #endif

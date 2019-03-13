@@ -136,61 +136,6 @@ std::tuple<std::vector<Float>, Float, Float> calculateImageDelta(const ImageView
         case PixelFormat::RGBA16F:
             CORRADE_ASSERT(false,
                 "DebugTools::CompareImage: half-float formats are not supported yet", {});
-
-        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-        CORRADE_IGNORE_DEPRECATED_PUSH
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        case PixelFormat::Red:
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        case PixelFormat::Green:
-        case PixelFormat::Blue:
-        #endif
-        #ifdef MAGNUM_TARGET_GLES2
-        case PixelFormat::Luminance:
-        #endif
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        case PixelFormat::RG:
-        #endif
-        #ifdef MAGNUM_TARGET_GLES2
-        case PixelFormat::LuminanceAlpha:
-        #endif
-        case PixelFormat::RGB:
-        case PixelFormat::RGBA:
-        #ifndef MAGNUM_TARGET_GLES
-        case PixelFormat::BGR:
-        #endif
-        #ifndef MAGNUM_TARGET_WEBGL
-        case PixelFormat::BGRA:
-        #endif
-        #ifdef MAGNUM_TARGET_GLES2
-        case PixelFormat::SRGB:
-        case PixelFormat::SRGBAlpha:
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        case PixelFormat::RedInteger:
-        #ifndef MAGNUM_TARGET_GLES
-        case PixelFormat::GreenInteger:
-        case PixelFormat::BlueInteger:
-        #endif
-        case PixelFormat::RGInteger:
-        case PixelFormat::RGBInteger:
-        case PixelFormat::RGBAInteger:
-        #ifndef MAGNUM_TARGET_GLES
-        case PixelFormat::BGRInteger:
-        case PixelFormat::BGRAInteger:
-        #endif
-        #endif
-        case PixelFormat::DepthComponent:
-        #ifndef MAGNUM_TARGET_WEBGL
-        case PixelFormat::StencilIndex:
-        #endif
-        case PixelFormat::DepthStencil:
-            /** @todo CORRADE_ASSERT_UNREACHABLE() with message here */
-            CORRADE_ASSERT(false,
-                "DebugTools::CompareImage: deprecated GL-specific formats are not supported", {});
-        CORRADE_IGNORE_DEPRECATED_POP
-        #endif
     }
 
     CORRADE_ASSERT(max == max,
@@ -302,57 +247,6 @@ void printPixelAt(Debug& out, const char* const pixels, const std::size_t stride
         case PixelFormat::RG16F:
         case PixelFormat::RGB16F:
         case PixelFormat::RGBA16F:
-        #if defined(MAGNUM_BUILD_DEPRECATED) && defined(MAGNUM_TARGET_GL)
-        CORRADE_IGNORE_DEPRECATED_PUSH
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        case PixelFormat::Red:
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        case PixelFormat::Green:
-        case PixelFormat::Blue:
-        #endif
-        #ifdef MAGNUM_TARGET_GLES2
-        case PixelFormat::Luminance:
-        #endif
-        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
-        case PixelFormat::RG:
-        #endif
-        #ifdef MAGNUM_TARGET_GLES2
-        case PixelFormat::LuminanceAlpha:
-        #endif
-        case PixelFormat::RGB:
-        case PixelFormat::RGBA:
-        #ifndef MAGNUM_TARGET_GLES
-        case PixelFormat::BGR:
-        #endif
-        #ifndef MAGNUM_TARGET_WEBGL
-        case PixelFormat::BGRA:
-        #endif
-        #ifdef MAGNUM_TARGET_GLES2
-        case PixelFormat::SRGB:
-        case PixelFormat::SRGBAlpha:
-        #endif
-        #ifndef MAGNUM_TARGET_GLES2
-        case PixelFormat::RedInteger:
-        #ifndef MAGNUM_TARGET_GLES
-        case PixelFormat::GreenInteger:
-        case PixelFormat::BlueInteger:
-        #endif
-        case PixelFormat::RGInteger:
-        case PixelFormat::RGBInteger:
-        case PixelFormat::RGBAInteger:
-        #ifndef MAGNUM_TARGET_GLES
-        case PixelFormat::BGRInteger:
-        case PixelFormat::BGRAInteger:
-        #endif
-        #endif
-        case PixelFormat::DepthComponent:
-        #ifndef MAGNUM_TARGET_WEBGL
-        case PixelFormat::StencilIndex:
-        #endif
-        case PixelFormat::DepthStencil:
-        CORRADE_IGNORE_DEPRECATED_POP
-        #endif
             /* Already handled by a printing assert before */
             CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
