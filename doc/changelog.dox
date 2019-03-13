@@ -267,7 +267,9 @@ See also:
 -   Removed all aliases to @ref GL library functionality in the root namespace
     (and root include path) which were deprecated in 2018.04
 -   Removed the `Shapes` library together with `DebugTools::ShapeRenderer`,
-    which was is a failed design experiment deprecated since 2018.10
+    which was a failed design experiment deprecated since version 2018.10
+-   Removed the `Platform::GlutApplication` as it was based on an outdated
+    toolkit and deprecated since version 2018.10
 -   In order to be compatible with both Emscripten 1.38.27 and the versions
     before, all Emscripten markup is now expected to have the HTML @cb{.html} <canvas> @ce element identified by @cb{.css} #canvas @ce. You need to:
     -   update your HTML markup to use
@@ -961,7 +963,7 @@ Released 2018-10-23, tagged as
     have look at [Bullet](https://bulletphysics.org), which has Magnum
     integration in @ref BulletIntegration, or at [Box2D](https://box2d.org/),
     which has a @ref examples-box2d "Magnum example" as well.
--   @ref Platform::GlutApplication is based on an outdated toolkit and thus
+-   `Platform::GlutApplication` is based on an outdated toolkit and thus
     scheduled for removal in a future release. Please consider switching to
     @ref Platform::Sdl2Application or @ref Platform::GlfwApplication as soon as
     possible.

@@ -68,7 +68,6 @@
 #  Trade                        - Trade library
 #  Vk                           - Vk library
 #  GlfwApplication              - GLFW application
-#  GlutApplication              - GLUT application
 #  GlxApplication               - GLX application
 #  Sdl2Application              - SDL2 application
 #  XEglApplication              - X/EGL application
@@ -331,9 +330,10 @@ endif()
 set(_MAGNUM_LIBRARY_COMPONENT_LIST
     Audio DebugTools GL MeshTools Primitives SceneGraph Shaders Text
     TextureTools Trade Vk
-    AndroidApplication GlfwApplication GlutApplication GlxApplication
-    Sdl2Application XEglApplication WindowlessCglApplication
-    WindowlessEglApplication WindowlessGlxApplication WindowlessIosApplication WindowlessWglApplication WindowlessWindowsEglApplication
+    AndroidApplication GlfwApplication GlxApplication Sdl2Application
+    XEglApplication WindowlessCglApplication WindowlessEglApplication
+    WindowlessGlxApplication WindowlessIosApplication WindowlessWglApplication
+    WindowlessWindowsEglApplication
     CglContext EglContext GlxContext WglContext
     OpenGLTester)
 set(_MAGNUM_PLUGIN_COMPONENT_LIST
@@ -408,7 +408,6 @@ if(MAGNUM_TARGET_GL)
     list(APPEND _MAGNUM_GlfwApplication_DEPENDENCIES GL)
 endif()
 
-set(_MAGNUM_GlutApplication_DEPENDENCIES GL)
 set(_MAGNUM_GlxApplication_DEPENDENCIES GL)
 
 set(_MAGNUM_Sdl2Application_DEPENDENCIES )
@@ -633,26 +632,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                         set_property(TARGET Magnum::${_component} APPEND
                             PROPERTY INTERFACE_LINK_LIBRARIES EGL::EGL)
                     endif()
-                endif()
-
-            # GLUT application dependencies
-            elseif(_component STREQUAL GlutApplication)
-                find_package(GLUT)
-                set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                    INTERFACE_INCLUDE_DIRECTORIES ${GLUT_INCLUDE_DIR})
-                set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                    INTERFACE_LINK_LIBRARIES ${GLUT_glut_LIBRARY})
-
-                # With GLVND (since CMake 3.11) we need to explicitly link to
-                # GLX because libOpenGL doesn't provide it. Also can't use
-                # OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
-                # *not* found. WTF. I don't think GLUT works with EGL, so not
-                # handling that.
-                set(OpenGL_GL_PREFERENCE GLVND)
-                find_package(OpenGL)
-                if(OPENGL_opengl_LIBRARY)
-                    set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                        INTERFACE_LINK_LIBRARIES OpenGL::GLX)
                 endif()
 
             # SDL2 application dependencies

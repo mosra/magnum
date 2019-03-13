@@ -307,8 +307,7 @@ for a high-level overview.
     buffer
 -   `Shapes::Shape::collision()` function as complement to
     `Shapes::Shape::collides()`
--   @ref Platform::GlutApplication::KeyEvent finally has more complete key
-    support
+-   `Platform::GlutApplication::KeyEvent` finally has more complete key support
 -   @ref Math::Range::data() function, useful when querying range values from
     GL
 -   Support for specifying context flags using
@@ -333,8 +332,8 @@ for a high-level overview.
     [mosra/magnum#20](https://github.com/mosra/magnum/issues/20),
     [mosra/magnum#45](https://github.com/mosra/magnum/issues/18))
 -   @ref Platform::Sdl2Application is now used everywhere (documentation,
-    tutorials, examples) by default, replacing @ref Platform::GlutApplication.
-    The GLUT application is still available, though. See
+    tutorials, examples) by default, replacing `Platform::GlutApplication`. The
+    GLUT application is still available, though. See
     [mosra/magnum#39](https://github.com/mosra/magnum/issues/39).
 -   The need for compiler compatibility mode is now automatically detected by
     CMake to avoid strange compilation errors later
@@ -500,7 +499,7 @@ No dependency changes in this release.
 -   Ability to request context version in all windowed
     @ref Platform::Sdl2Application "Platform::*Application" classes
 -   Mouse wheel support in @cpp Platform::NaClApplication::MouseEvent @ce
--   No-op @ref Platform::GlutApplication::keyReleaseEvent() and
+-   No-op `Platform::GlutApplication::keyReleaseEvent()` and
     @cpp Platform::NaClApplication::Configuration::setTitle() @ce functions to
     preserve source compatibility with other application classes.
 -   @ref SceneGraph::Drawable::drawables() function as a non-ambiguous

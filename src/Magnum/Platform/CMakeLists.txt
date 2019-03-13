@@ -92,7 +92,7 @@ set(MagnumPlatform_FILES )
 install(FILES ${MagnumPlatform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 
 # Decide about platform-specific context for cross-platform toolkits
-if((WITH_GLFWAPPLICATION OR WITH_GLUTAPPLICATION OR WITH_SDL2APPLICATION) AND TARGET_GL)
+if((WITH_GLFWAPPLICATION OR WITH_SDL2APPLICATION) AND TARGET_GL)
     if(CORRADE_TARGET_APPLE AND NOT MAGNUM_TARGET_GLES)
         set(NEED_CGLCONTEXT 1)
         set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumCglContextObjects>)
@@ -218,47 +218,6 @@ if(WITH_GLFWAPPLICATION)
 
     # Magnum GlfwApplication target alias for superprojects
     add_library(Magnum::GlfwApplication ALIAS MagnumGlfwApplication)
-endif()
-
-# GLUT application
-if(WITH_GLUTAPPLICATION)
-    if(NOT MAGNUM_BUILD_DEPRECATED)
-        message(FATAL_ERROR "GlutApplication is scheduled for removal and not available if BUILD_DEPRECATED is disabled. Please consider switching to Sdl2Application or GlfwApplication instead.")
-    endif()
-
-    find_package(GLUT)
-    if(NOT GLUT_FOUND)
-        message(FATAL_ERROR "GLUT library, required by GlutApplication, was not found. Set WITH_GLUTAPPLICATION to OFF to skip building it.")
-    endif()
-
-    set(MagnumGlutApplication_SRCS
-        GlutApplication.cpp
-        ${MagnumSomeContext_OBJECTS})
-    set(MagnumGlutApplication_HEADERS GlutApplication.h)
-
-    add_library(MagnumGlutApplication STATIC
-        ${MagnumGlutApplication_SRCS}
-        ${MagnumGlutApplication_HEADERS})
-    set_target_properties(MagnumGlutApplication PROPERTIES
-        DEBUG_POSTFIX "-d"
-        FOLDER "Magnum/Platform")
-    # Assuming that PIC is not needed because the Application lib is always
-    # linked to the executable and not to any intermediate shared lib
-    target_include_directories(MagnumGlutApplication PUBLIC ${GLUT_INCLUDE_DIR})
-    target_link_libraries(MagnumGlutApplication PUBLIC
-        MagnumGL
-        ${GLUT_glut_LIBRARY}
-        # need to link to GLX explicitly if using GLVND (CMake 3.11+)
-        ${MagnumSomeContext_LIBRARY})
-
-    install(FILES ${MagnumGlutApplication_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
-    install(TARGETS MagnumGlutApplication
-        RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
-        LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
-        ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
-
-    # Magnum GlutApplication target alias for superprojects
-    add_library(Magnum::GlutApplication ALIAS MagnumGlutApplication)
 endif()
 
 # SDL2 application

@@ -91,7 +91,7 @@ The following specialization are explicitly compiled into each particular
 @ref ScreenedApplication.hpp implementation file to avoid linker errors. See
 @ref compilation-speedup-hpp for more information.
 
--   @ref GlutApplication "BasicScreenedApplication<GlutApplication>"
+-   @ref GlfwApplication "BasicScreenedApplication<GlfwApplication>"
 -   @ref GlxApplication "BasicScreenedApplication<GlxApplication>"
 -   @ref Sdl2Application "BasicScreenedApplication<Sdl2Application>"
 -   @ref XEglApplication "BasicScreenedApplication<XEglApplication>"

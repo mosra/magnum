@@ -39,12 +39,6 @@ if(WITH_GLFWAPPLICATION)
     set_target_properties(PlatformGlfwApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
-if(WITH_GLUTAPPLICATION)
-    add_executable(PlatformGlutApplicationTest GlutApplicationTest.cpp)
-    target_link_libraries(PlatformGlutApplicationTest PRIVATE MagnumGlutApplication)
-    set_target_properties(PlatformGlutApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
-endif()
-
 if(WITH_GLXAPPLICATION)
     add_executable(PlatformGlxApplicationTest GlxApplicationTest.cpp)
     target_link_libraries(PlatformGlxApplicationTest PRIVATE MagnumGlxApplication)

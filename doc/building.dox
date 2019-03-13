@@ -544,10 +544,6 @@ going to build any of the @ref example-index "examples", you'll need it.
 -   `WITH_GLFWAPPLICATION` --- Build the
     @ref Platform::GlfwApplication "GlfwApplication" library. Depends on
     [GLFW](http://glfw.org).
--   `WITH_GLUTAPPLICATION` @m_class{m-label m-danger} **deprecated** --- Build
-    the @ref Platform::GlutApplication "GlutApplication" library. Depends on
-    [GLUT](http://freeglut.sourceforge.net/). Requires `TARGET_GL` to be
-    enabled.
 -   `WITH_GLXAPPLICATION` --- Build the
     @ref Platform::GlxApplication "GlxApplication" library. Depends on **X11**.
     Requires `TARGET_GL` to be enabled.
