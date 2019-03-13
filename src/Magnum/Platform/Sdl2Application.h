@@ -339,8 +339,11 @@ variable).
     system. For example if a 800x600 window is requested and DPI scaling is set
     to 200%, the resulting window will have 1600x1200 pixels. The backing
     framebuffer will have the same size. This is supported on Linux and
-    Windows. Equivalent to passing @ref Configuration::DpiScalingPolicy::Virtual
-    to @ref Configuration::setSize() or `virtual` on command line.
+    Windows; on Windows the application is first checked for DPI awareness
+    as described in @ref platforms-windows-hidpi and if the application is not
+    DPI-aware, 1:1 scaling is used. Equivalent to passing
+    @ref Configuration::DpiScalingPolicy::Virtual to
+    @ref Configuration::setSize() or `virtual` on command line.
 -   Physical DPI scaling. Takes the requested window size as a physical size
     that a window would have on platform's default DPI and scales it to have
     the same physical size on given display physical DPI. So, for example on a
@@ -349,9 +352,10 @@ variable).
     DPI display. On platforms that don't have a concept of a window (such
     as mobile platforms or @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten"), it
     causes the framebuffer to match display pixels 1:1 without any scaling.
-    This is supported on Linux, Windows, all mobile platforms except iOS and
-    Emscripten. Equivalent to passing
-    @ref Configuration::DpiScalingPolicy::Physical to
+    This is supported on Linux and all mobile platforms (except iOS) and
+    Emscripten. On Windows this is equivalent to virtual DPI scaling but
+    without doing an explicit check for DPI awareness first. Equivalent to
+    passing @ref Configuration::DpiScalingPolicy::Physical to
     @ref Configuration::setSize() or `physical` via command line / environment.
 
 Besides the above, it's possible to supply a custom DPI scaling value to

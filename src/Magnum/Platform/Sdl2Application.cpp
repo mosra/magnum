@@ -199,6 +199,26 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) const {
             return dpiScaling;
         }
 
+        /* Check for DPI awareness on (non-RT) Windows and then ask for DPI.
+           SDL_GetDisplayDPI() is querying GetDpiForMonitor() --
+           https://github.com/spurious/SDL-mirror/blob/17af4584cb28cdb3c2feba17e7d989a806007d9f/src/video/windows/SDL_windowsmodes.c#L266
+           and GetDpiForMonitor() returns 96 if the application is DPI unaware.
+           So we instead check for DPI awareness first (and tell the user if
+           not), and only if the app is, then we use SDL_GetDisplayDPI(). If
+           it's for some reason desired to get the DPI value unconditionally,
+           the user should use physical DPI scaling instead. */
+        #elif defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
+        if(!Implementation::isWindowsAppDpiAware()) {
+            Warning{verbose} << "Platform::Sdl2Application: your application is not set as DPI-aware, DPI scaling won't be used";
+            return Vector2{1.0f};
+        }
+        Vector2 dpi;
+        if(SDL_GetDisplayDPI(0, nullptr, &dpi.x(), &dpi.y()) == 0) {
+            const Vector2 dpiScaling{dpi/96.0f};
+            Debug{verbose} << "Platform::Sdl2Application: virtual DPI scaling" << dpiScaling;
+            return dpiScaling;
+        }
+
         /* Otherwise ¯\_(ツ)_/¯ */
         #else
         Debug{verbose} << "Platform::Sdl2Application: sorry, virtual DPI scaling not implemented on this platform yet, falling back to physical DPI scaling";
@@ -220,9 +240,11 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) const {
     Debug{verbose} << "Platform::Sdl2Application: physical DPI scaling" << dpiScaling.x();
     return dpiScaling;
 
-    /* Take display DPI elsewhere. Enable only on Linux for now, I need to
-       test this properly on Windows first. Also only since SDL 2.0.4. */
-    #elif defined(CORRADE_TARGET_UNIX) && SDL_VERSION_ATLEAST(2, 0, 4)
+    /* Take display DPI elsewhere. Enable only on Linux (where it gets the
+       usually very-off value from X11) and on non-RT Windows (where it takes
+       the UI scale value like with virtual DPI scaling, but without checking
+       for DPI awareness first). Also only since SDL 2.0.4. */
+    #elif (defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))) && SDL_VERSION_ATLEAST(2, 0, 4)
     Vector2 dpi;
     if(SDL_GetDisplayDPI(0, nullptr, &dpi.x(), &dpi.y()) == 0) {
         const Vector2 dpiScaling{dpi/96.0f};

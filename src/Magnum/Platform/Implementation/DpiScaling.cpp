@@ -45,6 +45,18 @@
 #include <emscripten/emscripten.h>
 #endif
 
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
+#define WIN32_LEAN_AND_MEAN 1
+#define VC_EXTRALEAN
+#include <windows.h>
+#ifdef __has_include
+#if __has_include(<shellscalingapi.h>)
+#include <shellscalingapi.h>
+#endif
+#endif
+#include <Corrade/Utility/Assert.h>
+#endif
+
 namespace Magnum { namespace Platform { namespace Implementation {
 
 Utility::Arguments windowScalingArguments() {
@@ -126,6 +138,37 @@ Float x11DpiScaling() {
 #ifdef CORRADE_TARGET_EMSCRIPTEN
 Float emscriptenDpiScaling() {
     return Float(emscripten_get_device_pixel_ratio());
+}
+#endif
+
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
+bool isWindowsAppDpiAware() {
+    /** @todo use GetWindowDpiAwarenessContext() (since Windows 10)? I think
+        it's not needed for a simple boolean return value. */
+
+    #ifdef DPI_ENUMS_DECLARED
+    /* The GetProcessDpiAwareness() function is available only since Windows
+       8.1, so load it manually to avoid a link-time error when building for
+       Windows 7. Also, the shellscalingapi.h include might not be available
+       on older MinGW, so it's guarded by __has_include(). Here, if the
+       DPI_ENUMS_DECLARED define is present, the header exists and has what we
+       need. */
+    HMODULE const shcore = GetModuleHandleA("Shcore.dll");
+    if(shcore) {
+        auto* const getProcessDpiAwareness = reinterpret_cast<HRESULT(*)(HANDLE, PROCESS_DPI_AWARENESS*)>(GetProcAddress(shcore, "GetProcessDpiAwareness"));
+        PROCESS_DPI_AWARENESS result{};
+        return getProcessDpiAwareness && getProcessDpiAwareness(nullptr, &result) == S_OK && result != PROCESS_DPI_UNAWARE;
+    }
+    #endif
+
+    /* IsProcessDPIAware() is available since Windows Vista. At this point we
+       can require it (XP support? haha no), so assert that everything works
+       correctly. */
+    HMODULE const user32 = GetModuleHandleA("User32.dll");
+    CORRADE_INTERNAL_ASSERT(user32);
+    auto const isProcessDPIAware = reinterpret_cast<BOOL(*)()>(GetProcAddress(user32, "IsProcessDPIAware"));
+    CORRADE_INTERNAL_ASSERT(isProcessDPIAware);
+    return isProcessDPIAware();
 }
 #endif
 

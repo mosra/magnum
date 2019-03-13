@@ -48,6 +48,10 @@ Float emscriptenDpiScaling();
 bool isAppleBundleHiDpiEnabled();
 #endif
 
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
+bool isWindowsAppDpiAware();
+#endif
+
 }}}
 
 #endif

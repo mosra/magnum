@@ -34,9 +34,74 @@ namespace Magnum {
 
 @section platforms-windows-hidpi HiDPI support
 
-Windows supports two approaches to advertising HiDPI support --- either via the
-manifest file or through the [SetProcessDpiAwareness()](https://docs.microsoft.com/en-us/windows/desktop/api/shellscalingapi/nf-shellscalingapi-setprocessdpiawareness)
-API. See the API documentation for more information.
+Windows supports two approaches to advertising HiDPI support. The recommended
+way is via a so-called manifest file added to an executable, but it's also
+possible to it programatically through the `SetProcessDpiAwareness()` family of
+APIs. Note there's three different levels of DPI awareness setup for Windows
+Vista and newer, Windows 8.1 and newer and Windows 10, and for best support may
+want to support all three.
+
+When using MSVC, the manifest file can be added directly via CMake. Advertising application-wide per-monitor support can look like in the following snippet,
+together with fallbacks for older systems:
+
+@code{.xml}
+<assembly xmlns="urn:schemas-microsoft-com:asm.v1" manifestVersion="1.0"
+          xmlns:asmv3="urn:schemas-microsoft-com:asm.v3">
+<asmv3:application>
+  <asmv3:windowsSettings>
+    <dpiAware xmlns="http://schemas.microsoft.com/SMI/2005/WindowsSettings">
+      true/pm
+    </dpiAware> <!-- legacy -->
+    <dpiAwareness xmlns="http://schemas.microsoft.com/SMI/2016/WindowsSettings">
+      permonitorv2,permonitor
+    </dpiAwareness> <!-- falls back to pm if pmv2 is not available -->
+  </asmv3:windowsSettings>
+</asmv3:application>
+</assembly>
+@endcode
+
+Then, the manifest file can be supplied directly in the sources list for
+@cmake add_executable() @ce, via a variable, or you can add it conditionally
+later using @cmake target_sources() @ce. For example:
+
+@code{.cmake}
+add_executable(my-application MyApplication.cpp)
+if(CORRADE_TARGET_WINDOWS)
+    target_sources(my-application PRIVATE WindowsHiDPI.manifest)
+endif()
+@endcode
+
+Some toolkits (such as GLFW in @ref Platform-GlfwApplication-dpi "Platform::GlfwApplication")
+are advertising HiDPI support implicitly programatically. In that case the
+manifest file doesn't need to be supplied, but there may be some disadvantages
+compared to supplying the manifest. See the
+[MSDN documentation about DPI awareness](https://msdn.microsoft.com/en-us/library/windows/desktop/mt846517(v=vs.85).aspx)
+for more information.
+
+@m_class{m-block m-info}
+
+@par Supplying manifests with MinGW
+    With MinGw the operation is slightly more involved, as you need to pass it
+    through a `*.rc` file. A downside is that MinGW is not able to merge
+    information from multiple manifests like the MSVC toolchain can.
+@par
+    @code{.txt}
+    1 RT_MANIFEST "WindowsHiDPI.manifest"
+    @endcode
+@par
+    Then you add the `*.rc` file using @cb{.cmake} target_sources @ce like
+    above. Here's a CMake snippet that will work for both:
+@par
+    @code{.cmake}
+    add_executable(my-application MyApplication.cpp)
+    if(CORRADE_TARGET_WINDOWS)
+        if(MSVC)
+            target_sources(my-application PRIVATE WindowsHiDPI.manifest)
+        elif(MINGW)
+            target_sources(my-application PRIVATE WindowsHiDPI.rc)
+        endif()
+    endif()
+    @endcode
 
 @section platforms-windows-rt Windows RT
 

@@ -149,6 +149,7 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) const {
     /* Otherwise there's a choice between virtual and physical DPI scaling */
     #else
     /* Try to get virtual DPI scaling first, if supported and requested */
+    /** @todo Revisit this for GLFW 3.3 -- https://github.com/glfw/glfw/issues/677 */
     if(dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Virtual) {
         /* Use Xft.dpi on X11 */
         #ifdef _MAGNUM_PLATFORM_USE_X11
@@ -157,6 +158,28 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) const {
             Debug{verbose} << "Platform::GlfwApplication: virtual DPI scaling" << dpiScaling.x();
             return dpiScaling;
         }
+
+        /* Check for DPI awareness on non-RT Windows and then ask for DPI. GLFW
+           is advertising the application to be DPI-aware on its own even
+           without supplying an explicit manifest --
+           https://github.com/glfw/glfw/blob/089ea9af227fdffdf872348923e1c12682e63029/src/win32_init.c#L564-L569
+           If, for some reason, the app is still not DPI-aware, tell that to
+           the user explicitly and don't even attempt to query the value if the
+           app is not DPI aware. If it's desired to get the DPI value
+           unconditionally, the user should use physical DPI scaling instead. */
+        #elif defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)
+        if(!Implementation::isWindowsAppDpiAware()) {
+            Warning{verbose} << "Platform::GlfwApplication: your application is not set as DPI-aware, DPI scaling won't be used";
+            return Vector2{1.0f};
+        }
+        GLFWmonitor* const monitor = glfwGetPrimaryMonitor();
+        const GLFWvidmode* const mode = glfwGetVideoMode(monitor);
+        Vector2i monitorSize;
+        glfwGetMonitorPhysicalSize(monitor, &monitorSize.x(), &monitorSize.y());
+        auto dpi = Vector2{Vector2i{mode->width, mode->height}*25.4f/Vector2{monitorSize}};
+        const Vector2 dpiScaling{dpi/96.0f};
+        Debug{verbose} << "Platform::GlfwApplication: virtual DPI scaling" << dpiScaling;
+        return dpiScaling;
 
         /* Otherwise ¯\_(ツ)_/¯ */
         #else
@@ -168,9 +191,11 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) const {
        scaling is requested */
     CORRADE_INTERNAL_ASSERT(dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Virtual || dpiScalingPolicy == Implementation::GlfwDpiScalingPolicy::Physical);
 
-    /* Take display DPI. Enable only on Linux for now, I need to test this
-       properly on Windows first. */
-    #ifdef CORRADE_TARGET_UNIX
+    /* Take display DPI elsewhere. Enable only on Linux (where it gets the
+       usually very-off value from X11) and on non-RT Windows (where it takes
+       the UI scale value like with virtual DPI scaling, but without checking
+       for DPI awareness first). */
+    #if defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT))
     GLFWmonitor* const monitor = glfwGetPrimaryMonitor();
     const GLFWvidmode* const mode = glfwGetVideoMode(monitor);
     Vector2i monitorSize;

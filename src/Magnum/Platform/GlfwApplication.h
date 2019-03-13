@@ -130,9 +130,11 @@ If no other application header is included, this class is also aliased to
 @section Platform-GlfwApplication-dpi DPI awareness
 
 DPI awareness behavior is consistent with @ref Sdl2Application except that iOS
-or Emscripten specifics don't apply here. See
-@ref Platform-Sdl2Application-dpi "its DPI awareness documentation" for more
-information.
+or Emscripten specifics don't apply here. In addition, on Windows, GLFW is
+implicitly advertising DPI awareness, so the manifest file described in
+@ref platforms-windows-hidpi doesn't necessarily need to be supplied. See
+@ref Platform-Sdl2Application-dpi "Sdl2Application DPI awareness documentation"
+for more information.
 */
 class GlfwApplication {
     public:
