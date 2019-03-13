@@ -63,7 +63,6 @@ available, each namespace has its own:
 -   @ref Magnum/Platform/Platform.h
 -   @ref Magnum/SceneGraph/SceneGraph.h
 -   @ref Magnum/Shaders/Shaders.h
--   @ref Magnum/Shapes/Shapes.h
 -   @ref Magnum/Text/Text.h
 -   @ref Magnum/Trade/Trade.h
 -   @ref Magnum/Ui/Ui.h

@@ -63,7 +63,6 @@
 #  Primitives                   - Primitives library
 #  SceneGraph                   - SceneGraph library
 #  Shaders                      - Shaders library
-#  Shapes                       - Shapes library
 #  Text                         - Text library
 #  TextureTools                 - TextureTools library
 #  Trade                        - Trade library
@@ -337,9 +336,6 @@ set(_MAGNUM_LIBRARY_COMPONENT_LIST
     WindowlessEglApplication WindowlessGlxApplication WindowlessIosApplication WindowlessWglApplication WindowlessWindowsEglApplication
     CglContext EglContext GlxContext WglContext
     OpenGLTester)
-if(MAGNUM_BUILD_DEPRECATED)
-    list(APPEND _MAGNUM_LIBRARY_COMPONENT_LIST Shapes)
-endif()
 set(_MAGNUM_PLUGIN_COMPONENT_LIST
     AnyAudioImporter AnyImageConverter AnyImageImporter AnySceneImporter
     MagnumFont MagnumFontConverter ObjImporter TgaImageConverter TgaImporter
@@ -352,9 +348,9 @@ set(_MAGNUM_Audio_DEPENDENCIES )
 
 set(_MAGNUM_DebugTools_DEPENDENCIES )
 if(MAGNUM_TARGET_GL)
-    # MeshTools, Primitives, SceneGraph, Shaders and Shapes are used only for
-    # GL renderers. All of this is optional, compiled in only if the base
-    # library was selected.
+    # MeshTools, Primitives, SceneGraph and Shaders are used only for GL
+    # renderers. All of this is optional, compiled in only if the base library
+    # was selected.
     list(APPEND _MAGNUM_DebugTools_DEPENDENCIES MeshTools Primitives SceneGraph Shaders Trade GL)
     set(_MAGNUM_DebugTools_MeshTools_DEPENDENCY_IS_OPTIONAL ON)
     set(_MAGNUM_DebugTools_Primitives_DEPENDENCY_IS_OPTIONAL ON)
@@ -362,10 +358,6 @@ if(MAGNUM_TARGET_GL)
     set(_MAGNUM_DebugTools_Shaders_DEPENDENCY_IS_OPTIONAL ON)
     set(_MAGNUM_DebugTools_Trade_DEPENDENCY_IS_OPTIONAL ON)
     set(_MAGNUM_DebugTools_GL_DEPENDENCY_IS_OPTIONAL ON)
-    if(MAGNUM_BUILD_DEPRECATED)
-        list(APPEND _MAGNUM_DebugTools_DEPENDENCIES Shapes)
-        set(_MAGNUM_DebugTools_Shapes_DEPENDENCY_IS_OPTIONAL ON)
-    endif()
 endif()
 
 set(_MAGNUM_MeshTools_DEPENDENCIES )
@@ -398,9 +390,6 @@ endif()
 set(_MAGNUM_Primitives_DEPENDENCIES Trade)
 set(_MAGNUM_SceneGraph_DEPENDENCIES )
 set(_MAGNUM_Shaders_DEPENDENCIES GL)
-if(MAGNUM_BUILD_DEPRECATED)
-    set(_MAGNUM_Shapes_DEPENDENCIES SceneGraph)
-endif()
 set(_MAGNUM_Text_DEPENDENCIES TextureTools)
 if(MAGNUM_TARGET_GL)
     list(APPEND _MAGNUM_Text_DEPENDENCIES GL)
@@ -846,7 +835,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
         # No special setup for SceneGraph library
         # No special setup for Shaders library
-        # No special setup for Shapes library
 
         # Text library
         elseif(_component STREQUAL Text)

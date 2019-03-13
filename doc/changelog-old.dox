@@ -305,8 +305,8 @@ for a high-level overview.
     imported data
 -   @ref MeshTools::interleaveInto() for interleaving data into existing
     buffer
--   @ref Shapes::Shape::collision() function as complement to
-    @ref Shapes::Shape::collides()
+-   `Shapes::Shape::collision()` function as complement to
+    `Shapes::Shape::collides()`
 -   @ref Platform::GlutApplication::KeyEvent finally has more complete key
     support
 -   @ref Math::Range::data() function, useful when querying range values from
@@ -672,8 +672,7 @@ for a high-level overview.
     avoid accidental memory leaks
 -   New translation-only transformation in @ref SceneGraph supporting also
     purely integral coordinates, useful e.g. for UI or 2D platformers.
--   Detailed collision queries and new @ref Shapes::InvertedSphere "InvertedSphere"
-    shape in Shapes library
+-   Detailed collision queries and new `InvertedSphere` shape in Shapes library
 -   Texture support in @ref Shaders::Flat
 -   Mouse button queries in @ref Platform::Sdl2Application::MouseMoveEvent "Platform::*Application::MouseMoveEvent"
 

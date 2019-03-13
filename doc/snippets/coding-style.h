@@ -9,14 +9,6 @@ void setPolygonMode(PolygonMode mode);
 #endif
 /* [glcompatibility] */
 
-/* [collisionoperator] */
-/** @collisionoccurenceoperator{Point,Sphere} */
-inline bool operator%(const Point& a, const Sphere& b) { return b % a; }
-
-/** @collisionoperator{Point,Sphere} */
-inline Collision operator/(const Point& a, const Sphere& b) { return (b/a).reverted(); }
-/* [collisionoperator] */
-
 /* [extension] */
 /** @gl_extension{ARB,timer_query} */
 /* [extension] */

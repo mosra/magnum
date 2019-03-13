@@ -101,19 +101,6 @@ these are defined:
 The @c \@glsl command expands to <tt>\@cb{.glsl}</tt>, making it possible to
 have inline highlighted GLSL code snippets, similarly to @c \@cpp and @c \@cmake.
 
-@subsubsection coding-style-documentation-commands-collisionoperator Shape collision operators
-
-Out-of-class operators for collision and collision occurence in Shapes
-namespace should be marked with @c \@collisionoperator and @c \@collisionoccurenceoperator,
-e.g.:
-
-@snippet coding-style.h collisionoperator
-
-They will appear as related functions within documentation of class for which
-the operator is implemented (not of class in which the operator is
-implemented), thus efficiently connecting the two classes together in the
-documentation.
-
 @subsubsection coding-style-documentation-commands-extension Links to OpenGL, Vulkan and OpenAL extensions
 
 If an OpenGL extension is referenced in the documentation, it should be done

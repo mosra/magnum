@@ -47,18 +47,6 @@
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/MeshView.h"
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-#if !defined(Magnum_DebugTools_ShapeRenderer_h) && !defined(_MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES)
-#define Magnum_DebugTools_ShapeRenderer_h_not_included
-#define _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
-#endif
-#include "Magnum/DebugTools/ShapeRenderer.h"
-#ifdef Magnum_DebugTools_ShapeRenderer_h_not_included
-#undef Magnum_DebugTools_ShapeRenderer_h_not_included
-#undef _MAGNUM_DO_NOT_WARN_DEPRECATED_SHAPES
-#endif
-#endif
 #endif
 
 #ifdef MAGNUM_TARGET_GL
@@ -74,22 +62,12 @@ information.
     @ref MAGNUM_TARGET_GL "TARGET_GL" enabled (done by default). See
     @ref building-features for more information.
 */
-#ifdef MAGNUM_BUILD_DEPRECATED
-CORRADE_IGNORE_DEPRECATED_PUSH
-#endif
-class MAGNUM_DEBUGTOOLS_EXPORT ResourceManager: public Magnum::ResourceManager<Magnum::Implementation::ResourceManagerLocalInstance, GL::AbstractShaderProgram, GL::Buffer, GL::Mesh, GL::MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    , DebugTools::ShapeRendererOptions
-    #endif
-    >
+class MAGNUM_DEBUGTOOLS_EXPORT ResourceManager: public Magnum::ResourceManager<Magnum::Implementation::ResourceManagerLocalInstance, GL::AbstractShaderProgram, GL::Buffer, GL::Mesh, GL::MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions>
 {
     public:
         explicit ResourceManager();
         ~ResourceManager();
 };
-#ifdef MAGNUM_BUILD_DEPRECATED
-CORRADE_IGNORE_DEPRECATED_POP
-#endif
 #else
 #error this header is available only in the OpenGL build
 #endif

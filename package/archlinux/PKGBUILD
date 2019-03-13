@@ -25,7 +25,6 @@ build() {
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_PREFIX=/usr \
         -DWITH_AUDIO=ON \
-        -DWITH_SHAPES=ON \
         -DWITH_VK=ON \
         -DWITH_GLFWAPPLICATION=ON \
         -DWITH_GLUTAPPLICATION=ON \

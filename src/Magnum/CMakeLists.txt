@@ -161,10 +161,6 @@ if(WITH_SHADERS)
     add_subdirectory(Shaders)
 endif()
 
-if(WITH_SHAPES)
-    add_subdirectory(Shapes)
-endif()
-
 if(WITH_TEXT)
     add_subdirectory(Text)
 endif()

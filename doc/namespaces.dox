@@ -371,44 +371,6 @@ target_link_libraries(your-app Magnum::Shaders)
 See @ref building, @ref cmake and @ref shaders for more information.
 */
 
-/** @dir Magnum/Shapes
-@brief Namespace @ref Magnum::Shapes
-
-@deprecated The @ref Magnum::Shapes library is a failed design experiment and
-    is scheduled for removal in a future release. Related geometry algorithms
-    were moved to @ref Magnum::Math::Distance and @ref Magnum::Math::Intersection;
-    if you need a full-fledged physics library, please have look at
-    [Bullet](https://bulletphysics.org), which has Magnum integration in
-    @ref Magnum::BulletIntegration, or at [Box2D](https://box2d.org/), which
-    has a @ref examples-box2d "Magnum example" as well.
-*/
-/** @namespace Magnum::Shapes
-@brief Shape library
-
-@deprecated This library is a failed design experiment and is scheduled for
-    removal in a future release. Related geometry algorithms were moved to
-    @ref Math::Distance and @ref Math::Intersection; if you need a full-fledged
-    physics library, please have look at [Bullet](https://bulletphysics.org),
-    which has Magnum integration in @ref BulletIntegration, or at
-    [Box2D](https://box2d.org/), which has a @ref examples-box2d "Magnum example"
-    as well.
-
-Collision detection system.
-
-This library is built if `WITH_SHAPES` is enabled when building Magnum. To use
-this library with CMake, you need to request the `Shapes` component of the
-`Magnum` package and link to the `Magnum::Shapes` target:
-
-@code{.cmake}
-find_package(Magnum REQUIRED Shapes)
-
-# ...
-target_link_libraries(your-app Magnum::Shapes)
-@endcode
-
-See @ref building, @ref cmake and @ref shapes for more information.
-*/
-
 /** @dir Magnum/Text
  * @brief Namespace @ref Magnum::Text
  */

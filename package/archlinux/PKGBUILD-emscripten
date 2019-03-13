@@ -29,7 +29,6 @@ build() {
         -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
         -DMAGNUM_DEPLOY_PREFIX=/srv/http/emscripten \
         -DWITH_AUDIO=ON \
-        -DWITH_SHAPES=ON \
         -DWITH_SDL2APPLICATION=ON \
         -DWITH_WINDOWLESSEGLAPPLICATION=ON \
         -DWITH_ANYAUDIOIMPORTER=ON \

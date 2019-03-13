@@ -266,6 +266,8 @@ See also:
 
 -   Removed all aliases to @ref GL library functionality in the root namespace
     (and root include path) which were deprecated in 2018.04
+-   Removed the `Shapes` library together with `DebugTools::ShapeRenderer`,
+    which was is a failed design experiment deprecated since 2018.10
 -   In order to be compatible with both Emscripten 1.38.27 and the versions
     before, all Emscripten markup is now expected to have the HTML @cb{.html} <canvas> @ce element identified by @cb{.css} #canvas @ce. You need to:
     -   update your HTML markup to use
@@ -952,14 +954,13 @@ Released 2018-10-23, tagged as
 
 @subsection changelog-2018-10-deprecated Deprecated APIs
 
--   The @ref Magnum::Shapes library is a failed design experiment and is
-    scheduled for removal in a future release, together with
-    @ref DebugTools::ShapeRenderer. Related geometry algorithms were moved to
-    @ref Magnum::Math::Distance and @ref Magnum::Math::Intersection; if you
-    need a full-fledged physics library, please have look at
-    [Bullet](https://bulletphysics.org), which has Magnum integration in
-    @ref Magnum::BulletIntegration, or at [Box2D](https://box2d.org/), which
-    has a @ref examples-box2d "Magnum example" as well.
+-   The `Shapes` library is a failed design experiment and is scheduled for
+    removal in a future release, together with `DebugTools::ShapeRenderer`.
+    Related geometry algorithms were moved to @ref Math::Distance and
+    @ref Math::Intersection; if you need a full-fledged physics library, please
+    have look at [Bullet](https://bulletphysics.org), which has Magnum
+    integration in @ref BulletIntegration, or at [Box2D](https://box2d.org/),
+    which has a @ref examples-box2d "Magnum example" as well.
 -   @ref Platform::GlutApplication is based on an outdated toolkit and thus
     scheduled for removal in a future release. Please consider switching to
     @ref Platform::Sdl2Application or @ref Platform::GlfwApplication as soon as
@@ -1010,8 +1011,8 @@ Released 2018-10-23, tagged as
 
 @subsection changelog-2018-10-compatibility Potential compatibility breakages, removed APIs
 
--   The @ref Magnum::Shapes library is not built by default anymore due to its
-    deprecated status
+-   The `Shapes` library is not built by default anymore due to its deprecated
+    status
 -   @ref Audio::Playable is now by default omnidirectional instead of having
     source in direction of negative Z axis (the direction has effect only when
     setting inner and outer cone properties of @ref Audio::Source).

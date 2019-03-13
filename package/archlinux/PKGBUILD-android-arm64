@@ -32,7 +32,6 @@ build() {
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-22/arch-arm64/usr \
         -DMAGNUM_INCLUDE_INSTALL_PREFIX=/opt/android-ndk/sysroot/usr \
-        -DWITH_SHAPES=ON \
         -DWITH_ANYAUDIOIMPORTER=OFF \
         -DWITH_ANYIMAGECONVERTER=ON \
         -DWITH_ANYIMAGEIMPORTER=ON \

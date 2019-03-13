@@ -208,13 +208,7 @@ for more detailed information and usage examples:
 -   @ref SceneGraph::Animable "SceneGraph::Animable*D" --- Adds animation
     functionality to given object. Group of animables can be then controlled
     using @ref SceneGraph::AnimableGroup "SceneGraph::AnimableGroup*D".
--   @ref Shapes::Shape @m_class{m-label m-danger} **deprecated** --- Adds a
-    collision shape to given object. Group of shapes can be then controlled
-    using @ref Shapes::ShapeGroup "Shapes::ShapeGroup*D". See @ref shapes for
-    more information.
 -   @ref DebugTools::ObjectRenderer "DebugTools::ObjectRenderer*D",
-    @ref DebugTools::ShapeRenderer "DebugTools::ShapeRenderer*D"
-    @m_class{m-label m-danger} **deprecated**,
     @ref DebugTools::ForceRenderer "DebugTools::ForceRenderer*D" --- Visualize
     object properties, object shape or force vector for debugging purposes. See
     @ref debug-tools for more information.

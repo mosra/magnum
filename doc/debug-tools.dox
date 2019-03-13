@@ -61,7 +61,7 @@ Example usage: visualizing object position, rotation and scaling using
 
 @snippet MagnumDebugTools-gl.cpp debug-tools-renderers
 
-See @ref DebugTools::ObjectRenderer and @ref DebugTools::ShapeRenderer for more
+See @ref DebugTools::ObjectRenderer and @ref DebugTools::ForceRenderer for more
 information.
 */
 }

@@ -21,7 +21,6 @@ build() {
         -DCMAKE_BUILD_TYPE=Release \
         -DCMAKE_INSTALL_PREFIX=/usr/i686-w64-mingw32 \
         -DWITH_AUDIO=ON \
-        -DWITH_SHAPES=ON \
         -DWITH_GLUTAPPLICATION=ON \
         -DWITH_SDL2APPLICATION=ON \
         -DWITH_WINDOWLESSWGLAPPLICATION=ON \

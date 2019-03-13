@@ -230,16 +230,6 @@ after_success:
 # Keep in sync with PKBUILD-coverage and appveyor-lcov.sh, please
 - if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --directory . --capture --output-file coverage.info > /dev/null; fi
 - if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --extract coverage.info "*/src/Magnum*/*" --output-file coverage.info > /dev/null; fi
-# Deprecated, we don't care about coverage anymore
-- if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/Magnum/Shapes/*" --output-file coverage.info > /dev/null; fi
-- if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/src/Magnum/DebugTools/ShapeRenderer*" --output-file coverage.info > /dev/null; fi
-- if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/src/Magnum/DebugTools/Implementation/*BoxRenderer*" --output-file coverage.info > /dev/null; fi
-- if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/src/Magnum/DebugTools/Implementation/AbstractShapeRenderer*" --output-file coverage.info > /dev/null; fi
-- if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/src/Magnum/DebugTools/Implementation/CapsuleRenderer*" --output-file coverage.info > /dev/null; fi
-- if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/src/Magnum/DebugTools/Implementation/CylinderRenderer*" --output-file coverage.info > /dev/null; fi
-- if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/src/Magnum/DebugTools/Implementation/LineSegmentRenderer*" --output-file coverage.info > /dev/null; fi
-- if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/src/Magnum/DebugTools/Implementation/PointRenderer*" --output-file coverage.info > /dev/null; fi
-- if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/src/Magnum/DebugTools/Implementation/SphereRenderer*" --output-file coverage.info > /dev/null; fi
 - if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/MagnumExternal/*" --output-file coverage.info > /dev/null; fi
 - if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/Test/*" --output-file coverage.info > /dev/null; fi
 - if [[ "$CMAKE_CXX_FLAGS" == *"--coverage"* ]]; then lcov $LCOV_EXTRA_OPTS --remove coverage.info "*/build/src/*" --output-file coverage.info > /dev/null; fi
