@@ -216,6 +216,9 @@ documentation of each `Integration.h` header for details:
 
 -   Math-related Vulkan structures --- @ref Magnum/Vk/Integration.h, part of
     the @ref Vk library
+-   All Eigen types --- @ref Magnum/EigenIntegration/Integration.h and
+    @ref Magnum/EigenIntegration/GeometryIntegration.h, part of the
+    @ref EigenIntegration library
 -   All GLM types --- @ref Magnum/GlmIntegration/Integration.h,
     @ref Magnum/GlmIntegration/GtcIntegration.h and
     @ref Magnum/GlmIntegration/GtxIntegration.h, part of the
