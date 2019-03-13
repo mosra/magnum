@@ -180,6 +180,8 @@ See also:
 
 @subsection changelog-latest-buildsystem Build system
 
+-   @ref building-packages-msys "MSYS2 packages" are now in official
+    repositories, installable directly via `pacman`
 -   Updated *extremely* outdated Emscripten boilerplate from the
     [base-emscripten bootstrap project](https://github.com/mosra/magnum-bootstrap/tree/base-emscripten)
     (the HTML markup was unchanged since 2013, heh)

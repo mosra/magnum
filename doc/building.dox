@@ -195,10 +195,16 @@ There are also ArchLinux packages for @ref building-plugins-packages-arch "Magnu
 
 @subsection building-packages-msys MSYS2 packages
 
-`PKGBUILD`s for [MSYS2](https://www.msys2.org/) are in the `package/msys`
-directory. Similarly to ArchLinux, there is one package in the
-`package/msys/magnum` directory, which will download and package latest stable
-release; and then a development `PKGBUILD`, allowing you to package and install
+[MSYS2](https://www.msys2.org/) package for the latest stable release is
+mantained in the official repos. Installing is as simple as this:
+
+@code{.sh}
+pacman -S mingw-w64-x86_64-magnum # or mingw-w64-i686-magnum
+@endcode
+
+Similarly to ArchLinux, there is one package in the `package/msys/magnum`
+directory, which will download and package latest stable release; and then a
+development `PKGBUILD` in `package/msys`, allowing you to package and install
 the currently checked out source tree. Both depend on a corresponding
 @ref building-corrade-packages-msys "Corrade MSYS2 package". Example usage:
 
