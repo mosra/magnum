@@ -130,7 +130,7 @@ See also:
     contemporary drivers supporting @gl_extension{EXT,direct_state_access}
     support the (newer and better designed) @gl_extension{ARB,direct_state_access},
     while drivers that don't support the ARB version don't support the EXT
-    flavor either.
+    flavor either. See also [mosra/magnum#81](https://github.com/mosra/magnum/issues/81).
 -   Reworked @ref GL::Mesh internals to make use of
     @gl_extension{ARB,direct_state_access} instead of being the last code path
     stuck on @gl_extension{EXT,direct_state_access}
@@ -268,8 +268,11 @@ See also:
     (and root include path) which were deprecated in 2018.04
 -   Removed the `Shapes` library together with `DebugTools::ShapeRenderer`,
     which was a failed design experiment deprecated since version 2018.10
+    (see [mosra/magnum#148](https://github.com/mosra/magnum/issues/148))
 -   Removed the `Platform::GlutApplication` as it was based on an outdated
-    toolkit and deprecated since version 2018.10
+    toolkit and deprecated since version 2018.10 (see
+    [mosra/magnum#148](https://github.com/mosra/magnum/issues/148) and
+    [mosra/magnum#195](https://github.com/mosra/magnum/pull/195))
 -   In order to be compatible with both Emscripten 1.38.27 and the versions
     before, all Emscripten markup is now expected to have the HTML @cb{.html} <canvas> @ce element identified by @cb{.css} #canvas @ce. You need to:
     -   update your HTML markup to use
