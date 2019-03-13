@@ -52,11 +52,10 @@ The engine tracks currently bound renderbuffer to avoid unnecessary calls to
 implementation-defined values (such as @ref maxSize()) are cached, so repeated
 queries don't result in repeated @fn_gl{Get} calls.
 
-If either @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) or
-@gl_extension{EXT,direct_state_access} desktop extension is available, functions
-@ref setStorage() and @ref setStorageMultisample() use DSA to avoid unnecessary
-calls to @fn_gl{BindRenderbuffer}. See their respective documentation for more
-information.
+If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is available,
+functions @ref setStorage() and @ref setStorageMultisample() use DSA to avoid
+unnecessary calls to @fn_gl{BindRenderbuffer}. See their respective
+documentation for more information.
 
 @requires_gl30 Extension @gl_extension{ARB,framebuffer_object}
 */
@@ -212,12 +211,10 @@ class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
          * @param internalFormat    Internal format
          * @param size              Renderbuffer size
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
          * available, the renderbuffer is bound before the operation (if not
          * already).
          * @see @ref maxSize(), @fn_gl2_keyword{NamedRenderbufferStorage,RenderbufferStorage},
-         *      @fn_gl_extension_keyword{NamedRenderbufferStorage,EXT,direct_state_access},
          *      eventually @fn_gl{BindRenderbuffer} and
          *      @fn_gl_keyword{RenderbufferStorage}
          */
@@ -230,13 +227,11 @@ class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
          * @param internalFormat    Internal format
          * @param size              Renderbuffer size
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
          * available, the renderbuffer is bound before the operation (if not
          * already).
          * @see @ref maxSize(), @ref maxSamples(),
          *      @fn_gl2_keyword{NamedRenderbufferStorageMultisample,RenderbufferStorageMultisample},
-         *      @fn_gl_extension_keyword{NamedRenderbufferStorageMultisample,EXT,direct_state_access},
          *      eventually @fn_gl{BindRenderbuffer} and
          *      @fn_gl_keyword{RenderbufferStorageMultisample}
          * @requires_gles30 Extension @gl_extension{ANGLE,framebuffer_multisample}
@@ -265,14 +260,12 @@ class MAGNUM_GL_EXPORT Renderbuffer: public AbstractObject {
         void MAGNUM_GL_LOCAL storageImplementationDefault(RenderbufferFormat internalFormat, const Vector2i& size);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL storageImplementationDSA(RenderbufferFormat internalFormat, const Vector2i& size);
-        void MAGNUM_GL_LOCAL storageImplementationDSAEXT(RenderbufferFormat internalFormat, const Vector2i& size);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         void MAGNUM_GL_LOCAL storageMultisampleImplementationDefault(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL storageMultisampleImplementationDSA(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
-        void MAGNUM_GL_LOCAL storageMultisampleImplementationDSAEXT(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);
         #endif
         #elif !defined(MAGNUM_TARGET_WEBGL)
         void MAGNUM_GL_LOCAL storageMultisampleImplementationANGLE(GLsizei samples, RenderbufferFormat internalFormat, const Vector2i& size);

@@ -124,16 +124,16 @@ Some functionality can be emulated by Magnum --- it detects available extensions
 and selects best possible code path for optimal performance. On startup, the
 application prints list of extensions that were used to improve the default
 functionality. The most prominent feature is @gl_extension{ARB,direct_state_access}
-(part of OpenGL 4.3) and its predecessor @gl_extension{EXT,direct_state_access}.
-These extensions make it possible to modify OpenGL objects without explicitly
-binding them, reducing the amount of needed API calls. Magnum API is designed
-around direct state access as it is far easier to use and less error-prone, but
-if these extensions are not available, the functionality is emulated through
-classic bind-to-edit approach. Other examples of extension-dependent
-functionality is @ref GL::DebugMessage "debug output" which is simply no-op
-when required extensions are not available, @ref GL::Texture::setStorage()
-emulation on platforms that don't support it etc. The goal is to abstract away
-the (mostly unimportant) differences for easier porting.
+(part of OpenGL 4.3). This extension makes it possible to modify OpenGL objects
+without explicitly binding them, reducing the amount of needed API calls.
+Magnum API is designed around direct state access as it is far easier to use
+and less error-prone, but if this extension is not available, the functionality
+is emulated through classic bind-to-edit approach. Other examples of
+extension-dependent functionality is @ref GL::DebugMessage "debug output" which
+is simply no-op when required extensions are not available,
+@ref GL::Texture::setStorage() emulation on platforms that don't support it
+etc. The goal is to abstract away the (mostly unimportant) differences for
+easier porting.
 
 @snippet MagnumGL.cpp opengl-wrapping-dsa
 

@@ -772,15 +772,12 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the texture is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the texture is bound before the operation (if not
          * already).
          * @see @ref setStorage(), @fn_gl{PixelStore}, then
          *      @fn_gl2_keyword{TextureSubImage2D,TexSubImage2D}/
          *      @fn_gl2_keyword{TextureSubImage3D,TexSubImage3D},
-         *      @fn_gl_extension_keyword{TextureSubImage2D,EXT,direct_state_access}/
-         *      @fn_gl_extension_keyword{TextureSubImage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexSubImage2D} / @fn_gl_keyword{TexSubImage3D}
          */
@@ -808,15 +805,12 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      or compressed @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the texture is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the texture is bound before the operation (if not
          * already).
          * @see @ref setStorage(), @fn_gl{PixelStore}, then
          *      @fn_gl2_keyword{CompressedTextureSubImage2D,CompressedTexSubImage2D}/
          *      @fn_gl2_keyword{CompressedTextureSubImage3D,CompressedTexSubImage3D},
-         *      @fn_gl_extension_keyword{CompressedTextureSubImage2D,EXT,direct_state_access}/
-         *      @fn_gl_extension_keyword{CompressedTextureSubImage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{CompressedTexSubImage2D} / @fn_gl_keyword{CompressedTexSubImage3D}
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}

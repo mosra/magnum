@@ -433,12 +433,6 @@ void Buffer::copyImplementationDefault(Buffer& read, Buffer& write, GLintptr rea
 void Buffer::copyImplementationDSA(Buffer& read, Buffer& write, const GLintptr readOffset, const GLintptr writeOffset, const GLsizeiptr size) {
     glCopyNamedBufferSubData(read._id, write._id, readOffset, writeOffset, size);
 }
-
-void Buffer::copyImplementationDSAEXT(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size) {
-    read._flags |= ObjectFlag::Created;
-    write._flags |= ObjectFlag::Created;
-    glNamedCopyBufferSubDataEXT(read._id, write._id, readOffset, writeOffset, size);
-}
 #endif
 #endif
 
@@ -450,11 +444,6 @@ void Buffer::getParameterImplementationDefault(const GLenum value, GLint* const 
 void Buffer::getParameterImplementationDSA(const GLenum value, GLint* const data) {
     glGetNamedBufferParameteriv(_id, value, data);
 }
-
-void Buffer::getParameterImplementationDSAEXT(const GLenum value, GLint* const data) {
-    _flags |= ObjectFlag::Created;
-    glGetNamedBufferParameterivEXT(_id, value, data);
-}
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
@@ -464,11 +453,6 @@ void Buffer::getSubDataImplementationDefault(const GLintptr offset, const GLsize
 
 void Buffer::getSubDataImplementationDSA(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
     glGetNamedBufferSubData(_id, offset, size, data);
-}
-
-void Buffer::getSubDataImplementationDSAEXT(const GLintptr offset, const GLsizeiptr size, GLvoid* const data) {
-    _flags |= ObjectFlag::Created;
-    glGetNamedBufferSubDataEXT(_id, offset, size, data);
 }
 #endif
 
@@ -480,11 +464,6 @@ void Buffer::dataImplementationDefault(GLsizeiptr size, const GLvoid* data, Buff
 void Buffer::dataImplementationDSA(const GLsizeiptr size, const GLvoid* const data, const BufferUsage usage) {
     glNamedBufferData(_id, size, data, GLenum(usage));
 }
-
-void Buffer::dataImplementationDSAEXT(GLsizeiptr size, const GLvoid* data, BufferUsage usage) {
-    _flags |= ObjectFlag::Created;
-    glNamedBufferDataEXT(_id, size, data, GLenum(usage));
-}
 #endif
 
 void Buffer::subDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
@@ -494,11 +473,6 @@ void Buffer::subDataImplementationDefault(GLintptr offset, GLsizeiptr size, cons
 #ifndef MAGNUM_TARGET_GLES
 void Buffer::subDataImplementationDSA(const GLintptr offset, const GLsizeiptr size, const GLvoid* const data) {
     glNamedBufferSubData(_id, offset, size, data);
-}
-
-void Buffer::subDataImplementationDSAEXT(GLintptr offset, GLsizeiptr size, const GLvoid* data) {
-    _flags |= ObjectFlag::Created;
-    glNamedBufferSubDataEXT(_id, offset, size, data);
 }
 #endif
 
@@ -533,11 +507,6 @@ void* Buffer::mapImplementationDefault(MapAccess access) {
 void* Buffer::mapImplementationDSA(const MapAccess access) {
     return glMapNamedBuffer(_id, GLenum(access));
 }
-
-void* Buffer::mapImplementationDSAEXT(MapAccess access) {
-    _flags |= ObjectFlag::Created;
-    return glMapNamedBufferEXT(_id, GLenum(access));
-}
 #endif
 
 void* Buffer::mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access) {
@@ -551,11 +520,6 @@ void* Buffer::mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, 
 #ifndef MAGNUM_TARGET_GLES
 void* Buffer::mapRangeImplementationDSA(const GLintptr offset, const GLsizeiptr length, const MapFlags access) {
     return glMapNamedBufferRange(_id, offset, length, GLenum(access));
-}
-
-void* Buffer::mapRangeImplementationDSAEXT(GLintptr offset, GLsizeiptr length, MapFlags access) {
-    _flags |= ObjectFlag::Created;
-    return glMapNamedBufferRangeEXT(_id, offset, length, GLenum(access));
 }
 #endif
 
@@ -571,11 +535,6 @@ void Buffer::flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr l
 void Buffer::flushMappedRangeImplementationDSA(const GLintptr offset, const GLsizeiptr length) {
     glFlushMappedNamedBufferRange(_id, offset, length);
 }
-
-void Buffer::flushMappedRangeImplementationDSAEXT(GLintptr offset, GLsizeiptr length) {
-    _flags |= ObjectFlag::Created;
-    glFlushMappedNamedBufferRangeEXT(_id, offset, length);
-}
 #endif
 
 bool Buffer::unmapImplementationDefault() {
@@ -589,11 +548,6 @@ bool Buffer::unmapImplementationDefault() {
 #ifndef MAGNUM_TARGET_GLES
 bool Buffer::unmapImplementationDSA() {
     return glUnmapNamedBuffer(_id);
-}
-
-bool Buffer::unmapImplementationDSAEXT() {
-    _flags |= ObjectFlag::Created;
-    return glUnmapNamedBufferEXT(_id);
 }
 #endif
 #endif

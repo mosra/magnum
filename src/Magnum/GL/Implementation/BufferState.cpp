@@ -113,18 +113,6 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
         mapRangeImplementation = &Buffer::mapRangeImplementationDSA;
         flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDSA;
         unmapImplementation = &Buffer::unmapImplementationDSA;
-    } else if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
-        extensions.emplace_back(Extensions::EXT::direct_state_access::string());
-
-        copyImplementation = &Buffer::copyImplementationDSAEXT;
-        getParameterImplementation = &Buffer::getParameterImplementationDSAEXT;
-        getSubDataImplementation = &Buffer::getSubDataImplementationDSAEXT;
-        dataImplementation = &Buffer::dataImplementationDSAEXT;
-        subDataImplementation = &Buffer::subDataImplementationDSAEXT;
-        mapImplementation = &Buffer::mapImplementationDSAEXT;
-        mapRangeImplementation = &Buffer::mapRangeImplementationDSAEXT;
-        flushMappedRangeImplementation = &Buffer::flushMappedRangeImplementationDSAEXT;
-        unmapImplementation = &Buffer::unmapImplementationDSAEXT;
     } else
     #endif
     {

@@ -87,12 +87,6 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         unbindImplementation = &AbstractTexture::unbindImplementationMulti;
         bindImplementation = &AbstractTexture::bindImplementationMulti;
 
-    } else if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
-        /* Extension name added below */
-
-        unbindImplementation = &AbstractTexture::unbindImplementationDSAEXT;
-        bindImplementation = &AbstractTexture::bindImplementationDSAEXT;
-
     } else
     #endif
     {
@@ -139,31 +133,6 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDSA;
         cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDSA;
         cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDSA;
-
-    } else if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
-        extensions.emplace_back(Extensions::EXT::direct_state_access::string());
-
-        parameteriImplementation = &AbstractTexture::parameterImplementationDSAEXT;
-        parameterfImplementation = &AbstractTexture::parameterImplementationDSAEXT;
-        parameterivImplementation = &AbstractTexture::parameterImplementationDSAEXT;
-        parameterfvImplementation = &AbstractTexture::parameterImplementationDSAEXT;
-        parameterIuivImplementation = &AbstractTexture::parameterIImplementationDSAEXT;
-        parameterIivImplementation = &AbstractTexture::parameterIImplementationDSAEXT;
-        getLevelParameterivImplementation = &AbstractTexture::getLevelParameterImplementationDSAEXT;
-        mipmapImplementation = &AbstractTexture::mipmapImplementationDSAEXT;
-        subImage1DImplementation = &AbstractTexture::subImageImplementationDSAEXT;
-        subImage2DImplementation = &AbstractTexture::subImageImplementationDSAEXT;
-        subImage3DImplementation = &AbstractTexture::subImageImplementationDSAEXT;
-        compressedSubImage1DImplementation = &AbstractTexture::compressedSubImageImplementationDSAEXT;
-        compressedSubImage2DImplementation = &AbstractTexture::compressedSubImageImplementationDSAEXT;
-        compressedSubImage3DImplementation = &AbstractTexture::compressedSubImageImplementationDSAEXT;
-
-        setBufferImplementation = &BufferTexture::setBufferImplementationDSAEXT;
-        setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDSAEXT;
-
-        getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDSAEXT;
-        cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDSAEXT;
-        cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDSAEXT;
 
     } else
     #endif
@@ -252,14 +221,10 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         !context.isDriverWorkaroundDisabled("nv-cubemap-inconsistent-compressed-image-size")) {
         if(context.isExtensionSupported<Extensions::ARB::direct_state_access>())
             getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSANonImmutableWorkaround;
-        else if(context.isExtensionSupported<Extensions::EXT::direct_state_access>())
-            getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSAEXTImmutableWorkaround;
         else getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDefaultImmutableWorkaround;
     } else {
         if(context.isExtensionSupported<Extensions::ARB::direct_state_access>())
             getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSA;
-        else if(context.isExtensionSupported<Extensions::EXT::direct_state_access>())
-            getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSAEXT;
         else getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDefault;
     }
 
@@ -273,11 +238,6 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         extensions.emplace_back(Extensions::ARB::robustness::string());
         getImageImplementation = &AbstractTexture::getImageImplementationRobustness;
         getCompressedImageImplementation = &AbstractTexture::getCompressedImageImplementationRobustness;
-
-    } else if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
-        /* Extension name added above */
-        getImageImplementation = &AbstractTexture::getImageImplementationDSAEXT;
-        getCompressedImageImplementation = &AbstractTexture::getCompressedImageImplementationDSAEXT;
 
     } else {
         getImageImplementation = &AbstractTexture::getImageImplementationDefault;
@@ -294,11 +254,6 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         /* Extension name added above */
         getCubeImageImplementation = &CubeMapTexture::getImageImplementationRobustness;
         getCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationRobustness;
-
-    } else if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
-        /* Extension name added above */
-        getCubeImageImplementation = &CubeMapTexture::getImageImplementationDSAEXT;
-        getCompressedCubeImageImplementation = &CubeMapTexture::getCompressedImageImplementationDSAEXT;
 
     } else {
         getCubeImageImplementation = &CubeMapTexture::getImageImplementationDefault;
@@ -335,10 +290,6 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
             storage2DImplementation = &AbstractTexture::storageImplementationDSA;
             storage3DImplementation = &AbstractTexture::storageImplementationDSA;
 
-        } else if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
-            storage1DImplementation = &AbstractTexture::storageImplementationDSAEXT;
-            storage2DImplementation = &AbstractTexture::storageImplementationDSAEXT;
-            storage3DImplementation = &AbstractTexture::storageImplementationDSAEXT;
         } else
         #endif
         {
@@ -378,9 +329,6 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
             storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSA;
             storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSA;
-        } else if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
-            storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSAEXT;
-            storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDSAEXT;
         } else {
             storage2DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDefault;
             storage3DMultisampleImplementation = &AbstractTexture::storageMultisampleImplementationDefault;

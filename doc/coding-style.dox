@@ -203,7 +203,7 @@ are the same as in @c \@gl_extension command. It produced link to extension
 specification, with function name as link text:
 
 <blockquote>
-@fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access}
+@fn_gl_extension{LabelObject,EXT,debug_label}
 </blockquote>
 
 For Vulkan, the commands are @c \@fn_vk, @c \@type_vk and @c \@def_vk. Example:

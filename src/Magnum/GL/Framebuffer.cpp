@@ -341,19 +341,10 @@ void Framebuffer::renderbufferImplementationDSA(const BufferAttachment attachmen
     glNamedFramebufferRenderbuffer(_id, GLenum(attachment), GL_RENDERBUFFER, renderbufferId);
 }
 
-void Framebuffer::renderbufferImplementationDSAEXT(const BufferAttachment attachment, const GLuint renderbufferId) {
-    _flags |= ObjectFlag::Created;
-    glNamedFramebufferRenderbufferEXT(_id, GLenum(attachment), GL_RENDERBUFFER, renderbufferId);
-}
-
 void Framebuffer::texture1DImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
     glFramebufferTexture1D(GLenum(bindInternal()), GLenum(attachment), GL_TEXTURE_1D, textureId, mipLevel);
 }
 
-void Framebuffer::texture1DImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint mipLevel) {
-    _flags |= ObjectFlag::Created;
-    glNamedFramebufferTexture1DEXT(_id, GLenum(attachment), GL_TEXTURE_1D, textureId, mipLevel);
-}
 #endif
 
 void Framebuffer::texture2DImplementationDefault(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel) {
@@ -363,11 +354,6 @@ void Framebuffer::texture2DImplementationDefault(BufferAttachment attachment, GL
 #ifndef MAGNUM_TARGET_GLES
 void Framebuffer::texture2DImplementationDSA(const BufferAttachment attachment, GLenum, const GLuint textureId, const GLint mipLevel) {
     glNamedFramebufferTexture(_id, GLenum(attachment), textureId, mipLevel);
-}
-
-void Framebuffer::texture2DImplementationDSAEXT(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint mipLevel) {
-    _flags |= ObjectFlag::Created;
-    glNamedFramebufferTexture2DEXT(_id, GLenum(attachment), textureTarget, textureId, mipLevel);
 }
 
 void Framebuffer::textureCubeMapImplementationDSA(const BufferAttachment attachment, const GLenum textureTarget, const GLuint textureId, const GLint mipLevel) {
@@ -391,10 +377,6 @@ void Framebuffer::textureImplementationEXT(BufferAttachment attachment, GLuint t
 void Framebuffer::textureImplementationDSA(const BufferAttachment attachment, const GLuint textureId, const GLint mipLevel) {
     glNamedFramebufferTexture(_id, GLenum(attachment), textureId, mipLevel);
 }
-
-void Framebuffer::textureImplementationDSAEXT(const BufferAttachment attachment, const GLuint textureId, const GLint mipLevel) {
-    glNamedFramebufferTextureEXT(_id, GLenum(attachment), textureId, mipLevel);
-}
 #endif
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -410,11 +392,6 @@ void Framebuffer::textureLayerImplementationDefault(BufferAttachment attachment,
 #ifndef MAGNUM_TARGET_GLES
 void Framebuffer::textureLayerImplementationDSA(const BufferAttachment attachment, const GLuint textureId, const GLint mipLevel, const GLint layer) {
     glNamedFramebufferTextureLayer(_id, GLenum(attachment), textureId, mipLevel, layer);
-}
-
-void Framebuffer::textureLayerImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint mipLevel, GLint layer) {
-    _flags |= ObjectFlag::Created;
-    glNamedFramebufferTextureLayerEXT(_id, GLenum(attachment), textureId, mipLevel, layer);
 }
 #endif
 

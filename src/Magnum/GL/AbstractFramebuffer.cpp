@@ -524,11 +524,6 @@ GLenum AbstractFramebuffer::checkStatusImplementationSingle(FramebufferTarget) {
 GLenum AbstractFramebuffer::checkStatusImplementationDSA(const FramebufferTarget target) {
     return glCheckNamedFramebufferStatus(_id, GLenum(target));
 }
-
-GLenum AbstractFramebuffer::checkStatusImplementationDSAEXT(const FramebufferTarget target) {
-    _flags |= ObjectFlag::Created;
-    return glCheckNamedFramebufferStatusEXT(_id, GLenum(target));
-}
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -582,11 +577,6 @@ void AbstractFramebuffer::drawBuffersImplementationDefault(GLsizei count, const 
 void AbstractFramebuffer::drawBuffersImplementationDSA(const GLsizei count, const GLenum* const buffers) {
     glNamedFramebufferDrawBuffers(_id, count, buffers);
 }
-
-void AbstractFramebuffer::drawBuffersImplementationDSAEXT(GLsizei count, const GLenum* buffers) {
-    _flags |= ObjectFlag::Created;
-    glFramebufferDrawBuffersEXT(_id, count, buffers);
-}
 #endif
 #else
 void AbstractFramebuffer::drawBuffersImplementationEXT(GLsizei count, const GLenum* buffers) {
@@ -612,11 +602,6 @@ void AbstractFramebuffer::drawBufferImplementationDefault(GLenum buffer) {
 void AbstractFramebuffer::drawBufferImplementationDSA(const GLenum buffer) {
     glNamedFramebufferDrawBuffer(_id, buffer);
 }
-
-void AbstractFramebuffer::drawBufferImplementationDSAEXT(GLenum buffer) {
-    _flags |= ObjectFlag::Created;
-    glFramebufferDrawBufferEXT(_id, buffer);
-}
 #endif
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -634,11 +619,6 @@ void AbstractFramebuffer::readBufferImplementationDefault(GLenum buffer) {
 #ifndef MAGNUM_TARGET_GLES
 void AbstractFramebuffer::readBufferImplementationDSA(const GLenum buffer) {
     glNamedFramebufferReadBuffer(_id, buffer);
-}
-
-void AbstractFramebuffer::readBufferImplementationDSAEXT(GLenum buffer) {
-    _flags |= ObjectFlag::Created;
-    glFramebufferReadBufferEXT(_id, buffer);
 }
 #endif
 
@@ -665,11 +645,6 @@ void AbstractFramebuffer::copySub1DImplementationDefault(const Range2Di& rectang
 void AbstractFramebuffer::copySub1DImplementationDSA(const Range2Di& rectangle, AbstractTexture& texture, const Int level, const Int offset) {
     glCopyTextureSubImage1D(texture._id, level, offset, rectangle.min().x(), rectangle.min().y(), rectangle.sizeX());
 }
-
-void AbstractFramebuffer::copySub1DImplementationDSAEXT(const Range2Di& rectangle, AbstractTexture& texture, const Int level, const Int offset) {
-    texture._flags |= ObjectFlag::Created;
-    glCopyTextureSubImage1DEXT(texture._id, texture._target, level, offset, rectangle.min().x(), rectangle.min().y(), rectangle.sizeX());
-}
 #endif
 
 void AbstractFramebuffer::copySub2DImplementationDefault(const Range2Di& rectangle, AbstractTexture& texture, const GLenum target, const Int level, const Vector2i& offset) {
@@ -684,11 +659,6 @@ void AbstractFramebuffer::copySub2DImplementationDSA(const Range2Di& rectangle, 
 
 void AbstractFramebuffer::copySubCubeMapImplementationDSA(const Range2Di& rectangle, AbstractTexture& texture, const GLenum target, const Int level, const Vector2i& offset) {
     glCopyTextureSubImage3D(texture._id, level, offset.x(), offset.y(), target - GL_TEXTURE_CUBE_MAP_POSITIVE_X, rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY());
-}
-
-void AbstractFramebuffer::copySub2DImplementationDSAEXT(const Range2Di& rectangle, AbstractTexture& texture, const GLenum target, const Int level, const Vector2i& offset) {
-    texture._flags |= ObjectFlag::Created;
-    glCopyTextureSubImage2DEXT(texture._id, target, level, offset.x(), offset.y(), rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY());
 }
 #endif
 
@@ -707,11 +677,6 @@ void AbstractFramebuffer::copySub3DImplementationDefault(const Range2Di& rectang
 #ifndef MAGNUM_TARGET_GLES
 void AbstractFramebuffer::copySub3DImplementationDSA(const Range2Di& rectangle, AbstractTexture& texture, const Int level, const Vector3i& offset) {
     glCopyTextureSubImage3D(texture._id, level, offset.x(), offset.y(), offset.z(), rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY());
-}
-
-void AbstractFramebuffer::copySub3DImplementationDSAEXT(const Range2Di& rectangle, AbstractTexture& texture, const Int level, const Vector3i& offset) {
-    texture._flags |= ObjectFlag::Created;
-    glCopyTextureSubImage3DEXT(texture._id, texture._target, level, offset.x(), offset.y(), offset.z(), rectangle.min().x(), rectangle.min().y(), rectangle.sizeX(), rectangle.sizeY());
 }
 #endif
 

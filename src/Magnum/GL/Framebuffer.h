@@ -73,13 +73,12 @@ framebuffer, then bind the default and render the textures on screen:
 
 See also @ref GL-AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
 
-If either @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) or
-@gl_extension{EXT,direct_state_access} desktop extension is available, functions
-@ref checkStatus(), @ref mapForDraw(), @ref mapForRead(), @ref invalidate(),
-@ref attachRenderbuffer(), @ref attachTexture(), @ref attachCubeMapTexture(),
-@ref attachTextureLayer() and @ref detach() use DSA to avoid unnecessary calls
-to @fn_gl{BindFramebuffer}. See their respective documentation for more
-information.
+If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+available, functions @ref checkStatus(), @ref mapForDraw(), @ref mapForRead(),
+@ref invalidate(), @ref attachRenderbuffer(), @ref attachTexture(),
+@ref attachCubeMapTexture(), @ref attachTextureLayer() and @ref detach() use
+DSA to avoid unnecessary calls to @fn_gl{BindFramebuffer}. See their respective
+documentation for more information.
 
 @requires_gl30 Extension @gl_extension{ARB,framebuffer_object}
 */
@@ -441,9 +440,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @brief Check framebuffer status
          * @param target    Target for which check the status
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the framebuffer is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the framebuffer is bound before the operation (if not
          * already).
          *
          * The @p target parameter is ignored on OpenGL ES 2.0 if none of
@@ -451,7 +449,6 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * or @gl_extension{NV,framebuffer_blit} is available and also on WebGL
          * 1.0.
          * @see @fn_gl2_keyword{CheckNamedFramebufferStatus,CheckFramebufferStatus},
-         *      @fn_gl_extension_keyword{CheckNamedFramebufferStatus,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{CheckFramebufferStatus}
          */
         Status checkStatus(FramebufferTarget target);
@@ -490,14 +487,12 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          *
          * @snippet MagnumGL.cpp Framebuffer-mapForDraw
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the framebuffer is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref maxDrawBuffers(), @ref maxDualSourceDrawBuffers(),
          *      @ref maxColorAttachments(), @ref mapForRead(),
          *      @fn_gl2_keyword{NamedFramebufferDrawBuffers,DrawBuffers},
-         *      @fn_gl_extension_keyword{FramebufferDrawBuffers,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{DrawBuffers}
          * @requires_gles30 Extension @gl_extension{EXT,draw_buffers} or
          *      @gl_extension{NV,draw_buffers} in OpenGL ES 2.0.
@@ -514,13 +509,11 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * Similar to above function, can be used in cases when shader has
          * only one (unnamed) output.
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the framebuffer is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref maxColorAttachments(), @ref mapForRead(),
          *      @fn_gl2_keyword{NamedFramebufferDrawBuffer,DrawBuffer},
-         *      @fn_gl_extension_keyword{FramebufferDrawBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{DrawBuffer}
          *      (or @fn_gl_keyword{DrawBuffers} in OpenGL ES)
          * @requires_gles30 Extension @gl_extension{EXT,draw_buffers} or
@@ -536,12 +529,10 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @param attachment        Color attachment
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the framebuffer is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref mapForDraw(), @fn_gl2_keyword{NamedFramebufferReadBuffer,ReadBuffer},
-         *      @fn_gl_extension_keyword{FramebufferReadBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{ReadBuffer}
          * @requires_gles30 Extension @gl_extension{NV,read_buffer} in OpenGL
          *      ES 2.0.
@@ -598,12 +589,10 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @param renderbuffer      Renderbuffer
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the framebuffer is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref detach(), @fn_gl2_keyword{NamedFramebufferRenderbuffer,FramebufferRenderbuffer},
-         *      @fn_gl_extension_keyword{NamedFramebufferRenderbuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{FramebufferRenderbuffer}
          */
         Framebuffer& attachRenderbuffer(BufferAttachment attachment, Renderbuffer& renderbuffer);
@@ -616,13 +605,11 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @param level             Mip level
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the framebuffer is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref detach(), @ref attachCubeMapTexture(),
          *      @fn_gl2_keyword{NamedFramebufferTexture,FramebufferTexture},
-         *      @fn_gl_extension_keyword{NamedFramebufferTexture1D,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and
          *      @fn_gl2_keyword{FramebufferTexture1D,FramebufferTexture}
          * @requires_gl Only 2D and 3D textures are available in OpenGL ES and
@@ -638,13 +625,11 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @param level             Mip level
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the framebuffer is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref detach(), @ref attachCubeMapTexture(),
          *      @fn_gl2_keyword{NamedFramebufferTexture,FramebufferTexture},
-         *      @fn_gl_extension_keyword{NamedFramebufferTexture2D,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and
          *      @fn_gl2_keyword{FramebufferTexture2D,FramebufferTexture}
          * @requires_gles30 Extension @gl_extension{OES,fbo_render_mipmap} to
@@ -681,13 +666,11 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @param level             Mip level
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the framebuffer is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref detach(), @ref attachTexture(),
          *      @fn_gl2_keyword{NamedFramebufferTextureLayer,FramebufferTextureLayer},
-         *      @fn_gl_extension_keyword{NamedFramebufferTexture2D,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and
          *      @fn_gl2_keyword{FramebufferTexture2D,FramebufferTexture}
          * @requires_gles30 Extension @gl_extension{OES,fbo_render_mipmap} to
@@ -706,12 +689,10 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @param layer             Layer
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the framebuffer is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref detach(), @fn_gl2_keyword{NamedFramebufferTextureLayer,FramebufferTextureLayer},
-         *      @fn_gl_extension_keyword{NamedFramebufferTextureLayer,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and
          *      @fn_gl2_keyword{FramebufferTextureLayer,FramebufferTexture}
          *      or @fn_gl_extension_keyword{FramebufferTexture3D,OES,texture_3D}
@@ -773,13 +754,11 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @return Reference to self (for method chaining)
          *
          * Attaches whole texture with all layers addressable using `gl_Layer`
-         * in geometry shader. If neither @gl_extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) nor @gl_extension{EXT,direct_state_access} desktop
-         * extension is available, the framebuffer is bound before the
+         * in geometry shader. If @gl_extension{ARB,direct_state_access} (part
+         * of OpenGL 4.5) is not available, the framebuffer is bound before the
          * operation (if not already).
          * @see @ref detach(), @ref attachTexture(),
          *      @fn_gl2_keyword{NamedFramebufferTexture,FramebufferTexture},
-         *      @fn_gl_extension_keyword{NamedFramebufferTexture,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and
          *      @fn_gl_keyword{FramebufferTexture}
          * @requires_gl32 Extension @gl_extension{ARB,geometry_shader4}
@@ -845,14 +824,12 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          * @param attachment        Buffer attachment
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the framebuffer is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref attachRenderbuffer(), @ref attachTexture(),
          *      @ref attachCubeMapTexture(), @ref attachTextureLayer(),
          *      @fn_gl2_keyword{NamedFramebufferRenderbuffer,FramebufferRenderbuffer},
-         *      @fn_gl_extension_keyword{NamedFramebufferRenderbuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and
          *      @fn_gl_keyword{FramebufferRenderbuffer}
          */
@@ -899,18 +876,15 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
         void MAGNUM_GL_LOCAL renderbufferImplementationDefault(BufferAttachment attachment, GLuint renderbufferId);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL renderbufferImplementationDSA(BufferAttachment attachment, GLuint renderbufferId);
-        void MAGNUM_GL_LOCAL renderbufferImplementationDSAEXT(BufferAttachment attachment, GLuint renderbufferId);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL texture1DImplementationDefault(BufferAttachment attachment, GLuint textureId, GLint level);
-        void MAGNUM_GL_LOCAL texture1DImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint level);
         #endif
 
         void MAGNUM_GL_LOCAL texture2DImplementationDefault(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL texture2DImplementationDSA(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
-        void MAGNUM_GL_LOCAL texture2DImplementationDSAEXT(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         void MAGNUM_GL_LOCAL textureCubeMapImplementationDSA(BufferAttachment attachment, GLenum textureTarget, GLuint textureId, GLint level);
         #endif
 
@@ -922,7 +896,6 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
         #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL textureImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint level);
-        void MAGNUM_GL_LOCAL textureImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint level);
         #endif
 
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
@@ -930,7 +903,6 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
         #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL textureLayerImplementationDSA(BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
-        void MAGNUM_GL_LOCAL textureLayerImplementationDSAEXT(BufferAttachment attachment, GLuint textureId, GLint level, GLint layer);
         #endif
 };
 

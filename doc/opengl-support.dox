@@ -315,7 +315,6 @@ Extension                                   | Status
 @gl_extension{EXT,texture_filter_anisotropic} | done
 @gl_extension{EXT,texture_compression_s3tc} | done
 @gl_extension{EXT,texture_mirror_clamp}     | only GL 4.4 subset
-@gl_extension{EXT,direct_state_access}      | done for implemented functionality
 @gl_extension{EXT,texture_sRGB_decode}      | done
 @gl_extension{EXT,shader_integer_mix}       | done (shading language only)
 @gl_extension{EXT,debug_label}              | missing pipeline and sampler label

@@ -66,11 +66,10 @@ for more involved usage, usage of non-default or multiple framebuffers.
 
 See also @ref GL-AbstractFramebuffer-performance-optimization "relevant section in AbstractFramebuffer".
 
-If either @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) or
-@gl_extension{EXT,direct_state_access} desktop extension is available, functions
-@ref checkStatus(), @ref mapForDraw(), @ref mapForRead() and @ref invalidate()
-use DSA to avoid unnecessary calls to @fn_gl{BindFramebuffer}. See their
-respective documentation for more information.
+If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is available,
+functions @ref checkStatus(), @ref mapForDraw(), @ref mapForRead() and
+@ref invalidate() use DSA to avoid unnecessary calls to @fn_gl{BindFramebuffer}.
+See their respective documentation for more information.
 */
 class MAGNUM_GL_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
     friend Context;
@@ -330,9 +329,8 @@ class MAGNUM_GL_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @brief Check framebuffer status
          * @param target    Target for which to check the status
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the framebuffer is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the framebuffer is bound before the operation (if not
          * already).
          *
          * The @p target parameter is ignored on OpenGL ES 2.0 if none of
@@ -340,7 +338,6 @@ class MAGNUM_GL_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * or @gl_extension{NV,framebuffer_blit} is available and also on WebGL
          * 1.0.
          * @see @fn_gl2_keyword{CheckNamedFramebufferStatus,CheckFramebufferStatus},
-         *      @fn_gl_extension_keyword{CheckNamedFramebufferStatus,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{CheckFramebufferStatus}
          * @requires_gl30 Extension @gl_extension{ARB,framebuffer_object}
          */
@@ -379,13 +376,11 @@ class MAGNUM_GL_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          *
          * @snippet MagnumGL.cpp DefaultFramebuffer-usage-map
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the framebuffer is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref maxDrawBuffers(), @ref maxDualSourceDrawBuffers(),
          *      @ref mapForRead(), @fn_gl2_keyword{NamedFramebufferDrawBuffers,DrawBuffers},
-         *      @fn_gl_extension_keyword{FramebufferDrawBuffers,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{DrawBuffers}
          * @requires_gles30 Extension @gl_extension{EXT,draw_buffers} in OpenGL
          *      ES 2.0.
@@ -402,12 +397,10 @@ class MAGNUM_GL_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * Similar to above function, can be used in cases when shader has
          * only one (unnamed) output.
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the framebuffer is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref mapForRead(), @fn_gl2_keyword{NamedFramebufferDrawBuffer,DrawBuffer},
-         *      @fn_gl_extension_keyword{FramebufferDrawBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{DrawBuffer}
          *      or @fn_gl{DrawBuffers} in OpenGL ES 3.0
          * @requires_gles30 Extension @gl_extension{EXT,draw_buffers} in OpenGL
@@ -423,12 +416,10 @@ class MAGNUM_GL_EXPORT DefaultFramebuffer: public AbstractFramebuffer {
          * @param attachment        Buffer attachment
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the framebuffer is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the framebuffer is bound before the operation (if not
          * already).
          * @see @ref mapForDraw(), @fn_gl2_keyword{NamedFramebufferReadBuffer,ReadBuffer},
-         *      @fn_gl_extension_keyword{FramebufferReadBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindFramebuffer} and @fn_gl_keyword{ReadBuffer}
          * @requires_gles30 Extension @gl_extension{NV,read_buffer} in OpenGL
          *      ES 2.0.

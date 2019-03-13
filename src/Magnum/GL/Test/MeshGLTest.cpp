@@ -2206,8 +2206,6 @@ void MeshGLTest::unbindVAOWhenSettingIndexBufferData() {
         CORRADE_SKIP(Extensions::ARB::vertex_array_object::string() + std::string(" is not available."));
     if(Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
         CORRADE_SKIP(Extensions::ARB::direct_state_access::string() + std::string(" is active with circumvents the issue tested here."));
-    if(Context::current().isExtensionSupported<Extensions::EXT::direct_state_access>())
-        CORRADE_SKIP(Extensions::EXT::direct_state_access::string() + std::string(" is active with circumvents the issue tested here."));
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current().isExtensionSupported<Extensions::OES::vertex_array_object>())
         CORRADE_SKIP(Extensions::OES::vertex_array_object::string() + std::string(" is not available."));
@@ -2263,8 +2261,6 @@ void MeshGLTest::unbindIndexBufferWhenBindingVao() {
         CORRADE_SKIP(Extensions::ARB::vertex_array_object::string() + std::string(" is not available."));
     if(Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
         CORRADE_SKIP(Extensions::ARB::direct_state_access::string() + std::string(" is active with circumvents the issue tested here."));
-    if(Context::current().isExtensionSupported<Extensions::EXT::direct_state_access>())
-        CORRADE_SKIP(Extensions::EXT::direct_state_access::string() + std::string(" is active with circumvents the issue tested here."));
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current().isExtensionSupported<Extensions::OES::vertex_array_object>())
         CORRADE_SKIP(Extensions::OES::vertex_array_object::string() + std::string(" is not available."));
@@ -2327,8 +2323,6 @@ void MeshGLTest::resetIndexBufferBindingWhenBindingVao() {
         CORRADE_SKIP(Extensions::ARB::vertex_array_object::string() + std::string(" is not available."));
     if(Context::current().isExtensionSupported<Extensions::ARB::direct_state_access>())
         CORRADE_SKIP(Extensions::ARB::direct_state_access::string() + std::string(" is active with circumvents the issue tested here."));
-    if(Context::current().isExtensionSupported<Extensions::EXT::direct_state_access>())
-        CORRADE_SKIP(Extensions::EXT::direct_state_access::string() + std::string(" is active with circumvents the issue tested here."));
     #elif defined(MAGNUM_TARGET_GLES2)
     if(!Context::current().isExtensionSupported<Extensions::OES::vertex_array_object>())
         CORRADE_SKIP(Extensions::OES::vertex_array_object::string() + std::string(" is not available."));

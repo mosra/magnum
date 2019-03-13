@@ -209,9 +209,8 @@ and implementation-defined values (such as @ref maxUniformBindings()) are
 cached, so repeated queries don't result in repeated @fn_gl{Get} calls. See
 also @ref Context::resetState() and @ref Context::State::Buffers.
 
-If either @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) or
-@gl_extension{EXT,direct_state_access} desktop extension is available, functions
-@ref copy(), @ref size(), @ref data(), @ref subData(), @ref setData(),
+If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is available,
+functions @ref copy(), @ref size(), @ref data(), @ref subData(), @ref setData(),
 @ref setSubData(), @ref map(), @ref mapRead(), @ref flushMappedRange() and
 @ref unmap() use DSA functions to avoid unnecessary calls to @fn_gl{BindBuffer}.
 See their respective documentation for more information.
@@ -725,12 +724,11 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @param writeOffset   Offset in the write buffer
          * @param size          Data size
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, @p read buffer is bound for reading and @p write buffer
-         * is bound for writing before the copy is performed (if not already).
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, @p read buffer is bound for reading and @p write
+         * buffer is bound for writing before the copy is performed (if not
+         * already).
          * @see @fn_gl2_keyword{CopyNamedBufferSubData,CopyBufferSubData},
-         *      @fn_gl_extension_keyword{NamedCopyBufferSubData,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl_keyword{CopyBufferSubData}
          * @requires_gl31 Extension @gl_extension{ARB,copy_buffer}
          * @requires_gles30 Buffer copying is not available in OpenGL ES 2.0.
@@ -870,12 +868,12 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @brief Set target hint
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the buffer needs to be internally bound to some target
-         * before any operation. You can specify target which will always be
-         * used when binding the buffer internally, possibly saving some calls
-         * to @fn_gl{BindBuffer}. Default target hint is @ref TargetHint::Array.
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the buffer needs to be internally bound to some
+         * target before any operation. You can specify target which will
+         * always be used when binding the buffer internally, possibly saving
+         * some calls to @fn_gl{BindBuffer}. Default target hint is
+         * @ref TargetHint::Array.
          * @see @ref setData(), @ref setSubData()
          */
         Buffer& setTargetHint(TargetHint hint);
@@ -937,12 +935,10 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         /**
          * @brief Buffer size
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the buffer is bound to hinted target before the operation
-         * (if not already).
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the buffer is bound to hinted target before the
+         * operation (if not already).
          * @see @ref setTargetHint(), @fn_gl2_keyword{GetNamedBufferParameter,GetBufferParameter},
-         *      @fn_gl_extension_keyword{GetNamedBufferParameter,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl_keyword{GetBufferParameter}
          */
         Int size();
@@ -951,16 +947,13 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         /**
          * @brief Buffer data
          *
-         * Returns data of whole buffer. If neither @gl_extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) nor @gl_extension{EXT,direct_state_access} is
-         * available, the buffer is bound to hinted target before the operation
-         * (if not already).
+         * Returns data of whole buffer. If @gl_extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not available, the buffer is bound to hinted
+         * target before the operation (if not already).
          * @see @ref size(), @ref subData(), @ref setData(), @ref setTargetHint(),
          *      @fn_gl2{GetNamedBufferParameter,GetBufferParameter},
-         *      @fn_gl_extension{GetNamedBufferParameter,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl{GetBufferParameter}
          *      with @def_gl{BUFFER_SIZE}, then @fn_gl2_keyword{GetNamedBufferSubData,GetBufferSubData},
-         *      @fn_gl_extension_keyword{GetNamedBufferSubData,EXT,direct_state_access},
          *      eventually @fn_gl_keyword{GetBufferSubData}
          * @requires_gl Buffer data queries are not available in OpenGL ES and
          *      WebGL. Use @ref map(), @ref mapRead() or @ref DebugTools::bufferData()
@@ -982,13 +975,12 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @param offset    Byte offset in the buffer
          * @param size      Data size in bytes
          *
-         * Returns data of given buffer portion. If neither
-         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @gl_extension{EXT,direct_state_access} is available, the buffer is
-         * bound to hinted target before the operation (if not already).
+         * Returns data of given buffer portion. If
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, the buffer is bound to hinted target before the operation
+         * (if not already).
          * @see @ref size(), @ref data(), @ref setSubData(), @ref setTargetHint(),
          *      @fn_gl2_keyword{GetNamedBufferSubData,GetBufferSubData},
-         *      @fn_gl_extension_keyword{GetNamedBufferSubData,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl_keyword{GetBufferSubData}
          * @requires_gl Buffer data queries are not available in OpenGL ES and
          *      WebGL. Use @ref map(), @ref mapRead() or @ref DebugTools::bufferData()
@@ -1011,12 +1003,10 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @param usage     Buffer usage
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the buffer is bound to hinted target before the operation
-         * (if not already).
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the buffer is bound to hinted target before the
+         * operation (if not already).
          * @see @ref setTargetHint(), @fn_gl2_keyword{NamedBufferData,BufferData},
-         *      @fn_gl_extension_keyword{NamedBufferData,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl_keyword{BufferData}
          */
         Buffer& setData(Containers::ArrayView<const void> data, BufferUsage usage = BufferUsage::StaticDraw);
@@ -1039,12 +1029,10 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @param data      Data
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the buffer is bound to hinted target before the operation
-         * (if not already).
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the buffer is bound to hinted target before the
+         * operation (if not already).
          * @see @ref setTargetHint(), @fn_gl2_keyword{NamedBufferSubData,BufferSubData},
-         *      @fn_gl_extension_keyword{NamedBufferSubData,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl_keyword{BufferSubData}
          */
         Buffer& setSubData(GLintptr offset, Containers::ArrayView<const void> data);
@@ -1089,13 +1077,11 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @param access    Access
          * @return Pointer to mapped buffer data or @cpp nullptr @ce on error
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the buffer is bound to hinted target before the operation
-         * (if not already).
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the buffer is bound to hinted target before the
+         * operation (if not already).
          * @see @ref mapRead(), @ref minMapAlignment(), @ref unmap(),
          *      @ref setTargetHint(), @fn_gl2_keyword{MapNamedBuffer,MapBuffer},
-         *      @fn_gl_extension_keyword{MapNamedBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl_keyword{MapBuffer}
          * @requires_es_extension Extension @gl_extension{OES,mapbuffer} in
          *      OpenGL ES 2.0, use @ref map(GLintptr, GLsizeiptr, MapFlags) in
@@ -1135,14 +1121,12 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          *      @ref MapFlag::Write must be specified.
          * @return Sized view to buffer data or @cpp nullptr @ce on error
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the buffer is bound to hinted target before the operation
-         * (if not already).
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the buffer is bound to hinted target before the
+         * operation (if not already).
          * @see @ref mapRead(), @ref minMapAlignment(), @ref flushMappedRange(),
          *      @ref unmap(), @ref map(MapAccess), @ref setTargetHint(),
          *      @fn_gl2_keyword{MapNamedBufferRange,MapBufferRange},
-         *      @fn_gl_extension_keyword{MapNamedBufferRange,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl_keyword{MapBufferRange}
          * @requires_gl30 Extension @gl_extension{ARB,map_buffer_range}
          * @requires_gles30 Extension @gl_extension{EXT,map_buffer_range} in
@@ -1180,12 +1164,10 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          * @ref map() with @ref MapFlag::FlushExplicit flag. See
          * @ref GL-Buffer-data-mapping "class documentation" for usage example.
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the buffer is bound to hinted target before the operation
-         * (if not already).
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the buffer is bound to hinted target before the
+         * operation (if not already).
          * @see @ref setTargetHint(), @fn_gl2_keyword{FlushMappedNamedBufferRange,FlushMappedBufferRange},
-         *      @fn_gl_extension_keyword{FlushMappedNamedBufferRange,EXT,direct_state_access},
          *      eventually @fn_gl{BindBuffer} and @fn_gl_keyword{FlushMappedBufferRange}
          * @requires_gl30 Extension @gl_extension{ARB,map_buffer_range}
          * @requires_gles30 Extension @gl_extension{EXT,map_buffer_range} in
@@ -1201,13 +1183,11 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          *      otherwise.
          *
          * Unmaps buffer previously mapped with @ref map() / @ref mapRead(),
-         * invalidating the pointer returned by these functions. If neither
-         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @gl_extension{EXT,direct_state_access} desktop extension is available,
-         * the buffer is bound to hinted target before the operation (if not
-         * already).
+         * invalidating the pointer returned by these functions. If
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, the buffer is bound to hinted target before the operation
+         * (if not already).
          * @see @ref setTargetHint(), @fn_gl2_keyword{UnmapNamedBuffer,UnmapBuffer},
-         *      @fn_gl_extension_keyword{UnmapNamedBuffer,EXT,direct_state_access},
          *      eventually  @fn_gl{BindBuffer} and @fn_gl_keyword{UnmapBuffer}
          * @requires_gles30 Extension @gl_extension{OES,mapbuffer} in OpenGL
          *      ES 2.0.
@@ -1244,7 +1224,6 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         static void MAGNUM_GL_LOCAL copyImplementationDefault(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
         #ifndef MAGNUM_TARGET_GLES
         static void MAGNUM_GL_LOCAL copyImplementationDSA(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
-        static void MAGNUM_GL_LOCAL copyImplementationDSAEXT(Buffer& read, Buffer& write, GLintptr readOffset, GLintptr writeOffset, GLsizeiptr size);
         #endif
         #endif
 
@@ -1273,25 +1252,21 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         void MAGNUM_GL_LOCAL getParameterImplementationDefault(GLenum value, GLint* data);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL getParameterImplementationDSA(GLenum value, GLint* data);
-        void MAGNUM_GL_LOCAL getParameterImplementationDSAEXT(GLenum value, GLint* data);
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL getSubDataImplementationDefault(GLintptr offset, GLsizeiptr size, GLvoid* data);
         void MAGNUM_GL_LOCAL getSubDataImplementationDSA(GLintptr offset, GLsizeiptr size, GLvoid* data);
-        void MAGNUM_GL_LOCAL getSubDataImplementationDSAEXT(GLintptr offset, GLsizeiptr size, GLvoid* data);
         #endif
 
         void MAGNUM_GL_LOCAL dataImplementationDefault(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL dataImplementationDSA(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
-        void MAGNUM_GL_LOCAL dataImplementationDSAEXT(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
         #endif
 
         void MAGNUM_GL_LOCAL subDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL subDataImplementationDSA(GLintptr offset, GLsizeiptr size, const GLvoid* data);
-        void MAGNUM_GL_LOCAL subDataImplementationDSAEXT(GLintptr offset, GLsizeiptr size, const GLvoid* data);
         #endif
 
         void MAGNUM_GL_LOCAL invalidateImplementationNoOp();
@@ -1308,25 +1283,21 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         void MAGNUM_GL_LOCAL * mapImplementationDefault(MapAccess access);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL * mapImplementationDSA(MapAccess access);
-        void MAGNUM_GL_LOCAL * mapImplementationDSAEXT(MapAccess access);
         #endif
 
         void MAGNUM_GL_LOCAL * mapRangeImplementationDefault(GLintptr offset, GLsizeiptr length, MapFlags access);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL * mapRangeImplementationDSA(GLintptr offset, GLsizeiptr length, MapFlags access);
-        void MAGNUM_GL_LOCAL * mapRangeImplementationDSAEXT(GLintptr offset, GLsizeiptr length, MapFlags access);
         #endif
 
         void MAGNUM_GL_LOCAL flushMappedRangeImplementationDefault(GLintptr offset, GLsizeiptr length);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL flushMappedRangeImplementationDSA(GLintptr offset, GLsizeiptr length);
-        void MAGNUM_GL_LOCAL flushMappedRangeImplementationDSAEXT(GLintptr offset, GLsizeiptr length);
         #endif
 
         bool MAGNUM_GL_LOCAL unmapImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES
         bool MAGNUM_GL_LOCAL unmapImplementationDSA();
-        bool MAGNUM_GL_LOCAL unmapImplementationDSAEXT();
         #endif
         #endif
 

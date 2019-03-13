@@ -146,13 +146,6 @@ void AbstractTexture::unbindImplementationDSA(const GLint textureUnit) {
     CORRADE_INTERNAL_ASSERT(Context::current().state().texture->bindings[textureUnit].first != 0);
     glBindTextureUnit(textureUnit, 0);
 }
-
-void AbstractTexture::unbindImplementationDSAEXT(const GLint textureUnit) {
-    Implementation::TextureState& textureState = *Context::current().state().texture;
-
-    CORRADE_INTERNAL_ASSERT(textureState.bindings[textureUnit].first != 0);
-    glBindMultiTextureEXT(GL_TEXTURE0 + textureUnit, textureState.bindings[textureUnit].first, 0);
-}
 #endif
 
 void AbstractTexture::unbind(const Int firstTextureUnit, const std::size_t count) {
@@ -368,11 +361,6 @@ void AbstractTexture::bindImplementationMulti(GLint textureUnit) {
 void AbstractTexture::bindImplementationDSA(const GLint textureUnit) {
     glBindTextureUnit(textureUnit, _id);
 }
-
-void AbstractTexture::bindImplementationDSAEXT(GLint textureUnit) {
-    _flags |= ObjectFlag::Created;
-    glBindMultiTextureEXT(GL_TEXTURE0 + textureUnit, _target, _id);
-}
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -508,11 +496,6 @@ void AbstractTexture::mipmapImplementationDefault() {
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::mipmapImplementationDSA() {
     glGenerateTextureMipmap(_id);
-}
-
-void AbstractTexture::mipmapImplementationDSAEXT() {
-    _flags |= ObjectFlag::Created;
-    glGenerateTextureMipmapEXT(_id, _target);
 }
 #endif
 
@@ -1074,11 +1057,6 @@ void AbstractTexture::parameterImplementationDefault(GLenum parameter, GLint val
 void AbstractTexture::parameterImplementationDSA(const GLenum parameter, const GLint value) {
     glTextureParameteri(_id, parameter, value);
 }
-
-void AbstractTexture::parameterImplementationDSAEXT(GLenum parameter, GLint value) {
-    _flags |= ObjectFlag::Created;
-    glTextureParameteriEXT(_id, _target, parameter, value);
-}
 #endif
 
 void AbstractTexture::parameterImplementationDefault(GLenum parameter, GLfloat value) {
@@ -1089,11 +1067,6 @@ void AbstractTexture::parameterImplementationDefault(GLenum parameter, GLfloat v
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::parameterImplementationDSA(const GLenum parameter, const GLfloat value) {
     glTextureParameterf(_id, parameter, value);
-}
-
-void AbstractTexture::parameterImplementationDSAEXT(GLenum parameter, GLfloat value) {
-    _flags |= ObjectFlag::Created;
-    glTextureParameterfEXT(_id, _target, parameter, value);
 }
 #endif
 
@@ -1107,11 +1080,6 @@ void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLi
 void AbstractTexture::parameterImplementationDSA(const GLenum parameter, const GLint* const values) {
     glTextureParameteriv(_id, parameter, values);
 }
-
-void AbstractTexture::parameterImplementationDSAEXT(GLenum parameter, const GLint* values) {
-    _flags |= ObjectFlag::Created;
-    glTextureParameterivEXT(_id, _target, parameter, values);
-}
 #endif
 #endif
 
@@ -1123,11 +1091,6 @@ void AbstractTexture::parameterImplementationDefault(GLenum parameter, const GLf
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::parameterImplementationDSA(const GLenum parameter, const GLfloat* const values) {
     glTextureParameterfv(_id, parameter, values);
-}
-
-void AbstractTexture::parameterImplementationDSAEXT(GLenum parameter, const GLfloat* values) {
-    _flags |= ObjectFlag::Created;
-    glTextureParameterfvEXT(_id, _target, parameter, values);
 }
 #endif
 
@@ -1148,11 +1111,6 @@ void AbstractTexture::parameterIImplementationEXT(GLenum parameter, const GLuint
 void AbstractTexture::parameterIImplementationDSA(const GLenum parameter, const GLuint* const values) {
     glTextureParameterIuiv(_id, parameter, values);
 }
-
-void AbstractTexture::parameterIImplementationDSAEXT(GLenum parameter, const GLuint* values) {
-    _flags |= ObjectFlag::Created;
-    glTextureParameterIuivEXT(_id, _target, parameter, values);
-}
 #endif
 
 void AbstractTexture::parameterIImplementationDefault(GLenum parameter, const GLint* values) {
@@ -1170,11 +1128,6 @@ void AbstractTexture::parameterIImplementationEXT(GLenum parameter, const GLint*
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::parameterIImplementationDSA(const GLenum parameter, const GLint* const values) {
     glTextureParameterIiv(_id, parameter, values);
-}
-
-void AbstractTexture::parameterIImplementationDSAEXT(GLenum parameter, const GLint* values) {
-    _flags |= ObjectFlag::Created;
-    glTextureParameterIivEXT(_id, _target, parameter, values);
 }
 #endif
 #endif
@@ -1201,11 +1154,6 @@ void AbstractTexture::getLevelParameterImplementationDefault(const GLint level, 
 void AbstractTexture::getLevelParameterImplementationDSA(const GLint level, const GLenum parameter, GLint* const values) {
     glGetTextureLevelParameteriv(_id, level, parameter, values);
 }
-
-void AbstractTexture::getLevelParameterImplementationDSAEXT(const GLint level, const GLenum parameter, GLint* const values) {
-    _flags |= ObjectFlag::Created;
-    glGetTextureLevelParameterivEXT(_id, _target, level, parameter, values);
-}
 #endif
 #endif
 
@@ -1226,11 +1174,6 @@ void AbstractTexture::storageImplementationDefault(GLsizei levels, TextureFormat
 
 void AbstractTexture::storageImplementationDSA(const GLsizei levels, const TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size) {
     glTextureStorage1D(_id, levels, GLenum(internalFormat), size[0]);
-}
-
-void AbstractTexture::storageImplementationDSAEXT(GLsizei levels, TextureFormat internalFormat, const Math::Vector<1, GLsizei>& size) {
-    _flags |= ObjectFlag::Created;
-    glTextureStorage1DEXT(_id, _target, levels, GLenum(internalFormat), size[0]);
 }
 #endif
 
@@ -1300,11 +1243,6 @@ void AbstractTexture::storageImplementationDefault(GLsizei levels, TextureFormat
 void AbstractTexture::storageImplementationDSA(const GLsizei levels, const TextureFormat internalFormat, const Vector2i& size) {
     glTextureStorage2D(_id, levels, GLenum(internalFormat), size.x(), size.y());
 }
-
-void AbstractTexture::storageImplementationDSAEXT(GLsizei levels, TextureFormat internalFormat, const Vector2i& size) {
-    _flags |= ObjectFlag::Created;
-    glTextureStorage2DEXT(_id, _target, levels, GLenum(internalFormat), size.x(), size.y());
-}
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES) || (defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
@@ -1366,11 +1304,6 @@ void AbstractTexture::storageImplementationDefault(GLsizei levels, TextureFormat
 void AbstractTexture::storageImplementationDSA(const GLsizei levels, const TextureFormat internalFormat, const Vector3i& size) {
     glTextureStorage3D(_id, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
 }
-
-void AbstractTexture::storageImplementationDSAEXT(GLsizei levels, TextureFormat internalFormat, const Vector3i& size) {
-    _flags |= ObjectFlag::Created;
-    glTextureStorage3DEXT(_id, _target, levels, GLenum(internalFormat), size.x(), size.y(), size.z());
-}
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
@@ -1390,11 +1323,6 @@ void AbstractTexture::storageMultisampleImplementationDefault(const GLsizei samp
 #ifndef MAGNUM_TARGET_GLES
 void AbstractTexture::storageMultisampleImplementationDSA(const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
     glTextureStorage2DMultisample(_id, samples, GLenum(internalFormat), size.x(), size.y(), fixedSampleLocations);
-}
-
-void AbstractTexture::storageMultisampleImplementationDSAEXT(const GLsizei samples, const TextureFormat internalFormat, const Vector2i& size, const GLboolean fixedSampleLocations) {
-    _flags |= ObjectFlag::Created;
-    glTextureStorage2DMultisampleEXT(_id, _target, samples, GLenum(internalFormat), size.x(), size.y(), fixedSampleLocations);
 }
 
 void AbstractTexture::storageMultisampleImplementationFallback(const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
@@ -1421,11 +1349,6 @@ void AbstractTexture::storageMultisampleImplementationOES(const GLsizei samples,
 void AbstractTexture::storageMultisampleImplementationDSA(const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
     glTextureStorage3DMultisample(_id, samples, GLenum(internalFormat), size.x(), size.y(), size.z(), fixedSampleLocations);
 }
-
-void AbstractTexture::storageMultisampleImplementationDSAEXT(const GLsizei samples, const TextureFormat internalFormat, const Vector3i& size, const GLboolean fixedSampleLocations) {
-    _flags |= ObjectFlag::Created;
-    glTextureStorage3DMultisampleEXT(_id, _target, samples, GLenum(internalFormat), size.x(), size.y(), size.z(), fixedSampleLocations);
-}
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
@@ -1445,16 +1368,6 @@ void AbstractTexture::getImageImplementationDSA(const GLint level, const PixelFo
 
 void AbstractTexture::getCompressedImageImplementationDSA(const GLint level, const std::size_t dataSize, GLvoid* const data) {
     glGetCompressedTextureImage(_id, level, dataSize, data);
-}
-
-void AbstractTexture::getImageImplementationDSAEXT(const GLint level, const PixelFormat format, const PixelType type, const std::size_t, GLvoid* const data) {
-    _flags |= ObjectFlag::Created;
-    glGetTextureImageEXT(_id, _target, level, GLenum(format), GLenum(type), data);
-}
-
-void AbstractTexture::getCompressedImageImplementationDSAEXT(const GLint level, std::size_t, GLvoid* const data) {
-    _flags |= ObjectFlag::Created;
-    glGetCompressedTextureImageEXT(_id, _target, level, data);
 }
 
 void AbstractTexture::getImageImplementationRobustness(const GLint level, const PixelFormat format, const PixelType type, const std::size_t dataSize, GLvoid* const data) {
@@ -1485,16 +1398,6 @@ void AbstractTexture::subImageImplementationDSA(const GLint level, const Math::V
 
 void AbstractTexture::compressedSubImageImplementationDSA(const GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, const CompressedPixelFormat format, const GLvoid* const data, const GLsizei dataSize) {
     glCompressedTextureSubImage1D(_id, level, offset[0], size[0], GLenum(format), dataSize, data);
-}
-
-void AbstractTexture::subImageImplementationDSAEXT(GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, PixelFormat format, PixelType type, const GLvoid* data) {
-    _flags |= ObjectFlag::Created;
-    glTextureSubImage1DEXT(_id, _target, level, offset[0], size[0], GLenum(format), GLenum(type), data);
-}
-
-void AbstractTexture::compressedSubImageImplementationDSAEXT(const GLint level, const Math::Vector<1, GLint>& offset, const Math::Vector<1, GLsizei>& size, const CompressedPixelFormat format, const GLvoid* const data, const GLsizei dataSize) {
-    _flags |= ObjectFlag::Created;
-    glCompressedTextureSubImage1DEXT(_id, _target, level, offset[0], size[0], GLenum(format), dataSize, data);
 }
 #endif
 
@@ -1555,16 +1458,6 @@ void AbstractTexture::subImage2DImplementationDSA(const GLint level, const Vecto
 
 void AbstractTexture::compressedSubImageImplementationDSA(const GLint level, const Vector2i& offset, const Vector2i& size, const CompressedPixelFormat format, const GLvoid* const data, const GLsizei dataSize) {
     glCompressedTextureSubImage2D(_id, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), dataSize, data);
-}
-
-void AbstractTexture::subImageImplementationDSAEXT(GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&) {
-    _flags |= ObjectFlag::Created;
-    glTextureSubImage2DEXT(_id, _target, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), GLenum(type), data);
-}
-
-void AbstractTexture::compressedSubImageImplementationDSAEXT(GLint level, const Vector2i& offset, const Vector2i& size, const CompressedPixelFormat format, const GLvoid* const data, const GLsizei dataSize) {
-    _flags |= ObjectFlag::Created;
-    glCompressedTextureSubImage2DEXT(_id, _target, level, offset.x(), offset.y(), size.x(), size.y(), GLenum(format), dataSize, data);
 }
 #endif
 
@@ -1657,16 +1550,6 @@ void AbstractTexture::subImage3DImplementationDSA(const GLint level, const Vecto
 
 void AbstractTexture::compressedSubImageImplementationDSA(const GLint level, const Vector3i& offset, const Vector3i& size, const CompressedPixelFormat format, const GLvoid* const data, const GLsizei dataSize) {
     glCompressedTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), dataSize, data);
-}
-
-void AbstractTexture::subImageImplementationDSAEXT(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&) {
-    _flags |= ObjectFlag::Created;
-    glTextureSubImage3DEXT(_id, _target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
-}
-
-void AbstractTexture::compressedSubImageImplementationDSAEXT(const GLint level, const Vector3i& offset, const Vector3i& size, const CompressedPixelFormat format, const GLvoid* const data, const GLsizei dataSize) {
-    _flags |= ObjectFlag::Created;
-    glCompressedTextureSubImage3DEXT(_id, _target, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), dataSize, data);
 }
 #endif
 

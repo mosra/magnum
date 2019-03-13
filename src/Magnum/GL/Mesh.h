@@ -1112,14 +1112,12 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         void MAGNUM_GL_LOCAL attributePointerImplementationVAO(AttributeLayout&& attribute);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL attributePointerImplementationVAODSA(AttributeLayout&& attribute);
-        void MAGNUM_GL_LOCAL attributePointerImplementationVAODSAEXT(AttributeLayout&& attribute);
         #endif
         void MAGNUM_GL_LOCAL vertexAttribPointer(AttributeLayout& attribute);
 
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL vertexAttribDivisorImplementationVAO(GLuint index, GLuint divisor);
         void MAGNUM_GL_LOCAL vertexAttribDivisorImplementationVAODSA(GLuint index, GLuint divisor);
-        void MAGNUM_GL_LOCAL vertexAttribDivisorImplementationVAODSAEXT(GLuint index, GLuint divisor);
         #elif defined(MAGNUM_TARGET_GLES2)
         void MAGNUM_GL_LOCAL vertexAttribDivisorImplementationANGLE(GLuint index, GLuint divisor);
         #ifndef MAGNUM_TARGET_WEBGL

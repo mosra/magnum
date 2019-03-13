@@ -232,12 +232,11 @@ namespace AMD {
     _extension(148,EXT,draw_buffers2,                   GL210, GL300) // #340
     _extension(149,EXT,texture_integer,                 GL210, GL300) // #343
     _extension(150,EXT,transform_feedback,              GL210, GL300) // #352
-    _extension(151,EXT,direct_state_access,             GL210,  None) // #353
-    _extension(152,EXT,texture_snorm,                   GL300, GL310) // #365
-    _extension(153,EXT,texture_sRGB_decode,             GL210,  None) // #402
-    _extension(154,EXT,shader_integer_mix,              GL300,  None) // #437
-    _extension(155,EXT,debug_label,                     GL210,  None) // #439
-    _extension(156,EXT,debug_marker,                    GL210,  None) // #440
+    _extension(151,EXT,texture_snorm,                   GL300, GL310) // #365
+    _extension(152,EXT,texture_sRGB_decode,             GL210,  None) // #402
+    _extension(153,EXT,shader_integer_mix,              GL300,  None) // #437
+    _extension(154,EXT,debug_label,                     GL210,  None) // #439
+    _extension(155,EXT,debug_marker,                    GL210,  None) // #440
 } namespace GREMEDY {
     _extension(157,GREMEDY,string_marker,               GL210,  None) // #311
 } namespace KHR {

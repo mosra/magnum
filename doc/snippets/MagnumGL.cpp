@@ -201,7 +201,6 @@ static_cast<void>(format);
 GL::Texture2D texture;
 
 /* - on OpenGL 4.5+/ARB_direct_state_access this calls glTextureStorage2D()
-   - if EXT_direct_state_access is available, calls glTextureStorage2DEXT()
    - on OpenGL 4.2+/ARB_texture_storage and OpenGL ES 3.0+ calls glTexStorage2D()
    - on OpenGL ES 2.0 with EXT_texture_storage calls glTexStorage2DEXT()
    - otherwise emulated using a sequence of four glTexImage2D() calls */

@@ -406,7 +406,6 @@ are cached, so repeated queries don't result in repeated @fn_gl{Get} calls. See
 also @ref Context::resetState() and @ref Context::State::Shaders.
 
 If extension @gl_extension{ARB,separate_shader_objects} (part of OpenGL 4.1),
-@gl_extension{EXT,direct_state_access} desktop extension,
 @gl_extension2{EXT,separate_shader_objects,EXT_separate_shader_objects.gles}
 OpenGL ES extension or OpenGL ES 3.1 is available, uniform setting functions
 use DSA functions to avoid unnecessary calls to @fn_gl{UseProgram}. See
@@ -1026,15 +1025,13 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
          * @param location      Uniform location
          * @param values        Values
          *
-         * If neither @gl_extension{ARB,separate_shader_objects} (part of OpenGL
-         * 4.1) nor @gl_extension{EXT,direct_state_access} desktop extension nor
-         * @gl_extension{EXT,separate_shader_objects} OpenGL ES extension nor
-         * OpenGL ES 3.1 is available, the shader is marked for use before the
-         * operation.
+         * If neither @gl_extension{ARB,separate_shader_objects} (part of
+         * OpenGL 4.1) nor @gl_extension{EXT,separate_shader_objects} OpenGL ES
+         * extension nor OpenGL ES 3.1 is available, the shader is marked for
+         * use before the operation.
          * @see @ref setUniform(Int, const T&), @ref uniformLocation(),
          *      @fn_gl{UseProgram}, @fn_gl_keyword{Uniform} or
-         *      @fn_gl_keyword{ProgramUniform} /
-         *      @fn_gl_extension_keyword{ProgramUniform,EXT,direct_state_access}.
+         *      @fn_gl_keyword{ProgramUniform}
          */
         void setUniform(Int location, Containers::ArrayView<const Float> values);
         void setUniform(Int location, Containers::ArrayView<const Math::Vector<2, Float>> values); /**< @overload */
@@ -1150,9 +1147,8 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         void use();
 
         /*
-            Currently, there are four supported ways to call glProgramUniform():
+            Currently, there are three supported ways to call glProgramUniform():
 
-            - EXT_direct_state_access (desktop GL only, EXT suffix)
             - EXT_separate_shader_objects (OpenGL ES extension, EXT suffix)
             - ARB_separate_shader_objects (desktop GL only, no suffix)
             - OpenGL ES 3.1, no suffix
@@ -1160,14 +1156,12 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
             To avoid copypasta and filesize bloat, this is merged to just two
             variants of implementation functions:
 
-            - uniformImplementationSSO() - functions without suffix, used if
+            - uniformImplementationSSO() -- functions without suffix, used if
                 ARB_separate_shader_objects desktop extension or OpenGL ES 3.1
                 is available, completely disabled for ES2
-            - uniformImplementationDSAEXT_SSOEXT() / uniformImplementationDSAEXT() --
-                functions with EXT suffix, used if EXT_direct_state_access
-                desktop exttension or EXT_separate_shader_objects ES 2.0 / ES 3.0
-                extension is available, functions which don't have equivalents
-                on ES (double arguments) don't have the _SSOEXT suffix
+            - uniformImplementationSSOEXT() -- functions with EXT suffix, used
+                if EXT_separate_shader_objects ES 2.0 / ES 3.0 extension is
+                available
         */
 
         void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const GLfloat* values);
@@ -1210,27 +1204,21 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<3, GLdouble>* values);
         void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::Vector<4, GLdouble>* values);
         #endif
-        #ifndef MAGNUM_TARGET_WEBGL
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const GLfloat* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::Vector<2, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::Vector<3, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::Vector<4, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const GLint* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::Vector<2, GLint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::Vector<3, GLint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::Vector<4, GLint>* values);
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const GLfloat* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<2, GLfloat>* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<3, GLfloat>* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<4, GLfloat>* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const GLint* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<2, GLint>* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<3, GLint>* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<4, GLint>* values);
         #ifndef MAGNUM_TARGET_GLES2
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const GLuint* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::Vector<2, GLuint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::Vector<3, GLuint>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::Vector<4, GLuint>* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const GLuint* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<2, GLuint>* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<3, GLuint>* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::Vector<4, GLuint>* values);
         #endif
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT(GLint location, GLsizei count, const GLdouble* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT(GLint location, GLsizei count, const Math::Vector<2, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT(GLint location, GLsizei count, const Math::Vector<3, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT(GLint location, GLsizei count, const Math::Vector<4, GLdouble>* values);
         #endif
 
         void MAGNUM_GL_LOCAL uniformImplementationDefault(GLint location, GLsizei count, const Math::RectangularMatrix<2, 2, GLfloat>* values);
@@ -1277,29 +1265,18 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<3, 4, GLdouble>* values);
         void MAGNUM_GL_LOCAL uniformImplementationSSO(GLint location, GLsizei count, const Math::RectangularMatrix<4, 3, GLdouble>* values);
         #endif
-        #ifndef MAGNUM_TARGET_WEBGL
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<2, 2, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<3, 3, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<4, 4, GLfloat>* values);
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<2, 2, GLfloat>* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<3, 3, GLfloat>* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<4, 4, GLfloat>* values);
         #ifndef MAGNUM_TARGET_GLES2
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<2, 3, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<3, 2, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<2, 4, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<4, 2, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<3, 4, GLfloat>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT_SSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<4, 3, GLfloat>* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<2, 3, GLfloat>* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<3, 2, GLfloat>* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<2, 4, GLfloat>* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<4, 2, GLfloat>* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<3, 4, GLfloat>* values);
+        void MAGNUM_GL_LOCAL uniformImplementationSSOEXT(GLint location, GLsizei count, const Math::RectangularMatrix<4, 3, GLfloat>* values);
         #endif
-        #endif
-        #ifndef MAGNUM_TARGET_GLES
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT(GLint location, GLsizei count, const Math::RectangularMatrix<2, 2, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT(GLint location, GLsizei count, const Math::RectangularMatrix<3, 3, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT(GLint location, GLsizei count, const Math::RectangularMatrix<4, 4, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT(GLint location, GLsizei count, const Math::RectangularMatrix<2, 3, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT(GLint location, GLsizei count, const Math::RectangularMatrix<3, 2, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT(GLint location, GLsizei count, const Math::RectangularMatrix<2, 4, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT(GLint location, GLsizei count, const Math::RectangularMatrix<4, 2, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT(GLint location, GLsizei count, const Math::RectangularMatrix<3, 4, GLdouble>* values);
-        void MAGNUM_GL_LOCAL uniformImplementationDSAEXT(GLint location, GLsizei count, const Math::RectangularMatrix<4, 3, GLdouble>* values);
         #endif
 
         GLuint _id;

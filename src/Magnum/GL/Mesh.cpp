@@ -713,27 +713,6 @@ void Mesh::attributePointerImplementationVAODSA(AttributeLayout&& attribute) {
     if(attribute.divisor)
         (this->*Context::current().state().mesh->vertexAttribDivisorImplementation)(attribute.location, attribute.divisor);
 }
-
-void Mesh::attributePointerImplementationVAODSAEXT(AttributeLayout&& attribute) {
-    _flags |= ObjectFlag::Created;
-    glEnableVertexArrayAttribEXT(_id, attribute.location);
-
-    #ifndef MAGNUM_TARGET_GLES2
-    if(attribute.kind == DynamicAttribute::Kind::Integral)
-        glVertexArrayVertexAttribIOffsetEXT(_id, attribute.buffer.id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
-    #ifndef MAGNUM_TARGET_GLES
-    else if(attribute.kind == DynamicAttribute::Kind::Long)
-        glVertexArrayVertexAttribLOffsetEXT(_id, attribute.buffer.id(), attribute.location, attribute.size, attribute.type, attribute.stride, attribute.offset);
-    #endif
-    else
-    #endif
-    {
-        glVertexArrayVertexAttribOffsetEXT(_id, attribute.buffer.id(), attribute.location, attribute.size, attribute.type, attribute.kind == DynamicAttribute::Kind::GenericNormalized, attribute.stride, attribute.offset);
-    }
-
-    if(attribute.divisor)
-        (this->*Context::current().state().mesh->vertexAttribDivisorImplementation)(attribute.location, attribute.divisor);
-}
 #endif
 
 void Mesh::vertexAttribPointer(AttributeLayout& attribute) {
@@ -769,9 +748,6 @@ void Mesh::vertexAttribDivisorImplementationVAO(const GLuint index, const GLuint
 }
 void Mesh::vertexAttribDivisorImplementationVAODSA(const GLuint index, const GLuint divisor) {
     glVertexArrayBindingDivisor(_id, index, divisor);
-}
-void Mesh::vertexAttribDivisorImplementationVAODSAEXT(const GLuint index, const GLuint divisor) {
-    glVertexArrayVertexAttribDivisorEXT(_id, index, divisor);
 }
 #elif defined(MAGNUM_TARGET_GLES2)
 void Mesh::vertexAttribDivisorImplementationANGLE(const GLuint index, const GLuint divisor) {

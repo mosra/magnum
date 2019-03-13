@@ -53,7 +53,7 @@ static void setSeamless(bool enabled) {
 /* [fn_gl2] */
 
 /* [fn_gl_extension] */
-/** @fn_gl_extension{NamedCopyBufferSubData,EXT,direct_state_access} */
+/** @fn_gl_extension{LabelObject,EXT,debug_label} */
 /* [fn_gl_extension] */
 
 /* [fn_vk] */

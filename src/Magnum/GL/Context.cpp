@@ -89,7 +89,6 @@ const std::vector<Extension>& Extension::extensions(Version version) {
         _extension(EXT,texture_filter_anisotropic),
         _extension(EXT,texture_compression_s3tc),
         _extension(EXT,texture_mirror_clamp),
-        _extension(EXT,direct_state_access),
         _extension(EXT,texture_sRGB_decode),
         _extension(EXT,shader_integer_mix),
         _extension(EXT,debug_label),

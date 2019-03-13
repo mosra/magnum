@@ -91,35 +91,6 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
         renderbufferStorageImplementation = &Renderbuffer::storageImplementationDSA;
 
-    } else if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
-        extensions.emplace_back(Extensions::EXT::direct_state_access::string());
-
-        checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDSAEXT;
-
-        /* I don't bother with EXT_DSA anymore */
-        clearIImplementation = &AbstractFramebuffer::clearImplementationDefault;
-        clearUIImplementation = &AbstractFramebuffer::clearImplementationDefault;
-        clearFImplementation = &AbstractFramebuffer::clearImplementationDefault;
-        clearFIImplementation = &AbstractFramebuffer::clearImplementationDefault;
-
-        drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDSAEXT;
-        drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDSAEXT;
-        readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDSAEXT;
-
-        copySub1DImplementation = &AbstractFramebuffer::copySub1DImplementationDSAEXT;
-        copySub2DImplementation = &AbstractFramebuffer::copySub2DImplementationDSAEXT;
-        copySubCubeMapImplementation = &AbstractFramebuffer::copySub2DImplementationDSAEXT;
-        copySub3DImplementation = &AbstractFramebuffer::copySub3DImplementationDSAEXT;
-
-        renderbufferImplementation = &Framebuffer::renderbufferImplementationDSAEXT;
-        texture1DImplementation = &Framebuffer::texture1DImplementationDSAEXT;
-        /* The EXT_DSA implementation is the same for both 2D and cube map textures */
-        texture2DImplementation = &Framebuffer::texture2DImplementationDSAEXT;
-        textureImplementation = &Framebuffer::textureImplementationDSAEXT;
-        textureCubeMapImplementation = &Framebuffer::texture2DImplementationDSAEXT;
-        textureLayerImplementation = &Framebuffer::textureLayerImplementationDSAEXT;
-
-        renderbufferStorageImplementation = &Renderbuffer::storageImplementationDSAEXT;
     } else
     #endif
     {
@@ -310,10 +281,6 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
         renderbufferStorageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationDSA;
 
-    } else if(context.isExtensionSupported<Extensions::EXT::direct_state_access>()) {
-        /* Extension added above */
-
-        renderbufferStorageMultisampleImplementation = &Renderbuffer::storageMultisampleImplementationDSAEXT;
     } else
     #endif
     {

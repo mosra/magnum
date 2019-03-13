@@ -65,10 +65,9 @@ information about usage in shaders.
 
 @section GL-BufferTexture-performance-optimizations Performance optimizations
 
-If either @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) or
-@gl_extension{EXT,direct_state_access} is available, @ref setBuffer() functions
-use DSA to avoid unnecessary calls to @fn_gl{ActiveTexture} and
-@fn_gl{BindTexture}. See
+If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is available,
+@ref setBuffer() functions use DSA to avoid unnecessary calls to
+@fn_gl{ActiveTexture} and @fn_gl{BindTexture}. See
 @ref GL-AbstractTexture-performance-optimization "relevant section in AbstractTexture documentation"
 and respective function documentation for more information.
 
@@ -187,12 +186,10 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
          *
          * Binds given buffer to this texture. The buffer itself can be then
          * filled with data of proper format at any time using @ref Buffer "Buffer"'s
-         * own data setting functions. If neither @gl_extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) nor @gl_extension{EXT,direct_state_access} is
-         * available, the texture is bound before the operation (if not
-         * already).
+         * own data setting functions. If @gl_extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not available, the texture is bound before
+         * the operation (if not already).
          * @see @ref maxSize(), @fn_gl2_keyword{TextureBuffer,TexBuffer},
-         *      @fn_gl_extension_keyword{TextureBuffer,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexBuffer}
          */
@@ -208,12 +205,10 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
          *
          * Binds range of given buffer to this texture. The buffer itself can
          * be then filled with data of proper format at any time using @ref Buffer "Buffer"'s
-         * own data setting functions. If neither @gl_extension{ARB,direct_state_access}
-         * (part of OpenGL 4.5) nor @gl_extension{EXT,direct_state_access} is
-         * available, the texture is bound before the operation (if not
-         * already).
+         * own data setting functions. If @gl_extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not available, the texture is bound before
+         * the operation (if not already).
          * @see @ref maxSize(), @fn_gl2_keyword{TextureBufferRange,TexBufferRange},
-         *      @fn_gl_extension_keyword{TextureBufferRange,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexBufferRange}
          * @requires_gl43 Extension @gl_extension{ARB,texture_buffer_range}
@@ -241,7 +236,6 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
         #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL setBufferImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer);
-        void MAGNUM_GL_LOCAL setBufferImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer);
         #endif
 
         void MAGNUM_GL_LOCAL setBufferRangeImplementationDefault(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
@@ -250,7 +244,6 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
         #endif
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL setBufferRangeImplementationDSA(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
-        void MAGNUM_GL_LOCAL setBufferRangeImplementationDSAEXT(BufferTextureFormat internalFormat, Buffer& buffer, GLintptr offset, GLsizeiptr size);
         #endif
 };
 

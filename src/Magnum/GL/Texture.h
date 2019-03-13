@@ -292,13 +292,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Taken into account when generating mipmap using @ref generateMipmap()
          * and when considering texture completeness when using mipmap
-         * filtering. If neither @gl_extension{ARB,direct_state_access} (part of
-         * OpenGL 4.5) nor @gl_extension{EXT,direct_state_access} desktop
-         * extension is available, the texture is bound before the operation
-         * (if not already). Initial value is @cpp 0 @ce.
+         * filtering. If @gl_extension{ARB,direct_state_access} (part of OpenGL
+         * 4.5) is not available, the texture is bound before the operation (if
+         * not already). Initial value is @cpp 0 @ce.
          * @see @ref setMaxLevel(), @ref setMinificationFilter(),
          *      @fn_gl2_keyword{TextureParameter,TexParameter},
-         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_BASE_LEVEL}
          * @requires_gles30 Base level is always `0` in OpenGL ES 2.0.
@@ -317,14 +315,12 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Taken into account when generating mipmap using @ref generateMipmap()
          * and when considering texture completeness when using mipmap
-         * filtering. If neither @gl_extension{ARB,direct_state_access} (part of
-         * OpenGL 4.5) nor @gl_extension{EXT,direct_state_access} desktop
-         * extension is available, the texture is bound before the operation
-         * (if not already). Initial value is `1000`, which is clamped to count
-         * of levels specified when using @ref setStorage().
+         * filtering. If @gl_extension{ARB,direct_state_access} (part of OpenGL
+         * 4.5) is not available, the texture is bound before the operation (if
+         * not already). Initial value is `1000`, which is clamped to count of
+         * levels specified when using @ref setStorage().
          * @see @ref setBaseLevel(), @ref setMinificationFilter(),
          *      @fn_gl2_keyword{TextureParameter,TexParameter},
-         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_MAX_LEVEL}
          * @requires_gles30 Extension @gl_extension{APPLE,texture_max_level},
@@ -347,14 +343,12 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Sets filter used when the object pixel size is smaller than the
-         * texture size. If neither @gl_extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @gl_extension{EXT,direct_state_access} desktop
-         * extension is available, the texture is bound before the operation
-         * (if not already). Initial value is {@ref SamplerFilter::Nearest,
-         * @ref SamplerMipmap::Linear}.
+         * texture size. If @gl_extension{ARB,direct_state_access} (part of
+         * OpenGL 4.5) is not available, the texture is bound before the
+         * operation (if not already). Initial value is
+         * {@ref SamplerFilter::Nearest, @ref SamplerMipmap::Linear}.
          * @see @ref setMagnificationFilter(), @ref setBaseLevel(),
          *      @ref setMaxLevel(), @fn_gl2_keyword{TextureParameter,TexParameter},
-         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_MIN_FILTER}
          */
@@ -374,12 +368,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Sets filter used when the object pixel size is larger than largest
-         * texture size. If neither @gl_extension{ARB,direct_state_access} (part
-         * of OpenGL 4.5) nor @gl_extension{EXT,direct_state_access} desktop
-         * extension is available, the texture is bound before the operation
-         * (if not already). Initial value is @ref SamplerFilter::Linear.
+         * texture size. If @gl_extension{ARB,direct_state_access} (part of
+         * OpenGL 4.5) is not available, the texture is bound before the
+         * operation (if not already). Initial value is
+         * @ref SamplerFilter::Linear.
          * @see @ref setMinificationFilter(), @fn_gl2_keyword{TextureParameter,TexParameter},
-         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_MAG_FILTER}
          */
@@ -398,13 +391,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set minimum level-of-detail parameter
          * @return Reference to self (for method chaining)
          *
-         * Limits selection of highest resolution mipmap. If neither
-         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @gl_extension{EXT,direct_state_access} desktop extension is available,
-         * the texture is bound before the operation (if not already). Initial
-         * value is @cpp -1000.0f @ce.
+         * Limits selection of highest resolution mipmap. If
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, the texture is bound before the operation (if not
+         * already). Initial value is @cpp -1000.0f @ce.
          * @see @ref setMaxLod(), @ref setLodBias(), @fn_gl2_keyword{TextureParameter,TexParameter},
-         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_MIN_LOD}
          * @requires_gles30 Texture LOD parameters are not available in OpenGL
@@ -421,13 +412,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set maximum level-of-detail parameter
          * @return Reference to self (for method chaining)
          *
-         * Limits selection of lowest resolution mipmap. If neither
-         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @gl_extension{EXT,direct_state_access} desktop extension is available,
-         * the texture is bound before the operation (if not already). Initial
-         * value is @cpp 1000.0f @ce.
+         * Limits selection of lowest resolution mipmap. If
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, the texture is bound before the operation (if not
+         * already). Initial value is @cpp 1000.0f @ce.
          * @see @ref setMinLod(), @ref setLodBias(), @fn_gl2_keyword{TextureParameter,TexParameter},
-         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_MAX_LOD}
          * @requires_gles30 Texture LOD parameters are not available in OpenGL
@@ -447,13 +436,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Fixed bias value that is added to the level-of-detail parameter. If
-         * neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @gl_extension{EXT,direct_state_access} is available, the texture is
-         * bound before the operation (if not already). Initial value is
-         * @cpp 0.0f @ce.
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, the texture is bound before the operation (if not
+         * already). Initial value is @cpp 0.0f @ce.
          * @see @ref maxLodBias(), @ref setMinLod(), @ref setMaxLod(),
          *      @fn_gl2_keyword{TextureParameter,TexParameter},
-         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_LOD_BIAS}
          * @requires_gl Texture LOD bias can be specified only directly in
@@ -471,12 +458,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Sets wrapping type for coordinates out of range @f$ [ 0.0, 1.0 ] @f$.
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the texture is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the texture is bound before the operation (if not
          * already). Initial value is @ref SamplerWrapping::Repeat.
          * @see @ref setBorderColor(), @fn_gl2_keyword{TextureParameter,TexParameter},
-         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_WRAP_S},
          *      @def_gl_keyword{TEXTURE_WRAP_T}, @def_gl_keyword{TEXTURE_WRAP_R}
@@ -497,12 +482,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Border color when wrapping is set to @ref SamplerWrapping::ClampToBorder.
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} is available, the texture is
-         * bound before the operation (if not already). Initial value is
-         * @cpp 0x00000000_rgbaf @ce.
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the texture is bound before the operation (if not
+         * already). Initial value is @cpp 0x00000000_rgbaf @ce.
          * @see @ref setWrapping(), @fn_gl2_keyword{TextureParameter,TexParameter},
-         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_BORDER_COLOR}
          * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
@@ -521,13 +504,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Border color for integer textures when wrapping is set to
-         * @ref SamplerWrapping::ClampToBorder. If neither
-         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @gl_extension{EXT,direct_state_access} is available, the texture is
-         * bound before the operation (if not already). Initial value is
-         * @cpp {0, 0, 0, 0} @ce.
+         * @ref SamplerWrapping::ClampToBorder. If
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, the texture is bound before the operation (if not
+         * already). Initial value is @cpp {0, 0, 0, 0} @ce.
          * @see @fn_gl2_keyword{TextureParameter,TexParameter},
-         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_BORDER_COLOR}
          * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
@@ -561,13 +542,12 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Default value is @cpp 1.0f @ce, which means no anisotropy. Set to
          * value greater than @cpp 1.0f @ce for anisotropic filtering. If
-         * extension @gl_extension{EXT,texture_filter_anisotropic} (desktop or ES)
-         * is not available, this function does nothing. If neither
-         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @gl_extension{EXT,direct_state_access} desktop extension is available,
-         * the texture is bound before the operation (if not already).
+         * extension @gl_extension{EXT,texture_filter_anisotropic} (desktop or
+         * ES) is not available, this function does nothing. If
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, the texture is bound before the operation (if not
+         * already).
          * @see @ref Sampler::maxMaxAnisotropy(), @fn_gl2_keyword{TextureParameter,TexParameter},
-         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with
          *      @def_gl_keyword{TEXTURE_MAX_ANISOTROPY_EXT}
@@ -582,13 +562,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set sRGB decoding
          * @return Reference to self (for method chaining)
          *
-         * Disables or reenables decoding of sRGB values. If neither
-         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @gl_extension{EXT,direct_state_access} desktop extension is available,
-         * the texture is bound before the operation (if not already). Initial
-         * value is @cpp true @ce.
+         * Disables or reenables decoding of sRGB values. If
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, the texture is bound before the operation (if not
+         * already). Initial value is @cpp true @ce.
          * @see @fn_gl2_keyword{TextureParameter,TexParameter},
-         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_SRGB_DECODE_EXT}
          * @requires_extension Extension @gl_extension{EXT,texture_sRGB_decode}
@@ -625,12 +603,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * @snippet MagnumGL.cpp Texture-setSwizzle
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the texture is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the texture is bound before the operation (if not
          * already). Initial value is @cpp 'r', 'g', 'b', 'a' @ce.
          * @see @fn_gl2_keyword{TextureParameter,TexParameter},
-         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_SWIZZLE_RGBA} (or
          *      @def_gl_keyword{TEXTURE_SWIZZLE_R}, @def_gl_keyword{TEXTURE_SWIZZLE_G},
@@ -651,13 +627,11 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Set depth texture comparison mode
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the texture is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the texture is bound before the operation (if not
          * already). Initial value is @ref SamplerCompareMode::None.
          * @note Depth textures can be only 1D or 2D.
          * @see @ref setCompareFunction(), @fn_gl2_keyword{TextureParameter,TexParameter},
-         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_COMPARE_MODE}
          * @requires_gles30 Extension @gl_extension{EXT,shadow_samplers} in
@@ -675,14 +649,12 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Comparison operator used when comparison mode is set to
-         * @ref SamplerCompareMode::CompareRefToTexture. If neither
-         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @gl_extension{EXT,direct_state_access} desktop extension is available,
-         * the texture is bound before the operation (if not already). Initial
-         * value is @ref SamplerCompareFunction::LessOrEqual.
+         * @ref SamplerCompareMode::CompareRefToTexture. If
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, the texture is bound before the operation (if not
+         * already). Initial value is @ref SamplerCompareFunction::LessOrEqual.
          * @note Depth textures can be only 1D or 2D.
          * @see @ref setCompareMode(), @fn_gl2_keyword{TextureParameter,TexParameter},
-         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{TEXTURE_COMPARE_FUNC}
          * @requires_gles30 Extension @gl_extension{EXT,shadow_samplers} in
@@ -702,13 +674,12 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @return Reference to self (for method chaining)
          *
          * Selects which component of packed depth/stencil texture is used for
-         * texturing. If neither @gl_extension{ARB,direct_state_access} (part of
-         * OpenGL 4.5) nor @gl_extension{EXT,direct_state_access} is available,
-         * the texture is bound before the operation (if not already). Initial
-         * value is @ref SamplerDepthStencilMode::DepthComponent.
+         * texturing. If @gl_extension{ARB,direct_state_access} (part of OpenGL
+         * 4.5) is not available, the texture is bound before the operation (if
+         * not already). Initial value is
+         * @ref SamplerDepthStencilMode::DepthComponent.
          * @note Depth textures can be only 1D or 2D.
          * @see @fn_gl2_keyword{TextureParameter,TexParameter},
-         *      @fn_gl_extension_keyword{TextureParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexParameter} with @def_gl_keyword{DEPTH_STENCIL_TEXTURE_MODE}
          * @requires_gl43 Extension @gl_extension{ARB,stencil_texturing}
@@ -732,9 +703,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * After calling this function the texture is immutable and calling
          * @ref setStorage() or @ref setImage() is not allowed.
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the texture is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the texture is bound before the operation (if not
          * already). If neither @gl_extension{ARB,texture_storage} (part of OpenGL
          * 4.2), OpenGL ES 3.0 nor @gl_extension{EXT,texture_storage} in OpenGL
          * ES 2.0 is available, the feature is emulated with sequence of
@@ -743,9 +713,6 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl2_keyword{TextureStorage1D,TexStorage1D} /
          *      @fn_gl2_keyword{TextureStorage2D,TexStorage2D} /
          *      @fn_gl2_keyword{TextureStorage3D,TexStorage3D},
-         *      @fn_gl_extension_keyword{TextureStorage1D,EXT,direct_state_access} /
-         *      @fn_gl_extension_keyword{TextureStorage2D,EXT,direct_state_access} /
-         *      @fn_gl_extension_keyword{TextureStorage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexStorage1D} / @fn_gl_keyword{TexStorage2D} /
          *      @fn_gl_keyword{TexStorage3D}
@@ -761,12 +728,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         /**
          * @brief Image size in given mip level
          *
-         * The result is not cached in any way. If neither
-         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) nor
-         * @gl_extension{EXT,direct_state_access} desktop extension is available,
-         * the texture is bound before the operation (if not already).
+         * The result is not cached in any way. If
+         * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
+         * available, the texture is bound before the operation (if not already).
          * @see @ref image(), @fn_gl2_keyword{GetTextureLevelParameter,GetTexLevelParameter},
-         *      @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{GetTexLevelParameter} with
          *      @def_gl_keyword{TEXTURE_WIDTH}, @def_gl_keyword{TEXTURE_HEIGHT},
@@ -792,22 +757,17 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @ref imageSize().  The storage is not reallocated if it is large
          * enough to contain the new data.
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} is available, the texture is
-         * bound before the operation (if not already). If either
-         * @gl_extension{ARB,direct_state_access} or @gl_extension{ARB,robustness}
-         * is available, the operation is protected from buffer overflow.
-         * However, if @gl_extension{ARB,direct_state_access} is not available and
-         * both @gl_extension{EXT,direct_state_access} and @gl_extension{ARB,robustness}
-         * are available, the robust operation is preferred over DSA.
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the texture is bound before the operation (if not
+         * already). If either @gl_extension{ARB,direct_state_access} or
+         * @gl_extension{ARB,robustness} is available, the operation is
+         * protected from buffer overflow.
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
-         *      @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl{GetTexLevelParameter} with @def_gl{TEXTURE_WIDTH},
          *      @def_gl{TEXTURE_HEIGHT}, @def_gl{TEXTURE_DEPTH}, then
          *      @fn_gl{PixelStore}, then @fn_gl2_keyword{GetTextureImage,GetTexImage},
          *      @fn_gl_extension_keyword{GetnTexImage,ARB,robustness},
-         *      @fn_gl_extension_keyword{GetTextureImage,EXT,direct_state_access},
          *      eventually @fn_gl_keyword{GetTexImage}
          * @requires_gl Texture image queries are not available in OpenGL ES or
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
@@ -861,16 +821,12 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * size is taken using @ref imageSize(). The storage is not reallocated
          * if it is large enough to contain the new data.
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} is available, the texture is
-         * bound before the operation (if not already). If either
-         * @gl_extension{ARB,direct_state_access} or @gl_extension{ARB,robustness}
-         * is available, the operation is protected from buffer overflow.
-         * However, if @gl_extension{ARB,direct_state_access} is not available and
-         * both @gl_extension{EXT,direct_state_access} and @gl_extension{ARB,robustness}
-         * are available, the robust operation is preferred over DSA.
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the texture is bound before the operation (if not
+         * already). If either @gl_extension{ARB,direct_state_access} or
+         * @gl_extension{ARB,robustness} is available, the operation is
+         * protected from buffer overflow.
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
-         *      @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access},
          *      eventually @fn_gl{GetTexLevelParameter} with
          *      @def_gl{TEXTURE_COMPRESSED_IMAGE_SIZE},
          *      @def_gl{TEXTURE_INTERNAL_FORMAT}, @def_gl{TEXTURE_WIDTH},
@@ -878,7 +834,6 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl{PixelStore}, then
          *      @fn_gl2_keyword{GetCompressedTextureImage,GetCompressedTexImage},
          *      @fn_gl_extension_keyword{GetnCompressedTexImage,ARB,robustness},
-         *      @fn_gl_extension_keyword{GetCompressedTextureImage,EXT,direct_state_access},
          *      eventually @fn_gl_keyword{GetCompressedTexImage}
          * @requires_gl42 Extension @gl_extension{ARB,compressed_texture_pixel_storage}
          *      for non-default @ref CompressedPixelStorage
@@ -990,7 +945,6 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Compression format and data size are taken from the texture.
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
-         *      @fn_gl_extension{GetTextureLevelParameter,EXT,direct_state_access},
          *      eventually @fn_gl{GetTexLevelParameter} with
          *      @def_gl{TEXTURE_INTERNAL_FORMAT}, then possibly
          *      @fn_gl{GetInternalformat} with @def_gl{TEXTURE_COMPRESSED_BLOCK_SIZE},
@@ -1125,8 +1079,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * On platforms that support it prefer to use @ref setStorage() and
          * @ref setCompressedSubImage() instead, as it avoids unnecessary
          * reallocations and has better performance characteristics. This call
-         * also has no equivalent in @gl_extension{ARB,direct_state_access}, thus
-         * the texture needs to be bound to some texture unit before the
+         * also has no equivalent in @gl_extension{ARB,direct_state_access},
+         * thus the texture needs to be bound to some texture unit before the
          * operation.
          * @see @ref maxSize(), @fn_gl{PixelStore}, then @fn_gl{ActiveTexture},
          *      @fn_gl{BindTexture} and @fn_gl_keyword{CompressedTexImage1D} /
@@ -1187,9 +1141,8 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the texture is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the texture is bound before the operation (if not
          * already).
          *
          * On OpenGL ES 2.0 and WebGL 1.0, if @ref PixelStorage::skip() is set,
@@ -1198,9 +1151,6 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      @fn_gl{PixelStore}, @fn_gl2_keyword{TextureSubImage1D,TexSubImage1D} /
          *      @fn_gl2_keyword{TextureSubImage2D,TexSubImage2D} /
          *      @fn_gl2_keyword{TextureSubImage3D,TexSubImage3D},
-         *      @fn_gl_extension_keyword{TextureSubImage1D,EXT,direct_state_access} /
-         *      @fn_gl_extension_keyword{TextureSubImage2D,EXT,direct_state_access} /
-         *      @fn_gl_extension_keyword{TextureSubImage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexSubImage1D} / @fn_gl_keyword{TexSubImage2D} /
          *      @fn_gl_keyword{TexSubImage3D}
@@ -1253,17 +1203,13 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      or compressed @ref Trade::ImageData of the same dimension count
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the texture is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the texture is bound before the operation (if not
          * already).
          * @see @ref setStorage(), @fn_gl{PixelStore},
          *      @fn_gl2_keyword{CompressedTextureSubImage1D,CompressedTexSubImage1D} /
          *      @fn_gl2_keyword{CompressedTextureSubImage2D,CompressedTexSubImage2D} /
          *      @fn_gl2_keyword{CompressedTextureSubImage3D,CompressedTexSubImage3D},
-         *      @fn_gl_extension_keyword{CompressedTextureSubImage1D,EXT,direct_state_access} /
-         *      @fn_gl_extension_keyword{CompressedTextureSubImage2D,EXT,direct_state_access} /
-         *      @fn_gl_extension_keyword{CompressedTextureSubImage3D,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{CompressedTexSubImage1D} /
          *      @fn_gl_keyword{CompressedTexSubImage2D} /
@@ -1313,12 +1259,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @brief Generate mipmap
          * @return Reference to self (for method chaining)
          *
-         * If neither @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5)
-         * nor @gl_extension{EXT,direct_state_access} desktop extension is
-         * available, the texture is bound before the operation (if not
+         * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
+         * not available, the texture is bound before the operation (if not
          * already).
          * @see @ref setMinificationFilter(), @fn_gl2_keyword{GenerateTextureMipmap,GenerateMipmap},
-         *      @fn_gl_extension_keyword{GenerateTextureMipmap,EXT,direct_state_access},
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{GenerateMipmap}
          * @requires_gl30 Extension @gl_extension{ARB,framebuffer_object}
