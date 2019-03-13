@@ -765,10 +765,9 @@ if(NEED_CGLCONTEXT OR WITH_CGLCONTEXT)
             message(SEND_ERROR "CglContext is available only if TARGET_GL is enabled")
         endif()
 
-        # CMake-generated XCode projects had some problems when library
-        # consisted only of $<TARGET_OBJECTS> entries, thus compiling the
-        # sources again in this case
-        add_library(MagnumCglContext STATIC ${MagnumContext_SRCS})
+        add_library(MagnumCglContext STATIC
+            $<TARGET_OBJECTS:MagnumCglContextObjects>
+            ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
         set_target_properties(MagnumCglContext PROPERTIES
             DEBUG_POSTFIX "-d"
             FOLDER "Magnum/Platform")
