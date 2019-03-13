@@ -404,7 +404,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         glfwMakeContextCurrent(_window);
 
     #ifndef MAGNUM_TARGET_GLES
-   /* Fall back to (forward compatible) GL 2.1, if version is not
+    /* Fall back to (forward compatible) GL 2.1, if version is not
        user-specified and either core context creation fails or we are on
        binary NVidia/AMD drivers on Linux/Windows or Intel Windows drivers.
        Instead of creating forward-compatible context with highest available
