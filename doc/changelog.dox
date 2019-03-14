@@ -197,6 +197,9 @@ See also:
 
 -   @ref building-packages-msys "MSYS2 packages" are now in official
     repositories, installable directly via `pacman`
+-   `FindSDL2.cmake` was updated to work with MinGW version 2.0.5 and newer,
+    since these dropped the old directory hierarchy. Older versions have both
+    the original and the new hierarchy, so it should work with these as well.
 -   Updated *extremely* outdated Emscripten boilerplate from the
     [base-emscripten bootstrap project](https://github.com/mosra/magnum-bootstrap/tree/base-emscripten)
     (the HTML markup was unchanged since 2013, heh)
