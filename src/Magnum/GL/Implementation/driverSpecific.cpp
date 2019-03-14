@@ -188,7 +188,8 @@ namespace {
 
         #if !defined(MAGNUM_TARGET_GLES2) && defined(CORRADE_TARGET_WINDOWS)
         /* Intel drivers on Windows return GL_UNSIGNED_BYTE for *both*
-           GL_IMPLEMENTATION_COLOR_READ_FORMAT and _TYPE when using either glGetNamedFramebufferParameter() or glGetFramebufferParameter(),
+           GL_IMPLEMENTATION_COLOR_READ_FORMAT and _TYPE when using either
+           glGetNamedFramebufferParameter() or glGetFramebufferParameter(),
            independently on what's the actual framebuffer format. Using
            glGetInteger() makes it return GL_RGBA and GL_UNSIGNED_BYTE for
            RGBA8 framebuffers, and cause a "Error has been generated. GL error
