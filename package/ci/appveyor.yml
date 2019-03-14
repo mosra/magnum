@@ -70,10 +70,10 @@ install:
 - IF "%TARGET%" == "desktop-gles" ren openal\bin\Win64\soft_oal.dll OpenAL32.dll
 
 # SDL2
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.4-VC.zip appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.4-VC.zip
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" 7z x SDL2-devel-2.0.4-VC.zip && ren SDL2-2.0.4 SDL
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.4-mingw.tar.gz appveyor DownloadFile http://libsdl.org/release/SDL2-devel-2.0.4-mingw.tar.gz
-- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.0.4-mingw.tar.gz & 7z x SDL2-devel-2.0.4-mingw.tar & ren SDL2-2.0.4 SDL
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.9-VC.zip appveyor DownloadFile http://www.libsdl.org/release/SDL2-devel-2.0.9-VC.zip
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "msvc" 7z x SDL2-devel-2.0.9-VC.zip && ren SDL2-2.0.9 SDL
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\SDL2-devel-2.0.9-mingw.tar.gz appveyor DownloadFile http://libsdl.org/release/SDL2-devel-2.0.9-mingw.tar.gz
+- IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" 7z x SDL2-devel-2.0.9-mingw.tar.gz & 7z x SDL2-devel-2.0.9-mingw.tar & ren SDL2-2.0.9 SDL
 
 # GLFW
 - IF "%TARGET%" == "desktop" IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\glfw-3.2.1.bin.WIN64.zip appveyor DownloadFile https://github.com/glfw/glfw/releases/download/3.2.1/glfw-3.2.1.bin.WIN64.zip
@@ -92,7 +92,7 @@ build_script:
 - IF "%TARGET%" == "rt" call package\ci\appveyor-rt.bat
 
 cache:
-- SDL2-devel-2.0.4-VC.zip
-- SDL2-devel-2.0.4-mingw.zip
+- SDL2-devel-2.0.9-VC.zip
+- SDL2-devel-2.0.9-mingw.zip
 - openal-soft-1.17.2-bin.zip
 - glfw-3.2.1.bin.WIN64.zip
