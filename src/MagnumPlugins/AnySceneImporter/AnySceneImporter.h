@@ -74,8 +74,7 @@ Supported formats:
 -   Biovision BVH (`*.bvh`), loaded with any plugin that provides `BvhImporter`
 -   CharacterStudio Motion (`*.csm`), loaded with any plugin that provides
     `CsmImporter`
--   COLLADA (`*.dae`), loaded with @ref ColladaImporter or any other plugin
-    that provides it
+-   COLLADA (`*.dae`), loaded with any plugin that provides `ColladaImporter`
 -   DirectX X (`*.x`), loaded with any plugin that provides `DirectXImporter`
 -   AutoCAD DXF (`*.dxf`), loaded with any plugin that provides `DxfImporter`
 -   Autodesk FBX (`*.fbx`), loaded with any plugin that provides `FbxImporter`
