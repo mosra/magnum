@@ -1261,6 +1261,7 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
 
         void MAGNUM_GL_LOCAL dataImplementationDefault(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
         #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_GL_LOCAL dataImplementationDSAIntelWindows(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
         void MAGNUM_GL_LOCAL dataImplementationDSA(GLsizeiptr size, const GLvoid* data, BufferUsage usage);
         #endif
 

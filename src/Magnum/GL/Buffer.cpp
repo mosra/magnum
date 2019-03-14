@@ -464,6 +464,18 @@ void Buffer::dataImplementationDefault(GLsizeiptr size, const GLvoid* data, Buff
 void Buffer::dataImplementationDSA(const GLsizeiptr size, const GLvoid* const data, const BufferUsage usage) {
     glNamedBufferData(_id, size, data, GLenum(usage));
 }
+
+#ifdef CORRADE_TARGET_WINDOWS
+void Buffer::dataImplementationDSAIntelWindows(const GLsizeiptr size, const GLvoid* const data, const BufferUsage usage) {
+    glNamedBufferData(_id, size, data, GLenum(usage));
+    /* See the "intel-windows-buggy-dsa-bufferdata-for-index-buffers"
+       workaround for more information */
+    if(_targetHint == TargetHint::ElementArray) {
+        bindInternal(TargetHint::ElementArray, nullptr);
+        bindInternal(TargetHint::ElementArray, this);
+    }
+}
+#endif
 #endif
 
 void Buffer::subDataImplementationDefault(GLintptr offset, GLsizeiptr size, const GLvoid* data) {

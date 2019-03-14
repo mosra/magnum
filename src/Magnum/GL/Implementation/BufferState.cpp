@@ -107,7 +107,6 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
         copyImplementation = &Buffer::copyImplementationDSA;
         getParameterImplementation = &Buffer::getParameterImplementationDSA;
         getSubDataImplementation = &Buffer::getSubDataImplementationDSA;
-        dataImplementation = &Buffer::dataImplementationDSA;
         subDataImplementation = &Buffer::subDataImplementationDSA;
         mapImplementation = &Buffer::mapImplementationDSA;
         mapRangeImplementation = &Buffer::mapRangeImplementationDSA;
@@ -123,7 +122,6 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
         #ifndef MAGNUM_TARGET_GLES
         getSubDataImplementation = &Buffer::getSubDataImplementationDefault;
         #endif
-        dataImplementation = &Buffer::dataImplementationDefault;
         subDataImplementation = &Buffer::subDataImplementationDefault;
         #ifndef MAGNUM_TARGET_WEBGL
         mapImplementation = &Buffer::mapImplementationDefault;
@@ -179,6 +177,24 @@ BufferState::BufferState(Context& context, std::vector<std::string>& extensions)
     #endif
     {
         setTargetHintImplementation = &Buffer::setTargetHintImplementationDefault;
+    }
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
+        #ifdef CORRADE_TARGET_WINDOWS
+        if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
+           !context.isDriverWorkaroundDisabled("intel-windows-buggy-dsa-bufferdata-for-index-buffers"))
+        {
+            dataImplementation = &Buffer::dataImplementationDSAIntelWindows;
+        } else
+        #endif
+        {
+            dataImplementation = &Buffer::dataImplementationDSA;
+        }
+    } else
+    #endif
+    {
+        dataImplementation = &Buffer::dataImplementationDefault;
     }
 
     #ifdef MAGNUM_TARGET_GLES

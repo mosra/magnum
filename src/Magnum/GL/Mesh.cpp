@@ -678,9 +678,7 @@ void Mesh::attributePointerImplementationVAO(AttributeLayout&& attribute) {
 
 #ifndef MAGNUM_TARGET_GLES
 void Mesh::attributePointerImplementationVAODSA(AttributeLayout&& attribute) {
-    _flags |= ObjectFlag::Created;
     glEnableVertexArrayAttrib(_id, attribute.location);
-
 
     #ifndef MAGNUM_TARGET_GLES2
     if(attribute.kind == DynamicAttribute::Kind::Integral)

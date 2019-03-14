@@ -200,6 +200,18 @@ namespace {
         "intel-windows-implementation-color-read-format-completely-broken",
         #endif
 
+        #if !defined(MAGNUM_TARGET_GLES) && defined(CORRADE_TARGET_WINDOWS)
+        /* Intel drivers on Windows have some synchronization / memory
+           alignment bug in the DSA glNamedBufferData() when the same buffer is
+           set as an index buffer to a mesh right after or repeatedly. Calling
+           glBindBuffer() right before or after the data upload fixes the
+           issue. Note that this workaround is done only for buffers with
+           TargetHint::ElementArray, as the issue was not observed elsewhere.
+           Reproducible with the 2019.01 ImGui example, unfortunately I was not
+           able to create a standalone minimal repro case. */
+        "intel-windows-buggy-dsa-bufferdata-for-index-buffers",
+        #endif
+
         #ifndef MAGNUM_TARGET_GLES
         /* NVidia seems to be returning values for the default framebuffer when
            GL_IMPLEMENTATION_COLOR_READ_FORMAT and _TYPE is queried using
