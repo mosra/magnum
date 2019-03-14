@@ -354,6 +354,7 @@ const struct {
 };
 #endif
 
+#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 /* Just 4x4x8 0x00 - 0xff compressed using RGBA BPTC Unorm by the driver */
 constexpr UnsignedByte CompressedData3D[]{
     64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -372,7 +373,6 @@ constexpr UnsignedByte CompressedData3D[]{
      84, 253,  73,  34, 109, 100,  91, 251
 };
 
-#if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
