@@ -156,7 +156,8 @@ void ObjectRendererGLTest::render3D() {
     CORRADE_COMPARE_WITH(
         framebuffer.read({{}, {64, 64}}, {PixelFormat::RGBA8Unorm}),
         Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "ObjectRenderer3D.tga"),
-        CompareImageToFile{_manager});
+        /* Intel Windows drivers misplace one pixel here. Nothing serious. */
+        (CompareImageToFile{_manager, 71.6f, 0.018f}));
 }
 
 }}}}
