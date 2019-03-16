@@ -84,6 +84,9 @@ See also:
     -   @cpp "intel-windows-half-baked-dsa-texture-bind" @ce fixing texture
         binding inconsistencies (affected [mosra/magnum-examples#55](https://github.com/mosra/magnum-examples/issues/55)
         as well)
+    -   @cpp "intel-windows-broken-dsa-layered-cubemap-array-framebuffer-attachment" @ce
+        fixing @ref GL::Framebuffer::attachLayeredTexture() with
+        @ref GL::CubeMapTextureArray
 -   New `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
     and a corresponding environment variable to conveniently enable
     @gl_extension{KHR,debug} debug output

@@ -317,7 +317,7 @@ Framebuffer& Framebuffer::attachLayeredTexture(const BufferAttachment attachment
 }
 
 Framebuffer& Framebuffer::attachLayeredTexture(const BufferAttachment attachment, CubeMapTextureArray& texture, const Int level) {
-    (this->*Context::current().state().framebuffer->textureImplementation)(attachment, texture.id(), level);
+    (this->*Context::current().state().framebuffer->layeredTextureCubeMapArrayImplementation)(attachment, texture.id(), level);
     return *this;
 }
 

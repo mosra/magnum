@@ -224,6 +224,12 @@ namespace {
            maps. Using the non-DSA code path for unbinding and cube maps as a
            workaround. */
         "intel-windows-half-baked-dsa-texture-bind",
+
+        /* DSA glNamedFramebufferTexture() on Intel Windows drivers doesn't
+           work for layered cube map array attachments. Non-layered or
+           non-array cube map attachment works. Using the non-DSA code path as
+           a workaround. */
+        "intel-windows-broken-dsa-layered-cubemap-array-framebuffer-attachment",
         #endif
 
         #ifndef MAGNUM_TARGET_GLES

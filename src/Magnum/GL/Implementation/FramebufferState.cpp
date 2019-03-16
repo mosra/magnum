@@ -155,6 +155,26 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         textureCubeMapImplementation = &Framebuffer::texture2DImplementationDefault;
     }
 
+    #if !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+    /* DSA/non-DSA implementation for attaching layered cubemap arrays, because
+       ... well, guess why. */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
+        #ifdef CORRADE_TARGET_WINDOWS
+        && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
+            context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-layered-cubemap-array-framebuffer-attachment"))
+        #endif
+    ) {
+        /* Extension name added above */
+
+        layeredTextureCubeMapArrayImplementation = &Framebuffer::textureImplementationDSA;
+    } else
+    #endif
+    {
+        layeredTextureCubeMapArrayImplementation = &Framebuffer::textureImplementationDefault;
+    }
+    #endif
+
     /* Framebuffer texture attachment on ES3 */
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
     if(context.isVersionSupported(Version::GLES320))
