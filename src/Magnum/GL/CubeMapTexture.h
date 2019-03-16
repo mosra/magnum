@@ -818,9 +818,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
          */
-        void compressedSubImage(Int level, const Range3Di& range, CompressedImage3D& image) {
-            AbstractTexture::compressedSubImage<3>(level, range, image);
-        }
+        void compressedSubImage(Int level, const Range3Di& range, CompressedImage3D& image);
 
         /** @overload
          *
@@ -846,9 +844,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          *      WebGL. See @ref Framebuffer::read() or @ref DebugTools::textureSubImage()
          *      for possible workarounds.
          */
-        void compressedSubImage(Int level, const Range3Di& range, CompressedBufferImage3D& image, BufferUsage usage) {
-            AbstractTexture::compressedSubImage<3>(level, range, image, usage);
-        }
+        void compressedSubImage(Int level, const Range3Di& range, CompressedBufferImage3D& image, BufferUsage usage);
 
         /** @overload
          *

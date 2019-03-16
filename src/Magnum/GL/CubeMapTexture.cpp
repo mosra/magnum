@@ -284,9 +284,61 @@ BufferImage3D CubeMapTexture::subImage(const Int level, const Range3Di& range, B
     return std::move(image);
 }
 
+void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, CompressedImage3D& image) {
+    createIfNotAlready();
+
+    /* Internal texture format */
+    GLint format;
+    (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+
+    /* Calculate compressed subimage size. If the user-provided pixel storage
+       doesn't tell us all properties about the compression, we need to ask GL
+       for it. That requires GL_ARB_internalformat_query2. */
+    std::size_t dataSize;
+    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
+        dataSize = compressedSubImageSize<3>(TextureFormat(format), range.size());
+    else dataSize = Magnum::Implementation::compressedImageDataSizeFor(image, range.size());
+
+    /* Reallocate only if needed */
+    Containers::Array<char> data{image.release()};
+    if(data.size() < dataSize)
+        data = Containers::Array<char>{dataSize};
+
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
+    glGetCompressedTextureSubImage(_id, level, range.min().x(), range.min().y(), range.min().z(), range.size().x(), range.size().y(), range.size().z(), data.size(), data);
+    image = CompressedImage3D{CompressedPixelFormat(format), range.size(), std::move(data)};
+}
+
 CompressedImage3D CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, CompressedImage3D&& image) {
     compressedSubImage(level, range, image);
     return std::move(image);
+}
+
+void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, CompressedBufferImage3D& image, const BufferUsage usage) {
+    createIfNotAlready();
+
+    /* Internal texture format */
+    GLint format;
+    (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+
+    /* Calculate compressed subimage size. If the user-provided pixel storage
+       doesn't tell us all properties about the compression, we need to ask GL
+       for it. That requires GL_ARB_internalformat_query2. */
+    std::size_t dataSize;
+    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
+        dataSize = compressedSubImageSize<3>(TextureFormat(format), range.size());
+    else dataSize = Magnum::Implementation::compressedImageDataSizeFor(image, range.size());
+
+    /* Reallocate only if needed */
+    if(image.dataSize() < dataSize)
+        image.setData(image.storage(), CompressedPixelFormat(format), range.size(), {nullptr, dataSize}, usage);
+    else
+        image.setData(image.storage(), CompressedPixelFormat(format), range.size(), nullptr, usage);
+
+    image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
+    glGetCompressedTextureSubImage(_id, level, range.min().x(), range.min().y(), range.min().z(), range.size().x(), range.size().y(), range.size().z(), dataSize, nullptr);
 }
 
 CompressedBufferImage3D CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, CompressedBufferImage3D&& image, const BufferUsage usage) {
