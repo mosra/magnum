@@ -531,6 +531,9 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL bindImplementationMulti(GLint textureUnit);
         void MAGNUM_GL_LOCAL bindImplementationDSA(GLint textureUnit);
+        #ifdef CORRADE_TARGET_WINDOWS
+        void MAGNUM_GL_LOCAL bindImplementationDSAIntelWindows(GLint textureUnit);
+        #endif
         #endif
 
         void MAGNUM_GL_LOCAL parameterImplementationDefault(GLenum parameter, GLint value);

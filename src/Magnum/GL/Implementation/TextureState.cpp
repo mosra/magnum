@@ -79,8 +79,19 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
     if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
         /* Extension name added below */
 
-        unbindImplementation = &AbstractTexture::unbindImplementationDSA;
-        bindImplementation = &AbstractTexture::bindImplementationDSA;
+        #ifdef CORRADE_TARGET_WINDOWS
+        if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
+            !context.isDriverWorkaroundDisabled("intel-windows-half-baked-dsa-texture-bind"))
+        {
+            unbindImplementation = &AbstractTexture::unbindImplementationDefault;
+            bindImplementation = &AbstractTexture::bindImplementationDSAIntelWindows;
+        } else
+        #endif
+        {
+            unbindImplementation = &AbstractTexture::unbindImplementationDSA;
+            bindImplementation = &AbstractTexture::bindImplementationDSA;
+        }
+
     } else if(context.isExtensionSupported<Extensions::ARB::multi_bind>()) {
         /* Extension name added below */
 

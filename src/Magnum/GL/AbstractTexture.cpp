@@ -361,6 +361,14 @@ void AbstractTexture::bindImplementationMulti(GLint textureUnit) {
 void AbstractTexture::bindImplementationDSA(const GLint textureUnit) {
     glBindTextureUnit(textureUnit, _id);
 }
+
+#ifdef CORRADE_TARGET_WINDOWS
+void AbstractTexture::bindImplementationDSAIntelWindows(const GLint textureUnit) {
+    /* See the "intel-windows-half-baked-dsa-texture-bind" workaround */
+    if(_target == GL_TEXTURE_CUBE_MAP) bindImplementationDefault(textureUnit);
+    else bindImplementationDSA(textureUnit);
+}
+#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2

@@ -218,6 +218,12 @@ namespace {
            for <target> 34067" (GL_TEXTURE_CUBE_MAP is 34067). Using the
             non-DSA code path as a workaround. */
         "intel-windows-broken-dsa-for-cubemaps",
+
+        /* DSA glBindTextureUnit() on Intel Windows drivers simply doesn't work
+           when passing 0 to it. Non-zero IDs work correctly except for cube
+           maps. Using the non-DSA code path for unbinding and cube maps as a
+           workaround. */
+        "intel-windows-half-baked-dsa-texture-bind",
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
