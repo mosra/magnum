@@ -76,7 +76,6 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
         copySub1DImplementation = &AbstractFramebuffer::copySub1DImplementationDSA;
         copySub2DImplementation = &AbstractFramebuffer::copySub2DImplementationDSA;
-        copySubCubeMapImplementation = &AbstractFramebuffer::copySubCubeMapImplementationDSA;
         copySub3DImplementation = &AbstractFramebuffer::copySub3DImplementationDSA;
 
         renderbufferImplementation = &Framebuffer::renderbufferImplementationDSA;
@@ -86,7 +85,6 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
            function to specify cube map face */
         texture2DImplementation = &Framebuffer::texture2DImplementationDSA;
         textureImplementation = &Framebuffer::textureImplementationDSA;
-        textureCubeMapImplementation = &Framebuffer::textureCubeMapImplementationDSA;
         textureLayerImplementation = &Framebuffer::textureLayerImplementationDSA;
 
         renderbufferStorageImplementation = &Renderbuffer::storageImplementationDSA;
@@ -117,7 +115,6 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         copySub1DImplementation = &AbstractFramebuffer::copySub1DImplementationDefault;
         #endif
         copySub2DImplementation = &AbstractFramebuffer::copySub2DImplementationDefault;
-        copySubCubeMapImplementation = &AbstractFramebuffer::copySub2DImplementationDefault;
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         copySub3DImplementation = &AbstractFramebuffer::copySub3DImplementationDefault;
         #endif
@@ -131,12 +128,31 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         #ifndef MAGNUM_TARGET_GLES
         textureImplementation = &Framebuffer::textureImplementationDefault;
         #endif
-        textureCubeMapImplementation = &Framebuffer::texture2DImplementationDefault;
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         textureLayerImplementation = &Framebuffer::textureLayerImplementationDefault;
         #endif
 
         renderbufferStorageImplementation = &Renderbuffer::storageImplementationDefault;
+    }
+
+    /* DSA/non-DSA implementation for cubemaps, because Intel Windows drivers
+       have to be broken in a special way */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
+        #ifdef CORRADE_TARGET_WINDOWS
+        && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
+            context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"))
+        #endif
+    ) {
+        /* Extension name added above */
+
+        copySubCubeMapImplementation = &AbstractFramebuffer::copySubCubeMapImplementationDSA;
+        textureCubeMapImplementation = &Framebuffer::textureCubeMapImplementationDSA;
+    } else
+    #endif
+    {
+        copySubCubeMapImplementation = &AbstractFramebuffer::copySub2DImplementationDefault;
+        textureCubeMapImplementation = &Framebuffer::texture2DImplementationDefault;
     }
 
     /* Framebuffer texture attachment on ES3 */

@@ -210,6 +210,14 @@ namespace {
            Reproducible with the 2019.01 ImGui example, unfortunately I was not
            able to create a standalone minimal repro case. */
         "intel-windows-buggy-dsa-bufferdata-for-index-buffers",
+
+        /* ARB_direct_state_access implementation on Intel Windows drivers has
+           broken *everything* related to cube map textures (but not cube map
+           arrays) -- data upload, data queries, framebuffer attachment,
+           framebuffer copies, all complaining about "Wrong <func> 6 provided
+           for <target> 34067" (GL_TEXTURE_CUBE_MAP is 34067). Using the
+            non-DSA code path as a workaround. */
+        "intel-windows-broken-dsa-for-cubemaps",
         #endif
 
         #ifndef MAGNUM_TARGET_GLES

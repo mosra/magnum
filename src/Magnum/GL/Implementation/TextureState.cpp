@@ -130,10 +130,6 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         setBufferImplementation = &BufferTexture::setBufferImplementationDSA;
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDSA;
 
-        getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDSA;
-        cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDSA;
-        cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDSA;
-
     } else
     #endif
     {
@@ -166,7 +162,25 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         setBufferImplementation = &BufferTexture::setBufferImplementationDefault;
         setBufferRangeImplementation = &BufferTexture::setBufferRangeImplementationDefault;
         #endif
+    }
 
+    /* DSA/non-DSA implementation for cubemaps, because Intel Windows drivers
+       have to be broken in a special way */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
+        #ifdef CORRADE_TARGET_WINDOWS
+        && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
+            context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"))
+        #endif
+    ) {
+        /* Extension name added above */
+
+        getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDSA;
+        cubeSubImageImplementation = &CubeMapTexture::subImageImplementationDSA;
+        cubeCompressedSubImageImplementation = &CubeMapTexture::compressedSubImageImplementationDSA;
+    } else
+    #endif
+    {
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         getCubeLevelParameterivImplementation = &CubeMapTexture::getLevelParameterImplementationDefault;
         #endif
@@ -222,10 +236,15 @@ TextureState::TextureState(Context& context, std::vector<std::string>& extension
         if(context.isExtensionSupported<Extensions::ARB::direct_state_access>())
             getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSANonImmutableWorkaround;
         else getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDefaultImmutableWorkaround;
+    } else if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
+        #ifdef CORRADE_TARGET_WINDOWS
+        && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
+            context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"))
+        #endif
+    ) {
+        getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSA;
     } else {
-        if(context.isExtensionSupported<Extensions::ARB::direct_state_access>())
-            getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDSA;
-        else getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDefault;
+        getCubeLevelCompressedImageSizeImplementation = &CubeMapTexture::getLevelCompressedImageSizeImplementationDefault;
     }
 
     /* Image retrieval implementation */

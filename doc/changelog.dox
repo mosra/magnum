@@ -71,10 +71,16 @@ See also:
     @ref opengl-workarounds for more information). This pseudo-extension can be
     also explicitly disabled using the usual `--magnum-disable-extensions`
     @ref GL-Context-command-line "command-line option" for testing purposes.
--   New @cpp "intel-windows-buggy-dsa-bufferdata-for-index-buffers" @ce
-    workaround for a synchronization bug in the Intel Windows drivers when
-    @ref GL::Buffer::setData() is followed by @ref GL::Mesh::setIndexBuffer()
-    when @gl_extension{ARB,direct_state_access} is used
+-   An assorted collection of workarounds for Intel Windows drivers "fixing"
+    various issues related to @gl_extension{ARB,direct_state_access} by using a
+    non-DSA code path in the affected cases --- see
+    @ref opengl-workarounds for more information:
+    -   @cpp "intel-windows-buggy-dsa-bufferdata-for-index-buffers" @ce
+        fixing a nasty hard-to-reproduce synchronization bug when
+        @ref GL::Buffer::setData() is followed by
+        @ref GL::Mesh::setIndexBuffer()
+    -   @cpp "intel-windows-broken-dsa-for-cubemaps" @ce fixing everything
+        about @ref GL::CubeMapTexture (see [mosra/magnum-examples#55](https://github.com/mosra/magnum-examples/issues/55))
 -   New `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
     and a corresponding environment variable to conveniently enable
     @gl_extension{KHR,debug} debug output
