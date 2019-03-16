@@ -255,14 +255,17 @@ template<class T, class K> Containers::Optional<std::pair<UnsignedInt, K>> playe
 }
 
 template<class T, class K> std::pair<UnsignedInt, K> Player<T, K>::elapsed(const T time) const {
+    const K duration = _duration.size();
+
     /* Get the elapsed time. This is an immutable query, so make copies of the
        (otherwise to be modified) internal state. */
-    T startTime = _startTime;
-    T pauseTime = _stopPauseTime;
-    State state = _state;
-    const K duration = _duration.size();
-    const Containers::Optional<std::pair<UnsignedInt, K>> elapsed = Implementation::playerElapsed(duration, _playCount, _scaler, time, startTime, pauseTime, state);
-    if(elapsed) return *elapsed;
+    {
+        T startTime = _startTime;
+        T pauseTime = _stopPauseTime;
+        State state = _state;
+        const Containers::Optional<std::pair<UnsignedInt, K>> elapsed = Implementation::playerElapsed(duration, _playCount, _scaler, time, startTime, pauseTime, state);
+        if(elapsed) return *elapsed;
+    }
 
     /* If not advancing, the animation can be paused -- calculate the iteration
        index and keyframe at which it was paused if the duration is nonzero. If

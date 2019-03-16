@@ -118,17 +118,17 @@ void AbstractGlyphCacheTest::setImage() {
 
         GlyphCacheFeatures doFeatures() const override { return {}; }
         void doSetImage(const Vector2i& offset, const ImageView2D& image) override {
-            this->offset = offset;
-            this->size = image.size();
+            imageOffset = offset;
+            imageSize = image.size();
         }
 
-        Vector2i offset, size;
+        Vector2i imageOffset, imageSize;
     } cache{{100, 200}};
 
     cache.setImage({80, 175}, ImageView2D{{}, {20, 25}, nullptr});
 
-    CORRADE_COMPARE(cache.offset, (Vector2i{80, 175}));
-    CORRADE_COMPARE(cache.size, (Vector2i{20, 25}));
+    CORRADE_COMPARE(cache.imageOffset, (Vector2i{80, 175}));
+    CORRADE_COMPARE(cache.imageSize, (Vector2i{20, 25}));
 }
 
 void AbstractGlyphCacheTest::setImageOutOfBounds() {

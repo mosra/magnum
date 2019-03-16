@@ -37,9 +37,9 @@ using namespace Magnum::Math::Literals;
 int main() {
 
 {
-Vector3 a, b;
 Float t{};
 {
+Vector3 a, b;
 /* [ease] */
 auto lerpBounceIn =
     Animation::ease<Vector3, Math::lerp, Animation::Easing::bounceIn>();
@@ -303,8 +303,11 @@ const Animation::Track<Float, Vector2> jump{{
 
 Vector2 position = jump.at(2.2f);               // y = 0.775
 /* [Track-usage] */
+static_cast<void>(position);
+}
 
 {
+const Animation::Track<Float, Vector2> jump;
 /* [Track-performance-hint] */
 std::size_t hint = 0;
 Vector2 position = jump.at(2.2f, hint);         // y = 0.775, hint = 2
@@ -313,13 +316,11 @@ static_cast<void>(position);
 }
 
 {
+const Animation::Track<Float, Vector2> jump;
 /* [Track-performance-strict] */
 std::size_t hint = 0;
 Vector2 position = jump.atStrict(2.2f, hint);   // y = 0.775, hint = 2
 /* [Track-performance-strict] */
-static_cast<void>(position);
-}
-
 static_cast<void>(position);
 }
 
