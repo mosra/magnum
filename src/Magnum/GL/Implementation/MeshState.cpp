@@ -57,8 +57,19 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
         if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
             extensions.emplace_back(Extensions::ARB::direct_state_access::string());
 
+            /* Intel Windows drivers are ... special */
+            #ifdef CORRADE_TARGET_WINDOWS
+            if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
+               !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-integer-vertex-attributes"))
+            {
+                attributePointerImplementation = &Mesh::attributePointerImplementationVAODSAIntelWindows;
+            } else
+            #endif
+            {
+                attributePointerImplementation = &Mesh::attributePointerImplementationVAODSA;
+            }
+
             createImplementation = &Mesh::createImplementationVAODSA;
-            attributePointerImplementation = &Mesh::attributePointerImplementationVAODSA;
             bindIndexBufferImplementation = &Mesh::bindIndexBufferImplementationVAODSA;
         } else
         #endif

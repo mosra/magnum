@@ -700,6 +700,17 @@ void Mesh::attributePointerImplementationVAODSA(AttributeLayout&& attribute) {
     if(attribute.divisor)
         (this->*Context::current().state().mesh->vertexAttribDivisorImplementation)(attribute.location, attribute.divisor);
 }
+
+#ifdef CORRADE_TARGET_WINDOWS
+void Mesh::attributePointerImplementationVAODSAIntelWindows(AttributeLayout&& attribute) {
+    /* See the "intel-windows-broken-dsa-integer-vertex-attributes" workaround
+       for more information. */
+    if(attribute.kind == DynamicAttribute::Kind::Integral)
+        return attributePointerImplementationVAO(std::move(attribute));
+    else
+        return attributePointerImplementationVAODSA(std::move(attribute));
+}
+#endif
 #endif
 
 void Mesh::vertexAttribPointer(AttributeLayout& attribute) {

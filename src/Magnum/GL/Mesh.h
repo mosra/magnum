@@ -1112,6 +1112,9 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
         void MAGNUM_GL_LOCAL attributePointerImplementationVAO(AttributeLayout&& attribute);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL attributePointerImplementationVAODSA(AttributeLayout&& attribute);
+        #ifdef CORRADE_TARGET_WINDOWS
+        void MAGNUM_GL_LOCAL attributePointerImplementationVAODSAIntelWindows(AttributeLayout&& attribute);
+        #endif
         #endif
         void MAGNUM_GL_LOCAL vertexAttribPointer(AttributeLayout& attribute);
 

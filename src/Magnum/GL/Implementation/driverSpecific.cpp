@@ -239,6 +239,13 @@ namespace {
            glBeginQueryIndexed(). Using the non-DSA glGenQueries() instead
            makes it work properly. See TransformFeedbackGLTest for a test. */
         "intel-windows-broken-dsa-indexed-queries",
+
+        /* DSA-ified "vertex layout" glVertexArrayAttribIFormat() is broken
+           when passing shorts instead of full 32bit ints. Using the old-style
+           glVertexAttribIPointer() works correctly. No idea if the non-DSA
+           glVertexAttribIFormat() works or not. A test that triggers this
+           issue is in MeshGLTest::addVertexBufferIntWithShort(). */
+        "intel-windows-broken-dsa-integer-vertex-attributes",
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
