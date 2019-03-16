@@ -249,15 +249,29 @@ if(WITH_OPENGLTESTER)
     set(MagnumOpenGLTester_SRCS OpenGLTester.cpp)
     set(MagnumOpenGLTester_HEADERS OpenGLTester.h)
 
-    add_library(MagnumOpenGLTester STATIC
+    # We need a separate library for tests that links exclusively to
+    # MagnumGLTestLib instead of MagnumGL otherwise there are problems on
+    # Windows with global state like GL::Context::current(). So build an object
+    # library and then include it in MagnumOpenGLTester and
+    # MagnumOpenGLTesterTestLib. See the MagnumOpenGLTesterTestLib target for
+    # further info.
+    add_library(MagnumOpenGLTesterObjects OBJECT
         ${MagnumOpenGLTester_SRCS}
         ${MagnumOpenGLTester_HEADERS})
+    # Assuming that PIC is not needed because the Tester lib is always linked
+    # to the executable and not to any intermediate shared lib
+    set_target_properties(MagnumOpenGLTesterObjects PROPERTIES FOLDER "Magnum/GL")
+    target_include_directories(MagnumOpenGLTesterObjects PUBLIC
+        $<TARGET_PROPERTY:Corrade::TestSuite,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>
+        $<TARGET_PROPERTY:${OPENGLTESTER_APPLICATION},INTERFACE_INCLUDE_DIRECTORIES>)
+
+    add_library(MagnumOpenGLTester STATIC
+        $<TARGET_OBJECTS:MagnumOpenGLTesterObjects>
+        ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
     set_target_properties(MagnumOpenGLTester PROPERTIES
         DEBUG_POSTFIX "-d"
         FOLDER "Magnum/GL")
-    # Assuming that PIC is not needed because the Tester lib is always linked
-    # to the executable and not to any intermediate shared lib
-
     # OPENGLTESTER_APPLICATION defined in the root CMakeLists, because it also
     # enables the application library dependencies
     target_link_libraries(MagnumOpenGLTester PUBLIC Magnum Corrade::TestSuite ${OPENGLTESTER_APPLICATION})
@@ -313,6 +327,38 @@ if(BUILD_TESTS)
             RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
             LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
             ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    endif()
+
+    if(BUILD_GL_TESTS)
+        add_library(MagnumOpenGLTesterTestLib STATIC
+            $<TARGET_OBJECTS:MagnumOpenGLTesterObjects>
+            ${PROJECT_SOURCE_DIR}/src/dummy.cpp) # XCode workaround, see file comment for details
+        set_target_properties(MagnumOpenGLTesterTestLib PROPERTIES
+            DEBUG_POSTFIX "-d"
+            FOLDER "Magnum/GL")
+        target_link_libraries(MagnumOpenGLTesterTestLib PUBLIC Magnum Corrade::TestSuite)
+        # On Windows the ${OPENGLTESTER_APPLICATION} links to MagnumGL, which
+        # is causing asserts in GL::Context::current() due to two different
+        # instances of the global variable getting used. We circumvent that by
+        # using just the library file from ${OPENGLTESTER_APPLICATION} and
+        # linking to MagnumGLTestLib explicitly. It's not a problem on other
+        # platforms and I don't want to go through the trouble of correctly
+        # passing through all dependencies like X11, CGL etc., so I do it for
+        # Windows only and elsewhere I just link the same way as with
+        # MagnumOpenGLTester.
+        if(CORRADE_TARGET_WINDOWS)
+            if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_DESKTOP_GLES)
+                # Otherwise it complains that EGL::EGL does not exist here
+                find_package(EGL)
+            endif()
+            target_link_libraries(MagnumOpenGLTesterTestLib PUBLIC
+                $<TARGET_FILE:${OPENGLTESTER_APPLICATION}>
+                MagnumGLTestLib) # this is different
+            target_include_directories(MagnumOpenGLTesterTestLib PUBLIC
+                $<TARGET_PROPERTY:${OPENGLTESTER_APPLICATION},INTERFACE_INCLUDE_DIRECTORIES>)
+        else()
+            target_link_libraries(MagnumOpenGLTesterTestLib PUBLIC Magnum Corrade::TestSuite MagnumGLTestLib ${OPENGLTESTER_APPLICATION})
+        endif()
     endif()
 
     add_subdirectory(Test)
