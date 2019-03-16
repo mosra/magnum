@@ -2148,6 +2148,11 @@ void FramebufferGLTest::implementationColorReadFormat() {
 
     PixelFormat format = framebuffer.implementationColorReadFormat();
     PixelType type = framebuffer.implementationColorReadType();
+
+    #ifdef CORRADE_TARGET_WINDOWS
+    CORRADE_EXPECT_FAIL_IF((Context::current().detectedDriver() & Context::DetectedDriver::IntelWindows) && data.renderbufferFormat != RenderbufferFormat::RGBA8,
+        "Framebuffer format queries on Intel Windows drivers are broken beyond repair for any non-trivial value.");
+    #endif
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_COMPARE(format, data.expectedFormat);
     CORRADE_COMPARE(type, data.expectedType);
