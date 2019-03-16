@@ -234,6 +234,11 @@ namespace {
         /* DSA glClearNamedFramebuffer*() on Intel Windows drivers doesn't do
            anything. Using the non-DSA code path as a workaournd. */
         "intel-windows-broken-dsa-framebuffer-clear",
+
+        /* Using DSA glCreateQueries() on Intel Windows drivers breaks
+           glBeginQueryIndexed(). Using the non-DSA glGenQueries() instead
+           makes it work properly. See TransformFeedbackGLTest for a test. */
+        "intel-windows-broken-dsa-indexed-queries",
         #endif
 
         #ifndef MAGNUM_TARGET_GLES

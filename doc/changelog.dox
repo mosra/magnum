@@ -89,6 +89,8 @@ See also:
         @ref GL::CubeMapTextureArray
     -   @cpp "intel-windows-broken-dsa-framebuffer-clear" @ce
         fixing @ref GL::Framebuffer::clearColor()
+    -   @cpp "intel-windows-broken-dsa-indexed-queries" @ce fixing
+        @ref GL::PrimitiveQuery::begin(UnsignedInt)
 -   New `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
     and a corresponding environment variable to conveniently enable
     @gl_extension{KHR,debug} debug output
