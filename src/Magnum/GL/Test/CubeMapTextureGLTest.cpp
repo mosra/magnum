@@ -1221,7 +1221,18 @@ void CubeMapTextureGLTest::fullImageQuery() {
             PixelFormat::RGBA, PixelType::UnsignedByte, {2, 2, 6},
             FullPixelStorageData[testCaseInstanceId()].data});
 
-    MAGNUM_VERIFY_NO_GL_ERROR();
+    {
+        #ifdef CORRADE_TARGET_WINDOWS
+        bool fails(Context::current().detectedDriver() & Context::DetectedDriver::IntelWindows);
+        CORRADE_EXPECT_FAIL_IF(fails,
+            "ARB_DSA cubemap APIs are broken on Intel Windows drivers.");
+        #endif
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        #ifdef CORRADE_TARGET_WINDOWS
+        if(fails) CORRADE_SKIP("Skipping the rest of the test");
+        #endif
+    }
 
     Image3D image = texture.image(0,
         {FullPixelStorageData[testCaseInstanceId()].storage, PixelFormat::RGBA, PixelType::UnsignedByte});
@@ -1251,7 +1262,18 @@ void CubeMapTextureGLTest::fullImageQueryBuffer() {
             FullPixelStorageData[testCaseInstanceId()].data,
             BufferUsage::StaticDraw});
 
-    MAGNUM_VERIFY_NO_GL_ERROR();
+    {
+        #ifdef CORRADE_TARGET_WINDOWS
+        bool fails(Context::current().detectedDriver() & Context::DetectedDriver::IntelWindows);
+        CORRADE_EXPECT_FAIL_IF(fails,
+            "ARB_DSA cubemap APIs are broken on Intel Windows drivers.");
+        #endif
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        #ifdef CORRADE_TARGET_WINDOWS
+        if(fails) CORRADE_SKIP("Skipping the rest of the test");
+        #endif
+    }
 
     BufferImage3D image = texture.image(0,
         {FullPixelStorageData[testCaseInstanceId()].storage, PixelFormat::RGBA,
@@ -1285,7 +1307,18 @@ void CubeMapTextureGLTest::compressedFullImageQuery() {
             CompressedPixelFormat::RGBAS3tcDxt3, {4, 4, 6},
             CompressedFullPixelStorageData[testCaseInstanceId()].data});
 
-    MAGNUM_VERIFY_NO_GL_ERROR();
+    {
+        #ifdef CORRADE_TARGET_WINDOWS
+        bool fails(Context::current().detectedDriver() & Context::DetectedDriver::IntelWindows);
+        CORRADE_EXPECT_FAIL_IF(fails,
+            "ARB_DSA cubemap APIs are broken on Intel Windows drivers.");
+        #endif
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        #ifdef CORRADE_TARGET_WINDOWS
+        if(fails) CORRADE_SKIP("Skipping the rest of the test");
+        #endif
+    }
 
     CompressedImage3D image = texture.compressedImage(0, {CompressedFullPixelStorageData[testCaseInstanceId()].storage});
 
@@ -1318,7 +1351,18 @@ void CubeMapTextureGLTest::compressedFullImageQueryBuffer() {
             CompressedFullPixelStorageData[testCaseInstanceId()].data,
             BufferUsage::StaticDraw});
 
-    MAGNUM_VERIFY_NO_GL_ERROR();
+    {
+        #ifdef CORRADE_TARGET_WINDOWS
+        bool fails(Context::current().detectedDriver() & Context::DetectedDriver::IntelWindows);
+        CORRADE_EXPECT_FAIL_IF(fails,
+            "ARB_DSA cubemap APIs are broken on Intel Windows drivers.");
+        #endif
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        #ifdef CORRADE_TARGET_WINDOWS
+        if(fails) CORRADE_SKIP("Skipping the rest of the test");
+        #endif
+    }
 
     CompressedBufferImage3D image = texture.compressedImage(0, {CompressedFullPixelStorageData[testCaseInstanceId()].storage}, BufferUsage::StaticRead);
 
