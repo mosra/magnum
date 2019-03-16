@@ -103,6 +103,11 @@ void ObjectRendererGLTest::render2D() {
     camera.draw(drawables);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
     CORRADE_COMPARE_WITH(
         framebuffer.read({{}, {64, 64}}, {PixelFormat::RGBA8Unorm}),
         Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "ObjectRenderer2D.tga"),
@@ -143,6 +148,11 @@ void ObjectRendererGLTest::render3D() {
     camera.draw(drawables);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
     CORRADE_COMPARE_WITH(
         framebuffer.read({{}, {64, 64}}, {PixelFormat::RGBA8Unorm}),
         Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "ObjectRenderer3D.tga"),

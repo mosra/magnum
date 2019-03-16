@@ -101,6 +101,10 @@ constexpr Color4ub DataRgba8[]{
 };
 
 void ScreenshotGLTest::rgba8() {
+    if(!(_converterManager.loadState("AnyImageConverter") & PluginManager::LoadState::Loaded) ||
+       !(_converterManager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageConverter / TgaImageConverter plugins not found.");
+
     ImageView2D rgba{PixelFormat::RGBA8Unorm, {4, 3}, DataRgba8};
 
     GL::Texture2D texture;
@@ -140,6 +144,11 @@ void ScreenshotGLTest::rgba8() {
     CORRADE_VERIFY(succeeded);
     CORRADE_COMPARE(out.str(),
         Utility::formatString("DebugTools::screenshot(): saved a PixelFormat::RGBA8Unorm image of size Vector(4, 3) to {}\n", file));
+
+    if(!(_importerManager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
     CORRADE_COMPARE_WITH(file, rgba, CompareFileToImage{_importerManager});
 }
 
@@ -155,6 +164,10 @@ void ScreenshotGLTest::r8() {
     #ifdef MAGNUM_TARGET_GLES2
     CORRADE_SKIP("Lumimance isn't renderable and the API doesn't support forcing a specific GL pixel format for EXT_texture_rg, can't test.");
     #else
+    if(!(_converterManager.loadState("AnyImageConverter") & PluginManager::LoadState::Loaded) ||
+       !(_converterManager.loadState("TgaImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageConverter / TgaImageConverter plugins not found.");
+
     ImageView2D r{PixelFormat::R8Unorm, {4, 3}, DataR8};
 
     GL::Texture2D texture;
@@ -188,6 +201,11 @@ void ScreenshotGLTest::r8() {
     CORRADE_VERIFY(succeeded);
     CORRADE_COMPARE(out.str(),
         Utility::formatString("DebugTools::screenshot(): saved a PixelFormat::R8Unorm image of size Vector(4, 3) to {}\n", file));
+
+    if(!(_importerManager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
     CORRADE_COMPARE_WITH(file, r, CompareFileToImage{_importerManager});
     #endif
 }
@@ -202,6 +220,10 @@ void ScreenshotGLTest::unknownFormat() {
     framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{0}, texture, 0);
 
     CORRADE_COMPARE(framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+
+    if(framebuffer.implementationColorReadFormat() == GL::PixelFormat::RGBA &&
+       framebuffer.implementationColorReadType() == GL::PixelType::UnsignedByte)
+        CORRADE_SKIP("The framebuffer read format is RGBA8, can't test.");
 
     std::ostringstream out;
     bool succeeded;
@@ -254,6 +276,9 @@ void ScreenshotGLTest::pluginLoadFailed() {
 }
 
 void ScreenshotGLTest::saveFailed() {
+    if(!(_converterManager.loadState("AnyImageConverter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageConverter plugin not found.");
+
     ImageView2D rgba{PixelFormat::RGBA8Unorm, {4, 3}, DataRgba8};
 
     GL::Texture2D texture;

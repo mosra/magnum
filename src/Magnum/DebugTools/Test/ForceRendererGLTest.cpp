@@ -102,6 +102,11 @@ void ForceRendererGLTest::render2D() {
     camera.draw(drawables);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
     CORRADE_COMPARE_WITH(
         framebuffer.read({{}, {64, 64}}, {PixelFormat::RGBA8Unorm}),
         Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "ForceRenderer2D.tga"),
@@ -143,6 +148,11 @@ void ForceRendererGLTest::render3D() {
     camera.draw(drawables);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
     {
         CORRADE_EXPECT_FAIL("I'm unable to convince it to orient the arrowhead correctly in 3D.");
         CORRADE_COMPARE_WITH(
