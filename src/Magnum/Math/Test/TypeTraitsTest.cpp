@@ -170,9 +170,9 @@ void TypeTraitsTest::name() {
 template<class T> void TypeTraitsTest::equalsIntegral() {
     setTestCaseName(std::string{"equalsIntegral<"} + TypeTraits<T>::name() + ">");
 
-    CORRADE_VERIFY(TypeTraits<T>::equals(1, 1));
-    CORRADE_VERIFY(!TypeTraits<T>::equals(1, -1));
-    CORRADE_VERIFY(!TypeTraits<T>::equals(1, 1+TypeTraits<T>::epsilon()));
+    CORRADE_VERIFY(TypeTraits<T>::equals(T(1), T(1)));
+    CORRADE_VERIFY(!TypeTraits<T>::equals(T(1), T(-1)));
+    CORRADE_VERIFY(!TypeTraits<T>::equals(T(1), T(1)+TypeTraits<T>::epsilon()));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPoint0() {
@@ -221,7 +221,7 @@ template<class T, class U = T, class V = typename std::enable_if<!std::is_unsign
 template<class T> void TypeTraitsTest::equalsZeroIntegral() {
     setTestCaseName(std::string{"equalsZeroIntegral<"} + TypeTraits<T>::name() + ">");
 
-    const T a(-123);
+    const T a = T(-123);
     const T magnitude = abs(a);
 
     CORRADE_VERIFY(TypeTraits<T>::equals(a, a));
