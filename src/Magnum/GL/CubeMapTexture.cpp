@@ -223,8 +223,10 @@ void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const I
     else
         dataSize = Magnum::Implementation::compressedImageDataSizeFor(image, size);
 
-    /* Internal texture format */
-    GLint format;
+    /* Internal texture format. Zero-init to avoid an assert about value
+       already wrapped in compressedPixelFormatWrap() later if the drivers are
+       extra shitty (Intel Windows drivers, I'm talking about you). */
+    GLint format{};
     (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
     /* Reallocate only if needed */
@@ -254,8 +256,10 @@ void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const I
     else
         dataSize = Magnum::Implementation::compressedImageDataSizeFor(image, size);
 
-    /* Internal texture format */
-    GLint format;
+    /* Internal texture format. Zero-init to avoid an assert about value
+       already wrapped in compressedPixelFormatWrap() later if the drivers are
+       extra shitty (Intel Windows drivers, I'm talking about you). */
+    GLint format{};
     (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
     /* Reallocate only if needed */
@@ -287,8 +291,10 @@ BufferImage3D CubeMapTexture::subImage(const Int level, const Range3Di& range, B
 void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, CompressedImage3D& image) {
     createIfNotAlready();
 
-    /* Internal texture format */
-    GLint format;
+    /* Internal texture format. Zero-init to avoid an assert about value
+       already wrapped in compressedPixelFormatWrap() later if the drivers are
+       extra shitty (Intel Windows drivers, I'm talking about you). */
+    GLint format{};
     (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
     /* Calculate compressed subimage size. If the user-provided pixel storage
@@ -318,8 +324,10 @@ CompressedImage3D CubeMapTexture::compressedSubImage(const Int level, const Rang
 void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, CompressedBufferImage3D& image, const BufferUsage usage) {
     createIfNotAlready();
 
-    /* Internal texture format */
-    GLint format;
+    /* Internal texture format. Zero-init to avoid an assert about value
+       already wrapped in compressedPixelFormatWrap() later if the drivers are
+       extra shitty (Intel Windows drivers, I'm talking about you). */
+    GLint format{};
     (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
     /* Calculate compressed subimage size. If the user-provided pixel storage
