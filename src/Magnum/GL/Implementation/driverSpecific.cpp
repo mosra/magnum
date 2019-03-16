@@ -230,6 +230,10 @@ namespace {
            non-array cube map attachment works. Using the non-DSA code path as
            a workaround. */
         "intel-windows-broken-dsa-layered-cubemap-array-framebuffer-attachment",
+
+        /* DSA glClearNamedFramebuffer*() on Intel Windows drivers doesn't do
+           anything. Using the non-DSA code path as a workaournd. */
+        "intel-windows-broken-dsa-framebuffer-clear",
         #endif
 
         #ifndef MAGNUM_TARGET_GLES

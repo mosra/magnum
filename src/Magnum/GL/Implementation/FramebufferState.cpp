@@ -65,11 +65,6 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
         checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDSA;
 
-        clearIImplementation = &AbstractFramebuffer::clearImplementationDSA;
-        clearUIImplementation = &AbstractFramebuffer::clearImplementationDSA;
-        clearFImplementation = &AbstractFramebuffer::clearImplementationDSA;
-        clearFIImplementation = &AbstractFramebuffer::clearImplementationDSA;
-
         drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDSA;
         drawBufferImplementation = &AbstractFramebuffer::drawBufferImplementationDSA;
         readBufferImplementation = &AbstractFramebuffer::readBufferImplementationDSA;
@@ -93,13 +88,6 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     #endif
     {
         checkStatusImplementation = &AbstractFramebuffer::checkStatusImplementationDefault;
-
-        #ifndef MAGNUM_TARGET_GLES2
-        clearIImplementation = &AbstractFramebuffer::clearImplementationDefault;
-        clearUIImplementation = &AbstractFramebuffer::clearImplementationDefault;
-        clearFImplementation = &AbstractFramebuffer::clearImplementationDefault;
-        clearFIImplementation = &AbstractFramebuffer::clearImplementationDefault;
-        #endif
 
         #ifndef MAGNUM_TARGET_GLES2
         drawBuffersImplementation = &AbstractFramebuffer::drawBuffersImplementationDefault;
@@ -174,6 +162,32 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
         layeredTextureCubeMapArrayImplementation = &Framebuffer::textureImplementationDefault;
     }
     #endif
+
+    /* DSA/non-DSA implementation for framebuffer clearing. Yes, it's because
+       Intel Windows drivers are shit. */
+    #ifndef MAGNUM_TARGET_GLES
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
+        #ifdef CORRADE_TARGET_WINDOWS
+        && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
+            context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-framebuffer-clear"))
+        #endif
+    ) {
+        /* Extension name added above */
+
+        clearIImplementation = &AbstractFramebuffer::clearImplementationDSA;
+        clearUIImplementation = &AbstractFramebuffer::clearImplementationDSA;
+        clearFImplementation = &AbstractFramebuffer::clearImplementationDSA;
+        clearFIImplementation = &AbstractFramebuffer::clearImplementationDSA;
+    } else
+    #endif
+    {
+        #ifndef MAGNUM_TARGET_GLES2
+        clearIImplementation = &AbstractFramebuffer::clearImplementationDefault;
+        clearUIImplementation = &AbstractFramebuffer::clearImplementationDefault;
+        clearFImplementation = &AbstractFramebuffer::clearImplementationDefault;
+        clearFIImplementation = &AbstractFramebuffer::clearImplementationDefault;
+        #endif
+    }
 
     /* Framebuffer texture attachment on ES3 */
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
