@@ -2468,6 +2468,21 @@ void MeshGLTest::bindScratchVaoWhenEnteringExternalSection() {
         .setIndexBuffer(indices, 0, MeshIndexType::UnsignedByte);
 
     {
+        /* Bind a scratch framebuffer so glDrawArrays() doesn't complain about
+           an incomplete framebuffer in case we're on a framebuffer-less
+           context */
+        Renderbuffer renderbuffer;
+        renderbuffer.setStorage(
+            #ifndef MAGNUM_TARGET_GLES2
+            RenderbufferFormat::RGBA8,
+            #else
+            RenderbufferFormat::RGBA4,
+            #endif
+            Vector2i{1});
+        Framebuffer framebuffer{{{}, Vector2i{1}}};
+        framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment{0}, renderbuffer)
+            .bind();
+
         /* Should bind a scratch VAO only on desktop with core profile and be
            a no-op everywhere else */
         Context::current().resetState(Context::State::EnterExternal
