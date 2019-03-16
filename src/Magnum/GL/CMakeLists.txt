@@ -260,7 +260,7 @@ if(WITH_OPENGLTESTER)
 
     # OPENGLTESTER_APPLICATION defined in the root CMakeLists, because it also
     # enables the application library dependencies
-    target_link_libraries(MagnumOpenGLTester Magnum Corrade::TestSuite ${OPENGLTESTER_APPLICATION})
+    target_link_libraries(MagnumOpenGLTester PUBLIC Magnum Corrade::TestSuite ${OPENGLTESTER_APPLICATION})
 
     install(FILES ${MagnumOpenGLTester_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/GL)
     install(TARGETS MagnumOpenGLTester
