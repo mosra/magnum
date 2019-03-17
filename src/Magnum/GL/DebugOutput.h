@@ -369,6 +369,13 @@ class MAGNUM_GL_EXPORT DebugOutput {
          * OpenGL ES 3.2 is not supported and @gl_extension{KHR,debug} desktop or
          * ES extension (covered also by @gl_extension{ANDROID,extension_pack_es31a})
          * is not available, this function does nothing.
+         *
+         * @attention The function is not necessarily called from the same
+         *      thread as the one that caused the message to appear --- in
+         *      particular, you can't assume the @ref GL::Context will be
+         *      present in the callback context. It might work on some drivers,
+         *      but not on others.
+         *
          * @see @ref setDefaultCallback(),
          *      @ref Renderer::Feature::DebugOutputSynchronous,
          *      @fn_gl_keyword{DebugMessageCallback}
@@ -804,6 +811,11 @@ class MAGNUM_GL_EXPORT DebugGroup {
 
 /** @debugoperatorclassenum{DebugGroup,DebugGroup::Source} */
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DebugGroup::Source value);
+
+/* Exposed for testing */
+namespace Implementation {
+    MAGNUM_GL_EXPORT void defaultDebugCallback(DebugOutput::Source source, DebugOutput::Type type, UnsignedInt id, DebugOutput::Severity severity, const std::string& string, std::ostream* output);
+}
 
 }}
 #else

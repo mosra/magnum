@@ -35,8 +35,7 @@ DebugState::DebugState(Context& context, std::vector<std::string>& extensions):
     maxLabelLength{0},
     maxLoggedMessages{0},
     maxMessageLength{0},
-    maxStackDepth{0},
-    messageCallback(nullptr)
+    maxStackDepth{0}
 {
     #ifndef MAGNUM_TARGET_GLES2
     #ifndef MAGNUM_TARGET_GLES

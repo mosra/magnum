@@ -50,7 +50,10 @@ struct DebugState {
     void(*popGroupImplementation)();
 
     GLint maxLabelLength, maxLoggedMessages, maxMessageLength, maxStackDepth;
-    DebugOutput::Callback messageCallback;
+    struct MessageCallback {
+        DebugOutput::Callback callback{};
+        const void* userParam{};
+    } messageCallback;
 };
 
 }}}

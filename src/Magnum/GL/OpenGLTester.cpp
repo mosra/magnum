@@ -50,7 +50,8 @@ OpenGLTester::OpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfigu
         DebugOutput::setDefaultCallback();
 
         /* Disable "Buffer detailed info" message on NV (too spammy) */
-        DebugOutput::setEnabled(DebugOutput::Source::Api, DebugOutput::Type::Other, {131185}, false);
+        if(Context::current().detectedDriver() & Context::DetectedDriver::NVidia)
+            DebugOutput::setEnabled(DebugOutput::Source::Api, DebugOutput::Type::Other, {131185}, false);
     }
     #endif
 }

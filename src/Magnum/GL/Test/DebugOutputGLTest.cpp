@@ -35,7 +35,11 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct DebugOutputGLTest: OpenGLTester {
     explicit DebugOutputGLTest();
 
-    void setCallback();
+    void setCallbackDefault();
+
+    void setup();
+    void teardown();
+
     void setEnabled();
 
     void messageNoOp();
@@ -45,11 +49,14 @@ struct DebugOutputGLTest: OpenGLTester {
     void groupNoOp();
     void group();
     void groupFallback();
+
+    std::ostringstream _out;
 };
 
 DebugOutputGLTest::DebugOutputGLTest() {
-    addTests({&DebugOutputGLTest::setCallback,
-              &DebugOutputGLTest::setEnabled,
+    addTests({&DebugOutputGLTest::setCallbackDefault});
+
+    addTests({&DebugOutputGLTest::setEnabled,
 
               &DebugOutputGLTest::messageNoOp,
               &DebugOutputGLTest::message,
@@ -57,10 +64,11 @@ DebugOutputGLTest::DebugOutputGLTest() {
 
               &DebugOutputGLTest::groupNoOp,
               &DebugOutputGLTest::group,
-              &DebugOutputGLTest::groupFallback});
+              &DebugOutputGLTest::groupFallback},
+        &DebugOutputGLTest::setup, &DebugOutputGLTest::teardown);
 }
 
-void DebugOutputGLTest::setCallback() {
+void DebugOutputGLTest::setCallbackDefault() {
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
         CORRADE_SKIP(Extensions::KHR::debug::string() + std::string(" is not supported"));
 
@@ -70,16 +78,41 @@ void DebugOutputGLTest::setCallback() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
+void DebugOutputGLTest::setup() {
+    _out.str({});
+
+    if(Context::current().isExtensionSupported<Extensions::KHR::debug>())
+        DebugOutput::setCallback([](DebugOutput::Source source, DebugOutput::Type type, UnsignedInt id, DebugOutput::Severity severity, const std::string& string, const void* userPtr) {
+            Implementation::defaultDebugCallback(source, type, id, severity, string, static_cast<std::ostringstream*>(const_cast<void*>(userPtr)));
+        }, &_out);
+}
+
+void DebugOutputGLTest::teardown() {
+    if(Context::current().isExtensionSupported<Extensions::KHR::debug>())
+        DebugOutput::setDefaultCallback();
+}
+
 void DebugOutputGLTest::setEnabled() {
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
         CORRADE_SKIP(Extensions::KHR::debug::string() + std::string(" is not supported"));
 
-    /* Try at least some combinations */
+    /* Try at least some combinations. Calling a less-specific version will
+       reset the more-specific setting from earlier. */
+    DebugOutput::setEnabled(true);
     DebugOutput::setEnabled(DebugOutput::Source::Application, true);
     DebugOutput::setEnabled(DebugOutput::Source::Application, DebugOutput::Type::UndefinedBehavior, {3168, 35487, 234487}, false);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::UndefinedBehavior,
+        35487, DebugOutput::Severity::Notification, "This message should get ignored");
+
+    /* Reset everything back */
     DebugOutput::setEnabled(true);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(_out.str(), "");
 }
 
 void DebugOutputGLTest::messageNoOp() {
@@ -95,6 +128,8 @@ void DebugOutputGLTest::messageNoOp() {
         1337, DebugOutput::Severity::Notification, "Hello from OpenGL command stream!");
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(_out.str(), "");
 }
 
 void DebugOutputGLTest::message() {
@@ -102,13 +137,11 @@ void DebugOutputGLTest::message() {
         CORRADE_SKIP(Extensions::KHR::debug::string() + std::string(" is not supported"));
 
     /* Need to be careful, because the test runner is using debug output too */
-    std::ostringstream out;
-    Debug redirectDebug{&out};
     DebugMessage::insert(DebugMessage::Source::Application, DebugMessage::Type::Marker,
         1337, DebugOutput::Severity::High, "Hello from OpenGL command stream!");
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(_out.str(),
         "Debug output: high severity application marker (1337): Hello from OpenGL command stream!\n");
 }
 
@@ -125,6 +158,8 @@ void DebugOutputGLTest::messageFallback() {
         1337, DebugOutput::Severity::Notification, "Hello from OpenGL command stream!");
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+
+    CORRADE_COMPARE(_out.str(), "");
 }
 
 void DebugOutputGLTest::groupNoOp() {
@@ -137,6 +172,7 @@ void DebugOutputGLTest::groupNoOp() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(_out.str(), "");
 }
 
 void DebugOutputGLTest::group() {
@@ -144,8 +180,6 @@ void DebugOutputGLTest::group() {
         CORRADE_SKIP(Extensions::KHR::debug::string() + std::string(" is not supported"));
 
     /* Need to be careful, because the test runner is using debug output too */
-    std::ostringstream out;
-    Debug redirectDebug{&out};
     {
         DebugGroup g1{DebugGroup::Source::Application, 42, "Automatic debug group"};
         DebugGroup g2;
@@ -154,7 +188,7 @@ void DebugOutputGLTest::group() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(_out.str(),
         "Debug output: application debug group enter (42): Automatic debug group\n"
         "Debug output: third party debug group enter (1337): Manual debug group\n"
         "Debug output: third party debug group leave (1337): Manual debug group\n"
@@ -171,6 +205,7 @@ void DebugOutputGLTest::groupFallback() {
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE(_out.str(), "");
 }
 
 }}}}
