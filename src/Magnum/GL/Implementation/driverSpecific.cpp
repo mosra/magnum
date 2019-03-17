@@ -186,7 +186,8 @@ namespace {
    independently on what's the actual framebuffer format. Using glGetInteger()
    makes it return GL_RGBA and GL_UNSIGNED_BYTE for RGBA8 framebuffers, and
    cause an "Error has been generated. GL error GL_INVALID_OPERATION in
-   GetIntegerv: (ID: 2576729458) Generic error" when it is not. Since glGetInteger() is actually able to return a correct value in *one
+   GetIntegerv: (ID: 2576729458) Generic error" when it is not. Since
+   glGetInteger() is actually able to return a correct value in *one
    circumstance*, it's preferrable to the other random shit the driver is
    doing. */
 "intel-windows-implementation-color-read-format-completely-broken",
@@ -205,7 +206,8 @@ namespace {
 /* ARB_direct_state_access implementation on Intel Windows drivers has broken
    *everything* related to cube map textures (but not cube map arrays) -- data
    upload, data queries, framebuffer attachment, framebuffer copies, all
-   complaining about "Wrong <func> 6 provided for <target> 34067" and similar (GL_TEXTURE_CUBE_MAP is 34067). Using the non-DSA code path as a
+   complaining about "Wrong <func> 6 provided for <target> 34067" and similar
+   (GL_TEXTURE_CUBE_MAP is 34067). Using the non-DSA code path as a
    workaround. */
 "intel-windows-broken-dsa-for-cubemaps",
 
