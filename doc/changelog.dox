@@ -168,6 +168,11 @@ See also:
     callback is called from the same thread as the one with the corresponding
     GL context (which is the case on Mesa AMD drivers). The documentation was
     updated to reflect that as well.
+-   @ref GL::AbstractTexture::unbindImage() "GL::*Texture::unbindImage()" now
+    uses a RGBA format instead of a single-channel format because
+    @ref GL::Context::DetectedDriver::ArmMali "ARM Mali" drivers complain about
+    R8 not being renderable (even though the format shouldn't matter when
+    unbinding a texture)
 
 @subsubsection changelog-latest-changes-math Math library
 

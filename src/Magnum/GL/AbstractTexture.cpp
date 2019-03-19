@@ -282,7 +282,7 @@ void AbstractTexture::unbindImage(const Int imageUnit) {
 
     /* Update state tracker, bind the texture to the unit */
     std::get<0>(textureState.imageBindings[imageUnit]) = 0;
-    glBindImageTexture(imageUnit, 0, 0, false, 0, GL_READ_ONLY, GL_R8);
+    glBindImageTexture(imageUnit, 0, 0, false, 0, GL_READ_ONLY, GL_RGBA8);
 }
 
 #ifndef MAGNUM_TARGET_GLES
