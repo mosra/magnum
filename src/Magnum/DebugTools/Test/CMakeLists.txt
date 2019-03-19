@@ -125,8 +125,12 @@ if(TARGET_GL)
         endif()
 
         if(WITH_SCENEGRAPH AND WITH_TRADE)
-            corrade_add_test(DebugToolsForceRendererGLTest ForceRendererGLTest.cpp LIBRARIES MagnumDebugTools MagnumOpenGLTester)
-            corrade_add_test(DebugToolsObjectRendererGLTest ObjectRendererGLTest.cpp LIBRARIES MagnumDebugTools MagnumOpenGLTester)
+            corrade_add_test(DebugToolsForceRendererGLTest ForceRendererGLTest.cpp
+                LIBRARIES MagnumDebugTools MagnumOpenGLTester
+                FILES ForceRenderer2D.tga ForceRenderer3D.tga)
+            corrade_add_test(DebugToolsObjectRendererGLTest ObjectRendererGLTest.cpp
+                LIBRARIES MagnumDebugTools MagnumOpenGLTester
+                FILES ObjectRenderer2D.tga ObjectRenderer3D.tga)
             set_target_properties(
                 DebugToolsForceRendererGLTest
                 DebugToolsObjectRendererGLTest
