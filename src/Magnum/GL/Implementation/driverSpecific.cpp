@@ -35,6 +35,14 @@ namespace {
     /* Search the code for the following strings to see where they are implemented. */
     std::vector<std::string> KnownWorkarounds{
 /* [workarounds] */
+#if defined(CORRADE_TARGET_ANDROID) && defined(MAGNUM_TARGET_GLES)
+/* glBeginQuery() with GL_TIME_ELAPSED causes a GL_OUT_OF_MEMORY error when
+   running from the Android shell (through ADB). No such error happens in an
+   APK. Detecting using the $SHELL environment variable and disabling
+   GL_EXT_disjoint_timer_query in that case. */
+"arm-mali-timer-queries-oom-in-shell",
+#endif
+
 #if !defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)
 /* Creating core context with specific version on AMD and NV proprietary
    drivers on Linux/Windows and Intel drivers on Windows causes the context to
@@ -411,6 +419,12 @@ void Context::setupDriverWorkarounds() {
     if((detectedDriver() & Context::DetectedDriver::SwiftShader) &&
        !isDriverWorkaroundDisabled("swiftshader-broken-shader-vertex-id"))
         _setRequiredVersion(MAGNUM::shader_vertex_id, None);
+    #endif
+
+    #if defined(CORRADE_TARGET_ANDROID) && defined(MAGNUM_TARGET_GLES)
+    if((detectedDriver() & Context::DetectedDriver::ArmMali) &&
+        std::getenv("SHELL") && !isDriverWorkaroundDisabled("arm-mali-timer-queries-oom-in-shell"))
+        _setRequiredVersion(EXT::disjoint_timer_query, None);
     #endif
 
     #undef _setRequiredVersion

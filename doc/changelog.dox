@@ -94,6 +94,12 @@ See also:
     -   @cpp "intel-windows-broken-dsa-integer-vertex-attributes" @ce fixing
         @ref GL::Mesh::addVertexBuffer() with @ref Magnum::Short "Short"
         attributes
+-   New @cpp "arm-mali-timer-queries-oom-in-shell" @ce workaround for
+    @ref GL::Context::DetectedDriver::ArmMali "ARM Mali" drivers on Android
+    disabling the @gl_extension{EXT,disjoint_timer_query} extension in Android
+    shell (as opposed to an APK) because using it causes the
+    @ref GL::Renderer::Error::OutOfMemory error. See @ref opengl-workarounds
+    for more information.
 -   New `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
     and a corresponding environment variable to conveniently enable
     @gl_extension{KHR,debug} debug output
