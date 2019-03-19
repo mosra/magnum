@@ -339,6 +339,11 @@ auto Context::detectedDriver() -> DetectedDrivers {
     #endif
     #endif
 
+    #ifdef CORRADE_TARGET_ANDROID
+    if(vendor.find("ARM") != std::string::npos && renderer.find("Mali") != std::string::npos)
+        return *_detectedDrivers |= DetectedDriver::ArmMali;
+    #endif
+
     return *_detectedDrivers;
 }
 

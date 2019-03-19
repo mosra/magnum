@@ -384,8 +384,17 @@ class MAGNUM_GL_EXPORT Context {
              *      contexts. Not detectable on WebGL, as browsers
              *      intentionally hide most of the driver information.
              */
-            SwiftShader = 1 << 6
+            SwiftShader = 1 << 6,
             #endif
+            #endif
+
+            #if defined(CORRADE_TARGET_ANDROID) || defined(DOXYGEN_GENERATING_OUTPUT)
+            /**
+             * ARM Mali drivers on OpenGL ES.
+             * @partialsupport Available only on
+             *      @ref CORRADE_TARGET_ANDROID "Android".
+             */
+            ArmMali = 1 << 7
             #endif
         };
 

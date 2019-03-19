@@ -978,6 +978,9 @@ Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
         _c(SwiftShader)
         #endif
         #endif
+        #ifdef CORRADE_TARGET_ANDROID
+        _c(ArmMali)
+        #endif
         #undef _c
         /* LCOV_EXCL_STOP */
     }
