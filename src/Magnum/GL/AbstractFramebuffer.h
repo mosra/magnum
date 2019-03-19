@@ -772,13 +772,11 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         FramebufferTarget MAGNUM_GL_LOCAL bindImplementationSingle();
         #endif
 
-        GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationDefault(GLenum what);
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationES31(GLenum what);
-        #endif
+        GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationGlobal(GLenum what);
         #ifndef MAGNUM_TARGET_GLES
-        GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationES31DSA(GLenum what);
-        GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationES31DSAMesa(GLenum what);
+        GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationFramebuffer(GLenum what);
+        GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationFramebufferDSA(GLenum what);
+        GLenum MAGNUM_GL_LOCAL implementationColorReadFormatTypeImplementationFramebufferDSAMesa(GLenum what);
         #endif
 
         GLenum MAGNUM_GL_LOCAL checkStatusImplementationDefault(FramebufferTarget target);

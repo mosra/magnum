@@ -256,50 +256,46 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
 
     /* Implementation-specific color read format/type implementation */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>() && context.isExtensionSupported<Extensions::ARB::ES3_1_compatibility>()) {
+    /* Get(Named)FramebufferParameteriv() supports querying
+       GL_IMPLEMENTATION_COLOR_READ_{FORMAT,TYPE} since GL 4.5. No
+       corresponding extension enabling this, only a mention of Bug 12360
+       that's supposed to have more information about this. But the Khronos
+       bugzilla is lost to internet history now and everything gets redirected
+       to the mostly-empty GitHub issue tracker (and it doesn't even have the
+       old bugs imported), so this is all I got. The whole thing is a
+       clusterfuck:
+        -   ES3.1 adds GetFramebufferParameteriv() but it *doesn't* allow
+            GL_IMPLEMENTATION_COLOR_READ_FORMAT to be used with it. ES3.2
+            doesn't fix that omission either. Funnily enough, most drivers
+            (including NV, Mesa and SwiftShader) support such a query, the only
+            driver which doesn't (and thus matches the spec) is on my Huawei
+            P10. What.
+        -   Intel implementation on Windows, even though supporting 4.5 and
+            DSA, returns absolute garbage on everything except the most basic
+            GetInteger query
+        -   NVidia returns broken values when calling the DSA code path
+        -   Mesa needs the framebuffer to be bound even for DSA queries */
+    if(context.isVersionSupported(Version::GL450)
         #ifdef CORRADE_TARGET_WINDOWS
-        if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
-            !context.isDriverWorkaroundDisabled("intel-windows-implementation-color-read-format-completely-broken")) {
-            implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationDefault;
-
-        } else
+        && !((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
+        !context.isDriverWorkaroundDisabled("intel-windows-implementation-color-read-format-completely-broken"))
         #endif
-        {
+    ) {
+        if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
+            && !((context.detectedDriver() & Context::DetectedDriver::NVidia) && !context.isDriverWorkaroundDisabled("nv-implementation-color-read-format-dsa-broken"))
+        ) {
             /* DSA extension added above */
-            extensions.push_back(Extensions::ARB::ES3_1_compatibility::string());
 
-            if((context.detectedDriver() & Context::DetectedDriver::NVidia) &&
-                !context.isDriverWorkaroundDisabled("nv-implementation-color-read-format-dsa-broken")) {
-                implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationES31;
-            } else if((context.detectedDriver() & Context::DetectedDriver::Mesa) &&
-                !context.isDriverWorkaroundDisabled("mesa-implementation-color-read-format-dsa-explicit-binding")) {
-                implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationES31DSAMesa;
-            } else {
-                implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationES31DSA;
-            }
-        }
-    } else
-    #endif
-    #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-    /* Checks for 3.1 on ES and for ARB_ES3_1_compatibility on desktop */
-    if(context.isVersionSupported(Version::GLES310)) {
-        #ifdef CORRADE_TARGET_WINDOWS
-        if((context.detectedDriver() & Context::DetectedDriver::IntelWindows) &&
-            !context.isDriverWorkaroundDisabled("intel-windows-implementation-color-read-format-completely-broken")) {
-            implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationDefault;
-        } else
-        #endif
-        {
-            #ifndef MAGNUM_TARGET_GLES
-            extensions.push_back(Extensions::ARB::ES3_1_compatibility::string());
-            #endif
-
-            implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationES31;
+            if((context.detectedDriver() & Context::DetectedDriver::Mesa) && !context.isDriverWorkaroundDisabled("mesa-implementation-color-read-format-dsa-explicit-binding"))
+                implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationFramebufferDSAMesa;
+            else implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationFramebufferDSA;
+        } else {
+            implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationFramebuffer;
         }
     } else
     #endif
     {
-        implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationDefault;
+        implementationColorReadFormatTypeImplementation = &AbstractFramebuffer::implementationColorReadFormatTypeImplementationGlobal;
     }
 
     /* Framebuffer reading implementation in desktop/ES */

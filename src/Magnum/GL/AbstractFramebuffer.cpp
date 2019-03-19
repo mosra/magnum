@@ -221,35 +221,33 @@ PixelType AbstractFramebuffer::implementationColorReadType() {
     return PixelType((this->*Context::current().state().framebuffer->implementationColorReadFormatTypeImplementation)(GL_IMPLEMENTATION_COLOR_READ_TYPE));
 }
 
-GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationDefault(const GLenum what) {
+GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationGlobal(const GLenum what) {
     bindInternal(FramebufferTarget::Read);
     GLint formatType;
     glGetIntegerv(what, &formatType);
     return formatType;
 }
 
-#if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationES31(const GLenum what) {
+#ifndef MAGNUM_TARGET_GLES
+GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationFramebuffer(const GLenum what) {
     const FramebufferTarget target = bindInternal();
     GLint formatType;
     glGetFramebufferParameteriv(GLenum(target), what, &formatType);
     return formatType;
 }
-#endif
 
-#ifndef MAGNUM_TARGET_GLES
-GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationES31DSA(const GLenum what) {
+GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationFramebufferDSA(const GLenum what) {
     GLint formatType;
     glGetNamedFramebufferParameteriv(_id, what, &formatType);
     return formatType;
 }
 
-GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationES31DSAMesa(const GLenum what) {
+GLenum AbstractFramebuffer::implementationColorReadFormatTypeImplementationFramebufferDSAMesa(const GLenum what) {
     /* Mesa needs the framebuffer bound for read even with DSA. See the
        "mesa-implementation-color-read-format-dsa-explicit-binding" workaround
        for details. */
     bindInternal(FramebufferTarget::Read);
-    return implementationColorReadFormatTypeImplementationES31DSA(what);
+    return implementationColorReadFormatTypeImplementationFramebufferDSA(what);
 }
 #endif
 
