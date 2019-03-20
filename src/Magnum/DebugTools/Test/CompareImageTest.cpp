@@ -173,7 +173,7 @@ const Float ExpectedRedData[] = {
     0.02f, 0.0f, 0.0f
 };
 
-const std::vector<Float> DeltaRed{
+const Float DeltaRed[]{
     0.35f, 0.0f, 0.3f,
     0.01f, 0.0f, 0.1f,
     0.12f, 1.0f, 0.0f
@@ -213,11 +213,11 @@ void CompareImageTest::formatImplementationSpecific() {
 }
 
 void CompareImageTest::calculateDelta() {
-    std::vector<Float> delta;
+    Containers::Array<Float> delta;
     Float max, mean;
     std::tie(delta, max, mean) = Implementation::calculateImageDelta(ActualRed, ExpectedRed);
 
-    CORRADE_COMPARE_AS(delta, DeltaRed, TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(delta, Containers::arrayView(DeltaRed), TestSuite::Compare::Container);
     CORRADE_COMPARE(max, 1.0f);
     CORRADE_COMPARE(mean, 0.208889f);
 }
@@ -241,14 +241,14 @@ const ImageView2D ExpectedRgb{
     PixelFormat::RGB8Unorm, {2, 2}, ExpectedRgbData};
 
 void CompareImageTest::calculateDeltaStorage() {
-    std::vector<Float> delta;
+    Containers::Array<Float> delta;
     Float max, mean;
     std::tie(delta, max, mean) = Implementation::calculateImageDelta(ActualRgb, ExpectedRgb);
 
-    CORRADE_COMPARE_AS(delta, (std::vector<Float>{
+    CORRADE_COMPARE_AS(delta, (Containers::Array<Float>{Containers::InPlaceInit, {
         1.0f/3.0f, (55.0f + 1.0f)/3.0f,
         48.0f/3.0f, 117.0f/3.0f
-        }), TestSuite::Compare::Container);
+    }}), TestSuite::Compare::Container);
     CORRADE_COMPARE(max, 117.0f/3.0f);
     CORRADE_COMPARE(mean, 18.5f);
 }
@@ -257,7 +257,7 @@ void CompareImageTest::deltaImage() {
     std::ostringstream out;
     Debug d{&out, Debug::Flag::DisableColors};
 
-    std::vector<Float> delta(32*32);
+    Containers::Array<Float> delta{32*32};
 
     for(std::int_fast32_t x = 0; x != 32; ++x)
         for(std::int_fast32_t y = 0; y != 32; ++y)
@@ -287,7 +287,7 @@ void CompareImageTest::deltaImageScaling() {
     std::ostringstream out;
     Debug d{&out, Debug::Flag::DisableColors};
 
-    std::vector<Float> delta(65*40);
+    Containers::Array<Float> delta{65*40};
     for(std::int_fast32_t x = 0; x != 65; ++x)
         for(std::int_fast32_t y = 0; y != 40; ++y)
             delta[y*65 + x] = Vector2{Float(x), Float(y)}.length()/Vector2{65.0f, 40.0f}.length();

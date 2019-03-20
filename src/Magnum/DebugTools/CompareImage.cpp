@@ -27,7 +27,6 @@
 
 #include <map>
 #include <sstream>
-#include <vector>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 
@@ -47,7 +46,7 @@ template<std::size_t size, class T> Math::Vector<size, T> pixelAt(const char* co
     return reinterpret_cast<const Math::Vector<size, T>*>(pixels + stride*pos.y())[pos.x()];
 }
 
-template<std::size_t size, class T> Float calculateImageDelta(const ImageView2D& actual, const ImageView2D& expected, std::vector<Float>& output) {
+template<std::size_t size, class T> Float calculateImageDelta(const ImageView2D& actual, const ImageView2D& expected, Containers::ArrayView<Float> output) {
     CORRADE_INTERNAL_ASSERT(output.size() == std::size_t(expected.size().product()));
 
     /* Precalculate parameters for pixel access */
@@ -79,9 +78,9 @@ template<std::size_t size, class T> Float calculateImageDelta(const ImageView2D&
 
 }
 
-std::tuple<std::vector<Float>, Float, Float> calculateImageDelta(const ImageView2D& actual, const ImageView2D& expected) {
+std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const ImageView2D& actual, const ImageView2D& expected) {
     /* Calculate a delta image */
-    std::vector<Float> delta(expected.size().product());
+    Containers::Array<Float> delta{Containers::NoInit, std::size_t(expected.size().product())};
 
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(expected.format()),
         "DebugTools::CompareImage: can't compare implementation-specific pixel formats", {});
@@ -145,7 +144,7 @@ std::tuple<std::vector<Float>, Float, Float> calculateImageDelta(const ImageView
        precision -- that would result in having false negatives! */
     const Float mean = Math::Algorithms::kahanSum(delta.begin(), delta.end())/delta.size();
 
-    return std::make_tuple(delta, max, mean);
+    return std::make_tuple(std::move(delta), max, mean);
 }
 
 namespace {
@@ -154,7 +153,7 @@ namespace {
     const char Characters[] = " .,:~=+?7IZ$08DNM";
 }
 
-void printDeltaImage(Debug& out, const std::vector<Float>& deltas, const Vector2i& size, const Float max, const Float maxThreshold, const Float meanThreshold) {
+void printDeltaImage(Debug& out, Containers::ArrayView<const Float> deltas, const Vector2i& size, const Float max, const Float maxThreshold, const Float meanThreshold) {
     CORRADE_INTERNAL_ASSERT(meanThreshold <= maxThreshold);
 
     /* At most 64 characters per line. The console fonts height is usually 2x
@@ -254,7 +253,7 @@ void printPixelAt(Debug& out, const char* const pixels, const std::size_t stride
 
 }
 
-void printPixelDeltas(Debug& out, const std::vector<Float>& delta, const ImageView2D& actual, const ImageView2D& expected, const Float maxThreshold, const Float meanThreshold, std::size_t maxCount) {
+void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, const ImageView2D& actual, const ImageView2D& expected, const Float maxThreshold, const Float meanThreshold, std::size_t maxCount) {
     /* Precalculate parameters for pixel access */
     Math::Vector2<std::size_t> offset, size;
 
@@ -356,7 +355,7 @@ bool ImageComparatorBase::operator()(const ImageView2D& actual, const ImageView2
         return false;
     }
 
-    std::vector<Float> delta;
+    Containers::Array<Float> delta;
     std::tie(delta, _max, _mean) = DebugTools::Implementation::calculateImageDelta(actual, expected);
 
     /* If both values are not above threshold, success */

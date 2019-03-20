@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::DebugTools::CompareImage
  */
 
-#include <vector>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/PluginManager/PluginManager.h>
 #include <Corrade/TestSuite/Comparator.h>
@@ -42,11 +42,11 @@
 namespace Magnum { namespace DebugTools {
 
 namespace Implementation {
-    MAGNUM_DEBUGTOOLS_EXPORT std::tuple<std::vector<Float>, Float, Float> calculateImageDelta(const ImageView2D& actual, const ImageView2D& expected);
+    MAGNUM_DEBUGTOOLS_EXPORT std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const ImageView2D& actual, const ImageView2D& expected);
 
-    MAGNUM_DEBUGTOOLS_EXPORT void printDeltaImage(Debug& out, const std::vector<Float>& delta, const Vector2i& size, Float max, Float maxThreshold, Float meanThreshold);
+    MAGNUM_DEBUGTOOLS_EXPORT void printDeltaImage(Debug& out, Containers::ArrayView<const Float> delta, const Vector2i& size, Float max, Float maxThreshold, Float meanThreshold);
 
-    MAGNUM_DEBUGTOOLS_EXPORT void printPixelDeltas(Debug& out, const std::vector<Float>& delta, const ImageView2D& actual, const ImageView2D& expected, Float maxThreshold, Float meanThreshold, std::size_t maxCount);
+    MAGNUM_DEBUGTOOLS_EXPORT void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, const ImageView2D& actual, const ImageView2D& expected, Float maxThreshold, Float meanThreshold, std::size_t maxCount);
 }
 
 class CompareImage;
@@ -85,7 +85,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT ImageComparatorBase {
         State _state{};
         const ImageView2D *_actualImage, *_expectedImage;
         Float _max, _mean;
-        std::vector<Float> _delta;
+        Containers::Array<Float> _delta;
 };
 
 }}}
