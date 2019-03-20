@@ -321,6 +321,9 @@ See also:
     and @ref GL::Context::DetectedDriver::Angle instead
 -   Removed @cpp GL::CubeMapTexture::Coordinate @ce deprecated since 2016, use
     @ref GL::CubeMapCoordinate instead
+-   Removed remaining @ref Platform::Sdl2Application "Platform::*Application"
+    constructors taking @cpp nullptr @ce instead of @ref NoCreate, deprecated
+    since 2017
 -   Removed the `Shapes` library together with `DebugTools::ShapeRenderer`,
     which was a failed design experiment deprecated since version 2018.10
     (see [mosra/magnum#148](https://github.com/mosra/magnum/issues/148))
