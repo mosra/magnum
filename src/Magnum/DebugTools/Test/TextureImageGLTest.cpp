@@ -225,8 +225,10 @@ constexpr Float Data2DFloat[] = { 1.0f,
 void TextureImageGLTest::subImage2DFloat() {
     GL::Texture2D texture;
     texture
-        /* if I don't set this, SwiftShader will return all zeros */
+        /* If I don't set min filter, SwiftShader will return all zeros. ARM
+           Mali G71 (on Huawei P10) needs the mag filter as well. */
         .setMinificationFilter(GL::SamplerFilter::Nearest)
+        .setMagnificationFilter(GL::SamplerFilter::Nearest)
         .setStorage(1, GL::TextureFormat::R32F, Vector2i{2})
         .setSubImage(0, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::Float, Vector2i{2}, Data2DFloat});
 
@@ -244,8 +246,10 @@ void TextureImageGLTest::subImage2DFloat() {
 void TextureImageGLTest::subImage2DFloatGeneric() {
     GL::Texture2D texture;
     texture
-        /* if I don't set this, SwiftShader will return all zeros */
+        /* If I don't set min filter, SwiftShader will return all zeros. ARM
+           Mali G71 (on Huawei P10) needs the mag filter as well. */
         .setMinificationFilter(GL::SamplerFilter::Nearest)
+        .setMagnificationFilter(GL::SamplerFilter::Nearest)
         .setStorage(1, GL::TextureFormat::R32F, Vector2i{2})
         .setSubImage(0, {}, ImageView2D{GL::PixelFormat::Red, GL::PixelType::Float, Vector2i{2}, Data2DFloat});
 
