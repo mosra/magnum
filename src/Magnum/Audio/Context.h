@@ -242,13 +242,6 @@ class MAGNUM_AUDIO_EXPORT Context {
          */
         std::string hrtfSpecifierString() const;
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief hrtfSpecifierString()
-         * @deprecated Use @ref hrtfSpecifierString() instead.
-         */
-        CORRADE_DEPRECATED("use hrtfSpecifierString() instead") std::string hrtfSpecifier() const { return hrtfSpecifierString(); }
-        #endif
-
         /**
          * @brief Device specifier string
          *

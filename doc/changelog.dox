@@ -327,6 +327,8 @@ See also:
 -   Removed compatibility code in @ref Audio::Context where
     @ref Audio::Context::current() would be usable with both @cpp . @ce and
     @cpp -> @ce, deprecated since 2017
+-   Removed @cpp Audio::Context::hrtfSpecifier() @ce deprecated since 2018.02.
+    Use @ref Audio::Context::hrtfSpecifierString() instead.
 -   Removed the `Shapes` library together with `DebugTools::ShapeRenderer`,
     which was a failed design experiment deprecated since version 2018.10
     (see [mosra/magnum#148](https://github.com/mosra/magnum/issues/148))
