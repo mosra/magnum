@@ -250,6 +250,8 @@ See also:
     global `CMAKE_EXE_LINKER_FLAGS` variable.
 -   It's now possible to use Magnum as a CMake subproject also when building
     for Emscripten (see [mosra/magnum#219](https://github.com/mosra/magnum/issues/219))
+-   Updated the Vcpkg package to work correctly with Vcpkg's own SDL2 (see
+    [Microsoft/vcpkg#5730](https://github.com/Microsoft/vcpkg/pull/5730))
 
 @subsection changelog-latest-bugfixes Bug fixes
 
@@ -545,7 +547,8 @@ Released 2019-02-04, tagged as
 -   Removed deprecated implicit conversion @ref Corrade::Containers::Optional
     to @ref std::optional, deprecated in January 2018. The class now contains
     an *explicit* and opt-in STL compatibility, see its documentation for more
-    information.
+    information. You may need to add an
+    @cpp #include <Corrade/Containers/Optional.h> @ce where appropriate.
 -   Removed the `Magnum/Test/AbstractOpenGLTester.h` header that was deprecated
     in January 2017. Use @ref Magnum/GL/OpenGLTester.h and the
     @ref GL::OpenGLTester library instead. Note that the deprecated
@@ -565,7 +568,7 @@ Released 2019-02-04, tagged as
 -   Removed @cpp Math::normalize() @ce and @cpp Math::denormalize() @ce
     functions, deprecated since December 2016. Use @ref Math::pack() and
     @ref Math::unpack() instead.
--   Removed @cpp Platform::*Application::MouseEvent::BUtton::WheelUp @ce and
+-   Removed @cpp Platform::*Application::MouseEvent::Button::WheelUp @ce and
     @cpp Platform::*Application::MouseEvent::Button::WheelDown @ce, deprecated
     since June 2016. Use the dedicated
     @ref Platform::Sdl2Application::mouseScrollEvent() "mouseScrollEvent()"
