@@ -57,8 +57,8 @@ Encapsulates runtime information about OpenAL extension, such as name string,
 minimal required OpenAL version and version in which the extension was adopted
 to core.
 
-See also @ref Audio::Extensions namespace, which contain compile-time information
-about OpenAL extensions.
+See also the @ref Audio::Extensions namespace, which contain compile-time
+information about OpenAL extensions.
 */
 class MAGNUM_AUDIO_EXPORT Extension {
     public:

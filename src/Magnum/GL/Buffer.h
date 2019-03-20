@@ -161,8 +161,8 @@ the buffer to desired size by passing @cpp nullptr @ce to @ref setData(), e.g.:
 
 Then you can map the buffer to client memory and operate with the memory
 directly. After you are done with the operation, call @ref unmap() to unmap the
-buffer again. The @ref map() functions return a view on `char` array and you
-may want to cast it to some useful type first using @ref Containers::arrayCast():
+buffer again. The @ref map() functions return a view on a @cpp char @ce array
+and you may want to cast it to some useful type first using @ref Containers::arrayCast():
 
 @snippet MagnumGL.cpp Buffer-map
 

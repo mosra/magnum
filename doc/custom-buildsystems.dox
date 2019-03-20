@@ -29,6 +29,7 @@ namespace Magnum {
 
 @m_keyword{Using custom buildsystems,,}
 @m_keyword{Custom buildsystems,,}
+@m_footernavigation
 
 While Magnum uses CMake as its primary buildsystem, it's possible to use Magnum
 with a custom buildsystem as well. The following guide will highlight the most
