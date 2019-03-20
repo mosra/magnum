@@ -359,13 +359,6 @@ Containers::Array<char> Buffer::subData(const GLintptr offset, const GLsizeiptr 
     if(size) (this->*Context::current().state().buffer->getSubDataImplementation)(offset, size, data);
     return data;
 }
-
-/** @todo remove when this is not used anymore */
-#ifdef MAGNUM_BUILD_DEPRECATED
-void Buffer::subDataInternal(GLintptr offset, GLsizeiptr size, GLvoid* data) {
-    (this->*Context::current().state().buffer->getSubDataImplementation)(offset, size, data);
-}
-#endif
 #endif
 
 #ifndef MAGNUM_TARGET_GLES2

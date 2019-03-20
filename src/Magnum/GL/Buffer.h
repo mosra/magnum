@@ -40,11 +40,6 @@
 #include "Magnum/GL/AbstractObject.h"
 #include "Magnum/GL/GL.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Containers/Array.h>
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum { namespace GL {
 
 /**
@@ -961,15 +956,6 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          */
         Containers::Array<char> data();
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief data()
-         * @deprecated Use non-templated @ref subData() and @ref Containers::arrayCast()
-         *      instead.
-         */
-        /* MinGW complains loudly if the declaration doesn't also have inline */
-        template<class T> CORRADE_DEPRECATED("use non-templated data() and Containers::arrayCast() instead") inline Containers::Array<T> data();
-        #endif
-
         /**
          * @brief Buffer subdata
          * @param offset    Byte offset in the buffer
@@ -987,14 +973,6 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          *      in OpenGL ES instead.
          */
         Containers::Array<char> subData(GLintptr offset, GLsizeiptr size);
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief subData()
-         * @deprecated Use non-templated @ref subData() and @ref Containers::arrayCast() instead
-         */
-        /* MinGW complains loudly if the declaration doesn't also have inline */
-        template<class T> CORRADE_DEPRECATED("use non-templated subData() and Containers::arrayCast() instead") inline Containers::Array<T> subData(GLintptr offset, GLsizeiptr size);
-        #endif
         #endif
 
         /**
@@ -1103,16 +1081,6 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         const char* mapRead() { return map(MapAccess::ReadOnly); }
         #endif
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @overload
-         * @deprecated Use non-templated @ref map() and cast the result
-         *      manually instead.
-         */
-        template<class T> CORRADE_DEPRECATED("use non-templated map() and cast the result manually instead") T* map(MapAccess access) {
-            return reinterpret_cast<T*>(map(access));
-        }
-        #endif
-
         /**
          * @brief Map buffer to client memory
          * @param offset    Byte offset into the buffer
@@ -1143,16 +1111,6 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         Containers::ArrayView<const char> mapRead(GLintptr offset, GLsizeiptr length, MapFlags flags = {}) {
             return map(offset, length, flags|MapFlag::Read);
         }
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @overload
-         * @deprecated Use non-templated @ref map() and @ref Containers::arrayCast()
-         *      instead.
-         */
-        template<class T> CORRADE_DEPRECATED("use non-templated map() and Containers::arrayCast() instead") T* map(GLintptr offset, GLsizeiptr length, MapFlags flags) {
-            return reinterpret_cast<T*>(map(offset, length, flags).data());
-        }
-        #endif
 
         /**
          * @brief Flush mapped range
@@ -1245,10 +1203,6 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         Buffer& setLabelInternal(Containers::ArrayView<const char> label);
         #endif
 
-        #if !defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_BUILD_DEPRECATED)
-        CORRADE_DEPRECATED("used only by deprecated subData<T>()") void subDataInternal(GLintptr offset, GLsizeiptr size, GLvoid* data);
-        #endif
-
         void MAGNUM_GL_LOCAL getParameterImplementationDefault(GLenum value, GLint* data);
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL getParameterImplementationDSA(GLenum value, GLint* data);
@@ -1338,22 +1292,6 @@ inline GLuint Buffer::release() {
     _id = 0;
     return id;
 }
-
-#if !defined(MAGNUM_TARGET_GLES) && defined(MAGNUM_BUILD_DEPRECATED)
-CORRADE_IGNORE_DEPRECATED_PUSH
-template<class T> Containers::Array<T> inline Buffer::data() {
-    const Int bufferSize = size();
-    CORRADE_ASSERT(bufferSize%sizeof(T) == 0, "Buffer::data(): the buffer size is" << bufferSize << "bytes, which can't be expressed as array of types with size" << sizeof(T), nullptr);
-    return subData<T>(0, bufferSize/sizeof(T));
-}
-
-template<class T> Containers::Array<T> inline Buffer::subData(const GLintptr offset, const GLsizeiptr size) {
-    Containers::Array<T> data(size);
-    if(size) subDataInternal(offset, size*sizeof(T), data);
-    return data;
-}
-CORRADE_IGNORE_DEPRECATED_POP
-#endif
 
 }}
 

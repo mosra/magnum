@@ -308,6 +308,10 @@ See also:
 
 -   Removed all aliases to @ref GL library functionality in the root namespace
     (and root include path) which were deprecated in 2018.04
+-   Removed templated overloads of @ref GL::Buffer::data(),
+    @ref GL::Buffer::subData() and @ref GL::Buffer::map() deprecated since
+    2017. Use the non-templated versions together with
+    @ref Corrade::Containers::arrayCast().
 -   Removed the `Shapes` library together with `DebugTools::ShapeRenderer`,
     which was a failed design experiment deprecated since version 2018.10
     (see [mosra/magnum#148](https://github.com/mosra/magnum/issues/148))
