@@ -91,14 +91,6 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
     friend Implementation::TextureState;
 
     public:
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief @copybrief CubeMapCoordinate
-         * @deprecated Use @ref CubeMapCoordinate instead.
-         */
-        typedef CORRADE_DEPRECATED("use CubeMapCoordinate instead") CubeMapCoordinate Coordinate;
-        #endif
-
         /**
          * @brief Max supported size of one side of cube map texture
          *
