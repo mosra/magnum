@@ -424,11 +424,6 @@ class MAGNUM_GL_EXPORT Context {
         /** @brief Move assignment is not allowed */
         Context& operator=(Context&&) = delete;
 
-        #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(DOXYGEN_GENERATING_OUTPUT)
-        CORRADE_DEPRECATED("Context::current() returns reference now") Context* operator->() { return this; }
-        CORRADE_DEPRECATED("Context::current() returns reference now") operator Context*() { return this; }
-        #endif
-
         /**
          * @brief OpenGL version
          *

@@ -193,11 +193,6 @@ class MAGNUM_AUDIO_EXPORT Context {
         /** @brief Move assignment is not allowed */
         Context& operator=(Context&& other) = delete;
 
-        #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(DOXYGEN_GENERATING_OUTPUT)
-        CORRADE_DEPRECATED("Audio::Context::current() returns reference now") Context* operator->() { return this; }
-        CORRADE_DEPRECATED("Audio::Context::current() returns reference now") operator Context*() { return this; }
-        #endif
-
         /**
          * @brief Complete the context setup and exit on failure
          *
