@@ -624,7 +624,6 @@ void CompareImageTest::imageToFile() {
        _manager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
         CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
 
-
     CORRADE_COMPARE_WITH(ActualRgb,
         Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
         (CompareImageToFile{*_manager, 40.0f, 20.0f}));
