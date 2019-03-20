@@ -63,7 +63,7 @@ information about OpenAL extensions.
 class MAGNUM_AUDIO_EXPORT Extension {
     public:
         /** @brief All OpenAL extensions */
-        static const std::vector<Extension>& extensions();
+        static Containers::ArrayView<const Extension> extensions();
 
         /** @brief Internal unique extension index */
         constexpr std::size_t index() const { return _index; }
@@ -71,12 +71,14 @@ class MAGNUM_AUDIO_EXPORT Extension {
         /** @brief Extension string */
         constexpr const char* string() const { return _string; }
 
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        constexpr Extension(std::size_t index, const char* string): _index{index}, _string{string} {}
+        #endif
+
     private:
         /* MSVC seems to have problems with const members */
         std::size_t _index;
         const char* _string;
-
-        constexpr Extension(std::size_t index, const char* string): _index(index), _string(string) {}
 };
 
 /**

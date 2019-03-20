@@ -41,21 +41,26 @@
 
 namespace Magnum { namespace Audio {
 
-const std::vector<Extension>& Extension::extensions() {
-    #define _extension(prefix, vendor, extension) {Extensions::prefix::vendor::extension::Index, Extensions::prefix::vendor::extension::string()}
-    static const std::vector<Extension> extensions{
-        _extension(AL,EXT,FLOAT32),
-        _extension(AL,EXT,DOUBLE),
-        _extension(AL,EXT,ALAW),
-        _extension(AL,EXT,MULAW),
-        _extension(AL,EXT,MCFORMATS),
-        _extension(ALC,EXT,ENUMERATION),
-        _extension(ALC,SOFTX,HRTF),
-        _extension(ALC,SOFT,HRTF)
-    };
-    #undef _entension
+namespace {
 
-    return extensions;
+constexpr Extension ExtensionList[]{
+    #define _extension(prefix, vendor, extension) {Extensions::prefix::vendor::extension::Index, Extensions::prefix::vendor::extension::string()}
+    _extension(AL,EXT,FLOAT32),
+    _extension(AL,EXT,DOUBLE),
+    _extension(AL,EXT,ALAW),
+    _extension(AL,EXT,MULAW),
+    _extension(AL,EXT,MCFORMATS),
+    _extension(ALC,EXT,ENUMERATION),
+    _extension(ALC,SOFTX,HRTF),
+    _extension(ALC,SOFT,HRTF)
+    #undef _entension
+};
+
+}
+
+Containers::ArrayView<const Extension> Extension::extensions() {
+    /* GCC 4.8 needs an explicit cast */
+    return Containers::arrayView(ExtensionList);
 }
 
 Debug& operator<<(Debug& debug, const Context::HrtfStatus value) {

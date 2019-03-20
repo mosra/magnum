@@ -25,6 +25,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 

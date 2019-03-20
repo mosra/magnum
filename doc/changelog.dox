@@ -337,6 +337,9 @@ See also:
     up compile times. Backwards compatibility is not provided, when using
     @ref Math types with @ref Corrade::Utility::Configuration or
     @ref Corrade::Utility::Arguments you have to include the header explicitly
+-   @ref Audio::Extension::extensions() and @ref GL::Extension::extensions()
+    now return a @ref Corrade::Containers::ArrayView instead of a reference to
+    @ref std::vector in order to reduce binary bloat and compile times
 -   Removed all aliases to @ref GL library functionality in the root namespace
     (and root include path) which were deprecated in 2018.04 and everything
     related to this change:

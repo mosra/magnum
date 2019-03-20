@@ -78,7 +78,7 @@ about OpenGL extensions.
 class MAGNUM_GL_EXPORT Extension {
     public:
         /** @brief All extensions for given OpenGL version */
-        static const std::vector<Extension>& extensions(Version version);
+        static Containers::ArrayView<const Extension> extensions(Version version);
 
         /** @brief Internal unique extension index */
         constexpr std::size_t index() const { return _index; }
@@ -92,13 +92,15 @@ class MAGNUM_GL_EXPORT Extension {
         /** @brief Extension string */
         constexpr const char* string() const { return _string; }
 
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    constexpr Extension(std::size_t index, Version requiredVersion, Version coreVersion, const char* string): _index{index}, _requiredVersion{requiredVersion}, _coreVersion{coreVersion}, _string{string} {}
+    #endif
+
     private:
         std::size_t _index;
         Version _requiredVersion;
         Version _coreVersion;
         const char* _string;
-
-        constexpr Extension(std::size_t index, Version requiredVersion, Version coreVersion, const char* string): _index(index), _requiredVersion(requiredVersion), _coreVersion(coreVersion), _string(string) {}
 };
 
 /**
