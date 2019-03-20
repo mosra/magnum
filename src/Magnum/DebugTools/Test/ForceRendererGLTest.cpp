@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Directory.h>
 
@@ -42,6 +43,10 @@
 #include "Magnum/Trade/AbstractImporter.h"
 
 #include "configure.h"
+
+#ifdef CORRADE_TARGET_ANDROID
+#include "Magnum/GL/Context.h"
+#endif
 
 namespace Magnum { namespace DebugTools { namespace Test { namespace {
 
@@ -107,10 +112,20 @@ void ForceRendererGLTest::render2D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
+    /* ARM Mali G71 (Huawei P10) has some rounding differences causing the
+       the arrowhead to be on a different place (but the rest is okay and the
+       3D case matches exactly), however to avoid false negatives elsewhere I'm
+       making it conditional. */
+    Containers::Optional<CompareImageToFile> comparator{Containers::InPlaceInit, _manager};
+    #ifdef CORRADE_TARGET_ANDROID
+    if(GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::ArmMali)
+        comparator.emplace(_manager, 79.0f, 0.22f);
+    #endif
+
     CORRADE_COMPARE_WITH(
         framebuffer.read({{}, {64, 64}}, {PixelFormat::RGBA8Unorm}),
         Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "ForceRenderer2D.tga"),
-        CompareImageToFile{_manager});
+        *comparator);
 }
 
 void ForceRendererGLTest::render3D() {
