@@ -48,10 +48,6 @@ struct MeshTest: TestSuite::Tester {
     void drawCountNotSet();
     void drawViewCountNotSet();
 
-    #ifdef MAGNUM_BUILD_DEPRECATED
-    void indexSizeDeprecated();
-    #endif
-
     void mapPrimitive();
     void mapPrimitiveInvalid();
     void mapIndexType();
@@ -70,10 +66,6 @@ MeshTest::MeshTest() {
 
               &MeshTest::drawCountNotSet,
               &MeshTest::drawViewCountNotSet,
-
-              #ifdef MAGNUM_BUILD_DEPRECATED
-              &MeshTest::indexSizeDeprecated,
-              #endif
 
               &MeshTest::mapPrimitive,
               &MeshTest::mapPrimitiveInvalid,
@@ -151,16 +143,6 @@ void MeshTest::drawViewCountNotSet() {
     CORRADE_COMPARE(out.str(),
         "GL::MeshView::draw(): setCount() was never called, probably a mistake?\n");
 }
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-void MeshTest::indexSizeDeprecated() {
-    CORRADE_IGNORE_DEPRECATED_PUSH
-    CORRADE_COMPARE(Mesh::indexSize(Mesh::IndexType::UnsignedByte), 1);
-    CORRADE_COMPARE(Mesh::indexSize(Mesh::IndexType::UnsignedShort), 2);
-    CORRADE_COMPARE(Mesh::indexSize(Mesh::IndexType::UnsignedInt), 4);
-    CORRADE_IGNORE_DEPRECATED_POP
-}
-#endif
 
 void MeshTest::mapPrimitive() {
     CORRADE_COMPARE(meshPrimitive(Magnum::MeshPrimitive::Points), MeshPrimitive::Points);

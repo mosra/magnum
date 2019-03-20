@@ -190,12 +190,6 @@ Int Mesh::maxElementsVertices() {
 }
 #endif
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-std::size_t Mesh::indexSize(Magnum::MeshIndexType type) {
-    return meshIndexTypeSize(type);
-}
-#endif
-
 Mesh::Mesh(const MeshPrimitive primitive): _primitive{primitive}, _flags{ObjectFlag::DeleteOnDestruction} {
     (this->*Context::current().state().mesh->createImplementation)(true);
 }

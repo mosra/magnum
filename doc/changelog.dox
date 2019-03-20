@@ -307,7 +307,10 @@ See also:
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 
 -   Removed all aliases to @ref GL library functionality in the root namespace
-    (and root include path) which were deprecated in 2018.04
+    (and root include path) which were deprecated in 2018.04 and everything
+    related to this change:
+    -   @cpp GL::Mesh::IndexType @ce and @cpp GL::Mesh::indexSize() @ce,
+        use @ref GL::MeshIndexType and @ref GL::Mesh::indexTypeSize() instead
 -   Removed templated overloads of @ref GL::Buffer::data(),
     @ref GL::Buffer::subData() and @ref GL::Buffer::map() deprecated since
     2017. Use the non-templated versions together with

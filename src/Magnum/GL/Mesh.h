@@ -294,14 +294,6 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
     friend Implementation::MeshState;
 
     public:
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief MeshIndexType
-         * @deprecated Use @ref Magnum::MeshIndexType or @ref GL::MeshIndexType
-         *      instead.
-         */
-        typedef CORRADE_DEPRECATED("use MeshIndexType instead") Magnum::MeshIndexType IndexType;
-        #endif
-
         #ifndef MAGNUM_TARGET_GLES2
         /**
          * @brief Max supported index value
@@ -348,13 +340,6 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @requires_webgl20 Ranged element draw is not supported in WebGL 1.0.
          */
         static Int maxElementsVertices();
-        #endif
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief meshIndexTypeSize()
-         * @deprecated Use @ref meshIndexTypeSize() instead.
-         */
-        static CORRADE_DEPRECATED("use meshIndexTypeSize() instead") std::size_t indexSize(Magnum::MeshIndexType type);
         #endif
 
         /**
@@ -525,14 +510,6 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
          * @see @ref isIndexed(), @ref meshIndexTypeSize(Magnum::MeshIndexType)
          */
         UnsignedInt indexTypeSize() const;
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /**
-         * @brief Index size
-         * @deprecated Use @ref indexTypeSize() instead.
-         */
-        CORRADE_DEPRECATED("use indexTypeSize() instead") std::size_t indexSize() const { return indexTypeSize(); }
-        #endif
 
         /** @brief Primitive type */
         MeshPrimitive primitive() const { return _primitive; }
