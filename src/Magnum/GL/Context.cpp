@@ -492,12 +492,16 @@ Context::Context(Context&& other): _version{other._version},
     #ifndef MAGNUM_TARGET_WEBGL
     _flags{other._flags},
     #endif
-    _extensionRequiredVersion(other._extensionRequiredVersion),
+    _extensionRequiredVersion{Containers::NoInit},
     _extensionStatus{other._extensionStatus},
     _supportedExtensions{std::move(other._supportedExtensions)},
     _state{other._state},
     _detectedDrivers{std::move(other._detectedDrivers)}
 {
+    /* StaticArray is deliberately non-copyable */
+    for(std::size_t i = 0; i != Implementation::ExtensionCount; ++i)
+        _extensionRequiredVersion[i] = other._extensionRequiredVersion[i];
+
     other._state = nullptr;
     if(currentContext == &other) currentContext = this;
 }
@@ -661,7 +665,7 @@ bool Context::tryCreate() {
     /* Mark all extensions from past versions as supported */
     for(std::size_t i = 0; i != future; ++i)
         for(const Extension& extension: Extension::extensions(versions[i]))
-            _extensionStatus.set(extension.index());
+            _extensionStatus.set(extension.index(), true);
 
     /* List of extensions from future versions (extensions from current and
        previous versions should be supported automatically, so we don't need
@@ -677,7 +681,7 @@ bool Context::tryCreate() {
         const auto found = futureExtensions.find(extension);
         if(found != futureExtensions.end()) {
             _supportedExtensions.push_back(found->second);
-            _extensionStatus.set(found->second.index());
+            _extensionStatus.set(found->second.index(), true);
         }
     }
 

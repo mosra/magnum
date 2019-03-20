@@ -30,13 +30,13 @@
  */
 
 #include <cstdlib>
-#include <array>
-#include <bitset>
 #include <vector>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Containers/StaticArray.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/Math/BoolVector.h"
 #include "Magnum/Tags.h"
 #include "Magnum/GL/GL.h"
 #include "Magnum/GL/OpenGL.h"
@@ -704,8 +704,8 @@ class MAGNUM_GL_EXPORT Context {
         Flags _flags;
         #endif
 
-        std::array<Version, Implementation::ExtensionCount> _extensionRequiredVersion;
-        std::bitset<Implementation::ExtensionCount> _extensionStatus;
+        Containers::StaticArray<Implementation::ExtensionCount, Version> _extensionRequiredVersion;
+        Math::BoolVector<Implementation::ExtensionCount> _extensionStatus;
         std::vector<Extension> _supportedExtensions;
 
         Implementation::State* _state;
