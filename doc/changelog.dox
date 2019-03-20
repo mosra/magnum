@@ -312,6 +312,10 @@ See also:
     @ref GL::Buffer::subData() and @ref GL::Buffer::map() deprecated since
     2017. Use the non-templated versions together with
     @ref Corrade::Containers::arrayCast().
+-   Removed @cpp GL::Context::DetectedDriver::AMD @ce and
+    @cpp GL::Context::DetectedDriver::ProbablyAngle @ce aliases deprecated
+    since 2017, use consistently-named @ref GL::Context::DetectedDriver::Amd
+    and @ref GL::Context::DetectedDriver::Angle instead
 -   Removed the `Shapes` library together with `DebugTools::ShapeRenderer`,
     which was a failed design experiment deprecated since version 2018.10
     (see [mosra/magnum#148](https://github.com/mosra/magnum/issues/148))

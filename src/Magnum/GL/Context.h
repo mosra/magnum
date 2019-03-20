@@ -314,13 +314,6 @@ class MAGNUM_GL_EXPORT Context {
              *      intentionally hide most of the driver information.
              */
             Amd = 1 << 0,
-
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /** @copydoc DetectedDriver::Amd
-             * @deprecated Use @ref DetectedDriver::Amd instead.
-             */
-            AMD CORRADE_DEPRECATED_ENUM("use DetectedDriver::Amd instead") = UnsignedShort(DetectedDriver::Amd),
-            #endif
             #endif
 
             #if defined(MAGNUM_TARGET_GLES) || defined(DOXYGEN_GENERATING_OUTPUT)
@@ -333,13 +326,6 @@ class MAGNUM_GL_EXPORT Context {
              * @requires_gles ANGLE doesn't support desktop OpenGL contexts.
              */
             Angle = 1 << 1,
-
-            #ifdef MAGNUM_BUILD_DEPRECATED
-            /** @copydoc DetectedDriver::Angle
-             * @deprecated Use @ref DetectedDriver::Angle instead.
-             */
-            ProbablyAngle CORRADE_DEPRECATED_ENUM("use DetectedDriver::Angle instead") = UnsignedShort(DetectedDriver::Angle),
-            #endif
             #endif
 
             #ifndef MAGNUM_TARGET_WEBGL
