@@ -40,18 +40,18 @@ template<UnsignedInt dimensions> ResourceKey shaderKey();
 template<> inline ResourceKey shaderKey<2>() { return ResourceKey("FlatShader2D"); }
 template<> inline ResourceKey shaderKey<3>() { return ResourceKey("FlatShader3D"); }
 
-constexpr std::array<Vector2, 4> positions{{
+constexpr Vector2 positions[]{
     {0.0f,  0.0f},
     {1.0f,  0.0f},
     {0.9f,  0.1f},
     {0.9f, -0.1f}
-}};
+};
 
-constexpr std::array<UnsignedByte, 6> indices{{
+constexpr UnsignedByte indices[]{
     0, 1,
     1, 2,
     1, 3
-}};
+};
 
 }
 
@@ -70,10 +70,10 @@ template<UnsignedInt dimensions> ForceRenderer<dimensions>::ForceRenderer(SceneG
     GL::Buffer indexBuffer{GL::Buffer::TargetHint::ElementArray};
     indexBuffer.setData(indices, GL::BufferUsage::StaticDraw);
     GL::Mesh mesh{GL::MeshPrimitive::Lines};
-    mesh.setCount(indices.size())
+    mesh.setCount(Containers::arraySize(indices))
         .addVertexBuffer(std::move(vertexBuffer), 0,
             typename Shaders::Flat<dimensions>::Position(Shaders::Flat<dimensions>::Position::Components::Two))
-        .setIndexBuffer(std::move(indexBuffer), 0, GL::MeshIndexType::UnsignedByte, 0, positions.size());
+        .setIndexBuffer(std::move(indexBuffer), 0, GL::MeshIndexType::UnsignedByte, 0, Containers::arraySize(positions));
     ResourceManager::instance().set(_mesh.key(), std::move(mesh), ResourceDataState::Final, ResourcePolicy::Manual);
 }
 
