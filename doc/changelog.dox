@@ -106,6 +106,9 @@ See also:
 -   Detection of SwiftShader and ARM Mali drivers with
     @ref GL::Context::DetectedDriver::SwiftShader and
     @ref GL::Context::DetectedDriver::ArmMali
+-   It's now possible to pass @ref std::initializer_list to
+    @ref GL::Buffer::setData() / @ref GL::Buffer::setSubData() for a succint
+    upload of basic types
 
 @subsubsection changelog-latest-new-math Math library
 
@@ -329,6 +332,12 @@ See also:
     deprecated in favor of
     @ref Text::AbstractFont::openData(Containers::ArrayView<const char>, Float)
     and @ref Text::AbstractFont::setFileCallback()
+-   @ref GL::Buffer::setData() and @ref GL::Buffer::setSubData() no longer has
+    overloads taking @ref std::vector / @ref std::array, but instead relies on
+    @ref Corrade/Containers/ArrayViewStl.h to provide conversion from these to
+    @ref Corrade::Containers::ArrayView. This header is included automatically
+    when @ref MAGNUM_BUILD_DEPRECATED is enabled, include it explicitly to stay
+    forward compatible.
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

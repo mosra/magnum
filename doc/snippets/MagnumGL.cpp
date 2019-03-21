@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/Reference.h>
 
 #include "Magnum/Image.h"

@@ -25,6 +25,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <vector>
+
 #include "Magnum/GL/Buffer.h"
 
 namespace Magnum { namespace GL { namespace Implementation {

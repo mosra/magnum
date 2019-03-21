@@ -2236,7 +2236,7 @@ void MeshGLTest::unbindVAOWhenSettingIndexBufferData() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Buffer indices{Buffer::TargetHint::ElementArray};
-    indices.setData(std::vector<UnsignedByte>{5, 0}, BufferUsage::StaticDraw);
+    indices.setData(std::initializer_list<UnsignedByte>{5, 0}, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.addVertexBuffer(buffer, 4, Attribute{})
@@ -2244,7 +2244,7 @@ void MeshGLTest::unbindVAOWhenSettingIndexBufferData() {
 
     /* This buffer should have no effect on the mesh above */
     Buffer otherIndices{Buffer::TargetHint::ElementArray};
-    otherIndices.setData(std::vector<UnsignedByte>{100, 1}, BufferUsage::StaticDraw);
+    otherIndices.setData(std::initializer_list<UnsignedByte>{100, 1}, BufferUsage::StaticDraw);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -2304,7 +2304,7 @@ void MeshGLTest::unbindIndexBufferWhenBindingVao() {
     nonindexed.addVertexBuffer(vertices, 0, Attribute{});
 
     /* Fill index buffer for the indexed mesh */
-    indices.setData(std::vector<UnsignedByte>{5, 1}, BufferUsage::StaticDraw);
+    indices.setData(std::initializer_list<UnsignedByte>{5, 1}, BufferUsage::StaticDraw);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -2359,7 +2359,7 @@ void MeshGLTest::resetIndexBufferBindingWhenBindingVao() {
     /* Create an index buffer and fill it (the VAO is bound now, so it'll get
        unbound to avoid messing with its state). */
     Buffer indices{Buffer::TargetHint::ElementArray};
-    indices.setData(std::vector<UnsignedByte>{5, 1});
+    indices.setData(std::initializer_list<UnsignedByte>{5, 1});
 
     /* Add the index buffer. The VAO is unbound, so it gets bound. That resets
        the element array buffer binding and then the buffer gets bound to the
@@ -2411,7 +2411,7 @@ void MeshGLTest::unbindVAOBeforeEnteringExternalSection() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Buffer indices{Buffer::TargetHint::ElementArray};
-    indices.setData(std::vector<UnsignedByte>{5, 0}, BufferUsage::StaticDraw);
+    indices.setData(std::initializer_list<UnsignedByte>{5, 0}, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.addVertexBuffer(buffer, 4, Attribute{})
@@ -2462,7 +2462,7 @@ void MeshGLTest::bindScratchVaoWhenEnteringExternalSection() {
     buffer.setData(data, BufferUsage::StaticDraw);
 
     Buffer indices{Buffer::TargetHint::ElementArray};
-    indices.setData(std::vector<UnsignedByte>{5, 0}, BufferUsage::StaticDraw);
+    indices.setData(std::initializer_list<UnsignedByte>{5, 0}, BufferUsage::StaticDraw);
 
     Mesh mesh;
     mesh.addVertexBuffer(buffer, 4, Attribute{})

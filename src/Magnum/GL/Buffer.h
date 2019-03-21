@@ -30,8 +30,6 @@
  */
 
 #include <cstddef>
-#include <array>
-#include <vector>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Utility/Assert.h>
@@ -40,6 +38,11 @@
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"
 #include "Magnum/GL/GL.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/** @todo remove once people get used to including this where needed */
+#include <Corrade/Containers/ArrayViewStl.h>
+#endif
 
 namespace Magnum { namespace GL {
 
@@ -148,8 +151,8 @@ more information about automatic conversions etc.
 
 @snippet MagnumGL.cpp Buffer-setdata
 
-There is also overload for array-like containers from STL, such as
-@ref std::vector or @link std::array @endlink:
+If you @cpp #include @ce @ref Corrade/Containers/ArrayViewStl.h, you can also
+pass directly STL types such as @ref std::vector or @link std::array @endlink:
 
 @snippet MagnumGL.cpp Buffer-setdata-stl
 
@@ -991,15 +994,8 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         Buffer& setData(Containers::ArrayView<const void> data, BufferUsage usage = BufferUsage::StaticDraw);
 
         /** @overload */
-        template<class T> Buffer& setData(const std::vector<T>& data, BufferUsage usage = BufferUsage::StaticDraw) {
-            setData({data.data(), data.size()}, usage);
-            return *this;
-        }
-
-        /** @overload */
-        template<std::size_t size, class T> Buffer& setData(const std::array<T, size>& data, BufferUsage usage = BufferUsage::StaticDraw) {
-            setData({data.data(), data.size()}, usage);
-            return *this;
+        template<class T> Buffer& setData(std::initializer_list<T> data, BufferUsage usage = BufferUsage::StaticDraw) {
+            return setData({data.begin(), data.size()}, usage);
         }
 
         /**
@@ -1017,15 +1013,8 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         Buffer& setSubData(GLintptr offset, Containers::ArrayView<const void> data);
 
         /** @overload */
-        template<class T> Buffer& setSubData(GLintptr offset, const std::vector<T>& data) {
-            setSubData(offset, {data.data(), data.size()});
-            return *this;
-        }
-
-        /** @overload */
-        template<std::size_t size, class T> Buffer& setSubData(GLintptr offset, const std::array<T, size>& data) {
-            setSubData(offset, {data.data(), data.size()});
-            return *this;
+        template<class T> Buffer& setSubData(GLintptr offset, std::initializer_list<T> data) {
+            return setSubData(offset, {data.begin(), data.size()});
         }
 
         /**
