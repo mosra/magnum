@@ -32,7 +32,6 @@
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
 
-
 namespace Magnum { namespace Math { namespace Test { namespace {
 
 struct CubicHermiteTest: Corrade::TestSuite::Tester {

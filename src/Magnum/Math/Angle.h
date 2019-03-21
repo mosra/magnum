@@ -29,7 +29,6 @@
  * @brief Class @ref Magnum::Math::Deg, @ref Magnum::Math::Rad, literal @link Magnum::Math::Literals::operator""_degf() @endlink, @link Magnum::Math::Literals::operator""_radf() @endlink, @link Magnum::Math::Literals::operator""_deg() @endlink, @link Magnum::Math::Literals::operator""_rad() @endlink
  */
 
-#include <Corrade/configure.h>
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/visibility.h"

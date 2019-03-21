@@ -30,7 +30,6 @@
  */
 
 #include <cstddef>
-#include <Corrade/configure.h>
 
 #include "Magnum/Types.h"
 

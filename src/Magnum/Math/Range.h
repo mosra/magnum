@@ -736,13 +736,6 @@ template<UnsignedInt dimensions, class T> Corrade::Utility::Debug& operator<<(Co
     return debug << Corrade::Utility::Debug::nospace << "})";
 }
 
-template<UnsignedInt dimensions, class T> inline bool Range<dimensions, T>::operator==(const Range<dimensions, T>& other) const {
-    /* For non-scalar types default implementation of TypeTraits would be used,
-       which is just operator== */
-    return TypeTraits<VectorType>::equals(_min, other._min) &&
-        TypeTraits<VectorType>::equals(_max, other._max);
-}
-
 /* Explicit instantiation for commonly used types */
 #ifndef DOXYGEN_GENERATING_OUTPUT
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<1, Float>&);
@@ -755,6 +748,13 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<2, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Range<3, Double>&);
 #endif
+
+template<UnsignedInt dimensions, class T> inline bool Range<dimensions, T>::operator==(const Range<dimensions, T>& other) const {
+    /* For non-scalar types default implementation of TypeTraits would be used,
+       which is just operator== */
+    return TypeTraits<VectorType>::equals(_min, other._min) &&
+        TypeTraits<VectorType>::equals(_max, other._max);
+}
 
 namespace Implementation {
 
