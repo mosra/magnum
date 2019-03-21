@@ -32,7 +32,9 @@
 
 #include <Corrade/configure.h>
 #include <Corrade/Containers/ArrayView.h>
+#ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
+#endif
 
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Vector4.h"
@@ -146,6 +148,7 @@ template<class T> class Frustum {
         Vector4<T> _data[6];
 };
 
+#ifndef CORRADE_NO_DEBUG
 /** @debugoperator{Frustum} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Frustum<T>& value) {
     debug << "Frustum({" << Corrade::Utility::Debug::nospace;
@@ -163,6 +166,7 @@ template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& d
 #ifndef DOXYGEN_GENERATING_OUTPUT
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Frustum<Float>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Frustum<Float>&);
+#endif
 #endif
 
 template<class T> constexpr Frustum<T>::Frustum(IdentityInitT) noexcept: _data{

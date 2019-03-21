@@ -369,6 +369,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
 
 MAGNUM_DUAL_OPERATOR_IMPLEMENTATION(DualComplex, Vector2, T)
 
+#ifndef CORRADE_NO_DEBUG
 /** @debugoperator{DualComplex} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const DualComplex<T>& value) {
     return debug << "DualComplex({" << Corrade::Utility::Debug::nospace
@@ -383,6 +384,7 @@ template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& d
 #ifndef DOXYGEN_GENERATING_OUTPUT
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualComplex<Float>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualComplex<Double>&);
+#endif
 #endif
 
 namespace Implementation {

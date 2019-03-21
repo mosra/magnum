@@ -31,7 +31,9 @@
 
 #include <cmath>
 #include <Corrade/Utility/Assert.h>
+#ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
+#endif
 
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/TypeTraits.h"
@@ -630,6 +632,7 @@ template<class T> inline Quaternion<T> operator/(T scalar, const Quaternion<T>& 
     return {scalar/quaternion.vector(), scalar/quaternion.scalar()};
 }
 
+#ifndef CORRADE_NO_DEBUG
 /** @debugoperator{Quaternion} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Quaternion<T>& value) {
     return debug << "Quaternion({" << Corrade::Utility::Debug::nospace
@@ -643,6 +646,7 @@ template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& d
 #ifndef DOXYGEN_GENERATING_OUTPUT
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Quaternion<Float>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Quaternion<Double>&);
+#endif
 #endif
 
 namespace Implementation {

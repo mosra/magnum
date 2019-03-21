@@ -34,7 +34,9 @@
 #include <algorithm> /* std::max() */
 #endif
 #include <Corrade/Utility/Assert.h>
+#ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
+#endif
 
 #include "Magnum/visibility.h"
 #include "Magnum/Math/Angle.h"
@@ -1102,6 +1104,7 @@ operator/(const Vector<size, Integral>& a, const Vector<size, FloatingPoint>& b)
     return copy /= b;
 }
 
+#ifndef CORRADE_NO_DEBUG
 /** @debugoperator{Vector} */
 template<std::size_t size, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Vector<size, T>& value) {
     debug << "Vector(" << Corrade::Utility::Debug::nospace;
@@ -1126,6 +1129,7 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<2, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<3, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Vector<4, Double>&);
+#endif
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

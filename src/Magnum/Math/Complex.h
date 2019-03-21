@@ -30,7 +30,9 @@
  */
 
 #include <Corrade/Utility/Assert.h>
+#ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
+#endif
 
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/Vector2.h"
@@ -607,6 +609,7 @@ template<class T> inline Complex<T> slerp(const Complex<T>& normalizedA, const C
     return (std::sin((T(1) - t)*a)*normalizedA + std::sin(t*a)*normalizedB)/std::sin(a);
 }
 
+#ifndef CORRADE_NO_DEBUG
 /** @debugoperator{Complex} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Complex<T>& value) {
     return debug << "Complex(" << Corrade::Utility::Debug::nospace
@@ -618,6 +621,7 @@ template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& d
 #ifndef DOXYGEN_GENERATING_OUTPUT
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Float>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Complex<Double>&);
+#endif
 #endif
 
 namespace Implementation {

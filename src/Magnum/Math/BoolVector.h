@@ -29,7 +29,9 @@
  * @brief Class @ref Magnum::Math::BoolVector
  */
 
+#ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
+#endif
 
 #include "Magnum/Types.h"
 #include "Magnum/Math/Math.h"
@@ -291,6 +293,7 @@ template<std::size_t size> class BoolVector {
         UnsignedByte _data[(size-1)/8+1];
 };
 
+#ifndef CORRADE_NO_DEBUG
 /** @debugoperator{BoolVector} */
 template<std::size_t size> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const BoolVector<size>& value) {
     debug << "BoolVector(" << Corrade::Utility::Debug::nospace;
@@ -300,6 +303,7 @@ template<std::size_t size> Corrade::Utility::Debug& operator<<(Corrade::Utility:
     }
     return debug << Corrade::Utility::Debug::nospace << ")";
 }
+#endif
 
 template<std::size_t size> inline bool BoolVector<size>::operator==(const BoolVector<size>& other) const {
     for(std::size_t i = 0; i != size/8; ++i)

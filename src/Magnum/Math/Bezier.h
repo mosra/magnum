@@ -293,6 +293,7 @@ Convenience alternative to @cpp CubicBezier<3, T> @ce. See @ref CubicBezier and
 template<class T> using CubicBezier3D = CubicBezier<3, T>;
 #endif
 
+#ifndef CORRADE_NO_DEBUG
 /** @debugoperator{Bezier} */
 template<UnsignedInt order, UnsignedInt dimensions, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Bezier<order, dimensions, T>& value) {
     debug << "Bezier(" << Corrade::Utility::Debug::nospace;
@@ -315,6 +316,7 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<2, 3, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 2, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Bezier<3, 3, Double>&);
+#endif
 #endif
 
 namespace Implementation {

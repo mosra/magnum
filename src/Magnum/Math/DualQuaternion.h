@@ -525,6 +525,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
 
 MAGNUM_DUAL_OPERATOR_IMPLEMENTATION(DualQuaternion, Quaternion, T)
 
+#ifndef CORRADE_NO_DEBUG
 /** @debugoperator{DualQuaternion} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const DualQuaternion<T>& value) {
     return debug << "DualQuaternion({{" << Corrade::Utility::Debug::nospace
@@ -543,6 +544,7 @@ template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& d
 #ifndef DOXYGEN_GENERATING_OUTPUT
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualQuaternion<Float>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const DualQuaternion<Double>&);
+#endif
 #endif
 
 namespace Implementation {

@@ -30,7 +30,10 @@
  */
 
 #include <cmath>
+#include <Corrade/Utility/TypeTraits.h>
+#ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
+#endif
 
 #include "Magnum/Math/Angle.h"
 #include "Magnum/Math/Tags.h"
@@ -345,12 +348,14 @@ template<class T, class U, class V = typename std::enable_if<!Implementation::Is
     }
 #endif
 
+#ifndef CORRADE_NO_DEBUG
 /** @debugoperator{Dual} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Dual<T>& value) {
     return debug << "Dual(" << Corrade::Utility::Debug::nospace
         << value.real() << Corrade::Utility::Debug::nospace << ","
         << value.dual() << Corrade::Utility::Debug::nospace << ")";
 }
+#endif
 
 /** @relatesalso Dual
 @brief Square root of dual number

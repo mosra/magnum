@@ -260,6 +260,7 @@ Convenience alternative to @cpp CubicHermite<Quaternion<T>> @ce. See
 template<class T> using CubicHermiteQuaternion = CubicHermite<Quaternion<T>>;
 #endif
 
+#ifndef CORRADE_NO_DEBUG
 /** @debugoperator{CubicHermite} */
 template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const CubicHermite<T>& value) {
     return debug << "CubicHermite(" << Corrade::Utility::Debug::nospace
@@ -282,6 +283,7 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Complex<Double>>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Quaternion<Float>>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const CubicHermite<Quaternion<Double>>&);
+#endif
 #endif
 
 /** @relatesalso CubicHermite

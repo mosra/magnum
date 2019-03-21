@@ -581,6 +581,7 @@ template<std::size_t size, std::size_t cols, class T> inline RectangularMatrix<c
     return RectangularMatrix<1, size, T>(vector)*matrix;
 }
 
+#ifndef CORRADE_NO_DEBUG
 /** @debugoperator{RectangularMatrix} */
 template<std::size_t cols, std::size_t rows, class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Magnum::Math::RectangularMatrix<cols, rows, T>& value) {
     debug << "Matrix(" << Corrade::Utility::Debug::nospace;
@@ -617,7 +618,10 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 2, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<3, 4, Double>&);
 extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const RectangularMatrix<4, 3, Double>&);
+#endif
+#endif
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
 #define MAGNUM_RECTANGULARMATRIX_SUBCLASS_IMPLEMENTATION(cols, rows, ...)   \
     static __VA_ARGS__& from(T* data) {                                     \
         return *reinterpret_cast<__VA_ARGS__*>(data);                       \

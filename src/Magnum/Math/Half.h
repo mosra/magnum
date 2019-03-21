@@ -150,6 +150,7 @@ inline Half operator "" _h(long double value) { return Half(Float(value)); }
 
 }
 
+#ifndef CORRADE_NO_DEBUG
 /**
 @debugoperator{Half}
 
@@ -160,6 +161,7 @@ Prints the value with 4 significant digits.
 @todoc remove `long double value` once doxygen can link to long double overloads properly
 */
 MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, Half value);
+#endif
 
 namespace Implementation {
 

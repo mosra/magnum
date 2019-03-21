@@ -1191,6 +1191,7 @@ inline Color4<Float> operator "" _srgbaf(unsigned long long value) {
 
 }
 
+#ifndef CORRADE_NO_DEBUG
 /**
 @debugoperator{Color3}
 
@@ -1206,6 +1207,7 @@ Prints the value as hex color (e.g. @cb{.shell-session} #9933aaff @ce). Other
 underlying types are handled by @ref operator<<(Corrade::Utility::Debug&, const Vector<size, T>&).
 */
 MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color4<UnsignedByte>& value);
+#endif
 
 namespace Implementation {
     template<class T> struct TypeForSize<3, Color3<T>> { typedef Color3<T> Type; };
