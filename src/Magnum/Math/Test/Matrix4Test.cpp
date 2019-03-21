@@ -26,7 +26,6 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
-#include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -114,7 +113,6 @@ struct Matrix4Test: Corrade::TestSuite::Tester {
     void strictWeakOrdering();
 
     void debug();
-    void configuration();
 };
 
 typedef Math::Deg<Float> Deg;
@@ -179,8 +177,7 @@ Matrix4Test::Matrix4Test() {
 
               &Matrix4Test::strictWeakOrdering,
 
-              &Matrix4Test::debug,
-              &Matrix4Test::configuration});
+              &Matrix4Test::debug});
 }
 
 using namespace Literals;
@@ -828,20 +825,6 @@ void Matrix4Test::debug() {
                              "       5, 4, -1, 4,\n"
                              "       8, 7, 8, 5,\n"
                              "       4, 3, 0, 9)\n");
-}
-
-void Matrix4Test::configuration() {
-    Corrade::Utility::Configuration c;
-
-    Matrix4 m({3.0f,  5.0f, 8.0f,   4.0f},
-              {4.0f,  4.0f, 7.0f, 3.125f},
-              {7.0f, -1.0f, 8.0f,   0.0f},
-              {9.0f,  4.0f, 5.0f,  9.55f});
-    std::string value("3 4 7 9 5 4 -1 4 8 7 8 5 4 3.125 0 9.55");
-
-    c.setValue("matrix", m);
-    CORRADE_COMPARE(c.value("matrix"), value);
-    CORRADE_COMPARE(c.value<Matrix4>("matrix"), m);
 }
 
 }}}}

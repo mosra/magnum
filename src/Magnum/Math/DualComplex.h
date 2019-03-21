@@ -391,26 +391,4 @@ namespace Implementation {
 
 }}
 
-namespace Corrade { namespace Utility {
-
-/** @configurationvalue{Magnum::Math::DualComplex} */
-template<class T> struct ConfigurationValue<Magnum::Math::DualComplex<T>> {
-    ConfigurationValue() = delete;
-
-    /** @brief Writes elements separated with spaces */
-    static std::string toString(const Magnum::Math::DualComplex<T>& value, ConfigurationValueFlags flags) {
-        return ConfigurationValue<Magnum::Math::Vector<4, T>>::toString(reinterpret_cast<const Magnum::Math::Vector<4, T>&>(value), flags);
-    }
-
-    /** @brief Reads elements separated with whitespace */
-    static Magnum::Math::DualComplex<T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
-        const Magnum::Math::Vector<4, T> value = ConfigurationValue<Magnum::Math::Vector<4, T>>::fromString(stringValue, flags);
-        return reinterpret_cast<const Magnum::Math::DualComplex<T>&>(value);
-    }
-};
-
-/* No explicit instantiation needed, as Vector<4, T> is instantiated already */
-
-}}
-
 #endif

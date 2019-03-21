@@ -25,7 +25,6 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Vector3.h" /* Vector3 used in Vector2Test::cross() */
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -74,7 +73,6 @@ struct Vector2Test: Corrade::TestSuite::Tester {
 
     void swizzleType();
     void debug();
-    void configuration();
 };
 
 typedef Math::Vector3<Int> Vector3i;
@@ -100,8 +98,7 @@ Vector2Test::Vector2Test() {
               &Vector2Test::strictWeakOrdering,
 
               &Vector2Test::swizzleType,
-              &Vector2Test::debug,
-              &Vector2Test::configuration});
+              &Vector2Test::debug});
 }
 
 void Vector2Test::construct() {
@@ -257,17 +254,6 @@ void Vector2Test::debug() {
     std::ostringstream o;
     Debug(&o) << Vector2(0.5f, 15.0f);
     CORRADE_COMPARE(o.str(), "Vector(0.5, 15)\n");
-}
-
-void Vector2Test::configuration() {
-    Corrade::Utility::Configuration c;
-
-    Vector2 vec(3.125f, 9.0f);
-    std::string value("3.125 9");
-
-    c.setValue("vector", vec);
-    CORRADE_COMPARE(c.value("vector"), value);
-    CORRADE_COMPARE(c.value<Vector2>("vector"), vec);
 }
 
 }}}}

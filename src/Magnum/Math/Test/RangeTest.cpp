@@ -25,7 +25,6 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Range.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -141,7 +140,6 @@ struct RangeTest: Corrade::TestSuite::Tester {
     void subclass();
 
     void debug();
-    void configuration();
 };
 
 typedef Math::Range1D<Float> Range1D;
@@ -193,8 +191,7 @@ RangeTest::RangeTest() {
               &RangeTest::subclassTypes,
               &RangeTest::subclass,
 
-              &RangeTest::debug,
-              &RangeTest::configuration});
+              &RangeTest::debug});
 }
 
 void RangeTest::construct() {
@@ -885,17 +882,6 @@ void RangeTest::debug() {
     Debug(&o) << Range2Di({34, 23}, {47, 30});
 
     CORRADE_COMPARE(o.str(), "Range({34, 23}, {47, 30})\n");
-}
-
-void RangeTest::configuration() {
-    Corrade::Utility::Configuration c;
-
-    Range2D rect({3.0f, 3.125f}, {9.0f, 9.55f});
-    std::string value("3 3.125 9 9.55");
-
-    c.setValue("rectangle", rect);
-    CORRADE_COMPARE(c.value("rectangle"), value);
-    CORRADE_COMPARE(c.value<Range2D>("rectangle"), rect);
 }
 
 }}}}

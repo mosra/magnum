@@ -35,6 +35,7 @@
 #endif
 #include <Corrade/Utility/Arguments.h>
 
+#include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 #include "Magnum/Platform/Implementation/DpiScaling.h"

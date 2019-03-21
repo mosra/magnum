@@ -25,7 +25,6 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Vector.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -111,7 +110,6 @@ struct VectorTest: Corrade::TestSuite::Tester {
     void strictWeakOrdering();
 
     void debug();
-    void configuration();
 };
 
 typedef Math::Rad<Float> Rad;
@@ -176,8 +174,7 @@ VectorTest::VectorTest() {
 
               &VectorTest::strictWeakOrdering,
 
-              &VectorTest::debug,
-              &VectorTest::configuration});
+              &VectorTest::debug});
 }
 
 void VectorTest::construct() {
@@ -752,25 +749,6 @@ void VectorTest::debug() {
     o.str({});
     Debug(&o) << "a" << Vector4() << "b" << Vector4();
     CORRADE_COMPARE(o.str(), "a Vector(0, 0, 0, 0) b Vector(0, 0, 0, 0)\n");
-}
-
-void VectorTest::configuration() {
-    Corrade::Utility::Configuration c;
-
-    Vector4 vec(3.0f, 3.125f, 9.0f, 9.55f);
-    std::string value("3 3.125 9 9.55");
-
-    c.setValue("vector", vec);
-    CORRADE_COMPARE(c.value("vector"), value);
-    CORRADE_COMPARE(c.value<Vector4>("vector"), vec);
-
-    /* Underflow */
-    c.setValue("underflow", "2.1 8.9");
-    CORRADE_COMPARE(c.value<Vector4>("underflow"), (Vector4{2.1f, 8.9f, 0.0f, 0.0f}));
-
-    /* Overflow */
-    c.setValue("overflow", "2 1 8 9 16 33");
-    CORRADE_COMPARE(c.value<Vector4>("overflow"), (Vector4{2.0f, 1.0f, 8.0f, 9.0f}));
 }
 
 }}}}

@@ -63,6 +63,7 @@ corrade_add_test(MathIntersectionBenchmark IntersectionBenchmark.cpp LIBRARIES M
 
 corrade_add_test(MathInterpolationBenchmark InterpolationBenchmark.cpp LIBRARIES MagnumMathTestLib)
 
+corrade_add_test(MathConfigurationValueTest ConfigurationValueTest.cpp LIBRARIES MagnumMathTestLib)
 corrade_add_test(MathStrictWeakOrderingTest StrictWeakOrderingTest.cpp LIBRARIES MagnumMathTestLib)
 
 set_property(TARGET
@@ -119,5 +120,6 @@ set_target_properties(
     MathIntersectionTest
     MathIntersectionBenchmark
 
+    MathConfigurationValueTest
     MathStrictWeakOrderingTest
     PROPERTIES FOLDER "Magnum/Math/Test")

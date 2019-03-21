@@ -32,6 +32,7 @@
 #include <Corrade/Utility/String.h>
 #include <Corrade/Utility/Unicode.h>
 
+#include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 #include "Magnum/Platform/Implementation/DpiScaling.h"
 

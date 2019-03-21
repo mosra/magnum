@@ -25,7 +25,6 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/RectangularMatrix.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -94,7 +93,6 @@ struct RectangularMatrixTest: Corrade::TestSuite::Tester {
     void strictWeakOrdering();
 
     void debug();
-    void configuration();
 };
 
 typedef RectangularMatrix<4, 3, Float> Matrix4x3;
@@ -147,8 +145,7 @@ RectangularMatrixTest::RectangularMatrixTest() {
 
               &RectangularMatrixTest::strictWeakOrdering,
 
-              &RectangularMatrixTest::debug,
-              &RectangularMatrixTest::configuration});
+              &RectangularMatrixTest::debug});
 }
 
 void RectangularMatrixTest::construct() {
@@ -715,33 +712,6 @@ void RectangularMatrixTest::debug() {
                              "       0, 0, 0) b Matrix(0, 0, 0, 0,\n"
                              "       0, 0, 0, 0,\n"
                              "       0, 0, 0, 0)\n");
-}
-
-void RectangularMatrixTest::configuration() {
-    Matrix3x4 m(Vector4(3.0f,  5.0f, 8.0f,   4.0f),
-                Vector4(4.0f,  4.0f, 7.0f, 3.125f),
-                Vector4(7.0f, -1.0f, 8.0f,  9.55f));
-    std::string value("3 4 7 5 4 -1 8 7 8 4 3.125 9.55");
-
-    Corrade::Utility::Configuration c;
-    c.setValue<Matrix3x4>("matrix", m);
-
-    CORRADE_COMPARE(c.value("matrix"), value);
-    CORRADE_COMPARE(c.value<Matrix3x4>("matrix"), m);
-
-    /* Underflow */
-    c.setValue("underflow", "2.1 8.9 1.3 1 5 7 1.5");
-    CORRADE_COMPARE(c.value<Matrix3x4>("underflow"), (Matrix3x4{
-        Vector4{2.1f, 1.0f, 1.5f, 0.0f},
-        Vector4{8.9f, 5.0f, 0.0f, 0.0f},
-        Vector4{1.3f, 7.0f, 0.0f, 0.0f}}));
-
-    /* Overflow */
-    c.setValue("overflow", "2 1 8 9 1 3 1 5 7 1 6 3 3 1.5 23 17");
-    CORRADE_COMPARE(c.value<Matrix3x4>("overflow"), (Matrix3x4{
-        Vector4{2.0f, 9.0f, 1.0f, 1.0f},
-        Vector4{1.0f, 1.0f, 5.0f, 6.0f},
-        Vector4{8.0f, 3.0f, 7.0f, 3.0f}}));
 }
 
 }}}}

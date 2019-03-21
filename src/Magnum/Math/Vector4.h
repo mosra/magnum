@@ -260,9 +260,4 @@ namespace Implementation {
 
 }}
 
-namespace Corrade { namespace Utility {
-    /** @configurationvalue{Magnum::Math::Vector4} */
-    template<class T> struct ConfigurationValue<Magnum::Math::Vector4<T>>: public ConfigurationValue<Magnum::Math::Vector<4, T>> {};
-}}
-
 #endif

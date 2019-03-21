@@ -26,7 +26,6 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Bezier.h"
 #include "Magnum/Math/CubicHermite.h"
@@ -89,7 +88,6 @@ struct BezierTest: Corrade::TestSuite::Tester {
     void strictWeakOrdering();
 
     void debug();
-    void configuration();
 };
 
 BezierTest::BezierTest() {
@@ -114,8 +112,7 @@ BezierTest::BezierTest() {
 
               &BezierTest::strictWeakOrdering,
 
-              &BezierTest::debug,
-              &BezierTest::configuration});
+              &BezierTest::debug});
 }
 
 void BezierTest::construct() {
@@ -336,17 +333,6 @@ void BezierTest::debug() {
     std::ostringstream out;
     Debug(&out) << CubicBezier2D{Vector2{0.0f, 1.0f}, Vector2{1.5f, -0.3f}, Vector2{2.1f, 0.5f}, Vector2{0.0f, 2.0f}};
     CORRADE_COMPARE(out.str(), "Bezier({0, 1}, {1.5, -0.3}, {2.1, 0.5}, {0, 2})\n");
-}
-
-void BezierTest::configuration() {
-    Corrade::Utility::Configuration c;
-
-    CubicBezier2D bezier{Vector2{0.0f, 1.0f}, Vector2{1.5f, -0.3f}, Vector2{2.1f, 0.5f}, Vector2{0.0f, 2.0f}};
-    std::string value("0 1 1.5 -0.3 2.1 0.5 0 2");
-
-    c.setValue("bezier", bezier);
-    CORRADE_COMPARE(c.value("bezier"), value);
-    CORRADE_COMPARE(c.value<CubicBezier2D>("bezier"), bezier);
 }
 
 }}}}

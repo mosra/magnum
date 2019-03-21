@@ -26,7 +26,6 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
-#include <Corrade/Utility/Configuration.h>
 #include <Corrade/Utility/Format.h>
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <Corrade/Utility/Tweakable.h>
@@ -115,7 +114,6 @@ struct ColorTest: Corrade::TestSuite::Tester {
     void swizzleType();
     void debug();
     void debugUb();
-    void configuration();
 
     #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
     void tweakableRgb();
@@ -229,8 +227,7 @@ ColorTest::ColorTest() {
 
               &ColorTest::swizzleType,
               &ColorTest::debug,
-              &ColorTest::debugUb,
-              &ColorTest::configuration});
+              &ColorTest::debugUb});
 
     #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
     addInstancedTests({&ColorTest::tweakableRgb,
@@ -925,24 +922,6 @@ void ColorTest::debugUb() {
     o.str({});
     Debug(&o) << 0x12345678_rgba << 0x90abcdef_rgba;
     CORRADE_COMPARE(o.str(), "#12345678 #90abcdef\n");
-}
-
-void ColorTest::configuration() {
-    Corrade::Utility::Configuration c;
-
-    Color3 color3(0.5f, 0.75f, 1.0f);
-    std::string value3("0.5 0.75 1");
-
-    c.setValue("color3", color3);
-    CORRADE_COMPARE(c.value("color3"), value3);
-    CORRADE_COMPARE(c.value<Color3>("color3"), color3);
-
-    Color4 color4(0.5f, 0.75f, 0.0f, 1.0f);
-    std::string value4("0.5 0.75 0 1");
-
-    c.setValue("color4", color4);
-    CORRADE_COMPARE(c.value("color4"), value4);
-    CORRADE_COMPARE(c.value<Color4>("color4"), color4);
 }
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)

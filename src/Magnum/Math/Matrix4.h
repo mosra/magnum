@@ -1030,9 +1030,4 @@ namespace Implementation {
 
 }}
 
-namespace Corrade { namespace Utility {
-    /** @configurationvalue{Magnum::Math::Matrix4} */
-    template<class T> struct ConfigurationValue<Magnum::Math::Matrix4<T>>: public ConfigurationValue<Magnum::Math::Matrix4x4<T>> {};
-}}
-
 #endif

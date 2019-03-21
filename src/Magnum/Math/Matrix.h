@@ -360,9 +360,4 @@ template<std::size_t size, class T> Matrix<size, T> Matrix<size, T>::inverted() 
 
 }}
 
-namespace Corrade { namespace Utility {
-    /** @configurationvalue{Magnum::Math::Matrix} */
-    template<std::size_t size, class T> struct ConfigurationValue<Magnum::Math::Matrix<size, T>>: public ConfigurationValue<Magnum::Math::RectangularMatrix<size, size, T>> {};
-}}
-
 #endif

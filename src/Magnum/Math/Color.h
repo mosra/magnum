@@ -1221,12 +1221,6 @@ namespace Implementation {
 
 namespace Corrade { namespace Utility {
 
-/** @configurationvalue{Magnum::Color3} */
-template<class T> struct ConfigurationValue<Magnum::Math::Color3<T>>: ConfigurationValue<Magnum::Math::Vector<3, T>> {};
-
-/** @configurationvalue{Magnum::Color4} */
-template<class T> struct ConfigurationValue<Magnum::Math::Color4<T>>: ConfigurationValue<Magnum::Math::Vector<4, T>> {};
-
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 /**
 @tweakableliteral{Magnum::Math::Color3}

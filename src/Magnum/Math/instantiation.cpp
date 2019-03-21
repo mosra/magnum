@@ -24,6 +24,7 @@
 */
 
 #include "Magnum/Math/Bezier.h"
+#include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Math/CubicHermite.h"
 #include "Magnum/Math/DualComplex.h"
 #include "Magnum/Math/DualQuaternion.h"

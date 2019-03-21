@@ -27,6 +27,7 @@
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Directory.h>
 
+#include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractFontConverter.h"
 #include "Magnum/Text/DistanceFieldGlyphCache.h"

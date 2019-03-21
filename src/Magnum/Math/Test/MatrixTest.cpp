@@ -25,7 +25,6 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -86,7 +85,6 @@ struct MatrixTest: Corrade::TestSuite::Tester {
     void subclass();
 
     void debug();
-    void configuration();
 };
 
 typedef Matrix<2, Float> Matrix2x2;
@@ -125,8 +123,7 @@ MatrixTest::MatrixTest() {
               &MatrixTest::subclassTypes,
               &MatrixTest::subclass,
 
-              &MatrixTest::debug,
-              &MatrixTest::configuration});
+              &MatrixTest::debug});
 }
 
 void MatrixTest::construct() {
@@ -487,20 +484,6 @@ void MatrixTest::debug() {
                              "       0, 1, 0, 0,\n"
                              "       0, 0, 1, 0,\n"
                              "       0, 0, 0, 1)\n");
-}
-
-void MatrixTest::configuration() {
-    Corrade::Utility::Configuration c;
-
-    Matrix4x4 m(Vector4(3.0f,  5.0f, 8.0f,   4.0f),
-                Vector4(4.0f,  4.0f, 7.0f, 3.125f),
-                Vector4(7.0f, -1.0f, 8.0f,   0.0f),
-                Vector4(9.0f,  4.0f, 5.0f,  9.55f));
-    std::string value("3 4 7 9 5 4 -1 4 8 7 8 5 4 3.125 0 9.55");
-
-    c.setValue("matrix", m);
-    CORRADE_COMPARE(c.value("matrix"), value);
-    CORRADE_COMPARE(c.value<Matrix4x4>("matrix"), m);
 }
 
 }}}}

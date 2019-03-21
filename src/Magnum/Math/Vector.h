@@ -34,7 +34,6 @@
 #include <algorithm> /* std::max() */
 #endif
 #include <Corrade/Utility/Assert.h>
-#include <Corrade/Utility/ConfigurationValue.h>
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/visibility.h"
@@ -1423,63 +1422,6 @@ template<std::size_t size, class T> struct StrictWeakOrdering<Vector<size, T>> {
 };
 
 }
-
-}}
-
-namespace Corrade { namespace Utility {
-
-/** @configurationvalue{Magnum::Math::Vector} */
-template<std::size_t size, class T> struct ConfigurationValue<Magnum::Math::Vector<size, T>> {
-    ConfigurationValue() = delete;
-
-    /** @brief Writes elements separated with spaces */
-    static std::string toString(const Magnum::Math::Vector<size, T>& value, ConfigurationValueFlags flags) {
-        std::string output;
-
-        for(std::size_t i = 0; i != size; ++i) {
-            if(!output.empty()) output += ' ';
-            output += ConfigurationValue<T>::toString(value[i], flags);
-        }
-
-        return output;
-    }
-
-    /** @brief Reads elements separated with whitespace */
-    static Magnum::Math::Vector<size, T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
-        Magnum::Math::Vector<size, T> result;
-
-        std::size_t oldpos = 0, pos = std::string::npos, i = 0;
-        do {
-            pos = stringValue.find(' ', oldpos);
-            std::string part = stringValue.substr(oldpos, pos-oldpos);
-
-            if(!part.empty()) {
-                result[i] = ConfigurationValue<T>::fromString(part, flags);
-                ++i;
-            }
-
-            oldpos = pos+1;
-        } while(pos != std::string::npos && i != size);
-
-        return result;
-    }
-};
-
-/* Explicit instantiation for commonly used types */
-#if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(__MINGW32__)
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, Magnum::Float>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, Magnum::Float>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, Magnum::Float>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, Magnum::Int>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, Magnum::Int>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, Magnum::Int>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, Magnum::UnsignedInt>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, Magnum::UnsignedInt>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, Magnum::UnsignedInt>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<2, Magnum::Double>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<3, Magnum::Double>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::Vector<4, Magnum::Double>>;
-#endif
 
 }}
 

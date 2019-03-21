@@ -30,6 +30,7 @@
 
 #include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"
+#include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/GL/Renderer.h"
 #include "Magnum/GL/Texture.h"

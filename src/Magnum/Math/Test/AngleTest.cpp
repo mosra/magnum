@@ -27,7 +27,6 @@
 #include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/Configuration.h>
 #include <Corrade/Utility/Format.h>
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <Corrade/Utility/TweakableParser.h>
@@ -51,8 +50,6 @@ struct AngleTest: Corrade::TestSuite::Tester {
 
     void debugDeg();
     void debugRad();
-    void configurationDeg();
-    void configurationRad();
     #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
     template<class T> void tweakable();
     template<class T> void tweakableError();
@@ -125,9 +122,7 @@ AngleTest::AngleTest() {
               &AngleTest::conversion,
 
               &AngleTest::debugDeg,
-              &AngleTest::debugRad,
-              &AngleTest::configurationDeg,
-              &AngleTest::configurationRad});
+              &AngleTest::debugRad});
 
     #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
     addInstancedTests<AngleTest>({
@@ -284,28 +279,6 @@ void AngleTest::debugRad() {
     o.str({});
     Debug(&o) << Rad(1.5708f) - Rad(3.1416f);
     CORRADE_COMPARE(o.str(), "Rad(-1.5708)\n");
-}
-
-void AngleTest::configurationDeg() {
-    Corrade::Utility::Configuration c;
-
-    Deg angle{25.3f};
-    std::string value("25.3");
-
-    c.setValue("angle", angle);
-    CORRADE_COMPARE(c.value("angle"), value);
-    CORRADE_COMPARE(c.value<Deg>("angle"), angle);
-}
-
-void AngleTest::configurationRad() {
-    Corrade::Utility::Configuration c;
-
-    Rad angle{3.14159f};
-    std::string value("3.14159");
-
-    c.setValue("angle", angle);
-    CORRADE_COMPARE(c.value("angle"), value);
-    CORRADE_COMPARE(c.value<Rad>("angle"), angle);
 }
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)

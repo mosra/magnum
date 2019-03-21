@@ -33,6 +33,7 @@
 
 #include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"
+#include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
 #include "MagnumPlugins/TgaImageConverter/TgaImageConverter.h"

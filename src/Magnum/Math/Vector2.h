@@ -192,9 +192,4 @@ namespace Implementation {
 
 }}
 
-namespace Corrade { namespace Utility {
-    /** @configurationvalue{Magnum::Math::Vector2} */
-    template<class T> struct ConfigurationValue<Magnum::Math::Vector2<T>>: public ConfigurationValue<Magnum::Math::Vector<2, T>> {};
-}}
-
 #endif

@@ -25,7 +25,6 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/Math/Complex.h"
 #include "Magnum/Math/Matrix3.h"
@@ -102,7 +101,6 @@ struct ComplexTest: Corrade::TestSuite::Tester {
     void strictWeakOrdering();
 
     void debug();
-    void configuration();
 };
 
 ComplexTest::ComplexTest() {
@@ -155,8 +153,7 @@ ComplexTest::ComplexTest() {
 
               &ComplexTest::strictWeakOrdering,
 
-              &ComplexTest::debug,
-              &ComplexTest::configuration});
+              &ComplexTest::debug});
 }
 
 typedef Math::Deg<Float> Deg;
@@ -554,25 +551,6 @@ void ComplexTest::debug() {
 
     Debug(&o) << Complex(2.5f, -7.5f);
     CORRADE_COMPARE(o.str(), "Complex(2.5, -7.5)\n");
-}
-
-void ComplexTest::configuration() {
-    Corrade::Utility::Configuration c;
-
-    Complex x{3.0f, 3.125f};
-    std::string value{"3 3.125"};
-
-    c.setValue("complex", x);
-    CORRADE_COMPARE(c.value("complex"), value);
-    CORRADE_COMPARE(c.value<Complex>("complex"), x);
-
-    /* Underflow */
-    c.setValue("underflow", "2.1");
-    CORRADE_COMPARE(c.value<Complex>("underflow"), (Complex{2.1f, 0.0f}));
-
-    /* Overflow */
-    c.setValue("overflow", "2 9 16 33");
-    CORRADE_COMPARE(c.value<Complex>("overflow"), (Complex{2.0f, 9.0f}));
 }
 
 }}}}

@@ -30,6 +30,7 @@ set(MagnumMath_HEADERS
     Color.h
     Complex.h
     Constants.h
+    ConfigurationValue.h
     CubicHermite.h
     Distance.h
     Dual.h

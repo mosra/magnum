@@ -551,30 +551,4 @@ namespace Implementation {
 
 }}
 
-namespace Corrade { namespace Utility {
-
-/** @configurationvalue{Magnum::Math::DualQuaternion} */
-template<class T> struct ConfigurationValue<Magnum::Math::DualQuaternion<T>> {
-    ConfigurationValue() = delete;
-
-    /** @brief Writes elements separated with spaces */
-    static std::string toString(const Magnum::Math::DualQuaternion<T>& value, ConfigurationValueFlags flags) {
-        return ConfigurationValue<Magnum::Math::Vector<8, T>>::toString(reinterpret_cast<const Magnum::Math::Vector<8, T>&>(value), flags);
-    }
-
-    /** @brief Reads elements separated with whitespace */
-    static Magnum::Math::DualQuaternion<T> fromString(const std::string& stringValue, ConfigurationValueFlags flags) {
-        const Magnum::Math::Vector<8, T> value = ConfigurationValue<Magnum::Math::Vector<8, T>>::fromString(stringValue, flags);
-        return reinterpret_cast<const Magnum::Math::DualQuaternion<T>&>(value);
-    }
-};
-
-/* Explicit instantiation for commonly used types */
-#if !defined(DOXYGEN_GENERATING_OUTPUT) && !defined(__MINGW32__)
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::DualQuaternion<Magnum::Float>>;
-extern template struct MAGNUM_EXPORT ConfigurationValue<Magnum::Math::DualQuaternion<Magnum::Double>>;
-#endif
-
-}}
-
 #endif
