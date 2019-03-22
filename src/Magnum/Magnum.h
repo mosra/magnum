@@ -158,7 +158,6 @@ for more information.
 */
 #define MAGNUM_TARGET_HEADLESS
 #undef MAGNUM_TARGET_HEADLESS
-#endif
 
 /**
 @brief Vulkan interoperability
@@ -170,6 +169,7 @@ Enabled by default in case the @ref Magnum::Vk "Vk" library is built.
 */
 #define MAGNUM_TARGET_VK
 #undef MAGNUM_TARGET_VK
+#endif
 
 /** @{ @name Basic type definitions
 
