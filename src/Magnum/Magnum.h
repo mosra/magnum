@@ -204,18 +204,20 @@ Equivalent to GLSL @glsl int @ce.
 */
 typedef std::int32_t Int;
 
-#ifndef MAGNUM_TARGET_WEBGL
+#ifndef CORRADE_TARGET_EMSCRIPTEN
 /**
 @brief Unsigned long (64bit)
 
-@requires_gles 64-bit integers are not available in WebGL.
+@partialsupport 64-bit integers are not available under
+    @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
 */
 typedef std::uint64_t UnsignedLong;
 
 /**
 @brief Signed long (64bit)
 
-@requires_gles 64-bit integers are not available in WebGL.
+@partialsupport 64-bit integers are not available in
+    @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
 */
 typedef std::int64_t Long;
 #endif
