@@ -1,4 +1,4 @@
-﻿#ifndef Magnum_Math_StrictWeakOrdering_h
+#ifndef Magnum_Math_StrictWeakOrdering_h
 #define Magnum_Math_StrictWeakOrdering_h
 /*
     This file is part of Magnum.
