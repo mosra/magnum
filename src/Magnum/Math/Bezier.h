@@ -30,8 +30,6 @@
  * @brief Class @ref Magnum::Math::Bezier, alias @ref Magnum::Math::QuadraticBezier, @ref Magnum::Math::QuadraticBezier2D, @ref Magnum::Math::QuadraticBezier3D, @ref Magnum::Math::CubicBezier, @ref Magnum::Math::CubicBezier2D, @ref Magnum::Math::CubicBezier3D
  */
 
-#include <array>
-
 #include "Magnum/Math/Vector.h"
 
 namespace Magnum { namespace Math {
@@ -178,7 +176,9 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          * @see @ref subdivide()
          */
         Vector<dimensions, T> value(Float t) const {
-            return calculateIntermediatePoints(t)[0][order];
+            Bezier<order, dimensions, T> iPoints[order + 1];
+            calculateIntermediatePoints(iPoints, t);
+            return iPoints[0][order];
         }
 
         /**
@@ -189,7 +189,8 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
          * @see @ref value()
          */
         std::pair<Bezier<order, dimensions, T>, Bezier<order, dimensions, T>> subdivide(Float t) const {
-            const auto iPoints = calculateIntermediatePoints(t);
+            Bezier<order, dimensions, T> iPoints[order + 1];
+            calculateIntermediatePoints(iPoints, t);
             Bezier<order, dimensions, T> left, right;
             for(std::size_t i = 0; i <= order; ++i)
                 left[i] = iPoints[0][i];
@@ -207,8 +208,7 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         template<class U, std::size_t ...sequence> constexpr explicit Bezier(Implementation::Sequence<sequence...>, U): _data{Vector<dimensions, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
 
         /* Calculates and returns all intermediate points generated when using De Casteljau's algorithm */
-        std::array<Bezier<order, dimensions, T>, order + 1> calculateIntermediatePoints(Float t) const {
-            std::array<Bezier<order, dimensions, T>, order + 1> iPoints;
+        void calculateIntermediatePoints(Bezier<order, dimensions, T>(&iPoints)[order + 1], Float t) const {
             for(std::size_t i = 0; i <= order; ++i) {
                 iPoints[i][0] = _data[i];
             }
@@ -217,7 +217,6 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
                     iPoints[i][r] = (1 - t)*iPoints[i][r - 1] + t*iPoints[i + 1][r - 1];
                 }
             }
-            return iPoints;
         }
 
         Vector<dimensions, T> _data[order + 1];
