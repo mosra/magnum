@@ -40,11 +40,9 @@ namespace Magnum { namespace Math {
 
 @see @ref Magnum::Constants, @ref Magnum::Constantsd
 */
+#ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> struct Constants {
-    Constants() = delete;
-
     /* See TypeTraits for answer why these are functions and not constants. */
-    #ifdef DOXYGEN_GENERATING_OUTPUT
     /**
      * @brief @f$ \pi @f$.
      *
@@ -141,8 +139,10 @@ template<class T> struct Constants {
      * @see @ref isInf()
      */
     static constexpr T inf();
-    #endif
 };
+#else
+template<class> struct Constants;
+#endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<> struct Constants<Double> {
