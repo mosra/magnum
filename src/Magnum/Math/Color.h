@@ -248,6 +248,21 @@ range @f$ [0.0, 1.0] @f$.
 template<class T> class Color3: public Vector3<T> {
     public:
         /**
+         * @brief Corresponding floating-point type
+         *
+         * For HSV and other color spaces.
+         */
+        typedef typename TypeTraits<T>::FloatingPointType FloatingPointType;
+
+        /**
+         * @brief Type for storing HSV color space values
+         *
+         * Hue in range @f$ [0.0, 360.0] @f$, saturation and value in range
+         * @f$ [0.0, 1.0] @f$.
+         */
+        typedef std::tuple<Deg<FloatingPointType>, FloatingPointType, FloatingPointType> Hsv;
+
+        /**
          * @brief Red color
          *
          * Convenience alternative to e.g. @cpp Color3{red, 0.0f, 0.0f} @ce.
@@ -312,21 +327,6 @@ template<class T> class Color3: public Vector3<T> {
         constexpr static Color3<T> yellow(T blue = T(0)) {
             return {Implementation::fullChannel<T>(), Implementation::fullChannel<T>(), blue};
         }
-
-        /**
-         * @brief Corresponding floating-point type
-         *
-         * For HSV and other color spaces.
-         */
-        typedef typename TypeTraits<T>::FloatingPointType FloatingPointType;
-
-        /**
-         * @brief Type for storing HSV color space values
-         *
-         * Hue in range @f$ [0.0, 360.0] @f$, saturation and value in range
-         * @f$ [0.0, 1.0] @f$.
-         */
-        typedef std::tuple<Deg<FloatingPointType>, FloatingPointType, FloatingPointType> Hsv;
 
         /**
          * @brief Create RGB color from HSV representation
