@@ -30,6 +30,7 @@
  */
 
 #include <cmath>
+#include <cstdlib> /* std::div() */
 #include <type_traits>
 #include <utility>
 #include <Corrade/Containers/ArrayView.h>
