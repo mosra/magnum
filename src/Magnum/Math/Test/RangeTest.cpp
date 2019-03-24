@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 
+#include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
 

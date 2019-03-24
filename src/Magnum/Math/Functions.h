@@ -33,7 +33,6 @@
 #include <cstdlib> /* std::div() */
 #include <type_traits>
 #include <utility>
-#include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/visibility.h"
 #include "Magnum/Math/Vector.h"
@@ -267,7 +266,8 @@ template<std::size_t size, class T> inline Vector<size, T> pow(const Vector<size
 @brief Minimum
 
 <em>NaN</em>s passed in @p value parameter are propagated.
-@see @ref max(), @ref minmax(), @ref clamp(), @ref Vector::min()
+@see @ref max(), @ref minmax(), @ref clamp(),
+    @ref min(Corrade::Containers::ArrayView<const T>), @ref Vector::min()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T min(T value, T min);
@@ -290,34 +290,11 @@ template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size
 }
 
 /**
-@brief Minimum of a range
-
-If the range is empty, returns default-constructed value.
-*/
-template<class T> inline T min(Corrade::Containers::ArrayView<const T> range) {
-    if(range.empty()) return {};
-
-    T out(range[0]);
-    for(std::size_t i = 1; i != range.size(); ++i)
-        out = min(out, range[i]);
-    return out;
-}
-
-/** @overload */
-template<class T> inline T min(std::initializer_list<T> list) {
-    return min(Corrade::Containers::ArrayView<const T>{list.begin(), list.size()});
-}
-
-/** @overload */
-template<class T, std::size_t size> inline T min(const T(&array)[size]) {
-    return min(Corrade::Containers::arrayView(array));
-}
-
-/**
 @brief Maximum
 
 <em>NaN</em>s passed in @p value parameter are propagated.
-@see @ref min(), @ref minmax(), @ref clamp(), @ref Vector::max()
+@see @ref min(), @ref minmax(), @ref clamp(),
+    @ref max(Corrade::Containers::ArrayView<const T>), @ref Vector::max()
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T max(T value, T max);
@@ -340,33 +317,10 @@ template<std::size_t size, class T> inline Vector<size, T> max(const Vector<size
 }
 
 /**
-@brief Maximum of a range
-
-If the range is empty, returns default-constructed value.
-*/
-template<class T> inline T max(Corrade::Containers::ArrayView<const T> range) {
-    if(range.empty()) return {};
-
-    T out(range[0]);
-    for(std::size_t i = 1; i != range.size(); ++i)
-        out = max(out, range[i]);
-    return out;
-}
-
-/** @overload */
-template<class T> inline T max(std::initializer_list<T> list) {
-    return max(Corrade::Containers::ArrayView<const T>{list.begin(), list.size()});
-}
-
-/** @overload */
-template<class T, std::size_t size> inline T max(const T(&array)[size]) {
-    return max(Corrade::Containers::arrayView(array));
-}
-
-/**
 @brief Minimum and maximum of two values
 
-@see @ref min(), @ref max(), @ref clamp(), @ref Vector::minmax(),
+@see @ref min(), @ref max(), @ref clamp(),
+    @ref minmax(Corrade::Containers::ArrayView<const T>), @ref Vector::minmax(),
     @ref Range::Range(const std::pair<VectorType, VectorType>&)
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
@@ -383,45 +337,6 @@ template<std::size_t size, class T> inline std::pair<Vector<size, T>, Vector<siz
     return out;
 }
 #endif
-
-namespace Implementation {
-    template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, void>::type minmax(T& min, T& max, T value) {
-        if(value < min)
-            min = value;
-        else if(value > max)
-            max = value;
-    }
-    template<std::size_t size, class T> inline void minmax(Vector<size, T>& min, Vector<size, T>& max, const Vector<size, T>& value) {
-        for(std::size_t i = 0; i != size; ++i)
-            minmax(min[i], max[i], value[i]);
-    }
-}
-
-/**
-@brief Minimum and maximum of a range
-
-If the range is empty, returns default-constructed values.
-@see @ref Range::Range(const std::pair<VectorType, VectorType>&)
-*/
-template<class T> inline std::pair<T, T> minmax(Corrade::Containers::ArrayView<const T> range) {
-    if(range.empty()) return {};
-
-    T min{range[0]}, max{range[0]};
-    for(std::size_t i = 1; i != range.size(); ++i)
-        Implementation::minmax(min, max, range[i]);
-
-    return {min, max};
-}
-
-/** @overload */
-template<class T> inline std::pair<T, T> minmax(std::initializer_list<T> list) {
-    return minmax(Corrade::Containers::ArrayView<const T>{list.begin(), list.size()});
-}
-
-/** @overload */
-template<class T, std::size_t size> inline std::pair<T, T> minmax(const T(&array)[size]) {
-    return minmax(Corrade::Containers::arrayView(array));
-}
 
 /**
 @brief Clamp value

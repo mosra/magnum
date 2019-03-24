@@ -28,6 +28,7 @@
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Math/Bezier.h"
 #include "Magnum/Math/CubicHermite.h"
 #include "Magnum/Math/DualComplex.h"

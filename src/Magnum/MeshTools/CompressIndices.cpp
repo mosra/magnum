@@ -29,7 +29,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/ArrayViewStl.h>
 
-#include "Magnum/Math/Functions.h"
+#include "Magnum/Math/FunctionsBatch.h"
 
 namespace Magnum { namespace MeshTools {
 

@@ -38,6 +38,7 @@ set(MagnumMath_HEADERS
     DualQuaternion.h
     Frustum.h
     Functions.h
+    FunctionsBatch.h
     Half.h
     Intersection.h
     Math.h

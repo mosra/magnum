@@ -38,11 +38,8 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void pow();
 
     void min();
-    void minList();
     void max();
-    void maxList();
     void minmax();
-    void minmaxList();
     void clamp();
     void nanPropagation();
 
@@ -90,11 +87,8 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::pow,
 
               &FunctionsTest::min,
-              &FunctionsTest::minList,
               &FunctionsTest::max,
-              &FunctionsTest::maxList,
               &FunctionsTest::minmax,
-              &FunctionsTest::minmaxList,
               &FunctionsTest::clamp,
               &FunctionsTest::nanPropagation,
 
@@ -150,34 +144,10 @@ void FunctionsTest::min() {
     CORRADE_COMPARE(Math::min(Vector3i{5, -3, 2}, 1), (Vector3i{1, -3, 1}));
 }
 
-void FunctionsTest::minList() {
-    CORRADE_COMPARE(Math::min({5, -2, 9}), -2);
-    CORRADE_COMPARE(Math::min({Vector3i(5, -3, 2),
-                               Vector3i(-2, 14, 7),
-                               Vector3i(9, -5, 18)}), Vector3i(-2, -5, 2));
-
-    CORRADE_COMPARE(Math::min(std::initializer_list<Vector3i>{}), Vector3i{});
-
-    const Int array[]{5, -2, 9};
-    CORRADE_COMPARE(Math::min(array), -2);
-}
-
 void FunctionsTest::max() {
     CORRADE_COMPARE(Math::max(5, 9), 9);
     CORRADE_COMPARE(Math::max(Vector3i(5, -3, 2), Vector3i(9, -5, 18)), Vector3i(9, -3, 18));
     CORRADE_COMPARE(Math::max(Vector3i{5, -3, 2}, 3), (Vector3i{5, 3, 3}));
-}
-
-void FunctionsTest::maxList() {
-    CORRADE_COMPARE(Math::max({5, -2, 9}), 9);
-    CORRADE_COMPARE(Math::max({Vector3i(5, -3, 2),
-                               Vector3i(-2, 14, 7),
-                               Vector3i(9, -5, 18)}), Vector3i(9, 14, 18));
-
-    CORRADE_COMPARE(Math::max(std::initializer_list<Vector3i>{}), Vector3i{});
-
-    const Int array[]{5, -2, 9};
-    CORRADE_COMPARE(Math::max(array), 9);
 }
 
 void FunctionsTest::minmax() {
@@ -190,27 +160,6 @@ void FunctionsTest::minmax() {
     const std::pair<Vector3, Vector3> expectedVector{{5.0f, -4.0f, 1.0f}, {7.0f, -3.0f, 1.0f}};
     CORRADE_COMPARE_AS(Math::minmax(a, b), expectedVector, std::pair<Vector3, Vector3>);
     CORRADE_COMPARE_AS(Math::minmax(b, a), expectedVector, std::pair<Vector3, Vector3>);
-}
-
-void FunctionsTest::minmaxList() {
-    const auto expected = std::make_pair(-3.0f, 2.0f);
-    CORRADE_COMPARE(Math::minmax({-1.0f, 2.0f, -3.0f}), expected);
-    CORRADE_COMPARE(Math::minmax({-1.0f, -3.0f, 2.0f}), expected);
-    CORRADE_COMPARE(Math::minmax({2.0f, -1.0f, -3.0f}), expected);
-    CORRADE_COMPARE(Math::minmax({2.0f, -3.0f, -1.0f}), expected);
-    CORRADE_COMPARE(Math::minmax({-3.0f, 2.0f, -1.0f}), expected);
-    CORRADE_COMPARE(Math::minmax({-3.0f, -1.0f, 2.0f}), expected);
-
-    const std::pair<Vector2, Vector2> expectedVec{Vector2{-3.0f, -2.0f}, Vector2{2.0f, 3.0f}};
-    CORRADE_COMPARE(Math::minmax({Vector2{-1.0f, 3.0f}, Vector2{2.0f, 1.0f}, Vector2{-3.0f, -2.0f}}), expectedVec);
-    CORRADE_COMPARE(Math::minmax({Vector2{-1.0f, 1.0f}, Vector2{-3.0f, 3.0f}, Vector2{2.0f, -2.0f}}), expectedVec);
-    CORRADE_COMPARE(Math::minmax({Vector2{2.0f, -2.0f}, Vector2{-1.0f, 1.0f}, Vector2{-3.0f, 3.0f}}), expectedVec);
-    CORRADE_COMPARE(Math::minmax({Vector2{2.0f, 1.0f}, Vector2{-3.0f, -2.0f}, Vector2{-1.0f, 3.0f}}), expectedVec);
-    CORRADE_COMPARE(Math::minmax({Vector2{-3.0f, 3.0f}, Vector2{2.0f, -2.0f}, Vector2{-1.0f, 1.0f}}), expectedVec);
-    CORRADE_COMPARE(Math::minmax({Vector2{-3.0f, -2.0f}, Vector2{-1.0f, 3.0f}, Vector2{2.0f, 1.0f}}), expectedVec);
-
-    const Float array[]{-1.0f, 2.0f, -3.0f};
-    CORRADE_COMPARE(Math::minmax(array), expected);
 }
 
 void FunctionsTest::clamp() {

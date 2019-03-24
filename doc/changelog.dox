@@ -317,6 +317,12 @@ See also:
     up compile times. Backwards compatibility is not provided, when using
     @ref Math types with @ref Corrade::Utility::Configuration or
     @ref Corrade::Utility::Arguments you have to include the header explicitly
+-   Batch @ref Math::min(Containers::ArrayView<const T>),
+    @ref Math::max(Containers::ArrayView<const T>) and
+    @ref Math::minmax(Containers::ArrayView<const T>) were moved to a new
+    @ref Magnum/Math/FunctionsBatch.h header in order to speed up compile
+    times. Backwards compatibility is not provided, when using these functions
+    you have to include the header explicitly
 -   Removed all aliases to @ref GL library functionality in the root namespace
     (and root include path) which were deprecated in 2018.04 and everything
     related to this change:
