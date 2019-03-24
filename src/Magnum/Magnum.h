@@ -311,6 +311,9 @@ typedef Math::Color3<Float> Color3;
 /** @brief Four-component (RGBA) float color */
 typedef Math::Color4<Float> Color4;
 
+/** @brief HSV float color */
+typedef Math::ColorHsv<Float> ColorHsv;
+
 /**
 @brief Three-component (RGB) unsigned byte color
 

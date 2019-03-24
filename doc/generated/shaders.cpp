@@ -194,7 +194,7 @@ std::string ShaderVisualizer::vertexColor() {
     std::vector<Color3> colors;
     colors.reserve(sphere.positions(0).size());
     for(Vector3 position: sphere.positions(0))
-        colors.push_back(Color3::fromHsv(Math::lerp(240.0_degf, 420.0_degf, Math::max(1.0f - (position - target).length(), 0.0f)), 0.85f, 0.666f));
+        colors.push_back(Color3::fromHsv({Math::lerp(240.0_degf, 420.0_degf, Math::max(1.0f - (position - target).length(), 0.0f)), 0.85f, 0.666f}));
 
     GL::Buffer vertices, indices;
     vertices.setData(MeshTools::interleave(sphere.positions(0), colors), GL::BufferUsage::StaticDraw);

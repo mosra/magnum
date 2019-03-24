@@ -110,7 +110,7 @@ static_cast<void>(b);
 /* [matrix-vector-construct-color-hue] */
 auto green = Color3::green();           // {0.0f, 1.0f, 0.0f}
 auto cyan = Color4::cyan(0.5f, 0.95f);  // {0.5f, 1.0f, 1.0f, 0.95f}
-auto fadedRed = Color3::fromHsv(219.0_degf, 0.50f, 0.57f);
+auto fadedRed = Color3::fromHsv({219.0_degf, 0.50f, 0.57f});
 /* [matrix-vector-construct-color-hue] */
 static_cast<void>(green);
 static_cast<void>(cyan);
@@ -727,15 +727,6 @@ static_cast<void>(b);
 }
 
 {
-Color3 color;
-/* [Color3-toHsv] */
-Deg hue;
-Float saturation, value;
-std::tie(hue, saturation, value) = color.toHsv();
-/* [Color3-toHsv] */
-}
-
-{
 /* [Color3-toSrgb] */
 Color3 color;
 Math::Vector3<UnsignedByte> srgb = color.toSrgb<UnsignedByte>();
@@ -773,15 +764,6 @@ static_cast<void>(b);
 Color4 rgba = Color4::fromSrgb(0xff3366, 0.5f);
 /* [Color4-fromSrgb-int] */
 static_cast<void>(rgba);
-}
-
-{
-Color4 color;
-/* [Color4-toHsv] */
-Deg hue;
-Float saturation, value;
-std::tie(hue, saturation, value) = color.toHsv();
-/* [Color4-toHsv] */
 }
 
 {

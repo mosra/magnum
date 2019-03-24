@@ -126,6 +126,8 @@ template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Dua
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Quaternion<Float>&);
 template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const Quaternion<Double>&);
 
+template Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug&, const ColorHsv<Float>&);
+
 /* Check proper size of GL types */
 static_assert(sizeof(Vector<2, Float>) == 8, "Improper size of 2-element Float vector");
 static_assert(sizeof(Vector<3, Float>) == 12, "Improper size of 3-element Float vector");

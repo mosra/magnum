@@ -78,6 +78,7 @@ template<class> class Vector2;
 template<class> class Vector3;
 template<class> class Vector4;
 
+template<class> struct ColorHsv;
 template<class> class Color3;
 template<class> class Color4;
 

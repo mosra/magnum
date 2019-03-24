@@ -71,7 +71,7 @@ SceneGraph::DrawableGroup3D debugDrawables;
 DebugTools::ResourceManager::instance().set("my",
     DebugTools::ForceRendererOptions{}
         .setSize(5.0f)
-        .setColor(Color3::fromHsv(120.0_degf, 1.0f, 0.7f)));
+        .setColor(Color3::fromHsv({120.0_degf, 1.0f, 0.7f})));
 
 // Create debug renderer for given object, use "my" options for it
 Vector3 force;
