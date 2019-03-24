@@ -75,6 +75,7 @@ struct FrustumTest: Corrade::TestSuite::Tester {
     void convert();
 
     void data();
+    void rangeFor();
 
     void compare();
 
@@ -98,6 +99,7 @@ FrustumTest::FrustumTest() {
               &FrustumTest::convert,
 
               &FrustumTest::data,
+              &FrustumTest::rangeFor,
 
               &FrustumTest::compare,
 
@@ -120,8 +122,12 @@ void FrustumTest::construct() {
         planes[2], planes[3],
         planes[4], planes[5]};
 
-    CORRADE_COMPARE_AS(frustum.planes(), Corrade::Containers::arrayView(planes),
-                       Corrade::TestSuite::Compare::Container);
+    CORRADE_COMPARE(frustum[0], planes[0]);
+    CORRADE_COMPARE(frustum[1], planes[1]);
+    CORRADE_COMPARE(frustum[2], planes[2]);
+    CORRADE_COMPARE(frustum[3], planes[3]);
+    CORRADE_COMPARE(frustum[4], planes[4]);
+    CORRADE_COMPARE(frustum[5], planes[5]);
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Frustum, Vector4, Vector4, Vector4, Vector4, Vector4, Vector4>::value));
 }
@@ -269,7 +275,7 @@ void FrustumTest::data() {
     #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
     constexpr
     #endif
-    Vector4 right = a.planes()[1];
+    Vector4 right = a.cbegin()[1];
     CORRADE_COMPARE(right, (Vector4{-1.0f, 0.0f, 0.0f, 1.0f}));
 
     constexpr Vector4 bottom = a[2];
@@ -277,6 +283,12 @@ void FrustumTest::data() {
 
     constexpr Vector4 near = a.near();
     CORRADE_COMPARE(near, (Vector4{0.0f, 0.0f, 1.0f, 1.0f}));
+
+    #if !defined(CORRADE_MSVC2015_COMPATIBILITY) && (!defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ >= 500)
+    constexpr
+    #endif
+    Vector4 far = *(a.cend() - 1);
+    CORRADE_COMPARE(far, (Vector4{0.0f, 0.0f, -1.0f, 1.0f}));
 
     #ifndef CORRADE_MSVC2015_COMPATIBILITY /* Apparently dereferencing pointer is verboten */
     constexpr
@@ -288,6 +300,18 @@ void FrustumTest::data() {
     Error redirectError{&out};
     a[6];
     CORRADE_COMPARE(out.str(), "Math::Frustum::operator[](): index 6 out of range\n");
+}
+
+void FrustumTest::rangeFor() {
+    Frustum a;
+    Vector4 sum{3.0f};
+    Int i = 0;
+    for(const Vector4& plane: a) {
+        ++i;
+        sum *= plane;
+    }
+    CORRADE_COMPARE(i, 6);
+    CORRADE_COMPARE(sum, (Vector4{0.0f, 0.0f, 0.0f, 3.0f}));
 }
 
 void FrustumTest::compare() {

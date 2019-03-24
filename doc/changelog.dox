@@ -107,6 +107,11 @@ See also:
     @ref GL::Context::DetectedDriver::SwiftShader and
     @ref GL::Context::DetectedDriver::ArmMali
 
+@subsubsection changelog-latest-new-math Math library
+
+-   @ref Math::Frustum::begin() / @ref Math::Frustum::end() accessors for
+    easy range-for access to @ref Math::Frustum planes
+
 @subsubsection changelog-latest-new-platform Platform libraries
 
 -   @ref Platform::Sdl2Application and @ref Platform::GlfwApplication are now
@@ -298,6 +303,9 @@ See also:
     are deprecated in favor of tuple-less @ref Math::ColorHsv, working
     correctly with the usual @ref Math::NoInit / @ref Math::ZeroInit tags while
     being faster to compile
+-   @cpp Math::Frustum::planes() @ce are deprecated due to redundancy, use
+    either @ref Math::Frustum::operator[](), @ref Math::Frustum::data() or
+    range access using @ref Math::Frustum::begin() / @ref Math::Frustum::end()
 -   @cpp Trade::ImporterFileCallbackPolicy @ce is deprecated as it was moved
     to @ref InputFileCallbackPolicy in the root namespace to be shared with
     APIs outside of the @ref Trade namespace

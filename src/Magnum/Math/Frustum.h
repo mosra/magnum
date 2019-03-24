@@ -31,13 +31,16 @@
  */
 
 #include <Corrade/configure.h>
-#include <Corrade/Containers/ArrayView.h>
 #ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
 
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/Vector4.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Containers/ArrayView.h> /** @todo remove when planes() is gone */
+#endif
 
 namespace Magnum { namespace Math {
 
@@ -116,11 +119,17 @@ template<class T> class Frustum {
         T* data() { return _data[0].data(); }
         constexpr const T* data() const { return _data[0].data(); } /**< @overload */
 
-        /** @brief Frustum planes */
-        constexpr Corrade::Containers::StaticArrayView<6, const Vector4<T>> planes() const {
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Frustum planes
+         * @deprecated Use @ref operator[](std::size_t) const, @ref data() or
+         *      @ref begin() / @ref end() instead.
+         */
+        constexpr CORRADE_DEPRECATED("use operator[](), data() or begin() / end() instead") Corrade::Containers::StaticArrayView<6, const Vector4<T>> planes() const {
             /* GCC 4.8 needs explicit construction */
             return Corrade::Containers::StaticArrayView<6, const Vector4<T>>{_data};
         }
+        #endif
 
         /**
          * @brief Plane at given index
@@ -131,6 +140,24 @@ template<class T> class Frustum {
         constexpr const Vector4<T>& operator[](std::size_t i) const {
             return CORRADE_CONSTEXPR_ASSERT(i < 6, "Math::Frustum::operator[](): index" << i << "out of range"), _data[i];
         }
+
+        /**
+         * @brief First plane
+         *
+         * Together with @ref end() useful for range access, for example here
+         * to check for a point/frustum intersection, similarly to
+         * @ref Intersection::pointFrustum():
+         *
+         * @snippet MagnumMath.cpp Frustum-range
+         */
+        Vector4<T>* begin() { return _data; }
+        constexpr const Vector4<T>* begin() const { return _data; }     /**< @overload */
+        constexpr const Vector4<T>* cbegin() const { return _data; }    /**< @overload */
+
+        /** @brief (One after) last plane */
+        Vector4<T>* end() { return _data + 6; }
+        constexpr const Vector4<T>* end() const { return _data + 6; }   /**< @overload */
+        constexpr const Vector4<T>* cend() const { return _data + 6; }  /**< @overload */
 
         /** @brief Left plane */
         constexpr Vector4<T> left() const { return _data[0]; }

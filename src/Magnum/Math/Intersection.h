@@ -418,7 +418,7 @@ The @p tanAngleSqPlusOne parameter can be precomputed like this:
 template<class T> bool rangeCone(const Range3D<T>& range, const Vector3<T>& coneOrigin, const Vector3<T>& coneNormal, const T tanAngleSqPlusOne);
 
 template<class T> bool pointFrustum(const Vector3<T>& point, const Frustum<T>& frustum) {
-    for(const Vector4<T>& plane: frustum.planes()) {
+    for(const Vector4<T>& plane: frustum) {
         /* The point is in front of one of the frustum planes (normals point
            outwards) */
         if(Distance::pointPlaneScaled<T>(point, plane) < T(0))
@@ -434,7 +434,7 @@ template<class T> bool rangeFrustum(const Range3D<T>& range, const Frustum<T>& f
     const Vector3<T> center = range.min() + range.max();
     const Vector3<T> extent = range.max() - range.min();
 
-    for(const Vector4<T>& plane: frustum.planes()) {
+    for(const Vector4<T>& plane: frustum) {
         const Vector3<T> absPlaneNormal = Math::abs(plane.xyz());
 
         const Float d = Math::dot(center, plane.xyz());
@@ -446,7 +446,7 @@ template<class T> bool rangeFrustum(const Range3D<T>& range, const Frustum<T>& f
 }
 
 template<class T> bool aabbFrustum(const Vector3<T>& aabbCenter, const Vector3<T>& aabbExtents, const Frustum<T>& frustum) {
-    for(const Vector4<T>& plane: frustum.planes()) {
+    for(const Vector4<T>& plane: frustum) {
         const Vector3<T> absPlaneNormal = Math::abs(plane.xyz());
 
         const Float d = Math::dot(aabbCenter, plane.xyz());
@@ -460,7 +460,7 @@ template<class T> bool aabbFrustum(const Vector3<T>& aabbCenter, const Vector3<T
 template<class T> bool sphereFrustum(const Vector3<T>& sphereCenter, const T sphereRadius, const Frustum<T>& frustum) {
     const T radiusSq = sphereRadius*sphereRadius;
 
-    for(const Vector4<T>& plane: frustum.planes()) {
+    for(const Vector4<T>& plane: frustum) {
         /* The sphere is in front of one of the frustum planes (normals point
            outwards) */
         if(Distance::pointPlaneScaled<T>(sphereCenter, plane) < -radiusSq)

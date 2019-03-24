@@ -31,8 +31,10 @@
 #include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Math/Bezier.h"
 #include "Magnum/Math/CubicHermite.h"
+#include "Magnum/Math/Distance.h"
 #include "Magnum/Math/DualComplex.h"
 #include "Magnum/Math/DualQuaternion.h"
+#include "Magnum/Math/Frustum.h"
 #include "Magnum/Math/Half.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Math/Algorithms/GramSchmidt.h"
@@ -857,6 +859,15 @@ Math::Dual<Float> floatingPoint{1.3f, 2.7f};
 Math::Dual<Byte> integral{floatingPoint}; // {1, 2}
 /* [Dual-conversion] */
 }
+
+[](const Vector3& point){
+Frustum frustum;
+/* [Frustum-range] */
+for(Vector4 plane: frustum)
+    if(Math::Distance::pointPlaneScaled(point, plane) < 0.0f) return false;
+return true;
+/* [Frustum-range] */
+}({});
 
 {
 /* [div] */

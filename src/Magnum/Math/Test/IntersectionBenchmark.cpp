@@ -34,7 +34,7 @@
 namespace Magnum { namespace Math { namespace Test { namespace {
 
 template<class T> bool rangeFrustumNaive(const Math::Range3D<T>& box, const Math::Frustum<T>& frustum) {
-    for(const Math::Vector4<T>& plane: frustum.planes()) {
+    for(const Math::Vector4<T>& plane: frustum) {
         bool cornerHit = 0;
 
         for(UnsignedByte c = 0; c != 8; ++c) {
