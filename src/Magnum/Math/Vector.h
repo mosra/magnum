@@ -29,11 +29,11 @@
  * @brief Class @ref Magnum::Math::Vector, function @ref Magnum::Math::dot(), @ref Magnum::Math::angle()
  */
 
-#include <cmath>
 #include <Corrade/Utility/Assert.h>
 #ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
+#include <Corrade/Utility/StlMath.h>
 
 #include "Magnum/visibility.h"
 #include "Magnum/Math/Angle.h"

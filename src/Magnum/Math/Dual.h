@@ -29,11 +29,11 @@
  * @brief Class @ref Magnum::Math::Dual
  */
 
-#include <cmath>
-#include <Corrade/Utility/TypeTraits.h>
 #ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
+#include <Corrade/Utility/StlMath.h>
+#include <Corrade/Utility/TypeTraits.h>
 
 #include "Magnum/Math/Angle.h"
 #include "Magnum/Math/Tags.h"

@@ -29,10 +29,10 @@
  * @brief Functions usable with scalar and vector types
  */
 
-#include <cmath>
 #include <cstdlib> /* std::div() */
 #include <type_traits>
 #include <utility>
+#include <Corrade/Utility/StlMath.h>
 
 #include "Magnum/visibility.h"
 #include "Magnum/Math/Vector.h"

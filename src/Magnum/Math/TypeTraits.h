@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::Math::TypeTraits
  */
 
-#include <cmath>
+#include <Corrade/Utility/StlMath.h>
 
 #include "Magnum/Types.h"
 

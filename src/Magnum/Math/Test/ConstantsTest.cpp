@@ -23,8 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <cmath>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/StlMath.h>
 
 #include "Magnum/Math/Constants.h"
 #include "Magnum/Math/Functions.h"

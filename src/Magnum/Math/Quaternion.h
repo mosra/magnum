@@ -29,11 +29,11 @@
  * @brief Class @ref Magnum::Math::Quaternion, function @ref Magnum::Math::dot(), @ref Magnum::Math::angle(), @ref Magnum::Math::lerp(), @ref Magnum::Math::slerp()
  */
 
-#include <cmath>
 #include <Corrade/Utility/Assert.h>
 #ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
+#include <Corrade/Utility/StlMath.h>
 
 #include "Magnum/Math/Matrix.h"
 #include "Magnum/Math/TypeTraits.h"

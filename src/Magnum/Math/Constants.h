@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::Math::Constants
  */
 
-#include <cmath>
+#include <Corrade/Utility/StlMath.h>
 
 #include "Magnum/Types.h"
 

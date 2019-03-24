@@ -29,7 +29,7 @@
  * @brief Class @ref Magnum::Math::DualQuaternion, function @ref Magnum::Math::sclerp()
  */
 
-#include <cmath>
+#include <Corrade/Utility/StlMath.h>
 
 #include "Magnum/Math/Dual.h"
 #include "Magnum/Math/Functions.h"
