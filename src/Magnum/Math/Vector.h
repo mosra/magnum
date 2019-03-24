@@ -30,9 +30,6 @@
  */
 
 #include <cmath>
-#ifdef _MSC_VER
-#include <algorithm> /* std::max() */
-#endif
 #include <Corrade/Utility/Assert.h>
 #ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
@@ -44,6 +41,17 @@
 #include "Magnum/Math/TypeTraits.h"
 
 namespace Magnum { namespace Math {
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* Documented in Functions.h, defined here because Vector needs them */
+template<class T> constexpr typename std::enable_if<std::is_arithmetic<T>::value, T>::type min(T a, T b) {
+    return b < a ? b : a;
+}
+
+template<class T> constexpr typename std::enable_if<std::is_arithmetic<T>::value, T>::type max(T a, T b) {
+    return a < b ? b : a;
+}
+#endif
 
 namespace Implementation {
     template<std::size_t, class, class> struct VectorConverter;
@@ -1383,7 +1391,7 @@ template<std::size_t size, class T> inline T Vector<size, T>::min() const {
     T out(_data[0]);
 
     for(std::size_t i = 1; i != size; ++i)
-        out = std::min(out, _data[i]);
+        out = Math::min(out, _data[i]);
 
     return out;
 }
@@ -1392,7 +1400,7 @@ template<std::size_t size, class T> inline T Vector<size, T>::max() const {
     T out(_data[0]);
 
     for(std::size_t i = 1; i != size; ++i)
-        out = std::max(out, _data[i]);
+        out = Math::max(out, _data[i]);
 
     return out;
 }

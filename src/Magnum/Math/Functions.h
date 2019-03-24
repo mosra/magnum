@@ -272,13 +272,11 @@ template<std::size_t size, class T> inline Vector<size, T> pow(const Vector<size
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T min(T value, T min);
 #else
-template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type min(T value, T min) {
-    return std::min(value, min);
-}
+/* min() for scalars defined in Vector.h */
 template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size, T>& value, const Vector<size, T>& min) {
     Vector<size, T> out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
-        out[i] = std::min(value[i], min[i]);
+        out[i] = Math::min(value[i], min[i]);
     return out;
 }
 #endif
@@ -287,7 +285,7 @@ template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size
 template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size, T>& value, T min) {
     Vector<size, T> out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
-        out[i] = std::min(value[i], min);
+        out[i] = Math::min(value[i], min);
     return out;
 }
 
@@ -324,13 +322,11 @@ template<class T, std::size_t size> inline T min(const T(&array)[size]) {
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline T max(T value, T max);
 #else
-template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type max(T value, T max) {
-    return std::max(value, max);
-}
+/* max() for scalars defined in Vector.h */
 template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& value, const Vector<size, T>& max) {
     Vector<size, T> out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
-        out[i] = std::max(value[i], max[i]);
+        out[i] = Math::max(value[i], max[i]);
     return out;
 }
 #endif
@@ -339,7 +335,7 @@ template<std::size_t size, class T> Vector<size, T> max(const Vector<size, T>& v
 template<std::size_t size, class T> inline Vector<size, T> max(const Vector<size, T>& value, T max) {
     Vector<size, T> out{NoInit};
     for(std::size_t i = 0; i != size; ++i)
-        out[i] = std::max(value[i], max);
+        out[i] = Math::max(value[i], max);
     return out;
 }
 
@@ -442,7 +438,7 @@ set to @p max. Equivalent to:
 template<class T, class U> inline T clamp(const T& value, const T& min, const T& max);
 #else
 template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, T>::type clamp(T value, T min, T max) {
-    return std::min(std::max(value, min), max);
+    return Math::min(Math::max(value, min), max);
 }
 template<std::size_t size, class T> inline Vector<size, T> clamp(const Vector<size, T>& value, const Vector<size, T>& min, const Vector<size, T>& max) {
     Vector<size, T> out{NoInit};
