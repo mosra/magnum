@@ -86,11 +86,15 @@ The best way to get started is to read the thorough
 [download, build, install and start using Magnum](https://doc.magnum.graphics/magnum/getting-started.html)
 in your project. There is also a complete
 [building documentation](https://doc.magnum.graphics/magnum/building.html) — we
-provide packages for many platforms, including Windows, Linux and macOS.
-
-After that, there are various [tutorials and examples](https://doc.magnum.graphics/magnum/example-index.html)
+provide packages for many platforms, including Windows, Linux and macOS. After
+that, there are various [tutorials and examples](https://doc.magnum.graphics/magnum/example-index.html)
 and a complete [feature guide](https://doc.magnum.graphics/magnum/features.html)
 explaining all aspects of the library.
+
+Apart from that, various Magnum functionality is available through
+[single-header libraries](https://doc.magnum.graphics/magnum/singles.html).
+Just download a file, `#include` it in your project and you're ready to go! No
+buildsystem wrangling needed.
 
 RELATED PROJECTS
 ================

@@ -47,11 +47,13 @@ Curious about what was added or improved recently? Check out the
 The best way to get started is to read the thorough
 @ref getting-started "guide to download, build, install and start using Magnum"
 in your project. There is also a complete @ref building documentation --- we
-provide packages for many platforms, including Windows, Linux and macOS.
+provide packages for many platforms, including Windows, Linux and macOS. After
+that, there are various @ref example-index "tutorials and examples" and a
+complete @ref features "feature guide" explaining all aspects of the library.
 
-After that, there are various @ref example-index "tutorials and examples"
-and a complete @ref features "feature guide" explaining all aspects of the
-library.
+Apart from that, various Magnum functionality is available through
+@ref singles "single-header libraries". Just download a file, @cpp #include @ce
+it in your project and you're ready to go! No buildsystem wrangling needed.
 
 @section mainpage-contact Contact & support
 

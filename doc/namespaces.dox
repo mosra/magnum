@@ -42,7 +42,9 @@ find_package(Magnum REQUIRED)
 target_link_libraries(your-app Magnum::Magnum)
 @endcode
 
-See @ref building and @ref cmake for more information.
+Parts of this library are additionally available in a form of
+@ref singles "single-header libraries". See @ref building and @ref cmake for
+more information.
 */
 
 /** @dir Magnum/Platform
@@ -93,6 +95,29 @@ target_link_libraries(your-app Magnum::Magnum)
 
 See @ref building, @ref cmake, @ref matrix-vector and @ref transformations for
 more information.
+
+@m_class{m-block m-success}
+
+@par Single-header version
+    This library is also available as a single-header, dependency-less
+    [MagnumMath.h](https://github.com/mosra/magnum-singles/tree/master/MagnumMath.h)
+    library in the Magnum Singles repository for easier integration into your
+    projects. See @ref singles for more information. Everything except contents
+    of the @ref Magnum/Math/FunctionsBatch.h and @ref Magnum/Math/Algorithms/Svd.h
+    headers is included. The library has a separate non-inline implementation
+    part, enable it *just once* like this:
+@par
+    @code{.cpp}
+    #define MAGNUM_MATH_IMPLEMENTATION
+    #include <MagnumMath.hpp>
+    @endcode
+@par
+    In addition, contents of the @ref GlmIntegration and @ref EigenIntegration
+    libraries are included as well --- opt-in by specifying either
+    @cpp #define MAGNUM_MATH_GLM_INTEGRATION @ce or
+    @cpp #define MAGNUM_MATH_EIGEN_INTEGRATION @ce before including the file.
+    Including it multiple times with different macros defined works as well.
+
 */
 /** @namespace Magnum::Math::Literals
 @brief Math literals
@@ -111,6 +136,14 @@ target_link_libraries(your-app Magnum::Magnum)
 @endcode
 
 See @ref building, @ref cmake and @ref types for more information.
+
+@m_class{m-block m-success}
+
+@par Single-header version
+    This library is available as a part of the single-header, dependency-less
+    [MagnumMath.h](https://github.com/mosra/magnum-singles/tree/master/MagnumMath.h)
+    library in the Magnum Singles repository for easier integration into your
+    projects. See @ref singles and @ref Math for more information.
 */
 
 /** @dir Magnum/Math/Algorithms
@@ -133,6 +166,14 @@ target_link_libraries(your-app Magnum::Magnum)
 @endcode
 
 See @ref building and @ref cmake for more information.
+
+@m_class{m-block m-success}
+
+@par Single-header version
+    This library is available as a part of the single-header, dependency-less
+    [MagnumMath.h](https://github.com/mosra/magnum-singles/tree/master/MagnumMath.h)
+    library in the Magnum Singles repository for easier integration into your
+    projects. See @ref singles and @ref Math for more information.
 */
 
 /** @dir Magnum/Math/Geometry
@@ -160,6 +201,14 @@ target_link_libraries(your-app Magnum::Magnum)
 @endcode
 
 See @ref building and @ref cmake for more information.
+
+@m_class{m-block m-success}
+
+@par Single-header version
+    This library is available as a part of the single-header, dependency-less
+    [MagnumMath.h](https://github.com/mosra/magnum-singles/tree/master/MagnumMath.h)
+    library in the Magnum Singles repository for easier integration into your
+    projects. See @ref singles and @ref Math for more information.
 */
 
 /** @namespace Magnum::Math::Intersection
@@ -177,6 +226,14 @@ target_link_libraries(your-app Magnum::Magnum)
 @endcode
 
 See @ref building and @ref cmake for more information.
+
+@m_class{m-block m-success}
+
+@par Single-header version
+    This library is available as a part of the single-header, dependency-less
+    [MagnumMath.h](https://github.com/mosra/magnum-singles/tree/master/MagnumMath.h)
+    library in the Magnum Singles repository for easier integration into your
+    projects. See @ref singles and @ref Math for more information.
 */
 
 /** @dir Magnum/Animation

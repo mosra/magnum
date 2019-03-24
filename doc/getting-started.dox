@@ -252,6 +252,7 @@ experimenting on your own!
 -   @subpage cmake-plugins --- @copybrief cmake-plugins
 -   @subpage cmake-integration --- @copybrief cmake-integration
 -   @subpage cmake-extras --- @copybrief cmake-extras
+-   @subpage singles --- @copybrief singles
 -   @subpage custom-buildsystems --- @copybrief custom-buildsystems
 
 */
