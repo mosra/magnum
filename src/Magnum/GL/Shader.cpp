@@ -38,6 +38,7 @@
 #endif
 #include "Magnum/GL/Implementation/State.h"
 #include "Magnum/GL/Implementation/ShaderState.h"
+#include "Magnum/Math/Functions.h"
 
 /* libgles-omap3-dev_4.03.00.02-r15.6 on BeagleBoard/Ångström linux 2011.3 doesn't have GLchar */
 #ifdef MAGNUM_TARGET_GLES
@@ -757,7 +758,7 @@ bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shader
     std::size_t maxSourceCount = 0;
     for(Shader& shader: shaders) {
         CORRADE_ASSERT(shader._sources.size() > 1, "GL::Shader::compile(): no files added", false);
-        maxSourceCount = std::max(shader._sources.size(), maxSourceCount);
+        maxSourceCount = Math::max(shader._sources.size(), maxSourceCount);
     }
     /** @todo ArrayTuple/VLAs */
     Containers::Array<const GLchar*> pointers(maxSourceCount);
@@ -788,7 +789,7 @@ bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shader
         std::string message(logLength, '\0');
         if(message.size() > 1)
             glGetShaderInfoLog(shader._id, message.size(), nullptr, &message[0]);
-        message.resize(std::max(logLength, 1)-1);
+        message.resize(Math::max(logLength, 1)-1);
 
         /* Show error log */
         if(!success) {

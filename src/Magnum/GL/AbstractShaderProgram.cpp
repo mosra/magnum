@@ -327,7 +327,7 @@ std::pair<bool, std::string> AbstractShaderProgram::validate() {
     std::string message(logLength, '\n');
     if(message.size() > 1)
         glGetProgramInfoLog(_id, message.size(), nullptr, &message[0]);
-    message.resize(std::max(logLength, 1)-1);
+    message.resize(Math::max(logLength, 1)-1);
 
     return {success, std::move(message)};
 }
@@ -415,7 +415,7 @@ bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<Abs
         std::string message(logLength, '\n');
         if(message.size() > 1)
             glGetProgramInfoLog(shader._id, message.size(), nullptr, &message[0]);
-        message.resize(std::max(logLength, 1)-1);
+        message.resize(Math::max(logLength, 1)-1);
 
         /* Show error log */
         if(!success) {

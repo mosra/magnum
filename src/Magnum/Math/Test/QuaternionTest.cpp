@@ -511,7 +511,7 @@ void QuaternionTest::matrix() {
     Quaternion q2 = Quaternion::rotation(Deg(130.0f), axis);
     CORRADE_COMPARE_AS(m2.trace(), 0.0f, Corrade::TestSuite::Compare::Less);
     CORRADE_COMPARE_AS(m2.diagonal()[2],
-        std::max(m2.diagonal()[0], m2.diagonal()[1]),
+        Math::max(m2.diagonal()[0], m2.diagonal()[1]),
         Corrade::TestSuite::Compare::Greater);
     CORRADE_COMPARE(Quaternion::fromMatrix(m2), q2);
 
@@ -521,7 +521,7 @@ void QuaternionTest::matrix() {
     Quaternion q3 = Quaternion::rotation(Deg(130.0f), axis2);
     CORRADE_COMPARE_AS(m3.trace(), 0.0f, Corrade::TestSuite::Compare::Less);
     CORRADE_COMPARE_AS(m3.diagonal()[1],
-        std::max(m3.diagonal()[0], m3.diagonal()[2]),
+        Math::max(m3.diagonal()[0], m3.diagonal()[2]),
         Corrade::TestSuite::Compare::Greater);
     CORRADE_COMPARE(Quaternion::fromMatrix(m3), q3);
 
@@ -531,7 +531,7 @@ void QuaternionTest::matrix() {
     Quaternion q4 = Quaternion::rotation(Deg(130.0f), axis3);
     CORRADE_COMPARE_AS(m4.trace(), 0.0f, Corrade::TestSuite::Compare::Less);
     CORRADE_COMPARE_AS(m4.diagonal()[0],
-        std::max(m4.diagonal()[1], m4.diagonal()[2]),
+        Math::max(m4.diagonal()[1], m4.diagonal()[2]),
         Corrade::TestSuite::Compare::Greater);
     CORRADE_COMPARE(Quaternion::fromMatrix(m4), q4);
 }

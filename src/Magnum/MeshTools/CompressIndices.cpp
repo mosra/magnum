@@ -26,8 +26,8 @@
 #include "CompressIndices.h"
 
 #include <cstring>
-#include <algorithm>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/ArrayViewStl.h>
 
 #include "Magnum/Math/Functions.h"
 
@@ -49,10 +49,10 @@ template<class T> inline Containers::Array<char> compress(const std::vector<Unsi
 
 std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> compressIndices(const std::vector<UnsignedInt>& indices) {
     /** @todo Performance hint when range can be represented by smaller value? */
-    const auto minmax = std::minmax_element(indices.begin(), indices.end());
+    const auto minmax = Math::minmax<UnsignedInt>(indices);
     Containers::Array<char> data;
     MeshIndexType type;
-    switch(Math::log(256, *minmax.second)) {
+    switch(Math::log(256, minmax.second)) {
         case 0:
             data = compress<UnsignedByte>(indices);
             type = MeshIndexType::UnsignedByte;
@@ -68,16 +68,16 @@ std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> com
             break;
 
         default:
-            CORRADE_ASSERT(false, "MeshTools::compressIndices(): no type able to index" << *minmax.second << "elements.", {});
+            CORRADE_ASSERT(false, "MeshTools::compressIndices(): no type able to index" << minmax.second << "elements.", {});
     }
 
-    return std::make_tuple(std::move(data), type, *minmax.first, *minmax.second);
+    return std::make_tuple(std::move(data), type, minmax.first, minmax.second);
 }
 
 template<class T> Containers::Array<T> compressIndicesAs(const std::vector<UnsignedInt>& indices) {
     #if !defined(CORRADE_NO_ASSERT) || defined(CORRADE_GRACEFUL_ASSERT)
-    const auto max = std::max_element(indices.begin(), indices.end());
-    CORRADE_ASSERT(Math::log(256, *max) < sizeof(T), "MeshTools::compressIndicesAs(): type too small to represent value" << *max, {});
+    const auto max = Math::max<UnsignedInt>(indices);
+    CORRADE_ASSERT(Math::log(256, max) < sizeof(T), "MeshTools::compressIndicesAs(): type too small to represent value" << max, {});
     #endif
 
     Containers::Array<T> buffer(indices.size());
