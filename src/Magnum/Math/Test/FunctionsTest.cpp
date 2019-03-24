@@ -23,7 +23,6 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include <tuple>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Functions.h"
@@ -325,10 +324,9 @@ void FunctionsTest::exp() {
 }
 
 void FunctionsTest::div() {
-    Int quotient, remainder;
-    std::tie(quotient, remainder) = Math::div(57, 6);
-    CORRADE_COMPARE(quotient, 9);
-    CORRADE_COMPARE(remainder, 3);
+    std::pair<Int, Int> div = Math::div(57, 6);
+    CORRADE_COMPARE(div.first, 9);
+    CORRADE_COMPARE(div.second, 3);
 }
 
 void FunctionsTest::isInf() {

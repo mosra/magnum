@@ -25,7 +25,6 @@
 */
 
 #include <random>
-#include <tuple>
 #include <utility>
 #include <Corrade/TestSuite/Tester.h>
 
@@ -113,7 +112,11 @@ struct IntersectionBenchmark: Corrade::TestSuite::Tester {
     void sphereConeView();
 
     Frustum _frustum;
-    std::tuple<Vector3, Vector3, Rad> _cone;
+    struct {
+        Vector3 origin;
+        Vector3 normal;
+        Rad angle;
+    } _cone;
     Matrix4 _coneView;
 
     std::vector<Range3D> _boxes;
@@ -140,11 +143,11 @@ IntersectionBenchmark::IntersectionBenchmark() {
     /* Cone angle distribution */
     std::uniform_real_distribution<float> ad(1.0f, 179.0f);
 
-    _cone = std::make_tuple(Vector3{pd(g), pd(g), pd(g)},
-                Vector3{pd(g), pd(g), pd(g)}.normalized(),
-                Rad(Deg(ad(g))));
-    _coneView = coneViewFromCone(std::get<0>(_cone), std::get<1>(_cone));
-    _frustum = Frustum::fromMatrix(_coneView*Matrix4::perspectiveProjection(std::get<2>(_cone), 1.0f, 0.001f, 100.0f));
+    _cone.origin = Vector3{pd(g), pd(g), pd(g)};
+    _cone.normal = Vector3{pd(g), pd(g), pd(g)}.normalized();
+    _cone.angle = Deg(ad(g));
+    _coneView = coneViewFromCone(_cone.origin, _cone.normal);
+    _frustum = Frustum::fromMatrix(_coneView*Matrix4::perspectiveProjection(_cone.angle, 1.0f, 0.001f, 100.0f));
 
     _boxes.reserve(512);
     _spheres.reserve(512);
@@ -173,10 +176,10 @@ void IntersectionBenchmark::rangeFrustum() {
 void IntersectionBenchmark::rangeCone() {
     volatile bool b = false;
     CORRADE_BENCHMARK(50) {
-        const Float tanAngle = Math::tan(std::get<2>(_cone));
+        const Float tanAngle = Math::tan(_cone.angle);
         const Float tanAngleSqPlusOne = tanAngle*tanAngle + 1.0f;
         for(auto& box: _boxes) {
-            b = b ^ Intersection::rangeCone(box, std::get<0>(_cone), std::get<1>(_cone), tanAngleSqPlusOne);
+            b = b ^ Intersection::rangeCone(box, _cone.origin, _cone.normal, tanAngleSqPlusOne);
         }
     }
 }
@@ -191,18 +194,18 @@ void IntersectionBenchmark::sphereFrustum() {
 void IntersectionBenchmark::sphereConeNaive() {
     volatile bool b = false;
     CORRADE_BENCHMARK(50) for(auto& sphere: _spheres) {
-        b = b ^ sphereConeGT<Float>(sphere.xyz(), sphere.w(), std::get<0>(_cone), std::get<1>(_cone), std::get<2>(_cone));
+        b = b ^ sphereConeGT<Float>(sphere.xyz(), sphere.w(), _cone.origin, _cone.normal, _cone.angle);
     }
 }
 
 void IntersectionBenchmark::sphereCone() {
     volatile bool b = false;
     CORRADE_BENCHMARK(50) {
-        const Float sinAngle = Math::sin(std::get<2>(_cone));
-        const Float tanAngle = Math::tan(std::get<2>(_cone));
+        const Float sinAngle = Math::sin(_cone.angle);
+        const Float tanAngle = Math::tan(_cone.angle);
         const Float tanAngleSqPlusOne = tanAngle*tanAngle + 1.0f;
         for(auto& sphere: _spheres) {
-            b = b ^ Intersection::sphereCone(sphere.xyz(), sphere.w(), std::get<0>(_cone), std::get<1>(_cone), sinAngle, tanAngleSqPlusOne);
+            b = b ^ Intersection::sphereCone(sphere.xyz(), sphere.w(), _cone.origin, _cone.normal, sinAngle, tanAngleSqPlusOne);
         }
     }
 }
@@ -210,8 +213,8 @@ void IntersectionBenchmark::sphereCone() {
 void IntersectionBenchmark::sphereConeView() {
     volatile bool b = false;
     CORRADE_BENCHMARK(50) {
-        const Float sinAngle = Math::sin(std::get<2>(_cone));
-        const Float tanAngle = Math::tan(std::get<2>(_cone));
+        const Float sinAngle = Math::sin(_cone.angle);
+        const Float tanAngle = Math::tan(_cone.angle);
         for(auto& sphere: _spheres) {
             b = b ^ Intersection::sphereConeView(sphere.xyz(), sphere.w(), _coneView, sinAngle, tanAngle);
         }
