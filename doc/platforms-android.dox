@@ -742,6 +742,25 @@ gradle build
 
 @section platforms-android-troubleshooting Troubleshooting
 
+@subsection platforms-android-troubleshooting-multiple-devices ADB fails when more devices are connected
+
+If any `adb` command fails with
+
+@code{.shell-session}
+error: more than one device/emulator
+@endcode
+
+@m_class{m-noindent}
+
+you can pass the device ID via the `-s` parameter to each command. That is,
+however, verbose and doesn't work for example in case of running
+@ref Corrade::TestSuite tests via `ctest`. Instead, it's possible to supply
+the device ID via an environment variable, for example:
+
+@code{.sh}
+export ANDROID_SERIAL="bla"
+@endcode
+
 @subsection platforms-android-troubleshooting-signing-failed Signing the APK using CMake fails
 
 At the moment the location and passphrase for the Android signing keystore is
