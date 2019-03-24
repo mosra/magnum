@@ -21,7 +21,17 @@
 */
 
 #include "base.h"
+/* Put the contents of Corrade/Utility/StlMath.h here so it doesn't get
+   reordered */
+#pragma ACME enable Corrade_Utility_StlMath_h
 // {{includes}}
+#include <ciso646>
+#ifdef _GLIBCXX_USE_STD_SPEC_FUNCS
+#undef _GLIBCXX_USE_STD_SPEC_FUNCS
+#define _GLIBCXX_USE_STD_SPEC_FUNCS 0
+#endif
+// {{includes}}
+#include <cmath>
 #if (!defined(CORRADE_ASSERT) || !defined(CORRADE_CONSTEXPR_ASSERT) || !defined(CORRADE_INTERNAL_ASSERT_OUTPUT) || !defined(CORRADE_ASSERT_UNREACHABLE)) && !defined(NDEBUG)
 #include <cassert>
 #endif
