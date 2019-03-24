@@ -75,6 +75,7 @@ set_property(TARGET
     MathComplexTest
     MathCubicHermiteTest
     MathDualComplexTest
+    MathFrustumTest
     MathQuaternionTest
     MathDualQuaternionTest
 

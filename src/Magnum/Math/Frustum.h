@@ -122,9 +122,15 @@ template<class T> class Frustum {
             return Corrade::Containers::StaticArrayView<6, const Vector4<T>>{_data};
         }
 
-        /** @brief Plane at given index */
+        /**
+         * @brief Plane at given index
+         *
+         * Expects that @p i is less than @cpp 6 @ce.
+         */
         /* returns const& so [][] operations are also constexpr */
-        constexpr const Vector4<T>& operator[](std::size_t i) const { return _data[i]; }
+        constexpr const Vector4<T>& operator[](std::size_t i) const {
+            return CORRADE_CONSTEXPR_ASSERT(i < 6, "Math::Frustum::operator[](): index" << i << "out of range"), _data[i];
+        }
 
         /** @brief Left plane */
         constexpr Vector4<T> left() const { return _data[0]; }

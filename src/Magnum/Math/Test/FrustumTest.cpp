@@ -283,6 +283,11 @@ void FrustumTest::data() {
     #endif
     Float b = *a.data();
     CORRADE_COMPARE(b, 1.0f);
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    a[6];
+    CORRADE_COMPARE(out.str(), "Math::Frustum::operator[](): index 6 out of range\n");
 }
 
 void FrustumTest::compare() {
