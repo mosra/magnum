@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Math::BoolVector
  */
 
+#include <type_traits>
 #ifndef CORRADE_NO_DEBUG
 #include <Corrade/Utility/Debug.h>
 #endif
