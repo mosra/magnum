@@ -306,6 +306,13 @@ See also:
 -   @cpp Math::Frustum::planes() @ce are deprecated due to redundancy, use
     either @ref Math::Frustum::operator[](), @ref Math::Frustum::data() or
     range access using @ref Math::Frustum::begin() / @ref Math::Frustum::end()
+-   Batch @ref Math::min(Containers::ArrayView<const T>),
+    @ref Math::max(Containers::ArrayView<const T>) and
+    @ref Math::minmax(Containers::ArrayView<const T>) are moved to a new
+    @ref Magnum/Math/FunctionsBatch.h header in order to speed up compile
+    times. This header is included from @ref Magnum/Math/FunctionsBatch.h when
+    building with @ref MAGNUM_BUILD_DEPRECATED enabled, include it explicitly
+    to ensure forward compatibility
 -   @cpp Trade::ImporterFileCallbackPolicy @ce is deprecated as it was moved
     to @ref InputFileCallbackPolicy in the root namespace to be shared with
     APIs outside of the @ref Trade namespace
@@ -325,12 +332,6 @@ See also:
     up compile times. Backwards compatibility is not provided, when using
     @ref Math types with @ref Corrade::Utility::Configuration or
     @ref Corrade::Utility::Arguments you have to include the header explicitly
--   Batch @ref Math::min(Containers::ArrayView<const T>),
-    @ref Math::max(Containers::ArrayView<const T>) and
-    @ref Math::minmax(Containers::ArrayView<const T>) were moved to a new
-    @ref Magnum/Math/FunctionsBatch.h header in order to speed up compile
-    times. Backwards compatibility is not provided, when using these functions
-    you have to include the header explicitly
 -   Removed all aliases to @ref GL library functionality in the root namespace
     (and root include path) which were deprecated in 2018.04 and everything
     related to this change:
