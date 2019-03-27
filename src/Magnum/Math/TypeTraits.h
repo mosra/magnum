@@ -166,7 +166,7 @@ namespace Implementation {
     _c(Short)
     _c(UnsignedInt)
     _c(Int)
-    #ifndef MAGNUM_TARGET_WEBGL
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     _c(UnsignedLong)
     _c(Long)
     #endif
@@ -200,7 +200,7 @@ template<> struct TypeTraits<UnsignedInt>: Implementation::TypeTraitsIntegral<Un
 template<> struct TypeTraits<Int>: Implementation::TypeTraitsIntegral<Int> {
     typedef Double FloatingPointType;
 };
-#ifndef MAGNUM_TARGET_WEBGL
+#ifndef CORRADE_TARGET_EMSCRIPTEN
 template<> struct TypeTraits<UnsignedLong>: Implementation::TypeTraitsIntegral<UnsignedLong> {
     typedef long double FloatingPointType;
 };
