@@ -308,6 +308,20 @@ template<std::size_t size, class T> inline T MatrixDeterminant<size, T>::operato
     return out;
 }
 
+/* This is not *critically* needed here (the specializations for 2x2 and 1x1
+   are technically enough to make things work), but together with the raw data
+   access it speeds up the debug build five times, so I think it's worth to
+   have it */
+template<class T> struct MatrixDeterminant<3, T> {
+    constexpr T operator()(const Matrix<3, T>& m) const {
+        /* Using ._data[] instead of [] to avoid function call indirection
+           on debug builds (saves a lot, yet doesn't obfuscate too much) */
+        return m._data[0]._data[0]*((m._data[1]._data[1]*m._data[2]._data[2]) - (m._data[2]._data[1]*m._data[1]._data[2])) -
+            m._data[0]._data[1]*(m._data[1]._data[0]*m._data[2]._data[2] - m._data[2]._data[0]*m._data[1]._data[2]) +
+            m._data[0]._data[2]*(m._data[1]._data[0]*m._data[2]._data[1] - m._data[2]._data[0]*m._data[1]._data[1]);
+    }
+};
+
 template<class T> struct MatrixDeterminant<2, T> {
     constexpr T operator()(const Matrix<2, T>& m) const {
         /* Using ._data[] instead of [] to avoid function call indirection
