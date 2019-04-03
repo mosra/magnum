@@ -364,7 +364,7 @@ void Context::disableDriverWorkaround(const std::string& workaround) {
     _driverWorkarounds.emplace_back(workaround, true);
 }
 
-bool Context::isDriverWorkaroundDisabled(const std::string& workaround) {
+bool Context::isDriverWorkaroundDisabled(const char* workaround) {
     CORRADE_INTERNAL_ASSERT(std::find(KnownWorkarounds.begin(), KnownWorkarounds.end(), workaround) != KnownWorkarounds.end());
 
     /* If the workaround was already asked for or disabled, return its state,

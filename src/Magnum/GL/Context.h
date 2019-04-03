@@ -662,7 +662,7 @@ class MAGNUM_GL_EXPORT Context {
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
     #endif
-        bool isDriverWorkaroundDisabled(const std::string& workaround);
+        bool isDriverWorkaroundDisabled(const char* workaround);
         Implementation::State& state() { return *_state; }
 
         /* This function is called from MeshState constructor, which means the
