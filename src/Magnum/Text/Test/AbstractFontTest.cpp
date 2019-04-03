@@ -349,7 +349,7 @@ void AbstractFontTest::openMultiDataDeprecated() {
 
         Metrics doOpenData(const Containers::ArrayView<const char> data, Float size) override {
             if(!fileCallback()) return {};
-            Containers::Optional<Containers::ArrayView<const char>> dataExt = fileCallback()("data.ext", InputFileCallbackPolicy::LoadPernament, fileCallbackUserData());
+            Containers::Optional<Containers::ArrayView<const char>> dataExt = fileCallback()("data.ext", InputFileCallbackPolicy::LoadPermanent, fileCallbackUserData());
             _opened = (data.size() == 1 && data[0] == '\xa5' && dataExt &&
                        dataExt->size() == 2 && (*dataExt)[1] == '\xee');
             return {size, 1.0f, 2.0f, 3.0f};

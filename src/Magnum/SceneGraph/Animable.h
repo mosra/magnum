@@ -103,7 +103,7 @@ use @ref Timeline for that, see its documentation for more information.
 @ref AnimableGroup is optimized for case when no animation is running --- it
 just puts itself to rest and waits until some animation changes its state to
 @ref AnimationState::Running again. If you put animations which are not
-pernamently running into separate group, they will not be traversed every time
+permanently running into separate group, they will not be traversed every time
 the @ref AnimableGroup::step() gets called, saving precious frame time.
 
 @section SceneGraph-Animable-explicit-specializations Explicit template specializations

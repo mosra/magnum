@@ -34,7 +34,7 @@ Debug& operator<<(Debug& debug, const InputFileCallbackPolicy value) {
         /* LCOV_EXCL_START */
         #define _c(v) case InputFileCallbackPolicy::v: return debug << "InputFileCallbackPolicy::" #v;
         _c(LoadTemporary)
-        _c(LoadPernament)
+        _c(LoadPermanent)
         _c(Close)
         #undef _c
         /* LCOV_EXCL_STOP */

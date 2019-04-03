@@ -32,6 +32,10 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum {
 
 /**
@@ -67,7 +71,14 @@ enum class InputFileCallbackPolicy: UnsignedByte {
      * of it. Note, however, that this might not be the case for all importers
      * --- see documentation of a particular plugin for concrete info.
      */
-    LoadPernament,
+    LoadPermanent,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /**
+     * @deprecated Use @ref InputFileCallbackPolicy::LoadPermanent instead.
+     */
+    LoadPernament CORRADE_DEPRECATED_ENUM("use LoadPermanent instead") = LoadPermanent,
+    #endif
 
     /**
      * A file that has been previously loaded by this callback can be closed
