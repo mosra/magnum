@@ -110,64 +110,64 @@ template<class T> class Vector4: public Vector<4, T> {
          *
          * @see @ref r()
          */
-        T& x() { return (*this)[0]; }
-        constexpr T x() const { return (*this)[0]; }    /**< @overload */
+        T& x() { return Vector<4, T>::_data[0]; }
+        constexpr T x() const { return Vector<4, T>::_data[0]; } /**< @overload */
 
         /**
          * @brief Y component
          *
          * @see @ref g()
          */
-        T& y() { return (*this)[1]; }
-        constexpr T y() const { return (*this)[1]; }    /**< @overload */
+        T& y() { return Vector<4, T>::_data[1]; }
+        constexpr T y() const { return Vector<4, T>::_data[1]; } /**< @overload */
 
         /**
          * @brief Z component
          *
          * @see @ref b()
          */
-        T& z() { return (*this)[2]; }
-        constexpr T z() const { return (*this)[2]; }    /**< @overload */
+        T& z() { return Vector<4, T>::_data[2]; }
+        constexpr T z() const { return Vector<4, T>::_data[2]; } /**< @overload */
 
         /**
          * @brief W component
          *
          * @see @ref a()
          */
-        T& w() { return (*this)[3]; }
-        constexpr T w() const { return (*this)[3]; }    /**< @overload */
+        T& w() { return Vector<4, T>::_data[3]; }
+        constexpr T w() const { return Vector<4, T>::_data[3]; } /**< @overload */
 
         /**
          * @brief R component
          *
          * Equivalent to @ref x().
          */
-        T& r() { return x(); }
-        constexpr T r() const { return x(); }           /**< @overload */
+        T& r() { return Vector<4, T>::_data[0]; }
+        constexpr T r() const { return Vector<4, T>::_data[0]; } /**< @overload */
 
         /**
          * @brief G component
          *
          * Equivalent to @ref y().
          */
-        T& g() { return y(); }
-        constexpr T g() const { return y(); }           /**< @overload */
+        T& g() { return Vector<4, T>::_data[1]; }
+        constexpr T g() const { return Vector<4, T>::_data[1]; } /**< @overload */
 
         /**
          * @brief B component
          *
          * Equivalent to @ref z().
          */
-        T& b() { return z(); }
-        constexpr T b() const { return z(); }           /**< @overload */
+        T& b() { return Vector<4, T>::_data[2]; }
+        constexpr T b() const { return Vector<4, T>::_data[2]; } /**< @overload */
 
         /**
          * @brief A component
          *
          * Equivalent to @ref w().
          */
-        T& a() { return w(); }
-        constexpr T a() const { return w(); }           /**< @overload */
+        T& a() { return Vector<4, T>::_data[3]; }
+        constexpr T a() const { return Vector<4, T>::_data[3]; } /**< @overload */
 
         /**
          * @brief XYZ part of the vector
@@ -176,7 +176,9 @@ template<class T> class Vector4: public Vector<4, T> {
          * @see @ref swizzle(), @ref rgb()
          */
         Vector3<T>& xyz() { return Vector3<T>::from(Vector<4, T>::data()); }
-        constexpr const Vector3<T> xyz() const { return {x(), y(), z()}; } /**< @overload */
+        constexpr const Vector3<T> xyz() const {
+            return {Vector<4, T>::_data[0], Vector<4, T>::_data[1], Vector<4, T>::_data[2]};
+        } /**< @overload */
 
         /**
          * @brief RGB part of the vector
@@ -185,8 +187,10 @@ template<class T> class Vector4: public Vector<4, T> {
          * Equivalent to @ref xyz().
          * @see @ref swizzle()
          */
-        Vector3<T>& rgb() { return xyz(); }
-        constexpr const Vector3<T> rgb() const { return xyz(); } /**< @overload */
+        Vector3<T>& rgb() { return Vector3<T>::from(Vector<4, T>::data()); }
+        constexpr const Vector3<T> rgb() const {
+            return {Vector<4, T>::_data[0], Vector<4, T>::_data[1], Vector<4, T>::_data[2]};
+        } /**< @overload */
 
         /**
          * @brief XY part of the vector
@@ -195,7 +199,9 @@ template<class T> class Vector4: public Vector<4, T> {
          * @see @ref swizzle()
          */
         Vector2<T>& xy() { return Vector2<T>::from(Vector<4, T>::data()); }
-        constexpr const Vector2<T> xy() const { return {x(), y()}; } /**< @overload */
+        constexpr const Vector2<T> xy() const {
+            return {Vector<4, T>::_data[0], Vector<4, T>::_data[1]};
+        } /**< @overload */
 
         MAGNUM_VECTOR_SUBCLASS_IMPLEMENTATION(4, Vector4)
 };

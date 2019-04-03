@@ -144,10 +144,10 @@ template<class T> class Vector2: public Vector<2, T> {
         /** @brief Copy constructor */
         constexpr /*implicit*/ Vector2(const Vector<2, T>& other) noexcept: Vector<2, T>(other) {}
 
-        T& x() { return (*this)[0]; }                   /**< @brief X component */
-        constexpr T x() const { return (*this)[0]; }    /**< @overload */
-        T& y() { return (*this)[1]; }                   /**< @brief Y component */
-        constexpr T y() const { return (*this)[1]; }    /**< @overload */
+        T& x() { return Vector<2, T>::_data[0]; } /**< @brief X component */
+        constexpr T x() const { return Vector<2, T>::_data[0]; } /**< @overload */
+        T& y() { return Vector<2, T>::_data[1]; } /**< @brief Y component */
+        constexpr T y() const { return Vector<2, T>::_data[1]; } /**< @overload */
 
         /**
          * @brief Perpendicular vector

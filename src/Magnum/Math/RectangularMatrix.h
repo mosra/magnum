@@ -443,6 +443,11 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         template<std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, T value) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), value))...} {}
 
     private:
+        /* These two needed to access _data to speed up debug builds,
+           Matrix::ij() needs access to different Matrix sizes */
+        template<std::size_t, class> friend class Matrix;
+        template<std::size_t, class> friend struct Implementation::MatrixDeterminant;
+
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
         template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, const RectangularMatrix<cols, rows, U>& matrix) noexcept: _data{Vector<rows, T>(matrix[sequence])...} {}
 
@@ -451,11 +456,11 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         template<class U, std::size_t ...sequence> constexpr explicit RectangularMatrix(Implementation::Sequence<sequence...>, U) noexcept: _data{Vector<rows, T>((static_cast<void>(sequence), U{typename U::Init{}}))...} {}
 
         template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedColsInternal(Implementation::Sequence<sequence...>) const {
-            return {(*this)[cols - 1 - sequence]...};
+            return {_data[cols - 1 - sequence]...};
         }
 
         template<std::size_t ...sequence> constexpr RectangularMatrix<cols, rows, T> flippedRowsInternal(Implementation::Sequence<sequence...>) const {
-            return {(*this)[sequence].flipped()...};
+            return {_data[sequence].flipped()...};
         }
 
         template<std::size_t ...sequence> constexpr Vector<DiagonalSize, T> diagonalInternal(Implementation::Sequence<sequence...>) const;
@@ -708,15 +713,19 @@ template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...se
 template<std::size_t cols, std::size_t rows, class T> inline Vector<cols, T> RectangularMatrix<cols, rows, T>::row(std::size_t row) const {
     Vector<cols, T> out;
 
+    /* Using ._data[] instead of [] to avoid function call indirection
+       on debug builds (saves a lot, yet doesn't obfuscate too much) */
     for(std::size_t i = 0; i != cols; ++i)
-        out[i] = _data[i][row];
+        out[i] = _data[i]._data[row];
 
     return out;
 }
 
 template<std::size_t cols, std::size_t rows, class T> inline void RectangularMatrix<cols, rows, T>::setRow(std::size_t row, const Vector<cols, T>& data) {
+    /* Using ._data[] instead of [] to avoid function call indirection
+       on debug builds (saves a lot, yet doesn't obfuscate too much) */
     for(std::size_t i = 0; i != cols; ++i)
-        _data[i][row] = data[i];
+        _data[i]._data[row] = data._data[i];
 }
 
 template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<cols, rows, T> RectangularMatrix<cols, rows, T>::operator-() const {
@@ -731,10 +740,12 @@ template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<c
 template<std::size_t cols, std::size_t rows, class T> template<std::size_t size> inline RectangularMatrix<size, rows, T> RectangularMatrix<cols, rows, T>::operator*(const RectangularMatrix<size, cols, T>& other) const {
     RectangularMatrix<size, rows, T> out{ZeroInit};
 
+    /* Using ._data[] instead of [] to avoid function call indirection
+       on debug builds (saves a lot, yet doesn't obfuscate too much) */
     for(std::size_t col = 0; col != size; ++col)
         for(std::size_t row = 0; row != rows; ++row)
             for(std::size_t pos = 0; pos != cols; ++pos)
-                out[col][row] += _data[pos][row]*other._data[col][pos];
+                out._data[col]._data[row] += _data[pos]._data[row]*other._data[col]._data[pos];
 
     return out;
 }
@@ -742,9 +753,11 @@ template<std::size_t cols, std::size_t rows, class T> template<std::size_t size>
 template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<rows, cols, T> RectangularMatrix<cols, rows, T>::transposed() const {
     RectangularMatrix<rows, cols, T> out{NoInit};
 
+    /* Using ._data[] instead of [] to avoid function call indirection
+       on debug builds (saves a lot, yet doesn't obfuscate too much) */
     for(std::size_t col = 0; col != cols; ++col)
         for(std::size_t row = 0; row != rows; ++row)
-            out[row][col] = _data[col][row];
+            out._data[row]._data[col] = _data[col]._data[row];
 
     return out;
 }
@@ -753,7 +766,7 @@ template<std::size_t cols, std::size_t rows, class T> constexpr auto Rectangular
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> constexpr auto RectangularMatrix<cols, rows, T>::diagonalInternal(Implementation::Sequence<sequence...>) const -> Vector<DiagonalSize, T> {
-    return {(*this)[sequence][sequence]...};
+    return {_data[sequence][sequence]...};
 }
 #endif
 

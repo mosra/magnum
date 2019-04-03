@@ -219,6 +219,8 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         #endif
 
     private:
+        friend struct Implementation::MatrixDeterminant<size, T>;
+
         /* Implementation for RectangularMatrix<cols, rows, T>::RectangularMatrix(const RectangularMatrix<cols, rows, U>&) */
         template<std::size_t otherSize, std::size_t ...col> constexpr explicit Matrix(Implementation::Sequence<col...>, const RectangularMatrix<otherSize, otherSize, T>& other) noexcept: RectangularMatrix<size, size, T>{Implementation::valueOrIdentityVector<size, col>(other)...} {}
 };
@@ -295,24 +297,30 @@ template<std::size_t size, class T> struct MatrixDeterminant {
     T operator()(const Matrix<size, T>& m);
 };
 
-template<std::size_t size, class T> T MatrixDeterminant<size, T>::operator()(const Matrix<size, T>& m) {
+template<std::size_t size, class T> inline T MatrixDeterminant<size, T>::operator()(const Matrix<size, T>& m) {
     T out(0);
 
+    /* Using ._data[] instead of [] to avoid function call indirection on debug
+       builds (saves a lot, yet doesn't obfuscate too much) */
     for(std::size_t col = 0; col != size; ++col)
-        out += ((col & 1) ? -1 : 1)*m[col][0]*m.ij(col, 0).determinant();
+        out += ((col & 1) ? -1 : 1)*m._data[col]._data[0]*m.ij(col, 0).determinant();
 
     return out;
 }
 
 template<class T> struct MatrixDeterminant<2, T> {
     constexpr T operator()(const Matrix<2, T>& m) const {
-        return m[0][0]*m[1][1] - m[1][0]*m[0][1];
+        /* Using ._data[] instead of [] to avoid function call indirection
+           on debug builds (saves a lot, yet doesn't obfuscate too much) */
+        return m._data[0]._data[0]*m._data[1]._data[1] - m._data[1]._data[0]*m._data[0]._data[1];
     }
 };
 
 template<class T> struct MatrixDeterminant<1, T> {
     constexpr T operator()(const Matrix<1, T>& m) const {
-        return m[0][0];
+        /* Using ._data[] instead of [] to avoid function call indirection
+           on debug builds (saves a lot, yet doesn't obfuscate too much) */
+        return m._data[0]._data[0];
     }
 };
 
@@ -322,14 +330,17 @@ template<std::size_t size, class T> struct StrictWeakOrdering<Matrix<size, T>>: 
 #endif
 
 template<std::size_t size, class T> bool Matrix<size, T>::isOrthogonal() const {
+    /* Using ._data[] instead of [] to avoid function call indirection on debug
+       builds (saves a lot, yet doesn't obfuscate too much) */
+
     /* Normality */
     for(std::size_t i = 0; i != size; ++i)
-        if(!(*this)[i].isNormalized()) return false;
+        if(!RectangularMatrix<size, size, T>::_data[i].isNormalized()) return false;
 
     /* Orthogonality */
     for(std::size_t i = 0; i != size-1; ++i)
         for(std::size_t j = i+1; j != size; ++j)
-            if(dot((*this)[i], (*this)[j]) > TypeTraits<T>::epsilon())
+            if(dot(RectangularMatrix<size, size, T>::_data[i], RectangularMatrix<size, size, T>::_data[j]) > TypeTraits<T>::epsilon())
                 return false;
 
     return true;
@@ -338,10 +349,13 @@ template<std::size_t size, class T> bool Matrix<size, T>::isOrthogonal() const {
 template<std::size_t size, class T> Matrix<size-1, T> Matrix<size, T>::ij(const std::size_t skipCol, const std::size_t skipRow) const {
     Matrix<size-1, T> out{NoInit};
 
+    /* Using ._data[] instead of [] to avoid function call indirection on debug
+       builds (saves a lot, yet doesn't obfuscate too much) */
     for(std::size_t col = 0; col != size-1; ++col)
         for(std::size_t row = 0; row != size-1; ++row)
-            out[col][row] = (*this)[col + (col >= skipCol)]
-                                    [row + (row >= skipRow)];
+            out._data[col]._data[row] = RectangularMatrix<size, size, T>::
+                _data[col + (col >= skipCol)]
+               ._data[row + (row >= skipRow)];
 
     return out;
 }
@@ -351,9 +365,11 @@ template<std::size_t size, class T> Matrix<size, T> Matrix<size, T>::inverted() 
 
     const T _determinant = determinant();
 
+    /* Using ._data[] instead of [] to avoid function call indirection on debug
+       builds (saves a lot, yet doesn't obfuscate too much) */
     for(std::size_t col = 0; col != size; ++col)
         for(std::size_t row = 0; row != size; ++row)
-            out[col][row] = (((row+col) & 1) ? -1 : 1)*ij(row, col).determinant()/_determinant;
+            out._data[col]._data[row] = (((row+col) & 1) ? -1 : 1)*ij(row, col).determinant()/_determinant;
 
     return out;
 }

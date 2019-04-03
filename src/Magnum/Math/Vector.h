@@ -74,6 +74,9 @@ namespace Implementation {
             return vec == Vector<size, T>{};
         }
     };
+
+    /* Used to make friends to speed up debug builds */
+    template<std::size_t, class> struct MatrixDeterminant;
 }
 
 /** @relatesalso Vector
@@ -124,8 +127,6 @@ See @ref matrix-vector for brief introduction.
 */
 template<std::size_t size, class T> class Vector {
     static_assert(size != 0, "Vector cannot have zero elements");
-
-    template<std::size_t, class> friend class Vector;
 
     public:
         typedef T Type;         /**< @brief Underlying data type */
@@ -609,7 +610,22 @@ template<std::size_t size, class T> class Vector {
          */
         std::pair<T, T> minmax() const;
 
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
     private:
+    #endif
+        /* So derived classes can avoid the overhead of operator[] in debug
+           builds */
+        T _data[size];
+
+    private:
+        template<std::size_t, class> friend class Vector;
+        /* These three needed to access _data to speed up debug builds */
+        template<std::size_t, std::size_t, class> friend class RectangularMatrix;
+        template<std::size_t, class> friend class Matrix;
+        template<std::size_t, class> friend struct Implementation::MatrixDeterminant;
+
         /* Implementation for Vector<size, T>::Vector(const Vector<size, U>&) */
         template<class U, std::size_t ...sequence> constexpr explicit Vector(Implementation::Sequence<sequence...>, const Vector<size, U>& vector) noexcept: _data{T(vector._data[sequence])...} {}
 
@@ -621,10 +637,8 @@ template<std::size_t size, class T> class Vector {
         }
 
         template<std::size_t ...sequence> constexpr Vector<size, T> flippedInternal(Implementation::Sequence<sequence...>) const {
-            return {(*this)[size - 1 - sequence]...};
+            return {_data[size - 1 - sequence]...};
         }
-
-        T _data[size];
 };
 
 /** @relates Vector
