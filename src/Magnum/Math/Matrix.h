@@ -294,19 +294,17 @@ MAGNUM_MATRIX_OPERATOR_IMPLEMENTATION(Matrix<size, T>)
 namespace Implementation {
 
 template<std::size_t size, class T> struct MatrixDeterminant {
-    T operator()(const Matrix<size, T>& m);
+    T operator()(const Matrix<size, T>& m) {
+        T out(0);
+
+        /* Using ._data[] instead of [] to avoid function call indirection on
+           debug builds (saves a lot, yet doesn't obfuscate too much) */
+        for(std::size_t col = 0; col != size; ++col)
+            out += ((col & 1) ? -1 : 1)*m._data[col]._data[0]*m.ij(col, 0).determinant();
+
+        return out;
+    }
 };
-
-template<std::size_t size, class T> inline T MatrixDeterminant<size, T>::operator()(const Matrix<size, T>& m) {
-    T out(0);
-
-    /* Using ._data[] instead of [] to avoid function call indirection on debug
-       builds (saves a lot, yet doesn't obfuscate too much) */
-    for(std::size_t col = 0; col != size; ++col)
-        out += ((col & 1) ? -1 : 1)*m._data[col]._data[0]*m.ij(col, 0).determinant();
-
-    return out;
-}
 
 /* This is not *critically* needed here (the specializations for 2x2 and 1x1
    are technically enough to make things work), but together with the raw data
