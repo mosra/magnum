@@ -3,7 +3,7 @@
 ## Patches for the m.css-generated docs. Just need to generate XML, that's it.
 
 OUTPUT_DIRECTORY       = build/doc-mcss/
-PROJECT_BRIEF          = docs
+PROJECT_BRIEF          = C++ docs
 GENERATE_HTML          = NO
 GENERATE_XML           = YES
 XML_PROGRAMLISTING     = NO
