@@ -22,11 +22,11 @@ ALIASES                = \
     "partialsupport=@xrefitem partialsupport \"Partially supported\" \"List of partially supported features\"" \
     "thirdparty=@xrefitem credits-third-party \"Third-party components\" \"Third-party components\"" \
     "todoc=@todo" \
-    "fn_gl{1}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl\1.xhtml\">gl\1()</a>" \
-    "fn_gl2{2}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl\2.xhtml\">gl\1()</a>" \
-    "fn_gl_extension{3}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/OpenGL/extensions/\2/\2_\3.txt\">gl\1<b></b>\2()</a>" \
+    "fn_gl{1}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl\1.xhtml\">gl\1()</a>" \
+    "fn_gl2{2}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/OpenGL-Refpages/gl4/html/gl\2.xhtml\">gl\1()</a>" \
+    "fn_gl_extension{3}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/OpenGL/extensions/\2/\2_\3.txt\">gl\1<b></b>\2()</a>" \
     "def_gl{1}=`GL_\1`" \
-    "def_gl_extension{3}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/OpenGL/extensions/\2/\2_\3.txt\">GL_\1_\2</a>" \
+    "def_gl_extension{3}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/OpenGL/extensions/\2/\2_\3.txt\">GL_\1_\2</a>" \
     "deprecated_gl=@xrefitem opengl-deprecated \"Deprecated OpenGL API\" \"Deprecated OpenGL API list\"" \
     "requires_gl30=@xrefitem requires-gl30 \"Requires OpenGL 3.0\" \"Functionality requiring OpenGL 3.0\"" \
     "requires_gl31=@xrefitem requires-gl31 \"Requires OpenGL 3.1\" \"Functionality requiring OpenGL 3.1\"" \
@@ -41,8 +41,8 @@ ALIASES                = \
     "requires_gl46=@xrefitem requires-gl46 \"Requires OpenGL 4.6\" \"Functionality requiring OpenGL 4.6\"" \
     "requires_extension=@xrefitem requires-extension \"Requires OpenGL extension\" \"Functionality requiring specific OpenGL extension\"" \
     "requires_gl=@xrefitem requires-gl \"Requires desktop OpenGL\" \"Functionality requiring desktop OpenGL\"" \
-    "gl_extension{2}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/OpenGL/extensions/\1/\1_\2.txt\">\1_\2</a>" \
-    "gl_extension2{3}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/OpenGL/extensions/\1/\3.txt\">\1_\2</a>" \
+    "gl_extension{2}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/OpenGL/extensions/\1/\1_\2.txt\">\1_\2</a>" \
+    "gl_extension2{3}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/OpenGL/extensions/\1/\3.txt\">\1_\2</a>" \
     "requires_gles20=@xrefitem requires-gles20 \"Requires OpenGL ES 2.0 / WebGL 1.0\" \"Functionality requiring OpenGL ES 2.0 or WebGL 1.0\"" \
     "requires_gles30=@xrefitem requires-gles30 \"Requires OpenGL ES 3.0\" \"Functionality requiring OpenGL ES 3.0\"" \
     "requires_gles31=@xrefitem requires-gles31 \"Requires OpenGL ES 3.1\" \"Functionality requiring OpenGL ES 3.1\"" \
@@ -51,19 +51,19 @@ ALIASES                = \
     "requires_gles=@xrefitem requires-gles \"Requires OpenGL ES or desktop OpenGL\" \"Functionality requiring OpenGL ES or desktop OpenGL\"" \
     "requires_webgl20=@xrefitem requires-webgl20 \"Requires WebGL 2.0\" \"Functionality requiring WebGL 2.0\"" \
     "requires_webgl_extension=@xrefitem requires-webgl-extension \"Requires WebGL extension\" \"Functionality requiring specific WebGL extension\"" \
-    "webgl_extension{2}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/webgl/extensions/\1_\2/\">\1_\2</a>" \
-    "fn_vk{1}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.0/man/html/vk\1.html\">vk\1()</a>" \
-    "type_vk{1}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.0/man/html/Vk\1.html\">Vk\1</a>" \
-    "def_vk{2}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.0/man/html/Vk\2.html\">VK_\1</a>" \
+    "webgl_extension{2}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/webgl/extensions/\1_\2/\">\1_\2</a>" \
+    "fn_vk{1}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.0/man/html/vk\1.html\">vk\1()</a>" \
+    "type_vk{1}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.0/man/html/Vk\1.html\">Vk\1</a>" \
+    "def_vk{2}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.0/man/html/Vk\2.html\">VK_\1</a>" \
     "requires_vk_extension=@xrefitem requires-vk-extension \"Requires Vulkan extension\" \"Functionality requiring specific Vulkan extension\"" \
-    "vk_extension{2}=@m_class{m-dox-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.0-extensions/html/vkspec.html#VK_\1_\2\">\1_\2</a>" \
+    "vk_extension{2}=@m_class{m-doc-external} <a href=\"https://www.khronos.org/registry/vulkan/specs/1.0-extensions/html/vkspec.html#VK_\1_\2\">\1_\2</a>" \
     "fn_al{1}=`al\1()`" \
     "fn_alc{1}=`alc\1()`" \
     "def_al{1}=`AL_\1`" \
     "def_alc{1}=`ALC_\1`" \
     "requires_al_extension=@xrefitem requires-al-extension \"Requires OpenAL extension\" \"Functionality requiring specific OpenAL extension\"" \
-    "al_extension{2}=@m_class{m-dox-external} <a href=\"http://icculus.org/alextreg/index.php?operation=op_showext&extname=AL_\1_\2\">AL_\1_\2</a>" \
-    "alc_extension{2}=@m_class{m-dox-external} <a href=\"http://icculus.org/alextreg/index.php?operation=op_showext&extname=ALC_\1_\2\">ALC_\1_\2</a>" \
+    "al_extension{2}=@m_class{m-doc-external} <a href=\"http://icculus.org/alextreg/index.php?operation=op_showext&extname=AL_\1_\2\">AL_\1_\2</a>" \
+    "alc_extension{2}=@m_class{m-doc-external} <a href=\"http://icculus.org/alextreg/index.php?operation=op_showext&extname=ALC_\1_\2\">ALC_\1_\2</a>" \
     "experimental=@attention This functionality is still experimental and may change in the future without keeping full backwards compatibility." \
     "cb{1}=@code{\1}" \
     "cpp=@code{.cpp}" \
@@ -99,7 +99,7 @@ GENERATE_BUGLIST       = NO
 HTML_EXTRA_STYLESHEET = \
     https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600&subset=latin-ext \
     https://static.magnum.graphics/m-dark.compiled.css \
-    https://static.magnum.graphics/m-dark.doxygen.compiled.css
+    https://static.magnum.graphics/m-dark.documentation.compiled.css
 
 ##! M_SEARCH_DOWNLOAD_BINARY = YES
 ##! M_SEARCH_BASE_URL = https://doc.magnum.graphics/magnum/
