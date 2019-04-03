@@ -239,7 +239,9 @@ template<class T, class K> Containers::Optional<std::pair<UnsignedInt, K>> playe
        iteration. If we exceeded play count, stop the animation and give out
        value at duration end. */
     } else {
-        std::tie(playIteration, key) = scaler(timeToUse, duration);
+        const std::pair<UnsignedInt, K> scaled = scaler(timeToUse, duration);
+        playIteration = scaled.first;
+        key = scaled.second;
         if(playCount && playIteration >= playCount) {
             if(state != State::Paused) state = State::Stopped;
             /* Don't reset the startTime to disambiguate between explicitly

@@ -113,11 +113,11 @@ void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) 
 
     /* If the user-provided pixel storage doesn't tell us all properties about
        the compression, we need to ask GL for it */
-    std::size_t dataOffset, dataSize;
+    std::pair<std::size_t, std::size_t> dataOffsetSize;
     if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
-        dataOffset = 0;
-        dataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)*6;
-    } else std::tie(dataOffset, dataSize) = Magnum::Implementation::compressedImageDataOffsetSizeFor(image, size);
+        dataOffsetSize.first = 0;
+        dataOffsetSize.second = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)*6;
+    } else dataOffsetSize = Magnum::Implementation::compressedImageDataOffsetSizeFor(image, size);
 
     /* Internal texture format */
     GLint format;
@@ -125,12 +125,12 @@ void CubeMapTexture::compressedImage(const Int level, CompressedImage3D& image) 
 
     /* Reallocate only if needed */
     Containers::Array<char> data{image.release()};
-    if(data.size() < dataOffset + dataSize)
-        data = Containers::Array<char>{dataOffset + dataSize};
+    if(data.size() < dataOffsetSize.first + dataOffsetSize.second)
+        data = Containers::Array<char>{dataOffsetSize.first + dataOffsetSize.second};
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer->applyPixelStoragePack(image.storage());
-    (this->*Context::current().state().texture->getFullCompressedCubeImageImplementation)(level, size.xy(), dataOffset, dataSize, data);
+    (this->*Context::current().state().texture->getFullCompressedCubeImageImplementation)(level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, data);
     image = CompressedImage3D{image.storage(), CompressedPixelFormat(format), size, std::move(data)};
 }
 
@@ -146,25 +146,25 @@ void CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D& i
 
     /* If the user-provided pixel storage doesn't tell us all properties about
        the compression, we need to ask GL for it */
-    std::size_t dataOffset, dataSize;
+    std::pair<std::size_t, std::size_t> dataOffsetSize;
     if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
-        dataOffset = 0;
-        dataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)*6;
-    } else std::tie(dataOffset, dataSize) = Magnum::Implementation::compressedImageDataOffsetSizeFor(image, size);
+        dataOffsetSize.first = 0;
+        dataOffsetSize.second = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)*6;
+    } else dataOffsetSize = Magnum::Implementation::compressedImageDataOffsetSizeFor(image, size);
 
     /* Internal texture format */
     GLint format;
     (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
 
     /* Reallocate only if needed */
-    if(image.dataSize() < dataOffset + dataSize)
-        image.setData(image.storage(), CompressedPixelFormat(format), size, {nullptr, dataOffset + dataSize}, usage);
+    if(image.dataSize() < dataOffsetSize.first + dataOffsetSize.second)
+        image.setData(image.storage(), CompressedPixelFormat(format), size, {nullptr, dataOffsetSize.first + dataOffsetSize.second}, usage);
     else
         image.setData(image.storage(), CompressedPixelFormat(format), size, nullptr, usage);
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer->applyPixelStoragePack(image.storage());
-    (this->*Context::current().state().texture->getFullCompressedCubeImageImplementation)(level, size.xy(), dataOffset, dataSize, nullptr);
+    (this->*Context::current().state().texture->getFullCompressedCubeImageImplementation)(level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, nullptr);
 }
 
 CompressedBufferImage3D CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D&& image, const BufferUsage usage) {

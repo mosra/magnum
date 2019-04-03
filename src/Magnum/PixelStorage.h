@@ -248,35 +248,32 @@ constexpr PixelStorage::PixelStorage() noexcept: _rowLength{0}, _imageHeight{0},
 namespace Implementation {
     /* Used in *Image::dataProperties() */
     template<std::size_t dimensions, class T> std::pair<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>> imageDataProperties(const T& image) {
-        Math::Vector3<std::size_t> offset, dataSize;
-        std::tie(offset, dataSize) = image.storage().dataProperties(image.pixelSize(), Vector3i::pad(image.size(), 1));
-        return std::make_pair(Math::Vector<dimensions, std::size_t>::pad(offset), Math::Vector<dimensions, std::size_t>::pad(dataSize));
+        std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties = image.storage().dataProperties(image.pixelSize(), Vector3i::pad(image.size(), 1));
+        return std::make_pair(Math::Vector<dimensions, std::size_t>::pad(dataProperties.first), Math::Vector<dimensions, std::size_t>::pad(dataProperties.second));
     }
 
     /* Used in Compressed*Image::dataProperties() */
     template<std::size_t dimensions, class T> std::pair<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>> compressedImageDataProperties(const T& image) {
-        Math::Vector3<std::size_t> offset, blockCount;
-        std::tie(offset, blockCount) = image.storage().dataProperties(Vector3i::pad(image.size(), 1));
-        return std::make_pair(Math::Vector<dimensions, std::size_t>::pad(offset), Math::Vector<dimensions, std::size_t>::pad(blockCount));
+        std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties = image.storage().dataProperties(Vector3i::pad(image.size(), 1));
+        return std::make_pair(Math::Vector<dimensions, std::size_t>::pad(dataProperties.first), Math::Vector<dimensions, std::size_t>::pad(dataProperties.second));
     }
 
     /* Used in image query functions */
     template<std::size_t dimensions, class T> std::size_t imageDataSizeFor(const T& image, const Math::Vector<dimensions, Int>& size) {
-        Math::Vector3<std::size_t> offset, dataSize;
-        std::tie(offset, dataSize) = image.storage().dataProperties(image.pixelSize(), Vector3i::pad(size, 1));
+        std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties = image.storage().dataProperties(image.pixelSize(), Vector3i::pad(size, 1));
 
         /* Smallest line/rectangle/cube that covers the area */
         std::size_t dataOffset = 0;
-        if(offset.z())
-            dataOffset += offset.z();
-        else if(offset.y()) {
+        if(dataProperties.first.z())
+            dataOffset += dataProperties.first.z();
+        else if(dataProperties.first.y()) {
             if(!image.storage().imageHeight())
-                dataOffset += offset.y();
-        } else if(offset.x()) {
+                dataOffset += dataProperties.first.y();
+        } else if(dataProperties.first.x()) {
             if(!image.storage().rowLength())
-                dataOffset += offset.x();
+                dataOffset += dataProperties.first.x();
         }
-        return dataOffset + dataSize.product();
+        return dataOffset + dataProperties.second.product();
     }
 
     /* Used in data size assertions */
@@ -287,12 +284,11 @@ namespace Implementation {
     template<std::size_t dimensions, class T> std::pair<std::size_t, std::size_t> compressedImageDataOffsetSizeFor(const T& image, const Math::Vector<dimensions, Int>& size) {
         CORRADE_INTERNAL_ASSERT(image.storage().compressedBlockSize().product() && image.storage().compressedBlockDataSize());
 
-        Math::Vector3<std::size_t> offset, blockCount;
-        std::tie(offset, blockCount) = image.storage().dataProperties(Vector3i::pad(size, 1));
+        std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties = image.storage().dataProperties(Vector3i::pad(size, 1));
 
         const auto realBlockCount = Math::Vector3<std::size_t>{(Vector3i::pad(size, 1) + image.storage().compressedBlockSize() - Vector3i{1})/image.storage().compressedBlockSize()};
 
-        return {offset.sum(), (blockCount.product() - (blockCount.x() - realBlockCount.x()) - (blockCount.y() - realBlockCount.y())*blockCount.x())*image.storage().compressedBlockDataSize()};
+        return {dataProperties.first.sum(), (dataProperties.second.product() - (dataProperties.second.x() - realBlockCount.x()) - (dataProperties.second.y() - realBlockCount.y())*dataProperties.second.x())*image.storage().compressedBlockDataSize()};
     }
 
     /* Used in image query functions */
