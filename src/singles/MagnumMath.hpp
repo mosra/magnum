@@ -15,6 +15,9 @@
     -   GitHub project page — https://github.com/mosra/magnum
     -   GitHub Singles repository — https://github.com/mosra/magnum-singles
 
+    v2019.01-241-g93686746a (2019-04-03)
+    -   Initial release
+
     Generated from Corrade {{revision:corrade/src}},
         Magnum {{revision:magnum/src}} and
         Magnum Integration {{revision:magnum-integration/src}}, {{stats:loc}} / {{stats:preprocessed}} LoC
