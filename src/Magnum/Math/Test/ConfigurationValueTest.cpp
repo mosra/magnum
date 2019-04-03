@@ -25,6 +25,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Configuration.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/ConfigurationValue.h"
 

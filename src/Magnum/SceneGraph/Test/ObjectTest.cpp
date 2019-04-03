@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/SceneGraph/MatrixTransformation3D.h"
 #include "Magnum/SceneGraph/Scene.h"

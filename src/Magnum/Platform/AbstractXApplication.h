@@ -32,6 +32,7 @@
 #include "Magnum/configure.h"
 
 #ifdef MAGNUM_TARGET_GL
+#include <string>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Pointer.h>
 

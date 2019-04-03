@@ -25,6 +25,7 @@
 
 #include "AbstractTexture.h"
 
+#include <tuple>
 #include <Corrade/Containers/Array.h>
 
 #include "Magnum/Array.h"

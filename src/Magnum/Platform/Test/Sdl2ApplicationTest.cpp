@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Utility/DebugStl.h>
+
 #include "Magnum/Platform/Sdl2Application.h"
 
 #include <SDL_events.h>

@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/GL/BufferImage.h"

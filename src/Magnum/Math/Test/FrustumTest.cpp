@@ -28,6 +28,7 @@
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Frustum.h"
 #include "Magnum/Math/StrictWeakOrdering.h"

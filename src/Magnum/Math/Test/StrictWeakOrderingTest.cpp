@@ -27,7 +27,7 @@
 #include <map>
 #include <set>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/Format.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Math/StrictWeakOrdering.h"

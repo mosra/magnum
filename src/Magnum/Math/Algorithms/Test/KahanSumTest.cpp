@@ -24,6 +24,7 @@
 */
 
 #include <numeric>
+#include <vector>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Magnum.h"

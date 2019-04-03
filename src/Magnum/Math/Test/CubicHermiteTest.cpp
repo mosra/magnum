@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Bezier.h"
 #include "Magnum/Math/CubicHermite.h"

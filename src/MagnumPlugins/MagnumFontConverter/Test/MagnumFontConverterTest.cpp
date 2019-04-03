@@ -25,9 +25,10 @@
 
 #include <sstream>
 #include <Corrade/Containers/Optional.h>
-#include <Corrade/Utility/Directory.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/File.h>
+#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Directory.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"

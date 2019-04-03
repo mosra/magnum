@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/GL/Context.h"

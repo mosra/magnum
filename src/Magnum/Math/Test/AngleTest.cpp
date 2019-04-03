@@ -27,8 +27,9 @@
 #include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/Format.h>
+#include <Corrade/Utility/DebugStl.h>
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
+#include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/TweakableParser.h>
 #endif
 

@@ -26,6 +26,7 @@
 #include "TransformFeedback.h"
 
 #ifndef MAGNUM_TARGET_GLES2
+#include <tuple>
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/GL/AbstractShaderProgram.h"

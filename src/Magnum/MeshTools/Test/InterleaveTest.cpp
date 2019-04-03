@@ -24,9 +24,11 @@
 */
 
 #include <sstream>
+#include <vector>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/Endianness.h>
 #include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/MeshTools/Interleave.h"
 

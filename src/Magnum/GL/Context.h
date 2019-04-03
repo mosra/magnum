@@ -35,6 +35,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/Containers/StaticArray.h>
+#include <Corrade/Utility/StlForwardString.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/BoolVector.h"

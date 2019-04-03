@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Directory.h>

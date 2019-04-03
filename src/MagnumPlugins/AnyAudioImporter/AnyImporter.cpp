@@ -28,6 +28,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/String.h>
 
 namespace Magnum { namespace Audio {

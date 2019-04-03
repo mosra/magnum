@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/Mesh.h"

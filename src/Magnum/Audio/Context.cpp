@@ -34,6 +34,7 @@
 
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Audio/Extensions.h"

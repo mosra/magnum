@@ -24,9 +24,11 @@
 */
 
 #include <array>
+#include <tuple>
 #include <vector>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Context.h"

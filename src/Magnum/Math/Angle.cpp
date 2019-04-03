@@ -28,6 +28,7 @@
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <algorithm>
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/String.h>
 #include <Corrade/Utility/TweakableParser.h>
 

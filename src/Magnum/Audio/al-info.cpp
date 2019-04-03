@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/Utility/Arguments.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Audio/Context.h"
 

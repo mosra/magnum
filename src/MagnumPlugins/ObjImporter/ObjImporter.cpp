@@ -31,6 +31,7 @@
 #include <unordered_map>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
+#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Mesh.h"

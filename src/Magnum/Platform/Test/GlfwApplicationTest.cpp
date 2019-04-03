@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Utility/DebugStl.h>
+
 #include "Magnum/Platform/GlfwApplication.h"
 
 namespace Magnum { namespace Platform { namespace Test { namespace {

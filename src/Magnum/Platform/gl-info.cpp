@@ -25,6 +25,7 @@
 
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Buffer.h"

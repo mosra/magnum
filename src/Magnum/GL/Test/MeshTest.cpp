@@ -25,6 +25,7 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Mesh.h"
 #include "Magnum/GL/AbstractShaderProgram.h"

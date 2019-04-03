@@ -26,6 +26,7 @@
 
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Constants.h"
 #include "Magnum/Math/Distance.h"

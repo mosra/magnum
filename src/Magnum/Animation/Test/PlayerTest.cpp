@@ -27,6 +27,7 @@
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Animation/Player.h"
 

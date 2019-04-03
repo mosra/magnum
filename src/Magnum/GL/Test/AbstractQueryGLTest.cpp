@@ -23,6 +23,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Utility/DebugStl.h>
+
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"

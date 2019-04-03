@@ -26,6 +26,7 @@
 #include <sstream>
 #include <tuple>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"

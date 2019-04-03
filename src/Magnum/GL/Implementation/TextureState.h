@@ -28,6 +28,7 @@
 #include <string>
 #include <vector>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Utility/StlForwardTuple.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/GL.h"

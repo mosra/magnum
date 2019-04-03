@@ -30,6 +30,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/Trade/ImageData.h"

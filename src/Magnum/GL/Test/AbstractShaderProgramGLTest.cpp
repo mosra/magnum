@@ -25,8 +25,9 @@
 
 #include <sstream>
 #include <Corrade/Containers/Reference.h>
-#include <Corrade/Utility/Resource.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Resource.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/GL/AbstractShaderProgram.h"

@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/ImageView.h"

@@ -25,6 +25,7 @@
 
 #include "Buffer.h"
 
+#include <tuple>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Debug.h>
 

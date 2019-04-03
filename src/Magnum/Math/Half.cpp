@@ -27,6 +27,7 @@
 
 #include <iomanip>
 #include <sstream>
+#include <Corrade/Utility/DebugStl.h>
 
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 #include <algorithm>

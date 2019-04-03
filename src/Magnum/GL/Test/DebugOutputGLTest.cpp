@@ -24,6 +24,7 @@
 */
 
 #include <sstream>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/DebugOutput.h"

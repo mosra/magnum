@@ -26,7 +26,7 @@
 #include "DistanceField.h"
 
 #include <Corrade/Containers/Reference.h>
-#include <Corrade/Utility/Format.h>
+#include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/Math/Range.h"

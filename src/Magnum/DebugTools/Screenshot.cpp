@@ -27,6 +27,7 @@
 
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Image.h"

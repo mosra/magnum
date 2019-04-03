@@ -29,6 +29,7 @@
 #include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/FileCallback.h"

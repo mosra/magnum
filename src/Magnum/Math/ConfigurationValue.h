@@ -29,6 +29,7 @@
  * @brief Configuration value parsers and writers for @ref Magnum::Math types
  */
 
+#include <string>
 #include <Corrade/Utility/ConfigurationValue.h>
 
 #include "Magnum/Math/Angle.h"

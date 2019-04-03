@@ -41,7 +41,7 @@
 */
 
 #include <Corrade/Utility/Directory.h>
-#include <Corrade/Utility/Format.h>
+#include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Magnum.h"

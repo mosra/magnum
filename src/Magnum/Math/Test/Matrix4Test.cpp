@@ -26,6 +26,7 @@
 #include <sstream>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Math/Matrix4.h"
 #include "Magnum/Math/StrictWeakOrdering.h"

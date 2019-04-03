@@ -23,7 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <tuple>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/GL/AbstractShaderProgram.h"

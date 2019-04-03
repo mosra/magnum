@@ -25,6 +25,7 @@
 
 #include "TextureState.h"
 
+#include <tuple>
 #include <Corrade/Utility/Assert.h>
 
 #include "Magnum/GL/AbstractTexture.h"

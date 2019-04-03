@@ -24,10 +24,12 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/Format.h>
+#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Trade/AbstractImporter.h"

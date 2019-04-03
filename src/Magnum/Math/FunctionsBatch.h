@@ -29,6 +29,7 @@
  * @brief Batch functions usable with scalar and vector types
  */
 
+#include <initializer_list>
 #include <Corrade/Containers/ArrayView.h>
 
 #include "Magnum/Math/Functions.h"

@@ -27,6 +27,7 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"

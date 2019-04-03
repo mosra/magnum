@@ -26,6 +26,7 @@
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/Platform/Sdl2Application.h>
 /** [0] */
+#include <Corrade/Utility/DebugStl.h>
 #include <Magnum/GL/Context.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/Version.h>

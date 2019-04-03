@@ -35,6 +35,7 @@
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/StlForwardTuple.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"

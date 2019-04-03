@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/GL/Context.h"

@@ -26,6 +26,7 @@
 */
 
 #include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Utility/StlForwardTuple.h>
 
 #include "Magnum/Tags.h"
 #include "Magnum/GL/AbstractObject.h"

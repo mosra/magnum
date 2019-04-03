@@ -27,6 +27,7 @@
 
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT

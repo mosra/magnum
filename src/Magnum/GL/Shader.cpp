@@ -29,6 +29,7 @@
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/GL/Context.h"

@@ -29,6 +29,7 @@
  * @brief Class @ref Magnum::Platform::Sdl2Application, macro @ref MAGNUM_SDL2APPLICATION_MAIN()
  */
 
+#include <string>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/EnumSet.h>
 #include <Corrade/Containers/Pointer.h>

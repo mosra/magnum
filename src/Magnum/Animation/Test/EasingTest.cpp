@@ -27,7 +27,7 @@
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
-#include <Corrade/Utility/Format.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Animation/Easing.h"
 

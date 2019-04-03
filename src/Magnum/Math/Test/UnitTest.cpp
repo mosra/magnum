@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <new>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Math/Constants.h"

@@ -25,6 +25,7 @@
 
 #include "WindowlessEglApplication.h"
 
+#include <string>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 

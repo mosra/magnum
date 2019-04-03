@@ -27,7 +27,8 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/Format.h>
+#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Audio/AbstractImporter.h"
 

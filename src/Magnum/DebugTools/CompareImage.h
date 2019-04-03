@@ -33,6 +33,8 @@
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/PluginManager/PluginManager.h>
 #include <Corrade/TestSuite/Comparator.h>
+#include <Corrade/Utility/StlForwardString.h>
+#include <Corrade/Utility/StlForwardTuple.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Math/Vector2.h"

@@ -29,6 +29,7 @@
 #include <numeric>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Magnum.h"
 
