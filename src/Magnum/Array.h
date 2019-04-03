@@ -103,12 +103,16 @@ template<UnsignedInt dimensions, class T> class Array {
         T* data() { return _data; }
         constexpr const T* data() const { return _data; } /**< @overload */
 
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    protected:
+    #else
     private:
+    #endif
+        T _data[dimensions];
 
+    private:
         /* Implementation for Array<dimensions, T>::Array(U) */
         template<std::size_t ...sequence> constexpr explicit Array(Math::Implementation::Sequence<sequence...>, T value): _data{Math::Implementation::repeat(value, sequence)...} {}
-
-        T _data[dimensions];
 };
 
 /**
@@ -129,8 +133,8 @@ template<class T> class Array1D: public Array<1, T> {
         /** @brief Copy constructor */
         constexpr Array1D(const Array<1, T>& other): Array<1, T>(other) {}
 
-        T& x() { return (*this)[0]; }                  /**< @brief X component */
-        constexpr T x() const { return (*this)[0]; }   /**< @overload */
+        T& x() { return Array<1, T>::_data[0]; } /**< @brief X component */
+        constexpr T x() const { return Array<1, T>::_data[0]; } /**< @overload */
 };
 
 /**
@@ -155,10 +159,10 @@ template<class T> class Array2D: public Array<2, T> {
         /** @brief Copy constructor */
         constexpr Array2D(const Array<2, T>& other): Array<2, T>(other) {}
 
-        T& x() { return (*this)[0]; }                  /**< @brief X component */
-        constexpr T x() const { return (*this)[0]; }   /**< @overload */
-        T& y() { return (*this)[1]; }                  /**< @brief Y component */
-        constexpr T y() const { return (*this)[1]; }   /**< @overload */
+        T& x() { return Array<2, T>::_data[0]; } /**< @brief X component */
+        constexpr T x() const { return Array<2, T>::_data[0]; } /**< @overload */
+        T& y() { return Array<2, T>::_data[1]; } /**< @brief Y component */
+        constexpr T y() const { return Array<2, T>::_data[1]; } /**< @overload */
 };
 
 /**
@@ -184,19 +188,21 @@ template<class T> class Array3D: public Array<3, T> {
         /** @brief Copy constructor */
         constexpr Array3D(const Array<3, T>& other): Array<3, T>(other) {}
 
-        T& x() { return (*this)[0]; }                  /**< @brief X component */
-        constexpr T x() const { return (*this)[0]; }   /**< @overload */
-        T& y() { return (*this)[1]; }                  /**< @brief Y component */
-        constexpr T y() const { return (*this)[1]; }   /**< @overload */
-        T& z() { return (*this)[2]; }                  /**< @brief Z component */
-        constexpr T z() const { return (*this)[2]; }   /**< @overload */
+        T& x() { return Array<3, T>::_data[0]; } /**< @brief X component */
+        constexpr T x() const { return Array<3, T>::_data[0]; } /**< @overload */
+        T& y() { return Array<3, T>::_data[1]; } /**< @brief Y component */
+        constexpr T y() const { return Array<3, T>::_data[1]; } /**< @overload */
+        T& z() { return Array<3, T>::_data[2]; } /**< @brief Z component */
+        constexpr T z() const { return Array<3, T>::_data[2]; } /**< @overload */
 
         /**
          * @brief XY part of the array
          * @return First two components of the array
          */
         Array2D<T>& xy() { return reinterpret_cast<Array2D<T>&>(*this); }
-        constexpr Array2D<T> xy() const { return {(*this)[0], (*this)[1]}; } /**< @overload */
+        constexpr Array2D<T> xy() const {
+            return {Array<3, T>::_data[0], Array<3, T>::_data[1]};
+        } /**< @overload */
 };
 
 /** @debugoperator{Array} */
