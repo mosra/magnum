@@ -46,8 +46,6 @@
 
 namespace Magnum {
 
-namespace Platform { class GLContext; }
-
 namespace GL {
 
 namespace Implementation {
@@ -670,10 +668,23 @@ class MAGNUM_GL_EXPORT Context {
            state() pointer is not ready yet so we have to pass it directly */
         MAGNUM_GL_LOCAL bool isCoreProfileInternal(Implementation::ContextState& state);
 
+    #ifdef DOXYGEN_GENERATING_OUTPUT
+    private:
+    #else
+    protected:
+    #endif
+        /* Made protected so it's possible to test the NoCreate constructor and
+           also not needed to friend Platform::GLContext. */
+        explicit Context(NoCreateT, Int argc, const char** argv, void functionLoader(Context&));
+        explicit Context(NoCreateT, Utility::Arguments&& args, Int argc, const char** argv, void functionLoader(Context&)): Context{NoCreate, args, argc, argv, functionLoader} {}
+        explicit Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader(Context&));
+
+        bool tryCreate();
+        void create();
+
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */
         friend Implementation::ContextState;
-        friend Platform::GLContext;
         #endif
 
         enum class InternalFlag: UnsignedByte {
@@ -683,12 +694,6 @@ class MAGNUM_GL_EXPORT Context {
         typedef Containers::EnumSet<InternalFlag> InternalFlags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(InternalFlags)
 
-        explicit Context(NoCreateT, Int argc, const char** argv, void functionLoader(Context&));
-        explicit Context(NoCreateT, Utility::Arguments&& args, Int argc, const char** argv, void functionLoader(Context&)): Context{NoCreate, args, argc, argv, functionLoader} {}
-        explicit Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader(Context&));
-
-        bool tryCreate();
-        void create();
         void disableDriverWorkaround(const std::string& workaround);
 
         /* Defined in Implementation/driverSpecific.cpp */
