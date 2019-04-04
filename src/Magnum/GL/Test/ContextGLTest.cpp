@@ -29,10 +29,14 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
 
+#include "Magnum/Platform/GLContext.h"
+
 namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct ContextGLTest: OpenGLTester {
     explicit ContextGLTest();
+
+    void constructNoCreate();
 
     void isVersionSupported();
     #ifndef MAGNUM_TARGET_GLES
@@ -44,13 +48,24 @@ struct ContextGLTest: OpenGLTester {
 };
 
 ContextGLTest::ContextGLTest() {
-    addTests({&ContextGLTest::isVersionSupported,
+    addTests({&ContextGLTest::constructNoCreate,
+              &ContextGLTest::isVersionSupported,
               #ifndef MAGNUM_TARGET_GLES
               &ContextGLTest::isVersionSupportedES,
               #endif
               &ContextGLTest::supportedVersion,
               &ContextGLTest::isExtensionSupported,
               &ContextGLTest::isExtensionDisabled});
+}
+
+void ContextGLTest::constructNoCreate() {
+    {
+        char dummyArgv[] = "dummy";
+        char* argv[] = {dummyArgv};
+        Platform::GLContext context{NoCreate, 1, argv};
+    }
+
+    CORRADE_VERIFY(true);
 }
 
 void ContextGLTest::isVersionSupported() {
