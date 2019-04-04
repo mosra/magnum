@@ -275,6 +275,9 @@ See also:
     @gl_extension{EXT,instanced_arrays}, @gl_extension{EXT,draw_instanced},
     @gl_extension{NV,instanced_arrays} and @gl_extension{NV,draw_instanced}
     extensions
+-   @ref GL::Context would crash on destruction if it was constructed with
+    @ref NoCreate but @ref GL::Context::create() was never called (see
+    [mosra/magnum#331](https://github.com/mosra/magnum/pull/331)
 -   Reading of float textures on ES3 contexts using
     @ref DebugTools::textureSubImage() returned a zero-sized image by accident
 -   Properly zero-initializing the UTF-8 buffer in

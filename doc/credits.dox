@@ -131,7 +131,7 @@ Are the below lists missing your name or something's wrong?
 -   **Leon Moctezuma** ([\@leonidax](https://github.com/leonidax)) ---
     bugreports, API design direction
 -   **Max Schwarz** ([\@xqms](https://github.com/xqms)) --- `Any*` plugin
-    improvements
+    improvements, fixes in the @ref GL library
 -   **Miguel Martin** ([\@miguelmartin75](https://github.com/miguelmartin75))
     --- initial macOS port, various other improvements
 -   **Nathan Ollerenshaw** ([\@matjam](https://github.com/matjam)) --- Ubuntu
