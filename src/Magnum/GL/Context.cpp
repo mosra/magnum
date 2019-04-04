@@ -495,20 +495,17 @@ Context::Context(Context&& other): _version{other._version},
     _extensionRequiredVersion{Containers::NoInit},
     _extensionStatus{other._extensionStatus},
     _supportedExtensions{std::move(other._supportedExtensions)},
-    _state{other._state},
+    _state{std::move(other._state)},
     _detectedDrivers{std::move(other._detectedDrivers)}
 {
     /* StaticArray is deliberately non-copyable */
     for(std::size_t i = 0; i != Implementation::ExtensionCount; ++i)
         _extensionRequiredVersion[i] = other._extensionRequiredVersion[i];
 
-    other._state = nullptr;
     if(currentContext == &other) currentContext = this;
 }
 
 Context::~Context() {
-    delete _state;
-
     if(currentContext == this) currentContext = nullptr;
 }
 
@@ -731,7 +728,7 @@ bool Context::tryCreate() {
         }
     }
 
-    _state = new Implementation::State{*this, output};
+    _state.emplace(*this, output);
 
     /* Print a list of used workarounds */
     if(!_driverWorkarounds.empty()) {
