@@ -27,7 +27,7 @@
 #include "flextGL.h"
 
 @for category,funcs in functions:
-@if funcs and category not in ['ES_VERSION_2_0', 'ES_VERSION_3_0']:
+@if funcs and category not in ['ES_VERSION_2_0', 'ES_VERSION_3_0', 'ES_VERSION_3_1', 'ES_VERSION_3_2']:
 @for f in funcs:
 #undef gl@f.name
 @end
@@ -38,7 +38,7 @@
 
 void flextGLInit(Magnum::GL::Context&) {
     @for category,funcs in functions:
-    @if funcs and category not in ['ES_VERSION_2_0', 'ES_VERSION_3_0']:
+    @if funcs and category not in ['ES_VERSION_2_0', 'ES_VERSION_3_0', 'ES_VERSION_3_1', 'ES_VERSION_3_2']:
 
     /* GL_@category */
     #if GL_@category
