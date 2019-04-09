@@ -100,7 +100,7 @@ more information.
 
 @par Single-header version
     This library is also available as a single-header, dependency-less
-    [MagnumMath.h](https://github.com/mosra/magnum-singles/tree/master/MagnumMath.h)
+    [MagnumMath.hpp](https://github.com/mosra/magnum-singles/tree/master/MagnumMath.hpp)
     library in the Magnum Singles repository for easier integration into your
     projects. See @ref singles for more information. Everything except contents
     of the @ref Magnum/Math/FunctionsBatch.h and @ref Magnum/Math/Algorithms/Svd.h
@@ -141,7 +141,7 @@ See @ref building, @ref cmake and @ref types for more information.
 
 @par Single-header version
     This library is available as a part of the single-header, dependency-less
-    [MagnumMath.h](https://github.com/mosra/magnum-singles/tree/master/MagnumMath.h)
+    [MagnumMath.hpp](https://github.com/mosra/magnum-singles/tree/master/MagnumMath.hpp)
     library in the Magnum Singles repository for easier integration into your
     projects. See @ref singles and @ref Math for more information.
 */
@@ -171,7 +171,7 @@ See @ref building and @ref cmake for more information.
 
 @par Single-header version
     This library is available as a part of the single-header, dependency-less
-    [MagnumMath.h](https://github.com/mosra/magnum-singles/tree/master/MagnumMath.h)
+    [MagnumMath.hpp](https://github.com/mosra/magnum-singles/tree/master/MagnumMath.hpp)
     library in the Magnum Singles repository for easier integration into your
     projects. See @ref singles and @ref Math for more information.
 */
