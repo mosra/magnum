@@ -558,7 +558,7 @@ int GlfwApplication::exec() {
         }
         glfwPollEvents();
     }
-    return 0;
+    return _exitCode;
 }
 
 auto GlfwApplication::MouseMoveEvent::buttons() -> Buttons {

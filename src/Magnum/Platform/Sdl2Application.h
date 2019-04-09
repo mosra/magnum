@@ -509,10 +509,11 @@ class Sdl2Application {
 
         /**
          * @brief Exit application main loop
+         * @param exitCode  The exit code the application should return
          *
          * Stops main loop started by @ref exec().
          */
-        void exit();
+        void exit(int exitCode = 0);
 
         /**
          * @brief Run one iteration of application main loop
@@ -1013,6 +1014,8 @@ class Sdl2Application {
         #endif
 
         Flags _flags;
+        
+        int _exitCode;
 };
 
 #ifdef MAGNUM_TARGET_GL

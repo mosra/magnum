@@ -232,9 +232,13 @@ class GlfwApplication {
          */
         int exec();
 
-        /** @brief Exit application main loop */
-        void exit() {
+        /**
+         * @brief Exit application main loop
+         * @param exitCode  The exit code the application should return
+         */
+        void exit(int exitCode = 0) {
             glfwSetWindowShouldClose(_window, true);
+            _exitCode = exitCode;
         }
 
         /**
@@ -547,6 +551,7 @@ class GlfwApplication {
         #ifdef MAGNUM_TARGET_GL
         Containers::Pointer<Platform::GLContext> _context;
         #endif
+        int _exitCode;
 };
 
 CORRADE_ENUMSET_OPERATORS(GlfwApplication::Flags)

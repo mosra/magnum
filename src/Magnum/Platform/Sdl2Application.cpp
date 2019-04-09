@@ -627,15 +627,16 @@ int Sdl2Application::exec() {
         static_cast<Sdl2Application*>(arg)->mainLoopIteration();
     }, this, 0, true);
     #endif
-    return 0;
+    return _exitCode;
 }
 
-void Sdl2Application::exit() {
+void Sdl2Application::exit(int exitCode) {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     _flags |= Flag::Exit;
     #else
     emscripten_cancel_main_loop();
     #endif
+    _exitCode = exitCode;
 }
 
 void Sdl2Application::mainLoopIteration() {
