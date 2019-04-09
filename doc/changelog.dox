@@ -217,6 +217,10 @@ See also:
     option available since Emscripten 1.38.27 and with older versions
 -   @ref Platform::WindowlessEglApplication was adapted to properly create
     WebGL 2 contexts both in Emscripten 1.38.24 and in older versions
+-   @ref Platform::Sdl2Application::exit() and
+    @ref Platform::GlfwApplication::exit() now have an optional parameter to
+    specify the actual application return code (see
+    [mosra/magnum#332](https://github.com/mosra/magnum/pull/332))
 
 @subsubsection changelog-latest-changes-text Text library
 
