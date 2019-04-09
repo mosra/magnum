@@ -1736,6 +1736,10 @@ template<UnsignedInt dimensions> std::size_t AbstractTexture::compressedSubImage
         compressedBlockDataSize(_target, format);
 }
 
+template std::size_t MAGNUM_GL_EXPORT AbstractTexture::compressedSubImageSize<1>(TextureFormat format, const Math::Vector<1, Int>& size);
+template std::size_t MAGNUM_GL_EXPORT AbstractTexture::compressedSubImageSize<2>(TextureFormat format, const Math::Vector<2, Int>& size);
+template std::size_t MAGNUM_GL_EXPORT AbstractTexture::compressedSubImageSize<3>(TextureFormat format, const Math::Vector<3, Int>& size);
+
 template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>& image) {
     createIfNotAlready();
 
