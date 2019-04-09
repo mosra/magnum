@@ -106,8 +106,10 @@ if((WITH_GLFWAPPLICATION OR WITH_SDL2APPLICATION) AND TARGET_GL)
         # to link to GLX explicitly. Otherwise (and also on all systems except
         # Linux) the transitive dependency to classic GL lib from MagnumGL is
         # enough. Can't use OpenGL_OpenGL_FOUND, because that one is set also
-        # if GLVND is *not* found. WTF.
-        if(OPENGL_opengl_LIBRARY)
+        # if GLVND is *not* found. WTF. Also can't just check for
+        # OPENGL_opengl_LIBRARY because that's set even if OpenGL_GL_PREFERENCE
+        # is explicitly set to LEGACY.
+        if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND)
             set(MagnumSomeContext_LIBRARY OpenGL::GLX)
         endif()
     elseif(MAGNUM_TARGET_GLES AND NOT CORRADE_TARGET_EMSCRIPTEN)

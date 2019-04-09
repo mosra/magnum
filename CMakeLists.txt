@@ -212,7 +212,13 @@ endif()
 # Check dependencies
 if(WITH_GL)
     if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
-        set(OpenGL_GL_PREFERENCE GLVND) # since CMake 3.11
+        # OpenGL library preference. Prefer to use GLVND, since that's the
+        # better approach nowadays, but allow the users to override it from
+        # outside in case it is broken for some reason (Nvidia drivers in
+        # Debian's testing (Buster) -- reported on 2019-04-09).
+        if(NOT CMAKE_VERSION VERSION_LESS 3.10 AND NOT OpenGL_GL_PREFERENCE)
+            set(OpenGL_GL_PREFERENCE GLVND)
+        endif()
         find_package(OpenGL REQUIRED)
     elseif(TARGET_GLES2)
         find_package(OpenGLES2 REQUIRED)

@@ -220,8 +220,10 @@ if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
     # If the GLVND library (CMake 3.11+) was found, link to the imported
     # target. Otherwise (and also on all systems except Linux) link to the
     # classic libGL. Can't use OpenGL_OpenGL_FOUND, because that one is set
-    # also if GLVND is *not* found. WTF.
-    if(OPENGL_opengl_LIBRARY)
+    # also if GLVND is *not* found. WTF. Also can't just check for
+    # OPENGL_opengl_LIBRARY because that's set even if OpenGL_GL_PREFERENCE is
+    # explicitly set to LEGACY.
+    if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND)
         target_link_libraries(MagnumGL PUBLIC OpenGL::OpenGL)
     else()
         target_link_libraries(MagnumGL PUBLIC ${OPENGL_gl_LIBRARY})
@@ -308,8 +310,10 @@ if(BUILD_TESTS)
         # If the GLVND library (CMake 3.11+) was found, link to the imported
         # target. Otherwise (and also on all systems except Linux) link to the
         # classic libGL. Can't use OpenGL_OpenGL_FOUND, because that one is set
-        # also if GLVND is *not* found. WTF.
-        if(OPENGL_opengl_LIBRARY)
+        # also if GLVND is *not* found. WTF. Also can't just check for
+        # OPENGL_opengl_LIBRARY because that's set even if OpenGL_GL_PREFERENCE
+        # is explicitly set to LEGACY.
+        if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND)
             target_link_libraries(MagnumGLTestLib PUBLIC OpenGL::OpenGL)
         else()
             target_link_libraries(MagnumGLTestLib PUBLIC ${OPENGL_gl_LIBRARY})

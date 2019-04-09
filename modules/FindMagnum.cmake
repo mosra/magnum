@@ -260,6 +260,14 @@ foreach(_magnumFlag ${_magnumFlags})
     endif()
 endforeach()
 
+# OpenGL library preference. Prefer to use GLVND, since that's the better
+# approach nowadays, but allow the users to override it from outside in case
+# it is broken for some reason (Nvidia drivers in Debian's testing (Buster) --
+# reported on 2019-04-09).
+if(NOT CMAKE_VERSION VERSION_LESS 3.10 AND NOT OpenGL_GL_PREFERENCE)
+    set(OpenGL_GL_PREFERENCE GLVND)
+endif()
+
 # Base Magnum library
 if(NOT TARGET Magnum::Magnum)
     add_library(Magnum::Magnum UNKNOWN IMPORTED)
@@ -618,12 +626,13 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 # our own EGL find module, which makes things simpler. The
                 # upstream FindOpenGL is anything but simple. Also can't use
                 # OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
-                # *not* found. WTF.
+                # *not* found. WTF. Also can't just check for
+                # OPENGL_opengl_LIBRARY because that's set even if
+                # OpenGL_GL_PREFERENCE is explicitly set to LEGACY.
                 if(MAGNUM_TARGET_GL)
                     if(CORRADE_TARGET_UNIX AND NOT CORRADE_TARGET_APPLE AND (NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES))
-                        set(OpenGL_GL_PREFERENCE GLVND)
                         find_package(OpenGL)
-                        if(OPENGL_opengl_LIBRARY)
+                        if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND)
                             set_property(TARGET Magnum::${_component} APPEND
                             PROPERTY INTERFACE_LINK_LIBRARIES OpenGL::GLX)
                         endif()
@@ -656,12 +665,13 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 # our own EGL find module, which makes things simpler. The
                 # upstream FindOpenGL is anything but simple. Also can't use
                 # OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
-                # *not* found. WTF.
+                # *not* found. WTF. Also can't just check for
+                # OPENGL_opengl_LIBRARY because that's set even if
+                # OpenGL_GL_PREFERENCE is explicitly set to LEGACY.
                 if(MAGNUM_TARGET_GL)
                     if(CORRADE_TARGET_UNIX AND NOT CORRADE_TARGET_APPLE AND (NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES))
-                        set(OpenGL_GL_PREFERENCE GLVND)
                         find_package(OpenGL)
-                        if(OPENGL_opengl_LIBRARY)
+                        if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND)
                             set_property(TARGET Magnum::${_component} APPEND
                             PROPERTY INTERFACE_LINK_LIBRARIES OpenGL::GLX)
                         endif()
@@ -683,10 +693,11 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 # With GLVND (since CMake 3.11) we need to explicitly link to
                 # GLX because libOpenGL doesn't provide it. Also can't use
                 # OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
-                # *not* found. WTF.
-                set(OpenGL_GL_PREFERENCE GLVND)
+                # *not* found. WTF. Also can't just check for
+                # OPENGL_opengl_LIBRARY because that's set even if
+                # OpenGL_GL_PREFERENCE is explicitly set to LEGACY.
                 find_package(OpenGL)
-                if(OPENGL_opengl_LIBRARY)
+                if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND)
                     set_property(TARGET Magnum::${_component} APPEND PROPERTY
                         INTERFACE_LINK_LIBRARIES OpenGL::GLX)
                 endif()
@@ -736,10 +747,11 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 # With GLVND (since CMake 3.11) we need to explicitly link to
                 # GLX because libOpenGL doesn't provide it. Also can't use
                 # OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
-                # *not* found. If GLVND is not used, link to X11 instead.
-                set(OpenGL_GL_PREFERENCE GLVND)
+                # *not* found. If GLVND is not used, link to X11 instead. Also
+                # can't just check for OPENGL_opengl_LIBRARY because that's set
+                # even if OpenGL_GL_PREFERENCE is explicitly set to LEGACY.
                 find_package(OpenGL)
-                if(OPENGL_opengl_LIBRARY)
+                if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND)
                     set_property(TARGET Magnum::${_component} APPEND PROPERTY
                         INTERFACE_LINK_LIBRARIES OpenGL::GLX)
                 else()
@@ -780,10 +792,11 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 # imported target. Otherwise (and also on all systems except
                 # Linux) link to the classic libGL. Can't use
                 # OpenGL_OpenGL_FOUND, because that one is set also if GLVND is
-                # *not* found. WTF.
-                set(OpenGL_GL_PREFERENCE GLVND)
+                # *not* found. WTF. Also can't just check for
+                # OPENGL_opengl_LIBRARY because that's set even if
+                # OpenGL_GL_PREFERENCE is explicitly set to LEGACY.
                 find_package(OpenGL REQUIRED)
-                if(OPENGL_opengl_LIBRARY)
+                if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND)
                     set_property(TARGET Magnum::${_component} APPEND PROPERTY
                         INTERFACE_LINK_LIBRARIES OpenGL::OpenGL)
                 else()
