@@ -264,6 +264,9 @@ See also:
     for Emscripten (see [mosra/magnum#219](https://github.com/mosra/magnum/issues/219))
 -   Updated the Vcpkg package to work correctly with Vcpkg's own SDL2 (see
     [Microsoft/vcpkg#5730](https://github.com/Microsoft/vcpkg/pull/5730))
+-   Updated bundled GL headers to properly define the `GL_VERSION_*` macros to
+    avoid conflicting `GLintptr` and `GLsizeiptr` type definitions on Windows
+    when using Magnum together with Qt
 
 @subsection changelog-latest-bugfixes Bug fixes
 

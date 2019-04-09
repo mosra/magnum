@@ -93,6 +93,29 @@ void flextGLInit(Magnum::GL::Context& context);
 #define GLAPI extern
 #endif
 
+/* GL version defines. Needs to be done to avoid conflicting definitions with
+   other GL headers (such as qopengl.h in Qt, which has different definition
+   for GLsizei and GLintptr on Windows) */
+#define GL_VERSION_1_0 1
+#define GL_VERSION_1_1 1
+#define GL_VERSION_1_2 1
+#define GL_VERSION_1_3 1
+#define GL_VERSION_1_4 1
+#define GL_VERSION_1_5 1
+#define GL_VERSION_2_0 1
+#define GL_VERSION_2_1 1
+#define GL_VERSION_3_0 1
+#define GL_VERSION_3_1 1
+#define GL_VERSION_3_2 1
+#define GL_VERSION_3_3 1
+#define GL_VERSION_4_0 1
+#define GL_VERSION_4_1 1
+#define GL_VERSION_4_2 1
+#define GL_VERSION_4_3 1
+#define GL_VERSION_4_4 1
+#define GL_VERSION_4_5 1
+#define GL_VERSION_4_6 1
+
 /* Data types */
 
 #include <KHR/khrplatform.h>

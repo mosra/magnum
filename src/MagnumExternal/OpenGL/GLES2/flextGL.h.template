@@ -81,6 +81,15 @@ void flextGLInit(Magnum::GL::Context& context);
 #define GLAPI extern
 #endif
 
+/* GL version defines. Needs to be done to avoid conflicting definitions with
+   other GL headers (such as qopengl.h in Qt, which has different definition
+   for GLsizei and GLintptr on Windows) */
+@for cat,_ in functions:
+@if cat.startswith('ES_VERSION_'):
+#define GL_@cat 1
+@endif
+@end
+
 /* Data types */
 
 @passthru
