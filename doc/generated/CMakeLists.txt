@@ -27,7 +27,7 @@ cmake_minimum_required(VERSION 3.1)
 
 project(MagnumDocumentationImageGenerator)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/../../modules/")
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/../../modules/" ${CMAKE_MODULE_PATH})
 
 find_package(Magnum REQUIRED
     MeshTools

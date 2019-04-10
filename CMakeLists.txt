@@ -46,7 +46,7 @@ endif()
 # Use folders for nice tree in Visual Studio and XCode
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/modules/")
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
 
 # Find Corrade first so we can check on the target
 find_package(Corrade REQUIRED Utility)
