@@ -93,15 +93,15 @@ void AnimationDataTest::construct() {
         {AnimationTrackType::Vector3,
          AnimationTrackTargetType::Translation3D, 42,
          Animation::TrackView<Float, Vector3>{
-            {&view[0].time, view.size(), sizeof(Data)},
-            {&view[0].position, view.size(), sizeof(Data)},
+            {view, &view[0].time, view.size(), sizeof(Data)},
+            {view, &view[0].position, view.size(), sizeof(Data)},
             Animation::Interpolation::Constant,
             animationInterpolatorFor<Vector3>(Animation::Interpolation::Constant)}},
         {AnimationTrackType::Quaternion,
          AnimationTrackTargetType::Rotation3D, 1337,
          Animation::TrackView<Float, Quaternion>{
-            {&view[0].time, view.size(), sizeof(Data)},
-            {&view[0].rotation, view.size(), sizeof(Data)},
+            {view, &view[0].time, view.size(), sizeof(Data)},
+            {view, &view[0].rotation, view.size(), sizeof(Data)},
             Animation::Interpolation::Linear,
             animationInterpolatorFor<Quaternion>(Animation::Interpolation::Linear)}}
         }}, {-1.0f, 7.0f}, &state};
@@ -155,14 +155,14 @@ void AnimationDataTest::constructImplicitDuration() {
         {AnimationTrackType::Bool,
          AnimationTrackTargetType(129), 0,
          Animation::TrackView<Float, bool>{
-            {&view[0].time, 2, sizeof(Data)},
-            {&view[0].value, 2, sizeof(Data)},
+            {view, &view[0].time, 2, sizeof(Data)},
+            {view, &view[0].value, 2, sizeof(Data)},
             Animation::Interpolation::Constant}},
         {AnimationTrackType::Bool,
          AnimationTrackTargetType(130), 1,
          Animation::TrackView<Float, bool>{
-            {&view[2].time, 2, sizeof(Data)},
-            {&view[2].value, 2, sizeof(Data)},
+            {view, &view[2].time, 2, sizeof(Data)},
+            {view, &view[2].value, 2, sizeof(Data)},
             Animation::Interpolation::Linear}}
         }}, &state};
 
@@ -224,15 +224,15 @@ void AnimationDataTest::constructMove() {
         {AnimationTrackType::Vector3,
          AnimationTrackTargetType::Translation3D, 42,
          Animation::TrackView<Float, Vector3>{
-            {&view[0].time, view.size(), sizeof(Data)},
-            {&view[0].position, view.size(), sizeof(Data)},
+            {view, &view[0].time, view.size(), sizeof(Data)},
+            {view, &view[0].position, view.size(), sizeof(Data)},
             Animation::Interpolation::Constant,
             animationInterpolatorFor<Vector3>(Animation::Interpolation::Constant)}},
         {AnimationTrackType::Quaternion,
          AnimationTrackTargetType::Rotation3D, 1337,
          Animation::TrackView<Float, Quaternion>{
-            {&view[0].time, view.size(), sizeof(Data)},
-            {&view[0].rotation, view.size(), sizeof(Data)},
+            {view, &view[0].time, view.size(), sizeof(Data)},
+            {view, &view[0].rotation, view.size(), sizeof(Data)},
             Animation::Interpolation::Linear,
             animationInterpolatorFor<Quaternion>(Animation::Interpolation::Linear)}}
         }}, {-1.0f, 7.0f}, &state};
@@ -324,8 +324,8 @@ void AnimationDataTest::trackCustomResultType() {
          AnimationTrackType::Vector3,
          AnimationTrackTargetType::Scaling3D, 0,
          Animation::TrackView<Float, Vector3i, Vector3>{
-             {&view[0].time, view.size(), sizeof(Data)},
-             {&view[0].position, view.size(), sizeof(Data)},
+             {view, &view[0].time, view.size(), sizeof(Data)},
+             {view, &view[0].position, view.size(), sizeof(Data)},
              [](const Vector3i& a, const Vector3i& b, Float t) -> Vector3 {
                  return Math::lerp(Vector3{a}*0.01f, Vector3{b}*0.01f, t);
              }}}}

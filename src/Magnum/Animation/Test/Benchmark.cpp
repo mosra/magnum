@@ -53,8 +53,8 @@ struct Benchmark: TestSuite::Tester {
     Containers::Array<Float> _keys;
     Containers::Array<Int> _values;
     Containers::Array<std::pair<Float, Int>> _interleaved;
-    Containers::StridedArrayView<const Float> _keysInterleaved;
-    Containers::StridedArrayView<const Int> _valuesInterleaved;
+    Containers::StridedArrayView1D<const Float> _keysInterleaved;
+    Containers::StridedArrayView1D<const Int> _valuesInterleaved;
     TrackView<Float, Int> _track;
     TrackView<Float, Int> _trackInterleaved;
 };
@@ -88,8 +88,8 @@ Benchmark::Benchmark() {
     for(std::size_t i = 0; i != DataSize; ++i)
         _keys[i] = _interleaved[i].first = Float(i)*3.1254f;
 
-    _keysInterleaved = {&_interleaved[0].first, _interleaved.size(), sizeof(std::pair<Float, Int>)};
-    _valuesInterleaved = {&_interleaved[0].second, _interleaved.size(), sizeof(std::pair<Float, Int>)};
+    _keysInterleaved = {_interleaved, &_interleaved[0].first, _interleaved.size(), sizeof(std::pair<Float, Int>)};
+    _valuesInterleaved = {_interleaved, &_interleaved[0].second, _interleaved.size(), sizeof(std::pair<Float, Int>)};
 
     _track = TrackView<Float, Int>{
         Containers::arrayView(_keys), Containers::arrayView(_values), Math::select};

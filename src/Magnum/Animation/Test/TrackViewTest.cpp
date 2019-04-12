@@ -417,7 +417,7 @@ Float lerpHalf(const Half& a, const Half& b, Float t) {
 
 void TrackViewTest::atDifferentResultType() {
     const TrackView<Float, Half, Float> a{
-        {&Keyframes[0].first, Containers::arraySize(Keyframes), sizeof(Keyframes[0])},
+        {Keyframes, &Keyframes[0].first, Containers::arraySize(Keyframes), sizeof(Keyframes[0])},
         HalfValues, lerpHalf};
 
     std::size_t hint{};
@@ -428,7 +428,7 @@ void TrackViewTest::atDifferentResultType() {
 
 void TrackViewTest::atDifferentResultTypeStrict() {
     const TrackView<Float, Half, Float> a{
-        {&Keyframes[0].first, Containers::arraySize(Keyframes), sizeof(Keyframes[0])},
+        {Keyframes, &Keyframes[0].first, Containers::arraySize(Keyframes), sizeof(Keyframes[0])},
         HalfValues, lerpHalf};
 
     std::size_t hint{};

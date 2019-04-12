@@ -303,8 +303,8 @@ template<class K, class V, class R
          *
          * @see @ref data(), @ref values(), @ref operator[]()
          */
-        Containers::StridedArrayView<const K> keys() const {
-            return _data ? Containers::StridedArrayView<const K>{&_data[0].first, _data.size(), sizeof(std::pair<K, V>)} : nullptr;
+        Containers::StridedArrayView1D<const K> keys() const {
+            return _data ? Containers::StridedArrayView1D<const K>{_data, &_data[0].first, _data.size(), sizeof(std::pair<K, V>)} : nullptr;
         }
 
         /**
@@ -312,8 +312,8 @@ template<class K, class V, class R
          *
          * @see @ref data(), @ref keys(), @ref operator[]()
          */
-        Containers::StridedArrayView<const V> values() const {
-            return _data ? Containers::StridedArrayView<const V>{&_data[0].second, _data.size(), sizeof(std::pair<K, V>)} : nullptr;
+        Containers::StridedArrayView1D<const V> values() const {
+            return _data ? Containers::StridedArrayView1D<const V>{_data, &_data[0].second, _data.size(), sizeof(std::pair<K, V>)} : nullptr;
         }
 
         /**
@@ -466,17 +466,17 @@ template<class K> class TrackViewStorage {
          *
          * @see @ref TrackView::values(), @ref TrackView::operator[]()
          */
-        Containers::StridedArrayView<const K> keys() const {
+        Containers::StridedArrayView1D<const K> keys() const {
             return _keys;
         }
 
     private:
         template<class, class, class> friend class TrackView;
 
-        template<class V, class R> explicit TrackViewStorage(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolation interpolation, R(*interpolator)(const V&, const V&, Float), Extrapolation before, Extrapolation after) noexcept: _keys{keys}, _values{reinterpret_cast<const Containers::StridedArrayView<const char>&>(values)}, _interpolator{reinterpret_cast<void(*)()>(interpolator)}, _interpolation{interpolation}, _before{before}, _after{after} {}
+        template<class V, class R> explicit TrackViewStorage(const Containers::StridedArrayView1D<const K>& keys, const Containers::StridedArrayView1D<const V>& values, Interpolation interpolation, R(*interpolator)(const V&, const V&, Float), Extrapolation before, Extrapolation after) noexcept: _keys{keys}, _values{reinterpret_cast<const Containers::StridedArrayView1D<const char>&>(values)}, _interpolator{reinterpret_cast<void(*)()>(interpolator)}, _interpolation{interpolation}, _before{before}, _after{after} {}
 
-        Containers::StridedArrayView<const K> _keys;
-        Containers::StridedArrayView<const char> _values;
+        Containers::StridedArrayView1D<const K> _keys;
+        Containers::StridedArrayView1D<const char> _values;
         void(*_interpolator)(void);
         Interpolation _interpolation;
         Extrapolation _before, _after;
@@ -527,17 +527,17 @@ template<class K, class V, class R
          * The keyframe data are assumed to be stored in sorted order. It's not
          * an error to have two successive keyframes with the same frame value.
          * The @ref interpolation() field is set to @ref Interpolation::Custom.
-         * See @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolation, Interpolator, Extrapolation, Extrapolation) or
-         * @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolation, Extrapolation, Extrapolation)
+         * See @ref TrackView(const Containers::StridedArrayView1D<const K>&, const Containers::StridedArrayView1D<const V>&, Interpolation, Interpolator, Extrapolation, Extrapolation) or
+         * @ref TrackView(const Containers::StridedArrayView1D<const K>&, const Containers::StridedArrayView1D<const V>&, Interpolation, Extrapolation, Extrapolation)
          * for an alternative.
          */
-        /*implicit*/ TrackView(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: TrackViewStorage<K>{keys, values, Interpolation::Custom, interpolator, before, after} {}
+        /*implicit*/ TrackView(const Containers::StridedArrayView1D<const K>& keys, const Containers::StridedArrayView1D<const V>& values, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: TrackViewStorage<K>{keys, values, Interpolation::Custom, interpolator, before, after} {}
 
         /** @overload
-         * Equivalent to calling @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolator, Extrapolation, Extrapolation)
+         * Equivalent to calling @ref TrackView(const Containers::StridedArrayView1D<const K>&, const Containers::StridedArrayView1D<const V>&, Interpolator, Extrapolation, Extrapolation)
          * with both @p before and @p after set to @p extrapolation.
          */
-        /*implicit*/ TrackView(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant) noexcept: TrackView<K, V, R>{keys, values, interpolator, extrapolation, extrapolation} {}
+        /*implicit*/ TrackView(const Containers::StridedArrayView1D<const K>& keys, const Containers::StridedArrayView1D<const V>& values, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant) noexcept: TrackView<K, V, R>{keys, values, interpolator, extrapolation, extrapolation} {}
 
         /**
          * @brief Construct with custom interpolator from an interleaved array
@@ -547,9 +547,9 @@ template<class K, class V, class R
          * @param after         Extrapolation behavior after
          *
          * Converts @p data to a pair of strided array views and calls
-         * @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolator, Extrapolation, Extrapolation).
+         * @ref TrackView(const Containers::StridedArrayView1D<const K>&, const Containers::StridedArrayView1D<const V>&, Interpolator, Extrapolation, Extrapolation).
          */
-        /*implicit*/ TrackView(Containers::ArrayView<const std::pair<K, V>> data, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: TrackView<K, V, R>{Containers::StridedArrayView<const K>{data ? &data[0].first : nullptr, data.size(), sizeof(std::pair<K, V>)}, Containers::StridedArrayView<const V>{data ? &data[0].second : nullptr, data.size(), sizeof(std::pair<K, V>)}, interpolator, before, after} {}
+        /*implicit*/ TrackView(Containers::ArrayView<const std::pair<K, V>> data, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: TrackView<K, V, R>{Containers::StridedArrayView1D<const K>{data, data ? &data[0].first : nullptr, data.size(), sizeof(std::pair<K, V>)}, Containers::StridedArrayView1D<const V>{data, data ? &data[0].second : nullptr, data.size(), sizeof(std::pair<K, V>)}, interpolator, before, after} {}
 
         /** @overload
          * Equivalent to calling @ref TrackView(Containers::ArrayView<const std::pair<K, V>>, Interpolator, Extrapolation, Extrapolation)
@@ -572,13 +572,13 @@ template<class K, class V, class R
          * supply their own interpolator function to @ref at() or
          * @ref atStrict().
          */
-        /*implicit*/ TrackView(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolation interpolation, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: TrackViewStorage<K>{keys, values, interpolation, interpolator, before, after} {}
+        /*implicit*/ TrackView(const Containers::StridedArrayView1D<const K>& keys, const Containers::StridedArrayView1D<const V>& values, Interpolation interpolation, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: TrackViewStorage<K>{keys, values, interpolation, interpolator, before, after} {}
 
         /** @overload
-         * Equivalent to calling @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolation, Interpolator, Extrapolation, Extrapolation)
+         * Equivalent to calling @ref TrackView(const Containers::StridedArrayView1D<const K>&, const Containers::StridedArrayView1D<const V>&, Interpolation, Interpolator, Extrapolation, Extrapolation)
          * with both @p before and @p after set to @p extrapolation.
          */
-        /*implicit*/ TrackView(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolation interpolation, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant) noexcept: TrackView<K, V, R>{keys, values, interpolation, interpolator, extrapolation, extrapolation} {}
+        /*implicit*/ TrackView(const Containers::StridedArrayView1D<const K>& keys, const Containers::StridedArrayView1D<const V>& values, Interpolation interpolation, Interpolator interpolator, Extrapolation extrapolation = Extrapolation::Constant) noexcept: TrackView<K, V, R>{keys, values, interpolation, interpolator, extrapolation, extrapolation} {}
 
         /**
          * @brief Construct with both generic and custom interpolator from an interleaved array
@@ -589,9 +589,9 @@ template<class K, class V, class R
          * @param after         Extrapolation behavior after
          *
          * Converts @p data to a pair of strided array views and calls
-         * @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolator, Extrapolation, Extrapolation).
+         * @ref TrackView(const Containers::StridedArrayView1D<const K>&, const Containers::StridedArrayView1D<const V>&, Interpolator, Extrapolation, Extrapolation).
          */
-        /*implicit*/ TrackView(Containers::ArrayView<const std::pair<K, V>> data, Interpolation interpolation, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: TrackViewStorage<K>{Containers::StridedArrayView<const K>{data ? &data[0].first : nullptr, data.size(), sizeof(std::pair<K, V>)}, Containers::StridedArrayView<const V>{data ? &data[0].second : nullptr, data.size(), sizeof(std::pair<K, V>)}, interpolation, interpolator, before, after} {}
+        /*implicit*/ TrackView(Containers::ArrayView<const std::pair<K, V>> data, Interpolation interpolation, Interpolator interpolator, Extrapolation before, Extrapolation after) noexcept: TrackViewStorage<K>{Containers::StridedArrayView1D<const K>{data, data ? &data[0].first : nullptr, data.size(), sizeof(std::pair<K, V>)}, Containers::StridedArrayView1D<const V>{data, data ? &data[0].second : nullptr, data.size(), sizeof(std::pair<K, V>)}, interpolation, interpolator, before, after} {}
 
         /** @overload
          * Equivalent to calling @ref TrackView(Containers::ArrayView<const std::pair<K, V>>, Interpolation, Interpolator, Extrapolation, Extrapolation)
@@ -613,13 +613,13 @@ template<class K, class V, class R
          * @p interpolation using @ref interpolatorFor(). See its documentation
          * for more information.
          */
-        /*implicit*/ TrackView(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolation interpolation, Extrapolation before, Extrapolation after) noexcept: TrackViewStorage<K>{keys, values, interpolation, interpolatorFor<V, R>(interpolation), before, after} {}
+        /*implicit*/ TrackView(const Containers::StridedArrayView1D<const K>& keys, const Containers::StridedArrayView1D<const V>& values, Interpolation interpolation, Extrapolation before, Extrapolation after) noexcept: TrackViewStorage<K>{keys, values, interpolation, interpolatorFor<V, R>(interpolation), before, after} {}
 
         /** @overload
-         * Equivalent to calling @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolation, Extrapolation, Extrapolation)
+         * Equivalent to calling @ref TrackView(const Containers::StridedArrayView1D<const K>&, const Containers::StridedArrayView1D<const V>&, Interpolation, Extrapolation, Extrapolation)
          * with both @p before and @p after set to @p extrapolation.
          */
-        /*implicit*/ TrackView(const Containers::StridedArrayView<const K>& keys, const Containers::StridedArrayView<const V>& values, Interpolation interpolation, Extrapolation extrapolation = Extrapolation::Constant) noexcept: TrackView<K, V, R>{keys, values, interpolation, extrapolation, extrapolation} {}
+        /*implicit*/ TrackView(const Containers::StridedArrayView1D<const K>& keys, const Containers::StridedArrayView1D<const V>& values, Interpolation interpolation, Extrapolation extrapolation = Extrapolation::Constant) noexcept: TrackView<K, V, R>{keys, values, interpolation, extrapolation, extrapolation} {}
 
         /**
          * @brief Construct with generic interpolation behavior from an interleaved array
@@ -629,9 +629,9 @@ template<class K, class V, class R
          * @param after         Extrapolation behavior after
          *
          * Converts @p data to a pair of strided array views and calls
-         * @ref TrackView(const Containers::StridedArrayView<const K>&, const Containers::StridedArrayView<const V>&, Interpolator, Extrapolation, Extrapolation).
+         * @ref TrackView(const Containers::StridedArrayView1D<const K>&, const Containers::StridedArrayView1D<const V>&, Interpolator, Extrapolation, Extrapolation).
          */
-        /*implicit*/ TrackView(Containers::ArrayView<const std::pair<K, V>> data, Interpolation interpolation, Extrapolation before, Extrapolation after) noexcept: TrackView<K, V, R>{Containers::StridedArrayView<const K>{data ? &data[0].first : nullptr, data.size(), sizeof(std::pair<K, V>)}, Containers::StridedArrayView<const V>{data ? &data[0].second : nullptr, data.size(), sizeof(std::pair<K, V>)}, interpolation, before, after} {}
+        /*implicit*/ TrackView(Containers::ArrayView<const std::pair<K, V>> data, Interpolation interpolation, Extrapolation before, Extrapolation after) noexcept: TrackView<K, V, R>{Containers::StridedArrayView1D<const K>{data, data ? &data[0].first : nullptr, data.size(), sizeof(std::pair<K, V>)}, Containers::StridedArrayView1D<const V>{data, data ? &data[0].second : nullptr, data.size(), sizeof(std::pair<K, V>)}, interpolation, before, after} {}
 
         /** @overload
          * Equivalent to calling @ref TrackView(Containers::ArrayView<const std::pair<K, V>>, Interpolation, Extrapolation, Extrapolation)
@@ -653,8 +653,8 @@ template<class K, class V, class R
          *
          * @see @ref keys(), @ref operator[]()
          */
-        Containers::StridedArrayView<const V> values() const {
-            return reinterpret_cast<const Containers::StridedArrayView<const V>&>(TrackViewStorage<K>::_values);
+        Containers::StridedArrayView1D<const V> values() const {
+            return reinterpret_cast<const Containers::StridedArrayView1D<const V>&>(TrackViewStorage<K>::_values);
         }
 
         /**
