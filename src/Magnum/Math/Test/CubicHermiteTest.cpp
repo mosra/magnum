@@ -339,6 +339,9 @@ void CubicHermiteTest::constructZeroScalar() {
     CORRADE_COMPARE(b, (CubicHermite1D{0.0f, 0.0f, 0.0f}));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermite1D, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, CubicHermite1D>::value));
 }
 
 void CubicHermiteTest::constructZeroVector() {
@@ -349,6 +352,9 @@ void CubicHermiteTest::constructZeroVector() {
     CORRADE_COMPARE(b, (CubicHermite2D{{0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}}));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermite2D, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, CubicHermite2D>::value));
 }
 
 void CubicHermiteTest::constructZeroComplex() {
@@ -359,6 +365,9 @@ void CubicHermiteTest::constructZeroComplex() {
     CORRADE_COMPARE(b, (CubicHermiteComplex{{0.0f, 0.0f}, {0.0f, 0.0f}, {0.0f, 0.0f}}));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteComplex, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, CubicHermiteComplex>::value));
 }
 
 void CubicHermiteTest::constructZeroQuaternion() {
@@ -375,6 +384,9 @@ void CubicHermiteTest::constructZeroQuaternion() {
         {{0.0f, 0.0f, 0.0f}, 0.0f}}));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteQuaternion, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, CubicHermiteQuaternion>::value));
 }
 
 void CubicHermiteTest::constructIdentityScalar() {
@@ -393,6 +405,9 @@ void CubicHermiteTest::constructIdentityComplex() {
     CORRADE_COMPARE(b, (CubicHermiteComplex{{0.0f, 0.0f}, {1.0f, 0.0f}, {0.0f, 0.0f}}));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteComplex, IdentityInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, CubicHermiteComplex>::value));
 }
 
 void CubicHermiteTest::constructIdentityQuaternion() {
@@ -409,6 +424,9 @@ void CubicHermiteTest::constructIdentityQuaternion() {
         {{0.0f, 0.0f, 0.0f}, 0.0f}}));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteComplex, IdentityInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, CubicHermiteQuaternion>::value));
 }
 
 void CubicHermiteTest::constructNoInitScalar() {

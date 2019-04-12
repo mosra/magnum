@@ -124,11 +124,18 @@ template<class T> class Complex {
         /**
          * @brief Default constructor
          *
+         * Equivalent to @ref Complex(IdentityInitT).
+         */
+        constexpr /*implicit*/ Complex() noexcept: _real(T(1)), _imaginary(T(0)) {}
+
+        /**
+         * @brief Identity constructor
+         *
          * Constructs unit complex number. @f[
          *      c = 1 + i0
          * @f]
          */
-        constexpr /*implicit*/ Complex(IdentityInitT = IdentityInit) noexcept: _real(T(1)), _imaginary(T(0)) {}
+        constexpr explicit Complex(IdentityInitT) noexcept: _real(T(1)), _imaginary(T(0)) {}
 
         /** @brief Construct zero-initialized complex number */
         constexpr explicit Complex(ZeroInitT) noexcept: _real{}, _imaginary{} {}

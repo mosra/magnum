@@ -95,8 +95,15 @@ template<std::size_t size> class BoolVector {
             DataSize = (size-1)/8+1     /**< Vector storage size */
         };
 
+        /**
+         * @brief Default constructor
+         *
+         * Equivalent to @ref BoolVector(ZeroInitT).
+         */
+        constexpr /*implicit*/ BoolVector() noexcept: _data{} {}
+
         /** @brief Construct zero-filled boolean vector */
-        constexpr /*implicit*/ BoolVector(ZeroInitT = ZeroInit) noexcept: _data{} {}
+        constexpr explicit BoolVector(ZeroInitT) noexcept: _data{} {}
 
         /** @brief Construct without initializing the contents */
         explicit BoolVector(NoInitT) noexcept {}

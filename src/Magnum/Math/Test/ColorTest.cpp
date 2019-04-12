@@ -290,12 +290,12 @@ void ColorTest::construct() {
 
 void ColorTest::constructDefault() {
     constexpr Color3 a1;
-    constexpr Color3 a2{Math::ZeroInit};
+    constexpr Color3 a2{ZeroInit};
     CORRADE_COMPARE(a1, Color3(0.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(a2, Color3(0.0f, 0.0f, 0.0f));
 
     constexpr Color4 b1;
-    constexpr Color4 b2{Math::ZeroInit};
+    constexpr Color4 b2{ZeroInit};
     CORRADE_COMPARE(b1, Color4(0.0f, 0.0f, 0.0f, 0.0f));
     CORRADE_COMPARE(b2, Color4(0.0f, 0.0f, 0.0f, 0.0f));
 
@@ -306,13 +306,17 @@ void ColorTest::constructDefault() {
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Color4>::value);
     CORRADE_VERIFY((std::is_nothrow_constructible<Color3, ZeroInitT>::value));
     CORRADE_VERIFY((std::is_nothrow_constructible<Color4, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Color3>::value));
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Color4>::value));
 }
 
 void ColorTest::constructNoInit() {
     Color3 a{1.0f, 0.5f, 0.75f};
     Color4 b{1.0f, 0.5f, 0.75f, 0.5f};
-    new(&a) Color3{Math::NoInit};
-    new(&b) Color4{Math::NoInit};
+    new(&a) Color3{NoInit};
+    new(&b) Color4{NoInit};
     {
         #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
         CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
@@ -481,6 +485,9 @@ void ColorTest::constructHsvDefault() {
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<ColorHsv>::value);
     CORRADE_VERIFY((std::is_nothrow_constructible<ColorHsv, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, ColorHsv>::value));
 }
 
 void ColorTest::constructHsvNoInit() {

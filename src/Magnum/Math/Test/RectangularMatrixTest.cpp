@@ -174,6 +174,9 @@ void RectangularMatrixTest::constructDefault() {
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Matrix4x3>::value);
     CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4x3, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Matrix4x3>::value));
 }
 
 void RectangularMatrixTest::constructNoInit() {

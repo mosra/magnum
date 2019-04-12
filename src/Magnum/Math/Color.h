@@ -428,9 +428,16 @@ template<class T> class Color3: public Vector3<T> {
         /**
          * @brief Default constructor
          *
+         * Equivalent to @ref Color3(ZeroInitT).
+         */
+        constexpr /*implicit*/ Color3() noexcept: Vector3<T>{ZeroInit} {}
+
+        /**
+         * @brief Construct a zero color
+         *
          * All components are set to zero.
          */
-        constexpr /*implicit*/ Color3(ZeroInitT = ZeroInit) noexcept
+        constexpr explicit Color3(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             : Vector3<T>{ZeroInit}
@@ -833,11 +840,15 @@ class Color4: public Vector4<T> {
         /**
          * @brief Default constructor
          *
+         * Equivalent to @ref Color4(ZeroInitT).
+         */
+        constexpr /*implicit*/ Color4() noexcept: Vector4<T>{ZeroInit} {}
+
+        /**
+         * @brief Construct a zero color
+         *
          * All components are set to zero.
          */
-        constexpr /*implicit*/ Color4() noexcept: Vector4<T>(T(0), T(0), T(0), T(0)) {}
-
-        /** @copydoc Vector::Vector(ZeroInitT) */
         constexpr explicit Color4(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -1042,9 +1053,16 @@ template<class T> struct ColorHsv {
     /**
      * @brief Default constructor
      *
+     * Equivalent to @ref ColorHsv(ZeroInitT).
+     */
+    constexpr /*implicit*/ ColorHsv() noexcept: hue{}, saturation{}, value{} {}
+
+    /**
+     * @brief Construct a zero color
+     *
      * All members are set to zero.
      */
-    constexpr /*implicit*/ ColorHsv(ZeroInitT = ZeroInit) noexcept: hue{}, saturation{}, value{} {}
+    constexpr explicit ColorHsv(ZeroInitT) noexcept: hue{}, saturation{}, value{} {}
 
     /** @brief Construct without initializing the contents */
     explicit ColorHsv(NoInitT) noexcept: hue{NoInit} /* and the others not */ {}

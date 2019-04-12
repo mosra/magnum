@@ -70,12 +70,19 @@ template<class T> class Frustum {
         }
 
         /**
+         * @brief Default constructor
+         *
+         * Equivalent to @ref Frustum(IdentityInitT).
+         */
+        constexpr /*implicit*/ Frustum() noexcept: Frustum<T>{IdentityInit} {}
+
+        /**
          * @brief Identity constructor
          *
          * Equivalent to creating a frustum from an identity matrix.
          * @see @ref fromMatrix()
          */
-        constexpr /*implicit*/ Frustum(IdentityInitT = IdentityInit) noexcept;
+        constexpr explicit Frustum(IdentityInitT) noexcept;
 
         /** @brief Construct a frustum without initializing the contents */
         explicit Frustum(NoInitT) noexcept: _data{Vector4<T>{NoInit}, Vector4<T>{NoInit}, Vector4<T>{NoInit}, Vector4<T>{NoInit}, Vector4<T>{NoInit}, Vector4<T>{NoInit}} {}

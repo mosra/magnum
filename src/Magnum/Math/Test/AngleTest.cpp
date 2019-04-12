@@ -170,6 +170,10 @@ void AngleTest::constructDefault() {
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Rad>::value);
     CORRADE_VERIFY((std::is_nothrow_constructible<Deg, ZeroInitT>::value));
     CORRADE_VERIFY((std::is_nothrow_constructible<Rad, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Deg>::value));
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Rad>::value));
 }
 
 void AngleTest::constructNoInit() {

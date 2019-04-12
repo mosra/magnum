@@ -138,6 +138,10 @@ void DualTest::constructZero() {
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Dual, ZeroInitT>::value));
     CORRADE_VERIFY((std::is_nothrow_constructible<Math::Dual<Math::Quaternion<Float>>, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Dual>::value));
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Math::Dual<Math::Quaternion<Float>>>::value));
 }
 
 void DualTest::constructNoInit() {

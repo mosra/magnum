@@ -176,6 +176,9 @@ void DualComplexTest::constructIdentity() {
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<DualComplex>::value);
     CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, IdentityInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, DualComplex>::value));
 }
 
 void DualComplexTest::constructZero() {
@@ -183,6 +186,9 @@ void DualComplexTest::constructZero() {
     CORRADE_COMPARE(a, DualComplex({0.0f, 0.0f}, {0.0f, 0.0f}));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<DualComplex, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, DualComplex>::value));
 }
 
 void DualComplexTest::constructNoInit() {

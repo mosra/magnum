@@ -211,6 +211,9 @@ void QuaternionTest::constructIdentity() {
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Quaternion>::value);
     CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, IdentityInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, Quaternion>::value));
 }
 
 void QuaternionTest::constructZero() {
@@ -218,6 +221,9 @@ void QuaternionTest::constructZero() {
     CORRADE_COMPARE(a, Quaternion({0.0f, 0.0f, 0.0f}, 0.0f));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Quaternion, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Quaternion>::value));
 }
 
 void QuaternionTest::constructNoInit() {

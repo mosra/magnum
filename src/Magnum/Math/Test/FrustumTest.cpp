@@ -150,6 +150,9 @@ void FrustumTest::constructIdentity() {
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Frustum>::value);
     CORRADE_VERIFY((std::is_nothrow_constructible<Frustum, IdentityInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, Frustum>::value));
 }
 
 void FrustumTest::constructNoInit() {

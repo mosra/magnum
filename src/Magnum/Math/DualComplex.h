@@ -105,14 +105,21 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
         /**
          * @brief Default constructor
          *
+         * Equivalent to @ref DualComplex(IdentityInitT).
+         */
+        constexpr /*implicit*/ DualComplex() noexcept: Dual<Complex<T>>({}, {T(0), T(0)}) {}
+
+        /**
+         * @brief Identity constructor
+         *
          * Creates unit dual complex number. @f[
          *      \hat c = (0 + i1) + \epsilon (0 + i0)
          * @f]
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
-        constexpr /*implicit*/ DualComplex(IdentityInitT = IdentityInit) noexcept;
+        constexpr explicit DualComplex(IdentityInitT) noexcept;
         #else
-        constexpr /*implicit*/ DualComplex(IdentityInitT = IdentityInit) noexcept: Dual<Complex<T>>({}, {T(0), T(0)}) {}
+        constexpr explicit DualComplex(IdentityInitT) noexcept: Dual<Complex<T>>({}, {T(0), T(0)}) {}
         #endif
 
         /** @brief Construct zero-initialized dual complex number */

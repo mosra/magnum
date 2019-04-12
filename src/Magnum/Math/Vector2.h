@@ -100,8 +100,15 @@ template<class T> class Vector2: public Vector<2, T> {
          */
         constexpr static Vector2<T> yScale(T scale) { return {T(1), scale}; }
 
+        /**
+         * @brief Default constructor
+         *
+         * Equivalent to @ref Vector2(ZeroInitT).
+         */
+        constexpr /*implicit*/ Vector2() noexcept: Vector<2, T>{ZeroInit} {}
+
         /** @copydoc Vector::Vector(ZeroInitT) */
-        constexpr /*implicit*/ Vector2(ZeroInitT = ZeroInit) noexcept
+        constexpr explicit Vector2(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             : Vector<2, T>{ZeroInit}

@@ -100,9 +100,16 @@ template<UnsignedInt order, UnsignedInt dimensions, class T> class Bezier {
         /**
          * @brief Default constructor
          *
-         * Construct the curve with all control points being zero vectors.
+         * Equivalent to @ref Bezier(ZeroInitT).
          */
-        constexpr /*implicit*/ Bezier(ZeroInitT = ZeroInit) noexcept
+        constexpr /*implicit*/ Bezier() noexcept: Bezier<order, dimensions, T>{typename Implementation::GenerateSequence<order + 1>::Type{}, ZeroInit} {}
+
+        /**
+         * @brief Construct a zero curve
+         *
+         * All control points are zero vectors.
+         */
+        constexpr explicit Bezier(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             : Bezier<order, dimensions, T>{typename Implementation::GenerateSequence<order + 1>::Type{}, ZeroInit}

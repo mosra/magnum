@@ -270,11 +270,18 @@ template<class T> class Quaternion {
         /**
          * @brief Default constructor
          *
+         * Equivalent to @ref Quaternion(IdentityInitT).
+         */
+        constexpr /*implicit*/ Quaternion() noexcept: _scalar{T(1)} {}
+
+        /**
+         * @brief Identity constructor
+         *
          * Creates unit quaternion. @f[
          *      q = [\boldsymbol 0, 1]
          * @f]
          */
-        constexpr /*implicit*/ Quaternion(IdentityInitT = IdentityInit) noexcept: _scalar{T(1)} {}
+        constexpr explicit Quaternion(IdentityInitT) noexcept: _scalar{T(1)} {}
 
         /** @brief Construct zero-initialized quaternion */
         constexpr explicit Quaternion(ZeroInitT) noexcept: _vector{ZeroInit}, _scalar{T{0}} {}

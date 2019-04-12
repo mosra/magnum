@@ -64,9 +64,12 @@ class Half {
         /**
          * @brief Default constructor
          *
-         * Creates a zero value.
+         * Equivalent to @ref Half(ZeroInitT).
          */
-        constexpr /*implicit*/ Half(ZeroInitT = ZeroInit) noexcept: _data{} {}
+        constexpr /*implicit*/ Half() noexcept: _data{} {}
+
+        /** @brief Construct a zero value */
+        constexpr explicit Half(ZeroInitT) noexcept: _data{} {}
 
         /** @brief Construct a half value from underlying 16-bit representation */
         constexpr explicit Half(UnsignedShort data) noexcept: _data{data} {}

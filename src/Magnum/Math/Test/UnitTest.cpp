@@ -87,6 +87,9 @@ void UnitTest::constructDefault() {
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Sec>::value);
     CORRADE_VERIFY((std::is_nothrow_constructible<Sec, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Sec>::value));
 }
 
 void UnitTest::constructNoInit() {

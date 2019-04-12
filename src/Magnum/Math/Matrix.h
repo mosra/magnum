@@ -65,10 +65,17 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         /**
          * @brief Default constructor
          *
-         * Creates identity matrix. @p value allows you to specify value on
+         * Equivalent to @ref Matrix(IdentityInitT, T).
+         */
+        constexpr /*implicit*/ Matrix() noexcept: RectangularMatrix<size, size, T>{typename Implementation::GenerateSequence<size>::Type(), Vector<size, T>(T(1))} {}
+
+        /**
+         * @brief Identity constructor
+         *
+         * Creates an identity matrix. @p value allows you to specify value on
          * diagonal.
          */
-        constexpr /*implicit*/ Matrix(IdentityInitT = IdentityInit, T value = T(1)) noexcept
+        constexpr explicit Matrix(IdentityInitT, T value = T(1)) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             : RectangularMatrix<size, size, T>{typename Implementation::GenerateSequence<size>::Type(), Vector<size, T>(value)}

@@ -245,11 +245,18 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
         /**
          * @brief Default constructor
          *
+         * Equivalent to @ref DualQuaternion(IdentityInitT).
+         */
+        constexpr /*implicit*/ DualQuaternion() noexcept: Dual<Quaternion<T>>{{}, {{}, T(0)}} {}
+
+        /**
+         * @brief Identity constructor
+         *
          * Creates unit dual quaternion. @f[
          *      \hat q = [\boldsymbol 0, 1] + \epsilon [\boldsymbol 0, 0]
          * @f]
          */
-        constexpr /*implicit*/ DualQuaternion(IdentityInitT = IdentityInit) noexcept
+        constexpr explicit DualQuaternion(IdentityInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             : Dual<Quaternion<T>>{{}, {{}, T(0)}}

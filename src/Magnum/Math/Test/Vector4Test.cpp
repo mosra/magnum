@@ -138,6 +138,9 @@ void Vector4Test::constructDefault() {
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Vector4>::value);
     CORRADE_VERIFY((std::is_nothrow_constructible<Vector4, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Vector4>::value));
 }
 
 void Vector4Test::constructNoInit() {

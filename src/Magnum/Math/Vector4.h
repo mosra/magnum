@@ -59,8 +59,15 @@ template<class T> class Vector4: public Vector<4, T> {
                     3 < otherSize ? a[3] : w};
         }
 
+        /**
+         * @brief Default constructor
+         *
+         * Equivalent to @ref Vector4(ZeroInitT).
+         */
+        constexpr /*implicit*/ Vector4() noexcept: Vector<4, T>{ZeroInit} {}
+
         /** @copydoc Vector::Vector(ZeroInitT) */
-        constexpr /*implicit*/ Vector4(ZeroInitT = ZeroInit) noexcept
+        constexpr explicit Vector4(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             : Vector<4, T>{ZeroInit}

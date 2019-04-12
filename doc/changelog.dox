@@ -187,6 +187,9 @@ See also:
 -   @ref Math::BoolVector now implements component-wise @cpp && @ce,
     @cpp || @ce and @cpp ! @ce for better consistency with boolean operations
     done on scalar types
+-   Construction using @ref Math::ZeroInit and @ref Math::IdentityInit is
+    now explicit, to be consistent with @ref Math::NoInit construction and
+    avoid ambiguous cases
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 

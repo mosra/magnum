@@ -217,6 +217,9 @@ void Matrix4Test::constructIdentity() {
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Matrix4>::value);
     CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, IdentityInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, Matrix4>::value));
 }
 
 void Matrix4Test::constructZero() {
@@ -227,6 +230,9 @@ void Matrix4Test::constructZero() {
                                {0.0f, 0.0f, 0.0f, 0.0f}));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Matrix4, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Matrix4>::value));
 }
 
 void Matrix4Test::constructNoInit() {

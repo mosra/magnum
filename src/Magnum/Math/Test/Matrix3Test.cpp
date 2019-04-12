@@ -184,6 +184,9 @@ void Matrix3Test::constructIdentity() {
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Matrix3>::value);
     CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, IdentityInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, Matrix3>::value));
 }
 
 void Matrix3Test::constructZero() {
@@ -193,6 +196,9 @@ void Matrix3Test::constructZero() {
                                {0.0f, 0.0f, 0.0f}));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Matrix3, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Matrix3>::value));
 }
 
 void Matrix3Test::constructNoInit() {

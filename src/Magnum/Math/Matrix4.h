@@ -383,10 +383,17 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         /**
          * @brief Default constructor
          *
-         * Creates identity matrix. @p value allows you to specify value on
+         * Equivalent to @ref Matrix4(IdentityInitT, T).
+         */
+        constexpr /*implicit*/ Matrix4() noexcept: Matrix4x4<T>{IdentityInit, T(1)} {}
+
+        /**
+         * @brief Identity constructor
+         *
+         * Creates an identity matrix. @p value allows you to specify value on
          * diagonal.
          */
-        constexpr /*implicit*/ Matrix4(IdentityInitT = IdentityInit, T value = T{1}) noexcept
+        constexpr explicit Matrix4(IdentityInitT, T value = T{1}) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             : Matrix4x4<T>{IdentityInit, value}

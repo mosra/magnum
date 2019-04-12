@@ -98,8 +98,15 @@ These silent errors are easily avoided by requiring explicit conversions:
 */
 template<class T> class Deg: public Unit<Deg, T> {
     public:
-        /** @brief Construct zero angle */
-        constexpr /*implicit*/ Deg(ZeroInitT = ZeroInit) noexcept
+        /**
+         * @brief Default constructor
+         *
+         * Equivalent to @ref Deg(ZeroInitT).
+         */
+        constexpr /*implicit*/ Deg() noexcept: Unit<Math::Deg, T>{ZeroInit} {}
+
+        /** @brief Construct a zero angle */
+        constexpr explicit Deg(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             : Unit<Math::Deg, T>{ZeroInit}
@@ -170,8 +177,15 @@ See @ref Deg for more information.
 */
 template<class T> class Rad: public Unit<Rad, T> {
     public:
-        /** @brief Default constructor */
-        constexpr /*implicit*/ Rad(ZeroInitT = ZeroInit) noexcept
+        /**
+         * @brief Default constructor
+         *
+         * Equivalent to @ref Rad(ZeroInitT).
+         */
+        constexpr /*implicit*/ Rad() noexcept: Unit<Math::Rad, T>{ZeroInit} {}
+
+        /** @brief Constructor a zero angle */
+        constexpr explicit Rad(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             : Unit<Math::Rad, T>{ZeroInit}

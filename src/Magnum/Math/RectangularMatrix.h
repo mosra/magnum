@@ -107,8 +107,15 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
             return RectangularMatrix(typename Implementation::GenerateSequence<cols>::Type(), diagonal);
         }
 
+        /**
+         * @brief Default constructor
+         *
+         * Equivalent to @ref RectangularMatrix(ZeroInitT).
+         */
+        constexpr /*implicit*/ RectangularMatrix() noexcept: RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, ZeroInit} {}
+
         /** @brief Construct zero-filled matrix */
-        constexpr /*implicit*/ RectangularMatrix(ZeroInitT = ZeroInit) noexcept
+        constexpr explicit RectangularMatrix(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             : RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, ZeroInit}

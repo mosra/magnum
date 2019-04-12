@@ -185,6 +185,9 @@ void ComplexTest::constructIdentity() {
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<Complex>::value);
     CORRADE_VERIFY((std::is_nothrow_constructible<Complex, IdentityInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, Complex>::value));
 }
 
 void ComplexTest::constructZero() {
@@ -192,6 +195,9 @@ void ComplexTest::constructZero() {
     CORRADE_COMPARE(a, Complex(0.0f, 0.0f));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<Complex, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Complex>::value));
 }
 
 void ComplexTest::constructNoInit() {

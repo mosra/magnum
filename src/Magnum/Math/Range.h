@@ -97,11 +97,18 @@ template<UnsignedInt dimensions, class T> class Range {
         }
 
         /**
+         * @brief Default constructor
+         *
+         * Equivalent to @ref Range(ZeroInitT).
+         */
+        constexpr /*implicit*/ Range() noexcept: Range<dimensions, T>{ZeroInit, typename std::conditional<dimensions == 1, void*, ZeroInitT*>::type{}} {}
+
+        /**
          * @brief Construct zero range
          *
          * Construct zero-size range positioned at origin.
          */
-        constexpr /*implicit*/ Range(ZeroInitT = ZeroInit) noexcept: Range<dimensions, T>{ZeroInit, typename std::conditional<dimensions == 1, void*, ZeroInitT*>::type{}} {}
+        constexpr explicit Range(ZeroInitT) noexcept: Range<dimensions, T>{ZeroInit, typename std::conditional<dimensions == 1, void*, ZeroInitT*>::type{}} {}
 
         /** @brief Construct without initializing the contents */
         explicit Range(NoInitT) noexcept: Range<dimensions, T>{NoInit, typename std::conditional<dimensions == 1, void*, NoInitT*>::type{}} {}
@@ -351,8 +358,15 @@ See @ref Range for more information.
 */
 template<class T> class Range2D: public Range<2, T> {
     public:
+        /**
+         * @brief Default constructor
+         *
+         * Equivalent to @ref Range2D(ZeroInitT).
+         */
+        constexpr /*implicit*/ Range2D() noexcept: Range<2, T>{ZeroInit} {}
+
         /** @copydoc Range(ZeroInitT) */
-        constexpr /*implicit*/ Range2D(ZeroInitT = ZeroInit) noexcept
+        constexpr explicit Range2D(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             : Range<2, T>{ZeroInit}
@@ -494,8 +508,15 @@ See @ref Range for more information.
 */
 template<class T> class Range3D: public Range<3, T> {
     public:
+        /**
+         * @brief Default constructor
+         *
+         * Equivalent to @ref Range3D(ZeroInitT).
+         */
+        constexpr /*implicit*/ Range3D() noexcept: Range<3, T>{ZeroInit} {}
+
         /** @copydoc Range(ZeroInitT) */
-        constexpr /*implicit*/ Range3D(ZeroInitT = ZeroInit) noexcept
+        constexpr explicit Range3D(ZeroInitT) noexcept
             /** @todoc remove workaround when doxygen is sane */
             #ifndef DOXYGEN_GENERATING_OUTPUT
             : Range<3, T>{ZeroInit}

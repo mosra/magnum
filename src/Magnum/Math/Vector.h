@@ -165,11 +165,18 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Default constructor
          *
+         * Equivalent to @ref Vector(ZeroInitT).
+         */
+        constexpr /*implicit*/ Vector() noexcept: _data{} {}
+
+        /**
+         * @brief Construct a zero vector
+         *
          * @f[
          *      \boldsymbol v = \boldsymbol 0
          * @f]
          */
-        constexpr /*implicit*/ Vector(ZeroInitT = ZeroInit) noexcept: _data{} {}
+        constexpr explicit Vector(ZeroInitT) noexcept: _data{} {}
 
         /** @brief Construct vector without initializing the contents */
         explicit Vector(NoInitT) noexcept {}

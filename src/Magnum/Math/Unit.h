@@ -46,8 +46,15 @@ template<template<class> class Derived, class T> class Unit {
     public:
         typedef T Type;             /**< @brief Underlying data type */
 
+        /**
+         * @brief Default constructor
+         *
+         * Equivalent to @ref Unit(ZeroInitT).
+         */
+        constexpr /*implicit*/ Unit() noexcept: _value(T(0)) {}
+
         /** @brief Construct zero value */
-        constexpr /*implicit*/ Unit(ZeroInitT = ZeroInit) noexcept: _value(T(0)) {}
+        constexpr explicit Unit(ZeroInitT) noexcept: _value(T(0)) {}
 
         /** @brief Construct without initializing the contents */
         explicit Unit(NoInitT) noexcept {}

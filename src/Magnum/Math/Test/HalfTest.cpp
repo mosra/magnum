@@ -564,6 +564,9 @@ void HalfTest::constructDefault() {
 
     CORRADE_VERIFY((std::is_nothrow_default_constructible<Half>::value));
     CORRADE_VERIFY((std::is_nothrow_constructible<Half, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, Half>::value));
 }
 
 void HalfTest::constructValue() {

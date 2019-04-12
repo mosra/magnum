@@ -201,6 +201,9 @@ void DualQuaternionTest::constructIdentity() {
 
     CORRADE_VERIFY(std::is_nothrow_default_constructible<DualQuaternion>::value);
     CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, IdentityInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<IdentityInitT, DualQuaternion>::value));
 }
 
 void DualQuaternionTest::constructZero() {
@@ -208,6 +211,9 @@ void DualQuaternionTest::constructZero() {
     CORRADE_COMPARE(a, DualQuaternion({{0.0f, 0.0f, 0.0f}, 0.0f}, {{0.0f, 0.0f, 0.0f}, 0.0f}));
 
     CORRADE_VERIFY((std::is_nothrow_constructible<DualQuaternion, ZeroInitT>::value));
+
+    /* Implicit construction is not allowed */
+    CORRADE_VERIFY(!(std::is_convertible<ZeroInitT, DualQuaternion>::value));
 }
 
 void DualQuaternionTest::constructNoInit() {
