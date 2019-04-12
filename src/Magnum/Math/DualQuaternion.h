@@ -256,28 +256,13 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      \hat q = [\boldsymbol 0, 1] + \epsilon [\boldsymbol 0, 0]
          * @f]
          */
-        constexpr explicit DualQuaternion(IdentityInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Dual<Quaternion<T>>{{}, {{}, T(0)}}
-            #endif
-            {}
+        constexpr explicit DualQuaternion(IdentityInitT) noexcept: Dual<Quaternion<T>>{{}, {{}, T(0)}} {}
 
         /** @brief Construct zero-initialized dual quaternion */
-        constexpr explicit DualQuaternion(ZeroInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Dual<Quaternion<T>>{Quaternion<T>{ZeroInit}, Quaternion<T>{ZeroInit}}
-            #endif
-            {}
+        constexpr explicit DualQuaternion(ZeroInitT) noexcept: Dual<Quaternion<T>>{Quaternion<T>{ZeroInit}, Quaternion<T>{ZeroInit}} {}
 
         /** @brief Construct without initializing the contents */
-        explicit DualQuaternion(NoInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Dual<Quaternion<T>>{NoInit}
-            #endif
-            {}
+        explicit DualQuaternion(NoInitT) noexcept: Dual<Quaternion<T>>{NoInit} {}
 
         /**
          * @brief Construct dual quaternion from real and dual part
@@ -295,11 +280,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          *      \hat q = [\hat{\boldsymbol v}, \hat s] = [\boldsymbol v_0, s_0] + \epsilon [\boldsymbol v_\epsilon, s_\epsilon]
          * @f]
          */
-        constexpr /*implicit*/ DualQuaternion(const Dual<Vector3<T>>& vector, const Dual<T>& scalar) noexcept
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Dual<Quaternion<T>>{{vector.real(), scalar.real()}, {vector.dual(), scalar.dual()}}
-            #endif
-            {}
+        constexpr /*implicit*/ DualQuaternion(const Dual<Vector3<T>>& vector, const Dual<T>& scalar) noexcept: Dual<Quaternion<T>>{{vector.real(), scalar.real()}, {vector.dual(), scalar.dual()}} {}
 
         /**
          * @brief Construct dual quaternion from vector
@@ -309,11 +290,7 @@ template<class T> class DualQuaternion: public Dual<Quaternion<T>> {
          * @f]
          * @see @ref transformPointNormalized()
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        constexpr explicit DualQuaternion(const Vector3<T>& vector) noexcept;
-        #else
         constexpr explicit DualQuaternion(const Vector3<T>& vector) noexcept: Dual<Quaternion<T>>({}, {vector, T(0)}) {}
-        #endif
 
         /**
          * @brief Construct dual quaternion from another of different type

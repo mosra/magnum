@@ -116,27 +116,13 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          *      \hat c = (0 + i1) + \epsilon (0 + i0)
          * @f]
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        constexpr explicit DualComplex(IdentityInitT) noexcept;
-        #else
         constexpr explicit DualComplex(IdentityInitT) noexcept: Dual<Complex<T>>({}, {T(0), T(0)}) {}
-        #endif
 
         /** @brief Construct zero-initialized dual complex number */
-        constexpr explicit DualComplex(ZeroInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Dual<Complex<T>>{Complex<T>{ZeroInit}, Complex<T>{ZeroInit}}
-            #endif
-            {}
+        constexpr explicit DualComplex(ZeroInitT) noexcept: Dual<Complex<T>>{Complex<T>{ZeroInit}, Complex<T>{ZeroInit}} {}
 
         /** @brief Construct without initializing the contents */
-        explicit DualComplex(NoInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Dual<Complex<T>>{NoInit}
-            #endif
-            {}
+        explicit DualComplex(NoInitT) noexcept: Dual<Complex<T>>{NoInit} {}
 
         /**
          * @brief Construct dual complex number from real and dual part
@@ -157,11 +143,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          *      \hat c = (0 + i1) + \epsilon(v_x + iv_y)
          * @f]
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        constexpr explicit DualComplex(const Vector2<T>& vector) noexcept;
-        #else
         constexpr explicit DualComplex(const Vector2<T>& vector) noexcept: Dual<Complex<T>>({}, Complex<T>(vector)) {}
-        #endif
 
         /**
          * @brief Construct dual complex number from another of different type
@@ -169,12 +151,7 @@ template<class T> class DualComplex: public Dual<Complex<T>> {
          * Performs only default casting on the values, no rounding or anything
          * else.
          */
-        template<class U> constexpr explicit DualComplex(const DualComplex<U>& other) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Dual<Complex<T>>{other}
-            #endif
-            {}
+        template<class U> constexpr explicit DualComplex(const DualComplex<U>& other) noexcept: Dual<Complex<T>>{other} {}
 
         /** @brief Construct dual complex number from external representation */
         template<class U, class V = decltype(Implementation::DualComplexConverter<T, U>::from(std::declval<U>()))> constexpr explicit DualComplex(const U& other): DualComplex{Implementation::DualComplexConverter<T, U>::from(other)} {}

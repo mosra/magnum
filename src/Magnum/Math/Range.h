@@ -366,20 +366,10 @@ template<class T> class Range2D: public Range<2, T> {
         constexpr /*implicit*/ Range2D() noexcept: Range<2, T>{ZeroInit} {}
 
         /** @copydoc Range(ZeroInitT) */
-        constexpr explicit Range2D(ZeroInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Range<2, T>{ZeroInit}
-            #endif
-            {}
+        constexpr explicit Range2D(ZeroInitT) noexcept: Range<2, T>{ZeroInit} {}
 
         /** @copydoc Range(NoInitT) */
-        explicit Range2D(NoInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Range<2, T>{NoInit}
-            #endif
-            {}
+        explicit Range2D(NoInitT) noexcept: Range<2, T>{NoInit} {}
 
         /** @copydoc Range(const VectorType&, const VectorType&) */
         constexpr /*implicit*/ Range2D(const Vector2<T>& min, const Vector2<T>& max) noexcept: Range<2, T>(min, max) {}
@@ -398,12 +388,7 @@ template<class T> class Range2D: public Range<2, T> {
             decltype(Implementation::RangeConverter<2, T, U>())
             #endif
             >
-        constexpr explicit Range2D(const U& other)
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Range<2, T>{Implementation::RangeConverter<2, T, U>::from(other)}
-            #endif
-            {}
+        constexpr explicit Range2D(const U& other): Range<2, T>{Implementation::RangeConverter<2, T, U>::from(other)} {}
 
         /** @copydoc Range(const Range&) */
         constexpr /*implicit*/ Range2D(const Range<2, T>& other) noexcept: Range<2, T>(other) {}
@@ -516,20 +501,10 @@ template<class T> class Range3D: public Range<3, T> {
         constexpr /*implicit*/ Range3D() noexcept: Range<3, T>{ZeroInit} {}
 
         /** @copydoc Range(ZeroInitT) */
-        constexpr explicit Range3D(ZeroInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Range<3, T>{ZeroInit}
-            #endif
-            {}
+        constexpr explicit Range3D(ZeroInitT) noexcept: Range<3, T>{ZeroInit} {}
 
         /** @brief @copybrief Range(NoInitT) */
-        explicit Range3D(NoInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Range<3, T>{NoInit}
-            #endif
-            {}
+        explicit Range3D(NoInitT) noexcept: Range<3, T>{NoInit} {}
 
         /** @copydoc Range(const VectorType&, const VectorType&) */
         constexpr /*implicit*/ Range3D(const Vector3<T>& min, const Vector3<T>& max) noexcept: Range<3, T>(min, max) {}
@@ -541,12 +516,7 @@ template<class T> class Range3D: public Range<3, T> {
          * @brief Construct range from external representation
          * @todoc Remove workaround when Doxygen no longer chokes on that line
          */
-        template<class U, class V = decltype(Implementation::RangeConverter<3, T, U>::from(std::declval<U>()))> constexpr explicit Range3D(const U& other) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Range<3, T>{Implementation::RangeConverter<3, T, U>::from(other)}
-            #endif
-            {}
+        template<class U, class V = decltype(Implementation::RangeConverter<3, T, U>::from(std::declval<U>()))> constexpr explicit Range3D(const U& other) noexcept: Range<3, T>{Implementation::RangeConverter<3, T, U>::from(other)} {}
 
         /** @copydoc Range(const Range&) */
         constexpr /*implicit*/ Range3D(const Range<3, T>& other) noexcept: Range<3, T>(other) {}

@@ -75,39 +75,19 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * Creates an identity matrix. @p value allows you to specify value on
          * diagonal.
          */
-        constexpr explicit Matrix(IdentityInitT, T value = T(1)) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : RectangularMatrix<size, size, T>{typename Implementation::GenerateSequence<size>::Type(), Vector<size, T>(value)}
-            #endif
-            {}
+        constexpr explicit Matrix(IdentityInitT, T value = T(1)) noexcept: RectangularMatrix<size, size, T>{typename Implementation::GenerateSequence<size>::Type(), Vector<size, T>(value)} {}
 
         /** @copydoc RectangularMatrix::RectangularMatrix(ZeroInitT) */
-        constexpr explicit Matrix(ZeroInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : RectangularMatrix<size, size, T>{ZeroInit}
-            #endif
-            {}
+        constexpr explicit Matrix(ZeroInitT) noexcept: RectangularMatrix<size, size, T>{ZeroInit} {}
 
         /** @copydoc RectangularMatrix::RectangularMatrix(NoInitT) */
-        constexpr explicit Matrix(NoInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : RectangularMatrix<size, size, T>{NoInit}
-            #endif
-            {}
+        constexpr explicit Matrix(NoInitT) noexcept: RectangularMatrix<size, size, T>{NoInit} {}
 
         /** @brief Construct matrix from column vectors */
         template<class ...U> constexpr /*implicit*/ Matrix(const Vector<size, T>& first, const U&... next) noexcept: RectangularMatrix<size, size, T>(first, next...) {}
 
         /** @brief Construct matrix with one value for all elements */
-        constexpr explicit Matrix(T value) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : RectangularMatrix<size, size, T>{typename Implementation::GenerateSequence<size>::Type(), value}
-            #endif
-            {}
+        constexpr explicit Matrix(T value) noexcept: RectangularMatrix<size, size, T>{typename Implementation::GenerateSequence<size>::Type(), value} {}
 
         /**
          * @brief Construct matrix from another of different type
@@ -129,12 +109,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
          * columns and rows from it; if the other matrix is smaller, it's
          * expanded to an identity (ones on diagonal, zeros elsewhere).
          */
-        template<std::size_t otherSize> constexpr explicit Matrix(const RectangularMatrix<otherSize, otherSize, T>& other) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Matrix<size, T>{typename Implementation::GenerateSequence<size>::Type(), other}
-            #endif
-            {}
+        template<std::size_t otherSize> constexpr explicit Matrix(const RectangularMatrix<otherSize, otherSize, T>& other) noexcept: Matrix<size, T>{typename Implementation::GenerateSequence<size>::Type(), other} {}
 
         /** @brief Copy constructor */
         constexpr /*implicit*/ Matrix(const RectangularMatrix<size, size, T>& other) noexcept: RectangularMatrix<size, size, T>(other) {}

@@ -208,39 +208,19 @@ template<class T> class Matrix3: public Matrix3x3<T> {
          * Creates an identity matrix. @p value allows you to specify value on
          * diagonal.
          */
-        constexpr explicit Matrix3(IdentityInitT, T value = T{1}) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Matrix3x3<T>{IdentityInit, value}
-            #endif
-            {}
+        constexpr explicit Matrix3(IdentityInitT, T value = T{1}) noexcept: Matrix3x3<T>{IdentityInit, value} {}
 
         /** @copydoc Matrix::Matrix(ZeroInitT) */
-        constexpr explicit Matrix3(ZeroInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Matrix3x3<T>{ZeroInit}
-            #endif
-            {}
+        constexpr explicit Matrix3(ZeroInitT) noexcept: Matrix3x3<T>{ZeroInit} {}
 
         /** @copydoc Matrix::Matrix(NoInitT) */
-        constexpr explicit Matrix3(NoInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Matrix3x3<T>{NoInit}
-            #endif
-            {}
+        constexpr explicit Matrix3(NoInitT) noexcept: Matrix3x3<T>{NoInit} {}
 
         /** @brief Construct matrix from column vectors */
         constexpr /*implicit*/ Matrix3(const Vector3<T>& first, const Vector3<T>& second, const Vector3<T>& third) noexcept: Matrix3x3<T>(first, second, third) {}
 
         /** @brief Construct matrix with one value for all elements */
-        constexpr explicit Matrix3(T value) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Matrix3x3<T>{value}
-            #endif
-            {}
+        constexpr explicit Matrix3(T value) noexcept: Matrix3x3<T>{value} {}
 
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */
         template<class U> constexpr explicit Matrix3(const RectangularMatrix<3, 3, U>& other) noexcept: Matrix3x3<T>(other) {}

@@ -437,20 +437,10 @@ template<class T> class Color3: public Vector3<T> {
          *
          * All components are set to zero.
          */
-        constexpr explicit Color3(ZeroInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Vector3<T>{ZeroInit}
-            #endif
-            {}
+        constexpr explicit Color3(ZeroInitT) noexcept: Vector3<T>{ZeroInit} {}
 
         /** @copydoc Vector::Vector(NoInitT) */
-        explicit Color3(NoInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Vector3<T>{NoInit}
-            #endif
-            {}
+        explicit Color3(NoInitT) noexcept: Vector3<T>{NoInit} {}
 
         /**
          * @brief Gray constructor
@@ -849,20 +839,10 @@ class Color4: public Vector4<T> {
          *
          * All components are set to zero.
          */
-        constexpr explicit Color4(ZeroInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Vector4<T>{ZeroInit}
-            #endif
-            {}
+        constexpr explicit Color4(ZeroInitT) noexcept: Vector4<T>{ZeroInit} {}
 
         /** @copydoc Vector::Vector(NoInitT) */
-        explicit Color4(NoInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Vector4<T>{NoInit}
-            #endif
-            {}
+        explicit Color4(NoInitT) noexcept: Vector4<T>{NoInit} {}
 
         /**
          * @copydoc Color3::Color3(T)

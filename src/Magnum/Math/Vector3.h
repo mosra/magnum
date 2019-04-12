@@ -129,20 +129,10 @@ template<class T> class Vector3: public Vector<3, T> {
         constexpr /*implicit*/ Vector3() noexcept: Vector<3, T>{ZeroInit} {}
 
         /** @copydoc Vector::Vector(ZeroInitT) */
-        constexpr explicit Vector3(ZeroInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Vector<3, T>{ZeroInit}
-            #endif
-            {}
+        constexpr explicit Vector3(ZeroInitT) noexcept: Vector<3, T>{ZeroInit} {}
 
         /** @copydoc Vector::Vector(NoInitT) */
-        explicit Vector3(NoInitT) noexcept
-            /** @todoc remove workaround when doxygen is sane */
-            #ifndef DOXYGEN_GENERATING_OUTPUT
-            : Vector<3, T>{NoInit}
-            #endif
-            {}
+        explicit Vector3(NoInitT) noexcept: Vector<3, T>{NoInit} {}
 
         /** @copydoc Vector::Vector(T) */
         constexpr explicit Vector3(T value) noexcept: Vector<3, T>(value) {}
