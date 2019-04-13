@@ -61,10 +61,70 @@ if(WITH_PRIMITIVES)
 endif()
 
 if(BUILD_GL_TESTS)
+    # Otherwise CMake complains that Corrade::PluginManager is not found
+    find_package(Corrade REQUIRED PluginManager)
+
     corrade_add_resource(FullScreenTriangleGLTest_RESOURCES resources.conf)
     set_target_properties(FullScreenTriangleGLTest_RESOURCES-dependencies PROPERTIES FOLDER "Magnum/MeshTools/Test")
 
     corrade_add_test(MeshToolsFullScreenTriangleGLTest
         FullScreenTriangleGLTest.cpp ${FullScreenTriangleGLTest_RESOURCES}
         LIBRARIES MagnumMeshTools MagnumGL MagnumOpenGLTester)
+
+    if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
+        set(COMPILEGLTEST_TEST_DIR ".")
+    else()
+        set(COMPILEGLTEST_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR}/CompileTestFiles)
+    endif()
+
+    # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
+    # https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since
+    # Corrade doesn't support dynamic plugins on iOS, this sorta works around
+    # that. Should be revisited when updating Travis to newer Xcode (current
+    # has CMake 3.6).
+    if(NOT BUILD_PLUGINS_STATIC)
+        if(WITH_ANYIMAGEIMPORTER)
+            set(ANYIMAGEIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:AnyImageImporter>)
+        endif()
+        if(WITH_TGAIMPORTER)
+            set(TGAIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
+        endif()
+
+        # First replace ${} variables, then $<> generator expressions
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                       ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+        file(GENERATE OUTPUT $<TARGET_FILE_DIR:MeshToolsCompileGLTest>/configure.h
+            INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+    else()
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                       ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+    endif()
+
+    corrade_add_test(MeshToolsCompileGLTest CompileGLTest.cpp
+        LIBRARIES
+            MagnumDebugTools
+            MagnumGL
+            MagnumOpenGLTester
+            MagnumMeshTools
+            MagnumShaders
+        FILES
+            CompileTestFiles/color2D.tga
+            CompileTestFiles/color3D.tga
+            CompileTestFiles/flat2D.tga
+            CompileTestFiles/flat3D.tga
+            CompileTestFiles/phong.tga
+            CompileTestFiles/textured2D.tga
+            CompileTestFiles/textured3D.tga)
+    set_target_properties(MeshToolsCompileGLTest PROPERTIES FOLDER "Magnum/MeshTools/Test")
+    if(NOT BUILD_PLUGINS_STATIC)
+        target_include_directories(MeshToolsCompileGLTest PRIVATE $<TARGET_FILE_DIR:MeshToolsCompileGLTest>)
+    else()
+        target_include_directories(MeshToolsCompileGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+        if(WITH_ANYIMAGEIMPORTER)
+            target_link_libraries(MeshToolsCompileGLTest PRIVATE AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            target_link_libraries(MeshToolsCompileGLTest PRIVATE TgaImporter)
+        endif()
+    endif()
 endif()
