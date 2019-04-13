@@ -137,7 +137,7 @@ GL::Mesh compile(const Trade::MeshData3D& meshData) {
     }
     if(meshData.hasTextureCoords2D()) {
         stride += sizeof(Shaders::Generic3D::TextureCoordinates::Type);
-        colorsOffset += sizeof(Shaders::Generic3D::Normal::Type);
+        colorsOffset += sizeof(Shaders::Generic3D::TextureCoordinates::Type);
     }
     if(meshData.hasColors())
         stride += sizeof(Shaders::Generic3D::Color4::Type);

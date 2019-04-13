@@ -297,6 +297,8 @@ See also:
     (see [mosra/magnum#331](https://github.com/mosra/magnum/pull/331)
 -   Reading of float textures on ES3 contexts using
     @ref DebugTools::textureSubImage() returned a zero-sized image by accident
+-   @ref MeshTools::compile() was producing an incorrect mesh when
+    @ref Trade::MeshData3D had both colors and texture coordinates
 -   Properly zero-initializing the UTF-8 buffer in
     @ref Platform::GlfwApplication::textInputEvent() (see
     [mosra/magnum#324](https://github.com/mosra/magnum/pull/324))
