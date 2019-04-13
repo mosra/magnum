@@ -23,7 +23,10 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/MeshTools/Duplicate.h"
@@ -34,15 +37,72 @@ struct DuplicateTest: TestSuite::Tester {
     explicit DuplicateTest();
 
     void duplicate();
+    void duplicateOutOfBounds();
+    void duplicateStl();
+
+    void duplicateInto();
+    void duplicateIntoWrongSize();
 };
 
 DuplicateTest::DuplicateTest() {
-    addTests({&DuplicateTest::duplicate});
+    addTests({&DuplicateTest::duplicate,
+              &DuplicateTest::duplicateOutOfBounds,
+              &DuplicateTest::duplicateStl,
+
+              &DuplicateTest::duplicateInto,
+              &DuplicateTest::duplicateIntoWrongSize});
 }
 
 void DuplicateTest::duplicate() {
+    constexpr UnsignedByte indices[]{1, 1, 0, 3, 2, 2};
+    constexpr Int data[]{-7, 35, 12, -18};
+
+    CORRADE_COMPARE_AS((MeshTools::duplicate<UnsignedByte, Int>(indices, data)),
+        (Containers::Array<Int>{Containers::InPlaceInit, {
+            35, 35, -7, -18, 12, 12
+        }}), TestSuite::Compare::Container);
+}
+
+void DuplicateTest::duplicateOutOfBounds() {
+    constexpr UnsignedByte indices[]{1, 1, 0, 4, 2, 2};
+    constexpr Int data[]{-7, 35, 12, -18};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    MeshTools::duplicate<UnsignedByte, Int>(indices, data);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::duplicateInto(): index 4 out of bounds for 4 elements\n");
+}
+
+void DuplicateTest::duplicateStl() {
     CORRADE_COMPARE(MeshTools::duplicate({1, 1, 0, 3, 2, 2}, std::vector<int>{-7, 35, 12, -18}),
-                    (std::vector<Int>{35, 35, -7, -18, 12, 12}));
+        (std::vector<Int>{35, 35, -7, -18, 12, 12}));
+}
+
+void DuplicateTest::duplicateInto() {
+    constexpr UnsignedByte indices[]{1, 1, 0, 3, 2, 2};
+    constexpr Int data[]{-7, 35, 12, -18};
+    Int output[6];
+
+    MeshTools::duplicateInto<UnsignedByte, Int>(indices, data, output);
+    CORRADE_COMPARE_AS(Containers::arrayView<const Int>(output),
+        (Containers::Array<Int>{Containers::InPlaceInit, {
+            35, 35, -7, -18, 12, 12
+        }}), TestSuite::Compare::Container);
+}
+
+void DuplicateTest::duplicateIntoWrongSize() {
+    constexpr UnsignedByte indices[]{1, 1, 0, 3, 2, 2};
+    constexpr Int data[]{-7, 35, 12, -18};
+    Int output[5];
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    MeshTools::duplicateInto<UnsignedByte, Int>(indices, data, output);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::duplicateInto(): bad output size, expected 6 but got 5\n");
 }
 
 }}}}

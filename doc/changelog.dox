@@ -133,6 +133,11 @@ See also:
     @ref Math::UnderlyingTypeOf utility
 -   Added batch versions of @ref Math::isInf() and @ref Math::isNan()
 
+@subsubsection changelog-latest-new-meshtools MeshTools library
+
+-   @ref MeshTools::duplicateInto() alternative to @ref MeshTools::duplicate()
+    that writes the output to an existing location
+
 @subsubsection changelog-latest-new-platform Platform libraries
 
 -   @ref Platform::Sdl2Application and @ref Platform::GlfwApplication are now

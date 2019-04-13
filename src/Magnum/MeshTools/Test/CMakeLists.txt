@@ -37,6 +37,7 @@ corrade_add_test(MeshToolsTransformTest TransformTest.cpp LIBRARIES MagnumMeshTo
 # Graceful assert for testing
 set_property(TARGET
     MeshToolsCombineIndexedArraysTest
+    MeshToolsDuplicateTest
     MeshToolsInterleaveTest
     MeshToolsSubdivideTest
     APPEND PROPERTY COMPILE_DEFINITIONS "CORRADE_GRACEFUL_ASSERT")
