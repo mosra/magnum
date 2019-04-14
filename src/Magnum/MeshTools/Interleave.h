@@ -32,6 +32,7 @@
 #include <cstring>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/TypeTraits.h>
 
 #include "Magnum/Magnum.h"
 
@@ -67,11 +68,25 @@ struct AttributeCount {
     constexpr std::size_t operator()() const { return 0; }
 };
 
+/* If anybody has an idea how to do this better and not require C++17 if
+   constexpr, please tell me. This is horrendous. */
+CORRADE_HAS_TYPE(HasType, typename T::Type);
+template<bool hasType> struct TypeSizeImpl;
+template<> struct TypeSizeImpl<true> {
+    template<class T> constexpr static std::size_t get() { return sizeof(typename T::Type); }
+};
+template<> struct TypeSizeImpl<false> {
+    template<class T> constexpr static std::size_t get() { return sizeof(typename T::value_type); }
+};
+template<class T> constexpr std::size_t typeSize() {
+    return TypeSizeImpl<HasType<T>::value>::template get<T>();
+}
+
 /* Stride, taking gaps into account. It must be in the structure, same reason
    as above */
 struct Stride {
     template<class T, class ...U> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type operator()(const T&, const U&... next) const {
-        return sizeof(typename T::value_type) + Stride{}(next...);
+        return typeSize<T>() + Stride{}(next...);
     }
     template<class... T> std::size_t operator()(std::size_t gap, const T&... next) const {
         return gap + Stride{}(next...);
@@ -83,9 +98,9 @@ struct Stride {
 template<class T> typename std::enable_if<!std::is_convertible<T, std::size_t>::value, std::size_t>::type writeOneInterleaved(std::size_t stride, char* startingOffset, const T& attributeList) {
     auto it = attributeList.begin();
     for(std::size_t i = 0; i != attributeList.size(); ++i, ++it)
-        std::memcpy(startingOffset + i*stride, reinterpret_cast<const char*>(&*it), sizeof(typename T::value_type));
+        std::memcpy(startingOffset + i*stride, reinterpret_cast<const char*>(&*it), typeSize<T>());
 
-    return sizeof(typename T::value_type);
+    return typeSize<T>();
 }
 
 /* Skip gap */
@@ -119,10 +134,12 @@ would be 21 bytes, causing possible performance loss.
 
 @attention The function expects that all arrays have the same size.
 
-@note The only requirements to attribute array type is that it must have
-    typedef `T::value_type`, forward iterator (to be used with range-based
-    for) and function `size()` returning count of elements. In most cases it
-    will be @ref std::vector or @ref std::array.
+@note The only requirements to attribute array type is that it must have either
+    a typedef `T::Type` (in case of Corrade types such as
+    @ref Corrade::Containers::ArrayView) or a typedef `T::value_type` (in case
+    of STL types such as @ref std::vector or @ref std::array) or a, a forward
+    iterator (to be used with range-based for) and a function `size()`
+    returning count of elements.
 
 @see @ref interleaveInto()
 */

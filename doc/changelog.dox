@@ -195,6 +195,9 @@ See also:
 
 -   @ref MeshTools::fullScreenTriangle() was updated to work on ES3 SwiftShader
     contexts (which have broken @glsl gl_VertexID @ce)
+-   @ref MeshTools::interleave() and @ref MeshTools::interleaveInto() now works
+    also with @ref Corrade::Containers::ArrayView,
+    @ref Corrade::Containers::StridedArrayView and friends
 
 @subsubsection changelog-latest-changes-texturetools TextureTools library
 
