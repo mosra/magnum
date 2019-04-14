@@ -43,7 +43,7 @@ layout(location = POSITION_ATTRIBUTE_LOCATION)
 in highp vec4 position;
 
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = 3)
+layout(location = COLOR_ATTRIBUTE_LOCATION)
 #endif
 in lowp vec4 color;
 

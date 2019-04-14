@@ -45,6 +45,8 @@ See @ref shaders-generic for more information.
 template<UnsignedInt> struct Generic;
 #else
 template<UnsignedInt dimensions> struct Generic {
+    /* Keep consistent with generic.glsl and the real definitions below */
+
     /**
      * @brief Vertex position
      *
