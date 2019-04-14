@@ -52,7 +52,6 @@ Example usage:
 @snippet MagnumMeshTools.cpp compressIndices
 
 @see @ref compressIndicesAs()
-@todo Extract IndexType out of Mesh class
 */
 std::tuple<Containers::Array<char>, MeshIndexType, UnsignedInt, UnsignedInt> MAGNUM_MESHTOOLS_EXPORT compressIndices(const std::vector<UnsignedInt>& indices);
 
