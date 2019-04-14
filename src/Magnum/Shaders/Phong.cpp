@@ -87,7 +87,7 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     lightInitializer.resize(lightInitializer.size() - 1);
     #endif
 
-    vert.addSource(flags ? "#define TEXTURED\n" : "")
+    vert.addSource(flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture) ? "#define TEXTURED\n" : "")
         .addSource(Utility::formatString("#define LIGHT_COUNT {}\n", lightCount))
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Phong.vert"));
