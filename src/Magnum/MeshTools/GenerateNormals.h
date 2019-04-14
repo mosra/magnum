@@ -62,22 +62,20 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateFlatNormals(const Con
 @param[out] normals     Where to put the generated normals
 
 A variant of @ref generateFlatNormals() that fills existing memory instead of
-allocating a new array.
+allocating a new array. The @p normals array is expected to have the same size
+as @p positions.
 */
 MAGNUM_MESHTOOLS_EXPORT void generateFlatNormalsInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals);
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /**
 @brief Generate flat normals
-@param indices      Array of triangle face indices
-@param positions    Array of vertex positions
+@param indices      Triangle face indices
+@param positions    Triangle vertex positions
 @return Normal indices and vectors
 
 All vertices in each triangle face get the same normal vector. Removes
-duplicates before returning.
-
-@attention The function requires the mesh to have triangle faces, thus index
-    count must be divisible by 3.
+duplicates before returning. Expects that the position count is divisible by 3.
 
 @deprecated This will generate index buffer that's different from the input
     @p indices array, so you'll need to recombine them using

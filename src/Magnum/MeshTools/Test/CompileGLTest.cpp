@@ -55,8 +55,9 @@ namespace Magnum { namespace MeshTools { namespace Test { namespace {
 enum class Flag {
     NonIndexed = 1 << 0,
     Normals = 1 << 1,
-    TextureCoordinates2D = 1 << 2,
-    Colors = 1 << 3
+    GeneratedFlatNormals = 1 << 2,
+    TextureCoordinates2D = 1 << 3,
+    Colors = 1 << 4
 };
 
 typedef Containers::EnumSet<Flag> Flags;
@@ -108,7 +109,16 @@ constexpr struct {
     {"positions + normals", Flag::Normals},
     {"positions + normals + colors", Flag::Normals|Flag::Colors},
     {"positions + normals + texcoords", Flag::Normals|Flag::TextureCoordinates2D},
-    {"positions + normals + texcoords + colors", Flag::Normals|Flag::TextureCoordinates2D|Flag::Colors}
+    {"positions + normals + texcoords + colors", Flag::Normals|Flag::TextureCoordinates2D|Flag::Colors},
+    {"positions + gen flat normals", Flag::GeneratedFlatNormals},
+    {"positions + normals, gen flat normals", Flag::Normals|Flag::GeneratedFlatNormals},
+    {"positions + gen flat normals + colors", Flag::GeneratedFlatNormals|Flag::Colors},
+    {"positions + gen flat normals + texcoords", Flag::GeneratedFlatNormals|Flag::TextureCoordinates2D},
+    {"positions + gen flat normals + texcoords + colors", Flag::NonIndexed|Flag::GeneratedFlatNormals|Flag::TextureCoordinates2D|Flag::Colors},
+    {"positions, nonindexed + gen flat normals", Flag::NonIndexed|Flag::GeneratedFlatNormals},
+    {"positions, nonindexed + gen flat normals + colors", Flag::NonIndexed|Flag::GeneratedFlatNormals|Flag::Colors},
+    {"positions, nonindexed + gen flat normals + texcoords", Flag::NonIndexed|Flag::GeneratedFlatNormals|Flag::TextureCoordinates2D},
+    {"positions, nonindexed + gen flat normals + texcoords + colors", Flag::NonIndexed|Flag::GeneratedFlatNormals|Flag::TextureCoordinates2D|Flag::Colors}
 };
 
 using namespace Math::Literals;
@@ -366,19 +376,26 @@ void CompileGLTest::threeDimensions() {
         4, 5, 8, 4, 8, 7
     };
 
-    /* Duplicate positions if data are non-indexed. Testing only positions
-       alone ATM, don't bother with other attribs. */
+    /* Duplicate everything if data are non-indexed */
     if(data.flags & Flag::NonIndexed) {
-        CORRADE_INTERNAL_ASSERT(normals.empty());
-        CORRADE_INTERNAL_ASSERT(textureCoordinates2D.empty());
-        CORRADE_INTERNAL_ASSERT(colors.empty());
         positions = duplicate(indices, positions);
+
+        if(data.flags & Flag::Normals)
+            normals[0] = duplicate(indices, normals[0]);
+
+        if(data.flags & Flag::TextureCoordinates2D)
+            textureCoordinates2D[0] = duplicate(indices, textureCoordinates2D[0]);
+
+        if(data.flags & Flag::Colors)
+            colors[0] = duplicate(indices, colors[0]);
+
         indices.clear();
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    GL::Mesh mesh = compile(Trade::MeshData3D{MeshPrimitive::Triangles, indices, {positions}, normals, textureCoordinates2D, colors});
+    GL::Mesh mesh = compile(Trade::MeshData3D{MeshPrimitive::Triangles, indices, {positions}, normals, textureCoordinates2D, colors},
+        data.flags & Flag::GeneratedFlatNormals ? CompileFlag::GenerateFlatNormals : CompileFlags{});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -404,8 +421,8 @@ void CompileGLTest::threeDimensions() {
             (DebugTools::CompareImageToFile{_manager}));
     }
 
-    /* Check with the phong shader, if we have normals */
-    if(data.flags & Flag::Normals) {
+    /* Check with the phong shader, if we have normals (but not flat generated) */
+    if(data.flags & Flag::Normals && !(data.flags & Flag::GeneratedFlatNormals)) {
         _framebuffer.clear(GL::FramebufferClear::Color);
         _phong
             .setDiffuseColor(0x33ff66_rgbf)
@@ -420,6 +437,24 @@ void CompileGLTest::threeDimensions() {
             Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "phong.tga"),
             /* SwiftShader has some minor off-by-one precision differences */
             (DebugTools::CompareImageToFile{_manager, 0.5f, 0.0113f}));
+    }
+
+    /* Check generated flat normals with the phong shader */
+    if(data.flags & Flag::GeneratedFlatNormals) {
+        _framebuffer.clear(GL::FramebufferClear::Color);
+        _phong
+            .setDiffuseColor(0x33ff66_rgbf)
+            .setTransformationMatrix(transformation)
+            .setNormalMatrix(transformation.rotationScaling())
+            .setProjectionMatrix(projection);
+        mesh.draw(_phong);
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        CORRADE_COMPARE_WITH(
+            _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
+            Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "phong-flat.tga"),
+            /* SwiftShader has some minor off-by-one precision differences */
+            (DebugTools::CompareImageToFile{_manager, 0.25f, 0.0079f}));
     }
 
     /* Check with the colored shader, if we have colors */

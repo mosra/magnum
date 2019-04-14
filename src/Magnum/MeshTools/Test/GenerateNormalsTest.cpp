@@ -40,19 +40,19 @@ struct GenerateNormalsTest: TestSuite::Tester {
     explicit GenerateNormalsTest();
 
     void flat();
-    void flatWrongCount();
     #ifdef MAGNUM_BUILD_DEPRECATED
     void flatDeprecated();
     #endif
+    void flatWrongCount();
     void flatIntoWrongSize();
 };
 
 GenerateNormalsTest::GenerateNormalsTest() {
     addTests({&GenerateNormalsTest::flat,
-              &GenerateNormalsTest::flatWrongCount,
               #ifdef MAGNUM_BUILD_DEPRECATED
               &GenerateNormalsTest::flatDeprecated,
               #endif
+              &GenerateNormalsTest::flatWrongCount,
               &GenerateNormalsTest::flatIntoWrongSize});
 }
 
@@ -77,15 +77,6 @@ void GenerateNormalsTest::flat() {
             -Vector3::zAxis(),
             -Vector3::zAxis()
         }}), TestSuite::Compare::Container);
-}
-
-void GenerateNormalsTest::flatWrongCount() {
-    std::stringstream out;
-    Error redirectError{&out};
-
-    const Vector3 positions[7];
-    generateFlatNormals(positions);
-    CORRADE_COMPARE(out.str(), "MeshTools::generateFlatNormalsInto(): position count not divisible by 3\n");
 }
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -115,6 +106,15 @@ void GenerateNormalsTest::flatDeprecated() {
     }));
 }
 #endif
+
+void GenerateNormalsTest::flatWrongCount() {
+    std::stringstream out;
+    Error redirectError{&out};
+
+    const Vector3 positions[7];
+    generateFlatNormals(positions);
+    CORRADE_COMPARE(out.str(), "MeshTools::generateFlatNormalsInto(): position count not divisible by 3\n");
+}
 
 void GenerateNormalsTest::flatIntoWrongSize() {
     std::stringstream out;
