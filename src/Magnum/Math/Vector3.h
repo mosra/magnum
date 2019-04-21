@@ -67,7 +67,7 @@ See @ref matrix-vector for brief introduction.
 template<class T> class Vector3: public Vector<3, T> {
     public:
         /**
-         * @brief Vector in direction of X axis (right)
+         * @brief Vector in a direction of X axis (right)
          *
          * Usable for translation or rotation along given axis, for example:
          *
@@ -79,7 +79,7 @@ template<class T> class Vector3: public Vector<3, T> {
         constexpr static Vector3<T> xAxis(T length = T(1)) { return {length, T(0), T(0)}; }
 
         /**
-         * @brief Vector in direction of Y axis (up)
+         * @brief Vector in a direction of Y axis (up)
          *
          * See @ref xAxis() for more information.
          * @see @ref yScale(), @ref Color3::green(), @ref Matrix4::up()
@@ -87,7 +87,7 @@ template<class T> class Vector3: public Vector<3, T> {
         constexpr static Vector3<T> yAxis(T length = T(1)) { return {T(0), length, T(0)}; }
 
         /**
-         * @brief Vector in direction of Z axis (backward)
+         * @brief Vector in a direction of Z axis (backward)
          *
          * See @ref xAxis() for more information.
          * @see @ref zScale(), @ref Color3::blue(), @ref Matrix4::backward()
@@ -95,7 +95,7 @@ template<class T> class Vector3: public Vector<3, T> {
         constexpr static Vector3<T> zAxis(T length = T(1)) { return {T(0), T(0), length}; }
 
         /**
-         * @brief Scaling vector in direction of X axis (width)
+         * @brief Scaling vector in a direction of X axis (width)
          *
          * Usable for scaling along given direction, for example:
          *
@@ -106,7 +106,7 @@ template<class T> class Vector3: public Vector<3, T> {
         constexpr static Vector3<T> xScale(T scale) { return {scale, T(1), T(1)}; }
 
         /**
-         * @brief Scaling vector in direction of Y axis (height)
+         * @brief Scaling vector in a direction of Y axis (height)
          *
          * See @ref xScale() for more information.
          * @see @ref yAxis(), @ref Color3::magenta()
@@ -114,7 +114,7 @@ template<class T> class Vector3: public Vector<3, T> {
         constexpr static Vector3<T> yScale(T scale) { return {T(1), scale, T(1)}; }
 
         /**
-         * @brief Scaling vector in direction of Z axis (depth)
+         * @brief Scaling vector in a direction of Z axis (depth)
          *
          * See @ref xScale() for more information.
          * @see @ref zAxis(), @ref Color3::yellow()

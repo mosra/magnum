@@ -72,7 +72,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         };
 
         /**
-         * @brief Matrix from array
+         * @brief Matrix from an array
          * @return Reference to the data as if it was matrix, thus doesn't
          *      perform any copying.
          *
@@ -88,7 +88,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /**
-         * @brief Construct matrix from vector
+         * @brief Construct a matrix from a vector
          *
          * Rolls the vector into matrix, i.e. first `rows` elements of the
          * vector will make first column of resulting matrix.
@@ -99,7 +99,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /**
-         * @brief Construct diagonal matrix
+         * @brief Construct a diagonal matrix
          *
          * @see @ref diagonal()
          */
@@ -114,18 +114,18 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          */
         constexpr /*implicit*/ RectangularMatrix() noexcept: RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, ZeroInit} {}
 
-        /** @brief Construct zero-filled matrix */
+        /** @brief Construct a zero-filled matrix */
         constexpr explicit RectangularMatrix(ZeroInitT) noexcept: RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, ZeroInit} {}
 
-        /** @brief Construct matrix without initializing the contents */
+        /** @brief Construct without initializing the contents */
         explicit RectangularMatrix(NoInitT) noexcept: RectangularMatrix<cols, rows, T>{typename Implementation::GenerateSequence<cols>::Type{}, NoInit} {}
 
-        /** @brief Construct matrix from column vectors */
+        /** @brief Construct from column vectors */
         template<class ...U> constexpr /*implicit*/ RectangularMatrix(const Vector<rows, T>& first, const U&... next) noexcept: _data{first, next...} {
             static_assert(sizeof...(next)+1 == cols, "Improper number of arguments passed to RectangularMatrix constructor");
         }
 
-        /** @brief Construct matrix with one value for all components */
+        /** @brief Construct with one value for all components */
         constexpr explicit RectangularMatrix(T value) noexcept: RectangularMatrix{typename Implementation::GenerateSequence<cols>::Type(), value} {}
 
         /**
@@ -160,7 +160,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         constexpr const T* data() const { return _data[0].data(); } /**< @overload */
 
         /**
-         * @brief Matrix column
+         * @brief Column at given position
          *
          * Particular elements can be accessed using @ref Vector::operator[](),
          * e.g.:
@@ -174,7 +174,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         constexpr const Vector<rows, T>& operator[](std::size_t col) const { return _data[col]; } /**< @overload */
 
         /**
-         * @brief Matrix row
+         * @brief Row at given position
          *
          * Consider using @ref transposed() when accessing rows frequently, as
          * this is slower than accessing columns due to the way the matrix is
@@ -257,7 +257,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         RectangularMatrix<cols, rows, T> operator-() const;
 
         /**
-         * @brief Add and assign matrix
+         * @brief Add and assign a matrix
          *
          * The computation is done column-wise in-place. @f[
          *      \boldsymbol A_j = \boldsymbol A_j + \boldsymbol B_j
@@ -271,7 +271,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /**
-         * @brief Add matrix
+         * @brief Add a matrix
          *
          * @see @ref operator+=()
          */
@@ -280,7 +280,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /**
-         * @brief Subtract and assign matrix
+         * @brief Subtract and assign a matrix
          *
          * The computation is done column-wise in-place. @f[
          *      \boldsymbol A_j = \boldsymbol A_j - \boldsymbol B_j
@@ -294,7 +294,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /**
-         * @brief Subtract matrix
+         * @brief Subtract a matrix
          *
          * @see @ref operator-=()
          */
@@ -303,54 +303,54 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         }
 
         /**
-         * @brief Multiply matrix with number and assign
+         * @brief Multiply with a scalar and assign
          *
          * The computation is done column-wise in-place. @f[
          *      \boldsymbol A_j = a \boldsymbol A_j
          * @f]
          */
-        RectangularMatrix<cols, rows, T>& operator*=(T number) {
+        RectangularMatrix<cols, rows, T>& operator*=(T scalar) {
             for(std::size_t i = 0; i != cols; ++i)
-                _data[i] *= number;
+                _data[i] *= scalar;
 
             return *this;
         }
 
         /**
-         * @brief Multiply matrix with number
+         * @brief Multiply with a scalar
          *
          * @see @ref operator*=(T), @ref operator*(T, const RectangularMatrix<cols, rows, T>&)
          */
-        RectangularMatrix<cols, rows, T> operator*(T number) const {
-            return RectangularMatrix<cols, rows, T>(*this) *= number;
+        RectangularMatrix<cols, rows, T> operator*(T scalar) const {
+            return RectangularMatrix<cols, rows, T>(*this) *= scalar;
         }
 
         /**
-         * @brief Divide matrix with number and assign
+         * @brief Divide with a scalar and assign
          *
          * The computation is done column-wise in-place. @f[
          *      \boldsymbol A_j = \frac{\boldsymbol A_j} a
          * @f]
          */
-        RectangularMatrix<cols, rows, T>& operator/=(T number) {
+        RectangularMatrix<cols, rows, T>& operator/=(T scalar) {
             for(std::size_t i = 0; i != cols; ++i)
-                _data[i] /= number;
+                _data[i] /= scalar;
 
             return *this;
         }
 
         /**
-         * @brief Divide matrix with number
+         * @brief Divide with a scalar
          *
          * @see @ref operator/=(T),
          *      @ref operator/(T, const RectangularMatrix<cols, rows, T>&)
          */
-        RectangularMatrix<cols, rows, T> operator/(T number) const {
-            return RectangularMatrix<cols, rows, T>(*this) /= number;
+        RectangularMatrix<cols, rows, T> operator/(T scalar) const {
+            return RectangularMatrix<cols, rows, T>(*this) /= scalar;
         }
 
         /**
-         * @brief Multiply matrix
+         * @brief Multiply a matrix
          *
          * @f[
          *      (\boldsymbol {AB})_{ji} = \sum_{k=0}^{m-1} \boldsymbol A_{ki} \boldsymbol B_{jk}
@@ -360,7 +360,7 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
         template<std::size_t size> RectangularMatrix<size, rows, T> operator*(const RectangularMatrix<size, cols, T>& other) const;
 
         /**
-         * @brief Multiply vector
+         * @brief Multiply a vector
          *
          * Internally the same as multiplying with one-column matrix, but
          * returns vector. @f[
@@ -527,7 +527,7 @@ template<class T> using Matrix4x3 = RectangularMatrix<4, 3, T>;
 #endif
 
 /** @relates RectangularMatrix
-@brief Multiply number with matrix
+@brief Multiply a scalar with a matrix
 
 Same as @ref RectangularMatrix::operator*(T) const.
 */
@@ -537,13 +537,13 @@ template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<c
     #else
     typename std::common_type<T>::type
     #endif
-    number, const RectangularMatrix<cols, rows, T>& matrix)
+    scalar, const RectangularMatrix<cols, rows, T>& matrix)
 {
-    return matrix*number;
+    return matrix*scalar;
 }
 
 /** @relates RectangularMatrix
-@brief Divide matrix with number and invert
+@brief Divide a matrix with a scalar and invert
 
 The computation is done column-wise. @f[
     \boldsymbol B_j = \frac a {\boldsymbol A_j}
@@ -556,18 +556,18 @@ template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<c
     #else
     typename std::common_type<T>::type
     #endif
-    number, const RectangularMatrix<cols, rows, T>& matrix)
+    scalar, const RectangularMatrix<cols, rows, T>& matrix)
 {
     RectangularMatrix<cols, rows, T> out{NoInit};
 
     for(std::size_t i = 0; i != cols; ++i)
-        out[i] = number/matrix[i];
+        out[i] = scalar/matrix[i];
 
     return out;
 }
 
 /** @relates RectangularMatrix
-@brief Multiply vector with rectangular matrix
+@brief Multiply a vector with a rectangular matrix
 
 Internally the same as multiplying one-column matrix with one-row matrix. @f[
     (\boldsymbol {aA})_{ji} = \boldsymbol a_i \boldsymbol A_j

@@ -259,7 +259,7 @@ template<class T> class Quaternion {
         static Quaternion<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis);
 
         /**
-         * @brief Create quaternion from rotation matrix
+         * @brief Create a quaternion from a rotation matrix
          *
          * Expects that the matrix is orthogonal (i.e. pure rotation).
          * @see @ref toMatrix(), @ref DualComplex::fromMatrix(),
@@ -275,7 +275,7 @@ template<class T> class Quaternion {
         constexpr /*implicit*/ Quaternion() noexcept: _scalar{T(1)} {}
 
         /**
-         * @brief Identity constructor
+         * @brief Construct an identity quaternion
          *
          * Creates unit quaternion. @f[
          *      q = [\boldsymbol 0, 1]
@@ -283,14 +283,14 @@ template<class T> class Quaternion {
          */
         constexpr explicit Quaternion(IdentityInitT) noexcept: _scalar{T(1)} {}
 
-        /** @brief Construct zero-initialized quaternion */
+        /** @brief Construct a zero-initialized quaternion */
         constexpr explicit Quaternion(ZeroInitT) noexcept: _vector{ZeroInit}, _scalar{T{0}} {}
 
         /** @brief Construct without initializing the contents */
         explicit Quaternion(NoInitT) noexcept: _vector{NoInit} {}
 
         /**
-         * @brief Construct quaternion from vector and scalar
+         * @brief Construct from a vector and a scalar
          *
          * @f[
          *      q = [\boldsymbol v, s]
@@ -299,7 +299,7 @@ template<class T> class Quaternion {
         constexpr /*implicit*/ Quaternion(const Vector3<T>& vector, T scalar) noexcept: _vector(vector), _scalar(scalar) {}
 
         /**
-         * @brief Construct quaternion from vector
+         * @brief Construct from a vector
          *
          * To be used in transformations later. @f[
          *      q = [\boldsymbol v, 0]
@@ -309,7 +309,7 @@ template<class T> class Quaternion {
         constexpr explicit Quaternion(const Vector3<T>& vector) noexcept: _vector(vector), _scalar(T(0)) {}
 
         /**
-         * @brief Construct dual complex number from another of different type
+         * @brief Construct from a quaternion of different type
          *
          * Performs only default casting on the values, no rounding or anything
          * else.
@@ -369,7 +369,7 @@ template<class T> class Quaternion {
         constexpr T scalar() const { return _scalar; } /**< @overload */
 
         /**
-         * @brief Rotation angle of unit quaternion
+         * @brief Rotation angle of a unit quaternion
          *
          * Expects that the quaternion is normalized. @f[
          *      \theta = 2 \cdot \arccos(q_S)
@@ -379,7 +379,7 @@ template<class T> class Quaternion {
         Rad<T> angle() const;
 
         /**
-         * @brief Rotation axis of unit quaternion
+         * @brief Rotation axis of a unit quaternion
          *
          * Expects that the quaternion is normalized. Returns either unit-length
          * vector for valid rotation quaternion or NaN vector for
@@ -391,7 +391,7 @@ template<class T> class Quaternion {
         Vector3<T> axis() const;
 
         /**
-         * @brief Convert quaternion to rotation matrix
+         * @brief Convert to a rotation matrix
          *
          * @see @ref fromMatrix(), @ref DualQuaternion::toMatrix(),
          *      @ref Matrix4::from(const Matrix3x3<T>&, const Vector3<T>&)
@@ -399,7 +399,16 @@ template<class T> class Quaternion {
         Matrix3x3<T> toMatrix() const;
 
         /**
-         * @brief Add and assign quaternion
+         * @brief Negated quaternion
+         *
+         * @f[
+         *      -q = [-\boldsymbol q_V, -q_S]
+         * @f]
+         */
+        Quaternion<T> operator-() const { return {-_vector, -_scalar}; }
+
+        /**
+         * @brief Add and assign a quaternion
          *
          * The computation is done in-place. @f[
          *      p + q = [\boldsymbol p_V + \boldsymbol q_V, p_S + q_S]
@@ -412,7 +421,7 @@ template<class T> class Quaternion {
         }
 
         /**
-         * @brief Add quaternion
+         * @brief Add a quaternion
          *
          * @see @ref operator+=()
          */
@@ -421,16 +430,7 @@ template<class T> class Quaternion {
         }
 
         /**
-         * @brief Negated quaternion
-         *
-         * @f[
-         *      -q = [-\boldsymbol q_V, -q_S]
-         * @f]
-         */
-        Quaternion<T> operator-() const { return {-_vector, -_scalar}; }
-
-        /**
-         * @brief Subtract and assign quaternion
+         * @brief Subtract and assign a quaternion
          *
          * The computation is done in-place. @f[
          *      p - q = [\boldsymbol p_V - \boldsymbol q_V, p_S - q_S]
@@ -443,7 +443,7 @@ template<class T> class Quaternion {
         }
 
         /**
-         * @brief Subtract quaternion
+         * @brief Subtract a quaternion
          *
          * @see @ref operator-=()
          */
@@ -452,7 +452,7 @@ template<class T> class Quaternion {
         }
 
         /**
-         * @brief Multiply with scalar and assign
+         * @brief Multiply with a scalar and assign
          *
          * The computation is done in-place. @f[
          *      q \cdot a = [\boldsymbol q_V \cdot a, q_S \cdot a]
@@ -465,7 +465,7 @@ template<class T> class Quaternion {
         }
 
         /**
-         * @brief Multiply with scalar
+         * @brief Multiply with a scalar
          *
          * @see @ref operator*=(T)
          */
@@ -474,7 +474,7 @@ template<class T> class Quaternion {
         }
 
         /**
-         * @brief Divide with scalar and assign
+         * @brief Divide with a scalar and assign
          *
          * The computation is done in-place. @f[
          *      \frac q a = [\frac {\boldsymbol q_V} a, \frac {q_S} a]
@@ -487,7 +487,7 @@ template<class T> class Quaternion {
         }
 
         /**
-         * @brief Divide with scalar
+         * @brief Divide with a scalar
          *
          * @see @ref operator/=(T)
          */
@@ -496,7 +496,7 @@ template<class T> class Quaternion {
         }
 
         /**
-         * @brief Multiply with quaternion
+         * @brief Multiply with a quaternion
          *
          * @f[
          *      p q = [p_S \boldsymbol q_V + q_S \boldsymbol p_V + \boldsymbol p_V \times \boldsymbol q_V,
@@ -567,7 +567,7 @@ template<class T> class Quaternion {
         Quaternion<T> invertedNormalized() const;
 
         /**
-         * @brief Rotate vector with quaternion
+         * @brief Rotate a vector with a quaternion
          *
          * See @ref transformVectorNormalized(), which is faster for normalized
          * quaternions. @f[
@@ -583,7 +583,7 @@ template<class T> class Quaternion {
         }
 
         /**
-         * @brief Rotate vector with normalized quaternion
+         * @brief Rotate a vector with a normalized quaternion
          *
          * Faster alternative to @ref transformVector(), expects that the
          * quaternion is normalized. Done using the following equation: @f[
@@ -619,7 +619,7 @@ template<class T> class Quaternion {
 };
 
 /** @relates Quaternion
-@brief Multiply scalar with quaternion
+@brief Multiply a scalar with a quaternion
 
 Same as @ref Quaternion::operator*(T) const.
 */
@@ -628,7 +628,7 @@ template<class T> inline Quaternion<T> operator*(T scalar, const Quaternion<T>& 
 }
 
 /** @relates Quaternion
-@brief Divide quaternion with number and invert
+@brief Divide a quaternion with a scalar and invert
 
 @f[
     \frac a q = [\frac a {\boldsymbol q_V}, \frac a {q_S}]

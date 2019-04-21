@@ -120,7 +120,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         static Matrix4<T> rotation(Rad<T> angle, const Vector3<T>& normalizedAxis);
 
         /**
-         * @brief 3D rotation matrix around X axis
+         * @brief 3D rotation matrix around the X axis
          * @param angle Rotation angle (counterclockwise)
          *
          * Faster than calling @cpp Matrix4::rotation(angle, Vector3::xAxis()) @ce. @f[
@@ -138,7 +138,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         static Matrix4<T> rotationX(Rad<T> angle);
 
         /**
-         * @brief 3D rotation matrix around Y axis
+         * @brief 3D rotation matrix around the Y axis
          * @param angle Rotation angle (counterclockwise)
          *
          * Faster than calling @cpp Matrix4::rotation(angle, Vector3::yAxis()) @ce. @f[
@@ -156,7 +156,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         static Matrix4<T> rotationY(Rad<T> angle);
 
         /**
-         * @brief 3D rotation matrix around Z axis
+         * @brief 3D rotation matrix around the Z axis
          * @param angle Rotation angle (counterclockwise)
          *
          * Faster than calling @cpp Matrix4::rotation(angle, Vector3::zAxis()) @ce. @f[
@@ -188,9 +188,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         static Matrix4<T> reflection(const Vector3<T>& normal);
 
         /**
-         * @brief 3D shearing matrix along XY plane
-         * @param amountX   Amount of shearing along X axis
-         * @param amountY   Amount of shearing along Y axis
+         * @brief 3D shearing matrix along the XY plane
+         * @param amountX   Amount of shearing along the X axis
+         * @param amountY   Amount of shearing along the Y axis
          *
          * Z axis remains unchanged. @f[
          *      \boldsymbol{A} = \begin{pmatrix}
@@ -211,9 +211,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         }
 
         /**
-         * @brief 3D shearing matrix along XZ plane
-         * @param amountX   Amount of shearing along X axis
-         * @param amountZ   Amount of shearing along Z axis
+         * @brief 3D shearing matrix along the XZ plane
+         * @param amountX   Amount of shearing along the X axis
+         * @param amountZ   Amount of shearing along the Z axis
          *
          * Y axis remains unchanged. @f[
          *      \boldsymbol{A} = \begin{pmatrix}
@@ -234,9 +234,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         }
 
         /**
-         * @brief 3D shearing matrix along YZ plane
-         * @param amountY   Amount of shearing along Y axis
-         * @param amountZ   Amount of shearing along Z axis
+         * @brief 3D shearing matrix along the YZ plane
+         * @param amountY   Amount of shearing along the Y axis
+         * @param amountZ   Amount of shearing along the Z axis
          *
          * X axis remains unchanged. @f[
          *      \boldsymbol{A} = \begin{pmatrix}
@@ -365,7 +365,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         static Matrix4<T> lookAt(const Vector3<T>& eye, const Vector3<T>& target, const Vector3<T>& up);
 
         /**
-         * @brief Create matrix from rotation/scaling part and translation part
+         * @brief Create a matrix from a rotation/scaling part and a translation part
          * @param rotationScaling   Rotation/scaling part (upper-left 3x3
          *      matrix)
          * @param translation       Translation part (first three elements of
@@ -388,10 +388,9 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         constexpr /*implicit*/ Matrix4() noexcept: Matrix4x4<T>{IdentityInit, T(1)} {}
 
         /**
-         * @brief Identity constructor
+         * @brief Construct an identity matrix
          *
-         * Creates an identity matrix. @p value allows you to specify value on
-         * diagonal.
+         * The @p value allows you to specify value on diagonal.
          */
         constexpr explicit Matrix4(IdentityInitT, T value = T{1}) noexcept: Matrix4x4<T>{IdentityInit, value} {}
 
@@ -401,20 +400,20 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         /** @copydoc Matrix::Matrix(NoInitT) */
         constexpr explicit Matrix4(NoInitT) noexcept: Matrix4x4<T>{NoInit} {}
 
-        /** @brief Construct matrix from column vectors */
+        /** @brief Construct from column vectors */
         constexpr /*implicit*/ Matrix4(const Vector4<T>& first, const Vector4<T>& second, const Vector4<T>& third, const Vector4<T>& fourth) noexcept: Matrix4x4<T>(first, second, third, fourth) {}
 
-        /** @brief Construct matrix with one value for all elements */
+        /** @brief Construct with one value for all elements */
         constexpr explicit Matrix4(T value) noexcept: Matrix4x4<T>{value} {}
 
         /** @copydoc Matrix::Matrix(const RectangularMatrix<size, size, U>&) */
         template<class U> constexpr explicit Matrix4(const RectangularMatrix<4, 4, U>& other) noexcept: Matrix4x4<T>(other) {}
 
-        /** @brief Construct matrix from external representation */
+        /** @brief Construct from external representation */
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(std::declval<U>()))> constexpr explicit Matrix4(const U& other): Matrix4x4<T>(Implementation::RectangularMatrixConverter<4, 4, T, U>::from(other)) {}
 
         /**
-         * @brief Construct matrix by slicing or expanding another of a different size
+         * @brief Construct by slicing or expanding a matrix of a different size
          *
          * If the other matrix is larger, takes only the first @cpp size @ce
          * columns and rows from it; if the other matrix is smaller, it's
@@ -426,7 +425,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         constexpr /*implicit*/ Matrix4(const RectangularMatrix<4, 4, T>& other) noexcept: Matrix4x4<T>(other) {}
 
         /**
-         * @brief Check whether the matrix represents rigid transformation
+         * @brief Check whether the matrix represents a rigid transformation
          *
          * Rigid transformation consists only of rotation and translation (i.e.
          * no scaling or projection).
@@ -467,7 +466,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         }
 
         /**
-         * @brief 3D rotation and scaling part of the matrix
+         * @brief 3D rotation and shear part of the matrix
          *
          * Normalized upper-left 3x3 part of the matrix. Assuming the following
          * matrix, with the upper-left 3x3 part represented by column vectors
@@ -634,7 +633,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         }
 
         /**
-         * @brief Non-uniform scaling part of the matrix, squared
+         * @brief Non-uniform scaling part of the matrix
          *
          * Length of vectors in upper-left 3x3 part of the matrix. Use the
          * faster alternative @ref scalingSquared() where possible. Assuming
@@ -838,7 +837,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         Matrix4<T> invertedRigid() const;
 
         /**
-         * @brief Transform 3D vector with the matrix
+         * @brief Transform a 3D vector with the matrix
          *
          * Unlike in @ref transformVector(), translation is not involved in the
          * transformation. @f[
@@ -853,7 +852,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         }
 
         /**
-         * @brief Transform 3D point with the matrix
+         * @brief Transform a 3D point with the matrix
          *
          * Unlike in @ref transformVector(), translation is also involved in
          * the transformation. @f[

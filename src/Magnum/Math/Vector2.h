@@ -63,7 +63,7 @@ See @ref matrix-vector for brief introduction.
 template<class T> class Vector2: public Vector<2, T> {
     public:
         /**
-         * @brief Vector in direction of X axis (right)
+         * @brief Vector in a direction of X axis (right)
          *
          * Usable for translation in given axis, for example:
          *
@@ -74,7 +74,7 @@ template<class T> class Vector2: public Vector<2, T> {
         constexpr static Vector2<T> xAxis(T length = T(1)) { return {length, T(0)}; }
 
         /**
-         * @brief Vector in direction of Y axis (up)
+         * @brief Vector in a direction of Y axis (up)
          *
          * See @ref xAxis() for more information.
          * @see @ref yScale(), @ref Matrix3::up()
@@ -82,7 +82,7 @@ template<class T> class Vector2: public Vector<2, T> {
         constexpr static Vector2<T> yAxis(T length = T(1)) { return {T(0), length}; }
 
         /**
-         * @brief Scaling vector in direction of X axis (width)
+         * @brief Scaling vector in a direction of X axis (width)
          *
          * Usable for scaling along given direction, for example:
          *
@@ -93,7 +93,7 @@ template<class T> class Vector2: public Vector<2, T> {
         constexpr static Vector2<T> xScale(T scale) { return {scale, T(1)}; }
 
         /**
-         * @brief Scaling vector in direction of Y axis (height)
+         * @brief Scaling vector in a direction of Y axis (height)
          *
          * See @ref xScale() for more information.
          * @see @ref yAxis()

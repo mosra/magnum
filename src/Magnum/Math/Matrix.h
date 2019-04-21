@@ -70,10 +70,10 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         constexpr /*implicit*/ Matrix() noexcept: RectangularMatrix<size, size, T>{typename Implementation::GenerateSequence<size>::Type(), Vector<size, T>(T(1))} {}
 
         /**
-         * @brief Identity constructor
+         * @brief Construct an identity matrix
          *
-         * Creates an identity matrix. @p value allows you to specify value on
-         * diagonal.
+         * The @p value allows you to specify a value on diagonal.
+         * @see @ref fromDiagonal()
          */
         constexpr explicit Matrix(IdentityInitT, T value = T(1)) noexcept: RectangularMatrix<size, size, T>{typename Implementation::GenerateSequence<size>::Type(), Vector<size, T>(value)} {}
 
@@ -83,14 +83,14 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         /** @copydoc RectangularMatrix::RectangularMatrix(NoInitT) */
         constexpr explicit Matrix(NoInitT) noexcept: RectangularMatrix<size, size, T>{NoInit} {}
 
-        /** @brief Construct matrix from column vectors */
+        /** @brief Construct from column vectors */
         template<class ...U> constexpr /*implicit*/ Matrix(const Vector<size, T>& first, const U&... next) noexcept: RectangularMatrix<size, size, T>(first, next...) {}
 
-        /** @brief Construct matrix with one value for all elements */
+        /** @brief Construct with one value for all elements */
         constexpr explicit Matrix(T value) noexcept: RectangularMatrix<size, size, T>{typename Implementation::GenerateSequence<size>::Type(), value} {}
 
         /**
-         * @brief Construct matrix from another of different type
+         * @brief Construct from a matrix of adifferent type
          *
          * Performs only default casting on the values, no rounding or
          * anything else. Example usage:
@@ -103,7 +103,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
         template<class U, class V = decltype(Implementation::RectangularMatrixConverter<size, size, T, U>::from(std::declval<U>()))> constexpr explicit Matrix(const U& other): RectangularMatrix<size, size, T>(Implementation::RectangularMatrixConverter<size, size, T, U>::from(other)) {}
 
         /**
-         * @brief Construct matrix by slicing or expanding another of a different size
+         * @brief Construct by slicing or expanding a matrix of different size
          *
          * If the other matrix is larger, takes only the first @cpp size @ce
          * columns and rows from it; if the other matrix is smaller, it's
