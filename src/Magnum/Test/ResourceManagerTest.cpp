@@ -44,7 +44,9 @@ struct ResourceManagerTest: TestSuite::Tester {
     void defaults();
     void clear();
     void clearWhileReferenced();
+
     void loader();
+    void loaderSetNullptr();
 
     void debugResourceState();
 };
@@ -71,7 +73,9 @@ ResourceManagerTest::ResourceManagerTest() {
               &ResourceManagerTest::defaults,
               &ResourceManagerTest::clear,
               &ResourceManagerTest::clearWhileReferenced,
+
               &ResourceManagerTest::loader,
+              &ResourceManagerTest::loaderSetNullptr,
 
               &ResourceManagerTest::debugResourceState});
 }
@@ -331,6 +335,52 @@ void ResourceManagerTest::loader() {
     }
 
     CORRADE_COMPARE(Data::count, 0);
+}
+
+void ResourceManagerTest::loaderSetNullptr() {
+    class IntResourceLoader: public AbstractResourceLoader<Int> {
+        public:
+            void load() {
+                set("hello", 1337, ResourceDataState::Final, ResourcePolicy::Resident);
+                set("world", 42, ResourceDataState::Final, ResourcePolicy::Resident);
+            }
+
+        private:
+            void doLoad(ResourceKey key) override {
+                /* Verify that calling load() with nullptr + Loading works */
+                set(key, nullptr, ResourceDataState::Loading, ResourcePolicy::Resident);
+                set("world", nullptr, ResourceDataState::Loading, ResourcePolicy::Resident);
+            }
+    };
+
+    ResourceManager rm;
+    Containers::Pointer<IntResourceLoader> loaderPtr{Containers::InPlaceInit};
+    IntResourceLoader& loader = *loaderPtr;
+    rm.setLoader<Int>(std::move(loaderPtr));
+
+    CORRADE_COMPARE(rm.state<Int>("hello"), ResourceState::NotLoaded);
+    CORRADE_COMPARE(rm.state<Int>("world"), ResourceState::NotLoaded);
+
+    /* Loading "hello" triggers a load of "world" as well */
+    Resource<Int> hello = rm.get<Int>("hello");
+    CORRADE_COMPARE(hello.state(), ResourceState::Loading);
+    CORRADE_COMPARE(rm.state<Int>("world"), ResourceState::Loading);
+    CORRADE_COMPARE(loader.requestedCount(), 1);
+    CORRADE_COMPARE(loader.loadedCount(), 0);
+    CORRADE_COMPARE(loader.notFoundCount(), 0);
+
+    /* Load the things */
+    loader.load();
+    CORRADE_COMPARE(hello.state(), ResourceState::Final);
+    CORRADE_COMPARE(*hello, 1337);
+    CORRADE_COMPARE(loader.requestedCount(), 1);
+    CORRADE_COMPARE(loader.loadedCount(), 2);
+    CORRADE_COMPARE(loader.notFoundCount(), 0);
+
+    /* World is now loaded as well as a side-effect */
+    Resource<Int> world = rm.get<Int>("world");
+    CORRADE_COMPARE(world.state(), ResourceState::Final);
+    CORRADE_COMPARE(*world, 42);
 }
 
 void ResourceManagerTest::debugResourceState() {

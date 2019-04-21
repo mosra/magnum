@@ -130,10 +130,17 @@ template<class T> class AbstractResourceLoader {
         /**
          * @brief Set loaded resource to resource manager
          *
-         * Also increments count of loaded resources. Parameter @p state must
-         * be either @ref ResourceDataState::Mutable or
-         * @ref ResourceDataState::Final. See @ref ResourceManager::set() for
+         * If @p data is @cpp nullptr @ce and @p state is
+         * @ref ResourceDataState::NotFound, increments count of not found
+         * resources. Otherwise, if @p data is not @cpp nullptr @ce, increments
+         * count of loaded resources. See @ref ResourceManager::set() for
          * more information.
+         *
+         * Note that resource's state is automatically set to
+         * @ref ResourceDataState::Loading when it is requested from
+         * @ref ResourceManager and it's not loaded yet, so it's not needed to
+         * call this function. For marking a resource as not found you can also
+         * use the convenience @ref setNotFound() variant.
          * @see @ref loadedCount()
          */
         void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy);
@@ -144,7 +151,7 @@ template<class T> class AbstractResourceLoader {
         }
 
         /** @overload */
-        template<class U> void set(ResourceKey key, U&& data, ResourceDataState state, ResourcePolicy policy) {
+        template<class U, class = typename std::enable_if<!std::is_same<typename std::decay<U>::type, std::nullptr_t>::value>::type> void set(ResourceKey key, U&& data, ResourceDataState state, ResourcePolicy policy) {
             set(key, new typename std::decay<U>::type(std::forward<U>(data)), state, policy);
         }
 
@@ -164,18 +171,21 @@ template<class T> class AbstractResourceLoader {
         }
 
         /** @overload */
-        template<class U> void set(ResourceKey key, U&& data) {
+        template<class U, class = typename std::enable_if<!std::is_same<typename std::decay<U>::type, std::nullptr_t>::value>::type> void set(ResourceKey key, U&& data) {
             set(key, new typename std::decay<U>::type(std::forward<U>(data)));
         }
 
         /**
          * @brief Mark resource as not found
          *
-         * Also increments count of not found resources. See also
-         * @ref ResourceManager::set() for more information.
+         * A convenience function calling @ref set() with @cpp nullptr @ce
+         * and @ref ResourceDataState::NotFound.
          * @see @ref notFoundCount()
          */
-        void setNotFound(ResourceKey key);
+        void setNotFound(ResourceKey key) {
+            /** @todo What policy for notfound resources? */
+            set(key, nullptr, ResourceDataState::NotFound, ResourcePolicy::Resident);
+        }
 
     #ifndef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -222,16 +232,9 @@ template<class T> void AbstractResourceLoader<T>::load(ResourceKey key) {
 }
 
 template<class T> void AbstractResourceLoader<T>::set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy) {
-    CORRADE_ASSERT(state == ResourceDataState::Mutable || state == ResourceDataState::Final,
-        "AbstractResourceLoader::set(): state must be either Mutable or Final", );
-    ++_loadedCount;
+    if(data) ++_loadedCount;
+    if(!data && state == ResourceDataState::NotFound) ++_notFoundCount;
     manager->set(key, data, state, policy);
-}
-
-template<class T> inline void AbstractResourceLoader<T>::setNotFound(ResourceKey key) {
-    ++_notFoundCount;
-    /** @todo What policy for notfound resources? */
-    manager->set(key, nullptr, ResourceDataState::NotFound, ResourcePolicy::Resident);
 }
 
 }

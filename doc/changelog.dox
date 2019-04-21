@@ -139,6 +139,9 @@ See also:
 
 -   The @ref ResourceManager class now accepts also
     @ref Corrade::Containers::Pointer instances in addition to raw pointers
+-   The @ref AbstractResourceLoader::set() function now accepts also
+    @cpp nullptr @ce for explicitly setting @ref ResourceDataState::Loading or
+    @ref ResourceDataState::NotFound resources
 
 @subsubsection changelog-latest-changes-animation Animation library
 
