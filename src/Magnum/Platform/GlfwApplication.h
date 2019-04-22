@@ -336,11 +336,14 @@ class GlfwApplication {
          */
         Vector2i windowSize() const;
 
+        #if (GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302) || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
          * @brief Set window minimum size
          * @param size    The minimum size, in screen coordinates.
          * 
          * If a value is set to -1, it will disable/remove the corresponding limit.
+         * 
+         * @note Supported since GLFW 3.2.
          */
         void setMinWindowSize(const Vector2i& size = {-1, -1});
         
@@ -349,8 +352,11 @@ class GlfwApplication {
          * @param size    The maximum size, in screen coordinates.
          * 
          * If a value is set to -1, it will disable/remove the corresponding limit.
+         *
+         * @note Supported since GLFW 3.2.
          */
         void setMaxWindowSize(const Vector2i& size = {-1, -1});
+        #endif
 
         #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
         /**

@@ -534,6 +534,7 @@ Vector2i GlfwApplication::windowSize() const {
     return size;
 }
 
+#if (GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302)
 void GlfwApplication::setMinWindowSize(const Vector2i& size) {
     CORRADE_ASSERT(_window, "Platform::GlfwApplication::setMinWindowSize(): no window opened", );
 
@@ -547,6 +548,7 @@ void GlfwApplication::setMaxWindowSize(const Vector2i& size) {
     glfwSetWindowSizeLimits(_window, _minWindowSize.x(), _minWindowSize.y(), size.x(), size.y());
     _maxWindowSize = size;
 }
+#endif
 
 #ifdef MAGNUM_TARGET_GL
 Vector2i GlfwApplication::framebufferSize() const {
