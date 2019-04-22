@@ -534,6 +534,20 @@ Vector2i GlfwApplication::windowSize() const {
     return size;
 }
 
+void GlfwApplication::setMinWindowSize(const Vector2i& size) {
+    CORRADE_ASSERT(_window, "Platform::GlfwApplication::setMinWindowSize(): no window opened", );
+
+    glfwSetWindowSizeLimits(_window, size.x(), size.y(), _maxWindowSize.x(), _maxWindowSize.y());
+    _minWindowSize = size;
+}
+
+void GlfwApplication::setMaxWindowSize(const Vector2i& size) {
+    CORRADE_ASSERT(_window, "Platform::GlfwApplication::setMaxWindowSize(): no window opened", );
+
+    glfwSetWindowSizeLimits(_window, _minWindowSize.x(), _minWindowSize.y(), size.x(), size.y());
+    _maxWindowSize = size;
+}
+
 #ifdef MAGNUM_TARGET_GL
 Vector2i GlfwApplication::framebufferSize() const {
     CORRADE_ASSERT(_window, "Platform::GlfwApplication::framebufferSize(): no window opened", {});

@@ -639,6 +639,24 @@ class Sdl2Application {
          */
         Vector2i windowSize() const;
 
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)
+        /**
+         * @brief Set minimum window size
+         * @param size    The minimum size for the window, in screen coordinates.
+         * 
+         * Note that SDL2 doesn't have a way to disable/remove a size limit.
+         */
+        void setMinWindowSize(const Vector2i& size);
+
+        /**
+         * @brief Set maximal window size
+         * @param size    The maximum size for the window, in screen coordinates.
+         * 
+         * Note that SDL2 doesn't have a way to disable/remove a size limit.
+         */
+        void setMaxWindowSize(const Vector2i& size);
+        #endif
+
         #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
          * @brief Framebuffer size

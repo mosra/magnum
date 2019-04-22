@@ -336,6 +336,22 @@ class GlfwApplication {
          */
         Vector2i windowSize() const;
 
+        /**
+         * @brief Set window minimum size
+         * @param size    The minimum size, in screen coordinates.
+         * 
+         * If a value is set to -1, it will disable/remove the corresponding limit.
+         */
+        void setMinWindowSize(const Vector2i& size = {-1, -1});
+        
+        /**
+         * @brief Set window maximum size
+         * @param size    The maximum size, in screen coordinates.
+         * 
+         * If a value is set to -1, it will disable/remove the corresponding limit.
+         */
+        void setMaxWindowSize(const Vector2i& size = {-1, -1});
+
         #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
          * @brief Framebuffer size
@@ -552,6 +568,9 @@ class GlfwApplication {
         Containers::Pointer<Platform::GLContext> _context;
         #endif
         int _exitCode;
+        
+        Vector2i _minWindowSize;
+        Vector2i _maxWindowSize;
 };
 
 CORRADE_ENUMSET_OPERATORS(GlfwApplication::Flags)
