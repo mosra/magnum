@@ -280,6 +280,8 @@ See also:
     [OpenGL_GL_PREFERENCE](https://cmake.org/cmake/help/v3.11/module/FindOpenGL.html#linux-specific)
     from outside on systems where GLVND doesn't work properly (before the build
     scripts and `FindMagnum.cmake` always forced GLVND)
+-   `FindMagnum.cmake` now correctly finds debug versions of statically built
+    plugins when using Vcpkg
 
 @subsection changelog-latest-bugfixes Bug fixes
 
