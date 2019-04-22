@@ -1014,7 +1014,7 @@ class Sdl2Application {
         #endif
 
         Flags _flags;
-        
+
         int _exitCode;
 };
 
