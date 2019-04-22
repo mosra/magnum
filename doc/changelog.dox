@@ -123,6 +123,9 @@ See also:
     for more information.
 -   Added @ref Platform::Sdl2Application::glContext() to access the underlying
     `SDL_GLContext` (see [mosra/magnum#325](https://github.com/mosra/magnum/pull/325))
+-   Added @ref Platform::Sdl2Application::setMinWindowSize() and
+    @ref Platform::Sdl2Application::setMinWindowSize() + equivalent APIs for
+    @ref Platform::GlfwApplication (see [mosra/magnum#335](https://github.com/mosra/magnum/pull/335))
 
 @subsubsection changelog-latest-new-text Text library
 
