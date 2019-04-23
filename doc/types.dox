@@ -69,7 +69,7 @@ underlying type.
 
 | Magnum vector type                             | Equivalent GLSL type      |
 | ---------------------------------------------- | ------------------------- |
-| @ref Math::BoolVector "Math::BoolVector<2>", @ref Math::BoolVector "Math::BoolVector<3>", @ref Math::BoolVector "Math::BoolVector<4>" | @glsl bvec2 @ce, @glsl bvec3 @ce, @glsl bvec4 @ce |
+| @ref BoolVector2, @ref BoolVector3, @ref BoolVector4 | @glsl bvec2 @ce, @glsl bvec3 @ce, @glsl bvec4 @ce |
 | @ref Vector2, @ref Vector3, @ref Color3, @ref Vector4, @ref Color4 | @glsl vec2 @ce, @glsl vec3 @ce, @glsl vec4 @ce |
 | @ref Vector2ui, @ref Vector3ui, @ref Vector4ui | @glsl uvec2 @ce, @glsl uvec3 @ce, @glsl uvec4 @ce |
 | @ref Vector2i, @ref Vector3i, @ref Vector4i    | @glsl ivec2 @ce, @glsl ivec3 @ce, @glsl ivec4 @ce |

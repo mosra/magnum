@@ -234,6 +234,30 @@ typedef float Float;
 typedef Math::Half Half;
 
 /**
+@brief Two-component bool vector
+
+Equivalent to GLSL @glsl bvec2 @ce.
+@m_keyword{bvec2,GLSL bvec2,}
+*/
+typedef Math::BoolVector<2> BoolVector2;
+
+/**
+@brief Three-component bool vector
+
+Equivalent to GLSL @glsl bvec3 @ce.
+@m_keyword{bvec3,GLSL bvec3,}
+*/
+typedef Math::BoolVector<3> BoolVector3;
+
+/**
+@brief Four-component bool vector
+
+Equivalent to GLSL @glsl bvec4 @ce.
+@m_keyword{bvec4,GLSL bvec4,}
+*/
+typedef Math::BoolVector<4> BoolVector4;
+
+/**
 @brief Two-component float vector
 
 Equivalent to GLSL @glsl vec2 @ce.

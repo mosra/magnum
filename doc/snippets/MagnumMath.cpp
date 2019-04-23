@@ -283,7 +283,7 @@ static_cast<void>(min);
 static_cast<void>(max);
 
 /* [matrix-vector-operations-compare] */
-Math::BoolVector<3> largerOrEqual = a >= b;     // {false, true, true}
+BoolVector3 largerOrEqual = a >= b;             // {false, true, true}
 bool anySmaller = (a < b).any();                // true
 bool allLarger = (a > b).all();                 // false
 /* [matrix-vector-operations-compare] */

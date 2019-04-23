@@ -82,9 +82,7 @@ way as if the variables were just scalars:
 
 @snippet MagnumMath.cpp BoolVector-boolean
 
-@m_keyword{bvec2,GLSL bvec2,}
-@m_keyword{bvec3,GLSL bvec3,}
-@m_keyword{bvec4,GLSL bvec4,}
+@see @ref Magnum::BoolVector2, @ref Magnum::BoolVector3, @ref Magnum::BoolVector4
 */
 template<std::size_t size> class BoolVector {
     static_assert(size != 0, "BoolVector cannot have zero elements");

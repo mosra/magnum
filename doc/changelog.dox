@@ -114,6 +114,8 @@ See also:
 
 -   @ref Math::Frustum::begin() / @ref Math::Frustum::end() accessors for
     easy range-for access to @ref Math::Frustum planes
+-   Added convenience @ref BoolVector2, @ref BoolVector3 and @ref BoolVector4
+    typedefs to the root namespace
 
 @subsubsection changelog-latest-new-platform Platform libraries
 
