@@ -205,6 +205,9 @@ See also:
 -   Construction using @ref Math::ZeroInit and @ref Math::IdentityInit is
     now explicit, to be consistent with @ref Math::NoInit construction and
     avoid ambiguous cases
+-   Changed the way @ref Math::operator<<(Corrade::Utility::Debug&, const BoolVector<size>&)
+    works --- the output now has the same bit order as when constructing it
+    using binary literals
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 

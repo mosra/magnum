@@ -55,6 +55,18 @@ if(MAGNUM_TARGET_GL)
 endif()
 set_target_properties(snippets-Magnum PROPERTIES FOLDER "Magnum/doc/snippets")
 
+# This is taken from corrade/src/Corrade/Test/CMakeLists.txt, keep in sync
+if((CMAKE_CXX_COMPILER_ID STREQUAL "GNU" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "5.0") OR
+   (CMAKE_CXX_COMPILER_ID STREQUAL "Clang" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "3.9") OR
+   (CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang" AND NOT CMAKE_CXX_COMPILER_VERSION VERSION_LESS "7.0") OR
+   (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC"))
+    add_library(snippets-Magnum-cpp14 STATIC MagnumMath-cpp14.cpp)
+    target_link_libraries(snippets-Magnum-cpp14 PRIVATE Magnum)
+    set_target_properties(snippets-Magnum-cpp14 PROPERTIES
+        CORRADE_CXX_STANDARD 14
+        FOLDER "Magnum/doc/snippets")
+endif()
+
 if(WITH_AUDIO)
     add_library(snippets-MagnumAudio STATIC MagnumAudio.cpp)
     target_link_libraries(snippets-MagnumAudio PRIVATE MagnumAudio)

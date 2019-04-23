@@ -68,6 +68,14 @@ stored as bits in array of unsigned bytes, unused bits have undefined value
 which doesn't affect comparison or @ref all() / @ref none() / @ref any()
 functions. See also @ref matrix-vector for brief introduction.
 
+@section Math-BoolVector-indexing Bit indexing
+
+Value at position 0 is the lowest bit of the first byte passed in constructor.
+Value at position 8 is the lowest bit of the second byte passed in constructor.
+For example:
+
+@snippet MagnumMath-cpp14.cpp BoolVector-indexing
+
 @section Math-BoolVector-boolean Boolean operations
 
 The class implements @cpp && @ce, @cpp || @ce and @cpp ! @ce operators
@@ -300,14 +308,45 @@ template<std::size_t size> class BoolVector {
 };
 
 #ifndef CORRADE_NO_DEBUG
-/** @debugoperator{BoolVector} */
+/**
+@debugoperator{BoolVector}
+
+In order to avoid potential confusion, prints the value as a comma-separated sequence of binary literals, so the output corresponds to how the value would
+be constructed. For example,
+
+@snippet MagnumMath-cpp14.cpp BoolVector-debug
+
+<b></b>
+
+@m_class{m-noindent}
+
+prints as
+
+@code{.shell-session}
+BoolVector(0b1010) BoolVector(0b00001000, 0b00000011, 0b100)
+@endcode
+
+Note that this, on the other hand, makes mapping to bit indices less obvious
+--- see @ref Math-BoolVector-indexing for more information.
+*/
 template<std::size_t size> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const BoolVector<size>& value) {
-    debug << "BoolVector(" << Corrade::Utility::Debug::nospace;
-    for(std::size_t i = 0; i != size; ++i) {
-        if(!i || (i%8)) debug << Corrade::Utility::Debug::nospace;
-        debug << (value[i] ? "1" : "0");
+    debug << "BoolVector(0b" << Corrade::Utility::Debug::nospace;
+
+    /* Print the full bytes comma-separated */
+    for(std::size_t byte = 0; byte != BoolVector<size>::DataSize - 1; ++byte) {
+        for(std::size_t i = 0; i != 8; ++i)
+            debug << (((value.data()[byte] >> (8 - i - 1)) & 1) ? "1" : "0")
+                  << Corrade::Utility::Debug::nospace;
+        debug << ", 0b" << Corrade::Utility::Debug::nospace;
     }
-    return debug << Corrade::Utility::Debug::nospace << ")";
+
+    /* Print the last (potentially) partial byte */
+    constexpr std::size_t suffixSize = size%8 ? size%8 : 8;
+    for(std::size_t i = 0; i != suffixSize; ++i)
+        debug << (((value.data()[size/8] >> (suffixSize - i - 1)) & 1) ? "1" : "0")
+              << Corrade::Utility::Debug::nospace;
+
+    return debug << ")";
 }
 #endif
 

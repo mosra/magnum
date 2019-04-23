@@ -198,6 +198,7 @@ void BoolVectorTest::convert() {
 }
 
 void BoolVectorTest::data() {
+    /* 0b00001000, 0b00000011, 0b100 */
     constexpr BoolVector19 a(0x08, 0x03, 0x04);
 
     CORRADE_VERIFY(!a[0] && !a[1] && !a[2]);
@@ -354,9 +355,10 @@ void BoolVectorTest::strictWeakOrdering() {
 void BoolVectorTest::debug() {
     std::ostringstream o;
 
+    /* 0b00100101 0b01010011 0b010 */
     Debug(&o) << BoolVector19(0x25, 0x53, 0x02);
 
-    CORRADE_COMPARE(o.str(), "BoolVector(10100100 11001010 010)\n");
+    CORRADE_COMPARE(o.str(), "BoolVector(0b00100101, 0b01010011, 0b010)\n");
 }
 
 }}}}
