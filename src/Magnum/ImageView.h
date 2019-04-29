@@ -113,7 +113,8 @@ Metal-specific format identifier:
 
 @snippet Magnum.cpp ImageView-usage-metal
 
-@see @ref ImageView1D, @ref ImageView2D, @ref ImageView3D
+@see @ref ImageView1D, @ref ImageView2D, @ref ImageView3D,
+    @ref Image-pixel-views
 */
 template<UnsignedInt dimensions> class ImageView {
     public:
@@ -365,7 +366,11 @@ template<UnsignedInt dimensions> class ImageView {
             return Implementation::imageDataProperties<dimensions>(*this);
         }
 
-        /** @brief Image data */
+        /**
+         * @brief Image data
+         *
+         * @see @ref pixels()
+         */
         Containers::ArrayView<const char> data() const { return _data; }
 
         /** @overload */
@@ -380,6 +385,14 @@ template<UnsignedInt dimensions> class ImageView {
          * specified in the constructor.
          */
         void setData(Containers::ArrayView<const void> data);
+
+        /**
+         * @brief View on pixel data
+         *
+         * Provides direct and easy-to-use access to image pixels. See
+         * @ref Image-pixel-views for more information.
+         */
+        Containers::StridedArrayView<dimensions + 1, const char> pixels() const;
 
     private:
         PixelStorage _storage;

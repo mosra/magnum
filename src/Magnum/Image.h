@@ -69,6 +69,36 @@ As with @ref ImageView, this class supports extra storage parameters and
 implementation-specific pixel format specification. See the @ref ImageView
 documentation for more information.
 
+@section Image-pixel-views Obtaining a view on pixel data
+
+While the raw image data are available through @ref data(), for correct pixel
+addressing it's required to incorporate all @ref storage() parameters such as
+row alignment, row length, skip offset and such. This is very error-prone to
+do by hand even with the help of @ref dataProperties().
+
+The @ref pixels() accessor returns a multi-dimensional
+@ref Corrade::Containers::StridedArrayView describing layout of the data and
+providing easy access to particular rows, pixels and pixel channels. The
+returned view always has one dimension more than the actual image, with the
+last dimension being bytes in a particular pixels. The second-to-last dimension
+is always pixels in a row, the one before (if the image is at least 2D) is rows
+in an image, and for 3D images the very first dimension describes image slices.
+Desired usage is casting to a concrete type based on @ref format() first using
+@ref Corrade::Containers::arrayCast() (which also flattens the last dimension)
+and then operating on the concretely typed array. The following example
+brightens the center 32x32 area of an image:
+
+@snippet Magnum.cpp Image-pixels
+
+@attention Note that the correctness of the cast is can't be generally checked
+    apart from expecting that the last dimension size is equal to the new type
+    size. It's the user responsibility to ensure the type matches given
+    @ref format().
+
+This operation is available also on @ref ImageView and non-compressed
+@ref Trade::ImageData. See @ref Corrade::Containers::StridedArrayView docs for
+more information about transforming, slicing and converting the view further.
+
 @see @ref Image1D, @ref Image2D, @ref Image3D, @ref CompressedImage
 */
 template<UnsignedInt dimensions> class Image {
@@ -324,7 +354,7 @@ template<UnsignedInt dimensions> class Image {
         /**
          * @brief Raw data
          *
-         * @see @ref release()
+         * @see @ref release(), @ref pixels()
          */
         Containers::ArrayView<char> data() & { return _data; }
         Containers::ArrayView<char> data() && = delete; /**< @overload */
@@ -342,6 +372,15 @@ template<UnsignedInt dimensions> class Image {
         template<class T = char> const T* data() const {
             return reinterpret_cast<const T*>(_data.data());
         }
+
+        /**
+         * @brief View on pixel data
+         *
+         * Provides direct and easy-to-use access to image pixels. See
+         * @ref Image-pixel-views for more information.
+         */
+        Containers::StridedArrayView<dimensions + 1, char> pixels();
+        Containers::StridedArrayView<dimensions + 1, const char> pixels() const; /**< @overload */
 
         /**
          * @brief Release data storage

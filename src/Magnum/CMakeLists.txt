@@ -63,6 +63,9 @@ set(Magnum_HEADERS
     Types.h
     visibility.h)
 
+set(Magnum_PRIVATE_HEADERS
+    Implementation/ImagePixelView.h)
+
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS
     Math/Angle.cpp

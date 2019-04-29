@@ -74,7 +74,8 @@ compressed properties through @ref compressedStorage() and
 
 @snippet MagnumTrade.cpp ImageData-usage
 
-@see @ref ImageData1D, @ref ImageData2D, @ref ImageData3D
+@see @ref ImageData1D, @ref ImageData2D, @ref ImageData3D,
+    @ref Image-pixel-views
 */
 template<UnsignedInt dimensions> class ImageData {
     public:
@@ -330,7 +331,7 @@ template<UnsignedInt dimensions> class ImageData {
         /**
          * @brief Raw data
          *
-         * @see @ref release()
+         * @see @ref release(), @ref pixels()
          */
         Containers::ArrayView<char> data() & { return _data; }
         Containers::ArrayView<char> data() && = delete; /**< @overload */
@@ -348,6 +349,17 @@ template<UnsignedInt dimensions> class ImageData {
         template<class T> const T* data() const {
             return reinterpret_cast<const T*>(_data.data());
         }
+
+        /**
+         * @brief View on pixel data
+         *
+         * Provides direct and easy-to-use access to image pixels. Expects that
+         * the image is not compressed. See @ref Image-pixel-views for more
+         * information.
+         * @see @ref isCompressed()
+         */
+        Containers::StridedArrayView<dimensions + 1, char> pixels();
+        Containers::StridedArrayView<dimensions + 1, const char> pixels() const; /**< @overload */
 
         /**
          * @brief Release data storage

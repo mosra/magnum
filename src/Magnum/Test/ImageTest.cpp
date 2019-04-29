@@ -24,10 +24,12 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
+#include "Magnum/Math/Color.h"
 #include "Magnum/PixelFormat.h"
 
 namespace Magnum { namespace Test { namespace {
@@ -67,6 +69,10 @@ struct ImageTest: TestSuite::Tester {
 
     void release();
     void releaseCompressed();
+
+    void pixels1D();
+    void pixels2D();
+    void pixels3D();
 };
 
 ImageTest::ImageTest() {
@@ -101,7 +107,11 @@ ImageTest::ImageTest() {
               &ImageTest::dataPropertiesCompressed,
 
               &ImageTest::release,
-              &ImageTest::releaseCompressed});
+              &ImageTest::releaseCompressed,
+
+              &ImageTest::pixels1D,
+              &ImageTest::pixels2D,
+              &ImageTest::pixels3D});
 }
 
 namespace GL {
@@ -658,6 +668,128 @@ void ImageTest::releaseCompressed() {
     CORRADE_COMPARE(pointer, data);
     CORRADE_COMPARE(a.data(), nullptr);
     CORRADE_COMPARE(a.size(), Vector2i());
+}
+
+void ImageTest::pixels1D() {
+    Image1D image{
+        PixelStorage{}
+            .setAlignment(1) /** @todo alignment 4 expects 17 bytes. what */
+            .setSkip({3, 0, 0}),
+        PixelFormat::RGB8Unorm, 2,
+        Containers::Array<char>{Containers::InPlaceInit, {
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 5, 6, 7, 8
+        }}};
+    const Image1D& cimage = image;
+
+    {
+        Containers::StridedArrayView1D<Color3ub> pixels = Containers::arrayCast<1, Color3ub>(image.pixels());
+        CORRADE_COMPARE(pixels.size(), 2);
+        CORRADE_COMPARE(pixels.stride(), 3);
+        CORRADE_COMPARE(pixels.data(), image.data() + 3*3);
+        CORRADE_COMPARE(pixels[0], (Color3ub{3, 4, 5}));
+        CORRADE_COMPARE(pixels[1], (Color3ub{6, 7, 8}));
+    } {
+        Containers::StridedArrayView1D<const Color3ub> pixels = Containers::arrayCast<1, const Color3ub>(cimage.pixels());
+        CORRADE_COMPARE(pixels.size(), 2);
+        CORRADE_COMPARE(pixels.stride(), 3);
+        CORRADE_COMPARE(pixels.data(), cimage.data() + 3*3);
+        CORRADE_COMPARE(pixels[0], (Color3ub{3, 4, 5}));
+        CORRADE_COMPARE(pixels[1], (Color3ub{6, 7, 8}));
+    }
+}
+
+void ImageTest::pixels2D() {
+    Image2D image{
+        PixelStorage{}
+            .setAlignment(4)
+            .setSkip({3, 2, 0})
+            .setRowLength(6),
+        PixelFormat::RGB8Unorm, {2, 4},
+        Containers::Array<char>{Containers::InPlaceInit, {
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 5, 6, 7, 8, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0,
+        }}};
+    const Image2D& cimage = image;
+
+    {
+        Containers::StridedArrayView2D<Color3ub> pixels = Containers::arrayCast<2, Color3ub>(image.pixels());
+        CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView2D<Color3ub>::Size{4, 2}));
+        CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView2D<Color3ub>::Stride{20, 3}));
+        CORRADE_COMPARE(pixels.data(), image.data() + 2*20 + 3*3);
+        CORRADE_COMPARE(pixels[3][0], (Color3ub{4, 5, 6}));
+        CORRADE_COMPARE(pixels[3][1], (Color3ub{7, 8, 9}));
+    } {
+        Containers::StridedArrayView2D<const Color3ub> pixels = Containers::arrayCast<2, const Color3ub>(cimage.pixels());
+        CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView2D<const Color3ub>::Size{4, 2}));
+        CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView2D<const Color3ub>::Stride{20, 3}));
+        CORRADE_COMPARE(pixels.data(), cimage.data() + 2*20 + 3*3);
+        CORRADE_COMPARE(pixels[3][0], (Color3ub{4, 5, 6}));
+        CORRADE_COMPARE(pixels[3][1], (Color3ub{7, 8, 9}));
+    }
+}
+
+void ImageTest::pixels3D() {
+    Image3D image{
+        PixelStorage{}
+            .setAlignment(4)
+            .setSkip({3, 2, 1})
+            .setRowLength(6)
+            .setImageHeight(7),
+        PixelFormat::RGB8Unorm, {2, 4, 3},
+        Containers::Array<char>{Containers::InPlaceInit, {
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 5, 6, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 3, 4, 5, 6, 7, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 4, 5, 6, 7, 8, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 5, 6, 7, 8, 9, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 5, 4, 3, 2, 1, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 6, 5, 4, 3, 2, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 7, 6, 5, 4, 3, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 8, 7, 6, 5, 4, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 5, 6, 1, 2, 3, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 6, 7, 2, 3, 4, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 7, 8, 3, 4, 5, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 8, 9, 4, 5, 6, 0, 0, 0, 0, 0,
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        }}};
+    const Image3D& cimage = image;
+
+    {
+        Containers::StridedArrayView3D<Color3ub> pixels = Containers::arrayCast<3, Color3ub>(image.pixels());
+        CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView3D<Color3ub>::Size{3, 4, 2}));
+        CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView3D<Color3ub>::Stride{140, 20, 3}));
+        CORRADE_COMPARE(pixels.data(), image.data() + 140 + 2*20 + 3*3);
+        CORRADE_COMPARE(pixels[1][3][0], (Color3ub{9, 8, 7}));
+        CORRADE_COMPARE(pixels[1][3][1], (Color3ub{6, 5, 4}));
+    } {
+        Containers::StridedArrayView3D<const Color3ub> pixels = Containers::arrayCast<3, const Color3ub>(cimage.pixels());
+        CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView3D<const Color3ub>::Size{3, 4, 2}));
+        CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView3D<const Color3ub>::Stride{140, 20, 3}));
+        CORRADE_COMPARE(pixels.data(), cimage.data() + 140 + 2*20 + 3*3);
+        CORRADE_COMPARE(pixels[1][3][0], (Color3ub{9, 8, 7}));
+        CORRADE_COMPARE(pixels[1][3][1], (Color3ub{6, 5, 4}));
+    }
 }
 
 }}}

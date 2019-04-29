@@ -23,6 +23,9 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/StridedArrayView.h>
+
+#include "Magnum/Math/Color.h"
 #include "Magnum/Image.h"
 #include "Magnum/PixelFormat.h"
 #ifdef MAGNUM_TARGET_GL
@@ -59,6 +62,19 @@ class MeshResourceLoader: public AbstractResourceLoader<GL::Mesh> {
 #endif
 
 int main() {
+
+{
+std::nullptr_t data{};
+/* [Image-pixels] */
+Image2D image{PixelFormat::RGB8Unorm, {128, 128}, data};
+
+Containers::StridedArrayView2D<Color3ub> pixels =
+    Containers::arrayCast<2, Color3ub>(image.pixels());
+for(auto row: pixels.slice({48, 48}, {80, 80})) {
+    for(Color3ub& pixel: row) pixel *= 1.1f;
+}
+/* [Image-pixels] */
+}
 
 {
 char data[3];

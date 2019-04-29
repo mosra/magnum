@@ -24,9 +24,11 @@
 */
 
 #include <sstream>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/Math/Color.h"
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 
@@ -57,6 +59,10 @@ struct ImageViewTest: TestSuite::Tester {
 
     void setDataInvalidSize();
     void setDataCompressedInvalidSize();
+
+    void pixels1D();
+    void pixels2D();
+    void pixels3D();
 };
 
 ImageViewTest::ImageViewTest() {
@@ -81,7 +87,11 @@ ImageViewTest::ImageViewTest() {
               &ImageViewTest::setDataCompressed,
 
               &ImageViewTest::setDataInvalidSize,
-              &ImageViewTest::setDataCompressedInvalidSize});
+              &ImageViewTest::setDataCompressedInvalidSize,
+
+              &ImageViewTest::pixels1D,
+              &ImageViewTest::pixels2D,
+              &ImageViewTest::pixels3D});
 }
 
 namespace GL {
@@ -579,6 +589,57 @@ void ImageViewTest::setDataCompressedInvalidSize() {
         CompressedImageView2D{CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, data};
         CORRADE_COMPARE(out.str(), "CompressedImageView::setData(): data too small, got 2 but expected at least 4 bytes\n");
     }
+}
+
+void ImageViewTest::pixels1D() {
+    ImageView1D image{
+        PixelStorage{}
+            .setAlignment(1) /** @todo alignment 4 expects 17 bytes. what */
+            .setSkip({3, 0, 0}),
+        PixelFormat::RGB8Unorm, 2,
+        {nullptr, 15}};
+
+    /* Full test is in ImageTest, this is just a sanity check */
+
+    Containers::StridedArrayView1D<const Color3ub> pixels = Containers::arrayCast<1, const Color3ub>(image.pixels());
+    CORRADE_COMPARE(pixels.size(), 2);
+    CORRADE_COMPARE(pixels.stride(), 3);
+    CORRADE_COMPARE(pixels.data(), image.data() + 3*3);
+}
+
+void ImageViewTest::pixels2D() {
+    ImageView2D image{
+        PixelStorage{}
+            .setAlignment(4)
+            .setSkip({3, 2, 0})
+            .setRowLength(6),
+        PixelFormat::RGB8Unorm, {2, 4},
+        {nullptr, 120}};
+
+    /* Full test is in ImageTest, this is just a sanity check */
+
+    Containers::StridedArrayView2D<const Color3ub> pixels = Containers::arrayCast<2, const Color3ub>(image.pixels());
+    CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView2D<const Color3ub>::Size{4, 2}));
+    CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView2D<const Color3ub>::Stride{20, 3}));
+    CORRADE_COMPARE(pixels.data(), image.data() + 2*20 + 3*3);
+}
+
+void ImageViewTest::pixels3D() {
+    ImageView3D image{
+        PixelStorage{}
+            .setAlignment(4)
+            .setSkip({3, 2, 1})
+            .setRowLength(6)
+            .setImageHeight(7),
+        PixelFormat::RGB8Unorm, {2, 4, 3},
+        {nullptr, 560}};
+
+    /* Full test is in ImageTest, this is just a sanity check */
+
+    Containers::StridedArrayView3D<const Color3ub> pixels = Containers::arrayCast<3, const Color3ub>(image.pixels());
+    CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView3D<const Color3ub>::Size{3, 4, 2}));
+    CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView3D<const Color3ub>::Stride{140, 20, 3}));
+    CORRADE_COMPARE(pixels.data(), image.data() + 140 + 2*20 + 3*3);
 }
 
 }}}
