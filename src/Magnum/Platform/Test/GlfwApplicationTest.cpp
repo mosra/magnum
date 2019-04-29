@@ -43,7 +43,7 @@ struct GlfwApplicationTest: Platform::Application {
 
     void keyPressEvent(KeyEvent& event) override {
         #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
-        Debug{} << "key press event:" << event.keyName();
+        Debug{} << "key press event:" << int(event.key()) << event.keyName();
         #endif
 
         if(event.key() == KeyEvent::Key::F1) {

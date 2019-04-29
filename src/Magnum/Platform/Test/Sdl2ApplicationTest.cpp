@@ -57,7 +57,7 @@ struct Sdl2ApplicationTest: Platform::Application {
     }
 
     void keyPressEvent(KeyEvent& event) override {
-        Debug{} << "key press event:" << event.keyName();
+        Debug{} << "key press event:" << SDL_Keycode(event.key()) << event.keyName();
 
         if(event.key() == KeyEvent::Key::F1) {
             Debug{} << "starting text input";
