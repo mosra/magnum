@@ -498,7 +498,7 @@ class Sdl2Application {
         Sdl2Application& operator=(Sdl2Application&&) = delete;
 
         /**
-         * @brief Execute main loop
+         * @brief Execute application main loop
          * @return Value for returning from @cpp main() @ce
          *
          * Calls @ref mainLoopIteration() in a loop until @ref exit() is
