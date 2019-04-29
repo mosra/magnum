@@ -40,7 +40,7 @@ namespace Magnum { namespace GL {
 namespace Implementation { template<class> struct Attribute; }
 
 /**
-@brief Base class for attribute location and type
+@brief Base class for vertex attribute location and type
 
 For use in @ref AbstractShaderProgram subclasses. Template parameter @p location
 is vertex attribute location, number between @cpp 0 @ce and
@@ -317,7 +317,7 @@ template<class T> Debug& operator<<(Debug& debug, Attribute<T>::DataType);
 #endif
 
 /**
-@brief Base class for dynamic attribute location and type
+@brief Base class for dynamic vertex attribute location and type
 
 Counterpart to @ref Attribute that allows runtime specification of attribute
 location and base type. Note that unlike the compile-time specification, this
@@ -499,7 +499,7 @@ class DynamicAttribute {
         /** @brief Attribute location */
         constexpr UnsignedInt location() const { return _location; }
 
-        /** @brief Component count of passed data */
+        /** @brief Component count */
         constexpr Components components() const { return _components; }
 
         /** @brief Type of passed data */
