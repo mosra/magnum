@@ -778,6 +778,21 @@ static_cast<void>(srgbAlpha);
 }
 
 {
+/* [Color3-debug] */
+Debug{Debug::Flag::Color} << 0xdcdcdc_rgb << 0xa5c9ea_rgb << 0x3bd267_rgb
+    << 0xc7cf2f_rgb << 0xcd3431_rgb << 0x2f83cc_rgb << 0x747474_rgb;
+/* [Color3-debug] */
+}
+
+{
+/* [Color4-debug] */
+Debug{Debug::Flag::Color}
+    << 0x3bd26700_rgba << 0x3bd26733_rgba << 0x3bd26766_rgba
+    << 0x3bd26799_rgba << 0x3bd267cc_rgba << 0x3bd267ff_rgba;
+/* [Color4-debug] */
+}
+
+{
 /* [_rgb] */
 using namespace Math::Literals;
 Color3ub a = 0x33b27f_rgb;      // {0x33, 0xb2, 0x7f}

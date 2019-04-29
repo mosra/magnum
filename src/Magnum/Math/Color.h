@@ -1292,16 +1292,69 @@ inline Color4<Float> operator "" _srgbaf(unsigned long long value) {
 /**
 @debugoperator{Color3}
 
-Prints the value as hex color (e.g. @cb{.shell-session} #ff33aa @ce). Other
-underlying types are handled by @ref operator<<(Corrade::Utility::Debug&, const Vector<size, T>&).
+If @ref Corrade::Utility::Debug::Flag::Color is enabled or
+@ref Corrade::Utility::Debug::color was set immediately before, prints the
+value as an ANSI 24bit color escape sequence using two successive Unicode block
+characters (to have it roughly square). To preserve at least some information
+when text is copied, the square consists of one of the five
+@cb{.shell-session} ░▒▓█ @ce shades, however the color is set for both
+foreground and background so the actual block character is indistinguishable
+when seen on a terminal.
+
+If @ref Corrade::Utility::Debug::Flag::Color is enabled and
+@ref Corrade::Utility::Debug::Flag::DisableColors is set, only the shaded
+character is used, without any ANSI color escape sequence.
+
+If @ref Corrade::Utility::Debug::Flag::Color is not enabled, the value is
+printed as a hex color (e.g. @cb{.shell-session} #ff33aa @ce). Other underlying
+types are handled by @ref operator<<(Corrade::Utility::Debug&, const Vector<size, T>&).
+
+For example, the following snippet:
+
+@snippet MagnumMath.cpp Color3-debug
+
+<b></b>
+
+@m_class{m-noindent}
+
+prints the following on terminals that support it:
+
+@include MathColor3-debug.ansi
 */
 MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color3<UnsignedByte>& value);
 
 /**
 @debugoperator{Color4}
 
-Prints the value as hex color (e.g. @cb{.shell-session} #9933aaff @ce). Other
+If @ref Corrade::Utility::Debug::Flag::Color is enabled or
+@ref Corrade::Utility::Debug::color was set immediately before, prints the
+value as an ANSI 24bit color escape sequence using two successive Unicode block
+characters (to have it roughly square). To preserve at least some information
+when text is copied, the square consists of one of the five
+@cb{.shell-session} ░▒▓█ @ce shades. The square shade is calculated as a
+product of @ref Color4::value() and @ref Color4::a(). If calculated color value
+is less than alpha, the colored square has the color set for both background
+and foreground, otherwise the background is left at the default.
+
+If @ref Corrade::Utility::Debug::Flag::Color is enabled and
+@ref Corrade::Utility::Debug::Flag::DisableColors is set, only the shaded
+character is used, without any ANSI color escape sequence.
+
+If @ref Corrade::Utility::Debug::Flag::Color is not enabled, the value is
+printed as a hex color (e.g. @cb{.shell-session} #ff33aaff @ce). Other
 underlying types are handled by @ref operator<<(Corrade::Utility::Debug&, const Vector<size, T>&).
+
+For example, the following snippet:
+
+@snippet MagnumMath.cpp Color4-debug
+
+<b></b>
+
+@m_class{m-noindent}
+
+prints the following on terminals that support it:
+
+@include MathColor4-debug.ansi
 */
 MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& debug, const Color4<UnsignedByte>& value);
 #endif

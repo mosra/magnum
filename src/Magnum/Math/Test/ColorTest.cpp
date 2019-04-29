@@ -122,6 +122,8 @@ struct ColorTest: Corrade::TestSuite::Tester {
     void swizzleType();
     void debug();
     void debugUb();
+    void debugUbColor();
+    void debugUbColorColorsDisabled();
     void debugHsv();
 
     #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
@@ -246,6 +248,8 @@ ColorTest::ColorTest() {
               &ColorTest::swizzleType,
               &ColorTest::debug,
               &ColorTest::debugUb,
+              &ColorTest::debugUbColor,
+              &ColorTest::debugUbColorColorsDisabled,
               &ColorTest::debugHsv});
 
     #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
@@ -1017,6 +1021,52 @@ void ColorTest::debugUb() {
     o.str({});
     Debug(&o) << 0x12345678_rgba << 0x90abcdef_rgba;
     CORRADE_COMPARE(o.str(), "#12345678 #90abcdef\n");
+}
+
+void ColorTest::debugUbColor() {
+    Debug{} << "The following should be the Magnum / m.css color palette:";
+
+    Debug{Debug::Flag::Color}
+        << 0xdcdcdc_rgb << 0xa5c9ea_rgb << 0x3bd267_rgb
+        << 0xc7cf2f_rgb << 0xcd3431_rgb << 0x2f83cc_rgb << 0x747474_rgb;
+
+    Debug{} << "The following should have increasing (overmultiplied) alpha:";
+
+    Debug{Debug::Flag::Color}
+        << 0x3bd26700_rgba << 0x3bd26733_rgba << 0x3bd26766_rgba
+        << 0x3bd26799_rgba << 0x3bd267cc_rgba << 0x3bd267ff_rgba;
+
+    /* It should work just for the immediately following value */
+    std::ostringstream out;
+    Debug{&out}
+        << Debug::color << 0x3bd267_rgb
+        << Debug::color << 0x2f83cc99_rgba
+        << 0x3bd267_rgb << 0x2f83cc99_rgba;
+    CORRADE_COMPARE(out.str(),
+        "\033[38;2;59;210;103m\033[48;2;59;210;103m██\033[0m "
+        "\033[38;2;47;131;204m▒▒\033[0m #3bd267 #2f83cc99\n");
+}
+
+void ColorTest::debugUbColorColorsDisabled() {
+    Debug{} << "The following should be the Magnum / m.css uncolored palette:";
+
+    Debug{Debug::Flag::Color|Debug::Flag::DisableColors}
+        << 0xdcdcdc_rgb << 0xa5c9ea_rgb << 0x3bd267_rgb
+        << 0xc7cf2f_rgb << 0xcd3431_rgb << 0x2f83cc_rgb << 0x747474_rgb;
+
+    Debug{} << "The following should have increasing (overmultiplied) alpha:";
+
+    Debug{Debug::Flag::Color|Debug::Flag::DisableColors}
+        << 0x3bd26700_rgba << 0x3bd26733_rgba << 0x3bd26766_rgba
+        << 0x3bd26799_rgba << 0x3bd267cc_rgba << 0x3bd267ff_rgba;
+
+    /* It should work just for the immediately following value */
+    std::ostringstream out;
+    Debug{&out, Debug::Flag::DisableColors}
+        << Debug::color << 0x2f83cc_rgb
+        << Debug::color << 0x2f83cc99_rgba
+        << 0x2f83cc_rgb << 0x2f83cc99_rgba;
+    CORRADE_COMPARE(out.str(), "▓▓ ▒▒ #2f83cc #2f83cc99\n");
 }
 
 void ColorTest::debugHsv() {

@@ -114,6 +114,9 @@ See also:
 
 -   @ref Math::Frustum::begin() / @ref Math::Frustum::end() accessors for
     easy range-for access to @ref Math::Frustum planes
+-   @ref Color3ub and @ref Color4ub can be printed with
+    @ref Corrade::Utility::Debug as actual colors using the
+    @ref Corrade::Utility::Debug::color modifier
 -   Added convenience @ref BoolVector2, @ref BoolVector3 and @ref BoolVector4
     typedefs to the root namespace
 
