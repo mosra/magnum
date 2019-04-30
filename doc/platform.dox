@@ -197,9 +197,9 @@ because dynamic function pointer loading is not available on these.
 
 For example, when you create the OpenGL context using GLX, you need to find
 `GlxContext` component, and link to `Magnum::GlxContext` target. Similarly to
-application libraries, you can also use generic `Magnum::Context` target,
-providing you requested only one `*Context` component in the @cmake find_package() @ce
-call. Complete example:
+application libraries, you can also use the generic `Magnum::GLContext` target,
+providing you requested only one `*Context` component in the
+@cmake find_package() @ce call. Complete example:
 
 @code{.cmake}
 find_package(Magnum REQUIRED GlxContext)
@@ -207,7 +207,7 @@ find_package(Magnum REQUIRED GlxContext)
 add_executable(myapplication MyCustomApplication.cpp)
 target_link_libraries(myapplication
     Magnum::Magnum
-    Magnum::Context)
+    Magnum::GLContext)
 @endcode
 
 @section platform-windowless-contexts Manually managing windowless contexts
