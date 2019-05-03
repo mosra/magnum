@@ -470,15 +470,19 @@ void GlfwApplication::setupCallbacks() {
         /* Properly redraw after the window is restored from minimized state */
         static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->drawEvent();
     });
+    #ifdef MAGNUM_TARGET_GL
     glfwSetFramebufferSizeCallback(_window, [](GLFWwindow* const window, const int w, const int h) {
         auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
-        ViewportEvent e{{w, h}
-            #ifdef MAGNUM_TARGET_GL
-            , app.framebufferSize()
-            #endif
-            , app.dpiScaling()};
-        static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->viewportEvent(e);
+        ViewportEvent e{app.windowSize(), {w, h}, app.dpiScaling()};
+        app.viewportEvent(e);
     });
+    #else
+    glfwSetWindowSizeCallback(_window, [](GLFWwindow* const window, const int w, const int h) {
+        auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
+        ViewportEvent e{{w, h}, app.dpiScaling()};
+        app.viewportEvent(e);
+    });
+    #endif
     glfwSetKeyCallback(_window, [](GLFWwindow* const window, const int key, int, const int action, const int mods) {
         auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
 

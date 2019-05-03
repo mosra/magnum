@@ -325,6 +325,9 @@ See also:
 -   Properly zero-initializing the UTF-8 buffer in
     @ref Platform::GlfwApplication::textInputEvent() (see
     [mosra/magnum#324](https://github.com/mosra/magnum/pull/324))
+-   @ref Platform::Sdl2Application::viewportEvent() and
+    @ref Platform::GlfwApplication::viewportEvent() is fixed to behave
+    correctly with @ref platforms-macos-hidpi "Retina-aware" apps on macOS/iOS
 -   @ref Text::AbstractFontConverter::exportFontToFile() and
     @ref Text::AbstractFontConverter::exportGlyphCacheToFile() now properly
     returns failure when the underlying data export function returns an empty

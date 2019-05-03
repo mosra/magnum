@@ -693,7 +693,11 @@ void Sdl2Application::mainLoopIteration() {
                            https://github.com/kripken/emscripten/issues/1731 */
                         CORRADE_ASSERT_UNREACHABLE();
                         #else
-                        ViewportEvent e{event, {event.window.data1, event.window.data2},
+                        /* {event.window.data1, event.window.data2} seems to be
+                           framebuffer size and not window size on macOS, which
+                           is weird. Query the values directly instead to be
+                           really sure. */
+                        ViewportEvent e{event, windowSize(),
                             #ifdef MAGNUM_TARGET_GL
                             framebufferSize(),
                             #endif
