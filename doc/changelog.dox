@@ -297,6 +297,8 @@ See also:
     scripts and `FindMagnum.cmake` always forced GLVND)
 -   `FindMagnum.cmake` now correctly finds debug versions of statically built
     plugins when using Vcpkg
+-   Fixed linking of static `Any*` plugins when the libraries are otherwise
+    build as dynamic
 
 @subsection changelog-latest-bugfixes Bug fixes
 
