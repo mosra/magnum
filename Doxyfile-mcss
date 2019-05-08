@@ -115,6 +115,7 @@ HTML_EXTRA_STYLESHEET = \
 ##! M_LINKS_NAVBAR2 = \
 ##!  "namespaces" \
 ##!  "annotated" \
-##!  "files"
+##!  "files" \
+##!  "<a href="../../../../magnum-bindings/build/doc/python/index.html">Python API</a>"
 
 # kate: hl Doxyfile

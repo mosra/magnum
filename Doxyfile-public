@@ -101,6 +101,11 @@ HTML_EXTRA_STYLESHEET = \
     https://static.magnum.graphics/m-dark.compiled.css \
     https://static.magnum.graphics/m-dark.documentation.compiled.css
 
+##! M_LINKS_NAVBAR2 = \
+##!  "namespaces" \
+##!  "annotated" \
+##!  "files" \
+##!  "<a href="https://doc.magnum.graphics/python/">Python API</a>"
 ##! M_SEARCH_DOWNLOAD_BINARY = YES
 ##! M_SEARCH_BASE_URL = https://doc.magnum.graphics/magnum/
 ##! M_SEARCH_EXTERNAL_URL = "https://google.com/search?q=site:doc.magnum.graphics+Magnum+{query}"
