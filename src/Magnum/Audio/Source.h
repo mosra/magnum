@@ -35,6 +35,8 @@
 #include <vector>
 #include <al.h>
 
+#include <Corrade/Containers/Containers.h>
+
 #include "Magnum/Magnum.h"
 #include "Magnum/Audio/Audio.h"
 #include "Magnum/Audio/visibility.h"
@@ -507,6 +509,28 @@ class MAGNUM_AUDIO_EXPORT Source {
          */
         Source& setBuffer(Buffer* buffer);
 
+        /**
+         * @brief Queue buffers
+         * @param buffers       Buffers to queue
+         * @return Reference to self (for method chaining)
+         *
+         * Changes source type to @ref Type::Streaming. The buffers must be
+         * already filled with data.
+         * @see @ref type(), @fn_al_keyword{SourceQueueBuffers}
+         */
+        Source& queueBuffers(Containers::ArrayView<Containers::Reference<Buffer>> buffers);
+
+        /**
+         * @brief Unqueue buffers
+         * @param buffers       Buffers to unqueue
+         * @return The number of unqueued buffers
+         *
+         * The unqueued buffers will be listed in the prefix of the array. Use
+         * @ref ArrayView::prefix() to get it.
+         * @see @fn_al_keyword{SourceUnqueueBuffers}
+         */
+        std::size_t unqueueBuffers(Containers::ArrayView<Containers::Reference<Buffer>> buffers);
+
         /*@}*/
 
         /** @{ @name State management */
@@ -732,6 +756,12 @@ inline Source& Source::operator=(Source&& other) {
     using std::swap;
     swap(_id, other._id);
     return *this;
+}
+
+inline auto Source::type() const -> Type {
+    ALint type;
+    alGetSourcei(_id, AL_SOURCE_TYPE, &type);
+    return Type(type);
 }
 
 inline auto Source::state() const -> State {
