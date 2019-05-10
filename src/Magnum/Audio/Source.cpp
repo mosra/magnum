@@ -25,7 +25,10 @@
 
 #include "Source.h"
 
+#include <algorithm>
+
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Reference.h>
 
 #include "Magnum/Audio/Buffer.h"
 
@@ -36,6 +39,32 @@ namespace Magnum { namespace Audio {
 Source& Source::setBuffer(Buffer* buffer) {
     alSourcei(_id, AL_BUFFER, buffer ? buffer->id() : 0);
     return *this;
+}
+
+Source& Source::queueBuffers(Containers::ArrayView<Containers::Reference<Buffer>> buffers) {
+    Containers::Array<ALuint> ids(buffers.size());
+    for(std::size_t i = 0; i < ids.size(); i++)
+        ids[i] = buffers[i]->id();
+    alSourceQueueBuffers(_id, ids.size(), ids.data());
+    return *this;
+}
+
+std::size_t Source::unqueueBuffers(Containers::ArrayView<Containers::Reference<Buffer>> buffers) {
+    ALint processedBuffers;
+    alGetSourcei(_id, AL_BUFFERS_PROCESSED, &processedBuffers);
+
+    if(!processedBuffers) return 0;
+
+    Containers::Array<ALuint> unqueuedIds(processedBuffers);
+    alSourceUnqueueBuffers(_id, unqueuedIds.size(), unqueuedIds.data());
+    auto isNotUnqueued = [&unqueuedIds](Buffer& buffer) {
+        for(ALuint id : unqueuedIds) {
+            if(buffer.id() == id)
+                return false;
+        }
+        return true;
+    };
+    return std::remove_if(buffers.begin(), buffers.end(), isNotUnqueued) - buffers.begin();
 }
 
 namespace {

@@ -35,6 +35,8 @@
 #include <vector>
 #include <al.h>
 
+#include <Corrade/Containers/Containers.h>
+
 #include "Magnum/Magnum.h"
 #include "Magnum/Audio/Audio.h"
 #include "Magnum/Audio/visibility.h"
@@ -506,6 +508,28 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @see @ref type(), @fn_al_keyword{Sourcei} with @def_al{BUFFER}
          */
         Source& setBuffer(Buffer* buffer);
+
+        /**
+         * @brief Queue buffers
+         * @param buffers       Buffers to queue
+         * @return Reference to self (for method chaining)
+         *
+         * Changes source type to @ref Type::Streaming. The buffers must be
+         * already filled with data.
+         * @see @ref type(), @fn_al_keyword{SourceQueueBuffers}
+         */
+        Source& queueBuffers(Containers::ArrayView<Containers::Reference<Buffer>> buffers);
+
+        /**
+         * @brief Unqueue buffers
+         * @param buffers       Buffers to unqueue
+         * @return The number of unqueued buffers
+         *
+         * The unqueued buffers will be listed in the prefix of the array. Use
+         * @ref Corrade::Containers::ArrayView::prefix() to get it.
+         * @see @fn_al_keyword{SourceUnqueueBuffers}
+         */
+        std::size_t unqueueBuffers(Containers::ArrayView<Containers::Reference<Buffer>> buffers);
 
         /*@}*/
 
