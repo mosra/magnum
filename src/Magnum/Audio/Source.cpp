@@ -59,7 +59,7 @@ std::size_t Source::unqueueBuffers(Containers::ArrayView<Containers::Reference<B
     alSourceUnqueueBuffers(_id, unqueuedIds.size(), unqueuedIds.data());
     auto isNotUnqueued = [&unqueuedIds](Buffer& buffer) {
         for(ALuint id : unqueuedIds) {
-            if(buffer->id() == id)
+            if(buffer.id() == id)
                 return false;
         }
         return true;
