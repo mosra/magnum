@@ -115,7 +115,8 @@ Are the below lists missing your name or something's wrong?
     algorithm bugfixes
 -   **Guillaume Jacquemin** ([\@williamjcm](https://github.com/williamjcm)) ---
     MSYS2 packages, additions to @ref Platform::Sdl2Application and
-    @ref Platform::GlfwApplication
+    @ref Platform::GlfwApplication, [base-wxwidgets](https://github.com/mosra/magnum-bootstrap/tree/base-wxwidgets)
+    bootstrap project
 -   **Hilario Pérez Corona** ([\@hpcorona](https://github.com/hpcorona)) ---
     improvements to @cb{.cmake} android_create_apk() @ce
 -   **Ivan P.** ([\@uzername](https://github.com/uzername)) --- documentation

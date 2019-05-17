@@ -135,6 +135,9 @@ See also:
 -   Added @ref Platform::Sdl2Application::setMinWindowSize() and
     @ref Platform::Sdl2Application::setMinWindowSize() + equivalent APIs for
     @ref Platform::GlfwApplication (see [mosra/magnum#335](https://github.com/mosra/magnum/pull/335))
+-   New [base-wxwidgets](https://github.com/mosra/magnum-bootstrap/tree/base-wxwidgets)
+    bootstrap project for using Magnum together with wxWidgets (see
+    [mosra/magnum-bootstrap#19](https://github.com/mosra/magnum-bootstrap/pull/19))
 
 @subsubsection changelog-latest-new-text Text library
 
