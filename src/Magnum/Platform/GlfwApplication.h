@@ -1591,6 +1591,8 @@ class GlfwApplication::MouseMoveEvent: public GlfwApplication::InputEvent {
         Containers::Optional<Modifiers> _modifiers;
 };
 
+CORRADE_ENUMSET_OPERATORS(GlfwApplication::MouseMoveEvent::Buttons)
+
 /**
 @brief Mouse scroll event
 
