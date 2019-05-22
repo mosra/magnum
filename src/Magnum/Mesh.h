@@ -114,7 +114,7 @@ enum class MeshPrimitive: UnsignedInt {
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, MeshPrimitive value);
 
 /**
-@brief Mesh primitive type
+@brief Mesh index type
 
 In case of OpenGL, corresponds to @ref GL::MeshIndexType and is convertible to
 it using @ref GL::meshIndexType(). See documentation of each value for more

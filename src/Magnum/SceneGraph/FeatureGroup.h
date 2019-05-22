@@ -95,7 +95,7 @@ template<UnsignedInt dimensions, class Feature, class T> class FeatureGroup: pub
         }
 
         /**
-         * @brief Add feature to the group
+         * @brief Add a feature to the group
          * @return Reference to self (for method chaining)
          *
          * If the features is part of another group, it is removed from it.
@@ -104,7 +104,7 @@ template<UnsignedInt dimensions, class Feature, class T> class FeatureGroup: pub
         FeatureGroup<dimensions, Feature, T>& add(Feature& feature);
 
         /**
-         * @brief Remove feature from the group
+         * @brief Remove a feature from the group
          * @return Reference to self (for method chaining)
          *
          * The feature must be part of the group.

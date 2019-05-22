@@ -143,7 +143,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         Scene<Transformation>* scene();
         const Scene<Transformation>* scene() const; /**< @overload */
 
-        /** @brief Parent object or `nullptr`, if this is root object */
+        /** @brief Parent object or `nullptr`, if this is the root object */
         Object<Transformation>* parent() {
             return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::list();
         }
@@ -153,7 +153,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
             return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::list();
         }
 
-        /** @brief Previous sibling object or `nullptr`, if this is first object */
+        /** @brief Previous sibling object or `nullptr`, if this is the first object */
         Object<Transformation>* previousSibling() {
             return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::previous();
         }
@@ -163,7 +163,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
             return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::previous();
         }
 
-        /** @brief Next sibling object or `nullptr`, if this is last object */
+        /** @brief Next sibling object or `nullptr`, if this is the last object */
         Object<Transformation>* nextSibling() {
             return Containers::LinkedListItem<Object<Transformation>, Object<Transformation>>::next();
         }
@@ -230,7 +230,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         }
 
         /**
-         * @brief Transformation matrix relative to root object
+         * @brief Transformation matrix relative to the root object
          *
          * @see @ref absoluteTransformation()
          */
@@ -239,7 +239,7 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         }
 
         /**
-         * @brief Transformation relative to root object
+         * @brief Transformation relative to the root object
          *
          * @see @ref absoluteTransformationMatrix()
          */

@@ -67,7 +67,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         }
 
         /**
-         * @brief Transform object
+         * @brief Transform the object
          * @return Reference to self (for method chaining)
          *
          * @see @ref transformLocal()
@@ -77,7 +77,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         }
 
         /**
-         * @brief Transform object as a local transformation
+         * @brief Transform the object as a local transformation
          *
          * Similar to the above, except that the transformation is applied
          * before all others.
@@ -92,7 +92,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         }
 
         /**
-         * Translate object
+         * Translate the object
          * @return Reference to self (for method chaining)
          *
          * Same as calling @ref transform() with @ref Math::Matrix3::translation().
@@ -104,7 +104,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         }
 
         /**
-         * @brief Translate object as a local transformation
+         * @brief Translate the object as a local transformation
          *
          * Similar to the above, except that the transformation is applied
          * before all others. Same as calling @ref transformLocal() with
@@ -115,7 +115,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         }
 
         /**
-         * @brief Rotate object
+         * @brief Rotate the object
          * @param angle     Angle (counterclockwise)
          * @return Reference to self (for method chaining)
          *
@@ -127,7 +127,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         }
 
         /**
-         * @brief Rotate object as a local transformation
+         * @brief Rotate the object as a local transformation
          *
          * Similar to the above, except that the transformation is applied
          * before all others. Same as calling @ref transformLocal() with
@@ -138,7 +138,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         }
 
         /**
-         * @brief Scale object
+         * @brief Scale the object
          * @return Reference to self (for method chaining)
          *
          * Same as calling @ref transform() with @ref Math::Matrix3::scaling().
@@ -150,7 +150,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         }
 
         /**
-         * @brief Scale object as a local transformation
+         * @brief Scale the object as a local transformation
          *
          * Similar to the above, except that the transformation is applied
          * before all others. Same as calling @ref transformLocal() with
@@ -161,7 +161,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         }
 
         /**
-         * @brief Reflect object
+         * @brief Reflect the object
          * @param normal    Normal of the line through which to reflect
          *      (normalized)
          * @return Reference to self (for method chaining)
@@ -175,7 +175,7 @@ template<class T> class BasicMatrixTransformation2D: public AbstractBasicTransla
         }
 
         /**
-         * @brief Reflect object as a local transformation
+         * @brief Reflect the object as a local transformation
          *
          * Similar to the above, except that the transformation is applied
          * before all others. Same as calling @ref transformLocal() with

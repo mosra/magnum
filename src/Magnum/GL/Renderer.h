@@ -45,7 +45,7 @@ namespace Magnum { namespace GL {
 namespace Implementation { struct RendererState; }
 
 /** @nosubgrouping
-@brief Global renderer configuration.
+@brief Global renderer configuration
 
 @todo @gl_extension{ARB,viewport_array}
 @todo `GL_POINT_SIZE_GRANULARITY`, `GL_POINT_SIZE_RANGE` (?)
@@ -77,7 +77,7 @@ class MAGNUM_GL_EXPORT Renderer {
         /** @{ @name Renderer features */
 
         /**
-         * @brief Features
+         * @brief Feature
          *
          * All features are disabled by default unless specified otherwise.
          * @see @ref enable(), @ref disable(), @ref setFeature()
@@ -317,21 +317,21 @@ class MAGNUM_GL_EXPORT Renderer {
         static Range1D lineWidthRange();
 
         /**
-         * @brief Enable feature
+         * @brief Enable a feature
          *
          * @see @ref disable(), @ref setFeature(), @fn_gl_keyword{Enable}
          */
         static void enable(Feature feature);
 
         /**
-         * @brief Disable feature
+         * @brief Disable a feature
          *
          * @see @ref enable(), @ref setFeature(), @fn_gl_keyword{Disable}
          */
         static void disable(Feature feature);
 
         /**
-         * @brief Enable or disable feature
+         * @brief Enable or disable a feature
          *
          * Convenience equivalent to the following:
          *
