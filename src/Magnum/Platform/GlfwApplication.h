@@ -575,7 +575,7 @@ class GlfwApplication {
         #ifdef MAGNUM_TARGET_GL
         Containers::Pointer<Platform::GLContext> _context;
         #endif
-        int _exitCode;
+        int _exitCode = 0;
 
         Vector2i _minWindowSize;
         Vector2i _maxWindowSize;

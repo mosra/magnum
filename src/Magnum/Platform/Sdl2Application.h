@@ -1039,7 +1039,7 @@ class Sdl2Application {
 
         Flags _flags;
 
-        int _exitCode;
+        int _exitCode = 0;
 };
 
 #ifdef MAGNUM_TARGET_GL
