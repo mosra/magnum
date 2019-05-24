@@ -195,14 +195,18 @@ void FunctionsTest::clamp() {
 
 void FunctionsTest::nanPropagation() {
     CORRADE_COMPARE(Math::min(Constants::nan(), 5.0f), Constants::nan());
+    CORRADE_COMPARE(Math::min(5.0f, Constants::nan()), 5.0f);
     CORRADE_COMPARE(Math::min(Vector2{Constants::nan(), 6.0f}, Vector2{5.0f})[0], Constants::nan());
     CORRADE_COMPARE(Math::min(Vector2{Constants::nan(), 6.0f}, Vector2{5.0f})[1], 5.0f);
 
     CORRADE_COMPARE(Math::max(Constants::nan(), 5.0f), Constants::nan());
+    CORRADE_COMPARE(Math::max(5.0f, Constants::nan()), 5.0f);
     CORRADE_COMPARE(Math::max(Vector2{Constants::nan(), 4.0f}, Vector2{5.0f})[0], Constants::nan());
     CORRADE_COMPARE(Math::max(Vector2{Constants::nan(), 4.0f}, Vector2{5.0f})[1], 5.0f);
 
     CORRADE_COMPARE(Math::clamp(Constants::nan(), 2.0f, 6.0f), Constants::nan());
+    /* NaN clamp bounds are not propagating the NaN, but those cases are
+       usually user error anyway */
     CORRADE_COMPARE(Math::clamp(Vector2{Constants::nan(), 1.0f}, 2.0f, 6.0f)[0], Constants::nan());
     CORRADE_COMPARE(Math::clamp(Vector2{Constants::nan(), 1.0f}, 2.0f, 6.0f)[1], 2.0f);
 }
