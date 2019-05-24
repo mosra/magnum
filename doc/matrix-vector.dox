@@ -241,10 +241,14 @@ reinterpret the matrix as vector and do the operation on it (and vice versa):
 
 @snippet MagnumMath.cpp matrix-vector-operations-functions-componentwise
 
-Note that all component-wise functions in @ref Math namespace work also for
-scalars:
+Note that all component-wise functions in the @ref Math namespace work also for
+scalars --- and on the special @ref Deg / @ref Rad types too.
 
 @snippet MagnumMath.cpp matrix-vector-operations-functions-scalar
+
+For types with units the only exception are power functions such as
+@ref Math::pow() or @ref Math::log() --- the resulting unit of such an
+operation can't be represented and thus those work only on unitless types.
 
 @section matrix-vector-column-major Matrices are column-major and vectors are columns
 

@@ -51,6 +51,9 @@ struct PackingTest: Corrade::TestSuite::Tester {
        because there's involved comparison and benchmarks to ground truth */
 };
 
+using namespace Literals;
+
+typedef Math::Rad<Float> Rad;
 typedef Math::Vector3<Float> Vector3;
 typedef Math::Vector3<UnsignedByte> Vector3ub;
 typedef Math::Vector3<Byte> Vector3b;
@@ -116,6 +119,10 @@ void PackingTest::unpackUnsigned() {
     /* Vector overloads */
     CORRADE_COMPARE(Math::unpack<Vector3>(Vector3ub(0, 127, 255)), Vector3(0.0f, 0.498039f, 1.0f));
     CORRADE_COMPARE((Math::unpack<Vector3, 6>(Vector3ub(0, 31, 63))), Vector3(0.0f, 0.492063f, 1.0f));
+
+    /* Wrapped types */
+    CORRADE_COMPARE((Math::unpack<Rad, UnsignedShort>(8191)), 0.124987_radf);
+    CORRADE_COMPARE((Math::unpack<Rad, 14>(8191u)), 0.499969_radf);
 }
 
 void PackingTest::unpackSigned() {
@@ -149,6 +156,10 @@ void PackingTest::unpackSigned() {
     /* Vector overloads */
     CORRADE_COMPARE(Math::unpack<Vector3>(Vector3b(0, -127, 64)), Vector3(0.0f, -1.0f, 0.503937f));
     CORRADE_COMPARE((Math::unpack<Vector3, 6>(Vector3b(0, -31, 16))), Vector3(0.0f, -1.0f, 0.516129f));
+
+    /* Wrapped types */
+    CORRADE_COMPARE((Math::unpack<Rad, Short>(8191)), 0.249977_radf);
+    CORRADE_COMPARE((Math::unpack<Rad, 14>(8191)), 1.0_radf);
 }
 
 void PackingTest::packUnsigned() {
@@ -190,6 +201,10 @@ void PackingTest::packUnsigned() {
     /* Vector overloads */
     CORRADE_COMPARE(Math::pack<Vector3ub>(Vector3(0.0f, 0.5f, 1.0f)), Vector3ub(0, 128, 255));
     CORRADE_COMPARE((Math::pack<Vector3ub, 6>(Vector3(0.0f, 0.5f, 1.0f))), Vector3ub(0, 32, 63));
+
+    /* Wrapped types */
+    CORRADE_COMPARE((Math::pack<UnsignedShort>(0.5_degf)), 32768);
+    CORRADE_COMPARE((Math::pack<UnsignedShort, 14>(0.5_degf)), 8192);
 }
 
 void PackingTest::packSigned() {
@@ -233,6 +248,10 @@ void PackingTest::packSigned() {
     /* Vector overloads */
     CORRADE_COMPARE(Math::pack<Vector3b>(Vector3(0.0f, -1.0f, 0.5f)), Vector3b(0, -127, 64));
     CORRADE_COMPARE((Math::pack<Vector3b, 6>(Vector3(0.0f, -1.0f, 0.5f))), Vector3b(0, -31, 16));
+
+    /* Wrapped types */
+    CORRADE_COMPARE((Math::pack<Short>(-0.5_degf)), -16384);
+    CORRADE_COMPARE((Math::pack<Short, 14>(-0.5_degf)), -4096);
 }
 
 void PackingTest::reunpackUnsigned() {

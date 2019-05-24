@@ -45,11 +45,11 @@ namespace Magnum { namespace Math {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* Documented in Functions.h, defined here because Vector needs them */
-template<class T> constexpr typename std::enable_if<std::is_arithmetic<T>::value, T>::type min(T a, T b) {
+template<class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type min(T a, T b) {
     return b < a ? b : a;
 }
 
-template<class T> constexpr typename std::enable_if<std::is_arithmetic<T>::value, T>::type max(T a, T b) {
+template<class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type max(T a, T b) {
     return a < b ? b : a;
 }
 #endif

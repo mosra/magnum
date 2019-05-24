@@ -211,6 +211,10 @@ See also:
 -   Construction using @ref Math::ZeroInit and @ref Math::IdentityInit is
     now explicit, to be consistent with @ref Math::NoInit construction and
     avoid ambiguous cases
+-   All scalar/vector functions in the @ref Math namespace now work also with
+    special types such as @ref Deg or @ref Rad --- the only exception is
+    power functions such as @ref Math::sqrt() or @ref Math::log(), as the
+    resulting unit can't be represented. Those accept only unitless types.
 -   Changed the way @ref Math::operator<<(Corrade::Utility::Debug&, const BoolVector<size>&)
     works --- the output now has the same bit order as when constructing it
     using binary literals

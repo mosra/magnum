@@ -47,7 +47,7 @@ template<class T> inline T min(Corrade::Containers::ArrayView<const T> range) {
 
     T out(range[0]);
     for(std::size_t i = 1; i != range.size(); ++i)
-        out = min(out, range[i]);
+        out = Math::min(out, range[i]);
     return out;
 }
 
@@ -71,7 +71,7 @@ template<class T> inline T max(Corrade::Containers::ArrayView<const T> range) {
 
     T out(range[0]);
     for(std::size_t i = 1; i != range.size(); ++i)
-        out = max(out, range[i]);
+        out = Math::max(out, range[i]);
     return out;
 }
 
@@ -86,7 +86,7 @@ template<class T, std::size_t size> inline T max(const T(&array)[size]) {
 }
 
 namespace Implementation {
-    template<class T> inline typename std::enable_if<std::is_arithmetic<T>::value, void>::type minmax(T& min, T& max, T value) {
+    template<class T> inline typename std::enable_if<IsScalar<T>::value, void>::type minmax(T& min, T& max, T value) {
         if(value < min)
             min = value;
         else if(value > max)

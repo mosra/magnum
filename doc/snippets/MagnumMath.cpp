@@ -314,14 +314,18 @@ mat = Matrix3x2::fromVector(vec);
 }
 
 {
+Deg value;
 /* [matrix-vector-operations-functions-scalar] */
 std::pair<Int, Int> minmax = Math::minmax(24, -5);  // -5, 24
 Int a = Math::lerp(0, 360, 0.75f);                  // 270
 auto b = Math::pack<UnsignedByte>(0.89f);           // 226
+
+Deg c = Math::clamp(value, 25.0_degf, 55.0_degf);
 /* [matrix-vector-operations-functions-scalar] */
 static_cast<void>(minmax);
 static_cast<void>(a);
 static_cast<void>(b);
+static_cast<void>(c);
 }
 
 {

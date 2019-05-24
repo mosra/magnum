@@ -38,6 +38,8 @@ struct FunctionsBatchTest: Corrade::TestSuite::Tester {
     void minmaxList();
 };
 
+using namespace Literals;
+
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector3<Int> Vector3i;
 
@@ -57,6 +59,9 @@ void FunctionsBatchTest::minList() {
 
     const Int array[]{5, -2, 9};
     CORRADE_COMPARE(Math::min(array), -2);
+
+    /* Wrapped types */
+    CORRADE_COMPARE(Math::min({5.0_degf, 2.0_degf, 9.0_degf}), 2.0_degf);
 }
 
 void FunctionsBatchTest::maxList() {
@@ -69,6 +74,9 @@ void FunctionsBatchTest::maxList() {
 
     const Int array[]{5, -2, 9};
     CORRADE_COMPARE(Math::max(array), 9);
+
+    /* Wrapped types */
+    CORRADE_COMPARE(Math::max({5.0_degf, 2.0_degf, 9.0_degf}), 9.0_degf);
 }
 
 void FunctionsBatchTest::minmaxList() {
@@ -90,6 +98,9 @@ void FunctionsBatchTest::minmaxList() {
 
     const Float array[]{-1.0f, 2.0f, -3.0f};
     CORRADE_COMPARE(Math::minmax(array), expected);
+
+    /* Wrapped types */
+    CORRADE_COMPARE(Math::minmax({1.0_radf, 2.0_radf, 3.0_radf}), std::make_pair(1.0_radf, 3.0_radf));
 }
 
 }}}}
