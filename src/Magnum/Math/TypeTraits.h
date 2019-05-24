@@ -54,6 +54,7 @@ for more headroom.
 #define DOUBLE_EQUALITY_PRECISION 1.0e-14
 #endif
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
 /**
 @brief Precision when testing long doubles for equality
 
@@ -63,13 +64,17 @@ for more headroom.
 @attention On MSVC the precision is the same as for doubles, because they are
     internally the same type (source: https://msdn.microsoft.com/en-us/library/9cx8xs15.aspx).
     The same is apparently for 32-bit @ref CORRADE_TARGET_ANDROID "Android"
-    (64-bit works as expected), but I couldn't find any source for that.
+    (64-bit works as expected), but I couldn't find any source for that. This
+    macro (and everything else related to @cpp long double @ce types is not
+    available on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" as the max
+    supported floating-point precision there is 64 bits.
 */
 #ifndef LONG_DOUBLE_EQUALITY_PRECISION
 #if !defined(_MSC_VER) && (!defined(CORRADE_TARGET_ANDROID) || __LP64__)
 #define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-17l
 #else
 #define LONG_DOUBLE_EQUALITY_PRECISION 1.0e-14
+#endif
 #endif
 #endif
 
@@ -341,7 +346,9 @@ namespace Implementation {
     #endif
     _c(Float)
     _c(Double)
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     _c(long double)
+    #endif
     #undef _c
     #endif
 
@@ -431,11 +438,13 @@ template<> struct TypeTraits<Double>: Implementation::TypeTraitsFloatingPoint<Do
 
     constexpr static Double epsilon() { return DOUBLE_EQUALITY_PRECISION; }
 };
+#ifndef CORRADE_TARGET_EMSCRIPTEN
 template<> struct TypeTraits<long double>: Implementation::TypeTraitsFloatingPoint<long double> {
     typedef long double FloatingPointType;
 
     constexpr static long double epsilon() { return LONG_DOUBLE_EQUALITY_PRECISION; }
 };
+#endif
 
 namespace Implementation {
 
