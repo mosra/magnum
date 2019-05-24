@@ -363,7 +363,7 @@ template<class T> Corrade::Utility::Debug& operator<<(Corrade::Utility::Debug& d
 @f[
     \sqrt{\hat a} = \sqrt{a_0} + \epsilon \frac{a_\epsilon}{2 \sqrt{a_0}}
 @f]
-@see @ref sqrt(const T&)
+@see @ref sqrt(T)
 */
 template<class T> Dual<T> sqrt(const Dual<T>& dual) {
     T sqrt0 = std::sqrt(dual.real());
