@@ -59,38 +59,6 @@ namespace Implementation {
 }
 
 /**
-@brief Integral logarithm
-
-Returns integral logarithm of given number with given base.
-@see @ref log2(), @ref log(T)
-*/
-UnsignedInt MAGNUM_EXPORT log(UnsignedInt base, UnsignedInt number);
-
-/**
-@brief Base-2 integral logarithm
-
-Returns integral logarithm of given number with base `2`.
-@see @ref log(UnsignedInt, UnsignedInt), @ref log(T)
-*/
-UnsignedInt MAGNUM_EXPORT log2(UnsignedInt number);
-
-/**
-@brief Natural logarithm
-
-Returns natural (base @f$ e @f$) logarithm of given number.
-@see @ref Constants::e(), @ref log(UnsignedInt, UnsignedInt), @ref log2()
-*/
-template<class T> inline T log(T number) { return std::log(number); }
-
-/**
-@brief Natural exponential
-
-Returns @f$ e^x @f$.
-@see @ref Constants::e(), @ref pow(T, T)
-*/
-template<class T> inline T exp(T exponent) { return std::exp(exponent); }
-
-/**
 @brief Integer division with remainder
 
 Example usage:
@@ -109,39 +77,13 @@ template<class Integral> inline std::pair<Integral, Integral> div(Integral x, In
 }
 
 /**
-@brief If given number is a positive or negative infinity
+@{ @name Trigonometric functions
 
-@see @ref isNan(), @ref Constants::inf()
+Unlike @ref std::sin() and friends, those take or return strongly-typed units
+to prevent degrees being accidentally interpreted as radians and such. See
+@ref Magnum::Math::Deg "Deg" and @ref Magnum::Math::Rad "Rad" for more
+information.
 */
-template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type isInf(T value) {
-    return std::isinf(UnderlyingTypeOf<T>(value));
-}
-
-/** @overload */
-template<std::size_t size, class T> inline BoolVector<size> isInf(const Vector<size, T>& value) {
-    BoolVector<size> out;
-    for(std::size_t i = 0; i != size; ++i)
-        out.set(i, Math::isInf(value[i]));
-    return out;
-}
-
-/**
-@brief If given number is a NaN
-
-Equivalent to @cpp value != value @ce.
-@see @ref isInf(), @ref Constants::nan()
-*/
-template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type isNan(T value) {
-    return std::isnan(UnderlyingTypeOf<T>(value));
-}
-
-/** @overload */
-template<std::size_t size, class T> inline BoolVector<size> isNan(const Vector<size, T>& value) {
-    BoolVector<size> out;
-    for(std::size_t i = 0; i != size; ++i)
-        out.set(i, Math::isNan(value[i]));
-    return out;
-}
 
 /** @todo Can't trigonometric functions be done with only one overload? */
 
@@ -204,58 +146,56 @@ template<class T> inline Rad<T> acos(T value) { return Rad<T>(std::acos(value));
 /** @brief Arc tangent */
 template<class T> inline Rad<T> atan(T value) { return Rad<T>(std::atan(value)); }
 
+/*@}*/
+
 /**
 @{ @name Scalar/vector functions
 
 These functions are overloaded for both scalar and vector types, including
-@ref Deg and @ref Rad. Scalar versions function exactly as their possible STL
-equivalents, vector overloads perform the operations component-wise.
+@ref Magnum::Math::Deg "Deg" and @ref Magnum::Math::Rad "Rad". Scalar versions
+function exactly as their possible STL equivalents, vector overloads perform
+the operations component-wise.
 */
 
 /**
-@brief Integral power
+@brief If given number is a positive or negative infinity
 
-Returns integral power of base to the exponent. Works only on types that
-satisfy @ref IsUnitless.
-@see @ref pow(T, T)
+@see @ref isNan(), @ref Constants::inf()
 */
-template<UnsignedInt exponent, class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type pow(T base) {
-    static_assert(IsUnitless<T>::value, "expected an unitless type");
-    return Implementation::Pow<exponent>::pow(base);
+template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type isInf(T value) {
+    return std::isinf(UnderlyingTypeOf<T>(value));
 }
 
 /** @overload */
-template<UnsignedInt exponent, std::size_t size, class T> inline Vector<size, T> pow(const Vector<size, T>& base) {
-    Vector<size, T> out{NoInit};
+template<std::size_t size, class T> inline BoolVector<size> isInf(const Vector<size, T>& value) {
+    BoolVector<size> out;
     for(std::size_t i = 0; i != size; ++i)
-        out[i] = Math::pow<exponent>(base[i]);
+        out.set(i, Math::isInf(value[i]));
     return out;
 }
 
 /**
-@brief Power
+@brief If given number is a NaN
 
-Returns power of @p base to the @p exponent. Works only on types that satisfy
-@ref IsUnitless.
-@see @ref pow(T), @ref exp()
+Equivalent to @cpp value != value @ce.
+@see @ref isInf(), @ref Constants::nan()
 */
-template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type pow(T base, T exponent) {
-    static_assert(IsUnitless<T>::value, "expected an unitless type");
-    return std::pow(base, exponent);
+template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type isNan(T value) {
+    return std::isnan(UnderlyingTypeOf<T>(value));
 }
 
 /** @overload */
-template<std::size_t size, class T> inline Vector<size, T> pow(const Vector<size, T>& base, T exponent) {
-    Vector<size, T> out{NoInit};
+template<std::size_t size, class T> inline BoolVector<size> isNan(const Vector<size, T>& value) {
+    BoolVector<size> out;
     for(std::size_t i = 0; i != size; ++i)
-        out[i] = Math::pow(base[i], exponent);
+        out.set(i, Math::isNan(value[i]));
     return out;
 }
 
 /**
 @brief Minimum
 
-<em>NaN</em>s passed in @p value parameter are propagated.
+<em>NaN</em>s passed in the @p value parameter are propagated.
 @see @ref max(), @ref minmax(), @ref clamp(),
     @ref min(Corrade::Containers::ArrayView<const T>), @ref Vector::min()
 */
@@ -281,7 +221,7 @@ template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size
 /**
 @brief Maximum
 
-<em>NaN</em>s passed in @p value parameter are propagated.
+<em>NaN</em>s passed in the @p value parameter are propagated.
 @see @ref min(), @ref minmax(), @ref clamp(),
     @ref max(Corrade::Containers::ArrayView<const T>), @ref Vector::max()
 */
@@ -427,42 +367,6 @@ template<std::size_t size, class T> inline Vector<size, T> ceil(const Vector<siz
 }
 
 /**
-@brief Square root
-
-Works only on types that satisfy @ref IsUnitless.
-@see @ref sqrtInverted(), @ref Vector::length(), @ref sqrt(const Dual<T>&)
-*/
-template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type sqrt(T a) {
-    static_assert(IsUnitless<T>::value, "expecting an unitless type");
-    return std::sqrt(a);
-}
-
-/** @overload */
-template<std::size_t size, class T> inline Vector<size, T> sqrt(const Vector<size, T>& a) {
-    Vector<size, T> out{NoInit};
-    for(std::size_t i = 0; i != size; ++i)
-        out[i] = Math::sqrt(a[i]);
-    return out;
-}
-
-/**
-@brief Inverse square root
-
-Works only on types that satisfy @ref IsUnitless.
-@see @ref sqrt(), @ref Vector::lengthInverted()
-@m_keyword{inversesqrt(),GLSL inversesqrt(),}
-*/
-template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type sqrtInverted(T a) {
-    static_assert(IsUnitless<T>::value, "expecting an unitless type");
-    return T(1)/std::sqrt(a);
-}
-
-/** @overload */
-template<std::size_t size, class T> inline Vector<size, T> sqrtInverted(const Vector<size, T>& a) {
-    return Vector<size, T>(T(1))/Math::sqrt(a);
-}
-
-/**
 @brief Linear interpolation of two values
 @param a     First value
 @param b     Second value
@@ -583,6 +487,124 @@ template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type fm
 template<std::size_t size, class T> inline Vector<size, T> fma(const Vector<size, T>& a, const Vector<size, T>& b, const Vector<size, T>& c) {
     static_assert(IsUnitless<T>::value, "expecting an unitless type");
     return a*b + c;
+}
+
+/*@}*/
+
+/**
+@{ @name Exponential and power functions
+
+Unlike @m_class{m-doc} [scalar/vector functions](#scalarvector-functions) these
+don't work on @ref Magnum::Math::Deg "Deg" / @ref Magnum::Math::Rad "Rad" as
+the resulting unit can't be easily expressed.
+*/
+
+/**
+@brief Integral logarithm
+
+Returns integral logarithm of given number with given base.
+@see @ref log2(), @ref log(T)
+*/
+UnsignedInt MAGNUM_EXPORT log(UnsignedInt base, UnsignedInt number);
+
+/**
+@brief Base-2 integral logarithm
+
+Returns integral logarithm of given number with base `2`.
+@see @ref log(UnsignedInt, UnsignedInt), @ref log(T)
+*/
+UnsignedInt MAGNUM_EXPORT log2(UnsignedInt number);
+
+/**
+@brief Natural logarithm
+
+Returns natural (base @f$ e @f$) logarithm of given number.
+@see @ref Constants::e(), @ref log(UnsignedInt, UnsignedInt), @ref log2()
+*/
+template<class T> inline T log(T number) { return std::log(number); }
+
+/**
+@brief Natural exponential
+
+Returns @f$ e^x @f$.
+@see @ref Constants::e(), @ref pow(T, T)
+*/
+template<class T> inline T exp(T exponent) { return std::exp(exponent); }
+
+/**
+@brief Integral power
+
+Returns integral power of base to the exponent. Works only on types that
+satisfy @ref IsUnitless.
+@see @ref pow(T, T)
+*/
+template<UnsignedInt exponent, class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type pow(T base) {
+    static_assert(IsUnitless<T>::value, "expected an unitless type");
+    return Implementation::Pow<exponent>::pow(base);
+}
+
+/** @overload */
+template<UnsignedInt exponent, std::size_t size, class T> inline Vector<size, T> pow(const Vector<size, T>& base) {
+    Vector<size, T> out{NoInit};
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = Math::pow<exponent>(base[i]);
+    return out;
+}
+
+/**
+@brief Power
+
+Returns power of @p base to the @p exponent. Works only on types that satisfy
+@ref IsUnitless.
+@see @ref pow(T), @ref exp()
+*/
+template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type pow(T base, T exponent) {
+    static_assert(IsUnitless<T>::value, "expected an unitless type");
+    return std::pow(base, exponent);
+}
+
+/** @overload */
+template<std::size_t size, class T> inline Vector<size, T> pow(const Vector<size, T>& base, T exponent) {
+    Vector<size, T> out{NoInit};
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = Math::pow(base[i], exponent);
+    return out;
+}
+
+/**
+@brief Square root
+
+Works only on types that satisfy @ref IsUnitless.
+@see @ref sqrtInverted(), @ref Vector::length(), @ref sqrt(const Dual<T>&)
+*/
+template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type sqrt(T a) {
+    static_assert(IsUnitless<T>::value, "expecting an unitless type");
+    return std::sqrt(a);
+}
+
+/** @overload */
+template<std::size_t size, class T> inline Vector<size, T> sqrt(const Vector<size, T>& a) {
+    Vector<size, T> out{NoInit};
+    for(std::size_t i = 0; i != size; ++i)
+        out[i] = Math::sqrt(a[i]);
+    return out;
+}
+
+/**
+@brief Inverse square root
+
+Works only on types that satisfy @ref IsUnitless.
+@see @ref sqrt(), @ref Vector::lengthInverted()
+@m_keyword{inversesqrt(),GLSL inversesqrt(),}
+*/
+template<class T> inline typename std::enable_if<IsScalar<T>::value, T>::type sqrtInverted(T a) {
+    static_assert(IsUnitless<T>::value, "expecting an unitless type");
+    return T(1)/std::sqrt(a);
+}
+
+/** @overload */
+template<std::size_t size, class T> inline Vector<size, T> sqrtInverted(const Vector<size, T>& a) {
+    return Vector<size, T>(T(1))/Math::sqrt(a);
 }
 
 /*@}*/

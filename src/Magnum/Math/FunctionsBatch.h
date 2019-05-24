@@ -37,6 +37,13 @@
 namespace Magnum { namespace Math {
 
 /**
+@{ @name Batch functions
+
+These functions process an ubounded range of values, as opposed to single
+vectors or scalars.
+*/
+
+/**
 @brief Minimum of a range
 
 If the range is empty, returns default-constructed value.
@@ -123,6 +130,8 @@ template<class T> inline std::pair<T, T> minmax(std::initializer_list<T> list) {
 template<class T, std::size_t size> inline std::pair<T, T> minmax(const T(&array)[size]) {
     return minmax(Corrade::Containers::arrayView(array));
 }
+
+/*@}*/
 
 }}
 
