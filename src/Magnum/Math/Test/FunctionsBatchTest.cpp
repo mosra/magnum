@@ -33,9 +33,9 @@ namespace Magnum { namespace Math { namespace Test { namespace {
 struct FunctionsBatchTest: Corrade::TestSuite::Tester {
     explicit FunctionsBatchTest();
 
-    void minList();
-    void maxList();
-    void minmaxList();
+    void min();
+    void max();
+    void minmax();
 };
 
 using namespace Literals;
@@ -44,12 +44,12 @@ typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector3<Int> Vector3i;
 
 FunctionsBatchTest::FunctionsBatchTest() {
-    addTests({&FunctionsBatchTest::minList,
-              &FunctionsBatchTest::maxList,
-              &FunctionsBatchTest::minmaxList});
+    addTests({&FunctionsBatchTest::min,
+              &FunctionsBatchTest::max,
+              &FunctionsBatchTest::minmax});
 }
 
-void FunctionsBatchTest::minList() {
+void FunctionsBatchTest::min() {
     CORRADE_COMPARE(Math::min({5, -2, 9}), -2);
     CORRADE_COMPARE(Math::min({Vector3i(5, -3, 2),
                                Vector3i(-2, 14, 7),
@@ -64,7 +64,7 @@ void FunctionsBatchTest::minList() {
     CORRADE_COMPARE(Math::min({5.0_degf, 2.0_degf, 9.0_degf}), 2.0_degf);
 }
 
-void FunctionsBatchTest::maxList() {
+void FunctionsBatchTest::max() {
     CORRADE_COMPARE(Math::max({5, -2, 9}), 9);
     CORRADE_COMPARE(Math::max({Vector3i(5, -3, 2),
                                Vector3i(-2, 14, 7),
@@ -79,7 +79,7 @@ void FunctionsBatchTest::maxList() {
     CORRADE_COMPARE(Math::max({5.0_degf, 2.0_degf, 9.0_degf}), 9.0_degf);
 }
 
-void FunctionsBatchTest::minmaxList() {
+void FunctionsBatchTest::minmax() {
     const auto expected = std::make_pair(-3.0f, 2.0f);
     CORRADE_COMPARE(Math::minmax({-1.0f, 2.0f, -3.0f}), expected);
     CORRADE_COMPARE(Math::minmax({-1.0f, -3.0f, 2.0f}), expected);
