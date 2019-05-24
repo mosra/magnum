@@ -87,7 +87,7 @@ Note that this is *different* from @ref std::is_scalar, which is @cpp true @ce
 also for enums or pointers --- it's rather closer to @ref std::is_arithmetic,
 except that it doesn't give @ref std::true_type for @cpp bool @ce. The name is
 chosen particularly for the @ref IsVector / @ref IsScalar distinction.
-@see @ref IsFloatingPoint, @ref IsIntegral
+@see @ref IsFloatingPoint, @ref IsIntegral, @ref UnderlyingTypeOf
 */
 template<class T> struct IsScalar
     #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -216,6 +216,31 @@ template<template<class> class Derived, class T> struct IsFloatingPoint<Unit<Der
 template<class T> struct IsFloatingPoint<Deg<T>>: IsFloatingPoint<T> {};
 template<class T> struct IsFloatingPoint<Rad<T>>: IsFloatingPoint<T> {};
 #endif
+
+namespace Implementation {
+    template<class T> struct UnderlyingType {
+        static_assert(IsScalar<T>::value, "type is not scalar");
+        typedef T Type;
+    };
+    template<template<class> class Derived, class T> struct UnderlyingType<Unit<Derived, T>> {
+        typedef T Type;
+    };
+    template<class T> struct UnderlyingType<Deg<T>> { typedef T Type; };
+    template<class T> struct UnderlyingType<Rad<T>> { typedef T Type; };
+}
+
+/**
+@brief Underlying builtin type for a scalar type
+
+For builtin types returns the type itself, for wrapped types like @ref Deg or
+@ref Rad returns the underlying builtin type. It's guaranteed that the input
+type is always explicitly convertible to the output type and the output type
+is usable with standard APIs such as @ref std::isinf().
+
+Passed types are required to satisfy @ref IsScalar. All non-scalar Magnum math
+types have a member @cpp typedef @ce ``Type`` containing the underlying type.
+*/
+template<class T> using UnderlyingTypeOf =  typename Implementation::UnderlyingType<T>::Type;
 
 namespace Implementation {
     template<class T> struct TypeTraitsDefault {

@@ -44,6 +44,8 @@ struct TypeTraitsTest: Corrade::TestSuite::Tester {
     void isIntegral();
     void isFloatingPoint();
 
+    void underlyingTypeOf();
+
     template<class T> void equalsIntegral();
     template<class T> void equalsFloatingPoint0();
     template<class T> void equalsFloatingPoint1();
@@ -105,6 +107,8 @@ TypeTraitsTest::TypeTraitsTest() {
               &TypeTraitsTest::isVector,
               &TypeTraitsTest::isIntegral,
               &TypeTraitsTest::isFloatingPoint,
+
+              &TypeTraitsTest::underlyingTypeOf,
 
               &TypeTraitsTest::equalsIntegral<UnsignedByte>,
               &TypeTraitsTest::equalsIntegral<Byte>,
@@ -225,6 +229,12 @@ void TypeTraitsTest::isFloatingPoint() {
     CORRADE_VERIFY((IsFloatingPoint<Unit<Rad, Float>>::value));
     CORRADE_VERIFY(!IsFloatingPoint<Deg<Half>>::value);
     CORRADE_VERIFY(!IsFloatingPoint<char*>::value);
+}
+
+void TypeTraitsTest::underlyingTypeOf() {
+    CORRADE_VERIFY((std::is_same<UnderlyingTypeOf<Int>, Int>::value));
+    CORRADE_VERIFY((std::is_same<UnderlyingTypeOf<Deg<Float>>, Float>::value));
+    CORRADE_VERIFY((std::is_same<UnderlyingTypeOf<Unit<Rad, Double>>, Double>::value));
 }
 
 template<class T> void TypeTraitsTest::equalsIntegral() {

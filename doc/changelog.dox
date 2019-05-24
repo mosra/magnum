@@ -124,7 +124,8 @@ See also:
 -   Added convenience @ref BoolVector2, @ref BoolVector3 and @ref BoolVector4
     typedefs to the root namespace
 -   New @ref Math::IsScalar, @ref Math::IsVector, @ref Math::IsIntegral and
-    @ref Math::IsFloatingPoint type traits
+    @ref Math::IsFloatingPoint type traits and a @ref Math::UnderlyingTypeOf
+    utility
 
 @subsubsection changelog-latest-new-platform Platform libraries
 
