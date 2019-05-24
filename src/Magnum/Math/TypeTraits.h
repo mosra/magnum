@@ -222,6 +222,24 @@ template<class T> struct IsFloatingPoint<Deg<T>>: IsFloatingPoint<T> {};
 template<class T> struct IsFloatingPoint<Rad<T>>: IsFloatingPoint<T> {};
 #endif
 
+/**
+@brief Whether @p T is a unitless tpye
+
+Equivalent to @ref std::true_type for scalar or vector types that have an
+unitless underlying type (i.e., not @ref Deg or @ref Rad); @ref std::false_type
+otherwise. Some math functions such as @ref sqrt() or @ref log() work only with
+unitless types because the resulting unit couldn't be expressed otherwise.
+@see @ref IsScalar, @ref IsVector
+*/
+template<class T> struct IsUnitless
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    : std::integral_constant<bool, IsScalar<T>::value || IsVector<T>::value>
+    #endif
+    {};
+template<template<class> class Derived, class T> struct IsUnitless<Unit<Derived, T>>: std::false_type {};
+template<class T> struct IsUnitless<Deg<T>>: std::false_type {};
+template<class T> struct IsUnitless<Rad<T>>: std::false_type {};
+
 namespace Implementation {
     template<class T> struct UnderlyingType {
         static_assert(IsScalar<T>::value, "type is not scalar");

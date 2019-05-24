@@ -43,6 +43,7 @@ struct TypeTraitsTest: Corrade::TestSuite::Tester {
     void isVector();
     void isIntegral();
     void isFloatingPoint();
+    void isUnitless();
 
     void underlyingTypeOf();
 
@@ -107,6 +108,7 @@ TypeTraitsTest::TypeTraitsTest() {
               &TypeTraitsTest::isVector,
               &TypeTraitsTest::isIntegral,
               &TypeTraitsTest::isFloatingPoint,
+              &TypeTraitsTest::isUnitless,
 
               &TypeTraitsTest::underlyingTypeOf,
 
@@ -229,6 +231,14 @@ void TypeTraitsTest::isFloatingPoint() {
     CORRADE_VERIFY((IsFloatingPoint<Unit<Rad, Float>>::value));
     CORRADE_VERIFY(!IsFloatingPoint<Deg<Half>>::value);
     CORRADE_VERIFY(!IsFloatingPoint<char*>::value);
+}
+
+void TypeTraitsTest::isUnitless() {
+    CORRADE_VERIFY(IsUnitless<Int>::value);
+    CORRADE_VERIFY(IsUnitless<Color4<Float>>::value);
+    CORRADE_VERIFY(!IsUnitless<Deg<Float>>::value);
+    CORRADE_VERIFY(!(IsUnitless<Unit<Rad, Double>>::value));
+    CORRADE_VERIFY(!IsUnitless<char*>::value);
 }
 
 void TypeTraitsTest::underlyingTypeOf() {
