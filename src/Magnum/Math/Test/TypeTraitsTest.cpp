@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/Math/Math.h"
 #include "Magnum/Math/TypeTraits.h"
 #include "Magnum/Math/Constants.h"
 
@@ -37,6 +38,11 @@ struct TypeTraitsTest: Corrade::TestSuite::Tester {
 
     void sizeOfLongDouble();
     void name();
+
+    void isScalar();
+    void isVector();
+    void isIntegral();
+    void isFloatingPoint();
 
     template<class T> void equalsIntegral();
     template<class T> void equalsFloatingPoint0();
@@ -94,6 +100,11 @@ struct {
 TypeTraitsTest::TypeTraitsTest() {
     addTests({&TypeTraitsTest::sizeOfLongDouble,
               &TypeTraitsTest::name,
+
+              &TypeTraitsTest::isScalar,
+              &TypeTraitsTest::isVector,
+              &TypeTraitsTest::isIntegral,
+              &TypeTraitsTest::isFloatingPoint,
 
               &TypeTraitsTest::equalsIntegral<UnsignedByte>,
               &TypeTraitsTest::equalsIntegral<Byte>,
@@ -164,6 +175,56 @@ void TypeTraitsTest::sizeOfLongDouble() {
 void TypeTraitsTest::name() {
     CORRADE_COMPARE(TypeTraits<UnsignedShort>::name(), std::string{"UnsignedShort"});
     CORRADE_COMPARE(TypeTraits<Float>::name(), std::string{"Float"});
+}
+
+void TypeTraitsTest::isScalar() {
+    CORRADE_VERIFY(IsScalar<char>::value);
+    CORRADE_VERIFY(IsScalar<UnsignedShort>::value);
+    CORRADE_VERIFY(IsScalar<Deg<Float>>::value);
+    CORRADE_VERIFY((IsScalar<Unit<Rad, Double>>::value));
+    CORRADE_VERIFY(!IsScalar<Vector2<Float>>::value);
+    CORRADE_VERIFY(!IsVector<Matrix2x3<Float>>::value);
+    CORRADE_VERIFY(!IsScalar<char*>::value);
+    CORRADE_VERIFY(!IsScalar<bool>::value);
+}
+
+void TypeTraitsTest::isVector() {
+    CORRADE_VERIFY(!IsVector<UnsignedByte>::value);
+    CORRADE_VERIFY(!IsVector<Deg<UnsignedByte>>::value);
+    CORRADE_VERIFY((IsVector<Vector<2, Deg<Float>>>::value));
+    CORRADE_VERIFY(IsVector<Color3<UnsignedByte>>::value);
+    CORRADE_VERIFY(!IsVector<Matrix2x3<Float>>::value);
+    CORRADE_VERIFY(!IsVector<char*>::value);
+}
+
+void TypeTraitsTest::isIntegral() {
+    /* These three are usually different types */
+    CORRADE_VERIFY(IsIntegral<char>::value);
+    CORRADE_VERIFY(IsIntegral<Byte>::value);
+    CORRADE_VERIFY(IsIntegral<UnsignedByte>::value);
+
+    CORRADE_VERIFY(IsIntegral<Int>::value);
+    CORRADE_VERIFY((IsIntegral<Vector<7, UnsignedInt>>::value));
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    CORRADE_VERIFY(IsIntegral<Vector2<Long>>::value);
+    #endif
+    CORRADE_VERIFY(!IsIntegral<Deg<Float>>::value);
+    CORRADE_VERIFY(!IsIntegral<char*>::value);
+    CORRADE_VERIFY(!IsIntegral<bool>::value);
+}
+
+void TypeTraitsTest::isFloatingPoint() {
+    CORRADE_VERIFY(!IsFloatingPoint<Int>::value);
+    CORRADE_VERIFY(!(IsFloatingPoint<Vector<7, UnsignedInt>>::value));
+    CORRADE_VERIFY(IsFloatingPoint<Double>::value);
+    CORRADE_VERIFY((IsFloatingPoint<Vector<2, Float>>::value));
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    CORRADE_VERIFY(IsFloatingPoint<Vector2<long double>>::value);
+    #endif
+    CORRADE_VERIFY(IsFloatingPoint<Deg<Float>>::value);
+    CORRADE_VERIFY((IsFloatingPoint<Unit<Rad, Float>>::value));
+    CORRADE_VERIFY(!IsFloatingPoint<Deg<Half>>::value);
+    CORRADE_VERIFY(!IsFloatingPoint<char*>::value);
 }
 
 template<class T> void TypeTraitsTest::equalsIntegral() {

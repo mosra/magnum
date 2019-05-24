@@ -26,11 +26,12 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::Math::TypeTraits
+ * @brief Type traits
  */
 
 #include <Corrade/Utility/StlMath.h>
 
+#include "Magnum/Math/Math.h"
 #include "Magnum/Types.h"
 
 /**
@@ -74,6 +75,148 @@ for more headroom.
 
 namespace Magnum { namespace Math {
 
+/**
+@brief Whether @p T is an arithmetic scalar type
+
+Equivalent to @ref std::true_type for all builtin scalar integer and
+floating-point types and in addition also @ref Deg and @ref Rad; equivalent to
+@ref std::false_type otherwise. The @ref Half type deliberately doesn't support
+any arithmetic, so it's not treated as a scalar type.
+
+Note that this is *different* from @ref std::is_scalar, which is @cpp true @ce
+also for enums or pointers --- it's rather closer to @ref std::is_arithmetic,
+except that it doesn't give @ref std::true_type for @cpp bool @ce. The name is
+chosen particularly for the @ref IsVector / @ref IsScalar distinction.
+@see @ref IsFloatingPoint, @ref IsIntegral
+*/
+template<class T> struct IsScalar
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    : std::false_type
+    #endif
+    {};
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* Can't use our own typedefs because they don't cover all types (signed char
+   vs char, long vs long long etc.). Funny that char != signed char but signed
+   int = int */
+template<> struct IsScalar<char>: std::true_type {};
+template<> struct IsScalar<signed char>: std::true_type {};
+template<> struct IsScalar<unsigned char>: std::true_type {};
+template<> struct IsScalar<short>: std::true_type {};
+template<> struct IsScalar<unsigned short>: std::true_type {};
+template<> struct IsScalar<int>: std::true_type {};
+template<> struct IsScalar<unsigned int>: std::true_type {};
+template<> struct IsScalar<long>: std::true_type {};
+template<> struct IsScalar<unsigned long>: std::true_type {};
+template<> struct IsScalar<long long>: std::true_type {};
+template<> struct IsScalar<unsigned long long>: std::true_type {};
+template<> struct IsScalar<float>: std::true_type {};
+template<> struct IsScalar<double>: std::true_type {};
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+template<> struct IsScalar<long double>: std::true_type {};
+#endif
+template<template<class> class Derived, class T> struct IsScalar<Unit<Derived, T>>: std::true_type {};
+template<class T> struct IsScalar<Deg<T>>: std::true_type {};
+template<class T> struct IsScalar<Rad<T>>: std::true_type {};
+#endif
+
+/**
+@brief Whether @p T is an arithmetic vector type
+
+Equivalent to @ref std::true_type for all @ref Vector types and their
+subclasses; equivalent to @ref std::false_type otherwise. In particular, gives
+@ref std::false_type for @ref BoolVector, all matrix types, @ref Complex or
+@ref Quaternion.
+@see @ref IsScalar, @ref IsFloatingPoint, @ref IsIntegral
+*/
+template<class T> struct IsVector
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    : std::false_type
+    #endif
+    {};
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<std::size_t size, class T> struct IsVector<Vector<size, T>>: std::true_type {};
+template<class T> struct IsVector<Vector2<T>>: std::true_type {};
+template<class T> struct IsVector<Vector3<T>>: std::true_type {};
+template<class T> struct IsVector<Vector4<T>>: std::true_type {};
+template<class T> struct IsVector<Color3<T>>: std::true_type {};
+template<class T> struct IsVector<Color4<T>>: std::true_type {};
+#endif
+
+/**
+@brief Whether @p T is integral
+
+Equivalent to @ref std::true_type for all integral scalar and vector types
+supported by Magnum math; equivalent to @ref std::false_type otherwise.
+
+Unlike @ref std::is_integral this is @ref std::false_type for @cpp bool @ce.
+@see @ref IsFloatingPoint, @ref IsScalar, @ref IsVector
+*/
+template<class T> struct IsIntegral
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    : std::false_type
+    #endif
+    {};
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/* Can't use our own typedefs because they don't cover all types (signed char
+   vs char, long vs long long etc.). Funny that char != signed char but signed
+   int = int */
+template<> struct IsIntegral<char>: std::true_type {};
+template<> struct IsIntegral<signed char>: std::true_type {};
+template<> struct IsIntegral<unsigned char>: std::true_type {};
+template<> struct IsIntegral<short>: std::true_type {};
+template<> struct IsIntegral<unsigned short>: std::true_type {};
+template<> struct IsIntegral<int>: std::true_type {};
+template<> struct IsIntegral<unsigned int>: std::true_type {};
+template<> struct IsIntegral<long>: std::true_type {};
+template<> struct IsIntegral<unsigned long>: std::true_type {};
+template<> struct IsIntegral<long long>: std::true_type {};
+template<> struct IsIntegral<unsigned long long>: std::true_type {};
+template<std::size_t size, class T> struct IsIntegral<Vector<size, T>>: IsIntegral<T> {};
+template<class T> struct IsIntegral<Vector2<T>>: IsIntegral<T> {};
+template<class T> struct IsIntegral<Vector3<T>>: IsIntegral<T> {};
+template<class T> struct IsIntegral<Vector4<T>>: IsIntegral<T> {};
+template<class T> struct IsIntegral<Color3<T>>: IsIntegral<T> {};
+template<class T> struct IsIntegral<Color4<T>>: IsIntegral<T> {};
+/* I don't expect Deg/Rad to ever have an integral base type */
+#endif
+
+/**
+@brief Whether @p T is floating-point
+
+Equivalent to @ref std::true_type for all floating-point scalar and vector
+types supported by Magnum math including @ref Deg and @ref Rad; equivalent to
+@ref std::false_type otherwise. The @ref Half type deliberately doesn't support
+any arithmetic, so it's not treated as a floating-point type.
+@see @ref IsIntegral, @ref IsScalar, @ref IsVector, @ref std::is_floating_point
+*/
+template<class T> struct IsFloatingPoint
+    #ifndef DOXYGEN_GENERATING_OUTPUT
+    : std::false_type
+    #endif
+    {};
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
+template<> struct IsFloatingPoint<Float>: std::true_type {};
+template<> struct IsFloatingPoint<Double>: std::true_type {};
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+template<> struct IsFloatingPoint<long double>: std::true_type {};
+#endif
+template<std::size_t size, class T> struct IsFloatingPoint<Vector<size, T>>: IsFloatingPoint<T> {};
+template<class T> struct IsFloatingPoint<Vector2<T>>: IsFloatingPoint<T> {};
+template<class T> struct IsFloatingPoint<Vector3<T>>: IsFloatingPoint<T> {};
+template<class T> struct IsFloatingPoint<Vector4<T>>: IsFloatingPoint<T> {};
+template<class T> struct IsFloatingPoint<Color3<T>>: IsFloatingPoint<T> {};
+template<class T> struct IsFloatingPoint<Color4<T>>: IsFloatingPoint<T> {};
+/* Deg<Half> is legal but Half is not an arithmetic type (and thus not
+   floating-point), so need to check the underlying type as well */
+template<template<class> class Derived, class T> struct IsFloatingPoint<Unit<Derived, T>>: IsFloatingPoint<T> {};
+template<class T> struct IsFloatingPoint<Deg<T>>: IsFloatingPoint<T> {};
+template<class T> struct IsFloatingPoint<Rad<T>>: IsFloatingPoint<T> {};
+#endif
+
 namespace Implementation {
     template<class T> struct TypeTraitsDefault {
         TypeTraitsDefault() = delete;
@@ -89,11 +232,12 @@ namespace Implementation {
 }
 
 /**
-@brief Traits class for numeric types
+@brief Traits class for builtin arithmetic types
 
 Traits classes are usable for detecting type features at compile time without
 the need for repeated code such as method overloading or template
-specialization for given types.
+specialization for given types. All builtin arithmetic types have this class
+implemented.
 */
 template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
     /*
