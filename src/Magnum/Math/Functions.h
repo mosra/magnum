@@ -160,7 +160,8 @@ the operations component-wise.
 /**
 @brief If given number is a positive or negative infinity
 
-@see @ref isNan(), @ref Constants::inf()
+@see @ref isNan(), @ref Constants::inf(),
+    @ref isInf(Corrade::Containers::ArrayView<const T>)
 */
 template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type isInf(T value) {
     return std::isinf(UnderlyingTypeOf<T>(value));
@@ -178,7 +179,8 @@ template<std::size_t size, class T> inline BoolVector<size> isInf(const Vector<s
 @brief If given number is a NaN
 
 Equivalent to @cpp value != value @ce.
-@see @ref isInf(), @ref Constants::nan()
+@see @ref isInf(), @ref Constants::nan(),
+    @ref isNan(Corrade::Containers::ArrayView<const T>)
 */
 template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type isNan(T value) {
     return std::isnan(UnderlyingTypeOf<T>(value));

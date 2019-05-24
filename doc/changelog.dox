@@ -126,6 +126,7 @@ See also:
 -   New @ref Math::IsScalar, @ref Math::IsVector, @ref Math::IsIntegral,
     @ref Math::IsFloatingPoint and @ref Math::IsUnitless type traits and a
     @ref Math::UnderlyingTypeOf utility
+-   Added batch versions of @ref Math::isInf() and @ref Math::isNan()
 
 @subsubsection changelog-latest-new-platform Platform libraries
 

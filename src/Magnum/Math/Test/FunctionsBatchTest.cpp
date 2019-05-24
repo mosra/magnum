@@ -33,6 +33,9 @@ namespace Magnum { namespace Math { namespace Test { namespace {
 struct FunctionsBatchTest: Corrade::TestSuite::Tester {
     explicit FunctionsBatchTest();
 
+    void isInf();
+    void isNan();
+
     void min();
     void max();
     void minmax();
@@ -40,13 +43,60 @@ struct FunctionsBatchTest: Corrade::TestSuite::Tester {
 
 using namespace Literals;
 
+typedef Math::Constants<Float> Constants;
 typedef Math::Vector2<Float> Vector2;
 typedef Math::Vector3<Int> Vector3i;
+typedef Math::Vector3<Float> Vector3;
 
 FunctionsBatchTest::FunctionsBatchTest() {
-    addTests({&FunctionsBatchTest::min,
+    addTests({&FunctionsBatchTest::isInf,
+              &FunctionsBatchTest::isNan,
+
+              &FunctionsBatchTest::min,
               &FunctionsBatchTest::max,
               &FunctionsBatchTest::minmax});
+}
+
+void FunctionsBatchTest::isInf() {
+    CORRADE_VERIFY(!Math::isInf({5.0f, -2.0f, 9.0f}));
+    CORRADE_VERIFY(Math::isInf({5.0f, Constants::inf(), 9.0f}));
+
+    CORRADE_COMPARE(Math::isInf({Vector2{5.0f, -3.0f},
+                                 Vector2{-2.0f, 14.0f},
+                                 Vector2{9.0f, -5.0f}}), BoolVector<2>{0});
+    CORRADE_COMPARE(Math::isInf({Vector2{5.0f, -3.0f},
+                                Vector2{-2.0f, 14.0f},
+                                Vector2{Constants::inf(), -5.0f}}), BoolVector<2>{1});
+
+    CORRADE_VERIFY(!Math::isInf(std::initializer_list<Float>{}));
+    CORRADE_COMPARE(Math::isInf(std::initializer_list<Vector3>{}), BoolVector<3>{0});
+
+    const Float a[]{5.0f, -2.0f, -Constants::inf()};
+    CORRADE_VERIFY(Math::isInf(a));
+
+    const Float b[]{5.0f, -2.0f, -1.0};
+    CORRADE_VERIFY(!Math::isInf(b));
+}
+
+void FunctionsBatchTest::isNan() {
+    CORRADE_VERIFY(!Math::isNan({5.0f, -2.0f, 9.0f}));
+    CORRADE_VERIFY(Math::isNan({5.0f, 9.0f, Constants::nan()}));
+
+    CORRADE_COMPARE(Math::isNan({Vector2{5.0f, -3.0f},
+                                 Vector2{-2.0f, 14.0f},
+                                 Vector2{9.0f, -5.0f}}), BoolVector<2>{0});
+    CORRADE_COMPARE(Math::isNan({Vector2{5.0f, -3.0f},
+                                Vector2{14.0f, Constants::nan()},
+                                Vector2{-2.0f, -5.0f}}), BoolVector<2>{2});
+
+    CORRADE_VERIFY(!Math::isNan(std::initializer_list<Double>{}));
+    CORRADE_COMPARE(Math::isNan(std::initializer_list<Vector3>{}), BoolVector<3>{0});
+
+    const Float a[]{5.0f, -Constants::nan(), -2.0f};
+    CORRADE_VERIFY(Math::isNan(a));
+
+    const Float b[]{5.0f, -2.0f, -1.0};
+    CORRADE_VERIFY(!Math::isNan(b));
 }
 
 void FunctionsBatchTest::min() {

@@ -44,6 +44,74 @@ vectors or scalars.
 */
 
 /**
+@brief If any number in the range is a positive or negative infinity
+
+For scalar types returns @cpp true @ce as soon as it finds an infinite value,
+@cpp false @ce otherwise. For vector types, returns @ref BoolVector with bits
+set to @cpp 1 @ce if any value has that component infinite. If the range is
+empty, returns @cpp false @ce or a @ref BoolVector with no bits set.
+@see @ref isInf(T), @ref Constants::inf()
+*/
+template<class T> auto isInf(Corrade::Containers::ArrayView<const T> range) -> decltype(isInf(std::declval<T>())) {
+    if(range.empty()) return {};
+
+    /* For scalars, this loop exits once any value is infinity. For vectors
+       the loop accumulates the bits and exits as soon as all bits are set
+       or the input is exhausted */
+    auto out = isInf(range[0]); /* bool or BoolVector */
+    for(std::size_t i = 1; i != range.size(); ++i) {
+        if(out) break;
+        out = out || isInf(range[i]);
+    }
+
+    return out;
+}
+
+/** @overload */
+template<class T> inline auto isInf(std::initializer_list<T> list) -> decltype(isInf(std::declval<T>())) {
+    return isInf(Corrade::Containers::arrayView(list.begin(), list.size()));
+}
+
+/** @overload */
+template<class T, std::size_t size> inline auto isInf(const T(&array)[size]) -> decltype(isInf(std::declval<T>())) {
+    return isInf(Corrade::Containers::arrayView(array));
+}
+
+/**
+@brief If any number in the range is a NaN
+
+For scalar types returns @cpp true @ce as soon as it finds a NaN value,
+@cpp false @ce otherwise. For vector types, returns @ref BoolVector with bits
+set to @cpp 1 @ce if any value has that component NaN. If the range is empty,
+returns @cpp false @ce or a @ref BoolVector with no bits set.
+@see @ref isNan(T), @ref Constants::nan()
+*/
+template<class T> inline auto isNan(Corrade::Containers::ArrayView<const T> range) -> decltype(isNan(std::declval<T>())) {
+    if(range.empty()) return {};
+
+    /* For scalars, this loop exits once any value is infinity. For vectors
+       the loop accumulates the bits and exits as soon as all bits are set
+       or the input is exhausted */
+    auto out = isNan(range[0]); /* bool or BoolVector */
+    for(std::size_t i = 1; i != range.size(); ++i) {
+        if(out) break;
+        out = out || isNan(range[i]);
+    }
+
+    return out;
+}
+
+/** @overload */
+template<class T> inline auto isNan(std::initializer_list<T> list) -> decltype(isInf(std::declval<T>())) {
+    return isNan(Corrade::Containers::arrayView(list.begin(), list.size()));
+}
+
+/** @overload */
+template<class T, std::size_t size> inline bool isNan(const T(&array)[size]) {
+    return isNan(Corrade::Containers::arrayView(array));
+}
+
+/**
 @brief Minimum of a range
 
 If the range is empty, returns default-constructed value.
