@@ -437,7 +437,15 @@ template<std::size_t size> inline BoolVector<size> lerp(const BoolVector<size>& 
 Returns interpolation phase *t*: @f[
     t = \frac{\boldsymbol{v_{LERP}} - \boldsymbol{v_A}}{\boldsymbol{v_B} - \boldsymbol{v_A}}
 @f]
-@see @ref lerp(), @ref select()
+
+Useful in combination with @ref lerp() for mapping values from one range to
+another --- for example, the following snippet maps `a` from a range
+@f$ [ -1; +1 ] @f$ to a range @f$ [ 5\degree; 15\degree ] @f$; the second
+expression combines that with @ref clamp() to ensure the value is in bounds:
+
+@snippet MagnumMath.cpp lerpInverted-map
+
+@see @ref select()
 */
 template<class T> inline UnderlyingTypeOf<typename std::enable_if<IsScalar<T>::value, T>::type> lerpInverted(T a, T b, T lerp) {
     return (lerp - a)/(b - a);

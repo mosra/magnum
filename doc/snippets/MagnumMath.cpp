@@ -913,6 +913,18 @@ Math::min(Math::max(value, min), max)
 }
 
 {
+Float a{};
+/* [lerpInverted-map] */
+Deg b = Math::lerp(5.0_degf, 15.0_degf,
+    Math::lerpInverted(-1.0f, 1.0f, a));
+Deg bClamped = Math::lerp(5.0_degf, 15.0_degf, Math::clamp(
+    Math::lerpInverted(-1.0f, 1.0f, a), 0.0f, 1.0f));
+/* [lerpInverted-map] */
+static_cast<void>(b);
+static_cast<void>(bClamped);
+}
+
+{
 /* [Half-usage] */
 using namespace Math::Literals;
 
