@@ -50,6 +50,8 @@ struct WavImporterTest: TestSuite::Tester {
     void invalidDataChunk();
     void invalidFactChunk();
 
+    void zeroSamples();
+
     void mono4();
     void mono8();
     void mono8junk();
@@ -87,6 +89,8 @@ WavImporterTest::WavImporterTest() {
               &WavImporterTest::invalidLength,
               &WavImporterTest::invalidDataChunk,
               &WavImporterTest::invalidFactChunk,
+
+              &WavImporterTest::zeroSamples,
 
               &WavImporterTest::mono4,
               &WavImporterTest::mono8,
@@ -193,6 +197,16 @@ void WavImporterTest::invalidFactChunk() {
         (Containers::Array<char>{Containers::InPlaceInit, {
             -27, -11, -1, -9, 24, -6, 127, -5}}),
         TestSuite::Compare::Container<Containers::ArrayView<const char>>);
+}
+
+void WavImporterTest::zeroSamples() {
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("WavAudioImporter");
+
+    /* No error should happen, it should just give an empty buffer back */
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(WAVAUDIOIMPORTER_TEST_DIR, "zeroSamples.wav")));
+    CORRADE_COMPARE(importer->format(), BufferFormat::Mono16);
+    CORRADE_COMPARE(importer->frequency(), 22050);
+    CORRADE_VERIFY(importer->data().empty());
 }
 
 void WavImporterTest::mono4() {

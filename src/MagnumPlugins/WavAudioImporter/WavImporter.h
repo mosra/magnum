@@ -31,6 +31,7 @@
  */
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/Optional.h>
 
 #include "Magnum/Audio/AbstractImporter.h"
 
@@ -102,7 +103,7 @@ class MAGNUM_WAVAUDIOIMPORTER_EXPORT WavImporter: public AbstractImporter {
         MAGNUM_WAVAUDIOIMPORTER_LOCAL UnsignedInt doFrequency() const override;
         MAGNUM_WAVAUDIOIMPORTER_LOCAL Containers::Array<char> doData() override;
 
-        Containers::Array<char> _data;
+        Containers::Optional<Containers::Array<char>> _data;
         BufferFormat _format;
         UnsignedInt _frequency;
 };

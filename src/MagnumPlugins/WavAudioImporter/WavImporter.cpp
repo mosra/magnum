@@ -45,7 +45,7 @@ WavImporter::WavImporter(PluginManager::AbstractManager& manager, const std::str
 
 auto WavImporter::doFeatures() const -> Features { return Feature::OpenData; }
 
-bool WavImporter::doIsOpened() const { return _data; }
+bool WavImporter::doIsOpened() const { return !!_data; }
 
 void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
     /* Check file size */
@@ -213,19 +213,19 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
     /* Copy the data */
     const char* dataChunkPtr = reinterpret_cast<const char*>(dataChunk + 1);
     _data = Containers::Array<char>(dataChunkSize);
-    std::copy(dataChunkPtr, dataChunkPtr+dataChunkSize, _data.begin());
+    std::copy(dataChunkPtr, dataChunkPtr+dataChunkSize, _data->begin());
     return;
 }
 
-void WavImporter::doClose() { _data = nullptr; }
+void WavImporter::doClose() { _data = Containers::NullOpt; }
 
 BufferFormat WavImporter::doFormat() const { return _format; }
 
 UnsignedInt WavImporter::doFrequency() const { return _frequency; }
 
 Containers::Array<char> WavImporter::doData() {
-    Containers::Array<char> copy(_data.size());
-    std::copy(_data.begin(), _data.end(), copy.begin());
+    Containers::Array<char> copy(_data->size());
+    std::copy(_data->begin(), _data->end(), copy.begin());
     return copy;
 }
 

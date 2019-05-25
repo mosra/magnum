@@ -58,6 +58,8 @@ corrade_add_test(WavAudioImporterTest WavImporterTest.cpp
         invalidDataChunk.wav
         invalidFactChunk.wav
 
+        zeroSamples.wav
+
         mono4.wav
         mono8.wav
         mono8junk.wav
