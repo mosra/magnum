@@ -761,6 +761,12 @@ inline Source& Source::operator=(Source&& other) {
     return *this;
 }
 
+inline auto Source::type() const -> Type {
+    ALint type;
+    alGetSourcei(_id, AL_SOURCE_TYPE, &type);
+    return Type(type);
+}
+
 inline auto Source::state() const -> State {
     ALint state;
     alGetSourcei(_id, AL_SOURCE_STATE, &state);

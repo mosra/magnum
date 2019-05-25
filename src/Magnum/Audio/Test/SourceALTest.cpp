@@ -25,6 +25,7 @@
 
 #include <Corrade/TestSuite/Tester.h>
 
+#include "Magnum/Audio/Buffer.h"
 #include "Magnum/Audio/Context.h"
 #include "Magnum/Audio/Source.h"
 
@@ -46,6 +47,7 @@ struct SourceALTest: TestSuite::Tester {
     void minGain();
     void coneAnglesAndGain();
     void rolloffFactor();
+    void type();
 
     Context _context;
 };
@@ -63,7 +65,8 @@ SourceALTest::SourceALTest() {
               &SourceALTest::maxGain,
               &SourceALTest::minGain,
               &SourceALTest::coneAnglesAndGain,
-              &SourceALTest::rolloffFactor});
+              &SourceALTest::rolloffFactor,
+              &SourceALTest::type});
 }
 
 void SourceALTest::construct() {
@@ -166,6 +169,15 @@ void SourceALTest::rolloffFactor() {
     source.setRolloffFactor(fact);
 
     CORRADE_COMPARE(source.rolloffFactor(), fact);
+}
+
+void SourceALTest::type() {
+    Source source;
+    CORRADE_COMPARE(source.type(), Source::Type::Undetermined);
+
+    Buffer buffer;
+    source.setBuffer(&buffer);
+    CORRADE_COMPARE(source.type(), Source::Type::Static);
 }
 
 }}}}
