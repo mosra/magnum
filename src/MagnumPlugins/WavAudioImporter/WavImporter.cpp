@@ -214,7 +214,6 @@ void WavImporter::doOpenData(Containers::ArrayView<const char> data) {
     const char* dataChunkPtr = reinterpret_cast<const char*>(dataChunk + 1);
     _data = Containers::Array<char>(dataChunkSize);
     std::copy(dataChunkPtr, dataChunkPtr+dataChunkSize, _data->begin());
-    return;
 }
 
 void WavImporter::doClose() { _data = Containers::NullOpt; }
