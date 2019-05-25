@@ -70,6 +70,8 @@ of the `Magnum` package and link to the `Magnum::AnyAudioImporter` target. See
 
 Supported formats:
 
+-   AAC (`*.aac`), loaded with any plugin that provides `AacAudioImporter`
+-   MP3 (`*.mp3`), loaded with any plugin that provides `Mp3AudioImporter`
 -   OGG Vorbis (`*.ogg`), loaded with any plugin that provides
     `VorbisAudioImporter`
 -   WAV (`*.wav`), loaded with @ref WavImporter "WavAudioImporter" or any other

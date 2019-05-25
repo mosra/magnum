@@ -53,7 +53,11 @@ void AnyImporter::doOpenFile(const std::string& filename) {
 
     /* Detect type from extension */
     std::string plugin;
-    if(Utility::String::endsWith(normalized, ".ogg"))
+    if(Utility::String::endsWith(normalized, ".aac"))
+        plugin = "AacAudioImporter";
+    else if(Utility::String::endsWith(normalized, ".mp3"))
+        plugin = "Mp3AudioImporter";
+    else if(Utility::String::endsWith(normalized, ".ogg"))
         plugin = "VorbisAudioImporter";
     else if(Utility::String::endsWith(normalized, ".wav"))
         plugin = "WavAudioImporter";
