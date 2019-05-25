@@ -44,6 +44,11 @@ See also:
     @ref Trade::ImageData::pixels() accessors for convenient direct access to
     pixel data of any image
 
+@subsubsection changelog-latest-new-audio Audio library
+
+-   Ability to (un)queue buffers in @ref Audio::Source (see
+    [mosra/magnum#338](https://github.com/mosra/magnum/pull/338))
+
 @subsubsection changelog-latest-new-debugtools DebugTools library
 
 -   New @ref DebugTools::screenshot() function for convenient saving of
