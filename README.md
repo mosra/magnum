@@ -117,6 +117,8 @@ separate repositories.
 -   **Magnum Extras** — playground for testing new APIs, specialized stuff
     that doesn't necessarily need to be a part of main Magnum repository or
     mutually exclusive functionality: https://github.com/mosra/magnum-extras
+-   **Magnum Bindings** — bindings to other languages such as Python are at
+    https://github.com/mosra/magnum-bindings
 -   **Magnum Singles** — various functionality from Magnum available as
     easy-to-integrate fast-to-compile single-header libraries:
     https://github.com/mosra/magnum-singles
