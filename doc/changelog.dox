@@ -224,10 +224,13 @@ See also:
 -   All batch functions in @ref Magnum/Math/FunctionsBatch.h now accept
     @ref Corrade::Containers::StridedArrayView instead of a dense array view to
     make them usable in more contexts
--   Batch @ref Math::min(Containers::StridedArrayView1D<const T>),
+-   @ref Math::Vector::min(), @ref Math::Vector::max(),
+    @ref Math::Vector::minmax() and batch
+    @ref Math::min(Containers::StridedArrayView1D<const T>),
     @ref Math::max(Containers::StridedArrayView1D<const T>) and
     @ref Math::minmax(Containers::StridedArrayView1D<const T>) functions now
-    ignore NaNs in the data, if possible. Use the batch
+    ignore NaNs in the data, if possible. Use
+    @ref Math::isNan(const Vector<size, T>&) or the batch
     @ref Math::isNan(Containers::StridedArrayView1D<const T>) to detect
     presence of NaN values if needed.
 -   Changed the way @ref Math::operator<<(Corrade::Utility::Debug&, const BoolVector<size>&)

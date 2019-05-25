@@ -97,6 +97,8 @@ struct VectorTest: Corrade::TestSuite::Tester {
     void max();
     void minmax();
 
+    void nanIgnoring();
+
     void projected();
     void projectedOntoNormalized();
     void projectedOntoNormalizedNotNormalized();
@@ -113,6 +115,7 @@ struct VectorTest: Corrade::TestSuite::Tester {
     void debug();
 };
 
+typedef Math::Constants<Float> Constants;
 typedef Math::Rad<Float> Rad;
 typedef Vector<2, Float> Vector2;
 typedef Vector<3, Float> Vector3;
@@ -161,6 +164,8 @@ VectorTest::VectorTest() {
               &VectorTest::min,
               &VectorTest::max,
               &VectorTest::minmax,
+
+              &VectorTest::nanIgnoring,
 
               &VectorTest::projected,
               &VectorTest::projectedOntoNormalized,
@@ -481,6 +486,26 @@ void VectorTest::minmax() {
     CORRADE_COMPARE((Vector3{2.0f, -3.0f, -1.0f}.minmax()), expected);
     CORRADE_COMPARE((Vector3{-3.0f, 2.0f, -1.0f}.minmax()), expected);
     CORRADE_COMPARE((Vector3{-3.0f, -1.0f, 2.0f}.minmax()), expected);
+}
+
+void VectorTest::nanIgnoring() {
+    Vector3 oneNan{1.0f, Constants::nan(), -3.0f};
+    Vector3 firstNan{Constants::nan(), 1.0f, -3.0f};
+    Vector3 allNan{Constants::nan(), Constants::nan(), Constants::nan()};
+
+    CORRADE_COMPARE(oneNan.min(), -3.0f);
+    CORRADE_COMPARE(firstNan.min(), -3.0f);
+    CORRADE_COMPARE(allNan.min(), Constants::nan());
+
+    CORRADE_COMPARE(oneNan.max(), 1.0f);
+    CORRADE_COMPARE(firstNan.max(), 1.0f);
+    CORRADE_COMPARE(allNan.max(), Constants::nan());
+
+    CORRADE_COMPARE(oneNan.minmax(), std::make_pair(-3.0f, 1.0f));
+    CORRADE_COMPARE(firstNan.minmax(), std::make_pair(-3.0f, 1.0f));
+    /* Need to compare this way because of NaNs */
+    CORRADE_COMPARE(allNan.minmax().first, Constants::nan());
+    CORRADE_COMPARE(allNan.minmax().second, Constants::nan());
 }
 
 void VectorTest::projected() {

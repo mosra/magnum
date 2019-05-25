@@ -182,9 +182,8 @@ Equivalent to @cpp value != value @ce.
 @see @ref isInf(), @ref Constants::nan(),
     @ref isNan(Corrade::Containers::StridedArrayView1D<const T>)
 */
-template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type isNan(T value) {
-    return std::isnan(UnderlyingTypeOf<T>(value));
-}
+/* defined in Vector.h */
+template<class T> typename std::enable_if<IsScalar<T>::value, bool>::type isNan(T value);
 
 /** @overload */
 template<std::size_t size, class T> inline BoolVector<size> isNan(const Vector<size, T>& value) {

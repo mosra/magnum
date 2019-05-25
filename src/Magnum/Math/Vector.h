@@ -45,6 +45,10 @@ namespace Magnum { namespace Math {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* Documented in Functions.h, defined here because Vector needs them */
+template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type isNan(T value) {
+    return std::isnan(UnderlyingTypeOf<T>(value));
+}
+
 template<class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type min(T a, T b) {
     return b < a ? b : a;
 }
@@ -599,21 +603,24 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Minimal value in the vector
          *
-         * @see @ref Math::min(), @ref minmax()
+         * <em>NaN</em>s are ignored, unless the vector is all <em>NaN</em>s.
+         * @see @ref Math::min(), @ref minmax(), @ref Math::isNan()
          */
         T min() const;
 
         /**
          * @brief Maximal value in the vector
          *
-         * @see @ref Math::max(), @ref minmax()
+         * <em>NaN</em>s are ignored, unless the vector is all <em>NaN</em>s.
+         * @see @ref Math::max(), @ref minmax(), @ref Math::isNan()
          */
         T max() const;
 
         /**
          * @brief Minimal and maximal value in the vector
          *
-         * @see @ref min(), @ref max(), @ref Math::minmax()
+         * <em>NaN</em>s are ignored, unless the vector is all <em>NaN</em>s.
+         * @see @ref min(), @ref max(), @ref Math::minmax(), @ref Math::isNan()
          */
         std::pair<T, T> minmax() const;
 
@@ -1409,28 +1416,47 @@ template<std::size_t size, class T> inline T Vector<size, T>::product() const {
     return out;
 }
 
-template<std::size_t size, class T> inline T Vector<size, T>::min() const {
-    T out(_data[0]);
+namespace Implementation {
+    /* Non-floating-point types, the first is a non-NaN for sure */
+    template<std::size_t size, class T> constexpr std::size_t firstNonNan(const T(&)[size], std::false_type) {
+        return 0;
+    }
+    /* Floating-point types, return the first that's not NaN */
+    template<std::size_t size, class T> inline std::size_t firstNonNan(const T(&data)[size], std::true_type) {
+        /* Find the first non-NaN value to compare against. If all are NaN,
+           return the last value so the following loop in min/max/minmax()
+           doesn't even execute. */
+        for(std::size_t i = 0; i != size; ++i)
+            if(!isNan(data[i])) return i;
+        return size - 1;
+    }
+}
 
-    for(std::size_t i = 1; i != size; ++i)
+template<std::size_t size, class T> inline T Vector<size, T>::min() const {
+    std::size_t i = Implementation::firstNonNan(_data, IsFloatingPoint<T>{});
+    T out(_data[i]);
+
+    for(++i; i != size; ++i)
         out = Math::min(out, _data[i]);
 
     return out;
 }
 
 template<std::size_t size, class T> inline T Vector<size, T>::max() const {
-    T out(_data[0]);
+    std::size_t i = Implementation::firstNonNan(_data, IsFloatingPoint<T>{});
+    T out(_data[i]);
 
-    for(std::size_t i = 1; i != size; ++i)
+    for(++i; i != size; ++i)
         out = Math::max(out, _data[i]);
 
     return out;
 }
 
 template<std::size_t size, class T> inline std::pair<T, T> Vector<size, T>::minmax() const {
-    T min{_data[0]}, max{_data[0]};
+    std::size_t i = Implementation::firstNonNan(_data, IsFloatingPoint<T>{});
+    T min{_data[i]}, max{_data[i]};
 
-    for(std::size_t i = 1; i != size; ++i) {
+    for(++i; i != size; ++i) {
         if(_data[i] < min)
             min = _data[i];
         else if(_data[i] > max)
