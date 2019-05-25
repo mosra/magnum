@@ -140,4 +140,18 @@ Debug& operator<<(Debug& debug, const Source::State value) {
     return debug << "Audio::Source::State(" << Debug::nospace << reinterpret_cast<void*>(ALint(value)) << Debug::nospace << ")";
 }
 
+Debug& operator<<(Debug& debug, const Source::Type value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case Source::Type::value: return debug << "Audio::Source::Type::" #value;
+        _c(Undetermined)
+        _c(Static)
+        _c(Streaming)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Audio::Source::Type(" << Debug::nospace << reinterpret_cast<void*>(ALint(value)) << Debug::nospace << ")";
+}
+
 }}

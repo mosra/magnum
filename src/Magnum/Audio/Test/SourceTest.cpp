@@ -35,16 +35,24 @@ struct SourceTest: TestSuite::Tester {
     explicit SourceTest();
 
     void debugState();
+    void debugType();
 };
 
 SourceTest::SourceTest() {
-    addTests({&SourceTest::debugState});
+    addTests({&SourceTest::debugState,
+              &SourceTest::debugType});
 }
 
 void SourceTest::debugState() {
     std::ostringstream out;
     Debug(&out) << Source::State::Playing << Source::State(0xdead);
     CORRADE_COMPARE(out.str(), "Audio::Source::State::Playing Audio::Source::State(0xdead)\n");
+}
+
+void SourceTest::debugType() {
+    std::ostringstream out;
+    Debug(&out) << Source::Type::Streaming << Source::Type(0xdead);
+    CORRADE_COMPARE(out.str(), "Audio::Source::Type::Streaming Audio::Source::Type(0xdead)\n");
 }
 
 }}}}
