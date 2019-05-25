@@ -103,6 +103,9 @@ template<class T> class Deg: public Unit<Deg, T> {
          *
          * Equivalent to @ref Deg(ZeroInitT).
          */
+        /* Needs to be Math::Deg here and in all other places because older
+           Clang and both MSVC 2015 and 2017 treat it as a template instantce
+           Deg<T> instead of a Deg template */
         constexpr /*implicit*/ Deg() noexcept: Unit<Math::Deg, T>{ZeroInit} {}
 
         /** @brief Construct a zero angle */
