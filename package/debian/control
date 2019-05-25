@@ -1,7 +1,7 @@
 Source: magnum
 Priority: optional
 Maintainer: Vladimír Vondruš <mosra@centrum.cz>
-Build-Depends: debhelper (>= 9), cmake (>= 3.1), corrade-dev, libgl-dev, libopenal-dev, libsdl2-dev
+Build-Depends: debhelper (>= 9), cmake (>= 3.1), corrade-dev, libgl-dev, libopenal-dev, libglfw3-dev, libsdl2-dev
 Standards-Version: 3.9.2
 Section: libs
 Homepage: https://magnum.graphics
@@ -11,14 +11,14 @@ Vcs-Browser: https://github.com/mosra/magnum
 Package: magnum-dev
 Section: libdevel
 Architecture: any
-Depends: magnum (= ${binary:Version}), corrade-dev, libgl-dev, libopenal-dev, libsdl2-dev
+Depends: magnum (= ${binary:Version}), corrade-dev, libgl-dev, libopenal-dev, libglfw3-dev, libsdl2-dev
 Description: Magnum development files
  Headers and tools needed for developing with Magnum.
 
 Package: magnum
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}, corrade, libgl1, libopenal1, libsdl2-2.0-0
+Depends: ${shlibs:Depends}, ${misc:Depends}, corrade, libgl1, libopenal1, libglfw3, libsdl2-2.0-0
 Description: C++11/C++14 graphics middleware for games and data visualization
  Magnum is 2D/3D graphics engine written in C++11 and modern OpenGL. Its goal
  is to simplify low-level graphics development and interaction with OpenGL

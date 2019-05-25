@@ -8,7 +8,7 @@ pkgdesc='C++11/C++14 graphics middleware for games and data visualization'
 arch=('x86_64')
 url='https://magnum.graphics'
 license=('MIT')
-depends=("corrade>=$pkgver" 'openal' 'sdl2' 'vulkan-icd-loader')
+depends=("corrade>=$pkgver" 'openal' 'glfw' 'sdl2' 'vulkan-icd-loader')
 optdepends=('magnum-plugins: import and export features')
 makedepends=('cmake' 'git' 'ninja')
 source=("git+https://github.com/mosra/magnum.git#tag=v$pkgver")
@@ -36,6 +36,7 @@ build() {
     -DWITH_OBJIMPORTER=ON \
     -DWITH_FONTCONVERTER=ON \
     -DWITH_GL_INFO=ON \
+    -DWITH_GLFWAPPLICATION=ON \
     -DWITH_SDL2APPLICATION=ON \
     -DWITH_TGAIMAGECONVERTER=ON \
     -DWITH_TGAIMPORTER=ON \
