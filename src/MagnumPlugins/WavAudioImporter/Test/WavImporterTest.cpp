@@ -40,7 +40,7 @@ namespace Magnum { namespace Audio { namespace Test { namespace {
 struct WavImporterTest: TestSuite::Tester {
     explicit WavImporterTest();
 
-    void wrongSize();
+    void empty();
     void wrongSignature();
     void unsupportedFormat();
     void unsupportedChannelCount();
@@ -80,7 +80,7 @@ struct WavImporterTest: TestSuite::Tester {
 };
 
 WavImporterTest::WavImporterTest() {
-    addTests({&WavImporterTest::wrongSize,
+    addTests({&WavImporterTest::empty,
               &WavImporterTest::wrongSignature,
               &WavImporterTest::unsupportedFormat,
               &WavImporterTest::unsupportedChannelCount,
@@ -122,13 +122,15 @@ WavImporterTest::WavImporterTest() {
     #endif
 }
 
-void WavImporterTest::wrongSize() {
+void WavImporterTest::empty() {
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("WavAudioImporter");
+
     std::ostringstream out;
     Error redirectError{&out};
-
-    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("WavAudioImporter");
-    CORRADE_VERIFY(!importer->openData(Containers::Array<char>(43)));
-    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): the file is too short: 43 bytes\n");
+    char a{};
+    /* Explicitly checking non-null but empty view */
+    CORRADE_VERIFY(!importer->openData({&a, 0}));
+    CORRADE_COMPARE(out.str(), "Audio::WavImporter::openData(): the file is too short: 0 bytes\n");
 }
 
 void WavImporterTest::wrongSignature() {
