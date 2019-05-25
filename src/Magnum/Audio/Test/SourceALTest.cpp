@@ -26,6 +26,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Audio/Buffer.h"
+#include "Magnum/Audio/BufferFormat.h"
 #include "Magnum/Audio/Context.h"
 #include "Magnum/Audio/Source.h"
 
@@ -175,7 +176,12 @@ void SourceALTest::type() {
     Source source;
     CORRADE_COMPARE(source.type(), Source::Type::Undetermined);
 
+    constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
+
+    /* Need to fill the buffer with some data otherwise it's still Undetermined
+       on Apple's OpenAL. OpenAL Soft doesn't need that. */
     Buffer buffer;
+    buffer.setData(BufferFormat::Mono8, data, 22050);
     source.setBuffer(&buffer);
     CORRADE_COMPARE(source.type(), Source::Type::Static);
 }
