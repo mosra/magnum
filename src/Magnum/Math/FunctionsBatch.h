@@ -111,19 +111,55 @@ template<class T, std::size_t size> inline bool isNan(const T(&array)[size]) {
     return isNan(Corrade::Containers::arrayView(array));
 }
 
+namespace Implementation {
+    /* Non-floating-point types, the first is a non-NaN for sure */
+    template<class T, bool any> constexpr std::pair<std::size_t, T> firstNonNan(Corrade::Containers::ArrayView<const T> range, std::false_type, std::integral_constant<bool, any>) {
+        return {0, range.front()};
+    }
+    /* Floating-point scalars, return the first that's not NaN */
+    template<class T> inline std::pair<std::size_t, T> firstNonNan(Corrade::Containers::ArrayView<const T> range, std::true_type, std::false_type) {
+        /* Find the first non-NaN value to compare against. If all are NaN,
+           return the last value so the following loop in min/max/minmax()
+           doesn't even execute. */
+        for(std::size_t i = 0; i != range.size(); ++i)
+            if(!isNan(range[i])) return {i, range[i]};
+        return {range.size() - 1, range.back()};
+    }
+    /* Floating-point vectors. Try to gather non-NaN values for each component
+       and exit as soon as all are found (or the input is exhausted). Return
+       the index of first item with at least one non-NaN value as we need to go
+       through all at least partially valid values again anyway in order to
+       apply the min/max/minmax operation. I expect the cases of heavily
+       NaN-filled vectors (and thus the need to loop twice through most of the
+       range) to be very rare, so this shouldn't be a problem. */
+    template<class T> inline std::pair<std::size_t, T> firstNonNan(Corrade::Containers::ArrayView<const T> range, std::true_type, std::true_type) {
+        T out = range[0];
+        std::size_t firstValid = 0;
+        for(std::size_t i = 1; i != range.size(); ++i) {
+            BoolVector<T::Size> nans = isNan(out);
+            if(nans.none()) break;
+            if(nans.all() && firstValid + 1 == i) ++firstValid;
+            out = Math::lerp(out, range[i], isNan(out));
+        }
+        return {firstValid, out};
+    }
+}
+
 /**
 @brief Minimum of a range
 
-If the range is empty, returns default-constructed value.
-@see @ref min(T, T)
+If the range is empty, returns default-constructed value. <em>NaN</em>s are
+ignored, unless the range is all <em>NaN</em>s.
+@see @ref min(T, T), @ref isNan(Corrade::Containers::ArrayView<const T>)
 */
 template<class T> inline T min(Corrade::Containers::ArrayView<const T> range) {
     if(range.empty()) return {};
 
-    T out(range[0]);
-    for(std::size_t i = 1; i != range.size(); ++i)
-        out = Math::min(out, range[i]);
-    return out;
+    std::pair<std::size_t, T> iOut = Implementation::firstNonNan(range, IsFloatingPoint<T>{}, IsVector<T>{});
+    for(++iOut.first; iOut.first != range.size(); ++iOut.first)
+        iOut.second = Math::min(iOut.second, range[iOut.first]);
+
+    return iOut.second;
 }
 
 /** @overload */
@@ -139,15 +175,18 @@ template<class T, std::size_t size> inline T min(const T(&array)[size]) {
 /**
 @brief Maximum of a range
 
-If the range is empty, returns default-constructed value.
+If the range is empty, returns default-constructed value. <em>NaN</em>s are
+ignored, unless the range is all <em>NaN</em>s.
+@see @ref max(T, T), @ref isNan(Corrade::Containers::ArrayView<const T>)
 */
 template<class T> inline T max(Corrade::Containers::ArrayView<const T> range) {
     if(range.empty()) return {};
 
-    T out(range[0]);
-    for(std::size_t i = 1; i != range.size(); ++i)
-        out = Math::max(out, range[i]);
-    return out;
+    std::pair<std::size_t, T> iOut = Implementation::firstNonNan(range, IsFloatingPoint<T>{}, IsVector<T>{});
+    for(++iOut.first; iOut.first != range.size(); ++iOut.first)
+        iOut.second = Math::max(iOut.second, range[iOut.first]);
+
+    return iOut.second;
 }
 
 /** @overload */
@@ -176,15 +215,19 @@ namespace Implementation {
 /**
 @brief Minimum and maximum of a range
 
-If the range is empty, returns default-constructed values.
-@see @ref Range::Range(const std::pair<VectorType, VectorType>&)
+If the range is empty, returns default-constructed values. <em>NaN</em>s are
+ignored, unless the range is all <em>NaN</em>s.
+@see @ref minmax(T, T),
+    @ref Range::Range(const std::pair<VectorType, VectorType>&),
+    @ref isNan(Corrade::Containers::ArrayView<const T>)
 */
 template<class T> inline std::pair<T, T> minmax(Corrade::Containers::ArrayView<const T> range) {
     if(range.empty()) return {};
 
-    T min{range[0]}, max{range[0]};
-    for(std::size_t i = 1; i != range.size(); ++i)
-        Implementation::minmax(min, max, range[i]);
+    std::pair<std::size_t, T> iOut = Implementation::firstNonNan(range, IsFloatingPoint<T>{}, IsVector<T>{});
+    T min{iOut.second}, max{iOut.second};
+    for(++iOut.first; iOut.first != range.size(); ++iOut.first)
+        Implementation::minmax(min, max, range[iOut.first]);
 
     return {min, max};
 }

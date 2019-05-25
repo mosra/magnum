@@ -216,6 +216,12 @@ See also:
     special types such as @ref Deg or @ref Rad --- the only exception is
     power functions such as @ref Math::sqrt() or @ref Math::log(), as the
     resulting unit can't be represented. Those accept only unitless types.
+-   Batch @ref Math::min(Containers::ArrayView<const T>),
+    @ref Math::max(Containers::ArrayView<const T>) and
+    @ref Math::minmax(Containers::ArrayView<const T>) functions now ignore NaNs
+    in the data, if possible. Use the batch
+    @ref Math::isNan(Containers::ArrayView<const T>) to detect presence of NaN
+    values if needed.
 -   Changed the way @ref Math::operator<<(Corrade::Utility::Debug&, const BoolVector<size>&)
     works --- the output now has the same bit order as when constructing it
     using binary literals
