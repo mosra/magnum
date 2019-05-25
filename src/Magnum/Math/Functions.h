@@ -161,7 +161,7 @@ the operations component-wise.
 @brief If given number is a positive or negative infinity
 
 @see @ref isNan(), @ref Constants::inf(),
-    @ref isInf(Corrade::Containers::ArrayView<const T>)
+    @ref isInf(Corrade::Containers::StridedArrayView1D<const T>)
 */
 template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type isInf(T value) {
     return std::isinf(UnderlyingTypeOf<T>(value));
@@ -180,7 +180,7 @@ template<std::size_t size, class T> inline BoolVector<size> isInf(const Vector<s
 
 Equivalent to @cpp value != value @ce.
 @see @ref isInf(), @ref Constants::nan(),
-    @ref isNan(Corrade::Containers::ArrayView<const T>)
+    @ref isNan(Corrade::Containers::StridedArrayView1D<const T>)
 */
 template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type isNan(T value) {
     return std::isnan(UnderlyingTypeOf<T>(value));
@@ -199,7 +199,8 @@ template<std::size_t size, class T> inline BoolVector<size> isNan(const Vector<s
 
 <em>NaN</em>s passed in the @p value parameter are propagated.
 @see @ref max(), @ref minmax(), @ref clamp(),
-    @ref min(Corrade::Containers::ArrayView<const T>), @ref Vector::min()
+    @ref min(Corrade::Containers::StridedArrayView1D<const T>),
+    @ref Vector::min()
 */
 /* defined in Vector.h */
 template<class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type min(T value, T min);
@@ -225,7 +226,8 @@ template<std::size_t size, class T> inline Vector<size, T> min(const Vector<size
 
 <em>NaN</em>s passed in the @p value parameter are propagated.
 @see @ref min(), @ref minmax(), @ref clamp(),
-    @ref max(Corrade::Containers::ArrayView<const T>), @ref Vector::max()
+    @ref max(Corrade::Containers::StridedArrayView1D<const T>),
+    @ref Vector::max()
 */
 /* defined in Vector.h */
 template<class T> constexpr typename std::enable_if<IsScalar<T>::value, T>::type max(T a, T b);
@@ -250,7 +252,8 @@ template<std::size_t size, class T> inline Vector<size, T> max(const Vector<size
 @brief Minimum and maximum of two values
 
 @see @ref min(), @ref max(), @ref clamp(),
-    @ref minmax(Corrade::Containers::ArrayView<const T>), @ref Vector::minmax(),
+    @ref minmax(Corrade::Containers::StridedArrayView1D<const T>),
+    @ref Vector::minmax(),
     @ref Range::Range(const std::pair<VectorType, VectorType>&)
 */
 template<class T> inline typename std::enable_if<IsScalar<T>::value, std::pair<T, T>>::type minmax(T a, T b) {

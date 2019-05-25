@@ -216,12 +216,15 @@ See also:
     special types such as @ref Deg or @ref Rad --- the only exception is
     power functions such as @ref Math::sqrt() or @ref Math::log(), as the
     resulting unit can't be represented. Those accept only unitless types.
--   Batch @ref Math::min(Containers::ArrayView<const T>),
-    @ref Math::max(Containers::ArrayView<const T>) and
-    @ref Math::minmax(Containers::ArrayView<const T>) functions now ignore NaNs
-    in the data, if possible. Use the batch
-    @ref Math::isNan(Containers::ArrayView<const T>) to detect presence of NaN
-    values if needed.
+-   All batch functions in @ref Magnum/Math/FunctionsBatch.h now accept
+    @ref Corrade::Containers::StridedArrayView instead of a dense array view to
+    make them usable in more contexts
+-   Batch @ref Math::min(Containers::StridedArrayView1D<const T>),
+    @ref Math::max(Containers::StridedArrayView1D<const T>) and
+    @ref Math::minmax(Containers::StridedArrayView1D<const T>) functions now
+    ignore NaNs in the data, if possible. Use the batch
+    @ref Math::isNan(Containers::StridedArrayView1D<const T>) to detect
+    presence of NaN values if needed.
 -   Changed the way @ref Math::operator<<(Corrade::Utility::Debug&, const BoolVector<size>&)
     works --- the output now has the same bit order as when constructing it
     using binary literals
@@ -373,10 +376,10 @@ See also:
 -   @cpp Math::Frustum::planes() @ce are deprecated due to redundancy, use
     either @ref Math::Frustum::operator[](), @ref Math::Frustum::data() or
     range access using @ref Math::Frustum::begin() / @ref Math::Frustum::end()
--   Batch @ref Math::min(Containers::ArrayView<const T>),
-    @ref Math::max(Containers::ArrayView<const T>) and
-    @ref Math::minmax(Containers::ArrayView<const T>) are moved to a new
-    @ref Magnum/Math/FunctionsBatch.h header in order to speed up compile
+-   Batch @ref Math::min(Containers::StridedArrayView1D<const T>),
+    @ref Math::max(Containers::StridedArrayView1D<const T>) and
+    @ref Math::minmax(Containers::StridedArrayView1D<const T>) are moved to a
+    new @ref Magnum/Math/FunctionsBatch.h header in order to speed up compile
     times. This header is included from @ref Magnum/Math/FunctionsBatch.h when
     building with @ref MAGNUM_BUILD_DEPRECATED enabled, include it explicitly
     to ensure forward compatibility

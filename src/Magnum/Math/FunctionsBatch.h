@@ -30,7 +30,7 @@
  */
 
 #include <initializer_list>
-#include <Corrade/Containers/ArrayView.h>
+#include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Math/Functions.h"
 
@@ -52,7 +52,7 @@ set to @cpp 1 @ce if any value has that component infinite. If the range is
 empty, returns @cpp false @ce or a @ref BoolVector with no bits set.
 @see @ref isInf(T), @ref Constants::inf()
 */
-template<class T> auto isInf(Corrade::Containers::ArrayView<const T> range) -> decltype(isInf(std::declval<T>())) {
+template<class T> auto isInf(Corrade::Containers::StridedArrayView1D<const T> range) -> decltype(isInf(std::declval<T>())) {
     if(range.empty()) return {};
 
     /* For scalars, this loop exits once any value is infinity. For vectors
@@ -69,12 +69,12 @@ template<class T> auto isInf(Corrade::Containers::ArrayView<const T> range) -> d
 
 /** @overload */
 template<class T> inline auto isInf(std::initializer_list<T> list) -> decltype(isInf(std::declval<T>())) {
-    return isInf(Corrade::Containers::arrayView(list.begin(), list.size()));
+    return isInf<T>(Corrade::Containers::arrayView(list.begin(), list.size()));
 }
 
 /** @overload */
 template<class T, std::size_t size> inline auto isInf(const T(&array)[size]) -> decltype(isInf(std::declval<T>())) {
-    return isInf(Corrade::Containers::arrayView(array));
+    return isInf<T>(Corrade::Containers::arrayView(array));
 }
 
 /**
@@ -86,7 +86,7 @@ set to @cpp 1 @ce if any value has that component NaN. If the range is empty,
 returns @cpp false @ce or a @ref BoolVector with no bits set.
 @see @ref isNan(T), @ref Constants::nan()
 */
-template<class T> inline auto isNan(Corrade::Containers::ArrayView<const T> range) -> decltype(isNan(std::declval<T>())) {
+template<class T> inline auto isNan(Corrade::Containers::StridedArrayView1D<const T> range) -> decltype(isNan(std::declval<T>())) {
     if(range.empty()) return {};
 
     /* For scalars, this loop exits once any value is infinity. For vectors
@@ -103,21 +103,21 @@ template<class T> inline auto isNan(Corrade::Containers::ArrayView<const T> rang
 
 /** @overload */
 template<class T> inline auto isNan(std::initializer_list<T> list) -> decltype(isInf(std::declval<T>())) {
-    return isNan(Corrade::Containers::arrayView(list.begin(), list.size()));
+    return isNan<T>(Corrade::Containers::arrayView(list.begin(), list.size()));
 }
 
 /** @overload */
 template<class T, std::size_t size> inline bool isNan(const T(&array)[size]) {
-    return isNan(Corrade::Containers::arrayView(array));
+    return isNan<T>(Corrade::Containers::arrayView(array));
 }
 
 namespace Implementation {
     /* Non-floating-point types, the first is a non-NaN for sure */
-    template<class T, bool any> constexpr std::pair<std::size_t, T> firstNonNan(Corrade::Containers::ArrayView<const T> range, std::false_type, std::integral_constant<bool, any>) {
+    template<class T, bool any> constexpr std::pair<std::size_t, T> firstNonNan(Corrade::Containers::StridedArrayView1D<const T> range, std::false_type, std::integral_constant<bool, any>) {
         return {0, range.front()};
     }
     /* Floating-point scalars, return the first that's not NaN */
-    template<class T> inline std::pair<std::size_t, T> firstNonNan(Corrade::Containers::ArrayView<const T> range, std::true_type, std::false_type) {
+    template<class T> inline std::pair<std::size_t, T> firstNonNan(Corrade::Containers::StridedArrayView1D<const T> range, std::true_type, std::false_type) {
         /* Find the first non-NaN value to compare against. If all are NaN,
            return the last value so the following loop in min/max/minmax()
            doesn't even execute. */
@@ -132,7 +132,7 @@ namespace Implementation {
        apply the min/max/minmax operation. I expect the cases of heavily
        NaN-filled vectors (and thus the need to loop twice through most of the
        range) to be very rare, so this shouldn't be a problem. */
-    template<class T> inline std::pair<std::size_t, T> firstNonNan(Corrade::Containers::ArrayView<const T> range, std::true_type, std::true_type) {
+    template<class T> inline std::pair<std::size_t, T> firstNonNan(Corrade::Containers::StridedArrayView1D<const T> range, std::true_type, std::true_type) {
         T out = range[0];
         std::size_t firstValid = 0;
         for(std::size_t i = 1; i != range.size(); ++i) {
@@ -150,9 +150,9 @@ namespace Implementation {
 
 If the range is empty, returns default-constructed value. <em>NaN</em>s are
 ignored, unless the range is all <em>NaN</em>s.
-@see @ref min(T, T), @ref isNan(Corrade::Containers::ArrayView<const T>)
+@see @ref min(T, T), @ref isNan(Corrade::Containers::StridedArrayView1D<const T>)
 */
-template<class T> inline T min(Corrade::Containers::ArrayView<const T> range) {
+template<class T> inline T min(Corrade::Containers::StridedArrayView1D<const T> range) {
     if(range.empty()) return {};
 
     std::pair<std::size_t, T> iOut = Implementation::firstNonNan(range, IsFloatingPoint<T>{}, IsVector<T>{});
@@ -164,12 +164,12 @@ template<class T> inline T min(Corrade::Containers::ArrayView<const T> range) {
 
 /** @overload */
 template<class T> inline T min(std::initializer_list<T> list) {
-    return min(Corrade::Containers::arrayView(list.begin(), list.size()));
+    return min<T>(Corrade::Containers::arrayView(list.begin(), list.size()));
 }
 
 /** @overload */
 template<class T, std::size_t size> inline T min(const T(&array)[size]) {
-    return min(Corrade::Containers::arrayView(array));
+    return min<T>(Corrade::Containers::arrayView(array));
 }
 
 /**
@@ -177,9 +177,9 @@ template<class T, std::size_t size> inline T min(const T(&array)[size]) {
 
 If the range is empty, returns default-constructed value. <em>NaN</em>s are
 ignored, unless the range is all <em>NaN</em>s.
-@see @ref max(T, T), @ref isNan(Corrade::Containers::ArrayView<const T>)
+@see @ref max(T, T), @ref isNan(Corrade::Containers::StridedArrayView1D<const T>)
 */
-template<class T> inline T max(Corrade::Containers::ArrayView<const T> range) {
+template<class T> inline T max(Corrade::Containers::StridedArrayView1D<const T> range) {
     if(range.empty()) return {};
 
     std::pair<std::size_t, T> iOut = Implementation::firstNonNan(range, IsFloatingPoint<T>{}, IsVector<T>{});
@@ -191,12 +191,12 @@ template<class T> inline T max(Corrade::Containers::ArrayView<const T> range) {
 
 /** @overload */
 template<class T> inline T max(std::initializer_list<T> list) {
-    return max(Corrade::Containers::arrayView(list.begin(), list.size()));
+    return max<T>(Corrade::Containers::arrayView(list.begin(), list.size()));
 }
 
 /** @overload */
 template<class T, std::size_t size> inline T max(const T(&array)[size]) {
-    return max(Corrade::Containers::arrayView(array));
+    return max<T>(Corrade::Containers::arrayView(array));
 }
 
 namespace Implementation {
@@ -219,9 +219,9 @@ If the range is empty, returns default-constructed values. <em>NaN</em>s are
 ignored, unless the range is all <em>NaN</em>s.
 @see @ref minmax(T, T),
     @ref Range::Range(const std::pair<VectorType, VectorType>&),
-    @ref isNan(Corrade::Containers::ArrayView<const T>)
+    @ref isNan(Corrade::Containers::StridedArrayView1D<const T>)
 */
-template<class T> inline std::pair<T, T> minmax(Corrade::Containers::ArrayView<const T> range) {
+template<class T> inline std::pair<T, T> minmax(Corrade::Containers::StridedArrayView1D<const T> range) {
     if(range.empty()) return {};
 
     std::pair<std::size_t, T> iOut = Implementation::firstNonNan(range, IsFloatingPoint<T>{}, IsVector<T>{});
@@ -234,12 +234,12 @@ template<class T> inline std::pair<T, T> minmax(Corrade::Containers::ArrayView<c
 
 /** @overload */
 template<class T> inline std::pair<T, T> minmax(std::initializer_list<T> list) {
-    return minmax(Corrade::Containers::arrayView(list.begin(), list.size()));
+    return minmax<T>(Corrade::Containers::arrayView(list.begin(), list.size()));
 }
 
 /** @overload */
 template<class T, std::size_t size> inline std::pair<T, T> minmax(const T(&array)[size]) {
-    return minmax(Corrade::Containers::arrayView(array));
+    return minmax<T>(Corrade::Containers::arrayView(array));
 }
 
 /*@}*/
