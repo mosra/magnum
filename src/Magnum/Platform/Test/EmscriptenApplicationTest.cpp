@@ -54,7 +54,6 @@ struct EmscriptenApplicationTest: Platform::Application {
         GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
         swapBuffers();
-        redraw();
     }
 
     #ifdef MAGNUM_TARGET_GL
