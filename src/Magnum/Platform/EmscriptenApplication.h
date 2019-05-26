@@ -513,10 +513,16 @@ class EmscriptenApplication {
 
 CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::Flags)
 
+#ifdef MAGNUM_TARGET_GL
 /**
 @brief WebGL context configuration
 
 The created context is always with a double-buffered OpenGL context.
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+
 @see @ref EmscriptenApplication(), @ref Configuration, @ref create(),
     @ref tryCreate()
 */
@@ -713,6 +719,7 @@ class EmscriptenApplication::GLConfiguration {
 };
 
 CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::GLConfiguration::Flags)
+#endif
 
 /**
 @brief Configuration

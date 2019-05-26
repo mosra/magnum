@@ -477,8 +477,10 @@ void EmscriptenApplication::mouseMoveEvent(MouseMoveEvent&) {}
 void EmscriptenApplication::mouseScrollEvent(MouseScrollEvent&) {}
 void EmscriptenApplication::textInputEvent(TextInputEvent&) {}
 
+#ifdef MAGNUM_TARGET_GL
 EmscriptenApplication::GLConfiguration::GLConfiguration():
     _colorBufferSize{8, 8, 8, 0}, _depthBufferSize{24}, _stencilBufferSize{0} {}
+#endif
 
 void EmscriptenApplication::mainLoopIteration() {
     /* The resize event is not fired on window resize, so poll for the canvas
