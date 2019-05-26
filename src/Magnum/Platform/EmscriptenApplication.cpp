@@ -356,33 +356,37 @@ void EmscriptenApplication::swapBuffers() {
 }
 
 void EmscriptenApplication::setupCallbacks() {
+    /* Since 1.38.17 all emscripten_set_*_callback() are macros. Play it safe
+       and wrap all lambdas in () to avoid the preprocessor getting upset when
+       seeing commas */
+
     emscripten_set_mousedown_callback("#canvas", this, false,
-        [](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
+        ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
             MouseEvent e{event};
             reinterpret_cast<EmscriptenApplication*>(userData)->mousePressEvent(e);
             return e.isAccepted();
-        });
+        }));
 
     emscripten_set_mouseup_callback("#canvas", this, false,
-        [](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
+        ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
             MouseEvent e{event};
             reinterpret_cast<EmscriptenApplication*>(userData)->mouseReleaseEvent(e);
             return e.isAccepted();
-        });
+        }));
 
     emscripten_set_mousemove_callback("#canvas", this, false,
-        [](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
+        ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
             MouseMoveEvent e{event};
             reinterpret_cast<EmscriptenApplication*>(userData)->mouseMoveEvent(e);
             return e.isAccepted();
-        });
+        }));
 
     emscripten_set_wheel_callback("#canvas", this, false,
-        [](int, const EmscriptenWheelEvent* event, void* userData) -> Int {
+        ([](int, const EmscriptenWheelEvent* event, void* userData) -> Int {
             MouseScrollEvent e{event};
             reinterpret_cast<EmscriptenApplication*>(userData)->mouseScrollEvent(e);
             return e.isAccepted();
-        });
+        }));
 
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wgnu-zero-variadic-macro-arguments"
@@ -428,7 +432,7 @@ void EmscriptenApplication::setupCallbacks() {
     /* keypress_callback does not fire for most of the keys and the modifiers
        don't seem to work, keydown on the other hand works fine for all */
     emscripten_set_keydown_callback(keyboardListeningElement, this, false,
-        [](int, const EmscriptenKeyboardEvent* event, void* userData) -> Int {
+        ([](int, const EmscriptenKeyboardEvent* event, void* userData) -> Int {
             EmscriptenApplication* app = reinterpret_cast<EmscriptenApplication*>(userData);
             if(app->isTextInputActive() && std::strlen(event->key) == 1) {
                 TextInputEvent e{{event->key, 1}};
@@ -438,14 +442,14 @@ void EmscriptenApplication::setupCallbacks() {
             KeyEvent e{event};
             app->keyPressEvent(e);
             return e.isAccepted();
-        });
+        }));
 
     emscripten_set_keyup_callback(keyboardListeningElement, this, false,
-        [](int, const EmscriptenKeyboardEvent* event, void* userData) -> Int {
+        ([](int, const EmscriptenKeyboardEvent* event, void* userData) -> Int {
             KeyEvent e{event};
             reinterpret_cast<EmscriptenApplication*>(userData)->keyReleaseEvent(e);
             return e.isAccepted();
-        });
+        }));
 
     #ifdef EMSCRIPTEN_EVENT_TARGET_DOCUMENT
     if(keyboardListeningElement != EMSCRIPTEN_EVENT_TARGET_DOCUMENT &&
