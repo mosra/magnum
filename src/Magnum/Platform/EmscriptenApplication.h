@@ -43,9 +43,12 @@
 #include "Magnum/Platform/Platform.h"
 
 #if defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)
+
+#ifndef DOXYGEN_GENERATING_OUTPUT
 struct EmscriptenKeyboardEvent;
 struct EmscriptenMouseEvent;
 struct EmscriptenWheelEvent;
+#endif
 
 namespace Magnum { namespace Platform {
 
