@@ -709,6 +709,8 @@ class EmscriptenApplication::GLConfiguration {
         Flags _flags;
 };
 
+CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::GLConfiguration::Flags)
+
 /**
 @brief Configuration
 
@@ -809,6 +811,8 @@ class EmscriptenApplication::Configuration {
         Vector2 _dpiScaling;
         WindowFlags _windowFlags;
 };
+
+CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::Configuration::WindowFlags)
 
 /**
 @brief Viewport event
@@ -970,6 +974,8 @@ class EmscriptenApplication::InputEvent {
         bool _accepted;
 };
 
+CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::InputEvent::Modifiers)
+
 /**
 @brief Mouse event
 
@@ -1056,6 +1062,8 @@ class EmscriptenApplication::MouseMoveEvent: public EmscriptenApplication::Input
 
         const EmscriptenMouseEvent* const _event;
 };
+
+CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::MouseMoveEvent::Buttons)
 
 /**
 @brief Mouse scroll event
@@ -1288,8 +1296,6 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
 
         const EmscriptenKeyboardEvent* const _event;
 };
-
-CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::MouseMoveEvent::Buttons)
 
 /**
 @brief Text input event
