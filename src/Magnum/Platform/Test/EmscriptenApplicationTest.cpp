@@ -99,6 +99,9 @@ struct EmscriptenApplicationTest: Platform::Application {
         } else if(event.key() == KeyEvent::Key::Esc) {
             Debug{} << "stopping text input";
             stopTextInput();
+        } else if(event.key() == KeyEvent::Key::F) {
+            Debug{} << "toggling fullscreen";
+            setContainerCssClass((_fullscreen ^= true) ? "fullsize" : "");
         }
 
         event.setAccepted();
@@ -125,6 +128,8 @@ struct EmscriptenApplicationTest: Platform::Application {
         event.setAccepted();
     }
 
+    private:
+        bool _fullscreen = false;
 };
 
 }}}

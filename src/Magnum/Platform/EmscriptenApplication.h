@@ -448,6 +448,18 @@ class EmscriptenApplication {
         Vector2 devicePixelRatio() const { return _devicePixelRatio; }
 
         /**
+         * @brief Set container CSS class
+         *
+         * Assigns given CSS class to the @cb{.html} <div class="container"> @ce.
+         * Useful for example to change aspect ratio of the view or stretch it
+         * to cover the full page. See @ref platforms-html5-layout for more
+         * information about possible values. Note that this replaces any
+         * existing class, to set multiple classes separate them with
+         * whitespace.
+         */
+        void setContainerCssClass(const std::string& cssClass);
+
+        /**
          * @brief Swap buffers
          *
          * Paints currently rendered framebuffer on screen.

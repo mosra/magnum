@@ -382,6 +382,13 @@ Vector2i EmscriptenApplication::framebufferSize() const {
 }
 #endif
 
+void EmscriptenApplication::setContainerCssClass(const std::string& cssClass) {
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
+    EM_ASM_({document.getElementById('container').className = AsciiToString($0);}, cssClass.data());
+    #pragma GCC diagnostic pop
+}
+
 void EmscriptenApplication::swapBuffers() {
     emscripten_webgl_commit_frame();
 }

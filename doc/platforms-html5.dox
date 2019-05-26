@@ -329,7 +329,8 @@ the @cb{.css} div#sizer @ce will center it, following the canvas width. If you
 need more advanced styling, check out [m.css](http://mcss.mosra.cz).
 
 @note It's also possible to modify the container CSS classes from the C++ side
-    using @ref Platform::Sdl2Application::setContainerCssClass().
+    using @ref Platform::EmscriptenApplication::setContainerCssClass() /
+    @ref Platform::Sdl2Application::setContainerCssClass().
 
 @section platforms-html5-events Controlling event behavior
 
