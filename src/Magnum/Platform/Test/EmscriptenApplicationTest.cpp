@@ -39,6 +39,12 @@ struct EmscriptenApplicationTest: Platform::Application {
             //, GLConfiguration{}.setFlags({})
         } {
 
+        Debug{} << "window size" << windowSize()
+            #ifdef MAGNUM_TARGET_GL
+            << framebufferSize()
+            #endif
+            << dpiScaling() << devicePixelRatio();
+
         /* This uses a VAO on WebGL 1, so it will crash in case GL flags are
            missing EnableExtensionsByDefault (uncomment above) */
         GL::Mesh mesh;
@@ -54,7 +60,7 @@ struct EmscriptenApplicationTest: Platform::Application {
     #ifdef MAGNUM_TARGET_GL
     /* For testing HiDPI resize events */
     void viewportEvent(ViewportEvent& event) override {
-        Debug{} << "viewport event" << event.windowSize() << event.framebufferSize() << event.dpiScaling();
+        Debug{} << "viewport event" << event.windowSize() << event.framebufferSize() << event.dpiScaling() << event.devicePixelRatio();
     }
     #endif
 

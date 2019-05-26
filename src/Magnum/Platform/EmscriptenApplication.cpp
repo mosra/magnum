@@ -238,10 +238,13 @@ Vector2 EmscriptenApplication::dpiScaling(const Configuration& configuration) co
         return configuration.dpiScaling();
     }
 
-    /* Take device pixel ratio on Emscripten */
-    const Vector2 dpiScaling{Implementation::emscriptenDpiScaling()};
-    Debug{verbose} << "Platform::EmscriptenApplication: physical DPI scaling" << dpiScaling.x();
-    return dpiScaling;
+    /* Unlike Sdl2Application, not taking device pixel ratio into account
+       because here we have window size different from framebuffer size.
+       However, in order to actually calculate the framebuffer size we need to
+       query the device pixel ratio. That's done in tryCreate() below, here it
+       is returning 1.0 to be consistent with behavior on other platforms where
+       it's either windowSize == 1 */
+    return Vector2{1.0f};
 }
 
 bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
@@ -250,19 +253,14 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
         return tryCreate(configuration, GLConfiguration{});
     }
     #endif
-    if(configuration.windowFlags() & Configuration::WindowFlag::Resizable) {
-        _flags |= Flag::Resizable;
-    }
 
     _dpiScaling = dpiScaling(configuration);
+    if(!configuration.size().isZero()) {
+        const Vector2i scaledCanvasSize = configuration.size()*_dpiScaling;
+        emscripten_set_canvas_element_size("#canvas", scaledCanvasSize.x(), scaledCanvasSize.y());
+    }
 
-    /* Resize window and match it to the selected format */
-    const Vector2i canvasSizei{windowSize()};
-    _lastKnownCanvasSize = canvasSizei;
-    const Vector2i size = _dpiScaling*canvasSizei;
-    emscripten_set_canvas_element_size("#canvas", size.x(), size.y());
-
-    setupCallbacks();
+    setupCallbacks(!!(configuration.windowFlags() & Configuration::WindowFlag::Resizable));
 
     return true;
 }
@@ -270,11 +268,6 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
 #ifdef MAGNUM_TARGET_GL
 bool EmscriptenApplication::tryCreate(const Configuration& configuration, const GLConfiguration& glConfiguration) {
     CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::EmscriptenApplication::tryCreate(): window with OpenGL context already created", false);
-    if(configuration.windowFlags() & Configuration::WindowFlag::Resizable) {
-        _flags |= Flag::Resizable;
-    }
-
-    _dpiScaling = dpiScaling(configuration);
 
     /* Create emscripten WebGL context */
     EmscriptenWebGLContextAttributes attrs;
@@ -313,11 +306,34 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     #error unsupported OpenGL ES version
     #endif
 
-    /* Resize window and match it to the selected format */
-    const Vector2i canvasSizei{windowSize()};
-    _lastKnownCanvasSize = canvasSizei;
-    const Vector2i size = _dpiScaling*canvasSizei;
-    emscripten_set_canvas_element_size("#canvas", size.x(), size.y());
+    std::ostream* verbose = _verboseLog ? Debug::output() : nullptr;
+
+    /* Fetch device pixel ratio. Together with DPI scaling (which is 1.0 by
+       default) this will define framebuffer size. See class docs for why is it
+       done like that. */
+    _devicePixelRatio = Vector2{Float(emscripten_get_device_pixel_ratio())};
+    Debug{verbose} << "Platform::EmscriptenApplication: device pixel ratio" << _devicePixelRatio.x();
+
+    /* Get CSS canvas size and cache it. This is used later to detect canvas
+       resizes in emscripten_set_resize_callback() and fire viewport events,
+       because browsers are only required to fire resize events on the window
+       and not on particular DOM elements. */
+    _lastKnownCanvasSize = windowSize();
+
+    /* By default Emscripten creates a 300x150 canvas. That's so freaking
+       random I'm getting mad. Use the real (CSS pixels) canvas size instead,
+       if the size is not hardcoded from the configuration. This is then
+       multiplied by the DPI scaling. */
+    Vector2i canvasSize;
+    if(!configuration.size().isZero()) {
+        canvasSize = configuration.size();
+    } else {
+        canvasSize = _lastKnownCanvasSize;
+        Debug{verbose} << "Platform::EmscriptenApplication::tryCreate(): autodetected canvas size" << canvasSize;
+    }
+    _dpiScaling = dpiScaling(configuration);
+    const Vector2i scaledCanvasSize = canvasSize*_dpiScaling*_devicePixelRatio;
+    emscripten_set_canvas_element_size("#canvas", scaledCanvasSize.x(), scaledCanvasSize.y());
 
     /* Create surface and context */
     EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context =
@@ -334,7 +350,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     CORRADE_INTERNAL_ASSERT_OUTPUT(
         emscripten_webgl_make_context_current(context) == EMSCRIPTEN_RESULT_SUCCESS);
 
-    setupCallbacks();
+    setupCallbacks(!!(configuration.windowFlags() & Configuration::WindowFlag::Resizable));
 
     /* Return true if the initialization succeeds */
     return _context->tryCreate();
@@ -342,19 +358,70 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
 #endif
 
 Vector2i EmscriptenApplication::windowSize() const {
-    double w, h;
-    emscripten_get_element_css_size("#canvas", &w, &h);
-    return {Int(w), Int(h)};
+    Vector2d size;
+    /* Emscripten 1.38.27 changed to generic CSS selectors from element IDs
+       depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1 being
+       set (which we can't detect at compile time). Fortunately, using #canvas
+       works the same way both in the previous versions and the current one.
+       Unfortunately, this is also the only value that works the same way for
+       both. Further details at
+       https://github.com/emscripten-core/emscripten/pull/7977 */
+    /** @todo don't hardcode "#canvas" everywhere, make it configurable from outside */
+    emscripten_get_element_css_size("#canvas", &size.x(), &size.y());
+    return Vector2i{Math::round(size)};
 }
+
+#ifdef MAGNUM_TARGET_GL
+Vector2i EmscriptenApplication::framebufferSize() const {
+    Vector2i size;
+    /* See above why hardcoded */
+    emscripten_get_canvas_element_size("#canvas", &size.x(), &size.y());
+    return size;
+}
+#endif
 
 void EmscriptenApplication::swapBuffers() {
     emscripten_webgl_commit_frame();
 }
 
-void EmscriptenApplication::setupCallbacks() {
+void EmscriptenApplication::setupCallbacks(bool resizable) {
     /* Since 1.38.17 all emscripten_set_*_callback() are macros. Play it safe
        and wrap all lambdas in () to avoid the preprocessor getting upset when
        seeing commas */
+
+    /* Set up the resize callback. Because browsers are only required to fire
+       resize events on the window and not on particular DOM elements, we need
+       to cache the last known canvas size and fire the event only if that
+       changes. Better than polling for this change in every frame like
+       Sdl2Application does, but still not ideal. */
+    if(resizable) {
+        #ifdef EMSCRIPTEN_EVENT_TARGET_WINDOW
+        const char* target = EMSCRIPTEN_EVENT_TARGET_WINDOW;
+        #else
+        const char* target = "#window";
+        #endif
+        auto cb = [](int, const EmscriptenUiEvent*, void* userData) -> Int {
+            EmscriptenApplication& app = *static_cast<EmscriptenApplication*>(userData);
+            /* See windowSize() for why we hardcode "#canvas" here */
+            const Vector2i canvasSize{app.windowSize()};
+            if(canvasSize != app._lastKnownCanvasSize) {
+                app._lastKnownCanvasSize = canvasSize;
+                const Vector2i size = canvasSize*app._dpiScaling*app._devicePixelRatio;
+                emscripten_set_canvas_element_size("#canvas", size.x(), size.y());
+                ViewportEvent e{canvasSize,
+                    #ifdef MAGNUM_TARGET_GL
+                    app.framebufferSize(),
+                    #endif
+                    app._dpiScaling, app._devicePixelRatio};
+                app.viewportEvent(e);
+                app._flags |= Flag::Redraw;
+            }
+            return false; /** @todo what does ignoring a resize event mean? */
+        };
+        emscripten_set_resize_callback(target, this, false, cb);
+    }
+
+    /* See windowSize() for why we hardcode "#canvas" here */
 
     emscripten_set_mousedown_callback("#canvas", this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
@@ -483,38 +550,10 @@ EmscriptenApplication::GLConfiguration::GLConfiguration():
 #endif
 
 void EmscriptenApplication::mainLoopIteration() {
-    /* The resize event is not fired on window resize, so poll for the canvas
-       size here. But only if the window was requested to be resizable, to
-       avoid resizing the canvas when the user doesn't want that. Related
-       issue: https://github.com/kripken/emscripten/issues/1731
+    if(!(_flags & Flag::Redraw)) return;
 
-       As this is caused by the DOM3 events spec only requiring browsers to
-       fire the resize event for `window` not generally for all DOM elemenets,
-       it also applies to `emscripten_set_resize_callback`. */
-    if(_flags & Flag::Resizable) {
-        /* Emscripten 1.38.27 changed to generic CSS selectors from element
-           IDs depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1
-           being set (which we can't detect at compile time). See above for the
-           reason why we hardcode #canvas here. */
-        const Vector2i canvasSizei{windowSize()};
-        if(canvasSizei != _lastKnownCanvasSize) {
-            _lastKnownCanvasSize = canvasSizei;
-            const Vector2i size = _dpiScaling*canvasSizei;
-            emscripten_set_canvas_element_size("#canvas", size.x(), size.y());
-            #ifdef MAGNUM_TARGET_GL
-            ViewportEvent e{size, size, _dpiScaling};
-            #else
-            ViewportEvent e{size, _dpiScaling};
-            #endif
-            viewportEvent(e);
-            _flags |= Flag::Redraw;
-        }
-    }
-
-    if(_flags & Flag::Redraw) {
-        _flags &= ~Flag::Redraw;
-        drawEvent();
-    }
+    _flags &= ~Flag::Redraw;
+    drawEvent();
 }
 
 void EmscriptenApplication::exec() {

@@ -135,8 +135,75 @@ MAGNUM_EMSCRIPTENAPPLICATION_MAIN(MyApplication)
 @endcode
 
 If no other application header is included, this class is also aliased to
-@cpp Platform::Application @ce and the macro is aliased to @cpp MAGNUM_APPLICATION_MAIN() @ce
-to simplify porting.
+@cpp Platform::Application @ce and the macro is aliased to
+@cpp MAGNUM_APPLICATION_MAIN() @ce to simplify porting.
+
+@section Platform-EmscriptenApplication-browser Browser-specific behavior
+
+Leaving a default (zero) size in @ref Configuration will cause the app to use a
+size that corresponds to *CSS pixel size* of the @cb{.html} <canvas> @ce
+element. The size is then multiplied by DPI scaling value, see
+@ref Platform-EmscriptenApplication-dpi "DPI awareness" below for details.
+
+If you enable @ref Configuration::WindowFlag::Resizable, the canvas will be
+resized when size of the canvas changes and you get @ref viewportEvent(). If
+the flag is not enabled, no canvas resizing is performed.
+
+Unlike desktop platforms, the browser has no concept of application exit code,
+so the return value of @ref exec() is always @cpp 0 @ce and whatever is passed
+to @ref exit(int) is ignored.
+
+@section Platform-EmscriptenApplication-webgl WebGL-specific behavior
+
+While WebGL itself requires all extensions to be
+[enabled explicitly](https://developer.mozilla.org/en-US/docs/Web/API/WebGL_API/Using_Extensions),
+by default Emscripten enables all supported extensions that don't have a
+negative effect on performance to simplify porting. This is controlled by
+@ref GLConfiguration::Flag::EnableExtensionsByDefault and the flag is enabled
+by default. When disabled, you are expected to enable desired extensions
+manually using @m_class{m-doc-external} [emscripten_webgl_enable_extension()](https://emscripten.org/docs/api_reference/html5.h.html#c.emscripten_webgl_enable_extension).
+
+@attention Because @ref GLConfiguration::Flag::EnableExtensionsByDefault is
+    among default flags, calling @ref GLConfiguration::setFlags() will reset
+    this default, causing crashes at runtime when extension functionality is
+    used. To be safe, you might want to use @ref GLConfiguration::addFlags()
+    and @ref GLConfiguration::clearFlags() instead.
+
+@section Platform-EmscriptenApplication-dpi DPI awareness
+
+Since this application targets only web browsers, DPI handling isn't as general
+as in case of @ref Sdl2Application or @ref GlfwApplication. See
+@ref Platform-Sdl2Application-dpi "Sdl2Application DPI awareness" documentation
+for a guide covering all platform differences.
+
+For this application in particular, @ref windowSize() can be different than
+@ref framebufferSize() on HiDPI displays --- which is different from
+@ref Sdl2Application behavior on Emscripten. By default, @ref dpiScaling() is
+@cpp 1.0f @ce in both dimensions but it can be overriden using custom DPI
+scaling --- the `--magnum-dpi-scaling` command-line options are supported the
+same way as in @ref Sdl2Application, only in the form of URL GET parameters,
+similarly to all other @ref platforms-html5-environment "command-line options".
+
+Having @ref dpiScaling() set to @cpp 1.0f @ce is done in order to have
+consistent behavior with other platforms --- platforms have either
+@ref windowSize() equivalent to @ref framebufferSize() and then
+@ref dpiScaling() specifies the UI scale (Windows/Linux/Android-like) or
+@ref windowSize() different from @ref framebufferSize() (which defines the UI
+scale) and then @ref dpiScaling() is @cpp 1.0f @ce (macOS/iOS-like), so this
+is the second case. The actual device pixel ratio is expressed in the ratio of
+@ref windowSize() and @ref framebufferSize() so crossplatform code shouldn't
+have a need to query it, however for completeness it's exposed in
+@ref devicePixelRatio() and @ref ViewportEvent::devicePixelRatio().
+
+Setting custom DPI scaling will affect @ref framebufferSize()
+(larger values making the canvas backing framebuffer larger and vice versa),
+@ref windowSize() will stay unaffected as it's controlled by the CSS, and
+@ref devicePixelRatio() will stay the same as well as it's defined by the
+browser.
+
+To avoid confusion, documentation of all @ref EmscriptenApplication APIs always
+mentions only the web case, consult equivalent APIs in @ref Sdl2Application or
+@ref GlfwApplication for behavior in those implementations.
 */
 class EmscriptenApplication {
     public:
@@ -319,12 +386,30 @@ class EmscriptenApplication {
         /**
          * @brief Canvas size
          *
-         * Note that this method is named "windowSize" to be API compatible with
-         * Application implementations on other platforms.
-         *
-         * Window size to which all input event coordinates can be related.
+         * Canvas size to which all input event coordinates can be related.
+         * On HiDPI displays, canvas size can be different from
+         * @ref framebufferSize(). See @ref Platform-Sdl2Application-dpi for
+         * more information. Note that this method is named "window size" to be
+         * API-compatible with Application implementations on other platforms.
          */
         Vector2i windowSize() const;
+
+        #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
+        /**
+         * @brief Framebuffer size
+         *
+         * On HiDPI displays, framebuffer size can be different from
+         * @ref windowSize(). See @ref Platform-EmscriptenApplication-dpi for
+         * more information.
+         *
+         * @note This function is available only if Magnum is compiled with
+         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
+         *      @ref building-features for more information.
+         *
+         * @see @ref Sdl2Application::framebufferSize()
+         */
+        Vector2i framebufferSize() const;
+        #endif
 
         /**
          * @brief DPI scaling
@@ -332,9 +417,10 @@ class EmscriptenApplication {
          * How the content should be scaled relative to system defaults for
          * given @ref windowSize(). If a window is not created yet, returns
          * zero vector, use @ref dpiScaling(const Configuration&) const for
-         * calculating a value independently. See @ref Platform-Sdl2Application-dpi
-         * for more information.
-         * @see @ref Sdl2Application::dpiScaling(), @ref framebufferSize()
+         * calculating a value depending on user configuration. By default set
+         * to @cpp 1.0 @ce, see @ref Platform-EmscriptenApplication-dpi for
+         * more information.
+         * @see @ref framebufferSize(), @ref devicePixelRatio()
          */
         Vector2 dpiScaling() const { return _dpiScaling; }
 
@@ -343,27 +429,21 @@ class EmscriptenApplication {
          *
          * Calculates DPI scaling that would be used when creating a window
          * with given @p configuration. Takes into account DPI scaling policy
-         * and custom scaling specified on the command-line. See
-         * @ref Platform-Sdl2Application-dpi for more information.
+         * and custom scaling specified via URL GET parameters. See
+         * @ref Platform-EmscriptenApplication-dpi for more information.
+         * @ref devicePixelRatio()
          */
         Vector2 dpiScaling(const Configuration& configuration) const;
 
-        #if defined(MAGNUM_TARGET_GL) || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
-         * @brief Framebuffer size
+         * @brief Device pixel ratio
          *
-         * Always the same as @ref windowSize() on
-         * @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten". See
-         * @ref Platform-Sdl2Application-dpi for more information.
-         *
-         * @note This function is available only if Magnum is compiled with
-         *      @ref MAGNUM_TARGET_GL enabled (done by default). See
-         *      @ref building-features for more information.
-         *
-         * @see @ref Sdl2Application::framebufferSize()
+         * Crossplatform code shouldn't need to query this value because the
+         * pixel ratio is already expressed in the ratio of @ref windowSize()
+         * and @ref framebufferSize() values.
+         * @see @ref dpiScaling()
          */
-        Vector2i framebufferSize() const { return windowSize(); }
-        #endif
+        Vector2 devicePixelRatio() const { return _devicePixelRatio; }
 
     protected:
         /**
@@ -488,16 +568,16 @@ class EmscriptenApplication {
     private:
         enum class Flag: UnsignedByte {
             Redraw = 1 << 0,
-            Resizable = 1 << 1,
-            TextInputActive = 1 << 2,
+            TextInputActive = 1 << 1
         };
         typedef Containers::EnumSet<Flag> Flags;
 
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
-        void setupCallbacks();
+        /* Sorry, but can't use Configuration::WindowFlags here :( */
+        void setupCallbacks(bool resizable);
 
-        Vector2 _dpiScaling;
+        Vector2 _devicePixelRatio, _dpiScaling;
         Vector2i _lastKnownCanvasSize;
 
         Flags _flags;
@@ -783,12 +863,11 @@ class EmscriptenApplication::Configuration {
          * @param dpiScaling        Custom DPI scaling value
          *
          * Default is a zero vector, meaning a value that matches the display
-         * or canvas size is autodetected. See @ref Platform-Sdl2Application-dpi
-         * for more information.
-         * When @p dpiScaling is not a zero vector, this function sets the DPI
-         * scaling directly. The resulting @ref EmscriptenApplication::windowSize()
-         * is @cpp size*dpiScaling @ce and @ref EmscriptenApplication::dpiScaling()
-         * is @p dpiScaling.
+         * or canvas size is autodetected. See
+         * @ref Platform-EmscriptenApplication-dpi for more information. When
+         * @p dpiScaling is not a zero vector, this function sets the DPI
+         * scaling directly. The resulting @ref windowSize() is
+         * @cpp size*dpiScaling @ce and @ref dpiScaling() is @p dpiScaling.
          */
         Configuration& setSize(const Vector2i& size, const Vector2& dpiScaling = {}) {
             _size = size;
@@ -800,8 +879,8 @@ class EmscriptenApplication::Configuration {
          * @brief Custom DPI scaling
          *
          * If zero, the devices pixel ratio has a priority over this value.
-         * The `--magnum-dpi-scaling` command-line option has a priority
-         * over any application-set value.
+         * The `--magnum-dpi-scaling` option (specified via URL GET parameters)
+         * has a priority over any application-set value.
          * @see @ref setSize(const Vector2i&, const Vector2&)
          */
         Vector2 dpiScaling() const { return _dpiScaling; }
@@ -850,11 +929,11 @@ class EmscriptenApplication::ViewportEvent {
         /**
          * @brief Canvas size
          *
-         * Note that this method is named "windowSize" to be API compatible with
-         * Application implementations on other platforms.
-         *
-         * Equivalent to @ref framebufferSize(). See @ref Platform-Sdl2Application-dpi
-         * for more information.
+         * On HiDPI displays, window size can be different from
+         * @ref framebufferSize(). See @ref Platform-EmscriptenApplication-dpi
+         * for more information. Note that this method is named "window size"
+         * to be API-compatible with Application implementations on other
+         * platforms.
          * @see @ref EmscriptenApplication::windowSize()
          */
         Vector2i windowSize() const { return _windowSize; }
@@ -863,8 +942,9 @@ class EmscriptenApplication::ViewportEvent {
         /**
          * @brief Framebuffer size
          *
-         * Equivalent to @ref windowSize(). See
-         * @ref Platform-Sdl2Application-dpi for more information.
+         * On HiDPI displays, framebuffer size can be different from
+         * @ref windowSize(). See @ref Platform-EmscriptenApplication-dpi for
+         * more information.
          *
          * @note This function is available only if Magnum is compiled with
          *      @ref MAGNUM_TARGET_GL enabled (done by default). See
@@ -878,35 +958,47 @@ class EmscriptenApplication::ViewportEvent {
         /**
          * @brief DPI scaling
          *
-         * On some platforms moving an app between displays can result in DPI
-         * scaling value being changed in tandem with a canvas/framebuffer
-         * size. Simply resizing a canvas doesn't change the DPI scaling value.
-         * See @ref Platform-Sdl2Application-dpi for more information.
+         * On some platforms moving a browser window between displays can
+         * result in DPI scaling value being changed in tandem with a
+         * canvas/framebuffer size. Simply resizing the canvas doesn't change
+         * the DPI scaling value. See @ref Platform-EmscriptenApplication-dpi
+         * for more information.
          * @see @ref EmscriptenApplication::dpiScaling()
          */
         Vector2 dpiScaling() const { return _dpiScaling; }
 
+        /**
+         * @brief Device pixel ratio
+         *
+         * On some platforms moving a browser window between displays can
+         * result in device pixel ratio value being changed. Crossplatform code
+         * shouldn't need to query this value because the ratio is already
+         * expressed in the ratio of @ref windowSize() and @ref framebufferSize()
+         * values. See @ref Platform-EmscriptenApplication-dpi for more
+         * information.
+         * @see @ref EmscriptenApplication::devicePixelRatio()
+         */
+        Vector2 devicePixelRatio() const { return _devicePixelRatio; }
+
     private:
         friend EmscriptenApplication;
 
-        explicit ViewportEvent(
-            const Vector2i& windowSize,
+        explicit ViewportEvent(const Vector2i& windowSize,
             #ifdef MAGNUM_TARGET_GL
             const Vector2i& framebufferSize,
             #endif
-            const Vector2& dpiScaling):
+            const Vector2& dpiScaling, const Vector2& devicePixelRatio):
                 _windowSize{windowSize},
                 #ifdef MAGNUM_TARGET_GL
                 _framebufferSize{framebufferSize},
                 #endif
-                _dpiScaling{dpiScaling} {}
+                _dpiScaling{dpiScaling}, _devicePixelRatio{devicePixelRatio} {}
 
         const Vector2i _windowSize;
         #ifdef MAGNUM_TARGET_GL
         const Vector2i _framebufferSize;
         #endif
-
-        const Vector2 _dpiScaling;
+        const Vector2 _dpiScaling, _devicePixelRatio;
 };
 
 /**

@@ -365,7 +365,12 @@ The default is depending on the platform:
     scaling, taken from [Window.getDevicePixelRatio()](https://developer.mozilla.org/en-US/docs/Web/API/Window/devicePixelRatio). The
     @ref windowSize() and @ref framebufferSize() is always the same,
     @ref dpiScaling() contains the queried DPI scaling value. The value can be
-    overriden using custom DPI scaling.
+    overriden using custom DPI scaling. Note that this is different from the
+    behavior in @ref EmscriptenApplication --- Emscripten's SDL implementation
+    has some additional emulation code that reports event coordinates in
+    framebuffer pixels instead of CSS pixels. See
+    @ref Platform-EmscriptenApplication-dpi "EmscriptenApplication DPI awareness docs"
+    for more information.
 
 If your application is saving and restoring window size, it's advisable to take
 @ref dpiScaling() into account:
