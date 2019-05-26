@@ -86,6 +86,19 @@ struct EmscriptenApplicationTest: Platform::Application {
         if(event.modifiers() & KeyEvent::Modifier::Alt) Debug{} << "Alt";
         if(event.modifiers() & KeyEvent::Modifier::Super) Debug{} << "Super";
     }
+
+    void keyReleaseEvent(KeyEvent& event) override {
+        if(event.key() != KeyEvent::Key::Unknown) {
+            Debug{} << "keyReleaseEvent(" << event.keyName().c_str() << "): ✓";
+        } else {
+            Debug{} << "keyReleaseEvent(" << event.keyName().c_str() << "): x";
+        }
+
+        if(event.modifiers() & KeyEvent::Modifier::Shift) Debug{} << "Shift";
+        if(event.modifiers() & KeyEvent::Modifier::Ctrl) Debug{} << "Ctrl";
+        if(event.modifiers() & KeyEvent::Modifier::Alt) Debug{} << "Alt";
+        if(event.modifiers() & KeyEvent::Modifier::Super) Debug{} << "Super";
+    }
 };
 
 }}}
