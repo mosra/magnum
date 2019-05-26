@@ -1843,8 +1843,6 @@ class Sdl2Application::InputEvent {
 @see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
 class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
-    friend Sdl2Application;
-
     public:
         /**
          * @brief Key
@@ -2053,6 +2051,8 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
         bool isRepeated() const { return _repeated; }
 
     private:
+        friend Sdl2Application;
+
         explicit KeyEvent(const SDL_Event& event, Key key, Modifiers modifiers, bool repeated): InputEvent{event}, _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
 
         const Key _key;
@@ -2067,8 +2067,6 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
     @ref mouseReleaseEvent()
 */
 class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
-    friend Sdl2Application;
-
     public:
         /**
          * @brief Mouse button
@@ -2110,6 +2108,8 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
+        friend Sdl2Application;
+
         explicit MouseEvent(const SDL_Event& event, Button button, const Vector2i& position
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             , Int clickCount
@@ -2135,8 +2135,6 @@ class Sdl2Application::MouseEvent: public Sdl2Application::InputEvent {
 @see @ref MouseEvent, @ref MouseScrollEvent, @ref mouseMoveEvent()
 */
 class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
-    friend Sdl2Application;
-
     public:
         /**
          * @brief Mouse button
@@ -2183,6 +2181,8 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
+        friend Sdl2Application;
+
         explicit MouseMoveEvent(const SDL_Event& event, const Vector2i& position, const Vector2i& relativePosition, Buttons buttons): InputEvent{event}, _position{position}, _relativePosition{relativePosition}, _buttons{buttons}, _modifiersLoaded{false} {}
 
         const Vector2i _position, _relativePosition;
@@ -2197,8 +2197,6 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
 @see @ref MouseEvent, @ref MouseMoveEvent, @ref mouseScrollEvent()
 */
 class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
-    friend Sdl2Application;
-
     public:
         /** @brief Scroll offset */
         Vector2 offset() const { return _offset; }
@@ -2218,6 +2216,8 @@ class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
         Modifiers modifiers();
 
     private:
+        friend Sdl2Application;
+
         explicit MouseScrollEvent(const SDL_Event& event, const Vector2& offset): InputEvent{event}, _offset{offset}, _positionLoaded{false}, _modifiersLoaded{false} {}
 
         const Vector2 _offset;
@@ -2234,8 +2234,6 @@ class Sdl2Application::MouseScrollEvent: public Sdl2Application::InputEvent {
 @see @ref multiGestureEvent()
 */
 class Sdl2Application::MultiGestureEvent {
-    friend Sdl2Application;
-
     public:
         /** @brief Copying is not allowed */
         MultiGestureEvent(const MultiGestureEvent&) = delete;
@@ -2295,6 +2293,8 @@ class Sdl2Application::MultiGestureEvent {
         const SDL_Event& event() const { return _event; }
 
     private:
+        friend Sdl2Application;
+
         explicit MultiGestureEvent(const SDL_Event& event, const Vector2& center, Float relativeRotation, Float relativeDistance, Int fingerCount): _event(event), _center{center}, _relativeRotation{relativeRotation}, _relativeDistance{relativeDistance}, _fingerCount{fingerCount}, _accepted{false} {}
 
         const SDL_Event& _event;
@@ -2311,8 +2311,6 @@ class Sdl2Application::MultiGestureEvent {
 @see @ref TextEditingEvent, @ref textInputEvent()
 */
 class Sdl2Application::TextInputEvent {
-    friend Sdl2Application;
-
     public:
         /** @brief Copying is not allowed */
         TextInputEvent(const TextInputEvent&) = delete;
@@ -2351,6 +2349,8 @@ class Sdl2Application::TextInputEvent {
         const SDL_Event& event() const { return _event; }
 
     private:
+        friend Sdl2Application;
+
         explicit TextInputEvent(const SDL_Event& event, Containers::ArrayView<const char> text): _event(event), _text{text}, _accepted{false} {}
 
         const SDL_Event& _event;
@@ -2364,8 +2364,6 @@ class Sdl2Application::TextInputEvent {
 @see @ref textEditingEvent()
 */
 class Sdl2Application::TextEditingEvent {
-    friend Sdl2Application;
-
     public:
         /** @brief Copying is not allowed */
         TextEditingEvent(const TextEditingEvent&) = delete;
@@ -2410,6 +2408,8 @@ class Sdl2Application::TextEditingEvent {
         const SDL_Event& event() const { return _event; }
 
     private:
+        friend Sdl2Application;
+
         explicit TextEditingEvent(const SDL_Event& event, Containers::ArrayView<const char> text, Int start, Int length): _event(event), _text{text}, _start{start}, _length{length}, _accepted{false} {}
 
         const SDL_Event& _event;

@@ -1268,8 +1268,6 @@ CORRADE_ENUMSET_OPERATORS(GlfwApplication::InputEvent::Modifiers)
 @see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
 class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
-    friend GlfwApplication;
-
     public:
         /**
          * @brief Key
@@ -1485,6 +1483,8 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
         bool isRepeated() const { return _repeated; }
 
     private:
+        friend GlfwApplication;
+
         explicit KeyEvent(Key key, Modifiers modifiers, bool repeated): _key{key}, _modifiers{modifiers}, _repeated{repeated} {}
 
         const Key _key;
@@ -1499,8 +1499,6 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
     @ref mouseReleaseEvent()
 */
 class GlfwApplication::MouseEvent: public GlfwApplication::InputEvent {
-    friend GlfwApplication;
-
     public:
         /**
          * @brief Mouse button
@@ -1531,6 +1529,8 @@ class GlfwApplication::MouseEvent: public GlfwApplication::InputEvent {
         Modifiers modifiers() const { return _modifiers; }
 
     private:
+        friend GlfwApplication;
+
         explicit MouseEvent(Button button, const Vector2i& position, Modifiers modifiers): _button{button}, _position{position}, _modifiers{modifiers} {}
 
         const Button _button;
@@ -1544,8 +1544,6 @@ class GlfwApplication::MouseEvent: public GlfwApplication::InputEvent {
 @see @ref MouseEvent, @ref MouseScrollEvent, @ref mouseMoveEvent()
 */
 class GlfwApplication::MouseMoveEvent: public GlfwApplication::InputEvent {
-    friend GlfwApplication;
-
     public:
         /**
          * @brief Mouse button
@@ -1583,6 +1581,8 @@ class GlfwApplication::MouseMoveEvent: public GlfwApplication::InputEvent {
         Modifiers modifiers();
 
     private:
+        friend GlfwApplication;
+
         explicit MouseMoveEvent(GLFWwindow* window, const Vector2i& position): _window{window}, _position{position} {}
 
         GLFWwindow* const _window;
@@ -1599,8 +1599,6 @@ CORRADE_ENUMSET_OPERATORS(GlfwApplication::MouseMoveEvent::Buttons)
 @see @ref MouseEvent, @ref MouseMoveEvent, @ref mouseScrollEvent()
 */
 class GlfwApplication::MouseScrollEvent: public GlfwApplication::InputEvent {
-    friend GlfwApplication;
-
     public:
         /** @brief Scroll offset */
         Vector2 offset() const { return _offset; }
@@ -1620,6 +1618,8 @@ class GlfwApplication::MouseScrollEvent: public GlfwApplication::InputEvent {
         Modifiers modifiers();
 
     private:
+        friend GlfwApplication;
+
         explicit MouseScrollEvent(GLFWwindow* window, const Vector2& offset): _window{window}, _offset{offset} {}
 
         GLFWwindow* const _window;
@@ -1634,8 +1634,6 @@ class GlfwApplication::MouseScrollEvent: public GlfwApplication::InputEvent {
 @see @ref textInputEvent()
 */
 class GlfwApplication::TextInputEvent {
-    friend GlfwApplication;
-
     public:
         /** @brief Copying is not allowed */
         TextInputEvent(const TextInputEvent&) = delete;
@@ -1666,6 +1664,8 @@ class GlfwApplication::TextInputEvent {
         Containers::ArrayView<const char> text() const { return _text; }
 
     private:
+        friend GlfwApplication;
+
         explicit TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
 
         const Containers::ArrayView<const char> _text;
