@@ -48,6 +48,7 @@
 struct EmscriptenKeyboardEvent;
 struct EmscriptenMouseEvent;
 struct EmscriptenWheelEvent;
+struct EmscriptenUiEvent;
 #endif
 
 namespace Magnum { namespace Platform {
@@ -980,20 +981,26 @@ class EmscriptenApplication::ViewportEvent {
          */
         Vector2 devicePixelRatio() const { return _devicePixelRatio; }
 
+        /** @brief Underlying Emscripten event */
+        const EmscriptenUiEvent& event() const { return _event; }
+
     private:
         friend EmscriptenApplication;
 
-        explicit ViewportEvent(const Vector2i& windowSize,
+        explicit ViewportEvent(const EmscriptenUiEvent& event,
+            const Vector2i& windowSize,
             #ifdef MAGNUM_TARGET_GL
             const Vector2i& framebufferSize,
             #endif
             const Vector2& dpiScaling, const Vector2& devicePixelRatio):
+                _event{event},
                 _windowSize{windowSize},
                 #ifdef MAGNUM_TARGET_GL
                 _framebufferSize{framebufferSize},
                 #endif
                 _dpiScaling{dpiScaling}, _devicePixelRatio{devicePixelRatio} {}
 
+        const EmscriptenUiEvent& _event;
         const Vector2i _windowSize;
         #ifdef MAGNUM_TARGET_GL
         const Vector2i _framebufferSize;
@@ -1115,12 +1122,15 @@ class EmscriptenApplication::MouseEvent: public EmscriptenApplication::InputEven
         /** @brief Modifiers */
         Modifiers modifiers() const;
 
+        /** @brief Underlying Emscripten event */
+        const EmscriptenMouseEvent& event() const { return _event; }
+
     private:
         friend EmscriptenApplication;
 
-        explicit MouseEvent(const EmscriptenMouseEvent* event): _event(event) {}
+        explicit MouseEvent(const EmscriptenMouseEvent& event): _event(event) {}
 
-        const EmscriptenMouseEvent* const _event;
+        const EmscriptenMouseEvent& _event;
 };
 
 /**
@@ -1162,12 +1172,15 @@ class EmscriptenApplication::MouseMoveEvent: public EmscriptenApplication::Input
         /** @brief Modifiers */
         Modifiers modifiers() const;
 
+        /** @brief Underlying Emscripten event */
+        const EmscriptenMouseEvent& event() const { return _event; }
+
     private:
         friend EmscriptenApplication;
 
-        explicit MouseMoveEvent(const EmscriptenMouseEvent* event): _event{event} {}
+        explicit MouseMoveEvent(const EmscriptenMouseEvent& event): _event(event) {}
 
-        const EmscriptenMouseEvent* const _event;
+        const EmscriptenMouseEvent& _event;
 };
 
 CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::MouseMoveEvent::Buttons)
@@ -1188,12 +1201,15 @@ class EmscriptenApplication::MouseScrollEvent: public EmscriptenApplication::Inp
         /** @brief Modifiers */
         Modifiers modifiers() const;
 
+        /** @brief Underlying Emscripten event */
+        const EmscriptenWheelEvent& event() const { return _event; }
+
     private:
         friend EmscriptenApplication;
 
-        explicit MouseScrollEvent(const EmscriptenWheelEvent* event): _event{event} {}
+        explicit MouseScrollEvent(const EmscriptenWheelEvent& event): _event(event) {}
 
-        const EmscriptenWheelEvent* const _event;
+        const EmscriptenWheelEvent& _event;
 };
 
 /**
@@ -1394,12 +1410,15 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
         /** @brief Modifiers */
         Modifiers modifiers() const;
 
+        /** @brief Underlying Emscripten event */
+        const EmscriptenKeyboardEvent& event() const { return _event; }
+
     private:
         friend EmscriptenApplication;
 
-        explicit KeyEvent(const EmscriptenKeyboardEvent* event): _event{event} {}
+        explicit KeyEvent(const EmscriptenKeyboardEvent& event): _event(event) {}
 
-        const EmscriptenKeyboardEvent* const _event;
+        const EmscriptenKeyboardEvent& _event;
 };
 
 /**
@@ -1430,11 +1449,15 @@ class EmscriptenApplication::TextInputEvent {
         /** @brief Input text in UTF-8 */
         Containers::ArrayView<const char> text() const { return _text; }
 
+        /** @brief Underlying Emscripten event */
+        const EmscriptenKeyboardEvent& event() const { return _event; }
+
     private:
         friend EmscriptenApplication;
 
-        explicit TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
+        explicit TextInputEvent(const EmscriptenKeyboardEvent& event, Containers::ArrayView<const char> text): _event(event), _text{text}, _accepted{false} {}
 
+        const EmscriptenKeyboardEvent& _event;
         const Containers::ArrayView<const char> _text;
         bool _accepted;
 };

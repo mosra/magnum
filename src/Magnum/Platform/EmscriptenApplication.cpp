@@ -400,7 +400,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         #else
         const char* target = "#window";
         #endif
-        auto cb = [](int, const EmscriptenUiEvent*, void* userData) -> Int {
+        auto cb = [](int, const EmscriptenUiEvent* event, void* userData) -> Int {
             EmscriptenApplication& app = *static_cast<EmscriptenApplication*>(userData);
             /* See windowSize() for why we hardcode "#canvas" here */
             const Vector2i canvasSize{app.windowSize()};
@@ -408,7 +408,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
                 app._lastKnownCanvasSize = canvasSize;
                 const Vector2i size = canvasSize*app._dpiScaling*app._devicePixelRatio;
                 emscripten_set_canvas_element_size("#canvas", size.x(), size.y());
-                ViewportEvent e{canvasSize,
+                ViewportEvent e{*event, canvasSize,
                     #ifdef MAGNUM_TARGET_GL
                     app.framebufferSize(),
                     #endif
@@ -425,28 +425,28 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
 
     emscripten_set_mousedown_callback("#canvas", this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
-            MouseEvent e{event};
+            MouseEvent e{*event};
             static_cast<EmscriptenApplication*>(userData)->mousePressEvent(e);
             return e.isAccepted();
         }));
 
     emscripten_set_mouseup_callback("#canvas", this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
-            MouseEvent e{event};
+            MouseEvent e{*event};
             static_cast<EmscriptenApplication*>(userData)->mouseReleaseEvent(e);
             return e.isAccepted();
         }));
 
     emscripten_set_mousemove_callback("#canvas", this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
-            MouseMoveEvent e{event};
+            MouseMoveEvent e{*event};
             static_cast<EmscriptenApplication*>(userData)->mouseMoveEvent(e);
             return e.isAccepted();
         }));
 
     emscripten_set_wheel_callback("#canvas", this, false,
         ([](int, const EmscriptenWheelEvent* event, void* userData) -> Int {
-            MouseScrollEvent e{event};
+            MouseScrollEvent e{*event};
             static_cast<EmscriptenApplication*>(userData)->mouseScrollEvent(e);
             return e.isAccepted();
         }));
@@ -498,18 +498,18 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         ([](int, const EmscriptenKeyboardEvent* event, void* userData) -> Int {
             EmscriptenApplication& app = *static_cast<EmscriptenApplication*>(userData);
             if(app.isTextInputActive() && std::strlen(event->key) == 1) {
-                TextInputEvent e{{event->key, 1}};
+                TextInputEvent e{*event, {event->key, 1}};
                 app.textInputEvent(e);
                 return e.isAccepted();
             }
-            KeyEvent e{event};
+            KeyEvent e{*event};
             app.keyPressEvent(e);
             return e.isAccepted();
         }));
 
     emscripten_set_keyup_callback(keyboardListeningElement, this, false,
         ([](int, const EmscriptenKeyboardEvent* event, void* userData) -> Int {
-            KeyEvent e{event};
+            KeyEvent e{*event};
             static_cast<EmscriptenApplication*>(userData)->keyReleaseEvent(e);
             return e.isAccepted();
         }));
@@ -567,36 +567,36 @@ void EmscriptenApplication::exit(int) {
 }
 
 EmscriptenApplication::MouseEvent::Button EmscriptenApplication::MouseEvent::button() const {
-    return Button(_event->button);
+    return Button(_event.button);
 }
 
 Vector2i EmscriptenApplication::MouseEvent::position() const {
-    return {Int(_event->canvasX), Int(_event->canvasY)};
+    return {Int(_event.canvasX), Int(_event.canvasY)};
 }
 
 EmscriptenApplication::MouseEvent::Modifiers EmscriptenApplication::MouseEvent::modifiers() const {
     Modifiers m;
-    if(_event->ctrlKey) m |= Modifier::Ctrl;
-    if(_event->shiftKey) m |= Modifier::Shift;
-    if(_event->altKey) m |= Modifier::Alt;
-    if(_event->metaKey) m |= Modifier::Super;
+    if(_event.ctrlKey) m |= Modifier::Ctrl;
+    if(_event.shiftKey) m |= Modifier::Shift;
+    if(_event.altKey) m |= Modifier::Alt;
+    if(_event.metaKey) m |= Modifier::Super;
     return m;
 }
 
 EmscriptenApplication::MouseMoveEvent::Buttons EmscriptenApplication::MouseMoveEvent::buttons() const {
-    return EmscriptenApplication::MouseMoveEvent::Button(_event->buttons);
+    return EmscriptenApplication::MouseMoveEvent::Button(_event.buttons);
 }
 
 Vector2i EmscriptenApplication::MouseMoveEvent::position() const {
-    return {Int(_event->canvasX), Int(_event->canvasY)};
+    return {Int(_event.canvasX), Int(_event.canvasY)};
 }
 
 EmscriptenApplication::MouseMoveEvent::Modifiers EmscriptenApplication::MouseMoveEvent::modifiers() const {
     Modifiers m;
-    if(_event->ctrlKey) m |= Modifier::Ctrl;
-    if(_event->shiftKey) m |= Modifier::Shift;
-    if(_event->altKey) m |= Modifier::Alt;
-    if(_event->metaKey) m |= Modifier::Super;
+    if(_event.ctrlKey) m |= Modifier::Ctrl;
+    if(_event.shiftKey) m |= Modifier::Shift;
+    if(_event.altKey) m |= Modifier::Alt;
+    if(_event.metaKey) m |= Modifier::Super;
     return m;
 }
 
@@ -607,42 +607,42 @@ Vector2 EmscriptenApplication::MouseScrollEvent::offset() const {
        DOM_DELTA_PIXEL => 100 pixels = 1 step
        DOM_DELTA_LINE => 3 lines = 1 step
        DOM_DELTA_PAGE => 1 page = 80 steps */
-    const Float f = (_event->deltaMode == DOM_DELTA_PIXEL) ? -0.01f :
-        ((_event->deltaMode == DOM_DELTA_LINE) ? -1.0f/3.0f : -80.0f);
+    const Float f = (_event.deltaMode == DOM_DELTA_PIXEL) ? -0.01f :
+        ((_event.deltaMode == DOM_DELTA_LINE) ? -1.0f/3.0f : -80.0f);
 
-    return {f*Float(_event->deltaX), f*Float(_event->deltaY)};
+    return {f*Float(_event.deltaX), f*Float(_event.deltaY)};
 }
 
 Vector2i EmscriptenApplication::MouseScrollEvent::position() const {
-    return {Int(_event->mouse.canvasX), Int(_event->mouse.canvasY)};
+    return {Int(_event.mouse.canvasX), Int(_event.mouse.canvasY)};
 }
 
 EmscriptenApplication::InputEvent::Modifiers EmscriptenApplication::MouseScrollEvent::modifiers() const {
     Modifiers m;
-    if(_event->mouse.ctrlKey) m |= Modifier::Ctrl;
-    if(_event->mouse.shiftKey) m |= Modifier::Shift;
-    if(_event->mouse.altKey) m |= Modifier::Alt;
-    if(_event->mouse.metaKey) m |= Modifier::Super;
+    if(_event.mouse.ctrlKey) m |= Modifier::Ctrl;
+    if(_event.mouse.shiftKey) m |= Modifier::Shift;
+    if(_event.mouse.altKey) m |= Modifier::Alt;
+    if(_event.mouse.metaKey) m |= Modifier::Super;
     return m;
 }
 
 Key EmscriptenApplication::KeyEvent::key() const {
-    return toKey(_event->key, _event->code);
+    return toKey(_event.key, _event.code);
 }
 
 std::string EmscriptenApplication::KeyEvent::keyName() const {
-    if((_event->key[0] >= 'a' && _event->key[0] <= 'z') ||
-       (_event->key[0] >= 'A' && _event->key[0] <= 'Z')) return _event->key;
+    if((_event.key[0] >= 'a' && _event.key[0] <= 'z') ||
+       (_event.key[0] >= 'A' && _event.key[0] <= 'Z')) return _event.key;
 
-    return _event->code;
+    return _event.code;
 }
 
 EmscriptenApplication::InputEvent::Modifiers EmscriptenApplication::KeyEvent::modifiers() const {
     Modifiers m;
-    if(_event->ctrlKey) m |= Modifier::Ctrl;
-    if(_event->shiftKey) m |= Modifier::Shift;
-    if(_event->altKey) m |= Modifier::Alt;
-    if(_event->metaKey) m |= Modifier::Super;
+    if(_event.ctrlKey) m |= Modifier::Ctrl;
+    if(_event.shiftKey) m |= Modifier::Shift;
+    if(_event.altKey) m |= Modifier::Alt;
+    if(_event.metaKey) m |= Modifier::Super;
     return m;
 }
 
