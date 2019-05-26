@@ -512,7 +512,7 @@ class EmscriptenApplication::GLConfiguration {
              * treated as representing premultiplied alpha values. If not set, the
              * alpha channel represents non-premultiplied alpha.
              */
-            PremultipliedAlpha,
+            PremultipliedAlpha = 1 << 0,
 
             /**
              * Preserve drawing buffer
@@ -523,7 +523,7 @@ class EmscriptenApplication::GLConfiguration {
              * @ref EmscriptenApplication::drawEvent().
              * Not setting this gives better performance.
              */
-            PreserveDrawingBuffer,
+            PreserveDrawingBuffer = 1 << 1,
 
             /**
              * Prefer low power to high performance
@@ -531,7 +531,7 @@ class EmscriptenApplication::GLConfiguration {
              * If set, the WebGL power preference will be set to reduce power
              * consumption.
              */
-            PreferLowPowerToHighPerformance,
+            PreferLowPowerToHighPerformance = 1 << 2,
 
             /**
              * Fail if major performance caveat
@@ -540,7 +540,7 @@ class EmscriptenApplication::GLConfiguration {
              * only able to create a context that does not give good hardware-
              * accelerated performance.
              */
-            FailIfMajorPerformanceCaveat,
+            FailIfMajorPerformanceCaveat = 1 << 3,
 
             /**
              * Explicit swap control
@@ -549,7 +549,7 @@ class EmscriptenApplication::GLConfiguration {
              * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.explicitSwapControl)
              * for more details.
              */
-            ExplicitSwapControl,
+            ExplicitSwapControl = 1 << 4,
 
             /**
              * Enable WebGL extensions by default
@@ -558,7 +558,7 @@ class EmscriptenApplication::GLConfiguration {
              * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.enableExtensionsByDefault)
              * for more details.
              */
-            EnableExtensionsByDefault,
+            EnableExtensionsByDefault = 1 << 5,
 
             /**
              * Render via offscreen back buffer
@@ -567,7 +567,7 @@ class EmscriptenApplication::GLConfiguration {
              * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.renderViaOffscreenBackBuffer)
              * for more details.
              */
-            RenderViaOffscreenBackBuffer,
+            RenderViaOffscreenBackBuffer = 1 << 6,
 
             /**
              * Proxy content to main thread
@@ -576,7 +576,7 @@ class EmscriptenApplication::GLConfiguration {
              * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.proxyContextToMainThread)
              * for more details.
              */
-            ProxyContextToMainThread,
+            ProxyContextToMainThread = 1 << 7
         };
 
         /**
