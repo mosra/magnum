@@ -587,7 +587,7 @@ CORRADE_ENUMSET_OPERATORS(GlfwApplication::Flags)
 /**
 @brief OpenGL context configuration
 
-The created window is always with double-buffered OpenGL context.
+The created window is always with a double-buffered OpenGL context.
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
@@ -600,7 +600,7 @@ class GlfwApplication::GLConfiguration {
         /**
          * @brief Context flag
          *
-         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
+         * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
          */
         enum class Flag: UnsignedByte {
             #ifndef MAGNUM_TARGET_GLES
@@ -631,7 +631,7 @@ class GlfwApplication::GLConfiguration {
         /**
          * @brief Context flags
          *
-         * @see @ref setFlags()
+         * @see @ref setFlags(), @ref GL::Context::Flags
          */
         typedef Containers::EnumSet<Flag> Flags;
 

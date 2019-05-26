@@ -666,7 +666,7 @@ class Sdl2Application {
          * zero vector, use @ref dpiScaling(const Configuration&) const for
          * calculating a value independently. See @ref Platform-Sdl2Application-dpi
          * for more information.
-         * @see @ref Sdl2Application::dpiScaling(), @ref framebufferSize()
+         * @see @ref framebufferSize()
          */
         Vector2 dpiScaling() const { return _dpiScaling; }
 
@@ -1023,7 +1023,7 @@ class Sdl2Application {
 /**
 @brief OpenGL context configuration
 
-The created window is always with double-buffered OpenGL context.
+The created window is always with a double-buffered OpenGL context.
 
 @note This function is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
@@ -1037,7 +1037,7 @@ class Sdl2Application::GLConfiguration {
         /**
          * @brief Context flag
          *
-         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
+         * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
          * @requires_gles Context flags are not available in WebGL.
          */
         enum class Flag: int {
@@ -1064,7 +1064,7 @@ class Sdl2Application::GLConfiguration {
         /**
          * @brief Context flags
          *
-         * @see @ref setFlags(), @ref Context::Flags
+         * @see @ref setFlags(), @ref GL::Context::Flags
          * @requires_gles Context flags are not available in WebGL.
          */
         #ifndef DOXYGEN_GENERATING_OUTPUT
