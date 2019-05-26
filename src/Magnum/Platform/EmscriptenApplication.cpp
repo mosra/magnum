@@ -359,28 +359,28 @@ void EmscriptenApplication::setupCallbacks() {
     emscripten_set_mousedown_callback("#canvas", this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
             MouseEvent e{event};
-            reinterpret_cast<EmscriptenApplication*>(userData)->mousePressEvent(e);
+            static_cast<EmscriptenApplication*>(userData)->mousePressEvent(e);
             return e.isAccepted();
         }));
 
     emscripten_set_mouseup_callback("#canvas", this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
             MouseEvent e{event};
-            reinterpret_cast<EmscriptenApplication*>(userData)->mouseReleaseEvent(e);
+            static_cast<EmscriptenApplication*>(userData)->mouseReleaseEvent(e);
             return e.isAccepted();
         }));
 
     emscripten_set_mousemove_callback("#canvas", this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
             MouseMoveEvent e{event};
-            reinterpret_cast<EmscriptenApplication*>(userData)->mouseMoveEvent(e);
+            static_cast<EmscriptenApplication*>(userData)->mouseMoveEvent(e);
             return e.isAccepted();
         }));
 
     emscripten_set_wheel_callback("#canvas", this, false,
         ([](int, const EmscriptenWheelEvent* event, void* userData) -> Int {
             MouseScrollEvent e{event};
-            reinterpret_cast<EmscriptenApplication*>(userData)->mouseScrollEvent(e);
+            static_cast<EmscriptenApplication*>(userData)->mouseScrollEvent(e);
             return e.isAccepted();
         }));
 
@@ -429,21 +429,21 @@ void EmscriptenApplication::setupCallbacks() {
        don't seem to work, keydown on the other hand works fine for all */
     emscripten_set_keydown_callback(keyboardListeningElement, this, false,
         ([](int, const EmscriptenKeyboardEvent* event, void* userData) -> Int {
-            EmscriptenApplication* app = reinterpret_cast<EmscriptenApplication*>(userData);
-            if(app->isTextInputActive() && std::strlen(event->key) == 1) {
+            EmscriptenApplication& app = *static_cast<EmscriptenApplication*>(userData);
+            if(app.isTextInputActive() && std::strlen(event->key) == 1) {
                 TextInputEvent e{{event->key, 1}};
-                app->textInputEvent(e);
+                app.textInputEvent(e);
                 return e.isAccepted();
             }
             KeyEvent e{event};
-            app->keyPressEvent(e);
+            app.keyPressEvent(e);
             return e.isAccepted();
         }));
 
     emscripten_set_keyup_callback(keyboardListeningElement, this, false,
         ([](int, const EmscriptenKeyboardEvent* event, void* userData) -> Int {
             KeyEvent e{event};
-            reinterpret_cast<EmscriptenApplication*>(userData)->keyReleaseEvent(e);
+            static_cast<EmscriptenApplication*>(userData)->keyReleaseEvent(e);
             return e.isAccepted();
         }));
 
