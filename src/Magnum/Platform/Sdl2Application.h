@@ -109,41 +109,13 @@ See @ref cmake for more information.
 
 @section Platform-Sdl2Application-bootstrap-emscripten Bootstrap application for Emscripten
 
-Fully contained base application using @ref Sdl2Application for both desktop
-and Emscripten build along with full HTML markup and CMake setup is available
-in `base-emscripten` branch of [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap)
-repository, download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base-emscripten.tar.gz)
-or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-emscripten.zip)
-file. After extracting the downloaded archive, you can do the desktop build in
-the same way as above. For the Emscripten build you also need to put the
-contents of toolchains repository from https://github.com/mosra/toolchains
-in `toolchains/` subdirectory. There are two toolchain files. The
-`generic/Emscripten.cmake` is for the classical (asm.js) build, the
-`generic/Emscripten-wasm.cmake` is for WebAssembly build. Don't forget to adapt
-`EMSCRIPTEN_PREFIX` variable in `toolchains/generic/Emscripten*.cmake` to path
-where Emscripten is installed; you can also pass it explicitly on command-line
-using `-DEMSCRIPTEN_PREFIX`. Default is `/usr/emscripten`.
-
-Then create build directory and run `cmake` and build/install commands in it.
-Set `CMAKE_PREFIX_PATH` to where you have all the dependencies installed, set
-`CMAKE_INSTALL_PREFIX` to have the files installed in proper location (a
-webserver, e.g.  `/srv/http/emscripten`).
-
-@code{.sh}
-mkdir build-emscripten && cd build-emscripten
-cmake .. \
-    -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
-    -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
-    -DCMAKE_INSTALL_PREFIX=/srv/http/emscripten
-cmake --build .
-cmake --build . --target install
-@endcode
-
-You can then open `MyApplication.html` in your browser (through a webserver,
-e.g. http://localhost/emscripten/MyApplication.html).
-
-Detailed information about deployment for Emscripten and all needed boilerplate
-together with a troubleshooting guide is available in @ref platforms-html5.
+The dedicated application implementation for Emscripten is
+@ref EmscriptenApplication, which also provides a bootstrap project along with
+full HTML markup and CMake setup. @ref Sdl2Application however supports
+Emscripten as well --- set up the bootstrap application as
+@ref Platform-EmscriptenApplication-bootstrap "described in the EmscriptenApplication docs"
+and then change `src/CMakeLists.txt` and the @cpp #include @ce to use
+@ref Sdl2Application for both the native and the web build.
 
 @section Platform-Sdl2Application-bootstrap-ios Bootstrap application for iOS
 

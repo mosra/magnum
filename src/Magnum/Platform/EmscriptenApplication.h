@@ -65,16 +65,43 @@ in the @ref building-corrade-cross-emscripten "Corrade" and
 
 @section Platform-EmscriptenApplication-bootstrap Bootstrap application
 
-Fully contained base application using @ref EmscriptenApplication for Emscripten
-build and CMake setup is available in `base-emscripten` branch of
+Fully contained base application using @ref Sdl2Application for desktop build
+and @ref EmscriptenApplication for Emscripten build along with full HTML markup
+and CMake setup is available in `base-emscripten` branch of the
 [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository,
 download it as [tar.gz](https://github.com/mosra/magnum-bootstrap/archive/base-emscripten.tar.gz)
 or [zip](https://github.com/mosra/magnum-bootstrap/archive/base-emscripten.zip)
-file. After extracting the downloaded archive, you can build in
-the same way as with @ref Sdl2Application.
+file. After extracting the downloaded archive, you can do the desktop build in
+the same way as with @ref Sdl2Application. For the Emscripten build you also
+need to put the contents of toolchains repository from
+https://github.com/mosra/toolchains in a `toolchains/` subdirectory. There are
+two toolchain files. The `generic/Emscripten.cmake` is for the classical
+(asm.js) build, the `generic/Emscripten-wasm.cmake` is for WebAssembly build.
+Don't forget to adapt `EMSCRIPTEN_PREFIX` variable in
+`toolchains/generic/Emscripten*.cmake` to path where Emscripten is installed;
+you can also pass it explicitly on command-line using `-DEMSCRIPTEN_PREFIX`.
+Default is `/usr/emscripten`.
+
+Then create build directory and run `cmake` and build/install commands in it.
+Set `CMAKE_PREFIX_PATH` to where you have all the dependencies installed, set
+`CMAKE_INSTALL_PREFIX` to have the files installed in proper location (a
+webserver, e.g.  `/srv/http/emscripten`).
+
+@code{.sh}
+mkdir build-emscripten && cd build-emscripten
+cmake .. \
+    -DCMAKE_TOOLCHAIN_FILE="../toolchains/generic/Emscripten.cmake" \
+    -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
+    -DCMAKE_INSTALL_PREFIX=/srv/http/emscripten
+cmake --build .
+cmake --build . --target install
+@endcode
+
+You can then open `MyApplication.html` in your browser (through a webserver,
+e.g. http://localhost/emscripten/MyApplication.html).
 
 Detailed information about deployment for Emscripten and all needed boilerplate
-together with a troubleshooting guide is available in @ref platforms-emscripten.
+together with a troubleshooting guide is available in @ref platforms-html5.
 
 @section Platform-EmscriptenApplication-usage General usage
 
@@ -94,7 +121,7 @@ endif()
 @endcode
 
 If no other application is requested, you can also use the generic
-`Magnum::Application` alias to simplify porting. Again, see @ref building and
+`Magnum::Application` alias to simplify porting. See @ref building and
 @ref cmake for more information.
 
 In C++ code you need to implement at least @ref drawEvent() to be able to draw
@@ -409,8 +436,7 @@ class EmscriptenApplication {
         /**
          * @brief Whether text input is active
          *
-         * If text input is active, text input events go to @ref textInputEvent()
-         * and @ref textEditingEvent().
+         * If text input is active, text input events go to @ref textInputEvent().
          * @note Note that in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" the
          *      value is emulated and might not reflect external events like
          *      closing on-screen keyboard.
@@ -423,8 +449,7 @@ class EmscriptenApplication {
         /**
          * @brief Start text input
          *
-         * Starts text input that will go to @ref textInputEvent() and
-         * @ref textEditingEvent().
+         * Starts text input that will go to @ref textInputEvent().
          * @see @ref stopTextInput(), @ref isTextInputActive(),
          *      @ref setTextInputRect()
          */
@@ -433,10 +458,9 @@ class EmscriptenApplication {
         /**
          * @brief Stop text input
          *
-         * Stops text input that went to @ref textInputEvent() and
-         * @ref textEditingEvent().
-         * @see @ref startTextInput(), @ref isTextInputActive(), @ref textInputEvent()
-         *      @ref textEditingEvent()
+         * Stops text input that went to @ref textInputEvent().
+         * @see @ref startTextInput(), @ref isTextInputActive(),
+         *      @ref textInputEvent()
          */
         void stopTextInput();
 
@@ -492,7 +516,7 @@ CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::Flags)
 /**
 @brief WebGL context configuration
 
-Double-buffered RGBA canvas with depth and stencil buffers.
+The created context is always with a double-buffered OpenGL context.
 @see @ref EmscriptenApplication(), @ref Configuration, @ref create(),
     @ref tryCreate()
 */
@@ -501,80 +525,61 @@ class EmscriptenApplication::GLConfiguration {
         /**
          * @brief Context flag
          *
-         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
-         * @requires_gles Context flags are not available in WebGL.
+         * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
          */
         enum class Flag: Int {
             /**
-             * Premultiplied alpha
-             *
-             * If set, the alpha channel of the rendering context will be
-             * treated as representing premultiplied alpha values. If not set, the
-             * alpha channel represents non-premultiplied alpha.
+             * Premultiplied alpha. If set, the alpha channel of the rendering
+             * context will be treated as representing premultiplied alpha
+             * values. If not set, the alpha channel represents
+             * non-premultiplied alpha.
              */
             PremultipliedAlpha = 1 << 0,
 
             /**
-             * Preserve drawing buffer
-             *
-             * If set, the contents of the drawing buffer are preserved between
-             * consecutive @ref EmscriptenApplication::drawEvent() calls. If not,
-             * color, depth and stencil are cleared at before
-             * @ref EmscriptenApplication::drawEvent().
-             * Not setting this gives better performance.
+             * Preserve drawing buffer. If set, the contents of the drawing
+             * buffer are preserved between consecutive @ref drawEvent() calls.
+             * If not, color, depth and stencil are cleared before entering
+             * @ref drawEvent(). Not setting this gives better performance.
              */
             PreserveDrawingBuffer = 1 << 1,
 
             /**
-             * Prefer low power to high performance
-             *
-             * If set, the WebGL power preference will be set to reduce power
-             * consumption.
+             * Prefer low power to high performance. If set, the WebGL power
+             * preference will be set to reduce power consumption.
              */
             PreferLowPowerToHighPerformance = 1 << 2,
 
             /**
-             * Fail if major performance caveat
-             *
-             * If set, requests context creation to abort if the browser is
-             * only able to create a context that does not give good hardware-
-             * accelerated performance.
+             * Fail if major performance caveat. If set, requests context
+             * creation to abort if the browser is only able to create a
+             * context that does not give good hardware-accelerated
+             * performance.
              */
             FailIfMajorPerformanceCaveat = 1 << 3,
 
             /**
-             * Explicit swap control
-             *
-             * For more details, see the
-             * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.explicitSwapControl)
-             * for more details.
+             * Explicit swap control. For more details, see the
+             * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.explicitSwapControl).
              */
             ExplicitSwapControl = 1 << 4,
 
             /**
-             * Enable WebGL extensions by default
-             *
-             * For more details, see the
-             * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.enableExtensionsByDefault)
-             * for more details.
+             * Enable WebGL extensions by default. Enabled by default. For more
+             * details, see @ref Platform-EmscriptenApplication-webgl and the
+             * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.enableExtensionsByDefault).
              */
             EnableExtensionsByDefault = 1 << 5,
 
             /**
-             * Render via offscreen back buffer
-             *
-             * For more details, see the
-             * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.renderViaOffscreenBackBuffer)
-             * for more details.
+             * Render via offscreen back buffer. For more details, see the
+             * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.renderViaOffscreenBackBuffer).
              */
             RenderViaOffscreenBackBuffer = 1 << 6,
 
             /**
-             * Proxy content to main thread
-             *
-             * For more details, see the
-             * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.proxyContextToMainThread)
-             * for more details.
+             * Proxy content to main thread. For more details, see the
+             * [Emscripten API reference](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenWebGLContextAttributes.proxyContextToMainThread).
              */
             ProxyContextToMainThread = 1 << 7
         };
@@ -582,15 +587,13 @@ class EmscriptenApplication::GLConfiguration {
         /**
          * @brief Context flags
          *
-         * @see @ref setFlags(), @ref Context::Flags
+         * @see @ref setFlags(), @ref GL::Context::Flags
          */
         typedef Containers::EnumSet<Flag> Flags;
 
         /*implicit*/ GLConfiguration();
 
-        /**
-         * @brief Context flags
-         */
+        /** @brief Context flags */
         Flags flags() const { return _flags; }
 
         /**
@@ -714,7 +717,6 @@ CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::GLConfiguration::Flags)
 /**
 @brief Configuration
 
-Double-buffered RGBA canvas with depth and stencil buffers.
 @see @ref EmscriptenApplication(), @ref GLConfiguration, @ref create(),
     @ref tryCreate()
 */
@@ -736,6 +738,13 @@ class EmscriptenApplication::Configuration {
              */
             Contextless = 1 << 0,
 
+            /**
+             * Resizable canvas. This causes the framebuffer to be resized
+             * when the @cb{.html} <canvas> @ce size changes, either directly
+             * or as a consequence of browser window size change.
+             *
+             * Implement @ref viewportEvent() to react to the resizing events.
+             */
             Resizable = 1 << 1
         };
 
@@ -754,7 +763,7 @@ class EmscriptenApplication::Configuration {
          *
          * @note This function does nothing and is included only for
          *      compatibility with other toolkits. You need to set the title
-         *      separately in the `EmscriptenManifest.xml` file.
+         *      separately in the HTML markup.
          */
         template<class T> Configuration& setTitle(const T&) { return *this; }
 
@@ -797,9 +806,7 @@ class EmscriptenApplication::Configuration {
 
         /**
          * @brief Set window flags
-         * @return  Reference to self (for method chaining)
-         *
-         * Default is @ref WindowFlag::Focused.
+         * @return Reference to self (for method chaining)
          */
         Configuration& setWindowFlags(WindowFlags windowFlags) {
             _windowFlags = windowFlags;
@@ -959,11 +966,17 @@ class EmscriptenApplication::InputEvent {
         /** @brief Moving is not allowed */
         InputEvent& operator=(InputEvent&&) = delete;
 
-        /** @copydoc Sdl2Application::InputEvent::setAccepted() */
-        void setAccepted(bool accepted = true) { _accepted = accepted; }
-
-        /** @copydoc Sdl2Application::InputEvent::isAccepted() */
+        /** @brief Whether the event is accepted */
         bool isAccepted() const { return _accepted; }
+
+        /**
+         * @brief Set event as accepted
+         *
+         * If the event is ignored (i.e., not set as accepted), it is
+         * propagated to other elements on the page. By default each event is
+         * ignored and thus propagated.
+         */
+        void setAccepted(bool accepted = true) { _accepted = accepted; }
 
     protected:
         explicit InputEvent(): _accepted(false) {}
@@ -1067,12 +1080,7 @@ CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::MouseMoveEvent::Buttons)
 */
 class EmscriptenApplication::MouseScrollEvent: public EmscriptenApplication::InputEvent {
     public:
-
-        /**
-         * @brief Scroll offset
-         *
-         * Offset in the unit described by @ref MouseScrollEvent::deltaMode().
-         */
+        /** @brief Scroll offset */
         Vector2 offset() const;
 
         /** @brief Position */
@@ -1160,33 +1168,33 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
              */
             RightSuper,
 
-            Enter,          /**< Enter */
-            Esc,            /**< Escape */
+            Enter,              /**< Enter */
+            Esc,                /**< Escape */
 
-            Up,             /**< Up arrow */
-            Down,           /**< Down arrow */
-            Left,           /**< Left arrow */
-            Right,          /**< Right arrow */
-            Home,           /**< Home */
-            End,            /**< End */
-            PageUp,         /**< Page up */
-            PageDown,       /**< Page down */
-            Backspace,      /**< Backspace */
-            Insert,         /**< Insert */
-            Delete,         /**< Delete */
+            Up,                 /**< Up arrow */
+            Down,               /**< Down arrow */
+            Left,               /**< Left arrow */
+            Right,              /**< Right arrow */
+            Home,               /**< Home */
+            End,                /**< End */
+            PageUp,             /**< Page up */
+            PageDown,           /**< Page down */
+            Backspace,          /**< Backspace */
+            Insert,             /**< Insert */
+            Delete,             /**< Delete */
 
-            F1,             /**< F1 */
-            F2,             /**< F2 */
-            F3,             /**< F3 */
-            F4,             /**< F4 */
-            F5,             /**< F5 */
-            F6,             /**< F6 */
-            F7,             /**< F7 */
-            F8,             /**< F8 */
-            F9,             /**< F9 */
-            F10,            /**< F10 */
-            F11,            /**< F11 */
-            F12,            /**< F12 */
+            F1,                 /**< F1 */
+            F2,                 /**< F2 */
+            F3,                 /**< F3 */
+            F4,                 /**< F4 */
+            F5,                 /**< F5 */
+            F6,                 /**< F6 */
+            F7,                 /**< F7 */
+            F8,                 /**< F8 */
+            F9,                 /**< F9 */
+            F10,                /**< F10 */
+            F11,                /**< F11 */
+            F12,                /**< F12 */
 
             Zero = '0',         /**< Zero */
             One,                /**< One */
@@ -1226,11 +1234,11 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
             Y,                  /**< Letter Y */
             Z,                  /**< Letter Z */
 
-            Space,          /**< Space */
-            Tab,            /**< Tab */
-            Comma,          /**< Comma */
-            Period,         /**< Period */
-            Minus,          /**< Minus */
+            Space,              /**< Space */
+            Tab,                /**< Tab */
+            Comma,              /**< Comma */
+            Period,             /**< Period */
+            Minus,              /**< Minus */
             /* Note: This may only be represented as SHIFT + = */
             Plus,               /**< Plus */
             Slash,              /**< Slash */
@@ -1270,10 +1278,13 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
             NumEqual            /**< Numpad equal */
         };
 
-        /** @brief Key
+        /**
+         * @brief Key
          *
-         * Note that the key is mapped from `EmscriptenKeyboardEvent::code` in
-         * all cases except A-Z, which are mapped from `EmscriptenkeyboardEvent::key`,
+         * Note that the key is mapped from @m_class{m-doc-external}
+         * [EmscriptenKeyboardEvent::code](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenKeyboardEvent.code)
+         * in all cases except A--Z, which are mapped from
+         * @m_class{m-doc-external} [EmscriptenkeyboardEvent::key](https://emscripten.org/docs/api_reference/html5.h.html#c.EmscriptenKeyboardEvent.key),
          * which respects the keyboard layout.
          */
         Key key() const;
@@ -1314,14 +1325,7 @@ class EmscriptenApplication::TextInputEvent {
         /** @brief Whether the event is accepted */
         bool isAccepted() const { return _accepted; }
 
-        /**
-         * @brief Set event as accepted
-         *
-         * If the event is ignored (i.e., not set as accepted), it might be
-         * propagated elsewhere, for example to another screen when using
-         * @ref BasicScreenedApplication "ScreenedApplication". By default is
-         * each event ignored and thus propagated.
-         */
+        /** @copydoc EmscriptenApplication::InputEvent::setAccepted() */
         void setAccepted(bool accepted = true) { _accepted = accepted; }
 
         /** @brief Input text in UTF-8 */

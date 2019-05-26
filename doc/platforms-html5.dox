@@ -98,13 +98,13 @@ Magnum source to the `modules/` dir in your project so it is able to find the
 WebGL libraries.
 
 Magnum provides Emscripten application wrappers in @ref Platform::Sdl2Application
-and @ref Platform::EmscriptenApplication. See their documentation for more information
-about general usage. You can also use the Emscripten APIs directly or any other
-way.
+and @ref Platform::EmscriptenApplication. See their documentation for more
+information about general usage. You can also use the Emscripten APIs directly
+or any other way.
 
-@note @ref Platform::Sdl2Application and @ref Platform::EmscriptenApplication
-    also contains a fully configured bootstrap projects that are ready to build
-    and deploy. Check their documentation for details.
+@note @ref Platform::EmscriptenApplication also contains a fully configured
+    bootstrap project that is ready to build and deploy. Check its
+    documentation for details.
 
 To target the web browser, you need to provide a HTML markup for your
 application. Template one is below. The markup references two files,
@@ -198,9 +198,8 @@ EGL and WebGL libraries.
 
 Windowless Magnum apps (i.e. apps that use the OpenGL context without a window)
 can be run in the browser as well using the @ref Platform::WindowlessEglApplication
-class. See its documentation for more information
-about general usage. You can also use the Emscripten APIs directly or any other
-way.
+class. See its documentation for more information about general usage. You can
+also use the Emscripten APIs directly or any other way.
 
 @note @ref Platform::WindowlessEglApplication also contains a fully configured
     bootstrap project that's ready to build and deploy. Check its documentation
@@ -350,8 +349,8 @@ Module.doNotCaptureKeyboard = true;
 </script>
 @endcode
 
-The above is implicitly set for @ref Platform::WindowlessEglApplicaiton, because
-it does not have an event loop.
+The above is implicitly set for @ref Platform::WindowlessEglApplication,
+because it does not have an event loop.
 
 @cb{.js} Module.doNotCaptureKeyboard @ce is not supported by
 @ref Platform::EmscriptenApplication.

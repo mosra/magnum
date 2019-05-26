@@ -107,27 +107,25 @@ namespace {
     };
 
     /* Translate emscripten key code (as defined by
-        https://www.w3.org/TR/uievents-code/#key-code-attribute-value)
-        to Key enum.
-
-        @param key Keyboard layout dependent key string, e.g. 'a', or '-'
-        @param code Keyboard layout independent key string, e.g. 'KeyA' or 'Minus'.
-                    Note that the y key on some layouts may result in 'KeyZ'.
-     */
+       https://www.w3.org/TR/uievents-code/#key-code-attribute-value)
+       to Key enum. `key` is a keyboard layout dependent key string, e.g. 'a',
+       or '-'; `code` is a keyboard layout independent key string, e.g. 'KeyA'
+       or 'Minus'. Note that the Y key on some layouts may result in 'KeyZ'. */
     Key toKey(const EM_UTF8* const key, const EM_UTF8* const code) {
         const std::size_t keyLength = std::strlen(key);
         if(keyLength == 0) return Key::Unknown;
 
         /* We use key for a-z as it gives us a keyboard layout respecting
-        representation of the key, i.e. we get `z` for z depending on layout
-        where code may give us `y` independent of the layout. */
+           representation of the key, i.e. we get `z` for z depending on layout
+           where code may give us `y` independent of the layout. */
         if(keyLength == 1) {
             if(key[0] >= 'a' && key[0] <= 'z') return Key(key[0]);
             else if(key[0] >= 'A' && key[0] <= 'Z') return Key(key[0] - 'A' + 'a');
         }
 
-        /* We use code for 0-9 as it allows us to differentiate towards Numpad digits.
-        For digits independent of numpad or not, key is e.g. '0' for Zero */
+        /* We use code for 0-9 as it allows us to differentiate towards Numpad
+           digits. For digits independent of numpad or not, key is e.g. '0' for
+           Zero */
         const std::size_t codeLength = std::strlen(code);
         if(Utility::String::viewBeginsWith({code, codeLength}, "Digit")) {
             return Key(code[5]);
@@ -307,11 +305,9 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     attrs.enableExtensionsByDefault =
         !!(glConfiguration.flags() & GLConfiguration::Flag::EnableExtensionsByDefault);
 
-    #ifdef MAGNUM_TARGET_GLES3
-    /* WebGL 2 */
+    #ifdef MAGNUM_TARGET_GLES3 /* WebGL 2 */
     attrs.majorVersion = 2;
-    #elif defined(MAGNUM_TARGET_GLES2)
-    /* WebGL 1 */
+    #elif defined(MAGNUM_TARGET_GLES2) /* WebGL 1 */
     attrs.minorVersion = 1;
     #else
     #error unsupported OpenGL ES version
@@ -327,8 +323,8 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context =
         emscripten_webgl_create_context("#canvas", &attrs);
     if(!context) {
-        /* When context creation fails, `context` is a negative integer matching
-           EMSCRIPTEN_RESULT_* defines */
+        /* When context creation fails, `context` is a negative integer
+           matching EMSCRIPTEN_RESULT_* defines */
         Error{} << "Platform::EmscriptenApplication::tryCreate(): cannot create WebGL context (EMSCRIPTEN_RESULT"
                 << context << Debug::nospace << ")";
         return false;
@@ -469,7 +465,7 @@ void EmscriptenApplication::stopTextInput() {
 }
 
 void EmscriptenApplication::setTextInputRect(const Range2Di&) {
-    // TODO: Place a hidden input field at given rect
+    /** @todo place a hidden input field at given rect */
 }
 
 void EmscriptenApplication::viewportEvent(ViewportEvent&) {}
@@ -565,12 +561,11 @@ EmscriptenApplication::MouseMoveEvent::Modifiers EmscriptenApplication::MouseMov
 
 Vector2 EmscriptenApplication::MouseScrollEvent::offset() const {
     /* From emscripten's Browser.getMouseWheelDelta() function in
-        library_browser.js:
+       library_browser.js:
 
-        DOM_DELTA_PIXEL => 100 pixels = 1 step
-        DOM_DELTA_LINE => 3 lines = 1 step
-        DOM_DELTA_PAGE => 1 page = 80 steps
-     */
+       DOM_DELTA_PIXEL => 100 pixels = 1 step
+       DOM_DELTA_LINE => 3 lines = 1 step
+       DOM_DELTA_PAGE => 1 page = 80 steps */
     const Float f = (_event->deltaMode == DOM_DELTA_PIXEL) ? -0.01f :
         ((_event->deltaMode == DOM_DELTA_LINE) ? -1.0f/3.0f : -80.0f);
 
