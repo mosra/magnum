@@ -447,7 +447,6 @@ class EmscriptenApplication {
          */
         Vector2 devicePixelRatio() const { return _devicePixelRatio; }
 
-    protected:
         /**
          * @brief Swap buffers
          *
