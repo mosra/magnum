@@ -24,6 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Utility/DebugStl.h>
+
 #include "Magnum/Platform/EmscriptenApplication.h"
 #include "Magnum/GL/Renderer.h"
 #include "Magnum/GL/DefaultFramebuffer.h"
@@ -90,6 +92,16 @@ struct EmscriptenApplicationTest: Platform::Application {
         if(event.modifiers() & KeyEvent::Modifier::Ctrl) Debug{} << "Ctrl";
         if(event.modifiers() & KeyEvent::Modifier::Alt) Debug{} << "Alt";
         if(event.modifiers() & KeyEvent::Modifier::Super) Debug{} << "Super";
+
+        if(event.key() == KeyEvent::Key::F1) {
+            Debug{} << "starting text input";
+            startTextInput();
+        } else if(event.key() == KeyEvent::Key::Esc) {
+            Debug{} << "stopping text input";
+            stopTextInput();
+        }
+
+        event.setAccepted();
     }
 
     void keyReleaseEvent(KeyEvent& event) override {
@@ -103,7 +115,16 @@ struct EmscriptenApplicationTest: Platform::Application {
         if(event.modifiers() & KeyEvent::Modifier::Ctrl) Debug{} << "Ctrl";
         if(event.modifiers() & KeyEvent::Modifier::Alt) Debug{} << "Alt";
         if(event.modifiers() & KeyEvent::Modifier::Super) Debug{} << "Super";
+
+        event.setAccepted();
     }
+
+    void textInputEvent(TextInputEvent& event) override {
+        Debug{} << "text input event:" << std::string{event.text(), event.text().size()};
+
+        event.setAccepted();
+    }
+
 };
 
 }}}
