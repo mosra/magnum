@@ -122,6 +122,8 @@ the components. The optional components are:
 
 Platform namespace is split into more components:
 
+-   `AndroidApplication` --- @ref Platform::AndroidApplication "AndroidApplication"
+-   `EmscriptenApplication` --- @ref Platform::EmscriptenApplication "EmscriptenApplication"
 -   `GlfwApplication` --- @ref Platform::GlfwApplication "GlfwApplication"
 -   `GlxApplication` --- @ref Platform::GlxApplication "GlxApplication"
 -   `Sdl2Application` --- @ref Platform::Sdl2Application "Sdl2Application"

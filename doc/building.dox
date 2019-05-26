@@ -526,6 +526,9 @@ going to build any of the @ref example-index "examples", you'll need it.
     @ref Platform::AndroidApplication "AndroidApplication" library. Available
     only on @ref CORRADE_TARGET_ANDROID "Android". Enables also building of the
     GL library.
+-   `WITH_EMSCRIPTENAPPLICATION` --- Build the
+    @ref Platform::EmscriptenApplication "EmscriptenApplication" library.
+    Available only on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
 -   `WITH_GLFWAPPLICATION` --- Build the
     @ref Platform::GlfwApplication "GlfwApplication" library. Depends on
     [GLFW](http://glfw.org).
