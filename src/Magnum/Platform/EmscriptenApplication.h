@@ -33,7 +33,6 @@
 #endif
 
 #include <string>
-
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Containers/Pointer.h>
 
@@ -129,7 +128,6 @@ class EmscriptenApplication {
         class MouseScrollEvent;
         class KeyEvent;
         class TextInputEvent;
-        class TextEditingEvent;
 
         /**
          * @brief Execute main loop
@@ -474,7 +472,6 @@ class EmscriptenApplication {
         /* These are saved from command-line arguments */
         bool _verboseLog{};
         Vector2 _commandLineDpiScaling;
-
 };
 
 CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::Flags)
@@ -494,7 +491,7 @@ class EmscriptenApplication::GLConfiguration {
          * @see @ref Flags, @ref setFlags(), @ref Context::Flag
          * @requires_gles Context flags are not available in WebGL.
          */
-        enum class Flag: int {
+        enum class Flag: Int {
             /**
              * Premultiplied alpha
              *
@@ -708,7 +705,6 @@ Double-buffered RGBA canvas with depth and stencil buffers.
 */
 class EmscriptenApplication::Configuration {
     public:
-
         /**
          * @brief Window flag
          *
@@ -763,7 +759,7 @@ class EmscriptenApplication::Configuration {
          * is @cpp size*dpiScaling @ce and @ref EmscriptenApplication::dpiScaling()
          * is @p dpiScaling.
          */
-        Configuration& setSize(const Vector2i& size, const Vector2& dpiScaling={}) {
+        Configuration& setSize(const Vector2i& size, const Vector2& dpiScaling = {}) {
             _size = size;
             _dpiScaling = dpiScaling;
             return *this;
@@ -967,8 +963,6 @@ class EmscriptenApplication::InputEvent {
 @see @ref MouseMoveEvent, @ref mousePressEvent(), @ref mouseReleaseEvent()
 */
 class EmscriptenApplication::MouseEvent: public EmscriptenApplication::InputEvent {
-    friend EmscriptenApplication;
-
     public:
         /**
          * @brief Mouse button
@@ -996,9 +990,11 @@ class EmscriptenApplication::MouseEvent: public EmscriptenApplication::InputEven
         Modifiers modifiers() const;
 
     private:
+        friend EmscriptenApplication;
+
         explicit MouseEvent(const EmscriptenMouseEvent* event): _event(event) {}
 
-        const EmscriptenMouseEvent* _event;
+        const EmscriptenMouseEvent* const _event;
 };
 
 /**
@@ -1007,8 +1003,6 @@ class EmscriptenApplication::MouseEvent: public EmscriptenApplication::InputEven
 @see @ref MouseEvent, @ref mouseMoveEvent()
 */
 class EmscriptenApplication::MouseMoveEvent: public EmscriptenApplication::InputEvent {
-    friend EmscriptenApplication;
-
     public:
         /**
          * @brief Mouse button
@@ -1043,9 +1037,11 @@ class EmscriptenApplication::MouseMoveEvent: public EmscriptenApplication::Input
         Modifiers modifiers() const;
 
     private:
-        explicit MouseMoveEvent(const EmscriptenMouseEvent* event): _event(event) {}
+        friend EmscriptenApplication;
 
-        const EmscriptenMouseEvent* _event;
+        explicit MouseMoveEvent(const EmscriptenMouseEvent* event): _event{event} {}
+
+        const EmscriptenMouseEvent* const _event;
 };
 
 /**
@@ -1054,8 +1050,6 @@ class EmscriptenApplication::MouseMoveEvent: public EmscriptenApplication::Input
 @see @ref MouseEvent, @ref MouseMoveEvent, @ref mouseScrollEvent()
 */
 class EmscriptenApplication::MouseScrollEvent: public EmscriptenApplication::InputEvent {
-    friend EmscriptenApplication;
-
     public:
 
         /**
@@ -1072,10 +1066,11 @@ class EmscriptenApplication::MouseScrollEvent: public EmscriptenApplication::Inp
         Modifiers modifiers() const;
 
     private:
-        explicit MouseScrollEvent(const EmscriptenWheelEvent* event):
-            InputEvent{}, _event{event} {}
+        friend EmscriptenApplication;
 
-        const EmscriptenWheelEvent* _event;
+        explicit MouseScrollEvent(const EmscriptenWheelEvent* event): _event{event} {}
+
+        const EmscriptenWheelEvent* const _event;
 };
 
 /**
@@ -1084,10 +1079,7 @@ class EmscriptenApplication::MouseScrollEvent: public EmscriptenApplication::Inp
 @see @ref keyPressEvent(), @ref keyReleaseEvent()
 */
 class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent {
-    friend EmscriptenApplication;
-
     public:
-
         /**
          * @brief Key
          *
@@ -1277,10 +1269,11 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
         Modifiers modifiers() const;
 
     private:
-        explicit KeyEvent(const EmscriptenKeyboardEvent* event): _event(event) {}
+        friend EmscriptenApplication;
 
-        const EmscriptenKeyboardEvent* _event;
+        explicit KeyEvent(const EmscriptenKeyboardEvent* event): _event{event} {}
 
+        const EmscriptenKeyboardEvent* const _event;
 };
 
 CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::MouseMoveEvent::Buttons)
@@ -1291,8 +1284,6 @@ CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::MouseMoveEvent::Buttons)
 @see @ref textInputEvent()
 */
 class EmscriptenApplication::TextInputEvent {
-    friend EmscriptenApplication;
-
     public:
         /** @brief Copying is not allowed */
         TextInputEvent(const TextInputEvent&) = delete;
@@ -1323,6 +1314,8 @@ class EmscriptenApplication::TextInputEvent {
         Containers::ArrayView<const char> text() const { return _text; }
 
     private:
+        friend EmscriptenApplication;
+
         explicit TextInputEvent(Containers::ArrayView<const char> text): _text{text}, _accepted{false} {}
 
         const Containers::ArrayView<const char> _text;

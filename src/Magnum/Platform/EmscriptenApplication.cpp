@@ -28,7 +28,6 @@
 
 #include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
-
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Debug.h>
@@ -98,11 +97,11 @@ namespace {
 
     /* Predicate for Entry "less than" to use with std::lower_bound */
     struct EntryCompare {
-        bool operator()(const Entry& a, const char* const& b) {
+        bool operator()(const Entry& a, const char* const b) {
             return std::strcmp(a.key, b) < 0;
         }
 
-        bool operator()(const char*& a, const Entry& b) {
+        bool operator()(const char* const a, const Entry& b) {
             return std::strcmp(a, b.key) < 0;
         }
     };
@@ -115,8 +114,8 @@ namespace {
         @param code Keyboard layout independent key string, e.g. 'KeyA' or 'Minus'.
                     Note that the y key on some layouts may result in 'KeyZ'.
      */
-    Key toKey(const EM_UTF8* key, const EM_UTF8* code) {
-        const size_t keyLength = std::strlen(key);
+    Key toKey(const EM_UTF8* const key, const EM_UTF8* const code) {
+        const std::size_t keyLength = std::strlen(key);
         if(keyLength == 0) return Key::Unknown;
 
         /* We use key for a-z as it gives us a keyboard layout respecting
@@ -129,7 +128,7 @@ namespace {
 
         /* We use code for 0-9 as it allows us to differentiate towards Numpad digits.
         For digits independent of numpad or not, key is e.g. '0' for Zero */
-        const size_t codeLength = std::strlen(code);
+        const std::size_t codeLength = std::strlen(code);
         if(Utility::String::viewBeginsWith({code, codeLength}, "Digit")) {
             return Key(code[5]);
 
@@ -146,20 +145,15 @@ namespace {
 
             /* Numpad0 - Numpad9 */
             const Int num = numKey[0] - '0';
-            if(num >= 0 && num <= 9) {
-                return Key(num + Int(Key::NumZero));
-            }
+            if(num >= 0 && num <= 9) return Key(num + Int(Key::NumZero));
 
             return Key::Unknown;
         }
 
-        const auto mapping = Containers::arrayView(KeyMapping,
-            Containers::arraySize(KeyMapping));
-        const Entry* found =
-            std::lower_bound(mapping.begin(), mapping.end(), code, EntryCompare{});
-        if(found != mapping.end() && std::strcmp(found->key, code) == 0) {
+        const Containers::ArrayView<const Entry> mapping = KeyMapping;
+        const Entry* found = std::lower_bound(mapping.begin(), mapping.end(), code, EntryCompare{});
+        if(found != mapping.end() && std::strcmp(found->key, code) == 0)
             return found->value;
-        }
 
         /* F1 - F12 */
         if(code[0] == 'F') {
@@ -175,7 +169,6 @@ namespace {
 
         return Key::Unknown;
     }
-
 }
 
 #ifdef MAGNUM_TARGET_GL
@@ -573,7 +566,7 @@ Vector2 EmscriptenApplication::MouseScrollEvent::offset() const {
         DOM_DELTA_PAGE => 1 page = 80 steps
      */
     const Float f = (_event->deltaMode == DOM_DELTA_PIXEL) ? -0.01f :
-                ((_event->deltaMode == DOM_DELTA_LINE) ? -1.0f/3.0f : -80.0f);
+        ((_event->deltaMode == DOM_DELTA_LINE) ? -1.0f/3.0f : -80.0f);
 
     return {f*Float(_event->deltaX), f*Float(_event->deltaY)};
 }
@@ -597,9 +590,8 @@ Key EmscriptenApplication::KeyEvent::key() const {
 
 std::string EmscriptenApplication::KeyEvent::keyName() const {
     if((_event->key[0] >= 'a' && _event->key[0] <= 'z') ||
-        (_event->key[0] >= 'A' && _event->key[0] <= 'Z')) {
-        return _event->key;
-    }
+       (_event->key[0] >= 'A' && _event->key[0] <= 'Z')) return _event->key;
+
     return _event->code;
 }
 
