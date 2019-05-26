@@ -49,6 +49,7 @@ struct EmscriptenKeyboardEvent;
 struct EmscriptenMouseEvent;
 struct EmscriptenWheelEvent;
 struct EmscriptenUiEvent;
+typedef int EMSCRIPTEN_WEBGL_CONTEXT_HANDLE;
 #endif
 
 namespace Magnum { namespace Platform {
@@ -308,6 +309,16 @@ class EmscriptenApplication {
          * implementations.
          */
         void exit(int exitCode = 0);
+
+        #ifdef MAGNUM_TARGET_GL
+        /**
+         * @brief Underlying WebGL context
+         *
+         * Use in case you need to call Emscripten functionality directly.
+         * Returns @cpp 0 @ce in case the context was not created yet.
+         */
+        EMSCRIPTEN_WEBGL_CONTEXT_HANDLE glContext() { return _glContext; }
+        #endif
 
     protected:
         /* Nobody will need to have (and delete) EmscriptenApplication*, thus
@@ -574,6 +585,7 @@ class EmscriptenApplication {
         Flags _flags;
 
         #ifdef MAGNUM_TARGET_GL
+        EMSCRIPTEN_WEBGL_CONTEXT_HANDLE _glContext{};
         Containers::Pointer<Platform::GLContext> _context;
         #endif
 

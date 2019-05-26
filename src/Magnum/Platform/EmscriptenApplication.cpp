@@ -208,7 +208,11 @@ EmscriptenApplication::EmscriptenApplication(const Arguments& arguments, NoCreat
 }
 
 EmscriptenApplication::~EmscriptenApplication() {
-    emscripten_webgl_make_context_current(0);
+    #ifdef MAGNUM_TARGET_GL
+    _context.reset();
+
+    emscripten_webgl_destroy_context(_glContext);
+    #endif
 }
 
 void EmscriptenApplication::create() {
@@ -335,9 +339,8 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     const Vector2i scaledCanvasSize = canvasSize*_dpiScaling*_devicePixelRatio;
     emscripten_set_canvas_element_size("#canvas", scaledCanvasSize.x(), scaledCanvasSize.y());
 
-    /* Create surface and context */
-    EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context =
-        emscripten_webgl_create_context("#canvas", &attrs);
+    /* Create WebGL context */
+    EMSCRIPTEN_WEBGL_CONTEXT_HANDLE context = emscripten_webgl_create_context("#canvas", &attrs);
     if(!context) {
         /* When context creation fails, `context` is a negative integer
            matching EMSCRIPTEN_RESULT_* defines */
@@ -347,8 +350,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     }
 
     /* Make the context current */
-    CORRADE_INTERNAL_ASSERT_OUTPUT(
-        emscripten_webgl_make_context_current(context) == EMSCRIPTEN_RESULT_SUCCESS);
+    CORRADE_INTERNAL_ASSERT_OUTPUT(emscripten_webgl_make_context_current(_glContext = context) == EMSCRIPTEN_RESULT_SUCCESS);
 
     setupCallbacks(!!(configuration.windowFlags() & Configuration::WindowFlag::Resizable));
 
