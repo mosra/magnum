@@ -549,17 +549,15 @@ EmscriptenApplication::GLConfiguration::GLConfiguration():
     _colorBufferSize{8, 8, 8, 0}, _depthBufferSize{24}, _stencilBufferSize{0} {}
 #endif
 
-void EmscriptenApplication::mainLoopIteration() {
-    if(!(_flags & Flag::Redraw)) return;
+int EmscriptenApplication::exec() {
+    emscripten_set_main_loop_arg([](void* userData) {
+        auto& app = *static_cast<EmscriptenApplication*>(userData);
+        if(!(app._flags & Flag::Redraw)) return;
 
-    _flags &= ~Flag::Redraw;
-    drawEvent();
-}
-
-void EmscriptenApplication::exec() {
-    emscripten_set_main_loop_arg([](void* arg) {
-        static_cast<EmscriptenApplication*>(arg)->mainLoopIteration();
+        app._flags &= ~Flag::Redraw;
+        app.drawEvent();
     }, this, 0, true);
+    return 0;
 }
 
 void EmscriptenApplication::exit(int) {

@@ -292,32 +292,22 @@ class EmscriptenApplication {
         EmscriptenApplication& operator=(EmscriptenApplication&&) = delete;
 
         /**
-         * @brief Execute main loop
+         * @brief Execute the application
          *
-         * Calls @ref mainLoopIteration() in a loop until @ref exit() is
+         * Sets up Emscripten to execute event handlers until @ref exit() is
          * called. See @ref MAGNUM_EMSCRIPTENAPPLICATION_MAIN() for usage
          * information.
          */
-        void exec();
+        int exec();
 
         /**
          * @brief Exit application main loop
-         * @param exitCode Exit code for compatibility with other application
-         *                 implementations
          *
-         * Stops main loop started by @ref exec().
+         * Stops execution started by @ref exec(). The @p exitCode is ignored
+         * and present only for API compatibility with other app
+         * implementations.
          */
         void exit(int exitCode = 0);
-
-        /**
-         * @brief Run one iteration of application main loop
-         *
-         * Called internally from @ref exec(). If you want to have better
-         * control over how the main loop behaves, you can call this function
-         * yourself from your own `main()` function instead of it being called
-         * automatically from @ref exec() / @ref MAGNUM_EMSCRIPTENAPPLICATION_MAIN().
-         */
-        void mainLoopIteration();
 
     protected:
         /* Nobody will need to have (and delete) EmscriptenApplication*, thus
