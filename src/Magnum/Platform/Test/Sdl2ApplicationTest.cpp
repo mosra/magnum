@@ -33,7 +33,9 @@ namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct Sdl2ApplicationTest: Platform::Application {
     /* For testing resize events */
-    explicit Sdl2ApplicationTest(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setWindowFlags(Configuration::WindowFlag::Resizable)} {}
+    explicit Sdl2ApplicationTest(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setWindowFlags(Configuration::WindowFlag::Resizable)} {
+        Debug{} << "window size" << windowSize() << framebufferSize() << dpiScaling();
+    }
 
     void exitEvent(ExitEvent& event) override {
         Debug{} << "application exiting";
