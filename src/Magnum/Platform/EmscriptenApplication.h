@@ -989,14 +989,9 @@ class EmscriptenApplication::MouseEvent: public EmscriptenApplication::InputEven
          * @see @ref button()
          */
         enum class Button: std::int32_t {
-            /** Left mouse button */
-            Left = 1 << 0,
-
-            /** Middle mouse button */
-            Middle = 1 << 1,
-
-            /** Right mouse button */
-            Right = 1 << 2
+            Left,       /**< Left mouse button */
+            Middle,     /**< Middle mouse button */
+            Right       /**< Right mouse button */
         };
 
         /** @brief Button */
@@ -1028,7 +1023,7 @@ class EmscriptenApplication::MouseMoveEvent: public EmscriptenApplication::Input
          *
          * @see @ref buttons()
          */
-        enum class Button: std::int32_t {
+        enum class Button: Int {
             /** Left mouse button */
             Left = 1 << 0,
 

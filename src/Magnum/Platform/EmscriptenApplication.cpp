@@ -530,7 +530,7 @@ void EmscriptenApplication::exit(int) {
 }
 
 EmscriptenApplication::MouseEvent::Button EmscriptenApplication::MouseEvent::button() const {
-    return Button(1 << _event->button);
+    return Button(_event->button);
 }
 
 Vector2i EmscriptenApplication::MouseEvent::position() const {
