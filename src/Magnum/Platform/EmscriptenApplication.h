@@ -597,7 +597,7 @@ class EmscriptenApplication::GLConfiguration {
          * @brief Set context flags
          * @return Reference to self (for method chaining)
          *
-         * Default is no flags.
+         * Default is @ref Flag::EnableExtensionsByDefault.
          * @see @ref addFlags(), @ref clearFlags(), @ref GL::Context::flags()
          */
         GLConfiguration& setFlags(Flags flags) {
@@ -706,7 +706,7 @@ class EmscriptenApplication::GLConfiguration {
         Int _depthBufferSize, _stencilBufferSize;
         Int _sampleCount;
 
-        Flags _flags;
+        Flags _flags{Flag::EnableExtensionsByDefault};
 };
 
 CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::GLConfiguration::Flags)
