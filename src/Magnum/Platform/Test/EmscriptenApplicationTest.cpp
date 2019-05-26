@@ -27,14 +27,21 @@
 #include "Magnum/Platform/EmscriptenApplication.h"
 #include "Magnum/GL/Renderer.h"
 #include "Magnum/GL/DefaultFramebuffer.h"
+#include "Magnum/GL/Mesh.h"
 
 namespace Magnum { namespace Platform { namespace Test {
 
 struct EmscriptenApplicationTest: Platform::Application {
     /* For testing resize events */
     explicit EmscriptenApplicationTest(const Arguments& arguments):
-        Platform::Application{arguments, Configuration{}
-            .setWindowFlags(Configuration::WindowFlag::Resizable)} {
+        Platform::Application{arguments,
+            Configuration{}.setWindowFlags(Configuration::WindowFlag::Resizable)
+            //, GLConfiguration{}.setFlags({})
+        } {
+
+        /* This uses a VAO on WebGL 1, so it will crash in case GL flags are
+           missing EnableExtensionsByDefault (uncomment above) */
+        GL::Mesh mesh;
     }
 
     virtual void drawEvent() override {
