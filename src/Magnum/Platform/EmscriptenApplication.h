@@ -182,8 +182,16 @@ class EmscriptenApplication {
         /**
          * @brief Construct with given configuration
          *
-         * Equivalent to calling @ref EmscriptenApplication(const Arguments&, const Configuration&, const GLConfiguration&)
+         * If @ref Configuration::WindowFlag::Contextless is present or Magnum
+         * was not built with @ref MAGNUM_TARGET_GL, this creates a window
+         * without any GPU context attached, leaving that part on the user.
+         *
+         * If none of the flags is present and Magnum was built with
+         * @ref MAGNUM_TARGET_GL, this is equivalent to calling
+         * @ref EmscriptenApplication(const Arguments&, const Configuration&, const GLConfiguration&)
          * with default-constructed @ref GLConfiguration.
+         *
+         * See also @ref building-features for more information.
          */
         explicit EmscriptenApplication(const Arguments& arguments, const Configuration& configuration);
 
