@@ -210,8 +210,6 @@ class EmscriptenApplication {
         /** @brief Moving is not allowed */
         EmscriptenApplication(EmscriptenApplication&&) = delete;
 
-        virtual ~EmscriptenApplication();
-
         /** @brief Copying is not allowed */
         EmscriptenApplication& operator=(const EmscriptenApplication&) = delete;
 
@@ -219,6 +217,10 @@ class EmscriptenApplication {
         EmscriptenApplication& operator=(EmscriptenApplication&&) = delete;
 
     protected:
+        /* Nobody will need to have (and delete) EmscriptenApplication*, thus
+           this is faster than public pure virtual destructor */
+        ~EmscriptenApplication();
+
         #ifdef MAGNUM_TARGET_GL
         /**
          * @brief Set up a canvas with given configuration for WebGL context
