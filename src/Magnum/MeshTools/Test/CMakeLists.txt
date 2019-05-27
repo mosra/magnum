@@ -33,6 +33,7 @@ corrade_add_test(MeshToolsRemoveDuplicatesTest RemoveDuplicatesTest.cpp LIBRARIE
 corrade_add_test(MeshToolsSubdivideTest SubdivideTest.cpp LIBRARIES Magnum)
 corrade_add_test(MeshToolsTipsifyTest TipsifyTest.cpp LIBRARIES MagnumMeshTools)
 corrade_add_test(MeshToolsTransformTest TransformTest.cpp LIBRARIES MagnumMeshTools)
+corrade_add_test(MeshToolsSubdivideRemov___Benchmark SubdivideRemoveDuplicatesBenchmark.cpp LIBRARIES MagnumPrimitives)
 
 # Graceful assert for testing
 set_property(TARGET
@@ -53,13 +54,8 @@ set_target_properties(
     MeshToolsSubdivideTest
     MeshToolsTipsifyTest
     MeshToolsTransformTest
+    MeshToolsSubdivideRemov___Benchmark
     PROPERTIES FOLDER "Magnum/MeshTools/Test")
-
-if(WITH_PRIMITIVES)
-    corrade_add_test(MeshToolsSubdivideRemov___Benchmark SubdivideRemoveDuplicatesBenchmark.cpp LIBRARIES MagnumPrimitives)
-
-    set_target_properties(MeshToolsSubdivideRemov___Benchmark PROPERTIES FOLDER "Magnum/MeshTools/Test")
-endif()
 
 if(BUILD_GL_TESTS)
     # Otherwise CMake complains that Corrade::PluginManager is not found
