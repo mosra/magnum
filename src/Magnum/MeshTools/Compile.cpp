@@ -130,7 +130,7 @@ GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
     GL::Mesh mesh;
     mesh.setPrimitive(meshData.primitive());
 
-    const bool generateNormals = flags & CompileFlag::GenerateFlatNormals && meshData.primitive() == MeshPrimitive::Triangles;
+    const bool generateNormals = flags & (CompileFlag::GenerateFlatNormals|CompileFlag::GenerateSmoothNormals) && meshData.primitive() == MeshPrimitive::Triangles;
 
     /* Decide about stride and offsets */
     UnsignedInt stride = sizeof(Shaders::Generic3D::Position::Type);
@@ -169,8 +169,9 @@ GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
     Containers::Array<Vector2> textureCoords2DStorage;
     Containers::Array<Color4> colorStorage;
     if(generateNormals) {
-        /* If the mesh is indexed, duplicate all attributes */
-        if(meshData.isIndexed()) {
+        /* If we want flat normals and the mesh is indexed, duplicate all
+           attributes */
+        if(flags & CompileFlag::GenerateFlatNormals && meshData.isIndexed()) {
             positionStorage = duplicate(
                 Containers::stridedArrayView(meshData.indices()), Containers::stridedArrayView(meshData.positions(0)));
             positions = Containers::arrayView(positionStorage);
@@ -194,9 +195,15 @@ GL::Mesh compile(const Trade::MeshData3D& meshData, CompileFlags flags) {
                 colors = meshData.colors(0);
         }
 
-        normalStorage = generateFlatNormals(positions);
+        if(flags & CompileFlag::GenerateFlatNormals || !meshData.isIndexed()) {
+            normalStorage = generateFlatNormals(positions);
+            useIndices = false;
+        } else {
+            normalStorage = generateSmoothNormals<UnsignedInt>(meshData.indices(), positions);
+            useIndices = true;
+        }
+
         normals = Containers::arrayView(normalStorage);
-        useIndices = false;
 
     } else {
         positions = meshData.positions(0);

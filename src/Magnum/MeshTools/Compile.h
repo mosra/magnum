@@ -59,7 +59,17 @@ enum class CompileFlag: UnsignedByte {
      * mesh or doesn't have 3D positions, this flag does nothing. If the mesh
      * already has its own normals, these get replaced.
      */
-    GenerateFlatNormals = 1 << 0
+    GenerateFlatNormals = 1 << 0,
+
+    /**
+     * If the mesh @ref MeshPrimitive::Triangles, generates normals using
+     * @ref MeshTools::generateSmoothNormals() based on triangle adjacency
+     * information from the index buffer. If the mesh is not indexed, this
+     * behaves the same as @ref CompileFlag::GenerateFlatNormals. If the mesh
+     * is not a triangle mesh or doesn't have 3D positions, this flag does
+     * nothing. If the mesh already has its own normals, these get replaced.
+     */
+    GenerateSmoothNormals = 1 << 1
 };
 
 /**

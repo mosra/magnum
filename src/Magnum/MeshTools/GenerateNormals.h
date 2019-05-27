@@ -52,7 +52,8 @@ Example usage:
 
 @snippet MagnumMeshTools.cpp generateFlatNormals
 
-@see @ref generateFlatNormalsInto(), @ref generateSmoothNormals()
+@see @ref generateFlatNormalsInto(), @ref generateSmoothNormals(),
+    @ref MeshTools::CompileFlag::GenerateFlatNormals
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateFlatNormals(const Containers::StridedArrayView1D<const Vector3>& positions);
 
@@ -102,7 +103,8 @@ vertex; hard edges are preserved where adjacent triangles don't share vertices.
 Implementation is based on the article
 [Weighted Vertex Normals](http://www.bytehazard.com/articles/vertnorm.html) by
 Martijn Buijs.
-@see @ref generateSmoothNormalsInto(), @ref generateFlatNormals()
+@see @ref generateSmoothNormalsInto(), @ref generateFlatNormals(),
+    @ref MeshTools::CompileFlag::GenerateSmoothNormals
 */
 template<class T> MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<const Vector3>& positions);
 

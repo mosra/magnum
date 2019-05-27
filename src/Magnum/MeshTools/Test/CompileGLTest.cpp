@@ -56,8 +56,9 @@ enum class Flag {
     NonIndexed = 1 << 0,
     Normals = 1 << 1,
     GeneratedFlatNormals = 1 << 2,
-    TextureCoordinates2D = 1 << 3,
-    Colors = 1 << 4
+    GeneratedSmoothNormals = 1 << 3,
+    TextureCoordinates2D = 1 << 4,
+    Colors = 1 << 5
 };
 
 typedef Containers::EnumSet<Flag> Flags;
@@ -118,7 +119,12 @@ constexpr struct {
     {"positions, nonindexed + gen flat normals", Flag::NonIndexed|Flag::GeneratedFlatNormals},
     {"positions, nonindexed + gen flat normals + colors", Flag::NonIndexed|Flag::GeneratedFlatNormals|Flag::Colors},
     {"positions, nonindexed + gen flat normals + texcoords", Flag::NonIndexed|Flag::GeneratedFlatNormals|Flag::TextureCoordinates2D},
-    {"positions, nonindexed + gen flat normals + texcoords + colors", Flag::NonIndexed|Flag::GeneratedFlatNormals|Flag::TextureCoordinates2D|Flag::Colors}
+    {"positions, nonindexed + gen flat normals + texcoords + colors", Flag::NonIndexed|Flag::GeneratedFlatNormals|Flag::TextureCoordinates2D|Flag::Colors},
+    {"positions, gen smooth normals", Flag::GeneratedSmoothNormals},
+    {"positions, gen smooth normals + colors", Flag::GeneratedSmoothNormals|Flag::Colors},
+    {"positions, gen smooth normals + texcoords", Flag::GeneratedSmoothNormals|Flag::TextureCoordinates2D},
+    {"positions, gen smooth normals + texcoords + colors", Flag::GeneratedSmoothNormals|Flag::TextureCoordinates2D|Flag::Colors},
+    {"positions, nonindexed + gen smooth normals", Flag::NonIndexed|Flag::GeneratedSmoothNormals},
 };
 
 using namespace Math::Literals;
@@ -394,8 +400,12 @@ void CompileGLTest::threeDimensions() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    GL::Mesh mesh = compile(Trade::MeshData3D{MeshPrimitive::Triangles, indices, {positions}, normals, textureCoordinates2D, colors},
-        data.flags & Flag::GeneratedFlatNormals ? CompileFlag::GenerateFlatNormals : CompileFlags{});
+    CompileFlags flags;
+    if(data.flags & Flag::GeneratedFlatNormals)
+        flags |= CompileFlag::GenerateFlatNormals;
+    else if(data.flags & Flag::GeneratedSmoothNormals)
+        flags |= CompileFlag::GenerateSmoothNormals;
+    GL::Mesh mesh = compile(Trade::MeshData3D{MeshPrimitive::Triangles, indices, {positions}, normals, textureCoordinates2D, colors}, flags);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -439,8 +449,10 @@ void CompileGLTest::threeDimensions() {
             (DebugTools::CompareImageToFile{_manager, 0.5f, 0.0113f}));
     }
 
-    /* Check generated flat normals with the phong shader */
-    if(data.flags & Flag::GeneratedFlatNormals) {
+    /* Check generated flat / smooth normals with the phong shader. If smooth
+       normals are requested but the mesh is not indexed, it should behave the
+       same as flat normals. */
+    if(data.flags & Flag::GeneratedFlatNormals || (data.flags & Flag::GeneratedSmoothNormals && data.flags & Flag::NonIndexed)) {
         _framebuffer.clear(GL::FramebufferClear::Color);
         _phong
             .setDiffuseColor(0x33ff66_rgbf)
@@ -455,6 +467,21 @@ void CompileGLTest::threeDimensions() {
             Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "phong-flat.tga"),
             /* SwiftShader has some minor off-by-one precision differences */
             (DebugTools::CompareImageToFile{_manager, 0.25f, 0.0079f}));
+    } else if(data.flags & Flag::GeneratedSmoothNormals) {
+        _framebuffer.clear(GL::FramebufferClear::Color);
+        _phong
+            .setDiffuseColor(0x33ff66_rgbf)
+            .setTransformationMatrix(transformation)
+            .setNormalMatrix(transformation.rotationScaling())
+            .setProjectionMatrix(projection);
+        mesh.draw(_phong);
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+        CORRADE_COMPARE_WITH(
+            _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
+            Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "phong-smooth.tga"),
+            /* SwiftShader has some minor off-by-one precision differences */
+            (DebugTools::CompareImageToFile{_manager, 0.25f, 0.0059f}));
     }
 
     /* Check with the colored shader, if we have colors */
