@@ -137,6 +137,9 @@ See also:
 
 -   @ref MeshTools::duplicateInto() alternative to @ref MeshTools::duplicate()
     that writes the output to an existing location
+-   @ref MeshTools::generateFlatNormalsInto() alternative to
+    @ref MeshTools::generateFlatNormals() that writes the output to an existing
+    location
 
 @subsubsection changelog-latest-new-platform Platform libraries
 
@@ -415,6 +418,12 @@ See also:
     @ref Corrade::Containers::ArrayView. This header is included automatically
     when @ref MAGNUM_BUILD_DEPRECATED is enabled, include it explicitly to stay
     forward compatible.
+-   @cpp Magnum/MeshTools/GenerateFlatNormals.h @ce is deprecated, use
+    @cpp Magnum/MeshTools/GenerateNormals.h @ce instead
+-   @cpp MeshTools::generateFlatNormals(const std::vector<UnsignedInt>&, const std::vector<Vector3>&) @ce
+    is deprecated for doing too many things at once and being too tied to one
+    particular STL container, use @ref MeshTools::generateFlatNormals(const Containers::StridedArrayView1D<const Vector3>&)
+    instead
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

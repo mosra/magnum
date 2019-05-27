@@ -23,16 +23,45 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "GenerateFlatNormals.h"
+#include "GenerateNormals.h"
+
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/StridedArrayView.h>
 
 #include "Magnum/Math/Vector3.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <vector>
+
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
+#endif
 
 namespace Magnum { namespace MeshTools {
 
-std::tuple<std::vector<UnsignedInt>, std::vector<Vector3>> generateFlatNormals(const std::vector<UnsignedInt>& indices, const std::vector<Vector3>& positions) {
-    CORRADE_ASSERT(!(indices.size()%3), "MeshTools::generateFlatNormals(): index count is not divisible by 3!", (std::tuple<std::vector<UnsignedInt>, std::vector<Vector3>>()));
+void generateFlatNormalsInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals) {
+    CORRADE_ASSERT(positions.size() % 3 == 0,
+        "MeshTools::generateFlatNormalsInto(): position count not divisible by 3", );
+    CORRADE_ASSERT(normals.size() == positions.size(),
+        "MeshTools::generateFlatNormalsInto(): bad output size, expected" << positions.size() << "but got" << normals.size(), );
+
+    for(std::size_t i = 0; i != positions.size(); i += 3)
+        normals[i] = normals[i + 1] = normals[i + 2] = Math::cross(
+            positions[i + 2] - positions[i + 1],
+            positions[i] - positions[i+1]).normalized();
+}
+
+Containers::Array<Vector3> generateFlatNormals(const Containers::StridedArrayView1D<const Vector3>& positions) {
+    Containers::Array<Vector3> out{Containers::NoInit, positions.size()};
+    generateFlatNormalsInto(positions, Containers::arrayView(out));
+    return out;
+}
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+/* Original implementation kept verbatim as I can't be bothered rewriting it
+   using the new APIs (the original test is kept as well) */
+std::pair<std::vector<UnsignedInt>, std::vector<Vector3>> generateFlatNormals(const std::vector<UnsignedInt>& indices, const std::vector<Vector3>& positions) {
+    CORRADE_ASSERT(!(indices.size()%3), "MeshTools::generateFlatNormals(): index count is not divisible by 3!", {});
 
     /* Create normal for every triangle (assuming counterclockwise winding) */
     std::vector<UnsignedInt> normalIndices;
@@ -52,7 +81,8 @@ std::tuple<std::vector<UnsignedInt>, std::vector<Vector3>> generateFlatNormals(c
 
     /* Remove duplicate normals and return */
     normalIndices = MeshTools::duplicate(normalIndices, MeshTools::removeDuplicates(normals));
-    return std::make_tuple(std::move(normalIndices), std::move(normals));
+    return {std::move(normalIndices), std::move(normals)};
 }
+#endif
 
 }}

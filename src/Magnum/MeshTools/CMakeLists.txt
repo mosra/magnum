@@ -32,14 +32,14 @@ set(MagnumMeshTools_GracefulAssert_SRCS
     CombineIndexedArrays.cpp
     CompressIndices.cpp
     FlipNormals.cpp
-    GenerateFlatNormals.cpp)
+    GenerateNormals.cpp)
 
 set(MagnumMeshTools_HEADERS
     CombineIndexedArrays.h
     CompressIndices.h
     Duplicate.h
     FlipNormals.h
-    GenerateFlatNormals.h
+    GenerateNormals.h
     Interleave.h
     RemoveDuplicates.h
     Subdivide.h
@@ -47,6 +47,10 @@ set(MagnumMeshTools_HEADERS
     Transform.h
 
     visibility.h)
+
+if(BUILD_DEPRECATED)
+    list(APPEND MagnumMeshTools_HEADERS GenerateFlatNormals.h)
+endif()
 
 if(TARGET_GL)
     list(APPEND MagnumMeshTools_SRCS

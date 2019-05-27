@@ -29,7 +29,7 @@
 #include "Magnum/MeshTools/CombineIndexedArrays.h"
 #include "Magnum/MeshTools/CompressIndices.h"
 #include "Magnum/MeshTools/Duplicate.h"
-#include "Magnum/MeshTools/GenerateFlatNormals.h"
+#include "Magnum/MeshTools/GenerateNormals.h"
 #include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/MeshTools/RemoveDuplicates.h"
 #include "Magnum/MeshTools/Transform.h"
@@ -84,20 +84,15 @@ Containers::Array<UnsignedShort> indexData =
 
 {
 /* [generateFlatNormals] */
-std::vector<UnsignedInt> vertexIndices;
-std::vector<Vector3> positions;
+Containers::ArrayView<UnsignedInt> indices;
+Containers::ArrayView<Vector3> indexedPositions;
 
-std::vector<UnsignedInt> normalIndices;
-std::vector<Vector3> normals;
-std::tie(normalIndices, normals) =
-    MeshTools::generateFlatNormals(vertexIndices, positions);
+Containers::Array<Vector3> positions =
+    MeshTools::duplicate<UnsignedInt, Vector3>(indices, indexedPositions);
+
+Containers::Array<Vector3> normals =
+    MeshTools::generateFlatNormals(positions);
 /* [generateFlatNormals] */
-
-/* [generateFlatNormals-recombine] */
-std::vector<UnsignedInt> indices = MeshTools::combineIndexedArrays(
-    std::make_pair(std::cref(vertexIndices), std::ref(positions)),
-    std::make_pair(std::cref(normalIndices), std::ref(normals)));
-/* [generateFlatNormals-recombine] */
 }
 
 {
