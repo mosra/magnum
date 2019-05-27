@@ -140,6 +140,8 @@ See also:
 -   @ref MeshTools::generateFlatNormalsInto() alternative to
     @ref MeshTools::generateFlatNormals() that writes the output to an existing
     location
+-   @ref MeshTools::generateSmoothNormals() for generating weighted smooth
+    normals of indexed meshes
 -   @ref MeshTools::compile(const Trade::MeshData3D&, CompileFlags) now accepts
     optional flags to control normal generation
 

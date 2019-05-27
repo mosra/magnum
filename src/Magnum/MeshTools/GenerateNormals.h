@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Function @ref Magnum::MeshTools::generateFlatNormals(), @ref Magnum::MeshTools::generateFlatNormalsInto()
+ * @brief Function @ref Magnum::MeshTools::generateFlatNormals(), @ref Magnum::MeshTools::generateFlatNormalsInto(), @ref Magnum::MeshTools::generateSmoothNormals(), @ref Magnum::MeshTools::generateSmoothNormalsInto()
  */
 
 #include "Magnum/Magnum.h"
@@ -52,7 +52,7 @@ Example usage:
 
 @snippet MagnumMeshTools.cpp generateFlatNormals
 
-@see @ref generateFlatNormalsInto()
+@see @ref generateFlatNormalsInto(), @ref generateSmoothNormals()
 */
 MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateFlatNormals(const Containers::StridedArrayView1D<const Vector3>& positions);
 
@@ -64,6 +64,7 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateFlatNormals(const Con
 A variant of @ref generateFlatNormals() that fills existing memory instead of
 allocating a new array. The @p normals array is expected to have the same size
 as @p positions.
+@see @ref generateSmoothNormalsInto()
 */
 MAGNUM_MESHTOOLS_EXPORT void generateFlatNormalsInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals);
 
@@ -85,6 +86,51 @@ duplicates before returning. Expects that the position count is divisible by 3.
     @ref generateFlatNormals(const Containers::StridedArrayView1D<const Vector3>&).
 */
 CORRADE_DEPRECATED("use generateFlatNormals(const Containers::StridedArrayView1D<const Vector3>&) instead") std::pair<std::vector<UnsignedInt>, std::vector<Vector3>> MAGNUM_MESHTOOLS_EXPORT generateFlatNormals(const std::vector<UnsignedInt>& indices, const std::vector<Vector3>& positions);
+#endif
+
+/**
+@brief Generate smooth normals
+@param indices      Triangle face indices
+@param positions    Triangle vertex positions
+@return Per-vertex normals
+
+Uses the @p indices array to discover adjacent triangles and then for each
+vertex position calculates a normal averaged from all triangles that share it.
+The normal is weighted according to adjacent triangle area and angle at given
+vertex; hard edges are preserved where adjacent triangles don't share vertices.
+
+Implementation is based on the article
+[Weighted Vertex Normals](http://www.bytehazard.com/articles/vertnorm.html) by
+Martijn Buijs.
+@see @ref generateSmoothNormalsInto(), @ref generateFlatNormals()
+*/
+template<class T> MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoothNormals(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<const Vector3>& positions);
+
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
+extern template MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoothNormals<UnsignedByte>(const Containers::StridedArrayView1D<const UnsignedByte>&, const Containers::StridedArrayView1D<const Vector3>&);
+extern template MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoothNormals<UnsignedShort>(const Containers::StridedArrayView1D<const UnsignedShort>&, const Containers::StridedArrayView1D<const Vector3>&);
+extern template MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoothNormals<UnsignedInt>(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const Vector3>&);
+#endif
+
+/**
+@brief Generate smooth normals into an existing array
+@param[in] indices      Triangle face indices
+@param[in] positions    Triangle vertex positions
+@param[out] normals     Where to put the generated normals
+
+A variant of @ref generateSmoothNormals() that fills existing memory instead of
+allocating a new array. The @p normals array is expected to have the same size
+as @p positions. Note that even with the output array this function isn't fully
+allocation-free --- it still allocates two additional internal arrays for
+adjacent face calculation.
+@see @ref generateFlatNormalsInto()
+*/
+template<class T> MAGNUM_MESHTOOLS_EXPORT void generateSmoothNormalsInto(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals);
+
+#if defined(CORRADE_TARGET_WINDOWS) && !defined(__MINGW32__)
+extern template MAGNUM_MESHTOOLS_EXPORT void generateSmoothNormalsInto<UnsignedByte>(const Containers::StridedArrayView1D<const UnsignedByte>&, const Containers::StridedArrayView1D<const Vector3>&, const Containers::StridedArrayView1D<Vector3>&);
+extern template MAGNUM_MESHTOOLS_EXPORT void generateSmoothNormalsInto<UnsignedShort>(const Containers::StridedArrayView1D<const UnsignedShort>&, const Containers::StridedArrayView1D<const Vector3>&, const Containers::StridedArrayView1D<Vector3>&);
+extern template MAGNUM_MESHTOOLS_EXPORT void generateSmoothNormalsInto<UnsignedInt>(const Containers::StridedArrayView1D<const UnsignedInt>&, const Containers::StridedArrayView1D<const Vector3>&, const Containers::StridedArrayView1D<Vector3>&);
 #endif
 
 }}
