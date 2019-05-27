@@ -3,7 +3,6 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
               Vladimír Vondruš <mosra@centrum.cz>
-    Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
     Copyright © 2019 Guillaume Jacquemin <williamjcm@users.noreply.github.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
@@ -25,41 +24,31 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-namespace Magnum {
+#include "Buffer.h"
 
-/** @page openal-support OpenAL support state
-@brief List of (un)supported OpenAL features and extensions.
+#include "Magnum/Math/Functions.h"
 
-@tableofcontents
-@m_footernavigation
+namespace Magnum { namespace Audio {
 
-@section openal-support-state OpenAL implementation state
+Buffer& Buffer::setLoopPoints(Int loopStart, Int loopEnd) {
+    ALint sizeInBytes;
+    ALint channels;
+    ALint bits;
 
-The extension implementation is considered complete if all its defined types,
-functions and enum values are exposed through the API.
+    alGetBufferi(_id, AL_SIZE, &sizeInBytes);
+    alGetBufferi(_id, AL_CHANNELS, &channels);
+    alGetBufferi(_id, AL_BITS, &bits);
 
-@subsection openal-extension-support Extensions
+    ALint lengthInSamples = sizeInBytes * 8 / (channels * bits);
 
-@m_class{m-fullwidth}
+    ALint loopPoints[2] = {
+        Math::max<ALint>(0, loopStart),
+        Math::min<ALint>(loopEnd, lengthInSamples)
+    };
 
-Extension                                   | Status
-------------------------------------------- | ------
-@alc_extension{ENUMERATION,EXT}             | done
-@al_extension{EXT,double}                   | done
-@al_extension{EXT,float32}                  | done
-@al_extension{EXT,ALAW}                     | done
-@al_extension{EXT,MULAW}                    | done
-@al_extension{EXT,MCFORMATS}                | done
+    alBufferiv(_id, AL_LOOP_POINTS_SOFT, &loopPoints[0]);
 
-@subsection openal-extension-support-soft OpenAL Soft Extensions
-
-@m_class{m-fullwidth}
-
-Extension                                   | Status
-------------------------------------------- | ------
-@alc_extension{SOFTX,HRTF}                  | done
-@alc_extension{SOFT,HRTF}                   | done
-@al_extension{SOFT,loop_points}             | done
-
-*/
+    return *this;
 }
+
+}}

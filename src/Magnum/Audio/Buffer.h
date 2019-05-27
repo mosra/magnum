@@ -5,6 +5,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2019 Guillaume Jacquemin <williamjcm@users.noreply.github.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -29,6 +30,7 @@
  * @brief Class @ref Magnum::Audio::Buffer
  */
 
+#include <climits>
 #include <utility>
 #include <al.h>
 #include <alc.h>
@@ -48,7 +50,7 @@
 namespace Magnum { namespace Audio {
 
 /** @brief Sample buffer */
-class Buffer {
+class MAGNUM_AUDIO_EXPORT Buffer {
     public:
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief BufferFormat
@@ -100,6 +102,57 @@ class Buffer {
         Buffer& setData(BufferFormat format, Containers::ArrayView<const void> data, ALsizei frequency) {
             alBufferData(_id, ALenum(format), data, data.size(), frequency);
             return *this;
+        }
+
+        /**
+         * @brief Set buffer loop points
+         * @param loopStart The loop's start point in samples
+         * @param loopEnd   The loop's end point in samples
+         * @return Reference to self (for method chaining)
+         *
+         * @requires_al_extension Extension @al_extension{SOFT,loop_points}
+         */
+        Buffer& setLoopPoints(Int loopStart, Int loopEnd);
+
+        /**
+         * @brief Set buffer to loop from the beginning until a certain point
+         *
+         * Equivalent to calling @ref setLoopPoints() with @p loopStart equal to
+         * 0.
+         * @param loopEnd   The loop's end point in samples
+         * @return Reference to self (for method chaining)
+         *
+         * @requires_al_extension Extension @al_extension{SOFT,loop_points}
+         */
+        Buffer& setLoopUntil(Int loopEnd) {
+            return setLoopPoints(0, loopEnd);
+        }
+
+        /**
+         * @brief Set buffer to loop from the a certain point until the end
+         *
+         * Equivalent to calling @ref setLoopPoints() with @p loopEnd equal to
+         * @p INT_MAX.
+         * @param loopStart The loop's start point in samples
+         * @return Reference to self (for method chaining)
+         *
+         * @requires_al_extension Extension @al_extension{SOFT,loop_points}
+         */
+        Buffer& setLoopSince(Int loopStart) {
+            return setLoopPoints(loopStart, INT_MAX);
+        }
+
+        /**
+         * @brief Resets the loop points
+         *
+         * Equivalent to calling @ref setLoopPoints() with @p loopStart equal to
+         * 0, and @p loopEnd equal to @p INT_MAX.
+         * @return Reference to self (for method chaining)
+         *
+         * @requires_al_extension Extension @al_extension{SOFT,loop_points}
+         */
+        Buffer& resetLoopPoints() {
+            return setLoopPoints(0, INT_MAX);
         }
 
     private:
