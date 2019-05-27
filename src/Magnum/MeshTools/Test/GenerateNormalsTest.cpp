@@ -32,8 +32,9 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 #include <Corrade/Utility/DebugStl.h>
 
-#include "Magnum/Math/Functions.h"
+#include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Math/Vector3.h"
+#include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/MeshTools/GenerateNormals.h"
 #include "Magnum/Primitives/Cylinder.h"
 #include "Magnum/Trade/MeshData3D.h"
@@ -56,6 +57,9 @@ struct GenerateNormalsTest: TestSuite::Tester {
     void smoothCylinder();
     void smoothWrongCount();
     void smoothIntoWrongSize();
+
+    void benchmarkFlat();
+    void benchmarkSmooth();
 };
 
 GenerateNormalsTest::GenerateNormalsTest() {
@@ -72,6 +76,9 @@ GenerateNormalsTest::GenerateNormalsTest() {
               &GenerateNormalsTest::smoothCylinder,
               &GenerateNormalsTest::smoothWrongCount,
               &GenerateNormalsTest::smoothIntoWrongSize});
+
+    addBenchmarks({&GenerateNormalsTest::benchmarkFlat,
+                   &GenerateNormalsTest::benchmarkSmooth}, 150);
 }
 
 /* Two vertices connected by one edge, each wound in another direction */
@@ -336,6 +343,30 @@ void GenerateNormalsTest::smoothIntoWrongSize() {
     Vector3 normals[4];
     generateSmoothNormalsInto(Containers::stridedArrayView(indices), positions, normals);
     CORRADE_COMPARE(out.str(), "MeshTools::generateSmoothNormalsInto(): bad output size, expected 3 but got 4\n");
+}
+
+void GenerateNormalsTest::benchmarkFlat() {
+    Containers::Array<Vector3> positions = duplicate(
+        Containers::stridedArrayView(BeveledCubeIndices),
+        Containers::stridedArrayView(BeveledCubePositions));
+
+    Containers::Array<Vector3> normals{Containers::NoInit, positions.size()};
+    CORRADE_BENCHMARK(10) {
+        generateFlatNormalsInto(positions, normals);
+    }
+
+    CORRADE_COMPARE(Math::min<Vector3>(normals), (Vector3{-1.0f, -1.0f, -1.0f}));
+}
+
+void GenerateNormalsTest::benchmarkSmooth() {
+    Containers::Array<Vector3> normals{Containers::NoInit, Containers::arraySize(BeveledCubePositions)};
+    CORRADE_BENCHMARK(10) {
+        generateSmoothNormalsInto(
+            Containers::stridedArrayView(BeveledCubeIndices),
+            BeveledCubePositions, normals);
+    }
+
+    CORRADE_COMPARE(Math::min<Vector3>(normals), (Vector3{-0.996072f, -0.997808f, -0.996072f}));
 }
 
 }}}}
