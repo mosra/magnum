@@ -121,7 +121,7 @@ extern template MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateSmoot
 A variant of @ref generateSmoothNormals() that fills existing memory instead of
 allocating a new array. The @p normals array is expected to have the same size
 as @p positions. Note that even with the output array this function isn't fully
-allocation-free --- it still allocates two additional internal arrays for
+allocation-free --- it still allocates three additional internal arrays for
 adjacent face calculation.
 @see @ref generateFlatNormalsInto()
 */

@@ -131,6 +131,29 @@ template<class T> void generateSmoothNormalsInto(const Containers::StridedArrayV
     /* Now, triangleCount should be all zeros, we don't need it anymore and the
        underlying `normals` array is ready to get filled with real output. */
 
+    /* Precalculate cross product and interior angles of each face --- the loop
+       below would otherwise calculate it for every vertex, which is at least
+       3x as much work */
+    Containers::Array<std::pair<Vector3, Math::Vector3<Rad>>> crossAngles{Math::NoInit, indices.size()/3};
+    for(std::size_t i = 0; i != crossAngles.size(); ++i) {
+        const Vector3 v0 = positions[indices[i*3 + 0]];
+        const Vector3 v1 = positions[indices[i*3 + 1]];
+        const Vector3 v2 = positions[indices[i*3 + 2]];
+
+        /* Cross product */
+        crossAngles[i].first = Math::cross(v2 - v1, v0 - v1);
+
+        /* Inner angle at each vertex of the triangle. The last one can be
+           calculated as a remainder to 180°. */
+        using namespace Math::Literals;
+        crossAngles[i].second[0] = Math::angle(
+            (v1 - v0).normalized(), (v2 - v0).normalized());
+        crossAngles[i].second[1] = Math::angle(
+            (v0 - v1).normalized(), (v2 - v1).normalized());
+        crossAngles[i].second[2] = Rad(180.0_degf)
+            - crossAngles[i].second[0] - crossAngles[i].second[1];
+    }
+
     /* For every vertex v, calculate normals from all faces it belongs to and
        average them */
     for(std::size_t v = 0; v != positions.size(); ++v) {
@@ -146,23 +169,15 @@ template<class T> void generateSmoothNormalsInto(const Containers::StridedArrayV
 
             /* Cross product is a vector in direction of the normal with length
                equal to size of the parallelogram */
-            const Vector3 cross = Math::cross(positions[v2i] - positions[v1i],
-                                              positions[v0i] - positions[v1i]);
+            const std::pair<Vector3, Math::Vector3<Rad>>& crossAngle = crossAngles[triangleIds[t]];
 
             /* Angle between two sides of the triangle that share vertex `v`.
-               The shared vertex can be one of the three, so three ways to
-               calculate the angle */
-            Vector3 a{Math::NoInit}, b{Math::NoInit};
-            if(v == v0i) {
-                a = positions[v1i] - positions[v0i];
-                b = positions[v2i] - positions[v0i];
-            } else if(v == v1i) {
-                a = positions[v0i] - positions[v1i];
-                b = positions[v2i] - positions[v1i];
-            } else if(v == v2i) {
-                a = positions[v0i] - positions[v2i];
-                b = positions[v1i] - positions[v2i];
-            } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+               The shared vertex can be one of the three. */
+            Rad angle;
+            if(v == v0i) angle = crossAngle.second[0];
+            else if(v == v1i) angle = crossAngle.second[1];
+            else if(v == v2i) angle = crossAngle.second[2];
+            else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
             /* The normal is cross.normalized(), we need to multiply it it by
                surface area which is cross.length()/2. Since normalization is
@@ -172,7 +187,7 @@ template<class T> void generateSmoothNormalsInto(const Containers::StridedArrayV
                that as well. Finally we need to weight by the angle, and in
                that case only the ratio is important as well, so it doesn't
                matter if degrees or radians. */
-            normals[v] += cross*Float(Math::angle(a.normalized(), b.normalized()));
+            normals[v] += crossAngle.first*Float(angle);
         }
 
         /* Normalize the accumulated direction */
