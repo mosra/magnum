@@ -87,8 +87,8 @@ template<class T> Containers::Array<T> compressIndicesAs(const std::vector<Unsig
     return buffer;
 }
 
-template Containers::Array<UnsignedByte> compressIndicesAs(const std::vector<UnsignedInt>& indices);
-template Containers::Array<UnsignedShort> compressIndicesAs(const std::vector<UnsignedInt>& indices);
-template Containers::Array<UnsignedInt> compressIndicesAs(const std::vector<UnsignedInt>& indices);
+template Containers::Array<UnsignedByte> compressIndicesAs(const std::vector<UnsignedInt>&);
+template Containers::Array<UnsignedShort> compressIndicesAs(const std::vector<UnsignedInt>&);
+template Containers::Array<UnsignedInt> compressIndicesAs(const std::vector<UnsignedInt>&);
 
 }}
