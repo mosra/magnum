@@ -53,12 +53,14 @@ template<std::size_t size, class T> Float calculateImageDelta(const ImageView2D&
     /* Precalculate parameters for pixel access */
     Math::Vector2<std::size_t> dataOffset, dataSize;
 
+    int64_t dataOffsetSum = dataOffset.sum();
+
     std::tie(dataOffset, dataSize) = actual.dataProperties();
-    const char* const actualPixels = actual.data() + dataOffset.sum();
+    const char* const actualPixels = actual.data() + dataOffsetSum;
     const std::size_t actualStride = dataSize.x();
 
     std::tie(dataOffset, dataSize) = expected.dataProperties();
-    const char* const expectedPixels = expected.data() + dataOffset.sum();
+    const char* const expectedPixels = expected.data() + dataOffsetSum;
     const std::size_t expectedStride = dataSize.x();
 
     /* Calculate deltas and maximal value of them */
@@ -258,12 +260,14 @@ void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, cons
     /* Precalculate parameters for pixel access */
     Math::Vector2<std::size_t> offset, size;
 
+    int64_t offsetSum = offset.sum();
+
     std::tie(offset, size) = actual.dataProperties();
-    const char* const actualPixels = actual.data() + offset.sum();
+    const char* const actualPixels = actual.data() + offsetSum;
     const std::size_t actualStride = size.x();
 
     std::tie(offset, size) = expected.dataProperties();
-    const char* const expectedPixels = expected.data() + offset.sum();
+    const char* const expectedPixels = expected.data() + offsetSum;
     const std::size_t expectedStride = size.x();
 
     /* Find first maxCount values above mean threshold and put them into a

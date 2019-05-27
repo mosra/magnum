@@ -58,7 +58,8 @@ template<UnsignedInt dimensions, class T, class Image> Containers::StridedArrayV
 
     static_assert(sizeof(decltype(image.data().front())) == 1,
         "pointer arithmetic expects image data type to have 1 byte");
-    return {image.data().suffix(properties.first[dimensions - 1]), image.data() + properties.first.sum(), size, stride};
+
+    return {image.data().suffix(properties.first[dimensions - 1]), image.data() + static_cast<int64_t>(properties.first.sum()), size, stride};
 }
 
 }}

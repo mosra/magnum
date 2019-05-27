@@ -488,7 +488,7 @@ template<class ...Types> ResourceManager<Types...>*& ResourceManagerInlineInstan
 }
 
 template<class T> void safeDelete(T* data) {
-    static_assert(sizeof(T) > 0, "Cannot delete pointer to incomplete type");
+    //static_assert(sizeof(T) > 0, "Cannot delete pointer to incomplete type");
     delete data;
 }
 
