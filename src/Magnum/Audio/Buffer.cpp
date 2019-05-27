@@ -31,19 +31,9 @@
 namespace Magnum { namespace Audio {
 
 Buffer& Buffer::setLoopPoints(Int loopStart, Int loopEnd) {
-    ALint sizeInBytes;
-    ALint channels;
-    ALint bits;
-
-    alGetBufferi(_id, AL_SIZE, &sizeInBytes);
-    alGetBufferi(_id, AL_CHANNELS, &channels);
-    alGetBufferi(_id, AL_BITS, &bits);
-
-    ALint lengthInSamples = sizeInBytes * 8 / (channels * bits);
-
     ALint loopPoints[2] = {
         Math::max<ALint>(0, loopStart),
-        Math::min<ALint>(loopEnd, lengthInSamples)
+        Math::min<ALint>(loopEnd, length())
     };
 
     alBufferiv(_id, AL_LOOP_POINTS_SOFT, &loopPoints[0]);

@@ -105,22 +105,74 @@ class MAGNUM_AUDIO_EXPORT Buffer {
         }
 
         /**
+         * @brief Get buffer size
+         * @return The buffer's size in bytes
+         */
+        ALint size() {
+            ALint size;
+            alGetBufferi(_id, AL_SIZE, &size);
+            return size;
+        }
+
+        /**
+         * @brief Get buffer channels
+         * @return The buffer's number of channels
+         */
+        ALint channels() {
+            ALint channels;
+            alGetBufferi(_id, AL_CHANNELS, &channels);
+            return channels;
+        }
+
+        /**
+         * @brief Get buffer bit depth
+         * @return The buffer's bit depth
+         */
+        ALint bitDepth() {
+            ALint bitDepth;
+            alGetBufferi(_id, AL_BITS, &bitDepth);
+            return bitDepth;
+        }
+
+        /**
+         * @brief Get buffer length
+         * @return The buffer's length in samples
+         */
+        ALint length() {
+            return size() * 8 / (channels() * bitDepth());
+        }
+
+        /**
+         * @brief Get buffer loop points
+         * @return A @ref std::pair containing the start and end loop points
+         *
+         * @requires_al_extension Extension @al_extension{SOFT,loop_points}
+         */
+        std::pair<ALint, ALint> loopPoints() {
+            std::pair<ALint, ALint> points{0, 0};
+            alGetBufferiv(_id, AL_LOOP_POINTS_SOFT, &(points.first));
+            return points;
+        }
+
+        /**
          * @brief Set buffer loop points
          * @param loopStart The loop's start point in samples
          * @param loopEnd   The loop's end point in samples
          * @return Reference to self (for method chaining)
          *
+         * The buffer needs to not be attached to a source for this operation to
+         * succeed.
          * @requires_al_extension Extension @al_extension{SOFT,loop_points}
          */
         Buffer& setLoopPoints(Int loopStart, Int loopEnd);
 
         /**
          * @brief Set buffer to loop from the beginning until a certain point
+         * @param loopEnd   The loop's end point in samples
+         * @return Reference to self (for method chaining)
          *
          * Equivalent to calling @ref setLoopPoints() with @p loopStart equal to
          * 0.
-         * @param loopEnd   The loop's end point in samples
-         * @return Reference to self (for method chaining)
          *
          * @requires_al_extension Extension @al_extension{SOFT,loop_points}
          */
@@ -130,11 +182,11 @@ class MAGNUM_AUDIO_EXPORT Buffer {
 
         /**
          * @brief Set buffer to loop from the a certain point until the end
+         * @param loopStart The loop's start point in samples
+         * @return Reference to self (for method chaining)
          *
          * Equivalent to calling @ref setLoopPoints() with @p loopEnd equal to
          * @p INT_MAX.
-         * @param loopStart The loop's start point in samples
-         * @return Reference to self (for method chaining)
          *
          * @requires_al_extension Extension @al_extension{SOFT,loop_points}
          */
@@ -144,10 +196,10 @@ class MAGNUM_AUDIO_EXPORT Buffer {
 
         /**
          * @brief Resets the loop points
+         * @return Reference to self (for method chaining)
          *
          * Equivalent to calling @ref setLoopPoints() with @p loopStart equal to
          * 0, and @p loopEnd equal to @p INT_MAX.
-         * @return Reference to self (for method chaining)
          *
          * @requires_al_extension Extension @al_extension{SOFT,loop_points}
          */

@@ -40,7 +40,11 @@ struct BufferALTest: TestSuite::Tester {
 
     void construct();
 
-    void setData();
+    void size();
+    void channels();
+    void bitDepth();
+    void length();
+    void loopPoints();
     void setLoopPoints();
     void setLoopSince();
     void setLoopUntil();
@@ -52,7 +56,11 @@ struct BufferALTest: TestSuite::Tester {
 BufferALTest::BufferALTest() {
     addTests({&BufferALTest::construct,
 
-              &BufferALTest::setData,
+              &BufferALTest::size,
+              &BufferALTest::channels,
+              &BufferALTest::bitDepth,
+              &BufferALTest::length,
+              &BufferALTest::loopPoints,
               &BufferALTest::setLoopPoints,
               &BufferALTest::setLoopSince,
               &BufferALTest::setLoopUntil,
@@ -64,15 +72,52 @@ void BufferALTest::construct() {
     CORRADE_VERIFY(buf.id() != 0);
 }
 
-void BufferALTest::setData() {
+void BufferALTest::size() {
     Buffer buf;
     constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
 
     buf.setData(BufferFormat::Mono8, data, 22050);
 
-    ALint bufSize;
-    alGetBufferi(buf.id(), AL_SIZE, &bufSize);
-    CORRADE_VERIFY(bufSize == 8);
+    CORRADE_COMPARE(buf.size(), 8);
+}
+
+void BufferALTest::channels() {
+    Buffer buf;
+    constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
+
+    buf.setData(BufferFormat::Mono8, data, 22050);
+
+    CORRADE_COMPARE(buf.channels(), 1);
+}
+
+void BufferALTest::bitDepth() {
+    Buffer buf;
+    constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
+
+    buf.setData(BufferFormat::Mono8, data, 22050);
+
+    CORRADE_COMPARE(buf.bitDepth(), 8);
+}
+
+void BufferALTest::length() {
+    Buffer buf;
+    constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
+
+    buf.setData(BufferFormat::Mono8, data, 22050);
+
+    CORRADE_COMPARE(buf.length(), 8);
+}
+
+void BufferALTest::loopPoints() {
+    if(!_context.isExtensionSupported<Audio::Extensions::AL::SOFT::loop_points>()) {
+        CORRADE_SKIP("Extension AL_SOFT_loop_points isn't supported on this system.");
+    }
+
+    Buffer buf;
+    constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
+
+    buf.setData(BufferFormat::Mono8, data, 22050);
+    CORRADE_COMPARE(buf.loopPoints(), std::make_pair(0, 8));
 }
 
 void BufferALTest::setLoopPoints() {
@@ -84,12 +129,7 @@ void BufferALTest::setLoopPoints() {
     constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
 
     buf.setData(BufferFormat::Mono8, data, 22050).setLoopPoints(1, 6);
-
-    Containers::Array<ALint> points{Containers::InPlaceInit, { 0, 0 }};
-    alGetBufferiv(buf.id(), AL_LOOP_POINTS_SOFT, points.data());
-    CORRADE_COMPARE_AS(points,
-        (Containers::Array<ALint>{Containers::InPlaceInit, { 1, 6 }}),
-        TestSuite::Compare::Container<Containers::ArrayView<const ALint>>);
+    CORRADE_COMPARE(buf.loopPoints(), std::make_pair(1, 6));
 }
 
 void BufferALTest::setLoopSince() {
@@ -101,12 +141,7 @@ void BufferALTest::setLoopSince() {
     constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
 
     buf.setData(BufferFormat::Mono8, data, 22050).setLoopSince(3);
-
-    Containers::Array<ALint> points{Containers::InPlaceInit, { 0, 0 }};
-    alGetBufferiv(buf.id(), AL_LOOP_POINTS_SOFT, points.data());
-    CORRADE_COMPARE_AS(points,
-        (Containers::Array<ALint>{Containers::InPlaceInit, { 3, 8 }}),
-        TestSuite::Compare::Container<Containers::ArrayView<const ALint>>);
+    CORRADE_COMPARE(buf.loopPoints(), std::make_pair(3, 8));
 }
 
 void BufferALTest::setLoopUntil() {
@@ -118,12 +153,7 @@ void BufferALTest::setLoopUntil() {
     constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
 
     buf.setData(BufferFormat::Mono8, data, 22050).setLoopUntil(5);
-
-    Containers::Array<ALint> points{Containers::InPlaceInit, { 0, 0 }};
-    alGetBufferiv(buf.id(), AL_LOOP_POINTS_SOFT, points.data());
-    CORRADE_COMPARE_AS(points,
-        (Containers::Array<ALint>{Containers::InPlaceInit, { 0, 5 }}),
-        TestSuite::Compare::Container<Containers::ArrayView<const ALint>>);
+    CORRADE_COMPARE(buf.loopPoints(), std::make_pair(0, 5));
 }
 
 void BufferALTest::resetLoopPoints() {
@@ -135,12 +165,7 @@ void BufferALTest::resetLoopPoints() {
     constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
 
     buf.setData(BufferFormat::Mono8, data, 22050).resetLoopPoints();
-
-    Containers::Array<ALint> points{Containers::InPlaceInit, { 0, 0 }};
-    alGetBufferiv(buf.id(), AL_LOOP_POINTS_SOFT, points.data());
-    CORRADE_COMPARE_AS(points,
-        (Containers::Array<ALint>{Containers::InPlaceInit, { 0, 8 }}),
-        TestSuite::Compare::Container<Containers::ArrayView<const ALint>>);
+    CORRADE_COMPARE(buf.loopPoints(), std::make_pair(0, 8));
 }
 
 }}}}
