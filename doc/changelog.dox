@@ -141,7 +141,7 @@ See also:
     @ref MeshTools::generateFlatNormals() that writes the output to an existing
     location
 -   @ref MeshTools::generateSmoothNormals() for generating weighted smooth
-    normals of indexed meshes
+    normals of indexed meshes (see [mosra/magnum#229](https://github.com/mosra/magnum/pull/229))
 -   @ref MeshTools::compile(const Trade::MeshData3D&, CompileFlags) now accepts
     optional flags to control normal generation
 
