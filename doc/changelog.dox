@@ -344,6 +344,9 @@ See also:
     plugins when using Vcpkg
 -   Fixed linking of static `Any*` plugins when the libraries are otherwise
     build as dynamic
+-   Removed mention of the outdated Ubuntu PPA from @ref building as it doesn't
+    seem to be maintained anymore (see
+    [mosra/magnum-examples#61](https://github.com/mosra/magnum-examples/issues/61))
 
 @subsection changelog-latest-bugfixes Bug fixes
 
