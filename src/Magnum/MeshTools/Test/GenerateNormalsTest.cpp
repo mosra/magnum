@@ -55,6 +55,8 @@ struct GenerateNormalsTest: TestSuite::Tester {
     void smoothCube();
     void smoothBeveledCube();
     void smoothCylinder();
+    void smoothZeroAreaTriangle();
+    void smoothNanPosition();
     void smoothWrongCount();
     void smoothIntoWrongSize();
 
@@ -74,6 +76,8 @@ GenerateNormalsTest::GenerateNormalsTest() {
               &GenerateNormalsTest::smoothCube,
               &GenerateNormalsTest::smoothBeveledCube,
               &GenerateNormalsTest::smoothCylinder,
+              &GenerateNormalsTest::smoothZeroAreaTriangle,
+              &GenerateNormalsTest::smoothNanPosition,
               &GenerateNormalsTest::smoothWrongCount,
               &GenerateNormalsTest::smoothIntoWrongSize});
 
@@ -322,6 +326,53 @@ void GenerateNormalsTest::smoothCylinder() {
         Containers::stridedArrayView(data.indices()),
         Containers::stridedArrayView(data.positions(0)))),
         Containers::arrayView(data.normals(0)), TestSuite::Compare::Container);
+}
+
+void GenerateNormalsTest::smoothZeroAreaTriangle() {
+    constexpr Vector3 positions[] {
+        {-1.0f, 0.0f, 0.0f},
+        { 1.0f, 0.0f, 0.0f},
+        { 0.0f, 1.0f, 0.0f},
+    };
+
+    /* Second triangle is just an edge, so it shouldn't contribute to the first
+       triangle normal */
+    constexpr UnsignedInt indices[] {
+        0, 1, 2, 1, 2, 1
+    };
+
+    CORRADE_COMPARE_AS(generateSmoothNormals(
+        Containers::stridedArrayView(indices), positions),
+        (Containers::Array<Vector3>{Containers::InPlaceInit, {
+            Vector3::zAxis(),
+            Vector3::zAxis(),
+            Vector3::zAxis()
+        }}), TestSuite::Compare::Container);
+}
+
+void GenerateNormalsTest::smoothNanPosition() {
+    constexpr Vector3 positions[] {
+        {-1.0f, 0.0f, 0.0f},
+        { 1.0f, 0.0f, 0.0f},
+        { 0.0f, 1.0f, 0.0f},
+        { 0.0f, Constants::nan(), 0.0f},
+    };
+
+    /* Second triangle is just an edge, so it shouldn't contribute to the first
+       triangle normal */
+    constexpr UnsignedInt indices[] {
+        0, 1, 2, 1, 2, 1
+    };
+
+    Containers::Array<Vector3> generated = generateSmoothNormals(
+        Containers::stridedArrayView(indices), positions);
+    CORRADE_COMPARE_AS(generated.prefix(3),
+        (Containers::Array<Vector3>{Containers::InPlaceInit, {
+            Vector3::zAxis(),
+            Vector3::zAxis(),
+            Vector3::zAxis()
+        }}), TestSuite::Compare::Container<Containers::ArrayView<const Vector3>>);
+    CORRADE_COMPARE(Math::isNan(generated[3]), BoolVector3{0x7});
 }
 
 void GenerateNormalsTest::smoothWrongCount() {

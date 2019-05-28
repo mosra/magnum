@@ -28,6 +28,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
 
+#include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Vector3.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
@@ -143,13 +144,24 @@ template<class T> void generateSmoothNormalsInto(const Containers::StridedArrayV
         /* Cross product */
         crossAngles[i].first = Math::cross(v2 - v1, v0 - v1);
 
+        /* If any of the vectors is zero, the normalization would result in a
+           NaN and the angle calculation will assert. This happens also when
+           any of the original positions is NaN. If that's the case, skip the
+           rest. Given triangle will then contribute with a zero total angle,
+           effectively getting ignored for normal calculation. */
+        const Vector3 v10n = (v1 - v0).normalized();
+        const Vector3 v20n = (v2 - v0).normalized();
+        const Vector3 v21n = (v2 - v1).normalized();
+        if(Math::isNan(v10n) || Math::isNan(v20n) || Math::isNan(v21n)) {
+            crossAngles[i].second = Math::Vector3<Rad>{Math::ZeroInit};
+            continue;
+        }
+
         /* Inner angle at each vertex of the triangle. The last one can be
            calculated as a remainder to 180°. */
         using namespace Math::Literals;
-        crossAngles[i].second[0] = Math::angle(
-            (v1 - v0).normalized(), (v2 - v0).normalized());
-        crossAngles[i].second[1] = Math::angle(
-            (v0 - v1).normalized(), (v2 - v1).normalized());
+        crossAngles[i].second[0] = Math::angle(v10n, v20n);
+        crossAngles[i].second[1] = Math::angle(-v10n, v21n);
         crossAngles[i].second[2] = Rad(180.0_degf)
             - crossAngles[i].second[0] - crossAngles[i].second[1];
     }

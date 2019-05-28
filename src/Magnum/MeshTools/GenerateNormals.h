@@ -99,6 +99,8 @@ Uses the @p indices array to discover adjacent triangles and then for each
 vertex position calculates a normal averaged from all triangles that share it.
 The normal is weighted according to adjacent triangle area and angle at given
 vertex; hard edges are preserved where adjacent triangles don't share vertices.
+Triangles with zero area or triangles containing invalid positions (NaNs) don't
+contribute to calculated vertex normals.
 
 Implementation is based on the article
 [Weighted Vertex Normals](http://www.bytehazard.com/articles/vertnorm.html) by
