@@ -79,14 +79,15 @@ do by hand even with the help of @ref dataProperties().
 The @ref pixels() accessor returns a multi-dimensional
 @ref Corrade::Containers::StridedArrayView describing layout of the data and
 providing easy access to particular rows, pixels and pixel channels. The
-returned view always has one dimension more than the actual image, with the
-last dimension being bytes in a particular pixels. The second-to-last dimension
-is always pixels in a row, the one before (if the image is at least 2D) is rows
-in an image, and for 3D images the very first dimension describes image slices.
-Desired usage is casting to a concrete type based on @ref format() first using
-@ref Corrade::Containers::arrayCast() (which also flattens the last dimension)
-and then operating on the concretely typed array. The following example
-brightens the center 32x32 area of an image:
+non-templated version returns a view that has one dimension more than the
+actual image, with the last dimension being bytes in a particular pixels. The
+second-to-last dimension is always pixels in a row, the one before (if the
+image is at least 2D) is rows in an image, and for 3D images the very first
+dimension describes image slices. Desired usage is casting to a concrete type
+based on @ref format() first, either using the templated @ref pixels<T>() or
+using @ref Corrade::Containers::arrayCast() and then operating on the
+concretely typed array. The following example brightens the center 32x32 area
+of an image:
 
 @snippet Magnum.cpp Image-pixels
 
@@ -381,6 +382,25 @@ template<UnsignedInt dimensions> class Image {
          */
         Containers::StridedArrayView<dimensions + 1, char> pixels();
         Containers::StridedArrayView<dimensions + 1, const char> pixels() const; /**< @overload */
+
+        /**
+         * @brief View on pixel data with a concrete pixel type
+         *
+         * Compared to non-templated @ref pixels() in addition casts the pixel
+         * data to a specified type. The user is responsible for choosing
+         * correct type for given @ref format() --- checking it on the library
+         * side is not possible for the general case.
+         */
+        template<class T> Containers::StridedArrayView<dimensions, T> pixels() {
+            /* Deliberately not adding a StridedArrayView include, it should
+               work without since this is a templated function */
+            return Containers::arrayCast<dimensions, T>(pixels());
+        }
+
+        /** @overload */
+        template<class T> Containers::StridedArrayView<dimensions, const T> pixels() const {
+            return Containers::arrayCast<dimensions, const T>(pixels());
+        }
 
         /**
          * @brief Release data storage

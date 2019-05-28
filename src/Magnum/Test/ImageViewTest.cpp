@@ -601,7 +601,7 @@ void ImageViewTest::pixels1D() {
 
     /* Full test is in ImageTest, this is just a sanity check */
 
-    Containers::StridedArrayView1D<const Color3ub> pixels = Containers::arrayCast<1, const Color3ub>(image.pixels());
+    Containers::StridedArrayView1D<const Color3ub> pixels = image.pixels<Color3ub>();
     CORRADE_COMPARE(pixels.size(), 2);
     CORRADE_COMPARE(pixels.stride(), 3);
     CORRADE_COMPARE(pixels.data(), image.data() + 3*3);
@@ -618,9 +618,9 @@ void ImageViewTest::pixels2D() {
 
     /* Full test is in ImageTest, this is just a sanity check */
 
-    Containers::StridedArrayView2D<const Color3ub> pixels = Containers::arrayCast<2, const Color3ub>(image.pixels());
-    CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView2D<const Color3ub>::Size{4, 2}));
-    CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView2D<const Color3ub>::Stride{20, 3}));
+    Containers::StridedArrayView2D<const Color3ub> pixels = image.pixels<Color3ub>();
+    CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView2D<Color3ub>::Size{4, 2}));
+    CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView2D<Color3ub>::Stride{20, 3}));
     CORRADE_COMPARE(pixels.data(), image.data() + 2*20 + 3*3);
 }
 
@@ -636,9 +636,9 @@ void ImageViewTest::pixels3D() {
 
     /* Full test is in ImageTest, this is just a sanity check */
 
-    Containers::StridedArrayView3D<const Color3ub> pixels = Containers::arrayCast<3, const Color3ub>(image.pixels());
-    CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView3D<const Color3ub>::Size{3, 4, 2}));
-    CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView3D<const Color3ub>::Stride{140, 20, 3}));
+    Containers::StridedArrayView3D<const Color3ub> pixels = image.pixels<Color3ub>();
+    CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView3D<Color3ub>::Size{3, 4, 2}));
+    CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView3D<Color3ub>::Stride{140, 20, 3}));
     CORRADE_COMPARE(pixels.data(), image.data() + 140 + 2*20 + 3*3);
 }
 

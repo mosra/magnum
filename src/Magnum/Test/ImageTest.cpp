@@ -682,14 +682,14 @@ void ImageTest::pixels1D() {
     const Image1D& cimage = image;
 
     {
-        Containers::StridedArrayView1D<Color3ub> pixels = Containers::arrayCast<1, Color3ub>(image.pixels());
+        Containers::StridedArrayView1D<Color3ub> pixels = image.pixels<Color3ub>();
         CORRADE_COMPARE(pixels.size(), 2);
         CORRADE_COMPARE(pixels.stride(), 3);
         CORRADE_COMPARE(pixels.data(), image.data() + 3*3);
         CORRADE_COMPARE(pixels[0], (Color3ub{3, 4, 5}));
         CORRADE_COMPARE(pixels[1], (Color3ub{6, 7, 8}));
     } {
-        Containers::StridedArrayView1D<const Color3ub> pixels = Containers::arrayCast<1, const Color3ub>(cimage.pixels());
+        Containers::StridedArrayView1D<const Color3ub> pixels = cimage.pixels<Color3ub>();
         CORRADE_COMPARE(pixels.size(), 2);
         CORRADE_COMPARE(pixels.stride(), 3);
         CORRADE_COMPARE(pixels.data(), cimage.data() + 3*3);
@@ -716,14 +716,14 @@ void ImageTest::pixels2D() {
     const Image2D& cimage = image;
 
     {
-        Containers::StridedArrayView2D<Color3ub> pixels = Containers::arrayCast<2, Color3ub>(image.pixels());
+        Containers::StridedArrayView2D<Color3ub> pixels = image.pixels<Color3ub>();
         CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView2D<Color3ub>::Size{4, 2}));
         CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView2D<Color3ub>::Stride{20, 3}));
         CORRADE_COMPARE(pixels.data(), image.data() + 2*20 + 3*3);
         CORRADE_COMPARE(pixels[3][0], (Color3ub{4, 5, 6}));
         CORRADE_COMPARE(pixels[3][1], (Color3ub{7, 8, 9}));
     } {
-        Containers::StridedArrayView2D<const Color3ub> pixels = Containers::arrayCast<2, const Color3ub>(cimage.pixels());
+        Containers::StridedArrayView2D<const Color3ub> pixels = cimage.pixels<Color3ub>();
         CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView2D<const Color3ub>::Size{4, 2}));
         CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView2D<const Color3ub>::Stride{20, 3}));
         CORRADE_COMPARE(pixels.data(), cimage.data() + 2*20 + 3*3);
@@ -776,14 +776,14 @@ void ImageTest::pixels3D() {
     const Image3D& cimage = image;
 
     {
-        Containers::StridedArrayView3D<Color3ub> pixels = Containers::arrayCast<3, Color3ub>(image.pixels());
+        Containers::StridedArrayView3D<Color3ub> pixels = image.pixels<Color3ub>();
         CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView3D<Color3ub>::Size{3, 4, 2}));
         CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView3D<Color3ub>::Stride{140, 20, 3}));
         CORRADE_COMPARE(pixels.data(), image.data() + 140 + 2*20 + 3*3);
         CORRADE_COMPARE(pixels[1][3][0], (Color3ub{9, 8, 7}));
         CORRADE_COMPARE(pixels[1][3][1], (Color3ub{6, 5, 4}));
     } {
-        Containers::StridedArrayView3D<const Color3ub> pixels = Containers::arrayCast<3, const Color3ub>(cimage.pixels());
+        Containers::StridedArrayView3D<const Color3ub> pixels = cimage.pixels<Color3ub>();
         CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView3D<const Color3ub>::Size{3, 4, 2}));
         CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView3D<const Color3ub>::Stride{140, 20, 3}));
         CORRADE_COMPARE(pixels.data(), cimage.data() + 140 + 2*20 + 3*3);

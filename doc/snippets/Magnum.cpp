@@ -68,8 +68,7 @@ std::nullptr_t data{};
 /* [Image-pixels] */
 Image2D image{PixelFormat::RGB8Unorm, {128, 128}, data};
 
-Containers::StridedArrayView2D<Color3ub> pixels =
-    Containers::arrayCast<2, Color3ub>(image.pixels());
+Containers::StridedArrayView2D<Color3ub> pixels = image.pixels<Color3ub>();
 for(auto row: pixels.slice({48, 48}, {80, 80})) {
     for(Color3ub& pixel: row) pixel *= 1.1f;
 }

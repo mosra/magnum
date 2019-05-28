@@ -394,6 +394,20 @@ template<UnsignedInt dimensions> class ImageView {
          */
         Containers::StridedArrayView<dimensions + 1, const char> pixels() const;
 
+        /**
+         * @brief View on pixel data with a concrete pixel type
+         *
+         * Compared to non-templated @ref pixels() in addition casts the pixel
+         * data to a specified type. The user is responsible for choosing
+         * correct type for given @ref format() --- checking it on the library
+         * side is not possible for the general case.
+         */
+        template<class T> Containers::StridedArrayView<dimensions, const T> pixels() const {
+            /* Deliberately not adding a StridedArrayView include, it should
+               work without since this is a templated function */
+            return Containers::arrayCast<dimensions, const T>(pixels());
+        }
+
     private:
         PixelStorage _storage;
         PixelFormat _format;
