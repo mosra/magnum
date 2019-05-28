@@ -70,6 +70,13 @@ template<UnsignedInt dimensions> struct Generic {
     typedef GL::Attribute<2, Vector3> Normal;
 
     /**
+     * @brief Vertex tangent
+     *
+     * @ref Magnum::Vector3 "Vector3", defined only in 3D.
+     */
+    typedef GL::Attribute<4, Vector3> Tangent;
+
+    /**
      * @brief Three-component vertex color.
      *
      * @ref Magnum::Color3. Use either this or the @ref Color4 attribute.
@@ -136,6 +143,7 @@ template<> struct Generic<2>: BaseGeneric {
 template<> struct Generic<3>: BaseGeneric {
     typedef GL::Attribute<0, Vector3> Position;
     typedef GL::Attribute<2, Vector3> Normal;
+    typedef GL::Attribute<4, Vector3> Tangent;
 };
 #endif
 

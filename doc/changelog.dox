@@ -160,6 +160,10 @@ See also:
     bootstrap project for using Magnum together with wxWidgets (see
     [mosra/magnum-bootstrap#19](https://github.com/mosra/magnum-bootstrap/pull/19))
 
+@subsubsection changelog-latest-new-shaders Shaders library
+
+-   Added @ref Shaders::Generic3D::Tangent generic vertex attribute definition
+
 @subsubsection changelog-latest-new-text Text library
 
 -   A new @ref Text::AbstractGlyphCache base now makes @ref Text::AbstractFont
