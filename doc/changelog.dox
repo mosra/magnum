@@ -162,6 +162,7 @@ See also:
 
 @subsubsection changelog-latest-new-shaders Shaders library
 
+-   Normal texture support in @ref Shaders::Phong
 -   Added @ref Shaders::Generic3D::Tangent generic vertex attribute definition
 
 @subsubsection changelog-latest-new-text Text library

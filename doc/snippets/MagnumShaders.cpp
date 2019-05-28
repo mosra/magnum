@@ -342,7 +342,7 @@ GL::Texture2D diffuseTexture, specularTexture;
 
 Shaders::Phong shader{Shaders::Phong::Flag::DiffuseTexture|
                       Shaders::Phong::Flag::SpecularTexture};
-shader.bindTextures(nullptr, &diffuseTexture, &specularTexture)
+shader.bindTextures(nullptr, &diffuseTexture, &specularTexture, nullptr)
     .setLightPosition({5.0f, 5.0f, 7.0f})
     .setTransformationMatrix(transformationMatrix)
     .setNormalMatrix(transformationMatrix.rotation())
@@ -359,7 +359,7 @@ Color3 diffuseRgb, specularRgb;
 /* [Phong-usage-alpha] */
 Shaders::Phong shader{Shaders::Phong::Flag::AmbientTexture|
                       Shaders::Phong::Flag::DiffuseTexture};
-shader.bindTextures(&diffuseAlphaTexture, &diffuseAlphaTexture, nullptr)
+shader.bindTextures(&diffuseAlphaTexture, &diffuseAlphaTexture, nullptr, nullptr)
     .setAmbientColor(0x000000ff_rgbaf)
     .setDiffuseColor(Color4{diffuseRgb, 0.0f})
     .setSpecularColor(Color4{specularRgb, 0.0f});

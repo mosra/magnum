@@ -76,6 +76,13 @@ layout(binding = 2)
 uniform lowp sampler2D specularTexture;
 #endif
 
+#ifdef NORMAL_TEXTURE
+#ifdef EXPLICIT_TEXTURE_LAYER
+layout(binding = 3)
+#endif
+uniform lowp sampler2D normalTexture;
+#endif
+
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = 6)
 #endif
@@ -118,10 +125,13 @@ uniform lowp vec4 lightColors[LIGHT_COUNT]
     ;
 
 in mediump vec3 transformedNormal;
+#ifdef NORMAL_TEXTURE
+in mediump vec3 transformedTangent;
+#endif
 in highp vec3 lightDirections[LIGHT_COUNT];
 in highp vec3 cameraDirection;
 
-#if defined(AMBIENT_TEXTURE) || defined(DIFFUSE_TEXTURE) || defined(SPECULAR_TEXTURE)
+#if defined(AMBIENT_TEXTURE) || defined(DIFFUSE_TEXTURE) || defined(SPECULAR_TEXTURE) || defined(NORMAL_TEXTURE)
 in mediump vec2 interpolatedTextureCoords;
 #endif
 
@@ -149,7 +159,18 @@ void main() {
     /* Ambient color */
     color = finalAmbientColor;
 
+    /* Normal */
     mediump vec3 normalizedTransformedNormal = normalize(transformedNormal);
+    #ifdef NORMAL_TEXTURE
+    mediump vec3 normalizedTransformedTangent = normalize(transformedTangent);
+    mediump mat3 tbn = mat3(
+        normalizedTransformedTangent,
+        normalize(cross(normalizedTransformedNormal,
+                        normalizedTransformedTangent)),
+        normalizedTransformedNormal
+    );
+    normalizedTransformedNormal = tbn*(texture(normalTexture, interpolatedTextureCoords).rgb*2.0 - vec3(1.0));
+    #endif
 
     /* Add diffuse color for each light */
     for(int i = 0; i < LIGHT_COUNT; ++i) {

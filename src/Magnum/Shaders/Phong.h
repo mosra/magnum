@@ -116,6 +116,15 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         typedef Generic3D::Normal Normal;
 
         /**
+         * @brief Tangent direction
+         *
+         * @ref shaders-generic "Generic attribute",
+         * @ref Magnum::Vector3 "Vector3", used only if
+         * @ref Flag::NormalTexture is set.
+         */
+        typedef Generic3D::Tangent Tangent;
+
+        /**
          * @brief 2D texture coordinates
          *
          * @ref shaders-generic "Generic attribute",
@@ -148,6 +157,12 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              * @see @ref setSpecularColor(), @ref setSpecularTexture()
              */
             SpecularTexture = 1 << 2,
+
+            /**
+             * Modify normals according to a texture. Requires the
+             * @ref Tangent attribute to be present.
+             */
+            NormalTexture = 1 << 4,
 
             /**
              * Enable alpha masking. If the combined fragment color has an
@@ -272,6 +287,16 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         #endif
 
         /**
+         * @brief Bind a normal texture
+         * @return Reference to self (for method chaining)
+         *
+         * Expects that the shader was created with @ref Flag::NormalTexture
+         * enabled and the @ref Tangent attribute was supplied.
+         * @see @ref bindTextures()
+         */
+        Phong& bindNormalTexture(GL::Texture2D& texture);
+
+        /**
          * @brief Set specular color
          * @return Reference to self (for method chaining)
          *
@@ -312,13 +337,17 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * A particular texture has effect only if particular texture flag from
          * @ref Phong::Flag "Flag" is set, you can use @cpp nullptr @ce for the
          * rest. Expects that the shader was created with at least one of
-         * @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture or
-         * @ref Flag::SpecularTexture enabled. More efficient than setting each
-         * texture separately.
+         * @ref Flag::AmbientTexture, @ref Flag::DiffuseTexture,
+         * @ref Flag::SpecularTexture or @ref Flag::NormalTexture enabled. More
+         * efficient than setting each texture separately.
          * @see @ref bindAmbientTexture(), @ref bindDiffuseTexture(),
-         *      @ref bindSpecularTexture()
+         *      @ref bindSpecularTexture(), @ref bindNormalTexture()
          */
-        Phong& bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::Texture2D* specular);
+        Phong& bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::Texture2D* specular, GL::Texture2D* normal
+            #ifdef MAGNUM_BUILD_DEPRECATED
+            = nullptr
+            #endif
+        );
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief bindTextures()

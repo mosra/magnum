@@ -71,6 +71,13 @@ layout(location = NORMAL_ATTRIBUTE_LOCATION)
 #endif
 in mediump vec3 normal;
 
+#ifdef NORMAL_TEXTURE
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = TANGENT_ATTRIBUTE_LOCATION)
+#endif
+in mediump vec3 tangent;
+#endif
+
 #ifdef TEXTURED
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = TEXTURECOORDINATES_ATTRIBUTE_LOCATION)
@@ -81,6 +88,9 @@ out mediump vec2 interpolatedTextureCoords;
 #endif
 
 out mediump vec3 transformedNormal;
+#ifdef NORMAL_TEXTURE
+out mediump vec3 transformedTangent;
+#endif
 out highp vec3 lightDirections[LIGHT_COUNT];
 out highp vec3 cameraDirection;
 
@@ -89,8 +99,11 @@ void main() {
     highp vec4 transformedPosition4 = transformationMatrix*position;
     highp vec3 transformedPosition = transformedPosition4.xyz/transformedPosition4.w;
 
-    /* Transformed normal vector */
+    /* Transformed normal and tangent vector */
     transformedNormal = normalMatrix*normal;
+    #ifdef NORMAL_TEXTURE
+    transformedTangent = normalMatrix*tangent;
+    #endif
 
     /* Direction to the light */
     for(int i = 0; i < LIGHT_COUNT; ++i)

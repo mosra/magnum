@@ -61,10 +61,12 @@ constexpr struct {
     {"ambient texture", Phong::Flag::AmbientTexture, 1},
     {"diffuse texture", Phong::Flag::DiffuseTexture, 1},
     {"specular texture", Phong::Flag::SpecularTexture, 1},
+    {"normal texture", Phong::Flag::NormalTexture, 1},
     {"ambient + diffuse texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture, 1},
     {"ambient + specular texture", Phong::Flag::AmbientTexture|Phong::Flag::SpecularTexture, 1},
     {"diffuse + specular texture", Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture, 1},
     {"ambient + diffuse + specular texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture, 1},
+    {"ambient + diffuse + specular + normal texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture|Phong::Flag::NormalTexture, 1},
     {"alpha mask", Phong::Flag::AlphaMask, 1},
     {"alpha mask + diffuse texture", Phong::Flag::AlphaMask|Phong::Flag::DiffuseTexture, 1},
     {"five lights", {}, 5}
@@ -135,11 +137,12 @@ void PhongGLTest::bindTextures() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     /* Test just that no assertion is fired */
-    Phong shader{Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture};
+    Phong shader{Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture|Phong::Flag::NormalTexture};
     shader.bindAmbientTexture(texture)
           .bindDiffuseTexture(texture)
           .bindSpecularTexture(texture)
-          .bindTextures(&texture, &texture, &texture);
+          .bindNormalTexture(texture)
+          .bindTextures(&texture, &texture, &texture, &texture);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
@@ -153,12 +156,14 @@ void PhongGLTest::bindTexturesNotEnabled() {
     shader.bindAmbientTexture(texture)
           .bindDiffuseTexture(texture)
           .bindSpecularTexture(texture)
-          .bindTextures(&texture, &texture, &texture);
+          .bindNormalTexture(texture)
+          .bindTextures(&texture, &texture, &texture, &texture);
 
     CORRADE_COMPARE(out.str(),
         "Shaders::Phong::bindAmbientTexture(): the shader was not created with ambient texture enabled\n"
         "Shaders::Phong::bindDiffuseTexture(): the shader was not created with diffuse texture enabled\n"
         "Shaders::Phong::bindSpecularTexture(): the shader was not created with specular texture enabled\n"
+        "Shaders::Phong::bindNormalTexture(): the shader was not created with normal texture enabled\n"
         "Shaders::Phong::bindTextures(): the shader was not created with any textures enabled\n");
 }
 
