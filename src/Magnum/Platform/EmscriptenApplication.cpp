@@ -265,6 +265,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration) {
     }
 
     setupCallbacks(!!(configuration.windowFlags() & Configuration::WindowFlag::Resizable));
+    setupAnimationFrame(!!(configuration.windowFlags() & Configuration::WindowFlag::AlwaysRequestAnimationFrame));
 
     return true;
 }
@@ -353,6 +354,7 @@ bool EmscriptenApplication::tryCreate(const Configuration& configuration, const 
     CORRADE_INTERNAL_ASSERT_OUTPUT(emscripten_webgl_make_context_current(_glContext = context) == EMSCRIPTEN_RESULT_SUCCESS);
 
     setupCallbacks(!!(configuration.windowFlags() & Configuration::WindowFlag::Resizable));
+    setupAnimationFrame(!!(configuration.windowFlags() & Configuration::WindowFlag::AlwaysRequestAnimationFrame));
 
     /* Return true if the initialization succeeds */
     return _context->tryCreate();
@@ -535,6 +537,49 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
     }
 }
 
+
+void EmscriptenApplication::setupAnimationFrame(bool forceAnimationFrame) {
+    if(forceAnimationFrame) {
+        _callback = [](void* userData) -> int {
+            auto& app = *static_cast<EmscriptenApplication*>(userData);
+
+            if(app._flags & Flag::ExitRequested) {
+                app._flags &= ~Flag::LoopActive;
+                return false;
+            }
+
+            if(app._flags & Flag::Redraw) {
+                app._flags &= ~Flag::Redraw;
+                app.drawEvent();
+            }
+
+            return true;
+        };
+    } else {
+        _callback = [](void* userData) -> int {
+            auto& app = *static_cast<EmscriptenApplication*>(userData);
+
+            if((app._flags & Flag::Redraw) && !(app._flags & Flag::ExitRequested)) {
+                app._flags &= ~Flag::Redraw;
+                app.drawEvent();
+            }
+
+            /* If redraw is requested, we will not cancel the already requested
+            animation frame.
+            If ForceAnimationFrame is set, we will request an animation frame
+            even if redraw is not requested. */
+            if((app._flags & Flag::Redraw) && !(app._flags & Flag::ExitRequested)) {
+                return true;
+            }
+
+            /* Cancel last requested animation frame and make redraw()
+            requestAnimationFrame again next time */
+            app._flags &= ~Flag::LoopActive;
+            return false;
+        };
+    }
+}
+
 void EmscriptenApplication::startTextInput() {
     _flags |= Flag::TextInputActive;
 }
@@ -562,18 +607,41 @@ EmscriptenApplication::GLConfiguration::GLConfiguration():
 #endif
 
 int EmscriptenApplication::exec() {
-    emscripten_set_main_loop_arg([](void* userData) {
-        auto& app = *static_cast<EmscriptenApplication*>(userData);
-        if(!(app._flags & Flag::Redraw)) return;
-
-        app._flags &= ~Flag::Redraw;
-        app.drawEvent();
-    }, this, 0, true);
+    redraw();
     return 0;
 }
 
+void EmscriptenApplication::redraw() {
+    _flags |= Flag::Redraw;
+
+    /* Loop already running, no need to start,
+       Note that should javascript runtimes ever be multithreaded, we
+       will have a reentrancy issue here. */
+    if(_flags & Flag::LoopActive) return;
+
+    /* Start requestAnimationFrame loop */
+    _flags |= Flag::LoopActive;
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
+    EM_ASM({
+        /* Animation frame callback */
+        var drawEvent = function() {
+            var id = window.requestAnimationFrame(drawEvent);
+
+            /* Call our callback via function pointer returning int with two
+            int params */
+            if(!dynCall('ii', $0, [$1])) {
+                window.cancelAnimationFrame(id);
+            }
+        };
+
+        window.requestAnimationFrame(drawEvent);
+    }, _callback, this);
+    #pragma GCC diagnostic pop
+}
+
 void EmscriptenApplication::exit(int) {
-    emscripten_cancel_main_loop();
+    _flags |= Flag::ExitRequested;
 }
 
 EmscriptenApplication::MouseEvent::Button EmscriptenApplication::MouseEvent::button() const {

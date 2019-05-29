@@ -155,6 +155,36 @@ Unlike desktop platforms, the browser has no concept of application exit code,
 so the return value of @ref exec() is always @cpp 0 @ce and whatever is passed
 to @ref exit(int) is ignored.
 
+@subsection Platform-EmscriptenApplication-browser-main-loop Main loop implementation
+
+Magnum application implementations default to redrawing only when needed to
+save power and while this is simple to implement efficiently on desktop apps
+where the application has the full control over the main loop, it's harder in
+the callback-based browser environment.
+
+@ref Sdl2Application makes use of @m_class{m-doc-external} [emscripten_set_main_loop()](https://emscripten.org/docs/api_reference/emscripten.h.html#c.emscripten_set_main_loop),
+which periodically calls @m_class{m-doc-external} [window.requestAnimationFrame()](https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame)
+in order to maintain a steady frame rate. For apps that need to redraw only
+when needed this means the callback will be called 60 times per second only to
+be a no-op. While that's still significantly more efficient than drawing
+everything each time, it still means the browser has to wake up 60 times per
+second to do nothing.
+
+@ref EmscriptenApplication instead makes use of `requestAnimationFrame()`
+directly --- on initialization and on @ref redraw(), an animation frame will be
+requested and the callback set up. The callback will immediately schedule
+another animation frame, but cancel that request after @ref drawEvent() if
+@ref redraw() was not requested. Note that due to the way Emscripten internals
+work, this also requires the class instance to be stored as a global variable
+instead of a local variable in @cpp main() @ce. The
+@ref MAGNUM_EMSCRIPTENAPPLICATION_MAIN() macro handles this in a portable way
+for you.
+
+For testing purposes or for more predictable behavior for example when the
+application has to redraw all the time anyway this can be disabled using
+@ref Configuration::WindowFlag::AlwaysRequestAnimationFrame. Setting the flag
+will make the main loop behave equivalently to @ref Sdl2Application.
+
 @section Platform-EmscriptenApplication-webgl WebGL-specific behavior
 
 While WebGL itself requires all extensions to be
@@ -322,8 +352,13 @@ class EmscriptenApplication {
 
     protected:
         /* Nobody will need to have (and delete) EmscriptenApplication*, thus
-           this is faster than public pure virtual destructor */
-        ~EmscriptenApplication();
+           just making it protected would be faster than public pure virtual
+           destructor. However, because we store it in a Pointer in
+           MAGNUM_EMSCRIPTENAPPLICATION_MAIN(), Clang complains that
+           "delete called on non-final 'MyApplication' that has virtual
+           functions but non-virtual destructor", so we have to mark it virtual
+           anyway. */
+        virtual ~EmscriptenApplication();
 
         #ifdef MAGNUM_TARGET_GL
         /**
@@ -467,7 +502,7 @@ class EmscriptenApplication {
         void swapBuffers();
 
         /** @copydoc Sdl2Application::redraw() */
-        void redraw() { _flags |= Flag::Redraw; }
+        void redraw();
 
     private:
         /** @copydoc GlfwApplication::viewportEvent(ViewportEvent&) */
@@ -581,7 +616,9 @@ class EmscriptenApplication {
     private:
         enum class Flag: UnsignedByte {
             Redraw = 1 << 0,
-            TextInputActive = 1 << 1
+            TextInputActive = 1 << 1,
+            ExitRequested = 1 << 2,
+            LoopActive = 1 << 3
         };
         typedef Containers::EnumSet<Flag> Flags;
 
@@ -589,6 +626,7 @@ class EmscriptenApplication {
 
         /* Sorry, but can't use Configuration::WindowFlags here :( */
         void setupCallbacks(bool resizable);
+        void setupAnimationFrame(bool ForceAnimationFrame);
 
         Vector2 _devicePixelRatio, _dpiScaling;
         Vector2i _lastKnownCanvasSize;
@@ -603,6 +641,9 @@ class EmscriptenApplication {
         /* These are saved from command-line arguments */
         bool _verboseLog{};
         Vector2 _commandLineDpiScaling;
+
+        /* Animation frame callback */
+        int (*_callback)(void*);
 };
 
 CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::Flags)
@@ -846,7 +887,22 @@ class EmscriptenApplication::Configuration {
              *
              * Implement @ref viewportEvent() to react to the resizing events.
              */
-            Resizable = 1 << 1
+            Resizable = 1 << 1,
+
+            /**
+             * Always request the next animation frame. Disables the
+             * idle-efficient main loop described in
+             * @ref Platform-EmscriptenApplication-browser-main-loop and
+             * unconditionally schedules @m_class{m-doc-external} [window.requestAnimationFrame()](https://developer.mozilla.org/en-US/docs/Web/API/window/requestAnimationFrame),
+             * matching the behavior of @ref Sdl2Application. Useful for
+             * testing or for simpler internal state when your app is going to
+             * redraw all the time anyway.
+             *
+             * Note that this does not affect how @ref drawEvent() is executed
+             * --- it depends on @ref redraw() being called independently of
+             * this flag being set.
+             */
+            AlwaysRequestAnimationFrame = 1 << 2
         };
 
         /**
@@ -1481,24 +1537,23 @@ class EmscriptenApplication::TextInputEvent {
 
 See @ref Magnum::Platform::EmscriptenApplication "Platform::EmscriptenApplication"
 for usage information. This macro abstracts out platform-specific entry point
-code. See
-@ref portability-applications for more information.
-
-@code{.cpp}
-int main(int argc, char** argv) {
-    className app({argc, argv});
-    return app.exec();
-}
-@endcode
+code. See @ref portability-applications for more information.
 
 When no other application header is included this macro is also aliased to
 @cpp MAGNUM_APPLICATION_MAIN() @ce.
+
+Compared to for example @ref MAGNUM_SDL2APPLICATION_MAIN(), the macro
+instantiates the application instance as a global variable instead of a local
+variable inside @cpp main() @ce. This is in order to support the
+@ref Platform-EmscriptenApplication-browser-main-loop "idle-efficient main loop",
+as otherwise the local scope would end before any event callback has a chance
+to happen.
 */
 #define MAGNUM_EMSCRIPTENAPPLICATION_MAIN(className)                        \
+    namespace { Corrade::Containers::Pointer<className> emscriptenApplicationInstance ; } \
     int main(int argc, char** argv) {                                       \
-        className app({argc, argv});                                        \
-        app.exec();                                                         \
-        return 0;                                                           \
+        emscriptenApplicationInstance.reset(new className{{argc, argv}});   \
+        return emscriptenApplicationInstance->exec();                       \
     }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

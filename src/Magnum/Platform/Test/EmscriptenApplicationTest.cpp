@@ -53,9 +53,14 @@ struct EmscriptenApplicationTest: Platform::Application {
     }
 
     virtual void drawEvent() override {
+        Debug() << "draw event";
         GL::defaultFramebuffer.clear(GL::FramebufferClear::Color);
 
         swapBuffers();
+
+        if(_redraw) {
+            redraw();
+        }
     }
 
     #ifdef MAGNUM_TARGET_GL
@@ -96,6 +101,10 @@ struct EmscriptenApplicationTest: Platform::Application {
         if(event.key() == KeyEvent::Key::F1) {
             Debug{} << "starting text input";
             startTextInput();
+        } else if(event.key() == KeyEvent::Key::F2) {
+            _redraw = !_redraw;
+            Debug{} << "redrawing" << (_redraw ? "enabled" : "disabled");
+            if(_redraw) redraw();
         } else if(event.key() == KeyEvent::Key::Esc) {
             Debug{} << "stopping text input";
             stopTextInput();
@@ -130,6 +139,7 @@ struct EmscriptenApplicationTest: Platform::Application {
 
     private:
         bool _fullscreen = false;
+        bool _redraw = false;
 };
 
 }}}

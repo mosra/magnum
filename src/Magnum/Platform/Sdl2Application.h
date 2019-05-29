@@ -278,6 +278,11 @@ If you enable @ref Configuration::WindowFlag::Resizable, the canvas will be
 resized when size of the canvas changes and you get @ref viewportEvent(). If
 the flag is not enabled, no canvas resizing is performed.
 
+@note While this implementation supports Esmcripten and is going to continue
+    supporting it for the foreseeable future, @ref EmscriptenApplication is now
+    the preferred application implementation for the web. It offers a broader
+    range of features, more efficient idle behavior and smaller code size.
+
 @subsection Platform-Sdl2Application-usage-gles OpenGL ES specifics
 
 For OpenGL ES, SDL2 defaults to a "desktop GLES" context of the system driver.
