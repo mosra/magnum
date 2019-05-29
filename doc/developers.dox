@@ -122,8 +122,8 @@ required to follow them to the point.
         support)
 13. Mention the library in `doc/changelog.dox` (or similar files in other
     repos)
-14. Build documentation:
-    -   run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
+14. @ref building-doc "Build documentation":
+    -   run [doxygen.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
         and verify there are no new warnings
     -   eyeball the namespace and directory docs, fix suspicious things, look
         also in the building and cmake docs
@@ -307,8 +307,8 @@ in inverse.
     more information.
 6.  Mention the new functionality in `doc/changelog.dox` (and similar files in
     other repos)
-7.  Build documentation:
-    -   run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
+7.  @ref building-doc "Build documentation":
+    -   run [doxygen.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
         and verify there are no new warnings
     -   eyeball the relevant docs and fix suspicious things
 8.  Build a coverage build (`package/archlinux/PKGBUILD-coverage`), or abuse
@@ -328,8 +328,8 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
 3.  Add a test for it to corresponding file, verify the test gets actually run
 4.  Mention the new functionality in `doc/changelog.dox` (and similar files in
     other repos)
-5.  Build documentation:
-    -   run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
+5.  @ref building-doc "Build documentation":
+    -   run [doxygen.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
         and verify there are no new warnings
     -   eyeball the relevant docs and fix suspicious things
 6.  Build a coverage build (`package/archlinux/PKGBUILD-coverage`), or abuse
@@ -354,8 +354,8 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
 5.  Populate it, see @ref coding-style for more information
 6.  Mention the new page in `doc/changelog.dox` (and similar files in other
     repos)
-7.  Build documentation:
-    -   run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
+7.  @ref building-doc "Build documentation":
+    -   run [doxygen.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
         and verify there are no new warnings
     -   eyeball the relevant docs and fix suspicious things
 8.  Push to `master`
@@ -399,8 +399,8 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
 7.  Upon verifying the above, start updating dependent code
 8.  Mention the deprecated API in the deprecation section of `doc/changelog.dox`
     (and similar files in other repos)
-9.  Build documentation:
-    -   run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
+9.  @ref building-doc "Build documentation":
+    -   run [doxygen.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
         and verify there are no new warnings
     -   eyeball the relevant docs and fix suspicious things
 10.  Push to a temporary branch (e.g., `next`)
@@ -474,8 +474,8 @@ in inverse --- but usually @ref developers-deprecation "deprecate first".
     remove relevant deprecated files and update `CMakeLists.txt`
 3.  Mention the removed API in the compatibility section of `doc/changelog.dox`
     (or similar files in other repos)
-4.  Build documentation:
-    -   run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
+4.  @ref building-doc "Build documentation":
+    -   run [doxygen.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
         and verify there are no new warnings --- sometimes it happens that a
         deprecated API is still being referenced
 5.  Push to a temporary branch (e.g., `next`)
@@ -603,8 +603,8 @@ unless it doesn't affect public API at all.
     possibly to multiple places
 9.  Update relevant extension support in tables in `doc/opengl-support.dox`
 10. Mention the new stuff in `doc/changelog.dox`
-11. Build documentation:
-    -   run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
+11. @ref building-doc "Build documentation":
+    -   run [doxygen.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
         and verify there are no new warnings
     -   eyeball the relevant docs and fix suspicious things
 12. Build and test for relevant platforms locally (as the public CI can't test
@@ -790,7 +790,7 @@ inverse.
 1.  (Optionally) remove `build/doc-public` to get rid of stale files
 2.  Verify there are no untracked files, modifications or branches different
     than `master` checked out that could mess up the docs
-3.  Run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-public`,
+3.  Run [doxygen.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-public`,
     look for suspicious warnings
 4.  Upload contents of `build/doc-public/html/` to `doc/magnum-new/` and remove
     `doc/magnum-old/` if any
@@ -810,8 +810,8 @@ inverse.
 5.  Add the contributor to `CREDITS.md`, if not already there
 6.  Update `doc/changelog.dox` (and similar files in other repos), if not
     already done
-7.  Build documentation:
-    -   run [dox2html5.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
+7.  @ref building-doc "Build documentation:
+    -   run [doxygen.py](http://mcss.mosra.cz/doxygen/) on `Doxyfile-mcss`
         and verify there are no new warnings
     -   eyeball the relevant docs and fix suspicious things
 8.  Push to a temporary branch (e.g., `next`)
