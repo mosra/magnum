@@ -17,7 +17,6 @@ RDEPEND="
 	media-libs/openal
 	media-libs/glfw
 	media-libs/libsdl2
-	media-libs/openal
 "
 DEPEND="${RDEPEND}"
 
