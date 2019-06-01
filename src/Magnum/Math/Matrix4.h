@@ -839,7 +839,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         /**
          * @brief Transform a 3D vector with the matrix
          *
-         * Unlike in @ref transformVector(), translation is not involved in the
+         * Unlike in @ref transformPoint(), translation is not involved in the
          * transformation. @f[
          *      \boldsymbol v' = \boldsymbol M \begin{pmatrix} v_x \\ v_y \\ v_z \\ 0 \end{pmatrix}
          * @f]
