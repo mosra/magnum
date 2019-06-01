@@ -43,15 +43,24 @@ namespace Magnum { namespace SceneGraph {
 See @ref FeatureGroup.
 */
 template<UnsignedInt dimensions, class T> class AbstractFeatureGroup {
-    template<UnsignedInt, class, class> friend class FeatureGroup;
+    public:
+        /** @brief Object transformation underlying type */
+        typedef T Type;
 
-    explicit AbstractFeatureGroup();
-    virtual ~AbstractFeatureGroup();
+        enum: UnsignedInt {
+            Dimensions = dimensions /**< Dimension count */
+        };
 
-    void add(AbstractFeature<dimensions, T>& feature);
-    void remove(AbstractFeature<dimensions, T>& feature);
+    private:
+        template<UnsignedInt, class, class> friend class FeatureGroup;
 
-    std::vector<std::reference_wrapper<AbstractFeature<dimensions, T>>> _features;
+        explicit AbstractFeatureGroup();
+        virtual ~AbstractFeatureGroup();
+
+        void add(AbstractFeature<dimensions, T>& feature);
+        void remove(AbstractFeature<dimensions, T>& feature);
+
+        std::vector<std::reference_wrapper<AbstractFeature<dimensions, T>>> _features;
 };
 
 /**

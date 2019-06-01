@@ -160,6 +160,16 @@ See also:
     bootstrap project for using Magnum together with wxWidgets (see
     [mosra/magnum-bootstrap#19](https://github.com/mosra/magnum-bootstrap/pull/19))
 
+@subsubsection changelog-latest-new-scenegraph SceneGraph library
+
+-   Added @ref SceneGraph::AbstractObject::Type /
+    @ref SceneGraph::AbstractFeature::Type /
+    @ref SceneGraph::AbstractFeatureGroup::Type typedefs and
+    @ref SceneGraph::AbstractObject::Dimensions /
+    @ref SceneGraph::AbstractFeature::Dimensions /
+    @ref SceneGraph::AbstractFeatureGroup::Dimensions constants for querying
+    underlying type and dimension template parameters
+
 @subsubsection changelog-latest-new-shaders Shaders library
 
 -   Normal texture support in @ref Shaders::Phong

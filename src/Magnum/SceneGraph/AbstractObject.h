@@ -78,11 +78,18 @@ template<UnsignedInt dimensions, class T> class AbstractObject
     #endif
 {
     public:
+        /** @brief Transformation underlying type */
+        typedef T Type;
+
         /** @brief Matrix type */
         typedef MatrixTypeFor<dimensions, T> MatrixType;
 
-        /** @brief Feature object type */
+        /** @brief Feature type */
         typedef AbstractFeature<dimensions, T> FeatureType;
+
+        enum: UnsignedInt {
+            Dimensions = dimensions /**< Dimension count */
+        };
 
         /* This isn't protected because having virtual destructor here is
            better than having it duplicated in all Object specializations */

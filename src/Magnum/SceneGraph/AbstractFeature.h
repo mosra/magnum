@@ -136,6 +136,13 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
     #endif
 {
     public:
+        /** @brief Object transformation underlying type */
+        typedef T Type;
+
+        enum: UnsignedInt {
+            Dimensions = dimensions /**< Dimension count */
+        };
+
         /**
          * @brief Constructor
          * @param object    Object holding this feature
