@@ -84,15 +84,18 @@ namespace AL {
         _extension(4,AL,EXT,MULAW) // #???
         _extension(5,AL,EXT,MCFORMATS) // #???
     }
+    namespace SOFT {
+        _extension(6,AL,SOFT,loop_points) // #???
+    }
 } namespace ALC {
     namespace EXT {
-        _extension_rev(6,ALC,EXT,ENUMERATION) // #???
+        _extension_rev(7,ALC,EXT,ENUMERATION) // #???
     }
     namespace SOFTX {
-        _extension(7,ALC,SOFTX,HRTF) // #???
+        _extension(8,ALC,SOFTX,HRTF) // #???
     }
     namespace SOFT {
-        _extension(8,ALC,SOFT,HRTF) // #???
+        _extension(9,ALC,SOFT,HRTF) // #???
     }
 }
 #undef _extension

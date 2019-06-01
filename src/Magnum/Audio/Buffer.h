@@ -30,6 +30,7 @@
  * @brief Class @ref Magnum::Audio::Buffer
  */
 
+#include <climits>
 #include <utility>
 #include <al.h>
 #include <alc.h>
@@ -49,7 +50,7 @@
 namespace Magnum { namespace Audio {
 
 /** @brief Sample buffer */
-class Buffer {
+class MAGNUM_AUDIO_EXPORT Buffer {
     public:
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief BufferFormat
@@ -139,6 +140,71 @@ class Buffer {
          */
         ALint length() {
             return size() * 8 / (channels() * bitDepth());
+        }
+
+        /**
+         * @brief Get buffer loop points
+         * @return A @ref std::pair containing the start and end loop points
+         *
+         * @requires_al_extension Extension @al_extension{SOFT,loop_points}
+         */
+        std::pair<ALint, ALint> loopPoints() {
+            std::pair<ALint, ALint> points{0, 0};
+            alGetBufferiv(_id, AL_LOOP_POINTS_SOFT, &(points.first));
+            return points;
+        }
+
+        /**
+         * @brief Set buffer loop points
+         * @param loopStart The loop's start point in samples
+         * @param loopEnd   The loop's end point in samples
+         * @return Reference to self (for method chaining)
+         *
+         * The buffer needs to not be attached to a source for this operation to
+         * succeed.
+         * @requires_al_extension Extension @al_extension{SOFT,loop_points}
+         */
+        Buffer& setLoopPoints(Int loopStart, Int loopEnd);
+
+        /**
+         * @brief Set buffer to loop from the beginning until a certain point
+         * @param loopEnd   The loop's end point in samples
+         * @return Reference to self (for method chaining)
+         *
+         * Equivalent to calling @ref setLoopPoints() with @p loopStart equal to
+         * 0.
+         *
+         * @requires_al_extension Extension @al_extension{SOFT,loop_points}
+         */
+        Buffer& setLoopUntil(Int loopEnd) {
+            return setLoopPoints(0, loopEnd);
+        }
+
+        /**
+         * @brief Set buffer to loop from the a certain point until the end
+         * @param loopStart The loop's start point in samples
+         * @return Reference to self (for method chaining)
+         *
+         * Equivalent to calling @ref setLoopPoints() with @p loopEnd equal to
+         * @p INT_MAX.
+         *
+         * @requires_al_extension Extension @al_extension{SOFT,loop_points}
+         */
+        Buffer& setLoopSince(Int loopStart) {
+            return setLoopPoints(loopStart, INT_MAX);
+        }
+
+        /**
+         * @brief Resets the loop points
+         * @return Reference to self (for method chaining)
+         *
+         * Equivalent to calling @ref setLoopPoints() with @p loopStart equal to
+         * 0, and @p loopEnd equal to @p INT_MAX.
+         *
+         * @requires_al_extension Extension @al_extension{SOFT,loop_points}
+         */
+        Buffer& resetLoopPoints() {
+            return setLoopPoints(0, INT_MAX);
         }
 
     private:

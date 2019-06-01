@@ -6,6 +6,7 @@
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
               Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
+    Copyright © 2019 Guillaume Jacquemin <williamjcm@users.noreply.github.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -86,6 +87,12 @@ extern "C" {
 #define AL_FORMAT_71CHN8                         0x1210
 #define AL_FORMAT_71CHN16                        0x1211
 #define AL_FORMAT_71CHN32                        0x1212
+#endif
+
+/* AL_SOFT_loop_points */
+#ifndef AL_SOFT_loop_points
+#define AL_SOFT_loop_points 1
+#define AL_LOOP_POINTS_SOFT                      0x2015
 #endif
 
 /* ALC_SOFTX_HRTF */

@@ -50,6 +50,7 @@ constexpr Extension ExtensionList[]{
     _extension(AL,EXT,ALAW),
     _extension(AL,EXT,MULAW),
     _extension(AL,EXT,MCFORMATS),
+    _extension(AL,SOFT,loop_points),
     _extension(ALC,EXT,ENUMERATION),
     _extension(ALC,SOFTX,HRTF),
     _extension(ALC,SOFT,HRTF)
