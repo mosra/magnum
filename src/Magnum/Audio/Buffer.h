@@ -105,42 +105,44 @@ class MAGNUM_AUDIO_EXPORT Buffer {
         }
 
         /**
-         * @brief Get buffer size
-         * @return The buffer's size in bytes
+         * @brief Buffer size in bytes
+         *
+         * @see @ref channels(), @ref bitDepth(), @ref sampleCount()
          */
-        ALint size() {
-            ALint size;
+        Int size() const {
+            Int size;
             alGetBufferi(_id, AL_SIZE, &size);
             return size;
         }
 
         /**
-         * @brief Get buffer channels
-         * @return The buffer's number of channels
+         * @brief Buffer channel count
+         *
+         * @see @ref size(), @ref bitDepth(), @ref sampleCount()
          */
-        ALint channels() {
+        Int channels() const {
             ALint channels;
             alGetBufferi(_id, AL_CHANNELS, &channels);
             return channels;
         }
 
         /**
-         * @brief Get buffer bit depth
-         * @return The buffer's bit depth
+         * @brief Buffer bit depth
+         *
+         * @see @ref size(), @ref channels(), @ref sampleCount()
          */
-        ALint bitDepth() {
+        Int bitDepth() const {
             ALint bitDepth;
             alGetBufferi(_id, AL_BITS, &bitDepth);
             return bitDepth;
         }
 
         /**
-         * @brief Get buffer length
-         * @return The buffer's length in samples
+         * @brief Buffer sample count
+         *
+         * Calculated from @ref size(), @ref channels() and @ref bitDepth().
          */
-        ALint length() {
-            return size() * 8 / (channels() * bitDepth());
-        }
+        Int sampleCount() const { return size()*8/(channels()*bitDepth()); }
 
         /**
          * @brief Get buffer loop points
@@ -148,8 +150,8 @@ class MAGNUM_AUDIO_EXPORT Buffer {
          *
          * @requires_al_extension Extension @al_extension{SOFT,loop_points}
          */
-        std::pair<ALint, ALint> loopPoints() {
-            std::pair<ALint, ALint> points{0, 0};
+        std::pair<Int, Int> loopPoints() const {
+            std::pair<Int, Int> points{0, 0};
             alGetBufferiv(_id, AL_LOOP_POINTS_SOFT, &(points.first));
             return points;
         }
@@ -160,8 +162,8 @@ class MAGNUM_AUDIO_EXPORT Buffer {
          * @param loopEnd   The loop's end point in samples
          * @return Reference to self (for method chaining)
          *
-         * The buffer needs to not be attached to a source for this operation to
-         * succeed.
+         * The buffer needs to not be attached to a source for this operation
+         * to succeed.
          * @requires_al_extension Extension @al_extension{SOFT,loop_points}
          */
         Buffer& setLoopPoints(Int loopStart, Int loopEnd);
@@ -171,9 +173,8 @@ class MAGNUM_AUDIO_EXPORT Buffer {
          * @param loopEnd   The loop's end point in samples
          * @return Reference to self (for method chaining)
          *
-         * Equivalent to calling @ref setLoopPoints() with @p loopStart equal to
-         * 0.
-         *
+         * Equivalent to calling @ref setLoopPoints() with @p loopStart equal
+         * to @cpp 0 @ce.
          * @requires_al_extension Extension @al_extension{SOFT,loop_points}
          */
         Buffer& setLoopUntil(Int loopEnd) {
@@ -186,8 +187,7 @@ class MAGNUM_AUDIO_EXPORT Buffer {
          * @return Reference to self (for method chaining)
          *
          * Equivalent to calling @ref setLoopPoints() with @p loopEnd equal to
-         * @p INT_MAX.
-         *
+         * @cpp INT_MAX @ce.
          * @requires_al_extension Extension @al_extension{SOFT,loop_points}
          */
         Buffer& setLoopSince(Int loopStart) {
@@ -198,9 +198,8 @@ class MAGNUM_AUDIO_EXPORT Buffer {
          * @brief Resets the loop points
          * @return Reference to self (for method chaining)
          *
-         * Equivalent to calling @ref setLoopPoints() with @p loopStart equal to
-         * 0, and @p loopEnd equal to @p INT_MAX.
-         *
+         * Equivalent to calling @ref setLoopPoints() with @p loopStart equal
+         * to @cpp 0 @ce, and @p loopEnd equal to @cpp INT_MAX @ce.
          * @requires_al_extension Extension @al_extension{SOFT,loop_points}
          */
         Buffer& resetLoopPoints() {

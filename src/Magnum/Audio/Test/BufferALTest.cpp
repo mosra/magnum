@@ -75,13 +75,12 @@ void BufferALTest::properties() {
     CORRADE_COMPARE(buf.size(), 8);
     CORRADE_COMPARE(buf.channels(), 1);
     CORRADE_COMPARE(buf.bitDepth(), 8);
-    CORRADE_COMPARE(buf.length(), 8);
+    CORRADE_COMPARE(buf.sampleCount(), 8);
 }
 
 void BufferALTest::loopPoints() {
-    if(!_context.isExtensionSupported<Audio::Extensions::AL::SOFT::loop_points>()) {
-        CORRADE_SKIP("Extension AL_SOFT_loop_points isn't supported on this system.");
-    }
+    if(!_context.isExtensionSupported<Audio::Extensions::AL::SOFT::loop_points>())
+        CORRADE_SKIP(Extensions::AL::SOFT::loop_points::string() + std::string{" is not supported."});
 
     Buffer buf;
     constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
@@ -91,9 +90,8 @@ void BufferALTest::loopPoints() {
 }
 
 void BufferALTest::setLoopPoints() {
-    if(!_context.isExtensionSupported<Audio::Extensions::AL::SOFT::loop_points>()) {
-        CORRADE_SKIP("Extension AL_SOFT_loop_points isn't supported on this system.");
-    }
+    if(!_context.isExtensionSupported<Audio::Extensions::AL::SOFT::loop_points>())
+        CORRADE_SKIP(Extensions::AL::SOFT::loop_points::string() + std::string{" is not supported."});
 
     Buffer buf;
     constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
@@ -103,9 +101,8 @@ void BufferALTest::setLoopPoints() {
 }
 
 void BufferALTest::setLoopSince() {
-    if(!_context.isExtensionSupported<Audio::Extensions::AL::SOFT::loop_points>()) {
-        CORRADE_SKIP("Extension AL_SOFT_loop_points isn't supported on this system.");
-    }
+    if(!_context.isExtensionSupported<Audio::Extensions::AL::SOFT::loop_points>())
+        CORRADE_SKIP(Extensions::AL::SOFT::loop_points::string() + std::string{" is not supported."});
 
     Buffer buf;
     constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
@@ -115,9 +112,8 @@ void BufferALTest::setLoopSince() {
 }
 
 void BufferALTest::setLoopUntil() {
-    if(!_context.isExtensionSupported<Audio::Extensions::AL::SOFT::loop_points>()) {
-        CORRADE_SKIP("Extension AL_SOFT_loop_points isn't supported on this system.");
-    }
+    if(!_context.isExtensionSupported<Audio::Extensions::AL::SOFT::loop_points>())
+        CORRADE_SKIP(Extensions::AL::SOFT::loop_points::string() + std::string{" is not supported."});
 
     Buffer buf;
     constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
@@ -127,9 +123,8 @@ void BufferALTest::setLoopUntil() {
 }
 
 void BufferALTest::resetLoopPoints() {
-    if(!_context.isExtensionSupported<Audio::Extensions::AL::SOFT::loop_points>()) {
-        CORRADE_SKIP("Extension AL_SOFT_loop_points isn't supported on this system.");
-    }
+    if(!_context.isExtensionSupported<Audio::Extensions::AL::SOFT::loop_points>())
+        CORRADE_SKIP(Extensions::AL::SOFT::loop_points::string() + std::string{" is not supported."});
 
     Buffer buf;
     constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
