@@ -5,6 +5,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2019 Guillaume Jacquemin <williamjcm@users.noreply.github.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -100,6 +101,44 @@ class Buffer {
         Buffer& setData(BufferFormat format, Containers::ArrayView<const void> data, ALsizei frequency) {
             alBufferData(_id, ALenum(format), data, data.size(), frequency);
             return *this;
+        }
+
+        /**
+         * @brief Get buffer size
+         * @return The buffer's size in bytes
+         */
+        ALint size() {
+            ALint size;
+            alGetBufferi(_id, AL_SIZE, &size);
+            return size;
+        }
+
+        /**
+         * @brief Get buffer channels
+         * @return The buffer's number of channels
+         */
+        ALint channels() {
+            ALint channels;
+            alGetBufferi(_id, AL_CHANNELS, &channels);
+            return channels;
+        }
+
+        /**
+         * @brief Get buffer bit depth
+         * @return The buffer's bit depth
+         */
+        ALint bitDepth() {
+            ALint bitDepth;
+            alGetBufferi(_id, AL_BITS, &bitDepth);
+            return bitDepth;
+        }
+
+        /**
+         * @brief Get buffer length
+         * @return The buffer's length in samples
+         */
+        ALint length() {
+            return size() * 8 / (channels() * bitDepth());
         }
 
     private:

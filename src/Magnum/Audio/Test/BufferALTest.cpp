@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2019 Guillaume Jacquemin <williamjcm@users.noreply.github.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -26,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Audio/Buffer.h"
+#include "Magnum/Audio/BufferFormat.h"
 #include "Magnum/Audio/Context.h"
 
 namespace Magnum { namespace Audio { namespace Test { namespace {
@@ -35,16 +37,32 @@ struct BufferALTest: TestSuite::Tester {
 
     void construct();
 
+    void properties();
+
     Context _context;
 };
 
 BufferALTest::BufferALTest() {
-    addTests({&BufferALTest::construct});
+    addTests({&BufferALTest::construct,
+
+              &BufferALTest::properties});
 }
 
 void BufferALTest::construct() {
     Buffer buf;
     CORRADE_VERIFY(buf.id() != 0);
+}
+
+void BufferALTest::properties() {
+    Buffer buf;
+    constexpr char data[] { 25, 17, 24, 122, 67, 24, 48, 96 };
+
+    buf.setData(BufferFormat::Mono8, data, 22050);
+
+    CORRADE_COMPARE(buf.size(), 8);
+    CORRADE_COMPARE(buf.channels(), 1);
+    CORRADE_COMPARE(buf.bitDepth(), 8);
+    CORRADE_COMPARE(buf.length(), 8);
 }
 
 }}}}
