@@ -150,6 +150,12 @@ class Resource {
         /** @brief Move assignment */
         Resource<T, U>& operator=(Resource<T, U>&& other);
 
+        /** @brief Equal operator */
+        bool operator==(const Resource<T, U>& other) const;
+
+        /** @brief Not equal operator */
+        bool operator!=(const Resource<T, U>& other) const;
+
         /** @brief Resource key */
         ResourceKey key() const { return _key; }
 
@@ -255,6 +261,14 @@ template<class T, class U> Resource<T, U>& Resource<T, U>::operator=(Resource<T,
 
     other.manager = nullptr;
     return *this;
+}
+
+template<class T, class U> bool Resource<T, U>::operator==(const Resource<T, U>& other) const {
+    return manager == other.manager && _key == other._key;
+}
+
+template<class T, class U> bool Resource<T, U>::operator!=(const Resource<T, U>& other) const {
+    return !(*this == other);
 }
 
 template<class T, class U> void Resource<T, U>::acquire() {
