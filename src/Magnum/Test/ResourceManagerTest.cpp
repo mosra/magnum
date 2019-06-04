@@ -34,6 +34,7 @@ namespace Magnum { namespace Test { namespace {
 struct ResourceManagerTest: TestSuite::Tester {
     explicit ResourceManagerTest();
 
+    void compare();
     void state();
     void stateFallback();
     void stateDisallowed();
@@ -61,7 +62,8 @@ typedef Magnum::ResourceManager<Int, Data> ResourceManager;
 size_t Data::count = 0;
 
 ResourceManagerTest::ResourceManagerTest() {
-    addTests({&ResourceManagerTest::state,
+    addTests({&ResourceManagerTest::compare,
+              &ResourceManagerTest::state,
               &ResourceManagerTest::stateFallback,
               &ResourceManagerTest::stateDisallowed,
               &ResourceManagerTest::basic,
@@ -74,6 +76,23 @@ ResourceManagerTest::ResourceManagerTest() {
               &ResourceManagerTest::loader,
 
               &ResourceManagerTest::debugResourceState});
+}
+
+void ResourceManagerTest::compare() {
+    ResourceManager rm;
+    
+    ResourceKey resKeyA("keyA");
+    ResourceKey resKeyB("keyB");
+    rm.set(resKeyA, 1);
+    rm.set(resKeyB, 0);
+    
+    Resource<Int> resA = rm.get<Int>(resKeyA);
+    Resource<Int> resA2 = rm.get<Int>(resKeyA);
+    Resource<Int> resB = rm.get<Int>(resKeyB);
+
+    CORRADE_VERIFY(resA == resA);
+    CORRADE_VERIFY(resA == resA2);
+    CORRADE_VERIFY(resA != resB);
 }
 
 void ResourceManagerTest::state() {
