@@ -5,6 +5,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2019 Daniel Guzman <daniel.guzman85@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -149,6 +150,16 @@ class Resource {
 
         /** @brief Move assignment */
         Resource<T, U>& operator=(Resource<T, U>&& other);
+
+        /** @brief Equality comparison */
+        bool operator==(const Resource<T, U>& other) const {
+            return manager == other.manager && _key == other._key;
+        }
+
+        /** @brief Non-equality comparison */
+        bool operator!=(const Resource<T, U>& other) const {
+            return !operator==(other);
+        }
 
         /** @brief Resource key */
         ResourceKey key() const { return _key; }

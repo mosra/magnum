@@ -3,6 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
               Vladimír Vondruš <mosra@centrum.cz>
+    Copyright © 2019 Daniel Guzman <daniel.guzman85@gmail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -34,6 +35,7 @@ namespace Magnum { namespace Test { namespace {
 struct ResourceManagerTest: TestSuite::Tester {
     explicit ResourceManagerTest();
 
+    void compare();
     void state();
     void stateFallback();
     void stateDisallowed();
@@ -63,7 +65,8 @@ typedef Magnum::ResourceManager<Int, Data> ResourceManager;
 size_t Data::count = 0;
 
 ResourceManagerTest::ResourceManagerTest() {
-    addTests({&ResourceManagerTest::state,
+    addTests({&ResourceManagerTest::compare,
+              &ResourceManagerTest::state,
               &ResourceManagerTest::stateFallback,
               &ResourceManagerTest::stateDisallowed,
               &ResourceManagerTest::basic,
@@ -78,6 +81,23 @@ ResourceManagerTest::ResourceManagerTest() {
               &ResourceManagerTest::loaderSetNullptr,
 
               &ResourceManagerTest::debugResourceState});
+}
+
+void ResourceManagerTest::compare() {
+    ResourceManager rm1;
+
+    ResourceKey resKeyA("keyA");
+    ResourceKey resKeyB("keyB");
+    rm1.set(resKeyA, 1);
+    rm1.set(resKeyB, 0);
+
+    Resource<Int> resA1 = rm1.get<Int>(resKeyA);
+    Resource<Int> resA2 = rm1.get<Int>(resKeyA);
+    Resource<Int> resB = rm1.get<Int>(resKeyB);
+
+    CORRADE_VERIFY(resA1 == resA1);
+    CORRADE_VERIFY(resA1 == resA2);
+    CORRADE_VERIFY(resA1 != resB);
 }
 
 void ResourceManagerTest::state() {
