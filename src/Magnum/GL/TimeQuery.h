@@ -47,7 +47,8 @@ usage of both methods:
 
 @snippet MagnumGL.cpp TimeQuery-usage2
 
-Using the latter results in fewer OpenGL calls when doing more measures.
+Using the latter results in fewer OpenGL calls when doing more measures. All
+times are reported in nanoseconds.
 
 @requires_gl33 Extension @gl_extension{ARB,timer_query}
 @requires_es_extension Extension @gl_extension{EXT,disjoint_timer_query}
@@ -66,8 +67,8 @@ class TimeQuery: public AbstractQuery {
          */
         enum class Target: GLenum {
             /**
-             * Elapsed time. Use @ref result<UnsignedLong>() or @ref result<Long>()
-             * to retrieve the result.
+             * Elapsed time, in nanoseconds. Use @ref result<UnsignedLong>() or
+             * @ref result<Long>() to retrieve the result.
              * @see @ref timestamp()
              */
             #ifndef MAGNUM_TARGET_GLES
@@ -77,9 +78,9 @@ class TimeQuery: public AbstractQuery {
             #endif
 
             /**
-             * Timestamp. For use with @ref timestamp() only, use
-             * @ref result<UnsignedLong>() or @ref result<Long>() to retrieve
-             * the result.
+             * Timestamp, in nanoseconds. For use with @ref timestamp() only,
+             * use @ref result<UnsignedLong>() or @ref result<Long>() to
+             * retrieve the result.
              */
             #ifndef MAGNUM_TARGET_GLES
             Timestamp = GL_TIMESTAMP
