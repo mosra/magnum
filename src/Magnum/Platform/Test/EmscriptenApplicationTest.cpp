@@ -72,17 +72,19 @@ struct EmscriptenApplicationTest: Platform::Application {
 
     /* For testing event coordinates */
     void mousePressEvent(MouseEvent& event) override {
-        Debug{} << "press" << event.position() << Int(event.button());
+        Debug{} << "mouse press event:" << event.position() << Int(event.button());
     }
 
-    /* For testing event coordinates */
     void mouseReleaseEvent(MouseEvent& event) override {
-        Debug{} << "release" << event.position() << Int(event.button());
+        Debug{} << "mouse release event:" << event.position() << Int(event.button());
     }
 
-    /* For testing event coordinates */
     void mouseMoveEvent(MouseMoveEvent& event) override {
-        Debug{} << "move" << event.position();
+        Debug{} << "mouse move event:" << event.position() << Int(event.buttons());
+    }
+
+    void mouseScrollEvent(MouseScrollEvent& event) override {
+        Debug{} << "mouse scroll event:" << event.offset() << event.position();
     }
 
     /* For testing keyboard capture */

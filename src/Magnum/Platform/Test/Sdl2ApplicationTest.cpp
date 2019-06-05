@@ -55,7 +55,19 @@ struct Sdl2ApplicationTest: Platform::Application {
 
     /* For testing event coordinates */
     void mousePressEvent(MouseEvent& event) override {
-        Debug{} << "mouse press event:" << event.position();
+        Debug{} << "mouse press event:" << event.position() << Int(event.button());
+    }
+
+    void mouseReleaseEvent(MouseEvent& event) override {
+        Debug{} << "mouse release event:" << event.position() << Int(event.button());
+    }
+
+    void mouseMoveEvent(MouseMoveEvent& event) override {
+        Debug{} << "mouse move event:" << event.position() << Uint32(event.buttons());
+    }
+
+    void mouseScrollEvent(MouseScrollEvent& event) override {
+        Debug{} << "mouse scroll event:" << event.offset() << event.position();
     }
 
     void keyPressEvent(KeyEvent& event) override {
