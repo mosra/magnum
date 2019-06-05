@@ -79,8 +79,8 @@ State::State(Context& context, std::ostream* const out) {
     #endif
 
     /* Sort the features and remove duplicates */
-    std::sort(extensions.begin(), extensions.end());
-    extensions.erase(std::unique(extensions.begin(), extensions.end()), extensions.end());
+//     std::sort(extensions.begin(), extensions.end());
+//     extensions.erase(std::unique(extensions.begin(), extensions.end()), extensions.end());
 
     Debug{out} << "Using optional features:";
     for(const auto& ext: extensions) Debug(out) << "   " << ext;
