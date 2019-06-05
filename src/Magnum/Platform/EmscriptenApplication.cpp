@@ -565,15 +565,14 @@ void EmscriptenApplication::setupAnimationFrame(bool forceAnimationFrame) {
             }
 
             /* If redraw is requested, we will not cancel the already requested
-            animation frame.
-            If ForceAnimationFrame is set, we will request an animation frame
-            even if redraw is not requested. */
+               animation frame. If ForceAnimationFrame is set, we will request
+               an animation frame even if redraw is not requested. */
             if((app._flags & Flag::Redraw) && !(app._flags & Flag::ExitRequested)) {
                 return true;
             }
 
             /* Cancel last requested animation frame and make redraw()
-            requestAnimationFrame again next time */
+               requestAnimationFrame again next time */
             app._flags &= ~Flag::LoopActive;
             return false;
         };
