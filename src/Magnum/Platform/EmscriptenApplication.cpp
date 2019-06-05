@@ -472,29 +472,30 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
        1.38.27 depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1
        but we don't want to force this flag on the users so the behavior
        handles both. */
-    #ifdef EMSCRIPTEN_EVENT_TARGET_DOCUMENT
-    char* const keyboardListeningElement = reinterpret_cast<char*>(EM_ASM_INT({
-        var element = Module['keyboardListeningElement'] || document;
-
-        if(element === document) return 1;
-        if(element === window) return 2;
-        if('id' in element)
-            return allocate(intArrayFromString(element.id), 'i8', ALLOC_NORMAL);
-
-        return 0;
-    }));
-    #else
-    char* const keyboardListeningElement = reinterpret_cast<char*>(EM_ASM_INT({
-        var element = Module['keyboardListeningElement'] || document;
-
-        if(element === document) element = {id: '#document'};
-        if(element === window) element = {id: '#window'};
-        if('id' in element)
-            return allocate(intArrayFromString(element.id), 'i8', ALLOC_NORMAL);
-
-        return 0;
-    }));
-    #endif
+//     #ifdef EMSCRIPTEN_EVENT_TARGET_DOCUMENT
+//     char* const keyboardListeningElement = reinterpret_cast<char*>(EM_ASM_INT({
+//         var element = Module['keyboardListeningElement'] || document;
+//
+//         if(element === document) return 1;
+//         if(element === window) return 2;
+//         if('id' in element)
+//             return allocate(intArrayFromString(element.id), 'i8', ALLOC_NORMAL);
+//
+//         return 0;
+//     }));
+//     #else
+//     char* const keyboardListeningElement = reinterpret_cast<char*>(EM_ASM_INT({
+//         var element = Module['keyboardListeningElement'] || document;
+//
+//         if(element === document) element = {id: '#document'};
+//         if(element === window) element = {id: '#window'};
+//         if('id' in element)
+//             return allocate(intArrayFromString(element.id), 'i8', ALLOC_NORMAL);
+//
+//         return 0;
+//     }));
+//     #endif
+    const char* keyboardListeningElement = "#canvas";
     #pragma GCC diagnostic pop
 
     /* Happens only if keyboardListeningElement was set, but did not have an
@@ -528,13 +529,13 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
             return e.isAccepted();
         }));
 
-    #ifdef EMSCRIPTEN_EVENT_TARGET_DOCUMENT
-    if(keyboardListeningElement != EMSCRIPTEN_EVENT_TARGET_DOCUMENT &&
-       keyboardListeningElement != EMSCRIPTEN_EVENT_TARGET_WINDOW)
-    #endif
-    {
-        std::free(keyboardListeningElement);
-    }
+//     #ifdef EMSCRIPTEN_EVENT_TARGET_DOCUMENT
+//     if(keyboardListeningElement != EMSCRIPTEN_EVENT_TARGET_DOCUMENT &&
+//        keyboardListeningElement != EMSCRIPTEN_EVENT_TARGET_WINDOW)
+//     #endif
+//     {
+//         std::free(keyboardListeningElement);
+//     }
 }
 
 
@@ -630,7 +631,7 @@ void EmscriptenApplication::redraw() {
 
             /* Call our callback via function pointer returning int with two
             int params */
-            if(!dynCall('ii', $0, [$1])) {
+            if(!dynCall_ii($0, [$1])) {
                 window.cancelAnimationFrame(id);
             }
         };
