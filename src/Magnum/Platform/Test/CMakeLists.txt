@@ -25,6 +25,8 @@
 
 set(ADDITIONAL_WEB_FILES "")
 
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lGL -s MINIMAL_RUNTIME=2 -s IGNORE_CLOSURE_COMPILER_ERRORS=1 -s ENVIRONMENT=web")
+
 if(WITH_ANDROIDAPPLICATION)
     add_library(PlatformAndroidApplicationTest SHARED AndroidApplicationTest.cpp)
     target_link_libraries(PlatformAndroidApplicationTest PRIVATE MagnumAndroidApplication)

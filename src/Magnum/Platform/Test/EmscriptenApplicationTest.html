@@ -14,8 +14,25 @@
       <div id="status">Initialization...</div>
       <div id="status-description"></div>
       <script src="EmscriptenApplication.js"></script>
-      <script async="async" src="PlatformEmscriptenApplicationTest.js"></script>
       <script>
+          function script(url, cb) {
+        var s = document.createElement('script');
+        s.src = url;
+        s.onload = cb;
+        document.body.appendChild(s);
+    }
+    function binary(url, cb) {
+        var x = new XMLHttpRequest();
+        x.open('GET', url, true);
+        x.responseType = 'arraybuffer';
+        x.onload = function() { cb(x.response); }
+        x.send(null);
+    }
+    binary('PlatformEmscriptenApplicationTest.wasm', function(wasm) {
+        Module.wasm = wasm;
+        script('PlatformEmscriptenApplicationTest.js');
+    });
+
       /* To test keyboard capture directly on the canvas */
       Module.keyboardListeningElement = Module.canvas;
       Module.canvas.addEventListener('mousedown', function(event) {
