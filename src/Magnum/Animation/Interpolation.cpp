@@ -73,6 +73,7 @@ template<class T> auto TypeTraits<Math::Complex<T>, Math::Complex<T>>::interpola
     }
 
     CORRADE_ASSERT(false, "Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
+    CORRADE_ASSERT_UNREACHABLE();
 }
 
 template<class T> auto TypeTraits<Math::Quaternion<T>, Math::Quaternion<T>>::interpolator(Interpolation interpolation) -> Interpolator {
@@ -85,6 +86,7 @@ template<class T> auto TypeTraits<Math::Quaternion<T>, Math::Quaternion<T>>::int
     }
 
     CORRADE_ASSERT(false, "Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
+    CORRADE_ASSERT_UNREACHABLE();
 }
 
 template<class T> auto TypeTraits<Math::DualQuaternion<T>, Math::DualQuaternion<T>>::interpolator(Interpolation interpolation) -> Interpolator {
@@ -97,6 +99,7 @@ template<class T> auto TypeTraits<Math::DualQuaternion<T>, Math::DualQuaternion<
     }
 
     CORRADE_ASSERT(false, "Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
+    CORRADE_ASSERT_UNREACHABLE();
 }
 
 template<class T> auto TypeTraits<Math::CubicHermite<T>, T>::interpolator(Interpolation interpolation) -> Interpolator {
@@ -109,6 +112,7 @@ template<class T> auto TypeTraits<Math::CubicHermite<T>, T>::interpolator(Interp
     }
 
     CORRADE_ASSERT(false, "Animation::interpolatorFor(): can't deduce interpolator function for" << interpolation, {});
+    CORRADE_ASSERT_UNREACHABLE();
 }
 
 template struct MAGNUM_EXPORT TypeTraits<Math::Complex<Float>, Math::Complex<Float>>;
