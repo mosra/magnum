@@ -672,20 +672,20 @@ bool Context::tryCreate() {
     /* List of extensions from future versions (extensions from current and
        previous versions should be supported automatically, so we don't need
        to check for them) */
-    std::unordered_map<std::string, Extension> futureExtensions;
-    for(std::size_t i = future; i != versions.size(); ++i)
-        for(const Extension& extension: Extension::extensions(versions[i]))
-            futureExtensions.emplace(extension.string(), extension);
-
-    /* Check for presence of future and vendor extensions */
-    const std::vector<std::string> extensions = extensionStrings();
-    for(const std::string& extension: extensions) {
-        const auto found = futureExtensions.find(extension);
-        if(found != futureExtensions.end()) {
-            _supportedExtensions.push_back(found->second);
-            _extensionStatus.set(found->second.index(), true);
-        }
-    }
+//     std::unordered_map<std::string, Extension> futureExtensions;
+//     for(std::size_t i = future; i != versions.size(); ++i)
+//         for(const Extension& extension: Extension::extensions(versions[i]))
+//             futureExtensions.emplace(extension.string(), extension);
+//
+//     /* Check for presence of future and vendor extensions */
+//     const std::vector<std::string> extensions = extensionStrings();
+//     for(const std::string& extension: extensions) {
+//         const auto found = futureExtensions.find(extension);
+//         if(found != futureExtensions.end()) {
+//             _supportedExtensions.push_back(found->second);
+//             _extensionStatus.set(found->second.index(), true);
+//         }
+//     }
 
     /* Reset minimal required version to Version::None for whole array */
     for(auto& i: _extensionRequiredVersion) i = Version::None;
@@ -716,21 +716,21 @@ bool Context::tryCreate() {
         Debug{output} << "Disabling extensions:";
 
         /* Put remaining extensions into the hashmap for faster lookup */
-        std::unordered_map<std::string, Extension> allExtensions{std::move(futureExtensions)};
-        for(std::size_t i = 0; i != future; ++i)
-            for(const Extension& extension: Extension::extensions(versions[i]))
-                allExtensions.emplace(extension.string(), extension);
+//         std::unordered_map<std::string, Extension> allExtensions{std::move(futureExtensions)};
+//         for(std::size_t i = 0; i != future; ++i)
+//             for(const Extension& extension: Extension::extensions(versions[i]))
+//                 allExtensions.emplace(extension.string(), extension);
 
         /* Disable extensions that are known and supported and print a message
            for each */
-        for(auto&& extension: _disabledExtensions) {
-            auto found = allExtensions.find(extension);
-            /** @todo Error message here? I should not clutter the output at this point */
-            if(found == allExtensions.end()) continue;
-
-            _extensionRequiredVersion[found->second.index()] = Version::None;
-            Debug{output} << "   " << extension;
-        }
+//         for(auto&& extension: _disabledExtensions) {
+//             auto found = allExtensions.find(extension);
+//             /** @todo Error message here? I should not clutter the output at this point */
+//             if(found == allExtensions.end()) continue;
+//
+//             _extensionRequiredVersion[found->second.index()] = Version::None;
+//             Debug{output} << "   " << extension;
+//         }
     }
 
     _state.emplace(*this, output);
