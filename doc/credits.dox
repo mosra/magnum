@@ -101,6 +101,8 @@ Are the below lists missing your name or something's wrong?
     weak ordering for @ref Math types
 -   **Daniel Bloor** ([\@Bluer01](https://github.com/Bluer01)) --- setting old
     code on fire
+-   **Daniel Guzman** ([\@roig](https://github.com/roig)) --- improvements to
+    @ref ResourceManager
 -   **Denis Igorevich Lobanov** ([\@denislobanov](https://github.com/denislobanov))
     --- math fixes
 -   **[\@dlardi](https://github.com/dlardi)** --- WGL-related bugfixes
@@ -135,6 +137,7 @@ Are the below lists missing your name or something's wrong?
     bugreports, API design direction
 -   **Max Schwarz** ([\@xqms](https://github.com/xqms)) --- `Any*` plugin
     improvements, fixes in the @ref GL library
+-   **Michael Tao** ([\@mtao](https://github.com/mtao)) --- Gentoo build fixes
 -   **Miguel Martin** ([\@miguelmartin75](https://github.com/miguelmartin75))
     --- initial macOS port, various other improvements
 -   **Nathan Ollerenshaw** ([\@matjam](https://github.com/matjam)) --- Ubuntu
