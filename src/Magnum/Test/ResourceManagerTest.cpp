@@ -98,6 +98,20 @@ void ResourceManagerTest::compare() {
     CORRADE_VERIFY(resA1 == resA1);
     CORRADE_VERIFY(resA1 == resA2);
     CORRADE_VERIFY(resA1 != resB);
+
+    Magnum::ResourceManager<Int, Float> rm2;
+    rm2.set(resKeyA, 1);
+    rm2.set(resKeyA, 1.0f);
+
+    Resource<Int> resAOther = rm2.get<Int>(resKeyA);
+    Resource<Float> resADifferentType = rm2.get<Float>(resKeyA);
+    /* Verify it checks for manager equality as well */
+    CORRADE_VERIFY(resA1 != resAOther);
+    /* If the comparison operator wouldn't be deleted, the implicit conversion
+       would kick in and then 1.0f == 1.0f, which is wrong. With the deleted
+       operator this doesn't compile. */
+    //CORRADE_VERIFY(resA1 != resADifferentType);
+    //CORRADE_VERIFY(!(resA1 == resADifferentType));
 }
 
 void ResourceManagerTest::state() {

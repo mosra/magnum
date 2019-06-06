@@ -156,10 +156,16 @@ class Resource {
             return manager == other.manager && _key == other._key;
         }
 
+        /** @brief Equality comparison with other types is explicitly disallowed */
+        template<class V, class W> bool operator==(const Resource<V, W>&) const = delete;
+
         /** @brief Non-equality comparison */
         bool operator!=(const Resource<T, U>& other) const {
             return !operator==(other);
         }
+
+        /** @brief Non-equality comparison with other types is explicitly disallowed */
+        template<class V, class W> bool operator!=(const Resource<V, W>&) const = delete;
 
         /** @brief Resource key */
         ResourceKey key() const { return _key; }
