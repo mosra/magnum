@@ -12,7 +12,7 @@
 #  SDL2_LIBRARY_DEBUG       - SDL2 debug library, if found
 #  SDL2_LIBRARY_RELEASE     - SDL2 release library, if found
 #  SDL2_INCLUDE_DIR         - Root include dir
-#
+#  SDL2_BIN_DIR             - Root bin dir
 
 #
 #   This file is part of Magnum.
@@ -62,9 +62,11 @@ else()
         elseif(MINGW)
             if(CMAKE_SIZEOF_VOID_P EQUAL 8)
                 set(_SDL2_LIBRARY_PATH_SUFFIX x86_64-w64-mingw32/lib)
+                set(_SDL2_BIN_PATH_SUFFIX x86_64-w64-mingw32/bin)
                 list(APPEND _SDL2_PATH_SUFFIXES x86_64-w64-mingw32/include/SDL2)
             elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
                 set(_SDL2_LIBRARY_PATH_SUFFIX i686-w64-mingw32/lib)
+                set(_SDL2_BIN_PATH_SUFFIX i686-w64-mingw32/bin)
                 list(APPEND _SDL2_PATH_SUFFIXES i686-w64-mingw32/include/SDL2)
             endif()
         endif()
@@ -77,9 +79,11 @@ else()
         # config though :/
         NAMES SDL2-2.0 SDL2
         PATH_SUFFIXES ${_SDL2_LIBRARY_PATH_SUFFIX})
+
     find_library(SDL2_LIBRARY_DEBUG
         NAMES SDL2d
         PATH_SUFFIXES ${_SDL2_LIBRARY_PATH_SUFFIX})
+
     # FPHSA needs one of the _DEBUG/_RELEASE variables to check that the
     # library was found -- using SDL_LIBRARY, which will get populated by
     # select_library_configurations() below.
@@ -100,6 +104,11 @@ find_path(SDL2_INCLUDE_DIR
     # find SDL.framework/Headers/SDL.h if SDL1 is installed, which is wrong.
     NAMES SDL_scancode.h
     PATH_SUFFIXES ${_SDL2_PATH_SUFFIXES})
+    
+# Bin dir
+find_path(SDL2_BIN_DIR
+    NAMES *.dll
+    PATH_SUFFIXES ${_SDL2_BIN_PATH_SUFFIX} ${_SDL2_LIBRARY_PATH_SUFFIX})
 
 # iOS dependencies
 if(CORRADE_TARGET_IOS)
