@@ -155,7 +155,7 @@ bool isWindowsAppDpiAware() {
        need. */
     HMODULE const shcore = GetModuleHandleA("Shcore.dll");
     if(shcore) {
-        auto* const getProcessDpiAwareness = reinterpret_cast<HRESULT(*)(HANDLE, PROCESS_DPI_AWARENESS*)>(GetProcAddress(shcore, "GetProcessDpiAwareness"));
+        auto* const getProcessDpiAwareness = reinterpret_cast<HRESULT(WINAPI *)(HANDLE, PROCESS_DPI_AWARENESS*)>(GetProcAddress(shcore, "GetProcessDpiAwareness"));
         PROCESS_DPI_AWARENESS result{};
         return getProcessDpiAwareness && getProcessDpiAwareness(nullptr, &result) == S_OK && result != PROCESS_DPI_UNAWARE;
     }
@@ -166,7 +166,7 @@ bool isWindowsAppDpiAware() {
        correctly. */
     HMODULE const user32 = GetModuleHandleA("User32.dll");
     CORRADE_INTERNAL_ASSERT(user32);
-    auto const isProcessDPIAware = reinterpret_cast<BOOL(*)()>(GetProcAddress(user32, "IsProcessDPIAware"));
+    auto const isProcessDPIAware = reinterpret_cast<BOOL(WINAPI *)()>(GetProcAddress(user32, "IsProcessDPIAware"));
     CORRADE_INTERNAL_ASSERT(isProcessDPIAware);
     return isProcessDPIAware();
 }
