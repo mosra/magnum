@@ -35,14 +35,14 @@ namespace Magnum {
 Matrices and vectors are the most important part of graphics programming and
 one of goals of Magnum is to make their usage as intuitive as possible. They
 are contained in @ref Math namespace and common variants also have aliases in
-root @ref Magnum namespace. See documentation of these namespaces for more
+root @ref Magnum namespace. See the documentation of these namespaces for more
 information about usage with CMake.
 
 @section matrix-vector-hierarchy Matrix and vector classes
 
 Magnum has three main matrix and vector classes: @ref Math::RectangularMatrix,
-(square) @ref Math::Matrix and @ref Math::Vector. To achieve greatest code
-reuse, @ref Math::Matrix is internally square @ref Math::RectangularMatrix and
+(square) @ref Math::Matrix and @ref Math::Vector. To maximize code reuse,
+@ref Math::Matrix is internally square @ref Math::RectangularMatrix and
 @ref Math::RectangularMatrix is internally array of one or more @ref Math::Vector
 instances. Both vectors and matrices can have arbitrary size (known at compile
 time) and can store any arithmetic type.
@@ -66,60 +66,60 @@ See @ref types and @ref Magnum namespace documentation for more information.
 
 @section matrix-vector-construction Constructing matrices and vectors
 
-Default constructors of @ref Math::RectangularMatrix and @ref Math::Vector (and
+The default constructors of @ref Math::RectangularMatrix and @ref Math::Vector (and
 @ref Math::Vector2, @ref Math::Vector3, @ref Math::Vector4, @ref Math::Color3,
 @ref Math::Color4) create zero-filled objects. @ref Math::Matrix (and
-@ref Math::Matrix3, @ref Math::Matrix4) is by default constructed as identity
+@ref Math::Matrix3, @ref Math::Matrix4) is by default constructed as an identity
 matrix.
 
 @snippet MagnumMath.cpp matrix-vector-construct
 
-Most common and most efficient way to create vector is to pass all values to
-constructor, matrix is created by passing all column vectors to the
-constructor. All constructors check number of passed arguments and the errors
-are catched at compile time.
+The most common and most efficient way to create a vector is to pass all values to
+the constructor. A matrix is created by passing all the column vectors to the
+constructor. These constructors check the number of passed arguments and errors
+are caught at compile time.
 
 @snippet MagnumMath.cpp matrix-vector-construct-value
 
-You can specify all components of vector or whole diagonal of square matrix
-with single value or create diagonal matrix from vector:
+You can specify all components of vectors or the diagonal of a square matrix
+with a single value or create a diagonal matrix from a vector:
 
 @snippet MagnumMath.cpp matrix-vector-construct-diagonal
 
 There are also shortcuts to create a vector with all but one component set to
-zero or one, useful for transformations:
+zero or one which are useful for transformations:
 
 @snippet MagnumMath.cpp matrix-vector-construct-axis
 
-It is also possible to create matrices and vectors from an C-style array. The
-function does simple type cast without any copying, so it's possible to
+It is also possible to create matrices and vectors from a C-style array. The
+function performs a simple type cast without copying anything, so it's possible to
 conveniently operate on the array itself:
 
 @snippet MagnumMath.cpp matrix-vector-construct-from
 
-@attention Note that, unlike constructors, this function has no way to check
-    whether the array is long enough to contain all elements, so use with
+@attention Note that, unlike a constructor, this function has no way to check
+    whether the array is long enough to contain all the elements, so use it with
     caution.
 
-To make handling of colors easier, their behavior is a bit different with a
+To make handling colors easier, their behavior is a bit different with a
 richer feature set. Implicit construction of @ref Color4 from @ref Color3 will
-set the alpha to full value (thus @cpp 1.0f @ce for @ref Color4 and @cpp 255 @ce
+set the alpha to the max value (thus @cpp 1.0f @ce for @ref Color4 and @cpp 255 @ce
 for @ref Color4ub):
 
 @snippet MagnumMath.cpp matrix-vector-construct-color
 
-Similarly to axes in vectors, you can create single color shades too, or create
-a RGB color from HSV representation:
+Similar to axes in vectors, you can create single color shades too, or create
+a RGB color from a HSV representation:
 
 @snippet MagnumMath.cpp matrix-vector-construct-color-hue
 
-Lastly, namespace @ref Math::Literals provides convenient
+Finally, the namespace @ref Math::Literals provides convenient
 @link Literals::operator""_rgb() operator""_rgb() @endlink /
 @link Literals::operator""_rgbf() operator""_rgbf() @endlink and
 @link Literals::operator""_rgba() operator""_rgba() @endlink /
 @link Literals::operator""_rgbaf() operator""_rgbaf() @endlink literals for
 entering colors in hex representation. These literals assume linear RGB input
-and don't do any gamma correction on it. For sRGB input, there is
+and don't do any gamma correction. For sRGB input, there is
 @link Literals::operator""_srgb() operator""_srgb() @endlink /
 @link Literals::operator""_srgba() operator""_srgba() @endlink and
 @link Literals::operator""_srgbf() operator""_srgbf() @endlink /
@@ -135,7 +135,7 @@ brackets:
 
 @snippet MagnumMath.cpp matrix-vector-access
 
-Row vectors can be accessed too, but only for reading, and the access is slower
+Row vectors can be accessed too, but only for reading, and access is slower
 due to the way the matrix is stored (see @ref matrix-vector-column-major "explanation below"):
 
 @snippet MagnumMath.cpp matrix-vector-access-row
@@ -154,21 +154,21 @@ function:
 
 @section matrix-vector-conversion Converting between different underlying types
 
-All vector, matrix and other classes in @ref Math namespace are able to be
-constructed from an instance with different underlying type (e.g. convert
+All vector, matrix and other classes in @ref Math namespace can be
+constructed from an instance with a different underlying type (e.g. convert
 between integer and floating-point or betweeen @ref Float and @ref Double).
-Unlike with plain C++ data types, the conversion is done via *explicit*
-constructor. That might sound inconvenient, but doing the conversion explicitly
-avoids common issues like precision loss (or, on the other hand, doing
-computations in unnecessarily high precision).
+Unlike with plain C++ data types, the conversion is done via an *explicit*
+constructor. That might sound inconvenient, but performing the conversion
+explicitly avoids common issues like precision loss (or, on the other hand,
+expensive computation with unnecessarily high precision).
 
-To further emphasise the intent of conversion (so it doesn't look like accident
-or typo), you are encouraged to use @cpp auto b = Type{a} @ce instead of
+To further emphasise the intent of conversion (so it doesn't look like an accident
+or a typo), you are encouraged to use @cpp auto b = Type{a} @ce instead of
 @cpp Type b{a} @ce.
 
 @snippet MagnumMath.cpp matrix-vector-convert
 
-For packing and unpacking there are @ref Math::pack() and @ref Math::unpack()
+For packing and unpacking use the @ref Math::pack() and @ref Math::unpack()
 functions:
 
 @snippet MagnumMath.cpp matrix-vector-convert-pack
@@ -179,8 +179,8 @@ available component-wise operations.
 @section matrix-vector-operations Operations with matrices and vectors
 
 Vectors can be added, subtracted, negated and multiplied or divided with
-scalars, as is common in mathematics, Magnum also adds the ability to divide
-scalar with vector:
+scalars, as is common in mathematics. Magnum also adds the ability to divide
+a scalar with vector:
 
 @snippet MagnumMath.cpp matrix-vector-operations-vector
 
@@ -189,9 +189,9 @@ As in GLSL, vectors can be also multiplied or divided component-wise:
 @snippet MagnumMath.cpp matrix-vector-operations-multiply
 
 When working with integral vectors (i.e. 24bit RGB values), it is often
-desirable to multiply them with floating-point values but with integral result.
+desirable to multiply them with floating-point values but retain an integral result.
 In Magnum, all multiplication/division operations involving integral vectors
-will have integral result, you need to convert both arguments to the same
+will return integers within the result, you need to convert both arguments to the same
 floating-point type to have floating-point result.
 
 @snippet MagnumMath.cpp matrix-vector-operations-integer
@@ -236,24 +236,24 @@ root, various interpolation and (de)normalization functionality:
 @snippet MagnumMath.cpp matrix-vector-operations-functions
 
 Component-wise functions are implemented only for vectors and not for matrices
-to keep the math library in sane and maintainable size. Instead, you can
+to keep the math library a sane and maintainable size. Instead, you can
 reinterpret the matrix as vector and do the operation on it (and vice versa):
 
 @snippet MagnumMath.cpp matrix-vector-operations-functions-componentwise
 
-Note that all component-wise functions in the @ref Math namespace work also for
+Note that all component-wise functions in the @ref Math namespace also work for
 scalars --- and on the special @ref Deg / @ref Rad types too.
 
 @snippet MagnumMath.cpp matrix-vector-operations-functions-scalar
 
 For types with units the only exception are power functions such as
 @ref Math::pow() or @ref Math::log() --- the resulting unit of such an
-operation can't be represented and thus those work only on unitless types.
+operation cannot be represented and thus will only work on unitless types.
 
 @section matrix-vector-column-major Matrices are column-major and vectors are columns
 
-OpenGL matrices are column-major, thus it is reasonable to have matrices in
-Magnum also column major (and vectors as columns). This has naturally some
+OpenGL matrices are column-major, thus in Magnum it is reasonable to use matrices
+also as column-major (the vectors are the columns). This naturally has some
 implications and it may differ from what is common in mathematics:
 
 <ul><li>
@@ -263,19 +263,19 @@ implications and it may differ from what is common in mathematics:
     @snippet MagnumMath.cpp matrix-vector-column-major-template
 </li><li>
     Order of components in matrix constructors is also column-major, further
-    emphasized by requirement that you have to pass directly column vectors:
+    emphasized by the requirement that you must pass column vectors directly:
 
     @snippet MagnumMath.cpp matrix-vector-column-major-construct
 </li><li>
-    Element accessing order is also column-major, thus the bracket operator is
-    accessing columns. Returned vector has also its own bracket operator, which
-    is then indexing rows.
+    Element access order is also column-major, thus the bracket operator
+    accesses columns. The returned vector also has its own bracket operator, which
+    then indexes rows.
 
     @snippet MagnumMath.cpp matrix-vector-column-major-access
 </li><li>
     Various algorithms which commonly operate on matrix rows (such as
     @ref Algorithms::gaussJordanInPlace() "Gauss-Jordan elimination") have
-    faster alternatives which operate on columns. It's then up to user decision
+    faster alternatives which operate on columns. It's then up to the user
     to operate with transposed matrices or use the slower non-transposed
     alternative of the algorithm.
 </li></ul>
