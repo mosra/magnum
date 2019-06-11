@@ -64,7 +64,7 @@ of given type. Magnum provides these plugin interfaces:
 -   @ref Trade::AbstractImageConverter --- conversion among various image
     formats. See `*ImageConverter` classes in the @ref Trade namespace for
     available image converter plugins.
--   @ref Text::AbstractFont --- font loading and glyph layouting. See `*Font`
+-   @ref Text::AbstractFont --- font loading and glyph layout. See `*Font`
     classes in the @ref Text namespace for available font plugins.
 -   @ref Text::AbstractFontConverter --- font and glyph cache conversion. See
     `*FontConverter` classes in the @ref Text namespace for available font
