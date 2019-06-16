@@ -99,6 +99,8 @@ Are the below lists missing your name or something's wrong?
 -   **[\@biosek](https://github.com/biosek)** --- documentation fixes
 -   **Borislav Stanimirov** ([\@iboB](https://github.com/iboB)) --- strict
     weak ordering for @ref Math types
+-   **Cameron Egbert** ([\@cegbertOculus](https://github.com/cegbertOculus))
+    --- fixes to Windows HiDPI support
 -   **Daniel Bloor** ([\@Bluer01](https://github.com/Bluer01)) --- setting old
     code on fire
 -   **Daniel Guzman** ([\@roig](https://github.com/roig)) --- improvements to
@@ -123,6 +125,8 @@ Are the below lists missing your name or something's wrong?
     improvements to @cb{.cmake} android_create_apk() @ce
 -   **Ivan P.** ([\@uzername](https://github.com/uzername)) --- documentation
     improvements
+-   **Jan Dupal** ([\@JanDupal](https://github.com/JanDupal)) --- Homebrew
+    package for `magnum-bindings`
 -   **Jonathan Hale** ([\@Squareys](https://github.com/Squareys)) ---
     @ref Audio library enhancements, @ref Platform::GlfwApplication and
     @ref Platform::EmscriptenApplication implementation, frustum and cone

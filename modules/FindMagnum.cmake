@@ -616,6 +616,8 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
                 set_property(TARGET Magnum::${_component} APPEND PROPERTY
                     INTERFACE_LINK_LIBRARIES android EGL::EGL)
 
+            # EmscriptenApplication has no additional dependencies
+
             # GLFW application dependencies
             elseif(_component STREQUAL GlfwApplication)
                 find_package(GLFW)

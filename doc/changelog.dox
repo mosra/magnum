@@ -154,11 +154,13 @@ See also:
 -   Added @ref Platform::EmscriptenApplication, implementing a lightweight and
     more flexible alternative to @ref Platform::Sdl2Application for Emscripten.
     This is now the recommended application to use for WebGL builds. See
-    [mosra/magnum#300](https://github.com/mosra/magnum/pull/300).
+    [mosra/magnum#300](https://github.com/mosra/magnum/pull/300) and
+    [mosra/magnum-bootstrap#17](https://github.com/mosra/magnum-bootstrap/pull/17).
 -   @ref Platform::Sdl2Application and @ref Platform::GlfwApplication are now
     DPI-aware on Windows as well. See their documentation,
-    @ref platforms-windows-hidpi and [mosra/magnum#243](https://github.com/mosra/magnum/issues/243)
-    for more information.
+    @ref platforms-windows-hidpi, [mosra/magnum#243](https://github.com/mosra/magnum/issues/243)
+    and [mosra/magnum#349](https://github.com/mosra/magnum/pull/349) for more
+    information.
 -   Added @ref Platform::Sdl2Application::glContext() to access the underlying
     `SDL_GLContext` (see [mosra/magnum#325](https://github.com/mosra/magnum/pull/325))
 -   Added @ref Platform::Sdl2Application::setMinWindowSize() and
