@@ -29,10 +29,18 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+#include <thread>
+#endif
+
 namespace Magnum { namespace GL { namespace Test { namespace {
 
 struct ContextGLTest: OpenGLTester {
     explicit ContextGLTest();
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    void multithreaded();
+    #endif
 
     void isVersionSupported();
     #ifndef MAGNUM_TARGET_GLES
@@ -44,14 +52,50 @@ struct ContextGLTest: OpenGLTester {
 };
 
 ContextGLTest::ContextGLTest() {
-    addTests({&ContextGLTest::isVersionSupported,
-              #ifndef MAGNUM_TARGET_GLES
-              &ContextGLTest::isVersionSupportedES,
-              #endif
-              &ContextGLTest::supportedVersion,
-              &ContextGLTest::isExtensionSupported,
-              &ContextGLTest::isExtensionDisabled});
+    addTests({
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        &ContextGLTest::multithreaded,
+        #endif
+
+        &ContextGLTest::isVersionSupported,
+        #ifndef MAGNUM_TARGET_GLES
+        &ContextGLTest::isVersionSupportedES,
+        #endif
+        &ContextGLTest::supportedVersion,
+        &ContextGLTest::isExtensionSupported,
+        &ContextGLTest::isExtensionDisabled});
 }
+
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+void ContextGLTest::multithreaded() {
+    CORRADE_VERIFY(Context::hasCurrent());
+    Containers::Optional<bool> otherThreadHasCurrent;
+
+    std::thread t{[](Containers::Optional<bool>& hasCurrent) {
+        hasCurrent = Context::hasCurrent();
+    }, std::ref(otherThreadHasCurrent)};
+
+    t.join();
+
+    CORRADE_VERIFY(otherThreadHasCurrent);
+
+    Debug{} << "MAGNUM_BUILD_MULTITHREADED defined:" <<
+        #ifdef MAGNUM_BUILD_MULTITHREADED
+        true
+        #else
+        false
+        #endif
+        ;
+
+    Debug{} << "Current context visible in another thread:" << *otherThreadHasCurrent;
+
+    #ifdef MAGNUM_BUILD_MULTITHREADED
+    CORRADE_VERIFY(!*otherThreadHasCurrent);
+    #else
+    CORRADE_VERIFY(*otherThreadHasCurrent);
+    #endif
+}
+#endif
 
 void ContextGLTest::isVersionSupported() {
     const Version v = Context::current().version();

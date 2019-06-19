@@ -106,7 +106,6 @@ endif()
 if(BUILD_GL_TESTS)
     corrade_add_test(GLAbstractTextureGLTest AbstractTextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLBufferGLTest BufferGLTest.cpp LIBRARIES MagnumOpenGLTester)
-    corrade_add_test(GLContextGLTest ContextGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLCubeMapTextureGLTest CubeMapTextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLFramebufferGLTest FramebufferGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLMeshGLTest MeshGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
@@ -119,6 +118,12 @@ if(BUILD_GL_TESTS)
         AbstractShaderProgramGLTest.cpp
         ${GLAbstractShaderProgramGLTest_RES}
         LIBRARIES MagnumOpenGLTester)
+
+    corrade_add_test(GLContextGLTest ContextGLTest.cpp LIBRARIES MagnumOpenGLTester)
+    if(NOT CORRADE_TARGET_EMSCRIPTEN)
+        find_package(Threads REQUIRED)
+        target_link_libraries(GLContextGLTest PRIVATE Threads::Threads)
+    endif()
 
     if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
         set(SHADERGLTEST_FILES_DIR "ShaderGLTestFiles")
