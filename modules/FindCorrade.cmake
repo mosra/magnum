@@ -70,6 +70,9 @@
 #   included
 #  CORRADE_BUILD_STATIC         - Defined if compiled as static libraries.
 #   Default are shared libraries.
+#  CORRADE_BUILD_MULTITHREADED  - Defined if compiled in a way that makes it
+#   possible to safely use certain Corrade features simultaenously in multiple
+#   threads
 #  CORRADE_TARGET_UNIX          - Defined if compiled for some Unix flavor
 #   (Linux, BSD, macOS)
 #  CORRADE_TARGET_APPLE         - Defined if compiled for Apple platforms
@@ -289,6 +292,7 @@ set(_corradeFlags
     MSVC2017_COMPATIBILITY
     BUILD_DEPRECATED
     BUILD_STATIC
+    BUILD_MULTITHREADED
     TARGET_UNIX
     TARGET_APPLE
     TARGET_IOS
