@@ -146,6 +146,14 @@ Note that all options are prefixed with `--magnum-` to avoid conflicts with
 options passed to the application itself. Options that don't have this prefix
 are completely ignored, see documentation of the
 @ref Utility-Arguments-delegating "Utility::Arguments" class for details.
+
+@section GL-Context-multithreading Thread safety
+
+If Corrade is compiled with @ref CORRADE_BUILD_MULTITHREADED (the default), the
+@ref hasCurrent() and @ref current() accessors are thread-local, matching the
+OpenGL context thread locality. This might cause some performance penalties ---
+if you are sure that you never need to have multiple independent thread-local
+Magnum context, build Corrade with the option disabled.
 */
 class MAGNUM_GL_EXPORT Context {
     public:
@@ -396,7 +404,7 @@ class MAGNUM_GL_EXPORT Context {
         /**
          * @brief Whether there is any current context
          *
-         * If Magnum is built with @ref MAGNUM_BUILD_MULTITHREADED, current
+         * If Corrade is built with @ref CORRADE_BUILD_MULTITHREADED, current
          * context is thread-local instead of global (the default).
          * @see @ref current()
          */
@@ -405,8 +413,8 @@ class MAGNUM_GL_EXPORT Context {
         /**
          * @brief Current context
          *
-         * Expect that there is current context. If Magnum is built with
-         * @ref MAGNUM_BUILD_MULTITHREADED, current context is thread-local
+         * Expect that there is current context. If Corrade is built with
+         * @ref CORRADE_BUILD_MULTITHREADED, current context is thread-local
          * instead of global (the default).
          * @see @ref hasCurrent()
          */

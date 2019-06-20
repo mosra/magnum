@@ -226,8 +226,6 @@ are also available as preprocessor variables if including
     included
 -   `MAGNUM_BUILD_STATIC` --- Defined if compiled as static libraries. Default
     are shared libraries.
--   `MAGNUM_BUILD_MULTITHREADED` --- Defined if compiled in a way that allows
-    having multiple thread-local Magnum contexts. The default.
 -   `MAGNUM_TARGET_GL` --- Defined if compiled with OpenGL interoperability
     enabled
 -   `MAGNUM_TARGET_GLES` --- Defined if compiled for OpenGL ES
@@ -240,6 +238,13 @@ are also available as preprocessor variables if including
     @ref MAGNUM_TARGET_HEADLESS documentation for more information.
 -   `MAGNUM_TARGET_VK` --- Defined if compiled with Vulkan interoperability
     enabled
+
+The following variables are provided for backwards compatibility purposes only
+when @ref MAGNUM_BUILD_DEPRECATED is defined and will be removed in a future
+release:
+
+-   `MAGNUM_BUILD_MULTITHREADED` --- Alias to `CORRADE_BUILD_MULTITHREADED`.
+    Use @ref CORRADE_BUILD_MULTITHREADED instead.
 
 Corrade library provides also its own set of CMake macros and variables, see
 @ref corrade-cmake "its documentation" for more information.

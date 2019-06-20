@@ -79,8 +79,8 @@ void ContextGLTest::multithreaded() {
 
     CORRADE_VERIFY(otherThreadHasCurrent);
 
-    Debug{} << "MAGNUM_BUILD_MULTITHREADED defined:" <<
-        #ifdef MAGNUM_BUILD_MULTITHREADED
+    Debug{} << "CORRADE_BUILD_MULTITHREADED defined:" <<
+        #ifdef CORRADE_BUILD_MULTITHREADED
         true
         #else
         false
@@ -89,7 +89,7 @@ void ContextGLTest::multithreaded() {
 
     Debug{} << "Current context visible in another thread:" << *otherThreadHasCurrent;
 
-    #ifdef MAGNUM_BUILD_MULTITHREADED
+    #ifdef CORRADE_BUILD_MULTITHREADED
     CORRADE_VERIFY(!*otherThreadHasCurrent);
     #else
     CORRADE_VERIFY(*otherThreadHasCurrent);

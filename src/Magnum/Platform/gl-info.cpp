@@ -241,6 +241,9 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifdef CORRADE_BUILD_STATIC
     Debug() << "    CORRADE_BUILD_STATIC";
     #endif
+    #ifdef CORRADE_BUILD_MULTITHREADED
+    Debug() << "    CORRADE_BUILD_MULTITHREADED";
+    #endif
     #ifdef CORRADE_TARGET_UNIX
     Debug() << "    CORRADE_TARGET_UNIX";
     #endif
@@ -288,9 +291,6 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #endif
     #ifdef MAGNUM_BUILD_STATIC
     Debug() << "    MAGNUM_BUILD_STATIC";
-    #endif
-    #ifdef MAGNUM_BUILD_MULTITHREADED
-    Debug() << "    MAGNUM_BUILD_MULTITHREADED";
     #endif
     #ifdef MAGNUM_TARGET_GLES
     Debug() << "    MAGNUM_TARGET_GLES";

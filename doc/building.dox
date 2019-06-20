@@ -475,9 +475,9 @@ available for desktop OpenGL only, see @ref requires-gl.
     @ref Vk library itself.
 
 By default the engine is built in a way that allows having multiple independent
-thread-local Magnum contents. This might cause some performance penalties ---
-if you are sure that you will never need such feature, you can disable it via
-the `BUILD_MULTITHREADED` option.
+thread-local Magnum contents. This is inherited from the
+@ref CORRADE_BUILD_MULTITHREADED option --- if you are sure that you will never
+need such feature, disable it when building Corrade itself.
 
 The features used can be conveniently detected in depending projects both in
 CMake and C++ sources, see @ref cmake and @ref Magnum/Magnum.h for more
@@ -924,10 +924,6 @@ shared libraries (although it is supported). Enable `BUILD_STATIC` to build
 static libraries. Dynamically loaded plugins are not supported on iOS at the
 moment, thus `BUILD_PLUGINS_STATIC` is implicitly enabled. OpenGL ES 2.0 is
 enabled by default, switch to 3.0 by disabling `TARGET_GLES2`.
-
-Please note that `BUILD_MULTITHREADED` is supported only since Xcode 7.3 and
-doesn't work on `i386` iOS Simulator, you need to disable it in order to build
-for older platforms.
 
 @code{.sh}
 mkdir build-ios && cd build-ios

@@ -66,16 +66,13 @@ Defined if built as static libraries. Default are shared libraries.
 #define MAGNUM_BUILD_STATIC
 #undef MAGNUM_BUILD_STATIC
 
-/**
-@brief Multi-threaded build
-
-Defined if the library is built in a way that allows multiple thread-local
-Magnum contexts. Enabled by default.
-@see @ref building, @ref cmake,
-    @ref Magnum::GL::Context::current() "GL::Context::current()"
-*/
+#ifdef MAGNUM_BUILD_DEPRECATED
+/** @brief Multi-threaded build
+ * @deprecated Use @ref CORRADE_BUILD_MULTITHREADED instead.
+ */
 #define MAGNUM_BUILD_MULTITHREADED
 #undef MAGNUM_BUILD_MULTITHREADED
+#endif
 
 /**
 @brief OpenGL interoperability

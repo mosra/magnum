@@ -127,8 +127,6 @@
 #  MAGNUM_BUILD_DEPRECATED      - Defined if compiled with deprecated APIs
 #   included
 #  MAGNUM_BUILD_STATIC          - Defined if compiled as static libraries
-#  MAGNUM_BUILD_MULTITHREADED   - Defined if compiled in a way that allows
-#   having multiple thread-local Magnum contexts
 #  MAGNUM_TARGET_GL             - Defined if compiled with OpenGL interop
 #  MAGNUM_TARGET_GLES           - Defined if compiled for OpenGL ES
 #  MAGNUM_TARGET_GLES2          - Defined if compiled for OpenGL ES 2.0
@@ -138,6 +136,13 @@
 #  MAGNUM_TARGET_WEBGL          - Defined if compiled for WebGL
 #  MAGNUM_TARGET_HEADLESS       - Defined if compiled for headless machines
 #  MAGNUM_TARGET_VK             - Defined if compiled with Vulkan interop
+#
+# The following variables are provided for backwards compatibility purposes
+# only when MAGNUM_BUILD_DEPRECATED is enabled and will be removed in a future
+# release:
+#
+#  MAGNUM_BUILD_MULTITHREADED   - Alias to CORRADE_BUILD_MULTITHREADED. Use
+#   CORRADE_BUILD_MULTITHREADED instead.
 #
 # Additionally these variables are defined for internal usage:
 #
@@ -246,7 +251,6 @@ set(_magnumFlags
     # So far that's not a problem, but might become an issue for new flags.
     BUILD_DEPRECATED
     BUILD_STATIC
-    BUILD_MULTITHREADED
     TARGET_GL
     TARGET_GLES
     TARGET_GLES2
@@ -261,6 +265,11 @@ foreach(_magnumFlag ${_magnumFlags})
         set(MAGNUM_${_magnumFlag} 1)
     endif()
 endforeach()
+
+# For compatibility only, to be removed at some point
+if(MAGNUM_BUILD_DEPRECATED AND CORRADE_BUILD_MULTITHREADED)
+    set(MAGNUM_BUILD_MULTITHREADED 1)
+endif()
 
 # OpenGL library preference. Prefer to use GLVND, since that's the better
 # approach nowadays, but allow the users to override it from outside in case

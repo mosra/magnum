@@ -512,6 +512,10 @@ See also:
         @cb{.js} 'module' @ce)
     -   and for CSS files, all references to @cb{.css} #module @ce need to be
         @cb{.css} #canvas @ce now
+-   The `BUILD_MULTITHREADED` CMake option and `MAGNUM_BUILD_MULTITHREADED`
+    CMake / preprocessor variable has been moved to Corrade --- you need to
+    toggle it when building Corrade and use @ref CORRADE_BUILD_MULTITHREADED
+    instead
 
 @section changelog-2019-01 2019.01
 

@@ -236,8 +236,9 @@ The main purpose of windowless contexts is threaded OpenGL, used for example
 for background data processing. The workflow is to create the windowless
 context on the main thread, but make it current in the worker thread. This way
 the main thread state isn't affected so it can have any other GL context
-current (for example for the main application rendering). See also
-@ref MAGNUM_BUILD_MULTITHREADED.
+current (for example for the main application rendering). See
+@ref GL-Context-multithreading and @ref CORRADE_BUILD_MULTITHREADED for more
+information.
 
 @note Context creation is not thread safe on all platforms, that's why it still
     has to be done on the main thread.

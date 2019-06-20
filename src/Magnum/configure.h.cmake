@@ -27,7 +27,6 @@
 
 #cmakedefine MAGNUM_BUILD_DEPRECATED
 #cmakedefine MAGNUM_BUILD_STATIC
-#cmakedefine MAGNUM_BUILD_MULTITHREADED
 #cmakedefine MAGNUM_TARGET_GL
 #cmakedefine MAGNUM_TARGET_GLES
 #cmakedefine MAGNUM_TARGET_GLES2
@@ -36,5 +35,13 @@
 #cmakedefine MAGNUM_TARGET_WEBGL
 #cmakedefine MAGNUM_TARGET_HEADLESS
 #cmakedefine MAGNUM_TARGET_VK
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Corrade/configure.h"
+#ifdef CORRADE_BUILD_MULTITHREADED
+/* For compatibility only, to be removed at some point */
+#define MAGNUM_BUILD_MULTITHREADED
+#endif
+#endif
 
 #endif

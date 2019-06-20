@@ -165,9 +165,16 @@ if(BUILD_DEPRECATED)
     set(MAGNUM_BUILD_DEPRECATED 1)
 endif()
 
-option(BUILD_MULTITHREADED "Build in a way that makes it possible to use multiple thread-local Magnum contexts" ON)
-if(BUILD_MULTITHREADED)
-    set(MAGNUM_BUILD_MULTITHREADED 1)
+# BUILD_MULTITHREADED got moved to Corrade itself. In case we're building with
+# deprecated features enabled, print a warning in case it's set but Corrade
+# reports a different value. We can't print a warning in case it's set because
+# that would cause false positives when both Corrade and Magnum are subprojects
+# (and thus this option is visible to both). Otherwise it's silent --- for
+# non-deprecated builds CMake will at most warn about "variable being unused".
+if(MAGNUM_BUILD_DEPRECATED)
+    if(DEFINED BUILD_MULTITHREADED AND ((NOT CORRADE_BUILD_MULTITHREADED AND BUILD_MULTITHREADED) OR (CORRADE_BUILD_MULTITHREADED AND NOT BUILD_MULTITHREADED)))
+        message(DEPRECATION "BUILD_MULTITHREADED (set to ${BUILD_MULTITHREADED}) is now ignored — you need to set it when building Corrade instead (there it's ${CORRADE_BUILD_MULTITHREADED} now)")
+    endif()
 endif()
 
 set(MAGNUM_DEPLOY_PREFIX "."

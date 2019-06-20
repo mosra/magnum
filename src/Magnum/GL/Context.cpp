@@ -443,12 +443,8 @@ Containers::ArrayView<const Extension> Extension::extensions(Version version) {
 }
 
 namespace {
-    #ifdef MAGNUM_BUILD_MULTITHREADED
-    #ifndef CORRADE_TARGET_APPLE
-    thread_local
-    #else
-    __thread
-    #endif
+    #ifdef CORRADE_BUILD_MULTITHREADED
+    CORRADE_THREAD_LOCAL
     #endif
     Context* currentContext = nullptr;
 }
