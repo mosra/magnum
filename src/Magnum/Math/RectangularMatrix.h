@@ -407,7 +407,12 @@ template<std::size_t cols, std::size_t rows, class T> class RectangularMatrix {
          *
          * @see @ref fromDiagonal()
          */
-        constexpr Vector<DiagonalSize, T> diagonal() const;
+        constexpr Vector<DiagonalSize, T> diagonal() const {
+            /* NVCC (from CUDA) has problems compiling this function under
+               Windows when there's a separate definition due to DiagonalSize
+               (see https://github.com/mosra/magnum/issues/345 for details) */
+            return diagonalInternal(typename Implementation::GenerateSequence<DiagonalSize>::Type());
+        }
 
         /**
          * @brief Convert matrix to vector
@@ -753,8 +758,6 @@ template<std::size_t cols, std::size_t rows, class T> inline RectangularMatrix<r
 
     return out;
 }
-
-template<std::size_t cols, std::size_t rows, class T> constexpr auto RectangularMatrix<cols, rows, T>::diagonal() const -> Vector<DiagonalSize, T> { return diagonalInternal(typename Implementation::GenerateSequence<DiagonalSize>::Type()); }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template<std::size_t cols, std::size_t rows, class T> template<std::size_t ...sequence> constexpr auto RectangularMatrix<cols, rows, T>::diagonalInternal(Implementation::Sequence<sequence...>) const -> Vector<DiagonalSize, T> {

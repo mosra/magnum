@@ -369,6 +369,9 @@ See also:
 -   Removed mention of the outdated Ubuntu PPA from @ref building as it doesn't
     seem to be maintained anymore (see
     [mosra/magnum-examples#61](https://github.com/mosra/magnum-examples/issues/61))
+-   Worked around a bug in the NVCC compiler on Windows involving
+    @ref Math::RectangularMatrix::DiagonalSize to make Magnum usable with CUDA
+    (see [mosra/magnum#345](https://github.com/mosra/magnum/issues/345))
 
 @subsection changelog-latest-bugfixes Bug fixes
 
