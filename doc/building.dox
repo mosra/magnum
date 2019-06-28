@@ -366,7 +366,9 @@ you are using MinGW-w64, the `C:/MinGW` directory is in most cases already
 prepared for exactly this.
 
 Then, when running CMake, set `CMAKE_PREFIX_PATH` and `CMAKE_INSTALL_PREFIX`
-value to that directory (e.g. `-DCMAKE_INSTALL_PREFIX=C:/Sys`).
+value to that directory (e.g. `-DCMAKE_INSTALL_PREFIX=C:/Sys`). If you have
+dependencies scattered across multiple locations, enter them into
+`CMAKE_PREFIX_PATH` separated with semicolons.
 
 @subsubsection building-windows-msvc Using Visual Studio
 
