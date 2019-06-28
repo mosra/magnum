@@ -456,6 +456,8 @@ Context& Context::current() {
     return *currentContext;
 }
 
+void Context::makeCurrent(Context* context) { currentContext = context; }
+
 Context::Context(NoCreateT, Int argc, const char** argv, void functionLoader(Context&)): Context{NoCreate, Utility::Arguments{"magnum"}, argc, argv, functionLoader} {}
 
 Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** argv, void functionLoader(Context&)): _functionLoader{functionLoader}, _version{Version::None} {

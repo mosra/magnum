@@ -23,9 +23,11 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/DefaultFramebuffer.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/Platform/Sdl2Application.h"
+#include "Magnum/Platform/GLContext.h"
 
 using namespace Magnum;
 
@@ -69,3 +71,30 @@ void drawEvent() override {
 }
 /* [Framebuffer-usage-draw] */
 };
+
+int main() {
+
+{
+SDL_Window* _window{};
+SDL_GLContext* _otherGLContext{};
+/* [Context-makeCurrent-nullptr] */
+Platform::GLContext context;
+
+SDL_GL_MakeCurrent(_window, _otherGLContext); // or other platform-specific API
+Platform::GLContext::makeCurrent(nullptr);
+
+Platform::GLContext other;
+/* [Context-makeCurrent-nullptr] */
+
+/* [Context-makeCurrent] */
+Platform::GLContext::makeCurrent(&context);
+
+GL::Buffer a; // implicitly tied to `context`
+
+Platform::GLContext::makeCurrent(&other);
+
+GL::Buffer b; // implicitly tied to `other`
+/* [Context-makeCurrent] */
+}
+
+}

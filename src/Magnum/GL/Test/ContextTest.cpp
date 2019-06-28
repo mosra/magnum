@@ -38,6 +38,8 @@ struct ContextTest: TestSuite::Tester {
     void constructNoCreate();
     void constructCopyMove();
 
+    void makeCurrentNoOp();
+
     void extensions();
 
     void debugFlag();
@@ -50,6 +52,8 @@ struct ContextTest: TestSuite::Tester {
 ContextTest::ContextTest() {
     addTests({&ContextTest::constructNoCreate,
               &ContextTest::constructCopyMove,
+
+              &ContextTest::makeCurrentNoOp,
 
               &ContextTest::extensions,
 
@@ -80,6 +84,12 @@ void ContextTest::constructCopyMove() {
     CORRADE_VERIFY((std::is_constructible<Context, Context&&>{}));
     CORRADE_VERIFY(!(std::is_assignable<Context, const Context&>{}));
     CORRADE_VERIFY(!(std::is_assignable<Context, Context&&>{}));
+}
+
+void ContextTest::makeCurrentNoOp() {
+    CORRADE_VERIFY(!Context::hasCurrent());
+    Context::makeCurrent(nullptr);
+    CORRADE_VERIFY(!Context::hasCurrent());
 }
 
 void ContextTest::extensions() {

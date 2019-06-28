@@ -154,6 +154,28 @@ If Corrade is compiled with @ref CORRADE_BUILD_MULTITHREADED (the default), the
 OpenGL context thread locality. This might cause some performance penalties ---
 if you are sure that you never need to have multiple independent thread-local
 Magnum context, build Corrade with the option disabled.
+
+@section GL-Context-multiple Using multiple OpenGL contexts
+
+By default, Magnum assumes you have one OpenGL context active at all times, and
+all state tracking is done by the @ref Context instance that's associated with
+it. When you are using multiple OpenGL contexts, each of them needs to have a
+corresponding @ref Context instance active at the same time, and you need to
+ensure you only access OpenGL objects that were created by the same context as
+is currently active.
+
+To prevent accidents in common cases, the @ref Context class expects that no
+other instance is active during its creation. In order to create additional
+instances for other OpenGL contexts, *first* you need to "unset" the current one
+with @ref makeCurrent() and *then* create another instance, which will then
+become implicitly active:
+
+@snippet MagnumGL-framebuffer.cpp Context-makeCurrent-nullptr
+
+Once all needed instances are created, switch between them right after making
+the underlying GL context current:
+
+@snippet MagnumGL-framebuffer.cpp Context-makeCurrent
 */
 class MAGNUM_GL_EXPORT Context {
     public:
@@ -419,6 +441,14 @@ class MAGNUM_GL_EXPORT Context {
          * @see @ref hasCurrent()
          */
         static Context& current();
+
+        /**
+         * @brief Make a context current
+         *
+         * To be used when you need to manage multiple OpenGL contexts. See
+         * @ref GL-Context-multiple for more information.
+         */
+        static void makeCurrent(Context* context);
 
         /** @brief Copying is not allowed */
         Context(const Context&) = delete;

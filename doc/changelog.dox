@@ -122,6 +122,9 @@ See also:
 -   It's now possible to pass @ref std::initializer_list to
     @ref GL::Buffer::setData() / @ref GL::Buffer::setSubData() for a succint
     upload of basic types
+-   Added an ability to use Magnum with multiple OpenGL contexts using
+    @ref GL::Context::makeCurrent(), see @ref GL-Context-multiple for more
+    information
 
 @subsubsection changelog-latest-new-math Math library
 

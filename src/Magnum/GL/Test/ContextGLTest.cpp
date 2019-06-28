@@ -38,6 +38,8 @@ namespace Magnum { namespace GL { namespace Test { namespace {
 struct ContextGLTest: OpenGLTester {
     explicit ContextGLTest();
 
+    void makeCurrent();
+
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     void multithreaded();
     #endif
@@ -53,6 +55,8 @@ struct ContextGLTest: OpenGLTester {
 
 ContextGLTest::ContextGLTest() {
     addTests({
+        &ContextGLTest::makeCurrent,
+
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         &ContextGLTest::multithreaded,
         #endif
@@ -64,6 +68,20 @@ ContextGLTest::ContextGLTest() {
         &ContextGLTest::supportedVersion,
         &ContextGLTest::isExtensionSupported,
         &ContextGLTest::isExtensionDisabled});
+}
+
+void ContextGLTest::makeCurrent() {
+    CORRADE_VERIFY(Context::hasCurrent());
+
+    Context& current = Context::current();
+    Context::makeCurrent(nullptr);
+
+    CORRADE_VERIFY(!Context::hasCurrent());
+
+    Context::makeCurrent(&current);
+
+    CORRADE_VERIFY(Context::hasCurrent());
+    CORRADE_COMPARE(&Context::current(), &current);
 }
 
 #ifndef CORRADE_TARGET_EMSCRIPTEN
