@@ -375,6 +375,8 @@ See also:
 -   Worked around a bug in the NVCC compiler on Windows involving
     @ref Math::RectangularMatrix::DiagonalSize to make Magnum usable with CUDA
     (see [mosra/magnum#345](https://github.com/mosra/magnum/issues/345))
+-   Fixed a 64-to-32-bit conversion warning on MSVC in @ref GL::Mesh internals
+    (see [mosra/magnum#352](https://github.com/mosra/magnum/issues/352))
 
 @subsection changelog-latest-bugfixes Bug fixes
 

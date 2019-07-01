@@ -1009,7 +1009,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
             /* Add the gap to offset for next attribute */
             addVertexBufferInternal(buffer, offset+gap, stride, divisor, attributes...);
         }
-        void addVertexBufferInternal(Buffer&, GLsizei, GLuint, GLintptr) {}
+        void addVertexBufferInternal(Buffer&, GLintptr, GLsizei, GLuint) {}
 
         template<UnsignedInt location, class T> void addVertexAttribute(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Float>::value, Buffer&>::type buffer, const Attribute<location, T>& attribute, GLintptr offset, GLsizei stride, GLuint divisor) {
             for(UnsignedInt i = 0; i != Attribute<location, T>::VectorCount; ++i)
