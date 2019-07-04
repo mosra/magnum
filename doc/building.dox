@@ -481,6 +481,15 @@ thread-local Magnum contents. This is inherited from the
 @ref CORRADE_BUILD_MULTITHREADED option --- if you are sure that you will never
 need such feature, disable it when building Corrade itself.
 
+Various plugin interfaces by default search for plugins in pre-defined
+locations. By default those are defined to the installation location and can be
+overriden using the `MAGNUM_PLUGINS_DIR`, `MAGNUM_PLUGINS_DEBUG_DIR` and
+`MAGNUM_PLUGINS_RELEASE_DIR` CMake variables --- see also
+@ref Trade::AbstractImporter::pluginSearchPaths() and equivalent functions in
+other plugin interfaces. Another option is supplying the plugin search path
+explicitly on the user side either using the same CMake variables (passed
+through to preprocessor, see @ref cmake) or via other autodetection means.
+
 The features used can be conveniently detected in depending projects both in
 CMake and C++ sources, see @ref cmake and @ref Magnum/Magnum.h for more
 information. See also @ref corrade-cmake and @ref Corrade/Corrade.h for
@@ -637,14 +646,6 @@ There are also a few command-line utilities, also all disabled by default:
     application libraries based on the target platform.
 -   `WITH_IMAGECONVERTER` --- Build the @ref magnum-imageconverter "magnum-imageconverter"
     executable for converting images of different formats.
-
-Some of these utilities operate with plugins and they search for them in the
-default plugin locations. You can override these locations using the
-`MAGNUM_PLUGINS_DIR` and `MAGNUM_PLUGINS_[DEBUG|RELEASE]_DIR` variables, much
-like when using Magnum from dependent projects --- see @ref cmake for more
-information. In particular, if you specify them as relative paths, the path
-will be taken relative to executable location, which is useful for making
-relocatable installations.
 
 Note that each [namespace](namespaces.html) documentation, all @ref Platform
 library documentation and the @ref GL::OpenGLTester class documentation contain

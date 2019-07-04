@@ -25,9 +25,7 @@
 #  MAGNUM_PLUGINS_DIR           - Base directory with dynamic plugins, defaults
 #   to :variable:`MAGNUM_PLUGINS_RELEASE_DIR` in release builds and
 #   multi-configuration builds or to :variable:`MAGNUM_PLUGINS_DEBUG_DIR` in
-#   debug builds. You can modify all three variables (e.g. set them to ``.``
-#   when deploying on Windows with plugins stored relatively to the
-#   executable), the following ``MAGNUM_PLUGINS_*_DIR`` variables depend on it.
+#   debug builds
 #  MAGNUM_PLUGINS_FONT[|_DEBUG|_RELEASE]_DIR - Directory with dynamic font
 #   plugins
 #  MAGNUM_PLUGINS_FONTCONVERTER[|_DEBUG|_RELEASE]_DIR - Directory with dynamic
