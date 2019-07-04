@@ -28,6 +28,7 @@
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/OpenGLTester.h"
+#include "Magnum/Platform/GLContext.h"
 
 #ifndef CORRADE_TARGET_EMSCRIPTEN
 #include <thread>
@@ -75,6 +76,15 @@ void ContextGLTest::makeCurrent() {
 
     Context& current = Context::current();
     Context::makeCurrent(nullptr);
+
+    CORRADE_VERIFY(!Context::hasCurrent());
+
+    {
+        const char* argv[]{"", "--magnum-log", "off"};
+        Platform::GLContext ctx{Int(Containers::arraySize(argv)), argv};
+
+        CORRADE_VERIFY(Context::hasCurrent());
+    }
 
     CORRADE_VERIFY(!Context::hasCurrent());
 
