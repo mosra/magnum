@@ -386,13 +386,15 @@ template<class T, class K
          * and you have to ensure that it's kept in scope for the whole
          * lifetime of the @ref Player instance.
          */
-        #ifndef CORRADE_MSVC2017_COMPATIBILITY
+        #ifndef CORRADE_MSVC2019_COMPATIBILITY
         template<class V, class R> Player<T, K>& add(const Track<K, V, R>& track, R& destination) {
             return add(TrackView<K, V, R>{track}, destination);
         }
         #else
         /* MSVC 2015 and 2017 is clueless when it comes to trying to deduce the
            template parameters (C2893: Failed to specialize function template).
+           MSVC 2019 works with /permissive-, but I can neither detect presence
+           of the flag nor force it onto users, so I'm treating it the same.
            It works when calling add<V, R> explicitly, but that makes the API
            hard to use and inconsistent between platforms. The only possible
            workaround is to make add() take *anything*, casting it to proper
@@ -439,7 +441,7 @@ template<class T, class K
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class V, class R> Player<T, K>& addWithCallback(const Track<K, V, R>& track, void(*callback)(K, const R&, void*), void* userData = nullptr);
-        #elif !defined(CORRADE_MSVC2017_COMPATIBILITY) /* See above why */
+        #elif !defined(CORRADE_MSVC2019_COMPATIBILITY) /* See above why */
         template<class V, class R, class Callback> Player<T, K>& addWithCallback(const Track<K, V, R>& track, Callback callback, void* userData = nullptr) {
             return addWithCallback(TrackView<K, V, R>{track}, callback, userData);
         }
@@ -472,7 +474,7 @@ template<class T, class K
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class V, class R, class U> Player<T, K>& addWithCallback(const Track<K, V, R>& track, void(*callback)(K, const R&, U&), U& userData);
-        #elif !defined(CORRADE_MSVC2017_COMPATIBILITY) /* See above why */
+        #elif !defined(CORRADE_MSVC2019_COMPATIBILITY) /* See above why */
         template<class V, class R, class U, class Callback> Player<T, K>& addWithCallback(const Track<K, V, R>& track, Callback callback, U& userData) {
             return addWithCallback(TrackView<K, V, R>{track}, callback, userData);
         }
@@ -511,7 +513,7 @@ template<class T, class K
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class V, class R> Player<T, K>& addWithCallbackOnChange(const Track<K, V, R>& track, void(*callback)(K, const R&, void*), R& destination, void* userData = nullptr);
-        #elif !defined(CORRADE_MSVC2017_COMPATIBILITY) /* See above why */
+        #elif !defined(CORRADE_MSVC2019_COMPATIBILITY) /* See above why */
         template<class V, class R, class Callback> Player<T, K>& addWithCallbackOnChange(const Track<K, V, R>& track, Callback callback, R& destination, void* userData = nullptr) {
             return addWithCallbackOnChange(TrackView<K, V, R>{track}, callback, destination, userData);
         }
@@ -544,7 +546,7 @@ template<class T, class K
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class V, class R, class U> Player<T, K>& addWithCallbackOnChange(const Track<K, V, R>& track, void(*callback)(K, const R&, void*), R& destination, U& userData);
-        #elif !defined(CORRADE_MSVC2017_COMPATIBILITY) /* See above why */
+        #elif !defined(CORRADE_MSVC2019_COMPATIBILITY) /* See above why */
         template<class V, class R, class U, class Callback> Player<T, K>& addWithCallbackOnChange(const Track<K, V, R>& track, Callback callback, R& destination, U& userData) {
             return addWithCallbackOnChange(TrackView<K, V, R>{track}, callback, destination, userData);
         }
@@ -590,7 +592,7 @@ template<class T, class K
          */
         #ifdef DOXYGEN_GENERATING_OUTPUT
         template<class V, class R> Player<T, K>& addRawCallback(const Track<K, V, R>& track, void(*callback)(const TrackViewStorage<K>&, K, std::size_t&, void*, void(*)(), void*), void* destination, void(*userCallback)(), void* userData);
-        #elif !defined(CORRADE_MSVC2017_COMPATIBILITY) /* See above why */
+        #elif !defined(CORRADE_MSVC2019_COMPATIBILITY) /* See above why */
         template<class V, class R, class Callback> Player<T, K>& addRawCallback(const Track<K, V, R>& track, Callback callback, void* destination, void(*userCallback)(), void* userData) {
             return addRawCallback(TrackView<K, V, R>{track}, callback, destination, userCallback, userData);
         }
