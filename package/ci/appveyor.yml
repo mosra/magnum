@@ -10,42 +10,38 @@ environment:
     COMPILER: msvc
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     APPVEYOR_JOB_NAME: windows-gl-msvc2017
+  - TARGET: desktop
+    COMPILER: msvc
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    APPVEYOR_JOB_NAME: windows-gl-msvc2019
   - TARGET: desktop-vulkan
     COMPILER: msvc
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
-    APPVEYOR_JOB_NAME: windows-vulkan-msvc2017
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    APPVEYOR_JOB_NAME: windows-vulkan-msvc2019
   - TARGET: desktop
     COMPILER: mingw
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     APPVEYOR_JOB_NAME: windows-gl-mingw
   - TARGET: desktop-gles
     TARGET_GLES2: ON
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    APPVEYOR_JOB_NAME: windows-gles2-msvc2015
-  - TARGET: desktop-gles
-    TARGET_GLES2: ON
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     APPVEYOR_JOB_NAME: windows-gles2-msvc2017
   - TARGET: desktop-gles
-    TARGET_GLES2: OFF
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    APPVEYOR_JOB_NAME: windows-gles3-msvc2015
+    TARGET_GLES2: ON
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    APPVEYOR_JOB_NAME: windows-gles2-msvc2019
   - TARGET: desktop-gles
     TARGET_GLES2: OFF
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     APPVEYOR_JOB_NAME: windows-gles3-msvc2017
-  - TARGET: rt
-    TARGET_GLES2: ON
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    APPVEYOR_JOB_NAME: windows-rt-gles2-msvc2015
+  - TARGET: desktop-gles
+    TARGET_GLES2: OFF
+    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+    APPVEYOR_JOB_NAME: windows-gles3-msvc2019
   - TARGET: rt
     TARGET_GLES2: ON
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
     APPVEYOR_JOB_NAME: windows-rt-gles2-msvc2017
-  - TARGET: rt
-    TARGET_GLES2: OFF
-    APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2015
-    APPVEYOR_JOB_NAME: windows-rt-gles3-msvc2015
   - TARGET: rt
     TARGET_GLES2: OFF
     APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2017
