@@ -40,6 +40,8 @@ See also:
 
 @subsection changelog-latest-new New features
 
+-   MSVC 2019 compatibility, with slightly less workarounds needed compared to
+    MSVC 2017. See also [mosra/magnum-bootstrap#18](https://github.com/mosra/magnum-bootstrap/issues/18).
 -   New @ref Image::pixels(), @ref ImageView::pixels() and
     @ref Trade::ImageData::pixels() accessors for convenient direct access to
     pixel data of any image
