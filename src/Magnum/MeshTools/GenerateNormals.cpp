@@ -86,6 +86,14 @@ std::pair<std::vector<UnsignedInt>, std::vector<Vector3>> generateFlatNormals(co
 }
 #endif
 
+#if defined(CORRADE_MSVC2019_COMPATIBILITY) && !defined(CORRADE_MSVC2017_COMPATIBILITY)
+/* When using /permissive- with MSVC2019, using namespace inside the function
+   below FOR SOME REASON gets lost when instantiating the template. That's
+   stupid but what can we do -- the only way to work around that is to move it
+   outside the function. */
+using namespace Math::Literals;
+#endif
+
 template<class T> void generateSmoothNormalsInto(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals) {
     CORRADE_ASSERT(indices.size() % 3 == 0,
         "MeshTools::generateSmoothNormalsInto(): index count not divisible by 3", );
@@ -159,6 +167,8 @@ template<class T> void generateSmoothNormalsInto(const Containers::StridedArrayV
 
         /* Inner angle at each vertex of the triangle. The last one can be
            calculated as a remainder to 180°. */
+        /* This using namespace doesn't work with MSVC2019 with /permissive-
+           (it gets lost when instantiating?!), so it's duplicated above */
         using namespace Math::Literals;
         crossAngles[i].second[0] = Math::angle(v10n, v20n);
         crossAngles[i].second[1] = Math::angle(-v10n, v21n);
