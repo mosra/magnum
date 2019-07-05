@@ -62,6 +62,8 @@
 #
 # Features of found Corrade library are exposed in these variables:
 #
+#  CORRADE_MSVC2019_COMPATIBILITY - Defined if compiled with compatibility
+#   mode for MSVC 2019
 #  CORRADE_MSVC2017_COMPATIBILITY - Defined if compiled with compatibility
 #   mode for MSVC 2017
 #  CORRADE_MSVC2015_COMPATIBILITY - Defined if compiled with compatibility
@@ -290,6 +292,7 @@ set(_corradeFlags
     # So far that's not a problem, but might become an issue for new flags.
     MSVC2015_COMPATIBILITY
     MSVC2017_COMPATIBILITY
+    MSVC2019_COMPATIBILITY
     BUILD_DEPRECATED
     BUILD_STATIC
     BUILD_MULTITHREADED
