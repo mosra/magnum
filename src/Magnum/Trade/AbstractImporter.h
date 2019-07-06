@@ -360,7 +360,8 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Closes previous file, if it was opened, and tries to open given raw
          * data. Available only if @ref Feature::OpenData is supported. Returns
-         * @cpp true @ce on success, @cpp false @ce otherwise.
+         * @cpp true @ce on success, @cpp false @ce otherwise. The @p data is
+         * not expected to be alive after the function exits.
          * @see @ref features(), @ref openFile()
          */
         bool openData(Containers::ArrayView<const char> data);
@@ -382,7 +383,7 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         bool openState(const void* state, const std::string& filePath = {});
 
         /**
-         * @brief Open file
+         * @brief Open a file
          *
          * Closes previous file, if it was opened, and tries to open given
          * file. Returns @cpp true @ce on success, @cpp false @ce otherwise.
@@ -394,7 +395,13 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          */
         bool openFile(const std::string& filename);
 
-        /** @brief Close file */
+        /**
+         * @brief Close currently opened file
+         *
+         * On particular implementations an explicit call to this function may
+         * result in freed memory. This call is also done automatically when
+         * the importer gets destructed or when another file is opened.
+         */
         void close();
 
         /** @{ @name Data accessors
