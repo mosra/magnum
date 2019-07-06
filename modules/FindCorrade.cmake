@@ -334,7 +334,7 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
     elseif(_component STREQUAL PluginManager)
         set(_CORRADE_${_COMPONENT}_DEPENDENCIES Containers Utility rc)
     elseif(_component STREQUAL TestSuite)
-        set(_CORRADE_${_COMPONENT}_DEPENDENCIES Utility)
+        set(_CORRADE_${_COMPONENT}_DEPENDENCIES Utility Main) # see below
     elseif(_component STREQUAL Utility)
         set(_CORRADE_${_COMPONENT}_DEPENDENCIES Containers rc)
     endif()
@@ -347,6 +347,13 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
     endif()
 
     list(APPEND _CORRADE_ADDITIONAL_COMPONENTS ${_CORRADE_${_COMPONENT}_DEPENDENCIES})
+
+    # Main is linked only in corrade_add_test(), not to everything that depends
+    # on TestSuite, so remove it from the list again once we filled the above
+    # variables
+    if(_component STREQUAL TestSuite)
+        set(_CORRADE_${_COMPONENT}_DEPENDENCIES Utility)
+    endif()
 endforeach()
 
 # Join the lists, remove duplicate components
@@ -358,8 +365,13 @@ if(Corrade_FIND_COMPONENTS)
 endif()
 
 # Component distinction
-set(_CORRADE_LIBRARY_COMPONENTS "^(Containers|Interconnect|PluginManager|TestSuite|Utility)$")
-set(_CORRADE_HEADER_ONLY_COMPONENTS "^(Containers)$")
+set(_CORRADE_LIBRARY_COMPONENTS "^(Containers|Interconnect|Main|PluginManager|TestSuite|Utility)$")
+if(CORRADE_TARGET_WINDOWS)
+    # CorradeMain is a real library only on windows, a dummy target elsewhere
+    set(_CORRADE_HEADER_ONLY_COMPONENTS "^(Containers)$")
+else()
+    set(_CORRADE_HEADER_ONLY_COMPONENTS "^(Containers|Main)$")
+endif()
 set(_CORRADE_EXECUTABLE_COMPONENTS "^(rc)$")
 
 # Find all components
@@ -372,7 +384,7 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
     if(TARGET Corrade::${_component})
         set(Corrade_${_component}_FOUND TRUE)
     else()
-        # Library components
+        # Library (and not header-only) components
         if(_component MATCHES ${_CORRADE_LIBRARY_COMPONENTS} AND NOT _component MATCHES ${_CORRADE_HEADER_ONLY_COMPONENTS})
             add_library(Corrade::${_component} UNKNOWN IMPORTED)
 
@@ -402,6 +414,13 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
             add_library(Corrade::${_component} INTERFACE IMPORTED)
         endif()
 
+        # Default include path names to look for for library / header-only
+        # components
+        if(_component MATCHES ${_CORRADE_LIBRARY_COMPONENTS})
+            set(_CORRADE_${_COMPONENT}_INCLUDE_PATH_SUFFIX Corrade/${_component})
+            set(_CORRADE_${_COMPONENT}_INCLUDE_PATH_NAMES ${_component}.h)
+        endif()
+
         # Executable components
         if(_component MATCHES ${_CORRADE_EXECUTABLE_COMPONENTS})
             add_executable(Corrade::${_component} IMPORTED)
@@ -428,6 +447,26 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
                 else()
                     set_property(TARGET Corrade::${_component} PROPERTY
                         INTERFACE_LINK_OPTIONS "/OPT:NOICF,REF")
+                endif()
+            endif()
+
+        # Main library
+        elseif(_component STREQUAL Main)
+            set(_CORRADE_${_COMPONENT}_INCLUDE_PATH_SUFFIX Corrade)
+            set(_CORRADE_${_COMPONENT}_INCLUDE_PATH_NAMES Corrade.h)
+
+            if(CORRADE_TARGET_WINDOWS)
+                if(NOT MINGW)
+                    # Abusing INTERFACE_LINK_LIBRARIES because
+                    # INTERFACE_LINK_OPTIONS is only since 3.13. They treat
+                    # things with `-` in front as linker flags and fortunately
+                    # I can use `-ENTRY` instead of `/ENTRY`.
+                    # https://gitlab.kitware.com/cmake/cmake/issues/16543
+                    set_property(TARGET Corrade::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES "-ENTRY:$<$<NOT:$<BOOL:$<TARGET_PROPERTY:WIN32_EXECUTABLE>>>:wmainCRTStartup>$<$<BOOL:$<TARGET_PROPERTY:WIN32_EXECUTABLE>>:wWinMainCRTStartup>")
+                else()
+                    set_property(TARGET Corrade::${_component} APPEND PROPERTY
+                        INTERFACE_LINK_LIBRARIES "-municode")
                 endif()
             endif()
 
@@ -482,8 +521,8 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
         # Find library includes
         if(_component MATCHES ${_CORRADE_LIBRARY_COMPONENTS})
             find_path(_CORRADE_${_COMPONENT}_INCLUDE_DIR
-                NAMES ${_component}.h
-                HINTS ${CORRADE_INCLUDE_DIR}/Corrade/${_component})
+                NAMES ${_CORRADE_${_COMPONENT}_INCLUDE_PATH_NAMES}
+                HINTS ${CORRADE_INCLUDE_DIR}/${_CORRADE_${_COMPONENT}_INCLUDE_PATH_SUFFIX})
             mark_as_advanced(_CORRADE_${_COMPONENT}_INCLUDE_DIR)
         endif()
 
