@@ -23,6 +23,8 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
+find_package(Corrade REQUIRED Main)
+
 set(ADDITIONAL_WEB_FILES "")
 
 if(WITH_ANDROIDAPPLICATION)
@@ -43,9 +45,9 @@ if(WITH_EMSCRIPTENAPPLICATION)
 endif()
 
 if(WITH_GLFWAPPLICATION)
-    add_executable(PlatformGlfwApplicationTest GlfwApplicationTest.cpp)
+    add_executable(PlatformGlfwApplicationTest WIN32 GlfwApplicationTest.cpp)
     # HiDPi.manifest not needed, as GLFW sets that on its own
-    target_link_libraries(PlatformGlfwApplicationTest PRIVATE MagnumGlfwApplication)
+    target_link_libraries(PlatformGlfwApplicationTest PRIVATE MagnumGlfwApplication Corrade::Main)
     set_target_properties(PlatformGlfwApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
@@ -56,7 +58,7 @@ if(WITH_GLXAPPLICATION)
 endif()
 
 if(WITH_SDL2APPLICATION)
-    add_executable(PlatformSdl2ApplicationTest Sdl2ApplicationTest.cpp)
+    add_executable(PlatformSdl2ApplicationTest WIN32 Sdl2ApplicationTest.cpp)
     if(CORRADE_TARGET_WINDOWS AND NOT CORRADE_TARGET_WINDOWS_RT)
         if(MSVC)
             target_sources(PlatformSdl2ApplicationTest PRIVATE WindowsHiDPI.manifest)
@@ -64,7 +66,7 @@ if(WITH_SDL2APPLICATION)
             target_sources(PlatformSdl2ApplicationTest PRIVATE WindowsHiDPI.rc)
         endif()
     endif()
-    target_link_libraries(PlatformSdl2ApplicationTest PRIVATE MagnumSdl2Application)
+    target_link_libraries(PlatformSdl2ApplicationTest PRIVATE MagnumSdl2Application Corrade::Main)
     set_target_properties(PlatformSdl2ApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
     if(CORRADE_TARGET_EMSCRIPTEN)
         list(APPEND ADDITIONAL_WEB_FILES Sdl2ApplicationTest.html)
