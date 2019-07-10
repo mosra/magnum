@@ -955,18 +955,20 @@ template<class T> Matrix4<T> Matrix4<T>::orthographicProjection(const Vector2<T>
 template<class T> Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>& size, const T near, const T far) {
     const Vector2<T> xyScale = 2*near/size;
 
+    T m22, m32;
     if(far == Constants<T>::inf()) {
-        return {{xyScale.x(),        T(0),                 T(0),  T(0)},
-                {       T(0), xyScale.y(),                 T(0),  T(0)},
-                {       T(0),        T(0),                T(-1), T(-1)},
-                {       T(0),        T(0),           T(-2)*near,  T(0)}};
+        m22 = T(-1);
+        m32 = T(-2)*near;
     } else {
         const T zScale = T(1.0)/(near-far);
-        return {{xyScale.x(),        T(0),                 T(0),  T(0)},
-                {       T(0), xyScale.y(),                 T(0),  T(0)},
-                {       T(0),        T(0),    (far+near)*zScale, T(-1)},
-                {       T(0),        T(0), T(2)*far*near*zScale,  T(0)}};
+        m22 = (far+near)*zScale;
+        m32 = T(2)*far*near*zScale;
     }
+
+    return {{xyScale.x(),        T(0), T(0),  T(0)},
+            {       T(0), xyScale.y(), T(0),  T(0)},
+            {       T(0),        T(0), m22,  T(-1)},
+            {       T(0),        T(0), m32,  T(0)}};
 }
 
 template<class T> Matrix4<T> Matrix4<T>::lookAt(const Vector3<T>& eye, const Vector3<T>& target, const Vector3<T>& up) {
