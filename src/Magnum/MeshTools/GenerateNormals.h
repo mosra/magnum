@@ -65,6 +65,13 @@ MAGNUM_MESHTOOLS_EXPORT Containers::Array<Vector3> generateFlatNormals(const Con
 A variant of @ref generateFlatNormals() that fills existing memory instead of
 allocating a new array. The @p normals array is expected to have the same size
 as @p positions.
+
+Useful when you need to interface for example with STL containers --- in that
+case @cpp #include @ce @ref Corrade/Containers/ArrayViewStl.h to get implicit
+conversions:
+
+@snippet MagnumMeshTools-stl.cpp generateFlatNormalsInto
+
 @see @ref generateSmoothNormalsInto()
 */
 MAGNUM_MESHTOOLS_EXPORT void generateFlatNormalsInto(const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals);
@@ -127,6 +134,13 @@ allocating a new array. The @p normals array is expected to have the same size
 as @p positions. Note that even with the output array this function isn't fully
 allocation-free --- it still allocates three additional internal arrays for
 adjacent face calculation.
+
+Useful when you need to interface for example with STL containers --- in that
+case @cpp #include @ce @ref Corrade/Containers/ArrayViewStl.h to get implicit
+conversions:
+
+@snippet MagnumMeshTools-stl.cpp generateSmoothNormalsInto
+
 @see @ref generateFlatNormalsInto()
 */
 template<class T> MAGNUM_MESHTOOLS_EXPORT void generateSmoothNormalsInto(const Containers::StridedArrayView1D<const T>& indices, const Containers::StridedArrayView1D<const Vector3>& positions, const Containers::StridedArrayView1D<Vector3>& normals);

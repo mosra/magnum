@@ -94,7 +94,8 @@ endif()
 
 if(WITH_MESHTOOLS)
     add_library(snippets-MagnumMeshTools STATIC
-        MagnumMeshTools.cpp)
+        MagnumMeshTools.cpp
+        MagnumMeshTools-gl.cpp)
     target_link_libraries(snippets-MagnumMeshTools PRIVATE MagnumMeshTools)
     set_target_properties(snippets-MagnumMeshTools PROPERTIES FOLDER "Magnum/doc/snippets")
 endif()
