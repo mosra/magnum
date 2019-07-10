@@ -298,10 +298,14 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *          0 & 0 & -1 & 0
          *      \end{pmatrix}
          * @f]
+         *
+         * If you need an off-center projection, use
+         * @ref perspectiveProjection(const Vector2<T>&, const Vector2<T>&, T, T)
+         * instead.
+         *
          * @see @ref perspectiveProjection(Rad<T> fov, T, T, T),
          *      @ref orthographicProjection(), @ref Matrix3::projection(),
          *      @ref Constants::inf()
-         * @m_keywords{gluPerspective()}
          */
         static Matrix4<T> perspectiveProjection(const Vector2<T>& size, T near, T far);
 
@@ -340,6 +344,12 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      \end{pmatrix}
          * @f]
          *
+         * This function is similar to the classic @cpp gluPerspective() @ce,
+         * with the difference that @p fov is *horizontal* instead of vertical.
+         * If you need an off-center projection (as with the classic
+         * @cpp glFrustum() @ce function), use
+         * @ref perspectiveProjection(const Vector2<T>&, const Vector2<T>&, T, T).
+         *
          * @see @ref orthographicProjection(), @ref Matrix3::projection(),
          *      @ref Constants::inf()
          * @m_keywords{gluPerspective()}
@@ -347,6 +357,44 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         static Matrix4<T> perspectiveProjection(Rad<T> fov, T aspectRatio, T near, T far) {
             return perspectiveProjection(T(2)*near*std::tan(T(fov)*T(0.5))*Vector2<T>::yScale(T(1)/aspectRatio), near, far);
         }
+
+        /**
+         * @brief 3D off-center perspective projection matrix
+         * @param bottomLeft    Bottom left corner of the near clipping plane
+         * @param topRight      Top right corner of the near clipping plane
+         * @param near          Distance to near clipping plane, positive is
+         *      ahead
+         * @param far           Distance to far clipping plane, positive is
+         *      ahead
+         *
+         * If @p far is finite, the result is: @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          \frac{2n}{r - l} & 0 & \frac{r + l}{r - l} & 0 \\
+         *          0 & \frac{2n}{t - b} & \frac{t + b}{t - b} & 0 \\
+         *          0 & 0 & \frac{n + f}{n - f} & \frac{2nf}{n - f} \\
+         *          0 & 0 & -1 & 0
+         *      \end{pmatrix}
+         * @f]
+         *
+         * For infinite @p far, the result is: @f[
+         *      \boldsymbol{A} = \begin{pmatrix}
+         *          \frac{2n}{r - l} & 0 & \frac{r + l}{r - l} & 0 \\
+         *          0 & \frac{2n}{t - b} & \frac{t + b}{t - b} & 0 \\
+         *          0 & 0 & -1 & -2n \\
+         *          0 & 0 & -1 & 0
+         *      \end{pmatrix}
+         * @f]
+         *
+         * Equivalent to the classic @cpp glFrustum() @ce function. If
+         * @p bottomLeft and @p topRight are a negation of each other, this
+         * function is equivalent to @ref perspectiveProjection(const Vector2<T>&, T, T).
+         *
+         * @see @ref perspectiveProjection(Rad<T> fov, T, T, T),
+         *      @ref orthographicProjection(), @ref Matrix3::projection(),
+         *      @ref Constants::inf()
+         * @m_keywords{glFrustum()}
+         */
+        static Matrix4<T> perspectiveProjection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight, T near, T far);
 
         /**
          * @brief Matrix oriented towards a specific point
@@ -969,6 +1017,27 @@ template<class T> Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>&
             {       T(0), xyScale.y(), T(0),  T(0)},
             {       T(0),        T(0), m22,  T(-1)},
             {       T(0),        T(0), m32,  T(0)}};
+}
+
+template<class T> Matrix4<T> Matrix4<T>::perspectiveProjection(const Vector2<T>& bottomLeft, const Vector2<T>& topRight, const T near, const T far) {
+    const Vector2<T> xyDifference = topRight - bottomLeft;
+    const Vector2<T> xyScale = 2*near/xyDifference;
+    const Vector2<T> xyOffset = (topRight + bottomLeft)/xyDifference;
+
+    T m22, m32;
+    if(far == Constants<T>::inf()) {
+        m22 = T(-1);
+        m32 = T(-2)*near;
+    } else {
+        const T zScale = T(1.0)/(near-far);
+        m22 = (far+near)*zScale;
+        m32 = T(2)*far*near*zScale;
+    }
+
+    return {{ xyScale.x(),         T(0), T(0),  T(0)},
+            {        T(0),  xyScale.y(), T(0),  T(0)},
+            {xyOffset.x(), xyOffset.y(), m22,  T(-1)},
+            {        T(0),         T(0), m32,  T(0)}};
 }
 
 template<class T> Matrix4<T> Matrix4<T>::lookAt(const Vector3<T>& eye, const Vector3<T>& target, const Vector3<T>& up) {

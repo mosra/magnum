@@ -133,6 +133,8 @@ See also:
 
 -   @ref Math::Frustum::begin() / @ref Math::Frustum::end() accessors for
     easy range-for access to @ref Math::Frustum planes
+-   New @ref Math::Matrix4::perspectiveProjection(const Vector2<T>&, const Vector2<T>&, T, T)
+    overload for calculating off-center projection matrices
 -   @ref Color3ub and @ref Color4ub can be printed with
     @ref Corrade::Utility::Debug as actual colors using the
     @ref Corrade::Utility::Debug::color modifier
