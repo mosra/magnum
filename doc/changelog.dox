@@ -292,6 +292,11 @@ See also:
     also with @ref Corrade::Containers::ArrayView,
     @ref Corrade::Containers::StridedArrayView and friends
 
+@subsubsection changelog-latest-changes-shaders Shaders library
+
+-   @ref Shaders::Phong now clamps the specular factor to minimize artifacts
+    when shininess is near zero
+
 @subsubsection changelog-latest-changes-texturetools TextureTools library
 
 -   @ref TextureTools::distanceField() was updated to work on ES3 SwiftShader

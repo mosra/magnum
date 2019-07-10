@@ -181,7 +181,7 @@ void main() {
         /* Add specular color, if needed */
         if(intensity > 0.001) {
             highp vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
-            mediump float specularity = pow(max(0.0, dot(normalize(cameraDirection), reflection)), shininess);
+            mediump float specularity = clamp(pow(max(0.0, dot(normalize(cameraDirection), reflection)), shininess), 0.0, 1.0);
             color += vec4(finalSpecularColor.rgb*specularity, finalSpecularColor.a);
         }
     }
