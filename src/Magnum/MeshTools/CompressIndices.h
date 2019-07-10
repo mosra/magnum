@@ -49,7 +49,7 @@ sufficient.
 
 Example usage:
 
-@snippet MagnumMeshTools.cpp compressIndices
+@snippet MagnumMeshTools-gl.cpp compressIndices
 
 @see @ref compressIndicesAs()
 */

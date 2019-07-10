@@ -122,7 +122,7 @@ data for each attribute are in continuous place in memory.
 
 Example usage:
 
-@snippet MagnumMeshTools.cpp interleave1
+@snippet MagnumMeshTools-gl.cpp interleave1
 
 It's often desirable to align data for one vertex on 32bit boundaries. To
 achieve that, you can specify gaps between the attributes:
