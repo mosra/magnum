@@ -245,7 +245,7 @@ using a dot product with the normal @f$ \boldsymbol{n} @f$ using the point
     d = - \boldsymbol{n} \cdot \boldsymbol{p}
 @f]
 @see @ref planeEquation(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&),
-    @ref dot()
+    @ref dot(), @ref Frustum
 */
 template<class T> Vector4<T> planeEquation(const Vector3<T>& normal, const Vector3<T>& point) {
     return {normal, -Math::dot(normal, point)};

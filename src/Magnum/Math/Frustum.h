@@ -87,7 +87,13 @@ template<class T> class Frustum {
         /** @brief Construct a frustum without initializing the contents */
         explicit Frustum(NoInitT) noexcept: _data{Vector4<T>{NoInit}, Vector4<T>{NoInit}, Vector4<T>{NoInit}, Vector4<T>{NoInit}, Vector4<T>{NoInit}, Vector4<T>{NoInit}} {}
 
-        /** @brief Construct a frustum from plane equations */
+        /**
+         * @brief Construct a frustum from plane equations
+         *
+         * The equations are in a form @f$ ax + by + cz + d = 0 @f$. You can
+         * use @ref planeEquation() to calculate the coefficients from a normal
+         * and a point.
+         */
         constexpr /*implicit*/ Frustum(const Vector4<T>& left, const Vector4<T>& right, const Vector4<T>& bottom, const Vector4<T>& top, const Vector4<T>& near, const Vector4<T>& far) noexcept: _data{left, right, bottom, top, near, far} {}
 
         /**
