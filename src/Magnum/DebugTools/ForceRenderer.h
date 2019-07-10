@@ -103,7 +103,11 @@ See @ref debug-tools-renderers for more information.
 
 @section DebugTools-ForceRenderer-usage Basic usage
 
-Example code:
+Example code --- note that the @p force is saved as a reference to the original
+vector (so when you update it, the renderer updates itself as well), and thus
+it must be available for the whole lifetime of the renderer. The renderer is
+automatically added to object's features so you don't need to keep a reference
+to it.
 
 @snippet MagnumDebugTools-gl.cpp ForceRenderer
 
@@ -124,10 +128,6 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: p
          *      @ref DebugTools-ForceRenderer-usage "class documentation" for
          *      more information.
          * @param drawables     Drawable group
-         *
-         * The renderer is automatically added to object's features, @p force
-         * is saved as reference to original vector and thus it must be
-         * available for the whole lifetime of the renderer.
          */
         explicit ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, const VectorTypeFor<dimensions, Float>& forcePosition, const VectorTypeFor<dimensions, Float>& force, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
 

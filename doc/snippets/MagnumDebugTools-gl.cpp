@@ -73,8 +73,9 @@ DebugTools::ResourceManager::instance().set("my",
         .setSize(5.0f)
         .setColor(Color3::fromHsv({120.0_degf, 1.0f, 0.7f})));
 
-// Create debug renderer for given object, use "my" options for it
-Vector3 force;
+Vector3 force; // taken as a reference, has to be kept in scope
+
+// Create debug renderer for given force, use "my" options for it
 new DebugTools::ForceRenderer3D(*object, {0.3f, 1.5f, -0.7f}, force, "my",
         &debugDrawables);
 /* [ForceRenderer] */
