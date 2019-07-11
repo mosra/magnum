@@ -748,7 +748,7 @@ bool Context::tryCreate() {
     /* Enable GPU validation, if requested */
     if(_internalFlags & InternalFlag::GpuValidation) {
         #ifndef MAGNUM_TARGET_WEBGL
-        if(Context::current().isExtensionSupported<Extensions::KHR::debug>()) {
+        if(isExtensionSupported<Extensions::KHR::debug>()) {
             Renderer::enable(Renderer::Feature::DebugOutput);
             Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
             DebugOutput::setDefaultCallback();
