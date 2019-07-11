@@ -341,7 +341,9 @@ class MAGNUM_GL_EXPORT Context {
         enum class DetectedDriver: UnsignedShort {
             #ifndef MAGNUM_TARGET_WEBGL
             /**
-             * Binary AMD desktop drivers on Windows and Linux
+             * Proprietary AMD desktop drivers on Windows and Linux. In
+             * contrast, AMDGPU Mesa drivers report as
+             * @ref DetectedDriver::Mesa instead.
              * @requires_gles Not detectable on WebGL, as browsers
              *      intentionally hide most of the driver information.
              */
@@ -369,7 +371,8 @@ class MAGNUM_GL_EXPORT Context {
             IntelWindows = 1 << 2,
 
             /**
-             * Mesa drivers on Windows and Linux. See also
+             * Mesa drivers on Windows and Linux. In particular, Intel, AMD
+             * and NVidia Mesa drivers match as this. See also
              * @ref DetectedDriver::Svga3D.
              * @requires_gles Not detectable on WebGL, as browsers
              *      intentionally hide most of the driver information.
@@ -377,7 +380,7 @@ class MAGNUM_GL_EXPORT Context {
             Mesa = 1 << 3,
 
             /**
-             * Binary NVidia drivers on Windows and Linux
+             * Proprietary NVidia drivers on Windows and Linux
              * @requires_gles Not detectable on WebGL, as browsers
              *      intentionally hide most of the driver information.
              */
