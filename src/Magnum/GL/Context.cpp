@@ -752,6 +752,11 @@ bool Context::tryCreate() {
             Renderer::enable(Renderer::Feature::DebugOutput);
             Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
             DebugOutput::setDefaultCallback();
+
+            if((detectedDriver() & DetectedDriver::Amd) && !(flags() & Flag::Debug)) {
+                Warning{} << "GL::Context: GPU validation on AMD drivers requires debug context to work properly";
+            }
+
         } else Warning{} << "GL::Context: GPU validation requested, but GL_KHR_debug not supported";
         #else
         Warning{} << "GL::Context: GPU validation is not available on WebGL";
