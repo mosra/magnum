@@ -323,6 +323,8 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     createContext();
     GL::Context& c = GL::Context::current();
 
+    Debug() << "";
+
     #ifndef MAGNUM_TARGET_GLES
     Debug() << "Core profile:" << (c.isCoreProfile() ? "yes" : "no");
     #endif
