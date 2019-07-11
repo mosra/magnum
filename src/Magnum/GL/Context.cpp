@@ -474,8 +474,10 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
         .setFromEnvironment("log")
         .parse(argc, argv);
 
-    /* Decide whether to display initialization log */
-    if(!(args.value("log") == "quiet" || args.value("log") == "QUIET"))
+    /* Decide how to display initialization log */
+    if(args.value("log") == "verbose" || args.value("log") == "VERBOSE")
+        _internalFlags |= InternalFlag::DisplayVerboseInitializationLog;
+    else if(!(args.value("log") == "quiet" || args.value("log") == "QUIET"))
         _internalFlags |= InternalFlag::DisplayInitializationLog;
 
     /* Decide whether to enable GPU validation */
@@ -755,6 +757,8 @@ bool Context::tryCreate() {
 
             if((detectedDriver() & DetectedDriver::Amd) && !(flags() & Flag::Debug)) {
                 Warning{} << "GL::Context: GPU validation on AMD drivers requires debug context to work properly";
+            } else if(_internalFlags >= InternalFlag::DisplayVerboseInitializationLog) {
+                Debug{} << "GL::Context: enabling GPU validation";
             }
 
         } else Warning{} << "GL::Context: GPU validation requested, but GL_KHR_debug not supported";

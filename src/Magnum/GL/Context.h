@@ -733,7 +733,8 @@ class MAGNUM_GL_EXPORT Context {
 
         enum class InternalFlag: UnsignedByte {
             DisplayInitializationLog = 1 << 0,
-            GpuValidation = 1 << 1
+            DisplayVerboseInitializationLog = DisplayInitializationLog|(1 << 1),
+            GpuValidation = 1 << 2
         };
         typedef Containers::EnumSet<InternalFlag> InternalFlags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(InternalFlags)
