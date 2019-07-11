@@ -72,8 +72,9 @@ struct CubeMapTextureGLTest: OpenGLTester {
     void samplingBorder();
     #endif
 
-    void storage();
+    void storageImageSize();
 
+    void storage();
     void image();
     #ifndef MAGNUM_TARGET_GLES2
     void imageBuffer();
@@ -296,9 +297,10 @@ CubeMapTextureGLTest::CubeMapTextureGLTest() {
               &CubeMapTextureGLTest::samplingBorder,
               #endif
 
-              &CubeMapTextureGLTest::storage});
+              &CubeMapTextureGLTest::storageImageSize});
 
     addInstancedTests({
+        &CubeMapTextureGLTest::storage,
         &CubeMapTextureGLTest::image,
         #ifndef MAGNUM_TARGET_GLES2
         &CubeMapTextureGLTest::imageBuffer,
@@ -578,7 +580,9 @@ void CubeMapTextureGLTest::samplingBorder() {
 }
 #endif
 
-void CubeMapTextureGLTest::storage() {
+constexpr UnsignedByte Zero[4*4*4]{};
+
+void CubeMapTextureGLTest::storageImageSize() {
     CubeMapTexture texture;
     texture.setStorage(5,
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
@@ -608,7 +612,83 @@ void CubeMapTextureGLTest::storage() {
     #endif
 }
 
-constexpr UnsignedByte Zero[4*4*4]{};
+void CubeMapTextureGLTest::storage() {
+    setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
+
+    #ifdef MAGNUM_TARGET_GLES2
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(PixelStorageData[testCaseInstanceId()].storage != PixelStorage{} && !Context::current().isExtensionSupported<Extensions::EXT::unpack_subimage>())
+        CORRADE_SKIP(Extensions::EXT::unpack_subimage::string() + std::string(" is not supported."));
+    #else
+    if(PixelStorageData[testCaseInstanceId()].storage != PixelStorage{})
+        CORRADE_SKIP("Image unpack is not supported in WebGL 1.");
+    #endif
+    #endif
+
+    CubeMapTexture texture;
+    texture.setStorage(1,
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        TextureFormat::RGBA8,
+        #else
+        TextureFormat::RGBA,
+        #endif
+        Vector2i(2));
+    texture.setSubImage(CubeMapCoordinate::PositiveX, 0, {}, ImageView2D{PixelStorageData[testCaseInstanceId()].storage,
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
+        PixelStorageData[testCaseInstanceId()].dataSparse});
+    texture.setSubImage(CubeMapCoordinate::NegativeX, 0, {},
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setSubImage(CubeMapCoordinate::PositiveY, 0, {}, ImageView2D{PixelStorageData[testCaseInstanceId()].storage,
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
+        PixelStorageData[testCaseInstanceId()].dataSparse});
+    texture.setSubImage(CubeMapCoordinate::NegativeY, 0, {},
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setSubImage(CubeMapCoordinate::PositiveZ, 0, {}, ImageView2D{PixelStorageData[testCaseInstanceId()].storage,
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
+        PixelStorageData[testCaseInstanceId()].dataSparse});
+    texture.setSubImage(CubeMapCoordinate::NegativeZ, 0, {},
+        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
+    {
+        Image2D image = texture.image(CubeMapCoordinate::PositiveX, 0,
+            {PixelStorageData[testCaseInstanceId()].storage,
+            PixelFormat::RGBA, PixelType::UnsignedByte});
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+
+        CORRADE_COMPARE(image.size(), Vector2i(2));
+        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorageData[testCaseInstanceId()].offset),
+            PixelStorageData[testCaseInstanceId()].data,
+            TestSuite::Compare::Container);
+    } {
+        Image2D image = texture.image(CubeMapCoordinate::PositiveY, 0,
+            {PixelStorageData[testCaseInstanceId()].storage,
+            PixelFormat::RGBA, PixelType::UnsignedByte});
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+
+        CORRADE_COMPARE(image.size(), Vector2i(2));
+        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorageData[testCaseInstanceId()].offset),
+            PixelStorageData[testCaseInstanceId()].data,
+            TestSuite::Compare::Container);
+    } {
+        Image2D image = texture.image(CubeMapCoordinate::PositiveZ, 0,
+            {PixelStorageData[testCaseInstanceId()].storage,
+            PixelFormat::RGBA, PixelType::UnsignedByte});
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+
+        CORRADE_COMPARE(image.size(), Vector2i(2));
+        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorageData[testCaseInstanceId()].offset),
+            PixelStorageData[testCaseInstanceId()].data,
+            TestSuite::Compare::Container);
+    }
+    #endif
+}
 
 void CubeMapTextureGLTest::image() {
     setTestCaseDescription(PixelStorageData[testCaseInstanceId()].name);
@@ -635,12 +715,14 @@ void CubeMapTextureGLTest::image() {
         PixelStorageData[testCaseInstanceId()].dataSparse});
     texture.setImage(CubeMapCoordinate::NegativeX, 0, format,
         ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
-    texture.setImage(CubeMapCoordinate::PositiveY, 0, format,
-        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setImage(CubeMapCoordinate::PositiveY, 0, format, ImageView2D{PixelStorageData[testCaseInstanceId()].storage,
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
+        PixelStorageData[testCaseInstanceId()].dataSparse});
     texture.setImage(CubeMapCoordinate::NegativeY, 0, format,
         ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
-    texture.setImage(CubeMapCoordinate::PositiveZ, 0, format,
-        ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
+    texture.setImage(CubeMapCoordinate::PositiveZ, 0, format, ImageView2D{PixelStorageData[testCaseInstanceId()].storage,
+        PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2),
+        PixelStorageData[testCaseInstanceId()].dataSparse});
     texture.setImage(CubeMapCoordinate::NegativeZ, 0, format,
         ImageView2D{PixelFormat::RGBA, PixelType::UnsignedByte, Vector2i(2), Zero});
 
@@ -648,16 +730,40 @@ void CubeMapTextureGLTest::image() {
 
     /** @todo How to test this on ES? */
     #ifndef MAGNUM_TARGET_GLES
-    Image2D image = texture.image(CubeMapCoordinate::PositiveX, 0,
-        {PixelStorageData[testCaseInstanceId()].storage,
-        PixelFormat::RGBA, PixelType::UnsignedByte});
+    {
+        Image2D image = texture.image(CubeMapCoordinate::PositiveX, 0,
+            {PixelStorageData[testCaseInstanceId()].storage,
+            PixelFormat::RGBA, PixelType::UnsignedByte});
 
-    MAGNUM_VERIFY_NO_GL_ERROR();
+        MAGNUM_VERIFY_NO_GL_ERROR();
 
-    CORRADE_COMPARE(image.size(), Vector2i(2));
-    CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorageData[testCaseInstanceId()].offset),
-        PixelStorageData[testCaseInstanceId()].data,
-        TestSuite::Compare::Container);
+        CORRADE_COMPARE(image.size(), Vector2i(2));
+        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorageData[testCaseInstanceId()].offset),
+            PixelStorageData[testCaseInstanceId()].data,
+            TestSuite::Compare::Container);
+    } {
+        Image2D image = texture.image(CubeMapCoordinate::PositiveY, 0,
+            {PixelStorageData[testCaseInstanceId()].storage,
+            PixelFormat::RGBA, PixelType::UnsignedByte});
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+
+        CORRADE_COMPARE(image.size(), Vector2i(2));
+        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorageData[testCaseInstanceId()].offset),
+            PixelStorageData[testCaseInstanceId()].data,
+            TestSuite::Compare::Container);
+    } {
+        Image2D image = texture.image(CubeMapCoordinate::PositiveZ, 0,
+            {PixelStorageData[testCaseInstanceId()].storage,
+            PixelFormat::RGBA, PixelType::UnsignedByte});
+
+        MAGNUM_VERIFY_NO_GL_ERROR();
+
+        CORRADE_COMPARE(image.size(), Vector2i(2));
+        CORRADE_COMPARE_AS(Containers::arrayCast<UnsignedByte>(image.data()).suffix(PixelStorageData[testCaseInstanceId()].offset),
+            PixelStorageData[testCaseInstanceId()].data,
+            TestSuite::Compare::Container);
+    }
     #endif
 }
 
