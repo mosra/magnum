@@ -707,8 +707,8 @@ bool Context::tryCreate() {
     std::ostream* output = _internalFlags & InternalFlag::DisplayInitializationLog ? Debug::output() : nullptr;
 
     /* Print some info and initialize state tracker (which also prints some
-       more info) */
-    Debug{output} << "Renderer:" << rendererString() << "by" << vendorString();
+       more info). Mesa's renderer string has a space at the end, trim that. */
+    Debug{output} << "Renderer:" << Utility::String::trim(rendererString()) << "by" << vendorString();
     Debug{output} << "OpenGL version:" << versionString();
 
     /* Disable extensions as requested by the user */
