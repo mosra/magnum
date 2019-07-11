@@ -277,6 +277,15 @@ MagnumInfo::MagnumInfo(const Arguments& arguments): Platform::WindowlessApplicat
     #ifdef CORRADE_TARGET_POWERPC
     Debug() << "    CORRADE_TARGET_POWERPC";
     #endif
+    #ifdef CORRADE_TARGET_LIBCXX
+    Debug() << "    CORRADE_TARGET_LIBCXX";
+    #endif
+    #ifdef CORRADE_TARGET_DINKUMWARE
+    Debug() << "    CORRADE_TARGET_DINKUMWARE";
+    #endif
+    #ifdef CORRADE_TARGET_LIBSTDCXX
+    Debug() << "    CORRADE_TARGET_LIBSTDCXX";
+    #endif
     #ifdef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
     Debug() << "    CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT";
     #endif
