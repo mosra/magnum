@@ -414,7 +414,11 @@ void EmscriptenApplication::handleCanvasResize(const EmscriptenUiEvent* event) {
             #endif
             _dpiScaling, _devicePixelRatio};
         viewportEvent(e);
-        _flags |= Flag::Redraw;
+
+        /* Can't say just _flags | Flag::Redraw because in case the
+           requestAnimationFrame callback is not set up at the moment it would
+           never up this change. */
+        redraw();
     }
 }
 
