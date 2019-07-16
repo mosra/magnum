@@ -624,6 +624,7 @@ class EmscriptenApplication {
 
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
+        void handleCanvasResize(const EmscriptenUiEvent* event);
         /* Sorry, but can't use Configuration::WindowFlags here :( */
         void setupCallbacks(bool resizable);
         void setupAnimationFrame(bool ForceAnimationFrame);
@@ -1050,13 +1051,19 @@ class EmscriptenApplication::ViewportEvent {
          */
         Vector2 devicePixelRatio() const { return _devicePixelRatio; }
 
-        /** @brief Underlying Emscripten event */
-        const EmscriptenUiEvent& event() const { return _event; }
+        /**
+         * @brief Underlying Emscripten event
+         *
+         * If the viewport event doesn't come from a browser event (for example
+         * when the canvas was resized programatically and not as a consequence
+         * of window size change), the function returns @cpp nullptr @ce.
+         */
+        const EmscriptenUiEvent* event() const { return _event; }
 
     private:
         friend EmscriptenApplication;
 
-        explicit ViewportEvent(const EmscriptenUiEvent& event,
+        explicit ViewportEvent(const EmscriptenUiEvent* event,
             const Vector2i& windowSize,
             #ifdef MAGNUM_TARGET_GL
             const Vector2i& framebufferSize,
@@ -1069,7 +1076,7 @@ class EmscriptenApplication::ViewportEvent {
                 #endif
                 _dpiScaling{dpiScaling}, _devicePixelRatio{devicePixelRatio} {}
 
-        const EmscriptenUiEvent& _event;
+        const EmscriptenUiEvent* _event;
         const Vector2i _windowSize;
         #ifdef MAGNUM_TARGET_GL
         const Vector2i _framebufferSize;

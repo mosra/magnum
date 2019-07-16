@@ -389,10 +389,33 @@ void EmscriptenApplication::setContainerCssClass(const std::string& cssClass) {
     #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
     EM_ASM_({document.getElementById('container').className = AsciiToString($0);}, cssClass.data());
     #pragma GCC diagnostic pop
+
+    /* Trigger a potential viewport event -- we don't poll the canvas size like
+       Sdl2Application does, so it needs to be done explicitly */
+    handleCanvasResize(nullptr);
 }
 
 void EmscriptenApplication::swapBuffers() {
     emscripten_webgl_commit_frame();
+}
+
+/* Called from window resize event but also explicitly from
+   setContainerCssClass() */
+void EmscriptenApplication::handleCanvasResize(const EmscriptenUiEvent* event) {
+    /* See windowSize() for why we hardcode "#canvas" here */
+    const Vector2i canvasSize{windowSize()};
+    if(canvasSize != _lastKnownCanvasSize) {
+        _lastKnownCanvasSize = canvasSize;
+        const Vector2i size = canvasSize*_dpiScaling*_devicePixelRatio;
+        emscripten_set_canvas_element_size("#canvas", size.x(), size.y());
+        ViewportEvent e{event, canvasSize,
+            #ifdef MAGNUM_TARGET_GL
+            framebufferSize(),
+            #endif
+            _dpiScaling, _devicePixelRatio};
+        viewportEvent(e);
+        _flags |= Flag::Redraw;
+    }
 }
 
 void EmscriptenApplication::setupCallbacks(bool resizable) {
@@ -413,20 +436,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         #endif
         auto cb = [](int, const EmscriptenUiEvent* event, void* userData) -> Int {
             EmscriptenApplication& app = *static_cast<EmscriptenApplication*>(userData);
-            /* See windowSize() for why we hardcode "#canvas" here */
-            const Vector2i canvasSize{app.windowSize()};
-            if(canvasSize != app._lastKnownCanvasSize) {
-                app._lastKnownCanvasSize = canvasSize;
-                const Vector2i size = canvasSize*app._dpiScaling*app._devicePixelRatio;
-                emscripten_set_canvas_element_size("#canvas", size.x(), size.y());
-                ViewportEvent e{*event, canvasSize,
-                    #ifdef MAGNUM_TARGET_GL
-                    app.framebufferSize(),
-                    #endif
-                    app._dpiScaling, app._devicePixelRatio};
-                app.viewportEvent(e);
-                app._flags |= Flag::Redraw;
-            }
+            app.handleCanvasResize(event);
             return false; /** @todo what does ignoring a resize event mean? */
         };
         emscripten_set_resize_callback(target, this, false, cb);
