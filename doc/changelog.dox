@@ -430,6 +430,8 @@ See also:
     Qt instead of @ref GL::defaultFramebuffer (see
     [mosra/magnum#322](https://github.com/mosra/magnum/issues/322) and
     [mosra/magnum-bootstrap#15](https://github.com/mosra/magnum-bootstrap/pull/15))
+-   @ref Trade::TgaImporter "TgaImporter" now properly handles files with too
+    short data (see [mosra/magnum#359](https://github.com/mosra/magnum/issues/359))
 
 @subsection changelog-latest-docs Documentation
 

@@ -43,7 +43,8 @@ struct TgaImporterTest: TestSuite::Tester {
     explicit TgaImporterTest();
 
     void openEmpty();
-    void openShort();
+    void openShortHeader();
+    void openShortData();
 
     void paletted();
     void compressed();
@@ -64,7 +65,8 @@ struct TgaImporterTest: TestSuite::Tester {
 
 TgaImporterTest::TgaImporterTest() {
     addTests({&TgaImporterTest::openEmpty,
-              &TgaImporterTest::openShort,
+              &TgaImporterTest::openShortHeader,
+              &TgaImporterTest::openShortData,
 
               &TgaImporterTest::paletted,
               &TgaImporterTest::compressed,
@@ -97,7 +99,7 @@ void TgaImporterTest::openEmpty() {
     CORRADE_COMPARE(out.str(), "Trade::TgaImporter::openData(): the file is empty\n");
 }
 
-void TgaImporterTest::openShort() {
+void TgaImporterTest::openShortHeader() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
     const char data[] = { 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
     CORRADE_VERIFY(importer->openData(data));
@@ -106,6 +108,24 @@ void TgaImporterTest::openShort() {
     Error redirectError{&debug};
     CORRADE_VERIFY(!importer->image2D(0));
     CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): the file is too short: 17 bytes\n");
+}
+
+constexpr const char ColorBits24[] = {
+    0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
+    1, 2, 3, 2, 3, 4,
+    3, 4, 5, 4, 5, 6,
+    5, 6, 7, 6, 7, 8
+};
+
+void TgaImporterTest::openShortData() {
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
+
+    CORRADE_VERIFY(importer->openData(Containers::arrayView(ColorBits24).except(1)));
+
+    std::ostringstream debug;
+    Error redirectError{&debug};
+    CORRADE_VERIFY(!importer->image2D(0));
+    CORRADE_COMPARE(debug.str(), "Trade::TgaImporter::image2D(): the file is too short: got 35 bytes but expected 36\n");
 }
 
 void TgaImporterTest::paletted() {
@@ -143,18 +163,12 @@ void TgaImporterTest::colorBits16() {
 
 void TgaImporterTest::colorBits24() {
     Containers::Pointer<AbstractImporter> importer = _manager.instantiate("TgaImporter");
-    const char data[] = {
-        0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 3, 0, 24, 0,
-        1, 2, 3, 2, 3, 4,
-        3, 4, 5, 4, 5, 6,
-        5, 6, 7, 6, 7, 8
-    };
     const char pixels[] = {
         3, 2, 1, 4, 3, 2,
         5, 4, 3, 6, 5, 4,
         7, 6, 5, 8, 7, 6
     };
-    CORRADE_VERIFY(importer->openData(data));
+    CORRADE_VERIFY(importer->openData(ColorBits24));
 
     Containers::Optional<Trade::ImageData2D> image = importer->image2D(0);
     CORRADE_VERIFY(image);

@@ -119,8 +119,14 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
         return Containers::NullOpt;
     }
 
-    Containers::Array<char> data{std::size_t(size.product())*header.bpp/8};
-    std::copy_n(_in + sizeof(Implementation::TgaHeader), data.size(), data.begin());
+    std::size_t outputSize = std::size_t(size.product())*header.bpp/8;
+    if(outputSize + sizeof(Implementation::TgaHeader) > _in.size()) {
+        Error{} << "Trade::TgaImporter::image2D(): the file is too short: got" << _in.size() << "bytes but expected" << outputSize + sizeof(Implementation::TgaHeader);
+        return Containers::NullOpt;
+    }
+
+    Containers::Array<char> data{outputSize};
+    std::copy_n(_in + sizeof(Implementation::TgaHeader), outputSize, data.begin());
 
     /* Adjust pixel storage if row size is not four byte aligned */
     PixelStorage storage;
