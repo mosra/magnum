@@ -27,7 +27,7 @@
 
 namespace Magnum {
 
-/** @page openal-support OpenAL support state
+/** @page openal-support Support state
 @brief List of (un)supported OpenAL features and extensions.
 
 @tableofcontents

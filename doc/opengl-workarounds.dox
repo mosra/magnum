@@ -27,8 +27,6 @@ namespace Magnum {
 /** @page opengl-workarounds Driver workarounds
 @brief List of OpenGL driver workarounds used by Magnum
 
-@m_keyword{OpenGL driver workarounds,,}
-
 @m_footernavigation
 
 Driver workarounds used by a particular app are listed in the engine startup
