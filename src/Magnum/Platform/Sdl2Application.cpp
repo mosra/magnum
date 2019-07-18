@@ -410,9 +410,12 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     #endif
     if(glConfiguration.version() == GL::Version::None && (!_glContext
         #ifndef CORRADE_TARGET_APPLE
-        /* Sorry about the UGLY code, HOPEFULLY THERE WON'T BE MORE WORKAROUNDS */
+        /* If context creation fails *really bad*, glGetString() may actually
+           return nullptr. Check for that to avoid crashes deep inside
+           strncmp(). Sorry about the UGLY code, HOPEFULLY THERE WON'T BE MORE
+           WORKAROUNDS */
         || (vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR)),
-        (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
+        vendorString && (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
          #ifdef CORRADE_TARGET_WINDOWS
          std::strncmp(vendorString, intelVendorString, sizeof(intelVendorString)) == 0 ||
          #endif

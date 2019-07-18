@@ -432,6 +432,12 @@ See also:
     [mosra/magnum-bootstrap#15](https://github.com/mosra/magnum-bootstrap/pull/15))
 -   @ref Trade::TgaImporter "TgaImporter" now properly handles files with too
     short data (see [mosra/magnum#359](https://github.com/mosra/magnum/issues/359))
+-   When context creation fails *really bad* with
+    @ref Platform::Sdl2Application, @ref Platform::GlfwApplication,
+    @ref Platform::WindowlessGlxApplication or
+    @ref Platform::WindowlessWglApplication, driver detection for the
+    @cpp "no-forward-compatible-core-context" @ce now properly handles
+    @fn_gl{GetString} returning a @cpp nullptr @ce
 
 @subsection changelog-latest-docs Documentation
 

@@ -176,7 +176,10 @@ WindowlessWglContext::WindowlessWglContext(const Configuration& configuration, G
         constexpr static const char intelVendorString[] = "Intel";
         constexpr static const char amdVendorString[] = "ATI Technologies Inc.";
         const char* const vendorString = reinterpret_cast<const char*>(glGetString(GL_VENDOR));
-        if((std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
+        /* If context creation fails *really bad*, glGetString() may actually
+           return nullptr. Check for that to avoid crashes deep inside
+           strncmp() */
+        if(vendorString && (std::strncmp(vendorString, nvidiaVendorString, sizeof(nvidiaVendorString)) == 0 ||
             std::strncmp(vendorString, intelVendorString, sizeof(intelVendorString)) == 0 ||
             std::strncmp(vendorString, amdVendorString, sizeof(amdVendorString)) == 0) &&
             (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("no-forward-compatible-core-context")))
