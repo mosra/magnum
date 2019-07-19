@@ -31,7 +31,7 @@
 #include <Corrade/Containers/Array.h>
 #include <Corrade/Utility/Endianness.h>
 
-#include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Swizzle.h"
 #include "Magnum/Math/Vector4.h"

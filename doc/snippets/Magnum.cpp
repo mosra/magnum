@@ -27,6 +27,7 @@
 
 #include "Magnum/Math/Color.h"
 #include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/ResourceManager.h"

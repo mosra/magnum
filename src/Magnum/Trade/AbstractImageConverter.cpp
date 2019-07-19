@@ -33,6 +33,7 @@
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/Trade/ImageData.h"
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT

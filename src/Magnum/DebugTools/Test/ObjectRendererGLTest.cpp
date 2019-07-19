@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/CompareImage.h"
 #include "Magnum/DebugTools/ObjectRenderer.h"

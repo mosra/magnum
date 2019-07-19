@@ -28,6 +28,7 @@
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/FileCallback.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Animation/Player.h"
 #include "Magnum/MeshTools/Transform.h"

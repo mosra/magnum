@@ -40,6 +40,7 @@
 #endif
 
 #include <Magnum/Image.h>
+#include <Magnum/ImageView.h>
 #include <Magnum/PixelFormat.h>
 #include <Magnum/GL/Buffer.h>
 #include <Magnum/GL/Framebuffer.h>

@@ -29,6 +29,7 @@
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/PixelFormat.h"
 

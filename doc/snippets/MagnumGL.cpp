@@ -27,6 +27,7 @@
 #include <Corrade/Containers/Reference.h>
 
 #include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Buffer.h"

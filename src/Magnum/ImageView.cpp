@@ -26,7 +26,7 @@
 #include "ImageView.h"
 
 #include "Magnum/PixelFormat.h"
-#include "Magnum/Implementation/ImagePixelView.h"
+#include "Magnum/Implementation/ImageProperties.h"
 
 namespace Magnum {
 
@@ -44,6 +44,10 @@ template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(co
 
 template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _size{size}, _data{nullptr} {}
 
+template<UnsignedInt dimensions, class T> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> ImageView<dimensions, T>::dataProperties() const {
+    return Implementation::imageDataProperties<dimensions>(*this);
+}
+
 template<UnsignedInt dimensions, class T> void ImageView<dimensions, T>::setData(const Containers::ArrayView<ErasedType> data) {
     CORRADE_ASSERT(Implementation::imageDataSize(*this) <= data.size(), "ImageView::setData(): data too small, got" << data.size() << "but expected at least" << Implementation::imageDataSize(*this) << "bytes", );
     _data = {reinterpret_cast<Type*>(data.data()), data.size()};
@@ -60,6 +64,10 @@ template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::Co
 template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: CompressedImageView{storage, compressedPixelFormatWrap(format), size, data} {}
 
 template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size) noexcept: CompressedImageView{storage, compressedPixelFormatWrap(format), size} {}
+
+template<UnsignedInt dimensions, class T> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> CompressedImageView<dimensions, T>::dataProperties() const {
+    return Implementation::compressedImageDataProperties<dimensions>(*this);
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_EXPORT ImageView<1, const char>;

@@ -32,6 +32,7 @@
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Text/AbstractFont.h"

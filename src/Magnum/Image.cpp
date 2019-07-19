@@ -25,8 +25,9 @@
 
 #include "Image.h"
 
+#include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
-#include "Magnum/Implementation/ImagePixelView.h"
+#include "Magnum/Implementation/ImageProperties.h"
 
 namespace Magnum {
 
@@ -44,6 +45,33 @@ template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage sto
 
 template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _data{} {}
 
+template<UnsignedInt dimensions> Image<dimensions>::Image(Image<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _formatExtra{std::move(other._formatExtra)}, _pixelSize{std::move(other._pixelSize)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
+    other._size = {};
+}
+
+template<UnsignedInt dimensions> Image<dimensions>& Image<dimensions>::operator=(Image<dimensions>&& other) noexcept {
+    using std::swap;
+    swap(_storage, other._storage);
+    swap(_format, other._format);
+    swap(_formatExtra, other._formatExtra);
+    swap(_pixelSize, other._pixelSize);
+    swap(_size, other._size);
+    swap(_data, other._data);
+    return *this;
+}
+
+template<UnsignedInt dimensions> Image<dimensions>::operator ImageView<dimensions, char>() {
+    return ImageView<dimensions, char>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
+}
+
+template<UnsignedInt dimensions> Image<dimensions>::operator ImageView<dimensions, const char>() const {
+    return ImageView<dimensions, const char>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
+}
+
+template<UnsignedInt dimensions> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> Image<dimensions>::dataProperties() const {
+    return Implementation::imageDataProperties<dimensions>(*this);
+}
+
 template<UnsignedInt dimensions> Containers::StridedArrayView<dimensions + 1, char> Image<dimensions>::pixels() {
     return Implementation::imagePixelView<dimensions, char>(*this);
 }
@@ -52,11 +80,49 @@ template<UnsignedInt dimensions> Containers::StridedArrayView<dimensions + 1, co
     return Implementation::imagePixelView<dimensions, const char>(*this);
 }
 
+template<UnsignedInt dimensions> Containers::Array<char> Image<dimensions>::release() {
+    Containers::Array<char> data{std::move(_data)};
+    _size = {};
+    return data;
+}
+
 template<UnsignedInt dimensions> CompressedImage<dimensions>::CompressedImage(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: _storage{storage}, _format{format}, _size{size}, _data{std::move(data)} {}
 
 template<UnsignedInt dimensions> CompressedImage<dimensions>::CompressedImage(const CompressedPixelStorage storage, const UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: CompressedImage{storage, compressedPixelFormatWrap(format), size, std::move(data)} {}
 
 template<UnsignedInt dimensions> CompressedImage<dimensions>::CompressedImage(const CompressedPixelStorage storage) noexcept: _storage{storage}, _format{} {}
+
+template<UnsignedInt dimensions> CompressedImage<dimensions>::CompressedImage(CompressedImage<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _size{std::move(other._size)}, _data{std::move(other._data)}
+{
+    other._size = {};
+}
+
+template<UnsignedInt dimensions> CompressedImage<dimensions>& CompressedImage<dimensions>::operator=(CompressedImage<dimensions>&& other) noexcept {
+    using std::swap;
+    swap(_storage, other._storage);
+    swap(_format, other._format);
+    swap(_size, other._size);
+    swap(_data, other._data);
+    return *this;
+}
+
+template<UnsignedInt dimensions> CompressedImage<dimensions>::operator CompressedImageView<dimensions, char>() {
+    return CompressedImageView<dimensions, char>{_storage, _format, _size, _data};
+}
+
+template<UnsignedInt dimensions> CompressedImage<dimensions>::operator CompressedImageView<dimensions, const char>() const {
+    return CompressedImageView<dimensions, const char>{_storage, _format, _size, _data};
+}
+
+template<UnsignedInt dimensions> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> CompressedImage<dimensions>::dataProperties() const {
+    return Implementation::compressedImageDataProperties<dimensions>(*this);
+}
+
+template<UnsignedInt dimensions> Containers::Array<char> CompressedImage<dimensions>::release() {
+    Containers::Array<char> data{std::move(_data)};
+    _size = {};
+    return data;
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 template class MAGNUM_EXPORT Image<1>;

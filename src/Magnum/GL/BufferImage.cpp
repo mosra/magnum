@@ -26,6 +26,7 @@
 #include "BufferImage.h"
 
 #include "Magnum/GL/PixelFormat.h"
+#include "Magnum/Implementation/ImageProperties.h"
 
 namespace Magnum { namespace GL {
 
@@ -48,7 +49,26 @@ template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(const Pixe
 
 template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(NoCreateT) noexcept: _format{PixelFormat::RGBA}, _type{PixelType::UnsignedByte}, _buffer{NoCreate}, _dataSize{} {}
 
+template<UnsignedInt dimensions> BufferImage<dimensions>::BufferImage(BufferImage<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _buffer{std::move(other._buffer)}, _dataSize{std::move(other._dataSize)} {
+    other._size = {};
+}
+
+template<UnsignedInt dimensions> BufferImage<dimensions>& BufferImage<dimensions>::operator=(BufferImage<dimensions>&& other) noexcept {
+    using std::swap;
+    swap(_storage, other._storage);
+    swap(_format, other._format);
+    swap(_type, other._type);
+    swap(_size, other._size);
+    swap(_buffer, other._buffer);
+    swap(_dataSize, other._dataSize);
+    return *this;
+}
+
 template<UnsignedInt dimensions> UnsignedInt BufferImage<dimensions>::pixelSize() const { return GL::pixelSize(_format, _type); }
+
+template<UnsignedInt dimensions> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> BufferImage<dimensions>::dataProperties() const {
+    return Magnum::Implementation::imageDataProperties<dimensions>(*this);
+}
 
 template<UnsignedInt dimensions> void BufferImage<dimensions>::setData(const PixelStorage storage, const PixelFormat format, const PixelType type, const VectorTypeFor<dimensions, Int>& size, Containers::ArrayView<const void> const data, const BufferUsage usage) {
     _storage = storage;
@@ -83,6 +103,25 @@ template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBu
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(const CompressedPixelStorage storage): _storage{storage}, _format{}, _buffer{Buffer::TargetHint::PixelPack}, _dataSize{} {}
 
 template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(NoCreateT) noexcept: _format{}, _buffer{NoCreate}, _dataSize{} {}
+
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>::CompressedBufferImage(CompressedBufferImage<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _size{std::move(other._size)}, _buffer{std::move(other._buffer)}, _dataSize{std::move(other._dataSize)} {
+    other._size = {};
+    other._dataSize = {};
+}
+
+template<UnsignedInt dimensions> CompressedBufferImage<dimensions>& CompressedBufferImage<dimensions>::operator=(CompressedBufferImage<dimensions>&& other) noexcept {
+    using std::swap;
+    swap(_storage, other._storage);
+    swap(_format, other._format);
+    swap(_size, other._size);
+    swap(_buffer, other._buffer);
+    swap(_dataSize, other._dataSize);
+    return *this;
+}
+
+template<UnsignedInt dimensions> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> CompressedBufferImage<dimensions>::dataProperties() const {
+    return Magnum::Implementation::compressedImageDataProperties<dimensions>(*this);
+}
 
 template<UnsignedInt dimensions> void CompressedBufferImage<dimensions>::setData(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<const void> data, const BufferUsage usage) {
     _storage = storage;

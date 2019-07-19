@@ -246,16 +246,13 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
 constexpr PixelStorage::PixelStorage() noexcept: _rowLength{0}, _imageHeight{0}, _skip{0}, _alignment{4} {}
 
 namespace Implementation {
-    /* Used in *Image::dataProperties() */
-    template<std::size_t dimensions, class T> std::pair<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>> imageDataProperties(const T& image) {
-        std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties = image.storage().dataProperties(image.pixelSize(), Vector3i::pad(image.size(), 1));
-        return std::make_pair(Math::Vector<dimensions, std::size_t>::pad(dataProperties.first), Math::Vector<dimensions, std::size_t>::pad(dataProperties.second));
+    /* Used in templated image[view] constructors */
+    template<class T> inline UnsignedInt pixelSizeAdl(T format) {
+        return pixelSize(format);
     }
 
-    /* Used in Compressed*Image::dataProperties() */
-    template<std::size_t dimensions, class T> std::pair<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>> compressedImageDataProperties(const T& image) {
-        std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties = image.storage().dataProperties(Vector3i::pad(image.size(), 1));
-        return std::make_pair(Math::Vector<dimensions, std::size_t>::pad(dataProperties.first), Math::Vector<dimensions, std::size_t>::pad(dataProperties.second));
+    template<class T, class U> inline UnsignedInt pixelSizeAdl(T format, U formatExtra) {
+        return pixelSize(format, formatExtra);
     }
 
     /* Used in image query functions */

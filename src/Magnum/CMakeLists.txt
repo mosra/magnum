@@ -64,7 +64,7 @@ set(Magnum_HEADERS
     visibility.h)
 
 set(Magnum_PRIVATE_HEADERS
-    Implementation/ImagePixelView.h)
+    Implementation/ImageProperties.h)
 
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS

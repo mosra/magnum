@@ -28,6 +28,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/ImageView.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/ImageData.h"

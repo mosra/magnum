@@ -1,5 +1,5 @@
-#ifndef Magnum_Implementation_ImagePixelView_h
-#define Magnum_Implementation_ImagePixelView_h
+#ifndef Magnum_Implementation_ImageProperties_h
+#define Magnum_Implementation_ImageProperties_h
 /*
     This file is part of Magnum.
 
@@ -32,6 +32,18 @@
 #include "Magnum/DimensionTraits.h"
 
 namespace Magnum { namespace Implementation {
+
+/* Used in *Image::dataProperties() */
+template<std::size_t dimensions, class T> std::pair<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>> imageDataProperties(const T& image) {
+    std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties = image.storage().dataProperties(image.pixelSize(), Vector3i::pad(image.size(), 1));
+    return std::make_pair(Math::Vector<dimensions, std::size_t>::pad(dataProperties.first), Math::Vector<dimensions, std::size_t>::pad(dataProperties.second));
+}
+
+/* Used in Compressed*Image::dataProperties() */
+template<std::size_t dimensions, class T> std::pair<Math::Vector<dimensions, std::size_t>, Math::Vector<dimensions, std::size_t>> compressedImageDataProperties(const T& image) {
+    std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>> dataProperties = image.storage().dataProperties(Vector3i::pad(image.size(), 1));
+    return std::make_pair(Math::Vector<dimensions, std::size_t>::pad(dataProperties.first), Math::Vector<dimensions, std::size_t>::pad(dataProperties.second));
+}
 
 template<UnsignedInt dimensions, class T, class Image> Containers::StridedArrayView<dimensions + 1, T> imagePixelView(Image& image) {
     const std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> properties = image.dataProperties();

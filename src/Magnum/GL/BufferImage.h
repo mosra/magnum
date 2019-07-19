@@ -285,9 +285,7 @@ template<UnsignedInt dimensions> class BufferImage {
          *
          * See @ref PixelStorage::dataProperties() for more information.
          */
-        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const {
-            return Magnum::Implementation::imageDataProperties<dimensions>(*this);
-        }
+        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
 
         /** @brief Currently allocated data size */
         std::size_t dataSize() const { return _dataSize; }
@@ -597,9 +595,7 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * @requires_gl Compressed pixel storage is hardcoded in OpenGL ES and
          *      WebGL.
          */
-        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const {
-            return Magnum::Implementation::compressedImageDataProperties<dimensions>(*this);
-        }
+        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
 
         /**
          * @brief Image buffer
@@ -694,36 +690,6 @@ typedef CompressedBufferImage<2> CompressedBufferImage2D;
 
 /** @brief Three-dimensional compressed buffer image */
 typedef CompressedBufferImage<3> CompressedBufferImage3D;
-
-template<UnsignedInt dimensions> inline BufferImage<dimensions>::BufferImage(BufferImage<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _type{std::move(other._type)}, _size{std::move(other._size)}, _buffer{std::move(other._buffer)}, _dataSize{std::move(other._dataSize)} {
-    other._size = {};
-}
-
-template<UnsignedInt dimensions> inline CompressedBufferImage<dimensions>::CompressedBufferImage(CompressedBufferImage<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _size{std::move(other._size)}, _buffer{std::move(other._buffer)}, _dataSize{std::move(other._dataSize)} {
-    other._size = {};
-    other._dataSize = {};
-}
-
-template<UnsignedInt dimensions> inline BufferImage<dimensions>& BufferImage<dimensions>::operator=(BufferImage<dimensions>&& other) noexcept {
-    using std::swap;
-    swap(_storage, other._storage);
-    swap(_format, other._format);
-    swap(_type, other._type);
-    swap(_size, other._size);
-    swap(_buffer, other._buffer);
-    swap(_dataSize, other._dataSize);
-    return *this;
-}
-
-template<UnsignedInt dimensions> inline CompressedBufferImage<dimensions>& CompressedBufferImage<dimensions>::operator=(CompressedBufferImage<dimensions>&& other) noexcept {
-    using std::swap;
-    swap(_storage, other._storage);
-    swap(_format, other._format);
-    swap(_size, other._size);
-    swap(_buffer, other._buffer);
-    swap(_dataSize, other._dataSize);
-    return *this;
-}
 
 }}
 #else

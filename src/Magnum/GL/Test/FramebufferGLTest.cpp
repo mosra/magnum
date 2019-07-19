@@ -27,6 +27,7 @@
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/CubeMapTexture.h"
 #include "Magnum/GL/Extensions.h"

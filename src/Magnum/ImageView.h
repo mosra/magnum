@@ -400,9 +400,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
          *
          * See @ref PixelStorage::dataProperties() for more information.
          */
-        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const {
-            return Implementation::imageDataProperties<dimensions>(*this);
-        }
+        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
 
         /**
          * @brief Image data
@@ -726,9 +724,7 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          * See @ref CompressedPixelStorage::dataProperties() for more
          * information.
          */
-        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const {
-            return Implementation::compressedImageDataProperties<dimensions>(*this);
-        }
+        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
 
         /** @brief Image data */
         Containers::ArrayView<Type> data() const { return _data; }
@@ -811,16 +807,6 @@ typedef CompressedImageView<2, char> MutableCompressedImageView2D;
 @see @ref CompressedImageView3D, @ref MutableImageView3D
 */
 typedef CompressedImageView<3, char> MutableCompressedImageView3D;
-
-namespace Implementation {
-    template<class T> inline UnsignedInt pixelSizeAdl(T format) {
-        return pixelSize(format);
-    }
-
-    template<class T, class U> inline UnsignedInt pixelSizeAdl(T format, U formatExtra) {
-        return pixelSize(format, formatExtra);
-    }
-}
 
 template<UnsignedInt dimensions, class T> template<class U, class V> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const V formatExtra, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: ImageView{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra), size, data} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,

@@ -30,6 +30,7 @@
 #include <Corrade/PluginManager/Manager.h>
 
 #include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Math/Range.h"

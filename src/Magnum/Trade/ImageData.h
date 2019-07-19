@@ -31,7 +31,8 @@
 
 #include <Corrade/Containers/Array.h>
 
-#include "Magnum/ImageView.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/PixelStorage.h"
 #include "Magnum/Trade/visibility.h"
 
 namespace Magnum { namespace Trade {
@@ -466,46 +467,6 @@ template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageD
 template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), size, std::move(data), importerState} {
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
-}
-
-template<UnsignedInt dimensions> inline ImageData<dimensions>::ImageData(ImageData<dimensions>&& other) noexcept: _compressed{std::move(other._compressed)}, _size{std::move(other._size)}, _data{std::move(other._data)}, _importerState{std::move(other._importerState)} {
-    if(_compressed) {
-        new(&_compressedStorage) CompressedPixelStorage{std::move(other._compressedStorage)};
-        _compressedFormat = std::move(other._compressedFormat);
-    }
-    else {
-        new(&_storage) PixelStorage{std::move(other._storage)};
-        _format = std::move(other._format);
-        _formatExtra = std::move(other._formatExtra);
-        _pixelSize = std::move(other._pixelSize);
-    }
-
-    other._size = {};
-}
-
-template<UnsignedInt dimensions> inline ImageData<dimensions>& ImageData<dimensions>::operator=(ImageData<dimensions>&& other) noexcept {
-    using std::swap;
-    swap(_compressed, other._compressed);
-    if(_compressed) {
-        swap(_compressedStorage, other._compressedStorage);
-        swap(_compressedFormat, other._compressedFormat);
-    }
-    else {
-        swap(_storage, other._storage);
-        swap(_format, other._format);
-    }
-    swap(_formatExtra, other._formatExtra);
-    swap(_pixelSize, other._pixelSize);
-    swap(_size, other._size);
-    swap(_data, other._data);
-    swap(_importerState, other._importerState);
-    return *this;
-}
-
-template<UnsignedInt dimensions> inline Containers::Array<char> ImageData<dimensions>::release() {
-    Containers::Array<char> data{std::move(_data)};
-    _size = {};
-    return data;
 }
 
 }}

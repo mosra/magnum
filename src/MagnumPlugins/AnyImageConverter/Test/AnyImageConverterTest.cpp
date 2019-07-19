@@ -30,6 +30,7 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/FormatStl.h>
 
+#include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/ImageData.h"

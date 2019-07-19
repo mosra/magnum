@@ -30,6 +30,7 @@
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"

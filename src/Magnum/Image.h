@@ -31,7 +31,8 @@
 
 #include <Corrade/Containers/Array.h>
 
-#include "Magnum/ImageView.h"
+#include "Magnum/DimensionTraits.h"
+#include "Magnum/PixelStorage.h"
 
 namespace Magnum {
 
@@ -350,9 +351,7 @@ template<UnsignedInt dimensions> class Image {
          *
          * See @ref PixelStorage::dataProperties() for more information.
          */
-        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const {
-            return Implementation::imageDataProperties<dimensions>(*this);
-        }
+        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
 
         /**
          * @brief Raw data
@@ -597,9 +596,7 @@ template<UnsignedInt dimensions> class CompressedImage {
          * See @ref CompressedPixelStorage::dataProperties() for more
          * information.
          */
-        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const {
-            return Implementation::compressedImageDataProperties<dimensions>(*this);
-        }
+        std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> dataProperties() const;
 
         /**
          * @brief Raw data
@@ -676,63 +673,6 @@ typedef CompressedImage<2> CompressedImage2D;
 
 /** @brief Three-dimensional compressed image */
 typedef CompressedImage<3> CompressedImage3D;
-
-template<UnsignedInt dimensions> inline Image<dimensions>::Image(Image<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _formatExtra{std::move(other._formatExtra)}, _pixelSize{std::move(other._pixelSize)}, _size{std::move(other._size)}, _data{std::move(other._data)} {
-    other._size = {};
-}
-
-template<UnsignedInt dimensions> inline CompressedImage<dimensions>::CompressedImage(CompressedImage<dimensions>&& other) noexcept: _storage{std::move(other._storage)}, _format{std::move(other._format)}, _size{std::move(other._size)}, _data{std::move(other._data)}
-{
-    other._size = {};
-}
-
-template<UnsignedInt dimensions> inline Image<dimensions>& Image<dimensions>::operator=(Image<dimensions>&& other) noexcept {
-    using std::swap;
-    swap(_storage, other._storage);
-    swap(_format, other._format);
-    swap(_formatExtra, other._formatExtra);
-    swap(_pixelSize, other._pixelSize);
-    swap(_size, other._size);
-    swap(_data, other._data);
-    return *this;
-}
-
-template<UnsignedInt dimensions> inline CompressedImage<dimensions>& CompressedImage<dimensions>::operator=(CompressedImage<dimensions>&& other) noexcept {
-    using std::swap;
-    swap(_storage, other._storage);
-    swap(_format, other._format);
-    swap(_size, other._size);
-    swap(_data, other._data);
-    return *this;
-}
-
-template<UnsignedInt dimensions> inline Image<dimensions>::operator ImageView<dimensions, char>() {
-    return ImageView<dimensions, char>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
-}
-
-template<UnsignedInt dimensions> inline Image<dimensions>::operator ImageView<dimensions, const char>() const {
-    return ImageView<dimensions, const char>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
-}
-
-template<UnsignedInt dimensions> inline CompressedImage<dimensions>::operator CompressedImageView<dimensions, char>() {
-    return CompressedImageView<dimensions, char>{_storage, _format, _size, _data};
-}
-
-template<UnsignedInt dimensions> inline CompressedImage<dimensions>::operator CompressedImageView<dimensions, const char>() const {
-    return CompressedImageView<dimensions, const char>{_storage, _format, _size, _data};
-}
-
-template<UnsignedInt dimensions> inline Containers::Array<char> Image<dimensions>::release() {
-    Containers::Array<char> data{std::move(_data)};
-    _size = {};
-    return data;
-}
-
-template<UnsignedInt dimensions> inline Containers::Array<char> CompressedImage<dimensions>::release() {
-    Containers::Array<char> data{std::move(_data)};
-    _size = {};
-    return data;
-}
 
 template<UnsignedInt dimensions> template<class T, class U> inline Image<dimensions>::Image(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra), size, std::move(data)} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,

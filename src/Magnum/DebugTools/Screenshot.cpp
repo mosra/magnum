@@ -31,6 +31,7 @@
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/GL/AbstractFramebuffer.h"
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/Trade/AbstractImageConverter.h"

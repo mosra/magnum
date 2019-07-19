@@ -26,6 +26,7 @@
 #include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/GL/BufferImage.h"
 #include "Magnum/GL/CubeMapTextureArray.h"
 #include "Magnum/GL/Context.h"

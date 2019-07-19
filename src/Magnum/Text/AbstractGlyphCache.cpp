@@ -26,6 +26,7 @@
 #include "AbstractGlyphCache.h"
 
 #include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/TextureTools/Atlas.h"
 
 namespace Magnum { namespace Text {

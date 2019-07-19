@@ -32,6 +32,7 @@
 #include <Corrade/Utility/Directory.h>
 #include <Corrade/Utility/Unicode.h>
 
+#include "Magnum/ImageView.h"
 #include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Text/GlyphCache.h"
 #include "Magnum/Trade/ImageData.h"
