@@ -55,10 +55,10 @@ struct ImageDataTest: TestSuite::Tester {
     void constructMoveAttachState();
     void constructMoveCompressedAttachState();
 
-    void toViewGeneric();
-    void toViewImplementationSpecific();
-    void toViewCompressedGeneric();
-    void toViewCompressedImplementationSpecific();
+    template<class T> void toViewGeneric();
+    template<class T> void toViewImplementationSpecific();
+    template<class T> void toViewCompressedGeneric();
+    template<class T> void toViewCompressedImplementationSpecific();
 
     void data();
     void dataRvalue();
@@ -72,6 +72,18 @@ struct ImageDataTest: TestSuite::Tester {
     void pixels2D();
     void pixels3D();
     void pixelsCompressed();
+};
+
+template<class> struct MutabilityTraits;
+template<> struct MutabilityTraits<const char> {
+    typedef const ImageData2D ImageType;
+
+    static const char* name() { return "ImageView"; }
+};
+template<> struct MutabilityTraits<char> {
+    typedef ImageData2D ImageType;
+
+    static const char* name() { return "MutableImageView"; }
 };
 
 ImageDataTest::ImageDataTest() {
@@ -93,10 +105,14 @@ ImageDataTest::ImageDataTest() {
               &ImageDataTest::constructMoveAttachState,
               &ImageDataTest::constructMoveCompressedAttachState,
 
-              &ImageDataTest::toViewGeneric,
-              &ImageDataTest::toViewImplementationSpecific,
-              &ImageDataTest::toViewCompressedGeneric,
-              &ImageDataTest::toViewCompressedImplementationSpecific,
+              &ImageDataTest::toViewGeneric<const char>,
+              &ImageDataTest::toViewGeneric<char>,
+              &ImageDataTest::toViewImplementationSpecific<const char>,
+              &ImageDataTest::toViewImplementationSpecific<char>,
+              &ImageDataTest::toViewCompressedGeneric<const char>,
+              &ImageDataTest::toViewCompressedGeneric<char>,
+              &ImageDataTest::toViewCompressedImplementationSpecific<const char>,
+              &ImageDataTest::toViewCompressedImplementationSpecific<char>,
 
               &ImageDataTest::data,
               &ImageDataTest::dataRvalue,
@@ -500,11 +516,13 @@ void ImageDataTest::constructMoveCompressedAttachState() {
     CORRADE_COMPARE(b.importerState(), &stateNew);
 }
 
-void ImageDataTest::toViewGeneric() {
+template<class T> void ImageDataTest::toViewGeneric() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
     auto data = new char[3*4];
-    const ImageData2D a{PixelStorage{}.setAlignment(1),
+    typename MutabilityTraits<T>::ImageType a{PixelStorage{}.setAlignment(1),
         PixelFormat::RG16I, {1, 3}, Containers::Array<char>{data, 3*4}};
-    ImageView2D b = a;
+    ImageView<2, T> b = a;
 
     CORRADE_COMPARE(b.storage().alignment(), 1);
     CORRADE_COMPARE(b.format(), PixelFormat::RG16I);
@@ -514,11 +532,13 @@ void ImageDataTest::toViewGeneric() {
     CORRADE_COMPARE(b.data(), data);
 }
 
-void ImageDataTest::toViewImplementationSpecific() {
+template<class T> void ImageDataTest::toViewImplementationSpecific() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
     auto data = new char[3*6];
-    const ImageData2D a{PixelStorage{}.setAlignment(1),
+    typename MutabilityTraits<T>::ImageType a{PixelStorage{}.setAlignment(1),
         GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, Containers::Array<char>{data, 3*6}};
-    ImageView2D b = a;
+    ImageView<2, T> b = a;
 
     CORRADE_COMPARE(b.storage().alignment(), 1);
     CORRADE_COMPARE(b.format(), pixelFormatWrap(GL::PixelFormat::RGB));
@@ -528,12 +548,14 @@ void ImageDataTest::toViewImplementationSpecific() {
     CORRADE_COMPARE(b.data(), data);
 }
 
-void ImageDataTest::toViewCompressedGeneric() {
+template<class T> void ImageDataTest::toViewCompressedGeneric() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
     auto data = new char[8];
-    const ImageData2D a{
+    typename MutabilityTraits<T>::ImageType a{
         CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
         CompressedPixelFormat::Bc1RGBUnorm, {4, 4}, Containers::Array<char>{data, 8}};
-    CompressedImageView2D b = a;
+    CompressedImageView<2, T> b = a;
 
     CORRADE_COMPARE(b.storage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(b.format(), CompressedPixelFormat::Bc1RGBUnorm);
@@ -542,12 +564,14 @@ void ImageDataTest::toViewCompressedGeneric() {
     CORRADE_COMPARE(b.data().size(), 8);
 }
 
-void ImageDataTest::toViewCompressedImplementationSpecific() {
+template<class T> void ImageDataTest::toViewCompressedImplementationSpecific() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
     auto data = new char[8];
-    const ImageData2D a{
+    typename MutabilityTraits<T>::ImageType a{
         CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
         GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, Containers::Array<char>{data, 8}};
-    CompressedImageView2D b = a;
+    CompressedImageView<2, T> b = a;
 
     CORRADE_COMPARE(b.storage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(b.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));

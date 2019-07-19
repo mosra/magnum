@@ -699,7 +699,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
-        TextureArray<dimensions>& setImage(Int level, TextureFormat internalFormat, const ImageView<dimensions+1>& image) {
+        TextureArray<dimensions>& setImage(Int level, TextureFormat internalFormat, const ImageView<dimensions+1, const char>& image) {
             DataHelper<dimensions+1>::setImage(*this, level, internalFormat, image);
             return *this;
         }
@@ -734,7 +734,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @deprecated_gl Prefer to use @ref setStorage() and
          *      @ref setCompressedSubImage() instead.
          */
-        TextureArray<dimensions>& setCompressedImage(Int level, const CompressedImageView<dimensions+1>& image) {
+        TextureArray<dimensions>& setCompressedImage(Int level, const CompressedImageView<dimensions+1, const char>& image) {
             DataHelper<dimensions+1>::setCompressedImage(*this, level, image);
             return *this;
         }
@@ -781,7 +781,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
          *      @fn_gl_keyword{TexSubImage2D} / @fn_gl_keyword{TexSubImage3D}
          */
-        TextureArray<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, const ImageView<dimensions+1>& image) {
+        TextureArray<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, const ImageView<dimensions+1, const char>& image) {
             DataHelper<dimensions+1>::setSubImage(*this, level, offset, image);
             return *this;
         }
@@ -818,7 +818,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @requires_gl Non-default @ref CompressedPixelStorage is not
          *      available in OpenGL ES and WebGL.
          */
-        TextureArray<dimensions>& setCompressedSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, const CompressedImageView<dimensions+1>& image) {
+        TextureArray<dimensions>& setCompressedSubImage(Int level, const VectorTypeFor<dimensions+1, Int>& offset, const CompressedImageView<dimensions+1, const char>& image) {
             DataHelper<dimensions+1>::setCompressedSubImage(*this, level, offset, image);
             return *this;
         }

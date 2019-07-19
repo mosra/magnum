@@ -37,16 +37,19 @@ namespace Magnum { namespace Test { namespace {
 struct ImageViewTest: TestSuite::Tester {
     explicit ImageViewTest();
 
-    void constructGeneric();
-    void constructGenericEmpty();
-    void constructGenericEmptyNullptr();
-    void constructImplementationSpecific();
-    void constructImplementationSpecificEmpty();
-    void constructImplementationSpecificEmptyNullptr();
-    void constructCompressedGeneric();
-    void constructCompressedGenericEmpty();
-    void constructCompressedImplementationSpecific();
-    void constructCompressedImplementationSpecificEmpty();
+    template<class T> void constructGeneric();
+    template<class T> void constructGenericEmpty();
+    template<class T> void constructGenericEmptyNullptr();
+    template<class T> void constructImplementationSpecific();
+    template<class T> void constructImplementationSpecificEmpty();
+    template<class T> void constructImplementationSpecificEmptyNullptr();
+    template<class T> void constructCompressedGeneric();
+    template<class T> void constructCompressedGenericEmpty();
+    template<class T> void constructCompressedImplementationSpecific();
+    template<class T> void constructCompressedImplementationSpecificEmpty();
+
+    void constructFromMutable();
+    void constructCompressedFromMutable();
 
     void constructInvalidSize();
     void constructCompressedInvalidSize();
@@ -54,28 +57,49 @@ struct ImageViewTest: TestSuite::Tester {
     void dataProperties();
     void dataPropertiesCompressed();
 
-    void setData();
-    void setDataCompressed();
+    template<class T> void setData();
+    template<class T> void setDataCompressed();
 
     void setDataInvalidSize();
     void setDataCompressedInvalidSize();
 
-    void pixels1D();
-    void pixels2D();
-    void pixels3D();
+    template<class T> void pixels1D();
+    template<class T> void pixels2D();
+    template<class T> void pixels3D();
+};
+
+template<class> struct MutabilityTraits;
+template<> struct MutabilityTraits<const char> {
+    static const char* name() { return "ImageView"; }
+};
+template<> struct MutabilityTraits<char> {
+    static const char* name() { return "MutableImageView"; }
 };
 
 ImageViewTest::ImageViewTest() {
-    addTests({&ImageViewTest::constructGeneric,
-              &ImageViewTest::constructGenericEmpty,
-              &ImageViewTest::constructGenericEmptyNullptr,
-              &ImageViewTest::constructImplementationSpecific,
-              &ImageViewTest::constructImplementationSpecificEmpty,
-              &ImageViewTest::constructImplementationSpecificEmptyNullptr,
-              &ImageViewTest::constructCompressedGeneric,
-              &ImageViewTest::constructCompressedGenericEmpty,
-              &ImageViewTest::constructCompressedImplementationSpecific,
-              &ImageViewTest::constructCompressedImplementationSpecificEmpty,
+    addTests({&ImageViewTest::constructGeneric<const char>,
+              &ImageViewTest::constructGeneric<char>,
+              &ImageViewTest::constructGenericEmpty<const char>,
+              &ImageViewTest::constructGenericEmpty<char>,
+              &ImageViewTest::constructGenericEmptyNullptr<const char>,
+              &ImageViewTest::constructGenericEmptyNullptr<char>,
+              &ImageViewTest::constructImplementationSpecific<const char>,
+              &ImageViewTest::constructImplementationSpecific<char>,
+              &ImageViewTest::constructImplementationSpecificEmpty<const char>,
+              &ImageViewTest::constructImplementationSpecificEmpty<char>,
+              &ImageViewTest::constructImplementationSpecificEmptyNullptr<const char>,
+              &ImageViewTest::constructImplementationSpecificEmptyNullptr<char>,
+              &ImageViewTest::constructCompressedGeneric<const char>,
+              &ImageViewTest::constructCompressedGeneric<char>,
+              &ImageViewTest::constructCompressedGenericEmpty<const char>,
+              &ImageViewTest::constructCompressedGenericEmpty<char>,
+              &ImageViewTest::constructCompressedImplementationSpecific<const char>,
+              &ImageViewTest::constructCompressedImplementationSpecific<char>,
+              &ImageViewTest::constructCompressedImplementationSpecificEmpty<const char>,
+              &ImageViewTest::constructCompressedImplementationSpecificEmpty<char>,
+
+              &ImageViewTest::constructFromMutable,
+              &ImageViewTest::constructCompressedFromMutable,
 
               &ImageViewTest::constructInvalidSize,
               &ImageViewTest::constructCompressedInvalidSize,
@@ -83,15 +107,20 @@ ImageViewTest::ImageViewTest() {
               &ImageViewTest::dataProperties,
               &ImageViewTest::dataPropertiesCompressed,
 
-              &ImageViewTest::setData,
-              &ImageViewTest::setDataCompressed,
+              &ImageViewTest::setData<const char>,
+              &ImageViewTest::setData<char>,
+              &ImageViewTest::setDataCompressed<const char>,
+              &ImageViewTest::setDataCompressed<char>,
 
               &ImageViewTest::setDataInvalidSize,
               &ImageViewTest::setDataCompressedInvalidSize,
 
-              &ImageViewTest::pixels1D,
-              &ImageViewTest::pixels2D,
-              &ImageViewTest::pixels3D});
+              &ImageViewTest::pixels1D<const char>,
+              &ImageViewTest::pixels1D<char>,
+              &ImageViewTest::pixels2D<const char>,
+              &ImageViewTest::pixels2D<char>,
+              &ImageViewTest::pixels3D<const char>,
+              &ImageViewTest::pixels3D<char>});
 }
 
 namespace GL {
@@ -122,21 +151,23 @@ namespace Vk {
     enum class CompressedPixelFormat { Bc1SRGBAlpha = 42 };
 }
 
-void ImageViewTest::constructGeneric() {
+template<class T> void ImageViewTest::constructGeneric() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
     {
-        const char data[4*4]{};
-        ImageView2D a{PixelFormat::RGBA8Unorm, {1, 3}, data};
+        T data[4*4]{};
+        ImageView<2, T> a{PixelFormat::RGBA8Unorm, {1, 3}, data};
 
         CORRADE_COMPARE(a.storage().alignment(), 4);
         CORRADE_COMPARE(a.format(), PixelFormat::RGBA8Unorm);
         CORRADE_COMPARE(a.formatExtra(), 0);
         CORRADE_COMPARE(a.pixelSize(), 4);
         CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), &data[0]);
         CORRADE_COMPARE(a.data().size(), 4*4);
     } {
-        const char data[3*2]{};
-        ImageView2D a{PixelStorage{}.setAlignment(1),
+        T data[3*2]{};
+        ImageView<2, T> a{PixelStorage{}.setAlignment(1),
             PixelFormat::R16UI, {1, 3}, data};
 
         CORRADE_COMPARE(a.storage().alignment(), 1);
@@ -144,14 +175,16 @@ void ImageViewTest::constructGeneric() {
         CORRADE_COMPARE(a.formatExtra(), 0);
         CORRADE_COMPARE(a.pixelSize(), 2);
         CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), &data[0]);
         CORRADE_COMPARE(a.data().size(), 3*2);
     }
 }
 
-void ImageViewTest::constructGenericEmpty() {
+template<class T> void ImageViewTest::constructGenericEmpty() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
     {
-        ImageView2D a{PixelFormat::RG32F, {2, 6}};
+        ImageView<2, T> a{PixelFormat::RG32F, {2, 6}};
 
         CORRADE_COMPARE(a.storage().alignment(), 4);
         CORRADE_COMPARE(a.format(), PixelFormat::RG32F);
@@ -160,7 +193,7 @@ void ImageViewTest::constructGenericEmpty() {
         CORRADE_COMPARE(a.size(), (Vector2i{2, 6}));
         CORRADE_COMPARE(a.data(), nullptr);
     } {
-        ImageView2D a{PixelStorage{}.setAlignment(1),
+        ImageView<2, T> a{PixelStorage{}.setAlignment(1),
             PixelFormat::RGB16F, {8, 3}};
 
         CORRADE_COMPARE(a.storage().alignment(), 1);
@@ -172,12 +205,14 @@ void ImageViewTest::constructGenericEmpty() {
     }
 }
 
-void ImageViewTest::constructGenericEmptyNullptr() {
+template<class T> void ImageViewTest::constructGenericEmptyNullptr() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
     /* This should be deprecated/removed, as it doesn't provide anything over
        the above and can lead to silent errors */
 
     {
-        ImageView2D a{PixelFormat::RG32F, {2, 6}, nullptr};
+        ImageView<2, T> a{PixelFormat::RG32F, {2, 6}, nullptr};
 
         CORRADE_COMPARE(a.storage().alignment(), 4);
         CORRADE_COMPARE(a.format(), PixelFormat::RG32F);
@@ -186,7 +221,7 @@ void ImageViewTest::constructGenericEmptyNullptr() {
         CORRADE_COMPARE(a.size(), (Vector2i{2, 6}));
         CORRADE_COMPARE(a.data(), nullptr);
     } {
-        ImageView2D a{PixelStorage{}.setAlignment(1),
+        ImageView<2, T> a{PixelStorage{}.setAlignment(1),
             PixelFormat::RGB16F, {8, 3}, nullptr};
 
         CORRADE_COMPARE(a.storage().alignment(), 1);
@@ -198,22 +233,24 @@ void ImageViewTest::constructGenericEmptyNullptr() {
     }
 }
 
-void ImageViewTest::constructImplementationSpecific() {
+template<class T> void ImageViewTest::constructImplementationSpecific() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
     /* Single format */
     {
-        const char data[3*12]{};
-        ImageView2D a{Vk::PixelFormat::R32G32B32F, {1, 3}, data};
+        T data[3*12]{};
+        ImageView<2, T> a{Vk::PixelFormat::R32G32B32F, {1, 3}, data};
 
         CORRADE_COMPARE(a.storage().alignment(), 4);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(Vk::PixelFormat::R32G32B32F));
         CORRADE_COMPARE(a.formatExtra(), 0);
         CORRADE_COMPARE(a.pixelSize(), 12);
         CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), &data[0]);
         CORRADE_COMPARE(a.data().size(), 3*12);
     } {
-        const char data[3*12]{};
-        ImageView2D a{PixelStorage{}.setAlignment(1),
+        T data[3*12]{};
+        ImageView<2, T> a{PixelStorage{}.setAlignment(1),
             Vk::PixelFormat::R32G32B32F, {1, 3}, data};
 
         CORRADE_COMPARE(a.storage().alignment(), 1);
@@ -221,54 +258,56 @@ void ImageViewTest::constructImplementationSpecific() {
         CORRADE_COMPARE(a.formatExtra(), 0);
         CORRADE_COMPARE(a.pixelSize(), 12);
         CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), &data[0]);
         CORRADE_COMPARE(a.data().size(), 3*12);
     }
 
     /* Format + extra */
     {
-        const char data[3*8]{};
-        ImageView2D a{GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, data};
+        T data[3*8]{};
+        ImageView<2, T> a{GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, data};
 
         CORRADE_COMPARE(a.storage().alignment(), 4);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
         CORRADE_COMPARE(a.pixelSize(), 6);
         CORRADE_COMPARE(a.size(), Vector2i(1, 3));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), &data[0]);
         CORRADE_COMPARE(a.data().size(), 3*8);
     } {
-        const char data[3*6]{};
-        ImageView2D a{PixelStorage{}.setAlignment(1),
+        T data[3*6]{};
+        ImageView<2, T> a{PixelStorage{}.setAlignment(1),
             GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, data};
 
         CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
         CORRADE_COMPARE(a.pixelSize(), 6);
         CORRADE_COMPARE(a.size(), Vector2i(1, 3));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), &data[0]);
         CORRADE_COMPARE(a.data().size(), 3*6);
     }
 
     /* Manual pixel size */
     {
-        const char data[3*6]{};
-        ImageView2D a{PixelStorage{}.setAlignment(1), 666, 1337, 6, {1, 3}, data};
+        T data[3*6]{};
+        ImageView<2, T> a{PixelStorage{}.setAlignment(1), 666, 1337, 6, {1, 3}, data};
 
         CORRADE_COMPARE(a.storage().alignment(), 1);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
         CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
         CORRADE_COMPARE(a.pixelSize(), 6);
         CORRADE_COMPARE(a.size(), Vector2i(1, 3));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), &data[0]);
         CORRADE_COMPARE(a.data().size(), 3*6);
     }
 }
 
-void ImageViewTest::constructImplementationSpecificEmpty() {
+template<class T> void ImageViewTest::constructImplementationSpecificEmpty() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
     /* Single format */
     {
-        ImageView2D a{Vk::PixelFormat::R32G32B32F, {2, 16}};
+        ImageView<2, T> a{Vk::PixelFormat::R32G32B32F, {2, 16}};
 
         CORRADE_COMPARE(a.storage().alignment(), 4);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(Vk::PixelFormat::R32G32B32F));
@@ -277,7 +316,7 @@ void ImageViewTest::constructImplementationSpecificEmpty() {
         CORRADE_COMPARE(a.size(), (Vector2i{2, 16}));
         CORRADE_COMPARE(a.data(), nullptr);
     } {
-        ImageView2D a{PixelStorage{}.setAlignment(1),
+        ImageView<2, T> a{PixelStorage{}.setAlignment(1),
             Vk::PixelFormat::R32G32B32F, {1, 2}};
 
         CORRADE_COMPARE(a.storage().alignment(), 1);
@@ -290,7 +329,7 @@ void ImageViewTest::constructImplementationSpecificEmpty() {
 
     /* Format + extra */
     {
-        ImageView2D a{GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}};
+        ImageView<2, T> a{GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}};
 
         CORRADE_COMPARE(a.storage().alignment(), 4);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
@@ -299,7 +338,7 @@ void ImageViewTest::constructImplementationSpecificEmpty() {
         CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
         CORRADE_COMPARE(a.data(), nullptr);
     } {
-        ImageView2D a{PixelStorage{}.setAlignment(1),
+        ImageView<2, T> a{PixelStorage{}.setAlignment(1),
             GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {8, 2}};
 
         CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
@@ -311,7 +350,7 @@ void ImageViewTest::constructImplementationSpecificEmpty() {
 
     /* Manual pixel size */
     {
-        ImageView2D a{PixelStorage{}.setAlignment(1), 666, 1337, 6, {3, 3}};
+        ImageView<2, T> a{PixelStorage{}.setAlignment(1), 666, 1337, 6, {3, 3}};
 
         CORRADE_COMPARE(a.storage().alignment(), 1);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
@@ -322,13 +361,15 @@ void ImageViewTest::constructImplementationSpecificEmpty() {
     }
 }
 
-void ImageViewTest::constructImplementationSpecificEmptyNullptr() {
+template<class T> void ImageViewTest::constructImplementationSpecificEmptyNullptr() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
     /* This should be deprecated/removed, as it doesn't provide anything over
        the above and can lead to silent errors */
 
     /* Single format */
     {
-        ImageView2D a{Vk::PixelFormat::R32G32B32F, {2, 16}, nullptr};
+        ImageView<2, T> a{Vk::PixelFormat::R32G32B32F, {2, 16}, nullptr};
 
         CORRADE_COMPARE(a.storage().alignment(), 4);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(Vk::PixelFormat::R32G32B32F));
@@ -337,7 +378,7 @@ void ImageViewTest::constructImplementationSpecificEmptyNullptr() {
         CORRADE_COMPARE(a.size(), (Vector2i{2, 16}));
         CORRADE_COMPARE(a.data(), nullptr);
     } {
-        ImageView2D a{PixelStorage{}.setAlignment(1),
+        ImageView<2, T> a{PixelStorage{}.setAlignment(1),
             Vk::PixelFormat::R32G32B32F, {1, 2}, nullptr};
 
         CORRADE_COMPARE(a.storage().alignment(), 1);
@@ -350,7 +391,7 @@ void ImageViewTest::constructImplementationSpecificEmptyNullptr() {
 
     /* Format + extra */
     {
-        ImageView2D a{GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, nullptr};
+        ImageView<2, T> a{GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, nullptr};
 
         CORRADE_COMPARE(a.storage().alignment(), 4);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
@@ -359,7 +400,7 @@ void ImageViewTest::constructImplementationSpecificEmptyNullptr() {
         CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
         CORRADE_COMPARE(a.data(), nullptr);
     } {
-        ImageView2D a{PixelStorage{}.setAlignment(1),
+        ImageView<2, T> a{PixelStorage{}.setAlignment(1),
             GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {8, 2}, nullptr};
 
         CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
@@ -371,7 +412,7 @@ void ImageViewTest::constructImplementationSpecificEmptyNullptr() {
 
     /* Manual pixel size */
     {
-        ImageView2D a{PixelStorage{}.setAlignment(1), 666, 1337, 6, {3, 3}, nullptr};
+        ImageView<2, T> a{PixelStorage{}.setAlignment(1), 666, 1337, 6, {3, 3}, nullptr};
 
         CORRADE_COMPARE(a.storage().alignment(), 1);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
@@ -382,40 +423,44 @@ void ImageViewTest::constructImplementationSpecificEmptyNullptr() {
     }
 }
 
-void ImageViewTest::constructCompressedGeneric() {
+template<class T> void ImageViewTest::constructCompressedGeneric() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
     {
-        const char data[8]{};
-        CompressedImageView2D a{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data};
+        T data[8]{};
+        CompressedImageView<2, T> a{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data};
 
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{0});
         CORRADE_COMPARE(a.format(), CompressedPixelFormat::Bc1RGBAUnorm);
         CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), &data[0]);
         CORRADE_COMPARE(a.data().size(), 8);
     } {
-        const char data[8]{};
-        CompressedImageView2D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
+        T data[8]{};
+        CompressedImageView<2, T> a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
             CompressedPixelFormat::Bc1RGBAUnorm, {4, 4},
             data};
 
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
         CORRADE_COMPARE(a.format(), CompressedPixelFormat::Bc1RGBAUnorm);
         CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), &data[0]);
         CORRADE_COMPARE(a.data().size(), 8);
     }
 }
 
-void ImageViewTest::constructCompressedGenericEmpty() {
+template<class T> void ImageViewTest::constructCompressedGenericEmpty() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
     {
-        CompressedImageView2D a{CompressedPixelFormat::Bc1RGBAUnorm, {8, 16}};
+        CompressedImageView<2, T> a{CompressedPixelFormat::Bc1RGBAUnorm, {8, 16}};
 
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{0});
         CORRADE_COMPARE(a.format(), CompressedPixelFormat::Bc1RGBAUnorm);
         CORRADE_COMPARE(a.size(), (Vector2i{8, 16}));
         CORRADE_COMPARE(a.data(), nullptr);
     } {
-        CompressedImageView2D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
+        CompressedImageView<2, T> a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
             CompressedPixelFormat::Bc1RGBAUnorm, {8, 16}};
 
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
@@ -425,44 +470,48 @@ void ImageViewTest::constructCompressedGenericEmpty() {
     }
 }
 
-void ImageViewTest::constructCompressedImplementationSpecific() {
+template<class T> void ImageViewTest::constructCompressedImplementationSpecific() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
     /* Format with autodetection */
     {
-        const char data[8]{};
-        CompressedImageView2D a{GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4},
+        T data[8]{};
+        CompressedImageView<2, T> a{GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4},
             data};
 
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{0});
         CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
         CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), &data[0]);
         CORRADE_COMPARE(a.data().size(), 8);
     } {
-        const char data[8]{};
-        CompressedImageView2D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
+        T data[8]{};
+        CompressedImageView<2, T> a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
             GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, data};
 
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
         CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
         CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
-        CORRADE_COMPARE(a.data(), data);
+        CORRADE_COMPARE(a.data(), &data[0]);
         CORRADE_COMPARE(a.data().size(), 8);
     }
 
     /* Manual properties not implemented yet */
 }
 
-void ImageViewTest::constructCompressedImplementationSpecificEmpty() {
+template<class T> void ImageViewTest::constructCompressedImplementationSpecificEmpty() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
     /* Format with autodetection */
     {
-        CompressedImageView2D a{GL::CompressedPixelFormat::RGBS3tcDxt1, {8, 16}};
+        CompressedImageView<2, T> a{GL::CompressedPixelFormat::RGBS3tcDxt1, {8, 16}};
 
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{0});
         CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
         CORRADE_COMPARE(a.size(), (Vector2i{8, 16}));
         CORRADE_COMPARE(a.data(), nullptr);
     } {
-        CompressedImageView2D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
+        CompressedImageView<2, T> a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
             GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 8}};
 
         CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
@@ -472,6 +521,49 @@ void ImageViewTest::constructCompressedImplementationSpecificEmpty() {
     }
 
     /* Manual properties not implemented yet */
+}
+
+void ImageViewTest::constructFromMutable() {
+    /* Copy of "Manual pixel size" in constructImplementationSpecific(), as
+       that exposes most fields */
+    char data[3*6]{};
+    MutableImageView2D a{PixelStorage{}.setAlignment(1), 666, 1337, 6, {1, 3}, data};
+    CORRADE_COMPARE(a.storage().alignment(), 1);
+    CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
+    CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
+    CORRADE_COMPARE(a.pixelSize(), 6);
+    CORRADE_COMPARE(a.size(), Vector2i(1, 3));
+    CORRADE_COMPARE(a.data(), &data[0]);
+    CORRADE_COMPARE(a.data().size(), 3*6);
+
+    ImageView2D b = a;
+    CORRADE_COMPARE(b.storage().alignment(), 1);
+    CORRADE_COMPARE(b.format(), pixelFormatWrap(GL::PixelFormat::RGB));
+    CORRADE_COMPARE(b.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
+    CORRADE_COMPARE(b.pixelSize(), 6);
+    CORRADE_COMPARE(b.size(), Vector2i(1, 3));
+    CORRADE_COMPARE(b.data(), &data[0]);
+    CORRADE_COMPARE(b.data().size(), 3*6);
+}
+
+void ImageViewTest::constructCompressedFromMutable() {
+    /* Copied from constructCompressedImplementationSpecific(), as that exposes
+       most fields */
+    char data[8]{};
+    MutableCompressedImageView2D a{CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
+        GL::CompressedPixelFormat::RGBS3tcDxt1, {4, 4}, data};
+    CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
+    CORRADE_COMPARE(a.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
+    CORRADE_COMPARE(a.size(), (Vector2i{4, 4}));
+    CORRADE_COMPARE(a.data(), &data[0]);
+    CORRADE_COMPARE(a.data().size(), 8);
+
+    CompressedImageView2D b = a;
+    CORRADE_COMPARE(b.storage().compressedBlockSize(), Vector3i{4});
+    CORRADE_COMPARE(b.format(), compressedPixelFormatWrap(GL::CompressedPixelFormat::RGBS3tcDxt1));
+    CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
+    CORRADE_COMPARE(b.data(), &data[0]);
+    CORRADE_COMPARE(b.data().size(), 8);
 }
 
 void ImageViewTest::constructInvalidSize() {
@@ -531,31 +623,35 @@ void ImageViewTest::dataPropertiesCompressed() {
         (std::pair<Math::Vector3<std::size_t>, Math::Vector3<std::size_t>>{{2*16, 2*16, 9*16}, {1, 3, 3}}));
 }
 
-void ImageViewTest::setData() {
-    const char data[3*3]{};
-    ImageView2D a{PixelStorage{}.setAlignment(1),
+template<class T> void ImageViewTest::setData() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
+    T data[3*3]{};
+    ImageView<2, T> a{PixelStorage{}.setAlignment(1),
         PixelFormat::RGB8Snorm, {1, 3}, data};
-    const char data2[3*3]{};
+    T data2[3*3]{};
     a.setData(data2);
 
     CORRADE_COMPARE(a.storage().alignment(), 1);
     CORRADE_COMPARE(a.format(), PixelFormat::RGB8Snorm);
     CORRADE_COMPARE(a.size(), Vector2i(1, 3));
-    CORRADE_COMPARE(a.data(), data2);
+    CORRADE_COMPARE(a.data(), &data2[0]);
 }
 
-void ImageViewTest::setDataCompressed() {
-    const char data[8]{};
-    CompressedImageView2D a{
+template<class T> void ImageViewTest::setDataCompressed() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
+    T data[8]{};
+    CompressedImageView<2, T> a{
         CompressedPixelStorage{}.setCompressedBlockSize(Vector3i{4}),
         CompressedPixelFormat::Bc1RGBAUnorm, {4, 4}, data};
-    const char data2[16]{};
+    T data2[16]{};
     a.setData(data2);
 
     CORRADE_COMPARE(a.storage().compressedBlockSize(), Vector3i{4});
     CORRADE_COMPARE(a.format(), CompressedPixelFormat::Bc1RGBAUnorm);
     CORRADE_COMPARE(a.size(), Vector2i(4, 4));
-    CORRADE_COMPARE(a.data(), data2);
+    CORRADE_COMPARE(a.data(), &data2[0]);
 }
 
 void ImageViewTest::setDataInvalidSize() {
@@ -591,8 +687,10 @@ void ImageViewTest::setDataCompressedInvalidSize() {
     }
 }
 
-void ImageViewTest::pixels1D() {
-    ImageView1D image{
+template<class T> void ImageViewTest::pixels1D() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
+    ImageView<1, T> image{
         PixelStorage{}
             .setAlignment(1) /** @todo alignment 4 expects 17 bytes. what */
             .setSkip({3, 0, 0}),
@@ -601,14 +699,18 @@ void ImageViewTest::pixels1D() {
 
     /* Full test is in ImageTest, this is just a sanity check */
 
-    Containers::StridedArrayView1D<const Color3ub> pixels = image.pixels<Color3ub>();
+    auto pixels = image.template pixels<Color3ub>();
+    CORRADE_COMPARE(decltype(pixels)::Dimensions, 1);
+    CORRADE_COMPARE(std::is_const<typename decltype(pixels)::Type>::value, std::is_const<T>::value);
     CORRADE_COMPARE(pixels.size(), 2);
     CORRADE_COMPARE(pixels.stride(), 3);
     CORRADE_COMPARE(pixels.data(), image.data() + 3*3);
 }
 
-void ImageViewTest::pixels2D() {
-    ImageView2D image{
+template<class T> void ImageViewTest::pixels2D() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
+    ImageView<2, T> image{
         PixelStorage{}
             .setAlignment(4)
             .setSkip({3, 2, 0})
@@ -618,14 +720,18 @@ void ImageViewTest::pixels2D() {
 
     /* Full test is in ImageTest, this is just a sanity check */
 
-    Containers::StridedArrayView2D<const Color3ub> pixels = image.pixels<Color3ub>();
+    auto pixels = image.template pixels<Color3ub>();
+    CORRADE_COMPARE(decltype(pixels)::Dimensions, 2);
+    CORRADE_COMPARE(std::is_const<typename decltype(pixels)::Type>::value, std::is_const<T>::value);
     CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView2D<Color3ub>::Size{4, 2}));
     CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView2D<Color3ub>::Stride{20, 3}));
     CORRADE_COMPARE(pixels.data(), image.data() + 2*20 + 3*3);
 }
 
-void ImageViewTest::pixels3D() {
-    ImageView3D image{
+template<class T> void ImageViewTest::pixels3D() {
+    setTestCaseTemplateName(MutabilityTraits<T>::name());
+
+    ImageView<3, T> image{
         PixelStorage{}
             .setAlignment(4)
             .setSkip({3, 2, 1})
@@ -636,7 +742,9 @@ void ImageViewTest::pixels3D() {
 
     /* Full test is in ImageTest, this is just a sanity check */
 
-    Containers::StridedArrayView3D<const Color3ub> pixels = image.pixels<Color3ub>();
+    auto pixels = image.template pixels<Color3ub>();
+    CORRADE_COMPARE(decltype(pixels)::Dimensions, 3);
+    CORRADE_COMPARE(std::is_const<typename decltype(pixels)::Type>::value, std::is_const<T>::value);
     CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView3D<Color3ub>::Size{3, 4, 2}));
     CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView3D<Color3ub>::Stride{140, 20, 3}));
     CORRADE_COMPARE(pixels.data(), image.data() + 140 + 2*20 + 3*3);

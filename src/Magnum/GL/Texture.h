@@ -1037,7 +1037,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @deprecated_gl Prefer to use @ref setStorage() and @ref setSubImage()
          *      instead.
          */
-        Texture<dimensions>& setImage(Int level, TextureFormat internalFormat, const ImageView<dimensions>& image) {
+        Texture<dimensions>& setImage(Int level, TextureFormat internalFormat, const ImageView<dimensions, const char>& image) {
             DataHelper<dimensions>::setImage(*this, level, internalFormat, image);
             return *this;
         }
@@ -1093,7 +1093,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @deprecated_gl Prefer to use @ref setStorage() and
          *      @ref setCompressedSubImage() instead.
          */
-        Texture<dimensions>& setCompressedImage(Int level, const CompressedImageView<dimensions>& image) {
+        Texture<dimensions>& setCompressedImage(Int level, const CompressedImageView<dimensions, const char>& image) {
             DataHelper<dimensions>::setCompressedImage(*this, level, image);
             return *this;
         }
@@ -1167,7 +1167,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *      able to use @ref setStorage() as it uses implicit @ref PixelType
          *      value.
          */
-        Texture<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, const ImageView<dimensions>& image) {
+        Texture<dimensions>& setSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, const ImageView<dimensions, const char>& image) {
             DataHelper<Dimensions>::setSubImage(*this, level, offset, image);
             return *this;
         }
@@ -1219,7 +1219,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @requires_gl Non-default @ref CompressedPixelStorage is not
          *      available in OpenGL ES and WebGL.
          */
-        Texture<dimensions>& setCompressedSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, const CompressedImageView<dimensions>& image) {
+        Texture<dimensions>& setCompressedSubImage(Int level, const VectorTypeFor<dimensions, Int>& offset, const CompressedImageView<dimensions, const char>& image) {
             DataHelper<Dimensions>::setCompressedSubImage(*this, level, offset, image);
             return *this;
         }

@@ -727,15 +727,21 @@ typedef CompressedImage<1> CompressedImage1D;
 typedef CompressedImage<2> CompressedImage2D;
 typedef CompressedImage<3> CompressedImage3D;
 
-template<UnsignedInt> class ImageView;
-typedef ImageView<1> ImageView1D;
-typedef ImageView<2> ImageView2D;
-typedef ImageView<3> ImageView3D;
+template<UnsignedInt, class> class ImageView;
+typedef ImageView<1, const char> ImageView1D;
+typedef ImageView<2, const char> ImageView2D;
+typedef ImageView<3, const char> ImageView3D;
+typedef ImageView<1, char> MutableImageView1D;
+typedef ImageView<2, char> MutableImageView2D;
+typedef ImageView<3, char> MutableImageView3D;
 
-template<UnsignedInt> class CompressedImageView;
-typedef CompressedImageView<1> CompressedImageView1D;
-typedef CompressedImageView<2> CompressedImageView2D;
-typedef CompressedImageView<3> CompressedImageView3D;
+template<UnsignedInt, class> class CompressedImageView;
+typedef CompressedImageView<1, const char> CompressedImageView1D;
+typedef CompressedImageView<2, const char> CompressedImageView2D;
+typedef CompressedImageView<3, const char> CompressedImageView3D;
+typedef CompressedImageView<1, char> MutableCompressedImageView1D;
+typedef CompressedImageView<2, char> MutableCompressedImageView2D;
+typedef CompressedImageView<3, char> MutableCompressedImageView3D;
 
 enum class MeshPrimitive: UnsignedInt;
 enum class MeshIndexType: UnsignedInt;

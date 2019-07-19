@@ -307,7 +307,9 @@ template<UnsignedInt dimensions> class Image {
         /** @brief Conversion to view */
         /* Not restricted to const&, because we might want to pass the view to
            another function in an oneliner (e.g. saving screenshot) */
-        /*implicit*/ operator ImageView<dimensions>() const;
+        /*implicit*/ operator ImageView<dimensions, char>();
+        /** @overload */
+        /*implicit*/ operator ImageView<dimensions, const char>() const;
 
         /** @brief Storage of pixel data */
         PixelStorage storage() const { return _storage; }
@@ -566,7 +568,11 @@ template<UnsignedInt dimensions> class CompressedImage {
         CompressedImage<dimensions>& operator=(CompressedImage<dimensions>&& other) noexcept;
 
         /** @brief Conversion to view */
-        /*implicit*/ operator CompressedImageView<dimensions>() const;
+        /* Not restricted to const&, because we might want to pass the view to
+           another function in an oneliner (e.g. saving screenshot) */
+        /*implicit*/ operator CompressedImageView<dimensions, char>();
+        /** @overload */
+        /*implicit*/ operator CompressedImageView<dimensions, const char>() const;
 
         /** @brief Storage of compressed pixel data */
         CompressedPixelStorage storage() const { return _storage; }
@@ -700,14 +706,20 @@ template<UnsignedInt dimensions> inline CompressedImage<dimensions>& CompressedI
     return *this;
 }
 
-template<UnsignedInt dimensions> inline Image<dimensions>::operator ImageView<dimensions>() const
-{
-    return ImageView<dimensions>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
+template<UnsignedInt dimensions> inline Image<dimensions>::operator ImageView<dimensions, char>() {
+    return ImageView<dimensions, char>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
 }
 
-template<UnsignedInt dimensions> inline CompressedImage<dimensions>::operator CompressedImageView<dimensions>() const
-{
-    return CompressedImageView<dimensions>{_storage, _format, _size, _data};
+template<UnsignedInt dimensions> inline Image<dimensions>::operator ImageView<dimensions, const char>() const {
+    return ImageView<dimensions, const char>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
+}
+
+template<UnsignedInt dimensions> inline CompressedImage<dimensions>::operator CompressedImageView<dimensions, char>() {
+    return CompressedImageView<dimensions, char>{_storage, _format, _size, _data};
+}
+
+template<UnsignedInt dimensions> inline CompressedImage<dimensions>::operator CompressedImageView<dimensions, const char>() const {
+    return CompressedImageView<dimensions, const char>{_storage, _format, _size, _data};
 }
 
 template<UnsignedInt dimensions> inline Containers::Array<char> Image<dimensions>::release() {
