@@ -291,7 +291,12 @@ template<UnsignedInt dimensions> class Image {
          * Equivalent to calling @ref Image(PixelStorage, T) with
          * default-constructed @ref PixelStorage.
          */
-        template<class T> /*implicit*/ Image(T format) noexcept: Image{{}, format} {}
+        template<class T
+            #ifndef DOXYGEN_GENERATING_OUTPUT
+            /* Otherwise this catches too much, resulting in weird errors */
+            , class = typename std::enable_if<std::is_enum<T>::value || std::is_integral<T>::value>::type
+            #endif
+            > /*implicit*/ Image(T format) noexcept: Image{{}, format} {}
 
         /** @brief Copying is not allowed */
         Image(const Image<dimensions>&) = delete;
