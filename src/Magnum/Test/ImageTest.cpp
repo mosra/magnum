@@ -61,8 +61,10 @@ struct ImageTest: TestSuite::Tester {
     void toViewCompressedGeneric();
     void toViewCompressedImplementationSpecific();
 
-    void access();
-    void accessCompressed();
+    void data();
+    void dataCompressed();
+    void dataRvalue();
+    void dataRvalueCompressed();
 
     void dataProperties();
     void dataPropertiesCompressed();
@@ -100,8 +102,10 @@ ImageTest::ImageTest() {
               &ImageTest::toViewCompressedGeneric,
               &ImageTest::toViewCompressedImplementationSpecific,
 
-              &ImageTest::access,
-              &ImageTest::accessCompressed,
+              &ImageTest::data,
+              &ImageTest::dataCompressed,
+              &ImageTest::dataRvalue,
+              &ImageTest::dataRvalueCompressed,
 
               &ImageTest::dataProperties,
               &ImageTest::dataPropertiesCompressed,
@@ -608,7 +612,7 @@ void ImageTest::toViewCompressedImplementationSpecific() {
     CORRADE_COMPARE(b.data().size(), 8);
 }
 
-void ImageTest::access() {
+void ImageTest::data() {
     auto data = new char[4*4];
     Image2D a{PixelFormat::RGBA8Unorm, {1, 3}, Containers::Array<char>{data, 4*4}};
     const Image2D& ca = a;
@@ -616,13 +620,28 @@ void ImageTest::access() {
     CORRADE_COMPARE(ca.data(), data);
 }
 
-void ImageTest::accessCompressed() {
+void ImageTest::dataCompressed() {
     auto data = new char[8];
     CompressedImage2D a{CompressedPixelFormat::Bc1RGBAUnorm, {4, 4},
         Containers::Array<char>{data, 8}};
     const CompressedImage2D& ca = a;
     CORRADE_COMPARE(a.data(), data);
     CORRADE_COMPARE(ca.data(), data);
+}
+
+void ImageTest::dataRvalue() {
+    auto data = new char[4*4];
+    Containers::Array<char> released = Image2D{PixelFormat::RGBA8Unorm, {1, 3},
+        Containers::Array<char>{data, 4*4}}.data();
+    CORRADE_COMPARE(released.data(), data);
+}
+
+void ImageTest::dataRvalueCompressed() {
+    auto data = new char[8];
+    Containers::Array<char> released = CompressedImage2D{
+        CompressedPixelFormat::Bc1RGBAUnorm, {4, 4},
+        Containers::Array<char>{data, 8}}.data();
+    CORRADE_COMPARE(released.data(), data);
 }
 
 void ImageTest::dataProperties() {

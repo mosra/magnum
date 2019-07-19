@@ -60,7 +60,9 @@ struct ImageDataTest: TestSuite::Tester {
     void toViewCompressedGeneric();
     void toViewCompressedImplementationSpecific();
 
-    void access();
+    void data();
+    void dataRvalue();
+
     void dataProperties();
 
     void release();
@@ -96,7 +98,9 @@ ImageDataTest::ImageDataTest() {
               &ImageDataTest::toViewCompressedGeneric,
               &ImageDataTest::toViewCompressedImplementationSpecific,
 
-              &ImageDataTest::access,
+              &ImageDataTest::data,
+              &ImageDataTest::dataRvalue,
+
               &ImageDataTest::dataProperties,
 
               &ImageDataTest::release,
@@ -552,12 +556,19 @@ void ImageDataTest::toViewCompressedImplementationSpecific() {
     CORRADE_COMPARE(b.data().size(), 8);
 }
 
-void ImageDataTest::access() {
+void ImageDataTest::data() {
     auto data = new char[4*4];
     ImageData2D a{PixelFormat::RGBA8Unorm, {1, 3}, Containers::Array<char>{data, 4*4}};
     const ImageData2D& ca = a;
     CORRADE_COMPARE(a.data(), data);
     CORRADE_COMPARE(ca.data(), data);
+}
+
+void ImageDataTest::dataRvalue() {
+    auto data = new char[4*4];
+    Containers::Array<char> released = ImageData2D{PixelFormat::RGBA8Unorm,
+        {1, 3}, Containers::Array<char>{data, 4*4}}.data();
+    CORRADE_COMPARE(released.data(), data);
 }
 
 void ImageDataTest::dataProperties() {

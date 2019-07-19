@@ -334,11 +334,24 @@ template<UnsignedInt dimensions> class ImageData {
          * @see @ref release(), @ref pixels()
          */
         Containers::ArrayView<char> data() & { return _data; }
-        Containers::ArrayView<char> data() && = delete; /**< @overload */
 
         /** @overload */
         Containers::ArrayView<const char> data() const & { return _data; }
-        Containers::ArrayView<const char> data() const && = delete; /**< @overload */
+
+        /**
+         * @brief Raw data from a r-value
+         *
+         * Unlike @ref data(), which returns a view, this is equivalent to
+         * @ref release() to avoid a dangling view when the temporary instance
+         * goes out of scope.
+         * @todoc stupid doxygen can't link to & overloads ffs
+         */
+        Containers::Array<char> data() && { return release(); }
+
+        /** @overload
+         * @todo what to do here?!
+         */
+        Containers::Array<char> data() const && = delete;
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
