@@ -489,6 +489,12 @@ See also:
     is deprecated for doing too many things at once and being too tied to one
     particular STL container, use @ref MeshTools::generateFlatNormals(const Containers::StridedArrayView1D<const Vector3>&)
     instead
+-   Templated versions of @ref Image::data(), @ref ImageView::data(),
+    @ref CompressedImage::data(), @ref CompressedImageView::data() and
+    @ref Trade::ImageData::data() that returned a raw pointer are deprecated,
+    use the non-templated version together with
+    @ref Corrade::Containers::arrayCast() instead for properly bounds-checked
+    type conversion
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

@@ -340,15 +340,27 @@ template<UnsignedInt dimensions> class ImageData {
         Containers::ArrayView<const char> data() const & { return _data; }
         Containers::ArrayView<const char> data() const && = delete; /**< @overload */
 
-        /** @overload */
-        template<class T> T* data() {
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Image data in a particular type
+         * @deprecated Use non-templated @ref data() together with
+         *      @ref Corrade::Containers::arrayCast() instead for properly
+         *      bounds-checked type conversion.
+         */
+        template<class T> CORRADE_DEPRECATED("use data() together with Containers::arrayCast() instead") T* data() {
             return reinterpret_cast<T*>(_data.data());
         }
 
-        /** @overload */
-        template<class T> const T* data() const {
+        /**
+         * @brief Image data in a particular type
+         * @deprecated Use non-templated @ref data() together with
+         *      @ref Corrade::Containers::arrayCast() instead for properly
+         *      bounds-checked type conversion.
+         */
+        template<class T> CORRADE_DEPRECATED("use data() together with Containers::arrayCast() instead") const T* data() const {
             return reinterpret_cast<const T*>(_data.data());
         }
+        #endif
 
         /**
          * @brief View on pixel data
