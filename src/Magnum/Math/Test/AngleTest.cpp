@@ -289,7 +289,7 @@ void AngleTest::debugRad() {
 #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(CORRADE_TARGET_UNIX) || (defined(CORRADE_TARGET_WINDOWS) && !defined(CORRADE_TARGET_WINDOWS_RT)) || defined(CORRADE_TARGET_EMSCRIPTEN)
 template<class T> void AngleTest::tweakable() {
     auto&& data = TweakableData[testCaseInstanceId()];
-    setTestCaseName(Corrade::Utility::formatString("tweakable<{}>", TweakableTraits<T>::name()));
+    setTestCaseTemplateName(TweakableTraits<T>::name());
     setTestCaseDescription(data.name);
     std::string input = Corrade::Utility::formatString(data.data, TweakableTraits<T>::literal());
     Corrade::Utility::TweakableState state;
@@ -301,7 +301,7 @@ template<class T> void AngleTest::tweakable() {
 
 template<class T> void AngleTest::tweakableError() {
     auto&& data = TweakableErrorData[testCaseInstanceId()];
-    setTestCaseName(Corrade::Utility::formatString("tweakableError<{}>", TweakableTraits<T>::name()));
+    setTestCaseTemplateName(TweakableTraits<T>::name());
     setTestCaseDescription(data.name);
     std::string input = Corrade::Utility::formatString(data.data, TweakableTraits<T>::literal());
 

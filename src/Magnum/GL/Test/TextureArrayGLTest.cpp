@@ -555,8 +555,8 @@ void TextureArrayGLTest::bindImage2D() {
 
 #ifndef MAGNUM_TARGET_GLES
 template<class T> void TextureArrayGLTest::sampling1D() {
-    setTestCaseName(std::is_same<T, GenericSampler>::value ?
-        "sampling1D<GenericSampler>" : "sampling1D<GLSampler>");
+    setTestCaseTemplateName(std::is_same<T, GenericSampler>::value ?
+        "GenericSampler" : "GLSampler");
 
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())
         CORRADE_SKIP(Extensions::EXT::texture_array::string() + std::string(" is not supported."));
@@ -632,8 +632,8 @@ void TextureArrayGLTest::samplingDepthStencilMode1D() {
 #endif
 
 template<class T> void TextureArrayGLTest::sampling2D() {
-    setTestCaseName(std::is_same<T, GenericSampler>::value ?
-        "sampling2D<GenericSampler>" : "sampling2D<GLSampler>");
+    setTestCaseTemplateName(std::is_same<T, GenericSampler>::value ?
+        "GenericSampler" : "GLSampler");
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_array>())

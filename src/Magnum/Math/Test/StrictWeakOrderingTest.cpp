@@ -27,7 +27,6 @@
 #include <map>
 #include <set>
 #include <Corrade/TestSuite/Tester.h>
-#include <Corrade/Utility/FormatStl.h>
 
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/Math/StrictWeakOrdering.h"
@@ -85,7 +84,7 @@ template<> struct Compare<std::less<Vector2i>> {
 };
 
 template<class Set> void StrictWeakOrderingTest::set() {
-    setTestCaseName(Corrade::Utility::formatString("set<{}>", Compare<typename Set::key_compare>::name()));
+    setTestCaseTemplateName(Compare<typename Set::key_compare>::name());
     Set s;
 
     s.insert({1, 2});
@@ -100,7 +99,7 @@ template<class Set> void StrictWeakOrderingTest::set() {
 }
 
 template<class Map> void StrictWeakOrderingTest::map() {
-    setTestCaseName(Corrade::Utility::formatString("map<{}>", Compare<typename Map::key_compare>::name()));
+    setTestCaseTemplateName(Compare<typename Map::key_compare>::name());
     Map m;
 
     m[{1, 2}] = 23;

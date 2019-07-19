@@ -329,7 +329,7 @@ void QuaternionTest::isNormalized() {
 }
 
 template<class T> void QuaternionTest::isNormalizedEpsilon() {
-    setTestCaseName(std::string{"isNormalizedEpsilon<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     CORRADE_VERIFY((Math::Quaternion<T>{{T(0.0106550719778129), T(0.311128101752138), T(-0.0468823167023769)}, T(0.949151106053128) + TypeTraits<T>::epsilon()/T(2.0)}.isNormalized()));
     CORRADE_VERIFY(!(Math::Quaternion<T>{{T(0.0106550719778129), T(0.311128101752138), T(-0.0468823167023769)}, T(0.949151106053128) + TypeTraits<T>::epsilon()*T(2.0)}.isNormalized()));
@@ -404,7 +404,7 @@ void QuaternionTest::normalized() {
 }
 
 template<class T> void QuaternionTest::normalizedIterative() {
-    setTestCaseName(std::string{"normalizedIterative<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     const auto axis = Math::Vector3<T>{T(0.5), T(7.9), T(0.1)}.normalized();
     auto a = Math::Quaternion<T>::rotation(Math::Deg<T>{T(36.7)}, Math::Vector3<T>{T(0.25), T(7.3), T(-1.1)}.normalized());

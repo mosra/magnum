@@ -304,7 +304,7 @@ void ComplexTest::isNormalized() {
 }
 
 template<class T> void ComplexTest::isNormalizedEpsilon() {
-    setTestCaseName(std::string{"isNormalizedEpsilon<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     CORRADE_VERIFY((Math::Complex<T>{T(0.801775644243754) + TypeTraits<T>::epsilon()/T(2.0), T(0.597625146975521)}.isNormalized()));
     CORRADE_VERIFY(!(Math::Complex<T>{T(0.801775644243754) + TypeTraits<T>::epsilon()*T(2.0), T(0.597625146975521)}.isNormalized()));
@@ -381,7 +381,7 @@ void ComplexTest::normalized() {
 }
 
 template<class T> void ComplexTest::normalizedIterative() {
-    setTestCaseName(std::string{"normalizedIterative<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     auto a = Math::Complex<T>::rotation(Math::Deg<T>{T(36.7)});
     for(std::size_t i = 0; i != testCaseRepeatId(); ++i) {

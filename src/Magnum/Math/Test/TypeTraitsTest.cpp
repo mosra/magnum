@@ -248,7 +248,7 @@ void TypeTraitsTest::underlyingTypeOf() {
 }
 
 template<class T> void TypeTraitsTest::equalsIntegral() {
-    setTestCaseName(std::string{"equalsIntegral<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     CORRADE_VERIFY(TypeTraits<T>::equals(T(1), T(1)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(1), T(-1)));
@@ -256,35 +256,35 @@ template<class T> void TypeTraitsTest::equalsIntegral() {
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPoint0() {
-    setTestCaseName(std::string{"equalsFloatingPoint0<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     CORRADE_VERIFY(TypeTraits<T>::equals(T(0)+TypeTraits<T>::epsilon()/T(2), T(0)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(0)+TypeTraits<T>::epsilon()*T(2), T(0)));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPoint1() {
-    setTestCaseName(std::string{"equalsFloatingPoint1<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     CORRADE_VERIFY(TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()/T(2), T(1)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(1)+TypeTraits<T>::epsilon()*T(3), T(1)));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPointLarge() {
-    setTestCaseName(std::string{"equalsFloatingPointLarge<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     CORRADE_VERIFY(TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(2), T(25)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(75), T(25)));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPointInfinity() {
-    setTestCaseName(std::string{"equalsFloatingPointInfinity<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     CORRADE_VERIFY(TypeTraits<T>::equals(Constants<T>::inf(),
                                          Constants<T>::inf()));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPointNaN() {
-    setTestCaseName(std::string{"equalsFloatingPointNaN<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     CORRADE_VERIFY(!TypeTraits<T>::equals(Constants<T>::nan(),
                                           Constants<T>::nan()));
@@ -299,7 +299,7 @@ template<class T, class U = T, class V = typename std::enable_if<!std::is_unsign
 }
 
 template<class T> void TypeTraitsTest::equalsZeroIntegral() {
-    setTestCaseName(std::string{"equalsZeroIntegral<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     const T a = T(-123);
     const T magnitude = abs(a);
@@ -310,7 +310,7 @@ template<class T> void TypeTraitsTest::equalsZeroIntegral() {
 }
 
 template<class T> void TypeTraitsTest::equalsZeroFloatingPoint() {
-    setTestCaseName(std::string{"equalsZeroFloatingPoint<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
     setTestCaseDescription(EqualsZeroData[testCaseInstanceId()].name);
 
     const T a = EqualsZeroData[testCaseInstanceId()].get(T{});

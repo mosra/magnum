@@ -285,14 +285,14 @@ void DualComplexTest::isNormalized() {
 }
 
 template<class T> void DualComplexTest::isNormalizedEpsilonRotation() {
-    setTestCaseName(std::string{"isNormalizedEpsilonRotation<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     CORRADE_VERIFY((Math::DualComplex<T>{{T(0.801775644243754) + TypeTraits<T>::epsilon()/T(2.0), T(0.597625146975521)}, {T(8018055.25501103), T(5975850.58193309)}}.isNormalized()));
     CORRADE_VERIFY(!(Math::DualComplex<T>{{T(0.801775644243754) + TypeTraits<T>::epsilon()*T(2.0), T(0.597625146975521)}, {T(8018055.25501103), T(5975850.58193309)}}.isNormalized()));
 }
 
 template<class T> void DualComplexTest::isNormalizedEpsilonTranslation() {
-    setTestCaseName(std::string{"isNormalizedEpsilonTranslation<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     /* Translation does not affect normalization */
     CORRADE_VERIFY((Math::DualComplex<T>{{T(0.801775644243754), T(0.597625146975521)}, {T(8018055.25501103), T(20.5)}}.isNormalized()));
@@ -331,7 +331,7 @@ template<> struct NormalizedIterativeData<Double> {
 };
 
 template<class T> void DualComplexTest::normalizedIterative() {
-    setTestCaseName(std::string{"normalizedIterative<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     auto a = Math::DualComplex<T>::rotation(Math::Deg<T>{T(36.7)})*Math::DualComplex<T>::translation(NormalizedIterativeData<T>::translation());
     for(std::size_t i = 0; i != testCaseRepeatId(); ++i) {

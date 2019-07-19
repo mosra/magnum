@@ -80,7 +80,7 @@ FlatGLTest::FlatGLTest() {
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::construct() {
-    setTestCaseName(Utility::formatString("construct<{}>", dimensions));
+    setTestCaseTemplateName(std::to_string(dimensions));
 
     auto&& data = ConstructData[testCaseInstanceId()];
     setTestCaseDescription(data.name);
@@ -97,7 +97,7 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::constructMove() {
-    setTestCaseName(Utility::formatString("constructMove<{}>", dimensions));
+    setTestCaseTemplateName(std::to_string(dimensions));
 
     Flat<dimensions> a{Flat<dimensions>::Flag::Textured};
     const GLuint id = a.id();
@@ -118,7 +118,7 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMove() {
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::bindTexture() {
-    setTestCaseName(Utility::formatString("bindTexture<{}>", dimensions));
+    setTestCaseTemplateName(std::to_string(dimensions));
 
     char data[4];
 
@@ -139,7 +139,7 @@ template<UnsignedInt dimensions> void FlatGLTest::bindTexture() {
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::bindTextureNotEnabled() {
-    setTestCaseName(Utility::formatString("bindTextureNotEnabled<{}>", dimensions));
+    setTestCaseTemplateName(std::to_string(dimensions));
 
     std::ostringstream out;
     Error redirectError{&out};
@@ -152,6 +152,8 @@ template<UnsignedInt dimensions> void FlatGLTest::bindTextureNotEnabled() {
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::setAlphaMask() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
     /* Test just that no assertion is fired */
     Flat<dimensions> shader{Flat<dimensions>::Flag::AlphaMask};
     shader.setAlphaMask(0.25f);
@@ -160,6 +162,8 @@ template<UnsignedInt dimensions> void FlatGLTest::setAlphaMask() {
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::setAlphaMaskNotEnabled() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
     std::ostringstream out;
     Error redirectError{&out};
 

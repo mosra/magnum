@@ -412,8 +412,8 @@ void CubeMapTextureArrayGLTest::bindImage() {
 }
 
 template<class T> void CubeMapTextureArrayGLTest::sampling() {
-    setTestCaseName(std::is_same<T, GenericSampler>::value ?
-        "sampling<GenericSampler>" : "sampling<GLSampler>");
+    setTestCaseTemplateName(std::is_same<T, GenericSampler>::value ?
+        "GenericSampler" : "GLSampler");
 
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_cube_map_array>())

@@ -46,7 +46,7 @@ ConstantsTest::ConstantsTest() {
 }
 
 template<class T> void ConstantsTest::constants() {
-    setTestCaseName(std::is_same<T, Double>::value ? "constants<Double>" : "constants<Float>");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     {
         constexpr T a = Constants<T>::sqrt2();
@@ -70,7 +70,7 @@ template<class T> void ConstantsTest::constants() {
 }
 
 template<class T> void ConstantsTest::specials() {
-    setTestCaseName(std::is_same<T, Double>::value ? "specials<Double>" : "specials<Float>");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     #ifndef CORRADE_MSVC2015_COMPATIBILITY /* NaN is not constexpr */
     constexpr

@@ -221,8 +221,8 @@ void RectangleTextureGLTest::bindImage() {
 }
 
 template<class T> void RectangleTextureGLTest::sampling() {
-    setTestCaseName(std::is_same<T, GenericSampler>::value ?
-        "sampling<GenericSampler>" : "sampling<GLSampler>");
+    setTestCaseTemplateName(std::is_same<T, GenericSampler>::value ?
+        "GenericSampler" : "GLSampler");
 
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_rectangle>())
         CORRADE_SKIP(Extensions::ARB::texture_rectangle::string() + std::string(" is not supported."));

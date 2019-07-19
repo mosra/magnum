@@ -318,14 +318,14 @@ void DualQuaternionTest::isNormalized() {
 }
 
 template<class T> void DualQuaternionTest::isNormalizedEpsilonRotation() {
-    setTestCaseName(std::string{"isNormalizedEpsilonRotation<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     CORRADE_VERIFY((Math::DualQuaternion<T>{{{T(0.199367934417197) + TypeTraits<T>::epsilon()/T(2.0), T(0.0), T(0.0)}, T(0.97992470462083)}, {{T(0.440966117079373), T(-0.440120368706115), T(-0.344665143363806)}, T(-0.0897155704877387)}}.isNormalized()));
     CORRADE_VERIFY(!(Math::DualQuaternion<T>{{{T(0.199367934417197), T(0.0), T(0.0)}, T(0.97992470462083) + TypeTraits<T>::epsilon()*T(2.0)}, {{T(0.440966117079373), T(-0.440120368706115), T(-0.344665143363806)}, T(-0.0897155704877387)}}.isNormalized()));
 }
 
 template<class T> void DualQuaternionTest::isNormalizedEpsilonTranslation() {
-    setTestCaseName(std::string{"isNormalizedEpsilonTranslation<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     CORRADE_VERIFY((Math::DualQuaternion<T>{{{T(0.199367934417197), T(0.0), T(0.0)}, T(0.97992470462083)}, {{T(0.440966117079373), T(-0.440120368706115) + TypeTraits<T>::epsilon()*T(2.0), T(-0.344665143363806)}, T(-0.0897155704877387)}}.isNormalized()));
     CORRADE_VERIFY(!(Math::DualQuaternion<T>{{{T(0.199367934417197), T(0.0), T(0.0)}, T(0.97992470462083)}, {{T(0.440966117079373) + TypeTraits<T>::epsilon()*T(4.0), T(-0.440120368706115), T(-0.344665143363806)}, T(-0.0897155704877387)}}.isNormalized()));
@@ -361,7 +361,7 @@ template<> struct NormalizedIterativeData<Double> {
 };
 
 template<class T> void DualQuaternionTest::normalizedIterative() {
-    setTestCaseName(std::string{"normalizedIterative<"} + TypeTraits<T>::name() + ">");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     const auto axis = Math::Vector3<T>{T(0.5), T(7.9), T(0.1)}.normalized();
     auto a = Math::DualQuaternion<T>::rotation(Math::Deg<T>{T(36.7)}, Math::Vector3<T>{T(0.25), T(7.3), T(-1.1)}.normalized())*Math::DualQuaternion<T>::translation(NormalizedIterativeData<T>::translation());

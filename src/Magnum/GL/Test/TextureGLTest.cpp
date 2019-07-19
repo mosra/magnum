@@ -859,8 +859,8 @@ void TextureGLTest::bindImage3D() {
 
 #ifndef MAGNUM_TARGET_GLES
 template<class T> void TextureGLTest::sampling1D() {
-    setTestCaseName(std::is_same<T, GenericSampler>::value ?
-        "sampling1D<GenericSampler>" : "sampling1D<GLSampler>");
+    setTestCaseTemplateName(std::is_same<T, GenericSampler>::value ?
+        "GenericSampler" : "GLSampler");
 
     Texture1D texture;
     texture.setMinificationFilter(T::Filter::Linear, T::Mipmap::Linear)
@@ -925,8 +925,8 @@ void TextureGLTest::samplingDepthStencilMode1D() {
 #endif
 
 template<class T> void TextureGLTest::sampling2D() {
-    setTestCaseName(std::is_same<T, GenericSampler>::value ?
-        "sampling2D<GenericSampler>" : "sampling2D<GLSampler>");
+    setTestCaseTemplateName(std::is_same<T, GenericSampler>::value ?
+        "GenericSampler" : "GLSampler");
 
     Texture2D texture;
     texture.setMinificationFilter(T::Filter::Linear, T::Mipmap::Linear)
@@ -1061,8 +1061,8 @@ void TextureGLTest::samplingBorder2D() {
 
 #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
 template<class T> void TextureGLTest::sampling3D() {
-    setTestCaseName(std::is_same<T, GenericSampler>::value ?
-        "sampling3D<GenericSampler>" : "sampling3D<GLSampler>");
+    setTestCaseTemplateName(std::is_same<T, GenericSampler>::value ?
+        "GenericSampler" : "GLSampler");
 
     #ifdef MAGNUM_TARGET_GLES2
     if(!Context::current().isExtensionSupported<Extensions::OES::texture_3D>())

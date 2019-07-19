@@ -445,8 +445,8 @@ void CubeMapTextureGLTest::bindImage() {
 #endif
 
 template<class T> void CubeMapTextureGLTest::sampling() {
-    setTestCaseName(std::is_same<T, GenericSampler>::value ?
-        "sampling<GenericSampler>" : "sampling<GLSampler>");
+    setTestCaseTemplateName(std::is_same<T, GenericSampler>::value ?
+        "GenericSampler" : "Sampler");
 
     CubeMapTexture texture;
     texture.setMinificationFilter(T::Filter::Linear, T::Mipmap::Linear)

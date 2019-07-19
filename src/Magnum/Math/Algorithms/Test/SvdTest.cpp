@@ -50,7 +50,7 @@ SvdTest::SvdTest() {
 }
 
 template<class T> void SvdTest::test() {
-    setTestCaseName(std::is_same<T, Double>::value ? "test<Double>" : "test<Float>");
+    setTestCaseTemplateName(TypeTraits<T>::name());
 
     constexpr const Matrix5x8<T> a{
         Vector8<T>{T{22}, T{14}, T{ -1}, T{-3}, T{ 9}, T{ 9}, T{ 2}, T{ 4}},

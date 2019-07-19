@@ -442,9 +442,8 @@ void MeshGLTest::wrap() {
 }
 
 template<class T> void MeshGLTest::primitive() {
-    setTestCaseName(std::is_same<T, MeshPrimitive>::value ?
-        "primitive<GL::MeshPrimitive>" :
-        "primitive<Magnum::MeshPrimitive>");
+    setTestCaseTemplateName(std::is_same<T, MeshPrimitive>::value ?
+        "GL::MeshPrimitive" : "Magnum::MeshPrimitive");
 
     {
         Mesh mesh{T::LineLoop};
@@ -2034,9 +2033,8 @@ constexpr Color4ub indexedResult{0xaa, 0xcc, 0x44, 0xff};
 #endif
 
 template<class T> void MeshGLTest::setIndexBuffer() {
-    setTestCaseName(std::is_same<T, MeshIndexType>::value ?
-        "setIndexBuffer<GL::MeshIndexType>" :
-        "setIndexBuffer<Magnum::MeshIndexType>");
+    setTestCaseTemplateName(std::is_same<T, MeshIndexType>::value ?
+        "GL::MeshIndexType" : "Magnum::MeshIndexType");
 
     Buffer vertices;
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
@@ -2067,9 +2065,8 @@ template<class T> void MeshGLTest::setIndexBuffer() {
 }
 
 template<class T> void MeshGLTest::setIndexBufferRange() {
-    setTestCaseName(std::is_same<T, MeshIndexType>::value ?
-        "setIndexBufferRange<GL::MeshIndexType>" :
-        "setIndexBufferRange<Magnum::MeshIndexType>");
+    setTestCaseTemplateName(std::is_same<T, MeshIndexType>::value ?
+        "GL::MeshIndexType" : "Magnum::MeshIndexType");
 
     Buffer vertices;
     vertices.setData(indexedVertexData, BufferUsage::StaticDraw);
@@ -2146,9 +2143,8 @@ void MeshGLTest::setIndexBufferMovedOutInstance() {
 }
 
 template<class T> void MeshGLTest::setIndexBufferTransferOwnership() {
-    setTestCaseName(std::is_same<T, MeshIndexType>::value ?
-        "setIndexBufferTransferOwnership<GL::MeshIndexType>" :
-        "setIndexBufferTransferOwnership<Magnum::MeshIndexType>");
+    setTestCaseTemplateName(std::is_same<T, MeshIndexType>::value ?
+        "GL::MeshIndexType" : "Magnum::MeshIndexType");
 
     const UnsignedShort data = 0;
     Buffer buffer{Buffer::TargetHint::ElementArray};
@@ -2179,9 +2175,8 @@ template<class T> void MeshGLTest::setIndexBufferTransferOwnership() {
 }
 
 template<class T> void MeshGLTest::setIndexBufferRangeTransferOwnership() {
-    setTestCaseName(std::is_same<T, MeshIndexType>::value ?
-        "setIndexBufferRangeTransferOwnership<GL::MeshIndexType>" :
-        "setIndexBufferRangeTransferOwnership<Magnum::MeshIndexType>");
+    setTestCaseTemplateName(std::is_same<T, MeshIndexType>::value ?
+        "GL::MeshIndexType" : "Magnum::MeshIndexType");
 
     const UnsignedShort data = 0;
     Buffer buffer{Buffer::TargetHint::ElementArray};
