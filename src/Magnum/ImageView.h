@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @brief Class @ref Magnum::ImageView, @ref Magnum::CompressedImageView, typedef @ref Magnum::ImageView1D, @ref Magnum::ImageView2D, @ref Magnum::ImageView3D, @ref Magnum::MutableImageView1D, @ref Magnum::MutableImageView2D, @ref Magnum::MutableImageView3D, @ref Magnum::CompressedImageView1D, @ref Magnum::CompressedImageView2D, @ref Magnum::CompressedImageView3D, @ref Magnum::MutableCompressedImageView1D, @ref Magnum::MutableCompressedImageView2D, @ref Magnum::MutableCompressedImageView3D
+ * @brief Class @ref Magnum::ImageView, @ref Magnum::CompressedImageView, alias @ref Magnum::BasicImageView, @ref Magnum::BasicCompressedImageView, typedef @ref Magnum::ImageView1D, @ref Magnum::ImageView2D, @ref Magnum::ImageView3D, @ref Magnum::MutableImageView1D, @ref Magnum::MutableImageView2D, @ref Magnum::MutableImageView3D, @ref Magnum::CompressedImageView1D, @ref Magnum::CompressedImageView2D, @ref Magnum::CompressedImageView3D, @ref Magnum::MutableCompressedImageView1D, @ref Magnum::MutableCompressedImageView2D, @ref Magnum::MutableCompressedImageView3D
  */
 
 #include <Corrade/Containers/ArrayView.h>
@@ -80,11 +80,12 @@ sub-rectangle of a 75x75 8-bit RGB image , with rows aligned to four bytes:
 
 @section ImageView-mutable Data mutability
 
-When using e.g. the @ref ImageView2D typedef, the viewed data are immutable.
-This is the most common use case, in order to be able to mutate the underlying
-data (for example in order to read into a pre-allocated memory), use
-@ref MutableImageView2D and friends instead. @ref Image and
-@ref Trade::ImageData are convertible to either of these. Similarly to
+When using types derived from @ref BasicImageView (e.g. @ref ImageView2D), the
+viewed data are immutable. This is the most common use case. In order to be
+able to mutate the underlying data (for example in order to read into a
+pre-allocated memory), use @ref BasicMutableImageView
+(e.g. @ref MutableImageView2D) instead. @ref Image and @ref Trade::ImageData
+are convertible to either of these. Similarly to
 @ref Corrade::Containers::ArrayView etc., a mutable view is also implicitly
 convertible to a const one.
 
@@ -123,9 +124,9 @@ Metal-specific format identifier:
 
 @snippet Magnum.cpp ImageView-usage-metal
 
-@see @ref ImageView1D, @ref ImageView2D, @ref ImageView3D,
-    @ref MutableImageView1D, @ref MutableImageView2D, @ref MutableImageView3D,
-    @ref Image-pixel-views
+@see @ref BasicImageView, @ref ImageView1D, @ref ImageView2D, @ref ImageView3D,
+    @ref BasicMutableImageView, @ref MutableImageView1D,
+    @ref MutableImageView2D, @ref MutableImageView3D, @ref Image-pixel-views
 */
 template<UnsignedInt dimensions, class T> class ImageView {
     public:
@@ -136,20 +137,16 @@ template<UnsignedInt dimensions, class T> class ImageView {
         /**
          * @brief Raw data type
          *
-         * @cpp const char @ce for @ref ImageView1D / @ref ImageView2D /
-         * @ref ImageView3D and @cpp char @ce for @ref MutableImageView1D /
-         * @ref MutableImageView2D / @ref MutableImageView3D. See also
-         * @ref ErasedType.
+         * @cpp const char @ce for @ref BasicImageView and @cpp char @ce for
+         * @ref BasicMutableImageView. See also @ref ErasedType.
          */
         typedef T Type;
 
         /**
          * @brief Erased data type
          *
-         * @cpp const void @ce for @ref ImageView1D / @ref ImageView2D /
-         * @ref ImageView3D and @cpp const void @ce for @ref MutableImageView1D
-         * / @ref MutableImageView2D / @ref MutableImageView3D. See also
-         * @ref Type.
+         * @cpp const void @ce for @ref BasicImageView and @cpp const void @ce
+         * for @ref BasicMutableImageView. See also @ref Type.
          */
         typedef typename std::conditional<std::is_const<T>::value, const void, void>::type ErasedType;
 
@@ -464,46 +461,66 @@ template<UnsignedInt dimensions, class T> class ImageView {
 };
 
 /**
+@brief Const image view
+
+@see @ref ImageView1D, @ref ImageView2D, @ref ImageView3D,
+    @ref BasicMutableImageView
+*/
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<UnsignedInt dimensions> using BasicImageView = ImageView<dimensions, const char>;
+#endif
+
+/**
 @brief One-dimensional image view
 
-@see @ref MutableImageView1D, @ref CompressedImageView1D
+@see @ref MutableImageView1D, @ref CompressedImageView1D, @ref ImageView
 */
-typedef ImageView<1, const char> ImageView1D;
+typedef BasicImageView<1> ImageView1D;
 
 /**
 @brief Two-dimensional image view
 
-@see @ref MutableImageView2D, @ref CompressedImageView2D
+@see @ref MutableImageView2D, @ref CompressedImageView2D, @ref ImageView
 */
-typedef ImageView<2, const char> ImageView2D;
+typedef BasicImageView<2> ImageView2D;
 
 /**
 @brief Three-dimensional image view
 
-@see @ref MutableImageView3D, @ref CompressedImageView3D
+@see @ref MutableImageView3D, @ref CompressedImageView3D, @ref ImageView
 */
-typedef ImageView<3, const char> ImageView3D;
+typedef BasicImageView<3> ImageView3D;
+
+/**
+@brief Mutable image view
+
+@see @ref MutableImageView1D, @ref MutableImageView2D, @ref MutableImageView3D,
+    @ref BasicImageView
+*/
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<UnsignedInt dimensions> using BasicMutableImageView = ImageView<dimensions, char>;
+#endif
 
 /**
 @brief One-dimensional mutable image view
 
-@see @ref ImageView1D, @ref MutableCompressedImageView1D
+@see @ref ImageView1D, @ref MutableCompressedImageView1D, @ref ImageView
 */
-typedef ImageView<1, char> MutableImageView1D;
+typedef BasicMutableImageView<1> MutableImageView1D;
 
 /**
 @brief Two-dimensional mutable image view
 
-@see @ref ImageView2D, @ref MutableCompressedImageView2D
+@see @ref ImageView2D, @ref MutableCompressedImageView2D, @ref ImageView
 */
-typedef ImageView<2, char> MutableImageView2D;
+typedef BasicMutableImageView<2> MutableImageView2D;
 
 /**
 @brief Three-dimensional mutable image view
 
-@see @ref ImageView3D, @ref MutableCompressedImageView3D
+@see @ref ImageView3D, @ref MutableCompressedImageView3D, @ref ImageView
 */
-typedef ImageView<3, char> MutableImageView3D;
+typedef BasicMutableImageView<3> MutableImageView3D;
 
 /**
 @brief Compressed image view
@@ -543,13 +560,14 @@ as first parameter. In the following snippet, the view is the bottom-right
 
 @section CompressedImageView-mutable Data mutability
 
-When using e.g. the @ref CompressedImageView2D typedef, the viewed data are
-immutable. This is the most common use case, in order to be able to mutate the
-underlying data (for example in order to read into a pre-allocated memory), use
-@ref MutableCompressedImageView2D and friends instead. @ref CompressedImage and
-@ref Trade::ImageData are convertible to either of those. Similarly to
-@ref Corrade::Containers::ArrayView etc., a mutable view is also implicitly
-convertible to a const one.
+When using types derived from @ref BasicCompressedImageView (e.g.
+@ref CompressedImageView2D), the viewed data are immutable. This is the most
+common use case. In order to be able to mutate the underlying data (for example
+in order to read into a pre-allocated memory), use
+@ref BasicMutableCompressedImageView (e.g. @ref MutableCompressedImageView2D)
+instead. @ref CompressedImage and @ref Trade::ImageData are convertible to
+either of these. Similarly to @ref Corrade::Containers::ArrayView etc., a
+mutable view is also implicitly convertible to a const one.
 
 @subsection CompressedImageView-usage-implementation-specific Implementation-specific formats
 
@@ -767,46 +785,72 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
 };
 
 /**
+@brief Const compressed image view
+
+@see @ref CompressedImageView1D, @ref CompressedImageView2D,
+    @ref CompressedImageView3D, @ref BasicMutableImageView
+*/
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<UnsignedInt dimensions> using BasicCompressedImageView = CompressedImageView<dimensions, const char>;
+#endif
+
+/**
 @brief One-dimensional compressed image view
 
-@see @ref MutableCompressedImageView1D, @ref ImageView1D
+@see @ref MutableCompressedImageView1D, @ref ImageView1D,
+    @ref CompressedImageView
 */
-typedef CompressedImageView<1, const char> CompressedImageView1D;
+typedef BasicCompressedImageView<1> CompressedImageView1D;
 
 /**
 @brief Two-dimensional compressed image view
 
-@see @ref MutableCompressedImageView2D, @ref ImageView2D
+@see @ref MutableCompressedImageView2D, @ref ImageView2D,
+    @ref CompressedImageView
 */
-typedef CompressedImageView<2, const char> CompressedImageView2D;
+typedef BasicCompressedImageView<2> CompressedImageView2D;
 
 /**
 @brief Three-dimensional compressed image view
 
-@see @ref MutableCompressedImageView3D, @ref ImageView3D
+@see @ref MutableCompressedImageView3D, @ref ImageView3D,
+    @ref CompressedImageView
 */
-typedef CompressedImageView<3, const char> CompressedImageView3D;
+typedef BasicCompressedImageView<3> CompressedImageView3D;
+
+/**
+@brief Mutable compressed image view
+
+@see @ref MutableCompressedImageView1D, @ref MutableCompressedImageView2D,
+    @ref MutableCompressedImageView3D, @ref BasicCompressedImageView
+*/
+#ifndef CORRADE_MSVC2015_COMPATIBILITY /* Multiple definitions still broken */
+template<UnsignedInt dimensions> using BasicMutableCompressedImageView = CompressedImageView<dimensions, char>;
+#endif
 
 /**
 @brief One-dimensional mutable compressed image view
 
-@see @ref CompressedImageView1D, @ref MutableImageView1D
+@see @ref CompressedImageView1D, @ref MutableImageView1D,
+    @ref CompressedImageView
 */
-typedef CompressedImageView<1, char> MutableCompressedImageView1D;
+typedef BasicMutableCompressedImageView<1> MutableCompressedImageView1D;
 
 /**
 @brief Two-dimensional mutable compressed image view
 
-@see @ref CompressedImageView2D, @ref MutableImageView2D
+@see @ref CompressedImageView2D, @ref MutableImageView2D,
+    @ref CompressedImageView
 */
-typedef CompressedImageView<2, char> MutableCompressedImageView2D;
+typedef BasicMutableCompressedImageView<2> MutableCompressedImageView2D;
 
 /**
 @brief Three-dimensional mutable compressed image view
 
-@see @ref CompressedImageView3D, @ref MutableImageView3D
+@see @ref CompressedImageView3D, @ref MutableImageView3D,
+    @ref CompressedImageView
 */
-typedef CompressedImageView<3, char> MutableCompressedImageView3D;
+typedef BasicMutableCompressedImageView<3> MutableCompressedImageView3D;
 
 template<UnsignedInt dimensions, class T> template<class U, class V> inline ImageView<dimensions, T>::ImageView(const PixelStorage storage, const U format, const V formatExtra, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: ImageView{storage, UnsignedInt(format), UnsignedInt(formatExtra), Implementation::pixelSizeAdl(format, formatExtra), size, data} {
     static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,

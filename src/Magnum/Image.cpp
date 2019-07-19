@@ -60,12 +60,12 @@ template<UnsignedInt dimensions> Image<dimensions>& Image<dimensions>::operator=
     return *this;
 }
 
-template<UnsignedInt dimensions> Image<dimensions>::operator ImageView<dimensions, char>() {
-    return ImageView<dimensions, char>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
+template<UnsignedInt dimensions> Image<dimensions>::operator BasicMutableImageView<dimensions>() {
+    return BasicMutableImageView<dimensions>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
 }
 
-template<UnsignedInt dimensions> Image<dimensions>::operator ImageView<dimensions, const char>() const {
-    return ImageView<dimensions, const char>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
+template<UnsignedInt dimensions> Image<dimensions>::operator BasicImageView<dimensions>() const {
+    return BasicImageView<dimensions>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
 }
 
 template<UnsignedInt dimensions> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> Image<dimensions>::dataProperties() const {
@@ -106,12 +106,12 @@ template<UnsignedInt dimensions> CompressedImage<dimensions>& CompressedImage<di
     return *this;
 }
 
-template<UnsignedInt dimensions> CompressedImage<dimensions>::operator CompressedImageView<dimensions, char>() {
-    return CompressedImageView<dimensions, char>{_storage, _format, _size, _data};
+template<UnsignedInt dimensions> CompressedImage<dimensions>::operator BasicMutableCompressedImageView<dimensions>() {
+    return BasicMutableCompressedImageView<dimensions>{_storage, _format, _size, _data};
 }
 
-template<UnsignedInt dimensions> CompressedImage<dimensions>::operator CompressedImageView<dimensions, const char>() const {
-    return CompressedImageView<dimensions, const char>{_storage, _format, _size, _data};
+template<UnsignedInt dimensions> CompressedImage<dimensions>::operator BasicCompressedImageView<dimensions>() const {
+    return BasicCompressedImageView<dimensions>{_storage, _format, _size, _data};
 }
 
 template<UnsignedInt dimensions> std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> CompressedImage<dimensions>::dataProperties() const {

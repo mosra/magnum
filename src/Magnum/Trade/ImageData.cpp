@@ -128,26 +128,26 @@ template<UnsignedInt dimensions> Containers::StridedArrayView<dimensions + 1, co
     return Implementation::imagePixelView<dimensions, const char>(*this);
 }
 
-template<UnsignedInt dimensions> ImageData<dimensions>::operator ImageView<dimensions, char>() {
-    CORRADE_ASSERT(!_compressed, "Trade::ImageData: the image is compressed", (ImageView<dimensions, char>{_storage, _format, _formatExtra, _pixelSize, _size}));
-    return ImageView<dimensions, char>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
+template<UnsignedInt dimensions> ImageData<dimensions>::operator BasicMutableImageView<dimensions>() {
+    CORRADE_ASSERT(!_compressed, "Trade::ImageData: the image is compressed", (BasicMutableImageView<dimensions>{_storage, _format, _formatExtra, _pixelSize, _size}));
+    return BasicMutableImageView<dimensions>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
 }
 
-template<UnsignedInt dimensions> ImageData<dimensions>::operator ImageView<dimensions, const char>() const {
-    CORRADE_ASSERT(!_compressed, "Trade::ImageData: the image is compressed", (ImageView<dimensions, const char>{_storage, _format, _formatExtra, _pixelSize, _size}));
-    return ImageView<dimensions, const char>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
+template<UnsignedInt dimensions> ImageData<dimensions>::operator BasicImageView<dimensions>() const {
+    CORRADE_ASSERT(!_compressed, "Trade::ImageData: the image is compressed", (BasicImageView<dimensions>{_storage, _format, _formatExtra, _pixelSize, _size}));
+    return BasicImageView<dimensions>{_storage, _format, _formatExtra, _pixelSize, _size, _data};
 }
 
-template<UnsignedInt dimensions> ImageData<dimensions>::operator CompressedImageView<dimensions, char>() {
-    CORRADE_ASSERT(_compressed, "Trade::ImageData: the image is not compressed", (CompressedImageView<dimensions, char>{_compressedStorage, _compressedFormat, _size}));
-    return CompressedImageView<dimensions, char>{
+template<UnsignedInt dimensions> ImageData<dimensions>::operator BasicMutableCompressedImageView<dimensions>() {
+    CORRADE_ASSERT(_compressed, "Trade::ImageData: the image is not compressed", (BasicMutableCompressedImageView<dimensions>{_compressedStorage, _compressedFormat, _size}));
+    return BasicMutableCompressedImageView<dimensions>{
         _compressedStorage,
         _compressedFormat, _size, _data};
 }
 
-template<UnsignedInt dimensions> ImageData<dimensions>::operator CompressedImageView<dimensions, const char>() const {
-    CORRADE_ASSERT(_compressed, "Trade::ImageData: the image is not compressed", (CompressedImageView<dimensions, const char>{_compressedStorage, _compressedFormat, _size}));
-    return CompressedImageView<dimensions, const char>{
+template<UnsignedInt dimensions> ImageData<dimensions>::operator BasicCompressedImageView<dimensions>() const {
+    CORRADE_ASSERT(_compressed, "Trade::ImageData: the image is not compressed", (BasicCompressedImageView<dimensions>{_compressedStorage, _compressedFormat, _size}));
+    return BasicCompressedImageView<dimensions>{
         _compressedStorage,
         _compressedFormat, _size, _data};
 }

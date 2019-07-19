@@ -46,9 +46,9 @@ See also:
 -   New @ref Image::pixels(), @ref ImageView::pixels() and
     @ref Trade::ImageData::pixels() accessors for convenient direct access to
     pixel data of any image
--   New @ref MutableImageView2D "MutableImageView*D" and
-    @ref CompressedMutableImageView2D "CompressedMutableImageView*D" types for
-    mutable views onto image data
+-   New @ref BasicMutableImageView "MutableImageView*D" and
+    @ref BasicMutableCompressedImageView "MutableCompressedImageView*D" types
+    for mutable views onto image data
 
 @subsubsection changelog-latest-new-audio Audio library
 
