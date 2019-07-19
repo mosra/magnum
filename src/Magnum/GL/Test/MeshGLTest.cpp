@@ -403,9 +403,9 @@ void MeshGLTest::constructMove() {
         MAGNUM_VERIFY_NO_GL_ERROR();
 
         #ifndef MAGNUM_TARGET_GLES2
-        CORRADE_COMPARE(framebuffer.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data<UnsignedByte>()[0], 96);
+        CORRADE_COMPARE(Containers::arrayCast<UnsignedByte>(framebuffer.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data())[0], 96);
         #else /* RGBA4, so less precision */
-        CORRADE_COMPARE(framebuffer.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data<UnsignedByte>()[0], 85);
+        CORRADE_COMPARE(Containers::arrayCast<UnsignedByte>(framebuffer.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data())[0], 85);
         #endif
     }
 }
@@ -668,7 +668,7 @@ Checker::Checker(AbstractShaderProgram&& shader, RenderbufferFormat format, Mesh
 }
 
 template<class T> T Checker::get(PixelFormat format, PixelType type) {
-    return framebuffer.read({{}, Vector2i{1}}, {format, type}).data<T>()[0];
+    return Containers::arrayCast<T>(framebuffer.read({{}, Vector2i{1}}, {format, type}).data())[0];
 }
 #endif
 
@@ -847,10 +847,10 @@ void MeshGLTest::addVertexBufferVectorNui() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     const auto value = Checker(IntegerShader("uvec3"), RenderbufferFormat::RGBA32UI, mesh)
-        .get<Vector3ui>(PixelFormat::RGBAInteger, PixelType::UnsignedInt);
+        .get<Vector4ui>(PixelFormat::RGBAInteger, PixelType::UnsignedInt);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(value, Vector3ui(27592, 157, 25));
+    CORRADE_COMPARE(value.xyz(), Vector3ui(27592, 157, 25));
 }
 
 void MeshGLTest::addVertexBufferVectorNi() {
@@ -923,13 +923,13 @@ void MeshGLTest::addVertexBufferVectorN() {
         #else
         RenderbufferFormat::RGBA4,
         #endif
-        mesh).get<Color3ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
+        mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_COMPARE(value, 0x60189c_rgb);
+    CORRADE_COMPARE(value.xyz(), 0x60189c_rgb);
     #else /* RGBA4, so less precision */
-    CORRADE_COMPARE(value, 0x551199_rgb);
+    CORRADE_COMPARE(value.xyz(), 0x551199_rgb);
     #endif
 }
 
@@ -1018,13 +1018,13 @@ void MeshGLTest::addVertexBufferMatrixNxN() {
         #else
         RenderbufferFormat::RGBA4,
         #endif
-        mesh).get<Color3ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
+        mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_COMPARE(value, 0x60189c_rgb);
+    CORRADE_COMPARE(value.xyz(), 0x60189c_rgb);
     #else /* RGBA4, so less precision */
-    CORRADE_COMPARE(value, 0x551199_rgb);
+    CORRADE_COMPARE(value.xyz(), 0x551199_rgb);
     #endif
 }
 
@@ -1067,7 +1067,7 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
 
     const auto value = Checker(DoubleShader("dmat3", "vec4",
         "vec4(value[0][0], value[1][1], value[2][2], 0.0)"),
-        RenderbufferFormat::RGBA16, mesh).get<Math::Vector3<UnsignedShort>>(PixelFormat::RGB, PixelType::UnsignedShort);
+        RenderbufferFormat::RGBA16, mesh).get<Math::Vector4<UnsignedShort>>(PixelFormat::RGBA, PixelType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1077,13 +1077,13 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
         drivers |= Context::DetectedDriver::IntelWindows;
         #endif
         CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & drivers, "Somehow only first two values are extracted on AMD, NVidia and Intel Windows drivers.");
-        CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 2576));
+        CORRADE_COMPARE(value.xyz(), Math::Vector3<UnsignedShort>(315, 65201, 2576));
     }
 
     /* This is wrong, but check if it's still the right wrong. Fails on AMD
        15.201.1151 but seems to be fixed in 15.300.1025.0 */
     if(Context::current().detectedDriver() & (Context::DetectedDriver::Amd|Context::DetectedDriver::NVidia))
-        CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 0));
+        CORRADE_COMPARE(value.xyz(), Math::Vector3<UnsignedShort>(315, 65201, 0));
 }
 #endif
 
@@ -1123,10 +1123,10 @@ void MeshGLTest::addVertexBufferMatrixMxN() {
 
     const auto value = Checker(FloatShader("mat3x4",
         "vec4(valueInterpolated[0][0], valueInterpolated[1][1], valueInterpolated[2][2], 0.0)"),
-        RenderbufferFormat::RGBA8, mesh).get<Color3ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
+        RenderbufferFormat::RGBA8, mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(value, Color3ub(96, 24, 156));
+    CORRADE_COMPARE(value.xyz(), Color3ub(96, 24, 156));
 }
 #endif
 
@@ -1169,7 +1169,7 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
 
     const auto value = Checker(DoubleShader("dmat3x4", "vec4",
         "vec4(value[0][0], value[1][1], value[2][2], 0.0)"),
-        RenderbufferFormat::RGBA16, mesh).get<Math::Vector3<UnsignedShort>>(PixelFormat::RGB, PixelType::UnsignedShort);
+        RenderbufferFormat::RGBA16, mesh).get<Math::Vector4<UnsignedShort>>(PixelFormat::RGBA, PixelType::UnsignedShort);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -1179,13 +1179,13 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
         drivers |= Context::DetectedDriver::IntelWindows;
         #endif
         CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & drivers, "Somehow only first two values are extracted on AMD, NVidia and Intel Windows drivers.");
-        CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 2576));
+        CORRADE_COMPARE(value.xyz(), Math::Vector3<UnsignedShort>(315, 65201, 2576));
     }
 
     /* This is wrong, but check if it's still the right wrong. Fails on AMD
        15.201.1151 but seems to be fixed in 15.300.1025.0 */
     if(Context::current().detectedDriver() & (Context::DetectedDriver::Amd|Context::DetectedDriver::NVidia))
-        CORRADE_COMPARE(value, Math::Vector3<UnsignedShort>(315, 65201, 0));
+        CORRADE_COMPARE(value.xyz(), Math::Vector3<UnsignedShort>(315, 65201, 0));
 }
 #endif
 
@@ -1579,13 +1579,13 @@ void MeshGLTest::addVertexBufferNormalized() {
         #else
         RenderbufferFormat::RGBA4,
         #endif
-        mesh).get<Color3ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
+        mesh).get<Color4ub>(PixelFormat::RGBA, PixelType::UnsignedByte);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_COMPARE(value, 0x209ce4_rgb);
+    CORRADE_COMPARE(value.xyz(), 0x209ce4_rgb);
     #else /* RGBA4, so less precision */
-    CORRADE_COMPARE(value, 0x1199dd_rgb);
+    CORRADE_COMPARE(value.xyz(), 0x1199dd_rgb);
     #endif
 }
 
@@ -2966,7 +2966,7 @@ void MeshGLTest::resetDivisorAfterInstancedDraw() {
 
         MAGNUM_VERIFY_NO_GL_ERROR();
 
-        CORRADE_COMPARE(framebuffer.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data<UnsignedByte>()[0], 96);
+        CORRADE_COMPARE(Containers::arrayCast<UnsignedByte>(framebuffer.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data())[0], 96);
     }
 
     /* Draw normal after. One two-vertex instance of an attribute with divisor
@@ -2982,7 +2982,7 @@ void MeshGLTest::resetDivisorAfterInstancedDraw() {
 
         MAGNUM_VERIFY_NO_GL_ERROR();
 
-        CORRADE_COMPARE(framebuffer.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data<UnsignedByte>()[0], 48);
+        CORRADE_COMPARE(Containers::arrayCast<UnsignedByte>(framebuffer.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data())[0], 48);
     }
 }
 
@@ -3030,7 +3030,7 @@ MultiChecker::MultiChecker(AbstractShaderProgram&& shader, Mesh& mesh): framebuf
 }
 
 template<class T> T MultiChecker::get(PixelFormat format, PixelType type) {
-    return framebuffer.read({{}, Vector2i{1}}, {format, type}).data<T>()[0];
+    return Containers::arrayCast<T>(framebuffer.read({{}, Vector2i{1}}, {format, type}).data())[0];
 }
 #endif
 

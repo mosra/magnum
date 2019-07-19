@@ -706,7 +706,7 @@ void TransformFeedbackGLTest::draw() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CORRADE_COMPARE(q.result<UnsignedInt>(), DrawData[testCaseInstanceId()].countDraw);
-    CORRADE_COMPARE(fb.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data<UnsignedByte>()[0], 153);
+    CORRADE_COMPARE(Containers::arrayCast<UnsignedByte>(fb.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte}).data())[0], 153);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }

@@ -1159,7 +1159,7 @@ void FramebufferGLTest::clearColorI() {
         {PixelFormat::RGBAInteger, PixelType::Int});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(colorImage.data<Vector4i>()[0], (Vector4i{-124, 67, 37, 17}));
+    CORRADE_COMPARE(Containers::arrayCast<Vector4i>(colorImage.data())[0], (Vector4i{-124, 67, 37, 17}));
 }
 
 void FramebufferGLTest::clearColorUI() {
@@ -1186,7 +1186,7 @@ void FramebufferGLTest::clearColorUI() {
         {PixelFormat::RGBAInteger, PixelType::UnsignedInt});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(colorImage.data<Vector4ui>()[0], (Vector4ui{240, 67, 37, 17}));
+    CORRADE_COMPARE(Containers::arrayCast<Vector4ui>(colorImage.data())[0], (Vector4ui{240, 67, 37, 17}));
 }
 
 void FramebufferGLTest::clearColorF() {
@@ -1213,7 +1213,7 @@ void FramebufferGLTest::clearColorF() {
         {PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(colorImage.data<Color4ub>()[0], (Color4ub{128, 64, 32, 17}));
+    CORRADE_COMPARE(Containers::arrayCast<Color4ub>(colorImage.data())[0], (Color4ub{128, 64, 32, 17}));
 }
 
 void FramebufferGLTest::clearDepth() {
@@ -1254,7 +1254,7 @@ void FramebufferGLTest::clearDepth() {
         Image2D depthImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::DepthComponent, PixelType::UnsignedShort});
 
         MAGNUM_VERIFY_NO_GL_ERROR();
-        CORRADE_COMPARE(depthImage.data<UnsignedShort>()[0], 48352);
+        CORRADE_COMPARE(Containers::arrayCast<UnsignedShort>(depthImage.data())[0], 48352);
     }
     #endif
 }
@@ -1295,7 +1295,7 @@ void FramebufferGLTest::clearStencil() {
         Image2D stencilImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::StencilIndex, PixelType::UnsignedByte});
 
         MAGNUM_VERIFY_NO_GL_ERROR();
-        CORRADE_COMPARE(stencilImage.data<UnsignedByte>()[0], 67);
+        CORRADE_COMPARE(Containers::arrayCast<UnsignedByte>(stencilImage.data())[0], 67);
     }
     #endif
 }
@@ -1337,8 +1337,8 @@ void FramebufferGLTest::clearDepthStencil() {
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         /** @todo This will probably fail on different systems */
-        CORRADE_COMPARE(depthStencilImage.data<UnsignedInt>()[0] >> 8, 12378300);
-        CORRADE_COMPARE(depthStencilImage.data<UnsignedByte>()[0], 67);
+        CORRADE_COMPARE(Containers::arrayCast<UnsignedInt>(depthStencilImage.data())[0] >> 8, 12378300);
+        CORRADE_COMPARE(Containers::arrayCast<UnsignedByte>(depthStencilImage.data())[0], 67);
     }
     #endif
 }
@@ -1475,9 +1475,9 @@ void FramebufferGLTest::read() {
     CORRADE_COMPARE(colorImage.size(), Vector2i(8, 16));
     CORRADE_COMPARE(colorImage.data().size(), (DataOffset + 8*16)*sizeof(Color4ub));
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_COMPARE(colorImage.data<Color4ub>()[DataOffset], 0x80402011_rgba);
+    CORRADE_COMPARE(Containers::arrayCast<Color4ub>(colorImage.data())[DataOffset], 0x80402011_rgba);
     #else /* using only RGBA4, less precision */
-    CORRADE_COMPARE(colorImage.data<Color4ub>()[DataOffset], 0x88442211_rgba);
+    CORRADE_COMPARE(Containers::arrayCast<Color4ub>(colorImage.data())[DataOffset], 0x88442211_rgba);
     #endif
 
     #ifndef MAGNUM_TARGET_WEBGL
@@ -1492,7 +1492,7 @@ void FramebufferGLTest::read() {
         Image2D depthImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::DepthComponent, PixelType::UnsignedShort});
 
         MAGNUM_VERIFY_NO_GL_ERROR();
-        CORRADE_COMPARE(depthImage.data<UnsignedShort>()[0], 48352);
+        CORRADE_COMPARE(Containers::arrayCast<UnsignedShort>(depthImage.data())[0], 48352);
     }
 
     #ifdef MAGNUM_TARGET_GLES
@@ -1506,7 +1506,7 @@ void FramebufferGLTest::read() {
         Image2D stencilImage = framebuffer.read({{}, Vector2i{1}}, {PixelFormat::StencilIndex, PixelType::UnsignedByte});
 
         MAGNUM_VERIFY_NO_GL_ERROR();
-        CORRADE_COMPARE(stencilImage.data<UnsignedByte>()[0], 67);
+        CORRADE_COMPARE(Containers::arrayCast<UnsignedByte>(stencilImage.data())[0], 67);
     }
 
     #ifdef MAGNUM_TARGET_GLES
@@ -1521,8 +1521,8 @@ void FramebufferGLTest::read() {
 
         MAGNUM_VERIFY_NO_GL_ERROR();
         /** @todo This will probably fail on different systems */
-        CORRADE_COMPARE(depthStencilImage.data<UnsignedInt>()[0] >> 8, 12378300);
-        CORRADE_COMPARE(depthStencilImage.data<UnsignedByte>()[0], 67);
+        CORRADE_COMPARE(Containers::arrayCast<UnsignedInt>(depthStencilImage.data())[0] >> 8, 12378300);
+        CORRADE_COMPARE(Containers::arrayCast<UnsignedByte>(depthStencilImage.data())[0], 67);
     }
     #endif
 }
@@ -2127,14 +2127,14 @@ void FramebufferGLTest::blit() {
     Image2D imageBefore = b.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(imageBefore.data<Color4ub>()[0], Color4ub());
+    CORRADE_COMPARE(Containers::arrayCast<Color4ub>(imageBefore.data())[0], Color4ub());
 
     /* And have given color after */
     Framebuffer::blit(a, b, a.viewport(), FramebufferBlit::Color);
     Image2D imageAfter = b.read({{}, Vector2i{1}}, {PixelFormat::RGBA, PixelType::UnsignedByte});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
-    CORRADE_COMPARE(imageAfter.data<Color4ub>()[0], Color4ub(128, 64, 32, 17));
+    CORRADE_COMPARE(Containers::arrayCast<Color4ub>(imageAfter.data())[0], Color4ub(128, 64, 32, 17));
 }
 #endif
 
