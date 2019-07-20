@@ -1602,6 +1602,24 @@ template void MAGNUM_GL_EXPORT AbstractTexture::image<1>(GLint, Image<1>&);
 template void MAGNUM_GL_EXPORT AbstractTexture::image<2>(GLint, Image<2>&);
 template void MAGNUM_GL_EXPORT AbstractTexture::image<3>(GLint, Image<3>&);
 
+template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, BasicMutableImageView<dimensions>& image) {
+    #ifndef CORRADE_NO_ASSERT
+    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
+    CORRADE_ASSERT(image.data().data() != nullptr,
+        "GL::AbstractTexture::image(): image view is nullptr", );
+    CORRADE_ASSERT(image.size() == size,
+        "GL::AbstractTexture::image(): expected image view size" << size << "but got" << image.size(), );
+    #endif
+
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
+    (this->*Context::current().state().texture->getImageImplementation)(level, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().size(), image.data());
+}
+
+template void MAGNUM_GL_EXPORT AbstractTexture::image<1>(GLint, BasicMutableImageView<1>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::image<2>(GLint, BasicMutableImageView<2>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::image<3>(GLint, BasicMutableImageView<3>&);
+
 template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, BufferImage<dimensions>& image, BufferUsage usage) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
     const std::size_t dataSize = Magnum::Implementation::imageDataSizeFor(image, size);
@@ -1652,6 +1670,45 @@ template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<1>(GLint, Compre
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<2>(GLint, CompressedImage<2>&);
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<3>(GLint, CompressedImage<3>&);
 
+template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, BasicMutableCompressedImageView<dimensions>& image) {
+    #ifndef CORRADE_NO_ASSERT
+    CORRADE_ASSERT(image.data().data() != nullptr,
+        "GL::AbstractTexture::compressedImage(): image view is nullptr", );
+
+    const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
+
+    CORRADE_ASSERT(image.size() == size,
+        "GL::AbstractTexture::compressedImage(): expected image view size" << size << "but got" << image.size(), );
+
+    /* If the user-provided pixel storage doesn't tell us all properties about
+       the compression, we need to ask GL for it */
+    std::size_t dataSize;
+    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
+        GLint textureDataSize;
+        (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_COMPRESSED_IMAGE_SIZE, &textureDataSize);
+        dataSize = textureDataSize;
+    } else dataSize = Magnum::Implementation::compressedImageDataSizeFor(image, size);
+
+    CORRADE_ASSERT(image.data().size() == dataSize,
+        "GL::AbstractTexture::compressedImage(): expected image view data size" << dataSize << "bytes but got" << image.data().size(), );
+
+    /* Internal texture format */
+    GLint format;
+    (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+
+    CORRADE_ASSERT(compressedPixelFormat(image.format()) == CompressedPixelFormat(format),
+        "GL::AbstractTexture::compressedImage(): expected image view format" << CompressedPixelFormat(format) << "but got" << compressedPixelFormat(image.format()), );
+    #endif
+
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
+    (this->*Context::current().state().texture->getCompressedImageImplementation)(level, image.data().size(), image.data());
+}
+
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<1>(GLint, BasicMutableCompressedImageView<1>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<2>(GLint, BasicMutableCompressedImageView<2>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<3>(GLint, BasicMutableCompressedImageView<3>&);
+
 template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, CompressedBufferImage<dimensions>& image, BufferUsage usage) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
 
@@ -1684,27 +1741,42 @@ template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<2>(GLint, Compre
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<3>(GLint, CompressedBufferImage<3>&, BufferUsage);
 
 template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>& image) {
-    createIfNotAlready();
-
+    /* Reallocate only if needed */
     const Math::Vector<dimensions, Int> size = range.size();
     const std::size_t dataSize = Magnum::Implementation::imageDataSizeFor(image, size);
-    const Vector3i paddedOffset = Vector3i::pad<dimensions>(range.min());
-    const Vector3i paddedSize = Vector3i::pad(size, 1);
-
-    /* Reallocate only if needed */
     Containers::Array<char> data{image.release()};
     if(data.size() < dataSize)
         data = Containers::Array<char>{dataSize};
 
-    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    Context::current().state().renderer->applyPixelStoragePack(image.storage());
-    glGetTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), GLenum(pixelFormat(image.format())), GLenum(pixelType(image.format(), image.formatExtra())), data.size(), data);
     image = Image<dimensions>{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, std::move(data)};
+    BasicMutableImageView<dimensions> view(image);
+    subImage(level, range, view);
 }
 
 template void MAGNUM_GL_EXPORT AbstractTexture::subImage<1>(GLint, const Range1Di&, Image<1>&);
 template void MAGNUM_GL_EXPORT AbstractTexture::subImage<2>(GLint, const Range2Di&, Image<2>&);
 template void MAGNUM_GL_EXPORT AbstractTexture::subImage<3>(GLint, const Range3Di&, Image<3>&);
+
+template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, BasicMutableImageView<dimensions>& image) {
+    CORRADE_ASSERT(image.data().data() != nullptr,
+        "GL::AbstractTexture::subImage(): image view is nullptr", );
+    CORRADE_ASSERT(image.size() == range.size(),
+        "GL::AbstractTexture::subImage(): expected image view size" << range.size() << "but got" << image.size(), );
+
+    createIfNotAlready();
+
+    const Math::Vector<dimensions, Int> size = range.size();
+    const Vector3i paddedOffset = Vector3i::pad<dimensions>(range.min());
+    const Vector3i paddedSize = Vector3i::pad(size, 1);
+
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
+    glGetTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), GLenum(pixelFormat(image.format())), GLenum(pixelType(image.format(), image.formatExtra())), image.data().size(), image.data());
+}
+
+template void MAGNUM_GL_EXPORT AbstractTexture::subImage<1>(GLint, const Range1Di&, BasicMutableImageView<1>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::subImage<2>(GLint, const Range2Di&, BasicMutableImageView<2>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::subImage<3>(GLint, const Range3Di&, BasicMutableImageView<3>&);
 
 template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>& image, const BufferUsage usage) {
     createIfNotAlready();
@@ -1774,6 +1846,48 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const 
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<1>(GLint, const Range1Di&, CompressedImage<1>&);
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<2>(GLint, const Range2Di&, CompressedImage<2>&);
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<3>(GLint, const Range3Di&, CompressedImage<3>&);
+
+template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, BasicMutableCompressedImageView<dimensions>& image) {
+    #ifndef CORRADE_NO_ASSERT
+    CORRADE_ASSERT(image.data().data() != nullptr,
+        "GL::AbstractTexture::compressedSubImage(): image view is nullptr", );
+    CORRADE_ASSERT(image.size() == range.size(),
+        "GL::AbstractTexture::compressedSubImage(): expected image view size" << range.size() << "but got" << image.size(), );
+
+    createIfNotAlready();
+
+    const Math::Vector<dimensions, Int> size = range.size();
+
+    /* Internal texture format */
+    GLint format;
+    (this->*Context::current().state().texture->getLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+
+    CORRADE_ASSERT(compressedPixelFormat(image.format()) == CompressedPixelFormat(format),
+        "GL::AbstractTexture::compressedSubImage(): expected image view format" << CompressedPixelFormat(format) << "but got" << compressedPixelFormat(image.format()), );
+
+    /* Calculate compressed subimage size. If the user-provided pixel storage
+       doesn't tell us all properties about the compression, we need to ask GL
+       for it. That requires GL_ARB_internalformat_query2. */
+    std::size_t dataSize;
+    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
+        dataSize = compressedSubImageSize<dimensions>(TextureFormat(format), size);
+    else dataSize = Magnum::Implementation::compressedImageDataSizeFor(image, size);
+
+    CORRADE_ASSERT(image.data().size() == dataSize,
+        "GL::AbstractTexture::compressedSubImage(): expected image view data size" << dataSize << "bytes but got" << image.data().size(), );
+    #endif
+
+    const Vector3i paddedOffset = Vector3i::pad<dimensions>(range.min());
+    const Vector3i paddedSize = Vector3i::pad(size, 1);
+
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
+    glGetCompressedTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), image.data().size(), image.data());
+}
+
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<1>(GLint, const Range1Di&, BasicMutableCompressedImageView<1>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<2>(GLint, const Range2Di&, BasicMutableCompressedImageView<2>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<3>(GLint, const Range3Di&, BasicMutableCompressedImageView<3>&);
 
 template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, CompressedBufferImage<dimensions>& image, const BufferUsage usage) {
     createIfNotAlready();

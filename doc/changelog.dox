@@ -131,6 +131,12 @@ See also:
 -   Added an ability to use Magnum with multiple OpenGL contexts using
     @ref GL::Context::makeCurrent(), see @ref GL-Context-multiple for more
     information
+-   @ref GL::AbstractFramebuffer::read(), @ref GL::Texture::image(),
+    @ref GL::Texture::subImage(), @ref GL::Texture::compressedImage(),
+    @ref GL::Texture::setCompressedSubImage() and equivalent APIs in other
+    texture classes now can read the pixels into
+    @ref BasicMutableImageView "MutableImageView*D" and
+    @ref BasicMutableCompressedImageView "MutableCompressedImageView*D" as well
 
 @subsubsection changelog-latest-new-math Math library
 

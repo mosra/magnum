@@ -85,6 +85,20 @@ Image3D CubeMapTexture::image(const Int level, Image3D&& image) {
     return std::move(image);
 }
 
+void CubeMapTexture::image(const Int level, MutableImageView3D& image) {
+    #ifndef CORRADE_NO_ASSERT
+    const Vector3i size{imageSize(level), 6};
+    CORRADE_ASSERT(image.data().data() != nullptr,
+        "GL::CubeMapTexture::image(): image view is nullptr", );
+    CORRADE_ASSERT(image.size() == size,
+        "GL::CubeMapTexture::image(): expected image view size" << size << "but got" << image.size(), );
+    #endif
+
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
+    glGetTextureImage(_id, level, GLenum(pixelFormat(image.format())), GLenum(pixelType(image.format(), image.formatExtra())), image.data().size(), image.data());
+}
+
 void CubeMapTexture::image(const Int level, BufferImage3D& image, const BufferUsage usage) {
     createIfNotAlready();
 
@@ -140,6 +154,40 @@ CompressedImage3D CubeMapTexture::compressedImage(const Int level, CompressedIma
     return std::move(image);
 }
 
+void CubeMapTexture::compressedImage(const Int level, MutableCompressedImageView3D& image) {
+    #ifndef CORRADE_NO_ASSERT
+    CORRADE_ASSERT(image.data().data() != nullptr,
+        "GL::CubeMapTexture::compressedImage(): image view is nullptr", );
+
+    const Vector3i size{imageSize(level), 6};
+
+    CORRADE_ASSERT(image.size() == size,
+        "GL::CubeMapTexture::compressedImage(): expected image view size" << size << "but got" << image.size(), );
+
+    /* If the user-provided pixel storage doesn't tell us all properties about
+       the compression, we need to ask GL for it */
+    std::pair<std::size_t, std::size_t> dataOffsetSize;
+    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize()) {
+        dataOffsetSize.first = 0;
+        dataOffsetSize.second = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level)*6;
+    } else dataOffsetSize = Magnum::Implementation::compressedImageDataOffsetSizeFor(image, size);
+
+    CORRADE_ASSERT(image.data().size() == dataOffsetSize.first + dataOffsetSize.second,
+        "GL::CubeMapTexture::compressedImage(): expected image view data size" << dataOffsetSize.first + dataOffsetSize.second << "bytes but got" << image.data().size(), );
+
+    /* Internal texture format */
+    GLint format;
+    (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+
+    CORRADE_ASSERT(compressedPixelFormat(image.format()) == CompressedPixelFormat(format),
+        "GL::CubeMapTexture::compressedImage(): expected image view format" << CompressedPixelFormat(format) << "but got" << compressedPixelFormat(image.format()), );
+    #endif
+
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
+    (this->*Context::current().state().texture->getFullCompressedCubeImageImplementation)(level, size.xy(), dataOffsetSize.first, dataOffsetSize.second, image.data());
+}
+
 void CubeMapTexture::compressedImage(const Int level, CompressedBufferImage3D& image, const BufferUsage usage) {
     createIfNotAlready();
 
@@ -193,6 +241,20 @@ Image2D CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int leve
     return std::move(image);
 }
 
+void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, MutableImageView2D& image) {
+    #ifndef CORRADE_NO_ASSERT
+    const Vector2i size = imageSize(level);
+    CORRADE_ASSERT(image.data().data() != nullptr,
+        "GL::CubeMapTexture::image(): image view is nullptr", );
+    CORRADE_ASSERT(image.size() == size,
+        "GL::CubeMapTexture::image(): expected image view size" << size << "but got" << image.size(), );
+    #endif
+
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
+    (this->*Context::current().state().texture->getCubeImageImplementation)(coordinate, level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().size(), image.data());
+}
+
 void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, BufferImage2D& image, const BufferUsage usage) {
     const Vector2i size = imageSize(level);
     const std::size_t dataSize = Magnum::Implementation::imageDataSizeFor(image, size);
@@ -244,6 +306,42 @@ void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const I
 CompressedImage2D CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, CompressedImage2D&& image) {
     compressedImage(coordinate, level, image);
     return std::move(image);
+}
+
+void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, MutableCompressedImageView2D& image) {
+    #ifndef CORRADE_NO_ASSERT
+    CORRADE_ASSERT(image.data().data() != nullptr,
+        "GL::CubeMapTexture::compressedImage(): image view is nullptr", );
+
+    const Vector2i size = imageSize(level);
+
+    CORRADE_ASSERT(image.size() == size,
+        "GL::CubeMapTexture::compressedImage(): expected image view size" << size << "but got" << image.size(), );
+
+    /* If the user-provided pixel storage doesn't tell us all properties about
+       the compression, we need to ask GL for it */
+    std::size_t dataSize;
+    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
+        dataSize = (this->*Context::current().state().texture->getCubeLevelCompressedImageSizeImplementation)(level);
+    else
+        dataSize = Magnum::Implementation::compressedImageDataSizeFor(image, size);
+
+    CORRADE_ASSERT(image.data().size() == dataSize,
+        "GL::CubeMapTexture::compressedImage(): expected image view data size" << dataSize << "bytes but got" << image.data().size(), );
+
+    /* Internal texture format. Zero-init to avoid an assert about value
+       already wrapped in compressedPixelFormatWrap() later if the drivers are
+       extra shitty (Intel Windows drivers, I'm talking about you). */
+    GLint format{};
+    (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+
+    CORRADE_ASSERT(compressedPixelFormat(image.format()) == CompressedPixelFormat(format),
+        "GL::CubeMapTexture::compressedImage(): expected image view format" << CompressedPixelFormat(format) << "but got" << compressedPixelFormat(image.format()), );
+    #endif
+
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
+    (this->*Context::current().state().texture->getCompressedCubeImageImplementation)(coordinate, level, size, image.data().size(), image.data());
 }
 
 void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, CompressedBufferImage2D& image, const BufferUsage usage) {
@@ -320,6 +418,41 @@ void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, 
 CompressedImage3D CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, CompressedImage3D&& image) {
     compressedSubImage(level, range, image);
     return std::move(image);
+}
+
+void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, MutableCompressedImageView3D& image) {
+    #ifndef CORRADE_NO_ASSERT
+    CORRADE_ASSERT(image.data().data() != nullptr,
+        "GL::CubeMapTexture::compressedSubImage(): image view is nullptr", );
+    CORRADE_ASSERT(image.size() == range.size(),
+        "GL::CubeMapTexture::compressedSubImage(): expected image view size" << range.size() << "but got" << image.size(), );
+
+    createIfNotAlready();
+
+    /* Internal texture format. Zero-init to avoid an assert about value
+       already wrapped in compressedPixelFormatWrap() later if the drivers are
+       extra shitty (Intel Windows drivers, I'm talking about you). */
+    GLint format{};
+    (this->*Context::current().state().texture->getCubeLevelParameterivImplementation)(level, GL_TEXTURE_INTERNAL_FORMAT, &format);
+
+    CORRADE_ASSERT(compressedPixelFormat(image.format()) == CompressedPixelFormat(format),
+        "GL::CubeMapTexture::compressedSubImage(): expected image view format" << CompressedPixelFormat(format) << "but got" << compressedPixelFormat(image.format()), );
+
+    /* Calculate compressed subimage size. If the user-provided pixel storage
+       doesn't tell us all properties about the compression, we need to ask GL
+       for it. That requires GL_ARB_internalformat_query2. */
+    std::size_t dataSize;
+    if(!image.storage().compressedBlockSize().product() || !image.storage().compressedBlockDataSize())
+        dataSize = compressedSubImageSize<3>(TextureFormat(format), range.size());
+    else dataSize = Magnum::Implementation::compressedImageDataSizeFor(image, range.size());
+
+    CORRADE_ASSERT(image.data().size() == dataSize,
+        "GL::CubeMapTexture::compressedSubImage(): expected image view data size" << dataSize << "bytes but got" << image.data().size(), );
+    #endif
+
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
+    glGetCompressedTextureSubImage(_id, level, range.min().x(), range.min().y(), range.min().z(), range.size().x(), range.size().y(), range.size().z(), image.data().size(), image.data());
 }
 
 void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, CompressedBufferImage3D& image, const BufferUsage usage) {

@@ -523,6 +523,17 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         Image<dimensions+1> image(Int level, Image<dimensions+1>&& image);
 
         /**
+         * @brief Read given texture mip level to an image view
+         *
+         * Compared to @ref image(Int, Image<dimensions+1>&) the function reads
+         * the pixels into the memory provided by @p image, expecting it's not
+         * @cpp nullptr @ce and its size is the same as size of given @p level.
+         */
+        void image(Int level, BasicMutableImageView<dimensions+1>& image) {
+            AbstractTexture::image<dimensions+1>(level, image);
+        }
+
+        /**
          * @brief Read given texture mip level to a buffer image
          *
          * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
@@ -565,6 +576,18 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @snippet MagnumGL.cpp TextureArray-compressedImage1
          */
         CompressedImage<dimensions+1> compressedImage(Int level, CompressedImage<dimensions+1>&& image);
+
+        /**
+         * @brief Read given compressed texture mip level to an image view
+         *
+         * Compared to @ref compressedImage(Int, CompressedImage<dimensions+1>&)
+         * the function reads the pixels into the memory provided by @p image,
+         * expecting it's not @cpp nullptr @ce, its format is the same as
+         * texture format and its size is the same as size of given @p level.
+         */
+        void compressedImage(Int level, BasicMutableCompressedImageView<dimensions+1>& image) {
+            AbstractTexture::compressedImage<dimensions+1>(level, image);
+        }
 
         /**
          * @brief Read given compressed texture mip level to a buffer image
@@ -610,6 +633,18 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @snippet MagnumGL.cpp TextureArray-subImage1
          */
         Image<dimensions+1> subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, Image<dimensions+1>&& image);
+
+        /**
+         * @brief Read a range of given texture mip level to an image view
+         *
+         * Compared to @ref subImage(Int, const RangeTypeFor<dimensions+1, Int>&, Image<dimensions+1>&)
+         * the function reads the pixels into the memory provided by @p image,
+         * expecting it's not @cpp nullptr @ce and its size is the same as
+         * @p range size.
+         */
+        void subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, BasicMutableImageView<dimensions+1>& image) {
+            AbstractTexture::subImage<dimensions+1>(level, range, image);
+        }
 
         /**
          * @brief Read a range of given texture mip level to a buffer image
@@ -660,6 +695,18 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * @snippet MagnumGL.cpp TextureArray-compressedSubImage1
          */
         CompressedImage<dimensions+1> compressedSubImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, CompressedImage<dimensions+1>&& image);
+
+        /**
+         * @brief Read a range of given compressed texture mip level to an image view
+         *
+         * Compared to @ref compressedSubImage(Int, const RangeTypeFor<dimensions+1, Int>&, CompressedImage<dimensions+1>&)
+         * the function reads the pixels into the memory provided by @p image,
+         * expecting it's not @cpp nullptr @ce, its format is the same as
+         * texture format and its size is the same as @p range size.
+         */
+        void compressedSubImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, BasicMutableCompressedImageView<dimensions+1>& image) {
+            AbstractTexture::compressedSubImage<dimensions+1>(level, range, image);
+        }
 
         /**
          * @brief Read a range of given compressed texture mip level to a buffer image

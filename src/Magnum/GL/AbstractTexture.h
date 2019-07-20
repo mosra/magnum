@@ -489,12 +489,16 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
         void generateMipmap();
 
         #ifndef MAGNUM_TARGET_GLES
+        template<UnsignedInt dimensions> void image(GLint level, BasicMutableImageView<dimensions>& image);
         template<UnsignedInt dimensions> void image(GLint level, Image<dimensions>& image);
         template<UnsignedInt dimensions> void image(GLint level, BufferImage<dimensions>& image, BufferUsage usage);
+        template<UnsignedInt dimensions> void compressedImage(GLint level, BasicMutableCompressedImageView<dimensions>& image);
         template<UnsignedInt dimensions> void compressedImage(GLint level, CompressedImage<dimensions>& image);
         template<UnsignedInt dimensions> void compressedImage(GLint level, CompressedBufferImage<dimensions>& image, BufferUsage usage);
+        template<UnsignedInt dimensions> void subImage(GLint level, const RangeTypeFor<dimensions, Int>& range, BasicMutableImageView<dimensions>& image);
         template<UnsignedInt dimensions> void subImage(GLint level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>& image);
         template<UnsignedInt dimensions> void subImage(GLint level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>& image, BufferUsage usage);
+        template<UnsignedInt dimensions> void compressedSubImage(GLint level, const RangeTypeFor<dimensions, Int>& range, BasicMutableCompressedImageView<dimensions>& image);
         template<UnsignedInt dimensions> void compressedSubImage(GLint level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>& image);
         template<UnsignedInt dimensions> void compressedSubImage(GLint level, const RangeTypeFor<dimensions, Int>& range, CompressedBufferImage<dimensions>& image, BufferUsage usage);
         #endif

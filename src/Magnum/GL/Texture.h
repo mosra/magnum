@@ -754,8 +754,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Image parameters like format and type of pixel data are taken from
          * given image, image size is taken from the texture using
-         * @ref imageSize().  The storage is not reallocated if it is large
-         * enough to contain the new data.
+         * @ref imageSize(). The storage is not reallocated if it is large
+         * enough to contain the new data --- however if you want to read into
+         * existing memory or *ensure* a reallocation does not happen, use
+         * @ref image(Int, BasicMutableImageView<dimensions>&) instead.
          *
          * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
          * not available, the texture is bound before the operation (if not
@@ -784,6 +786,17 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @snippet MagnumGL.cpp Texture-image1
          */
         Image<dimensions> image(Int level, Image<dimensions>&& image);
+
+        /**
+         * @brief Read given texture mip level to an image view
+         *
+         * Compared to @ref image(Int, Image<dimensions>&) the function reads
+         * the pixels into the memory provided by @p image, expecting it's not
+         * @cpp nullptr @ce and its size is the same as size of given @p level.
+         */
+        void image(Int level, BasicMutableImageView<dimensions>& image) {
+            AbstractTexture::image<dimensions>(level, image);
+        }
 
         /**
          * @brief Read given texture mip level to a buffer image
@@ -819,7 +832,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Compression format and data size are taken from the texture, image
          * size is taken using @ref imageSize(). The storage is not reallocated
-         * if it is large enough to contain the new data.
+         * if it is large enough to contain the new data --- however if you
+         * want to read into existing memory or *ensure* a reallocation does
+         * not happen, use @ref compressedImage(Int, BasicMutableCompressedImageView<dimensions>&)
+         * instead.
          *
          * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
          * not available, the texture is bound before the operation (if not
@@ -852,6 +868,18 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @snippet MagnumGL.cpp Texture-compressedImage1
          */
         CompressedImage<dimensions> compressedImage(Int level, CompressedImage<dimensions>&& image);
+
+        /**
+         * @brief Read given compressed texture mip level to an image view
+         *
+         * Compared to @ref compressedImage(Int, CompressedImage<dimensions>&)
+         * the function reads the pixels into the memory provided by @p image,
+         * expecting it's not @cpp nullptr @ce, its format is the same as
+         * texture format and its size is the same as size of given @p level.
+         */
+        void compressedImage(Int level, BasicMutableCompressedImageView<dimensions>& image) {
+            AbstractTexture::compressedImage<dimensions>(level, image);
+        }
 
         /**
          * @brief Read given compressed texture mip level to a buffer image
@@ -890,7 +918,10 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          *
          * Image parameters like format and type of pixel data are taken from
          * given image. The storage is not reallocated if it is large enough to
-         * contain the new data.
+         * contain the new data --- however if you want to read into existing
+         * memory or *ensure* a reallocation does not happen, use
+         * @ref subImage(Int, const RangeTypeFor<dimensions, Int>&, BasicMutableImageView<dimensions>&)
+         * instead.
          *
          * The operation is protected from buffer overflow.
          * @see @fn_gl_keyword{GetTextureSubImage}
@@ -909,6 +940,18 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @snippet MagnumGL.cpp Texture-subImage1
          */
         Image<dimensions> subImage(Int level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>&& image);
+
+        /**
+         * @brief Read a range of given texture mip level to an image view
+         *
+         * Compared to @ref subImage(Int, const RangeTypeFor<dimensions, Int>&, Image<dimensions>&)
+         * the function reads the pixels into the memory provided by @p image,
+         * expecting it's not @cpp nullptr @ce and its size is the same as
+         * @p range size.
+         */
+        void subImage(Int level, const RangeTypeFor<dimensions, Int>& range, BasicMutableImageView<dimensions>& image) {
+            AbstractTexture::subImage<dimensions>(level, range, image);
+        }
 
         /**
          * @brief Read a range of given texture mip level to a buffer image
@@ -943,7 +986,12 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @param range             Range to read
          * @param image             Image where to put the compressed data
          *
-         * Compression format and data size are taken from the texture.
+         * Compression format and data size are taken from the texture. The
+         * storage is not reallocated if it is large enough to contain the new
+         * data --- however if you want to read into existing memory or
+         * *ensure* a reallocation does not happen, use
+         * @ref compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, BasicMutableCompressedImageView<dimensions>&)
+         * instead.
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
          *      eventually @fn_gl{GetTexLevelParameter} with
          *      @def_gl{TEXTURE_INTERNAL_FORMAT}, then possibly
@@ -973,6 +1021,18 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @snippet MagnumGL.cpp Texture-compressedSubImage1
          */
         CompressedImage<dimensions> compressedSubImage(Int level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>&& image);
+
+        /**
+         * @brief Read a range of given compressed texture mip level to an image view
+         *
+         * Compared to @ref compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage<dimensions>&)
+         * the function reads the pixels into the memory provided by @p image,
+         * expecting it's not @cpp nullptr @ce, its format is the same as
+         * texture format and its size is the same as @p range size.
+         */
+        void compressedSubImage(Int level, const RangeTypeFor<dimensions, Int>& range, BasicMutableCompressedImageView<dimensions>& image) {
+            AbstractTexture::compressedSubImage<dimensions>(level, range, image);
+        }
 
         /**
          * @brief Read a range of given compressed texture mip level to a buffer image

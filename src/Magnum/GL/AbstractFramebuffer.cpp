@@ -26,6 +26,7 @@
 #include "AbstractFramebuffer.h"
 
 #include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #ifndef MAGNUM_TARGET_GLES2
 #include "Magnum/GL/BufferImage.h"
 #endif
@@ -334,25 +335,35 @@ AbstractFramebuffer& AbstractFramebuffer::clearDepthStencil(const Float depth, c
 }
 #endif
 
-void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
-    bindInternal(FramebufferTarget::Read);
+void AbstractFramebuffer::read(const Range2Di& rectangle, MutableImageView2D& image) {
+    CORRADE_ASSERT(image.data().data() != nullptr,
+        "GL::AbstractFramebuffer::read(): image view is nullptr", );
+    CORRADE_ASSERT(image.size() == rectangle.size(),
+        "GL::AbstractFramebuffer::read(): expected image view size" << rectangle.size() << "but got" << image.size(), );
 
+    bindInternal(FramebufferTarget::Read);
+    #ifndef MAGNUM_TARGET_GLES2
+    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
+    #endif
+    Context::current().state().renderer->applyPixelStoragePack(image.storage());
+    (Context::current().state().framebuffer->readImplementation)(rectangle, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().size(), image.data()
+        #ifdef MAGNUM_TARGET_GLES2
+        + Magnum::Implementation::pixelStorageSkipOffsetFor(image, rectangle.size())
+        #endif
+        );
+}
+
+void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
     /* Reallocate only if needed */
     const std::size_t dataSize = Magnum::Implementation::imageDataSizeFor(image, rectangle.size());
     Containers::Array<char> data{image.release()};
     if(data.size() < dataSize)
         data = Containers::Array<char>{dataSize};
 
-    #ifndef MAGNUM_TARGET_GLES2
-    Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
-    #endif
-    Context::current().state().renderer->applyPixelStoragePack(image.storage());
-    (Context::current().state().framebuffer->readImplementation)(rectangle, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), data.size(), data
-        #ifdef MAGNUM_TARGET_GLES2
-        + Magnum::Implementation::pixelStorageSkipOffsetFor(image, rectangle.size())
-        #endif
-        );
+    /* Replace the storage, proxy to the function taking a view */
     image = Image2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), rectangle.size(), std::move(data)};
+    MutableImageView2D view(image);
+    read(rectangle, view);
 }
 
 Image2D AbstractFramebuffer::read(const Range2Di& rectangle, Image2D&& image) {

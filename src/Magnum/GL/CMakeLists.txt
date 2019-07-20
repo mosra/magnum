@@ -24,13 +24,10 @@
 #
 
 set(MagnumGL_SRCS
-    AbstractFramebuffer.cpp
     AbstractObject.cpp
-    AbstractTexture.cpp
     AbstractShaderProgram.cpp
     Attribute.cpp
     Buffer.cpp
-    CubeMapTexture.cpp
     Context.cpp
     DefaultFramebuffer.cpp
     Framebuffer.cpp
@@ -54,6 +51,9 @@ set(MagnumGL_SRCS
     Implementation/maxTextureSize.cpp)
 
 set(MagnumGL_GracefulAssert_SRCS
+    AbstractFramebuffer.cpp
+    AbstractTexture.cpp
+    CubeMapTexture.cpp
     Mesh.cpp
     MeshView.cpp
     PixelFormat.cpp
