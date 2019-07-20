@@ -59,16 +59,17 @@ struct RectangleTextureGLTest: OpenGLTester {
     void storage();
 
     void image();
-    void compressedImage();
     void imageBuffer();
-    void compressedImageBuffer();
     void subImage();
-    void compressedSubImage();
     void subImageBuffer();
-    void compressedSubImageBuffer();
     void subImageQuery();
-    void compressedSubImageQuery();
     void subImageQueryBuffer();
+
+    void compressedImage();
+    void compressedImageBuffer();
+    void compressedSubImage();
+    void compressedSubImageBuffer();
+    void compressedSubImageQuery();
     void compressedSubImageQueryBuffer();
 
     void invalidateImage();
