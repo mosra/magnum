@@ -539,7 +539,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @brief Read given mip level of texture to image
+         * @brief Read given texture mip level to an image
          *
          * Image parameters like format and type of pixel data are taken from
          * given image, image size is taken from the texture using
@@ -566,7 +566,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         Image3D image(Int level, Image3D&& image);
 
         /**
-         * @brief Read given mip level of texture to buffer image
+         * @brief Read given texture mip level to a buffer image
          *
          * See @ref image(Int, Image3D&) for more information. The storage is
          * not reallocated if it is large enough to contain the new data, which
@@ -587,7 +587,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         BufferImage3D image(Int level, BufferImage3D&& image, BufferUsage usage);
 
         /**
-         * @brief Read given mip level of compressed texture to image
+         * @brief Read given mip level of a compressed texture to an image
          *
          * Compression format and data size are taken from the texture, image
          * size is taken using @ref imageSize(). The storage is not reallocated
@@ -615,7 +615,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         CompressedImage3D compressedImage(Int level, CompressedImage3D&& image);
 
         /**
-         * @brief Read given mip level of compressed texture to buffer image
+         * @brief Read given compressed texture mip level to a buffer image
          *
          * See @ref compressedImage(Int, CompressedImage3D&) for more
          * information. The storage is not reallocated if it is large enough to
@@ -638,7 +638,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         CompressedBufferImage3D compressedImage(Int level, CompressedBufferImage3D&& image, BufferUsage usage);
 
         /**
-         * @brief Read given mip level and coordinate of texture to image
+         * @brief Read given texture mip level and coordinate to an image
          *
          * Image parameters like format and type of pixel data are taken from
          * given image, image size is taken from the texture using
@@ -672,7 +672,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         Image2D image(CubeMapCoordinate coordinate, Int level, Image2D&& image);
 
         /**
-         * @brief Read given mip level and coordinate of texture to buffer image
+         * @brief Read given texture mip level and coordinate to a buffer image
          *
          * See @ref image(CubeMapCoordinate, Int, Image2D&) for more
          * information. The storage is not reallocated if it is large enough to
@@ -692,7 +692,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         BufferImage2D image(CubeMapCoordinate coordinate, Int level, BufferImage2D&& image, BufferUsage usage);
 
         /**
-         * @brief Read given mip level and coordinate of compressed texture to image
+         * @brief Read given compressed texture mip level and coordinate to an image
          *
          * Compression format and data size are taken from the texture, image
          * size is taken using @ref imageSize(). The storage is not reallocated
@@ -728,7 +728,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         CompressedImage2D compressedImage(CubeMapCoordinate coordinate, Int level, CompressedImage2D&& image);
 
         /**
-         * @brief Read given mip level and coordinate of compressed texture to buffer image
+         * @brief Read given compressed texture mip level and coordinate to a buffer image
          *
          * See @ref compressedImage(CubeMapCoordinate, Int, CompressedImage2D&)
          * for more information. The storage is not reallocated if it is large
@@ -751,7 +751,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         CompressedBufferImage2D compressedImage(CubeMapCoordinate coordinate, Int level, CompressedBufferImage2D&& image, BufferUsage usage);
 
         /**
-         * @brief @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
+         * @brief Read a range of given texture mip level to an image
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
          * for more information.
@@ -773,7 +773,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         Image3D subImage(Int level, const Range3Di& range, Image3D&& image);
 
         /**
-         * @brief @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
+         * @brief Read a range of given texture mip level to a buffer image
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
          * for more information.
@@ -795,7 +795,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         BufferImage3D subImage(Int level, const Range3Di& range, BufferImage3D&& image, BufferUsage usage);
 
         /**
-         * @brief @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
+         * @brief Read a range of given compressed texture mip level to an image
          *
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
          * for more information.
@@ -821,7 +821,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         CompressedImage3D compressedSubImage(Int level, const Range3Di& range, CompressedImage3D&& image);
 
         /**
-         * @brief @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         * @brief Read a range of given compressed texture mip level to a buffer image
          *
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
          * for more information.

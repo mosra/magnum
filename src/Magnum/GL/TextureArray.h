@@ -503,7 +503,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @brief @copybrief Texture::image(Int, Image&)
+         * @brief Read given texture mip level to an image
          *
          * See @ref Texture::image(Int, Image&) for more information.
          * @requires_gl Texture image queries are not available in OpenGL ES or
@@ -523,7 +523,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         Image<dimensions+1> image(Int level, Image<dimensions+1>&& image);
 
         /**
-         * @brief @copybrief Texture::image(Int, BufferImage&, BufferUsage)
+         * @brief Read given texture mip level to a buffer image
          *
          * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
          * information.
@@ -544,7 +544,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         BufferImage<dimensions+1> image(Int level, BufferImage<dimensions+1>&& image, BufferUsage usage);
 
         /**
-         * @brief @copybrief Texture::compressedImage(Int, CompressedImage&)
+         * @brief Read given compressed texture mip level to an image
          *
          * See @ref Texture::compressedImage(Int, CompressedImage&) for more
          * information.
@@ -567,7 +567,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         CompressedImage<dimensions+1> compressedImage(Int level, CompressedImage<dimensions+1>&& image);
 
         /**
-         * @brief @copybrief Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
+         * @brief Read given compressed texture mip level to a buffer image
          *
          * See @ref Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
          * for more information.
@@ -590,7 +590,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         CompressedBufferImage<dimensions+1> compressedImage(Int level, CompressedBufferImage<dimensions+1>&& image, BufferUsage usage);
 
         /**
-         * @brief @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
+         * @brief Read a range of given texture mip level to an image
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
          * for more information.
@@ -612,7 +612,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         Image<dimensions+1> subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, Image<dimensions+1>&& image);
 
         /**
-         * @brief @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
+         * @brief Read a range of given texture mip level to a buffer image
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
          * for more information.
@@ -634,7 +634,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         BufferImage<dimensions+1> subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, BufferImage<dimensions+1>&& image, BufferUsage usage);
 
         /**
-         * @brief @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
+         * @brief Read a range of given compressed texture mip level to an image
          *
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
          * for more information.
@@ -662,7 +662,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
         CompressedImage<dimensions+1> compressedSubImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, CompressedImage<dimensions+1>&& image);
 
         /**
-         * @brief @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         * @brief Read a range of given compressed texture mip level to a buffer image
          *
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
          * for more information.

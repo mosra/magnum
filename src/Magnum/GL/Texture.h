@@ -748,7 +748,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES
         /**
-         * @brief Read given mip level of texture to image
+         * @brief Read given texture mip level to an image
          * @param level             Mip level
          * @param image             Image where to put the data
          *
@@ -786,7 +786,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         Image<dimensions> image(Int level, Image<dimensions>&& image);
 
         /**
-         * @brief Read given mip level of texture to buffer image
+         * @brief Read given texture mip level to a buffer image
          * @param level             Mip level
          * @param image             Buffer image where to put the data
          * @param usage             Buffer usage
@@ -813,7 +813,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         BufferImage<dimensions> image(Int level, BufferImage<dimensions>&& image, BufferUsage usage);
 
         /**
-         * @brief Read given mip level of compressed texture to image
+         * @brief Read given compressed texture mip level to an image
          * @param level             Mip level
          * @param image             Image where to put the compressed data
          *
@@ -854,7 +854,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         CompressedImage<dimensions> compressedImage(Int level, CompressedImage<dimensions>&& image);
 
         /**
-         * @brief Read given mip level of compressed texture to buffer image
+         * @brief Read given compressed texture mip level to a buffer image
          * @param level             Mip level
          * @param image             Buffer image where to put the compressed data
          * @param usage             Buffer usage
@@ -883,7 +883,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         CompressedBufferImage<dimensions> compressedImage(Int level, CompressedBufferImage<dimensions>&& image, BufferUsage usage);
 
         /**
-         * @brief Read range of given texture mip level to image
+         * @brief Read a range of given texture mip level to an image
          * @param level             Mip level
          * @param range             Range to read
          * @param image             Image where to put the data
@@ -911,7 +911,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         Image<dimensions> subImage(Int level, const RangeTypeFor<dimensions, Int>& range, Image<dimensions>&& image);
 
         /**
-         * @brief Read range of given texture mip level to buffer image
+         * @brief Read a range of given texture mip level to a buffer image
          * @param level             Mip level
          * @param range             Range to read
          * @param image             Buffer image where to put the data
@@ -938,7 +938,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         BufferImage<dimensions> subImage(Int level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>&& image, BufferUsage usage);
 
         /**
-         * @brief Read range of given compressed texture mip level to image
+         * @brief Read a range of given compressed texture mip level to an image
          * @param level             Mip level
          * @param range             Range to read
          * @param image             Image where to put the compressed data
@@ -975,7 +975,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         CompressedImage<dimensions> compressedSubImage(Int level, const RangeTypeFor<dimensions, Int>& range, CompressedImage<dimensions>&& image);
 
         /**
-         * @brief Read range of given compressed texture mip level to buffer image
+         * @brief Read a range of given compressed texture mip level to a buffer image
          * @param level             Mip level
          * @param range             Range to read
          * @param image             Buffer image where to put the compressed data

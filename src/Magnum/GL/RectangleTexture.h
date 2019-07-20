@@ -353,7 +353,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         Vector2i imageSize() { return DataHelper<2>::imageSize(*this, 0); }
 
         /**
-         * @brief Read texture to image
+         * @brief Read texture to an image
          *
          * See @ref Texture::image(Int, Image&) for more information.
          */
@@ -370,7 +370,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         Image2D image(Image2D&& image);
 
         /**
-         * @brief Read texture to buffer image
+         * @brief Read texture to a buffer image
          *
          * See @ref Texture::image(Int, BufferImage&, BufferUsage) for more
          * information.
@@ -388,7 +388,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         BufferImage2D image(BufferImage2D&& image, BufferUsage usage);
 
         /**
-         * @brief Read compressed texture to image
+         * @brief Read compressed texture to an image
          *
          * See @ref Texture::compressedImage(Int, CompressedImage&) for more
          * information.
@@ -408,7 +408,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         CompressedImage2D compressedImage(CompressedImage2D&& image);
 
         /**
-         * @brief Read compressed texture to buffer image
+         * @brief Read compressed texture to a buffer image
          *
          * See @ref Texture::compressedImage(Int, CompressedBufferImage&, BufferUsage)
          * for more information.
@@ -428,7 +428,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         CompressedBufferImage2D compressedImage(CompressedBufferImage2D&& image, BufferUsage usage);
 
         /**
-         * @brief @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
+         * @brief Read a texture range to an image
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, Image&)
          * for more information.
@@ -447,7 +447,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         Image2D subImage(const Range2Di& range, Image2D&& image);
 
         /**
-         * @brief @copybrief Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
+         * @brief Read a texture range to a buffer image
          *
          * See @ref Texture::subImage(Int, const RangeTypeFor<dimensions, Int>&, BufferImage&, BufferUsage)
          * for more information.
@@ -466,7 +466,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         BufferImage2D subImage(const Range2Di& range, BufferImage2D&& image, BufferUsage usage);
 
         /**
-         * @brief @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
+         * @brief Read a compressed texture range to an image
          *
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage&)
          * for more information.
@@ -491,7 +491,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
         CompressedImage2D compressedSubImage(const Range2Di& range, CompressedImage2D&& image);
 
         /**
-         * @brief @copybrief Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
+         * @brief Read a compressed texture range to a buffer image
          *
          * See @ref Texture::compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedBufferImage&, BufferUsage)
          * for more information.
