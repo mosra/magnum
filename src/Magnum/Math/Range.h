@@ -334,6 +334,9 @@ template<UnsignedInt dimensions, class T> class Range {
     }                                                                       \
     Type<T> scaled(const VectorType<T>& scaling) const {                    \
         return Range<dimensions, T>::scaled(scaling);                       \
+    }                                                                       \
+    Type<T> scaledFromCenter(const VectorType<T>& scaling) const {          \
+        return Range<dimensions, T>::scaledFromCenter(scaling);             \
     }
 #endif
 
