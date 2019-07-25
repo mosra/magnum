@@ -329,8 +329,9 @@ template<class T> class Quaternion {
 
         /**
          * @brief Raw data
-         * @return One-dimensional array of four elements
          *
+         * Returns one-dimensional array of four elements, vector part first,
+         * scalar after.
          * @see @ref vector(), @ref scalar()
          */
         T* data() { return _vector.data(); }
