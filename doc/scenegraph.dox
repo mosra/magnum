@@ -65,8 +65,9 @@ usually a transformation matrix. The whole scene is rendered using a camera
 like field-of-view, aspect ratio and near/far clipping planes. The final
 projective object transform @f$ \boldsymbol{M_i} @f$, relative to camera, is
 calculated as a combination of all relative transformations up to the scene
-root (an absolute transformation), multiplied by an inverse of camera absolute
-transformation. For the object @f$ o_3 @f$ it's as follows: @f[
+root (an absolute transformation), multiplied by the inverse of the camera's absolute
+transformation. For the object @f$ o_3 @f$ its final transform @f$ \boldsymbol{M_3} @f$
+is produced as follows: @f[
     \begin{array}{rcl}
         \boldsymbol{M_3} & = & {\color{m-primary} \boldsymbol{P}} ~
                 (\color{m-success} \boldsymbol{T_4} ~ \boldsymbol{T_5})^{-1} ~
@@ -95,13 +96,13 @@ can have just one, drawing everything at once, or group the drawables by a
 shader / transparency etc. It's also possible to have multiple cameras and
 switch among them.
 
-Besides drawables, there are other features for animation, audio, physics etc.
+Besides drawables, there are other features for animation, audio, physics, etc.
 
 @m_div{m-clearfix-m} @m_enddiv
 
 @section scenegraph-transformation Transformations
 
-A transformation handles object position, rotation etc. and its basic property
+A transformation handles object position, rotation, etc. Its basic property
 is a dimension count (2D or 3D) and an underlying numeric type. All classes
 in @ref SceneGraph are templated on the underlying type. However, in most cases
 @ref Float is used and thus nearly all classes have convenience aliases so you
@@ -220,20 +221,20 @@ accessible through @ref SceneGraph::Object::features().
 
 @snippet MagnumSceneGraph.cpp feature
 
-Some features are passive, some active. Passive features can be just added to
+Some features are passive, others active. Passive features can just be added to
 an object, with no additional work except for possible configuration (for
 example a debug renderer). Active features require the user to implement some
-virtual function (for example to draw the object on screen or perform animation
+virtual function (for example to draw the object on screen or perform an animation
 step). To make things convenient, features can be added directly to object
 itself using multiple inheritance, so you can add all the active features you
-want and implement needed functions in your own @ref SceneGraph::Object
+want and implement functions you need in your own @ref SceneGraph::Object
 subclass without having to subclass each feature individually (and making the
-code overly verbose). Simplified example:
+code overly verbose). A simplified example:
 
 @snippet MagnumSceneGraph.cpp feature-inherit
 
 From the outside there is no difference between features added "at runtime" and
-features added using multiple inheritance, they can be both accessed from
+features added using multiple inheritance, they can be both accessed from the
 feature list.
 
 Similarly to object hierarchy, when destroying object, all its features (both
