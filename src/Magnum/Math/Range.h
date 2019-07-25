@@ -610,7 +610,7 @@ template<class T> class Range3D: public Range<3, T> {
         }
 
         /** @brief Range in the XY plane */
-        constexpr Range<2, T> xy() const {
+        constexpr Range2D<T> xy() const {
             return {Range<3, T>::min().xy(), Range<3, T>::max().xy()};
         }
 
