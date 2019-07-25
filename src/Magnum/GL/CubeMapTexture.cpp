@@ -85,7 +85,7 @@ Image3D CubeMapTexture::image(const Int level, Image3D&& image) {
     return std::move(image);
 }
 
-void CubeMapTexture::image(const Int level, MutableImageView3D& image) {
+void CubeMapTexture::image(const Int level, const MutableImageView3D& image) {
     #ifndef CORRADE_NO_ASSERT
     const Vector3i size{imageSize(level), 6};
     CORRADE_ASSERT(image.data().data() != nullptr,
@@ -154,7 +154,7 @@ CompressedImage3D CubeMapTexture::compressedImage(const Int level, CompressedIma
     return std::move(image);
 }
 
-void CubeMapTexture::compressedImage(const Int level, MutableCompressedImageView3D& image) {
+void CubeMapTexture::compressedImage(const Int level, const MutableCompressedImageView3D& image) {
     #ifndef CORRADE_NO_ASSERT
     CORRADE_ASSERT(image.data().data() != nullptr,
         "GL::CubeMapTexture::compressedImage(): image view is nullptr", );
@@ -241,7 +241,7 @@ Image2D CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int leve
     return std::move(image);
 }
 
-void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, MutableImageView2D& image) {
+void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, const MutableImageView2D& image) {
     #ifndef CORRADE_NO_ASSERT
     const Vector2i size = imageSize(level);
     CORRADE_ASSERT(image.data().data() != nullptr,
@@ -308,7 +308,7 @@ CompressedImage2D CubeMapTexture::compressedImage(const CubeMapCoordinate coordi
     return std::move(image);
 }
 
-void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, MutableCompressedImageView2D& image) {
+void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, const MutableCompressedImageView2D& image) {
     #ifndef CORRADE_NO_ASSERT
     CORRADE_ASSERT(image.data().data() != nullptr,
         "GL::CubeMapTexture::compressedImage(): image view is nullptr", );
@@ -420,7 +420,7 @@ CompressedImage3D CubeMapTexture::compressedSubImage(const Int level, const Rang
     return std::move(image);
 }
 
-void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, MutableCompressedImageView3D& image) {
+void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, const MutableCompressedImageView3D& image) {
     #ifndef CORRADE_NO_ASSERT
     CORRADE_ASSERT(image.data().data() != nullptr,
         "GL::CubeMapTexture::compressedSubImage(): image view is nullptr", );

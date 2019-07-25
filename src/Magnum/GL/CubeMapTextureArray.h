@@ -492,7 +492,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          * into the memory provided by @p image, expecting it's not
          * @cpp nullptr @ce and its size is the same as size of given @p level.
          */
-        void image(Int level, MutableImageView3D& image) {
+        void image(Int level, const MutableImageView3D& image) {
             AbstractTexture::image<3>(level, image);
         }
 
@@ -548,7 +548,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          * expecting it's not @cpp nullptr @ce, its format is the same as
          * texture format and its size is the same as size of given @p level.
          */
-        void compressedImage(Int level, MutableCompressedImageView3D& image) {
+        void compressedImage(Int level, const MutableCompressedImageView3D& image) {
             AbstractTexture::compressedImage<3>(level, image);
         }
 
@@ -605,7 +605,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          * expecting it's not @cpp nullptr @ce and its size is the same as
          * @p range size.
          */
-        void subImage(Int level, const Range3Di& range, MutableImageView3D& image) {
+        void subImage(Int level, const Range3Di& range, const MutableImageView3D& image) {
             AbstractTexture::subImage<3>(level, range, image);
         }
 
@@ -667,7 +667,7 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          * expecting it's not @cpp nullptr @ce, its format is the same as
          * texture format and its size is the same as @p range size.
          */
-        void compressedSubImage(Int level, const Range3Di& range, MutableCompressedImageView3D& image) {
+        void compressedSubImage(Int level, const Range3Di& range, const MutableCompressedImageView3D& image) {
             AbstractTexture::compressedSubImage<3>(level, range, image);
         }
 

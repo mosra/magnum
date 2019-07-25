@@ -572,7 +572,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * into the memory provided by @p image, expecting it's not
          * @cpp nullptr @ce and its size is the same as size of given @p level.
          */
-        void image(Int level, MutableImageView3D& image);
+        void image(Int level, const MutableImageView3D& image);
 
         /**
          * @brief Read given texture mip level to a buffer image
@@ -631,7 +631,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * expecting it's not @cpp nullptr @ce, its format is the same as
          * texture format and its size is the same as size of given @p level.
          */
-        void compressedImage(Int level, MutableCompressedImageView3D& image);
+        void compressedImage(Int level, const MutableCompressedImageView3D& image);
 
         /**
          * @brief Read given compressed texture mip level to a buffer image
@@ -698,7 +698,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * expecting it's not @cpp nullptr @ce and its size is the same as size
          * of given @p level.
          */
-        void image(CubeMapCoordinate coordinate, Int level, MutableImageView2D& image);
+        void image(CubeMapCoordinate coordinate, Int level, const MutableImageView2D& image);
 
         /**
          * @brief Read given texture mip level and coordinate to a buffer image
@@ -764,7 +764,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * expecting it's not @cpp nullptr @ce, its format is the same as
          * texture format and its size is the same as size of given @p level.
          */
-        void compressedImage(CubeMapCoordinate coordinate, Int level, MutableCompressedImageView2D& image);
+        void compressedImage(CubeMapCoordinate coordinate, Int level, const MutableCompressedImageView2D& image);
 
         /**
          * @brief Read given compressed texture mip level and coordinate to a buffer image
@@ -819,7 +819,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * expecting it's not @cpp nullptr @ce and its size is the same as
          * @p range size.
          */
-        void subImage(Int level, const Range3Di& range, MutableImageView3D& image) {
+        void subImage(Int level, const Range3Di& range, const MutableImageView3D& image) {
             AbstractTexture::subImage<3>(level, range, image);
         }
 
@@ -879,7 +879,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
          * expecting it's not @cpp nullptr @ce, its format is the same as
          * texture format and its size is the same as @p range size.
          */
-        void compressedSubImage(Int level, const Range3Di& range, MutableCompressedImageView3D& image);
+        void compressedSubImage(Int level, const Range3Di& range, const MutableCompressedImageView3D& image);
 
         /**
          * @brief Read a range of given compressed texture mip level to a buffer image

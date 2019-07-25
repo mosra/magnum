@@ -415,7 +415,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * it's not @cpp nullptr @ce and its size is the same as @p rectangle
          * size.
          */
-        void read(const Range2Di& rectangle, MutableImageView2D& image);
+        void read(const Range2Di& rectangle, const MutableImageView2D& image);
 
         #ifndef MAGNUM_TARGET_GLES2
         /**

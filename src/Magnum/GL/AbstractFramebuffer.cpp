@@ -335,7 +335,7 @@ AbstractFramebuffer& AbstractFramebuffer::clearDepthStencil(const Float depth, c
 }
 #endif
 
-void AbstractFramebuffer::read(const Range2Di& rectangle, MutableImageView2D& image) {
+void AbstractFramebuffer::read(const Range2Di& rectangle, const MutableImageView2D& image) {
     CORRADE_ASSERT(image.data().data() != nullptr,
         "GL::AbstractFramebuffer::read(): image view is nullptr", );
     CORRADE_ASSERT(image.size() == rectangle.size(),
@@ -362,8 +362,7 @@ void AbstractFramebuffer::read(const Range2Di& rectangle, Image2D& image) {
 
     /* Replace the storage, proxy to the function taking a view */
     image = Image2D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), rectangle.size(), std::move(data)};
-    MutableImageView2D view(image);
-    read(rectangle, view);
+    read(rectangle, MutableImageView2D(image));
 }
 
 Image2D AbstractFramebuffer::read(const Range2Di& rectangle, Image2D&& image) {

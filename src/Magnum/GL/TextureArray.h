@@ -529,7 +529,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * the pixels into the memory provided by @p image, expecting it's not
          * @cpp nullptr @ce and its size is the same as size of given @p level.
          */
-        void image(Int level, BasicMutableImageView<dimensions+1>& image) {
+        void image(Int level, const BasicMutableImageView<dimensions+1>& image) {
             AbstractTexture::image<dimensions+1>(level, image);
         }
 
@@ -585,7 +585,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * expecting it's not @cpp nullptr @ce, its format is the same as
          * texture format and its size is the same as size of given @p level.
          */
-        void compressedImage(Int level, BasicMutableCompressedImageView<dimensions+1>& image) {
+        void compressedImage(Int level, const BasicMutableCompressedImageView<dimensions+1>& image) {
             AbstractTexture::compressedImage<dimensions+1>(level, image);
         }
 
@@ -642,7 +642,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * expecting it's not @cpp nullptr @ce and its size is the same as
          * @p range size.
          */
-        void subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, BasicMutableImageView<dimensions+1>& image) {
+        void subImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, const BasicMutableImageView<dimensions+1>& image) {
             AbstractTexture::subImage<dimensions+1>(level, range, image);
         }
 
@@ -704,7 +704,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
          * expecting it's not @cpp nullptr @ce, its format is the same as
          * texture format and its size is the same as @p range size.
          */
-        void compressedSubImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, BasicMutableCompressedImageView<dimensions+1>& image) {
+        void compressedSubImage(Int level, const RangeTypeFor<dimensions+1, Int>& range, const BasicMutableCompressedImageView<dimensions+1>& image) {
             AbstractTexture::compressedSubImage<dimensions+1>(level, range, image);
         }
 

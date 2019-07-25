@@ -376,7 +376,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * the memory provided by @p image, expecting it's not @cpp nullptr @ce
          * and its size is the same as texture size.
          */
-        void image(MutableImageView2D& image) {
+        void image(const MutableImageView2D& image) {
             AbstractTexture::image<2>(0, image);
         }
 
@@ -426,7 +426,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * it's not @cpp nullptr @ce, its format is the same as texture format
          * and its size is the same as texture size.
          */
-        void compressedImage(MutableCompressedImageView2D& image) {
+        void compressedImage(const MutableCompressedImageView2D& image) {
             AbstractTexture::compressedImage<2>(0, image);
         }
 
@@ -476,7 +476,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * reads the pixels into the memory provided by @p image, expecting
          * it's not @cpp nullptr @ce and its size is the same as @p range size.
          */
-        void subImage(const Range2Di& range, MutableImageView2D& image) {
+        void subImage(const Range2Di& range, const MutableImageView2D& image) {
             AbstractTexture::subImage<2>(0, range, image);
         }
 
@@ -532,7 +532,7 @@ class MAGNUM_GL_EXPORT RectangleTexture: public AbstractTexture {
          * expecting it's not @cpp nullptr @ce, its format is the same as
          * texture format and its size is the same as @p range size.
          */
-        void compressedSubImage(const Range2Di& range, MutableCompressedImageView2D& image) {
+        void compressedSubImage(const Range2Di& range, const MutableCompressedImageView2D& image) {
             AbstractTexture::compressedSubImage<2>(0, range, image);
         }
 

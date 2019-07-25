@@ -1602,7 +1602,7 @@ template void MAGNUM_GL_EXPORT AbstractTexture::image<1>(GLint, Image<1>&);
 template void MAGNUM_GL_EXPORT AbstractTexture::image<2>(GLint, Image<2>&);
 template void MAGNUM_GL_EXPORT AbstractTexture::image<3>(GLint, Image<3>&);
 
-template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, BasicMutableImageView<dimensions>& image) {
+template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, const BasicMutableImageView<dimensions>& image) {
     #ifndef CORRADE_NO_ASSERT
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
     CORRADE_ASSERT(image.data().data() != nullptr,
@@ -1616,9 +1616,9 @@ template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, BasicM
     (this->*Context::current().state().texture->getImageImplementation)(level, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().size(), image.data());
 }
 
-template void MAGNUM_GL_EXPORT AbstractTexture::image<1>(GLint, BasicMutableImageView<1>&);
-template void MAGNUM_GL_EXPORT AbstractTexture::image<2>(GLint, BasicMutableImageView<2>&);
-template void MAGNUM_GL_EXPORT AbstractTexture::image<3>(GLint, BasicMutableImageView<3>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::image<1>(GLint, const BasicMutableImageView<1>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::image<2>(GLint, const BasicMutableImageView<2>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::image<3>(GLint, const BasicMutableImageView<3>&);
 
 template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, BufferImage<dimensions>& image, BufferUsage usage) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
@@ -1670,7 +1670,7 @@ template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<1>(GLint, Compre
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<2>(GLint, CompressedImage<2>&);
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<3>(GLint, CompressedImage<3>&);
 
-template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, BasicMutableCompressedImageView<dimensions>& image) {
+template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, const BasicMutableCompressedImageView<dimensions>& image) {
     #ifndef CORRADE_NO_ASSERT
     CORRADE_ASSERT(image.data().data() != nullptr,
         "GL::AbstractTexture::compressedImage(): image view is nullptr", );
@@ -1705,9 +1705,9 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLi
     (this->*Context::current().state().texture->getCompressedImageImplementation)(level, image.data().size(), image.data());
 }
 
-template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<1>(GLint, BasicMutableCompressedImageView<1>&);
-template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<2>(GLint, BasicMutableCompressedImageView<2>&);
-template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<3>(GLint, BasicMutableCompressedImageView<3>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<1>(GLint, const BasicMutableCompressedImageView<1>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<2>(GLint, const BasicMutableCompressedImageView<2>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<3>(GLint, const BasicMutableCompressedImageView<3>&);
 
 template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, CompressedBufferImage<dimensions>& image, BufferUsage usage) {
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
@@ -1749,15 +1749,14 @@ template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint leve
         data = Containers::Array<char>{dataSize};
 
     image = Image<dimensions>{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, std::move(data)};
-    BasicMutableImageView<dimensions> view(image);
-    subImage(level, range, view);
+    subImage(level, range, BasicMutableImageView<dimensions>(image));
 }
 
 template void MAGNUM_GL_EXPORT AbstractTexture::subImage<1>(GLint, const Range1Di&, Image<1>&);
 template void MAGNUM_GL_EXPORT AbstractTexture::subImage<2>(GLint, const Range2Di&, Image<2>&);
 template void MAGNUM_GL_EXPORT AbstractTexture::subImage<3>(GLint, const Range3Di&, Image<3>&);
 
-template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, BasicMutableImageView<dimensions>& image) {
+template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, const BasicMutableImageView<dimensions>& image) {
     CORRADE_ASSERT(image.data().data() != nullptr,
         "GL::AbstractTexture::subImage(): image view is nullptr", );
     CORRADE_ASSERT(image.size() == range.size(),
@@ -1774,9 +1773,9 @@ template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint leve
     glGetTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), GLenum(pixelFormat(image.format())), GLenum(pixelType(image.format(), image.formatExtra())), image.data().size(), image.data());
 }
 
-template void MAGNUM_GL_EXPORT AbstractTexture::subImage<1>(GLint, const Range1Di&, BasicMutableImageView<1>&);
-template void MAGNUM_GL_EXPORT AbstractTexture::subImage<2>(GLint, const Range2Di&, BasicMutableImageView<2>&);
-template void MAGNUM_GL_EXPORT AbstractTexture::subImage<3>(GLint, const Range3Di&, BasicMutableImageView<3>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::subImage<1>(GLint, const Range1Di&, const BasicMutableImageView<1>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::subImage<2>(GLint, const Range2Di&, const BasicMutableImageView<2>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::subImage<3>(GLint, const Range3Di&, const BasicMutableImageView<3>&);
 
 template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, BufferImage<dimensions>& image, const BufferUsage usage) {
     createIfNotAlready();
@@ -1847,7 +1846,7 @@ template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<1>(GLint, con
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<2>(GLint, const Range2Di&, CompressedImage<2>&);
 template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<3>(GLint, const Range3Di&, CompressedImage<3>&);
 
-template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, BasicMutableCompressedImageView<dimensions>& image) {
+template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, const BasicMutableCompressedImageView<dimensions>& image) {
     #ifndef CORRADE_NO_ASSERT
     CORRADE_ASSERT(image.data().data() != nullptr,
         "GL::AbstractTexture::compressedSubImage(): image view is nullptr", );
@@ -1885,9 +1884,9 @@ template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const 
     glGetCompressedTextureSubImage(_id, level, paddedOffset.x(), paddedOffset.y(), paddedOffset.z(), paddedSize.x(), paddedSize.y(), paddedSize.z(), image.data().size(), image.data());
 }
 
-template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<1>(GLint, const Range1Di&, BasicMutableCompressedImageView<1>&);
-template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<2>(GLint, const Range2Di&, BasicMutableCompressedImageView<2>&);
-template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<3>(GLint, const Range3Di&, BasicMutableCompressedImageView<3>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<1>(GLint, const Range1Di&, const BasicMutableCompressedImageView<1>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<2>(GLint, const Range2Di&, const BasicMutableCompressedImageView<2>&);
+template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<3>(GLint, const Range3Di&, const BasicMutableCompressedImageView<3>&);
 
 template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, CompressedBufferImage<dimensions>& image, const BufferUsage usage) {
     createIfNotAlready();
