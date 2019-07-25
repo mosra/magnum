@@ -495,22 +495,22 @@ typedef Math::Deg<Float> Deg;
 /** @brief Angle in float radians */
 typedef Math::Rad<Float> Rad;
 
-/** @brief Float 1D range */
+/** @brief One-dimensional float range */
 typedef Math::Range1D<Float> Range1D;
 
-/** @brief Float 2D range */
+/** @brief Two-dimensional float range */
 typedef Math::Range2D<Float> Range2D;
 
-/** @brief Float 3D range */
+/** @brief Three-dimensional float range */
 typedef Math::Range3D<Float> Range3D;
 
-/** @brief Signed integer 1D range */
+/** @brief One-dimensional signed integer range */
 typedef Math::Range1D<Int> Range1Di;
 
-/** @brief Signed integer 2D range */
+/** @brief Two-dimensional signed integer range */
 typedef Math::Range2D<Int> Range2Di;
 
-/** @brief Signed integer 3D range */
+/** @brief Three-dimensional signed integer range */
 typedef Math::Range3D<Int> Range3Di;
 
 /** @brief Float frustum */
@@ -695,13 +695,13 @@ typedef Math::Deg<Double> Degd;
 /** @brief Angle in double radians */
 typedef Math::Rad<Double> Radd;
 
-/** @brief Double 1D range */
+/** @brief One-dimensional double range */
 typedef Math::Range1D<Double> Range1Dd;
 
-/** @brief Double 2D range */
+/** @brief Two-dimensional double range */
 typedef Math::Range2D<Double> Range2Dd;
 
-/** @brief Double 3D range */
+/** @brief Three-dimensional double range */
 typedef Math::Range3D<Double> Range3Dd;
 
 /** @brief Double frustum */

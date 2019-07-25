@@ -104,9 +104,9 @@ template<UnsignedInt dimensions, class T> class Range {
         constexpr /*implicit*/ Range() noexcept: Range<dimensions, T>{ZeroInit, typename std::conditional<dimensions == 1, void*, ZeroInitT*>::type{}} {}
 
         /**
-         * @brief Construct zero range
+         * @brief Construct a zero range
          *
-         * Construct zero-size range positioned at origin.
+         * Construct a zero-size range positioned at origin.
          */
         constexpr explicit Range(ZeroInitT) noexcept: Range<dimensions, T>{ZeroInit, typename std::conditional<dimensions == 1, void*, ZeroInitT*>::type{}} {}
 

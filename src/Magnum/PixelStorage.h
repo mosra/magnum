@@ -106,11 +106,11 @@ class MAGNUM_EXPORT PixelStorage {
             return *this;
         }
 
-        /** @brief Pixel, row and image skipping */
+        /** @brief Pixel, row and image skip */
         constexpr Vector3i skip() const { return _skip; }
 
         /**
-         * @brief Set pixel, row and image skipping
+         * @brief Set pixel, row and image skip
          *
          * The Y value is used only for 2D and 3D images, the Z value is used
          * only for 3D images. Default is @cpp 0 @ce.

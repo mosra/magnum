@@ -309,7 +309,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         AbstractFramebuffer& setViewport(const Range2Di& rectangle);
 
         /**
-         * @brief Clear specified buffers in framebuffer
+         * @brief Clear specified buffers in the framebuffer
          * @param mask              Which buffers to clear
          * @return Reference to self (for method chaining)
          *
@@ -374,7 +374,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         #endif
 
         /**
-         * @brief Read block of pixels from framebuffer to image
+         * @brief Read block of pixels from the framebuffer to an image
          * @param rectangle         Framebuffer rectangle to read
          * @param image             Image where to put the data
          *
@@ -408,7 +408,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         Image2D read(const Range2Di& rectangle, Image2D&& image);
 
         /**
-         * @brief Read block of pixels from framebuffer to image
+         * @brief Read block of pixels from the framebuffer to an image view
          *
          * Compared to @ref read(const Range2Di&, Image2D&) the function
          * reads the pixels into the memory provided by @p image, expecting
