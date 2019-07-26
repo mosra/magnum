@@ -465,7 +465,7 @@ Context::Context(NoCreateT, Utility::Arguments& args, Int argc, const char** arg
     CORRADE_INTERNAL_ASSERT(args.prefix() == "magnum");
     args.addOption("disable-workarounds")
         .setHelp("disable-workarounds", "driver workarounds to disable\n      (see https://doc.magnum.graphics/magnum/opengl-workarounds.html for detailed info)", "LIST")
-        .addOption("disable-extensions").setHelp("disable-extensions", "OpenGL extensions to disable", "LIST")
+        .addOption("disable-extensions").setHelp("disable-extensions", "API extensions to disable", "LIST")
         .addOption("gpu-validation", "off").setHelp("gpu-validation", "GPU validation using KHR_debug (if present)", "off|on")
         .addOption("log", "default").setHelp("log", "console logging", "default|quiet|verbose")
         .setFromEnvironment("disable-workarounds")
@@ -713,7 +713,7 @@ bool Context::tryCreate() {
 
     /* Disable extensions as requested by the user */
     if(!_disabledExtensions.empty()) {
-        Debug{output} << "Disabling extensions:";
+        bool headerPrinted = false;
 
         /* Put remaining extensions into the hashmap for faster lookup */
         std::unordered_map<std::string, Extension> allExtensions{std::move(futureExtensions)};
@@ -725,10 +725,16 @@ bool Context::tryCreate() {
            for each */
         for(auto&& extension: _disabledExtensions) {
             auto found = allExtensions.find(extension);
-            /** @todo Error message here? I should not clutter the output at this point */
+            /* No error message here because some of the extensions could be
+               from Vulkan or OpenAL. That also means we print the header only
+               when we actually have something to say */
             if(found == allExtensions.end()) continue;
 
             _extensionRequiredVersion[found->second.index()] = Version::None;
+            if(!headerPrinted) {
+                Debug{output} << "Disabling extensions:";
+                headerPrinted = true;
+            }
             Debug{output} << "   " << extension;
         }
     }

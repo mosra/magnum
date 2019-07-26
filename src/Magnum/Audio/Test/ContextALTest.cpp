@@ -43,7 +43,9 @@ struct ContextALTest: TestSuite::Tester {
     void ignoreUnrelatedOptions();
 
     void extensionsString();
-    void isExtensionEnabled();
+    void isExtensionSupported();
+    void isExtensionUnsupported();
+    void isExtensionDisabled();
 };
 
 ContextALTest::ContextALTest():
@@ -57,7 +59,9 @@ ContextALTest::ContextALTest():
 
     addTests({&ContextALTest::ignoreUnrelatedOptions,
               &ContextALTest::extensionsString,
-              &ContextALTest::isExtensionEnabled});
+              &ContextALTest::isExtensionSupported,
+              &ContextALTest::isExtensionUnsupported,
+              &ContextALTest::isExtensionDisabled});
 }
 
 void ContextALTest::construct() {
@@ -110,10 +114,43 @@ void ContextALTest::extensionsString() {
     CORRADE_VERIFY(!extensions.empty());
 }
 
-void ContextALTest::isExtensionEnabled() {
+void ContextALTest::isExtensionSupported() {
+    Context context;
+    CORRADE_VERIFY(context.isExtensionSupported<Extensions::ALC::EXT::ENUMERATION>());
+    CORRADE_VERIFY(!context.isExtensionDisabled<Extensions::ALC::EXT::ENUMERATION>());
+
+    Extension e{Extensions::ALC::EXT::ENUMERATION::Index,
+                Extensions::ALC::EXT::ENUMERATION::string()};
+    CORRADE_VERIFY(context.isExtensionSupported(e));
+    CORRADE_VERIFY(!context.isExtensionDisabled(e));
+}
+
+void ContextALTest::isExtensionUnsupported() {
     Context context;
 
-    CORRADE_VERIFY(Context::current().isExtensionSupported<Extensions::ALC::EXT::ENUMERATION>());
+    if(context.isExtensionSupported<Extensions::ALC::SOFTX::HRTF>())
+        CORRADE_SKIP("Extension" + std::string{Extensions::ALC::SOFTX::HRTF::string()} + " is supported, can't test.");
+
+    CORRADE_VERIFY(!context.isExtensionSupported<Extensions::ALC::SOFTX::HRTF>());
+    CORRADE_VERIFY(!context.isExtensionDisabled<Extensions::ALC::SOFTX::HRTF>());
+
+    Extension e{Extensions::ALC::SOFTX::HRTF::Index,
+                Extensions::ALC::SOFTX::HRTF::string()};
+    CORRADE_VERIFY(!context.isExtensionSupported(e));
+    CORRADE_VERIFY(!context.isExtensionDisabled(e));
+}
+
+void ContextALTest::isExtensionDisabled() {
+    /* Yes, FFS. this is a weird-ass name */
+    const char* argv[] = { "", "--magnum-disable-extensions", "ALC_ENUMERATION_EXT" };
+    Context context{Containers::arraySize(argv), argv};
+    CORRADE_VERIFY(!context.isExtensionSupported<Extensions::ALC::EXT::ENUMERATION>());
+    CORRADE_VERIFY(context.isExtensionDisabled<Extensions::ALC::EXT::ENUMERATION>());
+
+    Extension e{Extensions::ALC::EXT::ENUMERATION::Index,
+                Extensions::ALC::EXT::ENUMERATION::string()};
+    CORRADE_VERIFY(!context.isExtensionSupported(e));
+    CORRADE_VERIFY(context.isExtensionDisabled(e));
 }
 
 }}}}

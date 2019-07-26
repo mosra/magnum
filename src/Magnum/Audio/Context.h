@@ -43,6 +43,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
 #include "Magnum/Audio/visibility.h"
+#include "Magnum/Math/BoolVector.h"
 #include "MagnumExternal/OpenAL/extensions.h"
 
 namespace Magnum { namespace Audio {
@@ -91,13 +92,16 @@ The context is configurable through command-line options, that can be passed
 for example from the `Platform::*Application` classes. Usage:
 
 @code{.sh}
-<application> [--magnum-help] [--magnum-log default|quiet|verbose] ...
+<application> [--magnum-help] [--magnum-disable-extensions LIST]
+              [--magnum-log default|quiet|verbose] ...
 @endcode
 
 Arguments:
 
 -   `...` --- main application arguments (see `-h` or `--help` for details)
 -   `--magnum-help` --- display this help message and exit
+-   `--magnum-disable-extensions LIST` --- API extensions to disable
+    (environment: `MAGNUM_DISABLE_EXTENSIONS`)
 -   `--magnum-log default|quiet|verbose` --- console logging
     (environment: `MAGNUM_LOG`) (default: `default`)
 
@@ -380,6 +384,28 @@ class MAGNUM_AUDIO_EXPORT Context {
             return _extensionStatus[extension.index()];
         }
 
+        /**
+         * @brief Whether given extension is disabled
+         *
+         * Can be used for detecting driver bug workarounds. Disabled
+         * extensions return @cpp false @ce in @ref isExtensionSupported() even
+         * if they are advertised as being supported by the driver.
+         */
+        template<class T> bool isExtensionDisabled() const {
+            return _disabledExtensions[T::Index];
+        }
+
+        /**
+         * @brief Whether given extension is disabled
+         *
+         * Can be used e.g. for listing extensions available on current
+         * hardware, but for general usage prefer @ref isExtensionDisabled() const,
+         * as it does most operations in compile time.
+         */
+        bool isExtensionDisabled(const Extension& extension) const {
+            return _disabledExtensions[extension.index()];
+        }
+
     private:
         MAGNUM_AUDIO_LOCAL static Context* _current;
 
@@ -388,8 +414,10 @@ class MAGNUM_AUDIO_EXPORT Context {
         ALCdevice* _device;
         ALCcontext* _context;
 
-        std::bitset<Implementation::ExtensionCount> _extensionStatus;
+        Math::BoolVector<Implementation::ExtensionCount> _extensionStatus;
+        Math::BoolVector<Implementation::ExtensionCount> _disabledExtensions;
         std::vector<Extension> _supportedExtensions;
+        std::vector<std::string> _disabledExtensionStrings;
 };
 
 /**

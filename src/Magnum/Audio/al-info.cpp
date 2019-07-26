@@ -140,6 +140,8 @@ int main(const int argc, const char** const argv) {
         d << "   " << extensionName << std::string(60-extensionName.size(), ' ');
         if(c.isExtensionSupported(extension))
             d << "SUPPORTED";
+        else if(c.isExtensionDisabled(extension))
+            d << " removed";
         else
             d << "   -";
     }

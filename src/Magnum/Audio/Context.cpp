@@ -128,10 +128,16 @@ Context::Context(NoCreateT, Int argc, const char** argv) noexcept: _device{}, _c
     Utility::Arguments args{"magnum",
         Utility::Arguments::Flag::IgnoreUnknownOptions};
     args.addOption("log", "default").setHelp("log", "console logging", "default|quiet|verbose")
+        .addOption("disable-extensions").setHelp("disable-extensions", "API extensions to disable", "LIST")
         .setFromEnvironment("log")
         .parse(argc, argv);
 
+    /* Decide how to display initialization log */
     _displayInitializationLog = !(args.value("log") == "quiet" || args.value("log") == "QUIET");
+
+    /* Disable extensions */
+    for(auto&& extension: Utility::String::splitWithoutEmptyParts(args.value("disable-extensions")))
+        _disabledExtensionStrings.push_back(extension);
 }
 
 void Context::create(const Configuration& configuration) {
@@ -211,14 +217,43 @@ bool Context::tryCreate(const Configuration& configuration) {
         const auto found = extensionMap.find(extension);
         if(found != extensionMap.end()) {
             _supportedExtensions.push_back(found->second);
-            _extensionStatus.set(found->second.index());
+            _extensionStatus.set(found->second.index(), true);
         }
     }
 
-    if(_displayInitializationLog) {
-        /* Print some info */
-        Debug() << "Audio Renderer:" << rendererString() << "by" << vendorString();
-        Debug() << "OpenAL version:" << versionString();
+    std::ostream* output = _displayInitializationLog ? Debug::output() : nullptr;
+
+    /* Print some info */
+    Debug{output} << "Audio renderer:" << rendererString() << "by" << vendorString();
+    Debug{output} << "OpenAL version:" << versionString();
+
+    /* Disable extensions as requested by the user */
+    if(!_disabledExtensionStrings.empty()) {
+        bool headerPrinted = false;
+
+        /* Disable extensions that are known and supported and print a message
+           for each */
+        for(auto&& extension: _disabledExtensionStrings) {
+            auto found = extensionMap.find(extension);
+            /* No error message here because some of the extensions could be
+               from Vulkan or OpenGL. That also means we print the header only
+               when we actually have something to say */
+            if(found == extensionMap.end()) continue;
+
+            /* If the extension isn't supported in the first place, don't do
+               anything. If it is, set its status as unsupported but flip the
+               corresponding bit in the disabled bitmap so we know it is
+               supported and only got disabled */
+            if(!_extensionStatus[found->second.index()]) continue;
+            _extensionStatus.set(found->second.index(), false);
+            _disabledExtensions.set(found->second.index(), true);
+
+            if(!headerPrinted) {
+                Debug{output} << "Disabling extensions:";
+                headerPrinted = true;
+            }
+            Debug{output} << "   " << extension;
+        }
     }
 
     return true;
