@@ -6,6 +6,7 @@
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
               Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
+    Copyright © 2019 Guillaume Jacquemin <williamjcm@users.noreply.github.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -158,22 +159,42 @@ class MAGNUM_AUDIO_EXPORT Context {
         /**
          * @brief Constructor
          *
-         * Creates OpenAL context with given configuration.
+         * Parses command-line arguments, and creates OpenAL context with given
+         * configuration.
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        explicit Context(const Configuration& configuration = Configuration());
-        #else
-        explicit Context(const Configuration& configuration);
-        explicit Context();
-        #endif
+        explicit Context(const Configuration& configuration, Int argc, const char** argv): Context(NoCreate, argc, argv) { create(configuration); }
 
-        /**
-         * @brief Construct without creating the underlying OpenAL context
-         *
-         * Useful in cases where you need to defer context creation to a later
-         * time, for example to do a more involved configuration. Call
-         * @ref create() or @ref tryCreate() to create the actual context.
-         */
+        /** @overload */
+        explicit Context(const Configuration& configuration, Int argc, char** argv): Context(configuration, argc, const_cast<const char**>(argv)) {}
+
+        /** @overload */
+        explicit Context(const Configuration& configuration, Int argc, std::nullptr_t argv): Context(configuration, argc, static_cast<const char**>(argv)) {}
+
+        /** @overload */
+        explicit Context(const Configuration& configuration): Context(configuration, 0, nullptr) {}
+
+        /** @overload */
+        explicit Context(Int argc, const char** argv);
+
+        /** @overload */
+        explicit Context(Int argc, char** argv): Context(argc, const_cast<const char**>(argv)) {}
+
+        /** @overload */
+        explicit Context(Int argc, std::nullptr_t argv): Context(argc, static_cast<const char**>(argv)) {}
+
+        /** @overload */
+        explicit Context(): Context(0, nullptr) {}
+
+        /** @overload */
+        explicit Context(NoCreateT, Int argc, const char** argv);
+
+        /** @overload */
+        explicit Context(NoCreateT, Int argc, char** argv): Context(NoCreate, argc, const_cast<const char**>(argv)) {}
+
+        /** @overload */
+        explicit Context(NoCreateT, Int argc, std::nullptr_t argv): Context(NoCreate, argc, static_cast<const char**>(argv)) {}
+
+        /** @overload */
         explicit Context(NoCreateT) noexcept;
 
         /** @brief Copying is not allowed */
@@ -330,6 +351,8 @@ class MAGNUM_AUDIO_EXPORT Context {
 
     private:
         MAGNUM_AUDIO_LOCAL static Context* _current;
+
+        bool _displayInitializationLog;
 
         ALCdevice* _device;
         ALCcontext* _context;
