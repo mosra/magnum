@@ -4,6 +4,7 @@
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
               Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
+    Copyright © 2019 Guillaume Jacquemin <williamjcm@users.noreply.github.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -32,6 +33,7 @@
 #include <alc.h>
 #include <cstring>
 
+#include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -120,15 +122,16 @@ Context& Context::current() {
     return *_current;
 }
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-Context::Context(): Context{Configuration{}} {}
-#endif
+Context::Context(Int argc, const char** argv): Context(Configuration{}, argc, argv) {}
 
-Context::Context(const Configuration& configuration) {
-    create(configuration);
+Context::Context(NoCreateT, Int argc, const char** argv) noexcept: _device{}, _context{} {
+    Utility::Arguments args{"magnum"};
+    args.addOption("log", "default").setHelp("log", "console logging", "default|quiet|verbose")
+        .setFromEnvironment("log")
+        .parse(argc, argv);
+
+    _displayInitializationLog = !(args.value("log") == "quiet" || args.value("log") == "QUIET");
 }
-
-Context::Context(NoCreateT) noexcept: _device{}, _context{} {}
 
 void Context::create(const Configuration& configuration) {
     if(!tryCreate(configuration)) std::exit(1);
@@ -211,9 +214,11 @@ bool Context::tryCreate(const Configuration& configuration) {
         }
     }
 
-    /* Print some info */
-    Debug() << "Audio Renderer:" << rendererString() << "by" << vendorString();
-    Debug() << "OpenAL version:" << versionString();
+    if(_displayInitializationLog) {
+        /* Print some info */
+        Debug() << "Audio Renderer:" << rendererString() << "by" << vendorString();
+        Debug() << "OpenAL version:" << versionString();
+    }
 
     return true;
 }

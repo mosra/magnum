@@ -6,6 +6,7 @@
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
               Vladimír Vondruš <mosra@centrum.cz>
     Copyright © 2015 Jonathan Hale <squareys@googlemail.com>
+    Copyright © 2019 Guillaume Jacquemin <williamjcm@users.noreply.github.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -83,6 +84,27 @@ class MAGNUM_AUDIO_EXPORT Extension {
 
 /**
 @brief OpenAL context
+
+@section AL-Context-command-line Command-line options
+
+The context is configurable through command-line options, that can be passed
+for example from the `Platform::*Application` classes. Usage:
+
+@code{.sh}
+<application> [--magnum-help] [--magnum-log default|quiet|verbose] ...
+@endcode
+
+Arguments:
+
+-   `...` --- main application arguments (see `-h` or `--help` for details)
+-   `--magnum-help` --- display this help message and exit
+-   `--magnum-log default|quiet|verbose` --- console logging
+    (environment: `MAGNUM_LOG`) (default: `default`)
+
+Note that all options are prefixed with `--magnum-` to avoid conflicts with
+options passed to the application itself. Options that don't have this prefix
+are completely ignored, see documentation of the
+@ref Utility-Arguments-delegating "Utility::Arguments" class for details.
  */
 class MAGNUM_AUDIO_EXPORT Context {
     public:
@@ -158,14 +180,31 @@ class MAGNUM_AUDIO_EXPORT Context {
         /**
          * @brief Constructor
          *
-         * Creates OpenAL context with given configuration.
+         * Parses command-line arguments, and creates OpenAL context with given
+         * configuration.
          */
-        #ifdef DOXYGEN_GENERATING_OUTPUT
-        explicit Context(const Configuration& configuration = Configuration());
-        #else
-        explicit Context(const Configuration& configuration);
-        explicit Context();
-        #endif
+        explicit Context(const Configuration& configuration, Int argc, const char** argv): Context(NoCreate, argc, argv) { create(configuration); }
+
+        /** @overload */
+        explicit Context(const Configuration& configuration, Int argc, char** argv): Context(configuration, argc, const_cast<const char**>(argv)) {}
+
+        /** @overload */
+        explicit Context(const Configuration& configuration, Int argc, std::nullptr_t argv): Context(configuration, argc, static_cast<const char**>(argv)) {}
+
+        /** @overload */
+        explicit Context(const Configuration& configuration): Context(configuration, 0, nullptr) {}
+
+        /** @overload */
+        explicit Context(Int argc, const char** argv);
+
+        /** @overload */
+        explicit Context(Int argc, char** argv): Context(argc, const_cast<const char**>(argv)) {}
+
+        /** @overload */
+        explicit Context(Int argc, std::nullptr_t argv): Context(argc, static_cast<const char**>(argv)) {}
+
+        /** @overload */
+        explicit Context(): Context(0, nullptr) {}
 
         /**
          * @brief Construct without creating the underlying OpenAL context
@@ -174,7 +213,16 @@ class MAGNUM_AUDIO_EXPORT Context {
          * time, for example to do a more involved configuration. Call
          * @ref create() or @ref tryCreate() to create the actual context.
          */
-        explicit Context(NoCreateT) noexcept;
+        explicit Context(NoCreateT, Int argc, const char** argv) noexcept;
+
+        /** @overload */
+        explicit Context(NoCreateT, Int argc, char** argv) noexcept: Context(NoCreate, argc, const_cast<const char**>(argv)) {}
+
+        /** @overload */
+        explicit Context(NoCreateT, Int argc, std::nullptr_t argv) noexcept: Context(NoCreate, argc, static_cast<const char**>(argv)) {}
+
+        /** @overload */
+        explicit Context(NoCreateT) noexcept: Context{NoCreate, 0, nullptr} {}
 
         /** @brief Copying is not allowed */
         Context(const Context&) = delete;
@@ -330,6 +378,8 @@ class MAGNUM_AUDIO_EXPORT Context {
 
     private:
         MAGNUM_AUDIO_LOCAL static Context* _current;
+
+        bool _displayInitializationLog;
 
         ALCdevice* _device;
         ALCcontext* _context;
