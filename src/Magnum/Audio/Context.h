@@ -60,6 +60,27 @@ to core.
 
 See also the @ref Audio::Extensions namespace, which contain compile-time
 information about OpenAL extensions.
+
+@section AL-Context-command-line Command-line options
+
+The context is configurable through command-line options, that are passed
+from the `Platform::*Application` classes. Usage:
+
+@code{.sh}
+<application> [--magnum-help] [--magnum-log default|quiet|verbose] ...
+@endcode
+
+Arguments:
+
+-   `...` --- main application arguments (see `-h` or `--help` for details)
+-   `--magnum-help` --- display this help message and exit
+-   `--magnum-log default|quiet|verbose` --- console logging
+    (environment: `MAGNUM_LOG`) (default: `default`)
+
+Note that all options are prefixed with `--magnum-` to avoid conflicts with
+options passed to the application itself. Options that don't have this prefix
+are completely ignored, see documentation of the
+@ref Utility-Arguments-delegating "Utility::Arguments" class for details.
 */
 class MAGNUM_AUDIO_EXPORT Extension {
     public:
