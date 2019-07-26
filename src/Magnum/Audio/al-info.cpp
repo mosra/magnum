@@ -110,6 +110,7 @@ int main(const int argc, const char** const argv) {
     Utility::Arguments args;
     args.addBooleanOption('s', "short").setHelp("short", "display just essential info and exit")
         .addBooleanOption("extension-strings").setHelp("extension-strings", "list all extension strings provided by the driver (implies --short)")
+        .addSkippedPrefix("magnum", "engine-specific options")
         .parse(argc, argv);
 
     Debug() << "";
@@ -118,7 +119,7 @@ int main(const int argc, const char** const argv) {
     Debug() << "  +---------------------------------------------------------+";
     Debug() << "";
 
-    Audio::Context c;
+    Audio::Context c{argc, argv};
     Debug() << "Available devices:";
     for(const auto& device: Audio::Context::deviceSpecifierStrings())
         Debug() << "   " << device;
