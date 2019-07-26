@@ -647,8 +647,6 @@ class EmscriptenApplication {
         int (*_callback)(void*);
 };
 
-CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::Flags)
-
 #ifdef MAGNUM_TARGET_GL
 /**
 @brief WebGL context configuration

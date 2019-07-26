@@ -581,8 +581,6 @@ class GlfwApplication {
         Vector2i _maxWindowSize;
 };
 
-CORRADE_ENUMSET_OPERATORS(GlfwApplication::Flags)
-
 #ifdef MAGNUM_TARGET_GL
 /**
 @brief OpenGL context configuration

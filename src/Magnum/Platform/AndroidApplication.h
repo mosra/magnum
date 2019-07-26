@@ -423,8 +423,6 @@ class AndroidApplication {
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 };
 
-CORRADE_ENUMSET_OPERATORS(AndroidApplication::Flags)
-
 /**
 @brief OpenGL context configuration
 

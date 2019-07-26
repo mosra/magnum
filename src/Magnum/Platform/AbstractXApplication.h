@@ -272,8 +272,6 @@ class AbstractXApplication {
         Flags _flags;
 };
 
-CORRADE_ENUMSET_OPERATORS(AbstractXApplication::Flags)
-
 /**
 @brief OpenGL context configuration
 

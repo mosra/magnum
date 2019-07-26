@@ -774,7 +774,6 @@ CORRADE_ENUMSET_OPERATORS(Context::Flags)
 #endif
 CORRADE_ENUMSET_OPERATORS(Context::DetectedDrivers)
 CORRADE_ENUMSET_OPERATORS(Context::States)
-CORRADE_ENUMSET_OPERATORS(Context::InternalFlags)
 
 #ifndef MAGNUM_TARGET_WEBGL
 /** @debugoperatorclassenum{Context,Context::Flag} */
