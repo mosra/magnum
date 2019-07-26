@@ -40,6 +40,7 @@ struct ContextALTest: TestSuite::Tester {
     void constructMove();
 
     void quietLog();
+    void ignoreUnrelatedOptions();
 
     void extensionsString();
     void isExtensionEnabled();
@@ -51,7 +52,8 @@ ContextALTest::ContextALTest() {
 
     addInstancedTests({&ContextALTest::quietLog}, 2);
 
-    addTests({&ContextALTest::extensionsString,
+    addTests({&ContextALTest::ignoreUnrelatedOptions,
+              &ContextALTest::extensionsString,
               &ContextALTest::isExtensionEnabled});
 }
 
@@ -88,6 +90,13 @@ void ContextALTest::quietLog() {
     Debug redirectOutput{&out};
     Context context{Containers::arraySize(argv), argv};
     CORRADE_COMPARE(out.str().empty(), bool(testCaseInstanceId()));
+}
+
+void ContextALTest::ignoreUnrelatedOptions() {
+    const char* argv[] = { "", "--magnum-gpu-validation", "on" };
+
+    Context context{Containers::arraySize(argv), argv};
+    CORRADE_VERIFY(Context::hasCurrent());
 }
 
 void ContextALTest::extensionsString() {

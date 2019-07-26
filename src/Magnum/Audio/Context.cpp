@@ -125,7 +125,8 @@ Context& Context::current() {
 Context::Context(Int argc, const char** argv): Context(Configuration{}, argc, argv) {}
 
 Context::Context(NoCreateT, Int argc, const char** argv) noexcept: _device{}, _context{} {
-    Utility::Arguments args{"magnum"};
+    Utility::Arguments args{"magnum",
+        Utility::Arguments::Flag::IgnoreUnknownOptions};
     args.addOption("log", "default").setHelp("log", "console logging", "default|quiet|verbose")
         .setFromEnvironment("log")
         .parse(argc, argv);
