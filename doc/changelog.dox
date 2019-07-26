@@ -459,6 +459,8 @@ See also:
     [mosra/magnum#211](https://github.com/mosra/magnum/issues/211))
 -   Fixed Gentoo build instructions (see
     [mosra/magnum#344](https://github.com/mosra/magnum/pull/344))
+-   Various documentation improvements and copy editing (see
+    [mosra/magnum#361](https://github.com/mosra/magnum/pull/361))
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

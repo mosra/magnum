@@ -757,7 +757,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * @ref imageSize(). The storage is not reallocated if it is large
          * enough to contain the new data --- however if you want to read into
          * existing memory or *ensure* a reallocation does not happen, use
-         * @ref image(Int, BasicMutableImageView<dimensions>&) instead.
+         * @ref image(Int, const BasicMutableImageView<dimensions>&) instead.
          *
          * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
          * not available, the texture is bound before the operation (if not
@@ -834,7 +834,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * size is taken using @ref imageSize(). The storage is not reallocated
          * if it is large enough to contain the new data --- however if you
          * want to read into existing memory or *ensure* a reallocation does
-         * not happen, use @ref compressedImage(Int, BasicMutableCompressedImageView<dimensions>&)
+         * not happen, use @ref compressedImage(Int, const BasicMutableCompressedImageView<dimensions>&)
          * instead.
          *
          * If @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is
@@ -920,7 +920,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * given image. The storage is not reallocated if it is large enough to
          * contain the new data --- however if you want to read into existing
          * memory or *ensure* a reallocation does not happen, use
-         * @ref subImage(Int, const RangeTypeFor<dimensions, Int>&, BasicMutableImageView<dimensions>&)
+         * @ref subImage(Int, const RangeTypeFor<dimensions, Int>&, const BasicMutableImageView<dimensions>&)
          * instead.
          *
          * The operation is protected from buffer overflow.
@@ -990,7 +990,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
          * storage is not reallocated if it is large enough to contain the new
          * data --- however if you want to read into existing memory or
          * *ensure* a reallocation does not happen, use
-         * @ref compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, BasicMutableCompressedImageView<dimensions>&)
+         * @ref compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, const BasicMutableCompressedImageView<dimensions>&)
          * instead.
          * @see @fn_gl2{GetTextureLevelParameter,GetTexLevelParameter},
          *      eventually @fn_gl{GetTexLevelParameter} with

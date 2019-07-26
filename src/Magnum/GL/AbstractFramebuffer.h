@@ -382,7 +382,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          * given image. The storage is not reallocated if it is large enough to
          * contain the new data --- however if you want to read into existing
          * memory or *ensure* a reallocation does not happen, use
-         * @ref read(const Range2Di&, MutableImageView2D&) instead.
+         * @ref read(const Range2Di&, const MutableImageView2D&) instead.
          *
          * On OpenGL ES 2.0 and WebGL 1.0, if @ref PixelStorage::skip() is set,
          * the functionality is emulated by adjusting the data pointer. If
