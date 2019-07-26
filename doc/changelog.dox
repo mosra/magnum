@@ -58,6 +58,10 @@ See also:
     [mosra/magnum#342](https://github.com/mosra/magnum/pull/342))
 -   Implemented support for @al_extension{SOFT,loop_points} in
     @ref Audio::Buffer (see [mosra/magnum#342](https://github.com/mosra/magnum/pull/342))
+-   @ref Audio::Context can now take command-line arguments and supports
+    the `--magnum-log` and `--magnum-disable-extensions` options similarly to
+    @ref GL::Context (see
+    [mosra/magnum#362](https://github.com/mosra/magnum/pull/362))
 
 @subsubsection changelog-latest-new-debugtools DebugTools library
 
