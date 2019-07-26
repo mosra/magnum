@@ -47,7 +47,10 @@ struct PlayableALTest: TestSuite::Tester {
     Context _context;
 };
 
-PlayableALTest::PlayableALTest() {
+PlayableALTest::PlayableALTest():
+    TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})},
+    _context{arguments().first, arguments().second}
+{
     addTests({&PlayableALTest::feature,
               &PlayableALTest::group});
 }

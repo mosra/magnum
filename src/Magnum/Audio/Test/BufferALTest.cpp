@@ -49,7 +49,10 @@ struct BufferALTest: TestSuite::Tester {
     Context _context;
 };
 
-BufferALTest::BufferALTest() {
+BufferALTest::BufferALTest():
+    TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})},
+    _context{arguments().first, arguments().second}
+{
     addTests({&BufferALTest::construct,
 
               &BufferALTest::properties,

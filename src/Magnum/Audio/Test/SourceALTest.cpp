@@ -53,7 +53,10 @@ struct SourceALTest: TestSuite::Tester {
     Context _context;
 };
 
-SourceALTest::SourceALTest() {
+SourceALTest::SourceALTest():
+    TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})},
+    _context{arguments().first, arguments().second}
+{
     addTests({&SourceALTest::construct,
 
               &SourceALTest::position,

@@ -46,7 +46,10 @@ struct ContextALTest: TestSuite::Tester {
     void isExtensionEnabled();
 };
 
-ContextALTest::ContextALTest() {
+ContextALTest::ContextALTest():
+    TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}
+        .setSkippedArgumentPrefixes({"magnum"})}
+{
     addTests({&ContextALTest::construct,
               &ContextALTest::constructMove});
 
@@ -61,7 +64,7 @@ void ContextALTest::construct() {
     CORRADE_VERIFY(!Context::hasCurrent());
 
     {
-        Context context;
+        Context context{arguments().first, arguments().second};
         CORRADE_VERIFY(Context::hasCurrent());
         CORRADE_COMPARE(&Context::current(), &context);
     }

@@ -44,7 +44,10 @@ struct RendererALTest: TestSuite::Tester {
     Context _context;
 };
 
-RendererALTest::RendererALTest() {
+RendererALTest::RendererALTest():
+    TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})},
+    _context{arguments().first, arguments().second}
+{
     addTests({&RendererALTest::listenerOrientation,
               &RendererALTest::listenerPosition,
               &RendererALTest::listenerVelocity,
