@@ -24,6 +24,8 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Audio/Extensions.h"
@@ -37,15 +39,19 @@ struct ContextALTest: TestSuite::Tester {
     void construct();
     void constructMove();
 
+    void quietLog();
+
     void extensionsString();
     void isExtensionEnabled();
 };
 
 ContextALTest::ContextALTest() {
     addTests({&ContextALTest::construct,
-              &ContextALTest::constructMove,
+              &ContextALTest::constructMove});
 
-              &ContextALTest::extensionsString,
+    addInstancedTests({&ContextALTest::quietLog}, 2);
+
+    addTests({&ContextALTest::extensionsString,
               &ContextALTest::isExtensionEnabled});
 }
 
@@ -71,6 +77,17 @@ void ContextALTest::constructMove() {
     }
 
     CORRADE_VERIFY(!Context::hasCurrent());
+}
+
+void ContextALTest::quietLog() {
+    setTestCaseDescription(testCaseInstanceId() ? "true" : "false");
+
+    const char* argv[] = { "", "--magnum-log", testCaseInstanceId() ? "quiet" : "default" };
+
+    std::ostringstream out;
+    Debug redirectOutput{&out};
+    Context context{Containers::arraySize(argv), argv};
+    CORRADE_COMPARE(out.str().empty(), bool(testCaseInstanceId()));
 }
 
 void ContextALTest::extensionsString() {
