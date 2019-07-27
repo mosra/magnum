@@ -808,10 +808,12 @@ GL::DebugOutput::setEnabled(
     GL::DebugOutput::Source::Api, GL::DebugOutput::Type::Other, {131185}, false);
 
 {
-    GL::DebugGroup group{GL::DebugGroup::Source::Application, 42, "Scene rendering"};
+    GL::DebugGroup group{GL::DebugGroup::Source::Application, 42,
+        "Scene rendering"};
 
-    GL::DebugMessage::insert(GL::DebugMessage::Source::Application, GL::DebugMessage::Type::Marker,
-        1337, GL::DebugOutput::Severity::Notification, "Rendering transparent mesh");
+    GL::DebugMessage::insert(GL::DebugMessage::Source::Application,
+        GL::DebugMessage::Type::Marker, 1337,
+        GL::DebugOutput::Severity::Notification, "Rendering a transparent mesh");
 
     GL::Renderer::enable(GL::Renderer::Feature::Blending);
     mesh.draw(shader);

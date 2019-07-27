@@ -1063,10 +1063,10 @@ class Sdl2Application::GLConfiguration {
              */
             Debug = SDL_GL_CONTEXT_DEBUG_FLAG,
 
-            /** Create context with robust access */
+            /** Context with robust access */
             RobustAccess = SDL_GL_CONTEXT_ROBUST_ACCESS_FLAG,
 
-            /** Create context with reset isolation */
+            /** Context with reset isolation */
             ResetIsolation = SDL_GL_CONTEXT_RESET_ISOLATION_FLAG
         };
 
