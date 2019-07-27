@@ -346,23 +346,23 @@ enum class ImageComparatorBase::State: UnsignedByte {
 
 class ImageComparatorBase::FileState {
     public:
-        explicit FileState(PluginManager::Manager<Trade::AbstractImporter>& manager): manager{&manager} {}
+        explicit FileState(PluginManager::Manager<Trade::AbstractImporter>& importerManager): importerManager{&importerManager} {}
 
-        explicit FileState(): _privateManager{Containers::InPlaceInit}, manager{&*_privateManager} {}
+        explicit FileState(): _privateImporterManager{Containers::InPlaceInit}, importerManager{&*_privateImporterManager} {}
 
     private:
-        Containers::Optional<PluginManager::Manager<Trade::AbstractImporter>> _privateManager;
+        Containers::Optional<PluginManager::Manager<Trade::AbstractImporter>> _privateImporterManager;
 
     public:
-        PluginManager::Manager<Trade::AbstractImporter>* manager;
+        PluginManager::Manager<Trade::AbstractImporter>* importerManager;
         std::string actualFilename, expectedFilename;
         Containers::Optional<Trade::ImageData2D> actualImageData, expectedImageData;
         /** @todo could at least the views have a NoCreate constructor? */
         Containers::Optional<ImageView2D> actualImage, expectedImage;
 };
 
-ImageComparatorBase::ImageComparatorBase(PluginManager::Manager<Trade::AbstractImporter>* manager, Float maxThreshold, Float meanThreshold): _maxThreshold{maxThreshold}, _meanThreshold{meanThreshold}, _max{}, _mean{} {
-    if(manager) _fileState.reset(new FileState{*manager});
+ImageComparatorBase::ImageComparatorBase(PluginManager::Manager<Trade::AbstractImporter>* importerManager, Float maxThreshold, Float meanThreshold): _maxThreshold{maxThreshold}, _meanThreshold{meanThreshold}, _max{}, _mean{} {
+    if(importerManager) _fileState.reset(new FileState{*importerManager});
 
     CORRADE_ASSERT(!Math::isNan(maxThreshold) && !Math::isInf(maxThreshold) &&
                    !Math::isNan(meanThreshold) && !Math::isInf(meanThreshold),
@@ -419,7 +419,7 @@ bool ImageComparatorBase::operator()(const std::string& actual, const std::strin
     _fileState->expectedFilename = expected;
 
     Containers::Pointer<Trade::AbstractImporter> importer;
-    if(!(importer = _fileState->manager->loadAndInstantiate("AnyImageImporter"))) {
+    if(!(importer = _fileState->importerManager->loadAndInstantiate("AnyImageImporter"))) {
         _state = State::PluginLoadFailed;
         return false;
     }
@@ -455,7 +455,7 @@ bool ImageComparatorBase::operator()(const ImageView2D& actual, const std::strin
     _fileState->expectedFilename = expected;
 
     Containers::Pointer<Trade::AbstractImporter> importer;
-    if(!(importer = _fileState->manager->loadAndInstantiate("AnyImageImporter"))) {
+    if(!(importer = _fileState->importerManager->loadAndInstantiate("AnyImageImporter"))) {
         _state = State::PluginLoadFailed;
         return false;
     }
@@ -480,7 +480,7 @@ bool ImageComparatorBase::operator()(const std::string& actual, const ImageView2
     _fileState->actualFilename = actual;
 
     Containers::Pointer<Trade::AbstractImporter> importer;
-    if(!(importer = _fileState->manager->loadAndInstantiate("AnyImageImporter"))) {
+    if(!(importer = _fileState->importerManager->loadAndInstantiate("AnyImageImporter"))) {
         _state = State::PluginLoadFailed;
         return false;
     }

@@ -60,7 +60,7 @@ namespace Implementation {
 
 class MAGNUM_DEBUGTOOLS_EXPORT ImageComparatorBase {
     public:
-        explicit ImageComparatorBase(PluginManager::Manager<Trade::AbstractImporter>* manager, Float maxThreshold, Float meanThreshold);
+        explicit ImageComparatorBase(PluginManager::Manager<Trade::AbstractImporter>* importerManager, Float maxThreshold, Float meanThreshold);
 
         /*implicit*/ ImageComparatorBase(): ImageComparatorBase{nullptr, 0.0f, 0.0f} {}
 
@@ -110,7 +110,7 @@ template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::Compare
 
 template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::CompareImageFile>: public Magnum::DebugTools::Implementation::ImageComparatorBase {
     public:
-        explicit Comparator(PluginManager::Manager<Magnum::Trade::AbstractImporter>* manager, Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{manager, maxThreshold, meanThreshold} {}
+        explicit Comparator(PluginManager::Manager<Magnum::Trade::AbstractImporter>* importerManager, Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{importerManager, maxThreshold, meanThreshold} {}
 
         /*implicit*/ Comparator(): Comparator{nullptr, 0.0f, 0.0f} {}
 
@@ -121,7 +121,7 @@ template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::Compare
 
 template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::CompareImageToFile>: public Magnum::DebugTools::Implementation::ImageComparatorBase {
     public:
-        explicit Comparator(PluginManager::Manager<Magnum::Trade::AbstractImporter>* manager, Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{manager, maxThreshold, meanThreshold} {}
+        explicit Comparator(PluginManager::Manager<Magnum::Trade::AbstractImporter>* importerManager, Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{importerManager, maxThreshold, meanThreshold} {}
 
         /*implicit*/ Comparator(): Comparator{nullptr, 0.0f, 0.0f} {}
 
@@ -132,7 +132,7 @@ template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::Compare
 
 template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::CompareFileToImage>: public Magnum::DebugTools::Implementation::ImageComparatorBase {
     public:
-        explicit Comparator(PluginManager::Manager<Magnum::Trade::AbstractImporter>* manager, Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{manager, maxThreshold, meanThreshold} {}
+        explicit Comparator(PluginManager::Manager<Magnum::Trade::AbstractImporter>* importerManager, Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{importerManager, maxThreshold, meanThreshold} {}
 
         /*implicit*/ Comparator(): Comparator{nullptr, 0.0f, 0.0f} {}
 
@@ -301,14 +301,14 @@ class CompareImageFile {
 
         /**
          * @brief Construct with an explicit plugin manager instance
-         * @param manager       Image importer plugin manager instance used
+         * @param importerManager   Image importer plugin manager instance used
          *      when comparing against images loaded from files
-         * @param maxThreshold  Max threshold. If any pixel has delta above
+         * @param maxThreshold      Max threshold. If any pixel has delta above
          *      this value, this comparison fails
-         * @param meanThreshold Mean threshold. If mean delta over all pixels
-         *      is above this value, the comparison fails
+         * @param meanThreshold     Mean threshold. If mean delta over all
+         *      pixels is above this value, the comparison fails
          */
-        explicit CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>& manager, Float maxThreshold, Float meanThreshold): _c{&manager, maxThreshold, meanThreshold} {}
+        explicit CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager, Float maxThreshold, Float meanThreshold): _c{&importerManager, maxThreshold, meanThreshold} {}
 
         /**
          * @brief Construct with an explicit plugin manager instance and implicit thresholds
@@ -316,7 +316,7 @@ class CompareImageFile {
          * Equivalent to calling @ref CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>&, Float, Float)
          * with zero values.
          */
-        explicit CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>& manager): _c{&manager, 0.0f, 0.0f} {}
+        explicit CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager): _c{&importerManager, 0.0f, 0.0f} {}
 
         /**
          * @brief Construct with implicit thresholds
@@ -363,7 +363,7 @@ class CompareImageToFile {
          * See @ref CompareImageFile::CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>&, Float, Float)
          * for more information.
          */
-        explicit CompareImageToFile(PluginManager::Manager<Trade::AbstractImporter>& manager, Float maxThreshold, Float meanThreshold): _c{&manager, maxThreshold, meanThreshold} {}
+        explicit CompareImageToFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager, Float maxThreshold, Float meanThreshold): _c{&importerManager, maxThreshold, meanThreshold} {}
 
         /**
          * @brief Construct with an explicit plugin manager instance and implicit thresholds
@@ -371,7 +371,7 @@ class CompareImageToFile {
          * Equivalent to calling @ref CompareImageToFile(PluginManager::Manager<Trade::AbstractImporter>&, Float, Float)
          * with zero values.
          */
-        explicit CompareImageToFile(PluginManager::Manager<Trade::AbstractImporter>& manager): _c{&manager, 0.0f, 0.0f} {}
+        explicit CompareImageToFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager): _c{&importerManager, 0.0f, 0.0f} {}
 
         /**
          * @brief Implicit constructor
