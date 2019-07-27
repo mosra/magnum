@@ -6,7 +6,7 @@ pkgdesc="C++11/C++14 graphics middleware for games and data visualization (cover
 arch=('i686' 'x86_64')
 url="https://magnum.graphics"
 license=('MIT')
-depends=('corrade' 'openal' 'sdl2' 'glfw' 'vulkan-icd-loader' 'gcc6')
+depends=('corrade' 'openal' 'sdl2' 'glfw' 'vulkan-icd-loader')
 makedepends=('cmake' 'ninja' 'lcov')
 options=('!strip')
 provides=('magnum-git')
@@ -22,7 +22,6 @@ build() {
     export CXXFLAGS="$newcxxflags"
 
     cmake .. \
-        -DCMAKE_CXX_COMPILER="g++-6" \
         -DCMAKE_CXX_FLAGS="--coverage" \
         -DCMAKE_BUILD_TYPE=Debug \
         -DCMAKE_INSTALL_PREFIX=/usr \
@@ -71,11 +70,11 @@ check() {
     rm -rf coverage
     mkdir coverage
     # Keep in sync with package/ci/appveyor-lcov.sh and travis.yml, please
-    lcov --gcov-tool="gcov-6" --directory . --capture --output-file coverage.info
-    lcov --gcov-tool="gcov-6" --extract coverage.info "*/src/Magnum*/*" --output-file coverage.info > /dev/null
-    lcov --gcov-tool="gcov-6" --remove coverage.info "*/src/MagnumExternal/*" --output-file coverage.info > /dev/null
-    lcov --gcov-tool="gcov-6" --remove coverage.info "*/Test/*" --output-file coverage.info > /dev/null
-    lcov --gcov-tool="gcov-6" --remove coverage.info "*/build-coverage/src/*" --output-file coverage.info > /dev/null
+    lcov --directory . --capture --output-file coverage.info
+    lcov --extract coverage.info "*/src/Magnum*/*" --output-file coverage.info > /dev/null
+    lcov --remove coverage.info "*/src/MagnumExternal/*" --output-file coverage.info > /dev/null
+    lcov --remove coverage.info "*/Test/*" --output-file coverage.info > /dev/null
+    lcov --remove coverage.info "*/build-coverage/src/*" --output-file coverage.info > /dev/null
     genhtml --output-directory ./coverage coverage.info
 }
 
