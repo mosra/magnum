@@ -60,7 +60,8 @@ Basic usage is:
 find_package(Magnum REQUIRED)
 @endcode
 
-This module tries to find base Magnum library and then defines:
+This module tries to find the base Magnum library and then defines the
+following:
 
 -   `Magnum_FOUND` --- Whether the library was found
 -   `Magnum::Magnum` --- Base library imported target
