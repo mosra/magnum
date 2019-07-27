@@ -301,8 +301,7 @@ class CompareImageFile {
 
         /**
          * @brief Construct with an explicit plugin manager instance
-         * @param importerManager   Image importer plugin manager instance used
-         *      when comparing against images loaded from files
+         * @param importerManager   Image importer plugin manager instance
          * @param maxThreshold      Max threshold. If any pixel has delta above
          *      this value, this comparison fails
          * @param meanThreshold     Mean threshold. If mean delta over all
