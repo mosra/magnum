@@ -138,7 +138,11 @@ Arguments:
     (environment: `MAGNUM_DISABLE_EXTENSIONS`)
 -   `--magnum-gpu-validation off|on` --- GPU validation using
     @gl_extension{KHR,debug}, if present (environment:
-    `MAGNUM_GPU_VALIDATION`) (default: `off`)
+    `MAGNUM_GPU_VALIDATION`) (default: `off`). This sets up @ref DebugOutput
+    callbacks and also causes
+    @ref Platform::Sdl2Application::GLConfiguration::Flag::Debug "GLConfiguration::Flag::Debug"
+    to be enabled for context creation for both windowed and windowless
+    applications on supported platforms
 -   `--magnum-log default|quiet|verbose` --- console logging
     (environment: `MAGNUM_LOG`) (default: `default`)
 
@@ -190,7 +194,10 @@ class MAGNUM_GL_EXPORT Context {
          */
         enum class Flag: GLint {
             /**
-             * Debug context
+             * Debug context. Enabled automatically by @ref Platform windowed
+             * and windowless application implementations if the
+             * `--magnum-gpu-validation`
+             * @ref GL-Context-command-line "command-line option" is present.
              * @requires_gl43 Extension @gl_extension{KHR,debug}
              * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
              *      @gl_extension{KHR,debug}
@@ -705,12 +712,23 @@ class MAGNUM_GL_EXPORT Context {
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
     #endif
+        /* Applications want an easy way to know if GPU validation is enabled */
+        enum class InternalFlag: UnsignedByte {
+            DisplayInitializationLog = 1 << 0,
+            DisplayVerboseInitializationLog = DisplayInitializationLog|(1 << 1),
+            GpuValidation = 1 << 2
+        };
+        typedef Containers::EnumSet<InternalFlag> InternalFlags;
+        CORRADE_ENUMSET_FRIEND_OPERATORS(InternalFlags)
+
         bool isDriverWorkaroundDisabled(const char* workaround);
         Implementation::State& state() { return *_state; }
 
         /* This function is called from MeshState constructor, which means the
            state() pointer is not ready yet so we have to pass it directly */
         MAGNUM_GL_LOCAL bool isCoreProfileInternal(Implementation::ContextState& state);
+
+        InternalFlags internalFlags() const { return _internalFlags; }
 
     #ifdef DOXYGEN_GENERATING_OUTPUT
     private:
@@ -730,14 +748,6 @@ class MAGNUM_GL_EXPORT Context {
         #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */
         friend Implementation::ContextState;
         #endif
-
-        enum class InternalFlag: UnsignedByte {
-            DisplayInitializationLog = 1 << 0,
-            DisplayVerboseInitializationLog = DisplayInitializationLog|(1 << 1),
-            GpuValidation = 1 << 2
-        };
-        typedef Containers::EnumSet<InternalFlag> InternalFlags;
-        CORRADE_ENUMSET_FRIEND_OPERATORS(InternalFlags)
 
         void disableDriverWorkaround(const std::string& workaround);
 

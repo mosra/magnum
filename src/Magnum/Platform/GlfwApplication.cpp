@@ -330,12 +330,16 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
     glfwWindowHint(GLFW_SAMPLES, glConfiguration.sampleCount());
     glfwWindowHint(GLFW_SRGB_CAPABLE, glConfiguration.isSrgbCapable());
 
-    const GLConfiguration::Flags& flags = glConfiguration.flags();
+    /* Request debug context if --magnum-gpu-validation is enabled */
+    GLConfiguration::Flags glFlags = glConfiguration.flags();
+    if(_context->internalFlags() & GL::Context::InternalFlag::GpuValidation)
+        glFlags |= GLConfiguration::Flag::Debug;
+
     #ifdef GLFW_CONTEXT_NO_ERROR
-    glfwWindowHint(GLFW_CONTEXT_NO_ERROR, flags >= GLConfiguration::Flag::NoError);
+    glfwWindowHint(GLFW_CONTEXT_NO_ERROR, glFlags >= GLConfiguration::Flag::NoError);
     #endif
-    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, flags >= GLConfiguration::Flag::Debug);
-    glfwWindowHint(GLFW_STEREO, flags >= GLConfiguration::Flag::Stereo);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, glFlags >= GLConfiguration::Flag::Debug);
+    glfwWindowHint(GLFW_STEREO, glFlags >= GLConfiguration::Flag::Stereo);
 
     /* Set context version, if requested */
     if(glConfiguration.version() != GL::Version::None) {
@@ -346,7 +350,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         #ifndef MAGNUM_TARGET_GLES
         if(glConfiguration.version() >= GL::Version::GL320) {
             glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, flags >= GLConfiguration::Flag::ForwardCompatible);
+            glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, glFlags >= GLConfiguration::Flag::ForwardCompatible);
         }
         #else
         glfwWindowHint(GLFW_CLIENT_API, GLFW_OPENGL_ES_API);
@@ -362,7 +366,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, flags >= GLConfiguration::Flag::ForwardCompatible);
+        glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, glFlags >= GLConfiguration::Flag::ForwardCompatible);
         #else
         /* For ES the major context version is compile-time constant */
         #ifdef MAGNUM_TARGET_GLES3

@@ -35,7 +35,7 @@
 
 namespace Magnum { namespace Platform {
 
-WindowlessWindowsEglContext::WindowlessWindowsEglContext(const Configuration& configuration, GLContext*) {
+WindowlessWindowsEglContext::WindowlessWindowsEglContext(const Configuration& configuration, GLContext* const magnumContext) {
     /* Register the window class (if not yet done) */
     WNDCLASSW wc;
     if(!GetClassInfoW(GetModuleHandleW(nullptr), L"Magnum Windowless Application", &wc)) {
@@ -110,6 +110,11 @@ WindowlessWindowsEglContext::WindowlessWindowsEglContext(const Configuration& co
         return;
     }
 
+    /* Request debug context if --magnum-gpu-validation is enabled */
+    Configuration::Flags flags = configuration.flags();
+    if(magnumContext && magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation)
+        flags |= Configuration::Flag::Debug;
+
     const EGLint attributes[] = {
         #ifdef MAGNUM_TARGET_GLES
         EGL_CONTEXT_CLIENT_VERSION,
@@ -121,7 +126,7 @@ WindowlessWindowsEglContext::WindowlessWindowsEglContext(const Configuration& co
             #error unsupported OpenGL ES version
             #endif
         #endif
-        EGL_CONTEXT_FLAGS_KHR, EGLint(configuration.flags()),
+        EGL_CONTEXT_FLAGS_KHR, EGLint(flags),
         EGL_NONE
     };
 

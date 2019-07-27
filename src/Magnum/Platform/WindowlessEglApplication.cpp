@@ -90,6 +90,13 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
         return;
     }
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    /* Request debug context if --magnum-gpu-validation is enabled */
+    Configuration::Flags flags = configuration.flags();
+    if(magnumContext && magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation)
+        flags |= Configuration::Flag::Debug;
+    #endif
+
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_WEBGL)
     const /* Is modified below to work around a SwiftShader limitation */
     #endif
@@ -111,7 +118,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
         #ifndef MAGNUM_TARGET_WEBGL
         /* Needs to be last because we're zeroing this out for SwiftShader (see
            below) */
-        EGL_CONTEXT_FLAGS_KHR, EGLint(configuration.flags()),
+        EGL_CONTEXT_FLAGS_KHR, EGLint(flags),
         #endif
         EGL_NONE
     };

@@ -165,7 +165,12 @@ class WindowlessGlxContext::Configuration {
             ForwardCompatible = GLX_CONTEXT_FORWARD_COMPATIBLE_BIT_ARB,
             #endif
 
-            Debug = GLX_CONTEXT_DEBUG_BIT_ARB   /**< Create debug context */
+            /**
+             * Debug context. Enabled automatically if the
+             * `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
+             * is present.
+             */
+            Debug = GLX_CONTEXT_DEBUG_BIT_ARB
         };
 
         /**

@@ -125,7 +125,10 @@ See also:
     for more information.
 -   New `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
     and a corresponding environment variable to conveniently enable
-    @gl_extension{KHR,debug} debug output
+    @gl_extension{KHR,debug} debug output. This flag also causes
+    @ref Platform::Sdl2Application::GLConfiguration::Flag::Debug "GLConfiguration::Flag::Debug"
+    to be enabled for context creation on both windowed and windowless
+    applications
 -   Detection of SwiftShader and ARM Mali drivers with
     @ref GL::Context::DetectedDriver::SwiftShader and
     @ref GL::Context::DetectedDriver::ArmMali

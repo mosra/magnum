@@ -1056,7 +1056,11 @@ class Sdl2Application::GLConfiguration {
             ForwardCompatible = SDL_GL_CONTEXT_FORWARD_COMPATIBLE_FLAG,
             #endif
 
-            /** Create debug context */
+            /**
+             * Debug context. Enabled automatically if the
+             * `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
+             * is present.
+             */
             Debug = SDL_GL_CONTEXT_DEBUG_FLAG,
 
             /** Create context with robust access */

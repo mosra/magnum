@@ -328,6 +328,11 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
     _dpiScaling = dpiScaling(configuration);
     const Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
 
+    /* Request debug context if --magnum-gpu-validation is enabled */
+    GLConfiguration::Flags glFlags = glConfiguration.flags();
+    if(_context->internalFlags() & GL::Context::InternalFlag::GpuValidation)
+        glFlags |= GLConfiguration::Flag::Debug;
+
     /* Set context version, if user-specified */
     if(glConfiguration.version() != GL::Version::None) {
         Int major, minor;
@@ -342,7 +347,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_ES);
         #endif
 
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(glConfiguration.flags()));
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(glFlags));
 
     /* Request usable version otherwise */
     } else {
@@ -359,7 +364,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         #endif
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(glConfiguration.flags()));
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(glFlags));
         #else
         /* For ES the major context version is compile-time constant */
         #ifdef MAGNUM_TARGET_GLES3
@@ -436,7 +441,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
         SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_COMPATIBILITY);
         /** @todo or keep the fwcompat? */
-        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(glConfiguration.flags() & ~GLConfiguration::Flag::ForwardCompatible));
+        SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, int(glFlags) & int(~GLConfiguration::Flag::ForwardCompatible));
 
         if(!(_window = SDL_CreateWindow(configuration.title().data(),
             SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,

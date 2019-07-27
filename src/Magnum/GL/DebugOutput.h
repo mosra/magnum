@@ -62,7 +62,7 @@ provided also by @gl_extension{EXT,debug_marker} (desktop/ES extensions) or
 
 With OpenGL 4.3 / OpenGL ES 3.2 or @gl_extension{KHR,debug} desktop/ES extension,
 the debug output needs to be enabled first. It can be enabled globally using
-@ref Platform::Sdl2Application::GLConfiguration::Flag::Debug "Platform::*Application::Configuration::Flag::Debug"
+@ref Platform::Sdl2Application::GLConfiguration::Flag::Debug "Platform::*Application::GLConfiguration::Flag::Debug"
 when creating context or only for some portions of the code using
 @ref Renderer::Feature::DebugOutput. If enabled globally, some OpenGL drivers
 may provide additional debugging information. In addition to that you can
@@ -72,7 +72,19 @@ You can gather the messages either through graphics debugger or in the
 application itself by setting up message callback using @ref setCallback() or
 @ref setDefaultCallback(). You might also want to enable
 @ref Renderer::Feature::DebugOutputSynchronous. Example usage, completely with
-@ref DebugGroup and @link DebugMessage @endlink:
+@ref DebugGroup and @ref DebugMessage is below.
+
+@m_class{m-block m-success}
+
+@par Enabling debug output from the command line / environment
+    Apart from setting up the debug output callbacks manually, it's also
+    possible to enable it conveniently using the `--magnum-gpu-validation`
+    @ref GL-Context-command-line "command-line or environment option" --- ideal
+    for quick debugging of rendering issues. If you are using application
+    classes from the @ref Platform namespace, this option also ensures that
+    @ref Platform::Sdl2Application::GLConfiguration::Flag::Debug "GLConfiguration::Flag::Debug"
+    is passed for context creation, both with windowed and windowless
+    application implementations.
 
 @snippet MagnumGL.cpp DebugOutput-usage
 

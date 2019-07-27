@@ -622,7 +622,13 @@ class GlfwApplication::GLConfiguration {
             NoError = 1 << 1,
             #endif
 
-            Debug = 1 << 2,     /**< Debug context */
+            /**
+             * Debug context. Enabled automatically if the
+             * `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
+             * is present.
+             */
+            Debug = 1 << 2,
+
             Stereo = 1 << 3     /**< Stereo rendering */
         };
 

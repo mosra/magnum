@@ -68,6 +68,11 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
     /* Get pointer to proper context creation function */
     const PFNGLXCREATECONTEXTATTRIBSARBPROC glXCreateContextAttribsARB = reinterpret_cast<PFNGLXCREATECONTEXTATTRIBSARBPROC>(glXGetProcAddress(reinterpret_cast<const GLubyte*>("glXCreateContextAttribsARB")));
 
+    /* Request debug context if --magnum-gpu-validation is enabled */
+    Configuration::Flags flags = configuration.flags();
+    if(magnumContext && magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation)
+        flags |= Configuration::Flag::Debug;
+
     /* Optimistically choose core context first */
     const GLint contextAttributes[] = {
         #ifdef MAGNUM_TARGET_GLES
@@ -80,12 +85,12 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
         #endif
         GLX_CONTEXT_MINOR_VERSION_ARB, 0,
         GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_ES2_PROFILE_BIT_EXT,
-        GLX_CONTEXT_FLAGS_ARB, GLint(configuration.flags()),
+        GLX_CONTEXT_FLAGS_ARB, GLint(flags),
         #else
         GLX_CONTEXT_MAJOR_VERSION_ARB, 3,
         GLX_CONTEXT_MINOR_VERSION_ARB, 1,
         GLX_CONTEXT_PROFILE_MASK_ARB, GLX_CONTEXT_CORE_PROFILE_BIT_ARB,
-        GLX_CONTEXT_FLAGS_ARB, GLint(configuration.flags()),
+        GLX_CONTEXT_FLAGS_ARB, GLint(flags),
         #endif
         0
     };
@@ -97,7 +102,7 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
         Warning() << "Platform::WindowlessGlxContext: cannot create core context, falling back to compatibility context";
 
         const GLint fallbackContextAttributes[] = {
-            GLX_CONTEXT_FLAGS_ARB, GLint(configuration.flags()),
+            GLX_CONTEXT_FLAGS_ARB, GLint(flags),
             0
         };
         _context = glXCreateContextAttribsARB(_display, configs[0], nullptr, True, fallbackContextAttributes);
@@ -134,7 +139,7 @@ WindowlessGlxContext::WindowlessGlxContext(const WindowlessGlxContext::Configura
             glXDestroyContext(_display, _context);
             const GLint fallbackContextAttributes[] = {
                 /** @todo keep the fwcompat? */
-                GLX_CONTEXT_FLAGS_ARB, GLint(configuration.flags() & ~Configuration::Flag::ForwardCompatible),
+                GLX_CONTEXT_FLAGS_ARB, GLint(flags & ~Configuration::Flag::ForwardCompatible),
                 0
             };
             _context = glXCreateContextAttribsARB(_display, configs[0], nullptr, True, fallbackContextAttributes);

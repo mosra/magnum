@@ -141,7 +141,12 @@ class WindowlessWindowsEglContext::Configuration {
          * @see @ref Flags, @ref setFlags(), @ref Context::Flag
          */
         enum class Flag: int {
-            Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR    /**< Create debug context */
+            /**
+             * Debug context. Enabled automatically if the
+             * `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
+             * is present.
+             */
+            Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR
         };
 
         /**

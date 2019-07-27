@@ -156,7 +156,12 @@ class WindowlessEglContext::Configuration {
             ForwardCompatible = EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR,
             #endif
 
-            Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR    /**< Create debug context */
+            /**
+             * Debug context. Enabled automatically if the
+             * `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
+             * is present.
+             */
+            Debug = EGL_CONTEXT_OPENGL_DEBUG_BIT_KHR
         };
 
         /**
