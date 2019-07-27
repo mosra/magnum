@@ -95,14 +95,16 @@ void ContextALTest::quietLog() {
 
     std::ostringstream out;
     Debug redirectOutput{&out};
-    Context context{Containers::arraySize(argv), argv};
+    /* MSVC 2015 and 2017 needs the int cast otherwise C2398 */
+    Context context{int(Containers::arraySize(argv)), argv};
     CORRADE_COMPARE(out.str().empty(), bool(testCaseInstanceId()));
 }
 
 void ContextALTest::ignoreUnrelatedOptions() {
     const char* argv[] = { "", "--magnum-gpu-validation", "on" };
 
-    Context context{Containers::arraySize(argv), argv};
+    /* MSVC 2015 and 2017 needs the int cast otherwise C2398 */
+    Context context{int(Containers::arraySize(argv)), argv};
     CORRADE_VERIFY(Context::hasCurrent());
 }
 
@@ -143,7 +145,8 @@ void ContextALTest::isExtensionUnsupported() {
 void ContextALTest::isExtensionDisabled() {
     /* Yes, FFS. this is a weird-ass name */
     const char* argv[] = { "", "--magnum-disable-extensions", "ALC_ENUMERATION_EXT" };
-    Context context{Containers::arraySize(argv), argv};
+    /* MSVC 2015 and 2017 needs the int cast otherwise C2398 */
+    Context context{int(Containers::arraySize(argv)), argv};
     CORRADE_VERIFY(!context.isExtensionSupported<Extensions::ALC::EXT::ENUMERATION>());
     CORRADE_VERIFY(context.isExtensionDisabled<Extensions::ALC::EXT::ENUMERATION>());
 
