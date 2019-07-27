@@ -142,7 +142,7 @@ class WindowlessEglContext::Configuration {
         /**
          * @brief Context flag
          *
-         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
+         * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
          * @requires_gles Context flags are not available in WebGL.
          */
         enum class Flag: int {

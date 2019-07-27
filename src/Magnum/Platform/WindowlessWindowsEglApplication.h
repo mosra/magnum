@@ -138,7 +138,7 @@ class WindowlessWindowsEglContext::Configuration {
         /**
          * @brief Context flag
          *
-         * @see @ref Flags, @ref setFlags(), @ref Context::Flag
+         * @see @ref Flags, @ref setFlags(), @ref GL::Context::Flag
          */
         enum class Flag: int {
             /**
