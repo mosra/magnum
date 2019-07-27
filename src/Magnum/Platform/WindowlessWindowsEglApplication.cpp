@@ -29,7 +29,7 @@
 #include <Corrade/Utility/Debug.h>
 
 #include "Magnum/GL/Version.h"
-#include "Magnum/Platform/Context.h"
+#include "Magnum/Platform/GLContext.h"
 
 #include "Implementation/Egl.h"
 
