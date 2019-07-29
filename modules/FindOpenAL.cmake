@@ -90,8 +90,9 @@
 # This version is modified for Magnum and was forked from
 # https://github.com/Kitware/CMake/blob/v3.6.1/Modules/FindOpenAL.cmake
 # The file was modified to add a new path suffix for finding OpenAL for
-# Emscripten on macOS and, in case of Emscripten, the library is not looked for
-# as it is linked in implicitly.
+# Emscripten on macOS. Additionally, in case of Emscripten, there's no library
+# to find but instead one says -lopenal (and if MINIMAL_RUNTIME is not
+# specified, this is implicit).
 
 find_path(OPENAL_INCLUDE_DIR al.h
   HINTS
@@ -115,7 +116,9 @@ else()
   set(_OpenAL_ARCH_DIR libs/Win32)
 endif()
 
-if(NOT CORRADE_TARGET_EMSCRIPTEN)
+if(CORRADE_TARGET_EMSCRIPTEN)
+    set(OPENAL_LIBRARY openal CACHE STRING "Path to a library." FORCE)
+else()
   find_library(OPENAL_LIBRARY
     NAMES OpenAL al openal OpenAL32
     HINTS
@@ -130,7 +133,6 @@ if(NOT CORRADE_TARGET_EMSCRIPTEN)
     /opt
     [HKEY_LOCAL_MACHINE\\SOFTWARE\\Creative\ Labs\\OpenAL\ 1.1\ Software\ Development\ Kit\\1.00.0000;InstallDir]
   )
-  set(OPENAL_LIBRARY_NEEDED OPENAL_LIBRARY)
 endif()
 
 unset(_OpenAL_ARCH_DIR)
@@ -138,6 +140,6 @@ unset(_OpenAL_ARCH_DIR)
 # handle the QUIETLY and REQUIRED arguments and set OPENAL_FOUND to TRUE if
 # all listed variables are TRUE
 include(FindPackageHandleStandardArgs)
-FIND_PACKAGE_HANDLE_STANDARD_ARGS(OpenAL  DEFAULT_MSG  ${OPENAL_LIBRARY_NEEDED} OPENAL_INCLUDE_DIR)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(OpenAL DEFAULT_MSG OPENAL_LIBRARY OPENAL_INCLUDE_DIR)
 
 mark_as_advanced(OPENAL_LIBRARY OPENAL_INCLUDE_DIR)

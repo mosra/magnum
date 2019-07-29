@@ -396,6 +396,9 @@ See also:
     scripts and `FindMagnum.cmake` always forced GLVND)
 -   `FindMagnum.cmake` now correctly finds debug versions of statically built
     plugins when using Vcpkg
+-   `FindEGL.cmake`, `FindOpenAL.cmake`, `FindOpenGLES2.cmake` and
+    `FindOpenGLES3.cmake` now explicitly link to the `GL` and `openal`
+    libraries on Emscripten, which is needed for `MINIMAL_BUILD`
 -   Fixed linking of static `Any*` plugins when the libraries are otherwise
     build as dynamic
 -   Removed mention of the outdated Ubuntu PPA from @ref building as it doesn't
