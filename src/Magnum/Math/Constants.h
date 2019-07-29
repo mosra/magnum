@@ -78,6 +78,8 @@ template<class T> struct Constants {
      * @brief @f$ \tau @f$.
      *
      * Or two pi. See the [Tau manifesto](https://www.tauday.com/tau-manifesto).
+     * If you think this is wrong, note that
+     * [Python has it too](https://www.python.org/dev/peps/pep-0628/).
      *
      * @f[
      *      \tau = 2 \pi = 360 \degree
