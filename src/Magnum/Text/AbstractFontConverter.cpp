@@ -64,10 +64,26 @@ std::string AbstractFontConverter::pluginInterface() {
 std::vector<std::string> AbstractFontConverter::pluginSearchPaths() {
     return {
         #ifdef CORRADE_IS_DEBUG_BUILD
+        #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_BUILD_STATIC)
+        Utility::Directory::join(Utility::Directory::path(Utility::Directory::dllLocation(
+            #ifdef __MINGW32__
+            "lib"
+            #endif
+            "MagnumText-d")), "magnum-d/fontconverters"),
+        #else
         "magnum-d/fontconverters",
+        #endif
         Utility::Directory::join(MAGNUM_PLUGINS_DEBUG_DIR, "fontconverters")
         #else
+        #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_BUILD_STATIC)
+        Utility::Directory::join(Utility::Directory::path(Utility::Directory::dllLocation(
+            #ifdef __MINGW32__
+            "lib"
+            #endif
+            "MagnumText")), "magnum/fontconverters"),
+        #else
         "magnum/fontconverters",
+        #endif
         Utility::Directory::join(MAGNUM_PLUGINS_DIR, "fontconverters")
         #endif
     };

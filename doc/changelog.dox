@@ -371,6 +371,11 @@ See also:
 
 -   @ref building-packages-msys "MSYS2 packages" are now in official
     repositories, installable directly via `pacman`
+-   Plugin search path on Windows is now discovered relative to location of the
+    @ref Trade, @ref Text or @ref Audio library DLL instead of executable
+    location. That makes it behave better in case Magnum is installed via a
+    package and the installation directory hardcoded at build time doesn't
+    exist on the target machine (which is the case of MSYS2 packages).
 -   `FindSDL2.cmake` was updated to work with MinGW version 2.0.5 and newer,
     since these dropped the old directory hierarchy. Older versions have both
     the original and the new hierarchy, so it should work with these as well.

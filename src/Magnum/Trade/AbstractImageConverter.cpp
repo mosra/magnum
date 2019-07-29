@@ -50,10 +50,26 @@ std::string AbstractImageConverter::pluginInterface() {
 std::vector<std::string> AbstractImageConverter::pluginSearchPaths() {
     return {
         #ifdef CORRADE_IS_DEBUG_BUILD
+        #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_BUILD_STATIC)
+        Utility::Directory::join(Utility::Directory::path(Utility::Directory::dllLocation(
+            #ifdef __MINGW32__
+            "lib"
+            #endif
+            "MagnumTrade-d")), "magnum-d/imageconverters"),
+        #else
         "magnum-d/imageconverters",
+        #endif
         Utility::Directory::join(MAGNUM_PLUGINS_DEBUG_DIR, "imageconverters")
         #else
+        #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_BUILD_STATIC)
+        Utility::Directory::join(Utility::Directory::path(Utility::Directory::dllLocation(
+            #ifdef __MINGW32__
+            "lib"
+            #endif
+            "MagnumTrade")), "magnum/imageconverters"),
+        #else
         "magnum/imageconverters",
+        #endif
         Utility::Directory::join(MAGNUM_PLUGINS_DIR, "imageconverters")
         #endif
     };
