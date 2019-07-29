@@ -82,3 +82,5 @@ if(NOT TARGET EGL::EGL)
     set_target_properties(EGL::EGL PROPERTIES
         INTERFACE_INCLUDE_DIRECTORIES ${EGL_INCLUDE_DIR})
 endif()
+
+mark_as_advanced(EGL_LIBRARY EGL_INCLUDE_DIR)

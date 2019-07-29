@@ -88,3 +88,5 @@ if(NOT TARGET OpenGLES3::OpenGLES3)
             INTERFACE_LINK_OPTIONS "SHELL:-s USE_WEBGL2=1")
     endif()
 endif()
+
+mark_as_advanced(OPENGLES3_LIBRARY)

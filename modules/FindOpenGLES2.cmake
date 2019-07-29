@@ -74,3 +74,5 @@ if(NOT TARGET OpenGLES2::OpenGLES2)
             IMPORTED_LOCATION ${OPENGLES2_LIBRARY})
     endif()
 endif()
+
+mark_as_advanced(OPENGLES2_LIBRARY)
