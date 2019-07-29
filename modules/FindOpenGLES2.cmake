@@ -10,7 +10,10 @@
 # Additionally these variables are defined for internal usage:
 #
 #  OPENGLES2_LIBRARY        - OpenGL ES 2 library
-#  OPENGLES2_INCLUDE_DIR    - Include dir
+#
+# Please note this find module is tailored especially for the needs of Magnum.
+# In particular, it depends on its platform definitions and doesn't look for
+# OpenGL ES includes as Magnum has its own, generated using flextGL.
 #
 
 #
@@ -53,17 +56,9 @@ else()
         OpenGLES)
 endif()
 
-# Include dir
-find_path(OPENGLES2_INCLUDE_DIR NAMES
-    GLES2/gl2.h
-
-    # iOS
-    ES2/gl.h)
-
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(OpenGLES2 DEFAULT_MSG
-    OPENGLES2_LIBRARY
-    OPENGLES2_INCLUDE_DIR)
+    OPENGLES2_LIBRARY)
 
 if(NOT TARGET OpenGLES2::OpenGLES2)
     # Work around BUGGY framework support on macOS. Do this also in case of
@@ -78,7 +73,4 @@ if(NOT TARGET OpenGLES2::OpenGLES2)
         set_property(TARGET OpenGLES2::OpenGLES2 PROPERTY
             IMPORTED_LOCATION ${OPENGLES2_LIBRARY})
     endif()
-
-    set_property(TARGET OpenGLES2::OpenGLES2 PROPERTY
-        INTERFACE_INCLUDE_DIRECTORIES ${OPENGLES2_INCLUDE_DIR})
 endif()

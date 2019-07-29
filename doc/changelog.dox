@@ -399,6 +399,8 @@ See also:
 -   `FindEGL.cmake`, `FindOpenAL.cmake`, `FindOpenGLES2.cmake` and
     `FindOpenGLES3.cmake` now explicitly link to the `GL` and `openal`
     libraries on Emscripten, which is needed for `MINIMAL_BUILD`
+-   `FindOpenGLES2.cmake` and `FindOpenGLES3.cmake` don't require GL ES headers
+    to be installed on the system anymore, as Magnum uses its own copies
 -   Fixed linking of static `Any*` plugins when the libraries are otherwise
     build as dynamic
 -   Removed mention of the outdated Ubuntu PPA from @ref building as it doesn't
