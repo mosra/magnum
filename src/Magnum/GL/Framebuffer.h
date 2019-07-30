@@ -502,7 +502,7 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
         Framebuffer& mapForDraw(std::initializer_list<std::pair<UnsignedInt, DrawAttachment>> attachments);
 
         /**
-         * @brief Map shader output to attachment
+         * @brief Map shader output to an attachment
          * @param attachment        Draw attachment
          * @return Reference to self (for method chaining)
          *

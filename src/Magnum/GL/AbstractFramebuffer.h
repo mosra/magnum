@@ -264,6 +264,19 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         Range2Di viewport() const { return _viewport; }
 
         /**
+         * @brief Set viewport
+         * @return Reference to self (for method chaining)
+         *
+         * Saves the viewport to be used at later time in @ref bind(). If the
+         * framebuffer is currently bound, updates the viewport to given
+         * rectangle. Initial value in @ref DefaultFramebuffer is set to cover
+         * whole window, in @ref Framebuffer the initial value is specified in
+         * constructor.
+         * @see @ref maxViewportSize(), @fn_gl_keyword{Viewport}
+         */
+        AbstractFramebuffer& setViewport(const Range2Di& rectangle);
+
+        /**
          * @brief Implementation-specific color read format
          *
          * The result is not cached in any way. If
@@ -294,19 +307,6 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
          *      @def_gl{IMPLEMENTATION_COLOR_READ_TYPE}
          */
         PixelType implementationColorReadType();
-
-        /**
-         * @brief Set viewport
-         * @return Reference to self (for method chaining)
-         *
-         * Saves the viewport to be used at later time in @ref bind(). If the
-         * framebuffer is currently bound, updates the viewport to given
-         * rectangle. Initial value in @ref DefaultFramebuffer is set to cover
-         * whole window, in @ref Framebuffer the initial value is specified in
-         * constructor.
-         * @see @ref maxViewportSize(), @fn_gl_keyword{Viewport}
-         */
-        AbstractFramebuffer& setViewport(const Range2Di& rectangle);
 
         /**
          * @brief Clear specified buffers in the framebuffer
