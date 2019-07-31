@@ -122,11 +122,11 @@ void ScreenshotGLTest::rgba8() {
 
     CORRADE_COMPARE(framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
 
-    std::string file = Utility::Directory::join(SCREENSHOT_TEST_DIR, "image.tga");
+    std::string file = Utility::Directory::join(SCREENSHOTTEST_SAVE_DIR, "image.tga");
     if(Utility::Directory::exists(file))
         CORRADE_VERIFY(Utility::Directory::rm(file));
     else
-        CORRADE_VERIFY(Utility::Directory::mkpath(SCREENSHOT_TEST_DIR));
+        CORRADE_VERIFY(Utility::Directory::mkpath(SCREENSHOTTEST_SAVE_DIR));
 
     std::ostringstream out;
     bool succeeded;
@@ -179,11 +179,11 @@ void ScreenshotGLTest::r8() {
 
     CORRADE_COMPARE(framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
 
-    std::string file = Utility::Directory::join(SCREENSHOT_TEST_DIR, "image.tga");
+    std::string file = Utility::Directory::join(SCREENSHOTTEST_SAVE_DIR, "image.tga");
     if(Utility::Directory::exists(file))
         CORRADE_VERIFY(Utility::Directory::rm(file));
     else
-        CORRADE_VERIFY(Utility::Directory::mkpath(SCREENSHOT_TEST_DIR));
+        CORRADE_VERIFY(Utility::Directory::mkpath(SCREENSHOTTEST_SAVE_DIR));
 
     std::ostringstream out;
     bool succeeded;
@@ -230,7 +230,7 @@ void ScreenshotGLTest::unknownFormat() {
     bool succeeded;
     {
         Error redirectOutput{&out};
-        succeeded = DebugTools::screenshot(_converterManager, framebuffer, Utility::Directory::join(SCREENSHOT_TEST_DIR, "image.tga"));
+        succeeded = DebugTools::screenshot(_converterManager, framebuffer, Utility::Directory::join(SCREENSHOTTEST_SAVE_DIR, "image.tga"));
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -264,7 +264,7 @@ void ScreenshotGLTest::pluginLoadFailed() {
     {
         Error redirectOutput{&out};
         PluginManager::Manager<Trade::AbstractImageConverter> manager{"nowhere"};
-        succeeded = DebugTools::screenshot(manager, framebuffer, Utility::Directory::join(SCREENSHOT_TEST_DIR, "image.poo"));
+        succeeded = DebugTools::screenshot(manager, framebuffer, Utility::Directory::join(SCREENSHOTTEST_SAVE_DIR, "image.poo"));
     }
 
     MAGNUM_VERIFY_NO_GL_ERROR();

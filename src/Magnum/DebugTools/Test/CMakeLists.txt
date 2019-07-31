@@ -29,10 +29,10 @@ if(WITH_TRADE)
 
     if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
         set(DEBUGTOOLS_TEST_DIR ".")
-        set(SCREENSHOT_TEST_DIR "write")
+        set(SCREENSHOTTEST_SAVE_DIR "write")
     else()
         set(DEBUGTOOLS_TEST_DIR ${CMAKE_CURRENT_SOURCE_DIR})
-        set(SCREENSHOT_TEST_DIR ${CMAKE_CURRENT_BINARY_DIR}/write)
+        set(SCREENSHOTTEST_SAVE_DIR ${CMAKE_CURRENT_BINARY_DIR}/write)
     endif()
 
     # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
