@@ -281,6 +281,8 @@ template<class T> void TypeTraitsTest::equalsFloatingPointInfinity() {
 
     CORRADE_VERIFY(TypeTraits<T>::equals(Constants<T>::inf(),
                                          Constants<T>::inf()));
+    CORRADE_VERIFY(!TypeTraits<T>::equals(Constants<T>::inf(),
+                                         -Constants<T>::inf()));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPointNaN() {
