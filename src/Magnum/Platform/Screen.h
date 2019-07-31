@@ -172,6 +172,8 @@ template<class Application> class BasicScreen: private Containers::LinkedListIte
         }
 
     protected:
+        /** @{ @name Screen handling */
+
         /** @brief Request redraw */
         virtual void redraw() { application()->redraw(); }
 
@@ -224,6 +226,10 @@ template<class Application> class BasicScreen: private Containers::LinkedListIte
          */
         virtual void drawEvent() = 0;
 
+        /*@}*/
+
+        /** @{ @name Keyboard handling */
+
         /**
          * @brief Key press event
          *
@@ -241,6 +247,10 @@ template<class Application> class BasicScreen: private Containers::LinkedListIte
          * for more information.
          */
         virtual void keyReleaseEvent(KeyEvent& event);
+
+        /*@}*/
+
+        /** @{ @name Mouse handling */
 
         /**
          * @brief Mouse press event
@@ -268,6 +278,8 @@ template<class Application> class BasicScreen: private Containers::LinkedListIte
          * for more information.
          */
         virtual void mouseMoveEvent(MouseMoveEvent& event);
+
+        /*@}*/
 
     private:
         #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */
