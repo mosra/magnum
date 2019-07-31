@@ -160,6 +160,9 @@ See also:
     @ref Math::IsFloatingPoint and @ref Math::IsUnitless type traits and a
     @ref Math::UnderlyingTypeOf utility
 -   Added batch versions of @ref Math::isInf() and @ref Math::isNan()
+-   @ref Math::equal() and @ref Math::notEqual() for component-wise comparison
+    of @ref Math::Vector, as the equality/non-equality operators return a
+    single @cpp bool @ce
 
 @subsubsection changelog-latest-new-meshtools MeshTools library
 

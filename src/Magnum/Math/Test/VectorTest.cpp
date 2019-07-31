@@ -343,6 +343,16 @@ void VectorTest::compare() {
 
 void VectorTest::compareComponentWise() {
     typedef BoolVector<3> BoolVector3;
+    typedef BoolVector<4> BoolVector4;
+
+    Vector4 a{1.0f, -3.5f, 5.0f, -10.0f};
+    Vector4 b{1.0f + TypeTraits<Float>::epsilon()/2, -3.5f, 5.0f - TypeTraits<Float>::epsilon()*2, -10.0f};
+    Vector4 c{1.0f + TypeTraits<Float>::epsilon()*2, -3.5f, 5.0f - TypeTraits<Float>::epsilon()*10, -10.0f};
+    CORRADE_COMPARE(equal(a, b), BoolVector4{0xf});
+    CORRADE_COMPARE(equal(a, c), BoolVector4{0xa});
+    CORRADE_COMPARE(notEqual(a, b), BoolVector4{0x0});
+    CORRADE_COMPARE(notEqual(a, c), BoolVector4{0x5});
+
     CORRADE_COMPARE(Vector3(1.0f, -1.0f, 5.0f) < Vector3(1.1f, -1.0f, 3.0f), BoolVector3(0x1));
     CORRADE_COMPARE(Vector3(1.0f, -1.0f, 5.0f) <= Vector3(1.1f, -1.0f, 3.0f), BoolVector3(0x3));
     CORRADE_COMPARE(Vector3(1.0f, -1.0f, 5.0f) >= Vector3(1.1f, -1.0f, 3.0f), BoolVector3(0x6));
