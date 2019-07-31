@@ -27,7 +27,7 @@ namespace Magnum {
 /** @page scenegraph Using the scene graph
 @brief Overview of scene management capabilities.
 
-THe Scene graph provides way to hierarchically manage your objects, their
+The scene graph provides a way to hierarchically manage your objects, their
 transformation, animation and rendering, among other things. The library is
 contained in the @ref SceneGraph namespace, see its documentation for more
 information about building and usage with CMake.
@@ -39,7 +39,7 @@ There are naturally many possible feature combinations (2D vs. 3D, different
 transformation representations, animated vs. static, object can have collision
 shape, participate in physics events, have forward vs. deferred rendering...)
 and to make everything possible without combinatiorial explosion and allow the
-users to provide their own features, scene graph in Magnum is composed of
+users to provide their own features, a scene graph in Magnum is composed of
 three main components:
 
 -   objects, providing parent/children hierarchy
