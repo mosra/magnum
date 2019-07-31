@@ -53,13 +53,17 @@ struct CompareImageTest: TestSuite::Tester {
 
     void calculateDelta();
     void calculateDeltaStorage();
+    void calculateDeltaSpecials();
+    void calculateDeltaSpecials3();
 
     void deltaImage();
     void deltaImageScaling();
     void deltaImageColors();
+    void deltaImageSpecials();
 
     void pixelDelta();
     void pixelDeltaOverflow();
+    void pixelDeltaSpecials();
 
     void compareDifferentSize();
     void compareDifferentFormat();
@@ -67,6 +71,9 @@ struct CompareImageTest: TestSuite::Tester {
     void compareAboveThresholds();
     void compareAboveMaxThreshold();
     void compareAboveMeanThreshold();
+    void compareSpecials();
+    void compareSpecialsMeanOnly();
+    void compareSpecialsDisallowedThreshold();
 
     void setupExternalPluginManager();
     void teardownExternalPluginManager();
@@ -102,13 +109,17 @@ CompareImageTest::CompareImageTest() {
 
               &CompareImageTest::calculateDelta,
               &CompareImageTest::calculateDeltaStorage,
+              &CompareImageTest::calculateDeltaSpecials,
+              &CompareImageTest::calculateDeltaSpecials3,
 
               &CompareImageTest::deltaImage,
               &CompareImageTest::deltaImageScaling,
               &CompareImageTest::deltaImageColors,
+              &CompareImageTest::deltaImageSpecials,
 
               &CompareImageTest::pixelDelta,
               &CompareImageTest::pixelDeltaOverflow,
+              &CompareImageTest::pixelDeltaSpecials,
 
               &CompareImageTest::compareDifferentSize,
               &CompareImageTest::compareDifferentFormat,
@@ -116,6 +127,9 @@ CompareImageTest::CompareImageTest() {
               &CompareImageTest::compareAboveThresholds,
               &CompareImageTest::compareAboveMaxThreshold,
               &CompareImageTest::compareAboveMeanThreshold,
+              &CompareImageTest::compareSpecials,
+              &CompareImageTest::compareSpecialsMeanOnly,
+              &CompareImageTest::compareSpecialsDisallowedThreshold,
 
               &CompareImageTest::image,
               &CompareImageTest::imageError});
@@ -254,6 +268,72 @@ void CompareImageTest::calculateDeltaStorage() {
     CORRADE_COMPARE(mean, 18.5f);
 }
 
+/* Variants:
+    -   expected number, got inf (and inverse)
+    -   expected number, got nan (and inverse)
+    -   got inf in both (and again, but different sign)
+    -   got nan in both
+    -   got a number in both (twice, to ensure it's calculated correctly) */
+const Float ActualDataSpecials[]{
+    Constants::inf(), 0.3f,
+    Constants::nan(), 0.3f,
+    -Constants::inf(), -Constants::inf(),
+    Constants::nan(),
+    0.3f, 3.0f
+};
+const Float ExpectedDataSpecials[]{
+    1.0f, -Constants::inf(),
+    0.3f, Constants::nan(),
+    -Constants::inf(), Constants::inf(),
+    Constants::nan(),
+    0.65f, -0.1f
+};
+const Float DeltaSpecials[]{
+    Constants::inf(), Constants::inf(),
+    Constants::nan(), Constants::nan(),
+    0.0f, Constants::inf(),
+    0.0f,
+    0.35f, 3.1f
+};
+
+const ImageView2D ActualSpecials{PixelFormat::R32F, {9, 1}, ActualDataSpecials};
+const ImageView2D ExpectedSpecials{PixelFormat::R32F, {9, 1}, ExpectedDataSpecials};
+
+void CompareImageTest::calculateDeltaSpecials() {
+    Containers::Array<Float> delta;
+    Float max, mean;
+    std::tie(delta, max, mean) = Implementation::calculateImageDelta(ActualSpecials, ExpectedSpecials);
+    CORRADE_COMPARE_AS(Containers::arrayView(delta),
+        Containers::arrayView(DeltaSpecials),
+        TestSuite::Compare::Container);
+    /* Max should be calculated *without* the specials because otherwise every
+       other potential difference will be zero compared to infinity. OTOH mean
+       needs to get "poisoned" by those in order to have *something* to fail
+       the test with. */
+    CORRADE_COMPARE(max, 3.1f);
+    CORRADE_COMPARE(mean, -Constants::nan());
+}
+
+void CompareImageTest::calculateDeltaSpecials3() {
+    /* Same as calculateDeltaSpecials(), but reinterpreting the data as
+       a three-component vector in order to test per-component handling of
+       specials */
+    const ImageView2D actualSpecials3{PixelFormat::RGB32F, {3, 1}, ActualDataSpecials};
+    const ImageView2D expectedSpecials3{PixelFormat::RGB32F, {3, 1}, ExpectedDataSpecials};
+
+    Containers::Array<Float> delta;
+    Float max, mean;
+    std::tie(delta, max, mean) = Implementation::calculateImageDelta(actualSpecials3, expectedSpecials3);
+    CORRADE_COMPARE_AS(delta, (Containers::Array<Float>{Containers::InPlaceInit, {
+        Constants::nan(), Constants::nan(), 1.15f
+    }}), TestSuite::Compare::Container);
+    /* Max and mean should be calculated *without* the specials because
+       otherwise every other potential difference will be zero compared to
+       infinity */
+    CORRADE_COMPARE(max, 1.15f);
+    CORRADE_COMPARE(mean, -Constants::nan());
+}
+
 void CompareImageTest::deltaImage() {
     std::ostringstream out;
     Debug d{&out, Debug::Flag::DisableColors};
@@ -325,6 +405,25 @@ void CompareImageTest::deltaImageColors() {
         "          |: ,|\n");
 }
 
+void CompareImageTest::deltaImageSpecials() {
+    const Float inf = Constants::inf(), nan = Constants::nan();
+    /* Duplicate the rows as the delta image visualizer merges each two to
+       preserve ratio */
+    const Float delta[]{0.7f,  inf, 2.5f,
+                        0.7f,  nan, 2.5f,
+                         nan,  inf, 0.0f,
+                         nan,  inf, 0.0f};
+
+    std::ostringstream out;
+    Debug dc{&out, Debug::Flag::DisableColors};
+    Implementation::printDeltaImage(dc, delta, {3, 4}, 3.0f, 0.0f, 0.0f);
+    /* Should show the max value for NaN and infs and the usual things
+       otherwise */
+    CORRADE_COMPARE(out.str(),
+        "          |MM |\n"
+        "          |~M8|\n");
+}
+
 void CompareImageTest::pixelDelta() {
     {
         Debug() << "Visual verification -- some lines should be yellow, some red:";
@@ -354,6 +453,33 @@ void CompareImageTest::pixelDeltaOverflow() {
         "          [1,2] Vector(1), expected Vector(0) (Δ = 1)\n"
         "          [0,0] Vector(0.3), expected Vector(0.65) (Δ = 0.35)\n"
         "          [2,0] Vector(0.9), expected Vector(0.6) (Δ = 0.3)");
+}
+
+void CompareImageTest::pixelDeltaSpecials() {
+    std::ostringstream out;
+    Debug d{&out, Debug::Flag::DisableColors};
+    Implementation::printPixelDeltas(d, DeltaSpecials, ActualSpecials, ExpectedSpecials, 1.5f, 0.5f, 10);
+
+    /* MSVC prints -nan(ind) instead of ±nan. But only sometimes. */
+    #ifdef _MSC_VER
+    CORRADE_COMPARE(out.str(),
+        "        Pixels above max/mean threshold:\n"
+        "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
+        "          [3,0] Vector(0.3), expected Vector(-nan(ind)) (Δ = -nan(ind))\n"
+        "          [2,0] Vector(-nan(ind)), expected Vector(0.3) (Δ = -nan(ind))\n"
+        "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
+        "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
+        "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)");
+    #else
+    CORRADE_COMPARE(out.str(),
+        "        Pixels above max/mean threshold:\n"
+        "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
+        "          [3,0] Vector(0.3), expected Vector(nan) (Δ = nan)\n"
+        "          [2,0] Vector(nan), expected Vector(0.3) (Δ = nan)\n"
+        "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
+        "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
+        "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)");
+    #endif
 }
 
 void CompareImageTest::compareDifferentSize() {
@@ -452,6 +578,124 @@ void CompareImageTest::compareAboveMeanThreshold() {
         "        Pixels above max/mean threshold:\n"
         "          [1,1] #abcd85, expected #abcdfa (Δ = 39)\n"
         "          [1,0] #5647ec, expected #5610ed (Δ = 18.6667)\n");
+}
+
+void CompareImageTest::compareSpecials() {
+    std::stringstream out;
+
+    {
+        TestSuite::Comparator<CompareImage> compare{1.5f, 0.5f};
+        CORRADE_VERIFY(!compare(ActualSpecials, ExpectedSpecials));
+        Debug d{&out, Debug::Flag::DisableColors};
+        compare.printErrorMessage(d, "a", "b");
+    }
+
+    /* Apple platforms, Android, Emscripten and MinGW32 don't print signed
+       NaNs. This is *not* a libc++ thing, tho -- libc++ on Linux prints signed NaNs. */
+    #if defined(CORRADE_TARGET_APPLE) || defined(CORRADE_TARGET_ANDROID) || defined(CORRADE_TARGET_EMSCRIPTEN) || defined(__MINGW32__)
+    CORRADE_COMPARE(out.str(),
+        "Images a and b have both max and mean delta above threshold, actual 3.1/nan but at most 1.5/0.5 expected. Delta image:\n"
+        "          |MMMM M ,M|\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
+        "          [3,0] Vector(0.3), expected Vector(nan) (Δ = nan)\n"
+        "          [2,0] Vector(nan), expected Vector(0.3) (Δ = nan)\n"
+        "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
+        "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
+        "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
+
+    /* MSVC prints -nan(ind) instead of ±nan. But only sometimes. */
+    #elif defined(_MSC_VER)
+    CORRADE_COMPARE(out.str(),
+        "Images a and b have both max and mean delta above threshold, actual 3.1/-nan(ind) but at most 1.5/0.5 expected. Delta image:\n"
+        "          |MMMM M ,M|\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
+        "          [3,0] Vector(0.3), expected Vector(-nan(ind)) (Δ = nan)\n"
+        "          [2,0] Vector(-nan(ind)), expected Vector(0.3) (Δ = nan)\n"
+        "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
+        "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
+        "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
+
+    /* Linux */
+    #else
+    CORRADE_COMPARE(out.str(),
+        "Images a and b have both max and mean delta above threshold, actual 3.1/-nan but at most 1.5/0.5 expected. Delta image:\n"
+        "          |MMMM M ,M|\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
+        "          [3,0] Vector(0.3), expected Vector(nan) (Δ = nan)\n"
+        "          [2,0] Vector(nan), expected Vector(0.3) (Δ = nan)\n"
+        "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
+        "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
+        "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
+    #endif
+}
+
+void CompareImageTest::compareSpecialsMeanOnly() {
+    std::stringstream out;
+
+    {
+        TestSuite::Comparator<CompareImage> compare{15.0f, 0.5f};
+        CORRADE_VERIFY(!compare(ActualSpecials, ExpectedSpecials));
+        Debug d{&out, Debug::Flag::DisableColors};
+        compare.printErrorMessage(d, "a", "b");
+    }
+
+    /* Apple platforms, Android, Emscripten and MinGW32 don't print signed
+       NaNs. This is *not* a libc++ thing, tho -- libc++ on Linux prints signed NaNs. */
+    #if defined(CORRADE_TARGET_APPLE) || defined(CORRADE_TARGET_ANDROID) || defined(CORRADE_TARGET_EMSCRIPTEN) || defined(__MINGW32__)
+    CORRADE_COMPARE(out.str(),
+        "Images a and b have mean delta above threshold, actual nan but at most 0.5 expected. Max delta 3.1 is below threshold 15. Delta image:\n"
+        "          |MMMM M ,M|\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
+        "          [3,0] Vector(0.3), expected Vector(nan) (Δ = nan)\n"
+        "          [2,0] Vector(nan), expected Vector(0.3) (Δ = nan)\n"
+        "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
+        "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
+        "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
+
+    /* MSVC prints -nan(ind) instead of ±nan. But only sometimes. */
+    #elif defined(CORRADE_TARGET_WINDOWS) && defined(_MSC_VER)
+    CORRADE_COMPARE(out.str(),
+        "Images a and b have mean delta above threshold, actual -nan(ind) but at most 0.5 expected. Max delta 3.1 is below threshold 15. Delta image:\n"
+        "          |MMMM M ,M|\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
+        "          [3,0] Vector(0.3), expected Vector(-nan(ind)) (Δ = nan)\n"
+        "          [2,0] Vector(-nan(ind)), expected Vector(0.3) (Δ = nan)\n"
+        "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
+        "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
+        "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
+
+    /* Linux */
+    #else
+    CORRADE_COMPARE(out.str(),
+        "Images a and b have mean delta above threshold, actual -nan but at most 0.5 expected. Max delta 3.1 is below threshold 15. Delta image:\n"
+        "          |MMMM M ,M|\n"
+        "        Pixels above max/mean threshold:\n"
+        "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
+        "          [3,0] Vector(0.3), expected Vector(nan) (Δ = nan)\n"
+        "          [2,0] Vector(nan), expected Vector(0.3) (Δ = nan)\n"
+        "          [1,0] Vector(0.3), expected Vector(-inf) (Δ = inf)\n"
+        "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
+        "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)\n");
+    #endif
+}
+
+void CompareImageTest::compareSpecialsDisallowedThreshold() {
+    std::stringstream out;
+
+    {
+        Error redirectError{&out};
+        TestSuite::Comparator<CompareImage> a{Constants::inf(), 0.3f};
+        TestSuite::Comparator<CompareImage> b{0.3f, Constants::nan()};
+    }
+
+    CORRADE_COMPARE(out.str(),
+        "DebugTools::CompareImage: thresholds can't be NaN or infinity\n"
+        "DebugTools::CompareImage: thresholds can't be NaN or infinity\n");
 }
 
 void CompareImageTest::setupExternalPluginManager() {

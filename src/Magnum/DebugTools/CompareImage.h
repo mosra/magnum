@@ -206,6 +206,30 @@ printed as characters of different perceived brightness. Blocks with delta over
 the max threshold are colored red, blocks with delta over the mean threshold
 are colored yellow. The delta list contains X,Y pixel position (with origin at
 bottom left), actual and expected pixel value and calculated delta.
+
+@section DebugTools-CompareImage-specials Special floating-point values
+
+For floating-point input, the comparator treats the values similarly to how
+@ref Corrade::TestSuite::Comparator<float> behaves for scalars:
+
+-   If both actual and expected channel value are NaN, they are treated as the
+    same (with channel delta being 0).
+-   If actual and expected channel value have the same sign of infinity, they
+    are treated the same (with channel delta being 0).
+-   Otherwise, the delta is calculated the usual way, with NaN and infinity
+    values getting propagated according to floating-point rules. This means
+    the final per-pixel @f$ \Delta_{\boldsymbol{p}} @f$ becomes either NaN or
+    infinity.
+-   When calculating the max value, NaN and infinity @f$ \Delta_{\boldsymbol{p}} @f$
+    values are ignored. This is done in order to avoid a single infinity deltas
+    causing all other deltas to be comparatively zero in the ASCII-art
+    representation.
+-   The mean value is calculated as usual, meaning that NaN or infinity in
+    @f$ \Delta_{\boldsymbol{p}} @f$ "poison" the final value, reliably causing
+    the comparison to fail.
+
+For the ASCII-art representation, NaN and infinity @f$ \Delta_{\boldsymbol{p}} @f$
+values are always treated as maximum difference.
 */
 class CompareImage {
     public:

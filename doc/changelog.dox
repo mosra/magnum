@@ -67,6 +67,8 @@ See also:
 
 -   New @ref DebugTools::screenshot() function for convenient saving of
     screenshots
+-   @ref DebugTools::CompareImage and variants now properly handle
+    floating-point specials such as NaN or @f$ \infty @f$ in compared data
 
 @subsubsection changelog-latest-new-gl GL library
 

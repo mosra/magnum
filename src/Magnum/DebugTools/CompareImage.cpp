@@ -68,9 +68,25 @@ template<std::size_t size, class T> Float calculateImageDelta(const ImageView2D&
             Math::Vector<size, Float> actualPixel{pixelAt<size, T>(actualPixels, actualStride, {Int(x), Int(y)})};
             Math::Vector<size, Float> expectedPixel{pixelAt<size, T>(expectedPixels, expectedStride, {Int(x), Int(y)})};
 
-            const Float value = (Math::abs(actualPixel - expectedPixel)).sum()/size;
-            output[y*expected.size().x() + x] = value;
-            max = Math::max(max, value);
+            /* First calculate a classic difference */
+            Math::Vector<size, Float> diff = Math::abs(actualPixel - expectedPixel);
+
+            /* Mark pixels that are NaN in both actual and expected pixels as
+               having no difference */
+            diff = Math::lerp(diff, {}, Math::isNan(actualPixel) & Math::isNan(expectedPixel));
+
+            /* Then also mark pixels that are the same sign of infnity in both
+               actual and expected pixel as having no difference */
+            diff = Math::lerp(diff, {}, Math::isInf(actualPixel) & Math::isInf(expectedPixel) & Math::equal(actualPixel, expectedPixel));
+
+            /* Calculate the difference and save it to the output image even
+               with NaN and ±Inf (as the user should know) */
+            output[y*expected.size().x() + x] = diff.sum()/size;
+
+            /* On the other hand, infs and NaNs should not contribute to the
+               max delta -- because all other differences would be zero
+               compared to them */
+            max = Math::max(max, Math::lerp(diff, {}, Math::isNan(diff)|Math::isInf(diff)).sum()/size);
         }
     }
 
@@ -142,7 +158,10 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Ima
         "DebugTools::CompareImage: unknown format" << expected.format(), {});
 
     /* Calculate mean delta. Do it the special way so we don't lose
-       precision -- that would result in having false negatives! */
+       precision -- that would result in having false negatives! This
+       *deliberately* leaves specials in. The `max` has them already filtered
+       out so if this would filter them out as well, there would be nothing
+       left that could cause the comparison to fail. */
     const Float mean = Math::Algorithms::kahanSum(delta.begin(), delta.end())/delta.size();
 
     return std::make_tuple(std::move(delta), max, mean);
@@ -151,7 +170,8 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Ima
 namespace {
     /* Done by printing an white to black gradient using one of the online
        ASCII converters. Yes, I'm lazy. Another one could be " .,:;ox%#@". */
-    const char Characters[] = " .,:~=+?7IZ$08DNM";
+    constexpr char CharacterData[] = " .,:~=+?7IZ$08DNM";
+    constexpr Containers::ArrayView<const char> Characters{CharacterData, sizeof(CharacterData) - 1};
 }
 
 void printDeltaImage(Debug& out, Containers::ArrayView<const Float> deltas, const Vector2i& size, const Float max, const Float maxThreshold, const Float meanThreshold) {
@@ -171,11 +191,18 @@ void printDeltaImage(Debug& out, Containers::ArrayView<const Float> deltas, cons
             const Vector2i blockSize = Math::min(size - offset, Vector2i{pixelsPerBlock});
 
             Float blockMax{};
-            for(std::int_fast32_t yb = 0; yb != blockSize.y(); ++yb)
-                for(std::int_fast32_t xb = 0; xb != blockSize.x(); ++xb)
-                    blockMax = Math::max(blockMax, deltas[(offset.y() + yb)*size.x() + offset.x() + xb]);
+            for(std::int_fast32_t yb = 0; yb != blockSize.y(); ++yb) {
+                for(std::int_fast32_t xb = 0; xb != blockSize.x(); ++xb) {
+                    /* Propagating NaNs. The delta should never be negative --
+                       but we need to test inversely in order to work correctly
+                       for NaNs. */
+                    const Float delta = deltas[(offset.y() + yb)*size.x() + offset.x() + xb];
+                    CORRADE_INTERNAL_ASSERT(!(delta < 0.0f));
+                    blockMax = Math::max(delta, blockMax);
+                }
+            }
 
-            const char c = Characters[Int(Math::round(Math::min(blockMax/max, 1.0f)*(sizeof(Characters) - 2)))];
+            const char c = Math::isNan(blockMax) ? Characters.back() : Characters[Int(Math::round(Math::min(1.0f, blockMax/max)*(Characters.size() - 1)))];
 
             if(blockMax > maxThreshold)
                 out << Debug::boldColor(Debug::Color::Red) << Debug::nospace << std::string{c} << Debug::resetColor;
@@ -267,10 +294,10 @@ void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, cons
     const std::size_t expectedStride = size.x();
 
     /* Find first maxCount values above mean threshold and put them into a
-       sorted map */
+       sorted map. Need to reverse the condition in order to catch NaNs. */
     std::multimap<Float, std::size_t> large;
     for(std::size_t i = 0; i != delta.size(); ++i)
-        if(delta[i] > meanThreshold) large.emplace(delta[i], i);
+        if(!(delta[i] <= meanThreshold)) large.emplace(delta[i], i);
 
     CORRADE_INTERNAL_ASSERT(!large.empty());
 
@@ -336,6 +363,9 @@ class ImageComparatorBase::FileState {
 ImageComparatorBase::ImageComparatorBase(PluginManager::Manager<Trade::AbstractImporter>* manager, Float maxThreshold, Float meanThreshold): _maxThreshold{maxThreshold}, _meanThreshold{meanThreshold}, _max{}, _mean{} {
     if(manager) _fileState.reset(new FileState{*manager});
 
+    CORRADE_ASSERT(!Math::isNan(maxThreshold) && !Math::isInf(maxThreshold) &&
+                   !Math::isNan(meanThreshold) && !Math::isInf(meanThreshold),
+        "DebugTools::CompareImage: thresholds can't be NaN or infinity", );
     CORRADE_ASSERT(meanThreshold <= maxThreshold,
         "DebugTools::CompareImage: maxThreshold can't be smaller than meanThreshold", );
 }
@@ -359,12 +389,20 @@ bool ImageComparatorBase::operator()(const ImageView2D& actual, const ImageView2
     Containers::Array<Float> delta;
     std::tie(delta, _max, _mean) = DebugTools::Implementation::calculateImageDelta(actual, expected);
 
-    /* If both values are not above threshold, success */
-    if(_max > _maxThreshold && _mean > _meanThreshold)
+    /* Verify the max/mean is never below zero so we didn't mess up when
+       calculating specials. Note the inverted condition to catch NaNs in
+       _mean. The max should OTOH be never special as it would make all other
+       deltas become zero in comparison. */
+    CORRADE_INTERNAL_ASSERT(!(_mean < 0.0f));
+    CORRADE_INTERNAL_ASSERT(_max >= 0.0f && !Math::isInf(_max) && !Math::isNan(_max));
+
+    /* If both values are not above threshold, success. Comparing this way in
+       order to properly catch NaNs in mean values. */
+    if(_max > _maxThreshold && !(_mean <= _meanThreshold))
         _state = State::AboveThresholds;
     else if(_max > _maxThreshold)
         _state = State::AboveMaxThreshold;
-    else if(_mean > _meanThreshold)
+    else if(!(_mean <= _meanThreshold))
         _state = State::AboveMeanThreshold;
     else return true;
 
