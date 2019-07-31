@@ -151,7 +151,7 @@ namespace Magnum { namespace DebugTools {
 
 To be used with @ref Corrade::TestSuite.
 
-@note This class is available only if Magnum is compiled with `WITH_TRADE`
+@note This class is available only if Magnum is compiled with `WITH_DEBUGTOOLS`
     enabled (done by default). See @ref building-features for more information.
 
 Basic use is really simple:

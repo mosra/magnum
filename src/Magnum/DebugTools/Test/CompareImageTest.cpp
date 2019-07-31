@@ -177,8 +177,8 @@ CompareImageTest::CompareImageTest() {
 }
 
 const Float ActualRedData[] = {
-        0.3f, 1.0f, 0.9f,
-        0.9f, 0.6f, 0.2f,
+     0.3f, 1.0f, 0.9f,
+     0.9f, 0.6f, 0.2f,
     -0.1f, 1.0f, 0.0f
 };
 

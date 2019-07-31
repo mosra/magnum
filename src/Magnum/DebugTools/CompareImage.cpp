@@ -186,7 +186,8 @@ void printDeltaImage(Debug& out, Containers::ArrayView<const Float> deltas, cons
         out << "          |";
 
         for(std::int_fast32_t x = 0; x != blockCount.x(); ++x) {
-            /* Going bottom-up so we don't flip the image upside down when printing */
+            /* Going bottom-up so we don't flip the image upside down when
+               printing */
             const Vector2i offset = Vector2i{Int(x), blockCount.y() - Int(y) - 1}*pixelsPerBlock;
             const Vector2i blockSize = Math::min(size - offset, Vector2i{pixelsPerBlock});
 
