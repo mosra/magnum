@@ -60,21 +60,23 @@ namespace Implementation {
 
 class MAGNUM_DEBUGTOOLS_EXPORT ImageComparatorBase {
     public:
-        explicit ImageComparatorBase(PluginManager::Manager<Trade::AbstractImporter>* importerManager, Float maxThreshold, Float meanThreshold);
+        explicit ImageComparatorBase(PluginManager::Manager<Trade::AbstractImporter>* importerManager, PluginManager::Manager<Trade::AbstractImageConverter>* converterManager, Float maxThreshold, Float meanThreshold);
 
-        /*implicit*/ ImageComparatorBase(): ImageComparatorBase{nullptr, 0.0f, 0.0f} {}
+        /*implicit*/ ImageComparatorBase(): ImageComparatorBase{nullptr, nullptr, 0.0f, 0.0f} {}
 
         ~ImageComparatorBase();
 
-        bool operator()(const ImageView2D& actual, const ImageView2D& expected);
+        TestSuite::ComparisonStatusFlags operator()(const ImageView2D& actual, const ImageView2D& expected);
 
-        bool operator()(const std::string& actual, const std::string& expected);
+        TestSuite::ComparisonStatusFlags operator()(const std::string& actual, const std::string& expected);
 
-        bool operator()(const std::string& actual, const ImageView2D& expected);
+        TestSuite::ComparisonStatusFlags operator()(const std::string& actual, const ImageView2D& expected);
 
-        bool operator()(const ImageView2D& actual, const std::string& expected);
+        TestSuite::ComparisonStatusFlags operator()(const ImageView2D& actual, const std::string& expected);
 
-        void printErrorMessage(Debug& out, const std::string& actual, const std::string& expected) const;
+        void printMessage(TestSuite::ComparisonStatusFlags flags, Debug& out, const std::string& actual, const std::string& expected) const;
+
+        void saveDiagnostic(TestSuite::ComparisonStatusFlags flags, Utility::Debug& out, const std::string& path);
 
     private:
         class MAGNUM_DEBUGTOOLS_LOCAL FileState;
@@ -85,7 +87,7 @@ class MAGNUM_DEBUGTOOLS_EXPORT ImageComparatorBase {
         Float _maxThreshold, _meanThreshold;
 
         State _state{};
-        const ImageView2D *_actualImage, *_expectedImage;
+        const ImageView2D *_actualImage{}, *_expectedImage{};
         Float _max, _mean;
         Containers::Array<Float> _delta;
 };
@@ -99,44 +101,44 @@ namespace Corrade { namespace TestSuite {
 
 template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::CompareImage>: public Magnum::DebugTools::Implementation::ImageComparatorBase {
     public:
-        explicit Comparator(Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{nullptr, maxThreshold, meanThreshold} {}
+        explicit Comparator(Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{nullptr, nullptr, maxThreshold, meanThreshold} {}
 
         /*implicit*/ Comparator(): Comparator{0.0f, 0.0f} {}
 
-        bool operator()(const Magnum::ImageView2D& actual, const Magnum::ImageView2D& expected) {
+        ComparisonStatusFlags operator()(const Magnum::ImageView2D& actual, const Magnum::ImageView2D& expected) {
             return Magnum::DebugTools::Implementation::ImageComparatorBase::operator()(actual, expected);
         }
 };
 
 template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::CompareImageFile>: public Magnum::DebugTools::Implementation::ImageComparatorBase {
     public:
-        explicit Comparator(PluginManager::Manager<Magnum::Trade::AbstractImporter>* importerManager, Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{importerManager, maxThreshold, meanThreshold} {}
+        explicit Comparator(PluginManager::Manager<Magnum::Trade::AbstractImporter>* importerManager, PluginManager::Manager<Magnum::Trade::AbstractImageConverter>* converterManager, Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{importerManager, converterManager, maxThreshold, meanThreshold} {}
 
-        /*implicit*/ Comparator(): Comparator{nullptr, 0.0f, 0.0f} {}
+        /*implicit*/ Comparator(): Comparator{nullptr, nullptr, 0.0f, 0.0f} {}
 
-        bool operator()(const std::string& actual, const std::string& expected) {
+        ComparisonStatusFlags operator()(const std::string& actual, const std::string& expected) {
             return Magnum::DebugTools::Implementation::ImageComparatorBase::operator()(actual, expected);
         }
 };
 
 template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::CompareImageToFile>: public Magnum::DebugTools::Implementation::ImageComparatorBase {
     public:
-        explicit Comparator(PluginManager::Manager<Magnum::Trade::AbstractImporter>* importerManager, Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{importerManager, maxThreshold, meanThreshold} {}
+        explicit Comparator(PluginManager::Manager<Magnum::Trade::AbstractImporter>* importerManager, PluginManager::Manager<Magnum::Trade::AbstractImageConverter>* converterManager, Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{importerManager, converterManager, maxThreshold, meanThreshold} {}
 
-        /*implicit*/ Comparator(): Comparator{nullptr, 0.0f, 0.0f} {}
+        /*implicit*/ Comparator(): Comparator{nullptr, nullptr, 0.0f, 0.0f} {}
 
-        bool operator()(const Magnum::ImageView2D& actual, const std::string& expected) {
+        ComparisonStatusFlags operator()(const Magnum::ImageView2D& actual, const std::string& expected) {
             return Magnum::DebugTools::Implementation::ImageComparatorBase::operator()(actual, expected);
         }
 };
 
 template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::CompareFileToImage>: public Magnum::DebugTools::Implementation::ImageComparatorBase {
     public:
-        explicit Comparator(PluginManager::Manager<Magnum::Trade::AbstractImporter>* importerManager, Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{importerManager, maxThreshold, meanThreshold} {}
+        explicit Comparator(PluginManager::Manager<Magnum::Trade::AbstractImporter>* importerManager, Magnum::Float maxThreshold, Magnum::Float meanThreshold): Magnum::DebugTools::Implementation::ImageComparatorBase{importerManager, nullptr, maxThreshold, meanThreshold} {}
 
         /*implicit*/ Comparator(): Comparator{nullptr, 0.0f, 0.0f} {}
 
-        bool operator()(const std::string& actual, const Magnum::ImageView2D& expected) {
+        ComparisonStatusFlags operator()(const std::string& actual, const Magnum::ImageView2D& expected) {
             return Magnum::DebugTools::Implementation::ImageComparatorBase::operator()(actual, expected);
         }
 };
@@ -287,6 +289,20 @@ available:
 
 See also @ref CompareImageToFile and @ref CompareFileToImage for comparing
 in-memory images to image files and vice versa.
+
+@section DebugTools-CompareImageFile-save-diagnostic Saving files for failed comparisons
+
+The comparator supports the @ref TestSuite-Tester-save-diagnostic "--save-diagnostic option"
+--- if the comparison fails, it saves actual image data to given directory with
+a filename and format matching the expected file, using the
+@ref Trade::AnyImageConverter "AnyImageConverter" plugin. For this to work,
+both @ref Trade::AnyImageConverter "AnyImageConverter" and the concrete
+converter plugin need to be available. You can use it to perform a manual data comparison with an external tool or for example to quickly update expected test
+data --- point the option to the directory with expected test files and let the
+test overwrite them with actual results. The @ref CompareImageToFile variant
+supports the same; the @ref CompareImage / @ref CompareFileToImage variants
+don't since the comparison is done against in-memory data and so producing a
+file isn't that helpful as in the other two variants.
 */
 class CompareImageFile {
     public:
@@ -297,7 +313,7 @@ class CompareImageFile {
          * @param meanThreshold Mean threshold. If mean delta over all pixels
          *      is above this value, the comparison fails
          */
-        explicit CompareImageFile(Float maxThreshold, Float meanThreshold): _c{nullptr, maxThreshold, meanThreshold} {}
+        explicit CompareImageFile(Float maxThreshold, Float meanThreshold): _c{nullptr, nullptr, maxThreshold, meanThreshold} {}
 
         /**
          * @brief Construct with an explicit plugin manager instance
@@ -307,7 +323,7 @@ class CompareImageFile {
          * @param meanThreshold     Mean threshold. If mean delta over all
          *      pixels is above this value, the comparison fails
          */
-        explicit CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager, Float maxThreshold, Float meanThreshold): _c{&importerManager, maxThreshold, meanThreshold} {}
+        explicit CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager, Float maxThreshold, Float meanThreshold): _c{&importerManager, nullptr, maxThreshold, meanThreshold} {}
 
         /**
          * @brief Construct with an explicit plugin manager instance and implicit thresholds
@@ -315,7 +331,24 @@ class CompareImageFile {
          * Equivalent to calling @ref CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>&, Float, Float)
          * with zero values.
          */
-        explicit CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager): _c{&importerManager, 0.0f, 0.0f} {}
+        explicit CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager): _c{&importerManager, nullptr, 0.0f, 0.0f} {}
+
+        /**
+         * @brief Construct with an explicit importer and converter plugin manager instance
+         * @param importerManager   Image importer plugin manager instance
+         * @param converterManager  Image converter plugin manager instance
+         * @param maxThreshold      Max threshold. If any pixel has delta above
+         *      this value, this comparison fails
+         * @param meanThreshold     Mean threshold. If mean delta over all
+         *      pixels is above this value, the comparison fails
+         *
+         * This variant is rarely usable outside of testing environment, as the
+         * @p converterManager is only ever used when saving diagnostic for
+         * failed * comparison when the `--save-diagnostic`
+         * @ref TestSuite-Tester-save-diagnostic "command-line option" is
+         * specified.
+         */
+        explicit CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager, PluginManager::Manager<Trade::AbstractImageConverter>& converterManager, Float maxThreshold, Float meanThreshold): _c{&importerManager, &converterManager, maxThreshold, meanThreshold} {}
 
         /**
          * @brief Construct with implicit thresholds
@@ -323,7 +356,7 @@ class CompareImageFile {
          * Equivalent to calling @ref CompareImageFile(Float, Float) with zero
          * values.
          */
-        explicit CompareImageFile(): _c{nullptr, 0.0f, 0.0f} {}
+        explicit CompareImageFile(): _c{nullptr, nullptr, 0.0f, 0.0f} {}
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         TestSuite::Comparator<CompareImageFile>& comparator() {
@@ -354,7 +387,7 @@ class CompareImageToFile {
          * See @ref CompareImageFile::CompareImageFile(Float, Float) for more
          * information.
          */
-        explicit CompareImageToFile(Float maxThreshold, Float meanThreshold): _c{nullptr, maxThreshold, meanThreshold} {}
+        explicit CompareImageToFile(Float maxThreshold, Float meanThreshold): _c{nullptr, nullptr, maxThreshold, meanThreshold} {}
 
         /**
          * @brief Construct with an explicit plugin manager instance
@@ -362,7 +395,7 @@ class CompareImageToFile {
          * See @ref CompareImageFile::CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>&, Float, Float)
          * for more information.
          */
-        explicit CompareImageToFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager, Float maxThreshold, Float meanThreshold): _c{&importerManager, maxThreshold, meanThreshold} {}
+        explicit CompareImageToFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager, Float maxThreshold, Float meanThreshold): _c{&importerManager, nullptr, maxThreshold, meanThreshold} {}
 
         /**
          * @brief Construct with an explicit plugin manager instance and implicit thresholds
@@ -370,7 +403,15 @@ class CompareImageToFile {
          * Equivalent to calling @ref CompareImageToFile(PluginManager::Manager<Trade::AbstractImporter>&, Float, Float)
          * with zero values.
          */
-        explicit CompareImageToFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager): _c{&importerManager, 0.0f, 0.0f} {}
+        explicit CompareImageToFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager): _c{&importerManager, nullptr, 0.0f, 0.0f} {}
+
+        /**
+         * @brief Construct with an explicit importer and converter plugin manager instance
+         *
+         * See @ref CompareImageFile::CompareImageFile(PluginManager::Manager<Trade::AbstractImporter>&, PluginManager::Manager<Trade::AbstractImageConverter>&, Float, Float)
+         * for more information.
+         */
+        explicit CompareImageToFile(PluginManager::Manager<Trade::AbstractImporter>& importerManager, PluginManager::Manager<Trade::AbstractImageConverter>& imageConverterManager, Float maxThreshold, Float meanThreshold): _c{&importerManager, &imageConverterManager, maxThreshold, meanThreshold} {}
 
         /**
          * @brief Implicit constructor
@@ -378,7 +419,7 @@ class CompareImageToFile {
          * Equivalent to calling @ref CompareImageToFile(Float, Float) with zero
          * values.
          */
-        explicit CompareImageToFile(): _c{nullptr, 0.0f, 0.0f} {}
+        explicit CompareImageToFile(): _c{nullptr, nullptr, 0.0f, 0.0f} {}
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         TestSuite::Comparator<CompareImageToFile>& comparator() {

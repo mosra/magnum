@@ -29,8 +29,10 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/TestSuite/Compare/File.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/FormatStl.h>
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/ImageView.h"
@@ -38,6 +40,7 @@
 #include "Magnum/DebugTools/CompareImage.h"
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/AbstractImporter.h"
 
 #include "configure.h"
@@ -100,6 +103,7 @@ struct CompareImageTest: TestSuite::Tester {
 
     private:
         Containers::Optional<PluginManager::Manager<Trade::AbstractImporter>> _importerManager;
+        Containers::Optional<PluginManager::Manager<Trade::AbstractImageConverter>> _converterManager;
 };
 
 CompareImageTest::CompareImageTest() {
@@ -174,6 +178,9 @@ CompareImageTest::CompareImageTest() {
         &CompareImageTest::teardownExternalPluginManager);
 
     addTests({&CompareImageTest::fileToImageActualIsCompressed});
+
+    /* Plugin manager setup is not done here, but in the
+       setupExternalPluginManager() function */
 }
 
 const Float ActualRedData[] = {
@@ -489,10 +496,12 @@ void CompareImageTest::compareDifferentSize() {
     ImageView2D b{PixelFormat::RG8UI, {3, 5}, nullptr};
 
     {
-        Error e(&out);
         TestSuite::Comparator<CompareImage> compare{{}, {}};
-        CORRADE_VERIFY(!compare(a, b));
-        compare.printErrorMessage(e, "a", "b");
+        TestSuite::ComparisonStatusFlags flags = compare(a, b);
+        /* No diagnostic as we don't have any expected filename */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
+        Error e(&out);
+        compare.printMessage(flags, e, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(), "Images a and b have different size, actual Vector(3, 4) but Vector(3, 5) expected.\n");
@@ -505,10 +514,12 @@ void CompareImageTest::compareDifferentFormat() {
     ImageView2D b{PixelFormat::RGB32F, {3, 4}, nullptr};
 
     {
-        Error e(&out);
         TestSuite::Comparator<CompareImage> compare{{}, {}};
-        CORRADE_VERIFY(!compare(a, b));
-        compare.printErrorMessage(e, "a", "b");
+        TestSuite::ComparisonStatusFlags flags = compare(a, b);
+        /* No diagnostic as we don't have any expected filename */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
+        Error e(&out);
+        compare.printMessage(flags, e, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(), "Images a and b have different format, actual PixelFormat::RGBA32F but PixelFormat::RGB32F expected.\n");
@@ -523,7 +534,7 @@ void CompareImageTest::compareSameZeroThreshold() {
     };
 
     const ImageView2D image{PixelFormat::RGB32F, {2, 2}, data};
-    CORRADE_VERIFY((TestSuite::Comparator<CompareImage>{0.0f, 0.0f}(image, image)));
+    CORRADE_COMPARE((TestSuite::Comparator<CompareImage>{0.0f, 0.0f}(image, image)), TestSuite::ComparisonStatusFlags{});
 }
 
 void CompareImageTest::compareAboveThresholds() {
@@ -531,9 +542,11 @@ void CompareImageTest::compareAboveThresholds() {
 
     {
         TestSuite::Comparator<CompareImage> compare{20.0f, 10.0f};
-        CORRADE_VERIFY(!compare(ActualRgb, ExpectedRgb));
+        TestSuite::ComparisonStatusFlags flags = compare(ActualRgb, ExpectedRgb);
+        /* No diagnostic as we don't have any expected filename */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(),
@@ -550,9 +563,11 @@ void CompareImageTest::compareAboveMaxThreshold() {
 
     {
         TestSuite::Comparator<CompareImage> compare{30.0f, 20.0f};
-        CORRADE_VERIFY(!compare(ActualRgb, ExpectedRgb));
+        TestSuite::ComparisonStatusFlags flags = compare(ActualRgb, ExpectedRgb);
+        /* No diagnostic as we don't have any expected filename */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(),
@@ -567,9 +582,11 @@ void CompareImageTest::compareAboveMeanThreshold() {
 
     {
         TestSuite::Comparator<CompareImage> compare{50.0f, 18.0f};
-        CORRADE_VERIFY(!compare(ActualRgb, ExpectedRgb));
+        TestSuite::ComparisonStatusFlags flags = compare(ActualRgb, ExpectedRgb);
+        /* No diagnostic as we don't have any expected filename */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(),
@@ -585,9 +602,11 @@ void CompareImageTest::compareSpecials() {
 
     {
         TestSuite::Comparator<CompareImage> compare{1.5f, 0.5f};
-        CORRADE_VERIFY(!compare(ActualSpecials, ExpectedSpecials));
+        TestSuite::ComparisonStatusFlags flags = compare(ActualSpecials, ExpectedSpecials);
+        /* No diagnostic as we don't have any expected filename */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     /* Apple platforms, Android, Emscripten and MinGW32 don't print signed
@@ -637,9 +656,11 @@ void CompareImageTest::compareSpecialsMeanOnly() {
 
     {
         TestSuite::Comparator<CompareImage> compare{15.0f, 0.5f};
-        CORRADE_VERIFY(!compare(ActualSpecials, ExpectedSpecials));
+        TestSuite::ComparisonStatusFlags flags = compare(ActualSpecials, ExpectedSpecials);
+        /* No diagnostic as we don't have any expected filename */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     /* Apple platforms, Android, Emscripten and MinGW32 don't print signed
@@ -700,16 +721,26 @@ void CompareImageTest::compareSpecialsDisallowedThreshold() {
 
 void CompareImageTest::setupExternalPluginManager() {
     _importerManager.emplace("nonexistent");
+    _converterManager.emplace("nonexistent");
     /* Load the plugin directly from the build tree. Otherwise it's either
        static and already loaded or not present in the build tree */
-    #if defined(ANYIMAGEIMPORTER_PLUGIN_FILENAME) && defined(TGAIMPORTER_PLUGIN_FILENAME)
+    #ifdef ANYIMAGEIMPORTER_PLUGIN_FILENAME
     CORRADE_INTERNAL_ASSERT(_importerManager->load(ANYIMAGEIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+    #ifdef ANYIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT(_converterManager->load(ANYIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+    #ifdef TGAIMPORTER_PLUGIN_FILENAME
     CORRADE_INTERNAL_ASSERT(_importerManager->load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
+    #endif
+    #ifdef TGAIMAGECONVERTER_PLUGIN_FILENAME
+    CORRADE_INTERNAL_ASSERT(_converterManager->load(TGAIMAGECONVERTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
 }
 
 void CompareImageTest::teardownExternalPluginManager() {
     _importerManager = Containers::NullOpt;
+    _converterManager = Containers::NullOpt;
 }
 
 constexpr const char* ImageCompareError =
@@ -722,6 +753,10 @@ constexpr const char* ImageCompareError =
 
 void CompareImageTest::image() {
     CORRADE_COMPARE_WITH(ActualRgb, ExpectedRgb, (CompareImage{40.0f, 20.0f}));
+
+    /* No diagnostic as there's no error */
+    TestSuite::Comparator<CompareImage> compare{40.0f, 20.0f};
+    CORRADE_COMPARE(compare(ActualRgb, ExpectedRgb), TestSuite::ComparisonStatusFlags{});
 }
 
 void CompareImageTest::imageError() {
@@ -729,9 +764,11 @@ void CompareImageTest::imageError() {
 
     {
         TestSuite::Comparator<CompareImage> compare{20.0f, 10.0f};
-        CORRADE_VERIFY(!compare(ActualRgb, ExpectedRgb));
+        TestSuite::ComparisonStatusFlags flags = compare(ActualRgb, ExpectedRgb);
+        /* No diagnostic as we don't have any expected filename */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(), ImageCompareError);
@@ -746,6 +783,13 @@ void CompareImageTest::imageFile() {
         Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
         Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
         (CompareImageFile{*_importerManager, 40.0f, 20.0f}));
+
+    /* No diagnostic as there's no error */
+    TestSuite::Comparator<CompareImageFile> compare{&*_importerManager, nullptr, 40.0f, 20.0f};
+    CORRADE_COMPARE(compare(
+        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
+        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga")),
+        TestSuite::ComparisonStatusFlags{});
 }
 
 void CompareImageTest::imageFileError() {
@@ -755,16 +799,40 @@ void CompareImageTest::imageFileError() {
 
     std::stringstream out;
 
+    TestSuite::Comparator<CompareImageFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
+    TestSuite::ComparisonStatusFlags flags = compare(
+        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
+        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+    /* The diagnostic flag should be slapped on the failure coming from the
+       operator() comparing two ImageViews */
+    CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic);
+
     {
-        TestSuite::Comparator<CompareImageFile> compare{&*_importerManager, 20.0f, 10.0f};
-        CORRADE_VERIFY(!compare(
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga")));
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(), ImageCompareError);
+
+    /* Create the output dir if it doesn't exist, but avoid stale files making
+       false positives */
+    CORRADE_VERIFY(Utility::Directory::mkpath(COMPAREIMAGETEST_SAVE_DIR));
+    std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageExpected.tga");
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    {
+        out.str({});
+        Debug redirectOutput(&out);
+        compare.saveDiagnostic(flags, redirectOutput, COMPAREIMAGETEST_SAVE_DIR);
+    }
+
+    /* We expect the *actual* contents, but under the *expected* filename.
+       Comparing file contents, expecting the converter makes exactly the same
+       file. */
+    CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
+    CORRADE_COMPARE_AS(filename,
+        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
 }
 
 void CompareImageTest::imageFilePluginLoadFailed() {
@@ -775,12 +843,15 @@ void CompareImageTest::imageFilePluginLoadFailed() {
     std::stringstream out;
 
     {
-        TestSuite::Comparator<CompareImageFile> compare{&manager, 20.0f, 10.0f};
-        CORRADE_VERIFY(!compare(
+        TestSuite::Comparator<CompareImageFile> compare{&manager, nullptr, 20.0f, 10.0f};
+        TestSuite::ComparisonStatusFlags flags = compare(
             Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga")));
+            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+        /* Can't load a plugin, so we can't open the file, so we can't save
+           it either and thus no diagnostic */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(), "AnyImageImporter plugin could not be loaded.\n");
@@ -794,11 +865,14 @@ void CompareImageTest::imageFileActualLoadFailed() {
     std::stringstream out;
 
     {
-        TestSuite::Comparator<CompareImageFile> compare{&*_importerManager, 20.0f, 10.0f};
-        CORRADE_VERIFY(!compare("nonexistent.tga",
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga")));
+        TestSuite::Comparator<CompareImageFile> compare{&*_importerManager, nullptr, 20.0f, 10.0f};
+        TestSuite::ComparisonStatusFlags flags = compare("nonexistent.tga",
+            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+        /* We can't open the file, so we can't save it either and thus no
+           diagnostic */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(), "Actual image a (nonexistent.tga) could not be loaded.\n");
@@ -811,16 +885,39 @@ void CompareImageTest::imageFileExpectedLoadFailed() {
 
     std::stringstream out;
 
+    TestSuite::Comparator<CompareImageFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
+    TestSuite::ComparisonStatusFlags flags = compare(
+        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
+        "nonexistent.tga");
+    /* Actual file *could* be loaded, so save it! */
+    CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic);
+
     {
-        TestSuite::Comparator<CompareImageFile> compare{&*_importerManager, 20.0f, 10.0f};
-        CORRADE_VERIFY(!compare(
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
-            "nonexistent.tga"));
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(), "Expected image b (nonexistent.tga) could not be loaded.\n");
+
+    /* Create the output dir if it doesn't exist, but avoid stale files making
+       false positives */
+    CORRADE_VERIFY(Utility::Directory::mkpath(COMPAREIMAGETEST_SAVE_DIR));
+    std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "nonexistent.tga");
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    {
+        out.str({});
+        Debug redirectOutput(&out);
+        compare.saveDiagnostic(flags, redirectOutput, COMPAREIMAGETEST_SAVE_DIR);
+    }
+
+    /* We expect the *actual* contents, but under the *expected* filename.
+       Comparing file contents, expecting the converter makes exactly the same
+       file. */
+    CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
+    CORRADE_COMPARE_AS(filename,
+        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
 }
 
 void CompareImageTest::imageFileActualIsCompressed() {
@@ -832,12 +929,15 @@ void CompareImageTest::imageFileActualIsCompressed() {
     std::stringstream out;
 
     {
-        TestSuite::Comparator<CompareImageFile> compare{&manager, 20.0f, 10.0f};
-        CORRADE_VERIFY(!compare(
+        TestSuite::Comparator<CompareImageFile> compare{&manager, nullptr, 20.0f, 10.0f};
+        TestSuite::ComparisonStatusFlags flags = compare(
             Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageCompressed.dds"),
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga")));
+            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+        /* We most probably couldn't save the file because it's in a different
+           format, so no diagnostic */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(Utility::String::replaceFirst(out.str(), DEBUGTOOLS_TEST_DIR, "..."), "Actual image a (.../CompareImageCompressed.dds) is compressed, comparison not possible.\n");
@@ -851,17 +951,30 @@ void CompareImageTest::imageFileExpectedIsCompressed() {
 
     std::stringstream out;
 
+    TestSuite::Comparator<CompareImageFile> compare{&manager, nullptr, 20.0f, 10.0f};
+    TestSuite::ComparisonStatusFlags flags = compare(
+        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
+        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageCompressed.dds"));
+    /* Actual file is not, so save it! */
+    CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic);
+
     {
-        TestSuite::Comparator<CompareImageFile> compare{&manager, 20.0f, 10.0f};
-        CORRADE_VERIFY(!compare(
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageCompressed.dds")));
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
-    CORRADE_COMPARE(Utility::String::replaceFirst(out.str(), DEBUGTOOLS_TEST_DIR, "..."),
-        "Expected image b (.../CompareImageCompressed.dds) is compressed, comparison not possible.\n");
+    /* Create the output dir if it doesn't exist, but avoid stale files making
+       false positives */
+    CORRADE_VERIFY(Utility::Directory::mkpath(COMPAREIMAGETEST_SAVE_DIR));
+    std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageCompressed.dds");
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    /* This will attempt to save a DDS and then fails, because we have no DDS
+       exporter. */
+    Debug d;
+    compare.saveDiagnostic(flags, d, COMPAREIMAGETEST_SAVE_DIR);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
 }
 
 void CompareImageTest::imageToFile() {
@@ -872,6 +985,11 @@ void CompareImageTest::imageToFile() {
     CORRADE_COMPARE_WITH(ActualRgb,
         Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
         (CompareImageToFile{*_importerManager, 40.0f, 20.0f}));
+
+    /* No diagnostic as there's no error */
+    TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, nullptr, 40.0f, 20.0f};
+    CORRADE_COMPARE(compare(ActualRgb, Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga")),
+        TestSuite::ComparisonStatusFlags{});
 }
 
 void CompareImageTest::imageToFileError() {
@@ -881,15 +999,39 @@ void CompareImageTest::imageToFileError() {
 
     std::stringstream out;
 
+    TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
+    TestSuite::ComparisonStatusFlags flags = compare(ActualRgb,
+        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+    /* The diagnostic flag should be slapped on the failure coming from the
+       operator() comparing two ImageViews */
+    CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic);
+
     {
-        TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, 20.0f, 10.0f};
-        CORRADE_VERIFY(!compare(ActualRgb,
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga")));
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(), ImageCompareError);
+
+    /* Create the output dir if it doesn't exist, but avoid stale files making
+       false positives */
+    CORRADE_VERIFY(Utility::Directory::mkpath(COMPAREIMAGETEST_SAVE_DIR));
+    std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageExpected.tga");
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    {
+        out.str({});
+        Debug redirectOutput(&out);
+        compare.saveDiagnostic(flags, redirectOutput, COMPAREIMAGETEST_SAVE_DIR);
+    }
+
+    /* We expect the *actual* contents, but under the *expected* filename.
+       Comparing file contents, expecting the converter makes exactly the same
+       file. */
+    CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
+    CORRADE_COMPARE_AS(filename,
+        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
 }
 
 void CompareImageTest::imageToFilePluginLoadFailed() {
@@ -900,11 +1042,14 @@ void CompareImageTest::imageToFilePluginLoadFailed() {
     std::stringstream out;
 
     {
-        TestSuite::Comparator<CompareImageToFile> compare{&manager, 20.0f, 10.0f};
-        CORRADE_VERIFY(!compare(ActualRgb,
-            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga")));
+        TestSuite::Comparator<CompareImageToFile> compare{&manager, nullptr, 20.0f, 10.0f};
+        TestSuite::ComparisonStatusFlags flags = compare(ActualRgb,
+            Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+        /* Can't load a plugin, so we can't open the file, so we can't save
+           it either and thus no diagnostic */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(), "AnyImageImporter plugin could not be loaded.\n");
@@ -917,14 +1062,37 @@ void CompareImageTest::imageToFileExpectedLoadFailed() {
 
     std::stringstream out;
 
+    TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
+    TestSuite::ComparisonStatusFlags flags = compare(ActualRgb, "nonexistent.tga");
+    /* Actual file *could* be loaded, so save it! */
+    CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic);
+
     {
-        TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, 20.0f, 10.0f};
-        CORRADE_VERIFY(!compare(ActualRgb, "nonexistent.tga"));
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(), "Expected image b (nonexistent.tga) could not be loaded.\n");
+
+    /* Create the output dir if it doesn't exist, but avoid stale files making
+       false positives */
+    CORRADE_VERIFY(Utility::Directory::mkpath(COMPAREIMAGETEST_SAVE_DIR));
+    std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "nonexistent.tga");
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    {
+        out.str({});
+        Debug redirectOutput(&out);
+        compare.saveDiagnostic(flags, redirectOutput, COMPAREIMAGETEST_SAVE_DIR);
+    }
+
+    /* We expect the *actual* contents, but under the *expected* filename.
+       Comparing file contents, expecting the converter makes exactly the same
+       file. */
+    CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
+    CORRADE_COMPARE_AS(filename,
+        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
 }
 
 void CompareImageTest::imageToFileExpectedIsCompressed() {
@@ -935,15 +1103,32 @@ void CompareImageTest::imageToFileExpectedIsCompressed() {
 
     std::stringstream out;
 
+    TestSuite::Comparator<CompareImageToFile> compare{&manager, nullptr, 20.0f, 10.0f};
+    TestSuite::ComparisonStatusFlags flags = compare(ActualRgb,
+        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageCompressed.dds"));
+    /* Actual file is not, so save it! */
+    CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic);
+
     {
-        TestSuite::Comparator<CompareImageToFile> compare{&manager, 20.0f, 10.0f};
-        CORRADE_VERIFY(!compare(ActualRgb, Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageCompressed.dds")));
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(Utility::String::replaceFirst(out.str(), DEBUGTOOLS_TEST_DIR, "..."),
         "Expected image b (.../CompareImageCompressed.dds) is compressed, comparison not possible.\n");
+
+    /* Create the output dir if it doesn't exist, but avoid stale files making
+       false positives */
+    CORRADE_VERIFY(Utility::Directory::mkpath(COMPAREIMAGETEST_SAVE_DIR));
+    std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageCompressed.dds");
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    /* This will attempt to save a DDS and then fails, because we have no DDS
+       exporter. */
+    Debug d;
+    compare.saveDiagnostic(flags, d, COMPAREIMAGETEST_SAVE_DIR);
+    CORRADE_VERIFY(!Utility::Directory::exists(filename));
 }
 
 void CompareImageTest::fileToImage() {
@@ -955,6 +1140,11 @@ void CompareImageTest::fileToImage() {
         Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
         ExpectedRgb,
         (CompareFileToImage{*_importerManager, 40.0f, 20.0f}));
+
+    /* No diagnostic as there's no error */
+    TestSuite::Comparator<CompareFileToImage> compare{&*_importerManager, 40.0f, 20.0f};
+    CORRADE_COMPARE(compare(Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
+        ExpectedRgb), TestSuite::ComparisonStatusFlags{});
 }
 
 void CompareImageTest::fileToImageError() {
@@ -966,11 +1156,13 @@ void CompareImageTest::fileToImageError() {
 
     {
         TestSuite::Comparator<CompareFileToImage> compare{&*_importerManager, 20.0f, 10.0f};
-        CORRADE_VERIFY(!compare(
+        TestSuite::ComparisonStatusFlags flags = compare(
             Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
-            ExpectedRgb));
+            ExpectedRgb);
+        /* No diagnostic as we don't have any expected filename */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(), ImageCompareError);
@@ -985,11 +1177,13 @@ void CompareImageTest::fileToImagePluginLoadFailed() {
 
     {
         TestSuite::Comparator<CompareFileToImage> compare{&manager, 20.0f, 10.0f};
-        CORRADE_VERIFY(!compare(
+        TestSuite::ComparisonStatusFlags flags = compare(
             Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"),
-            ExpectedRgb));
+            ExpectedRgb);
+        /* No diagnostic as we don't have any expected filename */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(), "AnyImageImporter plugin could not be loaded.\n");
@@ -1004,9 +1198,11 @@ void CompareImageTest::fileToImageActualLoadFailed() {
 
     {
         TestSuite::Comparator<CompareFileToImage> compare{&*_importerManager, 20.0f, 10.0f};
-        CORRADE_VERIFY(!compare("nonexistent.tga", ExpectedRgb));
+        TestSuite::ComparisonStatusFlags flags = compare("nonexistent.tga", ExpectedRgb);
+        /* No diagnostic as we don't have any expected filename */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(out.str(), "Actual image a (nonexistent.tga) could not be loaded.\n");
@@ -1022,9 +1218,11 @@ void CompareImageTest::fileToImageActualIsCompressed() {
 
     {
         TestSuite::Comparator<CompareFileToImage> compare{&manager, 20.0f, 10.0f};
-        CORRADE_VERIFY(!compare(Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageCompressed.dds"), ExpectedRgb));
+        TestSuite::ComparisonStatusFlags flags = compare(Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageCompressed.dds"), ExpectedRgb);
+        /* No diagnostic as we don't have any expected filename */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
         Debug d{&out, Debug::Flag::DisableColors};
-        compare.printErrorMessage(d, "a", "b");
+        compare.printMessage(flags, d, "a", "b");
     }
 
     CORRADE_COMPARE(Utility::String::replaceFirst(out.str(), DEBUGTOOLS_TEST_DIR, "..."),

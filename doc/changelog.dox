@@ -69,6 +69,9 @@ See also:
     screenshots
 -   @ref DebugTools::CompareImage and variants now properly handle
     floating-point specials such as NaN or @f$ \infty @f$ in compared data
+-   @ref DebugTools::CompareImageFile and @ref DebugTools::CompareImageToFile
+    now support the new @ref TestSuite-Tester-save-diagnostic "--save-diagnostic option",
+    making it possible to save images when a comparison fails
 
 @subsubsection changelog-latest-new-gl GL library
 

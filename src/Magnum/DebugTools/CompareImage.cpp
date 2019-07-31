@@ -30,12 +30,14 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Directory.h>
 
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Algorithms/KahanSum.h"
+#include "Magnum/Trade/AbstractImageConverter.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/ImageData.h"
 
@@ -346,23 +348,43 @@ enum class ImageComparatorBase::State: UnsignedByte {
 
 class ImageComparatorBase::FileState {
     public:
-        explicit FileState(PluginManager::Manager<Trade::AbstractImporter>& importerManager): importerManager{&importerManager} {}
+        explicit FileState(PluginManager::Manager<Trade::AbstractImporter>* importerManager, PluginManager::Manager<Trade::AbstractImageConverter>* converterManager): _importerManager{importerManager}, _converterManager{converterManager} {}
 
-        explicit FileState(): _privateImporterManager{Containers::InPlaceInit}, importerManager{&*_privateImporterManager} {}
+        explicit FileState() {}
+
+        /* Lazy-create the importer / converter if those weren't passed from
+           the outside. The importer might not be used at all if we are
+           comparing two image data (but in that case the FileState won't be
+           created at all); the converter will get used only very rarely for
+           the --save-failed option. Treat both the same lazy way to keep the
+           code straightforward. */
+        PluginManager::Manager<Trade::AbstractImporter>& importerManager() {
+            if(!_importerManager) _importerManager = &_privateImporterManager.emplace();
+            return *_importerManager;
+        }
+        PluginManager::Manager<Trade::AbstractImageConverter>& converterManager() {
+            if(!_converterManager) _converterManager = &_privateConverterManager.emplace();
+            return *_converterManager;
+        }
 
     private:
         Containers::Optional<PluginManager::Manager<Trade::AbstractImporter>> _privateImporterManager;
+        Containers::Optional<PluginManager::Manager<Trade::AbstractImageConverter>> _privateConverterManager;
+        PluginManager::Manager<Trade::AbstractImporter>* _importerManager{};
+        PluginManager::Manager<Trade::AbstractImageConverter>* _converterManager{};
 
     public:
-        PluginManager::Manager<Trade::AbstractImporter>* importerManager;
         std::string actualFilename, expectedFilename;
         Containers::Optional<Trade::ImageData2D> actualImageData, expectedImageData;
         /** @todo could at least the views have a NoCreate constructor? */
         Containers::Optional<ImageView2D> actualImage, expectedImage;
 };
 
-ImageComparatorBase::ImageComparatorBase(PluginManager::Manager<Trade::AbstractImporter>* importerManager, Float maxThreshold, Float meanThreshold): _maxThreshold{maxThreshold}, _meanThreshold{meanThreshold}, _max{}, _mean{} {
-    if(importerManager) _fileState.reset(new FileState{*importerManager});
+ImageComparatorBase::ImageComparatorBase(PluginManager::Manager<Trade::AbstractImporter>* importerManager, PluginManager::Manager<Trade::AbstractImageConverter>* converterManager, Float maxThreshold, Float meanThreshold): _maxThreshold{maxThreshold}, _meanThreshold{meanThreshold}, _max{}, _mean{} {
+    /* Only instantiate the file state if there's something to save -- if we
+       are comparing two image data, it won't be used at all */
+    if(importerManager || converterManager)
+        _fileState.reset(new FileState{importerManager, converterManager});
 
     CORRADE_ASSERT(!Math::isNan(maxThreshold) && !Math::isInf(maxThreshold) &&
                    !Math::isNan(meanThreshold) && !Math::isInf(meanThreshold),
@@ -373,18 +395,22 @@ ImageComparatorBase::ImageComparatorBase(PluginManager::Manager<Trade::AbstractI
 
 ImageComparatorBase::~ImageComparatorBase() = default;
 
-bool ImageComparatorBase::operator()(const ImageView2D& actual, const ImageView2D& expected) {
+TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView2D& actual, const ImageView2D& expected) {
+    /* Taking just references is okay because in case of files those are
+       references to actual views stored inside FileState; and in case of
+       data, the actual/expected params passed here stay in scope for the whole
+       time where operator(), printMessage() & saveDiagnostic() gets called */
     _actualImage = &actual;
     _expectedImage = &expected;
 
     /* Verify that the images are the same */
     if(actual.size() != expected.size()) {
         _state = State::DifferentSize;
-        return false;
+        return TestSuite::ComparisonStatusFlag::Failed;
     }
     if(actual.format() != expected.format()) {
         _state = State::DifferentFormat;
-        return false;
+        return TestSuite::ComparisonStatusFlag::Failed;
     }
 
     Containers::Array<Float> delta;
@@ -405,101 +431,151 @@ bool ImageComparatorBase::operator()(const ImageView2D& actual, const ImageView2
         _state = State::AboveMaxThreshold;
     else if(!(_mean <= _meanThreshold))
         _state = State::AboveMeanThreshold;
-    else return true;
+    else return TestSuite::ComparisonStatusFlags{};
 
     /* Otherwise save the deltas and fail */
     _delta = std::move(delta);
-    return false;
+    return TestSuite::ComparisonStatusFlag::Failed;
 }
 
-bool ImageComparatorBase::operator()(const std::string& actual, const std::string& expected) {
+TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const std::string& actual, const std::string& expected) {
     if(!_fileState) _fileState.reset(new FileState);
 
     _fileState->actualFilename = actual;
     _fileState->expectedFilename = expected;
 
     Containers::Pointer<Trade::AbstractImporter> importer;
-    if(!(importer = _fileState->importerManager->loadAndInstantiate("AnyImageImporter"))) {
+    /* Can't load importer plugin. While we *could* save diagnostic in this
+       case too, it would make no sense as it's a Schrödinger image at this
+       point -- we have no idea if it's the same or not until we open it. */
+    if(!(importer = _fileState->importerManager().loadAndInstantiate("AnyImageImporter"))) {
         _state = State::PluginLoadFailed;
-        return false;
+        return TestSuite::ComparisonStatusFlag::Failed;
     }
 
+    /* Same here. We can't open the image for some reason (file missing? broken
+       plugin?), so can't know if it's the same or not. */
     if(!importer->openFile(actual) || !(_fileState->actualImageData = importer->image2D(0))) {
         _state = State::ActualImageLoadFailed;
-        return false;
+        return TestSuite::ComparisonStatusFlag::Failed;
     }
 
-    if(!importer->openFile(expected) || !(_fileState->expectedImageData = importer->image2D(0))) {
-        _state = State::ExpectedImageLoadFailed;
-        return false;
-    }
-
+    /* If the actual data are compressed, we won't be able to compare them
+       (and probably neither save them back due to format mismatches). Don't
+       provide diagnostic in that case. */
     if(_fileState->actualImageData->isCompressed()) {
         _state = State::ActualImageIsCompressed;
-        return false;
+        return TestSuite::ComparisonStatusFlag::Failed;
     }
 
-    if(_fileState->expectedImageData->isCompressed()) {
-        _state = State::ExpectedImageIsCompressed;
-        return false;
-    }
-
+    /* At this point we already know we successfully opened the actual file,
+       so save also the view on its parsed contents to avoid it going out of
+       scope. We're saving through an image converter, not the original file,
+       see saveDiagnostic() for reasons why. */
     _fileState->actualImage.emplace(*_fileState->actualImageData);
+
+    /* Save a reference to the actual image so saveDiagnostic() can reach the
+       data even if we fail before the final data comparison (which does this
+       as well) */
+    _actualImage = &*_fileState->actualImage;
+
+    /* If the expected file can't be opened, we should still be able to save
+       the actual as a diagnostic. This could get also used to generate ground
+       truth data on the first-ever test run. */
+    if(!importer->openFile(expected) || !(_fileState->expectedImageData = importer->image2D(0))) {
+        _state = State::ExpectedImageLoadFailed;
+        return TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic;
+    }
+
+    /* If the expected file is compressed, it's bad, but it doesn't mean we
+       couldn't save the actual file either */
+    if(_fileState->expectedImageData->isCompressed()) {
+        _state = State::ExpectedImageIsCompressed;
+        return TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic;
+    }
+
+    /* Save also a view on the expected image data and proxy to the actual data
+       comparison. If comparison failed, offer to save a diagnostic. */
     _fileState->expectedImage.emplace(*_fileState->expectedImageData);
-    return operator()(*_fileState->actualImage, *_fileState->expectedImage);
+    TestSuite::ComparisonStatusFlags flags = operator()(*_fileState->actualImage, *_fileState->expectedImage);
+    if(flags & TestSuite::ComparisonStatusFlag::Failed)
+        flags |= TestSuite::ComparisonStatusFlag::Diagnostic;
+    return flags;
 }
 
-bool ImageComparatorBase::operator()(const ImageView2D& actual, const std::string& expected) {
+TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView2D& actual, const std::string& expected) {
     if(!_fileState) _fileState.reset(new FileState);
 
     _fileState->expectedFilename = expected;
 
     Containers::Pointer<Trade::AbstractImporter> importer;
-    if(!(importer = _fileState->importerManager->loadAndInstantiate("AnyImageImporter"))) {
+    /* Can't load importer plugin. While we *could* save diagnostic in this
+       case too, it would make no sense as it's a Schrödinger image at this
+       point -- we have no idea if it's the same or not until we open it. */
+    if(!(importer = _fileState->importerManager().loadAndInstantiate("AnyImageImporter"))) {
         _state = State::PluginLoadFailed;
-        return false;
+        return TestSuite::ComparisonStatusFlag::Failed;
     }
 
+    /* Save a reference to the actual image so saveDiagnostic() can reach the
+       data even if we fail before the final data comparison (which does this
+       as well) */
+    _actualImage = &actual;
+
+    /* If the expected file can't be opened, we should still be able to save
+       the actual as a diagnostic. This could get also used to generate ground
+       truth data on the first-ever test run. */
     if(!importer->openFile(expected) || !(_fileState->expectedImageData = importer->image2D(0))) {
         _state = State::ExpectedImageLoadFailed;
-        return false;
+        return TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic;
     }
 
+    /* If the expected file is compressed, it's bad, but it doesn't mean we
+       couldn't save the actual file either */
     if(_fileState->expectedImageData->isCompressed()) {
         _state = State::ExpectedImageIsCompressed;
-        return false;
+        return TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic;
     }
 
+    /* Save a view on the expected image data and proxy to the actual data
+       comparison. If comparison failed, offer to save a diagnostic. */
     _fileState->expectedImage.emplace(*_fileState->expectedImageData);
-    return operator()(actual, *_fileState->expectedImage);
+    TestSuite::ComparisonStatusFlags flags = operator()(actual, *_fileState->expectedImage);
+    if(flags & TestSuite::ComparisonStatusFlag::Failed)
+        flags |= TestSuite::ComparisonStatusFlag::Diagnostic;
+    return flags;
 }
 
-bool ImageComparatorBase::operator()(const std::string& actual, const ImageView2D& expected) {
+TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const std::string& actual, const ImageView2D& expected) {
     if(!_fileState) _fileState.reset(new FileState);
 
     _fileState->actualFilename = actual;
 
+    /* Here we are comparing against a view, not a file, so we cannot save
+       diagnostic in any case as we don't have the expected filename. This
+       behavior is consistent with TestSuite::Compare::FileToString. */
+
     Containers::Pointer<Trade::AbstractImporter> importer;
-    if(!(importer = _fileState->importerManager->loadAndInstantiate("AnyImageImporter"))) {
+    if(!(importer = _fileState->importerManager().loadAndInstantiate("AnyImageImporter"))) {
         _state = State::PluginLoadFailed;
-        return false;
+        return TestSuite::ComparisonStatusFlag::Failed;
     }
 
     if(!importer->openFile(actual) || !(_fileState->actualImageData = importer->image2D(0))) {
         _state = State::ActualImageLoadFailed;
-        return false;
+        return TestSuite::ComparisonStatusFlag::Failed;
     }
 
     if(_fileState->actualImageData->isCompressed()) {
         _state = State::ActualImageIsCompressed;
-        return false;
+        return TestSuite::ComparisonStatusFlag::Failed;
     }
 
     _fileState->actualImage.emplace(*_fileState->actualImageData);
     return operator()(*_fileState->actualImage, expected);
 }
 
-void ImageComparatorBase::printErrorMessage(Debug& out, const std::string& actual, const std::string& expected) const {
+void ImageComparatorBase::printMessage(TestSuite::ComparisonStatusFlags, Debug& out, const std::string& actual, const std::string& expected) const {
     if(_state == State::PluginLoadFailed) {
         out << "AnyImageImporter plugin could not be loaded.";
         return;
@@ -550,6 +626,20 @@ void ImageComparatorBase::printErrorMessage(Debug& out, const std::string& actua
         DebugTools::Implementation::printDeltaImage(out, _delta, _expectedImage->size(), _max, _maxThreshold, _meanThreshold);
         DebugTools::Implementation::printPixelDeltas(out, _delta, *_actualImage, *_expectedImage, _maxThreshold, _meanThreshold, 10);
     }
+}
+
+void ImageComparatorBase::saveDiagnostic(TestSuite::ComparisonStatusFlags, Utility::Debug& out, const std::string& path) {
+    CORRADE_INTERNAL_ASSERT(_fileState);
+    CORRADE_INTERNAL_ASSERT(_actualImage);
+
+    const std::string filename = Utility::Directory::join(path, Utility::Directory::filename(_fileState->expectedFilename));
+
+    /* Export the data the base view/view comparator saved. Ignore failures,
+       we're in the middle of a fail anyway (and everything will print messages
+       to the output nevertheless). */
+    Containers::Pointer<Trade::AbstractImageConverter> converter = _fileState->converterManager().loadAndInstantiate("AnyImageConverter");
+    if(converter && converter->exportToFile(*_actualImage, filename))
+        out << "->" << filename;
 }
 
 }}}
