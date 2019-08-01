@@ -39,9 +39,25 @@ namespace Magnum { namespace Platform {
 
 namespace Implementation {
 
+CORRADE_HAS_TYPE(HasKeyEvent, typename T::KeyEvent);
 CORRADE_HAS_TYPE(HasMouseScrollEvent, typename T::MouseScrollEvent);
 CORRADE_HAS_TYPE(HasTextInputEvent, typename T::TextInputEvent);
 CORRADE_HAS_TYPE(HasTextEditingEvent, typename T::TextEditingEvent);
+
+/* Calls into the screen in case the application has a key*Event(), otherwise
+   provides a dummy virtual so the application can unconditionally override */
+template<class Application, bool> struct ApplicationKeyEventMixin {
+    typedef int KeyEvent;
+    virtual void keyPressEvent(KeyEvent&) = 0;
+    virtual void keyReleaseEvent(KeyEvent&) = 0;
+
+    void callKeyPressEvent(KeyEvent&, Containers::LinkedList<BasicScreen<Application>>&);
+    void callKeyReleaseEvent(KeyEvent&, Containers::LinkedList<BasicScreen<Application>>&);
+};
+template<class Application> struct ApplicationKeyEventMixin<Application, true> {
+    void callKeyPressEvent(typename Application::KeyEvent& event, Containers::LinkedList<BasicScreen<Application>>& screens);
+    void callKeyReleaseEvent(typename Application::KeyEvent& event, Containers::LinkedList<BasicScreen<Application>>& screens);
+};
 
 /* Calls into the screen in case the application has a mouseScrollEvent(),
    otherwise provides a dummy virtual so the application can unconditionally
@@ -148,6 +164,7 @@ The following specialization are explicitly compiled into each particular
 template<class Application> class BasicScreenedApplication:
     public Application,
     private Containers::LinkedList<BasicScreen<Application>>,
+    private Implementation::ApplicationKeyEventMixin<Application, Implementation::HasKeyEvent<Application>::value>,
     private Implementation::ApplicationMouseScrollEventMixin<Application, Implementation::HasMouseScrollEvent<Application>::value>,
     private Implementation::ApplicationTextInputEventMixin<Application, Implementation::HasTextInputEvent<Application>::value>,
     private Implementation::ApplicationTextEditingEventMixin<Application, Implementation::HasTextEditingEvent<Application>::value>
@@ -269,12 +286,14 @@ template<class Application> class BasicScreenedApplication:
            to attached screens. */
         void viewportEvent(typename Application::ViewportEvent& event) override final;
         void drawEvent() override final;
-        void keyPressEvent(typename Application::KeyEvent& event) override final;
-        void keyReleaseEvent(typename Application::KeyEvent& event) override final;
         void mousePressEvent(typename Application::MouseEvent& event) override final;
         void mouseReleaseEvent(typename Application::MouseEvent& event) override final;
         void mouseMoveEvent(typename Application::MouseMoveEvent& event) override final;
 
+        /* These events are not available in all cases, so if the Application
+           doesn't have them, they're overriding a mixin dummy */
+        void keyPressEvent(typename BasicScreenedApplication<Application>::KeyEvent& event) override final;
+        void keyReleaseEvent(typename BasicScreenedApplication<Application>::KeyEvent& event) override final;
         void mouseScrollEvent(typename BasicScreenedApplication<Application>::MouseScrollEvent& event) override final;
         void textInputEvent(typename BasicScreenedApplication<Application>::TextInputEvent& event) override final;
         void textEditingEvent(typename BasicScreenedApplication<Application>::TextEditingEvent& event) override final;

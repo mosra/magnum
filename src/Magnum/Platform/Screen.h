@@ -49,6 +49,18 @@ CORRADE_ENUMSET_OPERATORS(PropagatedScreenEvents)
    are not implemented by all apps. The virtual *Event() function is defined
    only if the base Application has it. Calling into those is done through
    a corresponding Application*EventMixin defined in ScreenedApplication.h. */
+template<class Application, bool> class ScreenKeyEventMixin {};
+template<class Application> class ScreenKeyEventMixin<Application, true> {
+    public:
+        typedef typename BasicScreenedApplication<Application>::KeyEvent KeyEvent;
+
+    private:
+        friend ApplicationKeyEventMixin<Application, true>;
+
+        virtual void keyPressEvent(KeyEvent& event);
+        virtual void keyReleaseEvent(KeyEvent& event);
+};
+
 template<class Application, bool> class ScreenMouseScrollEventMixin {};
 template<class Application> class ScreenMouseScrollEventMixin<Application, true> {
     public:
@@ -108,6 +120,7 @@ The following specialization are explicitly compiled into each particular
 */
 template<class Application> class BasicScreen:
     private Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>,
+    public Implementation::ScreenKeyEventMixin<Application, Implementation::HasKeyEvent<Application>::value>,
     public Implementation::ScreenMouseScrollEventMixin<Application, Implementation::HasMouseScrollEvent<Application>::value>,
     public Implementation::ScreenTextInputEventMixin<Application, Implementation::HasTextInputEvent<Application>::value>,
     public Implementation::ScreenTextEditingEventMixin<Application, Implementation::HasTextEditingEvent<Application>::value>
@@ -156,8 +169,15 @@ template<class Application> class BasicScreen:
         /** @brief Input event */
         typedef typename BasicScreenedApplication<Application>::InputEvent InputEvent;
 
-        /** @brief Key event */
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        /**
+         * @brief Key event
+         *
+         * Defined only if the application has a
+         * @ref Sdl2Application::KeyEvent "KeyEvent".
+         */
         typedef typename BasicScreenedApplication<Application>::KeyEvent KeyEvent;
+        #endif
 
         /** @brief Mouse event */
         typedef typename BasicScreenedApplication<Application>::MouseEvent MouseEvent;
@@ -305,12 +325,14 @@ template<class Application> class BasicScreen:
 
         /** @{ @name Keyboard handling */
 
+        #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
          * @brief Key press event
          *
          * Called when @ref PropagatedEvent::Input is enabled and an key is
          * pressed. See @ref Sdl2Application::keyPressEvent() "*Application::keyPressEvent()"
-         * for more information.
+         * for more information. Defined only if the application has a
+         * @ref Sdl2Application::KeyEvent "KeyEvent".
          */
         virtual void keyPressEvent(KeyEvent& event);
 
@@ -319,9 +341,11 @@ template<class Application> class BasicScreen:
          *
          * Called when @ref PropagatedEvent::Input is enabled and an key is
          * released. See @ref Sdl2Application::keyReleaseEvent() "*Application::keyReleaseEvent()"
-         * for more information.
+         * for more information. Defined only if the application has a
+         * @ref Sdl2Application::KeyEvent "KeyEvent".
          */
         virtual void keyReleaseEvent(KeyEvent& event);
+        #endif
 
         /*@}*/
 

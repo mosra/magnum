@@ -36,6 +36,28 @@ namespace Magnum { namespace Platform {
 
 namespace Implementation {
 
+template<class Application, bool implements> void ApplicationKeyEventMixin<Application, implements>::callKeyPressEvent(KeyEvent&, Containers::LinkedList<BasicScreen<Application>>&) {}
+template<class Application> void ApplicationKeyEventMixin<Application, true>::callKeyPressEvent(typename Application::KeyEvent& event, Containers::LinkedList<BasicScreen<Application>>& screens) {
+    /* Front-to-back event propagation, stop when the event gets accepted */
+    for(BasicScreen<Application>* s = screens.first(); s; s = s->nextFartherScreen()) {
+        if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
+            s->keyPressEvent(event);
+            if(event.isAccepted()) break;
+        }
+    }
+}
+
+template<class Application, bool implements> void ApplicationKeyEventMixin<Application, implements>::callKeyReleaseEvent(KeyEvent&, Containers::LinkedList<BasicScreen<Application>>&) {}
+template<class Application> void ApplicationKeyEventMixin<Application, true>::callKeyReleaseEvent(typename Application::KeyEvent& event, Containers::LinkedList<BasicScreen<Application>>& screens) {
+    /* Front-to-back event propagation, stop when the event gets accepted */
+    for(BasicScreen<Application>* s = screens.first(); s; s = s->nextFartherScreen()) {
+        if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
+            s->keyReleaseEvent(event);
+            if(event.isAccepted()) break;
+        }
+    }
+}
+
 template<class Application, bool implements> void ApplicationMouseScrollEventMixin<Application, implements>::callMouseScrollEvent(MouseScrollEvent&, Containers::LinkedList<BasicScreen<Application>>&) {}
 template<class Application> void ApplicationMouseScrollEventMixin<Application, true>::callMouseScrollEvent(typename Application::MouseScrollEvent& event, Containers::LinkedList<BasicScreen<Application>>& screens) {
     /* Front-to-back event propagation, stop when the event gets accepted */
@@ -70,6 +92,10 @@ true>::callTextEditingEvent(typename Application::TextEditingEvent& event, Conta
     }
 }
 
+template<class Application> void ScreenKeyEventMixin<Application,
+true>::keyPressEvent(KeyEvent&) {}
+template<class Application> void ScreenKeyEventMixin<Application,
+true>::keyReleaseEvent(KeyEvent&) {}
 template<class Application> void ScreenMouseScrollEventMixin<Application,
 true>::mouseScrollEvent(MouseScrollEvent&) {}
 template<class Application> void ScreenTextInputEventMixin<Application,
@@ -96,8 +122,6 @@ template<class Application> void BasicScreen<Application>::viewportEvent(Viewpor
 template<class Application> void BasicScreen<Application>::viewportEvent(const Vector2i&) {}
 #endif
 
-template<class Application> void BasicScreen<Application>::keyPressEvent(KeyEvent&) {}
-template<class Application> void BasicScreen<Application>::keyReleaseEvent(KeyEvent&) {}
 template<class Application> void BasicScreen<Application>::mousePressEvent(MouseEvent&) {}
 template<class Application> void BasicScreen<Application>::mouseReleaseEvent(MouseEvent&) {}
 template<class Application> void BasicScreen<Application>::mouseMoveEvent(MouseMoveEvent&) {}
@@ -155,24 +179,12 @@ template<class Application> void BasicScreenedApplication<Application>::drawEven
     globalDrawEvent();
 }
 
-template<class Application> void BasicScreenedApplication<Application>::keyPressEvent(typename Application::KeyEvent& event) {
-    /* Front-to-back event propagation, stop when the event gets accepted */
-    for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
-        if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
-            s->keyPressEvent(event);
-            if(event.isAccepted()) break;
-        }
-    }
+template<class Application> void BasicScreenedApplication<Application>::keyPressEvent(typename BasicScreenedApplication<Application>::KeyEvent& event) {
+    this->callKeyPressEvent(event, screens());
 }
 
-template<class Application> void BasicScreenedApplication<Application>::keyReleaseEvent(typename Application::KeyEvent& event) {
-    /* Front-to-back event propagation, stop when the event gets accepted */
-    for(BasicScreen<Application>* s = screens().first(); s; s = s->nextFartherScreen()) {
-        if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
-            s->keyReleaseEvent(event);
-            if(event.isAccepted()) break;
-        }
-    }
+template<class Application> void BasicScreenedApplication<Application>::keyReleaseEvent(typename BasicScreenedApplication<Application>::KeyEvent& event) {
+    this->callKeyReleaseEvent(event, screens());
 }
 
 template<class Application> void BasicScreenedApplication<Application>::mousePressEvent(typename Application::MouseEvent& event) {
