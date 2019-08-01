@@ -214,7 +214,10 @@ template<class Application> class BasicScreen:
         #endif
 
         explicit BasicScreen();
-        ~BasicScreen();
+
+        /* A common use case is a list of screen derivatives, so allow deleting
+           them through a base pointer */
+        virtual ~BasicScreen();
 
         /** @brief Events propagated to this screen */
         PropagatedEvents propagatedEvents() const { return _propagatedEvents; }
