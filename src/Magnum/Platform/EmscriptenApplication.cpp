@@ -34,13 +34,13 @@
 #include <Corrade/Utility/String.h>
 
 #include "Magnum/Math/ConfigurationValue.h"
+#include "Magnum/Platform/ScreenedApplication.hpp"
+#include "Magnum/Platform/Implementation/DpiScaling.h"
 
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Version.h"
 #include "Magnum/Platform/GLContext.h"
 #endif
-
-#include "Magnum/Platform/Implementation/DpiScaling.h"
 
 namespace Magnum { namespace Platform {
 
@@ -736,5 +736,8 @@ EmscriptenApplication::InputEvent::Modifiers EmscriptenApplication::KeyEvent::mo
     if(_event.metaKey) m |= Modifier::Super;
     return m;
 }
+
+template class BasicScreen<EmscriptenApplication>;
+template class BasicScreenedApplication<EmscriptenApplication>;
 
 }}

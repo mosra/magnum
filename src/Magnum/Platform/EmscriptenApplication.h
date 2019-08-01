@@ -1566,6 +1566,8 @@ to happen.
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
 typedef EmscriptenApplication Application;
+typedef BasicScreen<EmscriptenApplication> Screen;
+typedef BasicScreenedApplication<EmscriptenApplication> ScreenedApplication;
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_EMSCRIPTENAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_APPLICATION_MAIN

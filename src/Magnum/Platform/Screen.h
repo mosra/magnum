@@ -114,6 +114,7 @@ The following specialization are explicitly compiled into each particular
 @ref compilation-speedup-hpp for more information.
 
 -   @ref AndroidApplication "BasicScreen<AndroidApplication>"
+-   @ref EmscriptenApplication "BasicScreen<EmscriptenApplication>"
 -   @ref GlfwApplication "BasicScreen<GlfwApplication>"
 -   @ref GlxApplication "BasicScreen<GlxApplication>"
 -   @ref Sdl2Application "BasicScreen<Sdl2Application>"
