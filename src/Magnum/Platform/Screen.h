@@ -175,12 +175,13 @@ template<class Application> class BasicScreen: private Containers::LinkedListIte
             return Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>::next();
         }
 
-    protected:
         /** @{ @name Screen handling */
 
+    protected:
         /** @brief Request redraw */
         virtual void redraw() { application()->redraw(); }
 
+    private:
         /**
          * @brief Focus event
          *

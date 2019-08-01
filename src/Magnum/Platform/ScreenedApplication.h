@@ -185,11 +185,7 @@ template<class Application> class BasicScreenedApplication: public Application, 
            this is faster than public pure virtual destructor */
         ~BasicScreenedApplication();
 
-    #ifdef DOXYGEN_GENERATING_OUTPUT
-    protected:
-    #else
     private:
-    #endif
         /**
          * @brief Global viewport event
          *
@@ -210,7 +206,6 @@ template<class Application> class BasicScreenedApplication: public Application, 
          */
         virtual void globalDrawEvent() = 0;
 
-    private:
         #ifndef DOXYGEN_GENERATING_OUTPUT /* https://bugzilla.gnome.org/show_bug.cgi?id=776986 */
         friend Containers::LinkedList<BasicScreen<Application>>;
         friend Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>;
