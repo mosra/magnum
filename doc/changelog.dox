@@ -352,6 +352,11 @@ See also:
     @ref Platform::GlfwApplication::exit() now have an optional parameter to
     specify the actual application return code (see
     [mosra/magnum#332](https://github.com/mosra/magnum/pull/332))
+-   Extended @ref Platform::BasicScreen with
+    @ref Platform::BasicScreen::mouseScrollEvent() "mouseScrollEvent()",
+    @ref Platform::BasicScreen::textInputEvent() "textInputEvent()" and
+    @ref Platform::BasicScreen::textEditingEvent() "textEditingEvent()" on
+    application implementations that provide such events
 
 @subsubsection changelog-latest-changes-text Text library
 

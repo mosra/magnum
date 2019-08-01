@@ -45,6 +45,43 @@ enum class PropagatedScreenEvent: UnsignedByte {
 typedef Containers::EnumSet<PropagatedScreenEvent> PropagatedScreenEvents;
 CORRADE_ENUMSET_OPERATORS(PropagatedScreenEvents)
 
+/* These provide overrideable event handlers on the Screen side for events that
+   are not implemented by all apps. The virtual *Event() function is defined
+   only if the base Application has it. Calling into those is done through
+   a corresponding Application*EventMixin defined in ScreenedApplication.h. */
+template<class Application, bool> class ScreenMouseScrollEventMixin {};
+template<class Application> class ScreenMouseScrollEventMixin<Application, true> {
+    public:
+        typedef typename BasicScreenedApplication<Application>::MouseScrollEvent MouseScrollEvent;
+
+    private:
+        friend ApplicationMouseScrollEventMixin<Application, true>;
+
+        virtual void mouseScrollEvent(MouseScrollEvent& event);
+};
+
+template<class Application, bool> class ScreenTextInputEventMixin {};
+template<class Application> class ScreenTextInputEventMixin<Application, true> {
+    public:
+        typedef typename BasicScreenedApplication<Application>::TextInputEvent TextInputEvent;
+
+    private:
+        friend ApplicationTextInputEventMixin<Application, true>;
+
+        virtual void textInputEvent(TextInputEvent& event);
+};
+
+template<class Application, bool> class ScreenTextEditingEventMixin {};
+template<class Application> class ScreenTextEditingEventMixin<Application, true> {
+    public:
+        typedef typename BasicScreenedApplication<Application>::TextEditingEvent TextEditingEvent;
+
+    private:
+        friend ApplicationTextEditingEventMixin<Application, true>;
+
+        virtual void textEditingEvent(TextEditingEvent& event);
+};
+
 }
 
 /**
@@ -69,7 +106,12 @@ The following specialization are explicitly compiled into each particular
 -   @ref Sdl2Application "BasicScreen<Sdl2Application>"
 -   @ref XEglApplication "BasicScreen<XEglApplication>"
 */
-template<class Application> class BasicScreen: private Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>> {
+template<class Application> class BasicScreen:
+    private Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>,
+    public Implementation::ScreenMouseScrollEventMixin<Application, Implementation::HasMouseScrollEvent<Application>::value>,
+    public Implementation::ScreenTextInputEventMixin<Application, Implementation::HasTextInputEvent<Application>::value>,
+    public Implementation::ScreenTextEditingEventMixin<Application, Implementation::HasTextEditingEvent<Application>::value>
+{
     public:
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
@@ -89,8 +131,10 @@ template<class Application> class BasicScreen: private Containers::LinkedListIte
              * Input events.
              *
              * When enabled, @ref keyPressEvent(), @ref keyReleaseEvent(),
-             * @ref mousePressEvent(), @ref mouseReleaseEvent() and
-             * @ref mouseMoveEvent() are propagated to this screen.
+             * @ref mousePressEvent(), @ref mouseReleaseEvent(),
+             * @ref mouseMoveEvent(), @ref mouseScrollEvent(),
+             * @ref textInputEvent() and @ref textEditingEvent() are propagated
+             * to this screen.
              */
             Input = 1 << 1
         };
@@ -120,6 +164,32 @@ template<class Application> class BasicScreen: private Containers::LinkedListIte
 
         /** @brief Mouse move event */
         typedef typename BasicScreenedApplication<Application>::MouseMoveEvent MouseMoveEvent;
+
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        /**
+         * @brief Mouse scroll event
+         *
+         * Defined only if the application has a
+         * @ref Sdl2Application::MouseScrollEvent "MouseScrollEvent".
+         */
+        typedef typename BasicScreenedApplication<Application>::MouseScrollEvent MouseScrollEvent;
+
+        /**
+         * @brief Text input event
+         *
+         * Defined only if the application has a
+         * @ref Sdl2Application::TextInputEvent "TextInputEvent".
+         */
+        typedef typename BasicScreenedApplication<Application>::TextInputEvent TextInputEvent;
+
+        /**
+         * @brief Text editing event
+         *
+         * Defined only if the application has a
+         * @ref Sdl2Application::TextEditingEvent "TextEditingEvent".
+         */
+        typedef typename BasicScreenedApplication<Application>::TextEditingEvent TextEditingEvent;
+        #endif
 
         explicit BasicScreen();
         ~BasicScreen();
@@ -283,6 +353,42 @@ template<class Application> class BasicScreen: private Containers::LinkedListIte
          * for more information.
          */
         virtual void mouseMoveEvent(MouseMoveEvent& event);
+
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        /**
+         * @brief Mouse scroll event
+         *
+         * Called when @ref PropagatedEvent::Input is enabled and mouse wheel
+         * is rotated. See @ref Sdl2Application::mouseScrollEvent() "*Application::mouseScrollEvent()"
+         * for more information. Defined only if the application has a
+         * @ref Sdl2Application::MouseScrollEvent "MouseScrollEvent".
+         */
+        virtual void mouseScrollEvent(MouseScrollEvent& event);
+        #endif
+
+        /*@}*/
+
+        /** @{ @name Text input handling */
+
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        /**
+         * @brief Text input event
+         *
+         * Called when @ref PropagatedEvent::Input is enabled and text is being
+         * input. Defined only if the application has a
+         * @ref Sdl2Application::TextInputEvent "TextInputEvent".
+         */
+        virtual void textInputEvent(TextInputEvent& event);
+
+        /**
+         * @brief Text editing event
+         *
+         * Called when @ref PropagatedEvent::Input and the text is being
+         * edited. Defined only if the application has a
+         * @ref Sdl2Application::TextEditingEvent "TextEditingEvent".
+         */
+        virtual void textEditingEvent(TextEditingEvent& event);
+        #endif
 
         /*@}*/
 

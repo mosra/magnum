@@ -37,6 +37,53 @@
 
 namespace Magnum { namespace Platform {
 
+namespace Implementation {
+
+CORRADE_HAS_TYPE(HasMouseScrollEvent, typename T::MouseScrollEvent);
+CORRADE_HAS_TYPE(HasTextInputEvent, typename T::TextInputEvent);
+CORRADE_HAS_TYPE(HasTextEditingEvent, typename T::TextEditingEvent);
+
+/* Calls into the screen in case the application has a mouseScrollEvent(),
+   otherwise provides a dummy virtual so the application can unconditionally
+   override */
+template<class Application, bool> struct ApplicationMouseScrollEventMixin {
+    typedef int MouseScrollEvent;
+    virtual void mouseScrollEvent(MouseScrollEvent&) = 0;
+
+    void callMouseScrollEvent(MouseScrollEvent&, Containers::LinkedList<BasicScreen<Application>>&);
+};
+template<class Application> struct ApplicationMouseScrollEventMixin<Application, true> {
+    void callMouseScrollEvent(typename Application::MouseScrollEvent& event, Containers::LinkedList<BasicScreen<Application>>& screens);
+};
+
+/* Calls into the screen in case the application has a textInputEvent(),
+   otherwise provides a dummy virtual so the application can unconditionally
+   override */
+template<class Application, bool> struct ApplicationTextInputEventMixin {
+    typedef int TextInputEvent;
+    virtual void textInputEvent(TextInputEvent&) = 0;
+
+    void callTextInputEvent(TextInputEvent&, Containers::LinkedList<BasicScreen<Application>>&);
+};
+template<class Application> struct ApplicationTextInputEventMixin<Application, true> {
+    void callTextInputEvent(typename Application::TextInputEvent& event, Containers::LinkedList<BasicScreen<Application>>& screens);
+};
+
+/* Calls into the screen in case the application has a textEditingEvent(),
+   otherwise provides a dummy virtual so the application can unconditionally
+   override */
+template<class Application, bool> struct ApplicationTextEditingEventMixin {
+    typedef int TextEditingEvent;
+    virtual void textEditingEvent(TextEditingEvent&) = 0;
+
+    void callTextEditingEvent(TextEditingEvent&, Containers::LinkedList<BasicScreen<Application>>&);
+};
+template<class Application> struct ApplicationTextEditingEventMixin<Application, true> {
+    void callTextEditingEvent(typename Application::TextEditingEvent& event, Containers::LinkedList<BasicScreen<Application>>& screens);
+};
+
+}
+
 /**
 @brief Base for applications with screen management
 
@@ -98,7 +145,13 @@ The following specialization are explicitly compiled into each particular
 -   @ref Sdl2Application "BasicScreenedApplication<Sdl2Application>"
 -   @ref XEglApplication "BasicScreenedApplication<XEglApplication>"
 */
-template<class Application> class BasicScreenedApplication: public Application, private Containers::LinkedList<BasicScreen<Application>> {
+template<class Application> class BasicScreenedApplication:
+    public Application,
+    private Containers::LinkedList<BasicScreen<Application>>,
+    private Implementation::ApplicationMouseScrollEventMixin<Application, Implementation::HasMouseScrollEvent<Application>::value>,
+    private Implementation::ApplicationTextInputEventMixin<Application, Implementation::HasTextInputEvent<Application>::value>,
+    private Implementation::ApplicationTextEditingEventMixin<Application, Implementation::HasTextEditingEvent<Application>::value>
+{
     public:
         #ifdef MAGNUM_TARGET_GL
         /**
@@ -221,6 +274,10 @@ template<class Application> class BasicScreenedApplication: public Application, 
         void mousePressEvent(typename Application::MouseEvent& event) override final;
         void mouseReleaseEvent(typename Application::MouseEvent& event) override final;
         void mouseMoveEvent(typename Application::MouseMoveEvent& event) override final;
+
+        void mouseScrollEvent(typename BasicScreenedApplication<Application>::MouseScrollEvent& event) override final;
+        void textInputEvent(typename BasicScreenedApplication<Application>::TextInputEvent& event) override final;
+        void textEditingEvent(typename BasicScreenedApplication<Application>::TextEditingEvent& event) override final;
 };
 
 }}

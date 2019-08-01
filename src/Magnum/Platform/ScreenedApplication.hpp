@@ -34,6 +34,51 @@
 
 namespace Magnum { namespace Platform {
 
+namespace Implementation {
+
+template<class Application, bool implements> void ApplicationMouseScrollEventMixin<Application, implements>::callMouseScrollEvent(MouseScrollEvent&, Containers::LinkedList<BasicScreen<Application>>&) {}
+template<class Application> void ApplicationMouseScrollEventMixin<Application, true>::callMouseScrollEvent(typename Application::MouseScrollEvent& event, Containers::LinkedList<BasicScreen<Application>>& screens) {
+    /* Front-to-back event propagation, stop when the event gets accepted */
+    for(BasicScreen<Application>* s = screens.first(); s; s = s->nextFartherScreen()) {
+        if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
+            s->mouseScrollEvent(event);
+            if(event.isAccepted()) break;
+        }
+    }
+}
+
+template<class Application, bool implements> void ApplicationTextInputEventMixin<Application, implements>::callTextInputEvent(TextInputEvent&, Containers::LinkedList<BasicScreen<Application>>&) {}
+template<class Application> void ApplicationTextInputEventMixin<Application, true>::callTextInputEvent(typename Application::TextInputEvent& event, Containers::LinkedList<BasicScreen<Application>>& screens) {
+    /* Front-to-back event propagation, stop when the event gets accepted */
+    for(BasicScreen<Application>* s = screens.first(); s; s = s->nextFartherScreen()) {
+        if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
+            s->textInputEvent(event);
+            if(event.isAccepted()) break;
+        }
+    }
+}
+
+template<class Application, bool implements> void ApplicationTextEditingEventMixin<Application, implements>::callTextEditingEvent(TextEditingEvent&, Containers::LinkedList<BasicScreen<Application>>&) {}
+template<class Application> void ApplicationTextEditingEventMixin<Application,
+true>::callTextEditingEvent(typename Application::TextEditingEvent& event, Containers::LinkedList<BasicScreen<Application>>& screens) {
+    /* Front-to-back event propagation, stop when the event gets accepted */
+    for(BasicScreen<Application>* s = screens.first(); s; s = s->nextFartherScreen()) {
+        if(s->propagatedEvents() & Implementation::PropagatedScreenEvent::Input) {
+            s->textEditingEvent(event);
+            if(event.isAccepted()) break;
+        }
+    }
+}
+
+template<class Application> void ScreenMouseScrollEventMixin<Application,
+true>::mouseScrollEvent(MouseScrollEvent&) {}
+template<class Application> void ScreenTextInputEventMixin<Application,
+true>::textInputEvent(TextInputEvent&) {}
+template<class Application> void ScreenTextEditingEventMixin<Application,
+true>::textEditingEvent(TextEditingEvent&) {}
+
+}
+
 template<class Application> BasicScreen<Application>::BasicScreen() = default;
 template<class Application> BasicScreen<Application>::~BasicScreen() = default;
 
@@ -158,6 +203,18 @@ template<class Application> void BasicScreenedApplication<Application>::mouseMov
             if(event.isAccepted()) break;
         }
     }
+}
+
+template<class Application> void BasicScreenedApplication<Application>::mouseScrollEvent(typename BasicScreenedApplication<Application>::MouseScrollEvent& event) {
+    this->callMouseScrollEvent(event, screens());
+}
+
+template<class Application> void BasicScreenedApplication<Application>::textInputEvent(typename BasicScreenedApplication<Application>::TextInputEvent& event) {
+    this->callTextInputEvent(event, screens());
+}
+
+template<class Application> void BasicScreenedApplication<Application>::textEditingEvent(typename BasicScreenedApplication<Application>::TextEditingEvent& event) {
+    this->callTextEditingEvent(event, screens());
 }
 
 }}
