@@ -258,10 +258,18 @@ Audio import, playback and integration with @ref SceneGraph.
 
 This library depends on the [OpenAL](https://www.openal.org/) library. It is
 built if `WITH_AUDIO` is enabled when building Magnum. To use this library with
-CMake, you need to request the `Audio` component of the `Magnum` package and
-link to the `Magnum::Audio` target:
+CMake, you need to copy
+[FindOpenAL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenAL.cmake)
+from the `modules/` directory in Magnum sources to a `modules/` dir in your
+project and pointing `CMAKE_MODULE_PATH` to it (if not done already) so it is
+able to correctly find the OpenAL library on all platforms. Then request the
+`Audio` component of the `Magnum` package and link to the `Magnum::Audio`
+target:
 
 @code{.cmake}
+# Path where FindOpenAL.cmake can be found, adapt as needed
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
+
 find_package(Magnum REQUIRED Audio)
 
 # ...
@@ -320,6 +328,19 @@ find_package(Magnum REQUIRED GL)
 
 # ...
 target_link_libraries(your-app Magnum::GL)
+@endcode
+
+In case you're building for EGL or OpenGL ES platforms, you also need to copy
+[FindEGL.cmake](https://github.com/mosra/magnum/blob/master/modules/FindEGL.cmake),
+[FindOpenGLES2.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenGLES2.cmake)
+or [FindOpenGLES3.cmake](https://github.com/mosra/magnum/blob/master/modules/FindOpenGLES3.cmake)
+from the `modules/` directory in Magnum sources to a `modules/` dir in your
+project and pointing `CMAKE_MODULE_PATH` to it (if not done already) so it is
+able to find the EGL and OpenGL ES libraries:
+
+@code{.cmake}
+# Path where FindEGL.cmake and others can be found, adapt as needed
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
 @endcode
 
 See @ref building, @ref cmake and @ref opengl for more information.

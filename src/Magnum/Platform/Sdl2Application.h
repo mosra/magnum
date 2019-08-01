@@ -183,14 +183,17 @@ final package along with a PowerShell script for easy local installation.
 
 @section Platform-Sdl2Application-usage General usage
 
-In order to use this library from CMake, you need to copy `FindSDL2.cmake` from
-the `modules/` directory in Magnum source to the `modules/` dir in your project
-(so it is able to find the SDL2 library). In case of Emscripten you need also
-`FindOpenGLES2.cmake` / `FindOpenGLES3.cmake`. Request the `Sdl2Application`
-component of the `Magnum` package and link to the `Magnum::Sdl2Application`
-target:
+In order to use this library from CMake, you need to copy
+[FindSDL2.cmake](https://github.com/mosra/magnum/blob/master/modules/FindSDL2.cmake)
+from the `modules/` directory in Magnum sources to a `modules/` dir in your
+project and pointing `CMAKE_MODULE_PATH` to it (if not done already) so it is
+able to find the SDL2 library. Then request the `Sdl2Application` component of
+the `Magnum` package and link to the `Magnum::Sdl2Application` target:
 
 @code{.cmake}
+# Path where FindSDL2.cmake can be found, adapt as needed
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
+
 find_package(Magnum REQUIRED Sdl2Application)
 
 # ...

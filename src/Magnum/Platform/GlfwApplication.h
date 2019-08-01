@@ -96,13 +96,17 @@ See @ref cmake for more information.
 
 @section Platform-GlfwApplication-usage General usage
 
-In order to use this library from CMake, you need to copy `FindGLFW.cmake` from
-the modules directory in Magnum source to the `modules/` dir in your project
-(so it is able to find the GLFW library). Request the `GlfwApplication`
-component of the `Magnum` package and link to the `Magnum::GlfwApplication`
-target:
+In order to use this library from CMake, you need to copy
+[FindGLFW.cmake](https://github.com/mosra/magnum/blob/master/modules/FindGLFW.cmake)
+from the `modules/` directory in Magnum sources to a `modules/` dir in your
+project and pointing `CMAKE_MODULE_PATH` to it (if not done already) so it is
+able to find the GLFW library. Then request the `GlfwApplication` component of
+the `Magnum` package and link to the `Magnum::GlfwApplication` target:
 
 @code{.cmake}
+# Path where FindGLFW.cmake can be found, adapt as needed
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
+
 find_package(Magnum REQUIRED GlfwApplication)
 
 # ...
