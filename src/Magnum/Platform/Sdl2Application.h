@@ -70,6 +70,8 @@ namespace Implementation {
 /** @nosubgrouping
 @brief SDL2 application
 
+@m_keywords{Application}
+
 Application using [Simple DirectMedia Layer](http://www.libsdl.org/) toolkit.
 Supports keyboard and mouse handling.
 

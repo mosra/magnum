@@ -51,6 +51,8 @@ namespace Magnum { namespace Platform {
 /**
 @brief Windowless iOS context
 
+@m_keywords{WindowlessGLContext}
+
 GL context using EAGL on iOS, used in @ref WindowlessIosApplication. Does not
 have any default framebuffer. It is built if `WITH_WINDOWLESSIOSAPPLICATION` is
 enabled in CMake.
@@ -137,6 +139,8 @@ class WindowlessIosContext::Configuration {
 
 /**
 @brief Windowless iOS application
+
+@m_keywords{WindowlessApplication}
 
 Application for offscreen rendering using @ref WindowlessIosContext. Does not
 have any default framebuffer. It is built if `WITH_WINDOWLESSIOSAPPLICATION` is

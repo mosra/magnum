@@ -57,6 +57,8 @@ namespace Magnum { namespace Platform {
 /** @nosubgrouping
 @brief Emscripten application
 
+@m_keywords{Application}
+
 Application running on Emscripten.
 
 This application library is available only on

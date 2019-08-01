@@ -57,6 +57,8 @@ namespace Magnum { namespace Platform {
 /**
 @brief Windowless WGL context
 
+@m_keywords{WindowlessGLContext}
+
 GL context using pure WINAPI, used in @ref WindowlessWglApplication. It is
 built if `WITH_WINDOWLESSWGLAPPLICATION` is enabled in CMake.
 
@@ -240,6 +242,8 @@ CORRADE_ENUMSET_OPERATORS(WindowlessWglContext::Configuration::Flags)
 
 /**
 @brief Windowless WGL application
+
+@m_keywords{WindowlessApplication}
 
 Application for offscreen rendering using @ref WindowlessWglContext. This
 application library is available on desktop OpenGL on Windows. It is built if

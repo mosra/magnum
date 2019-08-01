@@ -52,6 +52,8 @@ namespace Magnum { namespace Platform {
 /**
 @brief Windowless EGL context
 
+@m_keywords{WindowlessGLContext}
+
 GL context using EGL without any windowing system, used in
 @ref WindowlessEglApplication. Does not have any default framebuffer. It is
 built if `WITH_WINDOWLESSEGLAPPLICATION` is enabled in CMake.
@@ -246,6 +248,8 @@ CORRADE_ENUMSET_OPERATORS(WindowlessEglContext::Configuration::Flags)
 
 /**
 @brief Windowless EGL application
+
+@m_keywords{WindowlessApplication}
 
 Application for offscreen rendering using @ref WindowlessEglContext. This
 application library is in theory available for all platforms for which EGL

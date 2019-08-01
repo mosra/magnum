@@ -50,6 +50,8 @@ CORRADE_ENUMSET_OPERATORS(PropagatedScreenEvents)
 /**
 @brief Base for application screens
 
+@m_keywords{Screen}
+
 See @ref BasicScreenedApplication for more information.
 
 If exactly one application header is included, this class is also aliased to

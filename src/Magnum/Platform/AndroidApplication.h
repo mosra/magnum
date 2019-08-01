@@ -54,6 +54,8 @@ namespace Magnum { namespace Platform {
 /** @nosubgrouping
 @brief Android application
 
+@m_keywords{Application}
+
 Application running on Android.
 
 This application library is available only on

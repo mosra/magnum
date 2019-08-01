@@ -58,6 +58,8 @@ namespace Implementation {
 /** @nosubgrouping
 @brief GLFW application
 
+@m_keywords{Application}
+
 Application using the [GLFW](http://glfw.org) toolkit. Supports keyboard and
 mouse handling with support for changing cursor and mouse tracking and warping.
 

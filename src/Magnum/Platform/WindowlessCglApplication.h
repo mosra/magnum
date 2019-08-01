@@ -50,6 +50,8 @@ namespace Magnum { namespace Platform {
 /**
 @brief Windowless CGL context
 
+@m_keywords{WindowlessGLContext}
+
 GL context used in @ref WindowlessCglApplication. Does not have any default
 framebuffer. It is built if `WITH_WINDOWLESSCGLAPPLICATION` is enabled in
 CMake.
@@ -142,6 +144,8 @@ class WindowlessCglContext::Configuration {
 
 /**
 @brief Windowless CGL application
+
+@m_keywords{WindowlessApplication}
 
 Application for offscreen rendering using @ref WindowlessCglContext. This
 application library is available on desktop OpenGL on macOS. It is built if

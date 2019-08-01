@@ -40,6 +40,8 @@ namespace Magnum { namespace Platform {
 /**
 @brief Base for applications with screen management
 
+@m_keywords{ScreenedApplication}
+
 Manages list of screens and propagates events to them.
 
 If exactly one application header is included, this class is also aliased to

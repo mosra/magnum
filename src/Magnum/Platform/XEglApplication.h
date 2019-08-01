@@ -40,6 +40,8 @@ namespace Magnum { namespace Platform {
 /**
 @brief X/EGL application
 
+@m_keywords{Application}
+
 Application using pure X11 and EGL. Supports keyboard and mouse handling.
 
 This application library is available on both desktop OpenGL and
