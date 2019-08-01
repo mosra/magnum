@@ -357,6 +357,8 @@ See also:
     @ref Platform::BasicScreen::textInputEvent() "textInputEvent()" and
     @ref Platform::BasicScreen::textEditingEvent() "textEditingEvent()" on
     application implementations that provide such events
+-   @ref Platform::BasicScreenedApplication is now available also for
+    @ref Platform::AndroidApplication
 
 @subsubsection changelog-latest-changes-text Text library
 

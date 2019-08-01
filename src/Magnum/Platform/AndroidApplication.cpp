@@ -31,6 +31,7 @@
 
 #include "Magnum/GL/Version.h"
 #include "Magnum/Platform/GLContext.h"
+#include "Magnum/Platform/ScreenedApplication.hpp"
 
 #include "Implementation/Egl.h"
 
@@ -315,5 +316,8 @@ void AndroidApplication::exec(android_app* state, Containers::Pointer<AndroidApp
 
     state->userData = nullptr;
 }
+
+template class BasicScreen<AndroidApplication>;
+template class BasicScreenedApplication<AndroidApplication>;
 
 }}

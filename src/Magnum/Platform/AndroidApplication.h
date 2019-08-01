@@ -800,6 +800,8 @@ header is included this macro is also aliased to @cpp MAGNUM_APPLICATION_MAIN() 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_APPLICATION_MAIN
 typedef AndroidApplication Application;
+typedef BasicScreen<AndroidApplication> Screen;
+typedef BasicScreenedApplication<AndroidApplication> ScreenedApplication;
 #define MAGNUM_APPLICATION_MAIN(className) MAGNUM_ANDROIDAPPLICATION_MAIN(className)
 #else
 #undef MAGNUM_APPLICATION_MAIN

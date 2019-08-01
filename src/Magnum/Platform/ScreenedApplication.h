@@ -156,6 +156,7 @@ The following specialization are explicitly compiled into each particular
 @ref ScreenedApplication.hpp implementation file to avoid linker errors. See
 @ref compilation-speedup-hpp for more information.
 
+-   @ref AndroidApplication "BasicScreenedApplication<AndroidApplication>"
 -   @ref GlfwApplication "BasicScreenedApplication<GlfwApplication>"
 -   @ref GlxApplication "BasicScreenedApplication<GlxApplication>"
 -   @ref Sdl2Application "BasicScreenedApplication<Sdl2Application>"
