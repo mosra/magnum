@@ -36,13 +36,15 @@
 namespace Magnum { namespace Platform {
 
 namespace Implementation {
-    enum class PropagatedScreenEvent: UnsignedByte {
-        Draw = 1 << 0,
-        Input = 1 << 1
-    };
 
-    typedef Containers::EnumSet<PropagatedScreenEvent> PropagatedScreenEvents;
-    CORRADE_ENUMSET_OPERATORS(PropagatedScreenEvents)
+enum class PropagatedScreenEvent: UnsignedByte {
+    Draw = 1 << 0,
+    Input = 1 << 1
+};
+
+typedef Containers::EnumSet<PropagatedScreenEvent> PropagatedScreenEvents;
+CORRADE_ENUMSET_OPERATORS(PropagatedScreenEvents)
+
 }
 
 /**
