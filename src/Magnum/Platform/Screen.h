@@ -283,7 +283,7 @@ template<class Application> class BasicScreen:
          * Called when screen is focused using @ref BasicScreenedApplication::focusScreen()
          * or @ref BasicScreenedApplication::addScreen().
          */
-        virtual void focusEvent() = 0;
+        virtual void focusEvent();
 
         /**
          * @brief Blur event
@@ -292,7 +292,7 @@ template<class Application> class BasicScreen:
          * @ref BasicScreenedApplication::addScreen() or before the screen is
          * removed from application using @ref BasicScreenedApplication::removeScreen().
          */
-        virtual void blurEvent() = 0;
+        virtual void blurEvent();
 
         /**
          * @brief Viewport event

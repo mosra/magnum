@@ -108,6 +108,9 @@ true>::textEditingEvent(TextEditingEvent&) {}
 template<class Application> BasicScreen<Application>::BasicScreen() = default;
 template<class Application> BasicScreen<Application>::~BasicScreen() = default;
 
+template<class Application> void BasicScreen<Application>::focusEvent() {}
+template<class Application> void BasicScreen<Application>::blurEvent() {}
+
 template<class Application> void BasicScreen<Application>::viewportEvent(ViewportEvent& event) {
     #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_IGNORE_DEPRECATED_PUSH
