@@ -101,15 +101,14 @@ template<class Application> class ScreenTextEditingEventMixin<Application, true>
 
 @m_keywords{Screen}
 
-See @ref BasicScreenedApplication for more information.
-
-If exactly one application header is included, this class is also aliased to
+See @ref BasicScreenedApplication for more information. If exactly one
+application header is included, this class is also aliased to
 @cpp Platform::Screen @ce.
 
 @section Platform-BasicScreen-template-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into each particular
-`*Application` library. For other specializations you have to use
+`*Application` library. For other specializations you have to use the
 @ref ScreenedApplication.hpp implementation file to avoid linker errors. See
 @ref compilation-speedup-hpp for more information.
 

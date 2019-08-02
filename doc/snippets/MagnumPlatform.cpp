@@ -27,6 +27,8 @@
 #include <Magnum/GL/DefaultFramebuffer.h>
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/Math/Color.h>
+#include <Magnum/Platform/ScreenedApplication.h>
+#include <Magnum/Platform/Screen.h>
 #include <Magnum/Platform/Sdl2Application.h>
 #include <Magnum/Platform/GLContext.h>
 
@@ -142,5 +144,54 @@ MyApplication::MyApplication(const Arguments& arguments):
     // ...
 }
 /* [trycreatecontext] */
+
+}
+
+namespace F {
+
+int argc = 0;
+struct MyApplication: Platform::ScreenedApplication {
+    MyApplication(): Platform::ScreenedApplication{Arguments{argc, nullptr}} {}
+
+    void globalViewportEvent(ViewportEvent& event) override;
+    void globalDrawEvent() override;
+};
+
+/* [ScreenedApplication-global-events] */
+void MyApplication::globalViewportEvent(ViewportEvent& event) {
+    GL::defaultFramebuffer.setViewport({{}, event.framebufferSize()});
+
+    // Other stuff that should be done *before* all other event handlers ...
+}
+
+void MyApplication::globalDrawEvent() {
+    // Other stuff that should be done *after* all other event handlers ...
+
+    swapBuffers();
+}
+/* [ScreenedApplication-global-events] */
+
+void foo();
+void foo() {
+#ifdef __GNUC__
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-variable"
+#endif
+/* [ScreenedApplication-for-range] */
+MyApplication app;
+for(Platform::Screen& screen: app.screens()) {
+    // ...
+}
+/* [ScreenedApplication-for-range] */
+
+/* [ScreenedApplication-for] */
+for(Platform::Screen* s = app.screens().first(); s; s = s->nextFartherScreen()) {
+    // ...
+}
+/* [ScreenedApplication-for] */
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+}
 
 }

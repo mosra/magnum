@@ -105,14 +105,16 @@ template<class Application> struct ApplicationTextEditingEventMixin<Application,
 
 @m_keywords{ScreenedApplication}
 
-Manages list of screens and propagates events to them.
-
-If exactly one application header is included, this class is also aliased to
+Manages list of screens and propagates events to them. If exactly one
+application header is included, this class is also aliased to
 @cpp Platform::ScreenedApplication @ce.
 
-Each @ref BasicScreen "Screen" specifies which set of events should be
-propagated to it using @ref BasicScreen::setPropagatedEvents(). When
-application gets an event, they are propagated to the screens:
+When you derive from this class, you're not allowed to implement any
+usual application event handlers --- instead, these are propagated to
+@ref BasicScreen "Screen" instances that get added using @ref addScreen(). Each
+@ref BasicScreen "Screen" specifies which set of events should be propagated to
+it using @ref BasicScreen::setPropagatedEvents(). When the application gets an
+event, they are propagated to the screens:
 
 -   @ref Sdl2Application::viewportEvent() "viewportEvent()" is propagated to
     all screens.
@@ -122,37 +124,42 @@ application gets an event, they are propagated to the screens:
 -   Input events (@ref Sdl2Application::keyPressEvent() "keyPressEvent()",
     @ref Sdl2Application::keyReleaseEvent() "keyReleaseEvent()",
     @ref Sdl2Application::mousePressEvent() "mousePressEvent()",
-    @ref Sdl2Application::mouseReleaseEvent() "mouseReleaseEvent()"
-    and @ref Sdl2Application::mouseMoveEvent() "mouseMoveEvent()")
+    @ref Sdl2Application::mouseReleaseEvent() "mouseReleaseEvent()",
+    @ref Sdl2Application::mouseMoveEvent() "mouseMoveEvent()",
+    @ref Sdl2Application::mouseMoveEvent() "mouseScrollEvent()",
+    @ref Sdl2Application::textInputEvent() "textInputEvent()" and
+    @ref Sdl2Application::textEditingEvent() "textEditingEvent()")
     are propagated in front-to-back order to screens which have
     @ref BasicScreen::PropagatedEvent::Input enabled. If any screen sets the
     event as accepted, it is not propagated further.
+
+For the actual application, at the very least you need to implement
+@ref globalDrawEvent(), and in case your application is resizable,
+@ref globalViewportEvent() as well. The global draw event gets called *after*
+all @ref BasicScreen::drawEvent() "Screen::drawEvent()" in order to make it
+possible for you to do a buffer swap, while the global viewport event gets
+called *before* all @ref BasicScreen::viewportEvent() "Screen::viewportEvent()",
+in this case to make it possible to handle viewport changes on the default
+framebuffer:
+
+@snippet MagnumPlatform.cpp ScreenedApplication-global-events
 
 Uses @ref Corrade::Containers::LinkedList for efficient screen management.
 Traversing front-to-back through the list of screens can be done using
 range-based for:
 
-@code{.cpp}
-MyApplication app;
-for(Screen& screen: app.screens()) {
-    // ...
-}
-@endcode
+@snippet MagnumPlatform.cpp ScreenedApplication-for-range
 
 Or, if you need more flexibility, like in the following code. Traversing
 back-to-front can be done using @ref Corrade::Containers::LinkedList::last()
 and @ref BasicScreen::nextNearerScreen().
 
-@code{.cpp}
-for(Screen* s = app.screens().first(); s; s = s->nextFartherScreen()) {
-    // ...
-}
-@endcode
+@snippet MagnumPlatform.cpp ScreenedApplication-for
 
 @section Platform-ScreenedApplication-template-specializations Explicit template specializations
 
 The following specialization are explicitly compiled into each particular
-`*Application` library. For other specializations you have to use
+`*Application` library. For other specializations you have to use the
 @ref ScreenedApplication.hpp implementation file to avoid linker errors. See
 @ref compilation-speedup-hpp for more information.
 
