@@ -219,6 +219,12 @@ template<class Application> class BasicScreenedApplication:
          * added, @ref BasicScreen::focusEvent() is called. If not, neither
          * @ref BasicScreen::blurEvent() nor @ref BasicScreen::focusEvent() is
          * called (i.e. the screen default state is used).
+         *
+         * Alternatively, a screen can be created using the
+         * @ref BasicScreen::BasicScreen(BasicScreenedApplication<Application>&, PropagatedEvents)
+         * constructor. In that case, the first @ref BasicScreen::focusEvent()
+         * is not called, assuming the screen is put into desired state already
+         * during construction.
          */
         BasicScreenedApplication<Application>& addScreen(BasicScreen<Application>& screen);
 

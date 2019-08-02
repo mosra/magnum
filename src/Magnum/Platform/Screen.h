@@ -212,7 +212,27 @@ template<class Application> class BasicScreen:
         typedef typename BasicScreenedApplication<Application>::TextEditingEvent TextEditingEvent;
         #endif
 
+        /**
+         * @brief Construct a detached screen
+         *
+         * The screen is not attached to any application, use
+         * @ref BasicScreenedApplication::addScreen() to add it. Alternatively,
+         * use @ref BasicScreen(BasicScreenedApplication<Application>&, PropagatedEvents) to
+         * attach the screen right during the construction.
+         */
         explicit BasicScreen();
+
+        /**
+         * @brief Construct a screen and attach it to an application
+         *
+         * Unlike with @ref BasicScreen(), the screen is added to the
+         * application already during the construction, removing the need to
+         * call @ref addScreen() later. This also means @ref focusEvent() is
+         * not called for the very first time, assuming the screen is put into
+         * desired state already during construction.
+         * @see @ref setPropagatedEvents()
+         */
+        explicit BasicScreen(BasicScreenedApplication<Application>& application, PropagatedEvents events);
 
         /* A common use case is a list of screen derivatives, so allow deleting
            them through a base pointer */
@@ -227,6 +247,7 @@ template<class Application> class BasicScreen:
          * For non-propagated events related event functions are not called.
          * No events are propagated by default, call this function in
          * @ref focusEvent() and @ref blurEvent() to reflect focus changes.
+         * @see @ref BasicScreen(BasicScreenedApplication<Application>&, PropagatedEvents)
          */
         void setPropagatedEvents(PropagatedEvents events) { _propagatedEvents = events; }
 

@@ -106,6 +106,15 @@ true>::textEditingEvent(TextEditingEvent&) {}
 }
 
 template<class Application> BasicScreen<Application>::BasicScreen() = default;
+
+template<class Application> BasicScreen<Application>::BasicScreen(BasicScreenedApplication<Application>& application, PropagatedEvents events) {
+    /* A superset of this (together with focusEvent()) is done in
+       BasicScreenedApplication::addScreen() as well. Keep in sync. */
+    application.Containers::template LinkedList<BasicScreen<Application>>::insert(this);
+    redraw();
+    setPropagatedEvents(events);
+}
+
 template<class Application> BasicScreen<Application>::~BasicScreen() = default;
 
 template<class Application> void BasicScreen<Application>::focusEvent() {}
@@ -140,6 +149,9 @@ template<class Application> BasicScreenedApplication<Application>::BasicScreened
 template<class Application> BasicScreenedApplication<Application>::~BasicScreenedApplication() = default;
 
 template<class Application> BasicScreenedApplication<Application>& BasicScreenedApplication<Application>::addScreen(BasicScreen<Application>& screen) {
+    /* A subset of this (except focusEvent()) is done in
+       BasicScreen(BasicScreenedApplication&, PropagatedEvents) as well. Keep
+       in sync. */
     Containers::LinkedList<BasicScreen<Application>>::insert(&screen);
     if(screens().first() == &screen) screen.focusEvent();
     Application::redraw();

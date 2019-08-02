@@ -359,6 +359,11 @@ See also:
     application implementations that provide such events
 -   @ref Platform::BasicScreenedApplication is now available also for
     @ref Platform::AndroidApplication
+-   New @ref Platform::BasicScreen::BasicScreen(BasicScreenedApplication<Application>&, PropagatedEvents&)
+    constructor that directly adds the newly-created screen to an application
+    in a RAII manner, without needing to explicitly call
+    @ref Platform::BasicScreenedApplication::addScreen() and
+    @ref Platform::BasicScreen::setPropagatedEvents() later
 
 @subsubsection changelog-latest-changes-text Text library
 
