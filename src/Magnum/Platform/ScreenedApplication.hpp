@@ -149,6 +149,9 @@ template<class Application> BasicScreenedApplication<Application>::BasicScreened
 template<class Application> BasicScreenedApplication<Application>::~BasicScreenedApplication() = default;
 
 template<class Application> BasicScreenedApplication<Application>& BasicScreenedApplication<Application>::addScreen(BasicScreen<Application>& screen) {
+    CORRADE_ASSERT(!screen.application(),
+        "Platform::ScreenedApplication::addScreen(): screen already added to an application", *this);
+
     /* A subset of this (except focusEvent()) is done in
        BasicScreen(BasicScreenedApplication&, PropagatedEvents) as well. Keep
        in sync. */
@@ -159,6 +162,9 @@ template<class Application> BasicScreenedApplication<Application>& BasicScreened
 }
 
 template<class Application> BasicScreenedApplication<Application>& BasicScreenedApplication<Application>::removeScreen(BasicScreen<Application>& screen) {
+    CORRADE_ASSERT(screen.application() == this,
+        "Platform::ScreenedApplication::removeScreen(): screen not owned by this application", *this);
+
     screen.blurEvent();
     Containers::LinkedList<BasicScreen<Application>>::erase(&screen);
     Application::redraw();
@@ -166,6 +172,9 @@ template<class Application> BasicScreenedApplication<Application>& BasicScreened
 }
 
 template<class Application> BasicScreenedApplication<Application>& BasicScreenedApplication<Application>::focusScreen(BasicScreen<Application>& screen) {
+    CORRADE_ASSERT(screen.application() == this,
+        "Platform::ScreenedApplication::focusScreen(): screen not owned by this application", *this);
+
     /* Already focused, nothing to do */
     if(screens().first() == &screen) return *this;
 
