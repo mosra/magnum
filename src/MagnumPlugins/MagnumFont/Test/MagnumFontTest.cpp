@@ -31,7 +31,6 @@
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/FileCallback.h"
-#include "Magnum/GL/OpenGLTester.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/AbstractGlyphCache.h"
 #include "Magnum/Trade/AbstractImporter.h"
