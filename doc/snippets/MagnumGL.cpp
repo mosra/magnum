@@ -25,6 +25,7 @@
 
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/Reference.h>
+#include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -58,9 +59,6 @@
 
 #ifndef MAGNUM_TARGET_WEBGL
 #include "Magnum/GL/DebugOutput.h"
-#ifndef CORRADE_TARGET_ANDROID
-#include "Magnum/GL/OpenGLTester.h"
-#endif
 #include "Magnum/GL/TimeQuery.h"
 #endif
 
@@ -1137,7 +1135,6 @@ texture.setStorage(16, GL::TextureFormat::RGBA8, {1024, 1024});
 }
 #endif
 
-#if !defined(MAGNUM_TARGET_WEBGL) && !defined(CORRADE_TARGET_ANDROID)
 struct A: TestSuite::Tester {
 void foo() {
 /* [OpenGLTester-MAGNUM_VERIFY_NO_GL_ERROR] */
@@ -1145,7 +1142,6 @@ CORRADE_COMPARE(Magnum::GL::Renderer::error(), Magnum::GL::Renderer::Error::NoEr
 /* [OpenGLTester-MAGNUM_VERIFY_NO_GL_ERROR] */
 }
 };
-#endif
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
 {
