@@ -498,6 +498,9 @@ See also:
     [mosra/magnum#344](https://github.com/mosra/magnum/pull/344))
 -   Various documentation improvements and copy editing (see
     [mosra/magnum#361](https://github.com/mosra/magnum/pull/361))
+-   Populating the Troubleshooting section of
+    @ref platforms-windows "Windows-specific platform notes" (see
+    [mosra/magnum#355](https://github.com/mosra/magnum/issues/355))
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

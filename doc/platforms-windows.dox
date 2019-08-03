@@ -103,6 +103,46 @@ for more information.
     endif()
     @endcode
 
+@section platforms-windows-unicode Unicode support
+
+Windows is the only major platform that forces developers into UTF-16. This
+presents several challenges, however Magnum tries to shield users from this as
+much as possible:
+
+-   All Magnum APIs work with strings encoded as UTF-8, converting to UTF-16
+    behind the scenes if necessary
+-   If you use @ref Corrade::Utility::Directory instead of C file APIs or
+    @ref std::fstream, all filesystem operations are Unicode-aware, working
+    with paths encoded in UTF-8
+-   All Magnum APIs operating with files (@ref Trade::AbstractImporter::openFile(),
+    @ref GL::Shader::addFile(), ...) use @ref Corrade::Utility::Directory
+    underneath, meaning you're implicitly Unicode-aware as long as you use
+    Magnum APIs
+-   @ref Corrade::Utility::Arguments expose environment variables as UTF-8,
+    decoding them from UTF-16 input on Windows
+-   And finally, for Unicode-aware console I/O and command-line arguments,
+    simply link to the @ref main "Corrade::Main" library, which will do needed
+    conversion implicitly for you
+
+@section platform-windows-terminal-colors Colored terminal output
+
+There's two options for colored terminal output --- either using the classic
+Windows API (which is the default), or making use of the ANSI color escape
+codes compatible with all Unix systems. The former has a restriction that it
+works only when printing directly to the terminal (so your colors will get lost
+if you redirect to a file). The latter is available only in Windows 10, has to
+be explicitly enabled using @ref CORRADE_UTILITY_USE_ANSI_COLORS when building
+Corrade and additionally requires an explicit setup during application startup.
+This setup is done when you link to the @ref main "Corrade::Main" library, see
+its documentation for more information.
+
+@section platform-windows-hiding-console Hiding console window
+
+By default, CMake compiles GUI applications with an potentially unwanted
+console window lurking in the background. This can be fixed by creating your
+executable with @cmake add_executable(... WIN32 ...) @ce and linking to the
+@ref main "Corrade::Main" library. See its documentation for more information.
+
 @section platforms-windows-rt Windows RT
 
 Windows RT is a restricted subset of Windows API, used for UWP / "Metro" /
@@ -174,12 +214,45 @@ endif()
 
 @see @ref platforms-macos-clang-version-mapping
 
+@section platforms-windows-troubleshooting Troubleshooting
+
+@subsection platforms-windows-troubleshooting-ninja-includes Ninja spams the output with tons of include file notices
+
+This happens when you have a non-English locale of Visual Studio installed and
+apart from the spammy output it will probably cause incremental builds to not
+correctly rebuild files after a header change. A workaround is to uninstall the
+current locale and install the English one instead, additionally you have to
+recreate your build directory. See [ninja-build/ninja#613](https://github.com/ninja-build/ninja/issues/613)
+for more information.
+
+@subsection platforms-windows-troubleshooting-file-encoding Code page warnings with MSVC
+
+On some Windows systems with non-English locales, a warning similar to the
+following might come up, emitted for practically any Magnum header:
+
+@m_class{m-console-wrap}
+
+@code{.shell-session}
+src\Corrade/Utility/Debug.h : warning C4819: The file contains a character that cannot be represented in the current code page (949). Save the file in Unicode format to prevent data loss
+@endcode
+
+This is due to Visual Studio expecting header files in your system locale. All
+Magnum headers are *deliberately* containing UTF-8 characters (usually at least
+the `©` character in the license block) in order to prevent encoding errors in
+3rd party contributions. Solution is to convert your source files to UTF-8 as
+well, and, if the warning doesn't go away, add `/utf-8` to `CMAKE_CXX_FLAGS`
+--- either on the command line / via CMake GUI, or by directly adding the flag
+to your project's CMakeLists (useful if your whole team suffers from this
+problem). See https://stackoverflow.com/a/37872393 for more information.
+
+@code{.cmake}
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8")
+@endcode
+
 @todoc DLL paths
 @todoc vcpkg
 @todoc desktop ES
 @todoc mingw, clang, clang/c2...
-@todoc "unicode"
-@todoc colored console output
 @todoc lcov on mingw (ugh)
 */
 
