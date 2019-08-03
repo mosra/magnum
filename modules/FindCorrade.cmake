@@ -9,8 +9,11 @@
 # This module tries to find the base Corrade library and then defines the
 # following:
 #
-#  Corrade_FOUND                - Whether the base library was found
-#  CORRADE_LIB_SUFFIX_MODULE    - Path to CorradeLibSuffix.cmake module
+#  Corrade_FOUND                  - Whether the base library was found
+#  CORRADE_LIB_SUFFIX_MODULE      - Path to CorradeLibSuffix.cmake module
+#  CORRADE_INCLUDE_INSTALL_PREFIX - Prefix where to put platform-independent
+#   include and other files, defaults to ``.``. If a relative path is used,
+#   it's relative to :variable:`CMAKE_INSTALL_PREFIX`.
 #
 # This command will try to find only the base library, not the optional
 # components, which are:
@@ -557,3 +560,9 @@ find_package_handle_standard_args(Corrade REQUIRED_VARS
 
 # Finalize the finding process
 include(${CORRADE_USE_MODULE})
+
+# Installation dirs
+set(CORRADE_INCLUDE_INSTALL_PREFIX "."
+    CACHE STRING "Prefix where to put platform-independent include and other files")
+
+set(CORRADE_INCLUDE_INSTALL_DIR ${CORRADE_INCLUDE_INSTALL_PREFIX}/include/Corrade)
