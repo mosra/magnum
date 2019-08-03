@@ -227,9 +227,10 @@ template<class Application> class BasicScreen:
          *
          * Unlike with @ref BasicScreen(), the screen is added to the
          * application already during the construction, removing the need to
-         * call @ref addScreen() later. This also means @ref focusEvent() is
-         * not called for the very first time, assuming the screen is put into
-         * desired state already during construction.
+         * call @ref BasicScreenedApplication::addScreen() later. This also
+         * means @ref focusEvent() is not called for the very first time,
+         * assuming the screen is put into desired state already during
+         * construction.
          * @see @ref setPropagatedEvents()
          */
         explicit BasicScreen(BasicScreenedApplication<Application>& application, PropagatedEvents events);

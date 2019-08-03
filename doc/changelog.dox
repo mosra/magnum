@@ -41,8 +41,9 @@ See also:
 @subsection changelog-latest-new New features
 
 -   MSVC 2019 compatibility, with slightly less workarounds needed compared to
-    MSVC 2017. See also [mosra/magnum-bootstrap#18](https://github.com/mosra/magnum-bootstrap/issues/18)
-    and [mosra/magnum#343](https://github.com/mosra/magnum/pull/343).
+    MSVC 2017. See also [mosra/magnum-bootstrap#18](https://github.com/mosra/magnum-bootstrap/issues/18),
+    [mosra/magnum#343](https://github.com/mosra/magnum/pull/343) and
+    [mosra/magnum#354](https://github.com/mosra/magnum/issues/354).
 -   New @ref Image::pixels(), @ref ImageView::pixels() and
     @ref Trade::ImageData::pixels() accessors for convenient direct access to
     pixel data of any image
@@ -359,7 +360,7 @@ See also:
     application implementations that provide such events
 -   @ref Platform::BasicScreenedApplication is now available also for
     @ref Platform::AndroidApplication
--   New @ref Platform::BasicScreen::BasicScreen(BasicScreenedApplication<Application>&, PropagatedEvents&)
+-   New @ref Platform::BasicScreen::BasicScreen(BasicScreenedApplication<Application>&, PropagatedEvents)
     constructor that directly adds the newly-created screen to an application
     in a RAII manner, without needing to explicitly call
     @ref Platform::BasicScreenedApplication::addScreen() and
