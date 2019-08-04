@@ -88,7 +88,7 @@ Image3D CubeMapTexture::image(const Int level, Image3D&& image) {
 void CubeMapTexture::image(const Int level, const MutableImageView3D& image) {
     #ifndef CORRADE_NO_ASSERT
     const Vector3i size{imageSize(level), 6};
-    CORRADE_ASSERT(image.data().data() != nullptr,
+    CORRADE_ASSERT(image.data().data() != nullptr || !size.product(),
         "GL::CubeMapTexture::image(): image view is nullptr", );
     CORRADE_ASSERT(image.size() == size,
         "GL::CubeMapTexture::image(): expected image view size" << size << "but got" << image.size(), );
@@ -156,11 +156,10 @@ CompressedImage3D CubeMapTexture::compressedImage(const Int level, CompressedIma
 
 void CubeMapTexture::compressedImage(const Int level, const MutableCompressedImageView3D& image) {
     #ifndef CORRADE_NO_ASSERT
-    CORRADE_ASSERT(image.data().data() != nullptr,
-        "GL::CubeMapTexture::compressedImage(): image view is nullptr", );
-
     const Vector3i size{imageSize(level), 6};
 
+    CORRADE_ASSERT(image.data().data() != nullptr || !size.product(),
+        "GL::CubeMapTexture::compressedImage(): image view is nullptr", );
     CORRADE_ASSERT(image.size() == size,
         "GL::CubeMapTexture::compressedImage(): expected image view size" << size << "but got" << image.size(), );
 
@@ -244,7 +243,7 @@ Image2D CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int leve
 void CubeMapTexture::image(const CubeMapCoordinate coordinate, const Int level, const MutableImageView2D& image) {
     #ifndef CORRADE_NO_ASSERT
     const Vector2i size = imageSize(level);
-    CORRADE_ASSERT(image.data().data() != nullptr,
+    CORRADE_ASSERT(image.data().data() != nullptr || !size.product(),
         "GL::CubeMapTexture::image(): image view is nullptr", );
     CORRADE_ASSERT(image.size() == size,
         "GL::CubeMapTexture::image(): expected image view size" << size << "but got" << image.size(), );
@@ -310,11 +309,10 @@ CompressedImage2D CubeMapTexture::compressedImage(const CubeMapCoordinate coordi
 
 void CubeMapTexture::compressedImage(const CubeMapCoordinate coordinate, const Int level, const MutableCompressedImageView2D& image) {
     #ifndef CORRADE_NO_ASSERT
-    CORRADE_ASSERT(image.data().data() != nullptr,
-        "GL::CubeMapTexture::compressedImage(): image view is nullptr", );
-
     const Vector2i size = imageSize(level);
 
+    CORRADE_ASSERT(image.data().data() != nullptr || !size.product(),
+        "GL::CubeMapTexture::compressedImage(): image view is nullptr", );
     CORRADE_ASSERT(image.size() == size,
         "GL::CubeMapTexture::compressedImage(): expected image view size" << size << "but got" << image.size(), );
 
@@ -422,7 +420,7 @@ CompressedImage3D CubeMapTexture::compressedSubImage(const Int level, const Rang
 
 void CubeMapTexture::compressedSubImage(const Int level, const Range3Di& range, const MutableCompressedImageView3D& image) {
     #ifndef CORRADE_NO_ASSERT
-    CORRADE_ASSERT(image.data().data() != nullptr,
+    CORRADE_ASSERT(image.data().data() != nullptr || !range.size().product(),
         "GL::CubeMapTexture::compressedSubImage(): image view is nullptr", );
     CORRADE_ASSERT(image.size() == range.size(),
         "GL::CubeMapTexture::compressedSubImage(): expected image view size" << range.size() << "but got" << image.size(), );

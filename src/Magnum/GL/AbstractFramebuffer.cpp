@@ -336,7 +336,7 @@ AbstractFramebuffer& AbstractFramebuffer::clearDepthStencil(const Float depth, c
 #endif
 
 void AbstractFramebuffer::read(const Range2Di& rectangle, const MutableImageView2D& image) {
-    CORRADE_ASSERT(image.data().data() != nullptr,
+    CORRADE_ASSERT(image.data().data() != nullptr || !rectangle.size().product(),
         "GL::AbstractFramebuffer::read(): image view is nullptr", );
     CORRADE_ASSERT(image.size() == rectangle.size(),
         "GL::AbstractFramebuffer::read(): expected image view size" << rectangle.size() << "but got" << image.size(), );

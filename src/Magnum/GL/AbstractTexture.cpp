@@ -1605,7 +1605,7 @@ template void MAGNUM_GL_EXPORT AbstractTexture::image<3>(GLint, Image<3>&);
 template<UnsignedInt dimensions> void AbstractTexture::image(GLint level, const BasicMutableImageView<dimensions>& image) {
     #ifndef CORRADE_NO_ASSERT
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
-    CORRADE_ASSERT(image.data().data() != nullptr,
+    CORRADE_ASSERT(image.data().data() != nullptr || !size.product(),
         "GL::AbstractTexture::image(): image view is nullptr", );
     CORRADE_ASSERT(image.size() == size,
         "GL::AbstractTexture::image(): expected image view size" << size << "but got" << image.size(), );
@@ -1672,11 +1672,10 @@ template void MAGNUM_GL_EXPORT AbstractTexture::compressedImage<3>(GLint, Compre
 
 template<UnsignedInt dimensions> void AbstractTexture::compressedImage(const GLint level, const BasicMutableCompressedImageView<dimensions>& image) {
     #ifndef CORRADE_NO_ASSERT
-    CORRADE_ASSERT(image.data().data() != nullptr,
-        "GL::AbstractTexture::compressedImage(): image view is nullptr", );
-
     const Math::Vector<dimensions, Int> size = DataHelper<dimensions>::imageSize(*this, level);
 
+    CORRADE_ASSERT(image.data().data() != nullptr || !size.product(),
+        "GL::AbstractTexture::compressedImage(): image view is nullptr", );
     CORRADE_ASSERT(image.size() == size,
         "GL::AbstractTexture::compressedImage(): expected image view size" << size << "but got" << image.size(), );
 
@@ -1757,7 +1756,7 @@ template void MAGNUM_GL_EXPORT AbstractTexture::subImage<2>(GLint, const Range2D
 template void MAGNUM_GL_EXPORT AbstractTexture::subImage<3>(GLint, const Range3Di&, Image<3>&);
 
 template<UnsignedInt dimensions> void AbstractTexture::subImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, const BasicMutableImageView<dimensions>& image) {
-    CORRADE_ASSERT(image.data().data() != nullptr,
+    CORRADE_ASSERT(image.data().data() != nullptr || !(Math::Vector<dimensions, Int>(range.size()).product()),
         "GL::AbstractTexture::subImage(): image view is nullptr", );
     CORRADE_ASSERT(image.size() == range.size(),
         "GL::AbstractTexture::subImage(): expected image view size" << range.size() << "but got" << image.size(), );
@@ -1848,7 +1847,7 @@ template void MAGNUM_GL_EXPORT AbstractTexture::compressedSubImage<3>(GLint, con
 
 template<UnsignedInt dimensions> void AbstractTexture::compressedSubImage(const GLint level, const RangeTypeFor<dimensions, Int>& range, const BasicMutableCompressedImageView<dimensions>& image) {
     #ifndef CORRADE_NO_ASSERT
-    CORRADE_ASSERT(image.data().data() != nullptr,
+    CORRADE_ASSERT(image.data().data() != nullptr || !(Math::Vector<dimensions, Int>(range.size()).product()),
         "GL::AbstractTexture::compressedSubImage(): image view is nullptr", );
     CORRADE_ASSERT(image.size() == range.size(),
         "GL::AbstractTexture::compressedSubImage(): expected image view size" << range.size() << "but got" << image.size(), );
