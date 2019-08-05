@@ -27,9 +27,11 @@
 
 #include <map>
 #include <sstream>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
+#include <Corrade/TestSuite/Comparator.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 
@@ -323,7 +325,7 @@ void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, cons
     }
 }
 
-enum class ImageComparatorBase::State: UnsignedByte {
+enum class Result: UnsignedByte {
     PluginLoadFailed = 1,
     ActualImageLoadFailed,
     ExpectedImageLoadFailed,
@@ -336,11 +338,9 @@ enum class ImageComparatorBase::State: UnsignedByte {
     AboveMaxThreshold
 };
 
-class ImageComparatorBase::FileState {
+class ImageComparatorBase::State {
     public:
-        explicit FileState(PluginManager::Manager<Trade::AbstractImporter>* importerManager, PluginManager::Manager<Trade::AbstractImageConverter>* converterManager): _importerManager{importerManager}, _converterManager{converterManager} {}
-
-        explicit FileState() {}
+        explicit State(PluginManager::Manager<Trade::AbstractImporter>* importerManager, PluginManager::Manager<Trade::AbstractImageConverter>* converterManager, Float maxThreshold, Float meanThreshold): _importerManager{importerManager}, _converterManager{converterManager}, maxThreshold{maxThreshold}, meanThreshold{meanThreshold} {}
 
         /* Lazy-create the importer / converter if those weren't passed from
            the outside. The importer might not be used at all if we are
@@ -368,14 +368,14 @@ class ImageComparatorBase::FileState {
         Containers::Optional<Trade::ImageData2D> actualImageData, expectedImageData;
         /** @todo could at least the views have a NoCreate constructor? */
         Containers::Optional<ImageView2D> actualImage, expectedImage;
+
+        Float maxThreshold, meanThreshold;
+        Result result{};
+        Float max{}, mean{};
+        Containers::Array<Float> delta;
 };
 
-ImageComparatorBase::ImageComparatorBase(PluginManager::Manager<Trade::AbstractImporter>* importerManager, PluginManager::Manager<Trade::AbstractImageConverter>* converterManager, Float maxThreshold, Float meanThreshold): _maxThreshold{maxThreshold}, _meanThreshold{meanThreshold}, _max{}, _mean{} {
-    /* Only instantiate the file state if there's something to save -- if we
-       are comparing two image data, it won't be used at all */
-    if(importerManager || converterManager)
-        _fileState.reset(new FileState{importerManager, converterManager});
-
+ImageComparatorBase::ImageComparatorBase(PluginManager::Manager<Trade::AbstractImporter>* importerManager, PluginManager::Manager<Trade::AbstractImageConverter>* converterManager, Float maxThreshold, Float meanThreshold): _state{Containers::InPlaceInit, importerManager, converterManager, maxThreshold, meanThreshold} {
     CORRADE_ASSERT(!Math::isNan(maxThreshold) && !Math::isInf(maxThreshold) &&
                    !Math::isNan(meanThreshold) && !Math::isInf(meanThreshold),
         "DebugTools::CompareImage: thresholds can't be NaN or infinity", );
@@ -386,75 +386,73 @@ ImageComparatorBase::ImageComparatorBase(PluginManager::Manager<Trade::AbstractI
 ImageComparatorBase::~ImageComparatorBase() = default;
 
 TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView2D& actual, const ImageView2D& expected) {
-    /* Taking just references is okay because in case of files those are
-       references to actual views stored inside FileState; and in case of
-       data, the actual/expected params passed here stay in scope for the whole
-       time where operator(), printMessage() & saveDiagnostic() gets called */
-    _actualImage = &actual;
-    _expectedImage = &expected;
+    /* The reference can be pointing to the storage, don't call the assignment
+       on itself in that case */
+    if(!_state->actualImage || &*_state->actualImage != &actual)
+        _state->actualImage = actual;
+    if(!_state->expectedImage || &*_state->expectedImage != &expected)
+        _state->expectedImage = expected;
 
     /* Verify that the images are the same */
     if(actual.size() != expected.size()) {
-        _state = State::DifferentSize;
+        _state->result = Result::DifferentSize;
         return TestSuite::ComparisonStatusFlag::Failed;
     }
     if(actual.format() != expected.format()) {
-        _state = State::DifferentFormat;
+        _state->result = Result::DifferentFormat;
         return TestSuite::ComparisonStatusFlag::Failed;
     }
 
     Containers::Array<Float> delta;
-    std::tie(delta, _max, _mean) = DebugTools::Implementation::calculateImageDelta(actual, expected);
+    std::tie(delta, _state->max, _state->mean) = DebugTools::Implementation::calculateImageDelta(actual, expected);
 
     /* Verify the max/mean is never below zero so we didn't mess up when
        calculating specials. Note the inverted condition to catch NaNs in
        _mean. The max should OTOH be never special as it would make all other
        deltas become zero in comparison. */
-    CORRADE_INTERNAL_ASSERT(!(_mean < 0.0f));
-    CORRADE_INTERNAL_ASSERT(_max >= 0.0f && !Math::isInf(_max) && !Math::isNan(_max));
+    CORRADE_INTERNAL_ASSERT(!(_state->mean < 0.0f));
+    CORRADE_INTERNAL_ASSERT(_state->max >= 0.0f && !Math::isInf(_state->max) && !Math::isNan(_state->max));
 
     /* If both values are not above threshold, success. Comparing this way in
        order to properly catch NaNs in mean values. */
-    if(_max > _maxThreshold && !(_mean <= _meanThreshold))
-        _state = State::AboveThresholds;
-    else if(_max > _maxThreshold)
-        _state = State::AboveMaxThreshold;
-    else if(!(_mean <= _meanThreshold))
-        _state = State::AboveMeanThreshold;
+    if(_state->max > _state->maxThreshold && !(_state->mean <= _state->meanThreshold))
+        _state->result = Result::AboveThresholds;
+    else if(_state->max > _state->maxThreshold)
+        _state->result = Result::AboveMaxThreshold;
+    else if(!(_state->mean <= _state->meanThreshold))
+        _state->result = Result::AboveMeanThreshold;
     else return TestSuite::ComparisonStatusFlags{};
 
     /* Otherwise save the deltas and fail */
-    _delta = std::move(delta);
+    _state->delta = std::move(delta);
     return TestSuite::ComparisonStatusFlag::Failed;
 }
 
 TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const std::string& actual, const std::string& expected) {
-    if(!_fileState) _fileState.reset(new FileState);
-
-    _fileState->actualFilename = actual;
-    _fileState->expectedFilename = expected;
+    _state->actualFilename = actual;
+    _state->expectedFilename = expected;
 
     Containers::Pointer<Trade::AbstractImporter> importer;
     /* Can't load importer plugin. While we *could* save diagnostic in this
        case too, it would make no sense as it's a Schrödinger image at this
        point -- we have no idea if it's the same or not until we open it. */
-    if(!(importer = _fileState->importerManager().loadAndInstantiate("AnyImageImporter"))) {
-        _state = State::PluginLoadFailed;
+    if(!(importer = _state->importerManager().loadAndInstantiate("AnyImageImporter"))) {
+        _state->result = Result::PluginLoadFailed;
         return TestSuite::ComparisonStatusFlag::Failed;
     }
 
     /* Same here. We can't open the image for some reason (file missing? broken
        plugin?), so can't know if it's the same or not. */
-    if(!importer->openFile(actual) || !(_fileState->actualImageData = importer->image2D(0))) {
-        _state = State::ActualImageLoadFailed;
+    if(!importer->openFile(actual) || !(_state->actualImageData = importer->image2D(0))) {
+        _state->result = Result::ActualImageLoadFailed;
         return TestSuite::ComparisonStatusFlag::Failed;
     }
 
     /* If the actual data are compressed, we won't be able to compare them
        (and probably neither save them back due to format mismatches). Don't
        provide diagnostic in that case. */
-    if(_fileState->actualImageData->isCompressed()) {
-        _state = State::ActualImageIsCompressed;
+    if(_state->actualImageData->isCompressed()) {
+        _state->result = Result::ActualImageIsCompressed;
         return TestSuite::ComparisonStatusFlag::Failed;
     }
 
@@ -462,173 +460,162 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const std::stri
        so save also the view on its parsed contents to avoid it going out of
        scope. We're saving through an image converter, not the original file,
        see saveDiagnostic() for reasons why. */
-    _fileState->actualImage.emplace(*_fileState->actualImageData);
-
-    /* Save a reference to the actual image so saveDiagnostic() can reach the
-       data even if we fail before the final data comparison (which does this
-       as well) */
-    _actualImage = &*_fileState->actualImage;
+    _state->actualImage.emplace(*_state->actualImageData);
 
     /* If the expected file can't be opened, we should still be able to save
        the actual as a diagnostic. This could get also used to generate ground
        truth data on the first-ever test run. */
-    if(!importer->openFile(expected) || !(_fileState->expectedImageData = importer->image2D(0))) {
-        _state = State::ExpectedImageLoadFailed;
+    if(!importer->openFile(expected) || !(_state->expectedImageData = importer->image2D(0))) {
+        _state->result = Result::ExpectedImageLoadFailed;
         return TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic;
     }
 
     /* If the expected file is compressed, it's bad, but it doesn't mean we
        couldn't save the actual file either */
-    if(_fileState->expectedImageData->isCompressed()) {
-        _state = State::ExpectedImageIsCompressed;
+    if(_state->expectedImageData->isCompressed()) {
+        _state->result = Result::ExpectedImageIsCompressed;
         return TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic;
     }
 
     /* Save also a view on the expected image data and proxy to the actual data
        comparison. If comparison failed, offer to save a diagnostic. */
-    _fileState->expectedImage.emplace(*_fileState->expectedImageData);
-    TestSuite::ComparisonStatusFlags flags = operator()(*_fileState->actualImage, *_fileState->expectedImage);
+    _state->expectedImage.emplace(*_state->expectedImageData);
+    TestSuite::ComparisonStatusFlags flags = operator()(*_state->actualImage, *_state->expectedImage);
     if(flags & TestSuite::ComparisonStatusFlag::Failed)
         flags |= TestSuite::ComparisonStatusFlag::Diagnostic;
     return flags;
 }
 
 TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView2D& actual, const std::string& expected) {
-    if(!_fileState) _fileState.reset(new FileState);
-
-    _fileState->expectedFilename = expected;
+    _state->expectedFilename = expected;
 
     Containers::Pointer<Trade::AbstractImporter> importer;
     /* Can't load importer plugin. While we *could* save diagnostic in this
        case too, it would make no sense as it's a Schrödinger image at this
        point -- we have no idea if it's the same or not until we open it. */
-    if(!(importer = _fileState->importerManager().loadAndInstantiate("AnyImageImporter"))) {
-        _state = State::PluginLoadFailed;
+    if(!(importer = _state->importerManager().loadAndInstantiate("AnyImageImporter"))) {
+        _state->result = Result::PluginLoadFailed;
         return TestSuite::ComparisonStatusFlag::Failed;
     }
 
-    /* Save a reference to the actual image so saveDiagnostic() can reach the
-       data even if we fail before the final data comparison (which does this
-       as well) */
-    _actualImage = &actual;
+    /* Save the actual image so saveDiagnostic() can reach the data even if we
+       fail before the final data comparison (which does this as well) */
+    _state->actualImage = actual;
 
     /* If the expected file can't be opened, we should still be able to save
        the actual as a diagnostic. This could get also used to generate ground
        truth data on the first-ever test run. */
-    if(!importer->openFile(expected) || !(_fileState->expectedImageData = importer->image2D(0))) {
-        _state = State::ExpectedImageLoadFailed;
+    if(!importer->openFile(expected) || !(_state->expectedImageData = importer->image2D(0))) {
+        _state->result = Result::ExpectedImageLoadFailed;
         return TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic;
     }
 
     /* If the expected file is compressed, it's bad, but it doesn't mean we
        couldn't save the actual file either */
-    if(_fileState->expectedImageData->isCompressed()) {
-        _state = State::ExpectedImageIsCompressed;
+    if(_state->expectedImageData->isCompressed()) {
+        _state->result = Result::ExpectedImageIsCompressed;
         return TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic;
     }
 
     /* Save a view on the expected image data and proxy to the actual data
        comparison. If comparison failed, offer to save a diagnostic. */
-    _fileState->expectedImage.emplace(*_fileState->expectedImageData);
-    TestSuite::ComparisonStatusFlags flags = operator()(actual, *_fileState->expectedImage);
+    _state->expectedImage.emplace(*_state->expectedImageData);
+    TestSuite::ComparisonStatusFlags flags = operator()(actual, *_state->expectedImage);
     if(flags & TestSuite::ComparisonStatusFlag::Failed)
         flags |= TestSuite::ComparisonStatusFlag::Diagnostic;
     return flags;
 }
 
 TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const std::string& actual, const ImageView2D& expected) {
-    if(!_fileState) _fileState.reset(new FileState);
-
-    _fileState->actualFilename = actual;
+    _state->actualFilename = actual;
 
     /* Here we are comparing against a view, not a file, so we cannot save
        diagnostic in any case as we don't have the expected filename. This
        behavior is consistent with TestSuite::Compare::FileToString. */
 
     Containers::Pointer<Trade::AbstractImporter> importer;
-    if(!(importer = _fileState->importerManager().loadAndInstantiate("AnyImageImporter"))) {
-        _state = State::PluginLoadFailed;
+    if(!(importer = _state->importerManager().loadAndInstantiate("AnyImageImporter"))) {
+        _state->result = Result::PluginLoadFailed;
         return TestSuite::ComparisonStatusFlag::Failed;
     }
 
-    if(!importer->openFile(actual) || !(_fileState->actualImageData = importer->image2D(0))) {
-        _state = State::ActualImageLoadFailed;
+    if(!importer->openFile(actual) || !(_state->actualImageData = importer->image2D(0))) {
+        _state->result = Result::ActualImageLoadFailed;
         return TestSuite::ComparisonStatusFlag::Failed;
     }
 
-    if(_fileState->actualImageData->isCompressed()) {
-        _state = State::ActualImageIsCompressed;
+    if(_state->actualImageData->isCompressed()) {
+        _state->result = Result::ActualImageIsCompressed;
         return TestSuite::ComparisonStatusFlag::Failed;
     }
 
-    _fileState->actualImage.emplace(*_fileState->actualImageData);
-    return operator()(*_fileState->actualImage, expected);
+    _state->actualImage.emplace(*_state->actualImageData);
+    return operator()(*_state->actualImage, expected);
 }
 
 void ImageComparatorBase::printMessage(TestSuite::ComparisonStatusFlags, Debug& out, const std::string& actual, const std::string& expected) const {
-    if(_state == State::PluginLoadFailed) {
+    if(_state->result == Result::PluginLoadFailed) {
         out << "AnyImageImporter plugin could not be loaded.";
         return;
     }
-    if(_state == State::ActualImageLoadFailed) {
-        out << "Actual image" << actual << "(" << Debug::nospace << _fileState->actualFilename << Debug::nospace << ")" << "could not be loaded.";
+    if(_state->result == Result::ActualImageLoadFailed) {
+        out << "Actual image" << actual << "(" << Debug::nospace << _state->actualFilename << Debug::nospace << ")" << "could not be loaded.";
         return;
     }
-    if(_state == State::ExpectedImageLoadFailed) {
-        out << "Expected image" << expected << "(" << Debug::nospace << _fileState->expectedFilename << Debug::nospace << ")" << "could not be loaded.";
+    if(_state->result == Result::ExpectedImageLoadFailed) {
+        out << "Expected image" << expected << "(" << Debug::nospace << _state->expectedFilename << Debug::nospace << ")" << "could not be loaded.";
         return;
     }
-    if(_state == State::ActualImageIsCompressed) {
-        out << "Actual image" << actual << "(" << Debug::nospace << _fileState->actualFilename << Debug::nospace << ")" << "is compressed, comparison not possible.";
+    if(_state->result == Result::ActualImageIsCompressed) {
+        out << "Actual image" << actual << "(" << Debug::nospace << _state->actualFilename << Debug::nospace << ")" << "is compressed, comparison not possible.";
         return;
     }
-    if(_state == State::ExpectedImageIsCompressed) {
-        out << "Expected image" << expected << "(" << Debug::nospace << _fileState->expectedFilename << Debug::nospace << ")" << "is compressed, comparison not possible.";
+    if(_state->result == Result::ExpectedImageIsCompressed) {
+        out << "Expected image" << expected << "(" << Debug::nospace << _state->expectedFilename << Debug::nospace << ")" << "is compressed, comparison not possible.";
         return;
     }
 
     out << "Images" << actual << "and" << expected << "have";
-    if(_state == State::DifferentSize)
-        out << "different size, actual" << _actualImage->size() << "but"
-            << _expectedImage->size() << "expected.";
-    else if(_state == State::DifferentFormat)
-        out << "different format, actual" << _actualImage->format() << "but"
-            << _expectedImage->format() << "expected.";
+    if(_state->result == Result::DifferentSize)
+        out << "different size, actual" << _state->actualImage->size()
+            << "but" << _state->expectedImage->size() << "expected.";
+    else if(_state->result == Result::DifferentFormat)
+        out << "different format, actual" << _state->actualImage->format()
+            << "but" << _state->expectedImage->format() << "expected.";
     else {
-        if(_state == State::AboveThresholds)
+        if(_state->result == Result::AboveThresholds)
             out << "both max and mean delta above threshold, actual"
-                << _max << Debug::nospace << "/" << Debug::nospace << _mean
-                << "but at most" << _maxThreshold << Debug::nospace << "/"
-                << Debug::nospace << _meanThreshold << "expected.";
-        else if(_state == State::AboveMaxThreshold)
-            out << "max delta above threshold, actual" << _max
-                << "but at most" << _maxThreshold
-                << "expected. Mean delta" << _mean << "is below threshold"
-                << _meanThreshold << Debug::nospace << ".";
-        else if(_state == State::AboveMeanThreshold)
-            out << "mean delta above threshold, actual" << _mean
-                << "but at most" << _meanThreshold
-                << "expected. Max delta" << _max << "is below threshold"
-                << _maxThreshold << Debug::nospace << ".";
+                << _state->max << Debug::nospace << "/" << Debug::nospace << _state->mean
+                << "but at most" << _state->maxThreshold << Debug::nospace << "/"
+                << Debug::nospace << _state->meanThreshold << "expected.";
+        else if(_state->result == Result::AboveMaxThreshold)
+            out << "max delta above threshold, actual" << _state->max
+                << "but at most" << _state->maxThreshold
+                << "expected. Mean delta" << _state->mean << "is below threshold"
+                << _state->meanThreshold << Debug::nospace << ".";
+        else if(_state->result == Result::AboveMeanThreshold)
+            out << "mean delta above threshold, actual" << _state->mean
+                << "but at most" << _state->meanThreshold
+                << "expected. Max delta" << _state->max << "is below threshold"
+                << _state->maxThreshold << Debug::nospace << ".";
         else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
         out << "Delta image:" << Debug::newline;
-        DebugTools::Implementation::printDeltaImage(out, _delta, _expectedImage->size(), _max, _maxThreshold, _meanThreshold);
-        DebugTools::Implementation::printPixelDeltas(out, _delta, *_actualImage, *_expectedImage, _maxThreshold, _meanThreshold, 10);
+        DebugTools::Implementation::printDeltaImage(out, _state->delta, _state->expectedImage->size(), _state->max, _state->maxThreshold, _state->meanThreshold);
+        DebugTools::Implementation::printPixelDeltas(out, _state->delta, *_state->actualImage, *_state->expectedImage, _state->maxThreshold, _state->meanThreshold, 10);
     }
 }
 
 void ImageComparatorBase::saveDiagnostic(TestSuite::ComparisonStatusFlags, Utility::Debug& out, const std::string& path) {
-    CORRADE_INTERNAL_ASSERT(_fileState);
-    CORRADE_INTERNAL_ASSERT(_actualImage);
+    CORRADE_INTERNAL_ASSERT(_state->actualImage);
 
-    const std::string filename = Utility::Directory::join(path, Utility::Directory::filename(_fileState->expectedFilename));
+    const std::string filename = Utility::Directory::join(path, Utility::Directory::filename(_state->expectedFilename));
 
     /* Export the data the base view/view comparator saved. Ignore failures,
        we're in the middle of a fail anyway (and everything will print messages
        to the output nevertheless). */
-    Containers::Pointer<Trade::AbstractImageConverter> converter = _fileState->converterManager().loadAndInstantiate("AnyImageConverter");
-    if(converter && converter->exportToFile(*_actualImage, filename))
+    Containers::Pointer<Trade::AbstractImageConverter> converter = _state->converterManager().loadAndInstantiate("AnyImageConverter");
+    if(converter && converter->exportToFile(*_state->actualImage, filename))
         out << "->" << filename;
 }
 

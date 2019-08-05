@@ -29,10 +29,9 @@
  * @brief Class @ref Magnum::DebugTools::CompareImage
  */
 
-#include <Corrade/Containers/Array.h>
 #include <Corrade/Containers/Pointer.h>
 #include <Corrade/PluginManager/PluginManager.h>
-#include <Corrade/TestSuite/Comparator.h>
+#include <Corrade/TestSuite/TestSuite.h>
 #include <Corrade/Utility/StlForwardString.h>
 #include <Corrade/Utility/StlForwardTuple.h>
 
@@ -79,17 +78,8 @@ class MAGNUM_DEBUGTOOLS_EXPORT ImageComparatorBase {
         void saveDiagnostic(TestSuite::ComparisonStatusFlags flags, Utility::Debug& out, const std::string& path);
 
     private:
-        class MAGNUM_DEBUGTOOLS_LOCAL FileState;
-
-        enum class State: UnsignedByte;
-
-        Containers::Pointer<FileState> _fileState;
-        Float _maxThreshold, _meanThreshold;
-
-        State _state{};
-        const ImageView2D *_actualImage{}, *_expectedImage{};
-        Float _max, _mean;
-        Containers::Array<Float> _delta;
+        class MAGNUM_DEBUGTOOLS_LOCAL State;
+        Containers::Pointer<State> _state;
 };
 
 }}}
