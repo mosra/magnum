@@ -39,10 +39,8 @@ struct ImageViewTest: TestSuite::Tester {
 
     template<class T> void constructGeneric();
     template<class T> void constructGenericEmpty();
-    template<class T> void constructGenericEmptyNullptr();
     template<class T> void constructImplementationSpecific();
     template<class T> void constructImplementationSpecificEmpty();
-    template<class T> void constructImplementationSpecificEmptyNullptr();
     template<class T> void constructCompressedGeneric();
     template<class T> void constructCompressedGenericEmpty();
     template<class T> void constructCompressedImplementationSpecific();
@@ -51,6 +49,7 @@ struct ImageViewTest: TestSuite::Tester {
     void constructFromMutable();
     void constructCompressedFromMutable();
 
+    void constructNullptr();
     void constructInvalidSize();
     void constructCompressedInvalidSize();
 
@@ -81,14 +80,10 @@ ImageViewTest::ImageViewTest() {
               &ImageViewTest::constructGeneric<char>,
               &ImageViewTest::constructGenericEmpty<const char>,
               &ImageViewTest::constructGenericEmpty<char>,
-              &ImageViewTest::constructGenericEmptyNullptr<const char>,
-              &ImageViewTest::constructGenericEmptyNullptr<char>,
               &ImageViewTest::constructImplementationSpecific<const char>,
               &ImageViewTest::constructImplementationSpecific<char>,
               &ImageViewTest::constructImplementationSpecificEmpty<const char>,
               &ImageViewTest::constructImplementationSpecificEmpty<char>,
-              &ImageViewTest::constructImplementationSpecificEmptyNullptr<const char>,
-              &ImageViewTest::constructImplementationSpecificEmptyNullptr<char>,
               &ImageViewTest::constructCompressedGeneric<const char>,
               &ImageViewTest::constructCompressedGeneric<char>,
               &ImageViewTest::constructCompressedGenericEmpty<const char>,
@@ -101,6 +96,7 @@ ImageViewTest::ImageViewTest() {
               &ImageViewTest::constructFromMutable,
               &ImageViewTest::constructCompressedFromMutable,
 
+              &ImageViewTest::constructNullptr,
               &ImageViewTest::constructInvalidSize,
               &ImageViewTest::constructCompressedInvalidSize,
 
@@ -195,34 +191,6 @@ template<class T> void ImageViewTest::constructGenericEmpty() {
     } {
         ImageView<2, T> a{PixelStorage{}.setAlignment(1),
             PixelFormat::RGB16F, {8, 3}};
-
-        CORRADE_COMPARE(a.storage().alignment(), 1);
-        CORRADE_COMPARE(a.format(), PixelFormat::RGB16F);
-        CORRADE_COMPARE(a.formatExtra(), 0);
-        CORRADE_COMPARE(a.pixelSize(), 6);
-        CORRADE_COMPARE(a.size(), (Vector2i{8, 3}));
-        CORRADE_COMPARE(a.data(), nullptr);
-    }
-}
-
-template<class T> void ImageViewTest::constructGenericEmptyNullptr() {
-    setTestCaseTemplateName(MutabilityTraits<T>::name());
-
-    /* This should be deprecated/removed, as it doesn't provide anything over
-       the above and can lead to silent errors */
-
-    {
-        ImageView<2, T> a{PixelFormat::RG32F, {2, 6}, nullptr};
-
-        CORRADE_COMPARE(a.storage().alignment(), 4);
-        CORRADE_COMPARE(a.format(), PixelFormat::RG32F);
-        CORRADE_COMPARE(a.formatExtra(), 0);
-        CORRADE_COMPARE(a.pixelSize(), 8);
-        CORRADE_COMPARE(a.size(), (Vector2i{2, 6}));
-        CORRADE_COMPARE(a.data(), nullptr);
-    } {
-        ImageView<2, T> a{PixelStorage{}.setAlignment(1),
-            PixelFormat::RGB16F, {8, 3}, nullptr};
 
         CORRADE_COMPARE(a.storage().alignment(), 1);
         CORRADE_COMPARE(a.format(), PixelFormat::RGB16F);
@@ -351,68 +319,6 @@ template<class T> void ImageViewTest::constructImplementationSpecificEmpty() {
     /* Manual pixel size */
     {
         ImageView<2, T> a{PixelStorage{}.setAlignment(1), 666, 1337, 6, {3, 3}};
-
-        CORRADE_COMPARE(a.storage().alignment(), 1);
-        CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
-        CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
-        CORRADE_COMPARE(a.pixelSize(), 6);
-        CORRADE_COMPARE(a.size(), (Vector2i{3, 3}));
-        CORRADE_COMPARE(a.data(), nullptr);
-    }
-}
-
-template<class T> void ImageViewTest::constructImplementationSpecificEmptyNullptr() {
-    setTestCaseTemplateName(MutabilityTraits<T>::name());
-
-    /* This should be deprecated/removed, as it doesn't provide anything over
-       the above and can lead to silent errors */
-
-    /* Single format */
-    {
-        ImageView<2, T> a{Vk::PixelFormat::R32G32B32F, {2, 16}, nullptr};
-
-        CORRADE_COMPARE(a.storage().alignment(), 4);
-        CORRADE_COMPARE(a.format(), pixelFormatWrap(Vk::PixelFormat::R32G32B32F));
-        CORRADE_COMPARE(a.formatExtra(), 0);
-        CORRADE_COMPARE(a.pixelSize(), 12);
-        CORRADE_COMPARE(a.size(), (Vector2i{2, 16}));
-        CORRADE_COMPARE(a.data(), nullptr);
-    } {
-        ImageView<2, T> a{PixelStorage{}.setAlignment(1),
-            Vk::PixelFormat::R32G32B32F, {1, 2}, nullptr};
-
-        CORRADE_COMPARE(a.storage().alignment(), 1);
-        CORRADE_COMPARE(a.format(), pixelFormatWrap(Vk::PixelFormat::R32G32B32F));
-        CORRADE_COMPARE(a.formatExtra(), 0);
-        CORRADE_COMPARE(a.pixelSize(), 12);
-        CORRADE_COMPARE(a.size(), (Vector2i{1, 2}));
-        CORRADE_COMPARE(a.data(), nullptr);
-    }
-
-    /* Format + extra */
-    {
-        ImageView<2, T> a{GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {1, 3}, nullptr};
-
-        CORRADE_COMPARE(a.storage().alignment(), 4);
-        CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
-        CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
-        CORRADE_COMPARE(a.pixelSize(), 6);
-        CORRADE_COMPARE(a.size(), (Vector2i{1, 3}));
-        CORRADE_COMPARE(a.data(), nullptr);
-    } {
-        ImageView<2, T> a{PixelStorage{}.setAlignment(1),
-            GL::PixelFormat::RGB, GL::PixelType::UnsignedShort, {8, 2}, nullptr};
-
-        CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
-        CORRADE_COMPARE(a.formatExtra(), UnsignedInt(GL::PixelType::UnsignedShort));
-        CORRADE_COMPARE(a.pixelSize(), 6);
-        CORRADE_COMPARE(a.size(), (Vector2i{8, 2}));
-        CORRADE_COMPARE(a.data(), nullptr);
-    }
-
-    /* Manual pixel size */
-    {
-        ImageView<2, T> a{PixelStorage{}.setAlignment(1), 666, 1337, 6, {3, 3}, nullptr};
 
         CORRADE_COMPARE(a.storage().alignment(), 1);
         CORRADE_COMPARE(a.format(), pixelFormatWrap(GL::PixelFormat::RGB));
@@ -564,6 +470,17 @@ void ImageViewTest::constructCompressedFromMutable() {
     CORRADE_COMPARE(b.size(), (Vector2i{4, 4}));
     CORRADE_COMPARE(b.data(), &data[0]);
     CORRADE_COMPARE(b.data().size(), 8);
+}
+
+void ImageViewTest::constructNullptr() {
+    #ifdef CORRADE_BUILD_DEPRECATED
+    CORRADE_SKIP("This is still allowed on a deprecated build, can't test.");
+    #endif
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    ImageView2D{PixelFormat::RGB8Unorm, {1, 3},  nullptr};
+    CORRADE_COMPARE(out.str(), "ImageView::ImageView(): data too small, got 0 but expected at least 12 bytes\n");
 }
 
 void ImageViewTest::constructInvalidSize() {

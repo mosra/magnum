@@ -550,6 +550,9 @@ See also:
     use the non-templated version together with
     @ref Corrade::Containers::arrayCast() instead for properly bounds-checked
     type conversion
+-   Passing @cpp nullptr @ce to @ref ImageView constructors is deprecated and
+    will print a warning at runtime. Use a constructor without the @p data
+    parameter instead.
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

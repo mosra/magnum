@@ -493,8 +493,9 @@ void CompareImageTest::pixelDeltaSpecials() {
 void CompareImageTest::compareDifferentSize() {
     std::stringstream out;
 
-    ImageView2D a{PixelFormat::RG8UI, {3, 4}, nullptr};
-    ImageView2D b{PixelFormat::RG8UI, {3, 5}, nullptr};
+    char data[8*5];
+    ImageView2D a{PixelFormat::RG8UI, {3, 4}, data};
+    ImageView2D b{PixelFormat::RG8UI, {3, 5}, data};
 
     {
         TestSuite::Comparator<CompareImage> compare{{}, {}};
@@ -511,8 +512,9 @@ void CompareImageTest::compareDifferentSize() {
 void CompareImageTest::compareDifferentFormat() {
     std::stringstream out;
 
-    ImageView2D a{PixelFormat::RGBA32F, {3, 4}, nullptr};
-    ImageView2D b{PixelFormat::RGB32F, {3, 4}, nullptr};
+    char data[16*12];
+    ImageView2D a{PixelFormat::RGBA32F, {3, 4}, data};
+    ImageView2D b{PixelFormat::RGB32F, {3, 4}, data};
 
     {
         TestSuite::Comparator<CompareImage> compare{{}, {}};
