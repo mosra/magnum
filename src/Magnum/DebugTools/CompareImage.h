@@ -202,20 +202,15 @@ namespace Magnum { namespace DebugTools {
 /**
 @brief Image comparator
 
-To be used with @ref Corrade::TestSuite.
-
-@note This class is available only if Magnum is compiled with `WITH_DEBUGTOOLS`
-    enabled (done by default). See @ref building-features for more information.
-
-Basic use is really simple:
+To be used with @ref Corrade::TestSuite. Basic use is really simple:
 
 @snippet debugtools-compareimage.cpp 0
 
 @note For comparing image files, there are also @ref CompareImageFile,
     @ref CompareImageToFile and @ref CompareFileToImage variants.
 
-Based on actual images used, in case of commparison failure the comparator can
-give for example the following result:
+Based on actual images used, in case of comparison failure the comparator can
+give for example the following output:
 
 @include debugtools-compareimage.ansi
 
@@ -447,7 +442,7 @@ class CompareImageFile {
 /**
 @brief Image-to-file comparator
 
-A combination of @ref CompareImage and @ref CompareImageToFile, which allows to
+A combination of @ref CompareImage and @ref CompareImageFile, which allows to
 compare an in-memory image to a image file. See their documentation for more
 information. Example usage:
 
@@ -510,7 +505,7 @@ class CompareImageToFile {
 /**
 @brief File-to-image comparator
 
-A combination of @ref CompareImage and @ref CompareImageToFile, which allows to
+A combination of @ref CompareImage and @ref CompareImageFile, which allows to
 compare an image file to an in-memory image. See their documentation for more
 information. Example usage:
 
