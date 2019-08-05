@@ -62,6 +62,7 @@ template<UnsignedInt dimensions, class T> void ImageView<dimensions, T>::setData
 }
 
 template<UnsignedInt dimensions, class T> auto ImageView<dimensions, T>::pixels() const -> Containers::StridedArrayView<dimensions + 1, Type> {
+    if(!_data && !_data.size()) return {};
     return Implementation::imagePixelView<dimensions, Type>(*this);
 }
 

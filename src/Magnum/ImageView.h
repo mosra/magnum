@@ -430,7 +430,9 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * @brief View on pixel data
          *
          * Provides direct and easy-to-use access to image pixels. See
-         * @ref Image-pixel-views for more information.
+         * @ref Image-pixel-views for more information. If the view is empty
+         * (with @ref data() being @cpp nullptr @ce), returns @cpp nullptr @ce
+         * as well.
          */
         Containers::StridedArrayView<dimensions + 1, Type> pixels() const;
 
@@ -440,9 +442,12 @@ template<UnsignedInt dimensions, class T> class ImageView {
          * Compared to non-templated @ref pixels() in addition casts the pixel
          * data to a specified type. The user is responsible for choosing
          * correct type for given @ref format() --- checking it on the library
-         * side is not possible for the general case.
+         * side is not possible for the general case. If the view is empty
+         * (with @ref data() being @cpp nullptr @ce), returns @cpp nullptr @ce
+         * as well.
          */
         template<class U> Containers::StridedArrayView<dimensions, typename std::conditional<std::is_const<Type>::value, typename std::add_const<U>::type, U>::type> pixels() const {
+            if(!_data && !_data.size()) return {};
             /* Deliberately not adding a StridedArrayView include, it should
                work without since this is a templated function */
             return Containers::arrayCast<dimensions, typename std::conditional<std::is_const<Type>::value, typename std::add_const<U>::type, U>::type>(pixels());

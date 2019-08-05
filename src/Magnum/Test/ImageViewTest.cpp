@@ -65,6 +65,7 @@ struct ImageViewTest: TestSuite::Tester {
     template<class T> void pixels1D();
     template<class T> void pixels2D();
     template<class T> void pixels3D();
+    void pixelsNullptr();
 };
 
 template<class> struct MutabilityTraits;
@@ -116,7 +117,8 @@ ImageViewTest::ImageViewTest() {
               &ImageViewTest::pixels2D<const char>,
               &ImageViewTest::pixels2D<char>,
               &ImageViewTest::pixels3D<const char>,
-              &ImageViewTest::pixels3D<char>});
+              &ImageViewTest::pixels3D<char>,
+              &ImageViewTest::pixelsNullptr});
 }
 
 namespace GL {
@@ -665,6 +667,21 @@ template<class T> void ImageViewTest::pixels3D() {
     CORRADE_COMPARE(pixels.size(), (Containers::StridedArrayView3D<Color3ub>::Size{3, 4, 2}));
     CORRADE_COMPARE(pixels.stride(), (Containers::StridedArrayView3D<Color3ub>::Stride{140, 20, 3}));
     CORRADE_COMPARE(pixels.data(), image.data() + 140 + 2*20 + 3*3);
+}
+
+void ImageViewTest::pixelsNullptr() {
+    ImageView3D image{PixelFormat::RGB8Unorm, {2, 4, 3}};
+
+    CORRADE_COMPARE(image.data(), nullptr);
+    CORRADE_COMPARE(image.data().size(), 0);
+
+    CORRADE_COMPARE(image.pixels().data(), nullptr);
+    CORRADE_COMPARE(image.pixels().size(),
+        Containers::StridedArrayView4D<const char>::Size{});
+
+    CORRADE_COMPARE(image.pixels<Color3ub>().data(), nullptr);
+    CORRADE_COMPARE(image.pixels<Color3ub>().size(),
+        Containers::StridedArrayView3D<Color3ub>::Size{});
 }
 
 }}}
