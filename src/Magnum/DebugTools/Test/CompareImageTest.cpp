@@ -26,6 +26,7 @@
 #include <sstream>
 #include <numeric>
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/TestSuite/Tester.h>
@@ -101,6 +102,11 @@ struct CompareImageTest: TestSuite::Tester {
     void fileToImagePluginLoadFailed();
     void fileToImageActualLoadFailed();
     void fileToImageActualIsCompressed();
+
+    void pixelsToImage();
+    void pixelsToImageError();
+    void pixelsToFile();
+    void pixelsToFileError();
 
     private:
         Containers::Optional<PluginManager::Manager<Trade::AbstractImporter>> _importerManager;
@@ -180,6 +186,14 @@ CompareImageTest::CompareImageTest() {
 
     addTests({&CompareImageTest::fileToImageActualIsCompressed});
 
+    addTests({&CompareImageTest::pixelsToImage,
+              &CompareImageTest::pixelsToImageError});
+
+    addTests({&CompareImageTest::pixelsToFile,
+              &CompareImageTest::pixelsToFileError},
+        &CompareImageTest::setupExternalPluginManager,
+        &CompareImageTest::teardownExternalPluginManager);
+
     /* Plugin manager setup is not done here, but in the
        setupExternalPluginManager() function */
 }
@@ -210,7 +224,7 @@ void CompareImageTest::formatUnknown() {
     Error redirectError{&out};
 
     ImageView2D image{PixelStorage{}, PixelFormat(0xdead), 0, 0, {}};
-    Implementation::calculateImageDelta(image, image);
+    Implementation::calculateImageDelta(image.format(), image.pixels(), image);
 
     CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: unknown format PixelFormat(0xdead)\n");
 }
@@ -220,7 +234,7 @@ void CompareImageTest::formatHalf() {
     Error redirectError{&out};
 
     ImageView2D image{PixelFormat::RG16F, {}};
-    Implementation::calculateImageDelta(image, image);
+    Implementation::calculateImageDelta(image.format(), image.pixels(), image);
 
     CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: half-float formats are not supported yet\n");
 }
@@ -230,7 +244,7 @@ void CompareImageTest::formatImplementationSpecific() {
     Error redirectError{&out};
 
     ImageView2D image{PixelStorage{}, pixelFormatWrap(0xdead), 0, 0, {}};
-    Implementation::calculateImageDelta(image, image);
+    Implementation::calculateImageDelta(image.format(), image.pixels(), image);
 
     CORRADE_COMPARE(out.str(), "DebugTools::CompareImage: can't compare implementation-specific pixel formats\n");
 }
@@ -238,7 +252,7 @@ void CompareImageTest::formatImplementationSpecific() {
 void CompareImageTest::calculateDelta() {
     Containers::Array<Float> delta;
     Float max, mean;
-    std::tie(delta, max, mean) = Implementation::calculateImageDelta(ActualRed, ExpectedRed);
+    std::tie(delta, max, mean) = Implementation::calculateImageDelta(ActualRed.format(), ActualRed.pixels(), ExpectedRed);
 
     CORRADE_COMPARE_AS(delta, Containers::arrayView(DeltaRed), TestSuite::Compare::Container);
     CORRADE_COMPARE(max, 1.0f);
@@ -266,7 +280,7 @@ const ImageView2D ExpectedRgb{
 void CompareImageTest::calculateDeltaStorage() {
     Containers::Array<Float> delta;
     Float max, mean;
-    std::tie(delta, max, mean) = Implementation::calculateImageDelta(ActualRgb, ExpectedRgb);
+    std::tie(delta, max, mean) = Implementation::calculateImageDelta(ActualRgb.format(), ActualRgb.pixels(), ExpectedRgb);
 
     CORRADE_COMPARE_AS(delta, (Containers::Array<Float>{Containers::InPlaceInit, {
         1.0f/3.0f, (55.0f + 1.0f)/3.0f,
@@ -310,7 +324,7 @@ const ImageView2D ExpectedSpecials{PixelFormat::R32F, {9, 1}, ExpectedDataSpecia
 void CompareImageTest::calculateDeltaSpecials() {
     Containers::Array<Float> delta;
     Float max, mean;
-    std::tie(delta, max, mean) = Implementation::calculateImageDelta(ActualSpecials, ExpectedSpecials);
+    std::tie(delta, max, mean) = Implementation::calculateImageDelta(ActualSpecials.format(), ActualSpecials.pixels(), ExpectedSpecials);
     CORRADE_COMPARE_AS(Containers::arrayView(delta),
         Containers::arrayView(DeltaSpecials),
         TestSuite::Compare::Container);
@@ -331,7 +345,7 @@ void CompareImageTest::calculateDeltaSpecials3() {
 
     Containers::Array<Float> delta;
     Float max, mean;
-    std::tie(delta, max, mean) = Implementation::calculateImageDelta(actualSpecials3, expectedSpecials3);
+    std::tie(delta, max, mean) = Implementation::calculateImageDelta(actualSpecials3.format(), actualSpecials3.pixels(), expectedSpecials3);
     CORRADE_COMPARE_AS(delta, (Containers::Array<Float>{Containers::InPlaceInit, {
         Constants::nan(), Constants::nan(), 1.15f
     }}), TestSuite::Compare::Container);
@@ -436,12 +450,12 @@ void CompareImageTest::pixelDelta() {
     {
         Debug() << "Visual verification -- some lines should be yellow, some red:";
         Debug d;
-        Implementation::printPixelDeltas(d, DeltaRed, ActualRed, ExpectedRed, 0.5f, 0.1f, 10);
+        Implementation::printPixelDeltas(d, DeltaRed, ActualRed.format(), ActualRed.pixels(), ExpectedRed.pixels(), 0.5f, 0.1f, 10);
     }
 
     std::ostringstream out;
     Debug d{&out, Debug::Flag::DisableColors};
-    Implementation::printPixelDeltas(d, DeltaRed, ActualRed, ExpectedRed, 0.5f, 0.1f, 10);
+    Implementation::printPixelDeltas(d, DeltaRed, ActualRed.format(), ActualRed.pixels(), ExpectedRed.pixels(), 0.5f, 0.1f, 10);
 
     CORRADE_COMPARE(out.str(),
         "        Pixels above max/mean threshold:\n"
@@ -454,7 +468,7 @@ void CompareImageTest::pixelDelta() {
 void CompareImageTest::pixelDeltaOverflow() {
     std::ostringstream out;
     Debug d{&out, Debug::Flag::DisableColors};
-    Implementation::printPixelDeltas(d, DeltaRed, ActualRed, ExpectedRed, 0.5f, 0.1f, 3);
+    Implementation::printPixelDeltas(d, DeltaRed, ActualRed.format(), ActualRed.pixels(), ExpectedRed.pixels(), 0.5f, 0.1f, 3);
 
     CORRADE_COMPARE(out.str(),
         "        Top 3 out of 4 pixels above max/mean threshold:\n"
@@ -466,7 +480,7 @@ void CompareImageTest::pixelDeltaOverflow() {
 void CompareImageTest::pixelDeltaSpecials() {
     std::ostringstream out;
     Debug d{&out, Debug::Flag::DisableColors};
-    Implementation::printPixelDeltas(d, DeltaSpecials, ActualSpecials, ExpectedSpecials, 1.5f, 0.5f, 10);
+    Implementation::printPixelDeltas(d, DeltaSpecials, ActualSpecials.format(), ActualSpecials.pixels(), ExpectedSpecials.pixels(), 1.5f, 0.5f, 10);
 
     /* MSVC prints -nan(ind) instead of ±nan. But only sometimes. */
     #ifdef _MSC_VER
@@ -1230,6 +1244,96 @@ void CompareImageTest::fileToImageActualIsCompressed() {
 
     CORRADE_COMPARE(Utility::String::replaceFirst(out.str(), DEBUGTOOLS_TEST_DIR, "..."),
         "Actual image a (.../CompareImageCompressed.dds) is compressed, comparison not possible.\n");
+}
+
+void CompareImageTest::pixelsToImage() {
+    /* Same as image(), but taking pixels instead */
+
+    CORRADE_COMPARE_WITH(ActualRgb.pixels<Color3ub>(),
+        ExpectedRgb, (CompareImage{40.0f, 20.0f}));
+
+    /* No diagnostic as there's no error */
+    TestSuite::Comparator<CompareImage> compare{40.0f, 20.0f};
+    CORRADE_COMPARE(compare(ActualRgb, ExpectedRgb), TestSuite::ComparisonStatusFlags{});
+}
+
+void CompareImageTest::pixelsToImageError() {
+    /* Same as imageError(), but taking pixels instead */
+
+    std::stringstream out;
+
+    {
+        TestSuite::Comparator<CompareImage> compare{20.0f, 10.0f};
+        TestSuite::ComparisonStatusFlags flags =
+            compare(ActualRgb.pixels<Color3ub>(), ExpectedRgb);
+        /* No diagnostic as we don't have any expected filename */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed);
+        Debug d{&out, Debug::Flag::DisableColors};
+        compare.printMessage(flags, d, "a", "b");
+    }
+
+    CORRADE_COMPARE(out.str(), ImageCompareError);
+}
+
+void CompareImageTest::pixelsToFile() {
+    /* Same as imageToFile(), but taking pixels instead */
+
+    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
+       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
+        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+
+    CORRADE_COMPARE_WITH(ActualRgb.pixels<Color3ub>(),
+        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"),
+        (CompareImageToFile{*_importerManager, 40.0f, 20.0f}));
+
+    /* No diagnostic as there's no error */
+    TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, nullptr, 40.0f, 20.0f};
+    CORRADE_COMPARE(compare(ActualRgb, Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga")),
+        TestSuite::ComparisonStatusFlags{});
+}
+
+void CompareImageTest::pixelsToFileError() {
+    /* Same as imageToFileError(), but taking pixels instead */
+
+    if(_importerManager->loadState("AnyImageImporter") == PluginManager::LoadState::NotFound ||
+       _importerManager->loadState("TgaImporter") == PluginManager::LoadState::NotFound)
+        CORRADE_SKIP("AnyImageImporter or TgaImporter plugins not found.");
+
+    std::stringstream out;
+
+    TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, &*_converterManager, 20.0f, 10.0f};
+    TestSuite::ComparisonStatusFlags flags = compare(ActualRgb.pixels<Color3ub>(),
+        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga"));
+    /* The diagnostic flag should be slapped on the failure coming from the
+       operator() comparing two ImageViews */
+    CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Failed|TestSuite::ComparisonStatusFlag::Diagnostic);
+
+    {
+        Debug d{&out, Debug::Flag::DisableColors};
+        compare.printMessage(flags, d, "a", "b");
+    }
+
+    CORRADE_COMPARE(out.str(), ImageCompareError);
+
+    /* Create the output dir if it doesn't exist, but avoid stale files making
+       false positives */
+    CORRADE_VERIFY(Utility::Directory::mkpath(COMPAREIMAGETEST_SAVE_DIR));
+    std::string filename = Utility::Directory::join(COMPAREIMAGETEST_SAVE_DIR, "CompareImageExpected.tga");
+    if(Utility::Directory::exists(filename))
+        CORRADE_VERIFY(Utility::Directory::rm(filename));
+
+    {
+        out.str({});
+        Debug redirectOutput(&out);
+        compare.saveDiagnostic(flags, redirectOutput, COMPAREIMAGETEST_SAVE_DIR);
+    }
+
+    /* We expect the *actual* contents, but under the *expected* filename.
+       Comparing file contents, expecting the converter makes exactly the same
+       file. */
+    CORRADE_COMPARE(out.str(), Utility::formatString("-> {}\n", filename));
+    CORRADE_COMPARE_AS(filename,
+        Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageActual.tga"), TestSuite::Compare::File);
 }
 
 }}}}

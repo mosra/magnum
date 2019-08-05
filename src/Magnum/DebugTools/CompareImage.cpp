@@ -91,13 +91,14 @@ template<std::size_t size, class T> Float calculateImageDelta(const Containers::
 
 }
 
-std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const ImageView2D& actual, const ImageView2D& expected) {
+std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const ImageView2D& expected) {
     /* Calculate a delta image */
     Containers::Array<Float> deltaData{Containers::NoInit,
         std::size_t(expected.size().product())};
     Containers::StridedArrayView2D<Float> delta{deltaData,
         {std::size_t(expected.size().y()), std::size_t(expected.size().x())}};
 
+    CORRADE_INTERNAL_ASSERT(actualFormat == expected.format());
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(expected.format()),
         "DebugTools::CompareImage: can't compare implementation-specific pixel formats", {});
 
@@ -106,14 +107,14 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Ima
         #define _c(format, size, T)                                         \
             case PixelFormat::format:                                       \
                 max = calculateImageDelta<size, T>(                         \
-                    actual.pixels<Math::Vector<size, T>>(),                 \
+                    Containers::arrayCast<2, const Math::Vector<size, T>>(actualPixels), \
                     expected.pixels<Math::Vector<size, T>>(), delta);       \
                 break;
         #define _d(first, second, size, T)                                  \
             case PixelFormat::first:                                        \
             case PixelFormat::second:                                       \
                 max = calculateImageDelta<size, T>(                         \
-                    actual.pixels<Math::Vector<size, T>>(),                 \
+                    Containers::arrayCast<2, const Math::Vector<size, T>>(actualPixels), \
                     expected.pixels<Math::Vector<size, T>>(), delta);       \
                 break;
         /* LCOV_EXCL_START */
@@ -287,7 +288,7 @@ void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& 
 
 }
 
-void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, const ImageView2D& actual, const ImageView2D& expected, const Float maxThreshold, const Float meanThreshold, std::size_t maxCount) {
+void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, PixelFormat format, const Containers::StridedArrayView3D<const char>& actualPixels, const Containers::StridedArrayView3D<const char>& expectedPixels, const Float maxThreshold, const Float meanThreshold, std::size_t maxCount) {
     /* Find first maxCount values above mean threshold and put them into a
        sorted map. Need to reverse the condition in order to catch NaNs. */
     std::multimap<Float, std::size_t> large;
@@ -308,16 +309,16 @@ void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, cons
         if(++count > maxCount) break;
 
         Vector2i pos;
-        std::tie(pos.y(), pos.x()) = Math::div(Int(it->second), expected.size().x());
+        std::tie(pos.y(), pos.x()) = Math::div(Int(it->second), Int(expectedPixels.size()[1]));
         out << Debug::newline << "          [" << Debug::nospace << pos.x()
             << Debug::nospace << "," << Debug::nospace << pos.y()
             << Debug::nospace << "]";
 
-        printPixelAt(out, actual.pixels(), pos, expected.format());
+        printPixelAt(out, actualPixels, pos, format);
 
         out << Debug::nospace << ", expected";
 
-        printPixelAt(out, expected.pixels(), pos, expected.format());
+        printPixelAt(out, expectedPixels, pos, format);
 
         out << "(Δ =" << Debug::boldColor(delta[it->second] > maxThreshold ?
             Debug::Color::Red : Debug::Color::Yellow) << delta[it->second]
@@ -366,8 +367,9 @@ class ImageComparatorBase::State {
     public:
         std::string actualFilename, expectedFilename;
         Containers::Optional<Trade::ImageData2D> actualImageData, expectedImageData;
-        /** @todo could at least the views have a NoCreate constructor? */
-        Containers::Optional<ImageView2D> actualImage, expectedImage;
+        PixelFormat actualFormat;
+        Containers::StridedArrayView3D<const char> actualPixels;
+        Containers::Optional<ImageView2D> expectedImage;
 
         Float maxThreshold, meanThreshold;
         Result result{};
@@ -385,26 +387,28 @@ ImageComparatorBase::ImageComparatorBase(PluginManager::Manager<Trade::AbstractI
 
 ImageComparatorBase::~ImageComparatorBase() = default;
 
-TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView2D& actual, const ImageView2D& expected) {
+TestSuite::ComparisonStatusFlags ImageComparatorBase::compare(const PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const ImageView2D& expected) {
     /* The reference can be pointing to the storage, don't call the assignment
        on itself in that case */
-    if(!_state->actualImage || &*_state->actualImage != &actual)
-        _state->actualImage = actual;
+    if(&_state->actualPixels != &actualPixels) {
+        _state->actualFormat = actualFormat;
+        _state->actualPixels = actualPixels;
+    }
     if(!_state->expectedImage || &*_state->expectedImage != &expected)
         _state->expectedImage = expected;
 
     /* Verify that the images are the same */
-    if(actual.size() != expected.size()) {
+    if(Vector2i{Int(actualPixels.size()[1]), Int(actualPixels.size()[0])} != expected.size()) {
         _state->result = Result::DifferentSize;
         return TestSuite::ComparisonStatusFlag::Failed;
     }
-    if(actual.format() != expected.format()) {
+    if(actualFormat != expected.format()) {
         _state->result = Result::DifferentFormat;
         return TestSuite::ComparisonStatusFlag::Failed;
     }
 
     Containers::Array<Float> delta;
-    std::tie(delta, _state->max, _state->mean) = DebugTools::Implementation::calculateImageDelta(actual, expected);
+    std::tie(delta, _state->max, _state->mean) = DebugTools::Implementation::calculateImageDelta(actualFormat, actualPixels, expected);
 
     /* Verify the max/mean is never below zero so we didn't mess up when
        calculating specials. Note the inverted condition to catch NaNs in
@@ -426,6 +430,10 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView
     /* Otherwise save the deltas and fail */
     _state->delta = std::move(delta);
     return TestSuite::ComparisonStatusFlag::Failed;
+}
+
+TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView2D& actual, const ImageView2D& expected) {
+    return compare(actual.format(), actual.pixels(), expected);
 }
 
 TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const std::string& actual, const std::string& expected) {
@@ -460,7 +468,8 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const std::stri
        so save also the view on its parsed contents to avoid it going out of
        scope. We're saving through an image converter, not the original file,
        see saveDiagnostic() for reasons why. */
-    _state->actualImage.emplace(*_state->actualImageData);
+    _state->actualFormat = _state->actualImageData->format();
+    _state->actualPixels = _state->actualImageData->pixels();
 
     /* If the expected file can't be opened, we should still be able to save
        the actual as a diagnostic. This could get also used to generate ground
@@ -480,13 +489,13 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const std::stri
     /* Save also a view on the expected image data and proxy to the actual data
        comparison. If comparison failed, offer to save a diagnostic. */
     _state->expectedImage.emplace(*_state->expectedImageData);
-    TestSuite::ComparisonStatusFlags flags = operator()(*_state->actualImage, *_state->expectedImage);
+    TestSuite::ComparisonStatusFlags flags = compare(_state->actualFormat, _state->actualPixels, *_state->expectedImage);
     if(flags & TestSuite::ComparisonStatusFlag::Failed)
         flags |= TestSuite::ComparisonStatusFlag::Diagnostic;
     return flags;
 }
 
-TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView2D& actual, const std::string& expected) {
+TestSuite::ComparisonStatusFlags ImageComparatorBase::compare(const PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const std::string& expected) {
     _state->expectedFilename = expected;
 
     Containers::Pointer<Trade::AbstractImporter> importer;
@@ -499,8 +508,13 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView
     }
 
     /* Save the actual image so saveDiagnostic() can reach the data even if we
-       fail before the final data comparison (which does this as well) */
-    _state->actualImage = actual;
+       fail before the final data comparison (which does this as well). The
+       reference can be pointing to the storage, don't call the assignment on
+       itself in that case. */
+    if(&_state->actualPixels != &actualPixels) {
+        _state->actualFormat = actualFormat;
+        _state->actualPixels = actualPixels;
+    }
 
     /* If the expected file can't be opened, we should still be able to save
        the actual as a diagnostic. This could get also used to generate ground
@@ -520,10 +534,14 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView
     /* Save a view on the expected image data and proxy to the actual data
        comparison. If comparison failed, offer to save a diagnostic. */
     _state->expectedImage.emplace(*_state->expectedImageData);
-    TestSuite::ComparisonStatusFlags flags = operator()(actual, *_state->expectedImage);
+    TestSuite::ComparisonStatusFlags flags = compare(_state->actualFormat, _state->actualPixels, *_state->expectedImage);
     if(flags & TestSuite::ComparisonStatusFlag::Failed)
         flags |= TestSuite::ComparisonStatusFlag::Diagnostic;
     return flags;
+}
+
+TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView2D& actual, const std::string& expected) {
+    return compare(actual.format(), actual.pixels(), expected);
 }
 
 TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const std::string& actual, const ImageView2D& expected) {
@@ -549,8 +567,9 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const std::stri
         return TestSuite::ComparisonStatusFlag::Failed;
     }
 
-    _state->actualImage.emplace(*_state->actualImageData);
-    return operator()(*_state->actualImage, expected);
+    _state->actualFormat = _state->actualImageData->format();
+    _state->actualPixels = _state->actualImageData->pixels();
+    return compare(_state->actualFormat, _state->actualPixels, expected);
 }
 
 void ImageComparatorBase::printMessage(TestSuite::ComparisonStatusFlags, Debug& out, const std::string& actual, const std::string& expected) const {
@@ -577,10 +596,11 @@ void ImageComparatorBase::printMessage(TestSuite::ComparisonStatusFlags, Debug& 
 
     out << "Images" << actual << "and" << expected << "have";
     if(_state->result == Result::DifferentSize)
-        out << "different size, actual" << _state->actualImage->size()
+        out << "different size, actual"
+            << Vector2i{Int(_state->actualPixels.size()[1]),  Int(_state->actualPixels.size()[0])}
             << "but" << _state->expectedImage->size() << "expected.";
     else if(_state->result == Result::DifferentFormat)
-        out << "different format, actual" << _state->actualImage->format()
+        out << "different format, actual" << _state->actualFormat
             << "but" << _state->expectedImage->format() << "expected.";
     else {
         if(_state->result == Result::AboveThresholds)
@@ -602,20 +622,36 @@ void ImageComparatorBase::printMessage(TestSuite::ComparisonStatusFlags, Debug& 
 
         out << "Delta image:" << Debug::newline;
         DebugTools::Implementation::printDeltaImage(out, _state->delta, _state->expectedImage->size(), _state->max, _state->maxThreshold, _state->meanThreshold);
-        DebugTools::Implementation::printPixelDeltas(out, _state->delta, *_state->actualImage, *_state->expectedImage, _state->maxThreshold, _state->meanThreshold, 10);
+        CORRADE_INTERNAL_ASSERT(_state->actualFormat == _state->expectedImage->format());
+        DebugTools::Implementation::printPixelDeltas(out, _state->delta, _state->actualFormat, _state->actualPixels, _state->expectedImage->pixels(), _state->maxThreshold, _state->meanThreshold, 10);
     }
 }
 
 void ImageComparatorBase::saveDiagnostic(TestSuite::ComparisonStatusFlags, Utility::Debug& out, const std::string& path) {
-    CORRADE_INTERNAL_ASSERT(_state->actualImage);
+    /* Tightly pack the actual pixels into a new array and create an image from
+       it -- the array view might have totally arbitrary strides that can't
+       be represented in an Image */
+    Containers::Array<char> data{_state->actualPixels.size()[0]*_state->actualPixels.size()[1]*_state->actualPixels.size()[2]};
+    Containers::StridedArrayView3D<char> pixels{data, _state->actualPixels.size()};
+    for(std::size_t i = 0, iMax = _state->actualPixels.size()[0]; i != iMax; ++i) {
+        Containers::StridedArrayView2D<const char> inRow = _state->actualPixels[i];
+        Containers::StridedArrayView2D<char> outRow = pixels[i];
+        for(std::size_t j = 0, jMax = inRow.size()[0]; j != jMax; ++j) {
+            Containers::StridedArrayView1D<const char> inPixel = inRow[j];
+            Containers::StridedArrayView1D<char> outPixel = outRow[j];
+            for(std::size_t k = 0, kMax = inPixel.size(); k != kMax; ++k)
+                outPixel[k] = inPixel[k];
+        }
+    }
 
+    const ImageView2D image{PixelStorage{}.setAlignment(1), _state->actualFormat, Vector2i{Int(pixels.size()[1]), Int(pixels.size()[0])}, data};
     const std::string filename = Utility::Directory::join(path, Utility::Directory::filename(_state->expectedFilename));
 
     /* Export the data the base view/view comparator saved. Ignore failures,
        we're in the middle of a fail anyway (and everything will print messages
        to the output nevertheless). */
     Containers::Pointer<Trade::AbstractImageConverter> converter = _state->converterManager().loadAndInstantiate("AnyImageConverter");
-    if(converter && converter->exportToFile(*_state->actualImage, filename))
+    if(converter && converter->exportToFile(image, filename))
         out << "->" << filename;
 }
 

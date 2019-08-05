@@ -23,6 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/PluginManager/Manager.h>
 
@@ -87,6 +88,15 @@ Image2D expected = loadExpectedImage();
 CORRADE_COMPARE_WITH("actual.png", expected,
     (DebugTools::CompareFileToImage{15.5f, 5.0f}));
 /* [CompareFileToImage] */
+}
+
+{
+Image2D actual = doProcessing();
+Image2D expected = loadExpectedImage();
+/* [CompareImage-pixels-flip] */
+CORRADE_COMPARE_WITH(actual.pixels<Color3ub>().flipped<0>(), expected,
+    (DebugTools::CompareImage{15.5f, 5.0f}));
+/* [CompareImage-pixels-flip] */
 }
 }
 };

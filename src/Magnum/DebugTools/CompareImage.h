@@ -36,6 +36,7 @@
 #include <Corrade/Utility/StlForwardTuple.h>
 
 #include "Magnum/Magnum.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Vector2.h"
 #include "Magnum/DebugTools/visibility.h"
 #include "Magnum/Trade/Trade.h"
@@ -43,11 +44,11 @@
 namespace Magnum { namespace DebugTools {
 
 namespace Implementation {
-    MAGNUM_DEBUGTOOLS_EXPORT std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const ImageView2D& actual, const ImageView2D& expected);
+    MAGNUM_DEBUGTOOLS_EXPORT std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const ImageView2D& expected);
 
     MAGNUM_DEBUGTOOLS_EXPORT void printDeltaImage(Debug& out, Containers::ArrayView<const Float> delta, const Vector2i& size, Float max, Float maxThreshold, Float meanThreshold);
 
-    MAGNUM_DEBUGTOOLS_EXPORT void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, const ImageView2D& actual, const ImageView2D& expected, Float maxThreshold, Float meanThreshold, std::size_t maxCount);
+    MAGNUM_DEBUGTOOLS_EXPORT void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, PixelFormat format, const Containers::StridedArrayView3D<const char>& actualPixels, const Containers::StridedArrayView3D<const char>& expectedPixels, Float maxThreshold, Float meanThreshold, std::size_t maxCount);
 }
 
 class CompareImage;
@@ -56,6 +57,8 @@ class CompareImageToFile;
 class CompareFileToImage;
 
 namespace Implementation {
+
+template<class> constexpr PixelFormat pixelFormatFor();
 
 class MAGNUM_DEBUGTOOLS_EXPORT ImageComparatorBase {
     public:
@@ -73,6 +76,12 @@ class MAGNUM_DEBUGTOOLS_EXPORT ImageComparatorBase {
 
         TestSuite::ComparisonStatusFlags operator()(const ImageView2D& actual, const std::string& expected);
 
+        /* Used in templated CompareImage::operator() */
+        TestSuite::ComparisonStatusFlags compare(PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const ImageView2D& expected);
+
+        /* Used in templated CompareImageToFile::operator() */
+        TestSuite::ComparisonStatusFlags compare(PixelFormat actualFormat, const Containers::StridedArrayView3D<const char>& actualPixels, const std::string& expected);
+
         void printMessage(TestSuite::ComparisonStatusFlags flags, Debug& out, const std::string& actual, const std::string& expected) const;
 
         void saveDiagnostic(TestSuite::ComparisonStatusFlags flags, Utility::Debug& out, const std::string& path);
@@ -87,7 +96,15 @@ class MAGNUM_DEBUGTOOLS_EXPORT ImageComparatorBase {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 /* If Doxygen sees this, all @ref Corrade::TestSuite links break (prolly
    because the namespace is undocumented in this project) */
-namespace Corrade { namespace TestSuite {
+namespace Corrade {
+
+namespace Containers {
+    /* Forward-declaring this function to avoid the need to include
+       the whole StridedArrayView */
+    template<unsigned newDimensions, class U, unsigned dimensions, class T> StridedArrayView<newDimensions, U> arrayCast(const StridedArrayView<dimensions, T>&);
+}
+
+namespace TestSuite {
 
 template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::CompareImage>: public Magnum::DebugTools::Implementation::ImageComparatorBase {
     public:
@@ -97,6 +114,13 @@ template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::Compare
 
         ComparisonStatusFlags operator()(const Magnum::ImageView2D& actual, const Magnum::ImageView2D& expected) {
             return Magnum::DebugTools::Implementation::ImageComparatorBase::operator()(actual, expected);
+        }
+
+        template<class T> TestSuite::ComparisonStatusFlags operator()(const Containers::StridedArrayView2D<const T>& actualPixels, const Magnum::ImageView2D& expected) {
+            /** @todo do some tryFindCompatibleFormat() here */
+            return Magnum::DebugTools::Implementation::ImageComparatorBase::compare(
+                Magnum::DebugTools::Implementation::pixelFormatFor<T>(),
+                Containers::arrayCast<3, const char>(actualPixels), expected);
         }
 };
 
@@ -120,6 +144,13 @@ template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::Compare
         ComparisonStatusFlags operator()(const Magnum::ImageView2D& actual, const std::string& expected) {
             return Magnum::DebugTools::Implementation::ImageComparatorBase::operator()(actual, expected);
         }
+
+        template<class T> TestSuite::ComparisonStatusFlags operator()(const Containers::StridedArrayView2D<const T>& actualPixels, const std::string& expected) {
+            /** @todo do some tryFindCompatibleFormat() here */
+            return Magnum::DebugTools::Implementation::ImageComparatorBase::compare(
+                Magnum::DebugTools::Implementation::pixelFormatFor<T>(),
+                Containers::arrayCast<3, const char>(actualPixels), expected);
+        }
 };
 
 template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::CompareFileToImage>: public Magnum::DebugTools::Implementation::ImageComparatorBase {
@@ -132,6 +163,36 @@ template<> class MAGNUM_DEBUGTOOLS_EXPORT Comparator<Magnum::DebugTools::Compare
             return Magnum::DebugTools::Implementation::ImageComparatorBase::operator()(actual, expected);
         }
 };
+
+namespace Implementation {
+
+/* Explicit ComparatorTraits specialization because
+   Comparator<CompareImage>::operator() is overloaded */
+template<class T> struct ComparatorTraits<Magnum::DebugTools::CompareImage, Magnum::ImageView2D, T> {
+    typedef Magnum::ImageView2D ActualType;
+    typedef Magnum::ImageView2D ExpectedType;
+};
+template<class T> struct ComparatorTraits<Magnum::DebugTools::CompareImage, Magnum::Image2D, T>: ComparatorTraits<Magnum::DebugTools::CompareImage, Magnum::ImageView2D, T> {};
+template<class T> struct ComparatorTraits<Magnum::DebugTools::CompareImage, Magnum::Trade::ImageData2D, T>: ComparatorTraits<Magnum::DebugTools::CompareImage, Magnum::ImageView2D, T> {};
+template<class T, class U> struct ComparatorTraits<Magnum::DebugTools::CompareImage, Containers::StridedArrayView2D<T>, U> {
+    typedef Containers::StridedArrayView2D<const T> ActualType;
+    typedef Magnum::ImageView2D ExpectedType;
+};
+
+/* Explicit ComparatorTraits specialization because
+   Comparator<CompareImageToFile>::operator() is overloaded */
+template<class T> struct ComparatorTraits<Magnum::DebugTools::CompareImageToFile, Magnum::ImageView2D, T> {
+    typedef Magnum::ImageView2D ActualType;
+    typedef std::string ExpectedType;
+};
+template<class T> struct ComparatorTraits<Magnum::DebugTools::CompareImageToFile, Magnum::Image2D, T>: ComparatorTraits<Magnum::DebugTools::CompareImageToFile, Magnum::ImageView2D, T> {};
+template<class T> struct ComparatorTraits<Magnum::DebugTools::CompareImageToFile, Magnum::Trade::ImageData2D, T>: ComparatorTraits<Magnum::DebugTools::CompareImageToFile, Magnum::ImageView2D, T> {};
+template<class T, class U> struct ComparatorTraits<Magnum::DebugTools::CompareImageToFile, Containers::StridedArrayView2D<T>, U> {
+    typedef Containers::StridedArrayView2D<const T> ActualType;
+    typedef std::string ExpectedType;
+};
+
+}
 
 }}
 #endif
@@ -222,6 +283,31 @@ For floating-point input, the comparator treats the values similarly to how
 
 For the ASCII-art representation, NaN and infinity @f$ \Delta_{\boldsymbol{p}} @f$
 values are always treated as maximum difference.
+
+@section DebugTools-CompareImage-pixels Comparing against pixel views
+
+For added flexibility, it's possible to use a
+@ref Corrade::Containers::StridedArrayView2D containing pixel data on the left
+side of the comparison in both @ref CompareImage and @ref CompareImageToFile.
+This type is commonly returned from @ref ImageView::pixels() and allows you to
+do arbitrary operations on the viewed data --- for example, comparing pixel
+data flipped upside down:
+
+@snippet MagnumDebugTools.cpp CompareImage-pixels-flip
+
+For a different scenario, imagine you're comparing data read from a framebuffer
+to a ground truth image. On many systems, internal framebuffer storage has to
+be four-component; however your if your ground truth image is just
+three-component you can cast the pixel data to just a three-component type:
+
+@snippet MagnumDebugTools-gl.cpp CompareImage-pixels-rgb
+
+Currently, comparing against pixel views has a few inherent limitations --- it
+has to be cast to one of Magnum scalar or vector types and the format is
+then autodetected from the passed type, with normalized formats preferred. In
+practice this means e.g. @ref Math::Vector2 "Math::Vector2<UnsignedByte>" will
+be understood as @ref PixelFormat::RG8Unorm and there's currently no way to
+interpret it as @ref PixelFormat::RG8UI, for example.
 */
 class CompareImage {
     public:
@@ -475,6 +561,89 @@ class CompareFileToImage {
     private:
         TestSuite::Comparator<CompareFileToImage> _c;
 };
+
+namespace Implementation {
+
+/* LCOV_EXCL_START */
+/* One-component types */
+template<> constexpr PixelFormat pixelFormatFor<UnsignedByte>() { return PixelFormat::R8Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, UnsignedByte>>() { return PixelFormat::R8Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Byte>() { return PixelFormat::R8Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, Byte>>() { return PixelFormat::R8Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<UnsignedShort>() { return PixelFormat::R16Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, UnsignedShort>>() { return PixelFormat::R16Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Short>() { return PixelFormat::R16Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, Short>>() { return PixelFormat::R16Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<UnsignedInt>() { return PixelFormat::R32UI; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, UnsignedInt>>() { return PixelFormat::R32UI; }
+template<> constexpr PixelFormat pixelFormatFor<Int>() { return PixelFormat::R32I; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, Int>>() { return PixelFormat::R32I; }
+template<> constexpr PixelFormat pixelFormatFor<Float>() { return PixelFormat::R32F; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<1, Float>>() { return PixelFormat::R32F; }
+
+/* Two-component types */
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, UnsignedByte>>() { return PixelFormat::RG8Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<UnsignedByte>>() { return PixelFormat::RG8Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, Byte>>() { return PixelFormat::RG8Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<Byte>>() { return PixelFormat::RG8Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, UnsignedShort>>() { return PixelFormat::RG16Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<UnsignedShort>>() { return PixelFormat::RG16Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, Short>>() { return PixelFormat::RG16Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<Short>>() { return PixelFormat::RG16Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, UnsignedInt>>() { return PixelFormat::RG32UI; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<UnsignedInt>>() { return PixelFormat::RG32UI; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, Int>>() { return PixelFormat::RG32I; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<Int>>() { return PixelFormat::RG32I; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<2, Float>>() { return PixelFormat::RG32F; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector2<Float>>() { return PixelFormat::RG32F; }
+
+/* Three-component types */
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, UnsignedByte>>() { return PixelFormat::RGB8Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<UnsignedByte>>() { return PixelFormat::RGB8Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Color3<UnsignedByte>>() { return PixelFormat::RGB8Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, Byte>>() { return PixelFormat::RGB8Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<Byte>>() { return PixelFormat::RGB8Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Color3<Byte>>() { return PixelFormat::RGB8Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, UnsignedShort>>() { return PixelFormat::RGB16Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<UnsignedShort>>() { return PixelFormat::RGB16Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Color3<UnsignedShort>>() { return PixelFormat::RGB16Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, Short>>() { return PixelFormat::RGB16Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<Short>>() { return PixelFormat::RGB16Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Color3<Short>>() { return PixelFormat::RGB16Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, UnsignedInt>>() { return PixelFormat::RGB32UI; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<UnsignedInt>>() { return PixelFormat::RGB32UI; }
+/* Skipping Math::Color3<UnsignedInt>, as that isn't much used */
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, Int>>() { return PixelFormat::RGB32I; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<Int>>() { return PixelFormat::RGB32I; }
+/* Skipping Math::Color3<Int>, as that isn't much used */
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<3, Float>>() { return PixelFormat::RGB32F; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector3<Float>>() { return PixelFormat::RGB32F; }
+
+/* Four-component types */
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, UnsignedByte>>() { return PixelFormat::RGBA8Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<UnsignedByte>>() { return PixelFormat::RGBA8Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Color4<UnsignedByte>>() { return PixelFormat::RGBA8Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, Byte>>() { return PixelFormat::RGBA8Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<Byte>>() { return PixelFormat::RGBA8Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Color4<Byte>>() { return PixelFormat::RGBA8Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, UnsignedShort>>() { return PixelFormat::RGBA16Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<UnsignedShort>>() { return PixelFormat::RGBA16Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Color4<UnsignedShort>>() { return PixelFormat::RGBA16Unorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, Short>>() { return PixelFormat::RGBA16Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<Short>>() { return PixelFormat::RGBA16Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Color4<Short>>() { return PixelFormat::RGBA16Snorm; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, UnsignedInt>>() { return PixelFormat::RGBA32UI; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<UnsignedInt>>() { return PixelFormat::RGBA32UI; }
+/* Skipping Math::Color4<UnsignedInt>, as that isn't much used */
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, Int>>() { return PixelFormat::RGBA32I; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<Int>>() { return PixelFormat::RGBA32I; }
+/* Skipping Math::Color4<Int>, as that isn't much used */
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector<4, Float>>() { return PixelFormat::RGBA32F; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Vector4<Float>>() { return PixelFormat::RGBA32F; }
+template<> constexpr PixelFormat pixelFormatFor<Math::Color4<Float>>() { return PixelFormat::RGBA32F; }
+/* LCOV_EXCL_STOP */
+
+}
 
 }}
 

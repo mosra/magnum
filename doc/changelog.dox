@@ -73,6 +73,10 @@ See also:
 -   @ref DebugTools::CompareImageFile and @ref DebugTools::CompareImageToFile
     now support the new @ref TestSuite-Tester-save-diagnostic "--save-diagnostic option",
     making it possible to save images when a comparison fails
+-   @ref DebugTools::CompareImage and @ref DebugTools::CompareImageToFile now
+    accept also @ref Corrade::Containers::StridedArrayView2D on the left side
+    of the comparison for added flexibility. See
+    @ref DebugTools-CompareImage-pixels for more infromation.
 
 @subsubsection changelog-latest-new-gl GL library
 

@@ -23,14 +23,18 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
+#include "Magnum/DebugTools/CompareImage.h"
 #include "Magnum/DebugTools/ForceRenderer.h"
 #include "Magnum/DebugTools/ResourceManager.h"
 #include "Magnum/DebugTools/ObjectRenderer.h"
 #include "Magnum/DebugTools/TextureImage.h"
+#include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/CubeMapTexture.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/Math/Range.h"
@@ -134,3 +138,18 @@ GL::BufferImage2D image = DebugTools::textureSubImage(texture,
 }
 #endif
 }
+
+struct Foo: TestSuite::Tester {
+void foo() {
+{
+GL::Framebuffer fb{{}};
+ImageView2D expected{PixelFormat::RGB8Unorm, {}};
+/* [CompareImage-pixels-rgb] */
+Image2D image = fb.read(fb.viewport(), {PixelFormat::RGBA8Unorm});
+
+CORRADE_COMPARE_AS(Containers::arrayCast<Color3ub>(image.pixels<Color4ub>()),
+    "expected.png", DebugTools::CompareImageToFile);
+/* [CompareImage-pixels-rgb] */
+}
+}
+};
