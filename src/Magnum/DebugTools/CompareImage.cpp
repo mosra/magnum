@@ -27,6 +27,7 @@
 
 #include <map>
 #include <sstream>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -45,30 +46,21 @@ namespace Magnum { namespace DebugTools { namespace Implementation {
 
 namespace {
 
-template<std::size_t size, class T> Math::Vector<size, T> pixelAt(const char* const pixels, const std::size_t stride, const Vector2i& pos) {
-    return reinterpret_cast<const Math::Vector<size, T>*>(pixels + stride*pos.y())[pos.x()];
-}
-
-template<std::size_t size, class T> Float calculateImageDelta(const ImageView2D& actual, const ImageView2D& expected, Containers::ArrayView<Float> output) {
-    CORRADE_INTERNAL_ASSERT(output.size() == std::size_t(expected.size().product()));
-
-    /* Precalculate parameters for pixel access */
-    Math::Vector2<std::size_t> dataOffset, dataSize;
-
-    std::tie(dataOffset, dataSize) = actual.dataProperties();
-    const char* const actualPixels = actual.data() + dataOffset.sum();
-    const std::size_t actualStride = dataSize.x();
-
-    std::tie(dataOffset, dataSize) = expected.dataProperties();
-    const char* const expectedPixels = expected.data() + dataOffset.sum();
-    const std::size_t expectedStride = dataSize.x();
+template<std::size_t size, class T> Float calculateImageDelta(const Containers::StridedArrayView2D<const Math::Vector<size, T>>& actual, const Containers::StridedArrayView2D<const Math::Vector<size, T>>& expected, const Containers::StridedArrayView2D<Float>& output) {
+    CORRADE_INTERNAL_ASSERT(actual.size() == output.size());
+    CORRADE_INTERNAL_ASSERT(output.size() == expected.size());
 
     /* Calculate deltas and maximal value of them */
     Float max{};
-    for(std::int_fast32_t y = 0; y != expected.size().y(); ++y) {
-        for(std::int_fast32_t x = 0; x != expected.size().x(); ++x) {
-            Math::Vector<size, Float> actualPixel{pixelAt<size, T>(actualPixels, actualStride, {Int(x), Int(y)})};
-            Math::Vector<size, Float> expectedPixel{pixelAt<size, T>(expectedPixels, expectedStride, {Int(x), Int(y)})};
+    for(std::size_t i = 0, iMax = expected.size()[0]; i != iMax; ++i) {
+        Containers::StridedArrayView1D<const Math::Vector<size, T>> actualRow = actual[i];
+        Containers::StridedArrayView1D<const Math::Vector<size, T>> expectedRow = expected[i];
+        Containers::StridedArrayView1D<Float> outputRow = output[i];
+
+        for(std::size_t j = 0, jMax = expectedRow.size(); j != jMax; ++j) {
+            /* Explicitly convert from T to Float */
+            auto actualPixel = Math::Vector<size, Float>(actualRow[j]);
+            auto expectedPixel = Math::Vector<size, Float>(expectedRow[j]);
 
             /* First calculate a classic difference */
             Math::Vector<size, Float> diff = Math::abs(actualPixel - expectedPixel);
@@ -83,7 +75,7 @@ template<std::size_t size, class T> Float calculateImageDelta(const ImageView2D&
 
             /* Calculate the difference and save it to the output image even
                with NaN and ±Inf (as the user should know) */
-            output[y*expected.size().x() + x] = diff.sum()/size;
+            outputRow[j] = diff.sum()/size;
 
             /* On the other hand, infs and NaNs should not contribute to the
                max delta -- because all other differences would be zero
@@ -99,7 +91,10 @@ template<std::size_t size, class T> Float calculateImageDelta(const ImageView2D&
 
 std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const ImageView2D& actual, const ImageView2D& expected) {
     /* Calculate a delta image */
-    Containers::Array<Float> delta{Containers::NoInit, std::size_t(expected.size().product())};
+    Containers::Array<Float> deltaData{Containers::NoInit,
+        std::size_t(expected.size().product())};
+    Containers::StridedArrayView2D<Float> delta{deltaData,
+        {std::size_t(expected.size().y()), std::size_t(expected.size().x())}};
 
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(expected.format()),
         "DebugTools::CompareImage: can't compare implementation-specific pixel formats", {});
@@ -108,12 +103,16 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Ima
     switch(expected.format()) {
         #define _c(format, size, T)                                         \
             case PixelFormat::format:                                       \
-                max = calculateImageDelta<size, T>(actual, expected, delta); \
+                max = calculateImageDelta<size, T>(                         \
+                    actual.pixels<Math::Vector<size, T>>(),                 \
+                    expected.pixels<Math::Vector<size, T>>(), delta);       \
                 break;
         #define _d(first, second, size, T)                                  \
             case PixelFormat::first:                                        \
             case PixelFormat::second:                                       \
-                max = calculateImageDelta<size, T>(actual, expected, delta); \
+                max = calculateImageDelta<size, T>(                         \
+                    actual.pixels<Math::Vector<size, T>>(),                 \
+                    expected.pixels<Math::Vector<size, T>>(), delta);       \
                 break;
         /* LCOV_EXCL_START */
         _d(R8Unorm, R8UI, 1, UnsignedByte)
@@ -164,9 +163,9 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Ima
        *deliberately* leaves specials in. The `max` has them already filtered
        out so if this would filter them out as well, there would be nothing
        left that could cause the comparison to fail. */
-    const Float mean = Math::Algorithms::kahanSum(delta.begin(), delta.end())/delta.size();
+    const Float mean = Math::Algorithms::kahanSum(deltaData.begin(), deltaData.end())/deltaData.size();
 
-    return std::make_tuple(std::move(delta), max, mean);
+    return std::make_tuple(std::move(deltaData), max, mean);
 }
 
 namespace {
@@ -220,16 +219,18 @@ void printDeltaImage(Debug& out, Containers::ArrayView<const Float> deltas, cons
 
 namespace {
 
-void printPixelAt(Debug& out, const char* const pixels, const std::size_t stride, const Vector2i& pos, const PixelFormat format) {
+void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& pixels, const Vector2i& pos, const PixelFormat format) {
+    const char* const pixel = &pixels[pos.y()][pos.x()][0];
+
     switch(format) {
         #define _c(format, size, T)                                         \
             case PixelFormat::format:                                       \
-                out << pixelAt<size, T>(pixels, stride, pos);               \
+                out << *reinterpret_cast<const Math::Vector<size, T>*>(pixel); \
                 break;
         #define _d(first, second, size, T)                                  \
             case PixelFormat::first:                                        \
             case PixelFormat::second:                                       \
-                out << pixelAt<size, T>(pixels, stride, pos);               \
+                out << *reinterpret_cast<const Math::Vector<size, T>*>(pixel); \
                 break;
         /* LCOV_EXCL_START */
         _d(R8Unorm, R8UI, 1, UnsignedByte)
@@ -267,10 +268,10 @@ void printPixelAt(Debug& out, const char* const pixels, const std::size_t stride
 
         /* Take the opportunity and print 8-bit colors in hex */
         case PixelFormat::RGB8Unorm:
-            out << Color3ub{pixelAt<3, UnsignedByte>(pixels, stride, pos)};
+            out << *reinterpret_cast<const Color3ub*>(pixel);
             break;
         case PixelFormat::RGBA8Unorm:
-            out << Color4ub{pixelAt<4, UnsignedByte>(pixels, stride, pos)};
+            out << *reinterpret_cast<const Color4ub*>(pixel);
             break;
 
         case PixelFormat::R16F:
@@ -285,17 +286,6 @@ void printPixelAt(Debug& out, const char* const pixels, const std::size_t stride
 }
 
 void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, const ImageView2D& actual, const ImageView2D& expected, const Float maxThreshold, const Float meanThreshold, std::size_t maxCount) {
-    /* Precalculate parameters for pixel access */
-    Math::Vector2<std::size_t> offset, size;
-
-    std::tie(offset, size) = actual.dataProperties();
-    const char* const actualPixels = actual.data() + offset.sum();
-    const std::size_t actualStride = size.x();
-
-    std::tie(offset, size) = expected.dataProperties();
-    const char* const expectedPixels = expected.data() + offset.sum();
-    const std::size_t expectedStride = size.x();
-
     /* Find first maxCount values above mean threshold and put them into a
        sorted map. Need to reverse the condition in order to catch NaNs. */
     std::multimap<Float, std::size_t> large;
@@ -321,11 +311,11 @@ void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, cons
             << Debug::nospace << "," << Debug::nospace << pos.y()
             << Debug::nospace << "]";
 
-        printPixelAt(out, actualPixels, actualStride, pos, expected.format());
+        printPixelAt(out, actual.pixels(), pos, expected.format());
 
         out << Debug::nospace << ", expected";
 
-        printPixelAt(out, expectedPixels, expectedStride, pos, expected.format());
+        printPixelAt(out, expected.pixels(), pos, expected.format());
 
         out << "(Δ =" << Debug::boldColor(delta[it->second] > maxThreshold ?
             Debug::Color::Red : Debug::Color::Yellow) << delta[it->second]
