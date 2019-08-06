@@ -128,6 +128,7 @@ if(BUILD_GL_TESTS)
             PhongTestFiles/colored.tga
             PhongTestFiles/defaults.tga
             PhongTestFiles/shininess-black-specular.tga
+            PhongTestFiles/shininess0-overflow.tga
             PhongTestFiles/shininess0.tga
             PhongTestFiles/shininess10.tga
             PhongTestFiles/shininess80.tga

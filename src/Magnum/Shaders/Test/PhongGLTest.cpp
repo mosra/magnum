@@ -34,6 +34,7 @@
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/CompareImage.h"
+#include "Magnum/GL/Context.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/GL/OpenGLTester.h"
@@ -94,6 +95,20 @@ struct PhongGLTest: GL::OpenGLTester {
         GL::Renderbuffer _color{NoCreate};
         GL::Framebuffer _framebuffer{NoCreate};
 };
+
+/*
+    Rendering tests done on:
+
+    -   Mesa Intel
+    -   Mesa AMD
+    -   SwiftShader ES2/ES3
+    -   ARM Mali (Huawei P10) ES2/ES3
+    -   WebGL 1 / 2 (on Mesa Intel)
+
+    Mesa AMD, SwiftShader and ARM Mali has a bigger ring with shininess = 0.
+    Mesa Intel not. Currently handled as XFAIL on those, but probably could
+    invert that and XFAIL on Intel?
+*/
 
 constexpr struct {
     const char* name;
@@ -465,11 +480,19 @@ void PhongGLTest::renderDefaults() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has 6 different pixels on the edges and a bunch of small
+       rounding errors */
+    const Float maxThreshold = 31.0f, meanThreshold = 0.122f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 31.0f, meanThreshold = 4.142f;
+    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(SHADERS_TEST_DIR, "PhongTestFiles/defaults.tga"),
-        (DebugTools::CompareImageToFile{_manager, 0.0f, 0.0f}));
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
 void PhongGLTest::renderColored() {
@@ -498,11 +521,19 @@ void PhongGLTest::renderColored() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has some minor rounding differences (max = 1). ARM Mali G71
+       has bigger rounding differences. */
+    const Float maxThreshold = 8.34f, meanThreshold = 0.066f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 15.34f, meanThreshold = 3.33f;
+    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(SHADERS_TEST_DIR, "PhongTestFiles/colored.tga"),
-        (DebugTools::CompareImageToFile{_manager, 0.0f, 0.0f}));
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
 constexpr GL::TextureFormat TextureFormatRGB =
@@ -576,11 +607,19 @@ void PhongGLTest::renderSinglePixelTextured() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has some minor rounding differences (max = 1). ARM Mali G71
+       has bigger rounding differences. */
+    const Float maxThreshold = 7.0f, meanThreshold = 0.066f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 15.34f, meanThreshold = 3.33f;
+    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(SHADERS_TEST_DIR, "PhongTestFiles/colored.tga"),
-        (DebugTools::CompareImageToFile{_manager, 0.0f, 0.0f}));
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
 void PhongGLTest::renderTextured() {
@@ -666,11 +705,19 @@ void PhongGLTest::renderTextured() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has few rounding errors at the edges (giving a large max
+       error), but that's basically it. */
+    const Float maxThreshold = 210.4f, meanThreshold = 0.126f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's a bit worse */
+    const Float maxThreshold = 210.4f, meanThreshold = 3.434f;
+    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join({SHADERS_TEST_DIR, "PhongTestFiles", data.expected}),
-        (DebugTools::CompareImageToFile{_manager, 0.0f, 0.0f}));
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
 void PhongGLTest::renderTexturedNormal() {
@@ -737,11 +784,18 @@ void PhongGLTest::renderTexturedNormal() {
         pixels = pixels.flipped<1>().transposed<0, 1>();
     else CORRADE_COMPARE(data.rotation, 0.0_degf);
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* One pixel in the center didn't survive the transformation. But that's
-       okay */
+       okay. Due to the density of the normal map, SwiftShader has an overally
+       consistent off-by-a-bit error. */
+    const Float maxThreshold = 24.0f, meanThreshold = 0.3421f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 24.0f, meanThreshold = 3.017f;
+    #endif
     CORRADE_COMPARE_WITH(pixels,
         Utility::Directory::join(SHADERS_TEST_DIR, "PhongTestFiles/textured-normal.tga"),
-        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.00016f}));
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
 void PhongGLTest::renderShininess() {
@@ -766,11 +820,46 @@ void PhongGLTest::renderShininess() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
-    CORRADE_COMPARE_WITH(
-        /* Dropping the alpha channel, as it's always 1.0 */
-        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join({SHADERS_TEST_DIR, "PhongTestFiles", data.expected}),
-        (DebugTools::CompareImageToFile{_manager, 0.0f, 0.0f}));
+    {
+        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        /* SwiftShader has some minor rounding differences (max = 1.67). ARM
+           Mali G71 has bigger rounding differences. */
+        const Float maxThreshold = 12.0f, meanThreshold = 0.043f;
+        #else
+        /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+        const Float maxThreshold = 16.667f, meanThreshold = 2.583f;
+        #endif
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        CORRADE_EXPECT_FAIL_IF(data.shininess <= 0.0011f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader),
+            "SwiftShader has a much larger ring for the owerflown shininess.");
+        #endif
+        #if defined(CORRADE_TARGET_ANDROID) && defined(MAGNUM_TARGET_GLES2)
+        CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::ArmMali),
+            "ARM Mali has a much larger ring for the owerflown shininess when it's exactly 0.");
+        #endif
+        CORRADE_COMPARE_WITH(
+            /* Dropping the alpha channel, as it's always 1.0 */
+            Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+            Utility::Directory::join({SHADERS_TEST_DIR, "PhongTestFiles", data.expected}),
+            (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+    }
+
+    /* Test the special overflow results as well */
+    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+    if((data.shininess <= 0.0011f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader))
+        #if defined(CORRADE_TARGET_ANDROID) && defined(MAGNUM_TARGET_GLES2)
+        || (data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::ArmMali))
+        #endif
+    ) {
+        CORRADE_COMPARE_WITH(
+            /* Dropping the alpha channel, as it's always 1.0 */
+            Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+            Utility::Directory::join({SHADERS_TEST_DIR, "PhongTestFiles", "shininess0-overflow.tga"}),
+            /* The threshold = 0.001 case has a slight reddish tone on
+               SwiftShader; ARM Mali has one pixel off */
+            (DebugTools::CompareImageToFile{_manager, 255.0f, 1.475f}));
+    }
+    #endif
 }
 
 void PhongGLTest::renderAlphaSetup() {
@@ -855,13 +944,20 @@ void PhongGLTest::renderAlpha() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* In some cases (separate vs combined alpha) there are off-by-one errors.
-       That's okay, as we have only 8bit texture precision. */
+       That's okay, as we have only 8bit texture precision. SwiftShader has
+       additionally a few minor rounding errors at the edges. */
+    const Float maxThreshold = 172.667f, meanThreshold = 0.171f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 172.667f, meanThreshold = 4.736f;
+    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(SHADERS_TEST_DIR, data.expected),
-        (DebugTools::CompareImageToFile{_manager, 1.34f, 0.1f}));
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
 }}}}
