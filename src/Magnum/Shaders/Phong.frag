@@ -187,6 +187,9 @@ void main() {
     }
 
     #ifdef ALPHA_MASK
-    if(color.a < alphaMask) discard;
+    /* Using <= because if mask is set to 1.0, it should discard all, similarly
+       as when using 0, it should only discard what's already invisible
+       anyway. */
+    if(color.a <= alphaMask) discard;
     #endif
 }

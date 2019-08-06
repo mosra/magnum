@@ -72,6 +72,9 @@ void main() {
         color;
 
     #ifdef ALPHA_MASK
-    if(fragmentColor.a < alphaMask) discard;
+    /* Using <= because if mask is set to 1.0, it should discard all, similarly
+       as when using 0, it should only discard what's already invisible
+       anyway. */
+    if(fragmentColor.a <= alphaMask) discard;
     #endif
 }
