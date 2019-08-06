@@ -611,12 +611,12 @@ void ImageComparatorBase::printMessage(TestSuite::ComparisonStatusFlags, Debug& 
         else if(_state->result == Result::AboveMaxThreshold)
             out << "max delta above threshold, actual" << _state->max
                 << "but at most" << _state->maxThreshold
-                << "expected. Mean delta" << _state->mean << "is below threshold"
+                << "expected. Mean delta" << _state->mean << "is within threshold"
                 << _state->meanThreshold << Debug::nospace << ".";
         else if(_state->result == Result::AboveMeanThreshold)
             out << "mean delta above threshold, actual" << _state->mean
                 << "but at most" << _state->meanThreshold
-                << "expected. Max delta" << _state->max << "is below threshold"
+                << "expected. Max delta" << _state->max << "is within threshold"
                 << _state->maxThreshold << Debug::nospace << ".";
         else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 

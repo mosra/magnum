@@ -588,7 +588,7 @@ void CompareImageTest::compareAboveMaxThreshold() {
     }
 
     CORRADE_COMPARE(out.str(),
-        "Images a and b have max delta above threshold, actual 39 but at most 30 expected. Mean delta 18.5 is below threshold 20. Delta image:\n"
+        "Images a and b have max delta above threshold, actual 39 but at most 30 expected. Mean delta 18.5 is within threshold 20. Delta image:\n"
         "          |?M|\n"
         "        Pixels above max/mean threshold:\n"
         "          [1,1] #abcd85, expected #abcdfa (Δ = 39)\n");
@@ -607,7 +607,7 @@ void CompareImageTest::compareAboveMeanThreshold() {
     }
 
     CORRADE_COMPARE(out.str(),
-        "Images a and b have mean delta above threshold, actual 18.5 but at most 18 expected. Max delta 39 is below threshold 50. Delta image:\n"
+        "Images a and b have mean delta above threshold, actual 18.5 but at most 18 expected. Max delta 39 is within threshold 50. Delta image:\n"
         "          |?M|\n"
         "        Pixels above max/mean threshold:\n"
         "          [1,1] #abcd85, expected #abcdfa (Δ = 39)\n"
@@ -684,7 +684,7 @@ void CompareImageTest::compareSpecialsMeanOnly() {
        NaNs. This is *not* a libc++ thing, tho -- libc++ on Linux prints signed NaNs. */
     #if defined(CORRADE_TARGET_APPLE) || defined(CORRADE_TARGET_ANDROID) || defined(CORRADE_TARGET_EMSCRIPTEN) || defined(__MINGW32__)
     CORRADE_COMPARE(out.str(),
-        "Images a and b have mean delta above threshold, actual nan but at most 0.5 expected. Max delta 3.1 is below threshold 15. Delta image:\n"
+        "Images a and b have mean delta above threshold, actual nan but at most 0.5 expected. Max delta 3.1 is within threshold 15. Delta image:\n"
         "          |MMMM M ,M|\n"
         "        Pixels above max/mean threshold:\n"
         "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
@@ -697,7 +697,7 @@ void CompareImageTest::compareSpecialsMeanOnly() {
     /* MSVC prints -nan(ind) instead of ±nan. But only sometimes. */
     #elif defined(CORRADE_TARGET_WINDOWS) && defined(_MSC_VER)
     CORRADE_COMPARE(out.str(),
-        "Images a and b have mean delta above threshold, actual -nan(ind) but at most 0.5 expected. Max delta 3.1 is below threshold 15. Delta image:\n"
+        "Images a and b have mean delta above threshold, actual -nan(ind) but at most 0.5 expected. Max delta 3.1 is within threshold 15. Delta image:\n"
         "          |MMMM M ,M|\n"
         "        Pixels above max/mean threshold:\n"
         "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
@@ -710,7 +710,7 @@ void CompareImageTest::compareSpecialsMeanOnly() {
     /* Linux */
     #else
     CORRADE_COMPARE(out.str(),
-        "Images a and b have mean delta above threshold, actual -nan but at most 0.5 expected. Max delta 3.1 is below threshold 15. Delta image:\n"
+        "Images a and b have mean delta above threshold, actual -nan but at most 0.5 expected. Max delta 3.1 is within threshold 15. Delta image:\n"
         "          |MMMM M ,M|\n"
         "        Pixels above max/mean threshold:\n"
         "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
