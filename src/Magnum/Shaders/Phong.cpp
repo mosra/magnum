@@ -197,7 +197,7 @@ Phong& Phong::bindNormalTexture(GL::Texture2D& texture) {
 }
 
 Phong& Phong::bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::Texture2D* specular, GL::Texture2D* normal) {
-    CORRADE_ASSERT(_flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture, Flag::NormalTexture),
+    CORRADE_ASSERT(_flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture),
         "Shaders::Phong::bindTextures(): the shader was not created with any textures enabled", *this);
     GL::AbstractTexture::bind(AmbientTextureLayer, {ambient, diffuse, specular, normal});
     return *this;
