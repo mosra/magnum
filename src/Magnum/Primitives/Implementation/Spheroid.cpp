@@ -112,15 +112,15 @@ void Spheroid::bottomFaceRing() {
 }
 
 void Spheroid::faceRings(UnsignedInt count, UnsignedInt offset) {
-    UnsignedInt vertexSegments = segments + (textureCoords == TextureCoords::Generate ? 1 : 0);
+    const UnsignedInt vertexSegments = segments + (textureCoords == TextureCoords::Generate ? 1 : 0);
 
     for(UnsignedInt i = 0; i != count; ++i) {
         for(UnsignedInt j = 0; j != segments; ++j) {
-            UnsignedInt bottomLeft = i*vertexSegments+j+offset;
-            UnsignedInt bottomRight = ((j != segments-1 || textureCoords == TextureCoords::Generate) ?
+            const UnsignedInt bottomLeft = i*vertexSegments+j+offset;
+            const UnsignedInt bottomRight = ((j != segments-1 || textureCoords == TextureCoords::Generate) ?
                 i*vertexSegments+j+1+offset : i*segments+offset);
-            UnsignedInt topLeft = bottomLeft+vertexSegments;
-            UnsignedInt topRight = bottomRight+vertexSegments;
+            const UnsignedInt topLeft = bottomLeft+vertexSegments;
+            const UnsignedInt topRight = bottomRight+vertexSegments;
 
             indices.push_back(bottomLeft);
             indices.push_back(bottomRight);
@@ -133,7 +133,7 @@ void Spheroid::faceRings(UnsignedInt count, UnsignedInt offset) {
 }
 
 void Spheroid::topFaceRing() {
-    UnsignedInt vertexSegments = segments + (textureCoords == TextureCoords::Generate ? 1 : 0);
+    const UnsignedInt vertexSegments = segments + (textureCoords == TextureCoords::Generate ? 1 : 0);
 
     for(UnsignedInt j = 0; j != segments; ++j) {
         /* Bottom left vertex */
