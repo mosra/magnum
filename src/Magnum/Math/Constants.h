@@ -147,6 +147,17 @@ template<class> struct Constants;
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+template<> struct Constants<long double> {
+    /* Needed by Deg->Rad conversion, which is needed by a test for
+       __builtin_sincos. Hopefully nobody else needs those, so it's just pi.
+       21-digit string representation gives back the same value on rountrip.
+       https://en.wikipedia.org/wiki/Extended_precision#Working_range
+       Value taken using Wolfram Alpha.          1.23456789012345678901 */
+    static constexpr long double pi()   { return 3.14159265358979323846l; }
+};
+#endif
+
 template<> struct Constants<Double> {
     Constants() = delete;
 
