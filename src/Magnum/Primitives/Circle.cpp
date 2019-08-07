@@ -33,15 +33,21 @@
 
 namespace Magnum { namespace Primitives {
 
-Trade::MeshData2D circle2DSolid(const UnsignedInt segments) {
+Trade::MeshData2D circle2DSolid(const UnsignedInt segments, CircleTextureCoords textureCoords) {
     CORRADE_ASSERT(segments >= 3, "Primitives::circle2DSolid(): segments must be >= 3",
         (Trade::MeshData2D{MeshPrimitive::TriangleFan, {}, {}, {}, {}, nullptr}));
 
     std::vector<Vector2> positions;
     positions.reserve(segments + 2);
 
+    std::vector<std::vector<Vector2>> textureCoordinates;
+    if(textureCoords == CircleTextureCoords::Generate)
+        textureCoordinates.emplace_back();
+
     /* Central point */
     positions.emplace_back();
+    if(textureCoords == CircleTextureCoords::Generate)
+        textureCoordinates.front().emplace_back(0.5f, 0.5f);
 
     /* Points on circle. The first/last point is here twice to close the circle
        properly. */
@@ -49,10 +55,14 @@ Trade::MeshData2D circle2DSolid(const UnsignedInt segments) {
     for(UnsignedInt i = 0; i != segments + 1; ++i) {
         const Rad angle(Float(i)*angleIncrement);
         const std::pair<Float, Float> sincos = Math::sincos(angle);
-        positions.emplace_back(sincos.second, sincos.first);
+        Vector2 position{sincos.second, sincos.first};
+        positions.emplace_back(position);
+
+        if(textureCoords == CircleTextureCoords::Generate)
+            textureCoordinates.front().emplace_back(position*0.5f + Vector2{0.5f});
     }
 
-    return Trade::MeshData2D{MeshPrimitive::TriangleFan, {}, {std::move(positions)}, {}, {}, nullptr};
+    return Trade::MeshData2D{MeshPrimitive::TriangleFan, {}, {std::move(positions)}, std::move(textureCoordinates), {}, nullptr};
 }
 
 Trade::MeshData2D circle2DWireframe(const UnsignedInt segments) {
@@ -73,15 +83,21 @@ Trade::MeshData2D circle2DWireframe(const UnsignedInt segments) {
     return Trade::MeshData2D{MeshPrimitive::LineLoop, {}, {std::move(positions)}, {}, {}, nullptr};
 }
 
-Trade::MeshData3D circle3DSolid(const UnsignedInt segments) {
+Trade::MeshData3D circle3DSolid(const UnsignedInt segments, CircleTextureCoords textureCoords) {
     CORRADE_ASSERT(segments >= 3, "Primitives::circle3DSolid(): segments must be >= 3",
         (Trade::MeshData3D{MeshPrimitive::TriangleFan, {}, {}, {}, {}, {}, nullptr}));
 
     std::vector<Vector3> positions;
     positions.reserve(segments + 2);
 
+    std::vector<std::vector<Vector2>> textureCoordinates;
+    if(textureCoords == CircleTextureCoords::Generate)
+        textureCoordinates.emplace_back();
+
     /* Central point */
     positions.emplace_back();
+    if(textureCoords == CircleTextureCoords::Generate)
+        textureCoordinates.front().emplace_back(0.5f, 0.5f);
 
     /* Points on circle. The first/last point is here twice to close the circle
        properly. */
@@ -89,13 +105,17 @@ Trade::MeshData3D circle3DSolid(const UnsignedInt segments) {
     for(UnsignedInt i = 0; i != segments + 1; ++i) {
         const Rad angle(Float(i)*angleIncrement);
         const std::pair<Float, Float> sincos = Math::sincos(angle);
-        positions.emplace_back(sincos.second, sincos.first, 0.0f);
+        Vector3 position{sincos.second, sincos.first, 0.0f};
+        positions.emplace_back(position);
+
+        if(textureCoords == CircleTextureCoords::Generate)
+            textureCoordinates.front().emplace_back(position.xy()*0.5f + Vector2{0.5f});
     }
 
     /* Normals. All pointing in the same direction. */
     std::vector<Vector3> normals{segments + 2, Vector3::zAxis(1.0f)};
 
-    return Trade::MeshData3D{MeshPrimitive::TriangleFan, {}, {std::move(positions)}, {std::move(normals)}, {}, {}, nullptr};
+    return Trade::MeshData3D{MeshPrimitive::TriangleFan, {}, {std::move(positions)}, {std::move(normals)}, std::move(textureCoordinates), {}, nullptr};
 }
 
 Trade::MeshData3D circle3DWireframe(const UnsignedInt segments) {

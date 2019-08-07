@@ -207,6 +207,11 @@ See also:
     bootstrap project for using Magnum together with wxWidgets (see
     [mosra/magnum-bootstrap#19](https://github.com/mosra/magnum-bootstrap/pull/19))
 
+@subsubsection changelog-latest-new-primitives Primitives library
+
+-   @ref Primitives::circle2DSolid() and @ref Primitives::circle3DSolid()
+    can now generate a textured mesh
+
 @subsubsection changelog-latest-new-scenegraph SceneGraph library
 
 -   Added @ref SceneGraph::AbstractObject::Type /
