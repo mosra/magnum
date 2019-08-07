@@ -112,16 +112,4 @@ Trade::MeshData3D circle3DWireframe(const UnsignedInt segments) {
     return Trade::MeshData3D{MeshPrimitive::LineLoop, {}, {std::move(positions)}, {}, {}, {}, nullptr};
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* LCOV_EXCL_START */
-Trade::MeshData2D Circle::solid(const UnsignedInt segments) {
-    return circle2DSolid(segments);
-}
-
-Trade::MeshData2D Circle::wireframe(const UnsignedInt segments) {
-    return circle2DWireframe(segments);
-}
-/* LCOV_EXCL_STOP */
-#endif
-
 }}

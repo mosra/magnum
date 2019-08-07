@@ -33,10 +33,6 @@
 #include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum { namespace Primitives {
 
 /**
@@ -81,30 +77,6 @@ Unit-size line in direction of positive X axis. Equivalent to calling
 @snippet MagnumPrimitives.cpp line3D-identity
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D line3D();
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@brief 2D line
-@deprecated Use @ref line2D() instead.
-*/
-struct MAGNUM_PRIMITIVES_EXPORT Line2D {
-    /** @brief @copybrief line2D()
-     * @deprecated Use @ref line2D() instead.
-     */
-    CORRADE_DEPRECATED("use line2D() instead") static Trade::MeshData2D wireframe();
-};
-
-/**
-@brief 3D line
-@deprecated Use @ref line3D() instead.
-*/
-struct MAGNUM_PRIMITIVES_EXPORT Line3D {
-    /** @brief @copybrief line3D()
-     * @deprecated Use @ref line3D() instead.
-     */
-    CORRADE_DEPRECATED("use line3D() instead") static Trade::MeshData3D wireframe();
-};
-#endif
 
 }}
 

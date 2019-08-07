@@ -163,20 +163,4 @@ Trade::MeshData3D cubeWireframe() {
     }}, {}, {}, {}, nullptr};
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* LCOV_EXCL_START */
-Trade::MeshData3D Cube::solid() {
-    return cubeSolid();
-}
-
-Trade::MeshData3D Cube::solidStrip() {
-    return cubeSolidStrip();
-}
-
-Trade::MeshData3D Cube::wireframe() {
-    return cubeWireframe();
-}
-/* LCOV_EXCL_STOP */
-#endif
-
 }}

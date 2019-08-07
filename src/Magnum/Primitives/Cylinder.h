@@ -98,34 +98,6 @@ Cylinder along Y axis of radius @cpp 1.0f @ce. Indexed
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cylinderWireframe(UnsignedInt rings, UnsignedInt segments, Float halfLength);
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@brief 3D cylinder
-@deprecated Use @ref cylinderSolid() or @ref cylinderWireframe() instead.
-*/
-struct MAGNUM_PRIMITIVES_EXPORT Cylinder {
-    /** @brief @copybrief CylinderFlag
-     * @deprecated Use @ref CylinderFlag instead.
-     */
-    typedef CORRADE_DEPRECATED("use CylinderFlag instead") CylinderFlag Flag;
-
-    /** @brief @copybrief CylinderFlags
-     * @deprecated Use @ref CylinderFlags instead.
-     */
-    typedef CORRADE_DEPRECATED("use CylinderFlags instead") CylinderFlags Flags;
-
-    /** @brief @copybrief cylinderSolid()
-     * @deprecated Use @ref cylinderSolid() instead.
-     */
-    CORRADE_DEPRECATED("use cylinderSolid() instead") static Trade::MeshData3D solid(UnsignedInt rings, UnsignedInt segments, Float halfLength, CylinderFlags flags = {});
-
-    /** @brief @copybrief cylinderWireframe()
-     * @deprecated Use @ref cylinderWireframe() instead.
-     */
-    CORRADE_DEPRECATED("use cylinderWireframe() instead") static Trade::MeshData3D wireframe(UnsignedInt rings, UnsignedInt segments, Float halfLength);
-};
-#endif
-
 }}
 
 #endif

@@ -62,16 +62,4 @@ Trade::MeshData3D planeWireframe() {
     }}, {}, {}, {}, nullptr};
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* LCOV_EXCL_START */
-Trade::MeshData3D Plane::solid(const PlaneTextureCoords textureCoords) {
-    return planeSolid(textureCoords);
-}
-
-Trade::MeshData3D Plane::wireframe() {
-    return planeWireframe();
-}
-/* LCOV_EXCL_STOP */
-#endif
-
 }}

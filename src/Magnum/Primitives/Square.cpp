@@ -57,16 +57,4 @@ Trade::MeshData2D squareWireframe() {
     }}, {}, {}, nullptr};
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* LCOV_EXCL_START */
-Trade::MeshData2D Square::solid(const SquareTextureCoords textureCoords) {
-    return squareSolid(textureCoords);
-}
-
-Trade::MeshData2D Square::wireframe() {
-    return squareWireframe();
-}
-/* LCOV_EXCL_STOP */
-#endif
-
 }}

@@ -32,10 +32,6 @@
 #include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum { namespace Primitives {
 
 /**
@@ -61,24 +57,6 @@ Circle with radius @cpp 1.0f @ce. Non-indexed @ref MeshPrimitive::LineLoop.
 @see @ref circle2DSolid(), @ref circle3DWireframe()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D circle2DWireframe(UnsignedInt segments);
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@brief 2D circle primitive
-@deprecated Use @ref circle2DSolid() or @ref circle2DWireframe() instead.
-*/
-struct MAGNUM_PRIMITIVES_EXPORT Circle {
-    /** @brief @copybrief circle2DSolid()
-     * @deprecated Use @ref circle2DSolid() instead.
-     */
-    CORRADE_DEPRECATED("use circle2DSolid() instead") static Trade::MeshData2D solid(UnsignedInt segments);
-
-    /** @brief @copybrief circle2DWireframe()
-     * @deprecated Use @ref circle2DWireframe() instead.
-     */
-    CORRADE_DEPRECATED("use circle2DWireframe() instead") static Trade::MeshData2D wireframe(UnsignedInt segments);
-};
-#endif
 
 /**
 @brief Solid 3D circle

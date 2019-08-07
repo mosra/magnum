@@ -32,10 +32,6 @@
 #include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum { namespace Primitives {
 
 /**
@@ -56,19 +52,6 @@ result in 320 faces and so on. In particular, this is different from the
 @see @ref uvSphereSolid(), @ref uvSphereWireframe()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D icosphereSolid(UnsignedInt subdivisions);
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@brief 3D icosphere
-@deprecated Use @ref icosphereSolid() instead.
-*/
-struct MAGNUM_PRIMITIVES_EXPORT Icosphere {
-    /** @brief @copybrief icosphereSolid()
-     * @deprecated Use @ref icosphereSolid() instead.
-     */
-    CORRADE_DEPRECATED("use icosphereSolid() instead") static Trade::MeshData3D solid(UnsignedInt subdivisions);
-};
-#endif
 
 }}
 

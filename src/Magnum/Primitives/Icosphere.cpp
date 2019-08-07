@@ -84,12 +84,4 @@ Trade::MeshData3D icosphereSolid(const UnsignedInt subdivisions) {
     return Trade::MeshData3D{MeshPrimitive::Triangles, std::move(indices), {std::move(positions)}, {std::move(normals)}, {}, {}, nullptr};
 }
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/* LCOV_EXCL_START */
-Trade::MeshData3D Icosphere::solid(const UnsignedInt subdivisions) {
-    return icosphereSolid(subdivisions);
-}
-/* LCOV_EXCL_STOP */
-#endif
-
 }}

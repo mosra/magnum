@@ -576,6 +576,14 @@ See also:
     related to this change:
     -   @cpp GL::Mesh::IndexType @ce and @cpp GL::Mesh::indexSize() @ce,
         use @ref GL::MeshIndexType and @ref GL::Mesh::indexTypeSize() instead
+-   Removed @cpp Primitives::Capsule2D @ce, @cpp Primitives::Capsule3D @ce,
+    @cpp Primitives::Circle @ce, @cpp Primitives::Crosshair2D @ce,
+    @cpp Primitives::Crosshair3D @ce, @cpp Primitives::Cube @ce,
+    @cpp Primitives::Cylinder @ce, @cpp Primitives::Icosphere @ce,
+    @cpp Primitives::Line @ce, @cpp Primitives::Plane @ce,
+    @cpp Primitives::Square @ce and @cpp Primitives::UVSphere @ce classes
+    deprecated in 2018.04. The same functionality is available through free
+    functions in the @ref Primitives namespace, use those instead.
 -   Removed templated overloads of @ref GL::Buffer::data(),
     @ref GL::Buffer::subData() and @ref GL::Buffer::map() deprecated since
     2017. Use the non-templated versions together with
@@ -1656,6 +1664,9 @@ Released 2018-05-01, tagged as
     functions instead
 -   Class @cpp Primitives::Icosphere @ce is deprecated, use the
     @ref Primitives::icosphereSolid() free function instead
+-   Class @cpp Primitives::Line @ce is deprecated, use the
+    @ref Primitives::line2D() and @ref Primitives::line3D() free functions
+    instead
 -   Class @cpp Primitives::Plane @ce is deprecated, use
     @ref Primitives::planeSolid() and @ref Primitives::planeWireframe() free
     functions instead

@@ -32,10 +32,6 @@
 #include "Magnum/Trade/Trade.h"
 #include "Magnum/Primitives/visibility.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum { namespace Primitives {
 
 /**
@@ -80,29 +76,6 @@ Sphere with radius @cpp 1.0f @ce. Indexed @ref MeshPrimitive::Lines.
 @see @ref icosphereSolid()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D uvSphereWireframe(UnsignedInt rings, UnsignedInt segments);
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@brief 3D UV sphere
-@deprecated Use @ref uvSphereSolid() or @ref uvSphereWireframe() instead.
-*/
-struct MAGNUM_PRIMITIVES_EXPORT UVSphere {
-    /** @brief @copybrief UVSphereTextureCoords
-     * @deprecated Use @ref UVSphereTextureCoords instead.
-     */
-    typedef CORRADE_DEPRECATED("use UVSphereTextureCoords instead") UVSphereTextureCoords TextureCoords;
-
-    /** @brief @copybrief uvSphereSolid()
-     * @deprecated Use @ref uvSphereSolid() instead.
-     */
-    CORRADE_DEPRECATED("use uvSphereSolid() instead") static Trade::MeshData3D solid(UnsignedInt rings, UnsignedInt segments, UVSphereTextureCoords textureCoords = UVSphereTextureCoords::DontGenerate);
-
-    /** @brief @copybrief uvSphereWireframe()
-     * @deprecated Use @ref uvSphereWireframe() instead.
-     */
-    CORRADE_DEPRECATED("use uvSphereWireframe() instead") static Trade::MeshData3D wireframe(UnsignedInt rings, UnsignedInt segments);
-};
-#endif
 
 }}
 

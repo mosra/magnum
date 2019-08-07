@@ -32,10 +32,6 @@
 #include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum { namespace Primitives {
 
 /**
@@ -71,30 +67,6 @@ Indexed @ref MeshPrimitive::Lines.
 @see @ref cubeSolid(), @ref cubeSolidStrip()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D cubeWireframe();
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@brief 3D cube
-@deprecated Use @ref cubeSolid(), @ref cubeSolidStrip() or @ref cubeWireframe()
-    instead.
-*/
-struct MAGNUM_PRIMITIVES_EXPORT Cube {
-    /** @brief @copybrief cubeSolid()
-     * @deprecated Use @ref cubeSolid() instead.
-     */
-    CORRADE_DEPRECATED("use cubeSolid() instead") static Trade::MeshData3D solid();
-
-    /** @brief @copybrief cubeSolidStrip()
-     * @deprecated Use @ref cubeSolidStrip() instead.
-     */
-    CORRADE_DEPRECATED("use cubeSolidStrip() instead") static Trade::MeshData3D solidStrip();
-
-    /** @brief @copybrief cubeWireframe()
-     * @deprecated Use @ref cubeWireframe() instead.
-     */
-    CORRADE_DEPRECATED("use cubeWireframe() instead") static Trade::MeshData3D wireframe();
-};
-#endif
 
 }}
 

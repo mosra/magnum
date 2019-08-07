@@ -32,10 +32,6 @@
 #include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum { namespace Primitives {
 
 /**
@@ -71,29 +67,6 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D squareSolid(SquareTextureCoords textu
 @see @ref squareSolid(), @ref planeWireframe()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D squareWireframe();
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@brief 2D square
-@deprecated Use @ref squareSolid() or @ref squareWireframe() instead.
-*/
-struct MAGNUM_PRIMITIVES_EXPORT Square {
-    /** @brief @copybrief SquareTextureCoords
-     * @deprecated Use @ref SquareTextureCoords instead.
-     */
-    typedef CORRADE_DEPRECATED("use SquareTextureCoords instead") SquareTextureCoords TextureCoords;
-
-    /** @brief @copybrief squareSolid()
-     * @deprecated Use @ref squareWireframe() instead.
-     */
-    CORRADE_DEPRECATED("use squareSolid() instead") static Trade::MeshData2D solid(SquareTextureCoords textureCoords = SquareTextureCoords::DontGenerate);
-
-    /** @brief @copybrief squareWireframe()
-     * @deprecated Use @ref squareWireframe() instead.
-     */
-    CORRADE_DEPRECATED("use squareWireframe() instead") static Trade::MeshData2D wireframe();
-};
-#endif
 
 }}
 

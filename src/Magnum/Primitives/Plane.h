@@ -32,10 +32,6 @@
 #include "Magnum/Trade/Trade.h"
 #include "Magnum/Primitives/visibility.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum { namespace Primitives {
 
 /**
@@ -72,29 +68,6 @@ MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D planeSolid(PlaneTextureCoords texture
 @see @ref planeSolid(), @ref squareWireframe()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D planeWireframe();
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@brief 3D plane
-@deprecated Use @ref planeSolid() or @ref planeWireframe() instead.
-*/
-struct MAGNUM_PRIMITIVES_EXPORT Plane {
-    /** @brief @copybrief PlaneTextureCoords
-     * @deprecated Use @ref PlaneTextureCoords instead.
-     */
-    typedef CORRADE_DEPRECATED("use PlaneTextureCoords instead") PlaneTextureCoords TextureCoords;
-
-    /** @brief @copybrief planeSolid()
-     * @deprecated Use @ref planeSolid() instead.
-     */
-    CORRADE_DEPRECATED("use planeSolid() instead") static Trade::MeshData3D solid(PlaneTextureCoords textureCoords = PlaneTextureCoords::DontGenerate);
-
-    /** @brief @copybrief planeWireframe()
-     * @deprecated Use @ref planeWireframe() instead.
-     */
-    CORRADE_DEPRECATED("use planeWireframe() instead") static Trade::MeshData3D wireframe();
-};
-#endif
 
 }}
 

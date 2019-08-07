@@ -32,10 +32,6 @@
 #include "Magnum/Primitives/visibility.h"
 #include "Magnum/Trade/Trade.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
-
 namespace Magnum { namespace Primitives {
 
 /**
@@ -49,19 +45,6 @@ namespace Magnum { namespace Primitives {
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D crosshair2D();
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@brief 2D crosshair
-@deprecated Use @ref crosshair2D() instead.
-*/
-struct MAGNUM_PRIMITIVES_EXPORT Crosshair2D {
-    /** @brief @copybrief crosshair2D()
-     * @deprecated Use @ref crosshair2D() instead.
-     */
-    CORRADE_DEPRECATED("use crosshair2D() instead") static Trade::MeshData2D wireframe();
-};
-#endif
-
 /**
 @brief 3D crosshair
 
@@ -72,19 +55,6 @@ struct MAGNUM_PRIMITIVES_EXPORT Crosshair2D {
 @see @ref crosshair2D(), @ref axis2D(), @ref line3D()
 */
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D crosshair3D();
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-/**
-@brief 3D crosshair
-@deprecated Use @ref crosshair3D() instead.
-*/
-struct MAGNUM_PRIMITIVES_EXPORT Crosshair3D {
-    /** @brief @copybrief crosshair3D()
-     * @deprecated Use @ref crosshair3D() instead.
-     */
-    CORRADE_DEPRECATED("use crosshair3D() instead") static Trade::MeshData3D wireframe();
-};
-#endif
 
 }}
 
