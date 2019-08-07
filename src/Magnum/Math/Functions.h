@@ -114,17 +114,44 @@ template<class T> inline T cos(Unit<Rad, T> angle) { return std::cos(T(angle)); 
 template<class T> inline T cos(Unit<Deg, T> angle) { return cos(Rad<T>(angle)); }
 #endif
 
+#if defined(__GNUC__) && !defined(__clang__)
+namespace Implementation {
+    /* GCC builtin since 3.4 (https://stackoverflow.com/a/2742861),
+       unfortunately either Clang nor MSVC have any alternative which wouldn't
+       involve inline assembly. */
+    inline void sincos(Float rad, Float& sin, Float& cos) {
+        __builtin_sincosf(rad, &sin, &cos);
+    }
+    inline void sincos(Double rad, Double& sin, Double& cos) {
+        __builtin_sincos(rad, &sin, &cos);
+    }
+    inline void sincos(long double rad, long double& sin, long double& cos) {
+        __builtin_sincosl(rad, &sin, &cos);
+    }
+    /* Assuming there's no other floating-point type */
+}
+#endif
+
 /**
 @brief Sine and cosine
 
-On some architectures might be faster than doing both computations separately.
+On GCC, this uses the `__builtin_sincos` intrinsic (or its `f` / `l` suffixed
+variants), which may be faster than calculating sine and cosine separately. On
+other compilers this *might* result in the optimizer picking up the combined
+instruction as well.
 @see @ref sin(), @ref cos(), @ref sincos(const Dual<Rad<T>>&)
 */
 #ifdef DOXYGEN_GENERATING_OUTPUT
 template<class T> inline std::pair<T, T> sincos(Rad<T> angle);
 #else
 template<class T> inline std::pair<T, T> sincos(Unit<Rad, T> angle) {
-    return {std::sin(T(angle)) ,std::cos(T(angle))};
+    #if defined(__GNUC__) && !defined(__clang__)
+    std::pair<T, T> out;
+    Implementation::sincos(T(angle), out.first, out.second);
+    return out;
+    #else
+    return {std::sin(T(angle)), std::cos(T(angle))};
+    #endif
 }
 template<class T> inline std::pair<T, T> sincos(Unit<Deg, T> angle) { return sincos(Rad<T>(angle)); }
 #endif

@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Numeric.h>
 
 #include "Magnum/Math/Functions.h"
 #include "Magnum/Math/Vector4.h"
@@ -67,8 +68,13 @@ struct FunctionsTest: Corrade::TestSuite::Tester {
     void isInfVector();
     void isNan();
     void isNanfVector();
+
     void trigonometric();
     void trigonometricWithBase();
+    template<class T> void sincos();
+
+    void sinCosSeparateBenchmark();
+    void sinCosCombinedBenchmark();
 };
 
 using namespace Literals;
@@ -118,8 +124,18 @@ FunctionsTest::FunctionsTest() {
               &FunctionsTest::isInfVector,
               &FunctionsTest::isNan,
               &FunctionsTest::isNanfVector,
+
               &FunctionsTest::trigonometric,
-              &FunctionsTest::trigonometricWithBase});
+              &FunctionsTest::trigonometricWithBase,
+              &FunctionsTest::sincos<Float>,
+              &FunctionsTest::sincos<Double>,
+              #ifndef CORRADE_TARGET_EMSCRIPTEN
+              &FunctionsTest::sincos<long double>,
+              #endif
+              });
+
+    addBenchmarks({&FunctionsTest::sinCosSeparateBenchmark,
+                   &FunctionsTest::sinCosCombinedBenchmark}, 100);
 }
 
 void FunctionsTest::powIntegral() {
@@ -461,6 +477,38 @@ void FunctionsTest::trigonometricWithBase() {
 
     CORRADE_COMPARE(Math::tan(2*Deg(22.5f)), 1.0f);
     CORRADE_COMPARE(Math::tan(2*Rad(Constants::pi()/8)), 1.0f);
+}
+
+template<class T> void FunctionsTest::sincos() {
+    setTestCaseTemplateName(TypeTraits<T>::name());
+
+    /* For GCC's __builtin_sincos this verifies that all specializations are
+       correct */
+    CORRADE_COMPARE(Math::sincos(Math::Deg<T>(T(30.0))).first, T(0.5));
+    CORRADE_COMPARE(Math::sincos(Math::Deg<T>(T(30.0))).second, T(0.8660254037844386));
+}
+
+void FunctionsTest::sinCosSeparateBenchmark() {
+    Float sin{}, cos{}, a{};
+    CORRADE_BENCHMARK(1000) {
+        sin += Math::sin(Rad(a));
+        cos += Math::cos(Rad(a));
+        a += 0.1f;
+    }
+
+    CORRADE_COMPARE_AS(a, 10.0f, Corrade::TestSuite::Compare::Greater);
+}
+
+void FunctionsTest::sinCosCombinedBenchmark() {
+    Float sin{}, cos{}, a{};
+    CORRADE_BENCHMARK(1000) {
+        auto sincos = Math::sincos(Rad(a));
+        sin += sincos.first;
+        cos += sincos.second;
+        a += 0.1f;
+    }
+
+    CORRADE_COMPARE_AS(a, 10.0f, Corrade::TestSuite::Compare::Greater);
 }
 
 }}}}

@@ -315,6 +315,9 @@ See also:
 -   Changed the way @ref Math::operator<<(Corrade::Utility::Debug&, const BoolVector<size>&)
     works --- the output now has the same bit order as when constructing it
     using binary literals
+-   @ref Math::sincos() now uses the `__builtin_sincos` intrinsic on GCC,
+    making it potentially faster in case the optimizer doesn't figure out the
+    same
 
 @subsubsection changelog-latest-changes-meshtools MeshTools library
 
