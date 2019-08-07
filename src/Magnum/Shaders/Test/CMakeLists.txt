@@ -73,7 +73,40 @@ if(BUILD_GL_TESTS)
     endif()
 
     corrade_add_test(ShadersDistanceFieldVectorGLTest DistanceFieldVectorGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
-    corrade_add_test(ShadersFlatGLTest FlatGLTest.cpp LIBRARIES MagnumShadersTestLib MagnumOpenGLTester)
+
+    corrade_add_test(ShadersFlatGLTest FlatGLTest.cpp
+        LIBRARIES
+            MagnumDebugTools
+            MagnumMeshTools
+            MagnumPrimitives
+            MagnumShadersTestLib
+            MagnumOpenGLTester
+        FILES
+            TestFiles/diffuse-alpha-texture.tga
+            TestFiles/diffuse-texture.tga
+            TestFiles/alpha-mask1.0.tga
+
+            FlatTestFiles/colored2D.tga
+            FlatTestFiles/colored3D.tga
+            FlatTestFiles/defaults.tga
+            FlatTestFiles/textured2D.tga
+            FlatTestFiles/textured3D.tga
+            FlatTestFiles/textured2D-alpha.tga
+            FlatTestFiles/textured3D-alpha.tga
+            FlatTestFiles/textured2D-alpha-mask0.5.tga
+            FlatTestFiles/textured3D-alpha-mask0.5.tga)
+    if(NOT BUILD_PLUGINS_STATIC)
+        target_include_directories(ShadersFlatGLTest PRIVATE $<TARGET_FILE_DIR:ShadersPhongGLTest>)
+    else()
+        target_include_directories(ShadersFlatGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+        if(WITH_ANYIMAGEIMPORTER)
+            target_link_libraries(ShadersFlatGLTest PRIVATE AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            target_link_libraries(ShadersFlatGLTest PRIVATE TgaImporter)
+        endif()
+    endif()
+
     corrade_add_test(ShadersMeshVisualizerGLTest MeshVisualizerGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
 
     corrade_add_test(ShadersPhongGLTest PhongGLTest.cpp
