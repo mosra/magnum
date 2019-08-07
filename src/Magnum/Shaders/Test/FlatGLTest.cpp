@@ -94,6 +94,16 @@ struct FlatGLTest: GL::OpenGLTester {
         GL::Framebuffer _framebuffer{NoCreate};
 };
 
+/*
+    Rendering tests done on:
+
+    -   Mesa Intel
+    -   Mesa AMD
+    -   SwiftShader ES2/ES3
+    -   ARM Mali (Huawei P10) ES2/ES3
+    -   WebGL 1 / 2 (on Mesa Intel)
+*/
+
 using namespace Math::Literals;
 
 constexpr struct {
@@ -311,7 +321,8 @@ void FlatGLTest::renderDefaults2D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(SHADERS_TEST_DIR, "FlatTestFiles/defaults.tga"),
-        (DebugTools::CompareImageToFile{_manager, 0.0f, 0.0f}));
+        /* SwiftShader has 8 different pixels on the edges */
+        (DebugTools::CompareImageToFile{_manager, 238.0f, 0.2975f}));
 }
 
 void FlatGLTest::renderDefaults3D() {
@@ -330,7 +341,8 @@ void FlatGLTest::renderDefaults3D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(SHADERS_TEST_DIR, "FlatTestFiles/defaults.tga"),
-        (DebugTools::CompareImageToFile{_manager, 0.0f, 0.0f}));
+        /* SwiftShader has 8 different pixels on the edges */
+        (DebugTools::CompareImageToFile{_manager, 238.0f, 0.2975f}));
 }
 
 void FlatGLTest::renderColored2D() {
@@ -348,11 +360,17 @@ void FlatGLTest::renderColored2D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    const Float maxThreshold = 0.0f, meanThreshold = 0.0f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 11.34f, meanThreshold = 0.51f;
+    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(SHADERS_TEST_DIR, "FlatTestFiles/colored2D.tga"),
-        (DebugTools::CompareImageToFile{_manager, 0.0f, 0.0f}));
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
 void FlatGLTest::renderColored3D() {
@@ -374,11 +392,18 @@ void FlatGLTest::renderColored3D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has 5 different pixels on the edges */
+    const Float maxThreshold = 170.0f, meanThreshold = 0.133f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 170.0f, meanThreshold = 0.456f;
+    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(SHADERS_TEST_DIR, "FlatTestFiles/colored3D.tga"),
-        (DebugTools::CompareImageToFile{_manager, 0.0f, 0.0f}));
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
 constexpr GL::TextureFormat TextureFormatRGB =
@@ -420,11 +445,18 @@ void FlatGLTest::renderSinglePixelTextured2D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has 5 different pixels on the edges */
+    const Float maxThreshold = 170.0f, meanThreshold = 0.133f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 11.34f, meanThreshold = 0.51f;
+    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(SHADERS_TEST_DIR, "FlatTestFiles/colored2D.tga"),
-        (DebugTools::CompareImageToFile{_manager, 0.0f, 0.0f}));
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
 void FlatGLTest::renderSinglePixelTextured3D() {
@@ -455,11 +487,18 @@ void FlatGLTest::renderSinglePixelTextured3D() {
        !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has 5 different pixels on the edges */
+    const Float maxThreshold = 170.0f, meanThreshold = 0.133f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 170.0f, meanThreshold = 0.456f;
+    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(SHADERS_TEST_DIR, "FlatTestFiles/colored3D.tga"),
-        (DebugTools::CompareImageToFile{_manager, 0.0f, 0.0f}));
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
 void FlatGLTest::renderTextured2D() {
@@ -492,11 +531,18 @@ void FlatGLTest::renderTextured2D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has minor rounding errors */
+    const Float maxThreshold = 1.334f, meanThreshold = 0.012f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 15.667f, meanThreshold = 3.254f;
+    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(SHADERS_TEST_DIR, "FlatTestFiles/textured2D.tga"),
-        (DebugTools::CompareImageToFile{_manager, 0.0f, 0.0f}));
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
 void FlatGLTest::renderTextured3D() {
@@ -533,11 +579,18 @@ void FlatGLTest::renderTextured3D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has 5 different pixels on the edges */
+    const Float maxThreshold = 139.0f, meanThreshold = 0.087f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 139.0f, meanThreshold = 2.896f;
+    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(SHADERS_TEST_DIR, "FlatTestFiles/textured3D.tga"),
-        (DebugTools::CompareImageToFile{_manager, 0.0f, 0.0f}));
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
 void FlatGLTest::renderAlphaSetup() {
@@ -591,12 +644,18 @@ void FlatGLTest::renderAlpha2D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* Minor differences between opaque and diffuse, not sure why */
+    const Float maxThreshold = 24.34f, meanThreshold = 0.305f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 31.34f, meanThreshold = 3.945f;
+    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(SHADERS_TEST_DIR, data.expected2D),
-        /* Minor differences between opaque and diffuse, not sure why */
-        (DebugTools::CompareImageToFile{_manager, 24.34f, 0.290f}));
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
 void FlatGLTest::renderAlpha3D() {
@@ -644,12 +703,19 @@ void FlatGLTest::renderAlpha3D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* Minor differences between opaque and diffuse, not sure why. SwiftShader
+       has 5 different pixels on the edges. */
+    const Float maxThreshold = 139.0f, meanThreshold = 0.280f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 139.0f, meanThreshold = 4.587f;
+    #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join({SHADERS_TEST_DIR, data.expected3D}),
-        /* Minor differences between opaque and diffuse, not sure why */
-        (DebugTools::CompareImageToFile{_manager, 2.0f, 0.204f}));
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
 }}}}
