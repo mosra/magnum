@@ -48,7 +48,8 @@ Trade::MeshData2D circle2DSolid(const UnsignedInt segments) {
     const Rad angleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != segments + 1; ++i) {
         const Rad angle(Float(i)*angleIncrement);
-        positions.emplace_back(Math::cos(angle), Math::sin(angle));
+        const std::pair<Float, Float> sincos = Math::sincos(angle);
+        positions.emplace_back(sincos.second, sincos.first);
     }
 
     return Trade::MeshData2D{MeshPrimitive::TriangleFan, {}, {std::move(positions)}, {}, {}, nullptr};
@@ -65,7 +66,8 @@ Trade::MeshData2D circle2DWireframe(const UnsignedInt segments) {
     const Rad angleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != segments; ++i) {
         const Rad angle(Float(i)*angleIncrement);
-        positions.emplace_back(Math::cos(angle), Math::sin(angle));
+        const std::pair<Float, Float> sincos = Math::sincos(angle);
+        positions.emplace_back(sincos.second, sincos.first);
     }
 
     return Trade::MeshData2D{MeshPrimitive::LineLoop, {}, {std::move(positions)}, {}, {}, nullptr};
@@ -86,7 +88,8 @@ Trade::MeshData3D circle3DSolid(const UnsignedInt segments) {
     const Rad angleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != segments + 1; ++i) {
         const Rad angle(Float(i)*angleIncrement);
-        positions.emplace_back(Math::cos(angle), Math::sin(angle), 0.0f);
+        const std::pair<Float, Float> sincos = Math::sincos(angle);
+        positions.emplace_back(sincos.second, sincos.first, 0.0f);
     }
 
     /* Normals. All pointing in the same direction. */
@@ -106,7 +109,8 @@ Trade::MeshData3D circle3DWireframe(const UnsignedInt segments) {
     const Rad angleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != segments; ++i) {
         const Rad angle(Float(i)*angleIncrement);
-        positions.emplace_back(Math::cos(angle), Math::sin(angle), 0.0f);
+        const std::pair<Float, Float> sincos = Math::sincos(angle);
+        positions.emplace_back(sincos.second, sincos.first, 0.0f);
     }
 
     return Trade::MeshData3D{MeshPrimitive::LineLoop, {}, {std::move(positions)}, {}, {}, {}, nullptr};

@@ -48,11 +48,12 @@ void WireframeSpheroid::bottomHemisphere(const Float endY, const UnsignedInt rin
     const Rad ringAngleIncrement(Constants::piHalf()/rings);
     for(UnsignedInt j = 0; j != rings-1; ++j) {
         const Rad angle = Float(j+1)*ringAngleIncrement;
+        const std::pair<Float, Float> sincos = Math::sincos(angle);
 
-        _positions.emplace_back(0.0f, endY - Math::cos(angle), Math::sin(angle));
-        _positions.emplace_back(Math::sin(angle), endY - Math::cos(angle), 0.0f);
-        _positions.emplace_back(0.0f, endY - Math::cos(angle), -Math::sin(angle));
-        _positions.emplace_back(-Math::sin(angle), endY - Math::cos(angle), 0.0f);
+        _positions.emplace_back(0.0f, endY - sincos.second, sincos.first);
+        _positions.emplace_back(sincos.first, endY - sincos.second, 0.0f);
+        _positions.emplace_back(0.0f, endY - sincos.second, -sincos.first);
+        _positions.emplace_back(-sincos.first, endY - sincos.second, 0.0f);
 
         /* Connect vertices to next ring */
         for(UnsignedInt i = 0; i != 4; ++i)
@@ -70,15 +71,16 @@ void WireframeSpheroid::topHemisphere(const Float startY, const UnsignedInt ring
     const Rad ringAngleIncrement(Constants::piHalf()/rings);
     for(UnsignedInt j = 0; j != rings-1; ++j) {
         const Rad angle = Float(j+1)*ringAngleIncrement;
+        const std::pair<Float, Float> sincos = Math::sincos(angle);
 
         /* Connect previous hemisphere ring to current vertices */
         if(j != 0) for(UnsignedInt i = 0; i != 4; ++i)
             _indices.insert(_indices.end(), {UnsignedInt(_positions.size())-4+i, UnsignedInt(_positions.size())+i});
 
-        _positions.emplace_back(0.0f, startY + Math::sin(angle), Math::cos(angle));
-        _positions.emplace_back(Math::cos(angle), startY + Math::sin(angle), 0.0f);
-        _positions.emplace_back(0.0f, startY + Math::sin(angle), -Math::cos(angle));
-        _positions.emplace_back(-Math::cos(angle), startY + Math::sin(angle), 0.0f);
+        _positions.emplace_back(0.0f, startY + sincos.first, sincos.second);
+        _positions.emplace_back(sincos.second, startY + sincos.first, 0.0f);
+        _positions.emplace_back(0.0f, startY + sincos.first, -sincos.second);
+        _positions.emplace_back(-sincos.second, startY + sincos.first, 0.0f);
     }
 
     /* Final vertex */
@@ -97,8 +99,9 @@ void WireframeSpheroid::ring(const Float y) {
     for(UnsignedInt j = 0; j != _segments; ++j) {
         for(UnsignedInt i = 0; i != 4; ++i) {
             const Rad segmentAngle = Rad(Float(i)*Constants::piHalf()) + Float(j)*segmentAngleIncrement;
+            const std::pair<Float, Float> sincos = Math::sincos(segmentAngle);
             if(j != 0) _indices.insert(_indices.end(), {UnsignedInt(_positions.size()-4), UnsignedInt(_positions.size())});
-            _positions.emplace_back(Math::sin(segmentAngle), y, Math::cos(segmentAngle));
+            _positions.emplace_back(sincos.first, y, sincos.second);
         }
     }
 

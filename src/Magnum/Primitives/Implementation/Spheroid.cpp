@@ -43,17 +43,19 @@ void Spheroid::capVertex(Float y, Float normalY, Float textureCoordsV) {
 }
 
 void Spheroid::hemisphereVertexRings(UnsignedInt count, Float centerY, Rad startRingAngle, Rad ringAngleIncrement, Float startTextureCoordsV, Float textureCoordsVIncrement) {
-    Rad segmentAngleIncrement(Constants::tau()/segments);
-    Float x, y, z;
+    const Rad segmentAngleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != count; ++i) {
-        Rad ringAngle = startRingAngle + Float(i)*ringAngleIncrement;
-        x = z = Math::cos(ringAngle);
-        y = Math::sin(ringAngle);
+        const Rad ringAngle = startRingAngle + Float(i)*ringAngleIncrement;
+        const std::pair<Float, Float> ringSinCos = Math::sincos(ringAngle);
+        const Float x = ringSinCos.second;
+        const Float z = ringSinCos.second;
+        const Float y = ringSinCos.first;
 
         for(UnsignedInt j = 0; j != segments; ++j) {
-            Rad segmentAngle = Float(j)*segmentAngleIncrement;
-            positions.emplace_back(x*Math::sin(segmentAngle), centerY+y, z*Math::cos(segmentAngle));
-            normals.emplace_back(x*Math::sin(segmentAngle), y, z*Math::cos(segmentAngle));
+            const Rad segmentAngle = Float(j)*segmentAngleIncrement;
+            const std::pair<Float, Float> segmentSinCos = Math::sincos(segmentAngle);
+            positions.emplace_back(x*segmentSinCos.first, centerY+y, z*segmentSinCos.second);
+            normals.emplace_back(x*segmentSinCos.first, y, z*segmentSinCos.second);
 
             if(textureCoords == TextureCoords::Generate)
                 textureCoords2D.emplace_back(j*1.0f/segments, startTextureCoordsV + i*textureCoordsVIncrement);
@@ -72,12 +74,13 @@ void Spheroid::cylinderVertexRings(const UnsignedInt count, const Float startY, 
     const Vector2 baseNormal = -increment.perpendicular().normalized();
     Vector2 base = {1.0f, startY};
 
-    Rad segmentAngleIncrement(Constants::tau()/segments);
+    const Rad segmentAngleIncrement(Constants::tau()/segments);
     for(UnsignedInt i = 0; i != count; ++i) {
         for(UnsignedInt j = 0; j != segments; ++j) {
-            Rad segmentAngle = Float(j)*segmentAngleIncrement;
-            positions.emplace_back(base.x()*Math::sin(segmentAngle), base.y(), base.x()*Math::cos(segmentAngle));
-            normals.emplace_back(baseNormal.x()*Math::sin(segmentAngle), baseNormal.y(), baseNormal.x()*Math::cos(segmentAngle));
+            const Rad segmentAngle = Float(j)*segmentAngleIncrement;
+            const std::pair<Float, Float> segmentSinCos = Math::sincos(segmentAngle);
+            positions.emplace_back(base.x()*segmentSinCos.first, base.y(), base.x()*segmentSinCos.second);
+            normals.emplace_back(baseNormal.x()*segmentSinCos.first, baseNormal.y(), baseNormal.x()*segmentSinCos.second);
 
             if(textureCoords == TextureCoords::Generate)
                 textureCoords2D.emplace_back(j*1.0f/segments, startTextureCoordsV + i*textureCoordsVIncrement);
@@ -146,11 +149,12 @@ void Spheroid::topFaceRing() {
 }
 
 void Spheroid::capVertexRing(Float y, Float textureCoordsV, const Vector3& normal) {
-    Rad segmentAngleIncrement(Constants::tau()/segments);
+    const Rad segmentAngleIncrement(Constants::tau()/segments);
 
     for(UnsignedInt i = 0; i != segments; ++i) {
-        Rad segmentAngle = Float(i)*segmentAngleIncrement;
-        positions.emplace_back(Math::sin(segmentAngle), y, Math::cos(segmentAngle));
+        const Rad segmentAngle = Float(i)*segmentAngleIncrement;
+        const std::pair<Float, Float> segmentSinCos = Math::sincos(segmentAngle);
+        positions.emplace_back(segmentSinCos.first, y, segmentSinCos.second);
         normals.push_back(normal);
 
         if(textureCoords == TextureCoords::Generate)
