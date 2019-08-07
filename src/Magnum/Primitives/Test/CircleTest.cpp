@@ -24,6 +24,7 @@
 */
 
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
 
 #include "Magnum/Mesh.h"
 #include "Magnum/Math/Vector3.h"
@@ -54,14 +55,14 @@ void CircleTest::solid2D() {
 
     CORRADE_VERIFY(!circle.isIndexed());
     CORRADE_COMPARE(circle.primitive(), MeshPrimitive::TriangleFan);
-    CORRADE_COMPARE(circle.positions(0), (std::vector<Vector2>{
+    CORRADE_COMPARE_AS(circle.positions(0), (std::vector<Vector2>{
         { 0.0f,  0.0f},
         { 1.0f,  0.0f}, { Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f},
         { 0.0f,  1.0f}, {-Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f},
         {-1.0f,  0.0f}, {-Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f},
         { 0.0f, -1.0f}, { Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f},
         { 1.0f,  0.0f}
-    }));
+    }), TestSuite::Compare::Container);
 }
 
 void CircleTest::solid3D() {
@@ -69,15 +70,15 @@ void CircleTest::solid3D() {
 
     CORRADE_VERIFY(!circle.isIndexed());
     CORRADE_COMPARE(circle.primitive(), MeshPrimitive::TriangleFan);
-    CORRADE_COMPARE(circle.positions(0), (std::vector<Vector3>{
+    CORRADE_COMPARE_AS(circle.positions(0), (std::vector<Vector3>{
         { 0.0f,  0.0f, 0.0f},
         { 1.0f,  0.0f, 0.0f}, { Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f, 0.0f},
         { 0.0f,  1.0f, 0.0f}, {-Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f, 0.0f},
         {-1.0f,  0.0f, 0.0f}, {-Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f, 0.0f},
         { 0.0f, -1.0f, 0.0f}, { Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f, 0.0f},
         { 1.0f,  0.0f, 0.0f}
-    }));
-    CORRADE_COMPARE(circle.normals(0), (std::vector<Vector3>{
+    }), TestSuite::Compare::Container);
+    CORRADE_COMPARE_AS(circle.normals(0), (std::vector<Vector3>{
         { 0.0f,  0.0f, 1.0f},
         { 0.0f,  0.0f, 1.0f},
         { 0.0f,  0.0f, 1.0f},
@@ -88,7 +89,7 @@ void CircleTest::solid3D() {
         { 0.0f,  0.0f, 1.0f},
         { 0.0f,  0.0f, 1.0f},
         { 0.0f,  0.0f, 1.0f}
-    }));
+    }), TestSuite::Compare::Container);
 }
 
 void CircleTest::wireframe2D() {
@@ -96,12 +97,12 @@ void CircleTest::wireframe2D() {
 
     CORRADE_VERIFY(!circle.isIndexed());
     CORRADE_COMPARE(circle.primitive(), MeshPrimitive::LineLoop);
-    CORRADE_COMPARE(circle.positions(0), (std::vector<Vector2>{
+    CORRADE_COMPARE_AS(circle.positions(0), (std::vector<Vector2>{
         { 1.0f,  0.0f}, { Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f},
         { 0.0f,  1.0f}, {-Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f},
         {-1.0f,  0.0f}, {-Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f},
         { 0.0f, -1.0f}, { Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f}
-    }));
+    }), TestSuite::Compare::Container);
 }
 
 void CircleTest::wireframe3D() {
@@ -109,12 +110,12 @@ void CircleTest::wireframe3D() {
 
     CORRADE_VERIFY(!circle.isIndexed());
     CORRADE_COMPARE(circle.primitive(), MeshPrimitive::LineLoop);
-    CORRADE_COMPARE(circle.positions(0), (std::vector<Vector3>{
+    CORRADE_COMPARE_AS(circle.positions(0), (std::vector<Vector3>{
         { 1.0f,  0.0f, 0.0f}, { Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f, 0.0f},
         { 0.0f,  1.0f, 0.0f}, {-Constants::sqrt2()/2.0f,  Constants::sqrt2()/2.0f, 0.0f},
         {-1.0f,  0.0f, 0.0f}, {-Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f, 0.0f},
         { 0.0f, -1.0f, 0.0f}, { Constants::sqrt2()/2.0f, -Constants::sqrt2()/2.0f, 0.0f}
-    }));
+    }), TestSuite::Compare::Container);
 }
 
 }}}}
