@@ -297,11 +297,11 @@ void PhongGLTest::construct() {
     Phong shader{data.flags, data.lightCount};
     CORRADE_COMPARE(shader.flags(), data.flags);
     CORRADE_COMPARE(shader.lightCount(), data.lightCount);
+    CORRADE_VERIFY(shader.id());
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }

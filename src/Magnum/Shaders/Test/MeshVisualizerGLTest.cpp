@@ -55,11 +55,11 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
 void MeshVisualizerGLTest::construct() {
     MeshVisualizer shader;
     CORRADE_COMPARE(shader.flags(), MeshVisualizer::Flags{});
+    CORRADE_VERIFY(shader.id());
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }

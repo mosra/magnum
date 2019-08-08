@@ -193,11 +193,11 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
 
     Flat<dimensions> shader{data.flags};
     CORRADE_COMPARE(shader.flags(), data.flags);
+    CORRADE_VERIFY(shader.id());
     {
         #ifdef CORRADE_TARGET_APPLE
         CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
         #endif
-        CORRADE_VERIFY(shader.id());
         CORRADE_VERIFY(shader.validate().first);
     }
 }
