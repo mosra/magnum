@@ -63,12 +63,8 @@ struct PhongGLTest: GL::OpenGLTester {
 
     void constructMove();
 
-    void bindTextures();
     void bindTexturesNotEnabled();
-
-    void setAlphaMask();
     void setAlphaMaskNotEnabled();
-
     void setWrongLightCount();
     void setWrongLightId();
 
@@ -239,12 +235,8 @@ PhongGLTest::PhongGLTest() {
 
     addTests({&PhongGLTest::constructMove,
 
-              &PhongGLTest::bindTextures,
               &PhongGLTest::bindTexturesNotEnabled,
-
-              &PhongGLTest::setAlphaMask,
               &PhongGLTest::setAlphaMaskNotEnabled,
-
               &PhongGLTest::setWrongLightCount,
               &PhongGLTest::setWrongLightId});
 
@@ -329,29 +321,6 @@ void PhongGLTest::constructMove() {
     CORRADE_VERIFY(!b.id());
 }
 
-void PhongGLTest::bindTextures() {
-    char data[4];
-
-    GL::Texture2D texture;
-    texture
-        .setMinificationFilter(SamplerFilter::Linear, SamplerMipmap::Linear)
-        .setMagnificationFilter(SamplerFilter::Linear)
-        .setWrapping(SamplerWrapping::ClampToEdge)
-        .setImage(0, GL::TextureFormat::RGBA, ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data});
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    /* Test just that no assertion is fired */
-    Phong shader{Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture|Phong::Flag::NormalTexture};
-    shader.bindAmbientTexture(texture)
-          .bindDiffuseTexture(texture)
-          .bindSpecularTexture(texture)
-          .bindNormalTexture(texture)
-          .bindTextures(&texture, &texture, &texture, &texture);
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-}
-
 void PhongGLTest::bindTexturesNotEnabled() {
     std::ostringstream out;
     Error redirectError{&out};
@@ -370,14 +339,6 @@ void PhongGLTest::bindTexturesNotEnabled() {
         "Shaders::Phong::bindSpecularTexture(): the shader was not created with specular texture enabled\n"
         "Shaders::Phong::bindNormalTexture(): the shader was not created with normal texture enabled\n"
         "Shaders::Phong::bindTextures(): the shader was not created with any textures enabled\n");
-}
-
-void PhongGLTest::setAlphaMask() {
-    /* Test just that no assertion is fired */
-    Phong shader{Phong::Flag::AlphaMask};
-    shader.setAlphaMask(0.25f);
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void PhongGLTest::setAlphaMaskNotEnabled() {

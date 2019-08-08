@@ -60,13 +60,9 @@ struct FlatGLTest: GL::OpenGLTester {
     explicit FlatGLTest();
 
     template<UnsignedInt dimensions> void construct();
-
     template<UnsignedInt dimensions> void constructMove();
 
-    template<UnsignedInt dimensions> void bindTexture();
     template<UnsignedInt dimensions> void bindTextureNotEnabled();
-
-    template<UnsignedInt dimensions> void setAlphaMask();
     template<UnsignedInt dimensions> void setAlphaMaskNotEnabled();
 
     void renderSetup();
@@ -148,13 +144,8 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::constructMove<2>,
         &FlatGLTest::constructMove<3>,
 
-        &FlatGLTest::bindTexture<2>,
-        &FlatGLTest::bindTexture<3>,
         &FlatGLTest::bindTextureNotEnabled<2>,
         &FlatGLTest::bindTextureNotEnabled<3>,
-
-        &FlatGLTest::setAlphaMask<2>,
-        &FlatGLTest::setAlphaMask<3>,
         &FlatGLTest::setAlphaMaskNotEnabled<2>,
         &FlatGLTest::setAlphaMaskNotEnabled<3>});
 
@@ -223,27 +214,6 @@ template<UnsignedInt dimensions> void FlatGLTest::constructMove() {
     CORRADE_VERIFY(!b.id());
 }
 
-template<UnsignedInt dimensions> void FlatGLTest::bindTexture() {
-    setTestCaseTemplateName(std::to_string(dimensions));
-
-    char data[4];
-
-    GL::Texture2D texture;
-    texture
-        .setMinificationFilter(SamplerFilter::Linear, SamplerMipmap::Linear)
-        .setMagnificationFilter(SamplerFilter::Linear)
-        .setWrapping(SamplerWrapping::ClampToEdge)
-        .setImage(0, GL::TextureFormat::RGBA, ImageView2D{PixelFormat::RGBA8Unorm, {1, 1}, data});
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    /* Test just that no assertion is fired */
-    Flat<dimensions> shader{Flat<dimensions>::Flag::Textured};
-    shader.bindTexture(texture);
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-}
-
 template<UnsignedInt dimensions> void FlatGLTest::bindTextureNotEnabled() {
     setTestCaseTemplateName(std::to_string(dimensions));
 
@@ -255,16 +225,6 @@ template<UnsignedInt dimensions> void FlatGLTest::bindTextureNotEnabled() {
     shader.bindTexture(texture);
 
     CORRADE_COMPARE(out.str(), "Shaders::Flat::bindTexture(): the shader was not created with texturing enabled\n");
-}
-
-template<UnsignedInt dimensions> void FlatGLTest::setAlphaMask() {
-    setTestCaseTemplateName(std::to_string(dimensions));
-
-    /* Test just that no assertion is fired */
-    Flat<dimensions> shader{Flat<dimensions>::Flag::AlphaMask};
-    shader.setAlphaMask(0.25f);
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::setAlphaMaskNotEnabled() {
