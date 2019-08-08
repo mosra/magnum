@@ -165,11 +165,13 @@ constexpr struct {
 /* MSVC 2015 doesn't like constexpr here due to the angles */
 const struct {
     const char* name;
+    bool multiBind;
     Deg rotation;
 } RenderTexturedNormalData[]{
-    {"", {}},
-    {"rotated 90°", 90.0_degf},
-    {"rotated -90°", -90.0_degf}
+    {"", false, {}},
+    {"multi bind", true, {}},
+    {"rotated 90°", false, 90.0_degf},
+    {"rotated -90°", false, -90.0_degf}
 };
 
 const struct {
@@ -764,8 +766,12 @@ void PhongGLTest::renderTexturedNormal() {
             Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationX(15.0_degf)).rotationScaling())
         .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
-        .setDiffuseColor(0x999999_rgbf)
-        .bindNormalTexture(normal);
+        .setDiffuseColor(0x999999_rgbf);
+
+    if(data.multiBind)
+        shader.bindTextures(nullptr, nullptr, nullptr, &normal);
+    else
+        shader.bindNormalTexture(normal);
 
     plane.draw(shader);
 
