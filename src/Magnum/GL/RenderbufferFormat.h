@@ -59,7 +59,9 @@ enum class RenderbufferFormat: GLenum {
      * @requires_gl30 Extension @gl_extension{ARB,texture_rg}
      * @requires_gles30 Extension @gl_extension{EXT,texture_rg} in OpenGL ES
      *      2.0.
-     * @requires_webgl20 Not available in WebGL 1.0.
+     * @requires_webgl20 Only three- and four-component formats (such as
+     *      @ref RenderbufferFormat::RGB565 or @ref RenderbufferFormat::RGBA4)
+     *      are available in WebGL 1.0.
      */
     #ifndef MAGNUM_TARGET_GLES2
     R8 = GL_R8,
@@ -86,7 +88,9 @@ enum class RenderbufferFormat: GLenum {
      * @requires_gl30 Extension @gl_extension{ARB,texture_rg}
      * @requires_gles30 Extension @gl_extension{EXT,texture_rg} in OpenGL ES
      *      2.0.
-     * @requires_webgl20 Not available in WebGL 1.0.
+     * @requires_webgl20 Only three- and four-component formats (such as
+     *      @ref RenderbufferFormat::RGB565 or @ref RenderbufferFormat::RGBA4)
+     *      are available in WebGL 1.0.
      */
     #ifndef MAGNUM_TARGET_GLES2
     RG8 = GL_RG8,
@@ -110,7 +114,9 @@ enum class RenderbufferFormat: GLenum {
      * RGBA, each component normalized unsigned byte.
      * @requires_gles30 Extension @gl_extension{ARM,rgba8} or @gl_extension{OES,rgb8_rgba8}
      *      in OpenGL ES 2.0.
-     * @requires_webgl20 Not available in WebGL 1.0.
+     * @requires_webgl20 Not availabe in WebGL 1.0, use for example
+     *      @ref RenderbufferFormat::RGB565 or @ref RenderbufferFormat::RGBA4
+     *      instead.
      */
     #ifndef MAGNUM_TARGET_GLES2
     RGBA8 = GL_RGBA8,
@@ -123,30 +129,32 @@ enum class RenderbufferFormat: GLenum {
     /**
      * Red component, normalized unsigned short.
      * @requires_gl30 Extension @gl_extension{ARB,texture_rg}
-     * @requires_gl Only byte-sized normalized formats are available in OpenGL
-     *      ES and WebGL.
+     * @requires_gl Only byte-sized normalized formats (such as
+     *      @ref RenderbufferFormat::R8) are available in OpenGL ES and WebGL.
      */
     R16 = GL_R16,
 
     /**
      * Red and green component, each normalized unsigned short.
      * @requires_gl30 Extension @gl_extension{ARB,texture_rg}
-     * @requires_gl Only byte-sized normalized formats are available in OpenGL
-     *      ES and WebGL.
+     * @requires_gl Only byte-sized normalized formats (such as
+     *      @ref RenderbufferFormat::RG8) are available in OpenGL ES and WebGL.
      */
     RG16 = GL_RG16,
 
     /**
      * RGB, each component normalized unsigned short.
-     * @requires_gl Only byte-sized normalized formats are available in OpenGL
-     *      ES and WebGL.
+     * @requires_gl Only byte-sized normalized formats (such as
+     *      @ref RenderbufferFormat::RGBA8) are available in OpenGL ES and
+     *      WebGL.
      */
     RGB16 = GL_RGB16,
 
     /**
      * RGBA, each component normalized unsigned short.
-     * @requires_gl Only byte-sized normalized formats are available in OpenGL
-     *      ES and WebGL.
+     * @requires_gl Only byte-sized normalized formats (such as
+     *      @ref RenderbufferFormat::RGBA8) are available in OpenGL ES and
+     *      WebGL.
      */
     RGBA16 = GL_RGBA16,
     #endif
@@ -155,9 +163,10 @@ enum class RenderbufferFormat: GLenum {
     /**
      * Red component, non-normalized unsigned byte.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
+     * @requires_gles30 Only normalized integral formats (such as
+     *      @ref RenderbufferFormat::R8) are available in OpenGL ES 2.0.
+     * @requires_webgl20 Only three- and four-component normalized integral
+     *      formats (such as @ref RenderbufferFormat::RGB565) are available in
      *      WebGL 1.0.
      */
     R8UI = GL_R8UI,
@@ -165,9 +174,10 @@ enum class RenderbufferFormat: GLenum {
     /**
      * Red and green component, each non-normalized unsigned byte.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
+     * @requires_gles30 Only normalized integral formats (such as
+     *      @ref RenderbufferFormat::RG8) are available in OpenGL ES 2.0.
+     * @requires_webgl20 Only three- and four-component normalized integral
+     *      formats (such as @ref RenderbufferFormat::RGB565) are available in
      *      WebGL 1.0.
      */
     RG8UI = GL_RG8UI,
@@ -175,9 +185,10 @@ enum class RenderbufferFormat: GLenum {
     /**
      * RGBA, each component non-normalized unsigned byte.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
+     * @requires_gles30 Only normalized integral formats (such as
+     *      @ref RenderbufferFormat::RGBA8) are available in OpenGL ES 2.0.
+     * @requires_webgl20 Only three- and four-component normalized integral
+     *      formats (such as @ref RenderbufferFormat::RGBA4) are available in
      *      WebGL 1.0.
      */
     RGBA8UI = GL_RGBA8UI,
@@ -185,9 +196,10 @@ enum class RenderbufferFormat: GLenum {
     /**
      * Red component, non-normalized signed byte.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
+     * @requires_gles30 Only normalized integral formats (such as
+     *      @ref RenderbufferFormat::R8) are available in OpenGL ES 2.0.
+     * @requires_webgl20 Only three- and four-component normalized integral
+     *      formats (such as @ref RenderbufferFormat::RGB565) are available in
      *      WebGL 1.0.
      */
     R8I = GL_R8I,
@@ -195,9 +207,10 @@ enum class RenderbufferFormat: GLenum {
     /**
      * Red and green component, each non-normalized signed byte.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
+     * @requires_gles30 Only normalized integral formats (such as
+     *      @ref RenderbufferFormat::RG8) are available in OpenGL ES 2.0.
+     * @requires_webgl20 Only three- and four-component normalized integral
+     *      formats (such as @ref RenderbufferFormat::RGB565) are available in
      *      WebGL 1.0.
      */
     RG8I = GL_RG8I,
@@ -205,9 +218,10 @@ enum class RenderbufferFormat: GLenum {
     /**
      * RGBA, each component non-normalized signed byte.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
+     * @requires_gles30 Only normalized integral formats (such as
+     *      @ref RenderbufferFormat::RGBA8) are available in OpenGL ES 2.0.
+     * @requires_webgl20 Only three- and four-component normalized integral
+     *      formats (such as @ref RenderbufferFormat::RGBA4) are available in
      *      WebGL 1.0.
      */
     RGBA8I = GL_RGBA8I,
@@ -215,120 +229,144 @@ enum class RenderbufferFormat: GLenum {
     /**
      * Red component, non-normalized unsigned short.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Only byte-sized normalized integral formats
+     *      (such as @ref RenderbufferFormat::R8) are available in OpenGL ES
+     *      2.0.
+     * @requires_webgl20 Only byte-sized three- and four-component normalized
+     *      integral formats (such as @ref RenderbufferFormat::RGB565) are
+     *      available in WebGL 1.0.
      */
     R16UI = GL_R16UI,
 
     /**
      * Red and green component, each non-normalized unsigned short.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Only byte-sized normalized integral formats
+     *      (such as @ref RenderbufferFormat::RG8) are available in OpenGL ES
+     *      2.0.
+     * @requires_webgl20 Only byte-sized three- and four-component normalized
+     *      integral formats (such as @ref RenderbufferFormat::RGB565) are
+     *      available in WebGL 1.0.
      */
     RG16UI = GL_RG16UI,
 
     /**
      * RGBA, each component non-normalized unsigned short.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Only byte-sized normalized integral formats
+     *      (such as @ref RenderbufferFormat::RGBA8) are available in OpenGL ES
+     *      2.0.
+     * @requires_webgl20 Only byte-sized three- and four-component normalized
+     *      integral formats (such as @ref RenderbufferFormat::RGBA4) are
+     *      available in WebGL 1.0.
      */
     RGBA16UI = GL_RGBA16UI,
 
     /**
      * Red component, non-normalized signed short.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Only byte-sized normalized integral formats
+     *      (such as @ref RenderbufferFormat::R8) are available in OpenGL ES
+     *      2.0.
+     * @requires_webgl20 Only byte-sized three- and four-component normalized
+     *      integral formats (such as @ref RenderbufferFormat::RGB565) are
+     *      available in WebGL 1.0.
      */
     R16I = GL_R16I,
 
     /**
      * Red and green component, each non-normalized signed short.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Only byte-sized normalized integral formats
+     *      (such as @ref RenderbufferFormat::RG8) are available in OpenGL ES
+     *      2.0.
+     * @requires_webgl20 Only byte-sized three- and four-component normalized
+     *      integral formats (such as @ref RenderbufferFormat::RGB565) are
+     *      available in WebGL 1.0.
      */
     RG16I = GL_RG16I,
 
     /**
      * RGBA, each component non-normalized signed short.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Only byte-sized normalized integral formats
+     *      (such as @ref RenderbufferFormat::RGBA8) are available in OpenGL ES
+     *      2.0.
+     * @requires_webgl20 Only byte-sized three- and four-component normalized
+     *      integral formats (such as @ref RenderbufferFormat::RGBA4) are
+     *      available in WebGL 1.0.
      */
     RGBA16I = GL_RGBA16I,
 
     /**
      * Red component, non-normalized unsigned int.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Only byte-sized normalized integral formats
+     *      (such as @ref RenderbufferFormat::R8) are available in OpenGL ES
+     *      2.0.
+     * @requires_webgl20 Only byte-sized three- and four-component normalized
+     *      integral formats (such as @ref RenderbufferFormat::RGB565) are
+     *      available in WebGL 1.0.
      */
     R32UI = GL_R32UI,
 
     /**
      * Red and green component, each non-normalized unsigned int.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Only byte-sized normalized integral formats
+     *      (such as @ref RenderbufferFormat::RG8) are available in OpenGL ES
+     *      2.0.
+     * @requires_webgl20 Only byte-sized three- and four-component normalized
+     *      integral formats (such as @ref RenderbufferFormat::RGB565) are
+     *      available in WebGL 1.0.
      */
     RG32UI = GL_RG32UI,
 
     /**
      * RGBA, each component non-normalized unsigned int.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Only byte-sized normalized integral formats
+     *      (such as @ref RenderbufferFormat::RGBA8) are available in OpenGL ES
+     *      2.0.
+     * @requires_webgl20 Only byte-sized three- and four-component normalized
+     *      integral formats (such as @ref RenderbufferFormat::RGBA4) are
+     *      available in WebGL 1.0.
      */
     RGBA32UI = GL_RGBA32UI,
 
     /**
      * Red component, non-normalized signed int.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Only byte-sized normalized integral formats
+     *      (such as @ref RenderbufferFormat::R8) are available in OpenGL ES
+     *      2.0.
+     * @requires_webgl20 Only byte-sized three- and four-component normalized
+     *      integral formats (such as @ref RenderbufferFormat::RGB565) are
+     *      available in WebGL 1.0.
      */
     R32I = GL_R32I,
 
     /**
      * Red and green component, each non-normalized signed int.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Only byte-sized normalized integral formats
+     *      (such as @ref RenderbufferFormat::RG8) are available in OpenGL ES
+     *      2.0.
+     * @requires_webgl20 Only byte-sized three- and four-component normalized
+     *      integral formats (such as @ref RenderbufferFormat::RGB565) are
+     *      available in WebGL 1.0.
      */
     RG32I = GL_RG32I,
 
     /**
      * RGBA, each component non-normalized signed int.
      * @requires_gl30 Extension @gl_extension{EXT,texture_integer}
-     * @requires_gles30 Only normalized integral formats are available in
-     *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_gles30 Only byte-sized normalized integral formats
+     *      (such as @ref RenderbufferFormat::RGBA8) are available in OpenGL ES
+     *      2.0.
+     * @requires_webgl20 Only byte-sized three- and four-component normalized
+     *      integral formats (such as @ref RenderbufferFormat::RGBA4) are
+     *      available in WebGL 1.0.
      */
     RGBA32I = GL_RGBA32I,
     #endif
@@ -446,12 +484,22 @@ enum class RenderbufferFormat: GLenum {
         ,
     #endif
 
+    /** RGB, normalized unsigned, red and blue 5bit, green 6bit. */
+    RGB565 = GL_RGB565,
+
+    /** RGBA, normalized unsigned, each component 4bit. */
+    RGBA4 = GL_RGBA4,
+
+    /** RGBA, normalized unsigned, each RGB component 5bit, alpha 1bit. */
+    RGB5A1 = GL_RGB5_A1,
+
     #ifndef MAGNUM_TARGET_GLES2
     /**
      * RGBA, normalized unsigned, each RGB component 10bit, alpha 2bit.
      * @requires_gles30 Usable only as internal texture format in OpenGL ES
      *      2.0, see @ref TextureFormat::RGB10A2.
-     * @requires_webgl20 Not available in WebGL 1.0.
+     * @requires_webgl20 Not available in WebGL 1.0, use e.g.
+     *      @ref RenderbufferFormat::RGB5A1 instead.
      */
     RGB10A2 = GL_RGB10_A2,
 
@@ -460,30 +508,11 @@ enum class RenderbufferFormat: GLenum {
      * @requires_gl33 Extension @gl_extension{ARB,texture_rgb10_a2ui}
      * @requires_gles30 Only normalized integral formats are available in
      *      OpenGL ES 2.0.
-     * @requires_webgl20 Only normalized integral formats are available in
-     *      WebGL 1.0.
+     * @requires_webgl20 Only normalized integral formats (such as
+     *      @ref RenderbufferFormat::RGB5A1) are available in WebGL 1.0.
      */
     RGB10A2UI = GL_RGB10_A2UI,
     #endif
-
-    /** RGBA, normalized unsigned, each RGB component 5bit, alpha 1bit. */
-    RGB5A1 = GL_RGB5_A1,
-
-    /** RGBA, normalized unsigned, each component 4bit. */
-    RGBA4 = GL_RGBA4,
-
-    #ifndef MAGNUM_TARGET_GLES
-    /**
-     * RGB, float, red and green 11bit, blue 10bit.
-     * @requires_gl30 Extension @gl_extension{EXT,packed_float}
-     * @requires_gl Usable only as internal texture format in OpenGL ES and
-     *      WebGL, see @ref TextureFormat::R11FG11FB10F.
-     */
-    R11FG11FB10F = GL_R11F_G11F_B10F,
-    #endif
-
-    /** RGB, normalized unsigned, red and blue 5bit, green 6bit. */
-    RGB565 = GL_RGB565,
 
     /**
      * sRGBA, each component normalized unsigned byte.
@@ -494,6 +523,16 @@ enum class RenderbufferFormat: GLenum {
     SRGB8Alpha8 = GL_SRGB8_ALPHA8,
     #else
     SRGB8Alpha8 = GL_SRGB8_ALPHA8_EXT,
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    /**
+     * RGB, float, red and green 11bit, blue 10bit.
+     * @requires_gl30 Extension @gl_extension{EXT,packed_float}
+     * @requires_gl Usable only as internal texture format in OpenGL ES and
+     *      WebGL, see @ref TextureFormat::R11FG11FB10F.
+     */
+    R11FG11FB10F = GL_R11F_G11F_B10F,
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
