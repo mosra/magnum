@@ -111,7 +111,9 @@ constexpr struct {
     Flat2D::Flags flags;
 } ConstructData[]{
     {"", {}},
-    {"textured", Flat2D::Flag::Textured}
+    {"textured", Flat2D::Flag::Textured},
+    {"alpha mask", Flat2D::Flag::AlphaMask},
+    {"alpha mask + textured", Flat2D::Flag::AlphaMask|Flat2D::Flag::Textured}
 };
 
 const struct {
