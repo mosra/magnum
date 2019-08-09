@@ -100,10 +100,9 @@ struct PhongGLTest: GL::OpenGLTester {
     -   SwiftShader ES2/ES3
     -   ARM Mali (Huawei P10) ES2/ES3
     -   WebGL 1 / 2 (on Mesa Intel)
-
-    Mesa AMD, SwiftShader and ARM Mali has a bigger ring with shininess = 0.
-    Mesa Intel not. Currently handled as XFAIL on those, but probably could
-    invert that and XFAIL on Intel?
+    -   NVidia Windows
+    -   Intel Windows
+    -   AMD on macOS
 */
 
 constexpr struct {
@@ -754,11 +753,12 @@ void PhongGLTest::renderTexturedNormal() {
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* One pixel in the center didn't survive the transformation. But that's
        okay. Due to the density of the normal map, SwiftShader has an overally
-       consistent off-by-a-bit error. */
-    const Float maxThreshold = 24.0f, meanThreshold = 0.3421f;
+       consistent off-by-a-bit error. AMD macOS drivers have one pixel off
+       due to a rounding error on the edge. */
+    const Float maxThreshold = 191.0f, meanThreshold = 0.3421f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
-    const Float maxThreshold = 24.0f, meanThreshold = 3.017f;
+    const Float maxThreshold = 191.0f, meanThreshold = 3.017f;
     #endif
     CORRADE_COMPARE_WITH(pixels,
         Utility::Directory::join(SHADERS_TEST_DIR, "PhongTestFiles/textured-normal.tga"),
@@ -804,6 +804,14 @@ void PhongGLTest::renderShininess() {
         CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::ArmMali),
             "ARM Mali has a much larger ring for the owerflown shininess when it's exactly 0.");
         #endif
+        #ifndef MAGNUM_TARGET_WEBGL
+        CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().find("AMD") != std::string::npos,
+            "AMD Mesa drivers have a much larger ring for the owerflown shininess when it's exactly 0.");
+        #endif
+        #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+        CORRADE_EXPECT_FAIL_IF(data.shininess == 0.0f && GL::Context::current().rendererString().find("AMD") != std::string::npos,
+            "AMD on macOS has a much larger ring for the owerflown shininess when it's exactly 0.");
+        #endif
         CORRADE_COMPARE_WITH(
             /* Dropping the alpha channel, as it's always 1.0 */
             Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
@@ -812,8 +820,16 @@ void PhongGLTest::renderShininess() {
     }
 
     /* Test the special overflow results as well */
-    #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-    if((data.shininess <= 0.0011f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader))
+    if(false
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        || (data.shininess <= 0.0011f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::SwiftShader))
+        #endif
+        #ifndef MAGNUM_TARGET_WEBGL
+        || (data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::Mesa) && GL::Context::current().rendererString().find("AMD") != std::string::npos)
+        #endif
+        #if defined(CORRADE_TARGET_APPLE) && !defined(CORRADE_TARGET_IOS)
+        || (data.shininess == 0.0f && GL::Context::current().rendererString().find("AMD") != std::string::npos)
+        #endif
         #if defined(CORRADE_TARGET_ANDROID) && defined(MAGNUM_TARGET_GLES2)
         || (data.shininess == 0.0f && (GL::Context::current().detectedDriver() & GL::Context::DetectedDriver::ArmMali))
         #endif
@@ -826,7 +842,6 @@ void PhongGLTest::renderShininess() {
                SwiftShader; ARM Mali has one pixel off */
             (DebugTools::CompareImageToFile{_manager, 255.0f, 1.475f}));
     }
-    #endif
 }
 
 void PhongGLTest::renderAlphaSetup() {

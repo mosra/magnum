@@ -98,6 +98,9 @@ struct FlatGLTest: GL::OpenGLTester {
     -   SwiftShader ES2/ES3
     -   ARM Mali (Huawei P10) ES2/ES3
     -   WebGL 1 / 2 (on Mesa Intel)
+    -   NVidia Windows
+    -   Intel Windows
+    -   AMD on macOS
 */
 
 using namespace Math::Literals;
