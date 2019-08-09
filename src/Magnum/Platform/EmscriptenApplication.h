@@ -639,7 +639,7 @@ class EmscriptenApplication {
         void setupAnimationFrame(bool ForceAnimationFrame);
 
         Vector2 _devicePixelRatio, _dpiScaling;
-        Vector2i _lastKnownCanvasSize;
+        Vector2i _lastKnownCanvasSize, _previousMouseMovePosition{-1};
 
         Flags _flags;
 
@@ -1251,6 +1251,16 @@ class EmscriptenApplication::MouseMoveEvent: public EmscriptenApplication::Input
         /** @brief Position */
         Vector2i position() const;
 
+        /**
+         * @brief Relative position
+         *
+         * Position relative to previous move event. Unlike
+         * @ref Sdl2Application, HTML APIs don't provide relative position
+         * directly, so this is calculated explicitly as a delta from previous
+         * move event position.
+         */
+        Vector2i relativePosition() const { return _relativePosition; }
+
         /** @brief Mouse buttons */
         Buttons buttons() const;
 
@@ -1263,9 +1273,10 @@ class EmscriptenApplication::MouseMoveEvent: public EmscriptenApplication::Input
     private:
         friend EmscriptenApplication;
 
-        explicit MouseMoveEvent(const EmscriptenMouseEvent& event): _event(event) {}
+        explicit MouseMoveEvent(const EmscriptenMouseEvent& event, const Vector2i& relativePosition): _event(event), _relativePosition{relativePosition} {}
 
         const EmscriptenMouseEvent& _event;
+        const Vector2i _relativePosition;
 };
 
 CORRADE_ENUMSET_OPERATORS(EmscriptenApplication::MouseMoveEvent::Buttons)

@@ -60,6 +60,10 @@ struct GlfwApplicationTest: Platform::Application {
         }
     }
 
+    void mouseMoveEvent(MouseMoveEvent& event) override {
+        Debug{} << "mouse move event:" << event.position() << event.relativePosition() << UnsignedInt(event.buttons());
+    }
+
     void textInputEvent(TextInputEvent& event) override {
         Debug{} << "text input event:" << std::string{event.text(), event.text().size()};
     }

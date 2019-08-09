@@ -517,8 +517,15 @@ void GlfwApplication::setupCallbacks() {
             app.mouseReleaseEvent(e);
     });
     glfwSetCursorPosCallback(_window, [](GLFWwindow* const window, const double x, const double y) {
-        MouseMoveEvent e{window, Vector2i{Int(x), Int(y)}};
-        static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window))->mouseMoveEvent(e);
+        auto& app = *static_cast<GlfwApplication*>(glfwGetWindowUserPointer(window));
+        /* Avoid bogus offset at first -- report 0 when the event is called for
+           the first time */
+        Vector2i position{Int(x), Int(y)};
+        MouseMoveEvent e{window, position,
+            app._previousMouseMovePosition == Vector2i{-1} ? Vector2i{} :
+            position - app._previousMouseMovePosition};
+        app._previousMouseMovePosition = position;
+        app.mouseMoveEvent(e);
     });
     glfwSetScrollCallback(_window, [](GLFWwindow* window, double xoffset, double yoffset) {
         MouseScrollEvent e(window, Vector2{Float(xoffset), Float(yoffset)});

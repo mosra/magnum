@@ -590,8 +590,8 @@ class GlfwApplication {
         #endif
         int _exitCode = 0;
 
-        Vector2i _minWindowSize;
-        Vector2i _maxWindowSize;
+        Vector2i _minWindowSize, _maxWindowSize;
+        Vector2i _previousMouseMovePosition{-1};
 };
 
 #ifdef MAGNUM_TARGET_GL
@@ -1591,6 +1591,16 @@ class GlfwApplication::MouseMoveEvent: public GlfwApplication::InputEvent {
         Vector2i position() const { return _position; }
 
         /**
+         * @brief Relative position
+         *
+         * Position relative to previous move event. Unlike
+         * @ref Sdl2Application, GLFW doesn't provide relative position
+         * directly, so this is calculated explicitly as a delta from previous
+         * move event position.
+         */
+        Vector2i relativePosition() const { return _relativePosition; }
+
+        /**
          * @brief Modifiers
          *
          * Lazily populated on first request.
@@ -1600,10 +1610,10 @@ class GlfwApplication::MouseMoveEvent: public GlfwApplication::InputEvent {
     private:
         friend GlfwApplication;
 
-        explicit MouseMoveEvent(GLFWwindow* window, const Vector2i& position): _window{window}, _position{position} {}
+        explicit MouseMoveEvent(GLFWwindow* window, const Vector2i& position, const Vector2i& relativePosition): _window{window}, _position{position}, _relativePosition{relativePosition} {}
 
         GLFWwindow* const _window;
-        const Vector2i _position;
+        const Vector2i _position, _relativePosition;
         Containers::Optional<Buttons> _buttons;
         Containers::Optional<Modifiers> _modifiers;
 };

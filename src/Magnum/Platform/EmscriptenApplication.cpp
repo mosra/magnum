@@ -470,7 +470,14 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
 
     emscripten_set_mousemove_callback("#canvas", this, false,
         ([](int, const EmscriptenMouseEvent* event, void* userData) -> Int {
-            MouseMoveEvent e{*event};
+            auto& app = *static_cast<EmscriptenApplication*>(userData);
+            /* Avoid bogus offset at first -- report 0 when the event is called
+               for the first time */
+            Vector2i position{Int(event->canvasX), Int(event->canvasY)};
+            MouseMoveEvent e{*event,
+                app._previousMouseMovePosition == Vector2i{-1} ? Vector2i{} :
+                position - app._previousMouseMovePosition};
+            app._previousMouseMovePosition = position;
             static_cast<EmscriptenApplication*>(userData)->mouseMoveEvent(e);
             return e.isAccepted();
         }));

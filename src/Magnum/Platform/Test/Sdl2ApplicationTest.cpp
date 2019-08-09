@@ -63,7 +63,7 @@ struct Sdl2ApplicationTest: Platform::Application {
     }
 
     void mouseMoveEvent(MouseMoveEvent& event) override {
-        Debug{} << "mouse move event:" << event.position() << Uint32(event.buttons());
+        Debug{} << "mouse move event:" << event.position() << event.relativePosition() << Uint32(event.buttons());
     }
 
     void mouseScrollEvent(MouseScrollEvent& event) override {

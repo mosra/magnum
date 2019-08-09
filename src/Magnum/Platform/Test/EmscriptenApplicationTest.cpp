@@ -80,7 +80,7 @@ struct EmscriptenApplicationTest: Platform::Application {
     }
 
     void mouseMoveEvent(MouseMoveEvent& event) override {
-        Debug{} << "mouse move event:" << event.position() << Int(event.buttons());
+        Debug{} << "mouse move event:" << event.position() << event.relativePosition() << Int(event.buttons());
     }
 
     void mouseScrollEvent(MouseScrollEvent& event) override {

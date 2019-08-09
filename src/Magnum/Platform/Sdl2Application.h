@@ -2191,7 +2191,7 @@ class Sdl2Application::MouseMoveEvent: public Sdl2Application::InputEvent {
         /**
          * @brief Relative position
          *
-         * Position relative to previous event.
+         * Position relative to previous move event.
          */
         Vector2i relativePosition() const { return _relativePosition; }
 
