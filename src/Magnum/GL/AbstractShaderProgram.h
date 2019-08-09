@@ -88,7 +88,7 @@ functions and properties:
     @snippet MagnumGL.cpp AbstractShaderProgram-xfb
 </li></ul>
 
-@subsection GL-AbstractShaderProgram-attribute-location Binding attribute location
+@subsection GL-AbstractShaderProgram-attribute-location Binding attribute and fragment data location
 
 The preferred workflow is to specify attribute location for vertex shader input
 attributes and fragment shader output attributes explicitly in the shader code,
