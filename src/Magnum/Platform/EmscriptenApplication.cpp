@@ -446,8 +446,7 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
         const char* target = "#window";
         #endif
         auto cb = [](int, const EmscriptenUiEvent* event, void* userData) -> Int {
-            EmscriptenApplication& app = *static_cast<EmscriptenApplication*>(userData);
-            app.handleCanvasResize(event);
+            static_cast<EmscriptenApplication*>(userData)->handleCanvasResize(event);
             return false; /** @todo what does ignoring a resize event mean? */
         };
         emscripten_set_resize_callback(target, this, false, cb);
