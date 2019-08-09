@@ -32,6 +32,7 @@
 #include "Magnum/GL/AbstractShaderProgram.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/Math/Matrix4.h"
+#include "Magnum/Shaders/Generic.h"
 #include "Magnum/Shaders/visibility.h"
 
 namespace Magnum { namespace Shaders {
@@ -113,7 +114,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
          * @ref shaders-generic "Generic attribute",
          * @ref Magnum::Vector3 "Vector3".
          */
-        typedef GL::Attribute<0, Vector3> Position;
+        typedef Generic3D::Position Position;
 
         /**
          * @brief Vertex index
