@@ -1132,8 +1132,10 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         #endif
 
         void bindAttributeLocationInternal(UnsignedInt location, Containers::ArrayView<const char> name);
+        #ifndef MAGNUM_TARGET_GLES
         void bindFragmentDataLocationIndexedInternal(UnsignedInt location, UnsignedInt index, Containers::ArrayView<const char> name);
         void bindFragmentDataLocationInternal(UnsignedInt location, Containers::ArrayView<const char> name);
+        #endif
         Int uniformLocationInternal(Containers::ArrayView<const char> name);
         UnsignedInt uniformBlockIndexInternal(Containers::ArrayView<const char> name);
 
