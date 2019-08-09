@@ -343,8 +343,8 @@ bindAttributeLocation(Position::Location, "position");
 bindAttributeLocation(Normal::Location, "normal");
 bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
 
-bindFragmentDataLocationIndexed(ColorOutput, 0, "color");
-bindFragmentDataLocationIndexed(NormalOutput, 1, "normal");
+bindFragmentDataLocation(ColorOutput, "color");
+bindFragmentDataLocation(NormalOutput, "normal");
 
 // Link...
 /* [AbstractShaderProgram-binding] */
