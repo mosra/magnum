@@ -117,6 +117,24 @@ template<class Application> BasicScreen<Application>::BasicScreen(BasicScreenedA
 
 template<class Application> BasicScreen<Application>::~BasicScreen() = default;
 
+template<class Application> BasicScreenedApplication<Application>& BasicScreen<Application>::application() {
+    BasicScreenedApplication<Application>* application = Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>::list();
+    CORRADE_ASSERT(application, "Platform::Screen::application(): the screen is not added to any application", *application);
+    return *application;
+}
+
+template<class Application> const BasicScreenedApplication<Application>& BasicScreen<Application>::application() const {
+    const BasicScreenedApplication<Application>* application = Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>::list();
+    CORRADE_ASSERT(application, "Platform::Screen::application(): the screen is not added to any application", *application);
+    return *application;
+}
+
+template<class Application> void BasicScreen<Application>::redraw() {
+    BasicScreenedApplication<Application>* application = Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>::list();
+    CORRADE_ASSERT(application, "Platform::Screen::redraw(): the screen is not added to any application", );
+    application->redraw();
+}
+
 template<class Application> void BasicScreen<Application>::focusEvent() {}
 template<class Application> void BasicScreen<Application>::blurEvent() {}
 
@@ -149,7 +167,7 @@ template<class Application> BasicScreenedApplication<Application>::BasicScreened
 template<class Application> BasicScreenedApplication<Application>::~BasicScreenedApplication() = default;
 
 template<class Application> BasicScreenedApplication<Application>& BasicScreenedApplication<Application>::addScreen(BasicScreen<Application>& screen) {
-    CORRADE_ASSERT(!screen.application(),
+    CORRADE_ASSERT(!screen.hasApplication(),
         "Platform::ScreenedApplication::addScreen(): screen already added to an application", *this);
 
     /* A subset of this (except focusEvent()) is done in
@@ -162,7 +180,7 @@ template<class Application> BasicScreenedApplication<Application>& BasicScreened
 }
 
 template<class Application> BasicScreenedApplication<Application>& BasicScreenedApplication<Application>::removeScreen(BasicScreen<Application>& screen) {
-    CORRADE_ASSERT(screen.application() == this,
+    CORRADE_ASSERT(screen.hasApplication() && &screen.application() == this,
         "Platform::ScreenedApplication::removeScreen(): screen not owned by this application", *this);
 
     screen.blurEvent();
@@ -172,7 +190,7 @@ template<class Application> BasicScreenedApplication<Application>& BasicScreened
 }
 
 template<class Application> BasicScreenedApplication<Application>& BasicScreenedApplication<Application>::focusScreen(BasicScreen<Application>& screen) {
-    CORRADE_ASSERT(screen.application() == this,
+    CORRADE_ASSERT(screen.hasApplication() && &screen.application() == this,
         "Platform::ScreenedApplication::focusScreen(): screen not owned by this application", *this);
 
     /* Already focused, nothing to do */

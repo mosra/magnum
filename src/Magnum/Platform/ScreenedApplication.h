@@ -265,6 +265,18 @@ template<class Application> class BasicScreenedApplication:
             return static_cast<const Containers::LinkedList<BasicScreen<Application>>&>(*this);
         }
 
+        #if defined(MAGNUM_BUILD_DEPRECATED) && !defined(DOXYGEN_GENERATING_OUTPUT)
+        CORRADE_DEPRECATED("Platform::Screen::application() returns a reference now") BasicScreenedApplication<Application>* operator->() { return this; }
+        CORRADE_DEPRECATED("Platform::Screen::application() returns a reference now") const BasicScreenedApplication<Application>* operator->() const { return this; }
+        CORRADE_DEPRECATED("Platform::Screen::application() returns a reference now") BasicScreenedApplication<Application>& operator*() { return *this; }
+        CORRADE_DEPRECATED("Platform::Screen::application() returns a reference now") const BasicScreenedApplication<Application>& operator*() const { return *this; }
+        CORRADE_DEPRECATED("Platform::Screen::application() returns a reference now") operator BasicScreenedApplication<Application>*() { return this; }
+        CORRADE_DEPRECATED("Platform::Screen::application() returns a reference now") operator const BasicScreenedApplication<Application>*() const { return this; }
+        template<class T, class = typename std::enable_if<std::is_base_of<BasicScreenedApplication<Application>, T>::value>::type> CORRADE_DEPRECATED("Platform::Screen::application() returns a reference now") operator T*() { return static_cast<T*>(this); }
+        template<class T, class = typename std::enable_if<std::is_base_of<BasicScreenedApplication<Application>, T>::value>::type> CORRADE_DEPRECATED("Platform::Screen::application() returns a reference now") operator const T*() const { return static_cast<const T*>(this); }
+        CORRADE_DEPRECATED("Platform::Screen::application() returns a reference now, use hasApplication() instead") bool operator!() const { return false; }
+        #endif
+
     protected:
         /* Nobody will need to have (and delete) ScreenedApplication*, thus
            this is faster than public pure virtual destructor */

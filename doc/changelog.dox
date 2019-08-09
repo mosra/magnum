@@ -387,6 +387,11 @@ See also:
     in a RAII manner, without needing to explicitly call
     @ref Platform::BasicScreenedApplication::addScreen() and
     @ref Platform::BasicScreen::setPropagatedEvents() later
+-   @ref Platform::BasicScreen::application() now returns a reference instead
+    of a pointer, checking that the screen is actually added to the
+    application. Users are encouraged to call
+    @ref Platform::BasicScreen::hasApplication() to check if the application is
+    accessible.
 
 @subsubsection changelog-latest-changes-text Text library
 
@@ -575,6 +580,14 @@ See also:
 -   Passing @cpp nullptr @ce to @ref ImageView constructors is deprecated and
     will print a warning at runtime. Use a constructor without the @p data
     parameter instead.
+-   @ref Platform::BasicScreen::application() now returns a reference instead
+    of a pointer and together with @ref Platform::BasicScreen::redraw() checks
+    that the screen is actually added to the application instead of returning
+    @cpp nullptr @ce (and requiring excessive error checking in user code) or,
+    in case of @ref Platform::BasicScreen::redraw() "redraw()" silently doing
+    the wrong thing. For backwards compatibility
+    @ref Platform::BasicScreenedApplication is convertible to a pointer and
+    implements @cpp operator-> @ce, but this conversion is deprecated.
 
 @subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
 

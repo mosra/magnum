@@ -252,13 +252,33 @@ template<class Application> class BasicScreen:
          */
         void setPropagatedEvents(PropagatedEvents events) { _propagatedEvents = events; }
 
-        /** @brief Application holding this screen */
-        template<class T = BasicScreenedApplication<Application>> T* application() {
-            return static_cast<T*>(Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>::list());
+        /**
+         * @brief Whether the screen is added to an application
+         *
+         * If not, the @ref application() accessor can't be used.
+         * @see @ref BasicScreenedApplication::addScreen(),
+         *      @ref BasicScreenedApplication::removeScreen()
+         */
+        bool hasApplication() {
+            return Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>::list();
+        }
+
+        /**
+         * @brief Application holding this screen
+         *
+         * Expects that the screen is added to an application.
+         * @see @ref hasApplication()
+         */
+        BasicScreenedApplication<Application>& application();
+        /** @overload */
+        const BasicScreenedApplication<Application>& application() const;
+        /** @overload */
+        template<class T = BasicScreenedApplication<Application>> T& application() {
+            return static_cast<T&>(application());
         }
         /** @overload */
-        template<class T = BasicScreenedApplication<Application>> const T* application() const {
-            return static_cast<const T*>(Containers::LinkedListItem<BasicScreen<Application>, BasicScreenedApplication<Application>>::list());
+        template<class T = BasicScreenedApplication<Application>> const T& application() const {
+            return static_cast<const T&>(application());
         }
 
         /**
@@ -294,8 +314,13 @@ template<class Application> class BasicScreen:
         /** @{ @name Screen handling */
 
     protected:
-        /** @brief Request redraw */
-        virtual void redraw() { application()->redraw(); }
+        /**
+         * @brief Request redraw
+         *
+         * Expects that the screen is added to an application.
+         * @see @ref hasApplication()
+         */
+        virtual void redraw();
 
     private:
         /**
