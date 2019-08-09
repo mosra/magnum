@@ -86,7 +86,7 @@ struct FlatGLTest: GL::OpenGLTester {
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
 
-        GL::Renderbuffer _color{NoCreate}, _depth{NoCreate};
+        GL::Renderbuffer _color{NoCreate};
         GL::Framebuffer _framebuffer{NoCreate};
 };
 
