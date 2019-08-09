@@ -407,6 +407,13 @@ class GlfwApplication {
         Vector2 dpiScaling(const Configuration& configuration) const;
 
         /**
+         * @brief Set window title
+         *
+         * The @p title is expected to be encoded in UTF-8.
+         */
+        void setWindowTitle(const std::string& title);
+
+        /**
          * @brief Swap buffers
          *
          * Paints currently rendered framebuffer on screen.

@@ -214,6 +214,10 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) const {
     #endif
 }
 
+void GlfwApplication::setWindowTitle(const std::string& title) {
+    glfwSetWindowTitle(_window, title.data());
+}
+
 bool GlfwApplication::tryCreate(const Configuration& configuration) {
     #ifdef MAGNUM_TARGET_GL
     #ifdef GLFW_NO_API

@@ -206,6 +206,10 @@ See also:
 -   New [base-wxwidgets](https://github.com/mosra/magnum-bootstrap/tree/base-wxwidgets)
     bootstrap project for using Magnum together with wxWidgets (see
     [mosra/magnum-bootstrap#19](https://github.com/mosra/magnum-bootstrap/pull/19))
+-   Added @ref Platform::Sdl2Application::setWindowTitle() (and equivalents
+    in @ref Platform::GlfwApplication and @ref Platform::EmscriptenApplication)
+    for changing window title at runtime as opposed to setting them on
+    application startup
 
 @subsubsection changelog-latest-new-primitives Primitives library
 

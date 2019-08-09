@@ -690,6 +690,13 @@ class Sdl2Application {
          */
         Vector2 dpiScaling(const Configuration& configuration) const;
 
+        /**
+         * @brief Set window title
+         *
+         * The @p title is expected to be encoded in UTF-8.
+         */
+        void setWindowTitle(const std::string& title);
+
         #if defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
          * @brief Set container CSS class
@@ -1496,10 +1503,14 @@ class Sdl2Application::Configuration {
          * @return Reference to self (for method chaining)
          *
          * Default is @cpp "Magnum SDL2 Application" @ce.
-         * @note In @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" and
-         *      @ref CORRADE_TARGET_IOS "iOS" this function does nothing and is
-         *      included only for compatibility. You need to set the title
-         *      separately in platform-specific configuration file.
+         * @note On @ref CORRADE_TARGET_IOS "iOS" this function does nothing
+         *      and is included only for compatibility. You need to set the
+         *      title separately in platform-specific configuration file.
+         * @note Similarly, on @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" this
+         *      function is only for compatibility, as the page title is
+         *      expected to be set by the HTML markup. However, it's possible
+         *      to change the page title later (for example in response to
+         *      application state change) using @ref setWindowTitle().
          */
         #if !defined(CORRADE_TARGET_EMSCRIPTEN) && !defined(CORRADE_TARGET_IOS)
         Configuration& setTitle(std::string title) {

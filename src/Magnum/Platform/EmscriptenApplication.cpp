@@ -384,6 +384,13 @@ Vector2i EmscriptenApplication::framebufferSize() const {
 }
 #endif
 
+void EmscriptenApplication::setWindowTitle(const std::string& title) {
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
+    EM_ASM_({document.title = UTF8ToString($0);}, title.data());
+    #pragma GCC diagnostic pop
+}
+
 void EmscriptenApplication::setContainerCssClass(const std::string& cssClass) {
     #pragma GCC diagnostic push
     #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"

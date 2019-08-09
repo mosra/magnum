@@ -54,6 +54,9 @@ struct GlfwApplicationTest: Platform::Application {
         } else if(event.key() == KeyEvent::Key::Esc) {
             Debug{} << "stopping text input";
             stopTextInput();
+        } else if(event.key() == KeyEvent::Key::T) {
+            Debug{} << "setting window title";
+            setWindowTitle("This is a UTF-8 Window Title™!");
         }
     }
 

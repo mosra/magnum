@@ -264,6 +264,16 @@ Vector2 Sdl2Application::dpiScaling(const Configuration& configuration) const {
     #endif
 }
 
+void Sdl2Application::setWindowTitle(const std::string& title) {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    SDL_SetWindowTitle(_window, title.data());
+    #else
+    /* We don't have the _window because SDL_CreateWindow() doesn't exist in
+       the SDL1/2 hybrid. But it's not used anyway, so pass nullptr there. */
+    SDL_SetWindowTitle(nullptr, title.data());
+    #endif
+}
+
 bool Sdl2Application::tryCreate(const Configuration& configuration) {
     #ifdef MAGNUM_TARGET_GL
     if(!(configuration.windowFlags() & Configuration::WindowFlag::Contextless))

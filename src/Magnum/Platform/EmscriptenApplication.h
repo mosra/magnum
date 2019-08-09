@@ -485,6 +485,13 @@ class EmscriptenApplication {
         Vector2 devicePixelRatio() const { return _devicePixelRatio; }
 
         /**
+         * @brief Set window title
+         *
+         * The @p title is expected to be encoded in UTF-8.
+         */
+        void setWindowTitle(const std::string& title);
+
+        /**
          * @brief Set container CSS class
          *
          * Assigns given CSS class to the @cb{.html} <div class="container"> @ce.
@@ -920,8 +927,10 @@ class EmscriptenApplication::Configuration {
          * @return Reference to self (for method chaining)
          *
          * @note This function does nothing and is included only for
-         *      compatibility with other toolkits. You need to set the title
-         *      separately in the HTML markup.
+         *      compatibility with other toolkits, as the page title is
+         *      expected to be set by the HTML markup. However, it's possible
+         *      to change the page title later (for example in response to
+         *      application state change) using @ref setWindowTitle().
          */
         template<class T> Configuration& setTitle(const T&) { return *this; }
 
