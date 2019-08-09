@@ -42,7 +42,10 @@ namespace Magnum { namespace Shaders {
 namespace Implementation {
     enum class FlatFlag: UnsignedByte {
         Textured = 1 << 0,
-        AlphaMask = 1 << 1
+        AlphaMask = 1 << 1,
+        #ifndef MAGNUM_TARGET_GLES2
+        ObjectId = 1 << 2
+        #endif
     };
     typedef Containers::EnumSet<FlatFlag> FlatFlags;
 }
@@ -96,6 +99,20 @@ operation which is known to have considerable performance impact on some
 platforms. With proper depth sorting and blending you'll usually get much
 better performance and output quality.
 
+@subsection Shaders-Flat-usage-object-id Object ID output
+
+The shader supports writing object ID to the framebuffer for object picking or
+other annotation purposes. Enable it using @ref Flag::ObjectId and set up an
+integer buffer attached to the @ref ObjectIdOutput attachment. Note that for
+portability you should use @ref GL::Framebuffer::clearColor() instead of
+@ref GL::Framebuffer::clear() as the former usually emits GL errors when called
+on framebuffers with integer attachments.
+
+@snippet MagnumShaders.cpp Flat-usage-object-id
+
+@requires_gles30 Object ID output requires integer buffer attachments, which
+    are not available in OpenGL ES 2.0 or WebGL 1.0.
+
 @see @ref shaders, @ref Flat2D, @ref Flat3D
 */
 template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::AbstractShaderProgram {
@@ -117,6 +134,28 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          * set.
          */
         typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
+
+        enum: UnsignedInt {
+            /**
+             * Color shader output. Present always, expects three- or
+             * four-component floating-point or normalized buffer attachment.
+             */
+            ColorOutput = Generic<dimensions>::ColorOutput,
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * Object ID shader output. @ref shaders-generic "Generic output",
+             * present only if @ref Flag::ObjectId is set. Expects a
+             * single-component unsigned integral attachment. Writes the value
+             * set in @ref setObjectId() there, see
+             * @ref Shaders-Phong-usage-object-id for more information.
+             * @requires_gles30 Object ID output requires integer buffer
+             *      attachments, which are not available in OpenGL ES 2.0 or
+             *      WebGL 1.0.
+             */
+            ObjectIdOutput = Generic<dimensions>::ObjectIdOutput
+            #endif
+        };
 
         #ifdef DOXYGEN_GENERATING_OUTPUT
         /**
@@ -142,7 +181,18 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              * with proper depth sorting and blending you'll usually get much
              * better performance and output quality.
              */
-            AlphaMask = 1 << 1
+            AlphaMask = 1 << 1,
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * Enable object ID output. See @ref Shaders-Flat-usage-object-id
+             * for more information.
+             * @requires_gles30 Object ID output requires integer buffer
+             *      attachments, which are not available in OpenGL ES 2.0 or
+             *      WebGL 1.0.
+             */
+            ObjectId = 1 << 2
+            #endif
         };
 
         /**
@@ -237,6 +287,22 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          */
         Flat<dimensions>& setAlphaMask(Float mask);
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Set object ID
+         * @return Reference to self (for method chaining)
+         *
+         * Expects that the shader was created with @ref Flag::ObjectId
+         * enabled. Value set here is written to the @ref ObjectIdOutput, see
+         * @ref Shaders-Flat-usage-object-id for more information. Default is
+         * @cpp 0 @ce.
+         * @requires_gles30 Object ID output requires integer buffer
+         *      attachments, which are not available in OpenGL ES 2.0 or WebGL
+         *      1.0.
+         */
+        Flat<dimensions>& setObjectId(UnsignedInt id);
+        #endif
+
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief bindTexture()
          * @deprecated Use @ref bindTexture() instead.
@@ -251,6 +317,9 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
         Int _transformationProjectionMatrixUniform{0},
             _colorUniform{1},
             _alphaMaskUniform{2};
+        #ifndef MAGNUM_TARGET_GLES2
+        Int _objectIdUniform{3};
+        #endif
 };
 
 /** @brief 2D flat shader */

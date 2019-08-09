@@ -56,12 +56,30 @@ uniform lowp float alphaMask
     ;
 #endif
 
+#ifdef OBJECT_ID
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 3)
+#endif
+/* mediump is just 2^10, which might not be enough, this is 2^16 */
+uniform highp uint objectId; /* defaults to zero */
+#endif
+
 #ifdef TEXTURED
 in mediump vec2 interpolatedTextureCoordinates;
 #endif
 
 #ifdef NEW_GLSL
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = COLOR_OUTPUT_ATTRIBUTE_LOCATION)
+#endif
 out lowp vec4 fragmentColor;
+#endif
+#ifdef OBJECT_ID
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = OBJECT_ID_OUTPUT_ATTRIBUTE_LOCATION)
+#endif
+/* mediump is just 2^10, which might not be enough, this is 2^16 */
+out highp uint fragmentObjectId;
 #endif
 
 void main() {
@@ -76,5 +94,9 @@ void main() {
        as when using 0, it should only discard what's already invisible
        anyway. */
     if(fragmentColor.a <= alphaMask) discard;
+    #endif
+
+    #ifdef OBJECT_ID
+    fragmentObjectId = objectId;
     #endif
 }

@@ -55,9 +55,9 @@ uniform mediump mat3 normalMatrix
     #endif
     ;
 
-/* Needs to be last because it uses locations 9 to 9 + LIGHT_COUNT - 1 */
+/* Needs to be last because it uses locations 10 to 10 + LIGHT_COUNT - 1 */
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 9)
+layout(location = 10)
 #endif
 uniform highp vec3 lightPositions[LIGHT_COUNT]; /* defaults to zero */
 

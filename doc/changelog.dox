@@ -226,6 +226,7 @@ See also:
 
 -   Normal texture support in @ref Shaders::Phong
 -   Added @ref Shaders::Generic3D::Tangent generic vertex attribute definition
+-   Object ID output in @ref Shaders::Flat and @ref Shaders::Phong
 
 @subsubsection changelog-latest-new-text Text library
 

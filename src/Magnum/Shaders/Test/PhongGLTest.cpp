@@ -65,6 +65,9 @@ struct PhongGLTest: GL::OpenGLTester {
 
     void bindTexturesNotEnabled();
     void setAlphaMaskNotEnabled();
+    #ifndef MAGNUM_TARGET_GLES2
+    void setObjectIdNotEnabled();
+    #endif
     void setWrongLightCount();
     void setWrongLightId();
 
@@ -85,10 +88,20 @@ struct PhongGLTest: GL::OpenGLTester {
 
     void renderAlpha();
 
+    #ifndef MAGNUM_TARGET_GLES2
+    void renderObjectIdSetup();
+    void renderObjectIdTeardown();
+
+    void renderObjectId();
+    #endif
+
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
 
         GL::Renderbuffer _color{NoCreate};
+        #ifndef MAGNUM_TARGET_GLES2
+        GL::Renderbuffer _objectId{NoCreate};
+        #endif
         GL::Framebuffer _framebuffer{NoCreate};
 };
 
@@ -122,7 +135,11 @@ constexpr struct {
     {"ambient + diffuse + specular + normal texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture|Phong::Flag::NormalTexture, 1},
     {"alpha mask", Phong::Flag::AlphaMask, 1},
     {"alpha mask + diffuse texture", Phong::Flag::AlphaMask|Phong::Flag::DiffuseTexture, 1},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"object ID", Phong::Flag::ObjectId, 1},
+    {"object ID + alpha mask + specular texture", Phong::Flag::ObjectId|Phong::Flag::AlphaMask|Phong::Flag::SpecularTexture, 1},
     {"five lights", {}, 5}
+    #endif
 };
 
 using namespace Math::Literals;
@@ -236,6 +253,9 @@ PhongGLTest::PhongGLTest() {
 
               &PhongGLTest::bindTexturesNotEnabled,
               &PhongGLTest::setAlphaMaskNotEnabled,
+              #ifndef MAGNUM_TARGET_GLES2
+              &PhongGLTest::setObjectIdNotEnabled,
+              #endif
               &PhongGLTest::setWrongLightCount,
               &PhongGLTest::setWrongLightId});
 
@@ -272,6 +292,12 @@ PhongGLTest::PhongGLTest() {
         Containers::arraySize(RenderAlphaData),
         &PhongGLTest::renderAlphaSetup,
         &PhongGLTest::renderAlphaTeardown);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addTests({&PhongGLTest::renderObjectId},
+        &PhongGLTest::renderObjectIdSetup,
+        &PhongGLTest::renderObjectIdTeardown);
+    #endif
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -350,6 +376,19 @@ void PhongGLTest::setAlphaMaskNotEnabled() {
     CORRADE_COMPARE(out.str(),
         "Shaders::Phong::setAlphaMask(): the shader was not created with alpha mask enabled\n");
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void PhongGLTest::setObjectIdNotEnabled() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Phong shader;
+    shader.setObjectId(33376);
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::Phong::setObjectId(): the shader was not created with object ID enabled\n");
+}
+#endif
 
 void PhongGLTest::setWrongLightCount() {
     std::ostringstream out;
@@ -941,6 +980,90 @@ void PhongGLTest::renderAlpha() {
         Utility::Directory::join(SHADERS_TEST_DIR, data.expected),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void PhongGLTest::renderObjectIdSetup() {
+    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
+
+    _color = GL::Renderbuffer{};
+    _color.setStorage(GL::RenderbufferFormat::RGBA8, RenderSize);
+    _objectId = GL::Renderbuffer{};
+    _objectId.setStorage(GL::RenderbufferFormat::R32UI, RenderSize);
+    _framebuffer = GL::Framebuffer{{{}, RenderSize}};
+    _framebuffer
+        .attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
+        .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
+        .mapForDraw({
+            {Phong::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+            {Phong::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+        })
+        /* Pick a color that's directly representable on RGBA4 as well to
+           reduce artifacts (well, and this needs to be consistent with other
+           tests that *need* to run on WebGL 1) */
+        .clearColor(0, 0x111111_rgbf)
+        .clearColor(1, Vector4ui{27})
+        .bind();
+}
+
+void PhongGLTest::renderObjectIdTeardown() {
+    _color = GL::Renderbuffer{NoCreate};
+    _objectId = GL::Renderbuffer{NoCreate};
+    _framebuffer = GL::Framebuffer{NoCreate};
+}
+
+void PhongGLTest::renderObjectId() {
+    CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Draw), GL::Framebuffer::Status::Complete);
+
+    GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
+
+    Phong shader{Phong::Flag::ObjectId, 2};
+    shader.setLightColors({0x993366_rgbf, 0x669933_rgbf})
+        .setLightPositions({{-3.0f, -3.0f, 0.0f},
+                            { 3.0f, -3.0f, 0.0f}})
+        .setAmbientColor(0x330033_rgbf)
+        .setDiffuseColor(0xccffcc_rgbf)
+        .setSpecularColor(0x6666ff_rgbf)
+        .setTransformationMatrix(Matrix4::translation(Vector3::zAxis(-2.15f)))
+        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+        .setObjectId(48526);
+
+    sphere.draw(shader);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    /* Color output should have no difference -- same as in colored() */
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has some minor rounding differences (max = 1). ARM Mali G71
+       has bigger rounding differences. */
+    const Float maxThreshold = 8.34f, meanThreshold = 0.066f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 15.34f, meanThreshold = 3.33f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(SHADERS_TEST_DIR, "PhongTestFiles/colored.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+
+    /* Object ID -- no need to verify the whole image, just check that pixels
+       on known places have expected values. SwiftShader insists that the read
+       format has to be 32bit, so the renderbuffer format is that too to make
+       it the same (ES3 Mesa complains if these don't match). */
+    _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
+    CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+    Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    /* Outside of the object, cleared to 27 */
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[10][10], 27);
+    /* Inside of the object. Verify that it can hold 16 bits at least. */
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 48526);
+}
+#endif
 
 }}}}
 

@@ -98,19 +98,24 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         .addSource(flags & Flag::SpecularTexture ? "#define SPECULAR_TEXTURE\n" : "")
         .addSource(flags & Flag::NormalTexture ? "#define NORMAL_TEXTURE\n" : "")
         .addSource(flags & Flag::AlphaMask ? "#define ALPHA_MASK\n" : "")
+        #ifndef MAGNUM_TARGET_GLES2
+        .addSource(flags & Flag::ObjectId ? "#define OBJECT_ID\n" : "")
+        #endif
         .addSource(Utility::formatString(
             "#define LIGHT_COUNT {}\n"
             "#define LIGHT_COLORS_LOCATION {}\n", lightCount, _lightPositionsUniform + lightCount))
         #ifndef MAGNUM_TARGET_GLES
         .addSource(std::move(lightInitializer))
         #endif
+        .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Phong.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 
     attachShaders({vert, frag});
 
-    /* ES3 has this done in the shader directly */
+    /* ES3 has this done in the shader directly and doesn't even provide
+       bindFragmentDataLocation() */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
@@ -122,6 +127,12 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
             bindAttributeLocation(Tangent::Location, "tangent");
         if(flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture))
             bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
+        #ifndef MAGNUM_TARGET_GLES2
+        if(flags & Flag::ObjectId) {
+            bindFragmentDataLocation(ColorOutput, "color");
+            bindFragmentDataLocation(ObjectIdOutput, "objectId");
+        }
+        #endif
     }
     #endif
 
@@ -139,6 +150,9 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         _specularColorUniform = uniformLocation("specularColor");
         _shininessUniform = uniformLocation("shininess");
         if(flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask");
+        #ifndef MAGNUM_TARGET_GLES2
+        if(flags & Flag::ObjectId) _objectIdUniform = uniformLocation("objectId");
+        #endif
         _lightPositionsUniform = uniformLocation("lightPositions");
         _lightColorsUniform = uniformLocation("lightColors");
     }
@@ -162,12 +176,13 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     setSpecularColor(Color4{1.0f});
     setShininess(80.0f);
     if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
+    /* Object ID is zero by default */
     setLightColors(Containers::Array<Color4>{Containers::DirectInit, lightCount, Color4{1.0f}});
+    /* Light position is zero by default */
 
     setTransformationMatrix({});
     setProjectionMatrix({});
     setNormalMatrix({});
-    /* Light position is zero by default */
     #endif
 }
 
@@ -213,6 +228,15 @@ Phong& Phong::setAlphaMask(Float mask) {
     return *this;
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+Phong& Phong::setObjectId(UnsignedInt id) {
+    CORRADE_ASSERT(_flags & Flag::ObjectId,
+        "Shaders::Phong::setObjectId(): the shader was not created with object ID enabled", *this);
+    setUniform(_objectIdUniform, id);
+    return *this;
+}
+#endif
+
 Phong& Phong::setLightPositions(const Containers::ArrayView<const Vector3> positions) {
     CORRADE_ASSERT(_lightCount == positions.size(),
         "Shaders::Phong::setLightPositions(): expected" << _lightCount << "items but got" << positions.size(), *this);
@@ -250,6 +274,9 @@ Debug& operator<<(Debug& debug, const Phong::Flag value) {
         _c(SpecularTexture)
         _c(NormalTexture)
         _c(AlphaMask)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(ObjectId)
+        #endif
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -263,7 +290,11 @@ Debug& operator<<(Debug& debug, const Phong::Flags value) {
         Phong::Flag::DiffuseTexture,
         Phong::Flag::SpecularTexture,
         Phong::Flag::NormalTexture,
-        Phong::Flag::AlphaMask});
+        Phong::Flag::AlphaMask,
+        #ifndef MAGNUM_TARGET_GLES2
+        Phong::Flag::ObjectId
+        #endif
+        });
 }
 
 }}

@@ -73,27 +73,35 @@ Example configuration and rendering using @link Shaders::Phong @endlink:
 
 @snippet MagnumShaders.cpp shaders-rendering
 
-@section shaders-generic Generic vertex attributes
+@section shaders-generic Generic vertex attributes and framebuffer attachments
 
 Many shaders share the same vertex attribute definitions, such as positions,
 normals, texture coordinates etc. It's thus possible to configure the mesh
-for *generic* shader and then render it with any compatible shader. Definition
-of generic attributes is available in @ref Shaders::Generic class.
-Configuration of the above mesh using generic attributes could then look like
-this:
+for a *generic* shader and then render it with any compatible shader.
+Definition of all generic attributes is available in the @ref Shaders::Generic
+class. Configuration of the above mesh using generic attributes could then look
+like this:
 
 @snippet MagnumShaders.cpp shaders-generic
 
 Note that in this particular case both configurations are equivalent, because
-@ref Shaders::Phong also uses generic vertex attribute definitions.
-
-Then you can render the mesh using @ref Shaders::Phong shader like above, or
-use for example @ref Shaders::Flat3D or even @ref Shaders::MeshVisualizer with
-the same mesh reconfiguration. The unused attributes will be simply ignored.
+@ref Shaders::Phong also uses generic vertex attribute definitions. Then you
+can render the mesh using @ref Shaders::Phong shader like above, or use for
+example @ref Shaders::Flat3D or even @ref Shaders::MeshVisualizer with the same
+mesh reconfiguration. The unused attributes will be simply ignored.
 
 @snippet MagnumShaders.cpp shaders-meshvisualizer
 
 The @ref MeshTools::compile() utility configures meshes using generic vertex
 attribute definitions to make them usable with any shader.
+
+Besides vertex attributes, the @ref Shaders::Generic contains generic
+definitions for framebuffer outputs as well --- in many cases a shader has just
+one (color) output, but some shaders such as @ref Shaders::Flat or
+@ref Shaders::Phong offer an object ID output as well. A setup equivalent to
+what's done in Flat shader's @ref Shaders-Flat-usage-object-id but using the
+generic definitions would look like this:
+
+@snippet MagnumShaders.cpp shaders-generic-object-id
 */
 }

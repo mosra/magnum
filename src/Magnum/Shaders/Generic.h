@@ -37,8 +37,8 @@ namespace Magnum { namespace Shaders {
 @brief Generic shader definition
 
 Definitions common for majority of shaders in the @ref Shaders namespace,
-allowing mesh configured for a generic shader to be used with any of them.
-See @ref shaders-generic for more information.
+allowing mesh or a framebuffer configured for a generic shader to be used with
+any of them. See @ref shaders-generic for more information.
 @see @ref shaders, @ref Generic2D, @ref Generic3D
 */
 #ifndef DOXYGEN_GENERATING_OUTPUT
@@ -46,6 +46,25 @@ template<UnsignedInt> struct Generic;
 #else
 template<UnsignedInt dimensions> struct Generic {
     /* Keep consistent with generic.glsl and the real definitions below */
+
+    enum: UnsignedInt {
+        /**
+         * Color shader output. Present always, expects three- or
+         * four-component floating-point or normalized buffer attachment.
+        */
+        ColorOutput = 0,
+
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * Object ID shader output. Expects a single-component unsigned
+         * integral attachment.
+         * @requires_gles30 Object ID output requires integer buffer
+         *      attachments, which are not available in OpenGL ES 2.0 or
+         *      WebGL 1.0.
+         */
+        ObjectIdOutput = 1
+        #endif
+    };
 
     /**
      * @brief Vertex position
@@ -123,6 +142,13 @@ typedef Generic<3> Generic3D;
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 struct BaseGeneric {
+    enum: UnsignedInt {
+        ColorOutput = 0,
+        #ifndef MAGNUM_TARGET_GLES2
+        ObjectIdOutput = 1
+        #endif
+    };
+
     typedef GL::Attribute<1, Vector2> TextureCoordinates;
     typedef GL::Attribute<3, Magnum::Color3> Color3;
     typedef GL::Attribute<3, Magnum::Color4> Color4;

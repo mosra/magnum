@@ -68,13 +68,18 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
         .addSource(rs.get(vertexShaderName<dimensions>()));
     frag.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
         .addSource(flags & Flag::AlphaMask ? "#define ALPHA_MASK\n" : "")
+        #ifndef MAGNUM_TARGET_GLES2
+        .addSource(flags & Flag::ObjectId ? "#define OBJECT_ID\n" : "")
+        #endif
+        .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Flat.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 
     attachShaders({vert, frag});
 
-    /* ES3 has this done in the shader directly */
+    /* ES3 has this done in the shader directly and doesn't even provide
+       bindFragmentDataLocation() */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
@@ -82,6 +87,12 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
     {
         bindAttributeLocation(Position::Location, "position");
         if(flags & Flag::Textured) bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
+        #ifndef MAGNUM_TARGET_GLES2
+        if(flags & Flag::ObjectId) {
+            bindFragmentDataLocation(ColorOutput, "color");
+            bindFragmentDataLocation(ObjectIdOutput, "objectId");
+        }
+        #endif
     }
     #endif
 
@@ -94,6 +105,9 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
         _transformationProjectionMatrixUniform = uniformLocation("transformationProjectionMatrix");
         _colorUniform = uniformLocation("color");
         if(flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask");
+        #ifndef MAGNUM_TARGET_GLES2
+        if(flags & Flag::ObjectId) _objectIdUniform = uniformLocation("objectId");
+        #endif
     }
 
     #ifndef MAGNUM_TARGET_GLES
@@ -108,6 +122,7 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
     setTransformationProjectionMatrix({});
     setColor(Color4{1.0f});
     if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
+    /* Object ID is zero by default */
     #endif
 }
 
@@ -125,6 +140,15 @@ template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::setAlphaMas
     return *this;
 }
 
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::setObjectId(UnsignedInt id) {
+    CORRADE_ASSERT(_flags & Flag::ObjectId,
+        "Shaders::Flat::setObjectId(): the shader was not created with object ID enabled", *this);
+    setUniform(_objectIdUniform, id);
+    return *this;
+}
+#endif
+
 template class Flat<2>;
 template class Flat<3>;
 
@@ -136,6 +160,9 @@ Debug& operator<<(Debug& debug, const FlatFlag value) {
         #define _c(v) case FlatFlag::v: return debug << "Shaders::Flat::Flag::" #v;
         _c(Textured)
         _c(AlphaMask)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(ObjectId)
+        #endif
         #undef _c
         /* LCOV_EXCL_STOP */
     }
@@ -146,7 +173,11 @@ Debug& operator<<(Debug& debug, const FlatFlag value) {
 Debug& operator<<(Debug& debug, const FlatFlags value) {
     return Containers::enumSetDebugOutput(debug, value, "Shaders::Flat::Flags{}", {
         FlatFlag::Textured,
-        FlatFlag::AlphaMask});
+        FlatFlag::AlphaMask,
+        #ifndef MAGNUM_TARGET_GLES2
+        FlatFlag::ObjectId
+        #endif
+        });
 }
 
 }

@@ -25,7 +25,7 @@
 
 #ifndef NEW_GLSL
 #define in varying
-#define color gl_FragColor
+#define fragmentColor gl_FragColor
 #define texture texture2D
 #endif
 
@@ -112,9 +112,17 @@ uniform lowp float alphaMask
     ;
 #endif
 
-/* Needs to be last because it uses locations 9 + LIGHT_COUNT to
-   9 + 2*LIGHT_COUNT - 1. Location 9 is lightPositions. Also it can't be
-   specified as 9 + LIGHT_COUNT because that requires ARB_enhanced_layouts. */
+#ifdef OBJECT_ID
+#ifdef EXPLICIT_UNIFORM_LOCATION
+layout(location = 9)
+#endif
+/* mediump is just 2^10, which might not be enough, this is 2^16 */
+uniform highp uint objectId; /* defaults to zero */
+#endif
+
+/* Needs to be last because it uses locations 10 + LIGHT_COUNT to
+   10 + 2*LIGHT_COUNT - 1. Location 10 is lightPositions. Also it can't be
+   specified as 10 + LIGHT_COUNT because that requires ARB_enhanced_layouts. */
 #ifdef EXPLICIT_UNIFORM_LOCATION
 layout(location = LIGHT_COLORS_LOCATION) /* I fear this will blow up some drivers */
 #endif
@@ -136,7 +144,17 @@ in mediump vec2 interpolatedTextureCoords;
 #endif
 
 #ifdef NEW_GLSL
-out lowp vec4 color;
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = COLOR_OUTPUT_ATTRIBUTE_LOCATION)
+#endif
+out lowp vec4 fragmentColor;
+#endif
+#ifdef OBJECT_ID
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = OBJECT_ID_OUTPUT_ATTRIBUTE_LOCATION)
+#endif
+/* mediump is just 2^10, which might not be enough, this is 2^16 */
+out highp uint fragmentObjectId;
 #endif
 
 void main() {
@@ -157,7 +175,7 @@ void main() {
         specularColor;
 
     /* Ambient color */
-    color = finalAmbientColor;
+    fragmentColor = finalAmbientColor;
 
     /* Normal */
     mediump vec3 normalizedTransformedNormal = normalize(transformedNormal);
@@ -176,13 +194,13 @@ void main() {
     for(int i = 0; i < LIGHT_COUNT; ++i) {
         highp vec3 normalizedLightDirection = normalize(lightDirections[i]);
         lowp float intensity = max(0.0, dot(normalizedTransformedNormal, normalizedLightDirection));
-        color += vec4(finalDiffuseColor.rgb*lightColors[i].rgb*intensity, lightColors[i].a*finalDiffuseColor.a/float(LIGHT_COUNT));
+        fragmentColor += vec4(finalDiffuseColor.rgb*lightColors[i].rgb*intensity, lightColors[i].a*finalDiffuseColor.a/float(LIGHT_COUNT));
 
         /* Add specular color, if needed */
         if(intensity > 0.001) {
             highp vec3 reflection = reflect(-normalizedLightDirection, normalizedTransformedNormal);
             mediump float specularity = clamp(pow(max(0.0, dot(normalize(cameraDirection), reflection)), shininess), 0.0, 1.0);
-            color += vec4(finalSpecularColor.rgb*specularity, finalSpecularColor.a);
+            fragmentColor += vec4(finalSpecularColor.rgb*specularity, finalSpecularColor.a);
         }
     }
 
@@ -190,6 +208,10 @@ void main() {
     /* Using <= because if mask is set to 1.0, it should discard all, similarly
        as when using 0, it should only discard what's already invisible
        anyway. */
-    if(color.a <= alphaMask) discard;
+    if(fragmentColor.a <= alphaMask) discard;
+    #endif
+
+    #ifdef OBJECT_ID
+    fragmentObjectId = objectId;
     #endif
 }

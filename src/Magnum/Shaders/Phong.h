@@ -95,6 +95,18 @@ diffuse part and then separate the alpha like this:
 
 @snippet MagnumShaders.cpp Phong-usage-alpha
 
+@subsection Shaders-Phong-usage-object-id Object ID output
+
+The shader supports writing object ID to the framebuffer for object picking or
+other annotation purposes. Enable it using @ref Flag::ObjectId and set up an
+integer buffer attached to the @ref ObjectIdOutput attachment. The
+functionality is practically the same as in the @ref Flat shader, see its
+@ref Shaders-Flat-usage-object-id documentation for more information and usage
+example.
+
+@requires_gles30 Object ID output requires integer buffer attachments, which
+    are not available in OpenGL ES 2.0 or WebGL 1.0.
+
 @see @ref shaders
 */
 class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
@@ -133,6 +145,29 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * @ref Flag::SpecularTexture is set.
          */
         typedef Generic3D::TextureCoordinates TextureCoordinates;
+
+        enum: UnsignedInt {
+            /**
+             * Color shader output. @ref shaders-generic "Generic output",
+             * present always. Expects three- or four-component floating-point
+             * or normalized buffer attachment.
+             */
+            ColorOutput = Generic3D::ColorOutput,
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * Object ID shader output. @ref shaders-generic "Generic output",
+             * present only if @ref Flag::ObjectId is set. Expects a
+             * single-component unsigned integral attachment. Writes the value
+             * set in @ref setObjectId() there, see
+             * @ref Shaders-Phong-usage-object-id for more information.
+             * @requires_gles30 Object ID output requires integer buffer
+             *      attachments, which are not available in OpenGL ES 2.0 or
+             *      WebGL 1.0.
+             */
+            ObjectIdOutput = Generic3D::ObjectIdOutput
+            #endif
+        };
 
         /**
          * @brief Flag
@@ -175,7 +210,18 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              * with proper depth sorting and blending you'll usually get much
              * better performance and output quality.
              */
-            AlphaMask = 1 << 3
+            AlphaMask = 1 << 3,
+
+            #ifndef MAGNUM_TARGET_GLES2
+            /**
+             * Enable object ID output. See @ref Shaders-Phong-usage-object-id
+             * for more information.
+             * @requires_gles30 Object ID output requires integer buffer
+             *      attachments, which are not available in OpenGL ES 2.0 or
+             *      WebGL 1.0.
+             */
+            ObjectId = 1 << 5
+            #endif
         };
 
         /**
@@ -381,6 +427,22 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          */
         Phong& setAlphaMask(Float mask);
 
+        #ifndef MAGNUM_TARGET_GLES2
+        /**
+         * @brief Set object ID
+         * @return Reference to self (for method chaining)
+         *
+         * Expects that the shader was created with @ref Flag::ObjectId
+         * enabled. Value set here is written to the @ref ObjectIdOutput, see
+         * @ref Shaders-Phong-usage-object-id for more information. Default is
+         * @cpp 0 @ce.
+         * @requires_gles30 Object ID output requires integer buffer
+         *      attachments, which are not available in OpenGL ES 2.0 or WebGL
+         *      1.0.
+         */
+        Phong& setObjectId(UnsignedInt id);
+        #endif
+
         /**
          * @brief Set transformation matrix
          * @return Reference to self (for method chaining)
@@ -506,9 +568,12 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
             _diffuseColorUniform{5},
             _specularColorUniform{6},
             _shininessUniform{7},
-            _alphaMaskUniform{8},
-            _lightPositionsUniform{9},
-            _lightColorsUniform; /* 9 + lightCount, set in the constructor */
+            _alphaMaskUniform{8};
+            #ifndef MAGNUM_TARGET_GLES2
+            Int _objectIdUniform{9};
+            #endif
+        Int _lightPositionsUniform{10},
+            _lightColorsUniform; /* 10 + lightCount, set in the constructor */
 };
 
 /** @debugoperatorclassenum{Phong,Phong::Flag} */

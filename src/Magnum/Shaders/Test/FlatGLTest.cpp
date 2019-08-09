@@ -64,6 +64,9 @@ struct FlatGLTest: GL::OpenGLTester {
 
     template<UnsignedInt dimensions> void bindTextureNotEnabled();
     template<UnsignedInt dimensions> void setAlphaMaskNotEnabled();
+    #ifndef MAGNUM_TARGET_GLES2
+    template<UnsignedInt dimensions> void setObjectIdNotEnabled();
+    #endif
 
     void renderSetup();
     void renderTeardown();
@@ -83,10 +86,21 @@ struct FlatGLTest: GL::OpenGLTester {
     void renderAlpha2D();
     void renderAlpha3D();
 
+    #ifndef MAGNUM_TARGET_GLES2
+    void renderObjectIdSetup();
+    void renderObjectIdTeardown();
+
+    void renderObjectId2D();
+    void renderObjectId3D();
+    #endif
+
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
 
         GL::Renderbuffer _color{NoCreate};
+        #ifndef MAGNUM_TARGET_GLES2
+        GL::Renderbuffer _objectId{NoCreate};
+        #endif
         GL::Framebuffer _framebuffer{NoCreate};
 };
 
@@ -112,7 +126,11 @@ constexpr struct {
     {"", {}},
     {"textured", Flat2D::Flag::Textured},
     {"alpha mask", Flat2D::Flag::AlphaMask},
-    {"alpha mask + textured", Flat2D::Flag::AlphaMask|Flat2D::Flag::Textured}
+    {"alpha mask + textured", Flat2D::Flag::AlphaMask|Flat2D::Flag::Textured},
+    #ifndef MAGNUM_TARGET_GLES2
+    {"object ID", Flat2D::Flag::ObjectId},
+    {"object ID + alpha mask + textured", Flat2D::Flag::ObjectId|Flat2D::Flag::AlphaMask|Flat2D::Flag::Textured}
+    #endif
 };
 
 const struct {
@@ -150,7 +168,12 @@ FlatGLTest::FlatGLTest() {
         &FlatGLTest::bindTextureNotEnabled<2>,
         &FlatGLTest::bindTextureNotEnabled<3>,
         &FlatGLTest::setAlphaMaskNotEnabled<2>,
-        &FlatGLTest::setAlphaMaskNotEnabled<3>});
+        &FlatGLTest::setAlphaMaskNotEnabled<3>,
+        #ifndef MAGNUM_TARGET_GLES2
+        &FlatGLTest::setObjectIdNotEnabled<2>,
+        &FlatGLTest::setObjectIdNotEnabled<3>
+        #endif
+        });
 
     addTests({&FlatGLTest::renderDefaults2D,
               &FlatGLTest::renderDefaults3D,
@@ -168,6 +191,13 @@ FlatGLTest::FlatGLTest() {
         Containers::arraySize(RenderAlphaData),
         &FlatGLTest::renderAlphaSetup,
         &FlatGLTest::renderAlphaTeardown);
+
+    #ifndef MAGNUM_TARGET_GLES2
+    addTests({&FlatGLTest::renderObjectId2D,
+              &FlatGLTest::renderObjectId3D},
+        &FlatGLTest::renderObjectIdSetup,
+        &FlatGLTest::renderObjectIdTeardown);
+    #endif
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -242,6 +272,21 @@ template<UnsignedInt dimensions> void FlatGLTest::setAlphaMaskNotEnabled() {
     CORRADE_COMPARE(out.str(),
         "Shaders::Flat::setAlphaMask(): the shader was not created with alpha mask enabled\n");
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt dimensions> void FlatGLTest::setObjectIdNotEnabled() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Flat<dimensions> shader;
+    shader.setObjectId(33376);
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::Flat::setObjectId(): the shader was not created with object ID enabled\n");
+}
+#endif
 
 constexpr Vector2i RenderSize{80, 80};
 
@@ -682,6 +727,134 @@ void FlatGLTest::renderAlpha3D() {
         Utility::Directory::join({SHADERS_TEST_DIR, data.expected3D}),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+void FlatGLTest::renderObjectIdSetup() {
+    GL::Renderer::enable(GL::Renderer::Feature::FaceCulling);
+
+    _color = GL::Renderbuffer{};
+    _color.setStorage(GL::RenderbufferFormat::RGBA8, RenderSize);
+    _objectId = GL::Renderbuffer{};
+    _objectId.setStorage(GL::RenderbufferFormat::R32UI, RenderSize);
+    _framebuffer = GL::Framebuffer{{{}, RenderSize}};
+    _framebuffer
+        .attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, _color)
+        .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, _objectId)
+        .mapForDraw({
+            {Flat3D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+            {Flat3D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}
+        })
+        /* Pick a color that's directly representable on RGBA4 as well to
+           reduce artifacts (well, and this needs to be consistent with other
+           tests that *need* to run on WebGL 1) */
+        .clearColor(0, 0x111111_rgbf)
+        .clearColor(1, Vector4ui{27})
+        .bind();
+}
+
+void FlatGLTest::renderObjectIdTeardown() {
+    _color = GL::Renderbuffer{NoCreate};
+    _objectId = GL::Renderbuffer{NoCreate};
+    _framebuffer = GL::Framebuffer{NoCreate};
+}
+
+void FlatGLTest::renderObjectId2D() {
+    CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Draw), GL::Framebuffer::Status::Complete);
+
+    GL::Mesh circle = MeshTools::compile(Primitives::circle2DSolid(32));
+
+    Flat2D shader{Flat3D::Flag::ObjectId};
+    shader.setColor(0x9999ff_rgbf)
+        .setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+        .setObjectId(47523);
+
+    circle.draw(shader);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    /* Color output should have no difference -- same as in colored2D() */
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    const Float maxThreshold = 0.0f, meanThreshold = 0.0f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 11.34f, meanThreshold = 0.51f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(SHADERS_TEST_DIR, "FlatTestFiles/colored2D.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+
+    /* Object ID -- no need to verify the whole image, just check that pixels
+       on known places have expected values. SwiftShader insists that the read
+       format has to be 32bit, so the renderbuffer format is that too to make
+       it the same (ES3 Mesa complains if these don't match). */
+    _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
+    CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+    Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    /* Outside of the object, cleared to 27 */
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[10][10], 27);
+    /* Inside of the object. Verify that it can hold 16 bits at least. */
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 47523);
+}
+
+void FlatGLTest::renderObjectId3D() {
+    CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Draw), GL::Framebuffer::Status::Complete);
+
+    GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32));
+
+    Flat3D shader{Flat3D::Flag::ObjectId};
+    shader.setColor(0x9999ff_rgbf)
+        .setTransformationProjectionMatrix(
+            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::rotationY(-15.0_degf)*
+            Matrix4::rotationX(15.0_degf))
+        .setObjectId(48526);
+
+    sphere.draw(shader);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    /* Color output should have no difference -- same as in colored3D() */
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has 5 different pixels on the edges */
+    const Float maxThreshold = 170.0f, meanThreshold = 0.133f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 170.0f, meanThreshold = 0.456f;
+    #endif
+    _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{0});
+    CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(SHADERS_TEST_DIR, "FlatTestFiles/colored3D.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+
+    /* Object ID -- no need to verify the whole image, just check that pixels
+       on known places have expected values. SwiftShader insists that the read
+       format has to be 32bit, so the renderbuffer format is that too to make
+       it the same (ES3 Mesa complains if these don't match). */
+    _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
+    CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+    Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    /* Outside of the object, cleared to 27 */
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[10][10], 27);
+    /* Inside of the object. Verify that it can hold 16 bits at least. */
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 48526);
+}
+#endif
 
 }}}}
 

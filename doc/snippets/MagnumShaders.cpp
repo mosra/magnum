@@ -29,7 +29,10 @@
 
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/DefaultFramebuffer.h"
+#include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/Mesh.h"
+#include "Magnum/GL/Renderbuffer.h"
+#include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/MeshTools/Duplicate.h"
@@ -203,6 +206,42 @@ shader.setTransformationProjectionMatrix(projectionMatrix*transformationMatrix)
 mesh.draw(shader);
 /* [Flat-usage-textured2] */
 }
+
+#ifndef MAGNUM_TARGET_GLES2
+{
+GL::Framebuffer framebuffer{{}};
+GL::Mesh mesh;
+Vector2i size;
+UnsignedInt meshId{};
+/* [Flat-usage-object-id] */
+GL::Renderbuffer color, objectId;
+color.setStorage(GL::RenderbufferFormat::RGBA8, size);
+objectId.setStorage(GL::RenderbufferFormat::R16UI, size); // large as needed
+framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, color)
+    .attachRenderbuffer(GL::Framebuffer::ColorAttachment{1}, objectId);
+
+Shaders::Flat3D shader{Shaders::Flat3D::Flag::ObjectId};
+
+// ...
+
+framebuffer.mapForDraw({
+        {Shaders::Flat3D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+        {Shaders::Flat3D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}})
+    .clearColor(0, 0x1f1f1f_rgbf)
+    .clearColor(1, Vector4ui{0})
+    .bind();
+
+shader.setObjectId(meshId);
+mesh.draw(shader);
+/* [Flat-usage-object-id] */
+
+/* [shaders-generic-object-id] */
+framebuffer.mapForDraw({
+    {Shaders::Generic3D::ColorOutput, GL::Framebuffer::ColorAttachment{0}},
+    {Shaders::Generic3D::ObjectIdOutput, GL::Framebuffer::ColorAttachment{1}}});
+/* [shaders-generic-object-id] */
+}
+#endif
 
 {
 /* [MeshVisualizer-usage-geom1] */
