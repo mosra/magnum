@@ -110,10 +110,10 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
 
     attachShaders({vert, frag});
 
+    /* ES3 has this done in the shader directly */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
-    #else
-    if(!GL::Context::current().isVersionSupported(GL::Version::GLES300))
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
@@ -123,6 +123,7 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         if(flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture))
             bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
     }
+    #endif
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 

@@ -74,15 +74,16 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
 
     attachShaders({vert, frag});
 
+    /* ES3 has this done in the shader directly */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
-    #else
-    if(!GL::Context::current().isVersionSupported(GL::Version::GLES300))
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
         if(flags & Flag::Textured) bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
     }
+    #endif
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 

@@ -106,10 +106,10 @@ MeshVisualizer::MeshVisualizer(const Flags flags): _flags{flags} {
     if(geom) attachShader(*geom);
     #endif
 
+    /* ES3 has this done in the shader directly */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
     #ifndef MAGNUM_TARGET_GLES
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::ARB::explicit_attrib_location>(version))
-    #else
-    if(!GL::Context::current().isVersionSupported(GL::Version::GLES300))
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
@@ -123,6 +123,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): _flags{flags} {
         }
         #endif
     }
+    #endif
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(link());
 
