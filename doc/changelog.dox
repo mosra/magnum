@@ -293,6 +293,11 @@ See also:
     @ref GL::Context::DetectedDriver::ArmMali "ARM Mali" drivers complain about
     R8 not being renderable (even though the format shouldn't matter when
     unbinding a texture)
+-   The engine was silently doing an explicit initial call to @fn_gl{Viewport}
+    when it detected it's running under ApiTrace, because otherwise ApiTrace
+    would assume a zero-sized framebuffer. This behavior is no longer silent
+    but advertised as a @cpp "apitrace-zero-initial-viewport" @ce workaround.
+    See @ref opengl-workarounds for more information.
 
 @subsubsection changelog-latest-changes-math Math library
 

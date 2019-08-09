@@ -256,6 +256,12 @@ namespace {
    glGetFramebufferParameter() works correctly. */
 "nv-implementation-color-read-format-dsa-broken",
 #endif
+
+#ifndef MAGNUM_TARGET_GLES
+/* ApiTrace needs an explicit initial glViewport() call to initialize its
+   framebuffer size, otherwise it assumes it's zero-sized. */
+"apitrace-zero-initial-viewport",
+#endif
 /* [workarounds] */
     };
 }
@@ -431,6 +437,15 @@ void Context::setupDriverWorkarounds() {
     #endif
 
     #undef _setRequiredVersion
+
+    #ifndef MAGNUM_TARGET_GLES
+    if(isExtensionSupported<Extensions::GREMEDY::string_marker>() &&
+       !isDriverWorkaroundDisabled("apitrace-zero-initial-viewport")) {
+        GLint viewport[4];
+        glGetIntegerv(GL_VIEWPORT, viewport);
+        glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+    }
+    #endif
 }
 
 }}
