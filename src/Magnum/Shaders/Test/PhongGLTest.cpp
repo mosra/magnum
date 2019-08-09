@@ -456,8 +456,8 @@ void PhongGLTest::renderSetup() {
 }
 
 void PhongGLTest::renderTeardown() {
-    _color = GL::Renderbuffer{NoCreate};
     _framebuffer = GL::Framebuffer{NoCreate};
+    _color = GL::Renderbuffer{NoCreate};
 }
 
 void PhongGLTest::renderDefaults() {

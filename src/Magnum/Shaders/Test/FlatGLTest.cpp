@@ -311,8 +311,8 @@ void FlatGLTest::renderSetup() {
 }
 
 void FlatGLTest::renderTeardown() {
-    _color = GL::Renderbuffer{NoCreate};
     _framebuffer = GL::Framebuffer{NoCreate};
+    _color = GL::Renderbuffer{NoCreate};
 }
 
 void FlatGLTest::renderDefaults2D() {
