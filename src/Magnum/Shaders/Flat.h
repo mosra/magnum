@@ -59,10 +59,11 @@ shader renders the mesh with a white color in an identity transformation.
 Use @ref setTransformationProjectionMatrix(), @ref setColor() and others to
 configure the shader.
 
-If you want to use a texture, you need to provide also @ref TextureCoordinates
-attribute. Pass @ref Flag::Textured to the constructor and then at render time
-don't forget to bind also the texture via @ref bindTexture(). The texture is
-multipled by the color, which is by default set to @cpp 0xffffffff_rgbaf @ce.
+If you want to use a texture, you need to provide also the
+@ref TextureCoordinates attribute. Pass @ref Flag::Textured to the constructor
+and then at render time don't forget to bind also the texture via
+@ref bindTexture(). The texture is multipled by the color, which is by default
+set to @cpp 0xffffffff_rgbaf @ce.
 
 For coloring the texture based on intensity you can use the @ref Vector shader.
 
@@ -217,7 +218,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
         /**
          * @brief Construct without creating the underlying OpenGL object
          *
-         * The constructed instance is equivalent to moved-from state. Useful
+         * The constructed instance is equivalent to a moved-from state. Useful
          * in cases where you will overwrite the instance later anyway. Move
          * another object over it to make it useful.
          *
@@ -257,7 +258,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          * @return Reference to self (for method chaining)
          *
          * If @ref Flag::Textured is set, initial value is
-         * @cpp 0xffffffff_rgbaf @ce and the color will be multiplied with
+         * @cpp 0xffffffff_rgbaf @ce and the color will be multiplied with the
          * texture.
          * @see @ref bindTexture()
          */

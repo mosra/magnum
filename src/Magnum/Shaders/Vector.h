@@ -71,7 +71,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
         /**
          * @brief Construct without creating the underlying OpenGL object
          *
-         * The constructed instance is equivalent to moved-from state. Useful
+         * The constructed instance is equivalent to a moved-from state. Useful
          * in cases where you will overwrite the instance later anyway. Move
          * another object over it to make it useful.
          *

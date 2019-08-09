@@ -40,19 +40,19 @@ namespace Magnum { namespace Shaders {
 /**
 @brief Phong shader
 
-Uses ambient, diffuse and specular color or texture. For colored mesh you need
-to provide the @ref Position and @ref Normal attributes in your triangle mesh.
-By default, the shader renders the mesh with a white color in an identity
+Uses ambient, diffuse and specular color or texture. For a colored mesh you
+need to provide the @ref Position and @ref Normal attributes in your triangle
+mesh. By default, the shader renders the mesh with a white color in an identity
 transformation. Use @ref setTransformationMatrix(), @ref setNormalMatrix(),
 @ref setProjectionMatrix(), @ref setLightPosition() and others to configure
 the shader.
 
-If you want to use textures, you need to provide also @ref TextureCoordinates
-attribute. Pass appropriate @ref Flags to constructor and then at render time
-don't forget to also call appropriate subset of @ref bindAmbientTexture(),
-@ref bindDiffuseTexture() and @ref bindSpecularTexture() (or the combined
-@ref bindTextures()). The texture is multipled by the color, which is by
-default set to fully opaque white for enabled textures.
+If you want to use textures, you need to provide also the
+@ref TextureCoordinates attribute. Pass appropriate @ref Flag combination to
+the constructor and then at render time don't forget to also call appropriate subset of @ref bindAmbientTexture(), @ref bindDiffuseTexture() and
+@ref bindSpecularTexture() (or the combined @ref bindTextures()). The texture
+is multipled by the color, which is by default set to fully opaque white for
+enabled textures.
 
 @image html shaders-phong.png width=256px
 
@@ -87,9 +87,9 @@ operation which is known to have considerable performance impact on some
 platforms. With proper depth sorting and blending you'll usually get much
 better performance and output quality.
 
-For general alpha-masked drawing you need to provide ambient texture with alpha
-channel and set alpha channel of diffuse/specular color to @cpp 0.0f @ce so
-only ambient alpha will be taken into account. If you have diffuse texture
+For general alpha-masked drawing you need to provide an ambient texture with
+alpha channel and set alpha channel of the diffuse/specular color to @cpp 0.0f @ce
+so only ambient alpha will be taken into account. If you have a diffuse texture
 combined with the alpha mask, you can use that texture for both ambient and
 diffuse part and then separate the alpha like this:
 
@@ -241,7 +241,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         /**
          * @brief Construct without creating the underlying OpenGL object
          *
-         * The constructed instance is equivalent to moved-from state. Useful
+         * The constructed instance is equivalent to a moved-from state. Useful
          * in cases where you will overwrite the instance later anyway. Move
          * another object over it to make it useful.
          *

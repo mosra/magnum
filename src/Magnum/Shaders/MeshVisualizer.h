@@ -164,7 +164,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
         /**
          * @brief Construct without creating the underlying OpenGL object
          *
-         * The constructed instance is equivalent to moved-from state. Useful
+         * The constructed instance is equivalent to a moved-from state. Useful
          * in cases where you will overwrite the instance later anyway. Move
          * another object over it to make it useful.
          *
