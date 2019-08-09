@@ -128,6 +128,15 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
          */
         typedef GL::Attribute<3, Float> VertexIndex;
 
+        enum: UnsignedInt {
+            /**
+             * Color shader output. @ref shaders-generic "Generic output",
+             * present always. Expects three- or four-component floating-point
+             * or normalized buffer attachment.
+             */
+            ColorOutput = Generic3D::ColorOutput
+        };
+
         /**
          * @brief Flag
          *

@@ -85,6 +85,7 @@ MeshVisualizer::MeshVisualizer(const Flags flags): _flags{flags} {
         .addSource(rs.get("MeshVisualizer.vert"));
     frag.addSource(flags & Flag::Wireframe ? "#define WIREFRAME_RENDERING\n" : "")
         .addSource(flags & Flag::NoGeometryShader ? "#define NO_GEOMETRY_SHADER\n" : "")
+        .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("MeshVisualizer.frag"));
 
     #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)

@@ -89,6 +89,15 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
          */
         typedef typename Generic<dimensions>::Color4 Color4;
 
+        enum: UnsignedInt {
+            /**
+             * Color shader output. @ref shaders-generic "Generic output",
+             * present always. Expects three- or four-component floating-point
+             * or normalized buffer attachment.
+             */
+            ColorOutput = Generic<dimensions>::ColorOutput
+        };
+
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Vertex color

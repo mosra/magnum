@@ -92,6 +92,9 @@ in lowp vec3 barycentric;
 #endif
 
 #ifdef NEW_GLSL
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = COLOR_OUTPUT_ATTRIBUTE_LOCATION)
+#endif
 out lowp vec4 fragmentColor;
 #endif
 

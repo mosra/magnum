@@ -31,6 +31,9 @@
 in lowp vec4 interpolatedColor;
 
 #ifdef NEW_GLSL
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = COLOR_OUTPUT_ATTRIBUTE_LOCATION)
+#endif
 out lowp vec4 fragmentColor;
 #endif
 

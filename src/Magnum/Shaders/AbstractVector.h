@@ -59,6 +59,15 @@ template<UnsignedInt dimensions> class AbstractVector: public GL::AbstractShader
          */
         typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
 
+        enum: UnsignedInt {
+            /**
+             * Color shader output. @ref shaders-generic "Generic output",
+             * present always. Expects three- or four-component floating-point
+             * or normalized buffer attachment.
+             */
+            ColorOutput = Generic<dimensions>::ColorOutput
+        };
+
         /** @brief Copying is not allowed */
         AbstractVector(const AbstractVector<dimensions>&) = delete;
 

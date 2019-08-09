@@ -61,7 +61,8 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector() {
 
     vert.addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
-    frag.addSource(rs.get("Vector.frag"));
+    frag.addSource(rs.get("generic.glsl"))
+        .addSource(rs.get("Vector.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 

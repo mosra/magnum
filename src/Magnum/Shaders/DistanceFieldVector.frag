@@ -69,6 +69,9 @@ uniform lowp sampler2D vectorTexture;
 in mediump vec2 fragmentTextureCoordinates;
 
 #ifdef NEW_GLSL
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = COLOR_OUTPUT_ATTRIBUTE_LOCATION)
+#endif
 out lowp vec4 fragmentColor;
 #endif
 

@@ -61,7 +61,8 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor() {
 
     vert.addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
-    frag.addSource(rs.get("VertexColor.frag"));
+    frag.addSource(rs.get("generic.glsl"))
+        .addSource(rs.get("VertexColor.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
 
