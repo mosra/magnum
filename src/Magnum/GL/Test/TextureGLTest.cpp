@@ -2902,7 +2902,7 @@ void TextureGLTest::srgbStorage() {
         #else
         PixelFormat::SRGB
         #endif
-        , PixelType::UnsignedByte, Vector2i{32}, nullptr});
+        , PixelType::UnsignedByte, Vector2i{32}, {nullptr, 32*32*3}});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -2936,7 +2936,7 @@ void TextureGLTest::srgbAlphaStorage() {
         #else
         PixelFormat::SRGBAlpha
         #endif
-        , PixelType::UnsignedByte, Vector2i{32}, nullptr});
+        , PixelType::UnsignedByte, Vector2i{32}, {nullptr, 32*32*4}});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 

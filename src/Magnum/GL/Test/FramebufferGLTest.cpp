@@ -1599,7 +1599,7 @@ void FramebufferGLTest::readViewNullptr() {
     Framebuffer framebuffer({{}, Vector2i(128)});
     framebuffer.attachRenderbuffer(Framebuffer::ColorAttachment(0), color);
 
-    MutableImageView2D view{DataStorage, PixelFormat::RGBA, PixelType::UnsignedByte, {8, 16}, {nullptr, (DataOffset + 8*15)*sizeof(Color4ub)}};
+    MutableImageView2D view{DataStorage, PixelFormat::RGBA, PixelType::UnsignedByte, {8, 16}};
 
     std::ostringstream out;
     Error redirectError{&out};
