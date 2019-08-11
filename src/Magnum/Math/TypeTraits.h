@@ -327,6 +327,7 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
      * Uses fuzzy compare for floating-point types (using @ref epsilon()
      * value), pure equality comparison everywhere else. Algorithm adapted from
      * http://floating-point-gui.de/errors/comparison/.
+     * @see @ref Math::equal(T, T), @ref Math::notEqual(T, T)
      */
     static bool equals(T a, T b);
 
@@ -344,6 +345,28 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
     static bool equalsZero(T a, T magnitude);
     #endif
 };
+
+/**
+@brief Equality comparison of scalar types
+
+Calls @ref TypeTraits<T>::equals() --- using fuzzy compare for floating-point
+types and doing equality comparison on integral types. Scalar complement to
+@ref equal(const Vector<size, T>& a, const Vector<size, T>&).
+*/
+template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type equal(T a, T b) {
+    return TypeTraits<T>::equals(a, b);
+}
+
+/**
+@brief Non-equality comparison of scalar types
+
+Calls @ref TypeTraits<T>::equals() --- using fuzzy compare for floating-point
+types and doing equality comparison on integral types. Scalar complement to
+@ref notEqual(const Vector<size, T>& a, const Vector<size, T>&).
+*/
+template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type notEqual(T a, T b) {
+    return !TypeTraits<T>::equals(a, b);
+}
 
 /* Integral scalar types */
 namespace Implementation {

@@ -58,6 +58,8 @@ struct TypeTraitsTest: Corrade::TestSuite::Tester {
     template<class T> void equalsZeroFloatingPoint();
     template<class T> void equalsZeroFloatingPointSmall();
     template<class T> void equalsZeroFloatingPointLarge();
+
+    void equal();
 };
 
 enum: std::size_t { EqualsZeroDataCount = 3 };
@@ -162,6 +164,8 @@ TypeTraitsTest::TypeTraitsTest() {
         &TypeTraitsTest::equalsZeroFloatingPoint<long double>
         #endif
         }, EqualsZeroDataCount);
+
+    addTests({&TypeTraitsTest::equal});
 }
 
 void TypeTraitsTest::sizeOfLongDouble() {
@@ -274,6 +278,9 @@ template<class T> void TypeTraitsTest::equalsFloatingPointLarge() {
 
     CORRADE_VERIFY(TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(2), T(25)));
     CORRADE_VERIFY(!TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(75), T(25)));
+
+    CORRADE_VERIFY(TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(2), T(25)));
+    CORRADE_VERIFY(!TypeTraits<T>::equals(T(25)+TypeTraits<T>::epsilon()*T(75), T(25)));
 }
 
 template<class T> void TypeTraitsTest::equalsFloatingPointInfinity() {
@@ -324,6 +331,18 @@ template<class T> void TypeTraitsTest::equalsZeroFloatingPoint() {
 
     CORRADE_VERIFY(!TypeTraits<T>::equals(a - step*T(2.0), a));
     CORRADE_VERIFY(!TypeTraits<T>::equalsZero(a - step*T(2.0) - a, magnitude));
+}
+
+void TypeTraitsTest::equal() {
+    CORRADE_VERIFY(Math::equal(1, 1));
+    CORRADE_VERIFY(!Math::equal(1, -1));
+    CORRADE_VERIFY(Math::equal(1.0f + TypeTraits<Float>::epsilon()/2.0f, 1.0f));
+    CORRADE_VERIFY(!Math::equal(1.0f + TypeTraits<Float>::epsilon()*3.0f, 1.0f));
+
+    CORRADE_VERIFY(!Math::notEqual(1, 1));
+    CORRADE_VERIFY(Math::notEqual(1, -1));
+    CORRADE_VERIFY(!Math::notEqual(1.0f + TypeTraits<Float>::epsilon()/2.0f, 1.0f));
+    CORRADE_VERIFY(Math::notEqual(1.0f + TypeTraits<Float>::epsilon()*3.0f, 1.0f));
 }
 
 }}}}

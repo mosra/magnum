@@ -672,7 +672,7 @@ template<std::size_t size, class T> class Vector {
 @brief Component-wise equality comparison
 
 Unlike @ref Vector::operator==() returns a @ref BoolVector instead of a single
-value.
+value. Vector complement to @ref equal(T, T).
 */
 template<std::size_t size, class T> inline BoolVector<size> equal(const Vector<size, T>& a, const Vector<size, T>& b) {
     BoolVector<size> out;
@@ -687,7 +687,7 @@ template<std::size_t size, class T> inline BoolVector<size> equal(const Vector<s
 @brief Component-wise non-equality comparison
 
 Unlike @ref Vector::operator!=() returns a @ref BoolVector instead of a single
-value.
+value. Vector complement to @ref notEqual(T, T).
 */
 template<std::size_t size, class T> inline BoolVector<size> notEqual(const Vector<size, T>& a, const Vector<size, T>& b) {
     BoolVector<size> out;
