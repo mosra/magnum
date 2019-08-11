@@ -164,7 +164,8 @@ mesh.addVertexBuffer(vertices, 0, Shaders::Flat3D::Position{})
 
 /* [Flat-usage-colored2] */
 Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
-Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
+Matrix4 projectionMatrix =
+    Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
 
 Shaders::Flat3D shader;
 shader.setColor(0x2f83cc_rgbf)
@@ -261,7 +262,8 @@ mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizer::Position{});
 
 /* [MeshVisualizer-usage-geom2] */
 Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
-Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
+Matrix4 projectionMatrix =
+    Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
 
 Shaders::MeshVisualizer shader{Shaders::MeshVisualizer::Flag::Wireframe};
 shader.setColor(0x2f83cc_rgbf)
@@ -340,7 +342,8 @@ mesh.addVertexBuffer(vertices, 0,
 
 /* [Phong-usage-colored2] */
 Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
-Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
+Matrix4 projectionMatrix =
+    Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
 
 Shaders::Phong shader;
 shader.setDiffuseColor(0x2f83cc_rgbf)
@@ -459,7 +462,8 @@ mesh.addVertexBuffer(vertices, 0,
 
 /* [VertexColor-usage2] */
 Matrix4 transformationMatrix = Matrix4::translation(Vector3::zAxis(-5.0f));
-Matrix4 projectionMatrix = Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
+Matrix4 projectionMatrix =
+    Matrix4::perspectiveProjection(35.0_degf, 1.0f, 0.001f, 100.0f);
 
 Shaders::VertexColor3D shader;
 shader.setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
