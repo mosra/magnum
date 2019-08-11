@@ -966,6 +966,7 @@ class Sdl2Application {
          */
         virtual void exitEvent(ExitEvent& event);
 
+    protected:
         /**
          * @brief Tick event
          *
@@ -974,9 +975,15 @@ class Sdl2Application {
          * might be no input events and redraw is not requested. Useful e.g.
          * for asynchronous task polling. Use @ref setMinimalLoopPeriod()/
          * @ref setSwapInterval() to control main loop frequency.
+         *
+         * If this implementation gets called from its @cpp override @ce, it
+         * will effectively stop the tick event from being fired and the app
+         * returns back to waiting for input events. This can be used to
+         * disable the tick event when not needed.
          */
         virtual void tickEvent();
 
+    private:
         /**
          * @brief Any event
          *
