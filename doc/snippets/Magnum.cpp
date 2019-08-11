@@ -233,7 +233,7 @@ struct MyShader: GL::AbstractShaderProgram {
     void bindTexture(GL::Texture2D&) {}
 };
 /* [ResourceManager-fill] */
-MyResourceManager& manager = MyResourceManager::instance();
+MyResourceManager manager;
 Resource<GL::Texture2D> texture{manager.get<GL::Texture2D>("texture")};
 Resource<GL::AbstractShaderProgram, MyShader> shader =
     manager.get<GL::AbstractShaderProgram, MyShader>("shader");

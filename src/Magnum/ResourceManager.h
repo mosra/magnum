@@ -246,12 +246,14 @@ Basic usage is:
    template implementation file. */
 template<class... Types> class ResourceManager: private Implementation::ResourceManagerImplementation<Types>... {
     public:
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Global instance
          *
          * Assumes that the instance exists.
          */
-        static ResourceManager<Types...>& instance();
+        static CORRADE_DEPRECATED("implicit ResourceManager singleton is deprecated, make your own or pass a reference around instead") ResourceManager<Types...>& instance();
+        #endif
 
         /**
          * @brief Constructor
@@ -625,23 +627,29 @@ template<class T> inline ResourceManagerData<T>::Data::~Data() {
 
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 template<class ...Types> ResourceManager<Types...>& ResourceManager<Types...>::instance() {
     CORRADE_ASSERT(Implementation::ResourceManagerImplementation<Types...>::internalInstance(),
         "ResourceManager::instance(): no instance exists",
         static_cast<ResourceManager<Types...>&>(*Implementation::ResourceManagerImplementation<Types...>::internalInstance()));
     return static_cast<ResourceManager<Types...>&>(*Implementation::ResourceManagerImplementation<Types...>::internalInstance());
 }
+#endif
 
 template<class ...Types> ResourceManager<Types...>::ResourceManager() {
+    #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_ASSERT(!Implementation::ResourceManagerImplementation<Types...>::internalInstance(),
         "ResourceManager::ResourceManager(): another instance is already created", );
     Implementation::ResourceManagerImplementation<Types...>::internalInstance() = this;
+    #endif
 }
 
 template<class ...Types> ResourceManager<Types...>::~ResourceManager() {
     freeLoaders(typename Implementation::ResourceManagerImplementation<Types...>::TypePack{});
+    #ifdef MAGNUM_BUILD_DEPRECATED
     CORRADE_INTERNAL_ASSERT(Implementation::ResourceManagerImplementation<Types...>::internalInstance() == this);
     Implementation::ResourceManagerImplementation<Types...>::internalInstance() = nullptr;
+    #endif
 }
 
 }

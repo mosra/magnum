@@ -35,13 +35,6 @@ corrade_add_test(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES Magnum)
 target_compile_definitions(ResourceManagerTest PRIVATE "CORRADE_GRACEFUL_ASSERT")
 corrade_add_test(SamplerTest SamplerTest.cpp LIBRARIES MagnumTestLib)
 
-add_library(ResourceManagerLocalInstanceTestLib ${SHARED_OR_STATIC} ResourceManagerLocalInstanceTestLib.cpp)
-target_link_libraries(ResourceManagerLocalInstanceTestLib Magnum)
-if(NOT BUILD_STATIC)
-    target_compile_definitions(ResourceManagerLocalInstanceTestLib PRIVATE "ResourceManagerLocalInstanceTestLib_EXPORTS")
-endif()
-corrade_add_test(ResourceManagerLocalInstanceTest ResourceManagerLocalInstanceTest.cpp LIBRARIES Magnum ResourceManagerLocalInstanceTestLib)
-
 corrade_add_test(TagsTest TagsTest.cpp LIBRARIES Magnum)
 
 set_target_properties(
@@ -52,8 +45,20 @@ set_target_properties(
     PixelFormatTest
     PixelStorageTest
     ResourceManagerTest
-    ResourceManagerLocalInstanceTestLib
-    ResourceManagerLocalInstanceTest
     SamplerTest
     TagsTest
     PROPERTIES FOLDER "Magnum/Test")
+
+if(MAGNUM_BUILD_DEPRECATED)
+    add_library(ResourceManagerLocalInstanceTestLib ${SHARED_OR_STATIC} ResourceManagerLocalInstanceTestLib.cpp)
+    target_link_libraries(ResourceManagerLocalInstanceTestLib Magnum)
+    if(NOT BUILD_STATIC)
+        target_compile_definitions(ResourceManagerLocalInstanceTestLib PRIVATE "ResourceManagerLocalInstanceTestLib_EXPORTS")
+    endif()
+    corrade_add_test(ResourceManagerLocalInstanceTest ResourceManagerLocalInstanceTest.cpp LIBRARIES Magnum ResourceManagerLocalInstanceTestLib)
+
+    set_target_properties(
+        ResourceManagerLocalInstanceTestLib
+        ResourceManagerLocalInstanceTest
+        PROPERTIES FOLDER "Magnum/Test")
+endif()

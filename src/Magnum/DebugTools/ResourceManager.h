@@ -65,6 +65,13 @@ information.
 class MAGNUM_DEBUGTOOLS_EXPORT ResourceManager: public Magnum::ResourceManager<Magnum::Implementation::ResourceManagerLocalInstance, GL::AbstractShaderProgram, GL::Buffer, GL::Mesh, GL::MeshView, DebugTools::ForceRendererOptions, DebugTools::ObjectRendererOptions>
 {
     public:
+        /**
+         * @brief Global instance
+         *
+         * Assumes that the instance exists.
+         */
+        static ResourceManager& instance();
+
         explicit ResourceManager();
         ~ResourceManager();
 };

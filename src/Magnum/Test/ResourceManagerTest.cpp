@@ -316,7 +316,7 @@ void ResourceManagerTest::clearWhileReferenced() {
 void ResourceManagerTest::loader() {
     class IntResourceLoader: public AbstractResourceLoader<Int> {
         public:
-            IntResourceLoader(): resource(ResourceManager::instance().get<Data>("data")) {}
+            IntResourceLoader(ResourceManager& instance): resource{instance.get<Data>("data")} {}
 
             void load() {
                 set("hello", Containers::pointer<Int>(773), ResourceDataState::Final, ResourcePolicy::Resident);
@@ -338,7 +338,7 @@ void ResourceManagerTest::loader() {
 
     {
         ResourceManager rm;
-        Containers::Pointer<IntResourceLoader> loaderPtr{Containers::InPlaceInit};
+        Containers::Pointer<IntResourceLoader> loaderPtr{Containers::InPlaceInit, rm};
         IntResourceLoader& loader = *loaderPtr;
         rm.setLoader<Int>(std::move(loaderPtr));
 

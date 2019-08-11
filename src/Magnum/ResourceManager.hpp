@@ -40,6 +40,7 @@
 
 namespace Magnum { namespace Implementation {
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 template<class ...Types>
 #ifndef _MSC_VER
 CORRADE_VISIBILITY_EXPORT
@@ -48,6 +49,7 @@ ResourceManager<Types...>*& ResourceManagerLocalInstanceImplementation<Types...>
     static ResourceManager<Types...>* _instance(nullptr);
     return _instance;
 }
+#endif
 
 }}
 

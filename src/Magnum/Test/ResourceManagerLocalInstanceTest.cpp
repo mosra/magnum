@@ -42,9 +42,10 @@ ResourceManagerLocalInstanceTest::ResourceManagerLocalInstanceTest() {
 }
 
 void ResourceManagerLocalInstanceTest::instance() {
+    CORRADE_IGNORE_DEPRECATED_PUSH
     ResourceManagerWithLocalInstance::instance().set("another", 13);
-
     CORRADE_COMPARE(&manager.staticInstance, &manager.instance());
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(manager.count<Int>(), 2);
     CORRADE_COMPARE(manager.state<Int>("integer"), ResourceState::Final);
 }

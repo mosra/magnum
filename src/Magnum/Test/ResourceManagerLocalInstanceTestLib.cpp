@@ -35,9 +35,11 @@ namespace Implementation {
 
 namespace Test {
 
+CORRADE_IGNORE_DEPRECATED_PUSH
 ResourceManagerWithLocalInstance::ResourceManagerWithLocalInstance(): staticInstance(static_cast<ResourceManagerWithLocalInstance&>(instance())) {
     /* Add some stuff */
     set("integer", 42);
 }
+CORRADE_IGNORE_DEPRECATED_POP
 
 }}
