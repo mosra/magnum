@@ -61,7 +61,11 @@ void main() {
     barycentric = vec3(0.0);
 
     #ifdef SUBSCRIPTING_WORKAROUND
+    #ifndef NEW_GLSL
     int i = int(mod(vertexIndex, 3.0));
+    #else
+    int i = gl_VertexID % 3;
+    #endif
          if(i == 0) barycentric.x = 1.0;
     else if(i == 1) barycentric.y = 1.0;
     else            barycentric.z = 1.0;
