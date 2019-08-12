@@ -74,7 +74,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
         typedef typename Generic<dimensions>::Position Position;
 
         /**
-         * @brief Three-component vertex color.
+         * @brief Three-component vertex color
          *
          * @ref shaders-generic "Generic attribute", @ref Magnum::Color3. Use
          * either this or the @ref Color4 attribute.
@@ -82,7 +82,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
         typedef typename Generic<dimensions>::Color3 Color3;
 
         /**
-         * @brief Four-component vertex color.
+         * @brief Four-component vertex color
          *
          * @ref shaders-generic "Generic attribute", @ref Magnum::Color4. Use
          * either this or the @ref Color3 attribute.

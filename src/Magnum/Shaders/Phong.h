@@ -49,7 +49,8 @@ the shader.
 
 If you want to use textures, you need to provide also the
 @ref TextureCoordinates attribute. Pass appropriate @ref Flag combination to
-the constructor and then at render time don't forget to also call appropriate subset of @ref bindAmbientTexture(), @ref bindDiffuseTexture() and
+the constructor and then at render time don't forget to also call appropriate
+subset of @ref bindAmbientTexture(), @ref bindDiffuseTexture() and
 @ref bindSpecularTexture() (or the combined @ref bindTextures()). The texture
 is multipled by the color, which is by default set to fully opaque white for
 enabled textures.
