@@ -81,6 +81,8 @@ struct PhongGLTest: GL::OpenGLTester {
     void renderTextured();
     void renderTexturedNormal();
 
+    template<class T> void renderVertexColor();
+
     void renderShininess();
 
     void renderAlphaSetup();
@@ -137,6 +139,8 @@ constexpr struct {
     {"ambient + diffuse + specular + normal texture", Phong::Flag::AmbientTexture|Phong::Flag::DiffuseTexture|Phong::Flag::SpecularTexture|Phong::Flag::NormalTexture, 1},
     {"alpha mask", Phong::Flag::AlphaMask, 1},
     {"alpha mask + diffuse texture", Phong::Flag::AlphaMask|Phong::Flag::DiffuseTexture, 1},
+    {"vertex colors", Phong::Flag::VertexColor, 1},
+    {"vertex colors + diffuse texture", Phong::Flag::VertexColor|Phong::Flag::DiffuseTexture, 1},
     #ifndef MAGNUM_TARGET_GLES2
     {"object ID", Phong::Flag::ObjectId, 1},
     {"object ID + alpha mask + specular texture", Phong::Flag::ObjectId|Phong::Flag::AlphaMask|Phong::Flag::SpecularTexture, 1},
@@ -283,6 +287,11 @@ PhongGLTest::PhongGLTest() {
 
     addInstancedTests({&PhongGLTest::renderTexturedNormal},
         Containers::arraySize(RenderTexturedNormalData),
+        &PhongGLTest::renderSetup,
+        &PhongGLTest::renderTeardown);
+
+    addTests({&PhongGLTest::renderVertexColor<Color3>,
+              &PhongGLTest::renderVertexColor<Color4>},
         &PhongGLTest::renderSetup,
         &PhongGLTest::renderTeardown);
 
@@ -814,6 +823,69 @@ void PhongGLTest::renderTexturedNormal() {
     #endif
     CORRADE_COMPARE_WITH(pixels,
         Utility::Directory::join(SHADERS_TEST_DIR, "PhongTestFiles/textured-normal.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
+
+template<class T> void PhongGLTest::renderVertexColor() {
+    setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    Trade::MeshData3D sphereData = Primitives::uvSphereSolid(16, 32,
+        Primitives::UVSphereTextureCoords::Generate);
+
+    /* Highlight the middle rings */
+    Containers::Array<T> colorData{Containers::DirectInit, sphereData.positions(0).size(), 0x999999_rgbf};
+    for(std::size_t i = 6*33; i != 9*33; ++i)
+        colorData[i + 1] = 0xffff99_rgbf*1.5f;
+
+    GL::Buffer colors;
+    colors.setData(colorData);
+    GL::Mesh sphere = MeshTools::compile(sphereData);
+    sphere.addVertexBuffer(colors, 0, GL::Attribute<Shaders::Phong::Color3::Location, T>{});
+
+    Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer);
+
+    GL::Texture2D diffuse;
+    Containers::Optional<Trade::ImageData2D> image;
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(SHADERS_TEST_DIR, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+    diffuse.setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setStorage(1, TextureFormatRGB, image->size())
+        .setSubImage(0, {}, *image);
+
+    Phong shader{Phong::Flag::DiffuseTexture|Phong::Flag::VertexColor, 2};
+    shader.setLightPositions({{-3.0f, -3.0f, 0.0f},
+                              { 3.0f, -3.0f, 0.0f}})
+        .setTransformationMatrix(
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::rotationY(-15.0_degf)*
+            Matrix4::rotationX(15.0_degf))
+        /** @todo use normalMatrix() instead */
+        .setNormalMatrix((Matrix4::rotationY(-15.0_degf)*
+            Matrix4::rotationX(15.0_degf)).rotationScaling())
+        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+        .setDiffuseColor(0x9999ff_rgbf)
+        .bindDiffuseTexture(diffuse);
+    sphere.draw(shader);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has some minor differences on the edges */
+    const Float maxThreshold = 105.4f, meanThreshold = 0.075f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's worse */
+    const Float maxThreshold = 105.4f, meanThreshold = 0.075f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(SHADERS_TEST_DIR, "PhongTestFiles/vertexColor.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 

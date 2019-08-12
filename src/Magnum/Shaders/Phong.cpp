@@ -92,6 +92,7 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
 
     vert.addSource(flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture) ? "#define TEXTURED\n" : "")
         .addSource(flags & Flag::NormalTexture ? "#define NORMAL_TEXTURE\n" : "")
+        .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
         .addSource(Utility::formatString("#define LIGHT_COUNT {}\n", lightCount))
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Phong.vert"));
@@ -99,6 +100,7 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         .addSource(flags & Flag::DiffuseTexture ? "#define DIFFUSE_TEXTURE\n" : "")
         .addSource(flags & Flag::SpecularTexture ? "#define SPECULAR_TEXTURE\n" : "")
         .addSource(flags & Flag::NormalTexture ? "#define NORMAL_TEXTURE\n" : "")
+        .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
         .addSource(flags & Flag::AlphaMask ? "#define ALPHA_MASK\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(flags & Flag::ObjectId ? "#define OBJECT_ID\n" : "")
@@ -128,6 +130,8 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
             bindAttributeLocation(Normal::Location, "normal");
         if((flags & Flag::NormalTexture) && lightCount)
             bindAttributeLocation(Tangent::Location, "tangent");
+        if(flags & Flag::VertexColor)
+            bindAttributeLocation(Color3::Location, "vertexColor"); /* Color4 is the same */
         if(flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture))
             bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
         #ifndef MAGNUM_TARGET_GLES2
@@ -177,17 +181,17 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
     /* Default to fully opaque white so we can see the textures */
-    if(flags & Flag::AmbientTexture) setAmbientColor(Color4{1.0f});
-    else setAmbientColor(Color4{0.0f});
+    if(flags & Flag::AmbientTexture) setAmbientColor(Magnum::Color4{1.0f});
+    else setAmbientColor(Magnum::Color4{0.0f});
     setTransformationMatrix({});
     setProjectionMatrix({});
     if(lightCount) {
-        setDiffuseColor(Color4{1.0f});
-        setSpecularColor(Color4{1.0f});
+        setDiffuseColor(Magnum::Color4{1.0f});
+        setSpecularColor(Magnum::Color4{1.0f});
         setShininess(80.0f);
         if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
         /* Object ID is zero by default */
-        setLightColors(Containers::Array<Color4>{Containers::DirectInit, lightCount, Color4{1.0f}});
+        setLightColors(Containers::Array<Magnum::Color4>{Containers::DirectInit, lightCount, Magnum::Color4{1.0f}});
         /* Light position is zero by default */
         setNormalMatrix({});
     }
@@ -259,14 +263,14 @@ Phong& Phong::setLightPosition(UnsignedInt id, const Vector3& position) {
     return *this;
 }
 
-Phong& Phong::setLightColors(const Containers::ArrayView<const Color4> colors) {
+Phong& Phong::setLightColors(const Containers::ArrayView<const Magnum::Color4> colors) {
     CORRADE_ASSERT(_lightCount == colors.size(),
         "Shaders::Phong::setLightColors(): expected" << _lightCount << "items but got" << colors.size(), *this);
     if(_lightCount) setUniform(_lightColorsUniform, colors);
     return *this;
 }
 
-Phong& Phong::setLightColor(UnsignedInt id, const Color4& color) {
+Phong& Phong::setLightColor(UnsignedInt id, const Magnum::Color4& color) {
     CORRADE_ASSERT(id < _lightCount,
         "Shaders::Phong::setLightColor(): light ID" << id << "is out of bounds for" << _lightCount << "lights", *this);
     setUniform(_lightColorsUniform + id, color);
@@ -282,6 +286,7 @@ Debug& operator<<(Debug& debug, const Phong::Flag value) {
         _c(SpecularTexture)
         _c(NormalTexture)
         _c(AlphaMask)
+        _c(VertexColor)
         #ifndef MAGNUM_TARGET_GLES2
         _c(ObjectId)
         #endif
@@ -299,6 +304,7 @@ Debug& operator<<(Debug& debug, const Phong::Flags value) {
         Phong::Flag::SpecularTexture,
         Phong::Flag::NormalTexture,
         Phong::Flag::AlphaMask,
+        Phong::Flag::VertexColor,
         #ifndef MAGNUM_TARGET_GLES2
         Phong::Flag::ObjectId
         #endif

@@ -68,6 +68,10 @@ uniform highp uint objectId; /* defaults to zero */
 in mediump vec2 interpolatedTextureCoordinates;
 #endif
 
+#ifdef VERTEX_COLOR
+in lowp vec4 interpolatedVertexColor;
+#endif
+
 #ifdef NEW_GLSL
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = COLOR_OUTPUT_ATTRIBUTE_LOCATION)
@@ -86,6 +90,9 @@ void main() {
     fragmentColor =
         #ifdef TEXTURED
         texture(textureData, interpolatedTextureCoordinates)*
+        #endif
+        #ifdef VERTEX_COLOR
+        interpolatedVertexColor*
         #endif
         color;
 

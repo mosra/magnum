@@ -43,8 +43,9 @@ namespace Implementation {
     enum class FlatFlag: UnsignedByte {
         Textured = 1 << 0,
         AlphaMask = 1 << 1,
+        VertexColor = 1 << 2,
         #ifndef MAGNUM_TARGET_GLES2
-        ObjectId = 1 << 2
+        ObjectId = 1 << 3
         #endif
     };
     typedef Containers::EnumSet<FlatFlag> FlatFlags;
@@ -71,6 +72,8 @@ For coloring the texture based on intensity you can use the @ref Vector shader.
 The 3D version of this shader is equivalent to @ref Phong with zero lights,
 however this implementation is much simpler and thus likely also faster. See
 @ref Shaders-Phong-zero-lights "its documentation" for more information.
+Conversely, enabling @ref Flag::VertexColor and using a default color with no
+texturing makes this shader equivalent to @ref VertexColor.
 
 @section Shaders-Flat-usage Example usage
 
@@ -139,6 +142,24 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          */
         typedef typename Generic<dimensions>::TextureCoordinates TextureCoordinates;
 
+        /**
+         * @brief Three-component vertex color
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Color3. Use
+         * either this or the @ref Color4 attribute. Used only if
+         * @ref Flag::VertexColor is set.
+         */
+        typedef typename Generic<dimensions>::Color3 Color3;
+
+        /**
+         * @brief Four-component vertex color
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Color4. Use
+         * either this or the @ref Color3 attribute. Used only if
+         * @ref Flag::VertexColor is set.
+         */
+        typedef typename Generic<dimensions>::Color4 Color4;
+
         enum: UnsignedInt {
             /**
              * Color shader output. Present always, expects three- or
@@ -187,6 +208,12 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              */
             AlphaMask = 1 << 1,
 
+            /**
+             * Multiply diffuse color with a vertex color. Requires either
+             * the @ref Color3 or @ref Color4 attribute to be present.
+             */
+            VertexColor = 1 << 2,
+
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * Enable object ID output. See @ref Shaders-Flat-usage-object-id
@@ -195,7 +222,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              *      attachments, which are not available in OpenGL ES 2.0 or
              *      WebGL 1.0.
              */
-            ObjectId = 1 << 2
+            ObjectId = 1 << 3
             #endif
         };
 
@@ -265,7 +292,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          * texture.
          * @see @ref bindTexture()
          */
-        Flat<dimensions>& setColor(const Color4& color){
+        Flat<dimensions>& setColor(const Magnum::Color4& color) {
             setUniform(_colorUniform, color);
             return *this;
         }

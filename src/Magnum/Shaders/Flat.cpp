@@ -64,10 +64,12 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
     vert.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
+        .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
         .addSource(rs.get("generic.glsl"))
         .addSource(rs.get(vertexShaderName<dimensions>()));
     frag.addSource(flags & Flag::Textured ? "#define TEXTURED\n" : "")
         .addSource(flags & Flag::AlphaMask ? "#define ALPHA_MASK\n" : "")
+        .addSource(flags & Flag::VertexColor ? "#define VERTEX_COLOR\n" : "")
         #ifndef MAGNUM_TARGET_GLES2
         .addSource(flags & Flag::ObjectId ? "#define OBJECT_ID\n" : "")
         #endif
@@ -86,7 +88,10 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
-        if(flags & Flag::Textured) bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
+        if(flags & Flag::Textured)
+            bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
+        if(flags & Flag::VertexColor)
+            bindAttributeLocation(Color3::Location, "vertexColor"); /* Color4 is the same */
         #ifndef MAGNUM_TARGET_GLES2
         if(flags & Flag::ObjectId) {
             bindFragmentDataLocation(ColorOutput, "color");
@@ -120,7 +125,7 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
     #ifdef MAGNUM_TARGET_GLES
     setTransformationProjectionMatrix({});
-    setColor(Color4{1.0f});
+    setColor(Magnum::Color4{1.0f});
     if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
     /* Object ID is zero by default */
     #endif
@@ -160,6 +165,7 @@ Debug& operator<<(Debug& debug, const FlatFlag value) {
         #define _c(v) case FlatFlag::v: return debug << "Shaders::Flat::Flag::" #v;
         _c(Textured)
         _c(AlphaMask)
+        _c(VertexColor)
         #ifndef MAGNUM_TARGET_GLES2
         _c(ObjectId)
         #endif
@@ -174,6 +180,7 @@ Debug& operator<<(Debug& debug, const FlatFlags value) {
     return Containers::enumSetDebugOutput(debug, value, "Shaders::Flat::Flags{}", {
         FlatFlag::Textured,
         FlatFlag::AlphaMask,
+        FlatFlag::VertexColor,
         #ifndef MAGNUM_TARGET_GLES2
         FlatFlag::ObjectId
         #endif

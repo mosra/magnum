@@ -51,11 +51,25 @@ in mediump vec2 textureCoordinates;
 out mediump vec2 interpolatedTextureCoordinates;
 #endif
 
+#ifdef VERTEX_COLOR
+#ifdef EXPLICIT_ATTRIB_LOCATION
+layout(location = COLOR_ATTRIBUTE_LOCATION)
+#endif
+in lowp vec4 vertexColor;
+
+out lowp vec4 interpolatedVertexColor;
+#endif
+
 void main() {
     gl_Position = transformationProjectionMatrix*position;
 
     #ifdef TEXTURED
     /* Texture coordinates, if needed */
     interpolatedTextureCoordinates = textureCoordinates;
+    #endif
+
+    #ifdef VERTEX_COLOR
+    /* Vertex colors, if enabled */
+    interpolatedVertexColor = vertexColor;
     #endif
 }

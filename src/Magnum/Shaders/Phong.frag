@@ -149,6 +149,10 @@ in highp vec3 cameraDirection;
 in mediump vec2 interpolatedTextureCoords;
 #endif
 
+#ifdef VERTEX_COLOR
+in lowp vec4 interpolatedVertexColor;
+#endif
+
 #ifdef NEW_GLSL
 #ifdef EXPLICIT_ATTRIB_LOCATION
 layout(location = COLOR_OUTPUT_ATTRIBUTE_LOCATION)
@@ -173,6 +177,9 @@ void main() {
     lowp const vec4 finalDiffuseColor =
         #ifdef DIFFUSE_TEXTURE
         texture(diffuseTexture, interpolatedTextureCoords)*
+        #endif
+        #ifdef VERTEX_COLOR
+        interpolatedVertexColor*
         #endif
         diffuseColor;
     lowp const vec4 finalSpecularColor =

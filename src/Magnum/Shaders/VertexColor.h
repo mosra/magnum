@@ -49,6 +49,11 @@ configure the shader.
 
 @image html shaders-vertexcolor.png width=256px
 
+This shader is equivalent to @ref Flat with @ref Flat::Flag::VertexColor
+enabled; the 3D version of this shader is equivalent to @ref Phong with
+@ref Phong::Flag::VertexColor enabled. In both cases this implementation is
+much simpler and thus likely also faster.
+
 @section Shaders-VertexColor-example Example usage
 
 Common mesh setup. The shader accepts either three- or four-component color

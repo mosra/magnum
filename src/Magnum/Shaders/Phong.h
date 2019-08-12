@@ -115,6 +115,7 @@ Creating this shader with zero lights makes its output equivalent to the
 (if @ref Flag::AmbientTexture is enabled) are taken into account, which
 correspond to @ref Flat::setColor() and @ref Flat::bindTexture(). This is
 useful to reduce complexity in apps that render models with pre-baked lights.
+In addition, enabling @ref Flag::VertexColor and using a default ambient color with no texturing makes this shader equivalent to @ref VertexColor.
 
 @see @ref shaders
 */
@@ -154,6 +155,24 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * @ref Flag::SpecularTexture is set.
          */
         typedef Generic3D::TextureCoordinates TextureCoordinates;
+
+        /**
+         * @brief Three-component vertex color
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Color3. Use
+         * either this or the @ref Color4 attribute. Used only if
+         * @ref Flag::VertexColor is set.
+         */
+        typedef Generic3D::Color3 Color3;
+
+        /**
+         * @brief Four-component vertex color
+         *
+         * @ref shaders-generic "Generic attribute", @ref Magnum::Color4. Use
+         * either this or the @ref Color3 attribute. Used only if
+         * @ref Flag::VertexColor is set.
+         */
+        typedef Generic3D::Color4 Color4;
 
         enum: UnsignedInt {
             /**
@@ -221,6 +240,12 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              */
             AlphaMask = 1 << 3,
 
+            /**
+             * Multiply diffuse color with a vertex color. Requires either
+             * the @ref Color3 or @ref Color4 attribute to be present.
+             */
+            VertexColor = 1 << 5,
+
             #ifndef MAGNUM_TARGET_GLES2
             /**
              * Enable object ID output. See @ref Shaders-Phong-usage-object-id
@@ -229,7 +254,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              *      attachments, which are not available in OpenGL ES 2.0 or
              *      WebGL 1.0.
              */
-            ObjectId = 1 << 5
+            ObjectId = 1 << 6
             #endif
         };
 
@@ -286,7 +311,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * ambient texture, otherwise default value is @cpp 0x00000000_rgbaf @ce.
          * @see @ref bindAmbientTexture()
          */
-        Phong& setAmbientColor(const Color4& color) {
+        Phong& setAmbientColor(const Magnum::Color4& color) {
             setUniform(_ambientColorUniform, color);
             return *this;
         }
@@ -319,7 +344,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * to the output in that case.
          * @see @ref bindDiffuseTexture()
          */
-        Phong& setDiffuseColor(const Color4& color) {
+        Phong& setDiffuseColor(const Magnum::Color4& color) {
             if(_lightCount) setUniform(_diffuseColorUniform, color);
             return *this;
         }
@@ -368,7 +393,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * output in that case.
          * @see @ref bindSpecularTexture()
          */
-        Phong& setSpecularColor(const Color4& color) {
+        Phong& setSpecularColor(const Magnum::Color4& color) {
             if(_lightCount) setUniform(_specularColorUniform, color);
             return *this;
         }
@@ -550,10 +575,10 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * Initial values are @cpp 0xffffffff_rgbaf @ce. Expects that the size
          * of the @p colors array is the same as @ref lightCount().
          */
-        Phong& setLightColors(Containers::ArrayView<const Color4> colors);
+        Phong& setLightColors(Containers::ArrayView<const Magnum::Color4> colors);
 
         /** @overload */
-        Phong& setLightColors(std::initializer_list<Color4> colors) {
+        Phong& setLightColors(std::initializer_list<Magnum::Color4> colors) {
             return setLightColors({colors.begin(), colors.size()});
         }
 
@@ -563,9 +588,9 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          *
          * Unlike @ref setLightColors() updates just a single light color.
          * Expects that @p id is less than @ref lightCount().
-         * @see @ref setLightColor(const Color4&)
+         * @see @ref setLightColor(const Magnum::Color4&)
          */
-        Phong& setLightColor(UnsignedInt id, const Color4& color);
+        Phong& setLightColor(UnsignedInt id, const Magnum::Color4& color);
 
         /**
          * @brief Set light color
@@ -573,9 +598,9 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          *
          * Convenience alternative to @ref setLightColors() when there is just
          * one light.
-         * @see @ref setLightColor(UnsignedInt, const Color4&)
+         * @see @ref setLightColor(UnsignedInt, const Magnum::Color4&)
          */
-        Phong& setLightColor(const Color4& color) {
+        Phong& setLightColor(const Magnum::Color4& color) {
             return setLightColors({&color, 1});
         }
 

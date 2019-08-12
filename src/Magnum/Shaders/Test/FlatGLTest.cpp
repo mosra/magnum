@@ -80,6 +80,9 @@ struct FlatGLTest: GL::OpenGLTester {
     void renderTextured2D();
     void renderTextured3D();
 
+    template<class T> void renderVertexColor2D();
+    template<class T> void renderVertexColor3D();
+
     void renderAlphaSetup();
     void renderAlphaTeardown();
 
@@ -127,6 +130,8 @@ constexpr struct {
     {"textured", Flat2D::Flag::Textured},
     {"alpha mask", Flat2D::Flag::AlphaMask},
     {"alpha mask + textured", Flat2D::Flag::AlphaMask|Flat2D::Flag::Textured},
+    {"vertex colors", Flat2D::Flag::VertexColor},
+    {"vertex colors + textured", Flat2D::Flag::VertexColor|Flat2D::Flag::Textured},
     #ifndef MAGNUM_TARGET_GLES2
     {"object ID", Flat2D::Flag::ObjectId},
     {"object ID + alpha mask + textured", Flat2D::Flag::ObjectId|Flat2D::Flag::AlphaMask|Flat2D::Flag::Textured}
@@ -182,7 +187,11 @@ FlatGLTest::FlatGLTest() {
               &FlatGLTest::renderSinglePixelTextured2D,
               &FlatGLTest::renderSinglePixelTextured3D,
               &FlatGLTest::renderTextured2D,
-              &FlatGLTest::renderTextured3D},
+              &FlatGLTest::renderTextured3D,
+              &FlatGLTest::renderVertexColor2D<Color3>,
+              &FlatGLTest::renderVertexColor2D<Color4>,
+              &FlatGLTest::renderVertexColor3D<Color3>,
+              &FlatGLTest::renderVertexColor3D<Color4>},
         &FlatGLTest::renderSetup,
         &FlatGLTest::renderTeardown);
 
@@ -600,6 +609,118 @@ void FlatGLTest::renderTextured3D() {
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
         Utility::Directory::join(SHADERS_TEST_DIR, "FlatTestFiles/textured3D.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
+
+template<class T> void FlatGLTest::renderVertexColor2D() {
+    setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    Trade::MeshData2D circleData = Primitives::circle2DSolid(32,
+        Primitives::CircleTextureCoords::Generate);
+
+    /* Highlight a quarter */
+    Containers::Array<T> colorData{Containers::DirectInit, circleData.positions(0).size(), 0x999999_rgbf};
+    for(std::size_t i = 8; i != 16; ++i)
+        colorData[i + 1] = 0xffff99_rgbf*1.5f;
+
+    GL::Buffer colors;
+    colors.setData(colorData);
+    GL::Mesh circle = MeshTools::compile(circleData);
+    circle.addVertexBuffer(colors, 0, GL::Attribute<Shaders::Flat2D::Color3::Location, T>{});
+
+    Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer);
+
+    GL::Texture2D texture;
+    Containers::Optional<Trade::ImageData2D> image;
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(SHADERS_TEST_DIR, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+    texture.setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setStorage(1, TextureFormatRGB, image->size())
+        .setSubImage(0, {}, *image);
+
+    Flat2D shader{Flat2D::Flag::Textured|Flat2D::Flag::VertexColor};
+    shader.setTransformationProjectionMatrix(Matrix3::projection({2.1f, 2.1f}))
+        .setColor(0x9999ff_rgbf)
+        .bindTexture(texture);
+    circle.draw(shader);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has minor rounding errors. ARM Mali slightly more */
+    const Float maxThreshold = 1.334f, meanThreshold = 0.015f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's worse */
+    const Float maxThreshold = 1.334f, meanThreshold = 0.013f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(SHADERS_TEST_DIR, "FlatTestFiles/vertexColor2D.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+}
+
+template<class T> void FlatGLTest::renderVertexColor3D() {
+    setTestCaseTemplateName(T::Size == 3 ? "Color3" : "Color4");
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    Trade::MeshData3D sphereData = Primitives::uvSphereSolid(16, 32,
+        Primitives::UVSphereTextureCoords::Generate);
+
+    /* Highlight the middle rings */
+    Containers::Array<T> colorData{Containers::DirectInit, sphereData.positions(0).size(), 0x999999_rgbf};
+    for(std::size_t i = 6*33; i != 9*33; ++i)
+        colorData[i + 1] = 0xffff99_rgbf*1.5f;
+
+    GL::Buffer colors;
+    colors.setData(colorData);
+    GL::Mesh sphere = MeshTools::compile(sphereData);
+    sphere.addVertexBuffer(colors, 0, GL::Attribute<Shaders::Flat3D::Color4::Location, T>{});
+
+    Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer);
+
+    GL::Texture2D texture;
+    Containers::Optional<Trade::ImageData2D> image;
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(SHADERS_TEST_DIR, "TestFiles/diffuse-texture.tga")) && (image = importer->image2D(0)));
+    texture.setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setStorage(1, TextureFormatRGB, image->size())
+        .setSubImage(0, {}, *image);
+
+    Flat3D shader{Flat3D::Flag::Textured|Flat3D::Flag::VertexColor};
+    shader.setTransformationProjectionMatrix(
+            Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f)*
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::rotationY(-15.0_degf)*
+            Matrix4::rotationX(15.0_degf))
+        .setColor(0x9999ff_rgbf)
+        .bindTexture(texture);
+    sphere.draw(shader);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* SwiftShader has some minor differences on the edges */
+    const Float maxThreshold = 76.67f, meanThreshold = 0.072f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's worse */
+    const Float maxThreshold = 76.67f, meanThreshold = 0.072f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        Utility::Directory::join(SHADERS_TEST_DIR, "FlatTestFiles/vertexColor3D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 

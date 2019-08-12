@@ -94,7 +94,9 @@ if(BUILD_GL_TESTS)
             FlatTestFiles/textured2D-alpha.tga
             FlatTestFiles/textured3D-alpha.tga
             FlatTestFiles/textured2D-alpha-mask0.5.tga
-            FlatTestFiles/textured3D-alpha-mask0.5.tga)
+            FlatTestFiles/textured3D-alpha-mask0.5.tga
+            FlatTestFiles/vertexColor2D.tga
+            FlatTestFiles/vertexColor3D.tga)
     if(NOT BUILD_PLUGINS_STATIC)
         target_include_directories(ShadersFlatGLTest PRIVATE $<TARGET_FILE_DIR:ShadersPhongGLTest>)
     else()
@@ -140,6 +142,7 @@ if(BUILD_GL_TESTS)
             PhongTestFiles/textured-normal.tga
             PhongTestFiles/textured-specular.tga
             PhongTestFiles/textured.tga
+            PhongTestFiles/vertexColor.tga
 
             # For zero lights test (equivalency to Flat3D)
             FlatTestFiles/textured3D-alpha-mask0.5.tga)
