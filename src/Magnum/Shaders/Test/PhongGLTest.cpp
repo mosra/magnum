@@ -95,6 +95,8 @@ struct PhongGLTest: GL::OpenGLTester {
     void renderObjectId();
     #endif
 
+    void renderZeroLights();
+
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
 
@@ -139,7 +141,8 @@ constexpr struct {
     {"object ID", Phong::Flag::ObjectId, 1},
     {"object ID + alpha mask + specular texture", Phong::Flag::ObjectId|Phong::Flag::AlphaMask|Phong::Flag::SpecularTexture, 1},
     #endif
-    {"five lights", {}, 5}
+    {"five lights", {}, 5},
+    {"zero lights", {}, 0}
 };
 
 using namespace Math::Literals;
@@ -298,6 +301,16 @@ PhongGLTest::PhongGLTest() {
         &PhongGLTest::renderObjectIdSetup,
         &PhongGLTest::renderObjectIdTeardown);
     #endif
+
+    addTests({&PhongGLTest::renderZeroLights},
+        #ifndef MAGNUM_TARGET_GLES2
+        &PhongGLTest::renderObjectIdSetup,
+        &PhongGLTest::renderObjectIdTeardown
+        #else
+        &PhongGLTest::renderSetup,
+        &PhongGLTest::renderTeardown
+        #endif
+    );
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -1064,6 +1077,99 @@ void PhongGLTest::renderObjectId() {
     CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 48526);
 }
 #endif
+
+void PhongGLTest::renderZeroLights() {
+    CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Draw), GL::Framebuffer::Status::Complete);
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
+
+    GL::Mesh sphere = MeshTools::compile(Primitives::uvSphereSolid(16, 32,
+        Primitives::UVSphereTextureCoords::Generate));
+
+    Phong shader{
+        Phong::Flag::AmbientTexture|Phong::Flag::AlphaMask
+        #ifndef MAGNUM_TARGET_GLES2
+        |Phong::Flag::ObjectId
+        #endif
+    , 0};
+
+    Containers::Pointer<Trade::AbstractImporter> importer = _manager.loadAndInstantiate("AnyImageImporter");
+    CORRADE_VERIFY(importer);
+
+    GL::Texture2D ambient;
+    Containers::Optional<Trade::ImageData2D> ambientImage;
+    CORRADE_VERIFY(importer->openFile(Utility::Directory::join(SHADERS_TEST_DIR, "TestFiles/diffuse-alpha-texture.tga")) && (ambientImage = importer->image2D(0)));
+    ambient.setMinificationFilter(GL::SamplerFilter::Linear)
+        .setMagnificationFilter(GL::SamplerFilter::Linear)
+        .setWrapping(GL::SamplerWrapping::ClampToEdge)
+        .setStorage(1, TextureFormatRGBA, ambientImage->size())
+        .setSubImage(0, {}, *ambientImage);
+
+    GL::Texture2D bogus;
+
+    shader
+        .bindAmbientTexture(ambient)
+        .setAmbientColor(0x9999ff_rgbf)
+        .setTransformationMatrix(
+            Matrix4::translation(Vector3::zAxis(-2.15f))*
+            Matrix4::rotationY(-15.0_degf)*
+            Matrix4::rotationX(15.0_degf))
+        .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+        .setAlphaMask(0.5f)
+        #ifndef MAGNUM_TARGET_GLES2
+        .setObjectId(65534)
+        #endif
+        /* Passing a zero-sized light position / color array, shouldn't assert */
+        .setLightPositions({})
+        .setLightColors({})
+        /* Using a bogus normal matrix -- it's not used so it should be okay.
+           Same for all other unused values, they should get ignored. */
+        .setNormalMatrix(Matrix3x3{Math::ZeroInit})
+        .setDiffuseColor(0xfa9922_rgbf)
+        .setSpecularColor(0xfa9922_rgbf)
+        .setShininess(0.2f);
+
+    /* For proper Z order draw back faces first and then front faces */
+    GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Front);
+    sphere.draw(shader);
+    GL::Renderer::setFaceCullingMode(GL::Renderer::PolygonFacing::Back);
+    sphere.draw(shader);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+    /* Compared to FlatGLTest::renderAlpha3D(0.5), there's a bit more different
+       pixels on the edges, caused by matrix multiplication being done in the
+       shader and not on the CPU side. */
+    const Float maxThreshold = 139.0f, meanThreshold = 0.122f;
+    #else
+    /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
+    const Float maxThreshold = 139.0f, meanThreshold = 2.896f;
+    #endif
+    CORRADE_COMPARE_WITH(
+        /* Dropping the alpha channel, as it's always 1.0 */
+        Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
+        /* Should be equivalent to masked Flat3D */
+        Utility::Directory::join(SHADERS_TEST_DIR, "FlatTestFiles/textured3D-alpha-mask0.5.tga"),
+        (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
+
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Object ID -- no need to verify the whole image, just check that pixels
+       on known places have expected values. SwiftShader insists that the read
+       format has to be 32bit, so the renderbuffer format is that too to make
+       it the same (ES3 Mesa complains if these don't match). */
+    _framebuffer.mapForRead(GL::Framebuffer::ColorAttachment{1});
+    CORRADE_COMPARE(_framebuffer.checkStatus(GL::FramebufferTarget::Read), GL::Framebuffer::Status::Complete);
+    Image2D image = _framebuffer.read(_framebuffer.viewport(), {PixelFormat::R32UI});
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    /* Outside of the object, cleared to 27 */
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[10][10], 27);
+    /* Inside of the object. Verify that it can hold 16 bits at least. */
+    CORRADE_COMPARE(image.pixels<UnsignedInt>()[40][46], 65534);
+    #endif
+}
 
 }}}}
 

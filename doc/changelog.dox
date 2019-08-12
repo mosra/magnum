@@ -346,6 +346,9 @@ See also:
 
 -   @ref Shaders::Phong now clamps the specular factor to minimize artifacts
     when shininess is near zero
+-   @ref Shaders::Phong can now handle zero lights, in which case its output is
+    equivalent to @ref Shaders::Flat3D. See @ref Shaders-Phong-zero-lights for
+    more information.
 
 @subsubsection changelog-latest-changes-texturetools TextureTools library
 

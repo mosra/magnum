@@ -65,9 +65,12 @@ and then at render time don't forget to bind also the texture via
 @ref bindTexture(). The texture is multipled by the color, which is by default
 set to @cpp 0xffffffff_rgbaf @ce.
 
-For coloring the texture based on intensity you can use the @ref Vector shader.
-
 @image html shaders-flat.png width=256px
+
+For coloring the texture based on intensity you can use the @ref Vector shader.
+The 3D version of this shader is equivalent to @ref Phong with zero lights,
+however this implementation is much simpler and thus likely also faster. See
+@ref Shaders-Phong-zero-lights "its documentation" for more information.
 
 @section Shaders-Flat-usage Example usage
 

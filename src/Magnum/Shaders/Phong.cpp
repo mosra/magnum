@@ -69,23 +69,25 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     GL::Shader frag = Implementation::createCompatibilityShader(rs, version, GL::Shader::Type::Fragment);
 
     #ifndef MAGNUM_TARGET_GLES
-    /* Initializer for the light color array -- we need a list of vec4(1.0)
-       joined by commas. For GLES we'll simply upload the values directly. */
-    constexpr const char lightInitializerPreamble[] = "#define LIGHT_COLOR_INITIALIZER ";
-    constexpr std::size_t lightInitializerPreambleSize =
-        Containers::arraySize(lightInitializerPreamble) - 1;
-    constexpr const char lightInitializerItem[] = "vec4(1.0), ";
-    constexpr std::size_t lightInitializerItemSize =
-        Containers::arraySize(lightInitializerItem) - 1;
     std::string lightInitializer;
-    lightInitializer.reserve(Containers::arraySize(lightInitializerPreamble) - 1 + lightCount*lightInitializerItemSize);
-    lightInitializer.append(lightInitializerPreamble, lightInitializerPreambleSize);
-    for(std::size_t i = 0; i != lightCount; ++i)
-        lightInitializer.append(lightInitializerItem, lightInitializerItemSize);
+    if(lightCount) {
+        /* Initializer for the light color array -- we need a list of vec4(1.0)
+           joined by commas. For GLES we'll simply upload the values directly. */
+        constexpr const char lightInitializerPreamble[] = "#define LIGHT_COLOR_INITIALIZER ";
+        constexpr std::size_t lightInitializerPreambleSize =
+            Containers::arraySize(lightInitializerPreamble) - 1;
+        constexpr const char lightInitializerItem[] = "vec4(1.0), ";
+        constexpr std::size_t lightInitializerItemSize =
+            Containers::arraySize(lightInitializerItem) - 1;
+        lightInitializer.reserve(Containers::arraySize(lightInitializerPreamble) - 1 + lightCount*lightInitializerItemSize);
+        lightInitializer.append(lightInitializerPreamble, lightInitializerPreambleSize);
+        for(std::size_t i = 0; i != lightCount; ++i)
+            lightInitializer.append(lightInitializerItem, lightInitializerItemSize);
 
-    /* Drop the last comma and add a newline at the end */
-    lightInitializer[lightInitializer.size() - 2] = '\n';
-    lightInitializer.resize(lightInitializer.size() - 1);
+        /* Drop the last comma and add a newline at the end */
+        lightInitializer[lightInitializer.size() - 2] = '\n';
+        lightInitializer.resize(lightInitializer.size() - 1);
+    }
     #endif
 
     vert.addSource(flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture|Flag::NormalTexture) ? "#define TEXTURED\n" : "")
@@ -103,11 +105,11 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
         #endif
         .addSource(Utility::formatString(
             "#define LIGHT_COUNT {}\n"
-            "#define LIGHT_COLORS_LOCATION {}\n", lightCount, _lightPositionsUniform + lightCount))
-        #ifndef MAGNUM_TARGET_GLES
-        .addSource(std::move(lightInitializer))
-        #endif
-        .addSource(rs.get("generic.glsl"))
+            "#define LIGHT_COLORS_LOCATION {}\n", lightCount, _lightPositionsUniform + lightCount));
+    #ifndef MAGNUM_TARGET_GLES
+    if(lightCount) frag.addSource(std::move(lightInitializer));
+    #endif
+    frag.addSource(rs.get("generic.glsl"))
         .addSource(rs.get("Phong.frag"));
 
     CORRADE_INTERNAL_ASSERT_OUTPUT(GL::Shader::compile({vert, frag}));
@@ -122,8 +124,9 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     #endif
     {
         bindAttributeLocation(Position::Location, "position");
-        bindAttributeLocation(Normal::Location, "normal");
-        if(flags & Flag::NormalTexture)
+        if(lightCount)
+            bindAttributeLocation(Normal::Location, "normal");
+        if((flags & Flag::NormalTexture) && lightCount)
             bindAttributeLocation(Tangent::Location, "tangent");
         if(flags & (Flag::AmbientTexture|Flag::DiffuseTexture|Flag::SpecularTexture))
             bindAttributeLocation(TextureCoordinates::Location, "textureCoordinates");
@@ -144,17 +147,19 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     {
         _transformationMatrixUniform = uniformLocation("transformationMatrix");
         _projectionMatrixUniform = uniformLocation("projectionMatrix");
-        _normalMatrixUniform = uniformLocation("normalMatrix");
         _ambientColorUniform = uniformLocation("ambientColor");
-        _diffuseColorUniform = uniformLocation("diffuseColor");
-        _specularColorUniform = uniformLocation("specularColor");
-        _shininessUniform = uniformLocation("shininess");
+        if(lightCount) {
+            _normalMatrixUniform = uniformLocation("normalMatrix");
+            _diffuseColorUniform = uniformLocation("diffuseColor");
+            _specularColorUniform = uniformLocation("specularColor");
+            _shininessUniform = uniformLocation("shininess");
+            _lightPositionsUniform = uniformLocation("lightPositions");
+            _lightColorsUniform = uniformLocation("lightColors");
+        }
         if(flags & Flag::AlphaMask) _alphaMaskUniform = uniformLocation("alphaMask");
         #ifndef MAGNUM_TARGET_GLES2
         if(flags & Flag::ObjectId) _objectIdUniform = uniformLocation("objectId");
         #endif
-        _lightPositionsUniform = uniformLocation("lightPositions");
-        _lightColorsUniform = uniformLocation("lightColors");
     }
 
     #ifndef MAGNUM_TARGET_GLES
@@ -162,9 +167,11 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     #endif
     {
         if(flags & Flag::AmbientTexture) setUniform(uniformLocation("ambientTexture"), AmbientTextureLayer);
-        if(flags & Flag::DiffuseTexture) setUniform(uniformLocation("diffuseTexture"), DiffuseTextureLayer);
-        if(flags & Flag::SpecularTexture) setUniform(uniformLocation("specularTexture"), SpecularTextureLayer);
-        if(flags & Flag::NormalTexture) setUniform(uniformLocation("normalTexture"), NormalTextureLayer);
+        if(lightCount) {
+            if(flags & Flag::DiffuseTexture) setUniform(uniformLocation("diffuseTexture"), DiffuseTextureLayer);
+            if(flags & Flag::SpecularTexture) setUniform(uniformLocation("specularTexture"), SpecularTextureLayer);
+            if(flags & Flag::NormalTexture) setUniform(uniformLocation("normalTexture"), NormalTextureLayer);
+        }
     }
 
     /* Set defaults in OpenGL ES (for desktop they are set in shader code itself) */
@@ -172,17 +179,18 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     /* Default to fully opaque white so we can see the textures */
     if(flags & Flag::AmbientTexture) setAmbientColor(Color4{1.0f});
     else setAmbientColor(Color4{0.0f});
-    setDiffuseColor(Color4{1.0f});
-    setSpecularColor(Color4{1.0f});
-    setShininess(80.0f);
-    if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
-    /* Object ID is zero by default */
-    setLightColors(Containers::Array<Color4>{Containers::DirectInit, lightCount, Color4{1.0f}});
-    /* Light position is zero by default */
-
     setTransformationMatrix({});
     setProjectionMatrix({});
-    setNormalMatrix({});
+    if(lightCount) {
+        setDiffuseColor(Color4{1.0f});
+        setSpecularColor(Color4{1.0f});
+        setShininess(80.0f);
+        if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
+        /* Object ID is zero by default */
+        setLightColors(Containers::Array<Color4>{Containers::DirectInit, lightCount, Color4{1.0f}});
+        /* Light position is zero by default */
+        setNormalMatrix({});
+    }
     #endif
 }
 
@@ -196,21 +204,21 @@ Phong& Phong::bindAmbientTexture(GL::Texture2D& texture) {
 Phong& Phong::bindDiffuseTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(_flags & Flag::DiffuseTexture,
         "Shaders::Phong::bindDiffuseTexture(): the shader was not created with diffuse texture enabled", *this);
-    texture.bind(DiffuseTextureLayer);
+    if(_lightCount) texture.bind(DiffuseTextureLayer);
     return *this;
 }
 
 Phong& Phong::bindSpecularTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(_flags & Flag::SpecularTexture,
         "Shaders::Phong::bindSpecularTexture(): the shader was not created with specular texture enabled", *this);
-    texture.bind(SpecularTextureLayer);
+    if(_lightCount) texture.bind(SpecularTextureLayer);
     return *this;
 }
 
 Phong& Phong::bindNormalTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(_flags & Flag::NormalTexture,
         "Shaders::Phong::bindNormalTexture(): the shader was not created with normal texture enabled", *this);
-    texture.bind(NormalTextureLayer);
+    if(_lightCount) texture.bind(NormalTextureLayer);
     return *this;
 }
 
@@ -240,7 +248,7 @@ Phong& Phong::setObjectId(UnsignedInt id) {
 Phong& Phong::setLightPositions(const Containers::ArrayView<const Vector3> positions) {
     CORRADE_ASSERT(_lightCount == positions.size(),
         "Shaders::Phong::setLightPositions(): expected" << _lightCount << "items but got" << positions.size(), *this);
-    setUniform(_lightPositionsUniform, positions);
+    if(_lightCount) setUniform(_lightPositionsUniform, positions);
     return *this;
 }
 
@@ -254,7 +262,7 @@ Phong& Phong::setLightPosition(UnsignedInt id, const Vector3& position) {
 Phong& Phong::setLightColors(const Containers::ArrayView<const Color4> colors) {
     CORRADE_ASSERT(_lightCount == colors.size(),
         "Shaders::Phong::setLightColors(): expected" << _lightCount << "items but got" << colors.size(), *this);
-    setUniform(_lightColorsUniform, colors);
+    if(_lightCount) setUniform(_lightColorsUniform, colors);
     return *this;
 }
 

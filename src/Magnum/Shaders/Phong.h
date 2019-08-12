@@ -107,6 +107,14 @@ example.
 @requires_gles30 Object ID output requires integer buffer attachments, which
     are not available in OpenGL ES 2.0 or WebGL 1.0.
 
+@section Shaders-Phong-zero-lights Zero lights
+
+Creating this shader with zero lights makes its output equivalent to the
+@ref Flat3D shader --- only @ref setAmbientColor() and @ref bindAmbientTexture()
+(if @ref Flag::AmbientTexture is enabled) are taken into account, which
+correspond to @ref Flat::setColor() and @ref Flat::bindTexture(). This is
+useful to reduce complexity in apps that render models with pre-baked lights.
+
 @see @ref shaders
 */
 class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
@@ -305,11 +313,13 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * @brief Set diffuse color
          * @return Reference to self (for method chaining)
          *
-         * Initial value is @cpp 0xffffffff_rgbaf @ce.
+         * Initial value is @cpp 0xffffffff_rgbaf @ce. If @ref lightCount() is
+         * zero, this function is a no-op, as diffuse color doesn't contribute
+         * to the output in that case.
          * @see @ref bindDiffuseTexture()
          */
         Phong& setDiffuseColor(const Color4& color) {
-            setUniform(_diffuseColorUniform, color);
+            if(_lightCount) setUniform(_diffuseColorUniform, color);
             return *this;
         }
 
@@ -318,7 +328,8 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * Expects that the shader was created with @ref Flag::DiffuseTexture
-         * enabled.
+         * enabled. If @ref lightCount() is zero, this function is a no-op, as
+         * diffuse color doesn't contribute to the output in that case.
          * @see @ref bindTextures(), @ref setDiffuseColor()
          */
         Phong& bindDiffuseTexture(GL::Texture2D& texture);
@@ -337,7 +348,9 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * Expects that the shader was created with @ref Flag::NormalTexture
-         * enabled and the @ref Tangent attribute was supplied.
+         * enabled and the @ref Tangent attribute was supplied. If
+         * @ref lightCount() is zero, this function is a no-op, as normals
+         * dosn't contribute to the output in that case.
          * @see @ref bindTextures()
          */
         Phong& bindNormalTexture(GL::Texture2D& texture);
@@ -349,11 +362,13 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * Initial value is @cpp 0xffffffff_rgbaf @ce. Color will be multiplied
          * with specular texture if @ref Flag::SpecularTexture is set. If you
          * want to have a fully diffuse material, set specular color to
-         * @cpp 0x000000ff_rgbaf @ce.
+         * @cpp 0x000000ff_rgbaf @ce. If @ref lightCount() is zero, this
+         * function is a no-op, as specular color doesn't contribute to the
+         * output in that case.
          * @see @ref bindSpecularTexture()
          */
         Phong& setSpecularColor(const Color4& color) {
-            setUniform(_specularColorUniform, color);
+            if(_lightCount) setUniform(_specularColorUniform, color);
             return *this;
         }
 
@@ -362,7 +377,8 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * Expects that the shader was created with @ref Flag::SpecularTexture
-         * enabled.
+         * enabled. If @ref lightCount() is zero, this function is a no-op, as
+         * specular color doesn't contribute to the output in that case.
          * @see @ref bindTextures(), @ref setSpecularColor()
          */
         Phong& bindSpecularTexture(GL::Texture2D& texture);
@@ -409,10 +425,12 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * @return Reference to self (for method chaining)
          *
          * The larger value, the harder surface (smaller specular highlight).
-         * Initial value is @cpp 80.0f @ce.
+         * Initial value is @cpp 80.0f @ce. If @ref lightCount() is zero, this
+         * function is a no-op, as specular color doesn't contribute to the
+         * output in that case.
          */
         Phong& setShininess(Float shininess) {
-            setUniform(_shininessUniform, shininess);
+            if(_lightCount) setUniform(_shininessUniform, shininess);
             return *this;
         }
 
@@ -462,10 +480,12 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * The matrix doesn't need to be normalized, as the renormalization
          * must be done in the shader anyway. You need to set also
          * @ref setTransformationMatrix() with a corresponding value. Initial
-         * value is an identity matrix.
+         * value is an identity matrix. If @ref lightCount() is zero, this
+         * function is a no-op, as normals don't contribute to the output in
+         * that case.
          */
         Phong& setNormalMatrix(const Matrix3x3& matrix) {
-            setUniform(_normalMatrixUniform, matrix);
+            if(_lightCount) setUniform(_normalMatrixUniform, matrix);
             return *this;
         }
 

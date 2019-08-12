@@ -139,7 +139,10 @@ if(BUILD_GL_TESTS)
             PhongTestFiles/textured-diffuse.tga
             PhongTestFiles/textured-normal.tga
             PhongTestFiles/textured-specular.tga
-            PhongTestFiles/textured.tga)
+            PhongTestFiles/textured.tga
+
+            # For zero lights test (equivalency to Flat3D)
+            FlatTestFiles/textured3D-alpha-mask0.5.tga)
     if(NOT BUILD_PLUGINS_STATIC)
         target_include_directories(ShadersPhongGLTest PRIVATE $<TARGET_FILE_DIR:ShadersPhongGLTest>)
     else()

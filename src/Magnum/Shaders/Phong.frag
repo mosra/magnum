@@ -53,6 +53,7 @@ uniform lowp vec4 ambientColor
     #endif
     ;
 
+#if LIGHT_COUNT
 #ifdef DIFFUSE_TEXTURE
 #ifdef EXPLICIT_TEXTURE_LAYER
 layout(binding = 1)
@@ -100,6 +101,7 @@ uniform mediump float shininess
     = 80.0
     #endif
     ;
+#endif
 
 #ifdef ALPHA_MASK
 #ifdef EXPLICIT_UNIFORM_LOCATION
@@ -120,6 +122,7 @@ layout(location = 9)
 uniform highp uint objectId; /* defaults to zero */
 #endif
 
+#if LIGHT_COUNT
 /* Needs to be last because it uses locations 10 + LIGHT_COUNT to
    10 + 2*LIGHT_COUNT - 1. Location 10 is lightPositions. Also it can't be
    specified as 10 + LIGHT_COUNT because that requires ARB_enhanced_layouts. */
@@ -131,13 +134,16 @@ uniform lowp vec4 lightColors[LIGHT_COUNT]
     = vec4[](LIGHT_COLOR_INITIALIZER)
     #endif
     ;
+#endif
 
+#if LIGHT_COUNT
 in mediump vec3 transformedNormal;
 #ifdef NORMAL_TEXTURE
 in mediump vec3 transformedTangent;
 #endif
 in highp vec3 lightDirections[LIGHT_COUNT];
 in highp vec3 cameraDirection;
+#endif
 
 #if defined(AMBIENT_TEXTURE) || defined(DIFFUSE_TEXTURE) || defined(SPECULAR_TEXTURE) || defined(NORMAL_TEXTURE)
 in mediump vec2 interpolatedTextureCoords;
@@ -163,6 +169,7 @@ void main() {
         texture(ambientTexture, interpolatedTextureCoords)*
         #endif
         ambientColor;
+    #if LIGHT_COUNT
     lowp const vec4 finalDiffuseColor =
         #ifdef DIFFUSE_TEXTURE
         texture(diffuseTexture, interpolatedTextureCoords)*
@@ -173,10 +180,12 @@ void main() {
         texture(specularTexture, interpolatedTextureCoords)*
         #endif
         specularColor;
+    #endif
 
     /* Ambient color */
     fragmentColor = finalAmbientColor;
 
+    #if LIGHT_COUNT
     /* Normal */
     mediump vec3 normalizedTransformedNormal = normalize(transformedNormal);
     #ifdef NORMAL_TEXTURE
@@ -203,6 +212,7 @@ void main() {
             fragmentColor += vec4(finalSpecularColor.rgb*specularity, finalSpecularColor.a);
         }
     }
+    #endif
 
     #ifdef ALPHA_MASK
     /* Using <= because if mask is set to 1.0, it should discard all, similarly
