@@ -138,8 +138,8 @@ constexpr struct {
     #ifndef MAGNUM_TARGET_GLES2
     {"object ID", Phong::Flag::ObjectId, 1},
     {"object ID + alpha mask + specular texture", Phong::Flag::ObjectId|Phong::Flag::AlphaMask|Phong::Flag::SpecularTexture, 1},
-    {"five lights", {}, 5}
     #endif
+    {"five lights", {}, 5}
 };
 
 using namespace Math::Literals;
