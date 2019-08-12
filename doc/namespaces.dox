@@ -447,6 +447,49 @@ target_link_libraries(your-app Magnum::Shaders)
 @endcode
 
 See @ref building, @ref cmake and @ref shaders for more information.
+
+@m_class{m-row}
+
+@parblock
+
+@m_div{m-col-m-3 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html shaders-flat.png
+@ref Flat @m_class{m-label m-success} **2D** @m_class{m-label m-primary} **3D**
+@m_enddiv
+
+@m_div{m-col-m-3 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html shaders-phong.png
+@ref Phong @m_class{m-label m-primary} **3D**
+@m_enddiv
+
+@m_div{m-col-m-3 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html shaders-vertexcolor.png
+@ref VertexColor @m_class{m-label m-success} **2D** @m_class{m-label m-primary} **3D**
+@m_enddiv
+
+@m_div{m-col-m-3 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html shaders-meshvisualizer.png
+@ref MeshVisualizer @m_class{m-label m-primary} **3D**
+@m_enddiv
+
+@endparblock
+
+@m_class{m-row}
+
+@parblock
+
+@m_div{m-col-m-3 m-push-m-3 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html shaders-vector.png
+@ref Vector @m_class{m-label m-success} **2D** @m_class{m-label m-primary} **3D**
+@m_enddiv
+
+@m_div{m-col-m-3 m-push-m-3 m-col-t-6 m-text-center m-nopadt m-nopadx}
+@image html shaders-distancefieldvector.png
+@ref DistanceFieldVector @m_class{m-label m-success} **2D** @m_class{m-label m-primary} **3D**
+@m_enddiv
+
+@endparblock
+
 */
 
 /** @dir Magnum/Text
