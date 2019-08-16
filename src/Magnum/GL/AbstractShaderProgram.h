@@ -54,8 +54,8 @@ This class is designed to be used via subclassing. Subclasses define these
 functions and properties:
 
 <ul>
-<li> **Attribute definitions** with location and type for
-    configuring meshes, for example:
+<li> **Attribute definitions** using @ref Attribute typedefs with location and
+    type for configuring meshes, for example:
 
     @snippet MagnumGL.cpp AbstractShaderProgram-input-attributes
 </li>

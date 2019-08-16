@@ -34,6 +34,7 @@
 #include "Magnum/Magnum.h"
 #include "Magnum/GL/OpenGL.h"
 #include "Magnum/GL/visibility.h"
+#include "Magnum/Math/TypeTraits.h"
 
 namespace Magnum { namespace GL {
 
@@ -42,28 +43,36 @@ namespace Implementation { template<class> struct Attribute; }
 /**
 @brief Base class for vertex attribute location and type
 
-For use in @ref AbstractShaderProgram subclasses. Template parameter @p location
-is vertex attribute location, number between @cpp 0 @ce and
+For use in @ref AbstractShaderProgram subclasses. The @p location template
+parameter is vertex attribute location, a number between @cpp 0 @ce and
 @ref AbstractShaderProgram::maxVertexAttributes(). To ensure compatibility, you
-should always have vertex attribute with location @cpp 0 @ce.
+should always have a vertex attribute with location @cpp 0 @ce.
 
-Template parameter @p T is the type which is used for shader attribute, e.g.
-@ref Magnum::Vector4i "Vector4i" for @glsl ivec4 @ce. DataType is type of
-passed data when adding vertex buffers to mesh. By default it is the same as
-type used in shader (e.g. @ref DataType::Int for @ref Magnum::Vector4i "Vector4i").
-It's also possible to pass integer data to floating-point shader inputs. In
-this case you may want to normalize the values (e.g. color components from
-@cpp 0 @ce -- @cpp 255 @ce to @cpp 0.0f @ce -- @cpp 1.0f @ce) --- see
-@ref DataOption::Normalized.
+The @p T template parameter is the type which is used for shader attribute,
+e.g. @ref Magnum::Vector4i "Vector4i" for @glsl ivec4 @ce. @ref DataType is
+type of passed data when adding vertex buffers to mesh. By default it is the
+same as type used in shader (e.g. @ref DataType::Int for
+@ref Magnum::Vector4i "Vector4i"). It's also possible to pass integer data to
+floating-point shader inputs. In this case you may want to normalize the values
+(e.g. color components from @cpp 0 @ce -- @cpp 255 @ce to @cpp 0.0f @ce --
+@cpp 1.0f @ce) --- see @ref DataOption::Normalized.
 
-Only some types are allowed as attribute types, see @ref GL-AbstractShaderProgram-types
-for more information.
+@attention Only some types are allowed as attribute types and there are
+    additional restrictions applied for OpenGL ES and WebGL, see
+    @ref GL-AbstractShaderProgram-types for more information.
 
 See @ref GL-AbstractShaderProgram-subclassing for example usage in shaders and
-@ref GL-Mesh-configuration for example usage when adding vertex buffers to
+@ref GL-Mesh-configuration for example usage when adding vertex buffers to a
 mesh.
 */
 template<UnsignedInt location, class T> class Attribute {
+    #ifdef MAGNUM_TARGET_GLES2
+    static_assert(!Math::IsIntegral<T>::value, "integral attributes are not available on OpenGL ES 2.0 and WebGL 1");
+    #endif
+    #ifdef MAGNUM_TARGET_GLES
+    static_assert(!std::is_same<Math::UnderlyingTypeOf<T>, Double>::value, "double attributes and uniforms are not available in OpenGL ES and WebGL");
+    #endif
+
     public:
         enum: UnsignedInt {
             /**
@@ -343,11 +352,24 @@ class DynamicAttribute {
             GenericNormalized,
 
             #ifndef MAGNUM_TARGET_GLES2
-            /** Integral, matches integral shader type */
+            /**
+             * Integral, matches integral shader type
+             *
+             * @requires_gl30 Extension @gl_extension{EXT,gpu_shader4}
+             * @requires_gles30 Integral attributes are not available in OpenGL
+             *      ES 2.0.
+             * @requires_webgl20 Integral attributes are not available in WebGL
+             *      1.0.
+             */
             Integral,
             #ifndef MAGNUM_TARGET_GLES
 
-            /** Long, matches double-precision shader type */
+            /**
+             * Long, matches double-precision shader type
+             * @requires_gl40 Extension @gl_extension{ARB,gpu_shader_fp64}
+             * @requires_gl Double attributes and uniforms are not available in
+             *      OpenGL ES and WebGL.
+             */
             Long
             #endif
             #endif

@@ -312,11 +312,16 @@ MyShader& bindSpecularTexture(GL::Texture2D& texture) {
 /* [AbstractShaderProgram-textures] */
 
 /* [AbstractShaderProgram-xfb] */
-MyShader& setTransformFeedback(GL::TransformFeedback& feedback, GL::Buffer& positions, GL::Buffer& data) {
+MyShader& setTransformFeedback(GL::TransformFeedback& feedback,
+    GL::Buffer& positions, GL::Buffer& data)
+{
     feedback.attachBuffers(0, {&positions, &data});
     return *this;
 }
-MyShader& setTransformFeedback(GL::TransformFeedback& feedback, Int totalCount, GL::Buffer& positions, GLintptr positionsOffset, GL::Buffer& data, GLintptr dataOffset) {
+MyShader& setTransformFeedback(GL::TransformFeedback& feedback, Int totalCount,
+    GL::Buffer& positions, GLintptr positionsOffset, GL::Buffer& data,
+    GLintptr dataOffset)
+{
     feedback.attachBuffers(0, {
         std::make_tuple(&positions, positionsOffset, totalCount*sizeof(Vector3)),
         std::make_tuple(&data, dataOffset, totalCount*sizeof(Vector2ui))
