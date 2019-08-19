@@ -118,6 +118,9 @@ template<class T> class ResourceManagerData {
 
         template<class U> Resource<T, U> get(ResourceKey key);
 
+        template<class U> std::vector<Resource<T, U>> getAll();
+
+
         void set(ResourceKey key, T* data, ResourceDataState state, ResourcePolicy policy);
 
         T* fallback() { return _fallback; }
@@ -293,6 +296,10 @@ template<class... Types> class ResourceManager: private Implementation::Resource
             return this->Implementation::ResourceManagerData<T>::template get<U>(key);
         }
 
+        template<class T, class U = T> std::vector<Resource<T, U>> getAll() {
+            return this->Implementation::ResourceManagerData<T>::template getAll<U>();
+        }
+        
         /**
          * @brief Reference count of given resource
          *
@@ -536,6 +543,15 @@ template<class T> template<class U> Resource<T, U> ResourceManagerData<T>::get(R
     return Resource<T, U>(this, key);
 }
 
+template<class T> template<class U> std::vector<Resource<T, U>> ResourceManagerData<T>::getAll() {
+    std::vector<Resource<T, U>> resources;
+    resources.reserve(_data.size());
+    for (const auto& it : _data) {
+        resources.push_back(get<T>(it.first));
+    }
+    return resources;
+}
+
 template<class T> void ResourceManagerData<T>::set(const ResourceKey key, T* const data, const ResourceDataState state, const ResourcePolicy policy) {
     auto it = _data.find(key);
 
@@ -559,6 +575,7 @@ template<class T> void ResourceManagerData<T>::set(const ResourceKey key, T* con
     it->second.policy = policy;
     ++_lastChange;
 }
+
 
 template<class T> void ResourceManagerData<T>::setFallback(T* const data) {
     safeDelete(_fallback);
