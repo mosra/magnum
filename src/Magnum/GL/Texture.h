@@ -724,7 +724,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
             return *this;
         }
 
-        #ifndef MAGNUM_TARGET_GLES2
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
          * @brief Image size in given mip level
          *
