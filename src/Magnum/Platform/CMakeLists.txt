@@ -59,7 +59,7 @@ if(WITH_EMSCRIPTENAPPLICATION OR WITH_GLFWAPPLICATION OR WITH_SDL2APPLICATION)
         ${MagnumPlatform_SRCS}
         ${MagnumPlatform_HEADERS}
         ${MagnumPlatform_PRIVATE_HEADERS})
-    target_include_directories(MagnumPlatformObjects PUBLIC $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
+    target_include_directories(MagnumPlatformObjects PUBLIC $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
     if(BUILD_STATIC_PIC)
         set_target_properties(MagnumPlatformObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
     endif()
