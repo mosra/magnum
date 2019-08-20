@@ -31,7 +31,11 @@ namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct GlfwApplicationTest: Platform::Application {
     explicit GlfwApplicationTest(const Arguments& arguments): Platform::Application{arguments} {
-        Debug{} << "window size" << windowSize() << framebufferSize() << dpiScaling();
+        Debug{} << "window size" << windowSize()
+            #ifdef MAGNUM_TARGET_GL
+            << framebufferSize()
+            #endif
+            << dpiScaling();
     }
 
     /* For testing HiDPI resize events */
