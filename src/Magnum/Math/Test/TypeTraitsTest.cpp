@@ -247,8 +247,15 @@ void TypeTraitsTest::isUnitless() {
 
 void TypeTraitsTest::underlyingTypeOf() {
     CORRADE_VERIFY((std::is_same<UnderlyingTypeOf<Int>, Int>::value));
+
     CORRADE_VERIFY((std::is_same<UnderlyingTypeOf<Deg<Float>>, Float>::value));
     CORRADE_VERIFY((std::is_same<UnderlyingTypeOf<Unit<Rad, Double>>, Double>::value));
+
+    CORRADE_VERIFY((std::is_same<UnderlyingTypeOf<Vector2<UnsignedByte>>, UnsignedByte>::value));
+    CORRADE_VERIFY((std::is_same<UnderlyingTypeOf<Color3<Float>>, Float>::value));
+
+    CORRADE_VERIFY((std::is_same<UnderlyingTypeOf<Matrix2x3<Double>>, Double>::value));
+    CORRADE_VERIFY((std::is_same<UnderlyingTypeOf<Matrix4<Float>>, Float>::value));
 }
 
 template<class T> void TypeTraitsTest::equalsIntegral() {
