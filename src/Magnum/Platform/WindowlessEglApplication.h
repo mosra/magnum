@@ -349,6 +349,15 @@ MAGNUM_WINDOWLESSEGLAPPLICATION_MAIN(MyApplication)
 If no other application header is included, this class is also aliased to
 @cpp Platform::WindowlessApplication @ce and the macro is aliased to
 @cpp MAGNUM_WINDOWLESSAPPLICATION_MAIN() @ce to simplify porting.
+
+@subsection Platform-WindowlessEglApplication-usage-device-enumeration EGL device enumeration
+
+The application prefers to use the @m_class{m-doc-external}
+[EGL_EXT_device_enumeration](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_device_enumeration.txt),
+@m_class{m-doc-external} [EGL_EXT_platform_base](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_base.txt) and
+@m_class{m-doc-external} [EGL_EXT_platform_device](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_device.txt)
+where available instead of `EGL_DEFAULT_DISPLAY` to work better on headless
+setups. The application always chooses the first found device.
 */
 class WindowlessEglApplication {
     public:
