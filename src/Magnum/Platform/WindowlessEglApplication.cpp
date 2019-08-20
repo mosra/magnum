@@ -71,8 +71,10 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
        version parsing from a string. Not feeling like doing that today, no. */
     const char* const extensions = eglQueryString(EGL_NO_DISPLAY, EGL_EXTENSIONS);
     if(extensions &&
-        /* eglQueryDevicesEXT() */
-        extensionSupported(extensions, "EGL_EXT_device_enumeration") &&
+        /* eglQueryDevicesEXT(). NVidia exposes only EGL_EXT_device_base, which
+           is an older version of EGL_EXT_device_enumeration before it got
+           split to that and EGL_EXT_device_query, so test for both. */
+        (extensionSupported(extensions, "EGL_EXT_device_enumeration") || extensionSupported(extensions, "EGL_EXT_device_base")) &&
 
         /* eglGetPlatformDisplayEXT() */
         extensionSupported(extensions, "EGL_EXT_platform_base") &&
