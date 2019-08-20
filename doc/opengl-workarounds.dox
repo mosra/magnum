@@ -51,6 +51,8 @@ and diagnostic purpose it's possible to disable particular workarounds by
 passing their identifier string to the `--magnum-disable-workarounds`
 command-line option. See @ref GL-Context-command-line for more information.
 
+@m_class{m-console-wrap}
+
 @snippet src/Magnum/GL/Implementation/driverSpecific.cpp workarounds
 
 Chromium has a similar list: https://cs.chromium.org/chromium/src/gpu/config/gpu_driver_bug_list.json
