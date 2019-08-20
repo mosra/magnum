@@ -21,8 +21,8 @@ cd ../..
 # Vulkan build.
 g++ package/ci/libvulkan.cpp -std=c++11 -shared -o $HOME/libvulkan.so
 
-# Enabling only stuff that's directly affected by Vulkan, disabling everything
-# else.
+# Enabling only stuff that's directly affected by Vulkan (which means also
+# parts of Platform), disabling everything else.
 mkdir build && cd build
 # Not using CXXFLAGS in order to avoid affecting dependencies
 cmake .. \
@@ -56,6 +56,8 @@ cmake .. \
     -DWITH_DISTANCEFIELDCONVERTER=OFF \
     -DWITH_FONTCONVERTER=OFF \
     -DWITH_IMAGECONVERTER=OFF \
+    -DWITH_SDL2APPLICATION=ON \
+    -DWITH_GLFWAPPLICATION=ON \
     -DBUILD_TESTS=ON \
     -DBUILD_GL_TESTS=OFF \
     -DBUILD_DEPRECATED=$BUILD_DEPRECATED \
