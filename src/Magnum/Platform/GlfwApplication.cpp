@@ -256,7 +256,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
 
     #ifdef GLFW_NO_API
     /* Disable implicit GL context creation */
-    glfwWindowHint(GLFW_CONTEXT_CREATION_API, GLFW_NO_API);
+    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
     #endif
 
     /* Create the window */
