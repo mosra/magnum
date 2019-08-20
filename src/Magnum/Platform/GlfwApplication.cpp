@@ -67,7 +67,11 @@ GlfwApplication::GlfwApplication(const Arguments& arguments, NoCreateT):
     #ifdef MAGNUM_TARGET_GL
     _context.reset(new GLContext{NoCreate, args, arguments.argc, arguments.argv});
     #else
-    args.parse(arguments.argc, arguments.argv);
+    /** @todo this is duplicated here and in Sdl2Application, figure out a nice
+        non-duplicated way to handle this */
+    args.addOption("log", "default").setHelp("log", "console logging", "default|quiet|verbose")
+        .setFromEnvironment("log")
+        .parse(arguments.argc, arguments.argv);
     #endif
 
     /* Init GLFW */
