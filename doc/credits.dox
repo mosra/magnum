@@ -139,6 +139,8 @@ Are the below lists missing your name or something's wrong?
     fixes
 -   **Leon Moctezuma** ([\@leonidax](https://github.com/leonidax)) ---
     bugreports, API design direction
+-   **Mandeep Singh Baines** ([\@msbaines](https://github.com/msbaines)) ---
+    WebGL 2 build fixes
 -   **Max Schwarz** ([\@xqms](https://github.com/xqms)) --- `Any*` plugin
     improvements, fixes in the @ref GL library
 -   **Michael Tao** ([\@mtao](https://github.com/mtao)) --- Gentoo build fixes

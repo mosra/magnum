@@ -524,6 +524,8 @@ See also:
     @ref Platform::WindowlessWglApplication, driver detection for the
     @cpp "no-forward-compatible-core-context" @ce now properly handles
     @fn_gl{GetString} returning a @cpp nullptr @ce
+-   @ref GL::Texture::imageSize() was present on WebGL 2 by mistake (see
+    [mosra/magnum#365](https://github.com/mosra/magnum/pull/365))
 
 @subsection changelog-latest-docs Documentation
 
