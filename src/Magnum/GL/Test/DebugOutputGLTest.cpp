@@ -73,7 +73,6 @@ void DebugOutputGLTest::setCallbackDefault() {
     if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
         CORRADE_SKIP(Extensions::KHR::debug::string() + std::string(" is not supported"));
 
-    /* Need to be careful, because the test runner is using debug output too */
     DebugOutput::setDefaultCallback();
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -82,15 +81,23 @@ void DebugOutputGLTest::setCallbackDefault() {
 void DebugOutputGLTest::setup() {
     _out.str({});
 
-    if(Context::current().isExtensionSupported<Extensions::KHR::debug>())
-        DebugOutput::setCallback([](DebugOutput::Source source, DebugOutput::Type type, UnsignedInt id, DebugOutput::Severity severity, const std::string& string, const void* userPtr) {
-            Implementation::defaultDebugCallback(source, type, id, severity, string, static_cast<std::ostringstream*>(const_cast<void*>(userPtr)));
-        }, &_out);
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
+        return;
+
+    Renderer::enable(Renderer::Feature::DebugOutput);
+    Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
+    DebugOutput::setCallback([](DebugOutput::Source source, DebugOutput::Type type, UnsignedInt id, DebugOutput::Severity severity, const std::string& string, const void* userPtr) {
+        Implementation::defaultDebugCallback(source, type, id, severity, string, static_cast<std::ostringstream*>(const_cast<void*>(userPtr)));
+    }, &_out);
 }
 
 void DebugOutputGLTest::teardown() {
-    if(Context::current().isExtensionSupported<Extensions::KHR::debug>())
-        DebugOutput::setDefaultCallback();
+    if(!Context::current().isExtensionSupported<Extensions::KHR::debug>())
+        return;
+
+    Renderer::disable(Renderer::Feature::DebugOutput);
+    Renderer::disable(Renderer::Feature::DebugOutputSynchronous);
+    DebugOutput::setDefaultCallback();
 }
 
 void DebugOutputGLTest::setEnabled() {

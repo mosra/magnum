@@ -35,28 +35,7 @@
 
 namespace Magnum { namespace GL {
 
-OpenGLTester::OpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})}, _windowlessApplication{{arguments().first, arguments().second}} {
-    /* Try to create debug context, fallback to normal one if not possible. No
-       such thing on macOS, iOS or WebGL. */
-    #if !defined(CORRADE_TARGET_APPLE) && !defined(MAGNUM_TARGET_WEBGL)
-    if(!_windowlessApplication.tryCreateContext(Platform::WindowlessApplication::Configuration{}.addFlags(Platform::WindowlessApplication::Configuration::Flag::Debug)))
-        _windowlessApplication.createContext();
-    #else
-    _windowlessApplication.createContext();
-    #endif
-
-    #ifndef MAGNUM_TARGET_WEBGL
-    if(Context::current().isExtensionSupported<Extensions::KHR::debug>()) {
-        Renderer::enable(Renderer::Feature::DebugOutput);
-        Renderer::enable(Renderer::Feature::DebugOutputSynchronous);
-        DebugOutput::setDefaultCallback();
-
-        /* Disable "Buffer detailed info" message on NV (too spammy) */
-        if(Context::current().detectedDriver() & Context::DetectedDriver::NVidia)
-            DebugOutput::setEnabled(DebugOutput::Source::Api, DebugOutput::Type::Other, {131185}, false);
-    }
-    #endif
-}
+OpenGLTester::OpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfiguration{}.setSkippedArgumentPrefixes({"magnum"})}, _windowlessApplication{{arguments().first, arguments().second}} {}
 
 OpenGLTester::~OpenGLTester() = default;
 

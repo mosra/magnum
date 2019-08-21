@@ -121,16 +121,14 @@ to run single isolated test cases.
 
 @section GL-OpenGLTester-debug Debug context and error checking
 
-On platforms that support it, the OpenGL context is created with synchronous
-debug output, meaning that every OpenGL error is directly reported to standard
-output. While it is possible, the tester class doesn't abort the test cases
-upon encountering a GL error --- this should be done explicitly with
-@ref MAGNUM_VERIFY_NO_GL_ERROR() instead, as the debug output is not available
-on all platforms and not all GL errors are fatal.
-
-@note This overrides the `--magnum-gpu-validation`
-    @ref GL-Context-command-line "command line option", making it always
-    enabled.
+Because @ref DebugOutput can be quite spammy in some cases, especially when
+compiling more complex shaders or doing benchmarks, it's not implicitly enabled
+by default to make the test output more readable. Instead of relying on debug
+output to report errors, the @ref MAGNUM_VERIFY_NO_GL_ERROR() macro should be
+used to reliably check for errors regardless of platform support. For easier
+debugging of OpenGL errors users are encuraged to use the
+`--magnum-gpu-validation` @ref GL-Context-command-line "command line option",
+which is supported here as well as in all other application implementations.
 
 @section GL-OpenGLTester-benchmarks GPU time benchmarks
 
@@ -263,12 +261,8 @@ class OpenGLTester: public TestSuite::Tester {
         #endif
 
         struct WindowlessApplication: Platform::WindowlessApplication {
-            explicit WindowlessApplication(const Arguments& arguments): Platform::WindowlessApplication{arguments, NoCreate} {}
+            explicit WindowlessApplication(const Arguments& arguments): Platform::WindowlessApplication{arguments} {}
             int exec() override final { return 0; }
-
-            using Platform::WindowlessApplication::tryCreateContext;
-            using Platform::WindowlessApplication::createContext;
-
         } _windowlessApplication;
 
         #ifndef MAGNUM_TARGET_WEBGL
