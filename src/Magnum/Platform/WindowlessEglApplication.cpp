@@ -211,13 +211,13 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     #endif
 
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-    const std::string version = eglQueryString(_display, EGL_VERSION);
+    const char* version = eglQueryString(_display, EGL_VERSION);
 
     /* SwiftShader 3.3.0.1 blows up on encountering EGL_CONTEXT_FLAGS_KHR with
        a zero value, so erase these. It also doesn't handle them as correct
        flags, but instead checks for the whole value, so a combination won't
        work either: https://github.com/google/swiftshader/blob/5fb5e817a20d3e60f29f7338493f922b5ac9d7c4/src/OpenGL/libEGL/libEGL.cpp#L794-L8104 */
-    if(!configuration.flags() && version.find("SwiftShader") != std::string::npos && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-no-empty-egl-context-flags"))) {
+    if(!configuration.flags() && version && std::strstr(version, "SwiftShader") != nullptr && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-no-empty-egl-context-flags"))) {
         auto& contextFlags = attributes[Containers::arraySize(attributes) - 3];
         CORRADE_INTERNAL_ASSERT(contextFlags == EGL_CONTEXT_FLAGS_KHR);
         contextFlags = EGL_NONE;
@@ -232,7 +232,7 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
     /* SwiftShader 3.3.0.1 needs some pbuffer, otherwise it crashes somewhere
        deep inside when making the context current */
-    if(version.find("SwiftShader") != std::string::npos && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-egl-context-needs-pbuffer"))) {
+    if(version && std::strstr(version, "SwiftShader") != nullptr && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("swiftshader-egl-context-needs-pbuffer"))) {
         EGLint surfaceAttributes[] = {
             EGL_WIDTH, 32,
             EGL_HEIGHT, 32,
