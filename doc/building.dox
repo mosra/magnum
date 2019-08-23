@@ -3,7 +3,7 @@
 
     Copyright © 2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019
               Vladimír Vondruš <mosra@centrum.cz>
-    Copyright © 2018 Jonathan Hale <squareys@googlemail.com>
+    Copyright © 2018, 2019 Jonathan Hale <squareys@googlemail.com>
 
     Permission is hereby granted, free of charge, to any person obtaining a
     copy of this software and associated documentation files (the "Software"),
@@ -115,11 +115,14 @@ feature names are simply names of CMake `WITH_*` options but lowercase, e.g.:
 vcpkg install magnum[glfwapplication,tgaimporter]
 @endcode
 
-To install all features of a package, use `*`, e.g.:
+To install all features of magnum on windows (with @ref Magnum::Platform::WindowlessWglContext "wgl context"),
+use the following command:
 
 @code{.bat}
-vcpkg install magnum[*]
+vcpkg install magnum[anyimageimporter,anyaudioimporter,anyimageconverter,anysceneimporter,audio,debugtools,distancefieldconverter,fontconverter,gl,gl-info,glfwapplication,imageconverter,magnumfont,magnumfontconverter,meshtools,objimporter,tgaimporter,tgaimageconverter,opengltester,primitives,sdl2application,scenegraph,shaders,text,texturetools,tgaimporter,trade,wavaudioimporter,windowlesswglapplication,wglcontext]
 @endcode
+
+Note that `[*]` does not work as that would build linux specific contexts.
 
 For more information, see the
 [documentation on feature packages](https://vcpkg.readthedocs.io/en/latest/specifications/feature-packages/).
