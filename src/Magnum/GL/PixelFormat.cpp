@@ -425,9 +425,13 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         _c(SignedRG11Eac)
         #endif
         _c(RGBS3tcDxt1)
+        _c(SRGBS3tcDxt1)
         _c(RGBAS3tcDxt1)
+        _c(SRGBAlphaS3tcDxt1)
         _c(RGBAS3tcDxt3)
+        _c(SRGBAlphaS3tcDxt3)
         _c(RGBAS3tcDxt5)
+        _c(SRGBAlphaS3tcDxt5)
         #ifndef MAGNUM_TARGET_WEBGL
         _c(RGBAAstc4x4)
         _c(SRGB8Alpha8Astc4x4)

@@ -189,9 +189,13 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         /* LCOV_EXCL_START */
         #define _c(value) case CompressedPixelFormat::value: return debug << "CompressedPixelFormat::" #value;
         _c(Bc1RGBUnorm)
+        _c(Bc1RGBSrgb)
         _c(Bc1RGBAUnorm)
+        _c(Bc1RGBASrgb)
         _c(Bc2RGBAUnorm)
+        _c(Bc2RGBASrgb)
         _c(Bc3RGBAUnorm)
+        _c(Bc3RGBASrgb)
         _c(EacR11Unorm)
         _c(EacR11Snorm)
         _c(EacRG11Unorm)

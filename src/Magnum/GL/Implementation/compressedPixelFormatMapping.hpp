@@ -26,9 +26,13 @@
 /* See Magnum/GL/PixelFormat.cpp and Magnum/GL/Test/PixelFormatTest.cpp */
 #ifdef _c
 _c(Bc1RGBUnorm, RGBS3tcDxt1)
+_c(Bc1RGBSrgb, SRGBS3tcDxt1)
 _c(Bc1RGBAUnorm, RGBAS3tcDxt1)
+_c(Bc1RGBASrgb, SRGBAlphaS3tcDxt1)
 _c(Bc2RGBAUnorm, RGBAS3tcDxt3)
+_c(Bc2RGBASrgb, SRGBAlphaS3tcDxt3)
 _c(Bc3RGBAUnorm, RGBAS3tcDxt5)
+_c(Bc3RGBASrgb, SRGBAlphaS3tcDxt5)
 #ifndef MAGNUM_TARGET_GLES2
 _c(EacR11Unorm, R11Eac)
 _c(EacR11Snorm, SignedR11Eac)

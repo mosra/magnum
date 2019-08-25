@@ -455,7 +455,7 @@ Extension                                   | Status
 @gl_extension{EXT,texture_compression_s3tc} | done
 @gl_extension{EXT,shader_integer_mix}       | done (shading language only)
 @gl_extension{EXT,polygon_offset_clamp}     | |
-@gl_extension{EXT,texture_compression_s3tc_srgb} | |
+@gl_extension{EXT,texture_compression_s3tc_srgb} | done
 @gl_extension2{KHR,texture_compression_astc_hdr,KHR_texture_compression_astc_hdr} | done
 @gl_extension2{KHR,blend_equation_advanced_coherent,KHR_blend_equation_advanced} | done
 @gl_extension{KHR,context_flush_control}    | |
@@ -525,7 +525,7 @@ Extension                                   | Status
 @webgl_extension{EXT,color_buffer_float}    | |
 @webgl_extension{OES,texture_float_linear}  | done
 @webgl_extension{WEBGL,compressed_texture_s3tc} | done
-@webgl_extension{WEBGL,compressed_texture_s3tc_srgb} |
+@webgl_extension{WEBGL,compressed_texture_s3tc_srgb} | done
 
 @section opengl-unsupported Unsupported OpenGL features
 

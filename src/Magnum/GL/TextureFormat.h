@@ -1202,6 +1202,15 @@ enum class TextureFormat: GLenum {
     CompressedRGBS3tcDxt1 = GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
 
     /**
+     * S3TC DXT1 compressed sRGB. **Available only for 2D, 2D array, cube map
+     * and cube map array textures.**
+     * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
+     * @requires_es_extension Extension @gl_extension{EXT,texture_compression_s3tc_srgb}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc_srgb}
+     */
+    CompressedSRGBS3tcDxt1 = GL_COMPRESSED_SRGB_S3TC_DXT1_EXT,
+
+    /**
      * S3TC DXT1 compressed RGBA. **Available only on 2D, 2D array, cube map
      * and cube map array textures.**
      * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
@@ -1209,6 +1218,15 @@ enum class TextureFormat: GLenum {
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc}
      */
     CompressedRGBAS3tcDxt1 = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
+
+    /**
+     * S3TC DXT1 compressed sRGB + linear alpha. **Available only for 2D, 2D
+     * array, cube map and cube map array textures.**
+     * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
+     * @requires_es_extension Extension @gl_extension{EXT,texture_compression_s3tc_srgb}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc_srgb}
+     */
+    CompressedSRGBAlphaS3tcDxt1 = GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT,
 
     /**
      * S3TC DXT3 compressed RGBA. **Available only on 2D, 2D array, cube map
@@ -1220,6 +1238,15 @@ enum class TextureFormat: GLenum {
     CompressedRGBAS3tcDxt3 = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
 
     /**
+     * S3TC DXT3 compressed sRGB + linear alpha. **Available only for 2D, 2D
+     * array, cube map and cube map array textures.**
+     * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
+     * @requires_es_extension Extension @gl_extension{EXT,texture_compression_s3tc_srgb}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc_srgb}
+     */
+    CompressedSRGBAlphaS3tcDxt3 = GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT,
+
+    /**
      * S3TC DXT5 compressed RGBA. **Available only on 2D, 2D array, cube map
      * and cube map array textures.**
      * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
@@ -1227,6 +1254,15 @@ enum class TextureFormat: GLenum {
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc}
      */
     CompressedRGBAS3tcDxt5 = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,
+
+    /**
+     * S3TC DXT5 compressed sRGB + linear alpha. **Available only for 2D, 2D
+     * array, cube map and cube map array textures.**
+     * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
+     * @requires_es_extension Extension @gl_extension{EXT,texture_compression_s3tc_srgb}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc_srgb}
+     */
+    CompressedSRGBAlphaS3tcDxt5 = GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT,
 
     #ifndef MAGNUM_TARGET_WEBGL
     /**

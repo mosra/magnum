@@ -582,6 +582,16 @@ enum class CompressedPixelFormat: UnsignedInt {
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1
+     * compressed sRGB, normalized unsigned byte (DXT1).
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGBS3tcDxt1,
+     * @ref GL::TextureFormat::CompressedSRGBS3tcDxt1 /
+     * @def_vk_keyword{FORMAT_BC1_RGB_SRGB_BLOCK,Format}.
+     */
+    Bc1RGBSrgb,
+
+    /**
+     * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1
      * compressed RGBA, normalized unsigned byte (DXT1).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAS3tcDxt1,
@@ -589,6 +599,16 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @def_vk_keyword{FORMAT_BC1_RGBA_UNORM_BLOCK,Format}.
      */
     Bc1RGBAUnorm,
+
+    /**
+     * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1
+     * compressed sRGB + linear alpha, normalized unsigned byte (DXT1).
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGBAlphaS3tcDxt1,
+     * @ref GL::TextureFormat::CompressedSRGBAlphaS3tcDxt1 /
+     * @def_vk_keyword{FORMAT_BC1_RGBA_SRGB_BLOCK,Format}.
+     */
+    Bc1RGBASrgb,
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC2
@@ -601,6 +621,16 @@ enum class CompressedPixelFormat: UnsignedInt {
     Bc2RGBAUnorm,
 
     /**
+     * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC2
+     * compressed sRGB + linear alpha, normalized unsigned byte (DXT3).
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGBAlphaS3tcDxt3,
+     * @ref GL::TextureFormat::CompressedSRGBAlphaS3tcDxt3 /
+     * @def_vk_keyword{FORMAT_BC2_SRGB_BLOCK,Format}.
+     */
+    Bc2RGBASrgb,
+
+    /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC3
      * compressed RGBA, normalized unsigned byte (DXT5).
      *
@@ -609,6 +639,16 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @def_vk_keyword{FORMAT_BC3_UNORM_BLOCK,Format}.
      */
     Bc3RGBAUnorm,
+
+    /**
+     * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC3
+     * compressed sRGB + linear alpha, normalized unsigned byte (DXT5).
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGBAlphaS3tcDxt5,
+     * @ref GL::TextureFormat::CompressedSRGBAlphaS3tcDxt5 /
+     * @def_vk_keyword{FORMAT_BC3_SRGB_BLOCK,Format}.
+     */
+    Bc3RGBASrgb,
 
     /**
      * [EAC](https://en.wikipedia.org/wiki/Ericsson_Texture_Compression#ETC2_and_EAC)
