@@ -579,6 +579,8 @@ add any performance gains, is not supported in Magnum. See also
     supported exclusively by NVidia
 -   @gl_extension{ARB,cl_event} seems to be not supported anywhere
 -   @gl_extension{ARB,shader_stencil_export} is supported exclusively by AMD
+-   @gl_extension{EXT,texture_compression_latc} is superseded by
+    @gl_extension{EXT,texture_compression_rgtc}, available in OpenGL 3.0.
 
 @subsection opengl-unsupported-extensions-vendor Unsupported vendor extensions
 
