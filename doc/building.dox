@@ -99,12 +99,25 @@ like this:
 vcpkg install magnum
 @endcode
 
-Often you may want to install the latest Git revision of all Magnum projects
-instead:
+@m_class{m-block m-success}
 
-@code{.bat}
-vcpkg install --head corrade magnum
-@endcode
+@par Installing latest master
+    The `master` is considered stable for production use and often you may want
+    to prefer it over an potentially outdated tagged release. To do so, use
+    the `--head` option, on *both* `corrade` and `magnum`:
+@par
+    @code{.bat}
+    vcpkg install --head corrade magnum
+    @endcode
+@par
+    Note that `vcpkg upgrade` doesn't work well with `--head` packages (it will
+    go back to latest tagged version instead of updated master), you have to
+    remove both `corrade` and `magnum` and install `--head` again:
+@par
+    @code{.bat}
+    vcpkg remove magnum --recurse
+    vcpkg install --head corrade magnum
+    @endcode
 
 Not all features are installed by default; only those that are implicitly
 enabled in @ref building-features together with @ref Platform::Sdl2Application "Sdl2Application".
