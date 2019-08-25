@@ -284,6 +284,7 @@ void PixelFormatTest::mapCompressedFormatImplementationSpecific() {
     CORRADE_COMPARE(compressedPixelFormat(Magnum::compressedPixelFormatWrap(CompressedPixelFormat::RGBAS3tcDxt1)),
         CompressedPixelFormat::RGBAS3tcDxt1);
 }
+
 void PixelFormatTest::mapCompressedFormatUnsupported() {
     #ifndef MAGNUM_TARGET_GLES2
     CORRADE_SKIP("All pixel formats are supported on ES3+.");
