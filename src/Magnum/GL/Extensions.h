@@ -301,6 +301,7 @@ namespace ANGLE {
     _extension(19,WEBGL,color_buffer_float,         GLES200,    None) // #14
     _extension(20,WEBGL,draw_buffers,               GLES200, GLES300) // #18
     #endif
+    _extension(21,WEBGL,compressed_texture_s3tc_srgb, GLES200,  None) // #32
 } namespace MAGNUM {
     _extension(30,MAGNUM,shader_vertex_id,          GLES300, GLES300)
 }
@@ -397,6 +398,7 @@ namespace ANDROID {
     _extension( 60,EXT,primitive_bounding_box,      GLES310, GLES320) // #186
     #endif
     _extension( 61,EXT,polygon_offset_clamp,        GLES200,    None) // #252
+    _extension( 62,EXT,texture_compression_s3tc_srgb, GLES200,  None) // #289
 } namespace KHR {
     _extension( 70,KHR,texture_compression_astc_ldr,GLES200, GLES320) // #117
     _extension( 71,KHR,texture_compression_astc_hdr,GLES200,    None) // #117

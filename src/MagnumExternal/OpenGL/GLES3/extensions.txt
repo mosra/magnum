@@ -45,6 +45,7 @@ extension EXT_disjoint_timer_query                  optional
 extension EXT_texture_sRGB_decode                   optional
 extension EXT_sRGB_write_control                    optional
 extension EXT_texture_compression_s3tc              optional
+extension EXT_texture_compression_s3tc_srgb         optional
 extension EXT_shader_integer_mix                    optional
 extension KHR_texture_compression_astc_hdr          optional
 extension KHR_blend_equation_advanced_coherent      optional

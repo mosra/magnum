@@ -249,7 +249,8 @@ constexpr Extension ExtensionList[]{
     _extension(EXT,color_buffer_float),
     #endif
     _extension(OES,texture_float_linear),
-    _extension(WEBGL,compressed_texture_s3tc)};
+    _extension(WEBGL,compressed_texture_s3tc),
+    _extension(WEBGL,compressed_texture_s3tc_srgb)};
 constexpr Extension ExtensionListES300[]{
     #ifdef MAGNUM_TARGET_GLES2
     _extension(ANGLE,instanced_arrays),
@@ -298,6 +299,7 @@ constexpr Extension ExtensionList[]{
     _extension(EXT,shader_integer_mix),
     #endif
     _extension(EXT,polygon_offset_clamp),
+    _extension(EXT,texture_compression_s3tc_srgb),
     _extension(KHR,texture_compression_astc_hdr),
     _extension(KHR,blend_equation_advanced_coherent),
     _extension(KHR,context_flush_control),

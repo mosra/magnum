@@ -4,6 +4,9 @@
 
 version 4.6 core
 
+# Need this only for sRGB S3TC definitions, everything else is core since 2.1
+extension EXT_texture_sRGB                      optional
+
 extension AMD_transform_feedback3_lines_triangles optional
 extension AMD_vertex_shader_layer               optional
 extension AMD_shader_trinary_minmax             optional
