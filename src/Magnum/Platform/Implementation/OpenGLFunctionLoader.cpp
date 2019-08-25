@@ -41,6 +41,10 @@
 #pragma warning(disable: 4055)
 #pragma warning(disable: 4054)
 #endif
+#ifndef WIN32_LEAN_AND_MEAN
+#define WIN32_LEAN_AND_MEAN
+#endif
+#include <windows.h>
 
 /* GLX-specific includes */
 #elif defined(CORRADE_TARGET_UNIX) && defined(MAGNUM_PLATFORM_USE_GLX)
@@ -93,9 +97,9 @@ auto OpenGLFunctionLoader::load(const char* const name) -> FunctionPointer {
      const PROC address = wglGetProcAddress(reinterpret_cast<LPCSTR>(name));
      const auto integerAddress = reinterpret_cast<std::ptrdiff_t>(address);
      if(address && integerAddress != 1 && integerAddress != 2 &&
-        integerAddress != 3 && integerAddress != -1) return address;
+        integerAddress != 3 && integerAddress != -1) return reinterpret_cast<FunctionPointer>(address);
 
-     return GetProcAddress(library, reinterpret_cast<LPCSTR>(name));
+     return reinterpret_cast<FunctionPointer>(GetProcAddress(library, reinterpret_cast<LPCSTR>(name)));
 }
 
 /* GLX-specific implementation */

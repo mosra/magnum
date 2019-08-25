@@ -28,19 +28,16 @@
 #include "Magnum/Magnum.h"
 
 #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_PLATFORM_USE_EGL)
-#define WIN32_LEAN_AND_MEAN 1
-#include <windows.h>
+/* I didn't find a better way to circumvent the need for including windows.h */
+struct HINSTANCE__;
+typedef struct HINSTANCE__* HMODULE;
 #endif
 
 namespace Magnum { namespace Platform { namespace Implementation {
 
 class OpenGLFunctionLoader {
     public:
-        #if !defined(CORRADE_TARGET_WINDOWS) || defined(MAGNUM_PLATFORM_USE_EGL)
         using FunctionPointer = void(*)();
-        #else
-        using FunctionPointer = PROC;
-        #endif
 
         explicit OpenGLFunctionLoader();
         ~OpenGLFunctionLoader();
