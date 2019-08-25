@@ -982,6 +982,10 @@ typedef void (APIENTRY *GLDEBUGPROCKHR)(GLenum source,GLenum type,GLuint id,GLen
 #define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT 0x83F2
 #define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT 0x83F3
 
+/* GL_EXT_polygon_offset_clamp */
+
+#define GL_POLYGON_OFFSET_CLAMP_EXT 0x8E1B
+
 /* GL_EXT_texture_compression_s3tc_srgb */
 
 #define GL_COMPRESSED_SRGB_S3TC_DXT1_EXT 0x8C4C
@@ -1439,6 +1443,11 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryivEXT)(GLenum, GLenum, GLint 
 #define glGetQueryivEXT flextglGetQueryivEXT
 GLAPI FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsQueryEXT)(GLuint);
 #define glIsQueryEXT flextglIsQueryEXT
+
+/* GL_EXT_polygon_offset_clamp */
+
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglPolygonOffsetClampEXT)(GLfloat, GLfloat, GLfloat);
+#define glPolygonOffsetClampEXT flextglPolygonOffsetClampEXT
 
 /* GL_EXT_robustness */
 

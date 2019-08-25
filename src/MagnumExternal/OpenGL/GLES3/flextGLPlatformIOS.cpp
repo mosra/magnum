@@ -55,6 +55,7 @@
 #undef glMultiDrawElementsEXT
 #undef glFramebufferTexture2DMultisampleEXT
 #undef glRenderbufferStorageMultisampleEXT
+#undef glPolygonOffsetClampEXT
 #undef glPrimitiveBoundingBoxEXT
 #undef glGetGraphicsResetStatusEXT
 #undef glGetnUniformfvEXT
@@ -203,6 +204,11 @@ void flextGLInit(Magnum::GL::Context&) {
     #if GL_EXT_multisampled_render_to_texture
     flextglFramebufferTexture2DMultisampleEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLenum, GLuint, GLint, GLsizei)>(glFramebufferTexture2DMultisampleEXT);
     flextglRenderbufferStorageMultisampleEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, GLsizei, GLsizei)>(glRenderbufferStorageMultisampleEXT);
+    #endif
+
+    /* GL_EXT_polygon_offset_clamp */
+    #if GL_EXT_polygon_offset_clamp
+    flextglPolygonOffsetClampEXT = reinterpret_cast<void(APIENTRY*)(GLfloat, GLfloat, GLfloat)>(glPolygonOffsetClampEXT);
     #endif
 
     /* GL_EXT_primitive_bounding_box */

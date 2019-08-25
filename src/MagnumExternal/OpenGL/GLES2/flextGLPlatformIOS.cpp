@@ -67,6 +67,7 @@
 #undef glGetQueryObjectuivEXT
 #undef glGetQueryivEXT
 #undef glIsQueryEXT
+#undef glPolygonOffsetClampEXT
 #undef glGetGraphicsResetStatusEXT
 #undef glGetnUniformfvEXT
 #undef glGetnUniformivEXT
@@ -257,6 +258,11 @@ void flextGLInit(Magnum::GL::Context&) {
     flextglGetQueryObjectuivEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLuint *)>(glGetQueryObjectuivEXT);
     flextglGetQueryivEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLint *)>(glGetQueryivEXT);
     flextglIsQueryEXT = reinterpret_cast<GLboolean(APIENTRY*)(GLuint)>(glIsQueryEXT);
+    #endif
+
+    /* GL_EXT_polygon_offset_clamp */
+    #if GL_EXT_polygon_offset_clamp
+    flextglPolygonOffsetClampEXT = reinterpret_cast<void(APIENTRY*)(GLfloat, GLfloat, GLfloat)>(glPolygonOffsetClampEXT);
     #endif
 
     /* GL_EXT_robustness */

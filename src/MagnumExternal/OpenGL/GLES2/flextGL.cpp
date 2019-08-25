@@ -101,6 +101,9 @@ FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryObjectuivEXT)(GLuint, GLenum, GLuin
 FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryivEXT)(GLenum, GLenum, GLint *) = nullptr;
 FLEXTGL_EXPORT GLboolean(APIENTRY *flextglIsQueryEXT)(GLuint) = nullptr;
 
+/* GL_EXT_polygon_offset_clamp */
+FLEXTGL_EXPORT void(APIENTRY *flextglPolygonOffsetClampEXT)(GLfloat, GLfloat, GLfloat) = nullptr;
+
 /* GL_EXT_robustness */
 FLEXTGL_EXPORT GLenum(APIENTRY *flextglGetGraphicsResetStatusEXT)(void) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformfvEXT)(GLuint, GLint, GLsizei, GLfloat *) = nullptr;

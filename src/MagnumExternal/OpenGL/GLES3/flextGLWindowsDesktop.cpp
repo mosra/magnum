@@ -393,6 +393,9 @@ FLEXTGL_EXPORT void(APIENTRY *flextglMultiDrawElementsEXT)(GLenum, const GLsizei
 FLEXTGL_EXPORT void(APIENTRY *flextglFramebufferTexture2DMultisampleEXT)(GLenum, GLenum, GLenum, GLuint, GLint, GLsizei) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglRenderbufferStorageMultisampleEXT)(GLenum, GLsizei, GLenum, GLsizei, GLsizei) = nullptr;
 
+/* GL_EXT_polygon_offset_clamp */
+FLEXTGL_EXPORT void(APIENTRY *flextglPolygonOffsetClampEXT)(GLfloat, GLfloat, GLfloat) = nullptr;
+
 /* GL_EXT_primitive_bounding_box */
 FLEXTGL_EXPORT void(APIENTRY *flextglPrimitiveBoundingBoxEXT)(GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat, GLfloat) = nullptr;
 
