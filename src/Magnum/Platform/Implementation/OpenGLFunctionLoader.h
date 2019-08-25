@@ -55,6 +55,7 @@ class OpenGLFunctionLoader {
         /* WGL-specific handles */
         #elif defined(CORRADE_TARGET_WINDOWS)
         HMODULE library;
+        FunctionPointer getProcAddress;
 
         /* GLX-specific handles (nothing needed) */
         #elif defined(CORRADE_TARGET_UNIX) && defined(MAGNUM_PLATFORM_USE_GLX)

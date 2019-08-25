@@ -86,20 +86,28 @@ auto OpenGLFunctionLoader::load(const char* const name) -> FunctionPointer {
 /* WGL-specific implementation */
 #elif defined(CORRADE_TARGET_WINDOWS)
 OpenGLFunctionLoader::OpenGLFunctionLoader() {
-    library = GetModuleHandleA("OpenGL32.dll");
+    library = GetModuleHandleA("opengl32.dll");
+    getProcAddress = reinterpret_cast<FunctionPointer>(GetProcAddress(library, "wglGetProcAddress"));
 }
 
-/** @todo closing the library is not needed? */
+/* FreeLibrary() should not be called:
+   https://docs.microsoft.com/en-us/windows/win32/api/libloaderapi/nf-libloaderapi-getmodulehandlea */
 OpenGLFunctionLoader::~OpenGLFunctionLoader() = default;
 
 auto OpenGLFunctionLoader::load(const char* const name) -> FunctionPointer {
-     /** @todo Is this shit real?! OH MY GOD. */
-     const PROC address = wglGetProcAddress(reinterpret_cast<LPCSTR>(name));
-     const auto integerAddress = reinterpret_cast<std::ptrdiff_t>(address);
-     if(address && integerAddress != 1 && integerAddress != 2 &&
+    /* First try wglGetProcAddress that we extracted above, then a
+       normal GetProcAddress(). Not using wglGetProcAddress() directly because
+       that would mean we need to explicitly link to opengl32.dll (and since
+       this is inside a static library, also forcing our users to link to it
+       too). And why do that when `library` has that already anyway. */
+    const PROC address = reinterpret_cast<PROC(WINAPI*)(LPCSTR)>(getProcAddress)(reinterpret_cast<LPCSTR>(name));
+    /* This actually is real, it seems -- OH MY GOD
+       https://community.khronos.org/t/wglgetprocaddress/77122 */
+    const auto integerAddress = reinterpret_cast<std::ptrdiff_t>(address);
+    if(address && integerAddress != 1 && integerAddress != 2 &&
         integerAddress != 3 && integerAddress != -1) return reinterpret_cast<FunctionPointer>(address);
 
-     return reinterpret_cast<FunctionPointer>(GetProcAddress(library, reinterpret_cast<LPCSTR>(name)));
+    return reinterpret_cast<FunctionPointer>(GetProcAddress(library, reinterpret_cast<LPCSTR>(name)));
 }
 
 /* GLX-specific implementation */
