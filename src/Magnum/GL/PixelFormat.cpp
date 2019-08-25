@@ -403,6 +403,8 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         _c(RG)
         _c(RGB)
         _c(RGBA)
+        #endif
+        #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
         _c(RedRgtc1)
         _c(RGRgtc2)
         _c(SignedRedRgtc1)

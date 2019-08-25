@@ -279,29 +279,31 @@ namespace ANGLE {
     /* Replaces WEBGL_color_buffer_float from WebGL 1 */
     _extension( 8,EXT,color_buffer_float,           GLES300,    None) // #31
     #endif
+    _extension( 9,EXT,texture_compression_rgtc,     GLES200,    None) // #38
+    _extension(10,EXT,texture_compression_bptc,     GLES200,    None) // #39
 } namespace OES {
     #ifdef MAGNUM_TARGET_GLES2
-    _extension( 9,OES,texture_float,                GLES200, GLES300) // #1
-    _extension(10,OES,texture_half_float,           GLES200, GLES300) // #2
-    _extension(11,OES,standard_derivatives,         GLES200, GLES300) // #4
-    _extension(12,OES,vertex_array_object,          GLES200, GLES300) // #5
-    _extension(13,OES,element_index_uint,           GLES200, GLES300) // #10
+    _extension(15,OES,texture_float,                GLES200, GLES300) // #1
+    _extension(16,OES,texture_half_float,           GLES200, GLES300) // #2
+    _extension(17,OES,standard_derivatives,         GLES200, GLES300) // #4
+    _extension(18,OES,vertex_array_object,          GLES200, GLES300) // #5
+    _extension(19,OES,element_index_uint,           GLES200, GLES300) // #10
     #endif
-    _extension(14,OES,texture_float_linear,         GLES200,    None) // #20
+    _extension(20,OES,texture_float_linear,         GLES200,    None) // #20
     #ifdef MAGNUM_TARGET_GLES2
-    _extension(15,OES,texture_half_float_linear,    GLES200, GLES300) // #21
-    _extension(16,OES,fbo_render_mipmap,            GLES200, GLES300) // #28
+    _extension(21,OES,texture_half_float_linear,    GLES200, GLES300) // #21
+    _extension(22,OES,fbo_render_mipmap,            GLES200, GLES300) // #28
     #endif
 } namespace WEBGL {
-    _extension(17,WEBGL,compressed_texture_s3tc,    GLES200,    None) // #8
+    _extension(25,WEBGL,compressed_texture_s3tc,    GLES200,    None) // #8
     #ifdef MAGNUM_TARGET_GLES2
-    _extension(18,WEBGL,depth_texture,              GLES200, GLES300) // #9
+    _extension(26,WEBGL,depth_texture,              GLES200, GLES300) // #9
     /* Subsumed by the EXT_color_buffer_float extension in WebGL 2, so
        not exposing it on WebGL 2 builds even though it's not in core */
-    _extension(19,WEBGL,color_buffer_float,         GLES200,    None) // #14
-    _extension(20,WEBGL,draw_buffers,               GLES200, GLES300) // #18
+    _extension(27,WEBGL,color_buffer_float,         GLES200,    None) // #14
+    _extension(28,WEBGL,draw_buffers,               GLES200, GLES300) // #18
     #endif
-    _extension(21,WEBGL,compressed_texture_s3tc_srgb, GLES200,  None) // #32
+    _extension(29,WEBGL,compressed_texture_s3tc_srgb, GLES200,  None) // #32
 } namespace MAGNUM {
     _extension(30,MAGNUM,shader_vertex_id,          GLES300, GLES300)
 }
@@ -398,7 +400,11 @@ namespace ANDROID {
     _extension( 60,EXT,primitive_bounding_box,      GLES310, GLES320) // #186
     #endif
     _extension( 61,EXT,polygon_offset_clamp,        GLES200,    None) // #252
-    _extension( 62,EXT,texture_compression_s3tc_srgb, GLES200,  None) // #289
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension( 62,EXT,texture_compression_rgtc,    GLES300,    None) // #286
+    _extension( 63,EXT,texture_compression_bptc,    GLES300,    None) // #287
+    #endif
+    _extension( 64,EXT,texture_compression_s3tc_srgb, GLES200,  None) // #289
 } namespace KHR {
     _extension( 70,KHR,texture_compression_astc_ldr,GLES200, GLES320) // #117
     _extension( 71,KHR,texture_compression_astc_hdr,GLES200,    None) // #117

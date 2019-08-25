@@ -560,14 +560,25 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #endif
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::CompressedRed:
-        case TextureFormat::CompressedRedRgtc1:
-        case TextureFormat::CompressedSignedRedRgtc1:
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::CompressedR11Eac:
         case TextureFormat::CompressedSignedR11Eac:
         #endif
             return PixelFormat::Red;
+        #endif
+
+        #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
+        case TextureFormat::CompressedRedRgtc1:
+        case TextureFormat::CompressedSignedRedRgtc1:
+            #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+            return PixelFormat::Red;
+            #else
+            /* RGTC is on WebGL 1 but there's no Red pixel format (which is
+               okay because WebGL doesn't allow compression by upload anyway).
+               Assert here to have the enum value handled. */
+            CORRADE_ASSERT(false, "No single-component pixel format in WebGL 1 for RGTC compression", {});
+            #endif
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -596,14 +607,25 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #endif
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::CompressedRG:
-        case TextureFormat::CompressedRGRgtc2:
-        case TextureFormat::CompressedSignedRGRgtc2:
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::CompressedRG11Eac:
         case TextureFormat::CompressedSignedRG11Eac:
         #endif
             return PixelFormat::RG;
+        #endif
+
+        #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
+        case TextureFormat::CompressedRGRgtc2:
+        case TextureFormat::CompressedSignedRGRgtc2:
+            #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+            return PixelFormat::RG;
+            #else
+            /* RGTC is on WebGL 1 but there's no RG pixel format (which is okay
+               because WebGL doesn't allow compression by upload anyway).
+               Assert here to have the enum value handled. */
+            CORRADE_ASSERT(false, "No two-component pixel format in WebGL 1 for RGTC compression", {});
+            #endif
         #endif
 
         #ifndef MAGNUM_TARGET_GLES2
@@ -649,6 +671,8 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #endif
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::CompressedRGB:
+        #endif
+        #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
         case TextureFormat::CompressedRGBBptcUnsignedFloat:
         case TextureFormat::CompressedRGBBptcSignedFloat:
         #endif
@@ -710,8 +734,9 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #endif
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::CompressedRGBA:
+        #endif
+        #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
         case TextureFormat::CompressedRGBABptcUnorm:
-        case TextureFormat::CompressedSRGBAlphaBptcUnorm:
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::CompressedRGB8PunchthroughAlpha1Etc2:
@@ -759,6 +784,9 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #endif
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::SRGB8Alpha8:
+        #endif
+        #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
+        case TextureFormat::CompressedSRGBAlphaBptcUnorm:
         #endif
         case TextureFormat::CompressedSRGBAlphaS3tcDxt1:
         case TextureFormat::CompressedSRGBAlphaS3tcDxt3:
@@ -865,6 +893,8 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
         case TextureFormat::CompressedRG:
         case TextureFormat::CompressedRGB:
         case TextureFormat::CompressedRGBA:
+        #endif
+        #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
         case TextureFormat::CompressedRedRgtc1:
         case TextureFormat::CompressedRGRgtc2:
         case TextureFormat::CompressedRGBABptcUnorm:
@@ -931,11 +961,20 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
         case TextureFormat::RG8I:
         case TextureFormat::RGB8I:
         case TextureFormat::RGBA8I:
-        #ifndef MAGNUM_TARGET_GLES
+            return PixelType::Byte;
+        #endif
+
+        #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
         case TextureFormat::CompressedSignedRedRgtc1:
         case TextureFormat::CompressedSignedRGRgtc2:
-        #endif
+            #ifndef MAGNUM_TARGET_GLES2
             return PixelType::Byte;
+            #else
+            /* RGTC is on WebGL 1 but there's no RG pixel format (which is okay
+               because WebGL doesn't allow compression by upload anyway).
+               Assert here to have the enum value handled. */
+            CORRADE_ASSERT(false, "No signed pixel type in OpenGL ES 2.0 for RGTC compression", {});
+            #endif
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
@@ -991,15 +1030,17 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
         case TextureFormat::RGB32I:
         case TextureFormat::RGBA32I:
             return PixelType::Int;
+        #endif
 
+        #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
+        #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::R32F:
         case TextureFormat::RG32F:
         case TextureFormat::RGB32F:
         case TextureFormat::RGBA32F:
-        #ifndef MAGNUM_TARGET_GLES
+        #endif
         case TextureFormat::CompressedRGBBptcUnsignedFloat:
         case TextureFormat::CompressedRGBBptcSignedFloat:
-        #endif
             return PixelType::Float;
         #endif
 

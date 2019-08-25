@@ -710,7 +710,9 @@ enum class CompressedPixelFormat: GLenum {
      *      or WebGL.
      */
     RGBA = GL_COMPRESSED_RGBA,
+    #endif
 
+    #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     /**
      * RGTC compressed red channel, normalized unsigned. Equivalent to the old
      * @def_gl{COMPRESSED_LUMINANCE_LATC1_EXT} from
@@ -718,10 +720,17 @@ enum class CompressedPixelFormat: GLenum {
      * instead of all three. **Available only on 2D, 2D array, cube map and
      * cube map array textures.**
      * @requires_gl30 Extension @gl_extension{EXT,texture_compression_rgtc}
-     * @requires_gl RGTC texture compression is not available in OpenGL ES or
-     *      WebGL.
+     * @requires_es_extension OpenGL ES 3.0 and extension
+     *      @gl_extension{EXT,texture_compression_rgtc}
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{EXT,texture_compression_rgtc}. Unlike the OpenGL
+     *      ES variant, this extension doesn't require WebGL 2.
      */
+    #ifndef MAGNUM_TARGET_GLES
     RedRgtc1 = GL_COMPRESSED_RED_RGTC1,
+    #else
+    RedRgtc1 = GL_COMPRESSED_RED_RGTC1_EXT,
+    #endif
 
     /**
      * RGTC compressed red and green channel, normalized unsigned. Equivalent
@@ -730,10 +739,17 @@ enum class CompressedPixelFormat: GLenum {
      * green channel instead of all four. **Available only on 2D, 2D array,
      * cube map and cube map array textures.**
      * @requires_gl30 Extension @gl_extension{EXT,texture_compression_rgtc}
-     * @requires_gl RGTC texture compression is not available in OpenGL ES or
-     *      WebGL.
+     * @requires_es_extension OpenGL ES 3.0 and extension
+     *      @gl_extension{EXT,texture_compression_rgtc}
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{EXT,texture_compression_rgtc}. Unlike the OpenGL
+     *      ES variant, this extension doesn't require WebGL 2.
      */
+    #ifndef MAGNUM_TARGET_GLES
     RGRgtc2 = GL_COMPRESSED_RG_RGTC2,
+    #else
+    RGRgtc2 = GL_COMPRESSED_RED_GREEN_RGTC2_EXT, /*?!*/
+    #endif
 
     /**
      * RGTC compressed red channel, normalized signed. Equivalent to the old
@@ -742,10 +758,17 @@ enum class CompressedPixelFormat: GLenum {
      * instead of all three. **Available only on 2D, 2D array, cube map and
      * cube map array textures.**
      * @requires_gl30 Extension @gl_extension{EXT,texture_compression_rgtc}
-     * @requires_gl RGTC texture compression is not available in OpenGL ES or
-     *      WebGL.
+     * @requires_es_extension OpenGL ES 3.0 and extension
+     *      @gl_extension{EXT,texture_compression_rgtc}
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{EXT,texture_compression_rgtc}. Unlike the OpenGL
+     *      ES variant, this extension doesn't require WebGL 2.
      */
+    #ifndef MAGNUM_TARGET_GLES
     SignedRedRgtc1 = GL_COMPRESSED_SIGNED_RED_RGTC1,
+    #else
+    SignedRedRgtc1 = GL_COMPRESSED_SIGNED_RED_RGTC1_EXT,
+    #endif
 
     /**
      * RGTC compressed red and green channel, normalized signed. Equivalent
@@ -754,46 +777,81 @@ enum class CompressedPixelFormat: GLenum {
      * green channel instead of all four. **Available only on 2D, 2D array,
      * cube map and cube map array textures.**
      * @requires_gl30 Extension @gl_extension{EXT,texture_compression_rgtc}
-     * @requires_gl RGTC texture compression is not available in OpenGL ES or
-     *      WebGL.
+     * @requires_es_extension OpenGL ES 3.0 and extension
+     *      @gl_extension{EXT,texture_compression_rgtc}
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{EXT,texture_compression_rgtc}. Unlike the OpenGL
+     *      ES variant, this extension doesn't require WebGL 2.
      */
+    #ifndef MAGNUM_TARGET_GLES
     SignedRGRgtc2 = GL_COMPRESSED_SIGNED_RG_RGTC2,
+    #else
+    SignedRGRgtc2 = GL_COMPRESSED_SIGNED_RED_GREEN_RGTC2_EXT, /*?!*/
+    #endif
 
     /**
      * BPTC compressed RGB, unsigned float. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
      * @requires_gl42 Extension @gl_extension{ARB,texture_compression_bptc}
-     * @requires_gl BPTC texture compression is not available in OpenGL ES or
-     *      WebGL.
+     * @requires_es_extension OpenGL ES 3.0 and extension
+     *      @gl_extension{EXT,texture_compression_bptc}
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{EXT,texture_compression_bptc}. Unlike the OpenGL
+     *      ES variant, this extension doesn't require WebGL 2.
      */
+    #ifndef MAGNUM_TARGET_GLES
     RGBBptcUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT,
+    #else
+    RGBBptcUnsignedFloat = GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT,
+    #endif
 
     /**
      * BPTC compressed RGB, signed float. **Available only on 2D, 3D, 2D array,
      * cube map and cube map array textures.**
      * @requires_gl42 Extension @gl_extension{ARB,texture_compression_bptc}
-     * @requires_gl BPTC texture compression is not available in OpenGL ES or
-     *      WebGL.
+     * @requires_es_extension OpenGL ES 3.0 and extension
+     *      @gl_extension{EXT,texture_compression_bptc}
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{EXT,texture_compression_bptc}. Unlike the OpenGL
+     *      ES variant, this extension doesn't require WebGL 2.
      */
+    #ifndef MAGNUM_TARGET_GLES
     RGBBptcSignedFloat = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT,
+    #else
+    RGBBptcSignedFloat = GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT,
+    #endif
 
     /**
      * BPTC compressed RGBA, normalized unsigned. **Available only on 2D, 3D,
      * 2D array, cube map and cube map array textures.**
      * @requires_gl42 Extension @gl_extension{ARB,texture_compression_bptc}
-     * @requires_gl BPTC texture compression is not available in OpenGL ES or
-     *      WebGL.
+     * @requires_es_extension OpenGL ES 3.0 and extension
+     *      @gl_extension{EXT,texture_compression_bptc}
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{EXT,texture_compression_bptc}. Unlike the OpenGL
+     *      ES variant, this extension doesn't require WebGL 2.
      */
+    #ifndef MAGNUM_TARGET_GLES
     RGBABptcUnorm = GL_COMPRESSED_RGBA_BPTC_UNORM,
+    #else
+    RGBABptcUnorm = GL_COMPRESSED_RGBA_BPTC_UNORM_EXT,
+    #endif
 
     /**
      * BPTC compressed sRGBA, normalized unsigned. **Available only on 2D, 3D,
      * 2D array, cube map and cube map array textures.**
      * @requires_gl42 Extension @gl_extension{ARB,texture_compression_bptc}
-     * @requires_gl BPTC texture compression is not available in OpenGL ES or
-     *      WebGL.
+     * @requires_es_extension OpenGL ES 3.0 and extension
+     *      @gl_extension{EXT,texture_compression_bptc}
+     * @requires_webgl_extension Extension
+     *      @webgl_extension{EXT,texture_compression_bptc}. Unlike the OpenGL
+     *      ES variant, this extension doesn't require WebGL 2.
      */
+    #ifndef MAGNUM_TARGET_GLES
     SRGBAlphaBptcUnorm = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM,
+    #else
+    SRGBAlphaBptcUnorm = GL_COMPRESSED_SRGB_ALPHA_BPTC_UNORM_EXT,
+    #endif
     #endif
 
     #ifndef MAGNUM_TARGET_GLES2

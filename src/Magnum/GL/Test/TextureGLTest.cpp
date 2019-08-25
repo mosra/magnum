@@ -403,17 +403,13 @@ constexpr UnsignedByte CompressedData3D[]{
 const struct {
     const char* name;
     Containers::ArrayView<const UnsignedByte> data;
-    #ifndef MAGNUM_TARGET_GLES
     CompressedPixelStorage storage;
-    #endif
     Containers::ArrayView<const UnsignedByte> dataSparse;
     std::size_t offset;
 } CompressedPixelStorage3DData[]{
     {"default pixel storage",
         Containers::arrayView(CompressedData3D).suffix(16*4),
-        #ifndef MAGNUM_TARGET_GLES
         {},
-        #endif
         Containers::arrayView(CompressedData3D).suffix(16*4), 0},
     #ifndef MAGNUM_TARGET_GLES
     {"skip Z",
@@ -2359,14 +2355,18 @@ void TextureGLTest::subImage3DQueryBuffer() {
 void TextureGLTest::compressedImage3D() {
     setTestCaseDescription(CompressedPixelStorage3DData[testCaseInstanceId()].name);
 
-    #ifdef MAGNUM_TARGET_GLES
-    /** @todo ASTC HDR, when available on any ES driver */
-    CORRADE_SKIP("No 3D texture compression format available on OpenGL ES.");
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    CORRADE_SKIP("No 3D texture compression format available on OpenGL ES 2.0.");
     #else
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_compression_bptc>())
         CORRADE_SKIP(Extensions::ARB::texture_compression_bptc::string() + std::string(" is not supported."));
     if(CompressedPixelStorage3DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_bptc>())
+        CORRADE_SKIP(Extensions::EXT::texture_compression_bptc::string() + std::string(" is not supported."));
+    #endif
 
     Texture3D texture;
     texture.setCompressedImage(0, CompressedImageView3D{
@@ -2376,6 +2376,8 @@ void TextureGLTest::compressedImage3D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     CompressedImage3D image = texture.compressedImage(0, {CompressedPixelStorage3DData[testCaseInstanceId()].storage});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -2389,20 +2391,22 @@ void TextureGLTest::compressedImage3D() {
             TestSuite::Compare::Container);
     }
     #endif
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES2
 void TextureGLTest::compressedImage3DBuffer() {
     setTestCaseDescription(CompressedPixelStorage3DData[testCaseInstanceId()].name);
 
-    #ifdef MAGNUM_TARGET_GLES
-    /** @todo ASTC HDR, when available on any ES driver */
-    CORRADE_SKIP("No 3D texture compression format available on OpenGL ES.");
-    #else
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_compression_bptc>())
         CORRADE_SKIP(Extensions::ARB::texture_compression_bptc::string() + std::string(" is not supported."));
     if(CompressedPixelStorage3DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_bptc>())
+        CORRADE_SKIP(Extensions::EXT::texture_compression_bptc::string() + std::string(" is not supported."));
+    #endif
 
     Texture3D texture;
     texture.setCompressedImage(0, CompressedBufferImage3D{
@@ -2413,6 +2417,8 @@ void TextureGLTest::compressedImage3DBuffer() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     CompressedBufferImage3D image = texture.compressedImage(0, {CompressedPixelStorage3DData[testCaseInstanceId()].storage}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data();
 
@@ -2464,7 +2470,7 @@ void TextureGLTest::compressedImage3DQueryView() {
 }
 #endif
 
-#ifndef MAGNUM_TARGET_GLES
+#if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
 /* Just 12x4x4 zeros compressed using RGBA BPTC Unorm by the driver */
 constexpr UnsignedByte CompressedZero3D[3*4*16]{
     64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -2482,7 +2488,9 @@ constexpr UnsignedByte CompressedZero3D[3*4*16]{
     64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
     64, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
+#endif
 
+#ifndef MAGNUM_TARGET_GLES
 /* Combination of CompressedZero3D and CompressedData3D. Note that, in
    contrast to array textures, the data are ordered in "cubes" instead of
    slices. */
@@ -2511,14 +2519,18 @@ constexpr UnsignedByte CompressedSubData3DComplete[]{
 void TextureGLTest::compressedSubImage3D() {
     setTestCaseDescription(CompressedPixelStorage3DData[testCaseInstanceId()].name);
 
-    #ifdef MAGNUM_TARGET_GLES
-    /** @todo ASTC HDR, when available on any ES driver */
-    CORRADE_SKIP("No 3D texture compression format available on OpenGL ES.");
+    #if defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+    CORRADE_SKIP("No 3D texture compression format available on OpenGL ES 2.0.");
     #else
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_compression_bptc>())
         CORRADE_SKIP(Extensions::ARB::texture_compression_bptc::string() + std::string(" is not supported."));
     if(CompressedPixelStorage3DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_bptc>())
+        CORRADE_SKIP(Extensions::EXT::texture_compression_bptc::string() + std::string(" is not supported."));
+    #endif
 
     Texture3D texture;
     texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBABptcUnorm,
@@ -2529,6 +2541,8 @@ void TextureGLTest::compressedSubImage3D() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     CompressedImage3D image = texture.compressedImage(0, {});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
@@ -2545,20 +2559,22 @@ void TextureGLTest::compressedSubImage3D() {
             TestSuite::Compare::Container);
     }
     #endif
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES2
 void TextureGLTest::compressedSubImage3DBuffer() {
     setTestCaseDescription(CompressedPixelStorage3DData[testCaseInstanceId()].name);
 
-    #ifdef MAGNUM_TARGET_GLES
-    /** @todo ASTC HDR, when available on any ES driver */
-    CORRADE_SKIP("No 3D texture compression format available on OpenGL ES.");
-    #else
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::texture_compression_bptc>())
         CORRADE_SKIP(Extensions::ARB::texture_compression_bptc::string() + std::string(" is not supported."));
     if(CompressedPixelStorage3DData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
         CORRADE_SKIP(Extensions::ARB::compressed_texture_pixel_storage::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_bptc>())
+        CORRADE_SKIP(Extensions::EXT::texture_compression_bptc::string() + std::string(" is not supported."));
+    #endif
 
     Texture3D texture;
     texture.setCompressedImage(0, CompressedImageView3D{CompressedPixelFormat::RGBABptcUnorm,
@@ -2569,6 +2585,8 @@ void TextureGLTest::compressedSubImage3DBuffer() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
+    /** @todo How to test this on ES? */
+    #ifndef MAGNUM_TARGET_GLES
     CompressedBufferImage3D image = texture.compressedImage(0, {}, BufferUsage::StaticRead);
     const auto imageData = image.buffer().data();
 

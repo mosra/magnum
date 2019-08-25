@@ -248,6 +248,8 @@ constexpr Extension ExtensionList[]{
     #ifndef MAGNUM_TARGET_GLES2
     _extension(EXT,color_buffer_float),
     #endif
+    _extension(EXT,texture_compression_rgtc),
+    _extension(EXT,texture_compression_bptc),
     _extension(OES,texture_float_linear),
     _extension(WEBGL,compressed_texture_s3tc),
     _extension(WEBGL,compressed_texture_s3tc_srgb)};

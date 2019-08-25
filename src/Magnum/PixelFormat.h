@@ -651,6 +651,86 @@ enum class CompressedPixelFormat: UnsignedInt {
     Bc3RGBASrgb,
 
     /**
+     * [3Dc+](https://en.wikipedia.org/wiki/3Dc#3Dc+) BC4 compressed red
+     * component, unsigned normalized. Also known as RGTC1 or LATC1.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RedRgtc1 /
+     * @ref GL::TextureFormat::CompressedRedRgtc1 /
+     * @def_vk_keyword{FORMAT_BC4_UNORM_BLOCK,Format}.
+     */
+    Bc4RUnorm,
+
+    /**
+     * [3Dc+](https://en.wikipedia.org/wiki/3Dc#3Dc+) BC4 compressed red
+     * component, signed normalized. Also known as RGTC1 or LATC1.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SignedRedRgtc1 /
+     * @ref GL::TextureFormat::CompressedSignedRedRgtc1 /
+     * @def_vk_keyword{FORMAT_BC4_SNORM_BLOCK,Format}.
+     */
+    Bc4RSnorm,
+
+    /**
+     * [3Dc](https://en.wikipedia.org/wiki/3Dc) BC5 compressed red and green
+     * component, unsigned normalized. Also known as RGTC2 or LATC2.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGRgtc2 /
+     * @ref GL::TextureFormat::CompressedRGRgtc2 /
+     * @def_vk_keyword{FORMAT_BC5_UNORM_BLOCK,Format}.
+     */
+    Bc5RGUnorm,
+
+    /**
+     * [3Dc](https://en.wikipedia.org/wiki/3Dc) BC5 compressed red and green
+     * component, signed normalized. Also known as RGTC2 or LATC2.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SignedRGRgtc2 /
+     * @ref GL::TextureFormat::CompressedSignedRGRgtc2 /
+     * @def_vk_keyword{FORMAT_BC5_SNORM_BLOCK,Format}.
+     */
+    Bc5RGSnorm,
+
+    /**
+     * [BC6H](https://docs.microsoft.com/en-us/windows/win32/direct3d11/bc6h-format)
+     * compressed RGB, unsigned float. Also known as BPTC.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBBptcUnsignedFloat /
+     * @ref GL::TextureFormat::CompressedRGBBptcUnsignedFloat /
+     * @def_vk_keyword{FORMAT_BC6H_UFLOAT_BLOCK,Format}.
+     */
+    Bc6hRGBUfloat,
+
+    /**
+     * [BC6H](https://docs.microsoft.com/en-us/windows/win32/direct3d11/bc6h-format)
+     * compressed RGB, signed float. Also known as BPTC.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBBptcSignedFloat /
+     * @ref GL::TextureFormat::CompressedRGBBptcSignedFloat /
+     * @def_vk_keyword{FORMAT_BC6H_SFLOAT_BLOCK,Format}.
+     */
+    Bc6hRGBSfloat,
+
+    /**
+     * [BC7](https://docs.microsoft.com/en-us/windows/win32/direct3d11/bc7-format),
+     * compressed RGBA, unsigned normalized. Also known as BPTC.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBABptcUnorm /
+     * @ref GL::TextureFormat::CompressedRGBABptcUnorm /
+     * @def_vk_keyword{FORMAT_BC7_UNORM_BLOCK,Format}.
+     */
+    Bc7RGBAUnorm,
+
+    /**
+     * [BC7](https://docs.microsoft.com/en-us/windows/win32/direct3d11/bc7-format),
+     * compressed sRGB + linear alpha, unsigned normalized. Also known as BPTC.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGBAlphaBptcUnorm /
+     * @ref GL::TextureFormat::CompressedSRGBAlphaBptcUnorm /
+     * @def_vk_keyword{FORMAT_BC7_SRGB_BLOCK,Format}.
+     */
+    Bc7RGBASrgb,
+
+    /**
      * [EAC](https://en.wikipedia.org/wiki/Ericsson_Texture_Compression#ETC2_and_EAC)
      * compressed red component, normalized unsigned 11-bit.
      *
