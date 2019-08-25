@@ -275,7 +275,10 @@ namespace ANGLE {
     #ifdef MAGNUM_TARGET_GLES2
     _extension( 7,EXT,shader_texture_lod,           GLES200, GLES300) // #27
     #endif
+    #ifndef MAGNUM_TARGET_GLES2
+    /* Replaces WEBGL_color_buffer_float from WebGL 1 */
     _extension( 8,EXT,color_buffer_float,           GLES300,    None) // #31
+    #endif
 } namespace OES {
     #ifdef MAGNUM_TARGET_GLES2
     _extension( 9,OES,texture_float,                GLES200, GLES300) // #1
@@ -293,6 +296,8 @@ namespace ANGLE {
     _extension(17,WEBGL,compressed_texture_s3tc,    GLES200,    None) // #8
     #ifdef MAGNUM_TARGET_GLES2
     _extension(18,WEBGL,depth_texture,              GLES200, GLES300) // #9
+    /* Subsumed by the EXT_color_buffer_float extension in WebGL 2, so
+       not exposing it on WebGL 2 builds even though it's not in core */
     _extension(19,WEBGL,color_buffer_float,         GLES200,    None) // #14
     _extension(20,WEBGL,draw_buffers,               GLES200, GLES300) // #18
     #endif

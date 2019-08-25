@@ -245,7 +245,9 @@ constexpr Extension ExtensionList460[]{
 constexpr Extension ExtensionList[]{
     _extension(EXT,texture_filter_anisotropic),
     _extension(EXT,disjoint_timer_query),
+    #ifndef MAGNUM_TARGET_GLES2
     _extension(EXT,color_buffer_float),
+    #endif
     _extension(OES,texture_float_linear),
     _extension(WEBGL,compressed_texture_s3tc)};
 constexpr Extension ExtensionListES300[]{
