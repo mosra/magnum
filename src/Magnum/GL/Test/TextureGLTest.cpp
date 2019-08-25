@@ -2906,15 +2906,11 @@ void TextureGLTest::srgbStorage() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    texture.setStorage(1,
-        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-        TextureFormat::SRGB8,
-        #else
-        TextureFormat::SRGB,
-        #endif
-        Vector2i{32});
+    #ifndef MAGNUM_TARGET_GLES2
+    texture.setStorage(1, TextureFormat::SRGB8, Vector2i{32});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
+    #endif
 }
 
 void TextureGLTest::srgbAlphaStorage() {

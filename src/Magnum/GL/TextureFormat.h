@@ -863,22 +863,15 @@ enum class TextureFormat: GLenum {
     #endif
     #endif
 
-    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+    #ifndef MAGNUM_TARGET_GLES2
     /**
      * sRGB, each component normalized unsigned byte.
-     * @requires_gles30 Extension @gl_extension{EXT,sRGB} and
-     *      @gl_extension{EXT,texture_storage}, only for
-     *      @ref Texture::setStorage() "*Texture::setStorage()" calls,
-     *      otherwise use @ref TextureFormat::SRGB in OpenGL ES 2.0 instead.
+     * @requires_gles30 Use @ref TextureFormat::SRGB in OpenGL ES 2.0 instead.
      * @requires_gl Can't be used as render target in OpenGL ES. Use
      *      @ref TextureFormat::SRGB8Alpha8 instead.
      * @requires_webgl20 Use @ref TextureFormat::SRGB in WebGL 1.0 instead.
      */
-    #ifndef MAGNUM_TARGET_GLES2
-    SRGB8 = GL_SRGB8,
-    #else
-    SRGB8 = 0x8C41, /* Not in any spec, but seems to work at least on NV */
-    #endif
+    SRGB8 = GL_SRGB8, /* NV_sRGB_formats has this on ES2, but meh */
     #endif
 
     #ifndef MAGNUM_TARGET_GLES

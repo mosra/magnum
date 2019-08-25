@@ -514,6 +514,10 @@ enum class RenderbufferFormat: GLenum {
     RGB10A2UI = GL_RGB10_A2UI,
     #endif
 
+    /* NV_sRGB_formats makes GL_SRGB8_NV accepted here but since that format
+       doesn't make sense anywhere else and there's GL_SRGB8_ALPHA8_EXT anyway,
+       I don't think it's worth supporting. */
+
     /**
      * sRGBA, each component normalized unsigned byte.
      * @requires_gles30 Extension @gl_extension{EXT,sRGB} in OpenGL ES 2.0.
