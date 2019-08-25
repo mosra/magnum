@@ -136,7 +136,7 @@ extern "C" {
 
 /* VK_KHR_device_group */
 
-#define VK_KHR_DEVICE_GROUP_SPEC_VERSION 3
+#define VK_KHR_DEVICE_GROUP_SPEC_VERSION 4
 #define VK_KHR_DEVICE_GROUP_EXTENSION_NAME "VK_KHR_device_group"
 
 /* VK_KHR_device_group_creation */
@@ -186,7 +186,7 @@ extern "C" {
 
 /* VK_KHR_get_physical_device_properties2 */
 
-#define VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION 1
+#define VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_SPEC_VERSION 2
 #define VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME "VK_KHR_get_physical_device_properties2"
 
 /* VK_KHR_maintenance1 */
@@ -216,7 +216,7 @@ extern "C" {
 
 /* VK_KHR_sampler_ycbcr_conversion */
 
-#define VK_KHR_SAMPLER_YCBCR_CONVERSION_SPEC_VERSION 1
+#define VK_KHR_SAMPLER_YCBCR_CONVERSION_SPEC_VERSION 14
 #define VK_KHR_SAMPLER_YCBCR_CONVERSION_EXTENSION_NAME "VK_KHR_sampler_ycbcr_conversion"
 
 /* VK_KHR_shader_draw_parameters */
@@ -246,7 +246,7 @@ extern "C" {
 // Vulkan 1.1 version number
 #define VK_API_VERSION_1_1 VK_MAKE_VERSION(1, 1, 0)// Patch version should always be set to 0
 // Version of this file
-#define VK_HEADER_VERSION 98
+#define VK_HEADER_VERSION 121
 #define VK_DEFINE_HANDLE(object) typedef struct object##_T* object;
 #if !defined(VK_DEFINE_NON_DISPATCHABLE_HANDLE)
 #if defined(__LP64__) || defined(_WIN64) || (defined(__x86_64__) && !defined(__ILP32__) ) || defined(_M_X64) || defined(__ia64) || defined (_M_IA64) || defined(__aarch64__) || defined(__powerpc64__)
@@ -418,11 +418,17 @@ typedef enum {
     VK_BORDER_COLOR_INT_OPAQUE_WHITE = 5
 } VkBorderColor;
 
+typedef int VkFramebufferCreateFlagBits;
+
+typedef int VkRenderPassCreateFlagBits;
+
 typedef int VkSamplerCreateFlagBits;
 
 typedef enum {
     VK_PIPELINE_CACHE_HEADER_VERSION_ONE = 1
 } VkPipelineCacheHeaderVersion;
+
+typedef int VkPipelineShaderStageCreateFlagBits;
 
 typedef int VkDescriptorSetLayoutCreateFlagBits;
 
@@ -1110,7 +1116,8 @@ typedef enum {
 typedef enum {
     VK_STENCIL_FACE_FRONT_BIT = 1 << 0,
     VK_STENCIL_FACE_BACK_BIT = 1 << 1,
-    VK_STENCIL_FRONT_AND_BACK = 0x00000003
+    VK_STENCIL_FACE_FRONT_AND_BACK = 0x00000003,
+    VK_STENCIL_FRONT_AND_BACK = VK_STENCIL_FACE_FRONT_AND_BACK
 } VkStencilFaceFlagBits;
 
 typedef enum {
@@ -1210,7 +1217,8 @@ typedef enum {
     VK_STRUCTURE_TYPE_RENDER_PASS_MULTIVIEW_CREATE_INFO = 1000053000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_FEATURES = 1000053001,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MULTIVIEW_PROPERTIES = 1000053002,
-    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES = 1000120000,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTERS_FEATURES = 1000120000,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTERS_FEATURES,
     VK_STRUCTURE_TYPE_PROTECTED_SUBMIT_INFO = 1000145000,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_FEATURES = 1000145001,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_PROTECTED_MEMORY_PROPERTIES = 1000145002,
@@ -1238,7 +1246,8 @@ typedef enum {
     VK_STRUCTURE_TYPE_EXTERNAL_SEMAPHORE_PROPERTIES = 1000076001,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_MAINTENANCE_3_PROPERTIES = 1000168000,
     VK_STRUCTURE_TYPE_DESCRIPTOR_SET_LAYOUT_SUPPORT = 1000168001,
-    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETER_FEATURES = 1000063000,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES = 1000063000,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETER_FEATURES = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SHADER_DRAW_PARAMETERS_FEATURES,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES_KHR = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_16BIT_STORAGE_FEATURES,
     VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO_KHR = VK_STRUCTURE_TYPE_BIND_BUFFER_MEMORY_INFO,
     VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO_KHR = VK_STRUCTURE_TYPE_BIND_IMAGE_MEMORY_INFO,
@@ -1303,7 +1312,8 @@ typedef enum {
     VK_STRUCTURE_TYPE_IMAGE_PLANE_MEMORY_REQUIREMENTS_INFO_KHR = VK_STRUCTURE_TYPE_IMAGE_PLANE_MEMORY_REQUIREMENTS_INFO,
     VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES_KHR = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_SAMPLER_YCBCR_CONVERSION_FEATURES,
     VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_IMAGE_FORMAT_PROPERTIES_KHR = VK_STRUCTURE_TYPE_SAMPLER_YCBCR_CONVERSION_IMAGE_FORMAT_PROPERTIES,
-    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES_KHR = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES_KHR = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES,
+    VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTERS_FEATURES_KHR = VK_STRUCTURE_TYPE_PHYSICAL_DEVICE_VARIABLE_POINTER_FEATURES
 } VkStructureType;
 
 typedef enum {
@@ -1406,6 +1416,8 @@ typedef enum {
     VK_POINT_CLIPPING_BEHAVIOR_ALL_CLIP_PLANES_KHR = VK_POINT_CLIPPING_BEHAVIOR_ALL_CLIP_PLANES,
     VK_POINT_CLIPPING_BEHAVIOR_USER_CLIP_PLANES_ONLY_KHR = VK_POINT_CLIPPING_BEHAVIOR_USER_CLIP_PLANES_ONLY
 } VkPointClippingBehavior;
+
+typedef int VkShaderModuleCreateFlagBits;
 
 typedef enum {
     VK_EXTERNAL_MEMORY_HANDLE_TYPE_OPAQUE_FD_BIT = 1 << 0,
@@ -2735,14 +2747,18 @@ typedef struct VkPhysicalDeviceSparseImageFormatInfo2 {
 
 typedef VkPhysicalDeviceSparseImageFormatInfo2 VkPhysicalDeviceSparseImageFormatInfo2KHR;
 
-typedef struct VkPhysicalDeviceVariablePointerFeatures {
+typedef struct VkPhysicalDeviceVariablePointersFeatures {
     VkStructureType sType;
     void*                            pNext;
     VkBool32                         variablePointersStorageBuffer;
     VkBool32                         variablePointers;
-} VkPhysicalDeviceVariablePointerFeatures;
+} VkPhysicalDeviceVariablePointersFeatures;
 
-typedef VkPhysicalDeviceVariablePointerFeatures VkPhysicalDeviceVariablePointerFeaturesKHR;
+typedef VkPhysicalDeviceVariablePointersFeatures VkPhysicalDeviceVariablePointersFeaturesKHR;
+
+typedef VkPhysicalDeviceVariablePointersFeatures VkPhysicalDeviceVariablePointerFeaturesKHR;
+
+typedef VkPhysicalDeviceVariablePointersFeatures VkPhysicalDeviceVariablePointerFeatures;
 
 typedef struct VkExternalMemoryProperties {
     VkExternalMemoryFeatureFlags  externalMemoryFeatures;
@@ -3281,11 +3297,13 @@ typedef struct VkDescriptorSetLayoutSupport {
 
 typedef VkDescriptorSetLayoutSupport VkDescriptorSetLayoutSupportKHR;
 
-typedef struct VkPhysicalDeviceShaderDrawParameterFeatures {
+typedef struct VkPhysicalDeviceShaderDrawParametersFeatures {
     VkStructureType sType;
     void*                            pNext;
     VkBool32                         shaderDrawParameters;
-} VkPhysicalDeviceShaderDrawParameterFeatures;
+} VkPhysicalDeviceShaderDrawParametersFeatures;
+
+typedef VkPhysicalDeviceShaderDrawParametersFeatures VkPhysicalDeviceShaderDrawParameterFeatures;
 
 /* I'll bite the bullet and expect that vkCreateInstance(),
    vkEnumerateInstanceExtensionProperties() and vkEnumerateInstanceLayerProperties()
