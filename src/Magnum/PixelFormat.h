@@ -571,37 +571,41 @@ to check for its presence.
 */
 enum class CompressedPixelFormat: UnsignedInt {
     /**
-     * S3TC BC1 compressed RGB (DXT1).
+     * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1
+     * compressed RGB, normalized unsigned byte (DXT1).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBS3tcDxt1,
-     * @ref GL::TextureFormat::RGBS3tcDxt1 /
+     * @ref GL::TextureFormat::CompressedRGBS3tcDxt1 /
      * @def_vk_keyword{FORMAT_BC1_RGB_UNORM_BLOCK,Format}.
      */
     Bc1RGBUnorm,
 
     /**
-     * S3TC BC1 compressed RGBA (DXT1).
+     * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1
+     * compressed RGBA, normalized unsigned byte (DXT1).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAS3tcDxt1,
-     * @ref GL::TextureFormat::RGBAS3tcDxt1 /
+     * @ref GL::TextureFormat::CompressedRGBAS3tcDxt1 /
      * @def_vk_keyword{FORMAT_BC1_RGBA_UNORM_BLOCK,Format}.
      */
     Bc1RGBAUnorm,
 
     /**
-     * S3TC BC2 compressed RGBA (DXT3).
+     * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC2
+     * compressed RGBA, normalized unsigned byte (DXT3).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAS3tcDxt3,
-     * @ref GL::TextureFormat::RGBAS3tcDxt3 /
+     * @ref GL::TextureFormat::CompressedRGBAS3tcDxt3 /
      * @def_vk_keyword{FORMAT_BC2_UNORM_BLOCK,Format}.
      */
     Bc2RGBAUnorm,
 
     /**
-     * S3TC BC3 compressed RGBA (DXT5).
+     * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC3
+     * compressed RGBA, normalized unsigned byte (DXT5).
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAS3tcDxt5,
-     * @ref GL::TextureFormat::RGBAS3tcDxt5 /
+     * @ref GL::TextureFormat::CompressedRGBAS3tcDxt5 /
      * @def_vk_keyword{FORMAT_BC3_UNORM_BLOCK,Format}.
      */
     Bc3RGBAUnorm
