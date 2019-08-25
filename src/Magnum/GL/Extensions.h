@@ -303,9 +303,10 @@ namespace ANGLE {
     _extension(27,WEBGL,color_buffer_float,         GLES200,    None) // #14
     _extension(28,WEBGL,draw_buffers,               GLES200, GLES300) // #18
     #endif
-    _extension(29,WEBGL,compressed_texture_s3tc_srgb, GLES200,  None) // #32
+    _extension(29,WEBGL,compressed_texture_astc,    GLES200,    None) // #30
+    _extension(30,WEBGL,compressed_texture_s3tc_srgb, GLES200,  None) // #32
 } namespace MAGNUM {
-    _extension(30,MAGNUM,shader_vertex_id,          GLES300, GLES300)
+    _extension(31,MAGNUM,shader_vertex_id,          GLES300, GLES300)
 }
 #else
 namespace ANDROID {

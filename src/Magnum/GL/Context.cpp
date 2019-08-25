@@ -252,6 +252,7 @@ constexpr Extension ExtensionList[]{
     _extension(EXT,texture_compression_bptc),
     _extension(OES,texture_float_linear),
     _extension(WEBGL,compressed_texture_s3tc),
+    _extension(WEBGL,compressed_texture_astc),
     _extension(WEBGL,compressed_texture_s3tc_srgb)};
 constexpr Extension ExtensionListES300[]{
     #ifdef MAGNUM_TARGET_GLES2

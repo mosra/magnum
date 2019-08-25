@@ -434,7 +434,6 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         _c(SRGBAlphaS3tcDxt3)
         _c(RGBAS3tcDxt5)
         _c(SRGBAlphaS3tcDxt5)
-        #ifndef MAGNUM_TARGET_WEBGL
         _c(RGBAAstc4x4)
         _c(SRGB8Alpha8Astc4x4)
         _c(RGBAAstc5x4)
@@ -463,7 +462,6 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         _c(SRGB8Alpha8Astc12x10)
         _c(RGBAAstc12x12)
         _c(SRGB8Alpha8Astc12x12)
-        #endif
         #undef _c
         /* LCOV_EXCL_STOP */
     }

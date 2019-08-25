@@ -529,6 +529,7 @@ Extension                                   | Status
 @gl_extension{EXT,texture_compression_bptc} | done
 @webgl_extension{OES,texture_float_linear}  | done
 @webgl_extension{WEBGL,compressed_texture_s3tc} | done
+@webgl_extension{WEBGL,compressed_texture_astc} | done
 @webgl_extension{WEBGL,compressed_texture_s3tc_srgb} | done
 
 @section opengl-unsupported Unsupported OpenGL features

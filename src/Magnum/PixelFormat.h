@@ -828,7 +828,301 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Etc2Eac /
      * @def_vk_keyword{FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK,Format}.
      */
-    Etc2RGBA8Srgb
+    Etc2RGBA8Srgb,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 4x4 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x4,
+     * @ref GL::TextureFormat::CompressedRGBAAstc4x4 /
+     * @def_vk_keyword{FORMAT_ASTC_4x4_UNORM_BLOCK,Format}.
+     */
+    Astc4x4RGBAUnorm,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 4x4
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc4x4,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc4x4 /
+     * @def_vk_keyword{FORMAT_ASTC_4x4_SRGB_BLOCK,Format}.
+     */
+    Astc4x4RGBASrgb,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 5x4 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x4,
+     * @ref GL::TextureFormat::CompressedRGBAAstc5x4 /
+     * @def_vk_keyword{FORMAT_ASTC_5x4_UNORM_BLOCK,Format}.
+     */
+    Astc5x4RGBAUnorm,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 5x4
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc5x4,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc5x4 /
+     * @def_vk_keyword{FORMAT_ASTC_5x4_SRGB_BLOCK,Format}.
+     */
+    Astc5x4RGBASrgb,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 5x5 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x5,
+     * @ref GL::TextureFormat::CompressedRGBAAstc5x5 /
+     * @def_vk_keyword{FORMAT_ASTC_5x5_UNORM_BLOCK,Format}.
+     */
+    Astc5x5RGBAUnorm,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 5x5
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc5x5,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc5x5 /
+     * @def_vk_keyword{FORMAT_ASTC_5x5_SRGB_BLOCK,Format}.
+     */
+    Astc5x5RGBASrgb,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 6x5 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x5,
+     * @ref GL::TextureFormat::CompressedRGBAAstc6x5 /
+     * @def_vk_keyword{FORMAT_ASTC_6x5_UNORM_BLOCK,Format}.
+     */
+    Astc6x5RGBAUnorm,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 6x5
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc6x5,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc6x5 /
+     * @def_vk_keyword{FORMAT_ASTC_6x5_SRGB_BLOCK,Format}.
+     */
+    Astc6x5RGBASrgb,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 6x6 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x6,
+     * @ref GL::TextureFormat::CompressedRGBAAstc6x6 /
+     * @def_vk_keyword{FORMAT_ASTC_6x6_UNORM_BLOCK,Format}.
+     */
+    Astc6x6RGBAUnorm,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 6x6
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc6x6,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc6x6 /
+     * @def_vk_keyword{FORMAT_ASTC_6x6_SRGB_BLOCK,Format}.
+     */
+    Astc6x6RGBASrgb,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 8x5 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x5,
+     * @ref GL::TextureFormat::CompressedRGBAAstc8x5 /
+     * @def_vk_keyword{FORMAT_ASTC_8x5_UNORM_BLOCK,Format}.
+     */
+    Astc8x5RGBAUnorm,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 8x5
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc8x5,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc8x5 /
+     * @def_vk_keyword{FORMAT_ASTC_8x5_SRGB_BLOCK,Format}.
+     */
+    Astc8x5RGBASrgb,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 8x6 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x6,
+     * @ref GL::TextureFormat::CompressedRGBAAstc8x6 /
+     * @def_vk_keyword{FORMAT_ASTC_8x6_UNORM_BLOCK,Format}.
+     */
+    Astc8x6RGBAUnorm,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 8x6
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc8x6,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc8x6 /
+     * @def_vk_keyword{FORMAT_ASTC_8x6_SRGB_BLOCK,Format}.
+     */
+    Astc8x6RGBASrgb,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 8x8 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x8,
+     * @ref GL::TextureFormat::CompressedRGBAAstc8x8 /
+     * @def_vk_keyword{FORMAT_ASTC_8x8_UNORM_BLOCK,Format}.
+     */
+    Astc8x8RGBAUnorm,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 8x8
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc8x8,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc8x8 /
+     * @def_vk_keyword{FORMAT_ASTC_8x8_SRGB_BLOCK,Format}.
+     */
+    Astc8x8RGBASrgb,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 10x5 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x5,
+     * @ref GL::TextureFormat::CompressedRGBAAstc10x5 /
+     * @def_vk_keyword{FORMAT_ASTC_10x5_UNORM_BLOCK,Format}.
+     */
+    Astc10x5RGBAUnorm,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 10x5
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc10x5,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc10x5 /
+     * @def_vk_keyword{FORMAT_ASTC_10x5_SRGB_BLOCK,Format}.
+     */
+    Astc10x5RGBASrgb,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 10x6 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x6,
+     * @ref GL::TextureFormat::CompressedRGBAAstc10x6 /
+     * @def_vk_keyword{FORMAT_ASTC_10x6_UNORM_BLOCK,Format}.
+     */
+    Astc10x6RGBAUnorm,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 10x6
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc10x6,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc10x6 /
+     * @def_vk_keyword{FORMAT_ASTC_10x6_SRGB_BLOCK,Format}.
+     */
+    Astc10x6RGBASrgb,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 10x8 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x8,
+     * @ref GL::TextureFormat::CompressedRGBAAstc10x8 /
+     * @def_vk_keyword{FORMAT_ASTC_10x8_UNORM_BLOCK,Format}.
+     */
+    Astc10x8RGBAUnorm,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 10x8
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc10x8,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc10x8 /
+     * @def_vk_keyword{FORMAT_ASTC_10x8_SRGB_BLOCK,Format}.
+     */
+    Astc10x8RGBASrgb,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 10x10 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x10,
+     * @ref GL::TextureFormat::CompressedRGBAAstc10x10 /
+     * @def_vk_keyword{FORMAT_ASTC_10x10_UNORM_BLOCK,Format}.
+     */
+    Astc10x10RGBAUnorm,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 10x10
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc10x10,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc10x10 /
+     * @def_vk_keyword{FORMAT_ASTC_10x10_SRGB_BLOCK,Format}.
+     */
+    Astc10x10RGBASrgb,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 12x10 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc12x10,
+     * @ref GL::TextureFormat::CompressedRGBAAstc12x10 /
+     * @def_vk_keyword{FORMAT_ASTC_12x10_UNORM_BLOCK,Format}.
+     */
+    Astc12x10RGBAUnorm,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 12x10
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc12x10,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc12x10 /
+     * @def_vk_keyword{FORMAT_ASTC_12x10_SRGB_BLOCK,Format}.
+     */
+    Astc12x10RGBASrgb,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 12x12 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc12x12,
+     * @ref GL::TextureFormat::CompressedRGBAAstc12x12 /
+     * @def_vk_keyword{FORMAT_ASTC_12x12_UNORM_BLOCK,Format}.
+     */
+    Astc12x12RGBAUnorm,
+
+    /**
+     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 12x12
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc12x12,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc12x12 /
+     * @def_vk_keyword{FORMAT_ASTC_12x12_SRGB_BLOCK,Format}.
+     */
+    Astc12x12RGBASrgb
 };
 
 /** @debugoperatorenum{CompressedPixelFormat} */

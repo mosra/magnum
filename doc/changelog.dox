@@ -50,7 +50,7 @@ See also:
 -   New @ref BasicMutableImageView "MutableImageView*D" and
     @ref BasicMutableCompressedImageView "MutableCompressedImageView*D" types
     for mutable views onto image data
--   Added sRGB BC1-3, BC4, BC5, BC6G, BC7, ETC2 and EAC formats to
+-   Added sRGB BC1-3, BC4, BC5, BC6G, BC7, ETC2, EAC and ASTC formats to
     @ref CompressedPixelFormat as well as their conversion to corresponding
     GL/Vulkan formats in @ref GL::compressedPixelFormat() and
     @ref Vk::vkFormat(Magnum::CompressedPixelFormat)
@@ -84,6 +84,18 @@ See also:
 
 @subsubsection changelog-latest-new-gl GL library
 
+-   Additions to @ref GL::CompressedPixelFormat and compressed
+    @link GL::TextureFormat @endlink:
+    -   sRGB S3TC formats as defined by the @gl_extension{EXT,texture_sRGB}
+        desktop, @gl_extension{EXT,texture_compression_s3tc_srgb} ES and
+        @webgl_extension{WEBGL,compressed_texture_s3tc_srgb} WebGL extension
+    -   @gl_extension{EXT,texture_compression_rgtc} /
+        @gl_extension{EXT,texture_compression_bptc} OpenGL ES and
+        @webgl_extension{EXT,texture_compression_rgtc} /
+        @webgl_extension{EXT,texture_compression_bptc} WebGL extensions,
+        complementing the desktop support for BC4, BC5, BC6H and BC7 formats
+    -   @webgl_extension{WEBGL,texture_compression_astc} WebGL extension,
+        complementing the desktop and ES support for ASTC
 -   New @ref GL::AbstractFramebuffer::implementationColorReadFormat() and
     @ref GL::AbstractFramebuffer::implementationColorReadType() queries for
     more robust checks when doing framebuffer readbacks; together with three
@@ -158,17 +170,7 @@ See also:
     texture classes now can read the pixels into
     @ref BasicMutableImageView "MutableImageView*D" and
     @ref BasicMutableCompressedImageView "MutableCompressedImageView*D" as well
--   Added sRGB S3TC formats as defined by the
-    @gl_extension{EXT,texture_sRGB} desktop,
-    @gl_extension{EXT,texture_compression_s3tc_srgb} ES and
-    @webgl_extension{WEBGL,compressed_texture_s3tc_srgb} WebGL extension to
-    @ref GL::CompressedPixelFormat and @ref GL::TextureFormat
--   Added support for @gl_extension{EXT,texture_compression_rgtc} /
-    @gl_extension{EXT,texture_compression_bptc} OpenGL ES and
-    @webgl_extension{EXT,texture_compression_rgtc} /
-    @webgl_extension{EXT,texture_compression_bptc} WebGL extensions,
-    complementing the desktop support for BC4, BC5, BC6H and BC7 formats in
-    @ref GL::CompressedPixelFormat and @ref GL::TextureFormat
+
 
 @subsubsection changelog-latest-new-math Math library
 

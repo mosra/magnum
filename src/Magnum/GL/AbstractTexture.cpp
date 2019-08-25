@@ -747,36 +747,20 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         case TextureFormat::CompressedRGBAS3tcDxt1:
         case TextureFormat::CompressedRGBAS3tcDxt3:
         case TextureFormat::CompressedRGBAS3tcDxt5:
-        #ifndef MAGNUM_TARGET_WEBGL
         case TextureFormat::CompressedRGBAAstc4x4:
-        case TextureFormat::CompressedSRGB8Alpha8Astc4x4:
         case TextureFormat::CompressedRGBAAstc5x4:
-        case TextureFormat::CompressedSRGB8Alpha8Astc5x4:
         case TextureFormat::CompressedRGBAAstc5x5:
-        case TextureFormat::CompressedSRGB8Alpha8Astc5x5:
         case TextureFormat::CompressedRGBAAstc6x5:
-        case TextureFormat::CompressedSRGB8Alpha8Astc6x5:
         case TextureFormat::CompressedRGBAAstc6x6:
-        case TextureFormat::CompressedSRGB8Alpha8Astc6x6:
         case TextureFormat::CompressedRGBAAstc8x5:
-        case TextureFormat::CompressedSRGB8Alpha8Astc8x5:
         case TextureFormat::CompressedRGBAAstc8x6:
-        case TextureFormat::CompressedSRGB8Alpha8Astc8x6:
         case TextureFormat::CompressedRGBAAstc8x8:
-        case TextureFormat::CompressedSRGB8Alpha8Astc8x8:
         case TextureFormat::CompressedRGBAAstc10x5:
-        case TextureFormat::CompressedSRGB8Alpha8Astc10x5:
         case TextureFormat::CompressedRGBAAstc10x6:
-        case TextureFormat::CompressedSRGB8Alpha8Astc10x6:
         case TextureFormat::CompressedRGBAAstc10x8:
-        case TextureFormat::CompressedSRGB8Alpha8Astc10x8:
         case TextureFormat::CompressedRGBAAstc10x10:
-        case TextureFormat::CompressedSRGB8Alpha8Astc10x10:
         case TextureFormat::CompressedRGBAAstc12x10:
-        case TextureFormat::CompressedSRGB8Alpha8Astc12x10:
         case TextureFormat::CompressedRGBAAstc12x12:
-        case TextureFormat::CompressedSRGB8Alpha8Astc12x12:
-        #endif
             return PixelFormat::RGBA;
 
         #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2)
@@ -791,6 +775,20 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         case TextureFormat::CompressedSRGBAlphaS3tcDxt1:
         case TextureFormat::CompressedSRGBAlphaS3tcDxt3:
         case TextureFormat::CompressedSRGBAlphaS3tcDxt5:
+        case TextureFormat::CompressedSRGB8Alpha8Astc4x4:
+        case TextureFormat::CompressedSRGB8Alpha8Astc5x4:
+        case TextureFormat::CompressedSRGB8Alpha8Astc5x5:
+        case TextureFormat::CompressedSRGB8Alpha8Astc6x5:
+        case TextureFormat::CompressedSRGB8Alpha8Astc6x6:
+        case TextureFormat::CompressedSRGB8Alpha8Astc8x5:
+        case TextureFormat::CompressedSRGB8Alpha8Astc8x6:
+        case TextureFormat::CompressedSRGB8Alpha8Astc8x8:
+        case TextureFormat::CompressedSRGB8Alpha8Astc10x5:
+        case TextureFormat::CompressedSRGB8Alpha8Astc10x6:
+        case TextureFormat::CompressedSRGB8Alpha8Astc10x8:
+        case TextureFormat::CompressedSRGB8Alpha8Astc10x10:
+        case TextureFormat::CompressedSRGB8Alpha8Astc12x10:
+        case TextureFormat::CompressedSRGB8Alpha8Astc12x12:
             #ifndef MAGNUM_TARGET_GLES2
             return PixelFormat::RGBA;
             #else
@@ -920,7 +918,6 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
         case TextureFormat::CompressedSRGBAlphaS3tcDxt3:
         case TextureFormat::CompressedRGBAS3tcDxt5:
         case TextureFormat::CompressedSRGBAlphaS3tcDxt5:
-        #ifndef MAGNUM_TARGET_WEBGL
         case TextureFormat::CompressedRGBAAstc4x4:
         case TextureFormat::CompressedSRGB8Alpha8Astc4x4:
         case TextureFormat::CompressedRGBAAstc5x4:
@@ -949,7 +946,6 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
         case TextureFormat::CompressedSRGB8Alpha8Astc12x10:
         case TextureFormat::CompressedRGBAAstc12x12:
         case TextureFormat::CompressedSRGB8Alpha8Astc12x12:
-        #endif
             return PixelType::UnsignedByte;
 
         #ifndef MAGNUM_TARGET_GLES2
