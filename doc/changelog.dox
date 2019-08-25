@@ -50,6 +50,9 @@ See also:
 -   New @ref BasicMutableImageView "MutableImageView*D" and
     @ref BasicMutableCompressedImageView "MutableCompressedImageView*D" types
     for mutable views onto image data
+-   Added ETC2 and EAC formats to @ref CompressedPixelFormat as well as their
+    conversion to corresponding GL/Vulkan in @ref GL::compressedPixelFormat()
+    and @ref Vk::vkFormat(Magnum::CompressedPixelFormat)
 
 @subsubsection changelog-latest-new-audio Audio library
 

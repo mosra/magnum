@@ -608,7 +608,107 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref GL::TextureFormat::CompressedRGBAS3tcDxt5 /
      * @def_vk_keyword{FORMAT_BC3_UNORM_BLOCK,Format}.
      */
-    Bc3RGBAUnorm
+    Bc3RGBAUnorm,
+
+    /**
+     * [EAC](https://en.wikipedia.org/wiki/Ericsson_Texture_Compression#ETC2_and_EAC)
+     * compressed red component, normalized unsigned 11-bit.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::R11Eac,
+     * @ref GL::TextureFormat::CompressedR11Eac /
+     * @def_vk_keyword{FORMAT_EAC_R11_UNORM_BLOCK,Format}.
+     */
+    EacR11Unorm,
+
+    /**
+     * [EAC](https://en.wikipedia.org/wiki/Ericsson_Texture_Compression#ETC2_and_EAC)
+     * compressed red component, normalized signed 11-bit.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SignedR11Eac,
+     * @ref GL::TextureFormat::CompressedSignedR11Eac /
+     * @def_vk_keyword{FORMAT_EAC_R11_SNORM_BLOCK,Format}.
+     */
+    EacR11Snorm,
+
+    /**
+     * [EAC](https://en.wikipedia.org/wiki/Ericsson_Texture_Compression#ETC2_and_EAC)
+     * compressed red and green component, normalized unsigned 11-bit.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RG11Eac,
+     * @ref GL::TextureFormat::CompressedRG11Eac /
+     * @def_vk_keyword{FORMAT_EAC_R11G11_UNORM_BLOCK,Format}.
+     */
+    EacRG11Unorm,
+
+    /**
+     * [EAC](https://en.wikipedia.org/wiki/Ericsson_Texture_Compression#ETC2_and_EAC)
+     * compressed red and green component, normalized signed 11-bit.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SignedRG11Eac,
+     * @ref GL::TextureFormat::CompressedSignedRG11Eac /
+     * @def_vk_keyword{FORMAT_EAC_R11G11_SNORM_BLOCK,Format}.
+     */
+    EacRG11Snorm,
+
+    /**
+     * [ETC2](https://en.wikipedia.org/wiki/Ericsson_Texture_Compression#ETC2_and_EAC)
+     * compressed RGB, normalized unsigned byte.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGB8Etc2,
+     * @ref GL::TextureFormat::CompressedRGB8Etc2 /
+     * @def_vk_keyword{FORMAT_ETC2_R8G8B8_UNORM_BLOCK,Format}.
+     */
+    Etc2RGB8Unorm,
+
+    /**
+     * [ETC2](https://en.wikipedia.org/wiki/Ericsson_Texture_Compression#ETC2_and_EAC)
+     * compressed sRGB, normalized unsigned byte.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Etc2,
+     * @ref GL::TextureFormat::CompressedSRGB8Etc2 /
+     * @def_vk_keyword{FORMAT_ETC2_R8G8B8_SRGB_BLOCK,Format}.
+     */
+    Etc2RGB8Srgb,
+
+    /**
+     * [ETC2](https://en.wikipedia.org/wiki/Ericsson_Texture_Compression#ETC2_and_EAC)
+     * compressed RGB, normalized unsigned byte + a single-bit alpha.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGB8PunchthroughAlpha1Etc2,
+     * @ref GL::TextureFormat::CompressedRGB8PunchthroughAlpha1Etc2 /
+     * @def_vk_keyword{FORMAT_ETC2_R8G8B8A1_UNORM_BLOCK,Format}.
+     */
+    Etc2RGB8A1Unorm,
+
+    /**
+     * [ETC2](https://en.wikipedia.org/wiki/Ericsson_Texture_Compression#ETC2_and_EAC)
+     * compressed sRGB, normalized unsigned byte + a single-bit alpha.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8PunchthroughAlpha1Etc2,
+     * @ref GL::TextureFormat::CompressedSRGB8PunchthroughAlpha1Etc2 /
+     * @def_vk_keyword{FORMAT_ETC2_R8G8B8A1_SRGB_BLOCK,Format}.
+     */
+    Etc2RGB8A1Srgb,
+
+    /**
+     * [ETC2](https://en.wikipedia.org/wiki/Ericsson_Texture_Compression#ETC2_and_EAC)
+     * compressed RGBA, normalized unsigned byte (EAC).
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBA8Etc2Eac,
+     * @ref GL::TextureFormat::CompressedRGBA8Etc2Eac /
+     * @def_vk_keyword{FORMAT_ETC2_R8G8B8A8_UNORM_BLOCK,Format}.
+     */
+    Etc2RGBA8Unorm,
+
+    /**
+     * [ETC2](https://en.wikipedia.org/wiki/Ericsson_Texture_Compression#ETC2_and_EAC)
+     * compressed sRGB + linear alpha, normalized unsigned byte (EAC).
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Etc2Eac,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Etc2Eac /
+     * @def_vk_keyword{FORMAT_ETC2_R8G8B8A8_SRGB_BLOCK,Format}.
+     */
+    Etc2RGBA8Srgb
 };
 
 /** @debugoperatorenum{CompressedPixelFormat} */

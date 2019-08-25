@@ -271,15 +271,15 @@ void PixelFormatTest::mapCompressedFormatImplementationSpecific() {
         CompressedPixelFormat::RGBAS3tcDxt1);
 }
 void PixelFormatTest::mapCompressedFormatUnsupported() {
-    #if 1
-    CORRADE_SKIP("All compressed pixel formats are currently supported everywhere.");
+    #ifndef MAGNUM_TARGET_GLES2
+    CORRADE_SKIP("All pixel formats are supported on ES3+.");
     #else
-    CORRADE_VERIFY(!hasCompressedPixelFormat(Magnum::CompressedPixelFormat::Bc1RGBAUnorm));
+    CORRADE_VERIFY(!hasCompressedPixelFormat(Magnum::CompressedPixelFormat::Etc2RGB8Unorm));
 
     std::ostringstream out;
     Error redirectError{&out};
-    compressedPixelFormat(Magnum::CompressedPixelFormat::Bc1RGBAUnorm);
-    CORRADE_COMPARE(out.str(), "GL::compressedPixelFormat(): format CompressedPixelFormat::Bc1RGBAUnorm is not supported on this target\n");
+    compressedPixelFormat(Magnum::CompressedPixelFormat::Etc2RGB8Unorm);
+    CORRADE_COMPARE(out.str(), "GL::compressedPixelFormat(): format CompressedPixelFormat::Etc2RGB8Unorm is not supported on this target\n");
     #endif
 }
 
