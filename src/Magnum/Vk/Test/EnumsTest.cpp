@@ -190,6 +190,10 @@ void EnumsTest::mapVkFormat() {
            - that there was no gap (unhandled value inside the range)
            - that a particular pixel format maps to a particular GL format
            - that a particular pixel type maps to a particular GL type */
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic error "-Wswitch"
+        #endif
         switch(format) {
             #define _c(format, expectedFormat) \
                 case Magnum::PixelFormat::format: \
@@ -211,6 +215,9 @@ void EnumsTest::mapVkFormat() {
             #undef _s
             #undef _c
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
 
         /* Not handled by any value, remember -- we might either be at the end
            of the enum range (which is okay) or some value might be unhandled
@@ -267,6 +274,10 @@ void EnumsTest::mapVkFormatCompressed() {
            - that there was no gap (unhandled value inside the range)
            - that a particular pixel format maps to a particular GL format
            - that a particular pixel type maps to a particular GL type */
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic error "-Wswitch"
+        #endif
         switch(format) {
             #define _c(format, expectedFormat) \
                 case Magnum::CompressedPixelFormat::format: \
@@ -288,6 +299,9 @@ void EnumsTest::mapVkFormatCompressed() {
             #undef _s
             #undef _c
         }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
 
         /* Not handled by any value, remember -- we might either be at the end
            of the enum range (which is okay) or some value might be unhandled

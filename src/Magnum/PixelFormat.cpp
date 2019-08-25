@@ -34,6 +34,10 @@ UnsignedInt pixelSize(const PixelFormat format) {
     CORRADE_ASSERT(!(UnsignedInt(format) & (1 << 31)),
         "pixelSize(): can't determine pixel size of an implementation-specific format", {});
 
+    #ifdef __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
     switch(format) {
         case PixelFormat::R8Unorm:
         case PixelFormat::R8Snorm:
@@ -92,6 +96,9 @@ UnsignedInt pixelSize(const PixelFormat format) {
         case PixelFormat::RGBA32F:
             return 16;
     }
+    #ifdef __GNUC__
+    #pragma GCC diagnostic pop
+    #endif
 
     CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
@@ -102,6 +109,10 @@ Debug& operator<<(Debug& debug, const PixelFormat value) {
         return debug << "PixelFormat::ImplementationSpecific(" << Debug::nospace << reinterpret_cast<void*>(pixelFormatUnwrap(value)) << Debug::nospace << ")";
     }
 
+    #ifdef __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(value) case PixelFormat::value: return debug << "PixelFormat::" #value;
@@ -156,6 +167,9 @@ Debug& operator<<(Debug& debug, const PixelFormat value) {
         #undef _c
         /* LCOV_EXCL_STOP */
     }
+    #ifdef __GNUC__
+    #pragma GCC diagnostic pop
+    #endif
 
     return debug << "PixelFormat(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
 }
@@ -167,6 +181,10 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         return debug << "CompressedPixelFormat::ImplementationSpecific(" << Debug::nospace << reinterpret_cast<void*>(compressedPixelFormatUnwrap(value)) << Debug::nospace << ")";
     }
 
+    #ifdef __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(value) case CompressedPixelFormat::value: return debug << "CompressedPixelFormat::" #value;
@@ -187,6 +205,9 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         #undef _c
         /* LCOV_EXCL_STOP */
     }
+    #ifdef __GNUC__
+    #pragma GCC diagnostic pop
+    #endif
 
     return debug << "CompressedPixelFormat(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
 }

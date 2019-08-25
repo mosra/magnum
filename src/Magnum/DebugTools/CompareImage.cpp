@@ -102,6 +102,10 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Pix
     CORRADE_ASSERT(!isPixelFormatImplementationSpecific(expected.format()),
         "DebugTools::CompareImage: can't compare implementation-specific pixel formats", {});
 
+    #ifdef __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
     Float max{Constants::nan()};
     switch(expected.format()) {
         #define _c(format, size, T)                                         \
@@ -157,6 +161,9 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Pix
             CORRADE_ASSERT(false,
                 "DebugTools::CompareImage: half-float formats are not supported yet", {});
     }
+    #ifdef __GNUC__
+    #pragma GCC diagnostic pop
+    #endif
 
     CORRADE_ASSERT(max == max,
         "DebugTools::CompareImage: unknown format" << expected.format(), {});
@@ -225,6 +232,10 @@ namespace {
 void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& pixels, const Vector2i& pos, const PixelFormat format) {
     const char* const pixel = &pixels[pos.y()][pos.x()][0];
 
+    #ifdef __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
     switch(format) {
         #define _c(format, size, T)                                         \
             case PixelFormat::format:                                       \
@@ -284,6 +295,9 @@ void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& 
             /* Already handled by a printing assert before */
             CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
     }
+    #ifdef __GNUC__
+    #pragma GCC diagnostic pop
+    #endif
 }
 
 }

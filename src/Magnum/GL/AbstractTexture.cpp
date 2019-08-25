@@ -539,6 +539,10 @@ void AbstractTexture::bindInternal() {
 namespace {
 
 PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
+    #ifdef __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
     switch(internalFormat) {
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::Red:
@@ -806,11 +810,18 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #endif
             return PixelFormat::DepthStencil;
     }
+    #ifdef __GNUC__
+    #pragma GCC diagnostic pop
+    #endif
 
     CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
+    #ifdef __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
     switch(internalFormat) {
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case TextureFormat::Red:
@@ -1053,6 +1064,9 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
             return PixelType::Float32UnsignedInt248Rev;
         #endif
     }
+    #ifdef __GNUC__
+    #pragma GCC diagnostic pop
+    #endif
 
     CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }

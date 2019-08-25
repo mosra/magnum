@@ -88,6 +88,10 @@ PixelType pixelType(const Magnum::PixelFormat format, const UnsignedInt extra) {
 
 UnsignedInt pixelSize(const PixelFormat format, const PixelType type) {
     std::size_t size = 0;
+    #ifdef __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
     switch(type) {
         case PixelType::UnsignedByte:
         #ifndef MAGNUM_TARGET_GLES2
@@ -144,7 +148,14 @@ UnsignedInt pixelSize(const PixelFormat format, const PixelType type) {
             return 8;
         #endif
     }
+    #ifdef __GNUC__
+    #pragma GCC diagnostic pop
+    #endif
 
+    #ifdef __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
     switch(format) {
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case PixelFormat::Red:
@@ -207,12 +218,19 @@ UnsignedInt pixelSize(const PixelFormat format, const PixelType type) {
         case PixelFormat::DepthStencil:
             CORRADE_ASSERT(false, "GL::pixelSize(): invalid" << type << "specified for" << format, 0);
     }
+    #ifdef __GNUC__
+    #pragma GCC diagnostic pop
+    #endif
 
     CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const PixelFormat value) {
+    #ifdef __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(value) case PixelFormat::value: return debug << "GL::PixelFormat::" #value;
@@ -266,11 +284,18 @@ Debug& operator<<(Debug& debug, const PixelFormat value) {
         #undef _c
         /* LCOV_EXCL_STOP */
     }
+    #ifdef __GNUC__
+    #pragma GCC diagnostic pop
+    #endif
 
     return debug << "GL::PixelFormat(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const PixelType value) {
+    #ifdef __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(value) case PixelType::value: return debug << "GL::PixelType::" #value;
@@ -323,6 +348,9 @@ Debug& operator<<(Debug& debug, const PixelType value) {
         #undef _c
         /* LCOV_EXCL_STOP */
     }
+    #ifdef __GNUC__
+    #pragma GCC diagnostic pop
+    #endif
 
     return debug << "GL::PixelType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
@@ -363,6 +391,10 @@ CompressedPixelFormat compressedPixelFormat(const Magnum::CompressedPixelFormat 
 }
 
 Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
+    #ifdef __GNUC__
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic error "-Wswitch"
+    #endif
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(value) case CompressedPixelFormat::value: return debug << "GL::CompressedPixelFormat::" #value;
@@ -429,6 +461,9 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         #undef _c
         /* LCOV_EXCL_STOP */
     }
+    #ifdef __GNUC__
+    #pragma GCC diagnostic pop
+    #endif
 
     return debug << "GL::CompressedPixelFormat(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
