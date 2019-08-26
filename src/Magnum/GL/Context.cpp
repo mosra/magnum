@@ -99,7 +99,8 @@ constexpr Extension ExtensionList[]{
     _extension(KHR,texture_compression_astc_ldr),
     _extension(KHR,texture_compression_astc_hdr),
     _extension(KHR,blend_equation_advanced),
-    _extension(KHR,blend_equation_advanced_coherent)};
+    _extension(KHR,blend_equation_advanced_coherent),
+    _extension(KHR,texture_compression_astc_sliced_3d)};
 constexpr Extension ExtensionList300[]{
     _extension(ARB,map_buffer_range),
     _extension(ARB,color_buffer_float),
@@ -317,6 +318,7 @@ constexpr Extension ExtensionList[]{
     _extension(KHR,blend_equation_advanced_coherent),
     _extension(KHR,context_flush_control),
     _extension(KHR,no_error),
+    _extension(KHR,texture_compression_astc_sliced_3d),
     _extension(NV,read_buffer_front),
     _extension(NV,read_depth),
     _extension(NV,read_stencil),

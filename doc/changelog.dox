@@ -95,6 +95,8 @@ See also:
         @gl_extension2{ANGLE,texture_compression_dxt5,ANGLE_texture_compression_dxt}
         family of extensions in order to enable S3TC formats on a wider range
         of OpenGL ES devices
+    -   Recognizing the @gl_extension{KHR,texture_compression_astc_sliced_3d}
+        extension
     -   @gl_extension{EXT,texture_compression_rgtc} /
         @gl_extension{EXT,texture_compression_bptc} OpenGL ES and
         @webgl_extension{EXT,texture_compression_rgtc} /

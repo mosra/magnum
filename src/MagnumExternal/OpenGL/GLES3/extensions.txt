@@ -62,6 +62,7 @@ extension IMG_texture_compression_pvrtc             optional
 extension KHR_blend_equation_advanced_coherent      optional
 extension KHR_context_flush_control                 optional
 extension KHR_no_error                              optional
+# extension KHR_texture_compression_astc_sliced_3d  optional
 extension NV_read_buffer_front                      optional
 extension NV_read_depth                             optional
 extension NV_read_stencil                           optional

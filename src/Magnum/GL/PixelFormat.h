@@ -1032,13 +1032,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed RGBA with 4x4 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc4x4 = GL_COMPRESSED_RGBA_ASTC_4x4_KHR,
@@ -1050,13 +1055,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed sRGB with alpha with 4x4 blocks. **Available only on 2D,
      * 3D, 2D array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc4x4 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR,
@@ -1068,13 +1078,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed RGBA with 5x4 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc5x4 = GL_COMPRESSED_RGBA_ASTC_5x4_KHR,
@@ -1086,13 +1101,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed sRGB with alpha with 5x4 blocks. **Available only on 2D,
      * 3D, 2D array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc5x4 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR,
@@ -1104,13 +1124,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed RGBA with 5x5 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc5x5 = GL_COMPRESSED_RGBA_ASTC_5x5_KHR,
@@ -1122,13 +1147,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed sRGB with alpha with 5x5 blocks. **Available only on 2D,
      * 3D, 2D array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc5x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR,
@@ -1140,13 +1170,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed RGBA with 6x5 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc6x5 = GL_COMPRESSED_RGBA_ASTC_6x5_KHR,
@@ -1158,13 +1193,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed sRGB with alpha with 6x5 blocks. **Available only on 2D,
      * 3D, 2D array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc6x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR,
@@ -1176,13 +1216,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed RGBA with 6x6 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc6x6 = GL_COMPRESSED_RGBA_ASTC_6x6_KHR,
@@ -1194,13 +1239,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed sRGB with alpha with 6x6 blocks. **Available only on 2D,
      * 3D, 2D array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc6x6 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR,
@@ -1212,13 +1262,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed RGBA with 8x5 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc8x5 = GL_COMPRESSED_RGBA_ASTC_8x5_KHR,
@@ -1230,13 +1285,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed sRGB with alpha with 8x5 blocks. **Available only on 2D,
      * 3D, 2D array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc8x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR,
@@ -1248,13 +1308,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed RGBA with 8x6 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc8x6 = GL_COMPRESSED_RGBA_ASTC_8x6_KHR,
@@ -1266,13 +1331,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed sRGB with alpha with 8x6 blocks. **Available only on 2D,
      * 3D, 2D array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc8x6 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR,
@@ -1284,13 +1354,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed RGBA with 8x8 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc8x8 = GL_COMPRESSED_RGBA_ASTC_8x8_KHR,
@@ -1302,13 +1377,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed sRGB with alpha with 8x8 blocks. **Available only on 2D,
      * 3D, 2D array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc8x8 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR,
@@ -1320,13 +1400,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed RGBA with 10x5 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc10x5 = GL_COMPRESSED_RGBA_ASTC_10x5_KHR,
@@ -1338,13 +1423,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed sRGB with alpha with 10x5 blocks. **Available only on
      * 2D, 3D, 2D array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc10x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR,
@@ -1356,13 +1446,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed RGBA with 10x6 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc10x6 = GL_COMPRESSED_RGBA_ASTC_10x6_KHR,
@@ -1374,13 +1469,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed sRGB with alpha with 10x6 blocks. **Available only on
      * 2D, 3D, 2D array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc10x6 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR,
@@ -1392,13 +1492,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed RGBA with 10x8 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc10x8 = GL_COMPRESSED_RGBA_ASTC_10x8_KHR,
@@ -1410,13 +1515,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed sRGB with alpha with 10x8 blocks. **Available only on
      * 2D, 3D, 2D array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc10x8 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR,
@@ -1428,13 +1538,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed RGBA with 10x10 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc10x10 = GL_COMPRESSED_RGBA_ASTC_10x10_KHR,
@@ -1446,13 +1561,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed sRGB with alpha with 10x10 blocks. **Available only on
      * 2D, 3D, 2D array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc10x10 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR,
@@ -1464,13 +1584,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed RGBA with 12x10 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc12x10 = GL_COMPRESSED_RGBA_ASTC_12x10_KHR,
@@ -1482,13 +1607,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed sRGB with alpha with 12x10 blocks. **Available only on
      * 2D, 3D, 2D array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc12x10 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR,
@@ -1500,13 +1630,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed RGBA with 12x12 blocks. **Available only on 2D, 3D, 2D
      * array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc12x12 = GL_COMPRESSED_RGBA_ASTC_12x12_KHR,
@@ -1518,13 +1653,18 @@ enum class CompressedPixelFormat: GLenum {
      * ASTC compressed sRGB with alpha with 12x12 blocks. **Available only on
      * 2D, 3D, 2D array, cube map and cube map array textures.**
      * @requires_extension Extension @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
      * @requires_gles32 Extension @gl_extension{ANDROID,extension_pack_es31a} /
      *      @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr}
+     * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_sliced_3d}
+     *      for 3D textures
      * @requires_es_extension Extension @gl_extension{KHR,texture_compression_astc_hdr}
      *      for 3D textures and HDR profile
-     ** @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc},
+     *      2D and cube map textures only
      */
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc12x12 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR,
