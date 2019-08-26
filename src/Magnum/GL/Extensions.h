@@ -209,7 +209,7 @@ namespace AMD {
     _extension(123,ARB,texture_barrier,                 GL210, GL450) // #167
     _extension(124,ARB,pipeline_statistics_query,       GL300, GL460) // #171
     _extension(125,ARB,sparse_buffer,                   GL210,  None) // #172
-    _extension(126,ARB,transform_feedback_overflow_query, GL300, None) // #173
+    _extension(126,ARB,transform_feedback_overflow_query, GL300, GL460) // #173
     _extension(127,ARB,ES3_2_compatibility,             GL450,  None) // #177
     _extension(128,ARB,shader_atomic_counter_ops,       GL300, GL460) // #182
     _extension(129,ARB,gl_spirv,                        GL330, GL460) // #190
@@ -248,7 +248,7 @@ namespace AMD {
     _extension(165,KHR,robustness,                      GL320, GL450) // #170
     _extension(166,KHR,blend_equation_advanced,         GL210,  None) // #174
     _extension(167,KHR,blend_equation_advanced_coherent, GL210, None) // #174
-    _extension(168,KHR,no_error,                        GL210,  None) // #175
+    _extension(168,KHR,no_error,                        GL210, GL460) // #175
 } namespace NV {
     _extension(169,NV,primitive_restart,                GL210, GL310) // #285
     _extension(170,NV,depth_buffer_float,               GL210, GL300) // #334
@@ -329,7 +329,7 @@ namespace ANDROID {
     #endif
     _extension(  7,APPLE,texture_format_BGRA8888,   GLES200,   None) // #79
     #ifdef MAGNUM_TARGET_GLES2
-    _extension(  8,APPLE,texture_max_level,         GLES200,    None) // #80
+    _extension(  8,APPLE,texture_max_level,         GLES200, GLES300) // #80
     #endif
 } namespace ARM {
     #ifdef MAGNUM_TARGET_GLES2
