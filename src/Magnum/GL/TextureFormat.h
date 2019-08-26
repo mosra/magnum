@@ -1254,7 +1254,10 @@ enum class TextureFormat: GLenum {
      * S3TC DXT1 compressed RGB. **Available only on 2D, 2D array, cube map and
      * cube map array textures.**
      * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
-     * @requires_es_extension Extension @gl_extension{EXT,texture_compression_s3tc}
+     *      or @gl_extension{EXT,texture_compression_dxt1}
+     * @requires_es_extension Extension @gl_extension{EXT,texture_compression_s3tc},
+     *      @gl_extension{EXT,texture_compression_dxt1} or
+     *      @gl_extension2{ANGLE,texture_compression_dxt1,ANGLE_texture_compression_dxt}
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc}
      */
     CompressedRGBS3tcDxt1 = GL_COMPRESSED_RGB_S3TC_DXT1_EXT,
@@ -1272,7 +1275,10 @@ enum class TextureFormat: GLenum {
      * S3TC DXT1 compressed RGBA. **Available only on 2D, 2D array, cube map
      * and cube map array textures.**
      * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
-     * @requires_es_extension Extension @gl_extension{EXT,texture_compression_s3tc}
+     *      or @gl_extension{EXT,texture_compression_dxt1}
+     * @requires_es_extension Extension @gl_extension{EXT,texture_compression_s3tc},
+     *      @gl_extension{EXT,texture_compression_dxt1} or
+     *      @gl_extension2{ANGLE,texture_compression_dxt1,ANGLE_texture_compression_dxt}
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc}
      */
     CompressedRGBAS3tcDxt1 = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT,
@@ -1291,6 +1297,7 @@ enum class TextureFormat: GLenum {
      * and cube map array textures.**
      * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
      * @requires_es_extension Extension @gl_extension{EXT,texture_compression_s3tc}
+     *      or @gl_extension2{ANGLE,texture_compression_dxt3,ANGLE_texture_compression_dxt}
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc}
      */
     CompressedRGBAS3tcDxt3 = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT,
@@ -1309,6 +1316,7 @@ enum class TextureFormat: GLenum {
      * and cube map array textures.**
      * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
      * @requires_es_extension Extension @gl_extension{EXT,texture_compression_s3tc}
+     *      or @gl_extension2{ANGLE,texture_compression_dxt5,ANGLE_texture_compression_dxt}
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc}
      */
     CompressedRGBAS3tcDxt5 = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT,

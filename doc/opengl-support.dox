@@ -313,6 +313,7 @@ Extension                                   | Status
 @gl_extension{EXT,texture_filter_anisotropic} | done
 @gl_extension{EXT,texture_compression_s3tc} | done
 @gl_extension{EXT,texture_mirror_clamp}     | only GL 4.4 subset
+@gl_extension{EXT,texture_compression_dxt1} | done
 @gl_extension{EXT,texture_sRGB_decode}      | done
 @gl_extension{EXT,shader_integer_mix}       | done (shading language only)
 @gl_extension{EXT,debug_label}              | missing pipeline and sampler label
@@ -436,10 +437,14 @@ Extension                                   | Status
 Extension                                   | Status
 ------------------------------------------- | ------
 @gl_extension{ANDROID,extension_pack_es31a} | done (nothing to do)
+@gl_extension2{ANGLE,texture_compression_dxt1,ANGLE_texture_compression_dxt} | done
+@gl_extension2{ANGLE,texture_compression_dxt3,ANGLE_texture_compression_dxt} | done
+@gl_extension2{ANGLE,texture_compression_dxt5,ANGLE_texture_compression_dxt} | done
 @gl_extension{APPLE,texture_format_BGRA8888} | done
 @gl_extension{ARM,shader_framebuffer_fetch} | missing renderer setup and limit query
 @gl_extension{ARM,shader_framebuffer_fetch_depth_stencil} | done (shading language only)
 @gl_extension{EXT,texture_filter_anisotropic} | done
+@gl_extension{EXT,texture_compression_dxt1} | done
 @gl_extension{EXT,texture_format_BGRA8888}  | done
 @gl_extension{EXT,read_format_bgra}         | done
 @gl_extension{EXT,multi_draw_arrays}        | done

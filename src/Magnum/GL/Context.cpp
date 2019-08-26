@@ -90,6 +90,7 @@ constexpr Extension ExtensionList[]{
     _extension(EXT,texture_filter_anisotropic),
     _extension(EXT,texture_compression_s3tc),
     _extension(EXT,texture_mirror_clamp),
+    _extension(EXT,texture_compression_dxt1),
     _extension(EXT,texture_sRGB_decode),
     _extension(EXT,shader_integer_mix),
     _extension(EXT,debug_label),
@@ -284,10 +285,14 @@ constexpr Extension ExtensionList[]{
     #ifndef MAGNUM_TARGET_GLES2
     _extension(ANDROID,extension_pack_es31a),
     #endif
+    _extension(ANGLE,texture_compression_dxt1),
+    _extension(ANGLE,texture_compression_dxt3),
+    _extension(ANGLE,texture_compression_dxt5),
     _extension(APPLE,texture_format_BGRA8888),
     _extension(ARM,shader_framebuffer_fetch),
     _extension(ARM,shader_framebuffer_fetch_depth_stencil),
     _extension(EXT,texture_filter_anisotropic),
+    _extension(EXT,texture_compression_dxt1),
     _extension(EXT,texture_format_BGRA8888),
     _extension(EXT,read_format_bgra),
     _extension(EXT,multi_draw_arrays),

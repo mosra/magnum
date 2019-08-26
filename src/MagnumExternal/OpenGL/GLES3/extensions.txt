@@ -30,10 +30,14 @@ extension OES_texture_stencil8                      optional
 extension OES_texture_storage_multisample_2d_array  optional
 
 extension ANDROID_extension_pack_es31a              optional
+# extension ANGLE_texture_compression_dxt1          optional
+# extension ANGLE_texture_compression_dxt3          optional
+# extension ANGLE_texture_compression_dxt5          optional
 extension APPLE_texture_format_BGRA8888             optional
 extension ARM_shader_framebuffer_fetch              optional
 extension ARM_shader_framebuffer_fetch_depth_stencil optional
 extension EXT_texture_filter_anisotropic            optional
+# extension EXT_texture_compression_dxt1            optional
 extension EXT_texture_format_BGRA8888               optional
 extension EXT_read_format_bgra                      optional
 extension EXT_multi_draw_arrays                     optional

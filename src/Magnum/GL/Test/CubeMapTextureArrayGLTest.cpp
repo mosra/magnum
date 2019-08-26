@@ -683,8 +683,13 @@ void CubeMapTextureArrayGLTest::compressedImage() {
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
         CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
     #endif
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::texture_compression_dxt3>())
+        CORRADE_SKIP(Extensions::ANGLE::texture_compression_dxt3::string() + std::string(" is not supported."));
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(CompressedPixelStorageData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
@@ -723,8 +728,13 @@ void CubeMapTextureArrayGLTest::compressedImageBuffer() {
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
         CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
     #endif
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::texture_compression_dxt3>())
+        CORRADE_SKIP(Extensions::ANGLE::texture_compression_dxt3::string() + std::string(" is not supported."));
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(CompressedPixelStorageData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
@@ -1052,8 +1062,13 @@ void CubeMapTextureArrayGLTest::compressedSubImage() {
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
         CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
     #endif
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::texture_compression_dxt3>())
+        CORRADE_SKIP(Extensions::ANGLE::texture_compression_dxt3::string() + std::string(" is not supported."));
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(CompressedPixelStorageData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())
@@ -1100,8 +1115,13 @@ void CubeMapTextureArrayGLTest::compressedSubImageBuffer() {
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_cube_map_array>())
         CORRADE_SKIP(Extensions::EXT::texture_cube_map_array::string() + std::string(" is not supported."));
     #endif
+    #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::EXT::texture_compression_s3tc>())
         CORRADE_SKIP(Extensions::EXT::texture_compression_s3tc::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::ANGLE::texture_compression_dxt3>())
+        CORRADE_SKIP(Extensions::ANGLE::texture_compression_dxt3::string() + std::string(" is not supported."));
+    #endif
 
     #ifndef MAGNUM_TARGET_GLES
     if(CompressedPixelStorageData[testCaseInstanceId()].storage != CompressedPixelStorage{} && !Context::current().isExtensionSupported<Extensions::ARB::compressed_texture_pixel_storage>())

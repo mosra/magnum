@@ -219,11 +219,12 @@ namespace AMD {
 } namespace ATI {
     _extension(133,ATI,texture_mirror_once,             GL210,  None) // #221
 } namespace EXT {
-    _extension(140,EXT,texture_filter_anisotropic,      GL210,  None) // #187
-    _extension(141,EXT,texture_compression_s3tc,        GL210,  None) // #198
+    _extension(139,EXT,texture_filter_anisotropic,      GL210,  None) // #187
+    _extension(140,EXT,texture_compression_s3tc,        GL210,  None) // #198
     /* EXT_framebuffer_object, EXT_packed_depth_stencil, EXT_framebuffer_blit,
        EXT_framebuffer_multisample replaced with ARB_framebuffer_object */
-    _extension(142,EXT,texture_mirror_clamp,            GL210,  None) // #298
+    _extension(141,EXT,texture_mirror_clamp,            GL210,  None) // #298
+    _extension(142,EXT,texture_compression_dxt1,        GL210,  None) // #309
     _extension(143,EXT,gpu_shader4,                     GL210, GL300) // #326
     _extension(144,EXT,packed_float,                    GL210, GL300) // #328
     _extension(145,EXT,texture_array,                   GL210, GL300) // #329
@@ -323,27 +324,33 @@ namespace ANDROID {
     _extension(  2,ANGLE,framebuffer_blit,          GLES200, GLES300) // #83
     _extension(  3,ANGLE,framebuffer_multisample,   GLES200, GLES300) // #84
     _extension(  4,ANGLE,instanced_arrays,          GLES200, GLES300) // #109
-    _extension(  5,ANGLE,depth_texture,             GLES200, GLES300) // #138
+    #endif
+    _extension(  5,ANGLE,texture_compression_dxt1,  GLES200,    None) // #111
+    _extension(  6,ANGLE,texture_compression_dxt3,  GLES200,    None) // #111
+    _extension(  7,ANGLE,texture_compression_dxt5,  GLES200,    None) // #111
+    #ifdef MAGNUM_TARGET_GLES2
+    _extension(  8,ANGLE,depth_texture,             GLES200, GLES300) // #138
     #endif
 } namespace APPLE {
     #ifdef MAGNUM_TARGET_GLES2
-    _extension(  6,APPLE,framebuffer_multisample,   GLES200, GLES300) // #78
+    _extension(  9,APPLE,framebuffer_multisample,   GLES200, GLES300) // #78
     #endif
-    _extension(  7,APPLE,texture_format_BGRA8888,   GLES200,    None) // #79
+    _extension( 10,APPLE,texture_format_BGRA8888,   GLES200,    None) // #79
     #ifdef MAGNUM_TARGET_GLES2
-    _extension(  8,APPLE,texture_max_level,         GLES200, GLES300) // #80
+    _extension( 11,APPLE,texture_max_level,         GLES200, GLES300) // #80
     #endif
 } namespace ARM {
     #ifdef MAGNUM_TARGET_GLES2
-    _extension(  9,ARM,rgba8,                       GLES200, GLES300) // #82
+    _extension( 12,ARM,rgba8,                       GLES200, GLES300) // #82
     #endif
-    _extension( 10,ARM,shader_framebuffer_fetch,    GLES200,    None) // #165
-    _extension( 11,ARM,shader_framebuffer_fetch_depth_stencil, GLES200, None) // #166
+    _extension( 13,ARM,shader_framebuffer_fetch,    GLES200,    None) // #165
+    _extension( 14,ARM,shader_framebuffer_fetch_depth_stencil, GLES200, None) // #166
 } namespace EXT {
-    _extension( 20,EXT,texture_filter_anisotropic,  GLES200,    None) // #41
+    _extension( 19,EXT,texture_filter_anisotropic,  GLES200,    None) // #41
     #ifdef MAGNUM_TARGET_GLES2
-    _extension( 21,EXT,texture_type_2_10_10_10_REV, GLES200, GLES300) // #42
+    _extension( 20,EXT,texture_type_2_10_10_10_REV, GLES200, GLES300) // #42
     #endif
+    _extension( 21,EXT,texture_compression_dxt1,    GLES200,    None) // #49
     _extension( 22,EXT,texture_format_BGRA8888,     GLES200,    None) // #51
     #ifdef MAGNUM_TARGET_GLES2
     _extension( 23,EXT,discard_framebuffer,         GLES200, GLES300) // #64

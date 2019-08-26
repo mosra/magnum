@@ -25,6 +25,7 @@ extension ATI_texture_mirror_once               optional
 # extension EXT_texture_filter_anisotropic      optional
 extension EXT_texture_compression_s3tc          optional
 extension EXT_texture_mirror_clamp              optional
+# extension EXT_texture_compression_dxt1        optional
 extension EXT_texture_sRGB_decode               optional
 extension EXT_shader_integer_mix                optional
 extension EXT_debug_label                       optional
