@@ -41,11 +41,13 @@ UnsignedInt pixelSize(const PixelFormat format) {
     switch(format) {
         case PixelFormat::R8Unorm:
         case PixelFormat::R8Snorm:
+        case PixelFormat::R8Srgb:
         case PixelFormat::R8UI:
         case PixelFormat::R8I:
             return 1;
         case PixelFormat::RG8Unorm:
         case PixelFormat::RG8Snorm:
+        case PixelFormat::RG8Srgb:
         case PixelFormat::RG8UI:
         case PixelFormat::RG8I:
         case PixelFormat::R16Unorm:
@@ -56,11 +58,13 @@ UnsignedInt pixelSize(const PixelFormat format) {
             return 2;
         case PixelFormat::RGB8Unorm:
         case PixelFormat::RGB8Snorm:
+        case PixelFormat::RGB8Srgb:
         case PixelFormat::RGB8UI:
         case PixelFormat::RGB8I:
             return 3;
         case PixelFormat::RGBA8Unorm:
         case PixelFormat::RGBA8Snorm:
+        case PixelFormat::RGBA8Srgb:
         case PixelFormat::RGBA8UI:
         case PixelFormat::RGBA8I:
         case PixelFormat::RG16Unorm:
@@ -124,6 +128,10 @@ Debug& operator<<(Debug& debug, const PixelFormat value) {
         _c(RG8Snorm)
         _c(RGB8Snorm)
         _c(RGBA8Snorm)
+        _c(R8Srgb)
+        _c(RG8Srgb)
+        _c(RGB8Srgb)
+        _c(RGBA8Srgb)
         _c(R8UI)
         _c(RG8UI)
         _c(RGB8UI)

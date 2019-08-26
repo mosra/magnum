@@ -238,6 +238,7 @@ namespace AMD {
     _extension(153,EXT,shader_integer_mix,              GL300,  None) // #437
     _extension(154,EXT,debug_label,                     GL210,  None) // #439
     _extension(155,EXT,debug_marker,                    GL210,  None) // #440
+    _extension(156,EXT,texture_sRGB_R8,                 GL210,  None) // #534
 } namespace GREMEDY {
     _extension(157,GREMEDY,string_marker,               GL210,  None) // #311
 } namespace KHR {
@@ -413,15 +414,17 @@ namespace ANDROID {
     _extension( 59,EXT,texture_buffer,              GLES310, GLES320) // #183
     _extension( 60,EXT,texture_cube_map_array,      GLES310, GLES320) // #184
     _extension( 61,EXT,primitive_bounding_box,      GLES310, GLES320) // #186
+    _extension( 62,EXT,texture_sRGB_R8,             GLES300,    None) // #221
+    _extension( 63,EXT,texture_sRGB_RG8,            GLES300,    None) // #223
     #endif
-    _extension( 62,EXT,polygon_offset_clamp,        GLES200,    None) // #252
+    _extension( 64,EXT,polygon_offset_clamp,        GLES200,    None) // #252
     #ifndef MAGNUM_TARGET_GLES2
-    _extension( 63,EXT,texture_compression_rgtc,    GLES300,    None) // #286
-    _extension( 64,EXT,texture_compression_bptc,    GLES300,    None) // #287
+    _extension( 65,EXT,texture_compression_rgtc,    GLES300,    None) // #286
+    _extension( 66,EXT,texture_compression_bptc,    GLES300,    None) // #287
     #endif
-    _extension( 65,EXT,texture_compression_s3tc_srgb, GLES200,  None) // #289
+    _extension( 67,EXT,texture_compression_s3tc_srgb, GLES200,  None) // #289
 } namespace IMG {
-    _extension( 66,IMG,texture_compression_pvrtc,   GLES200,    None) // #54
+    _extension( 68,IMG,texture_compression_pvrtc,   GLES200,    None) // #54
 } namespace KHR {
     _extension( 70,KHR,texture_compression_astc_ldr,GLES200, GLES320) // #117
     _extension( 71,KHR,texture_compression_astc_hdr,GLES200,    None) // #117

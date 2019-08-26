@@ -47,6 +47,17 @@ _s(RG8Snorm)
 _s(RGB8Snorm)
 _s(RGBA8Snorm)
 #endif
+/* Yes, GL's pixel format doesn't distinguish between linear and sRGB, so
+   mapping is the same as in case of the Unorm types. */
+#ifndef MAGNUM_TARGET_GLES2
+_c(R8Srgb, Red, UnsignedByte)
+_c(RG8Srgb, RG, UnsignedByte)
+#else
+_c(R8Srgb, Luminance, UnsignedByte)
+_c(RG8Srgb, LuminanceAlpha, UnsignedByte)
+#endif
+_c(RGB8Srgb, RGB, UnsignedByte)
+_c(RGBA8Srgb, RGBA, UnsignedByte)
 #ifndef MAGNUM_TARGET_GLES2
 _c(R8UI, RedInteger, UnsignedByte)
 _c(RG8UI, RGInteger, UnsignedByte)

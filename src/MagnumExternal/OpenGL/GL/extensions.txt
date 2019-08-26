@@ -30,6 +30,7 @@ extension EXT_texture_sRGB_decode               optional
 extension EXT_shader_integer_mix                optional
 extension EXT_debug_label                       optional
 extension EXT_debug_marker                      optional
+extension EXT_texture_sRGB_R8                   optional
 extension GREMEDY_string_marker                 optional
 extension KHR_texture_compression_astc_ldr      optional
 # extension KHR_texture_compression_astc_hdr    optional

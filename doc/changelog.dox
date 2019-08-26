@@ -54,6 +54,10 @@ See also:
     @ref CompressedPixelFormat as well as their conversion to corresponding
     GL/Vulkan formats in @ref GL::compressedPixelFormat() and
     @ref Vk::vkFormat(Magnum::CompressedPixelFormat)
+-   New @ref PixelFormat::R8Srgb, @ref PixelFormat::RG8Srgb,
+    @ref PixelFormat::RGB8Srgb and @ref PixelFormat::RGBA8Srgb sRGB pixel
+    formats as well as their conversion to corresponding GL/Vulkan formats in
+    @ref GL::pixelFormat() and @ref Vk::vkFormat(Magnum::PixelFormat)
 
 @subsubsection changelog-latest-new-audio Audio library
 
@@ -107,6 +111,10 @@ See also:
     -   PVRTC formats defined by the @gl_extension{IMG,texture_compression_pvrtc}
         / @gl_extension{IMG,pvrtc_sRGB} OpenGL ES and
         @webgl_extension{WEBGL,compressed_texture_pvrtc} WebGL extensions
+-   Implemented @gl_extension{EXT,texture_sRGB_R8} and
+    @gl_extension{EXT,texture_sRGB_RG8} extensions adding
+    @ref GL::TextureFormat::SR8 and @ref GL::TextureFormat::SRG8 formats to
+    complement new sRGB formats in @ref GL::PixelFormat
 -   New @ref GL::AbstractFramebuffer::implementationColorReadFormat() and
     @ref GL::AbstractFramebuffer::implementationColorReadType() queries for
     more robust checks when doing framebuffer readbacks; together with three

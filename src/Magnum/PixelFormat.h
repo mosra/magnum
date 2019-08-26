@@ -131,6 +131,42 @@ enum class PixelFormat: UnsignedInt {
     RGBA8Snorm,
 
     /**
+     * sRGB-encoded red component, normalized unsigned byte.
+     *
+     * Corresponds to @ref GL::PixelFormat::Red and
+     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::SR8 /
+     * @def_vk_keyword{FORMAT_R8_SRGB,Format}.
+     */
+    R8Srgb,
+
+    /**
+     * sRGB-encoded red and green component, normalized unsigned byte.
+     *
+     * Corresponds to @ref GL::PixelFormat::RG and
+     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::SRG8 /
+     * @def_vk_keyword{FORMAT_R8G8_SRGB,Format}.
+     */
+    RG8Srgb,
+
+    /**
+     * sRGB, normalized unsigned byte.
+     *
+     * Corresponds to @ref GL::PixelFormat::RGB and
+     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::SRGB8 /
+     * @def_vk_keyword{FORMAT_R8G8B8_SRGB,Format}.
+     */
+    RGB8Srgb,
+
+    /**
+     * sRGB + linear alpha, normalized unsigned byte.
+     *
+     * Corresponds to @ref GL::PixelFormat::RGBA and
+     * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::SRGB8Alpha8 /
+     * @def_vk_keyword{FORMAT_R8G8B8A8_SRGB,Format}.
+     */
+    RGBA8Srgb,
+
+    /**
      * Red component, integral unsigned byte.
      *
      * Corresponds to @ref GL::PixelFormat::RedInteger and

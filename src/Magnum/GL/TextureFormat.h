@@ -767,6 +767,31 @@ enum class TextureFormat: GLenum {
     LuminanceAlpha = GL_LUMINANCE_ALPHA,
     #endif
 
+    #ifndef MAGNUM_TARGET_WEBGL
+    /**
+     * sRGB-encoded red component, normalized unsigned byte.
+     * @requires_extension Extension @gl_extension{EXT,texture_sRGB_R8}
+     * @requires_es_extension Extension @gl_extension{EXT,texture_sRGB_R8}
+     * @requires_gles One- and two-component sRGB texture formats are not
+     *      available in WebGL, use @ref TextureFormat::SRGB8 or
+     *      @ref TextureFormat::SRGB8Alpha8
+     */
+    SR8 = GL_SR8_EXT,
+
+    #if defined(MAGNUM_TARGET_GLES) || defined(DOXYGEN_GENERATING_OUTPUT)
+    /**
+     * sRGB-encoded red and green component, normalized unsigned byte.
+     * @requires_es_extension Extension @gl_extension{EXT,texture_sRGB_RG8}
+     * @requires_gles One- and two-component sRGB texture formats are not
+     *      available in WebGL, use @ref TextureFormat::SRGB8 or
+     *      @ref TextureFormat::SRGB8Alpha8 instead. Only
+     *      @ref TextureFormat::SR8, @ref TextureFormat::SRGB8 or
+     *      @ref TextureFormat::SRGB8Alpha8 is available in desktop OpenGL.
+     */
+    SRG8 = GL_SRG8_EXT,
+    #endif
+    #endif
+
     #ifndef MAGNUM_TARGET_GLES
     /**
      * RGB, normalized unsigned, red and green component 3bit, blue 2bit.

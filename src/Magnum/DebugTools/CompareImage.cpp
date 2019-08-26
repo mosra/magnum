@@ -121,11 +121,19 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Pix
                     Containers::arrayCast<2, const Math::Vector<size, T>>(actualPixels), \
                     expected.pixels<Math::Vector<size, T>>(), delta);       \
                 break;
+        #define _e(first, second, third, size, T)                           \
+            case PixelFormat::first:                                        \
+            case PixelFormat::second:                                       \
+            case PixelFormat::third:                                        \
+                max = calculateImageDelta<size, T>(                         \
+                    Containers::arrayCast<2, const Math::Vector<size, T>>(actualPixels), \
+                    expected.pixels<Math::Vector<size, T>>(), delta);       \
+                break;
         /* LCOV_EXCL_START */
-        _d(R8Unorm, R8UI, 1, UnsignedByte)
-        _d(RG8Unorm, RG8UI, 2, UnsignedByte)
-        _d(RGB8Unorm, RGB8UI, 3, UnsignedByte)
-        _d(RGBA8Unorm, RGBA8UI, 4, UnsignedByte)
+        _e(R8Unorm, R8Srgb, R8UI, 1, UnsignedByte)
+        _e(RG8Unorm, RG8Srgb, RG8UI, 2, UnsignedByte)
+        _e(RGB8Unorm, RGB8Srgb, RGB8UI, 3, UnsignedByte)
+        _e(RGBA8Unorm, RGBA8Srgb, RGBA8UI, 4, UnsignedByte)
         _d(R8Snorm, R8I, 1, Byte)
         _d(RG8Snorm, RG8I, 2, Byte)
         _d(RGB8Snorm, RGB8I, 3, Byte)
@@ -151,6 +159,7 @@ std::tuple<Containers::Array<Float>, Float, Float> calculateImageDelta(const Pix
         _c(RGB32F, 3, Float)
         _c(RGBA32F, 4, Float)
         /* LCOV_EXCL_STOP */
+        #undef _e
         #undef _d
         #undef _c
 
@@ -246,12 +255,18 @@ void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& 
             case PixelFormat::second:                                       \
                 out << *reinterpret_cast<const Math::Vector<size, T>*>(pixel); \
                 break;
+        #define _e(first, second, third, size, T)                           \
+            case PixelFormat::first:                                        \
+            case PixelFormat::second:                                       \
+            case PixelFormat::third:                                       \
+                out << *reinterpret_cast<const Math::Vector<size, T>*>(pixel); \
+                break;
         /* LCOV_EXCL_START */
-        _d(R8Unorm, R8UI, 1, UnsignedByte)
-        _d(RG8Unorm, RG8UI, 2, UnsignedByte)
+        _e(R8Unorm, R8Srgb, R8UI, 1, UnsignedByte)
+        _e(RG8Unorm, RG8Srgb, RG8UI, 2, UnsignedByte)
         _c(RGB8UI, 3, UnsignedByte)
         _c(RGBA8UI, 4, UnsignedByte)
-        /* RGB8Unorm, RGBA8Unorm handled below */
+        /* RGB8Unorm, RGBA8Unorm, RGB8Srgb, RGBA8Srgb handled below */
         _d(R8Snorm, R8I, 1, Byte)
         _d(RG8Snorm, RG8I, 2, Byte)
         _d(RGB8Snorm, RGB8I, 3, Byte)
@@ -277,14 +292,17 @@ void printPixelAt(Debug& out, const Containers::StridedArrayView3D<const char>& 
         _c(RGB32F, 3, Float)
         _c(RGBA32F, 4, Float)
         /* LCOV_EXCL_STOP */
+        #undef _e
         #undef _d
         #undef _c
 
         /* Take the opportunity and print 8-bit colors in hex */
         case PixelFormat::RGB8Unorm:
+        case PixelFormat::RGB8Srgb:
             out << *reinterpret_cast<const Color3ub*>(pixel);
             break;
         case PixelFormat::RGBA8Unorm:
+        case PixelFormat::RGBA8Srgb:
             out << *reinterpret_cast<const Color4ub*>(pixel);
             break;
 

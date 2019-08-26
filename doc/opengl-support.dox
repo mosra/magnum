@@ -319,6 +319,7 @@ Extension                                   | Status
 @gl_extension{EXT,shader_integer_mix}       | done (shading language only)
 @gl_extension{EXT,debug_label}              | missing pipeline and sampler label
 @gl_extension{EXT,debug_marker}             | done
+@gl_extension{EXT,sRGB_R8}                  | done
 @gl_extension{GREMEDY,string_marker}        | done
 
 @subsection opengl-support-es20 OpenGL ES 2.0
@@ -461,6 +462,8 @@ Extension                                   | Status
 @gl_extension{EXT,texture_compression_s3tc} | done
 @gl_extension{EXT,pvrtc_sRGB}               | done
 @gl_extension{EXT,shader_integer_mix}       | done (shading language only)
+@gl_extension{EXT,sRGB_R8}                  | done
+@gl_extension{EXT,sRGB_RG8}                 | done
 @gl_extension{EXT,polygon_offset_clamp}     | |
 @gl_extension{EXT,texture_compression_rgtc} | done
 @gl_extension{EXT,texture_compression_bptc} | done

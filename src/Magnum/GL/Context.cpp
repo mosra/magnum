@@ -95,6 +95,7 @@ constexpr Extension ExtensionList[]{
     _extension(EXT,shader_integer_mix),
     _extension(EXT,debug_label),
     _extension(EXT,debug_marker),
+    _extension(EXT,texture_sRGB_R8),
     _extension(GREMEDY,string_marker),
     _extension(KHR,texture_compression_astc_ldr),
     _extension(KHR,texture_compression_astc_hdr),
@@ -310,6 +311,8 @@ constexpr Extension ExtensionList[]{
     _extension(EXT,pvrtc_sRGB),
     #ifndef MAGNUM_TARGET_GLES2
     _extension(EXT,shader_integer_mix),
+    _extension(EXT,texture_sRGB_R8),
+    _extension(EXT,texture_sRGB_RG8),
     #endif
     _extension(EXT,polygon_offset_clamp),
     _extension(EXT,texture_compression_s3tc_srgb),
