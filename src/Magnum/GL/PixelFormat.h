@@ -1032,7 +1032,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc4x4 = GL_COMPRESSED_RGBA_ASTC_4x4_KHR,
+    #else
+    RGBAAstc4x4 = GL_COMPRESSED_RGBA_ASTC_4x4,
+    #endif
 
     /**
      * ASTC compressed sRGB with alpha with 4x4 blocks. **Available only on 2D,
@@ -1046,7 +1050,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc4x4 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4_KHR,
+    #else
+    SRGB8Alpha8Astc4x4 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4,
+    #endif
 
     /**
      * ASTC compressed RGBA with 5x4 blocks. **Available only on 2D, 3D, 2D
@@ -1060,7 +1068,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc5x4 = GL_COMPRESSED_RGBA_ASTC_5x4_KHR,
+    #else
+    RGBAAstc5x4 = GL_COMPRESSED_RGBA_ASTC_5x4,
+    #endif
 
     /**
      * ASTC compressed sRGB with alpha with 5x4 blocks. **Available only on 2D,
@@ -1074,7 +1086,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc5x4 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4_KHR,
+    #else
+    SRGB8Alpha8Astc5x4 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4,
+    #endif
 
     /**
      * ASTC compressed RGBA with 5x5 blocks. **Available only on 2D, 3D, 2D
@@ -1088,7 +1104,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc5x5 = GL_COMPRESSED_RGBA_ASTC_5x5_KHR,
+    #else
+    RGBAAstc5x5 = GL_COMPRESSED_RGBA_ASTC_5x5,
+    #endif
 
     /**
      * ASTC compressed sRGB with alpha with 5x5 blocks. **Available only on 2D,
@@ -1102,7 +1122,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc5x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5_KHR,
+    #else
+    SRGB8Alpha8Astc5x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5,
+    #endif
 
     /**
      * ASTC compressed RGBA with 6x5 blocks. **Available only on 2D, 3D, 2D
@@ -1116,7 +1140,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc6x5 = GL_COMPRESSED_RGBA_ASTC_6x5_KHR,
+    #else
+    RGBAAstc6x5 = GL_COMPRESSED_RGBA_ASTC_6x5,
+    #endif
 
     /**
      * ASTC compressed sRGB with alpha with 6x5 blocks. **Available only on 2D,
@@ -1130,7 +1158,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc6x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5_KHR,
+    #else
+    SRGB8Alpha8Astc6x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5,
+    #endif
 
     /**
      * ASTC compressed RGBA with 6x6 blocks. **Available only on 2D, 3D, 2D
@@ -1144,7 +1176,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc6x6 = GL_COMPRESSED_RGBA_ASTC_6x6_KHR,
+    #else
+    RGBAAstc6x6 = GL_COMPRESSED_RGBA_ASTC_6x6,
+    #endif
 
     /**
      * ASTC compressed sRGB with alpha with 6x6 blocks. **Available only on 2D,
@@ -1158,7 +1194,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc6x6 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6_KHR,
+    #else
+    SRGB8Alpha8Astc6x6 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6,
+    #endif
 
     /**
      * ASTC compressed RGBA with 8x5 blocks. **Available only on 2D, 3D, 2D
@@ -1172,7 +1212,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc8x5 = GL_COMPRESSED_RGBA_ASTC_8x5_KHR,
+    #else
+    RGBAAstc8x5 = GL_COMPRESSED_RGBA_ASTC_8x5,
+    #endif
 
     /**
      * ASTC compressed sRGB with alpha with 8x5 blocks. **Available only on 2D,
@@ -1186,7 +1230,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc8x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x5_KHR,
+    #else
+    SRGB8Alpha8Astc8x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x5,
+    #endif
 
     /**
      * ASTC compressed RGBA with 8x6 blocks. **Available only on 2D, 3D, 2D
@@ -1200,7 +1248,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc8x6 = GL_COMPRESSED_RGBA_ASTC_8x6_KHR,
+    #else
+    RGBAAstc8x6 = GL_COMPRESSED_RGBA_ASTC_8x6,
+    #endif
 
     /**
      * ASTC compressed sRGB with alpha with 8x6 blocks. **Available only on 2D,
@@ -1214,7 +1266,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc8x6 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x6_KHR,
+    #else
+    SRGB8Alpha8Astc8x6 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x6,
+    #endif
 
     /**
      * ASTC compressed RGBA with 8x8 blocks. **Available only on 2D, 3D, 2D
@@ -1228,7 +1284,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc8x8 = GL_COMPRESSED_RGBA_ASTC_8x8_KHR,
+    #else
+    RGBAAstc8x8 = GL_COMPRESSED_RGBA_ASTC_8x8,
+    #endif
 
     /**
      * ASTC compressed sRGB with alpha with 8x8 blocks. **Available only on 2D,
@@ -1242,7 +1302,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc8x8 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x8_KHR,
+    #else
+    SRGB8Alpha8Astc8x8 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_8x8,
+    #endif
 
     /**
      * ASTC compressed RGBA with 10x5 blocks. **Available only on 2D, 3D, 2D
@@ -1256,7 +1320,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc10x5 = GL_COMPRESSED_RGBA_ASTC_10x5_KHR,
+    #else
+    RGBAAstc10x5 = GL_COMPRESSED_RGBA_ASTC_10x5,
+    #endif
 
     /**
      * ASTC compressed sRGB with alpha with 10x5 blocks. **Available only on
@@ -1270,7 +1338,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc10x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x5_KHR,
+    #else
+    SRGB8Alpha8Astc10x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x5,
+    #endif
 
     /**
      * ASTC compressed RGBA with 10x6 blocks. **Available only on 2D, 3D, 2D
@@ -1284,7 +1356,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc10x6 = GL_COMPRESSED_RGBA_ASTC_10x6_KHR,
+    #else
+    RGBAAstc10x6 = GL_COMPRESSED_RGBA_ASTC_10x6,
+    #endif
 
     /**
      * ASTC compressed sRGB with alpha with 10x6 blocks. **Available only on
@@ -1298,7 +1374,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc10x6 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6_KHR,
+    #else
+    SRGB8Alpha8Astc10x6 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x6,
+    #endif
 
     /**
      * ASTC compressed RGBA with 10x8 blocks. **Available only on 2D, 3D, 2D
@@ -1312,7 +1392,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc10x8 = GL_COMPRESSED_RGBA_ASTC_10x8_KHR,
+    #else
+    RGBAAstc10x8 = GL_COMPRESSED_RGBA_ASTC_10x8,
+    #endif
 
     /**
      * ASTC compressed sRGB with alpha with 10x8 blocks. **Available only on
@@ -1326,7 +1410,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc10x8 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x8_KHR,
+    #else
+    SRGB8Alpha8Astc10x8 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x8,
+    #endif
 
     /**
      * ASTC compressed RGBA with 10x10 blocks. **Available only on 2D, 3D, 2D
@@ -1340,7 +1428,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc10x10 = GL_COMPRESSED_RGBA_ASTC_10x10_KHR,
+    #else
+    RGBAAstc10x10 = GL_COMPRESSED_RGBA_ASTC_10x10,
+    #endif
 
     /**
      * ASTC compressed sRGB with alpha with 10x10 blocks. **Available only on
@@ -1354,7 +1446,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc10x10 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x10_KHR,
+    #else
+    SRGB8Alpha8Astc10x10 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_10x10,
+    #endif
 
     /**
      * ASTC compressed RGBA with 12x10 blocks. **Available only on 2D, 3D, 2D
@@ -1368,7 +1464,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc12x10 = GL_COMPRESSED_RGBA_ASTC_12x10_KHR,
+    #else
+    RGBAAstc12x10 = GL_COMPRESSED_RGBA_ASTC_12x10,
+    #endif
 
     /**
      * ASTC compressed sRGB with alpha with 12x10 blocks. **Available only on
@@ -1382,7 +1482,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc12x10 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10_KHR,
+    #else
+    SRGB8Alpha8Astc12x10 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x10,
+    #endif
 
     /**
      * ASTC compressed RGBA with 12x12 blocks. **Available only on 2D, 3D, 2D
@@ -1396,7 +1500,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     RGBAAstc12x12 = GL_COMPRESSED_RGBA_ASTC_12x12_KHR,
+    #else
+    RGBAAstc12x12 = GL_COMPRESSED_RGBA_ASTC_12x12,
+    #endif
 
     /**
      * ASTC compressed sRGB with alpha with 12x12 blocks. **Available only on
@@ -1410,7 +1518,11 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      ** @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
+    #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
     SRGB8Alpha8Astc12x12 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR,
+    #else
+    SRGB8Alpha8Astc12x12 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12,
+    #endif
 
     #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(MAGNUM_TARGET_GLES)
     /**

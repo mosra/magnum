@@ -1,6 +1,7 @@
 # The following output is taken from `magnum-gl-info` with removed `GL_`
 # prefixes. Only vendor extensions are needed, everything else is pulled in
-# with GL 4.6.
+# with GL 4.6. Some extensions are comented out as they don't add any symbols
+# that aren't already added by headers and would only bloat the headers.
 
 version 4.6 core
 
@@ -21,7 +22,7 @@ extension ARB_sparse_texture                    optional
 extension ARB_sparse_buffer                     optional
 extension ARB_ES3_2_compatibility               optional
 extension ATI_texture_mirror_once               optional
-extension EXT_texture_filter_anisotropic        optional
+# extension EXT_texture_filter_anisotropic      optional
 extension EXT_texture_compression_s3tc          optional
 extension EXT_texture_mirror_clamp              optional
 extension EXT_texture_sRGB_decode               optional
@@ -30,6 +31,8 @@ extension EXT_debug_label                       optional
 extension EXT_debug_marker                      optional
 extension GREMEDY_string_marker                 optional
 extension KHR_texture_compression_astc_ldr      optional
-extension KHR_texture_compression_astc_hdr      optional
+# extension KHR_texture_compression_astc_hdr    optional
 extension KHR_blend_equation_advanced           optional
 extension KHR_blend_equation_advanced_coherent  optional
+
+# kate: hl python

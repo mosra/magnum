@@ -1250,7 +1250,13 @@ void AbstractTexture::setMaxAnisotropyImplementationArb(GLfloat anisotropy) {
 #endif
 
 void AbstractTexture::setMaxAnisotropyImplementationExt(GLfloat anisotropy) {
-    (this->*Context::current().state().texture->parameterfImplementation)(GL_TEXTURE_MAX_ANISOTROPY_EXT, anisotropy);
+    (this->*Context::current().state().texture->parameterfImplementation)(
+        #ifndef MAGNUM_TARGET_GLES
+        GL_TEXTURE_MAX_ANISOTROPY
+        #else
+        GL_TEXTURE_MAX_ANISOTROPY_EXT
+        #endif
+    , anisotropy);
 }
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)

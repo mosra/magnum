@@ -1,5 +1,7 @@
 # The following output is taken from `magnum-gl-info --all-extensions` with
-# removed `GL_` prefixes.
+# removed `GL_` prefixes. Some extensions are comented out as they don't add
+# any symbols that aren't already added by headers and would only bloat the
+# headers.
 
 version 3.2 es
 
@@ -15,7 +17,7 @@ extension EXT_texture_border_clamp                  optional
 extension EXT_texture_buffer                        optional
 extension EXT_texture_cube_map_array                optional
 extension EXT_primitive_bounding_box                optional
-extension KHR_texture_compression_astc_ldr          optional
+# extension KHR_texture_compression_astc_ldr        optional
 extension KHR_debug                                 optional
 extension KHR_blend_equation_advanced               optional
 extension KHR_robustness                            optional
@@ -52,7 +54,7 @@ extension EXT_texture_compression_rgtc              optional
 extension EXT_texture_compression_bptc              optional
 extension EXT_texture_compression_s3tc_srgb         optional
 extension IMG_texture_compression_pvrtc             optional
-extension KHR_texture_compression_astc_hdr          optional
+# extension KHR_texture_compression_astc_hdr        optional
 extension KHR_blend_equation_advanced_coherent      optional
 extension KHR_context_flush_control                 optional
 extension KHR_no_error                              optional
@@ -67,3 +69,5 @@ extension OES_depth32                               optional
 extension OES_mapbuffer                             optional
 extension OES_stencil1                              optional
 extension OES_stencil4                              optional
+
+# kate: hl python

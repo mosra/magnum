@@ -117,7 +117,13 @@ Float Sampler::maxMaxAnisotropy() {
         else
         #endif
         if(Context::current().isExtensionSupported<Extensions::EXT::texture_filter_anisotropic>())
-            glGetFloatv(GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &value);
+            glGetFloatv(
+                #ifndef MAGNUM_TARGET_GLES
+                GL_MAX_TEXTURE_MAX_ANISOTROPY
+                #else
+                GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT
+                #endif
+            , &value);
     }
 
     return value;

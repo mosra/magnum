@@ -1,5 +1,6 @@
 # The following output is taken from `magnum-gl-info` with removed `GL_`
-# prefixes.
+# prefixes. Some extensions are comented out as they don't add any symbols
+# that aren't already added by headers and would only bloat the headers.
 
 version 2.0 es
 
@@ -25,7 +26,7 @@ extension EXT_draw_buffers                      optional
 extension EXT_instanced_arrays                  optional
 extension EXT_draw_instanced                    optional
 extension NV_draw_buffers                       optional
-extension NV_fbo_color_attachments              optional
+# extension NV_fbo_color_attachments            optional
 extension NV_read_buffer                        optional
 extension NV_pack_subimage                      optional
 extension NV_draw_instanced                     optional
@@ -84,7 +85,7 @@ extension EXT_pvrtc_sRGB                        optional
 extension EXT_polygon_offset_clamp              optional
 extension EXT_texture_compression_s3tc_srgb     optional
 extension IMG_texture_compression_pvrtc         optional
-extension KHR_texture_compression_astc_hdr      optional
+# extension KHR_texture_compression_astc_hdr    optional
 extension KHR_blend_equation_advanced_coherent  optional
 extension KHR_context_flush_control             optional
 extension KHR_no_error                          optional
@@ -134,3 +135,5 @@ begin functions blacklist
     TextureStorage2DEXT
     TextureStorage3DEXT
 end functions blacklist
+
+# kate: hl python
