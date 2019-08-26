@@ -40,7 +40,10 @@ GL::Mesh fullScreenTriangle(const GL::Version version) {
     mesh.setPrimitive(GL::MeshPrimitive::Triangles)
         .setCount(3);
 
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>(version)) {
+    #ifndef MAGNUM_TARGET_GLES2
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>(version))
+    #endif
+    {
         constexpr Vector2 triangle[]{
             {-1.0f,  1.0f},
             {-1.0f, -3.0f},
@@ -50,6 +53,10 @@ GL::Mesh fullScreenTriangle(const GL::Version version) {
         buffer.setData(triangle, GL::BufferUsage::StaticDraw);
         mesh.addVertexBuffer(std::move(buffer), 0, GL::Attribute<0, Vector2>{});
     }
+
+    #ifdef MAGNUM_TARGET_GLES2
+    static_cast<void>(version);
+    #endif
 
     return mesh;
 }

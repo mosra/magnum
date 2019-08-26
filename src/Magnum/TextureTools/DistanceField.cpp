@@ -106,7 +106,10 @@ DistanceFieldShader::DistanceFieldShader(const UnsignedInt radius) {
 
     attachShaders({vert, frag});
 
-    if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>()) {
+    #ifndef MAGNUM_TARGET_GLES2
+    if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+    #endif
+    {
         bindAttributeLocation(Position::Location, "position");
     }
 
@@ -154,7 +157,9 @@ DistanceField::DistanceField(const UnsignedInt radius): _state{new State{radius}
     _state->mesh.setPrimitive(GL::MeshPrimitive::Triangles)
         .setCount(3);
 
+    #ifndef MAGNUM_TARGET_GLES2
     if(!GL::Context::current().isExtensionSupported<GL::Extensions::MAGNUM::shader_vertex_id>())
+    #endif
     {
         constexpr Vector2 triangle[] = {
             Vector2(-1.0,  1.0),

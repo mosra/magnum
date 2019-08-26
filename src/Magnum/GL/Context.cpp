@@ -263,7 +263,9 @@ constexpr Extension ExtensionListES300[]{
     _extension(EXT,blend_minmax),
     _extension(EXT,shader_texture_lod),
     #endif
+    #ifndef MAGNUM_TARGET_GLES2
     _extension(MAGNUM,shader_vertex_id),
+    #endif
     #ifdef MAGNUM_TARGET_GLES2
     _extension(OES,texture_float),
     _extension(OES,texture_half_float),
@@ -348,7 +350,9 @@ constexpr Extension ExtensionListES300[]{
     _extension(EXT,instanced_arrays),
     _extension(EXT,draw_instanced),
     #endif
+    #ifndef MAGNUM_TARGET_GLES2
     _extension(MAGNUM,shader_vertex_id),
+    #endif
     #ifdef MAGNUM_TARGET_GLES2
     _extension(NV,draw_buffers),
     _extension(NV,fbo_color_attachments),

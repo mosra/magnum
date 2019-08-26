@@ -29,6 +29,7 @@
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/GL/Context.h"
+#include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Version.h"
 
 namespace Magnum { namespace GL { namespace Test { namespace {
@@ -166,7 +167,7 @@ void ContextTest::extensions() {
             #endif
 
             #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2)
-            if(e.coreVersion() == Version::GLES300) {
+            if(e.coreVersion() == Version::GLES300 && e.index() != Extensions::MAGNUM::shader_vertex_id::Index) {
                 Error{} << "Extension" << e.string() << "has core version" << e.coreVersion() << "on a GLES3 build -- it shouldn't be present at all";
                 CORRADE_VERIFY(false);
             }

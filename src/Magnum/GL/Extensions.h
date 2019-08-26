@@ -309,7 +309,9 @@ namespace ANGLE {
     _extension(30,WEBGL,compressed_texture_astc,    GLES200,    None) // #30
     _extension(31,WEBGL,compressed_texture_s3tc_srgb, GLES200,  None) // #32
 } namespace MAGNUM {
+    #ifndef MAGNUM_TARGET_GLES2
     _extension(40,MAGNUM,shader_vertex_id,          GLES300, GLES300)
+    #endif
 }
 #else
 namespace ANDROID {
@@ -489,7 +491,9 @@ namespace ANDROID {
     _extension(126,OES,texture_storage_multisample_2d_array, GLES310, GLES320) // #174
     #endif
 } namespace MAGNUM {
+    #ifndef MAGNUM_TARGET_GLES2
     _extension(130,MAGNUM,shader_vertex_id,         GLES300, GLES300)
+    #endif
 }
 #endif
 #undef _extension
