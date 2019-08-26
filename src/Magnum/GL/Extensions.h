@@ -329,7 +329,7 @@ namespace ANDROID {
     #ifdef MAGNUM_TARGET_GLES2
     _extension(  6,APPLE,framebuffer_multisample,   GLES200, GLES300) // #78
     #endif
-    _extension(  7,APPLE,texture_format_BGRA8888,   GLES200,   None) // #79
+    _extension(  7,APPLE,texture_format_BGRA8888,   GLES200,    None) // #79
     #ifdef MAGNUM_TARGET_GLES2
     _extension(  8,APPLE,texture_max_level,         GLES200, GLES300) // #80
     #endif
@@ -340,7 +340,7 @@ namespace ANDROID {
     _extension( 10,ARM,shader_framebuffer_fetch,    GLES200,    None) // #165
     _extension( 11,ARM,shader_framebuffer_fetch_depth_stencil, GLES200, None) // #166
 } namespace EXT {
-    _extension( 20,EXT,texture_filter_anisotropic,  GLES200,   None) // #41
+    _extension( 20,EXT,texture_filter_anisotropic,  GLES200,    None) // #41
     #ifdef MAGNUM_TARGET_GLES2
     _extension( 21,EXT,texture_type_2_10_10_10_REV, GLES200, GLES300) // #42
     #endif
