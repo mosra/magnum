@@ -1122,7 +1122,93 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc12x12 /
      * @def_vk_keyword{FORMAT_ASTC_12x12_SRGB_BLOCK,Format}.
      */
-    Astc12x12RGBASrgb
+    Astc12x12RGBASrgb,
+
+    /* See https://github.com/KhronosGroup/Vulkan-Docs/issues/512#issuecomment-307768667
+       for Vulkan mapping. Ugh. */
+
+    /**
+     * [PVRTC](https://en.wikipedia.org/wiki/PVRTC) compressed RGB, normalized
+     * unsigned byte with 2 bits per pixel.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBPvrtc2bppV1,
+     * @ref GL::TextureFormat::CompressedRGBPvrtc2bppV1 /
+     * @def_vk_keyword{FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG,Format}.
+     */
+    PvrtcRGB2bppUnorm,
+
+    /**
+     * [PVRTC](https://en.wikipedia.org/wiki/PVRTC) compressed sRGB, normalized
+     * unsigned byte with 2 bits per pixel.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGBPvrtc2bppV1,
+     * @ref GL::TextureFormat::CompressedSRGBPvrtc2bppV1 /
+     * @def_vk_keyword{FORMAT_PVRTC1_2BPP_SRGB_BLOCK_IMG,Format}.
+     */
+    PvrtcRGB2bppSrgb,
+
+    /**
+     * [PVRTC](https://en.wikipedia.org/wiki/PVRTC) compressed RGBA, normalized
+     * unsigned byte with 2 bits per pixel.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAPvrtc2bppV1,
+     * @ref GL::TextureFormat::CompressedRGBAPvrtc2bppV1 /
+     * @def_vk_keyword{FORMAT_PVRTC1_2BPP_UNORM_BLOCK_IMG,Format}.
+     */
+    PvrtcRGBA2bppUnorm,
+
+    /**
+     * [PVRTC](https://en.wikipedia.org/wiki/PVRTC) compressed sRGB + linear
+     * alpha, normalized unsigned byte with 2 bits per pixel.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGBAlphaPvrtc2bppV1,
+     * @ref GL::TextureFormat::CompressedSRGBAlphaPvrtc2bppV1 /
+     * @def_vk_keyword{FORMAT_PVRTC1_2BPP_SRGB_BLOCK_IMG,Format}.
+     */
+    PvrtcRGBA2bppSrgb,
+
+    /**
+     * [PVRTC](https://en.wikipedia.org/wiki/PVRTC) compressed RGB, normalized
+     * unsigned byte with 4 bits per pixel.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBPvrtc4bppV1,
+     * @ref GL::TextureFormat::CompressedRGBPvrtc4bppV1 /
+     * @def_vk_keyword{FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG,Format}.
+     */
+    PvrtcRGB4bppUnorm,
+
+    /**
+     * [PVRTC](https://en.wikipedia.org/wiki/PVRTC) compressed sRGB, normalized
+     * unsigned byte with 4 bits per pixel.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGBPvrtc4bppV1,
+     * @ref GL::TextureFormat::CompressedSRGBPvrtc4bppV1 /
+     * @def_vk_keyword{FORMAT_PVRTC1_4BPP_SRGB_BLOCK_IMG,Format}.
+     */
+    PvrtcRGB4bppSrgb,
+
+    /**
+     * [PVRTC](https://en.wikipedia.org/wiki/PVRTC) compressed RGBA, normalized
+     * unsigned byte with 4 bits per pixel.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAPvrtc4bppV1,
+     * @ref GL::TextureFormat::CompressedRGBAPvrtc4bppV1 /
+     * @def_vk_keyword{FORMAT_PVRTC1_4BPP_UNORM_BLOCK_IMG,Format}.
+     */
+    PvrtcRGBA4bppUnorm,
+
+    /**
+     * [PVRTC](https://en.wikipedia.org/wiki/PVRTC) compressed sRGB + linear
+     * alpha, normalized unsigned byte with 4 bits per pixel.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGBAlphaPvrtc4bppV1,
+     * @ref GL::TextureFormat::CompressedSRGBAlphaPvrtc4bppV1 /
+     * @def_vk_keyword{FORMAT_PVRTC1_4BPP_SRGB_BLOCK_IMG,Format}.
+     */
+    PvrtcRGBA4bppSrgb
+
+    /* PVRTC2 variants not listed as PVRTC is mainly on Apple hardware but
+       Metal doesn't support it and it doesn't have a WebGL equiv either. */
 };
 
 /** @debugoperatorenum{CompressedPixelFormat} */

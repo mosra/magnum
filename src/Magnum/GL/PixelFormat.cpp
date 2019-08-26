@@ -462,6 +462,24 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         _c(SRGB8Alpha8Astc12x10)
         _c(RGBAAstc12x12)
         _c(SRGB8Alpha8Astc12x12)
+        #ifdef MAGNUM_TARGET_GLES
+        _c(RGBPvrtc2bppV1)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(SRGBPvrtc2bppV1)
+        #endif
+        _c(RGBAPvrtc2bppV1)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(SRGBAlphaPvrtc2bppV1)
+        #endif
+        _c(RGBPvrtc4bppV1)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(SRGBPvrtc4bppV1)
+        #endif
+        _c(RGBAPvrtc4bppV1)
+        #ifndef MAGNUM_TARGET_WEBGL
+        _c(SRGBAlphaPvrtc4bppV1)
+        #endif
+        #endif
         #undef _c
         /* LCOV_EXCL_STOP */
     }

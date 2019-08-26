@@ -103,4 +103,39 @@ _c(Astc12x10RGBAUnorm, RGBAAstc12x10)
 _c(Astc12x10RGBASrgb, SRGB8Alpha8Astc12x10)
 _c(Astc12x12RGBAUnorm, RGBAAstc12x12)
 _c(Astc12x12RGBASrgb, SRGB8Alpha8Astc12x12)
+#ifdef MAGNUM_TARGET_GLES
+_c(PvrtcRGB2bppUnorm, RGBPvrtc2bppV1)
+#ifndef MAGNUM_TARGET_WEBGL
+_c(PvrtcRGB2bppSrgb, SRGBPvrtc2bppV1)
+#else
+_s(PvrtcRGB2bppSrgb)
+#endif
+_c(PvrtcRGBA2bppUnorm, RGBAPvrtc2bppV1)
+#ifndef MAGNUM_TARGET_WEBGL
+_c(PvrtcRGBA2bppSrgb, SRGBAlphaPvrtc2bppV1)
+#else
+_s(PvrtcRGBA2bppSrgb)
+#endif
+_c(PvrtcRGB4bppUnorm, RGBPvrtc4bppV1)
+#ifndef MAGNUM_TARGET_WEBGL
+_c(PvrtcRGB4bppSrgb, SRGBPvrtc4bppV1)
+#else
+_s(PvrtcRGB4bppSrgb)
+#endif
+_c(PvrtcRGBA4bppUnorm, RGBAPvrtc4bppV1)
+#ifndef MAGNUM_TARGET_WEBGL
+_c(PvrtcRGBA4bppSrgb, SRGBAlphaPvrtc4bppV1)
+#else
+_s(PvrtcRGBA4bppSrgb)
+#endif
+#else
+_s(PvrtcRGB2bppUnorm)
+_s(PvrtcRGB2bppSrgb)
+_s(PvrtcRGBA2bppUnorm)
+_s(PvrtcRGBA2bppSrgb)
+_s(PvrtcRGB4bppUnorm)
+_s(PvrtcRGB4bppSrgb)
+_s(PvrtcRGBA4bppUnorm)
+_s(PvrtcRGBA4bppSrgb)
+#endif
 #endif

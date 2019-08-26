@@ -23,3 +23,5 @@ extension KHR_sampler_ycbcr_conversion optional
 extension KHR_shader_draw_parameters optional
 extension KHR_storage_buffer_storage_class optional
 extension KHR_variable_pointers optional
+
+extension IMG_format_pvrtc optional

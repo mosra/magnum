@@ -28,4 +28,5 @@ extension EXT_texture_compression_bptc          optional
 extension EXT_color_buffer_float                optional
 extension EXT_texture_compression_s3tc          optional
 extension EXT_texture_compression_s3tc_srgb     optional
+extension IMG_texture_compression_pvrtc         optional
 extension KHR_texture_compression_astc_ldr      optional

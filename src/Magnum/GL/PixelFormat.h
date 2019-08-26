@@ -1410,7 +1410,96 @@ enum class CompressedPixelFormat: GLenum {
      *      for 3D textures and HDR profile
      ** @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_astc}
      */
-    SRGB8Alpha8Astc12x12 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR
+    SRGB8Alpha8Astc12x12 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12_KHR,
+
+    #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(MAGNUM_TARGET_GLES)
+    /**
+     * PVRTC compressed RGB, normalized unsigned byte with 2 bits per pixel.
+     * **Available only on 2D, 3D, 2D array, cube map and cube map array
+     * textures.**
+     * @requires_gles Not available on desktop OpenGL.
+     * @requires_es_extension Extension @gl_extension{IMG,texture_compression_pvrtc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_pvrtc}
+     */
+    RGBPvrtc2bppV1 = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG,
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    /**
+     * PVRTC compressed sRGB, normalized unsigned byte with 2 bits per pixel.
+     * **Available only on 2D, 3D, 2D array, cube map and cube map array
+     * textures.**
+     * @requires_gles Not available on desktop OpenGL or WebGL.
+     * @requires_es_extension Extension @gl_extension{EXT,pvrtc_sRGB}
+     */
+    SRGBPvrtc2bppV1 = GL_COMPRESSED_SRGB_PVRTC_2BPPV1_EXT,
+    #endif
+
+    /**
+     * PVRTC compressed RGBA, normalized unsigned byte with 2 bits per pixel.
+     * **Available only on 2D, 3D, 2D array, cube map and cube map array
+     * textures.**
+     * @requires_gles Not available on desktop OpenGL.
+     * @requires_es_extension Extension @gl_extension{IMG,texture_compression_pvrtc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_pvrtc}
+     */
+    RGBAPvrtc2bppV1 = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG,
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    /**
+     * PVRTC compressed sRGB + linear alpha, normalized unsigned byte with 2
+     * bits per pixel. **Available only on 2D, 3D, 2D array, cube map and cube
+     * map array textures.**
+     * @requires_gles Not available on desktop OpenGL or WebGL.
+     * @requires_es_extension Extension @gl_extension{EXT,pvrtc_sRGB}
+     */
+    SRGBAlphaPvrtc2bppV1 = GL_COMPRESSED_SRGB_ALPHA_PVRTC_2BPPV1_EXT,
+    #endif
+
+    /**
+     * PVRTC compressed RGB, normalized unsigned byte with 4 bits per pixel.
+     * **Available only on 2D, 3D, 2D array, cube map and cube map array
+     * textures.**
+     * @requires_gles Not available on desktop OpenGL.
+     * @requires_es_extension Extension @gl_extension{IMG,texture_compression_pvrtc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_pvrtc}
+     */
+    RGBPvrtc4bppV1 = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG,
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    /**
+     * PVRTC compressed sRGB, normalized unsigned byte with 4 bits per pixel.
+     * **Available only on 2D, 3D, 2D array, cube map and cube map array
+     * textures.**
+     * @requires_gles Not available on desktop OpenGL or WebGL.
+     * @requires_es_extension Extension @gl_extension{EXT,pvrtc_sRGB}
+     */
+    SRGBPvrtc4bppV1 = GL_COMPRESSED_SRGB_PVRTC_4BPPV1_EXT,
+    #endif
+
+    /**
+     * PVRTC compressed RGBA, normalized unsigned byte with 4 bits per pixel.
+     * **Available only on 2D, 3D, 2D array, cube map and cube map array
+     * textures.**
+     * @requires_gles Not available on desktop OpenGL.
+     * @requires_es_extension Extension @gl_extension{IMG,texture_compression_pvrtc}
+     * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_pvrtc}
+     */
+    RGBAPvrtc4bppV1 = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG,
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    /**
+     * PVRTC compressed sRGB + linear alpha, normalized unsigned byte with 4
+     * bits per pixel. **Available only on 2D, 3D, 2D array, cube map and cube
+     * map array textures.**
+     * @requires_gles Not available on desktop OpenGL or WebGL.
+     * @requires_es_extension Extension @gl_extension{EXT,pvrtc_sRGB}
+     */
+    SRGBAlphaPvrtc4bppV1 = GL_COMPRESSED_SRGB_ALPHA_PVRTC_4BPPV1_EXT
+    #endif
+
+    /* PVRTC2 variants not listed as PVRTC is mainly on Apple hardware but
+       Metal doesn't support it and it doesn't have a WebGL equiv either. */
+    #endif
 };
 
 /**

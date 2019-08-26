@@ -453,11 +453,13 @@ Extension                                   | Status
 @gl_extension{EXT,texture_sRGB_decode}      | done
 @gl_extension{EXT,sRGB_write_control}       | done
 @gl_extension{EXT,texture_compression_s3tc} | done
+@gl_extension{EXT,pvrtc_sRGB}               | done
 @gl_extension{EXT,shader_integer_mix}       | done (shading language only)
 @gl_extension{EXT,polygon_offset_clamp}     | |
 @gl_extension{EXT,texture_compression_rgtc} | done
 @gl_extension{EXT,texture_compression_bptc} | done
 @gl_extension{EXT,texture_compression_s3tc_srgb} | done
+@gl_extension{IMG,texture_compression_pvrtc} | done
 @gl_extension2{KHR,texture_compression_astc_hdr,KHR_texture_compression_astc_hdr} | done
 @gl_extension2{KHR,blend_equation_advanced_coherent,KHR_blend_equation_advanced} | done
 @gl_extension{KHR,context_flush_control}    | |
@@ -529,6 +531,7 @@ Extension                                   | Status
 @gl_extension{EXT,texture_compression_bptc} | done
 @webgl_extension{OES,texture_float_linear}  | done
 @webgl_extension{WEBGL,compressed_texture_s3tc} | done
+@webgl_extension{WEBGL,compressed_texture_pvrtc} | done
 @webgl_extension{WEBGL,compressed_texture_astc} | done
 @webgl_extension{WEBGL,compressed_texture_s3tc_srgb} | done
 
@@ -595,6 +598,9 @@ add any performance gains, is not supported in Magnum. See also
 -   @gl_extension{NV,draw_texture} can be done with framebuffer blitting and
     doesn't make any full-screen postprocessing easier, as shaders are
     excluded.
+-   @gl_extension{IMG,texture_compression_pvrtc2} OpenGL ES extension is not
+    supported as there is no equivalent in WebGL nor Metal and
+    [all hardware having support for it suppors other formats as well](https://forums.developer.apple.com/thread/38454).
 */
 
 /** @page opengl-deprecated Deprecated OpenGL API list

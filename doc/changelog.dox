@@ -50,7 +50,7 @@ See also:
 -   New @ref BasicMutableImageView "MutableImageView*D" and
     @ref BasicMutableCompressedImageView "MutableCompressedImageView*D" types
     for mutable views onto image data
--   Added sRGB BC1-3, BC4, BC5, BC6G, BC7, ETC2, EAC and ASTC formats to
+-   Added sRGB BC1-3, BC4, BC5, BC6G, BC7, ETC2, EAC, ASTC and PVRTC formats to
     @ref CompressedPixelFormat as well as their conversion to corresponding
     GL/Vulkan formats in @ref GL::compressedPixelFormat() and
     @ref Vk::vkFormat(Magnum::CompressedPixelFormat)
@@ -96,6 +96,9 @@ See also:
         complementing the desktop support for BC4, BC5, BC6H and BC7 formats
     -   @webgl_extension{WEBGL,texture_compression_astc} WebGL extension,
         complementing the desktop and ES support for ASTC
+    -   PVRTC formats defined by the @gl_extension{IMG,texture_compression_pvrtc}
+        / @gl_extension{IMG,pvrtc_sRGB} OpenGL ES and
+        @webgl_extension{WEBGL,compressed_texture_pvrtc} WebGL extensions
 -   New @ref GL::AbstractFramebuffer::implementationColorReadFormat() and
     @ref GL::AbstractFramebuffer::implementationColorReadType() queries for
     more robust checks when doing framebuffer readbacks; together with three

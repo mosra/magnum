@@ -242,6 +242,14 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
         _c(Astc12x10RGBASrgb)
         _c(Astc12x12RGBAUnorm)
         _c(Astc12x12RGBASrgb)
+        _c(PvrtcRGB2bppUnorm)
+        _c(PvrtcRGB2bppSrgb)
+        _c(PvrtcRGBA2bppUnorm)
+        _c(PvrtcRGBA2bppSrgb)
+        _c(PvrtcRGB4bppUnorm)
+        _c(PvrtcRGB4bppSrgb)
+        _c(PvrtcRGBA4bppUnorm)
+        _c(PvrtcRGBA4bppSrgb)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
