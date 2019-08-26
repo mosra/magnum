@@ -678,7 +678,6 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::CompressedRGB8Etc2:
-        case TextureFormat::CompressedSRGB8Etc2:
         #endif
         case TextureFormat::CompressedRGBS3tcDxt1:
         #ifdef MAGNUM_TARGET_GLES
@@ -692,6 +691,9 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::SRGB8:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::CompressedSRGB8Etc2:
         #endif
         case TextureFormat::CompressedSRGBS3tcDxt1:
         #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
@@ -748,9 +750,7 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #endif
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::CompressedRGB8PunchthroughAlpha1Etc2:
-        case TextureFormat::CompressedSRGB8PunchthroughAlpha1Etc2:
         case TextureFormat::CompressedRGBA8Etc2Eac:
-        case TextureFormat::CompressedSRGB8Alpha8Etc2Eac:
         #endif
         case TextureFormat::CompressedRGBAS3tcDxt1:
         case TextureFormat::CompressedRGBAS3tcDxt3:
@@ -783,6 +783,10 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         #endif
         #if !defined(MAGNUM_TARGET_GLES2) || defined(MAGNUM_TARGET_WEBGL)
         case TextureFormat::CompressedSRGBAlphaBptcUnorm:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        case TextureFormat::CompressedSRGB8PunchthroughAlpha1Etc2:
+        case TextureFormat::CompressedSRGB8Alpha8Etc2Eac:
         #endif
         case TextureFormat::CompressedSRGBAlphaS3tcDxt1:
         case TextureFormat::CompressedSRGBAlphaS3tcDxt3:
