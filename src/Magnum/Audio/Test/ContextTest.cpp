@@ -24,6 +24,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <set>
 #include <sstream>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/TestSuite/Tester.h>
@@ -70,7 +71,9 @@ void ContextTest::constructCopyMove() {
 void ContextTest::extensions() {
     const char* used[Implementation::ExtensionCount]{};
 
-    /* Check that all extension indices are unique */
+    std::set<std::string> unique;
+
+    /* Check that all extension indices are unique and are listed just once */
     for(const Extension& e: Extension::extensions()) {
         if(e.index() >= Implementation::ExtensionCount) {
             Error{} << "Index" << e.index() << "used by" << e.string()
@@ -85,6 +88,10 @@ void ContextTest::extensions() {
         }
 
         used[e.index()] = e.string();
+        if(!unique.insert(e.string()).second) {
+            Error{} << "Extension" << e.string() << "listed more than once";
+            CORRADE_VERIFY(false);
+        }
     }
 
     CORRADE_VERIFY(true);
