@@ -66,6 +66,8 @@ of the `Magnum` package and link to the `Magnum::AnyImageImporter` target. See
 
 Supported formats:
 
+-   Basis Universal (`*.basis`), loaded @ref BasisImporter or any other plugin
+    that provides it
 -   Windows Bitmap (`*.bmp`), loaded with any plugin that provides `BmpImporter`
 -   DirectDraw Surface (`*.dds` or data with corresponding signature), loaded
     with @ref DdsImporter or any other plugin that provides it

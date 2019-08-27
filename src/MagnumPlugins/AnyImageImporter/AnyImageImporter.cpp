@@ -57,7 +57,9 @@ void AnyImageImporter::doOpenFile(const std::string& filename) {
 
     /* Detect type from extension */
     std::string plugin;
-    if(Utility::String::endsWith(normalized, ".bmp"))
+    if(Utility::String::endsWith(normalized, ".basis"))
+        plugin = "BasisImporter";
+    else if(Utility::String::endsWith(normalized, ".bmp"))
         plugin = "BmpImporter";
     else if(Utility::String::endsWith(normalized, ".dds"))
         plugin = "DdsImporter";
@@ -128,8 +130,11 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
     CORRADE_INTERNAL_ASSERT(manager());
 
     std::string plugin;
+    /* https://github.com/BinomialLLC/basis_universal/blob/7d784c728844c007d8c95d63231f7adcc0f65364/transcoder/basisu_file_headers.h#L78 */
+    if(Utility::String::viewBeginsWith(data, "sB\0\x16"))
+        plugin = "BasisImporter";
     /* https://docs.microsoft.com/cs-cz/windows/desktop/direct3ddds/dx-graphics-dds-pguide */
-    if(Utility::String::viewBeginsWith(data, "DDS "))
+    else if(Utility::String::viewBeginsWith(data, "DDS "))
         plugin = "DdsImporter";
     /* http://www.openexr.com/openexrfilelayout.pdf */
     else if(Utility::String::viewBeginsWith(data, "\x76\x2f\x31\x01"))

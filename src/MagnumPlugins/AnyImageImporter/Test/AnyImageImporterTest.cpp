@@ -87,7 +87,8 @@ constexpr struct {
     {"BMP", "image.bmp", nullptr, "BmpImporter"},
     {"GIF", "image.gif", nullptr, "GifImporter"},
     {"PSD", "image.psd", nullptr, "PsdImporter"},
-    {"TIFF", "image.tiff", nullptr, "TiffImporter"}
+    {"TIFF", "image.tiff", nullptr, "TiffImporter"},
+    {"Basis", "rgb.basis", nullptr, "BasisImporter"}
     /* Not testing everything, just the most important ones */
 };
 
