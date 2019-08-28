@@ -123,6 +123,8 @@ See also:
     and @cpp "mesa-implementation-color-read-format-dsa-explicit-binding" @ce,
     because it's 2019 and GL drivers are *still* awful. See
     @ref opengl-workarounds for more information.
+-   Added @ref GL::BufferTexture::size() as it was the only texture type were
+    this query was missing.
 -   New @cpp "swiftshader-no-es2-draw-instanced-entrypoints" @ce and
     @cpp "swiftshader-no-es2-oes-texture-3d-entrypoints" @ce workarounds
     disabling @gl_extension{ANGLE,instanced_arrays} and
@@ -189,7 +191,6 @@ See also:
     texture classes now can read the pixels into
     @ref BasicMutableImageView "MutableImageView*D" and
     @ref BasicMutableCompressedImageView "MutableCompressedImageView*D" as well
-
 
 @subsubsection changelog-latest-new-math Math library
 

@@ -157,6 +157,23 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
         BufferTexture& operator=(BufferTexture&&) noexcept = default;
 
         /**
+         * @brief Texture size
+         *
+         * Equivalent to size of the buffer attached to @ref setBuffer()
+         * divided by size of a particular @ref BufferTextureFormat. The result
+         * is not cached in any way. If @gl_extension{ARB,direct_state_access}
+         * (part of OpenGL 4.5) is not available, the texture is bound before
+         * the operation (if not already).
+         * @see @fn_gl2_keyword{GetTextureLevelParameter,GetTexLevelParameter},
+         *      eventually @fn_gl{ActiveTexture}, @fn_gl{BindTexture} and
+         *      @fn_gl_keyword{GetTexLevelParameter} with
+         *      @def_gl_keyword{TEXTURE_WIDTH}
+         * @requires_gles31 Texture image size queries are not available in
+         *      OpenGL ES 3.0 and older.
+         */
+        Int size();
+
+        /**
          * @brief Bind texture to given image unit
          * @param imageUnit Image unit
          * @param access    Image access

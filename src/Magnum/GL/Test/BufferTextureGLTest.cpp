@@ -181,7 +181,16 @@ void BufferTextureGLTest::setBuffer() {
         0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
     };
     buffer.setData(data, BufferUsage::StaticDraw);
-    texture.setBuffer(BufferTextureFormat::R8UI, buffer);
+    texture.setBuffer(BufferTextureFormat::RG8UI, buffer);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    #ifdef MAGNUM_TARGET_GLES
+    if(!Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 not supported, skipping image size testing.");
+    #endif
+
+    CORRADE_COMPARE(texture.size(), 8);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
@@ -210,7 +219,16 @@ void BufferTextureGLTest::setBufferOffset() {
     };
     buffer.setData({nullptr, 1024}, BufferUsage::StaticDraw);
     buffer.setSubData(256 - 16, data);
-    texture.setBuffer(BufferTextureFormat::R8UI, buffer, 256, 8);
+    texture.setBuffer(BufferTextureFormat::RGBA8UI, buffer, 256, 8);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    #ifdef MAGNUM_TARGET_GLES
+    if(!Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 not supported, skipping image size testing.");
+    #endif
+
+    CORRADE_COMPARE(texture.size(), 2);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }

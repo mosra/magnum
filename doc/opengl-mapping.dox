@@ -227,7 +227,7 @@ OpenGL function                         | Matching API
 @fn_gl{GetSubroutineUniformLocation}    | |
 @fn_gl{GetSync}                         | |
 @fn_gl{GetTexImage}, \n `glGetnTexImage()`, \n @fn_gl_extension{GetnTexImage,ARB,robustness}, \n `glGetTextureImage()` | @ref GL::Texture::image(), \n @ref GL::TextureArray::image(), \n @ref GL::CubeMapTexture::image(), \n @ref GL::CubeMapTextureArray::image(), \n @ref GL::RectangleTexture::image()
-@fn_gl{GetTexLevelParameter}, \n `glGetTextureLevelParameter()` | @ref GL::Texture::imageSize(), \n @ref GL::TextureArray::imageSize(), \n @ref GL::CubeMapTexture::imageSize(), \n @ref GL::CubeMapTextureArray::imageSize(), \n @ref GL::RectangleTexture::imageSize()
+@fn_gl{GetTexLevelParameter}, \n `glGetTextureLevelParameter()` | @ref GL::Texture::imageSize(), \n @ref GL::TextureArray::imageSize(), \n @ref GL::CubeMapTexture::imageSize(), \n @ref GL::CubeMapTextureArray::imageSize(), \n @ref GL::RectangleTexture::imageSize(), \n @ref GL::BufferTexture::imageSize()
 @fn_gl{GetTexParameter}, \n `glGetTextureParameter()` | |
 @fn_gl_extension{GetTextureHandle,ARB,bindless_texture} | |
 @fn_gl_extension{GetTextureSamplerHandle,ARB,bindless_texture} | |
