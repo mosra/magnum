@@ -210,7 +210,7 @@ void Buffer::setTargetHintImplementationSwiftShader(const TargetHint hint) {
 }
 #endif
 
-inline void Buffer::createIfNotAlready() {
+void Buffer::createIfNotAlready() {
     if(_flags & ObjectFlag::Created) return;
 
     /* glGen*() does not create the object, just reserves the name. Some

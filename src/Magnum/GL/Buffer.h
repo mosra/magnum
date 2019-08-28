@@ -221,8 +221,6 @@ by OpenGL in order to preserve the data. If running on OpenGL ES or extension
 functions do nothing.
  */
 class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
-    friend Implementation::BufferState;
-
     public:
         /**
          * @brief Buffer target
@@ -1155,6 +1153,11 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
         void bindInternal(TargetHint target) { bindInternal(target, this); }
 
     private:
+        friend Implementation::BufferState;
+        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
+        friend BufferTexture; /* calls createIfNotAlready() */
+        #endif
+
         static void bindInternal(TargetHint hint, Buffer* buffer);
         TargetHint MAGNUM_GL_LOCAL bindSomewhereInternal(TargetHint hint);
 

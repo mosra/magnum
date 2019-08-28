@@ -79,11 +79,13 @@ Int BufferTexture::size() {
 }
 
 BufferTexture& BufferTexture::setBuffer(const BufferTextureFormat internalFormat, Buffer& buffer) {
+    buffer.createIfNotAlready();
     (this->*Context::current().state().texture->setBufferImplementation)(internalFormat, buffer);
     return *this;
 }
 
 BufferTexture& BufferTexture::setBuffer(const BufferTextureFormat internalFormat, Buffer& buffer, const GLintptr offset, const GLsizeiptr size) {
+    buffer.createIfNotAlready();
     (this->*Context::current().state().texture->setBufferRangeImplementation)(internalFormat, buffer, offset, size);
     return *this;
 }

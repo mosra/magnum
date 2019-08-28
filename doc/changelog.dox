@@ -579,6 +579,11 @@ See also:
     @fn_gl{GetString} returning a @cpp nullptr @ce
 -   @ref GL::Texture::imageSize() was present on WebGL 2 by mistake (see
     [mosra/magnum#365](https://github.com/mosra/magnum/pull/365))
+-   @ref GL::BufferTexture::setBuffer() now creates the passed buffer if not
+    already (and if it was not created by @fn_gl{CreateBuffers}). Before that,
+    passing a freshly created @ref GL::Buffer to it was causing
+    @ref GL::Renderer::Error::InvalidOperation on systems without
+    @gl_extension{ARB,direct_state_access}.
 
 @subsection changelog-latest-docs Documentation
 
