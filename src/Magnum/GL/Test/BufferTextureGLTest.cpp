@@ -45,6 +45,7 @@ struct BufferTextureGLTest: OpenGLTester {
     void bindImage();
 
     void setBuffer();
+    void setBufferEmptyFirst();
     void setBufferOffset();
 };
 
@@ -56,6 +57,7 @@ BufferTextureGLTest::BufferTextureGLTest() {
               &BufferTextureGLTest::bindImage,
 
               &BufferTextureGLTest::setBuffer,
+              &BufferTextureGLTest::setBufferEmptyFirst,
               &BufferTextureGLTest::setBufferOffset});
 }
 
@@ -191,6 +193,42 @@ void BufferTextureGLTest::setBuffer() {
     #endif
 
     CORRADE_COMPARE(texture.size(), 8);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+}
+
+void BufferTextureGLTest::setBufferEmptyFirst() {
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::texture_buffer_object>())
+        CORRADE_SKIP(Extensions::ARB::texture_buffer_object::string() + std::string(" is not supported."));
+    #else
+    if(!Context::current().isExtensionSupported<Extensions::EXT::texture_buffer>())
+        CORRADE_SKIP(Extensions::EXT::texture_buffer::string() + std::string(" is not supported."));
+    #endif
+
+    BufferTexture texture;
+    Buffer buffer;
+    texture.setBuffer(BufferTextureFormat::RGBA8UI, buffer);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_COMPARE(texture.size(), 0);
+
+    constexpr UnsignedByte data[] = {
+        0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x07,
+        0x08, 0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x0e, 0x0f
+    };
+    buffer.setData(data, BufferUsage::StaticDraw);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    #ifdef MAGNUM_TARGET_GLES
+    if(!Context::current().isVersionSupported(Version::GLES310))
+        CORRADE_SKIP("OpenGL ES 3.1 not supported, skipping image size testing.");
+    #endif
+
+    CORRADE_COMPARE(texture.size(), 4);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
