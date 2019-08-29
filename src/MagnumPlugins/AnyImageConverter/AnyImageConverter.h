@@ -66,10 +66,12 @@ target. See @ref building, @ref cmake and @ref plugins for more information.
 
 Supported formats for uncompressed data:
 
--   OpenEXR (`*.exr`), converted with any plugin that provides
-    `OpenExrImageConverter`
+-   Basis Universal (`*.basis`), converted with @ref BasisImageConverter or any other
+    plugin that provides it
 -   Windows Bitmap (`*.bmp`), converted with any plugin that provides
     `BmpImageConverter`
+-   OpenEXR (`*.exr`), converted with any plugin that provides
+    `OpenExrImageConverter`
 -   Radiance HDR (`*.hdr`), converted with any plugin that provides
     `HdrImageConverter`
 -   JPEG (`*.jpg`, `*.jpe`, `*.jpeg`), converted with @ref JpegImageConverter
