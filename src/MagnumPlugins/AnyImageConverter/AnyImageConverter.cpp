@@ -54,6 +54,8 @@ bool AnyImageConverter::doExportToFile(const ImageView2D& image, const std::stri
     std::string plugin;
     if(Utility::String::endsWith(normalized, ".bmp"))
         plugin = "BmpImageConverter";
+    else if(Utility::String::endsWith(normalized, ".basis"))
+        plugin = "BasisImageConverter";
     else if(Utility::String::endsWith(normalized, ".exr"))
         plugin = "OpenExrImageConverter";
     else if(Utility::String::endsWith(normalized, ".hdr"))
