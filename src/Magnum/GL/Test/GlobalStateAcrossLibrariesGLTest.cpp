@@ -42,7 +42,12 @@ GlobalStateAcrossLibrariesGLTest::GlobalStateAcrossLibrariesGLTest() {
 
 void GlobalStateAcrossLibrariesGLTest::test() {
     CORRADE_VERIFY(GL::Context::hasCurrent());
-    CORRADE_COMPARE(currentContextInALibrary(), &GL::Context::current());
+    {
+        #ifdef CORRADE_TARGET_WINDOWS
+        CORRADE_EXPECT_FAIL("Deduplication of global data across shared libraries isn't implemented on Windows yet.");
+        #endif
+        CORRADE_COMPARE(currentContextInALibrary(), &GL::Context::current());
+    }
 }
 
 }}}}

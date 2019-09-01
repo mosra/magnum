@@ -293,6 +293,10 @@ See also:
 -   @ref Image::data(), @ref CompressedImage::data() and
     @ref Trade::ImageData::data() called on a r-value now return
     @ref Corrade::Containers::Array instead of being deleted
+-   Global state used by @ref GL::Context and @ref Audio::Context is no longer
+    duplicated when Magnum is built statically and linked to more than one
+    dynamic library or executable. Currently that holds only for Linux and
+    macOS, Windows support will come next.
 
 @subsubsection changelog-latest-changes-animation Animation library
 

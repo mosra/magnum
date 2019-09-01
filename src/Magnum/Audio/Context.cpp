@@ -113,11 +113,31 @@ std::vector<std::string> Context::deviceSpecifierStrings() {
     return list;
 }
 
+#ifndef MAGNUM_BUILD_STATIC
+/* (Of course) can't be in an unnamed namespace in order to export it below */
 namespace {
-    /* Unlike GL, this isn't thread-local. Would need to implement
-       ALC_EXT_thread_local_context first */
-    Context* currentContext = nullptr;
+#endif
+
+/* Unlike GL, this isn't thread-local. Would need to implement
+   ALC_EXT_thread_local_context first */
+#if defined(MAGNUM_BUILD_STATIC) && !defined(CORRADE_TARGET_WINDOWS)
+/* On static builds that get linked to multiple shared libraries and then used
+   in a single app we want to ensure there's just one global symbol. On Linux
+   it's apparently enough to just export, macOS needs the weak attribute.
+   Windows not handled yet, as it needs a workaround using DllMain() and
+   GetProcAddress(). */
+CORRADE_VISIBILITY_EXPORT
+    #ifdef __GNUC__
+    __attribute__((weak))
+    #else
+    /* uh oh? the test will fail, probably */
+    #endif
+#endif
+Context* currentContext = nullptr;
+
+#ifndef MAGNUM_BUILD_STATIC
 }
+#endif
 
 bool Context::hasCurrent() { return currentContext; }
 

@@ -466,12 +466,32 @@ Containers::ArrayView<const Extension> Extension::extensions(Version version) {
     CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
+#ifndef MAGNUM_BUILD_STATIC
+/* (Of course) can't be in an unnamed namespace in order to export it below */
 namespace {
-    #ifdef CORRADE_BUILD_MULTITHREADED
-    CORRADE_THREAD_LOCAL
+#endif
+
+#ifdef CORRADE_BUILD_MULTITHREADED
+CORRADE_THREAD_LOCAL
+#endif
+#if defined(MAGNUM_BUILD_STATIC) && !defined(CORRADE_TARGET_WINDOWS)
+/* On static builds that get linked to multiple shared libraries and then used
+   in a single app we want to ensure there's just one global symbol. On Linux
+   it's apparently enough to just export, macOS needs the weak attribute.
+   Windows not handled yet, as it needs a workaround using DllMain() and
+   GetProcAddress(). */
+CORRADE_VISIBILITY_EXPORT
+    #ifdef __GNUC__
+    __attribute__((weak))
+    #else
+    /* uh oh? the test will fail, probably */
     #endif
-    Context* currentContext = nullptr;
+#endif
+Context* currentContext = nullptr;
+
+#ifndef MAGNUM_BUILD_STATIC
 }
+#endif
 
 bool Context::hasCurrent() { return currentContext; }
 
