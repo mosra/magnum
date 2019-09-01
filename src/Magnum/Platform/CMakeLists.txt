@@ -92,17 +92,27 @@ set(MagnumPlatform_FILES )
 
 install(FILES ${MagnumPlatform_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Platform)
 
-# Decide about platform-specific context for cross-platform toolkits
-if((WITH_GLFWAPPLICATION OR WITH_SDL2APPLICATION) AND TARGET_GL)
-    if(CORRADE_TARGET_APPLE AND NOT MAGNUM_TARGET_GLES)
-        set(NEED_CGLCONTEXT 1)
-        set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumCglContextObjects>)
-    elseif(CORRADE_TARGET_WINDOWS AND (NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES))
-        set(NEED_WGLCONTEXT 1)
-        set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumWglContextObjects>)
-    elseif(CORRADE_TARGET_UNIX AND (NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES))
-        set(NEED_GLXCONTEXT 1)
-        set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumGlxContextObjects>)
+if(TARGET_GL)
+    # Decide about platform-specific context for cross-platform toolkits
+    if(WITH_GLFWAPPLICATION OR WITH_SDL2APPLICATION)
+        if(CORRADE_TARGET_APPLE AND NOT MAGNUM_TARGET_GLES)
+            set(NEED_CGLCONTEXT 1)
+            set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumCglContextObjects>)
+        elseif(CORRADE_TARGET_WINDOWS AND (NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES))
+            set(NEED_WGLCONTEXT 1)
+            set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumWglContextObjects>)
+        elseif(CORRADE_TARGET_UNIX AND (NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES))
+            set(NEED_GLXCONTEXT 1)
+            set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumGlxContextObjects>)
+        elseif(MAGNUM_TARGET_GLES AND NOT CORRADE_TARGET_EMSCRIPTEN)
+            set(NEED_EGLCONTEXT 1)
+            set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumEglContextObjects>)
+            # We're linking to EGL explicitly, no need to bother with GLVND there
+        endif()
+    endif()
+
+    # This is needed also by [Windowless]GlxApplication
+    if((WITH_GLXAPPLICATION OR WITH_WINDOWLESSGLXAPPLICATION OR WITH_GLFWAPPLICATION OR WITH_SDL2APPLICATION) AND CORRADE_TARGET_UNIX AND (NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES))
         # If the GLVND library (CMake 3.11+) was found and linked to, we need
         # to link to GLX explicitly. Otherwise (and also on all systems except
         # Linux) the transitive dependency to classic GL lib from MagnumGL is
@@ -113,10 +123,6 @@ if((WITH_GLFWAPPLICATION OR WITH_SDL2APPLICATION) AND TARGET_GL)
         if(OPENGL_opengl_LIBRARY AND OpenGL_GL_PREFERENCE STREQUAL GLVND)
             set(MagnumSomeContext_LIBRARY OpenGL::GLX)
         endif()
-    elseif(MAGNUM_TARGET_GLES AND NOT CORRADE_TARGET_EMSCRIPTEN)
-        set(NEED_EGLCONTEXT 1)
-        set(MagnumSomeContext_OBJECTS $<TARGET_OBJECTS:MagnumEglContextObjects>)
-        # We're linking to EGL explicitly, no need to bother with GLVND there
     endif()
 endif()
 
