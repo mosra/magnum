@@ -104,8 +104,6 @@ const char* alcErrorString(const ALenum error) {
 
 }
 
-Context* Context::_current = nullptr;
-
 std::vector<std::string> Context::deviceSpecifierStrings() {
     std::vector<std::string> list;
     const char* const devices = alcGetString(nullptr, ALC_DEVICE_SPECIFIER);
@@ -115,11 +113,17 @@ std::vector<std::string> Context::deviceSpecifierStrings() {
     return list;
 }
 
-bool Context::hasCurrent() { return _current; }
+namespace {
+    /* Unlike GL, this isn't thread-local. Would need to implement
+       ALC_EXT_thread_local_context first */
+    Context* currentContext = nullptr;
+}
+
+bool Context::hasCurrent() { return currentContext; }
 
 Context& Context::current() {
-    CORRADE_ASSERT(_current, "Audio::Context::current(): no current context", *_current);
-    return *_current;
+    CORRADE_ASSERT(currentContext, "Audio::Context::current(): no current context", *currentContext);
+    return *currentContext;
 }
 
 Context::Context(Int argc, const char** argv): Context(Configuration{}, argc, argv) {}
@@ -145,7 +149,7 @@ void Context::create(const Configuration& configuration) {
 }
 
 bool Context::tryCreate(const Configuration& configuration) {
-    CORRADE_ASSERT(!_current, "Audio::Context: context already created", false);
+    CORRADE_ASSERT(!currentContext, "Audio::Context: context already created", false);
 
     /* Open the device */
     const ALCchar* const deviceSpecifier = configuration.deviceSpecifier().empty() ? alcGetString(nullptr, ALC_DEFAULT_DEVICE_SPECIFIER) : configuration.deviceSpecifier().data();
@@ -204,7 +208,7 @@ bool Context::tryCreate(const Configuration& configuration) {
     }
 
     alcMakeContextCurrent(_context);
-    _current = this;
+    currentContext = this;
 
     /* Add all extensions to a map for faster lookup */
     std::unordered_map<std::string, Extension> extensionMap;
@@ -262,13 +266,13 @@ bool Context::tryCreate(const Configuration& configuration) {
 Context::Context(Context&& other) noexcept: _device{other._device}, _context{other._context}, _extensionStatus{std::move(other._extensionStatus)}, _supportedExtensions{std::move(other._supportedExtensions)} {
     other._device = nullptr;
     other._context = nullptr;
-    if(_current == &other) _current = this;
+    if(currentContext == &other) currentContext = this;
 }
 
 Context::~Context() {
     if(_context) alcDestroyContext(_context);
     if(_device) alcCloseDevice(_device);
-    if(_current == this) _current = nullptr;
+    if(currentContext == this) currentContext = nullptr;
 }
 
 std::vector<std::string> Context::extensionStrings() const {

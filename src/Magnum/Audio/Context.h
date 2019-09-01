@@ -407,8 +407,6 @@ class MAGNUM_AUDIO_EXPORT Context {
         }
 
     private:
-        MAGNUM_AUDIO_LOCAL static Context* _current;
-
         bool _displayInitializationLog;
 
         ALCdevice* _device;
