@@ -72,4 +72,18 @@ if(BUILD_AL_TESTS)
             AudioPlayableALTest
             PROPERTIES FOLDER "Magnum/Audio/Test")
     endif()
+
+    if(MAGNUM_BUILD_STATIC AND NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_WINDOWS_RT)
+        add_library(AudioGlobalStateAcrossLibrariesLibrary SHARED
+            GlobalStateAcrossLibrariesLibrary.cpp)
+        target_link_libraries(AudioGlobalStateAcrossLibrariesLibrary PUBLIC MagnumAudio)
+
+        corrade_add_test(AudioGlobalStateAcrossLibrariesALTest
+            GlobalStateAcrossLibrariesALTest.cpp
+            LIBRARIES AudioGlobalStateAcrossLibrariesLibrary)
+        set_target_properties(
+            AudioGlobalStateAcrossLibrariesLibrary
+            AudioGlobalStateAcrossLibrariesALTest
+            PROPERTIES FOLDER "Magnum/Audio/Test")
+    endif()
 endif()

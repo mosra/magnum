@@ -208,4 +208,18 @@ if(BUILD_GL_TESTS)
         corrade_add_test(GLRectangleTextureGLTest RectangleTextureGLTest.cpp LIBRARIES MagnumOpenGLTester)
         set_target_properties(GLRectangleTextureGLTest PROPERTIES FOLDER "Magnum/GL/Test")
     endif()
+
+    if(MAGNUM_BUILD_STATIC AND NOT CORRADE_TARGET_EMSCRIPTEN AND NOT CORRADE_TARGET_IOS AND NOT CORRADE_TARGET_ANDROID AND NOT CORRADE_TARGET_WINDOWS_RT)
+        add_library(GLGlobalStateAcrossLibrariesLibrary SHARED
+            GlobalStateAcrossLibrariesLibrary.cpp)
+        target_link_libraries(GLGlobalStateAcrossLibrariesLibrary PUBLIC MagnumGL)
+
+        corrade_add_test(GLGlobalStateAcrossLibrariesGLTest
+            GlobalStateAcrossLibrariesGLTest.cpp
+            LIBRARIES GLGlobalStateAcrossLibrariesLibrary MagnumOpenGLTester)
+        set_target_properties(
+            GLGlobalStateAcrossLibrariesLibrary
+            GLGlobalStateAcrossLibrariesGLTest
+            PROPERTIES FOLDER "Magnum/GL/Test")
+    endif()
 endif()
