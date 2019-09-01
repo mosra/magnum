@@ -48,7 +48,7 @@ add_plugin(MagnumFont
 if(BUILD_PLUGINS_STATIC AND BUILD_STATIC_PIC)
     set_target_properties(MagnumFont PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_link_libraries(MagnumFont PUBLIC Magnum MagnumText)
+target_link_libraries(MagnumFont PUBLIC Magnum MagnumText MagnumTrade)
 if(CORRADE_TARGET_WINDOWS)
     target_link_libraries(MagnumFont PUBLIC TgaImporter)
 endif()

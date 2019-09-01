@@ -42,7 +42,7 @@ add_plugin(MagnumFontConverter
 if(BUILD_PLUGINS_STATIC AND BUILD_STATIC_PIC)
     set_target_properties(MagnumFontConverter PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-target_link_libraries(MagnumFontConverter PUBLIC Magnum MagnumText)
+target_link_libraries(MagnumFontConverter PUBLIC Magnum MagnumText MagnumTrade)
 if(CORRADE_TARGET_WINDOWS)
     target_link_libraries(MagnumFontConverter PUBLIC TgaImageConverter)
 endif()
