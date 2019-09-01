@@ -27,6 +27,7 @@
 #include <Corrade/Containers/Optional.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/Resource.h>
 
 #include "Magnum/FileCallback.h"
 #include "Magnum/Shaders/Vector.h"
