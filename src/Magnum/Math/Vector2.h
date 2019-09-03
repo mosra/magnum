@@ -149,14 +149,20 @@ template<class T> class Vector2: public Vector<2, T> {
         /**
          * @brief Perpendicular vector
          *
-         * Returns vector rotated 90° counterclockwise. @f[
+         * Returns vector rotated 90° counterclockwise. Enabled only for signed
+         * types. @f[
          *      \boldsymbol v_\bot = \begin{pmatrix} -v_y \\ v_x \end{pmatrix}
          * @f]
          * @see @ref cross(),
          *      @ref dot(const Vector<size, T>&, const Vector<size, T>&),
          *      @ref operator-() const
          */
-        Vector2<T> perpendicular() const { return {-y(), x()}; }
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector2<T>
+        #else
+        template<class U = T> typename std::enable_if<std::is_signed<U>::value, Vector2<T>>::type
+        #endif
+        perpendicular() const { return {-y(), x()}; }
 
         /**
          * @brief Aspect ratio

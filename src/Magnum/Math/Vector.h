@@ -313,12 +313,17 @@ template<std::size_t size, class T> class Vector {
         /**
          * @brief Negated vector
          *
-         * @f[
+         * Enabled only for signed types. @f[
          *      \boldsymbol b_i = -\boldsymbol a_i
          * @f]
          * @see @ref Vector2::perpendicular()
          */
-        Vector<size, T> operator-() const;
+        #ifdef DOXYGEN_GENERATING_OUTPUT
+        Vector<size, T>
+        #else
+        template<class U = T> typename std::enable_if<std::is_signed<U>::value, Vector<size, T>>::type
+        #endif
+        operator-() const;
 
         /**
          * @brief Add and assign a vector
@@ -1224,7 +1229,8 @@ extern template MAGNUM_EXPORT Corrade::Utility::Debug& operator<<(Corrade::Utili
         return Math::Vector<size, T>::pad(a, value);                        \
     }                                                                       \
                                                                             \
-    Type<T> operator-() const {                                             \
+    template<class U = T> typename std::enable_if<std::is_signed<U>::value, Type<T>>::type \
+    operator-() const {                                                     \
         return Math::Vector<size, T>::operator-();                          \
     }                                                                       \
     Type<T>& operator+=(const Math::Vector<size, T>& other) {               \
@@ -1420,7 +1426,13 @@ template<std::size_t size, class T> inline BoolVector<size> Vector<size, T>::ope
     return out;
 }
 
-template<std::size_t size, class T> inline Vector<size, T> Vector<size, T>::operator-() const {
+template<std::size_t size, class T>
+#ifdef DOXYGEN_GENERATING_OUTPUT
+inline Vector<size, T>
+#else
+template<class U> inline typename std::enable_if<std::is_signed<U>::value, Vector<size, T>>::type
+#endif
+Vector<size, T>::operator-() const {
     Vector<size, T> out;
 
     for(std::size_t i = 0; i != size; ++i)
