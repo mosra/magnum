@@ -1248,7 +1248,7 @@ Calls @ref Color3::fromSrgb(UnsignedInt) on the literal value. Example usage:
 @m_keywords{_srgbf srgbf}
 */
 inline Color3<Float> operator "" _srgbf(unsigned long long value) {
-    return Color3<Float>::fromSrgb(value);
+    return Color3<Float>::fromSrgb(UnsignedInt(value));
 }
 
 /** @relatesalso Magnum::Math::Color4
@@ -1283,7 +1283,7 @@ usage:
 @m_keywords{_srgbaf srgbaf}
 */
 inline Color4<Float> operator "" _srgbaf(unsigned long long value) {
-    return Color4<Float>::fromSrgbAlpha(value);
+    return Color4<Float>::fromSrgbAlpha(UnsignedInt(value));
 }
 
 }
