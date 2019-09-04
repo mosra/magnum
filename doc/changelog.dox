@@ -535,6 +535,16 @@ See also:
 -   Emscripten builds now have the `-fPIC` option disabled by default as it
     causes linker errors related to `__memory_base` on 1.38.36 (see also
     [emscripten-core/emscripten#8761](https://github.com/emscripten-core/emscripten/issues/8761))
+-   Fixed the `Magnum::Application`, `Magnum::WindowlessApplication` and
+    `Magnum::GLContext` aliases in `FindMagnum.cmake` to propagate the values
+    from the target they alias also across directories, instead of failing with
+    e.g.
+
+        Error evaluating generator expression:
+
+        $<TARGET_PROPERTY:Magnum::Sdl2Application,INTERFACE_INCLUDE_DIRECTORIES>
+
+        Target "Magnum::Sdl2Application" not found.
 
 @subsection changelog-latest-bugfixes Bug fixes
 
