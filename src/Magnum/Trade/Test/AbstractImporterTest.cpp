@@ -2628,9 +2628,6 @@ void AbstractImporterTest::image1D() {
         }
     } importer;
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     CORRADE_COMPARE(importer.image1DCount(), 8);
     CORRADE_COMPARE(importer.image1DForName("eighth"), 7);
     CORRADE_COMPARE(importer.image1DName(7), "eighth");
@@ -2793,9 +2790,6 @@ void AbstractImporterTest::image2D() {
         }
     } importer;
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     CORRADE_COMPARE(importer.image2DCount(), 8);
     CORRADE_COMPARE(importer.image2DForName("eighth"), 7);
     CORRADE_COMPARE(importer.image2DName(7), "eighth");
@@ -2957,9 +2951,6 @@ void AbstractImporterTest::image3D() {
             else return {};
         }
     } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
 
     CORRADE_COMPARE(importer.image3DCount(), 8);
     CORRADE_COMPARE(importer.image3DForName("eighth"), 7);
