@@ -90,8 +90,8 @@ void PixelFormatTest::mapFormatType() {
     /* This goes through the first 16 bits, which should be enough. Going
        through 32 bits takes 8 seconds, too much. */
     UnsignedInt firstUnhandled = 0xffff;
-    UnsignedInt nextHandled = 0;
-    for(UnsignedInt i = 0; i <= 0xffff; ++i) {
+    UnsignedInt nextHandled = 1; /* 0 is an invalid format */
+    for(UnsignedInt i = 1; i <= 0xffff; ++i) {
         const auto format = Magnum::PixelFormat(i);
         /* Each case verifies:
            - that the cases are ordered by number (so insertion here is done in
@@ -161,10 +161,14 @@ void PixelFormatTest::mapFormatInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    hasPixelFormat(Magnum::PixelFormat{});
     hasPixelFormat(Magnum::PixelFormat(0x123));
+    pixelFormat(Magnum::PixelFormat{});
     pixelFormat(Magnum::PixelFormat(0x123));
     CORRADE_COMPARE(out.str(),
+        "GL::hasPixelFormat(): invalid format PixelFormat(0x0)\n"
         "GL::hasPixelFormat(): invalid format PixelFormat(0x123)\n"
+        "GL::pixelFormat(): invalid format PixelFormat(0x0)\n"
         "GL::pixelFormat(): invalid format PixelFormat(0x123)\n");
 }
 
@@ -197,8 +201,11 @@ void PixelFormatTest::mapTypeUnsupported() {
 void PixelFormatTest::mapTypeInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
+    pixelType(Magnum::PixelFormat{});
     pixelType(Magnum::PixelFormat(0x123));
-    CORRADE_COMPARE(out.str(), "GL::pixelType(): invalid format PixelFormat(0x123)\n");
+    CORRADE_COMPARE(out.str(),
+        "GL::pixelType(): invalid format PixelFormat(0x0)\n"
+        "GL::pixelType(): invalid format PixelFormat(0x123)\n");
 }
 
 void PixelFormatTest::size() {
@@ -232,8 +239,8 @@ void PixelFormatTest::mapCompressedFormat() {
     /* This goes through the first 16 bits, which should be enough. Going
        through 32 bits takes 8 seconds, too much. */
     UnsignedInt firstUnhandled = 0xffff;
-    UnsignedInt nextHandled = 0;
-    for(UnsignedInt i = 0; i <= 0xffff; ++i) {
+    UnsignedInt nextHandled = 1; /* 0 is an invalid format */
+    for(UnsignedInt i = 1; i <= 0xffff; ++i) {
         const auto format = Magnum::CompressedPixelFormat(i);
         /* Each case verifies:
            - that the cases are ordered by number (so insertion here is done in
@@ -302,10 +309,14 @@ void PixelFormatTest::mapCompressedFormatInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    hasCompressedPixelFormat(Magnum::CompressedPixelFormat{});
     hasCompressedPixelFormat(Magnum::CompressedPixelFormat(0x123));
+    compressedPixelFormat(Magnum::CompressedPixelFormat{});
     compressedPixelFormat(Magnum::CompressedPixelFormat(0x123));
     CORRADE_COMPARE(out.str(),
+        "GL::hasCompressedPixelFormat(): invalid format CompressedPixelFormat(0x0)\n"
         "GL::hasCompressedPixelFormat(): invalid format CompressedPixelFormat(0x123)\n"
+        "GL::compressedPixelFormat(): invalid format CompressedPixelFormat(0x0)\n"
         "GL::compressedPixelFormat(): invalid format CompressedPixelFormat(0x123)\n");
 }
 

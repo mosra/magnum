@@ -54,18 +54,18 @@ bool hasPixelFormat(const Magnum::PixelFormat format) {
     if(isPixelFormatImplementationSpecific(format))
         return true;
 
-    CORRADE_ASSERT(UnsignedInt(format) < Containers::arraySize(FormatMapping),
+    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(FormatMapping),
         "GL::hasPixelFormat(): invalid format" << format, {});
-    return UnsignedInt(FormatMapping[UnsignedInt(format)].format);
+    return UnsignedInt(FormatMapping[UnsignedInt(format) - 1].format);
 }
 
 PixelFormat pixelFormat(const Magnum::PixelFormat format) {
     if(isPixelFormatImplementationSpecific(format))
         return pixelFormatUnwrap<GL::PixelFormat>(format);
 
-    CORRADE_ASSERT(UnsignedInt(format) < Containers::arraySize(FormatMapping),
+    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(FormatMapping),
         "GL::pixelFormat(): invalid format" << format, {});
-    const PixelFormat out = FormatMapping[UnsignedInt(format)].format;
+    const PixelFormat out = FormatMapping[UnsignedInt(format) - 1].format;
     CORRADE_ASSERT(UnsignedInt(out),
         "GL::pixelFormat(): format" << format << "is not supported on this target", {});
     return out;
@@ -78,9 +78,9 @@ PixelType pixelType(const Magnum::PixelFormat format, const UnsignedInt extra) {
         return PixelType(extra);
     }
 
-    CORRADE_ASSERT(UnsignedInt(format) < Containers::arraySize(FormatMapping),
+    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(FormatMapping),
         "GL::pixelType(): invalid format" << format, {});
-    const PixelType out = FormatMapping[UnsignedInt(format)].type;
+    const PixelType out = FormatMapping[UnsignedInt(format) - 1].type;
     CORRADE_ASSERT(UnsignedInt(out),
         "GL::pixelType(): format" << format << "is not supported on this target", {});
     return out;
@@ -373,18 +373,18 @@ bool hasCompressedPixelFormat(const Magnum::CompressedPixelFormat format) {
     if(isCompressedPixelFormatImplementationSpecific(format))
         return true;
 
-    CORRADE_ASSERT(UnsignedInt(format) < Containers::arraySize(CompressedFormatMapping),
+    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedFormatMapping),
         "GL::hasCompressedPixelFormat(): invalid format" << format, {});
-    return UnsignedInt(CompressedFormatMapping[UnsignedInt(format)]);
+    return UnsignedInt(CompressedFormatMapping[UnsignedInt(format) - 1]);
 }
 
 CompressedPixelFormat compressedPixelFormat(const Magnum::CompressedPixelFormat format) {
     if(isCompressedPixelFormatImplementationSpecific(format))
         return compressedPixelFormatUnwrap<GL::CompressedPixelFormat>(format);
 
-    CORRADE_ASSERT(UnsignedInt(format) < Containers::arraySize(CompressedFormatMapping),
+    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedFormatMapping),
         "GL::compressedPixelFormat(): invalid format" << format, {});
-    const CompressedPixelFormat out = CompressedFormatMapping[UnsignedInt(format)];
+    const CompressedPixelFormat out = CompressedFormatMapping[UnsignedInt(format) - 1];
     CORRADE_ASSERT(UnsignedInt(out),
         "GL::compressedPixelFormat(): format" << format << "is not supported on this target", {});
     return out;

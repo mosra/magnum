@@ -124,27 +124,27 @@ bool hasVkFormat(const Magnum::PixelFormat format) {
     if(isPixelFormatImplementationSpecific(format))
         return true;
 
-    CORRADE_ASSERT(UnsignedInt(format) < Containers::arraySize(FormatMapping),
+    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(FormatMapping),
         "Vk::hasVkFormat(): invalid format" << format, {});
-    return UnsignedInt(FormatMapping[UnsignedInt(format)]);
+    return UnsignedInt(FormatMapping[UnsignedInt(format) - 1]);
 }
 
 bool hasVkFormat(const Magnum::CompressedPixelFormat format) {
     if(isCompressedPixelFormatImplementationSpecific(format))
         return true;
 
-    CORRADE_ASSERT(UnsignedInt(format) < Containers::arraySize(CompressedFormatMapping),
+    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedFormatMapping),
         "Vk::hasVkFormat(): invalid format" << format, {});
-    return UnsignedInt(CompressedFormatMapping[UnsignedInt(format)]);
+    return UnsignedInt(CompressedFormatMapping[UnsignedInt(format) - 1]);
 }
 
 VkFormat vkFormat(const Magnum::PixelFormat format) {
     if(isPixelFormatImplementationSpecific(format))
         return pixelFormatUnwrap<VkFormat>(format);
 
-    CORRADE_ASSERT(UnsignedInt(format) < Containers::arraySize(FormatMapping),
+    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(FormatMapping),
         "Vk::vkFormat(): invalid format" << format, {});
-    const VkFormat out = FormatMapping[UnsignedInt(format)];
+    const VkFormat out = FormatMapping[UnsignedInt(format) - 1];
     CORRADE_ASSERT(UnsignedInt(out),
         "Vk::vkFormat(): unsupported format" << format, {});
     return out;
@@ -154,9 +154,9 @@ VkFormat vkFormat(const Magnum::CompressedPixelFormat format) {
     if(isCompressedPixelFormatImplementationSpecific(format))
         return compressedPixelFormatUnwrap<VkFormat>(format);
 
-    CORRADE_ASSERT(UnsignedInt(format) < Containers::arraySize(CompressedFormatMapping),
+    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedFormatMapping),
         "Vk::vkFormat(): invalid format" << format, {});
-    const VkFormat out = CompressedFormatMapping[UnsignedInt(format)];
+    const VkFormat out = CompressedFormatMapping[UnsignedInt(format) - 1];
     CORRADE_ASSERT(UnsignedInt(out),
         "Vk::vkFormat(): unsupported format" << format, {});
     return out;

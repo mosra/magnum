@@ -30,6 +30,7 @@
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 
+#include "Magnum/PixelFormat.h"
 #include "Magnum/FileCallback.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/AnimationData.h"
@@ -2622,7 +2623,7 @@ void AbstractImporterTest::image1D() {
             else return {};
         }
         Containers::Optional<ImageData1D> doImage1D(UnsignedInt id) override {
-            if(id == 7) return ImageData1D{PixelStorage{}, {}, {}, {}, &state};
+            if(id == 7) return ImageData1D{PixelFormat::RGBA8Unorm, {}, {}, &state};
             else return {};
         }
     } importer;
@@ -2787,7 +2788,7 @@ void AbstractImporterTest::image2D() {
             else return {};
         }
         Containers::Optional<ImageData2D> doImage2D(UnsignedInt id) override {
-            if(id == 7) return ImageData2D{PixelStorage{}, {}, {}, {}, &state};
+            if(id == 7) return ImageData2D{PixelFormat::RGBA8Unorm, {}, {}, &state};
             else return {};
         }
     } importer;
@@ -2952,7 +2953,7 @@ void AbstractImporterTest::image3D() {
             else return {};
         }
         Containers::Optional<ImageData3D> doImage3D(UnsignedInt id) override {
-            if(id == 7) return ImageData3D{PixelStorage{}, {}, {}, {}, &state};
+            if(id == 7) return ImageData3D{PixelFormat::RGBA8Unorm, {}, {}, &state};
             else return {};
         }
     } importer;

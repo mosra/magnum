@@ -27,6 +27,7 @@
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/TextureTools/Atlas.h"
 
 namespace Magnum { namespace Text {
@@ -65,13 +66,13 @@ void AbstractGlyphCache::setImage(const Vector2i& offset, const ImageView2D& ima
 
 Image2D AbstractGlyphCache::image() {
     CORRADE_ASSERT(features() & GlyphCacheFeature::ImageDownload,
-        "Text::AbstractGlyphCache::image(): feature not supported", Image2D{{}});
+        "Text::AbstractGlyphCache::image(): feature not supported", Image2D{PixelFormat::R8Unorm});
 
     return doImage();
 }
 
 Image2D AbstractGlyphCache::doImage() {
-    CORRADE_ASSERT(false, "Text::AbstractGlyphCache::image(): feature advertised but not implemented", Image2D{{}});
+    CORRADE_ASSERT(false, "Text::AbstractGlyphCache::image(): feature advertised but not implemented", Image2D{PixelFormat::R8Unorm});
 }
 
 }}

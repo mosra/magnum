@@ -58,6 +58,8 @@ presence.
 @see @ref pixelSize(), @ref CompressedPixelFormat, @ref Image, @ref ImageView
 */
 enum class PixelFormat: UnsignedInt {
+    /* Zero reserved for an invalid format (but not being a named value) */
+
     /**
      * Red component, normalized unsigned byte.
      *
@@ -65,7 +67,7 @@ enum class PixelFormat: UnsignedInt {
      * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::R8 /
      * @def_vk_keyword{FORMAT_R8_UNORM,Format}.
      */
-    R8Unorm,
+    R8Unorm = 1,
 
     /**
      * Red and green component, normalized unsigned byte.
@@ -606,6 +608,8 @@ to check for its presence.
 @see @ref PixelFormat, @ref CompressedImage, @ref CompressedImageView
 */
 enum class CompressedPixelFormat: UnsignedInt {
+    /* Zero reserved for an invalid format (but not being a named value) */
+
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1
      * compressed RGB, normalized unsigned byte (DXT1).
@@ -614,7 +618,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref GL::TextureFormat::CompressedRGBS3tcDxt1 /
      * @def_vk_keyword{FORMAT_BC1_RGB_UNORM_BLOCK,Format}.
      */
-    Bc1RGBUnorm,
+    Bc1RGBUnorm = 1,
 
     /**
      * [S3TC](https://en.wikipedia.org/wiki/S3_Texture_Compression) BC1

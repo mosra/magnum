@@ -35,6 +35,7 @@ struct PixelFormatTest: TestSuite::Tester {
     explicit PixelFormatTest();
 
     void size();
+    void sizeInvalid();
     void sizeImplementationSpecific();
 
     void isImplementationSpecific();
@@ -58,6 +59,7 @@ struct PixelFormatTest: TestSuite::Tester {
 
 PixelFormatTest::PixelFormatTest() {
     addTests({&PixelFormatTest::size,
+              &PixelFormatTest::sizeInvalid,
               &PixelFormatTest::sizeImplementationSpecific,
 
               &PixelFormatTest::isImplementationSpecific,
@@ -88,6 +90,18 @@ void PixelFormatTest::size() {
     CORRADE_COMPARE(pixelSize(PixelFormat::RGBA16F), 8);
     CORRADE_COMPARE(pixelSize(PixelFormat::RGB32UI), 12);
     CORRADE_COMPARE(pixelSize(PixelFormat::RGBA32F), 16);
+}
+
+void PixelFormatTest::sizeInvalid() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    pixelSize(PixelFormat{});
+    pixelSize(PixelFormat(0xdead));
+
+    CORRADE_COMPARE(out.str(),
+        "pixelSize(): invalid pixel format PixelFormat(0x0)\n"
+        "pixelSize(): invalid pixel format PixelFormat(0xdead)\n");
 }
 
 void PixelFormatTest::sizeImplementationSpecific() {

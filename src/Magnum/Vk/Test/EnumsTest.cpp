@@ -181,8 +181,8 @@ void EnumsTest::mapVkFormat() {
     /* This goes through the first 16 bits, which should be enough. Going
        through 32 bits takes 8 seconds, too much. */
     UnsignedInt firstUnhandled = 0xffff;
-    UnsignedInt nextHandled = 0;
-    for(UnsignedInt i = 0; i <= 0xffff; ++i) {
+    UnsignedInt nextHandled = 1; /* 0 is an invalid format */
+    for(UnsignedInt i = 1; i <= 0xffff; ++i) {
         const auto format = Magnum::PixelFormat(i);
         /* Each case verifies:
            - that the cases are ordered by number (so insertion here is done in
@@ -250,10 +250,14 @@ void EnumsTest::mapVkFormatInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    hasVkFormat(Magnum::PixelFormat{});
     hasVkFormat(Magnum::PixelFormat(0x123));
+    vkFormat(Magnum::PixelFormat{});
     vkFormat(Magnum::PixelFormat(0x123));
     CORRADE_COMPARE(out.str(),
+        "Vk::hasVkFormat(): invalid format PixelFormat(0x0)\n"
         "Vk::hasVkFormat(): invalid format PixelFormat(0x123)\n"
+        "Vk::vkFormat(): invalid format PixelFormat(0x0)\n"
         "Vk::vkFormat(): invalid format PixelFormat(0x123)\n");
 }
 
@@ -265,8 +269,8 @@ void EnumsTest::mapVkFormatCompressed() {
     /* This goes through the first 16 bits, which should be enough. Going
        through 32 bits takes 8 seconds, too much. */
     UnsignedInt firstUnhandled = 0xffff;
-    UnsignedInt nextHandled = 0;
-    for(UnsignedInt i = 0; i <= 0xffff; ++i) {
+    UnsignedInt nextHandled = 1; /* 0 is an invalid format */
+    for(UnsignedInt i = 1; i <= 0xffff; ++i) {
         const auto format = Magnum::CompressedPixelFormat(i);
         /* Each case verifies:
            - that the cases are ordered by number (so insertion here is done in
@@ -335,10 +339,14 @@ void EnumsTest::mapVkFormatCompressedInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    hasVkFormat(Magnum::CompressedPixelFormat{});
     hasVkFormat(Magnum::CompressedPixelFormat(0x123));
+    vkFormat(Magnum::CompressedPixelFormat{});
     vkFormat(Magnum::CompressedPixelFormat(0x123));
     CORRADE_COMPARE(out.str(),
+        "Vk::hasVkFormat(): invalid format CompressedPixelFormat(0x0)\n"
         "Vk::hasVkFormat(): invalid format CompressedPixelFormat(0x123)\n"
+        "Vk::vkFormat(): invalid format CompressedPixelFormat(0x0)\n"
         "Vk::vkFormat(): invalid format CompressedPixelFormat(0x123)\n");
 }
 

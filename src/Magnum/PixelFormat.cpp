@@ -104,7 +104,7 @@ UnsignedInt pixelSize(const PixelFormat format) {
     #pragma GCC diagnostic pop
     #endif
 
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    CORRADE_ASSERT(false, "pixelSize(): invalid pixel format" << format, {});
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

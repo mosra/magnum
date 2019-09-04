@@ -740,6 +740,10 @@ See also:
     CMake / preprocessor variable has been moved to Corrade --- you need to
     toggle it when building Corrade and use @ref CORRADE_BUILD_MULTITHREADED
     instead
+-   @ref PixelFormat and @ref CompressedPixelFormat now reserve the zero value
+    to indicate an invalid format, better catching accidentally forgotten
+    initialization. Valid code shouldn't be affected by this change, but broken
+    code that seemingly worked before might start throwing assertions now.
 
 @section changelog-2019-01 2019.01
 
