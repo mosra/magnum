@@ -1026,14 +1026,13 @@ class Sdl2Application {
         SDL_Window* _window{};
         UnsignedInt _minimalLoopPeriod;
         #else
+        SDL_Surface* _surface{};
         Vector2i _lastKnownCanvasSize;
         #endif
 
         #ifdef MAGNUM_TARGET_GL
         #ifndef CORRADE_TARGET_EMSCRIPTEN
-        SDL_GLContext _glContext;
-        #else
-        SDL_Surface* _glContext{};
+        SDL_GLContext _glContext{};
         #endif
         Containers::Pointer<Platform::GLContext> _context;
         #endif

@@ -82,9 +82,6 @@ Sdl2Application::Sdl2Application(const Arguments& arguments, NoCreateT):
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     _minimalLoopPeriod{0},
     #endif
-    #ifdef MAGNUM_TARGET_GL
-    _glContext{nullptr},
-    #endif
     _flags{Flag::Redraw}
 {
     Utility::Arguments args{Implementation::windowScalingArguments()};
@@ -284,11 +281,11 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
         return tryCreate(configuration, GLConfiguration{});
     #endif
 
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Scale window based on DPI */
     _dpiScaling = dpiScaling(configuration);
     const Vector2i scaledWindowSize = configuration.size()*_dpiScaling;
 
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
     /* Create window */
     if(!(_window = SDL_CreateWindow(
         #ifndef CORRADE_TARGET_IOS
@@ -303,10 +300,50 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
         Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
         return false;
     }
-    #else
+
     /* Emscripten-specific initialization */
-    if(!(_glContext = SDL_SetVideoMode(scaledWindowSize.x(), scaledWindowSize.y(), 24, SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF))) {
-        Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
+    #else
+    /* Get CSS canvas size. This is used later to detect canvas resizes and
+       fire viewport events, because Emscripten doesn't do that. Related info:
+       https://github.com/kripken/emscripten/issues/1731 */
+    /** @todo don't hardcode "#canvas" here, make it configurable from outside */
+    {
+        Vector2d canvasSize;
+        /* Emscripten 1.38.27 changed to generic CSS selectors from element
+           IDs depending on -s DISABLE_DEPRECATED_FIND_EVENT_TARGET_BEHAVIOR=1
+           being set (which we can't detect at compile time). Fortunately,
+           using #canvas works the same way both in the previous versions and
+           the current one. Unfortunately, this is also the only value that
+           works the same way for both. Further details at
+           https://github.com/emscripten-core/emscripten/pull/7977 */
+        emscripten_get_element_css_size("#canvas", &canvasSize.x(), &canvasSize.y());
+        _lastKnownCanvasSize = Vector2i{canvasSize};
+    }
+
+    /* By default Emscripten creates a 300x150 canvas. That's so freaking
+       random I'm getting mad. Use the real (CSS pixels) canvas size instead,
+       if the size is not hardcoded from the configuration. This is then
+       multiplied by the DPI scaling. */
+    Vector2i windowSize;
+    if(!configuration.size().isZero()) {
+        windowSize = configuration.size();
+    } else {
+        windowSize = _lastKnownCanvasSize;
+        Debug{_verboseLog ? Debug::output() : nullptr} << "Platform::Sdl2Application::tryCreate(): autodetected canvas size" << windowSize;
+    }
+    _dpiScaling = dpiScaling(configuration);
+    const Vector2i scaledWindowSize = windowSize*_dpiScaling;
+
+    Uint32 flags = SDL_OPENGL|SDL_HWSURFACE|SDL_DOUBLEBUF;
+    if(configuration.windowFlags() & Configuration::WindowFlag::Resizable) {
+        _flags |= Flag::Resizable;
+        /* Actually not sure if this makes any difference:
+           https://github.com/kripken/emscripten/issues/1731 */
+        flags |= SDL_RESIZABLE;
+    }
+
+    if(!(_surface = SDL_SetVideoMode(scaledWindowSize.x(), scaledWindowSize.y(), 24, flags))) {
+        Error() << "Platform::Sdl2Application::tryCreate(): cannot create context:" << SDL_GetError();
         return false;
     }
     #endif
@@ -531,7 +568,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         flags |= SDL_RESIZABLE;
     }
 
-    if(!(_glContext = SDL_SetVideoMode(scaledWindowSize.x(), scaledWindowSize.y(), 24, flags))) {
+    if(!(_surface = SDL_SetVideoMode(scaledWindowSize.x(), scaledWindowSize.y(), 24, flags))) {
         Error() << "Platform::Sdl2Application::tryCreate(): cannot create context:" << SDL_GetError();
         return false;
     }
@@ -544,7 +581,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration, const GLConf
         SDL_DestroyWindow(_window);
         _window = nullptr;
         #else
-        SDL_FreeSurface(_glContext);
+        SDL_FreeSurface(_surface);
         #endif
         return false;
     }
@@ -566,7 +603,7 @@ Vector2i Sdl2Application::windowSize() const {
     CORRADE_ASSERT(_window, "Platform::Sdl2Application::windowSize(): no window opened", {});
     SDL_GetWindowSize(_window, &size.x(), &size.y());
     #else
-    CORRADE_ASSERT(_glContext, "Platform::Sdl2Application::windowSize(): no window opened", {});
+    CORRADE_ASSERT(_surface, "Platform::Sdl2Application::windowSize(): no window opened", {});
     emscripten_get_canvas_element_size("#canvas", &size.x(), &size.y());
     #endif
     return size;
@@ -591,7 +628,7 @@ Vector2i Sdl2Application::framebufferSize() const {
     CORRADE_ASSERT(_window, "Platform::Sdl2Application::framebufferSize(): no window opened", {});
     SDL_GL_GetDrawableSize(_window, &size.x(), &size.y());
     #else
-    CORRADE_ASSERT(_glContext, "Platform::Sdl2Application::framebufferSize(): no window opened", {});
+    CORRADE_ASSERT(_surface, "Platform::Sdl2Application::framebufferSize(): no window opened", {});
     emscripten_get_canvas_element_size("#canvas", &size.x(), &size.y());
     #endif
     return size;
@@ -611,7 +648,7 @@ void Sdl2Application::swapBuffers() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     SDL_GL_SwapWindow(_window);
     #else
-    SDL_Flip(_glContext);
+    SDL_Flip(_surface);
     #endif
 }
 
@@ -643,7 +680,7 @@ Sdl2Application::~Sdl2Application() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     SDL_GL_DeleteContext(_glContext);
     #else
-    SDL_FreeSurface(_glContext);
+    SDL_FreeSurface(_surface);
     #endif
     #endif
 
@@ -696,7 +733,11 @@ void Sdl2Application::mainLoopIteration() {
             _lastKnownCanvasSize = canvasSizei;
             const Vector2i size = _dpiScaling*canvasSizei;
             emscripten_set_canvas_element_size("#canvas", size.x(), size.y());
-            ViewportEvent e{size, size, _dpiScaling};
+            ViewportEvent e{
+                #ifdef MAGNUM_TARGET_GL
+                size,
+                #endif
+                size, _dpiScaling};
             viewportEvent(e);
             _flags |= Flag::Redraw;
         }
