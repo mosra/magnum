@@ -356,7 +356,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
         template<class U> explicit ImageView(U format, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{{}, format, size} {}
 
         /** @brief Construct from a view of lower dimension count */
-        template<UnsignedInt otherDimensions, class = typename std::enable_if<otherDimensions < dimensions>::type> /*implicit*/ ImageView(const ImageView<otherDimensions, T>& other) noexcept;
+        template<UnsignedInt otherDimensions, class = typename std::enable_if<(otherDimensions < dimensions)>::type> /*implicit*/ ImageView(const ImageView<otherDimensions, T>& other) noexcept;
 
         /** @brief Convert a mutable view to a const one */
         template<class U, class = typename std::enable_if<std::is_const<T>::value &&!std::is_const<U>::value>::type> /*implicit*/ ImageView(const ImageView<dimensions, U>& other) noexcept;
@@ -725,7 +725,7 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
         template<class U> explicit CompressedImageView(U format, const VectorTypeFor<dimensions, Int>& size) noexcept: CompressedImageView{{}, format, size} {}
 
         /** @brief Construct from a view of lower dimension count */
-        template<UnsignedInt otherDimensions, class = typename std::enable_if<otherDimensions < dimensions>::type> /*implicit*/ CompressedImageView(const CompressedImageView<otherDimensions, T>& other) noexcept;
+        template<UnsignedInt otherDimensions, class = typename std::enable_if<(otherDimensions < dimensions)>::type> /*implicit*/ CompressedImageView(const CompressedImageView<otherDimensions, T>& other) noexcept;
 
         /** @brief Convert a mutable view to a const one */
         template<class U, class = typename std::enable_if<std::is_const<T>::value &&!std::is_const<U>::value>::type> /*implicit*/ CompressedImageView(const CompressedImageView<dimensions, U>& other) noexcept;
