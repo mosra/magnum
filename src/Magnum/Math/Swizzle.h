@@ -140,7 +140,14 @@ Inverse to @ref gather(), supporting the same component addressing except for
 @see @ref matrix-vector-component-access, @ref Vector4::xyz(),
     @ref Vector4::rgb(), @ref Vector4::xy(), @ref Vector3::xy()
 */
-template<char ...components, class T> constexpr T scatter(const T& vector, const Vector<sizeof...(components), typename T::Type>& values) {
+#ifdef DOXYGEN_GENERATING_OUTPUT
+template<char ...components, class T> constexpr T scatter(const T& vector, const Vector<sizeof...(components), typename T::Type>& values)
+#else
+/* Using std::common_type otherwise GCC 4.8 fails to match the arguments
+   in SwizzleTest::scatterOneComponent() */
+template<char ...components, class T> constexpr T scatter(const T& vector, const typename std::common_type<Vector<sizeof...(components), typename T::Type>>::type& values)
+#endif
+{
     return Implementation::scatterRecursive<T, sizeof...(components), components...>(vector, values, 0);
 }
 
