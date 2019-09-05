@@ -82,8 +82,8 @@ namespace Implementation {
     /* Used to make friends to speed up debug builds */
     template<std::size_t, class> struct MatrixDeterminant;
     /* To make gather() / scatter() faster */
-    template<std::size_t, std::size_t> struct ComponentAtPosition;
-    template<std::size_t, char, std::size_t> struct ComponentOr;
+    template<std::size_t, std::size_t> struct GatherComponentAt;
+    template<std::size_t, std::size_t, bool> struct ScatterComponentOr;
 }
 
 /** @relatesalso Vector
@@ -656,8 +656,8 @@ template<std::size_t size, class T> class Vector {
         template<std::size_t, class> friend class Matrix;
         template<std::size_t, class> friend struct Implementation::MatrixDeterminant;
         /* To make gather() / scatter() faster */
-        template<std::size_t, std::size_t> friend struct Implementation::ComponentAtPosition;
-        template<std::size_t, char, std::size_t> friend struct Implementation::ComponentOr;
+        template<std::size_t, std::size_t> friend struct Implementation::GatherComponentAt;
+        template<std::size_t, std::size_t, bool> friend struct Implementation::ScatterComponentOr;
 
         /* So the out-of-class comparators can access data directly to avoid
            function call overhead */

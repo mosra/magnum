@@ -210,7 +210,8 @@ See also:
 -   Scalar and vector @ref Math::equal() and @ref Math::notEqual() which do a
     component-wise comparison in the vector case, as the equality/non-equality
     operators return a single @cpp bool @ce
--   @ref Math::scatter() as an inverse operation to @ref math::gather()
+-   @ref Math::scatter() as an inverse operation to @ref math::gather(), both
+    functions now support addressing via component indices as well
 
 @subsubsection changelog-latest-new-meshtools MeshTools library
 
