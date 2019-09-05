@@ -614,6 +614,8 @@ See also:
 -   Populating the Troubleshooting section of
     @ref platforms-windows "Windows-specific platform notes" (see
     [mosra/magnum#355](https://github.com/mosra/magnum/issues/355))
+-   Extended info about the `--head` option in @ref building-packages-vcpkg
+    (see [mosra/magnum#367](https://github.com/mosra/magnum/issues/367))
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

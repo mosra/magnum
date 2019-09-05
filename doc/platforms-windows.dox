@@ -138,7 +138,7 @@ its documentation for more information.
 
 @section platform-windows-hiding-console Hiding console window
 
-By default, CMake compiles GUI applications with an potentially unwanted
+By default, CMake compiles GUI applications with a potentially unwanted
 console window lurking in the background. This can be fixed by creating your
 executable with @cmake add_executable(... WIN32 ...) @ce and linking to the
 @ref main "Corrade::Main" library. See its documentation for more information.
