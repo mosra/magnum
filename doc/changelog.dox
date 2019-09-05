@@ -292,6 +292,9 @@ See also:
     @ref ResourceDataState::NotFound resources
 -   Added comparison operators to @ref Resource (see
     [mosra/magnum#346](https://github.com/mosra/magnum/pull/346))
+-   @ref ImageView and @ref CompressedImageView of smaller dimension count are
+    now implicitly convertible to views of higher dimension count to make
+    slice-by-slice uploads to @ref GL::TextureArray and others easier
 -   @ref Image::data(), @ref CompressedImage::data() and
     @ref Trade::ImageData::data() called on a r-value now return
     @ref Corrade::Containers::Array instead of being deleted

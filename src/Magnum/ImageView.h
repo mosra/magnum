@@ -355,6 +355,9 @@ template<UnsignedInt dimensions, class T> class ImageView {
          */
         template<class U> explicit ImageView(U format, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{{}, format, size} {}
 
+        /** @brief Construct from a view of lower dimension count */
+        template<UnsignedInt otherDimensions, class = typename std::enable_if<otherDimensions < dimensions>::type> /*implicit*/ ImageView(const ImageView<otherDimensions, T>& other) noexcept;
+
         /** @brief Convert a mutable view to a const one */
         template<class U, class = typename std::enable_if<std::is_const<T>::value &&!std::is_const<U>::value>::type> /*implicit*/ ImageView(const ImageView<dimensions, U>& other) noexcept;
 
@@ -721,6 +724,9 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          */
         template<class U> explicit CompressedImageView(U format, const VectorTypeFor<dimensions, Int>& size) noexcept: CompressedImageView{{}, format, size} {}
 
+        /** @brief Construct from a view of lower dimension count */
+        template<UnsignedInt otherDimensions, class = typename std::enable_if<otherDimensions < dimensions>::type> /*implicit*/ CompressedImageView(const CompressedImageView<otherDimensions, T>& other) noexcept;
+
         /** @brief Convert a mutable view to a const one */
         template<class U, class = typename std::enable_if<std::is_const<T>::value &&!std::is_const<U>::value>::type> /*implicit*/ CompressedImageView(const CompressedImageView<dimensions, U>& other) noexcept;
 
@@ -877,6 +883,10 @@ template<UnsignedInt dimensions, class T> template<class U> inline ImageView<dim
         "format types larger than 32bits are not supported");
 }
 
+#ifndef DOXYGEN_GENERATING_OUTPUT /* it complains otherwise. why? don't know, don't want to know */
+template<UnsignedInt dimensions, class T> template<UnsignedInt otherDimensions, class> ImageView<dimensions, T>::ImageView(const ImageView<otherDimensions, T>& other) noexcept: _storage{other._storage}, _format{other._format}, _formatExtra{other._formatExtra}, _pixelSize{other._pixelSize}, _size{Math::Vector<dimensions, Int>::pad(other._size, 1)}, _data{other._data} {}
+#endif
+
 template<UnsignedInt dimensions, class T> template<class U, class> ImageView<dimensions, T>::ImageView(const ImageView<dimensions, U>& other) noexcept: _storage{other._storage}, _format{other._format}, _formatExtra{other._formatExtra}, _pixelSize{other._pixelSize}, _size{other._size}, _data{other._data} {}
 
 template<UnsignedInt dimensions, class T> template<class U> inline  CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const U format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: CompressedImageView{storage, UnsignedInt(format), size, data} {
@@ -888,6 +898,10 @@ template<UnsignedInt dimensions, class T> template<class U> inline CompressedIma
     static_assert(sizeof(U) <= 4,
         "format types larger than 32bits are not supported");
 }
+
+#ifndef DOXYGEN_GENERATING_OUTPUT /* it complains otherwise. why? don't know, don't want to know */
+template<UnsignedInt dimensions, class T> template<UnsignedInt otherDimensions, class> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedImageView<otherDimensions, T>& other) noexcept: _storage{other._storage}, _format{other._format}, _size{Math::Vector<dimensions, Int>::pad(other._size, 1)}, _data{other._data} {}
+#endif
 
 template<UnsignedInt dimensions, class T> template<class U, class> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedImageView<dimensions, U>& other) noexcept: _storage{other._storage}, _format{other._format}, _size{other._size}, _data{other._data} {}
 
