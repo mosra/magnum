@@ -26,7 +26,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "MagnumPlugins/WavAudioImporter/WavImporter.h"
+#include "Magnum/Magnum.h"
 
 namespace Magnum { namespace Audio { namespace Implementation {
 

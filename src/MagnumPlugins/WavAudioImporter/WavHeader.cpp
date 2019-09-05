@@ -27,8 +27,6 @@
 
 #include <Corrade/Utility/Debug.h>
 
-#include "Magnum/Magnum.h"
-
 namespace Magnum { namespace Audio { namespace Implementation {
 
 static_assert(sizeof(RiffChunk) == 8, "RiffChunk size is not 8 bytes");
