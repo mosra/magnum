@@ -187,7 +187,7 @@ void PixelFormatTest::mapTypeImplementationSpecificZero() {
 
 void PixelFormatTest::mapTypeUnsupported() {
     #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_SKIP("All pixel formats are supported on ES3+");
+    CORRADE_SKIP("All pixel formats are supported on ES3+.");
     #else
     CORRADE_VERIFY(!hasPixelFormat(Magnum::PixelFormat::RGBA16UI));
 
@@ -293,15 +293,22 @@ void PixelFormatTest::mapCompressedFormatImplementationSpecific() {
 }
 
 void PixelFormatTest::mapCompressedFormatUnsupported() {
-    #ifndef MAGNUM_TARGET_GLES2
-    CORRADE_SKIP("All pixel formats are supported on ES3+.");
-    #else
+    #ifdef MAGNUM_TARGET_GLES2
     CORRADE_VERIFY(!hasCompressedPixelFormat(Magnum::CompressedPixelFormat::Etc2RGB8Unorm));
 
     std::ostringstream out;
     Error redirectError{&out};
     compressedPixelFormat(Magnum::CompressedPixelFormat::Etc2RGB8Unorm);
     CORRADE_COMPARE(out.str(), "GL::compressedPixelFormat(): format CompressedPixelFormat::Etc2RGB8Unorm is not supported on this target\n");
+    #elif !defined(MAGNUM_TARGET_GLES)
+    CORRADE_VERIFY(!hasCompressedPixelFormat(Magnum::CompressedPixelFormat::PvrtcRGB2bppUnorm));
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    compressedPixelFormat(Magnum::CompressedPixelFormat::PvrtcRGB2bppUnorm);
+    CORRADE_COMPARE(out.str(), "GL::compressedPixelFormat(): format CompressedPixelFormat::PvrtcRGB2bppUnorm is not supported on this target\n");
+    #else
+    CORRADE_SKIP("All compressed pixel formats are supported on ES3.");
     #endif
 }
 
