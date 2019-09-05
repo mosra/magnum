@@ -51,8 +51,8 @@ https://twitter.com/sjb3d/status/563640846671953920): @f[
 @see @ref cross(const Vector2<T>&, const Vector2<T>&), @ref planeEquation()
 */
 template<class T> inline Vector3<T> cross(const Vector3<T>& a, const Vector3<T>& b) {
-    return swizzle<'y', 'z', 'x'>(a*swizzle<'y', 'z', 'x'>(b) -
-                                  b*swizzle<'y', 'z', 'x'>(a));
+    return gather<'y', 'z', 'x'>(a*gather<'y', 'z', 'x'>(b) -
+                                 b*gather<'y', 'z', 'x'>(a));
 }
 
 /**

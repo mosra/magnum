@@ -82,11 +82,11 @@ Containers::Array<char> TgaImageConverter::doExportToData(const ImageView2D& ima
     if(image.format() == PixelFormat::RGB8Unorm) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.begin()+sizeof(Implementation::TgaHeader));
         std::transform(pixels, pixels + image.size().product(), pixels,
-            [](Math::Vector3<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r'>(pixel); });
+            [](Math::Vector3<UnsignedByte> pixel) { return Math::gather<'b', 'g', 'r'>(pixel); });
     } else if(image.format() == PixelFormat::RGBA8Unorm) {
         auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data.begin()+sizeof(Implementation::TgaHeader));
         std::transform(pixels, pixels + image.size().product(), pixels,
-            [](Math::Vector4<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r', 'a'>(pixel); });
+            [](Math::Vector4<UnsignedByte> pixel) { return Math::gather<'b', 'g', 'r', 'a'>(pixel); });
     }
 
     return data;

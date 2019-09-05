@@ -990,16 +990,16 @@ void ColorTest::swizzleType() {
     constexpr Color3 origColor3;
     constexpr Color4ub origColor4;
 
-    constexpr auto a = Math::swizzle<'y', 'z', 'r'>(origColor3);
+    constexpr auto a = Math::gather<'y', 'z', 'r'>(origColor3);
     CORRADE_VERIFY((std::is_same<decltype(a), const Color3>::value));
 
-    constexpr auto b = Math::swizzle<'y', 'z', 'a'>(origColor4);
+    constexpr auto b = Math::gather<'y', 'z', 'a'>(origColor4);
     CORRADE_VERIFY((std::is_same<decltype(b), const Color3ub>::value));
 
-    constexpr auto c = Math::swizzle<'y', 'z', 'y', 'x'>(origColor3);
+    constexpr auto c = Math::gather<'y', 'z', 'y', 'x'>(origColor3);
     CORRADE_VERIFY((std::is_same<decltype(c), const Color4>::value));
 
-    constexpr auto d = Math::swizzle<'y', 'a', 'y', 'x'>(origColor4);
+    constexpr auto d = Math::gather<'y', 'a', 'y', 'x'>(origColor4);
     CORRADE_VERIFY((std::is_same<decltype(d), const Color4ub>::value));
 }
 

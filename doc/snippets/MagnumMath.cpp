@@ -162,9 +162,14 @@ static_cast<void>(x);
 {
 /* [matrix-vector-access-swizzle] */
 Vector4i orig{-1, 2, 3, 4};
-Vector4i bgra = Math::swizzle<'b', 'g', 'r', 'a'>(orig); // { 3, 2, -1, 4 }
-Math::Vector<6, Int> w10xyz = Math::swizzle<'w', '1', '0', 'x', 'y', 'z'>(orig);
+Vector4i bgra = Math::gather<'b', 'g', 'r', 'a'>(orig); // { 3, 2, -1, 4 }
+Math::Vector<6, Int> w10xyz = Math::gather<'w', '1', '0', 'x', 'y', 'z'>(orig);
     // { 4, 1, 0, -1, 2, 3 }
+
+Vector4 vec{1.5f, 3.0f, 0.1f, 1.1f};
+Vector2 coords{5.0f, -2.0f};
+Math::scatter<'z', 'w'>(vec, coords); // { 1.5, 3.0, 5.0, -2.0 }
+
 /* [matrix-vector-access-swizzle] */
 static_cast<void>(bgra);
 static_cast<void>(w10xyz);
@@ -1077,13 +1082,25 @@ static_cast<void>(mySet);
 }
 
 {
-/* [swizzle] */
+/* [gather] */
 Vector4i original(-1, 2, 3, 4);
 
-auto vec = Math::swizzle<'w', '1', '0', 'x', 'y', 'z'>(original);
+auto vec = Math::gather<'w', '1', '0', 'x', 'y', 'z'>(original);
         // vec == { 4, 1, 0, -1, 2, 3 }
-/* [swizzle] */
+/* [gather] */
 static_cast<void>(vec);
+}
+
+{
+/* [scatter] */
+Vector4 vec{1.5f, 3.0f, 0.1f, 1.1f};
+Vector2 coords{5.0f, -2.0f};
+vec = Math::scatter<'z', 'w'>(vec, coords); // { 1.5, 3.0, 5.0, -2.0 }
+
+/* Combine the two for more advanced swizzles */
+Vector4 vec2;
+vec2 = Math::scatter<'w', 'x', 'y'>(vec2, Math::gather<'x', 'w', 'y'>(vec));
+/* [scatter] */
 }
 
 {

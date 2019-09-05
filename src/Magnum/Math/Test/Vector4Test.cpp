@@ -317,7 +317,7 @@ void Vector4Test::strictWeakOrdering() {
 
 void Vector4Test::swizzleType() {
     constexpr Vector4i orig;
-    constexpr auto c = swizzle<'y', 'a', 'y', 'x'>(orig);
+    constexpr auto c = gather<'y', 'a', 'y', 'x'>(orig);
     CORRADE_VERIFY((std::is_same<decltype(c), const Vector4i>::value));
 }
 

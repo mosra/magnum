@@ -32,45 +32,86 @@ namespace Magnum { namespace Math { namespace Test { namespace {
 struct SwizzleTest: Corrade::TestSuite::Tester {
     explicit SwizzleTest();
 
-    void components();
-    void constants();
-    void rgba();
-    void sizes();
+    void gather();
+    void gatherConstants();
+    void gatherDifferentSize();
+
+    void scatter();
+    void scatterOneComponent();
+    void scatterRepeatedComponents();
+    void scatterOverwriteAllComponents();
 };
 
+typedef Vector<2, Int> Vector2i;
+typedef Vector<3, Int> Vector3i;
 typedef Vector<4, Int> Vector4i;
 
 SwizzleTest::SwizzleTest() {
-    addTests({&SwizzleTest::components,
-              &SwizzleTest::constants,
-              &SwizzleTest::rgba,
-              &SwizzleTest::sizes});
+    addTests({&SwizzleTest::gather,
+              &SwizzleTest::gatherConstants,
+              &SwizzleTest::gatherDifferentSize,
+
+              &SwizzleTest::scatter,
+              &SwizzleTest::scatterOneComponent,
+              &SwizzleTest::scatterRepeatedComponents,
+              &SwizzleTest::scatterOverwriteAllComponents});
 }
 
-void SwizzleTest::components() {
-    constexpr auto a = swizzle<'z', 'x', 'w', 'y'>(Vector4i(2, 4, 5, 7));
-    CORRADE_COMPARE(a, Vector4i(5, 2, 7, 4));
+void SwizzleTest::gather() {
+    constexpr auto a = Math::gather<'z', 'x', 'w', 'y'>(Vector4i{2, 4, 5, 7});
+    constexpr auto b = Math::gather<'b', 'r', 'a', 'g'>(Vector4i{2, 4, 5, 7});
+    CORRADE_COMPARE(a, (Vector4i{5, 2, 7, 4}));
+    CORRADE_COMPARE(b, (Vector4i{5, 2, 7, 4}));
 }
 
-void SwizzleTest::constants() {
-    constexpr auto a = swizzle<'1', 'w', '0', 'y'>(Vector4i(2, 4, 5, 7));
-    CORRADE_COMPARE(a, Vector4i(1, 7, 0, 4));
+void SwizzleTest::gatherConstants() {
+    constexpr auto a = Math::gather<'1', 'w', '0', 'y'>(Vector4i{2, 4, 5, 7});
+    constexpr auto b = Math::gather<'1', 3, '0', 2>(Vector4i{2, 4, 5, 7});
+    CORRADE_COMPARE(a, (Vector4i{1, 7, 0, 4}));
+    CORRADE_COMPARE(b, (Vector4i{1, 7, 0, 4}));
 }
 
-void SwizzleTest::rgba() {
-    constexpr auto a = swizzle<'b', 'r', 'a', 'g'>(Vector4i(2, 4, 5, 7));
-    CORRADE_COMPARE(a, Vector4i(5, 2, 7, 4));
+void SwizzleTest::gatherDifferentSize() {
+    constexpr auto a = Math::gather<'y', 'x', 'x'>(Vector<2, Int>{1, 2});
+    CORRADE_COMPARE(a, (Vector3i{2, 1, 1}));
+
+    constexpr auto b = Math::gather<'z'>(Vector4i{1, 2, 3, 4});
+    CORRADE_COMPARE(b, (Vector<1, Int>{3}));
+
+    constexpr auto c = Math::gather<'z', 'x', 'w', 'y', 'z', 'y', 'x'>(Vector4i{1, 2, 3, 4});
+    CORRADE_COMPARE(c, (Vector<7, Int>{3, 1, 4, 2, 3, 2, 1}));
 }
 
-void SwizzleTest::sizes() {
-    constexpr auto a = swizzle<'y', 'x', 'x'>(Vector<2, Int>(1, 2));
-    CORRADE_COMPARE(a, (Vector<3, Int>(2, 1, 1)));
+void SwizzleTest::scatter() {
+    constexpr auto a = Math::scatter<'w', 'y'>(Vector4i{2, 4, 5, 7}, Vector2i{1, 3});
+    constexpr auto b = Math::scatter<'a', 'g'>(Vector4i{2, 4, 5, 7}, Vector2i{1, 3});
+    CORRADE_COMPARE(a, (Vector4i{2, 3, 5, 1}));
+    CORRADE_COMPARE(b, (Vector4i{2, 3, 5, 1}));
 
-    constexpr auto b = swizzle<'z'>(Vector4i(1, 2, 3, 4));
-    CORRADE_COMPARE(b, (Vector<1, Int>(3)));
+    /* It's an inverse, so doing the same gather should result back in the
+       original values */
+    CORRADE_COMPARE((Math::gather<'w', 'y'>(a)), (Vector2i{1, 3}));
+}
 
-    constexpr auto c = swizzle<'z', 'x', 'w', 'y', 'z', 'y', 'x'>(Vector4i(1, 2, 3, 4));
-    CORRADE_COMPARE(c, (Vector<7, Int>(3, 1, 4, 2, 3, 2, 1)));
+void SwizzleTest::scatterOneComponent() {
+    constexpr auto a = Math::scatter<'w'>(Vector<7, Int>{2, 4, 5, 7, 0, 3, 2}, 1);
+    constexpr auto b = Math::scatter<'a'>(Vector<7, Int>{2, 4, 5, 7, 0, 3, 2}, 1);
+    CORRADE_COMPARE(a, (Vector<7, Int>{2, 4, 5, 1, 0, 3, 2}));
+    CORRADE_COMPARE(b, (Vector<7, Int>{2, 4, 5, 1, 0, 3, 2}));
+}
+
+void SwizzleTest::scatterRepeatedComponents() {
+    constexpr auto a = Math::scatter<'x', 'y', 'z', 'y', 'x'>(Vector3i{6, 12, 19}, Vector<5, Int>{1, 2, 3, 4, 5});
+    constexpr auto b = Math::scatter<'r', 'g', 'b', 'g', 'r'>(Vector3i{6, 12, 19}, Vector<5, Int>{1, 2, 3, 4, 5});
+    CORRADE_COMPARE(a, (Vector3i{5, 4, 3}));
+    CORRADE_COMPARE(b, (Vector3i{5, 4, 3}));
+}
+
+void SwizzleTest::scatterOverwriteAllComponents() {
+    constexpr auto a = Math::scatter<'w', 'y', 'z', 'x'>(Vector4i{2, 4, 5, 7}, Vector4i{1, 3, 6, 9});
+    constexpr auto b = Math::gather<'w', 'y', 'z', 'x'>(Vector4i{1, 3, 6, 9});
+    CORRADE_COMPARE(a, (Vector4i{9, 3, 6, 1}));
+    CORRADE_COMPARE(b, (Vector4i{9, 3, 6, 1}));
 }
 
 }}}}

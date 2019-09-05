@@ -147,8 +147,8 @@ and subparts:
 
 @ref Color3 and @ref Color4 name their components `rgba` instead of `xyzw`.
 
-For more involved operations with components there is the @ref Math::swizzle()
-function:
+For more involved operations with components there is the @ref Math::gather()
+and @ref Math::scatter() functions:
 
 @snippet MagnumMath.cpp matrix-vector-access-swizzle
 

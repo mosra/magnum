@@ -136,11 +136,11 @@ Containers::Optional<ImageData2D> TgaImporter::doImage2D(UnsignedInt) {
     if(format == PixelFormat::RGB8Unorm) {
         auto pixels = reinterpret_cast<Math::Vector3<UnsignedByte>*>(data.data());
         std::transform(pixels, pixels + size.product(), pixels,
-            [](Math::Vector3<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r'>(pixel); });
+            [](Math::Vector3<UnsignedByte> pixel) { return Math::gather<'b', 'g', 'r'>(pixel); });
     } else if(format == PixelFormat::RGBA8Unorm) {
         auto pixels = reinterpret_cast<Math::Vector4<UnsignedByte>*>(data.data());
         std::transform(pixels, pixels + size.product(), pixels,
-            [](Math::Vector4<UnsignedByte> pixel) { return Math::swizzle<'b', 'g', 'r', 'a'>(pixel); });
+            [](Math::Vector4<UnsignedByte> pixel) { return Math::gather<'b', 'g', 'r', 'a'>(pixel); });
     }
 
     return ImageData2D{storage, format, size, std::move(data)};
