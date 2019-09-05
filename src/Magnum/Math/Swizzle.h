@@ -38,7 +38,7 @@ namespace Implementation {
         static_assert(size > position, "swizzle parameter out of range of gather vector");
 
         template<class T> constexpr static T value(const Math::Vector<size, T>& vector) {
-            return vector[position];
+            return vector._data[position];
         }
     };
 
@@ -70,7 +70,7 @@ namespace Implementation {
             "swizzle parameter out of range of scatter vector");
 
         template<class T> constexpr static T value(const Math::Vector<size, T>& vector, const T&) {
-            return vector[i];
+            return vector._data[i];
         }
     };
     template<std::size_t size, std::size_t position> struct Value {
