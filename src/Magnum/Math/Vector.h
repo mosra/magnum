@@ -84,6 +84,7 @@ namespace Implementation {
     /* To make gather() / scatter() faster */
     template<std::size_t, std::size_t> struct GatherComponentAt;
     template<std::size_t, std::size_t, bool> struct ScatterComponentOr;
+    template<class T, std::size_t valueSize, char, char...> constexpr T scatterRecursive(const T&, const Vector<valueSize, typename T::Type>&, std::size_t);
 }
 
 /** @relatesalso Vector
@@ -658,6 +659,7 @@ template<std::size_t size, class T> class Vector {
         /* To make gather() / scatter() faster */
         template<std::size_t, std::size_t> friend struct Implementation::GatherComponentAt;
         template<std::size_t, std::size_t, bool> friend struct Implementation::ScatterComponentOr;
+        template<class T_, std::size_t valueSize, char, char...> friend constexpr T_ Implementation::scatterRecursive(const T_&, const Vector<valueSize, typename T_::Type>&, std::size_t);
 
         /* So the out-of-class comparators can access data directly to avoid
            function call overhead */

@@ -97,7 +97,7 @@ namespace Implementation {
     }
     template<class T, std::size_t valueSize, char component, char ...next> constexpr T scatterRecursive(const T& vector, const Vector<valueSize, typename T::Type>& values, std::size_t valueIndex) {
         return scatterRecursive<T, valueSize, next...>(
-            scatterComponentOr<T, component>(vector, values[valueIndex], typename GenerateSequence<T::Size>::Type{}),
+            scatterComponentOr<T, component>(vector, values._data[valueIndex], typename GenerateSequence<T::Size>::Type{}),
             values, valueIndex + 1);
     }
 }
