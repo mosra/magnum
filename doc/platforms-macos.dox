@@ -128,7 +128,7 @@ advertised programmatically. In case of CMake, you have to supply a custom
 
 Apple Clang has a different versioning scheme from upstream Clang, making it
 hard to know which Clang version corresponds to which Apple Clang version.
-Wikipedia has a [handy version mapping table](https://en.wikipedia.org/wiki/Xcode#Latest_versions).
+Wikipedia has a [handy version mapping table](https://en.wikipedia.org/wiki/Xcode#Toolchain_versions).
 
 CMake exposes Apple Clang as `AppleClang`, so a complete check for e.g.
 upstream version 5 needs to look like this:

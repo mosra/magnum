@@ -44,7 +44,9 @@ class MyApplication: public Platform::Application {
 };
 
 /** [1] */
-MyApplication::MyApplication(const Arguments& arguments): Platform::Application{arguments} {
+MyApplication::MyApplication(const Arguments& arguments):
+    Platform::Application{arguments}
+{
     using namespace Magnum::Math::Literals;
 
     GL::Renderer::setClearColor(0xa5c9ea_rgbf);

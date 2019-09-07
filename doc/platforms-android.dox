@@ -742,6 +742,53 @@ gradle build
 
 @section platforms-android-troubleshooting Troubleshooting
 
+@subsection platforms-android-cmake-too-old CMake is too old
+
+While the minimal CMake version that's required for building Magnum for Android
+is 3.7, you might want to grab at least CMake 3.9.2, as it
+[fixes an issue with the Clang toolchain](https://gitlab.kitware.com/cmake/cmake/issues/17253).
+
+@subsection platforms-android-ndk-too-new NDK is too new
+
+Last NDK version that's known to be reliably working with CMake is r17, newer
+versions suffer from various issues due to changes introduced in NDK internals.
+No work has been done yet on Magnum side to counter / work around those issues,
+optimistically waiting on CMake devs to figure it out instead. See
+[mosra/magnum#310](https://github.com/mosra/magnum/issues/310) for details.
+
+@subsection platforms-android-troubleshooting-windows-nsight CMake complaining about some NVIDIA Nsight Tegra Visual Studio Edition on Windows
+
+On Windows it's possible that you get the following CMake error when
+configuring an Android project:
+
+> CMAKE_SYSTEM_NAME is 'Android' but 'NVIDIA Nsight Tegra Visual Studio
+> Edition' is not installed.
+
+This is because Visual Studio Project Files as the default generator on Windows
+is not able to build for any other system than Windows itself. To fix it, use a
+different generator --- for example [Ninja](https://ninja-build.org/). Download
+the binary, put it somewhere on your `PATH` and pass `-G Ninja` to CMake.
+Alternatively, pass the path to it using
+`-DCMAKE_MAKE_PROGRAM=C:/path/to/ninja.exe`.
+
+@m_class{m-block m-success}
+
+@par Using Ninja that's bundled with Visual Studio
+    If you have Visual Studio with CMake support installed, instead of
+    downloading Ninja yourself, you can make use of the version that's bundled
+    with it. In version 2017 it's in the following location, adjust the path
+    for other versions:
+@par
+    @parblock
+    <!-- gotta love doxygen, making easy things hard and complex things such as
+         applying a class to a nested block element next-to-impossible -->
+    @m_class{m-console-wrap}
+
+    @code{.bat}
+    cmake -G Ninja -DCMAKE_MAKE_PROGRAM=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja\ninja.exe ...
+    @endcode
+    @endparblock
+
 @subsection platforms-android-troubleshooting-multiple-devices ADB fails when more devices are connected
 
 If any `adb` command fails with

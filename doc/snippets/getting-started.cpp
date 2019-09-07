@@ -37,7 +37,9 @@ class MyApplication: public Platform::Application {
         void drawEvent() override;
 };
 
-MyApplication::MyApplication(const Arguments& arguments): Platform::Application{arguments} {
+MyApplication::MyApplication(const Arguments& arguments):
+    Platform::Application{arguments}
+{
     // TODO: Add your initialization code here
 }
 

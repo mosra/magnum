@@ -77,23 +77,53 @@ project(MyApplication)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
 
+# Add Corrade and Magnum as subprojects, enable Sdl2Application
+set(WITH_SDL2APPLICATION ON CACHE BOOL "" FORCE)
 add_subdirectory(corrade)
 add_subdirectory(magnum)
+
 add_subdirectory(src)
 @endcode
 
-@note
-    In the long run it's better to install Corrade and Magnum separately
-    instead of cloning them into your project tree, as that vastly improves
-    your iteration times. Follow @ref building "the full installation guide" if
-    you want to go that route; don't forget to enable `WITH_SDL2APPLICATION`
-    when building Magnum so the bootstrap project can use it later. There are
-    also ready-to-use packages for various OSes and distributions.
-@note
-    If you have that, you don't need to clone the subprojects and modify the
-    `CMakeLists.txt` file like above, you might only need to set
-    `CMAKE_PREFIX_PATH` if you installed Corrade and Magnum to a non-standard
-    location.
+@m_class{m-block m-warning}
+
+@par What the heck is ON CACHE BOOL? FORCE?!
+    CMake is a buildsystem with a long history and even though some design
+    decisions were not good in retrospect, preserving the behavior is crucial
+    for its reliability. The above is needed due to an unfortunate behavior of
+    the @cmake option() @ce command that got
+    [fixed in CMake 3.13](https://cmake.org/cmake/help/latest/policy/CMP0077.html).
+    If you can afford requiring CMake 3.13 for your project, you can change the
+    above to just the following:
+@par
+    @code{.cmake}
+    cmake_minimum_required(VERSION 3.13) # important
+
+    ...
+
+    set(WITH_SDL2APPLICATION ON)
+    add_subdirectory(corrade)
+    add_subdirectory(magnum)
+    @endcode
+
+<b></b>
+
+@m_class{m-block m-success}
+
+@par Building Magnum separately
+    Even though using Magnum as a CMake subproject is a fully supported use
+    case, in the long run it might be better to build & install Corrade and
+    Magnum separately instead of cloning them into your project tree, as that
+    vastly improves your iteration times. Follow
+    @ref building "the full installation guide" if you want to go that route;
+    don't forget to enable `WITH_SDL2APPLICATION` when building Magnum so the
+    bootstrap project can correctly find and use it. There are also
+    ready-to-use packages for various OSes and distributions, as listed above.
+@par
+    If you have a separate installation (or a package), you don't need to clone
+    the subprojects and modify the `CMakeLists.txt` file like above, you might
+    only need to set `CMAKE_PREFIX_PATH` if you installed Corrade and Magnum to
+    a non-standard location.
 
 @section getting-started-review Review project structure
 
@@ -151,22 +181,27 @@ In the following tutorials the code will be explained more thoroughly.
 
 @subsection getting-started-linux Linux, macOS and other Unix-based OSes
 
-In Linux (and other Unix-based OSs) you can build the application along with
-the subprojects using the following three commands: create out-of-source build
-directory, run `cmake`, enable SDL2 application in the Magnum subproject and
+Because the bootstrap project is based on SDL2, make sure you have SDL2
+installed. It's usually in your system's package manager, on macOS you can get
+it from Homebrew using @cb{.sh} brew install sdl2 @ce. The application along
+with the subprojects is built using the following three commands ---
+create an out-of-source build directory, run `cmake` to generate a project and
 then build everything. The compiled application binary will then appear in
 `src/` subdirectory of the build dir:
 
 @code{.sh}
 mkdir -p build && cd build
-cmake .. -DWITH_SDL2APPLICATION=ON
+cmake ..
 cmake --build .
 ./src/MyApplication
 @endcode
 
-@note If you installed Corrade and Magnum separately (instead of putting them
-    in the project as subprojects), the `-DWITH_SDL2APPLICATION=ON` is not
-    needed as that was already done when compiling & installing Magnum before.
+@m_class{m-note m-success}
+
+@par Generating an Xcode project
+    On macOS it's possible to generate an Xcode project by running CMake as
+    `cmake -G Xcode ..`. After that's done, you can open the generated project
+    from the `build` directory.
 
 @subsection getting-started-windows Windows
 
@@ -177,13 +212,14 @@ to find them. For running the executable properly, Windows also need to have
 all dependency DLLs copied along it. That can be done by setting
 `CMAKE_RUNTIME_OUTPUT_DIRECTORY`. It's then up to you whether you will use a
 command line, Visual Studio or for example QtCreator. With Visual Studio the
-most straightforward way to generate the project file is via the command line:
+most straightforward way to generate the project file is via the Developer
+Command Prompt, alternatively execute the correct `vcvarsall.bat` in order to
+populate the necessary environment variables.
 
 @code{.bat}
 mkdir build && cd build
 cmake .. ^
-    -DWITH_SDL2APPLICATION=ON ^
-    -DCMAKE_PREFIX_PATH="C:/Users/you/where/you/extracted/SDL2-2.0.5" ^
+    -DCMAKE_PREFIX_PATH="C:/Users/you/where/you/extracted/SDL" ^
     -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="bin"
 @endcode
 
@@ -192,8 +228,7 @@ generated by CMake in the `build/` directory.
 
 With QtCreator just open project's root `CMakeLists.txt` file. It then asks you
 where to create build directory, allows you to specify initial CMake parameters
-(`-DWITH_SDL2APPLICATION=ON` and others) and then you can just press *Configure*
-and everything is ready to be built.
+and then you can just press *Configure* and everything is ready to be built.
 
 @note If you installed Corrade and Magnum separately, the install directory
     containing the DLLs needs to be in @cb{.bat} %PATH% @ce in order to

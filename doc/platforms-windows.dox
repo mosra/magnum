@@ -161,7 +161,8 @@ are in the @ref Platform-Sdl2Application-bootstrap-winrt "SDL2 bootstrap applica
 
 @code{.xml}
 <?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest"
+         xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
   <Identity Name="MyApplication" Publisher="CN=A Publisher" Version="1.1.0.0" />
   <Properties>
     <DisplayName>My Application</DisplayName>
@@ -172,7 +173,8 @@ are in the @ref Platform-Sdl2Application-bootstrap-winrt "SDL2 bootstrap applica
     <Resource Language="x-generate" />
   </Resources>
   <Applications>
-    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="MyApplication.App">
+    <Application Id="App" Executable="$targetnametoken$.exe"
+                 EntryPoint="MyApplication.App">
       <m2:VisualElements
         DisplayName="Magnum Windows Store Application"
         Description="My Application"

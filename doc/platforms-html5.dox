@@ -508,6 +508,35 @@ location:
 export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin
 @endcode
 
+@subsection platforms-html5-troubleshooting-windows-compiler CMake insists on using Visual C++ as a compiler
+
+On Windows, running CMake as-is without specifying a generator via `-G` will
+always use the Visual Studio compiler and seemingly ignore the Emscripten
+toolchain file altogether. This is because Visual Studio Project Files as the
+default generator on Windows is not able to build for any other system than
+Windows itself. To fix it, use a different generator --- for example
+[Ninja](https://ninja-build.org/). Download the binary, put it somewhere on
+your `PATH` and pass `-G Ninja` to CMake. Alternatively, pass the path to it
+using `-DCMAKE_MAKE_PROGRAM=C:/path/to/ninja.exe`.
+
+@m_class{m-block m-success}
+
+@par Using Ninja that's bundled with Visual Studio
+    If you have Visual Studio with CMake support installed, instead of
+    downloading Ninja yourself, you can make use of the version that's bundled
+    with it. In version 2017 it's in the following location, adjust the path
+    for other versions:
+@par
+    @parblock
+    <!-- gotta love doxygen, making easy things hard and complex things such as
+         applying a class to a nested block element next-to-impossible -->
+    @m_class{m-console-wrap}
+
+    @code{.bat}
+    cmake -G Ninja -DCMAKE_MAKE_PROGRAM=C:\Program Files (x86)\Microsoft Visual Studio\2017\Community\Common7\IDE\CommonExtensions\Microsoft\CMake\Ninja\ninja.exe ...
+    @endcode
+    @endparblock
+
 @subsection platforms-html5-troubleshooting-bootstrap First Emscripten run takes long or fails
 
 Emscripten downloads and builds a lot of things on first startup or after
@@ -541,9 +570,11 @@ em++ -s WASM=1 main.cpp
 After this step it might be also needed to purge all CMake build directories
 and set them up again to ensure no bad state got cached.
 
-@subsection platforms-html5-troubleshooting-corrade-not-found CMake can't find _CORRADE_MODULE_DIR
+@subsection platforms-html5-troubleshooting-corrade-not-found CMake can't find CORRADE_INCLUDE_DIR, _CORRADE_CONFIGURE_FILE or _CORRADE_MODULE_DIR
 
-If initial CMake configuration fails with
+If you set `CMAKE_INSTALL_PREFIX` to a path contained in `EMSCRIPTEN_TOOLCHAIN_PATH` (which is specified in the toolchain file) and
+dependencies are installed there as well, things should "just work". In other
+cases you might end up with variants of the following error:
 
 @code{.shell-session}
   Could NOT find Corrade (missing: _CORRADE_MODULE_DIR)
@@ -559,7 +590,7 @@ cmake .. \
     -DCMAKE_TOOLCHAIN_FILE=../toolchains/generic/Emscripten-wasm.cmake \
     -DCMAKE_PREFIX_PATH=/your/emscripten/libs/ \
     -DCMAKE_FIND_ROOT_PATH=/your/emscripten/libs/ \
-    -G Ninja
+    ...
 @endcode
 
 @subsection platforms-html5-troubleshooting-loading-failed Application fails to load
@@ -623,8 +654,10 @@ JavaScript code. Using them in C++ sources triggers a warning from Clang:
 warning: '$' in identifier
 @endcode
 
-Solution is to disable the warning for the offending lines, here for example
-when modifying a title element contents through DOM:
+Solution is to disable the warning for the offending lines, below for example
+when modifying a title element contents through DOM. No @cpp #ifdef __clang__ @ce
+is necessary, as the code in question is only ever compiled by Emscripten's
+Clang anyway:
 
 @snippet platforms-html5.cpp emasm-dollar
 

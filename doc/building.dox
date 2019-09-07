@@ -337,7 +337,7 @@ compressed archive or use the command line:
 git clone git://github.com/mosra/magnum.git
 @endcode
 
-Relevant information about CMake usage was described in
+Relevant information about CMake usage is described in
 @ref building-corrade-cmake "Corrade download and installation guide", this
 guide is assuming you have at least basic knowledge of CMake.
 
@@ -365,6 +365,17 @@ with semicolons.
 Also, if you plan to install the library to non-standard location, you might
 want to set `CMAKE_INSTALL_RPATH` to `lib/` subdir of given prefix (e.g.
 `/home/xyz/projects/lib`), so the dynamic libraries can be found at runtime.
+
+@m_class{m-note m-default}
+
+@par
+    @parblock
+    @m_class{m-noindent}
+
+    See the @ref platforms-linux "Linux" and @ref platforms-macos "macOS"
+    platform docs for a troubleshooting guide and more information about
+    building your projects for Unix-like systems.
+    @endparblock
 
 @subsection building-windows Building on Windows
 
@@ -416,6 +427,17 @@ see @ref building-features "below" for more information.
 
 Installation to given prefix can be done from within QtCreator by adding a new
 `make install` build rule.
+
+@m_class{m-note m-default}
+
+@par
+    @parblock
+    @m_class{m-noindent}
+
+    See the @ref platforms-windows "Windows platform docs" for a
+    troubleshooting guide and more information about building your projects for
+    Windows.
+    @endparblock
 
 @subsection building-features Enabling or disabling features
 
@@ -763,15 +785,10 @@ See @ref platforms-gl-es-angle for more information about using ANGLE.
 
 @section building-cross Cross-compiling
 
-For cross-compiling you need to have *both* target and native version of
-Corrade installed, because Corrade needs to run `corrade-rc` utility on the
-host system as part of the build process. If native version of `corrade-rc` is
-not found on the system, cross-compilation will fail.
-
-You also need to have the toolchains submodule updated. Either run the
-following command, or, if you build from source archive, download a snapshot of
-the toolchains repository from https://github.com/mosra/toolchains and put the
-contents in the `toolchains/` subdirectory.
+For cross-compiling you need to have the toolchains submodule updated. Either
+run the following command, or, if you build from source archive, download a
+snapshot of the toolchains repository from https://github.com/mosra/toolchains
+and put the contents in the `toolchains/` subdirectory.
 
 @code{.sh}
 git submodule update --init
@@ -781,6 +798,20 @@ Note that CMake for some reason treats `CMAKE_PREFIX_PATH` and
 `CMAKE_INSTALL_PREFIX` differently while cross-compiling and you may need to
 add dependency paths to both `CMAKE_PREFIX_PATH` and `CMAKE_FIND_ROOT_PATH` to
 make it able to find the dependencies.
+
+@anchor building-cross-corrade-rc
+
+<b></b>
+
+@m_class{m-block m-primary}
+
+@par Native build of corrade-rc
+    You also need to have *both* target and native version of Corrade
+    installed, because Corrade needs to run `corrade-rc` utility on the host
+    system as part of the build process. If native version of `corrade-rc` is
+    not found on the system, cross-compilation will fail. If `corrade-rc` is
+    not in `PATH`, point CMake to it using
+    `-DCORRADE_RC_EXECUTABLE=/path/to/corrade-rc`.
 
 @subsection building-cross-winrt Cross-compiling for Windows RT
 
@@ -798,7 +829,9 @@ SDL has support for WinRT applications --- download the source from
 https://www.libsdl.org/download-2.0.php and use project files from the
 `VisualC-WinRT` directory. Because WinRT applications run in a sandbox, it's
 recommended to build the library as static so you don't have to bundle all the
-DLLs. Example:
+DLLs. Example is below, you can omit specifying `CORRADE_RC_EXECUTABLE` if
+@ref building-cross-corrade-rc "natively-built corrade-rc" is accessible
+through `PATH`.
 
 @code{.bat}
 mkdir build-winrt && cd build-winrt
@@ -818,8 +851,16 @@ instead. When done, you can install the package using
 @cb{.bat} cmake --build . --target install @ce to make it available to
 depending projects.
 
-See @ref platforms-windows for more information about building your projects
-for WinRT.
+@m_class{m-note m-default}
+
+@par
+    @parblock
+    @m_class{m-noindent}
+
+    See the @ref platforms-windows "Windows platform docs" for a
+    troubleshooting guide and more information about building your projects for
+    Windows.
+    @endparblock
 
 @subsection building-cross-win Cross-compiling for Windows using MinGW-w64
 
@@ -857,8 +898,16 @@ cmake --build .
 Then you can install the package using @cb{.sh} cmake --build . --target install @ce
 to make it available to depending projects.
 
-See @ref platforms-windows for more information about building your projects
-for Windows.
+@m_class{m-note m-default}
+
+@par
+    @parblock
+    @m_class{m-noindent}
+
+    See the @ref platforms-windows "Windows platform docs" for a
+    troubleshooting guide and more information about building your projects for
+    Windows.
+    @endparblock
 
 @subsection building-cross-emscripten Cross-compiling for Emscripten
 
@@ -878,7 +927,10 @@ pass it explicitly on command-line using `-DEMSCRIPTEN_PREFIX`. Default is
 porting and they are generally slower, thus `BUILD_STATIC` is implicitly
 enabled.
 
-Then create build directory and run `cmake` and the build command in it.
+Then create build directory and run `cmake` and the build command in it. You
+can omit specifying `CORRADE_RC_EXECUTABLE` if
+@ref building-cross-corrade-rc "natively-built corrade-rc" is accessible
+through `PATH`.
 
 WebGL 1.0 (GLES 2.0 equivalent) is enabled by default, switch to 2.0 (GLES 3.0
 equivalent) by disabling `TARGET_GLES2`. If you enable one of the
@@ -893,21 +945,11 @@ cmake .. \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_PREFIX_PATH=/usr/lib/emscripten/system \
     -DCMAKE_INSTALL_PREFIX=/usr/lib/emscripten/system \
+    -DCORRADE_RC_EXECUTABLE=/path/to/corrade-rc \
     -DMAGNUM_DEPLOY_PREFIX=/srv/http/magnum \
     -DWITH_SDL2APPLICATION=ON
 cmake --build .
 @endcode
-
-@note
-    If you set `CMAKE_INSTALL_PREFIX` to a path contained in
-    `EMSCRIPTEN_TOOLCHAIN_PATH` and dependencies are installed there as well,
-    things should "just work". Otherwise you might get the following error:
-@note <pre>CMake Error at .../Modules/FindPackageHandleStandardArgs.cmake:138 (message):
-  Could NOT find Corrade (missing: CORRADE_INCLUDE_DIR
-  _CORRADE_CONFIGURE_FILE)</pre>
-@note
-    This can be solved by adding the location where Corrade is installed to
-    `CMAKE_PREFIX_PATH` or `CMAKE_FIND_ROOT_PATH`.
 
 Then you can install the library using @cb{.sh} cmake --build . --target install @ce
 to make it available to depending projects.
@@ -923,8 +965,16 @@ named `PKGBUILD-emscripten`, `PKGBUILD-emscripten-webgl2`,
 WebGL 1 / WebGL 2 optimized asm.js build (*slow* to compile), the second for
 unoptimized build (faster to compile) and the third for WebAssembly build.
 
-See @ref platforms-html5 for more information about building your projects for
-Emscripten.
+@m_class{m-note m-default}
+
+@par
+    @parblock
+    @m_class{m-noindent}
+
+    See the @ref platforms-html5 "Emscripten platform docs" for a
+    troubleshooting guide and more information about building your projects for
+    Emscripten.
+    @endparblock
 
 @subsection building-cross-ios Cross-compiling for iOS
 
@@ -934,12 +984,17 @@ Set `CMAKE_OSX_ROOT` to the SDK you want to target and enable all desired
 architectures in `CMAKE_OSX_ARCHITECTURES`. Be sure to set
 `CMAKE_INSTALL_PREFIX` to prefix where you store other iOS dependencies such as
 @ref building-corrade-cross-ios "Corrade built for iOS" or a SDL2 iOS build.
+You can omit specifying `CORRADE_RC_EXECUTABLE` if
+@ref building-cross-corrade-rc "natively-built corrade-rc" is accessible
+through `PATH`.
 
 As every application is in its own sandbox, it doesn't make sense to build
 shared libraries (although it is supported). Enable `BUILD_STATIC` to build
 static libraries. Dynamically loaded plugins are not supported on iOS at the
 moment, thus `BUILD_PLUGINS_STATIC` is implicitly enabled. OpenGL ES 2.0 is
 enabled by default, switch to 3.0 by disabling `TARGET_GLES2`.
+
+@m_class{m-console-wrap}
 
 @code{.sh}
 mkdir build-ios && cd build-ios
@@ -948,6 +1003,7 @@ cmake .. \
     -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk \
     -DCMAKE_OSX_ARCHITECTURES="arm64;armv7;armv7s" \
     -DCMAKE_INSTALL_PREFIX=~/ios-libs \
+    -DCORRADE_RC_EXECUTABLE=/path/to/corrade-rc \
     -DBUILD_STATIC=ON \
     -DBUILD_PLUGINS_STATIC=ON \
     -DTARGET_GLES2=OFF \
@@ -959,19 +1015,22 @@ cmake --build .
 Then you can install the library using @cb{.sh} cmake --build . --target install @ce
 to make it available to depending projects.
 
-See @ref platforms-ios documentation for more information about building your
-projects for iOS.
+@m_class{m-note m-default}
+
+@par
+    @parblock
+    @m_class{m-noindent}
+
+    See the @ref platforms-ios "iOS platform docs" for a troubleshooting guide
+    and more information about building your projects for iOS.
+    @endparblock
 
 @subsection building-cross-android Crosscompiling for Android
 
 You will need [Android NDK](https://developer.android.com/ndk/) installed and
 configured and @ref building-corrade-cross-android "Corrade built for Android".
-CMake 3.7 is required, as it has Android support builtin. The supported
-toolchain is now Clang with libc++, GCC is not supported anymore.
-
-@attention
-    You might want to grab at least CMake 3.9.2 instead of just 3.7, as it
-    [fixes an issue with the Clang toolchain](https://gitlab.kitware.com/cmake/cmake/issues/17253).
+At least CMake 3.7 is required, as it has Android support built-in. The
+supported toolchain is now Clang with libc++, GCC is not supported anymore.
 
 Create a build directory and run `cmake` and the build command in it. Set
 `CMAKE_SYSTEM_NAME` to `Android` to enable the crosscompilation,
@@ -979,7 +1038,9 @@ Create a build directory and run `cmake` and the build command in it. Set
 with libc++, `CMAKE_SYSTEM_VERSION` to minimal API version level you wish to
 use and `CMAKE_ANDROID_ARCH_ABI` to target platform ABI. Check the
 [CMake Android cross-compiling documentation](https://cmake.org/cmake/help/latest/manual/cmake-toolchains.7.html#cross-compiling-for-android)
-for further information.
+for further information. You can omit specifying `CORRADE_RC_EXECUTABLE` if
+@ref building-cross-corrade-rc "natively-built corrade-rc" is accessible
+through `PATH`.
 
 If you set `CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of the particular
 Android platform sysroot, the package will get found automatically when
@@ -1003,6 +1064,7 @@ cmake .. \
     -DCMAKE_ANDROID_STL_TYPE=c++_static \
     -DCMAKE_BUILD_TYPE=Release \
     -DCMAKE_INSTALL_PREFIX=/opt/android-ndk/platforms/android-22/arch-arm/usr \
+    -DCORRADE_RC_EXECUTABLE=/path/to/corrade-rc \
     -DMAGNUM_INCLUDE_INSTALL_PREFIX=/opt/android-ndk/sysroot/usr \
     -DTARGET_GLES2=OFF \
     -DWITH_ANDROIDAPPLICATION=ON
@@ -1016,21 +1078,16 @@ For ArchLinux there is also a prepared package file in `package/archlinux/`,
 named `PKGBUILD-android-arm64`; see @ref building-packages-arch "above" for
 more information.
 
-@attention
-    On Windows it's possible that you get the following CMake error when
-    configuring the project:
-@attention
-    <blockquote>
-    CMAKE_SYSTEM_NAME is 'Android' but 'NVIDIA Nsight Tegra Visual Studio
-    Edition' is not installed.
-    </blockquote>
-@attention
-    This is because MSVC as the default generator on Windows is not able to
-    build arbitrary Android projects. To fix it, use a different generator (for
-    example Ninja, by passing `-G Ninja` to CMake).
+@m_class{m-note m-default}
 
-See @ref platforms-android for more information about building your projects
-for Android.
+@par
+    @parblock
+    @m_class{m-noindent}
+
+    See the @ref platforms-android "Android platform docs" for a
+    troubleshooting guide and more information about building your projects for
+    Android.
+    @endparblock
 
 @section building-ci Continuous Integration
 
