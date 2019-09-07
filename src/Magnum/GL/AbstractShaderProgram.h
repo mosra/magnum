@@ -796,7 +796,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         #endif
 
         /**
-         * @brief Attach shader
+         * @brief Attach a shader
          *
          * @see @fn_gl_keyword{AttachShader}
          */
@@ -812,7 +812,7 @@ class MAGNUM_GL_EXPORT AbstractShaderProgram: public AbstractObject {
         void attachShaders(std::initializer_list<Containers::Reference<Shader>> shaders);
 
         /**
-         * @brief Bind attribute to given location
+         * @brief Bind an attribute to given location
          * @param location      Location
          * @param name          Attribute name
          *

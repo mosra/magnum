@@ -596,7 +596,7 @@ class MAGNUM_GL_EXPORT Shader: public AbstractObject {
         Shader& addSource(std::string source);
 
         /**
-         * @brief Add source file
+         * @brief Add shader source file
          * @param filename  Name of source file to read from
          * @return Reference to self (for method chaining)
          *
