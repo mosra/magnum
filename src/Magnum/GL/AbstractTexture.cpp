@@ -660,7 +660,7 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
         case TextureFormat::RGB32F:
         #endif
         #ifndef MAGNUM_TARGET_GLES
-        case TextureFormat::R3B3G2:
+        case TextureFormat::R3G3B2:
         case TextureFormat::RGB4:
         case TextureFormat::RGB5:
         #endif
@@ -1091,7 +1091,7 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        case TextureFormat::R3B3G2:
+        case TextureFormat::R3G3B2:
             return PixelType::UnsignedByte332;
         case TextureFormat::RGB4:
             return PixelType::UnsignedShort4444;

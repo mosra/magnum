@@ -657,6 +657,8 @@ See also:
     @ref Corrade::Containers::ArrayView. This header is included automatically
     when @ref MAGNUM_BUILD_DEPRECATED is enabled, include it explicitly to stay
     forward compatible.
+-   @cpp GL::TextureFormat::R3B3G2 @ce had a misleading typo in the name, use
+    @ref GL::TextureFormat::R3G3B2 instead.
 -   @cpp Magnum/MeshTools/GenerateFlatNormals.h @ce is deprecated, use
     @cpp Magnum/MeshTools/GenerateNormals.h @ce instead
 -   @cpp MeshTools::generateFlatNormals(const std::vector<UnsignedInt>&, const std::vector<Vector3>&) @ce

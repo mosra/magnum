@@ -797,7 +797,15 @@ enum class TextureFormat: GLenum {
      * RGB, normalized unsigned, red and green component 3bit, blue 2bit.
      * @requires_gl Packed 8bit types are not available in OpenGL ES or WebGL.
      */
-    R3B3G2 = GL_R3_G3_B2,
+    R3G3B2 = GL_R3_G3_B2,
+
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    /** RGB, normalized unsigned, red and green component 3bit, blue 2bit.
+     * @deprecated This one had a misleading typo in the name, use
+     *      @ref TextureFormat::R3G3B2 instead.
+     */
+    R3B3G2 CORRADE_DEPRECATED_ENUM("use R3G3B2 instead") = R3G3B2,
+    #endif
 
     /**
      * RGB, each component normalized unsigned 4bit.
