@@ -659,6 +659,11 @@ See also:
     forward compatible.
 -   @cpp GL::TextureFormat::R3B3G2 @ce had a misleading typo in the name, use
     @ref GL::TextureFormat::R3G3B2 instead.
+-   @ref GL::AbstractTexture destructor is now @cpp protected @ce on builds
+    with @ref MAGNUM_BUILD_DEPRECATED disabled in order to avoid accidents with
+    subclass destructors not being called. Right now all subclasses themselves
+    have trivial destruction, but that may change in the future due to driver
+    workarounds being added.
 -   @cpp Magnum/MeshTools/GenerateFlatNormals.h @ce is deprecated, use
     @cpp Magnum/MeshTools/GenerateNormals.h @ce instead
 -   @cpp MeshTools::generateFlatNormals(const std::vector<UnsignedInt>&, const std::vector<Vector3>&) @ce
