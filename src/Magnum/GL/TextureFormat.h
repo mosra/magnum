@@ -82,9 +82,7 @@ enum class TextureFormat: GLenum {
     #else
     R8 = GL_R8_EXT,
     #endif
-    #endif
 
-    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     /**
      * Red and green component, normalized unsigned, size
      * implementation-dependent. Not allowed in unemulated
