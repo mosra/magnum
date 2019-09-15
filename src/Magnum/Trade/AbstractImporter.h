@@ -97,8 +97,8 @@ data through to @ref openData(), in case the importer supports at least
 nor @ref Feature::OpenData, @ref setFileCallback() doesn't allow the callbacks
 to be set.
 
-The input file callback signature is the same for @ref Trade::AbstractImporter
-and @ref Text::AbstractFont to allow code reuse.
+The input file callback signature is the same for @ref Trade::AbstractImporter,
+@ref Audio::AbstractImporter and @ref Text::AbstractFont to allow code reuse.
 
 @subsection Trade-AbstractImporter-usage-state Internal importer state
 
