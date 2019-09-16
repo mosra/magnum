@@ -72,6 +72,10 @@ struct AttributeTest: TestSuite::Tester {
     #endif
     void debugDataTypeVector3();
     void debugDataTypeVector4();
+
+    void debugDynamicKind();
+    void debugDynamicComponents();
+    void debugDynamicDataType();
 };
 
 AttributeTest::AttributeTest() {
@@ -112,7 +116,11 @@ AttributeTest::AttributeTest() {
               &AttributeTest::debugDataTypeDouble,
               #endif
               &AttributeTest::debugDataTypeVector3,
-              &AttributeTest::debugDataTypeVector4});
+              &AttributeTest::debugDataTypeVector4,
+
+              &AttributeTest::debugDynamicKind,
+              &AttributeTest::debugDynamicComponents,
+              &AttributeTest::debugDynamicDataType});
 }
 
 void AttributeTest::attributeScalar() {
@@ -470,6 +478,24 @@ void AttributeTest::debugDataTypeVector4() {
     std::ostringstream out;
     Debug{&out} << Attribute::DataType::Float << Attribute::DataType(0xdead);
     CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");
+}
+
+void AttributeTest::debugDynamicKind() {
+    std::ostringstream out;
+    Debug{&out} << DynamicAttribute::Kind::GenericNormalized << DynamicAttribute::Kind(0xdead);
+    CORRADE_COMPARE(out.str(), "GL::DynamicAttribute::Kind::GenericNormalized GL::DynamicAttribute::Kind(0xdead)\n");
+}
+
+void AttributeTest::debugDynamicComponents() {
+    std::ostringstream out;
+    Debug{&out} << DynamicAttribute::Components::Three << DynamicAttribute::Components(0xdead);
+    CORRADE_COMPARE(out.str(), "GL::DynamicAttribute::Components::Three GL::DynamicAttribute::Components(0xdead)\n");
+}
+
+void AttributeTest::debugDynamicDataType() {
+    std::ostringstream out;
+    Debug{&out} << DynamicAttribute::DataType::Float << DynamicAttribute::DataType(0xdead);
+    CORRADE_COMPARE(out.str(), "GL::DynamicAttribute::DataType::Float GL::DynamicAttribute::DataType(0xdead)\n");
 }
 
 }}}}

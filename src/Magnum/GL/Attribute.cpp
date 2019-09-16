@@ -28,7 +28,75 @@
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 
-namespace Magnum { namespace GL { namespace Implementation {
+namespace Magnum { namespace GL {
+
+Debug& operator<<(Debug& debug, DynamicAttribute::Kind value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case DynamicAttribute::Kind::value: return debug << "GL::DynamicAttribute::Kind::" #value;
+        _c(Generic)
+        _c(GenericNormalized)
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(Integral)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(Long)
+        #endif
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "GL::DynamicAttribute::Kind(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, DynamicAttribute::Components value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case DynamicAttribute::Components::value: return debug << "GL::DynamicAttribute::Components::" #value;
+        _c(One)
+        _c(Two)
+        _c(Three)
+        _c(Four)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(BGRA)
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "GL::DynamicAttribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, DynamicAttribute::DataType value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(value) case DynamicAttribute::DataType::value: return debug << "GL::DynamicAttribute::DataType::" #value;
+        _c(UnsignedByte)
+        _c(Byte)
+        _c(UnsignedShort)
+        _c(Short)
+        _c(UnsignedInt)
+        _c(Int)
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
+        _c(HalfFloat)
+        #endif
+        _c(Float)
+        #ifndef MAGNUM_TARGET_GLES
+        _c(Double)
+        _c(UnsignedInt10f11f11fRev)
+        #endif
+        #ifndef MAGNUM_TARGET_GLES2
+        _c(UnsignedInt2101010Rev)
+        _c(Int2101010Rev)
+        #endif
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "GL::DynamicAttribute::DataType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+}
+
+namespace Implementation {
 
 UnsignedInt FloatAttribute::size(GLint components, DataType dataType) {
     switch(dataType) {
@@ -365,4 +433,6 @@ Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::DataType valu
     return debug << "GL::Attribute::DataType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
-}}}
+}
+
+}}

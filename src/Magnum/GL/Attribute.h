@@ -534,6 +534,15 @@ class DynamicAttribute {
         DataType _dataType;
 };
 
+/** @debugoperatorclassenum{DynamicAttribute,DynamicAttribute::Kind} */
+MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DynamicAttribute::Kind);
+
+/** @debugoperatorclassenum{DynamicAttribute,DynamicAttribute::Components} */
+MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DynamicAttribute::Components);
+
+/** @debugoperatorclassenum{DynamicAttribute,DynamicAttribute::DataType} */
+MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DynamicAttribute::DataType);
+
 namespace Implementation {
 
 /* Base for sized attributes */
