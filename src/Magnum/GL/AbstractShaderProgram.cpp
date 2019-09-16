@@ -421,14 +421,14 @@ bool AbstractShaderProgram::link(std::initializer_list<Containers::Reference<Abs
         /* Show error log */
         if(!success) {
             Error out{Debug::Flag::NoNewlineAtTheEnd};
-            out << "AbstractShaderProgram::link(): linking";
+            out << "GL::AbstractShaderProgram::link(): linking";
             if(shaders.size() != 1) out << "of shader" << i;
             out << "failed with the following message:" << Debug::newline << message;
 
         /* Or just warnings, if any */
         } else if(!message.empty() && !Implementation::isProgramLinkLogEmpty(message)) {
             Warning out{Debug::Flag::NoNewlineAtTheEnd};
-            out << "AbstractShaderProgram::link(): linking";
+            out << "GL::AbstractShaderProgram::link(): linking";
             if(shaders.size() != 1) out << "of shader" << i;
             out << "succeeded with the following message:" << Debug::newline << message;
         }
