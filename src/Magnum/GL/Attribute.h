@@ -607,10 +607,12 @@ struct FloatAttribute {
         Short = GL_SHORT,
         UnsignedInt = GL_UNSIGNED_INT,
         Int = GL_INT,
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         #ifndef MAGNUM_TARGET_GLES2
         HalfFloat = GL_HALF_FLOAT,
         #else
         HalfFloat = GL_HALF_FLOAT_OES,
+        #endif
         #endif
         Float = GL_FLOAT
 
@@ -705,10 +707,12 @@ template<> struct Attribute<Math::Vector<3, Float>>: SizedAttribute<1, 3> {
         Short = GL_SHORT,
         UnsignedInt = GL_UNSIGNED_INT,
         Int = GL_INT,
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         #ifndef MAGNUM_TARGET_GLES2
         HalfFloat = GL_HALF_FLOAT,
         #else
         HalfFloat = GL_HALF_FLOAT_OES,
+        #endif
         #endif
         Float = GL_FLOAT
 
@@ -751,10 +755,12 @@ template<> struct Attribute<Math::Vector<4, Float>> {
         Short = GL_SHORT,
         UnsignedInt = GL_UNSIGNED_INT,
         Int = GL_INT,
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         #ifndef MAGNUM_TARGET_GLES2
         HalfFloat = GL_HALF_FLOAT,
         #else
         HalfFloat = GL_HALF_FLOAT_OES,
+        #endif
         #endif
         Float = GL_FLOAT
         #ifndef MAGNUM_TARGET_GLES

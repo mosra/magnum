@@ -37,7 +37,9 @@ UnsignedInt FloatAttribute::size(GLint components, DataType dataType) {
             return components;
         case DataType::UnsignedShort:
         case DataType::Short:
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case DataType::HalfFloat:
+        #endif
             return 2*components;
         case DataType::UnsignedInt:
         case DataType::Int:
@@ -88,7 +90,9 @@ UnsignedInt Attribute<Math::Vector<3, Float>>::size(GLint components, DataType d
             return components;
         case DataType::UnsignedShort:
         case DataType::Short:
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case DataType::HalfFloat:
+        #endif
             return 2*components;
         case DataType::UnsignedInt:
         case DataType::Int:
@@ -117,7 +121,9 @@ UnsignedInt Attribute<Math::Vector<4, Float>>::size(GLint components, DataType d
             return components;
         case DataType::UnsignedShort:
         case DataType::Short:
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         case DataType::HalfFloat:
+        #endif
             return 2*components;
         case DataType::UnsignedInt:
         case DataType::Int:
@@ -259,7 +265,9 @@ Debug& operator<<(Debug& debug, FloatAttribute::DataType value) {
         _c(Short)
         _c(UnsignedInt)
         _c(Int)
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         _c(HalfFloat)
+        #endif
         _c(Float)
         #ifndef MAGNUM_TARGET_GLES
         _c(Double)
@@ -314,7 +322,9 @@ Debug& operator<<(Debug& debug, Attribute<Math::Vector<3, Float>>::DataType valu
         _c(Short)
         _c(UnsignedInt)
         _c(Int)
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         _c(HalfFloat)
+        #endif
         _c(Float)
         #ifndef MAGNUM_TARGET_GLES
         _c(Double)
@@ -337,7 +347,9 @@ Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::DataType valu
         _c(Short)
         _c(UnsignedInt)
         _c(Int)
+        #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         _c(HalfFloat)
+        #endif
         _c(Float)
         #ifndef MAGNUM_TARGET_GLES
         _c(Double)

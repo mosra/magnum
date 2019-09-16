@@ -276,9 +276,12 @@ void AttributeTest::attributeVector4() {
     #ifndef MAGNUM_TARGET_GLES
     Attribute a(Attribute::DataType::UnsignedInt2101010Rev);
     CORRADE_COMPARE(a.vectorSize(), 4);
-    #else
+    #elif !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     Attribute a(Attribute::DataType::HalfFloat);
     CORRADE_COMPARE(a.vectorSize(), 8);
+    #else
+    Attribute a(Attribute::DataType::Float);
+    CORRADE_COMPARE(a.vectorSize(), 16);
     #endif
 }
 
@@ -424,8 +427,13 @@ void AttributeTest::debugDataTypeFloat() {
     typedef Attribute<3, Float> Attribute;
 
     std::ostringstream out;
+    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     Debug{&out} << Attribute::DataType::HalfFloat << Attribute::DataType(0xdead);
     CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::HalfFloat GL::Attribute::DataType(0xdead)\n");
+    #else
+    Debug{&out} << Attribute::DataType::Float << Attribute::DataType(0xdead);
+    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");
+    #endif
 }
 
 #ifndef MAGNUM_TARGET_GLES2
@@ -452,16 +460,16 @@ void AttributeTest::debugDataTypeVector3() {
     typedef Attribute<3, Vector3> Attribute;
 
     std::ostringstream out;
-    Debug{&out} << Attribute::DataType::HalfFloat << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::HalfFloat GL::Attribute::DataType(0xdead)\n");
+    Debug{&out} << Attribute::DataType::Float << Attribute::DataType(0xdead);
+    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");
 }
 
 void AttributeTest::debugDataTypeVector4() {
     typedef Attribute<3, Vector4> Attribute;
 
     std::ostringstream out;
-    Debug{&out} << Attribute::DataType::HalfFloat << Attribute::DataType(0xdead);
-    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::HalfFloat GL::Attribute::DataType(0xdead)\n");
+    Debug{&out} << Attribute::DataType::Float << Attribute::DataType(0xdead);
+    CORRADE_COMPARE(out.str(), "GL::Attribute::DataType::Float GL::Attribute::DataType(0xdead)\n");
 }
 
 }}}}
