@@ -334,7 +334,7 @@ template<UnsignedInt dimensions> class ImageData {
            needless state changes -- thus the calculation can't be done */
 
         /**
-         * @brief Raw data
+         * @brief Image data
          *
          * @see @ref release(), @ref pixels()
          */
@@ -344,7 +344,7 @@ template<UnsignedInt dimensions> class ImageData {
         Containers::ArrayView<const char> data() const & { return _data; }
 
         /**
-         * @brief Raw data from a r-value
+         * @brief Image data from a r-value
          *
          * Unlike @ref data(), which returns a view, this is equivalent to
          * @ref release() to avoid a dangling view when the temporary instance
