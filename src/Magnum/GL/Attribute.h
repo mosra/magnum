@@ -319,10 +319,10 @@ template<UnsignedInt location, class T> class Attribute {
 
 #ifdef DOXYGEN_GENERATING_OUTPUT
 /** @debugoperatorclassenum{Attribute,Attribute::Components} */
-template<class T> Debug& operator<<(Debug& debug, Attribute<T>::Components);
+template<UnsignedInt location, class T> Debug& operator<<(Debug& debug, Attribute<location, T>::Components);
 
 /** @debugoperatorclassenum{Attribute,Attribute::DataType} */
-template<class T> Debug& operator<<(Debug& debug, Attribute<T>::DataType);
+template<UnsignedInt location, class T> Debug& operator<<(Debug& debug, Attribute<location, T>::DataType);
 #endif
 
 /**
