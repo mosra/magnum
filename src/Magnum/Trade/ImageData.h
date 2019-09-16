@@ -445,13 +445,13 @@ template<UnsignedInt dimensions> class ImageData {
         const void* _importerState;
 };
 
-/** @brief One-dimensional image */
+/** @brief One-dimensional image data */
 typedef ImageData<1> ImageData1D;
 
-/** @brief Two-dimensional image */
+/** @brief Two-dimensional image data */
 typedef ImageData<2> ImageData2D;
 
-/** @brief Three-dimensional image */
+/** @brief Three-dimensional image data */
 typedef ImageData<3> ImageData3D;
 
 template<UnsignedInt dimensions> template<class T, class U> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), UnsignedInt(formatExtra), Magnum::Implementation::pixelSizeAdl(format, formatExtra), size, std::move(data), importerState} {

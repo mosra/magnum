@@ -388,7 +388,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @brief Set minimum level-of-detail parameter
+         * @brief Set the minimum level-of-detail
          * @return Reference to self (for method chaining)
          *
          * Limits selection of highest resolution mipmap. If
@@ -409,7 +409,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
         }
 
         /**
-         * @brief Set maximum level-of-detail parameter
+         * @brief Set the maximum level-of-detail
          * @return Reference to self (for method chaining)
          *
          * Limits selection of lowest resolution mipmap. If
