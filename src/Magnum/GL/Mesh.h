@@ -1017,7 +1017,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
                     location+i,
                     GLint(attribute.components()),
                     GLenum(attribute.dataType()),
-                    attribute.dataOptions() & Attribute<location, T>::DataOption::Normalized ? DynamicAttribute::Kind::GenericNormalized : DynamicAttribute::Kind::Generic,
+                    Implementation::kindFor<location, T>(attribute.dataOptions()),
                     GLintptr(offset+i*attribute.vectorSize()),
                     stride,
                     divisor);
@@ -1029,7 +1029,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
                 location,
                 GLint(attribute.components()),
                 GLenum(attribute.dataType()),
-                DynamicAttribute::Kind::Integral,
+                Implementation::kindFor<location, T>(attribute.dataOptions()),
                 offset,
                 stride,
                 divisor);
@@ -1042,7 +1042,7 @@ class MAGNUM_GL_EXPORT Mesh: public AbstractObject {
                     location+i,
                     GLint(attribute.components()),
                     GLenum(attribute.dataType()),
-                    DynamicAttribute::Kind::Long,
+                    Implementation::kindFor<location, T>(attribute.dataOptions()),
                     GLintptr(offset+i*attribute.vectorSize()),
                     stride,
                     divisor);

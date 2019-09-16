@@ -515,6 +515,9 @@ class DynamicAttribute {
          */
         constexpr DynamicAttribute(Kind kind, UnsignedInt location, Components components, DataType dataType): _kind{kind}, _location{location}, _components{components}, _dataType{dataType} {}
 
+        /** @brief Construct from a compile-time attribute */
+        template<UnsignedInt location_, class T> constexpr DynamicAttribute(const Attribute<location_, T>& attribute);
+
         /** @brief Attribute kind */
         constexpr Kind kind() const { return _kind; }
 
@@ -544,6 +547,23 @@ MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DynamicAttribute::Components);
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, DynamicAttribute::DataType);
 
 namespace Implementation {
+
+template<UnsignedInt location, class T> constexpr DynamicAttribute::Kind kindFor(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Float>::value, typename GL::Attribute<location, T>::DataOptions>::type options) {
+    return options & GL::Attribute<location, T>::DataOption::Normalized ?
+        DynamicAttribute::Kind::GenericNormalized : DynamicAttribute::Kind::Generic;
+}
+
+#ifndef MAGNUM_TARGET_GLES2
+template<UnsignedInt location, class T> constexpr DynamicAttribute::Kind kindFor(typename std::enable_if<std::is_integral<typename Implementation::Attribute<T>::ScalarType>::value, typename GL::Attribute<location, T>::DataOptions>::type) {
+    return DynamicAttribute::Kind::Integral;
+}
+
+#ifndef MAGNUM_TARGET_GLES
+template<UnsignedInt location, class T> constexpr DynamicAttribute::Kind kindFor(typename std::enable_if<std::is_same<typename Implementation::Attribute<T>::ScalarType, Double>::value, typename GL::Attribute<location, T>::DataOptions>::type) {
+    return DynamicAttribute::Kind::Long;
+}
+#endif
+#endif
 
 /* Base for sized attributes */
 template<std::size_t cols, std::size_t rows> struct SizedAttribute;
@@ -835,6 +855,8 @@ template<class T> struct Attribute<Math::Matrix3<T>>: Attribute<Math::Matrix<3, 
 template<class T> struct Attribute<Math::Matrix4<T>>: Attribute<Math::Matrix<4, T>> {};
 
 }
+
+template<UnsignedInt location_, class T> constexpr DynamicAttribute::DynamicAttribute(const Attribute<location_, T>& attribute): _kind{Implementation::kindFor<location_, T>(attribute.dataOptions())}, _location{location_}, _components{Components(GLint(attribute.components()))}, _dataType{DataType(GLenum(attribute.dataType()))} {}
 
 }}
 

@@ -359,6 +359,8 @@ See also:
     easier debugging, users are encouraged to use the new
     `--magnum-gpu-validation` @ref GL-Context-command-line "command line option"
     instead.
+-   Added an ability to create @ref GL::DynamicAttribute directly from a
+    @ref GL::Attribute
 
 @subsubsection changelog-latest-changes-math Math library
 
