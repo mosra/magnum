@@ -31,6 +31,10 @@
 
 #include "Magnum/GL/OpenGL.h"
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include <Corrade/Utility/Macros.h>
+#endif
+
 namespace Magnum { namespace GL {
 
 /**
