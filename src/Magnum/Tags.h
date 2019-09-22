@@ -29,6 +29,9 @@
  * @brief Tag type @ref Magnum::NoCreateT, tag @ref Magnum::NoCreate
  */
 
+#include "Corrade/configure.h"
+#include "Magnum/configure.h"
+
 namespace Magnum {
 
 /**
