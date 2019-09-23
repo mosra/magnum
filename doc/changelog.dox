@@ -489,6 +489,9 @@ See also:
     when opening an empty file
 -   @ref Trade::AbstractImporter::setFileCallback() now accepts callbacks with
     @cpp const @ce references to user data as well
+-   @ref Trade::AnyImageImporter "AnyImageImporter" and
+    @ref Trade::AnyImageConverter "AnyImageConverter" plugins now recognize
+    Basis Universal files
 
 @subsection changelog-latest-buildsystem Build system
 
