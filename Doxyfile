@@ -930,6 +930,7 @@ EXAMPLE_PATH           = doc/generated/ \
                          doc/snippets/ \
                          src/ \
                          ../magnum-plugins/src/ \
+                         ../magnum-plugins/doc/snippets/ \
                          ../magnum-examples/src/ \
                          ../magnum-extras/doc/snippets/ \
                          ../magnum-integration/doc/snippets/ \
