@@ -23,7 +23,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/PixelFormat.h"
+#include "PixelFormat.h"
 
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
