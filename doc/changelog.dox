@@ -58,6 +58,9 @@ See also:
     @ref PixelFormat::RGB8Srgb and @ref PixelFormat::RGBA8Srgb sRGB pixel
     formats as well as their conversion to corresponding GL/Vulkan formats in
     @ref GL::pixelFormat() and @ref Vk::vkFormat(Magnum::PixelFormat)
+-   New @ref compressedBlockSize() and @ref compressedBlockDataSize() utilities
+    for querying parameters of @ref CompressedPixelFormat entries, similar to
+    what @ref pixelSize() is for @ref PixelFormat
 
 @subsubsection changelog-latest-new-audio Audio library
 

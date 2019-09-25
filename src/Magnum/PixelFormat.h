@@ -749,7 +749,8 @@ For D3D, corresponds to @m_class{m-doc-external} [DXGI_FORMAT](https://docs.micr
 and import is provided by the @ref Trade::DdsImporter "DdsImporter" plugin; for
 Metal, corresponds to @m_class{m-doc-external} [MTLPixelFormat](https://developer.apple.com/documentation/metal/mtlpixelformat?language=objc).
 See documentation of each value for more information about the mapping.
-@see @ref PixelFormat, @ref CompressedImage, @ref CompressedImageView
+@see @ref compressedBlockSize(), @ref compressedBlockDataSize(),
+    @ref PixelFormat, @ref CompressedImage, @ref CompressedImageView
 */
 enum class CompressedPixelFormat: UnsignedInt {
     /* Zero reserved for an invalid format (but not being a named value) */
@@ -1590,6 +1591,26 @@ enum class CompressedPixelFormat: UnsignedInt {
     /* PVRTC2 variants not listed as PVRTC is mainly on Apple hardware but
        Metal doesn't support it and it doesn't have a WebGL equiv either. */
 };
+
+/**
+@brief Compressed block size
+
+For 2D formats the Z dimension is always 1. Expects that the pixel format is
+* *not* implementation-specific.
+@see @ref compressedBlockDataSize(),
+    @ref isCompressedPixelFormatImplementationSpecific()
+*/
+MAGNUM_EXPORT Vector3i compressedBlockSize(CompressedPixelFormat format);
+
+/**
+@brief Compressed block data size
+
+Byte size of each compressed block. Expects that the pixel format is *not*
+implementation-specific.
+@see @ref compressedBlockSize(),
+    @ref isCompressedPixelFormatImplementationSpecific()
+*/
+MAGNUM_EXPORT UnsignedInt compressedBlockDataSize(CompressedPixelFormat format);
 
 /** @debugoperatorenum{CompressedPixelFormat} */
 MAGNUM_EXPORT Debug& operator<<(Debug& debug, CompressedPixelFormat value);

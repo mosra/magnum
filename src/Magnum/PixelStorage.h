@@ -185,6 +185,7 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
          * If set to @cpp 0 @ce for given dimension, size information from
          * particular compressed format is used. Default is @cpp 0 @ce in all
          * dimensions.
+         * @see @ref Magnum::compressedBlockSize()
          */
         CompressedPixelStorage& setCompressedBlockSize(const Vector3i& size) {
             _blockSize = size;
@@ -199,6 +200,7 @@ class MAGNUM_EXPORT CompressedPixelStorage: public PixelStorage {
          *
          * If set to @cpp 0 @ce, size information from particular compressed
          * format is used. Default is @cpp 0 @ce in all dimensions.
+         * @see @ref Magnum::compressedBlockDataSize()
          */
         CompressedPixelStorage& setCompressedBlockDataSize(Int size) {
             _blockDataSize = size;

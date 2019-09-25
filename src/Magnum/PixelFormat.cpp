@@ -25,8 +25,11 @@
 
 #include "PixelFormat.h"
 
+#include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
+
+#include "Magnum/Math/Vector3.h"
 
 namespace Magnum {
 
@@ -182,6 +185,51 @@ Debug& operator<<(Debug& debug, const PixelFormat value) {
     return debug << "PixelFormat(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
 }
 #endif
+
+namespace {
+
+#ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */
+constexpr UnsignedShort CompressedBlockData[] {
+    /* Assuming w/h/d/s is never larger than 16 (and never zero), each number
+       has 1 subtracted and packed into four bits, 16 bits in total. The size
+       is supplied in bits, so first divide by eight and then subtract 1. For
+       the currently ~60 supported format that makes this table to be about 128
+       bytes.*/
+    #define _c(format, width, height, depth, size) \
+        ((width - 1) << 12) | \
+        ((height - 1) << 8) | \
+        ((depth - 1) << 4) | \
+        ((size >> 3) - 1),
+    #include "Magnum/Implementation/compressedPixelFormatMapping.hpp"
+    #undef _s
+    #undef _c
+};
+#endif
+
+}
+
+Vector3i compressedBlockSize(const CompressedPixelFormat format) {
+    CORRADE_ASSERT(!(UnsignedInt(format) & (1 << 31)),
+        "compressedBlockSize(): can't determine size of an implementation-specific format", {});
+
+    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedBlockData),
+        "compressedBlockSize(): invalid format" << format, {});
+    const UnsignedInt data = CompressedBlockData[UnsignedInt(format) - 1];
+    return {
+        (Int(data >> 12) & 0xf) + 1,
+        (Int(data >>  8) & 0xf) + 1,
+        (Int(data >>  4) & 0xf) + 1,
+    };
+}
+
+UnsignedInt compressedBlockDataSize(const CompressedPixelFormat format) {
+    CORRADE_ASSERT(!(UnsignedInt(format) & (1 << 31)),
+        "compressedBlockDataSize(): can't determine size of an implementation-specific format", {});
+
+    CORRADE_ASSERT(UnsignedInt(format) - 1 < Containers::arraySize(CompressedBlockData),
+        "compressedBlockDataSize(): invalid format" << format, {});
+    return (CompressedBlockData[UnsignedInt(format) - 1] & 0xf) + 1;
+}
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
