@@ -35,7 +35,7 @@ namespace Magnum {
 
 UnsignedInt pixelSize(const PixelFormat format) {
     CORRADE_ASSERT(!(UnsignedInt(format) & (1 << 31)),
-        "pixelSize(): can't determine pixel size of an implementation-specific format", {});
+        "pixelSize(): can't determine size of an implementation-specific format", {});
 
     #ifdef __GNUC__
     #pragma GCC diagnostic push
@@ -107,7 +107,7 @@ UnsignedInt pixelSize(const PixelFormat format) {
     #pragma GCC diagnostic pop
     #endif
 
-    CORRADE_ASSERT(false, "pixelSize(): invalid pixel format" << format, {});
+    CORRADE_ASSERT(false, "pixelSize(): invalid format" << format, {});
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

@@ -110,8 +110,8 @@ void PixelFormatTest::sizeInvalid() {
     pixelSize(PixelFormat(0xdead));
 
     CORRADE_COMPARE(out.str(),
-        "pixelSize(): invalid pixel format PixelFormat(0x0)\n"
-        "pixelSize(): invalid pixel format PixelFormat(0xdead)\n");
+        "pixelSize(): invalid format PixelFormat(0x0)\n"
+        "pixelSize(): invalid format PixelFormat(0xdead)\n");
 }
 
 void PixelFormatTest::sizeImplementationSpecific() {
@@ -120,7 +120,7 @@ void PixelFormatTest::sizeImplementationSpecific() {
 
     pixelSize(pixelFormatWrap(0xdead));
 
-    CORRADE_COMPARE(out.str(), "pixelSize(): can't determine pixel size of an implementation-specific format\n");
+    CORRADE_COMPARE(out.str(), "pixelSize(): can't determine size of an implementation-specific format\n");
 }
 
 void PixelFormatTest::compressedBlockSize() {
