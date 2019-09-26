@@ -432,8 +432,12 @@ void CubicHermiteTest::constructIdentityQuaternion() {
 void CubicHermiteTest::constructNoInitScalar() {
     CubicHermite1D spline{2.0f, -2.0f, -0.5f};
     new(&spline) CubicHermite1D{NoInit};
-
-    CORRADE_COMPARE(spline, (CubicHermite1D{2.0f, -2.0f, -0.5f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(spline, (CubicHermite1D{2.0f, -2.0f, -0.5f}));
+    }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermite1D, NoInitT>::value));
 
@@ -444,8 +448,12 @@ void CubicHermiteTest::constructNoInitScalar() {
 void CubicHermiteTest::constructNoInitVector() {
     CubicHermite2D spline{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}};
     new(&spline) CubicHermite2D{NoInit};
-
-    CORRADE_COMPARE(spline, (CubicHermite2D{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(spline, (CubicHermite2D{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}}));
+    }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermite2D, NoInitT>::value));
 
@@ -456,8 +464,12 @@ void CubicHermiteTest::constructNoInitVector() {
 void CubicHermiteTest::constructNoInitComplex() {
     CubicHermiteComplex spline{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}};
     new(&spline) CubicHermiteComplex{NoInit};
-
-    CORRADE_COMPARE(spline, (CubicHermiteComplex{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(spline, (CubicHermiteComplex{{1.0f, 2.0f}, {1.5f, -2.0f}, {3.0f, -0.5f}}));
+    }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteComplex, NoInitT>::value));
 
@@ -471,11 +483,15 @@ void CubicHermiteTest::constructNoInitQuaternion() {
         {{1.5f, -2.0f, 0.1f}, 1.1f},
         {{3.0f, -0.5f, 1.2f}, 0.3f}};
     new(&spline) CubicHermiteQuaternion{NoInit};
-
-    CORRADE_COMPARE(spline, (CubicHermiteQuaternion{
-        {{1.0f, 2.0f, -1.0f}, 3.0f},
-        {{1.5f, -2.0f, 0.1f}, 1.1f},
-        {{3.0f, -0.5f, 1.2f}, 0.3f}}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(spline, (CubicHermiteQuaternion{
+            {{1.0f, 2.0f, -1.0f}, 3.0f},
+            {{1.5f, -2.0f, 0.1f}, 1.1f},
+            {{3.0f, -0.5f, 1.2f}, 0.3f}}));
+    }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<CubicHermiteQuaternion, NoInitT>::value));
 

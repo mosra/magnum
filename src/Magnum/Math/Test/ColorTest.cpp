@@ -497,7 +497,12 @@ void ColorTest::constructHsvDefault() {
 void ColorTest::constructHsvNoInit() {
     ColorHsv a{135.0_degf, 0.5f, 0.9f};
     new(&a) ColorHsv{NoInit};
-    CORRADE_COMPARE(a, (ColorHsv{135.0_degf, 0.5f, 0.9f}));
+    {
+        #if defined(__GNUC__) && __GNUC__*100 + __GNUC_MINOR__ >= 601 && __OPTIMIZE__
+        CORRADE_EXPECT_FAIL("GCC 6.1+ misoptimizes and overwrites the value.");
+        #endif
+        CORRADE_COMPARE(a, (ColorHsv{135.0_degf, 0.5f, 0.9f}));
+    }
 
     CORRADE_VERIFY((std::is_nothrow_constructible<ColorHsv, NoInitT>::value));
 
