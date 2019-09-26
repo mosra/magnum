@@ -52,9 +52,11 @@ constexpr VkIndexType IndexTypeMapping[]{
 };
 
 #ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */
+static_assert(VK_FORMAT_UNDEFINED == 0, "VK_FORMAT_UNDEFINED is assumed to be 0");
+
 constexpr VkFormat FormatMapping[] {
     #define _c(input, format) VK_FORMAT_ ## format,
-    #define _s(input) VkFormat(~UnsignedInt{}),
+    #define _s(input) {},
     #include "Magnum/Vk/Implementation/formatMapping.hpp"
     #undef _s
     #undef _c
@@ -62,7 +64,7 @@ constexpr VkFormat FormatMapping[] {
 
 constexpr VkFormat CompressedFormatMapping[] {
     #define _c(input, format) VK_FORMAT_ ## format,
-    #define _s(input) VkFormat(~UnsignedInt{}),
+    #define _s(input) {},
     #include "Magnum/Vk/Implementation/compressedFormatMapping.hpp"
     #undef _s
     #undef _c
