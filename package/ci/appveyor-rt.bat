@@ -2,9 +2,13 @@ if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" call "C:/Program File
 if "%APPVEYOR_BUILD_WORKER_IMAGE%" == "Visual Studio 2017" set GENERATOR=Visual Studio 15 2017
 set PATH=%APPVEYOR_BUILD_FOLDER%\deps-native\bin;%PATH%
 
-rem Build ANGLE
-git clone --depth 1 git://github.com/MSOpenTech/angle.git || exit /b
-cd angle\winrt\10\src || exit /b
+rem Build ANGLE. The repo is now just a README redirecting to googlesource.
+rem I don't want to bother with this right now, so checking out last usable
+rem version from 2017. TODO: fix when I can be bothered
+git clone --depth 10 git://github.com/MSOpenTech/angle.git || exit /b
+cd angle || exit /b
+git checkout c61d0488abd9663e0d4d2450db7345baa2c0dfb6 || exit /b
+cd winrt\10\src || exit /b
 msbuild angle.sln /p:Configuration=Release || exit /b
 cd ..\..\..\.. || exit /b
 
