@@ -1090,21 +1090,20 @@ enum class CompressedPixelFormat: UnsignedInt {
     Etc2RGBA8Srgb,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 4x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x4,
      * @ref GL::TextureFormat::CompressedRGBAAstc4x4;
      * @def_vk_keyword{FORMAT_ASTC_4x4_UNORM_BLOCK,Format} or
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_4x4_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_4x4_ldr?language=objc) /
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_4x4_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_4x4_hdr?language=objc).
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_4x4_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_4x4_ldr?language=objc).
      * No equivalent in D3D.
-     * @m_keywords{MTLPixelFormatASTC_4x4_LDR MTLPixelFormatASTC_4x4_HDR}
+     * @m_keywords{MTLPixelFormatASTC_4x4_LDR}
      */
     Astc4x4RGBAUnorm,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 4x4
      * blocks.
      *
@@ -1118,21 +1117,33 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc4x4RGBASrgb,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 4x4 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x4,
+     * @ref GL::TextureFormat::CompressedRGBAAstc4x4;
+     * @def_vk_keyword{FORMAT_ASTC_4x4_SFLOAT_BLOCK,Format} or
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_4x4_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_4x4_hdr?language=objc).
+     * No equivalent in D3D.
+     * @m_keywords{MTLPixelFormatASTC_4x4_HDR}
+     */
+    Astc4x4RGBAF,
+
+    /**
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 5x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x4,
      * @ref GL::TextureFormat::CompressedRGBAAstc5x4;
      * @def_vk_keyword{FORMAT_ASTC_5x4_UNORM_BLOCK,Format} or
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_5x4_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_5x4_ldr?language=objc) /
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_5x4_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_5x4_hdr?language=objc).
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_5x4_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_5x4_ldr?language=objc).
      * No equivalent in D3D.
-     * @m_keywords{MTLPixelFormatASTC_5x4_LDR MTLPixelFormatASTC_5x4_HDR}
+     * @m_keywords{MTLPixelFormatASTC_5x4_LDR}
      */
     Astc5x4RGBAUnorm,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 5x4
      * blocks.
      *
@@ -1146,21 +1157,33 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc5x4RGBASrgb,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 5x4 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x4,
+     * @ref GL::TextureFormat::CompressedRGBAAstc5x4;
+     * @def_vk_keyword{FORMAT_ASTC_5x4_SFLOAT_BLOCK,Format} or
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_5x4_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_5x4_hdr?language=objc).
+     * No equivalent in D3D.
+     * @m_keywords{MTLPixelFormatASTC_5x4_HDR}
+     */
+    Astc5x4RGBAF,
+
+    /**
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 5x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc5x5;
      * @def_vk_keyword{FORMAT_ASTC_5x5_UNORM_BLOCK,Format} or
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_5x5_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_5x5_ldr?language=objc) /
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_5x5_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_5x5_hdr?language=objc).
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_5x5_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_5x5_ldr?language=objc).
      * No equivalent in D3D.
-     * @m_keywords{MTLPixelFormatASTC_5x5_LDR MTLPixelFormatASTC_5x5_HDR}
+     * @m_keywords{MTLPixelFormatASTC_5x5_LDR}
      */
     Astc5x5RGBAUnorm,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 5x5
      * blocks.
      *
@@ -1174,21 +1197,33 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc5x5RGBASrgb,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 5x5 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x5,
+     * @ref GL::TextureFormat::CompressedRGBAAstc5x5;
+     * @def_vk_keyword{FORMAT_ASTC_5x5_SFLOAT_BLOCK,Format} or
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_5x5_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_5x5_hdr?language=objc).
+     * No equivalent in D3D.
+     * @m_keywords{MTLPixelFormatASTC_5x5_HDR}
+     */
+    Astc5x5RGBAF,
+
+    /**
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 6x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc6x5;
      * @def_vk_keyword{FORMAT_ASTC_6x5_UNORM_BLOCK,Format} or
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_6x5_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_6x5_ldr?language=objc) /
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_6x5_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_6x5_hdr?language=objc).
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_6x5_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_6x5_ldr?language=objc).
      * No equivalent in D3D.
-     * @m_keywords{MTLPixelFormatASTC_6x5_LDR MTLPixelFormatASTC_6x5_HDR}
+     * @m_keywords{MTLPixelFormatASTC_6x5_LDR}
      */
     Astc6x5RGBAUnorm,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 6x5
      * blocks.
      *
@@ -1202,21 +1237,33 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc6x5RGBASrgb,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 6x5 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x5,
+     * @ref GL::TextureFormat::CompressedRGBAAstc6x5;
+     * @def_vk_keyword{FORMAT_ASTC_6x5_SFLOAT_BLOCK,Format} or
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_6x5_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_6x5_hdr?language=objc).
+     * No equivalent in D3D.
+     * @m_keywords{MTLPixelFormatASTC_6x5_HDR}
+     */
+    Astc6x5RGBAF,
+
+    /**
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 6x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x6,
      * @ref GL::TextureFormat::CompressedRGBAAstc6x6;
      * @def_vk_keyword{FORMAT_ASTC_6x6_UNORM_BLOCK,Format} or
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_6x6_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_6x6_ldr?language=objc) /
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_6x6_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_6x6_hdr?language=objc).
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_6x6_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_6x6_ldr?language=objc).
      * No equivalent in D3D.
-     * @m_keywords{MTLPixelFormatASTC_6x6_LDR MTLPixelFormatASTC_6x6_HDR}
+     * @m_keywords{MTLPixelFormatASTC_6x6_LDR}
      */
     Astc6x6RGBAUnorm,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 6x6
      * blocks.
      *
@@ -1230,21 +1277,33 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc6x6RGBASrgb,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 6x6 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x6,
+     * @ref GL::TextureFormat::CompressedRGBAAstc6x6;
+     * @def_vk_keyword{FORMAT_ASTC_6x6_SFLOAT_BLOCK,Format} or
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_6x6_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_6x6_hdr?language=objc).
+     * No equivalent in D3D.
+     * @m_keywords{MTLPixelFormatASTC_6x6_HDR}
+     */
+    Astc6x6RGBAF,
+
+    /**
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 8x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc8x5;
      * @def_vk_keyword{FORMAT_ASTC_8x5_UNORM_BLOCK,Format} or
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_8x5_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x5_ldr?language=objc) /
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_8x5_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x5_hdr?language=objc).
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_8x5_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x5_ldr?language=objc).
      * No equivalent in D3D.
-     * @m_keywords{MTLPixelFormatASTC_8x5_LDR MTLPixelFormatASTC_8x5_HDR}
+     * @m_keywords{MTLPixelFormatASTC_8x5_LDR}
      */
     Astc8x5RGBAUnorm,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 8x5
      * blocks.
      *
@@ -1258,21 +1317,33 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc8x5RGBASrgb,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 8x5 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x5,
+     * @ref GL::TextureFormat::CompressedRGBAAstc8x5;
+     * @def_vk_keyword{FORMAT_ASTC_8x5_SFLOAT_BLOCK,Format} or
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_8x5_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x5_hdr?language=objc).
+     * No equivalent in D3D.
+     * @m_keywords{MTLPixelFormatASTC_8x5_HDR}
+     */
+    Astc8x5RGBAF,
+
+    /**
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 8x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x6,
      * @ref GL::TextureFormat::CompressedRGBAAstc8x6;
      * @def_vk_keyword{FORMAT_ASTC_8x6_UNORM_BLOCK,Format} or
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_8x6_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x6_ldr?language=objc) /
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_8x6_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x6_hdr?language=objc).
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_8x6_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x6_ldr?language=objc).
      * No equivalent in D3D.
-     * @m_keywords{MTLPixelFormatASTC_8x6_LDR MTLPixelFormatASTC_8x6_HDR}
+     * @m_keywords{MTLPixelFormatASTC_8x6_LDR}
      */
     Astc8x6RGBAUnorm,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 8x6
      * blocks.
      *
@@ -1286,21 +1357,33 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc8x6RGBASrgb,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 8x6 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x6,
+     * @ref GL::TextureFormat::CompressedRGBAAstc8x6;
+     * @def_vk_keyword{FORMAT_ASTC_8x6_SFLOAT_BLOCK,Format} or
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_8x6_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x6_hdr?language=objc).
+     * No equivalent in D3D.
+     * @m_keywords{MTLPixelFormatASTC_8x6_HDR}
+     */
+    Astc8x6RGBAF,
+
+    /**
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 8x8 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x8,
      * @ref GL::TextureFormat::CompressedRGBAAstc8x8;
      * @def_vk_keyword{FORMAT_ASTC_8x8_UNORM_BLOCK,Format} or
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_8x8_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x8_ldr?language=objc) /
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_8x8_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x8_hdr?language=objc).
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_8x8_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x8_ldr?language=objc).
      * No equivalent in D3D.
-     * @m_keywords{MTLPixelFormatASTC_8x8_LDR MTLPixelFormatASTC_8x8_HDR}
+     * @m_keywords{MTLPixelFormatASTC_8x8_LDR}
      */
     Astc8x8RGBAUnorm,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 8x8
      * blocks.
      *
@@ -1314,21 +1397,33 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc8x8RGBASrgb,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 8x8 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x8,
+     * @ref GL::TextureFormat::CompressedRGBAAstc8x8;
+     * @def_vk_keyword{FORMAT_ASTC_8x8_SFLOAT_BLOCK,Format} or
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_8x8_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x8_hdr?language=objc).
+     * No equivalent in D3D.
+     * @m_keywords{MTLPixelFormatASTC_8x8_HDR}
+     */
+    Astc8x8RGBAF,
+
+    /**
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 10x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x5,
      * @ref GL::TextureFormat::CompressedRGBAAstc10x5;
      * @def_vk_keyword{FORMAT_ASTC_10x5_UNORM_BLOCK,Format} or
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_10x5_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x5_ldr?language=objc) /
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_10x5_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x5_hdr?language=objc).
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_10x5_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x5_ldr?language=objc).
      * No equivalent in D3D.
-     * @m_keywords{MTLPixelFormatASTC_10x5_LDR MTLPixelFormatASTC_10x5_HDR}
+     * @m_keywords{MTLPixelFormatASTC_10x5_LDR}
      */
     Astc10x5RGBAUnorm,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 10x5
      * blocks.
      *
@@ -1342,21 +1437,33 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc10x5RGBASrgb,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 10x5 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x5,
+     * @ref GL::TextureFormat::CompressedRGBAAstc10x5;
+     * @def_vk_keyword{FORMAT_ASTC_10x5_SFLOAT_BLOCK,Format} or
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_10x5_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x5_hdr?language=objc).
+     * No equivalent in D3D.
+     * @m_keywords{MTLPixelFormatASTC_10x5_HDR}
+     */
+    Astc10x5RGBAF,
+
+    /**
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 10x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x6,
      * @ref GL::TextureFormat::CompressedRGBAAstc10x6;
      * @def_vk_keyword{FORMAT_ASTC_10x6_UNORM_BLOCK,Format} or
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_10x6_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x6_ldr?language=objc) /
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_10x6_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x6_hdr?language=objc).
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_10x6_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x6_ldr?language=objc).
      * No equivalent in D3D.
-     * @m_keywords{MTLPixelFormatASTC_10x6_LDR MTLPixelFormatASTC_10x6_HDR}
+     * @m_keywords{MTLPixelFormatASTC_10x6_LDR}
      */
     Astc10x6RGBAUnorm,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 10x6
      * blocks.
      *
@@ -1370,21 +1477,33 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc10x6RGBASrgb,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 10x6 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x6,
+     * @ref GL::TextureFormat::CompressedRGBAAstc10x6;
+     * @def_vk_keyword{FORMAT_ASTC_10x6_SFLOAT_BLOCK,Format} or
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_10x6_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x6_hdr?language=objc).
+     * No equivalent in D3D.
+     * @m_keywords{MTLPixelFormatASTC_10x6_HDR}
+     */
+    Astc10x6RGBAF,
+
+    /**
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 10x8 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x8,
      * @ref GL::TextureFormat::CompressedRGBAAstc10x8;
      * @def_vk_keyword{FORMAT_ASTC_10x8_UNORM_BLOCK,Format} or
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_10x8_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x8_ldr?language=objc) /
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_10x8_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x8_hdr?language=objc).
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_10x8_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x8_ldr?language=objc).
      * No equivalent in D3D.
-     * @m_keywords{MTLPixelFormatASTC_10x8_LDR MTLPixelFormatASTC_10x8_HDR}
+     * @m_keywords{MTLPixelFormatASTC_10x8_LDR}
      */
     Astc10x8RGBAUnorm,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 10x8
      * blocks.
      *
@@ -1398,21 +1517,33 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc10x8RGBASrgb,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 10x8 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x8,
+     * @ref GL::TextureFormat::CompressedRGBAAstc10x8;
+     * @def_vk_keyword{FORMAT_ASTC_10x8_SFLOAT_BLOCK,Format} or
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_10x8_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x8_hdr?language=objc).
+     * No equivalent in D3D.
+     * @m_keywords{MTLPixelFormatASTC_10x8_HDR}
+     */
+    Astc10x8RGBAF,
+
+    /**
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 10x10 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x10,
      * @ref GL::TextureFormat::CompressedRGBAAstc10x10;
      * @def_vk_keyword{FORMAT_ASTC_10x10_UNORM_BLOCK,Format} or
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_10x10_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x10_ldr?language=objc) /
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_10x10_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x10_hdr?language=objc).
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_10x10_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x10_ldr?language=objc).
      * No equivalent in D3D.
-     * @m_keywords{MTLPixelFormatASTC_10x10_LDR MTLPixelFormatASTC_10x10_HDR}
+     * @m_keywords{MTLPixelFormatASTC_10x10_LDR}
      */
     Astc10x10RGBAUnorm,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 10x10
      * blocks.
      *
@@ -1426,21 +1557,33 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc10x10RGBASrgb,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 10x10 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x10,
+     * @ref GL::TextureFormat::CompressedRGBAAstc10x10;
+     * @def_vk_keyword{FORMAT_ASTC_10x10_SFLOAT_BLOCK,Format} or
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_10x10_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x10_hdr?language=objc).
+     * No equivalent in D3D.
+     * @m_keywords{MTLPixelFormatASTC_10x10_HDR}
+     */
+    Astc10x10RGBAF,
+
+    /**
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 12x10 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc12x10,
      * @ref GL::TextureFormat::CompressedRGBAAstc12x10;
      * @def_vk_keyword{FORMAT_ASTC_12x10_UNORM_BLOCK,Format} or
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_12x10_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_12x10_ldr?language=objc) /
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_12x10_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_12x10_hdr?language=objc).
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_12x10_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_12x10_ldr?language=objc).
      * No equivalent in D3D.
-     * @m_keywords{MTLPixelFormatASTC_12x10_LDR MTLPixelFormatASTC_12x10_HDR}
+     * @m_keywords{MTLPixelFormatASTC_12x10_LDR}
      */
     Astc12x10RGBAUnorm,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 12x10
      * blocks.
      *
@@ -1454,21 +1597,33 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc12x10RGBASrgb,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 12x10 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc12x10,
+     * @ref GL::TextureFormat::CompressedRGBAAstc12x10;
+     * @def_vk_keyword{FORMAT_ASTC_12x10_SFLOAT_BLOCK,Format} or
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_12x10_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_12x10_hdr?language=objc).
+     * No equivalent in D3D.
+     * @m_keywords{MTLPixelFormatASTC_12x10_HDR}
+     */
+    Astc12x10RGBAF,
+
+    /**
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 12x12 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc12x12,
      * @ref GL::TextureFormat::CompressedRGBAAstc12x12;
      * @def_vk_keyword{FORMAT_ASTC_12x12_UNORM_BLOCK,Format} or
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_12x12_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_12x12_ldr?language=objc) /
-     * @m_class{m-doc-external} [MTLPixelFormatASTC_12x12_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_12x12_hdr?language=objc).
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_12x12_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_12x12_ldr?language=objc).
      * No equivalent in D3D.
-     * @m_keywords{MTLPixelFormatASTC_12x12_LDR MTLPixelFormatASTC_12x12_HDR}
+     * @m_keywords{MTLPixelFormatASTC_12x12_LDR}
      */
     Astc12x12RGBAUnorm,
 
     /**
-     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 12x12
      * blocks.
      *
@@ -1482,7 +1637,20 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc12x12RGBASrgb,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 12x12 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc12x12,
+     * @ref GL::TextureFormat::CompressedRGBAAstc12x12;
+     * @def_vk_keyword{FORMAT_ASTC_12x12_SFLOAT_BLOCK,Format} or
+     * @m_class{m-doc-external} [MTLPixelFormatASTC_12x12_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_12x12_hdr?language=objc).
+     * No equivalent in D3D.
+     * @m_keywords{MTLPixelFormatASTC_12x12_HDR}
+     */
+    Astc12x12RGBAF,
+
+    /**
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 3x3x3 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc3x3x3,
@@ -1494,7 +1662,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc3x3x3RGBAUnorm,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 3x3x3
      * blocks.
      *
@@ -1507,7 +1675,19 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc3x3x3RGBASrgb,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 3x3x3 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc3x3x3,
+     * @ref GL::TextureFormat::CompressedRGBAAstc3x3x3;
+     * and @def_vk_keyword{FORMAT_ASTC_3x3x3_SFLOAT_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc3x3x3RGBAF,
+
+    /**
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 4x3x3 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x3x3,
@@ -1519,7 +1699,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc4x3x3RGBAUnorm,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 4x3x3
      * blocks.
      *
@@ -1532,7 +1712,19 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc4x3x3RGBASrgb,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 4x3x3 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x3x3,
+     * @ref GL::TextureFormat::CompressedRGBAAstc4x3x3;
+     * and @def_vk_keyword{FORMAT_ASTC_4x3x3_SFLOAT_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc4x3x3RGBAF,
+
+    /**
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 4x4x3 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x4x3,
@@ -1544,7 +1736,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc4x4x3RGBAUnorm,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 4x4x3
      * blocks.
      *
@@ -1557,7 +1749,19 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc4x4x3RGBASrgb,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 4x4x3 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x4x3,
+     * @ref GL::TextureFormat::CompressedRGBAAstc4x4x3;
+     * and @def_vk_keyword{FORMAT_ASTC_4x4x3_SFLOAT_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc4x4x3RGBAF,
+
+    /**
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 4x4x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x4x4,
@@ -1569,7 +1773,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc4x4x4RGBAUnorm,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 4x4x4
      * blocks.
      *
@@ -1582,7 +1786,19 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc4x4x4RGBASrgb,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 4x4x4 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x4x4,
+     * @ref GL::TextureFormat::CompressedRGBAAstc4x4x4;
+     * and @def_vk_keyword{FORMAT_ASTC_4x4x4_SFLOAT_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc4x4x4RGBAF,
+
+    /**
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 5x4x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x4x4,
@@ -1594,7 +1810,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc5x4x4RGBAUnorm,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 5x4x4
      * blocks.
      *
@@ -1607,7 +1823,19 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc5x4x4RGBASrgb,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 5x4x4 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x4x4,
+     * @ref GL::TextureFormat::CompressedRGBAAstc5x4x4;
+     * and @def_vk_keyword{FORMAT_ASTC_5x4x4_SFLOAT_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc5x4x4RGBAF,
+
+    /**
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 5x5x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x5x4,
@@ -1619,7 +1847,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc5x5x4RGBAUnorm,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 5x5x4
      * blocks.
      *
@@ -1632,7 +1860,19 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc5x5x4RGBASrgb,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 5x5x4 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x5x4,
+     * @ref GL::TextureFormat::CompressedRGBAAstc5x5x4;
+     * and @def_vk_keyword{FORMAT_ASTC_5x5x4_SFLOAT_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc5x5x4RGBAF,
+
+    /**
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 5x5x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x5x5,
@@ -1644,7 +1884,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc5x5x5RGBAUnorm,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 5x5x5
      * blocks.
      *
@@ -1657,7 +1897,19 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc5x5x5RGBASrgb,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 5x5x5 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x5x5,
+     * @ref GL::TextureFormat::CompressedRGBAAstc5x5x5;
+     * and @def_vk_keyword{FORMAT_ASTC_5x5x5_SFLOAT_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc5x5x5RGBAF,
+
+    /**
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 6x5x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x5x5,
@@ -1669,7 +1921,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc6x5x5RGBAUnorm,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 6x5x5
      * blocks.
      *
@@ -1682,7 +1934,19 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc6x5x5RGBASrgb,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 6x5x5 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x5x5,
+     * @ref GL::TextureFormat::CompressedRGBAAstc6x5x5;
+     * and @def_vk_keyword{FORMAT_ASTC_6x5x5_SFLOAT_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc6x5x5RGBAF,
+
+    /**
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 6x6x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x6x5,
@@ -1694,7 +1958,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc6x6x5RGBAUnorm,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 6x6x5
      * blocks.
      *
@@ -1707,7 +1971,19 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc6x6x5RGBASrgb,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 6x6x5 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x6x5,
+     * @ref GL::TextureFormat::CompressedRGBAAstc6x6x5;
+     * and @def_vk_keyword{FORMAT_ASTC_6x6x5_SFLOAT_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc6x6x5RGBAF,
+
+    /**
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 6x6x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x6x6,
@@ -1719,7 +1995,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc6x6x6RGBAUnorm,
 
     /**
-     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 3D LDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 6x6x6
      * blocks.
      *
@@ -1730,6 +2006,18 @@ enum class CompressedPixelFormat: UnsignedInt {
      * No equivalent in Metal or D3D.
      */
     Astc6x6x6RGBASrgb,
+
+    /**
+     * 3D HDR [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, half float with 6x6x6 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x6x6,
+     * @ref GL::TextureFormat::CompressedRGBAAstc6x6x6;
+     * and @def_vk_keyword{FORMAT_ASTC_6x6x6_SFLOAT_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc6x6x6RGBAF,
 
     /* See https://github.com/KhronosGroup/Vulkan-Docs/issues/512#issuecomment-307768667
        for Vulkan mapping. Ugh. */

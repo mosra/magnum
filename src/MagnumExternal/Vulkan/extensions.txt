@@ -24,6 +24,8 @@ extension KHR_shader_draw_parameters optional
 extension KHR_storage_buffer_storage_class optional
 extension KHR_variable_pointers optional
 
+extension EXT_texture_compression_astc_hdr optional
+
 extension IMG_format_pvrtc optional
 
 # kate: hl python
