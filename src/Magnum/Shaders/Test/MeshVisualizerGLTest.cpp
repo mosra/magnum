@@ -62,6 +62,8 @@ void MeshVisualizerGLTest::construct() {
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)

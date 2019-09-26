@@ -345,6 +345,8 @@ void PhongGLTest::construct() {
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void PhongGLTest::constructMove() {

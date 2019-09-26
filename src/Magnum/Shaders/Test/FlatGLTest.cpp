@@ -233,6 +233,8 @@ template<UnsignedInt dimensions> void FlatGLTest::construct() {
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 template<UnsignedInt dimensions> void FlatGLTest::constructMove() {

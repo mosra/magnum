@@ -55,6 +55,8 @@ void VertexColorGLTest::construct2D() {
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void VertexColorGLTest::construct3D() {
@@ -66,6 +68,8 @@ void VertexColorGLTest::construct3D() {
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void VertexColorGLTest::constructMove2D() {

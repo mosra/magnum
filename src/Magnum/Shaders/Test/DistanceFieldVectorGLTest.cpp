@@ -55,6 +55,8 @@ void DistanceFieldVectorGLTest::construct2D() {
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void DistanceFieldVectorGLTest::construct3D() {
@@ -66,6 +68,8 @@ void DistanceFieldVectorGLTest::construct3D() {
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void DistanceFieldVectorGLTest::constructMove2D() {

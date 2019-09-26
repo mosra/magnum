@@ -55,6 +55,8 @@ void VectorGLTest::construct2D() {
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void VectorGLTest::construct3D() {
@@ -66,6 +68,8 @@ void VectorGLTest::construct3D() {
         #endif
         CORRADE_VERIFY(shader.validate().first);
     }
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
 void VectorGLTest::constructMove2D() {
