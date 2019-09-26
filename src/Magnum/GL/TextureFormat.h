@@ -127,13 +127,16 @@ enum class TextureFormat: GLenum {
     #endif
 
     /**
-     * RGB, normalized unsigned, size implementation-dependent. Not allowed in
-     * unemulated @ref Texture::setStorage() "*Texture::setStorage()" calls, in
+     * RGB, type/size implementation-dependent. Not allowed in unemulated
+     * @ref Texture::setStorage() "*Texture::setStorage()" calls, in
      * that case use @ref TextureFormat::RGB8 "TextureFormat::RGB8" instead.
      * @requires_gl Can't be used as a render target in OpenGL ES or WebGL. See
      *      @ref TextureFormat::RGBA for an alternative.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref TextureFormat::RGB8.
+     * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
+     *      for filtering @ref PixelType::HalfFloat textures using
+     *      @ref SamplerFilter::Linear in WebGL 1.0.
      */
     RGB = GL_RGB,
 
@@ -155,11 +158,14 @@ enum class TextureFormat: GLenum {
     #endif
 
     /**
-     * RGBA, normalized unsigned, size implementation-dependent. Not allowed in
-     * unemulated @ref Texture::setStorage() "*Texture::setStorage()" calls, in
-     * that case use @ref TextureFormat::RGBA8 "TextureFormat::RGBA8" instead.
+     * RGBA, type/size implementation-dependent. Not allowed in unemulated
+     * @ref Texture::setStorage() "*Texture::setStorage()" calls, in that case
+     * use @ref TextureFormat::RGBA8 "TextureFormat::RGBA8" instead.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref TextureFormat::RGBA8.
+     * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
+     *      for filtering @ref PixelType::HalfFloat textures using
+     *      @ref SamplerFilter::Linear in WebGL 1.0.
      */
     RGBA = GL_RGBA,
 
@@ -709,8 +715,6 @@ enum class TextureFormat: GLenum {
      * @requires_webgl20 Use @ref TextureFormat::RGB in combination with
      *      @ref PixelFormat::HalfFloat (@webgl_extension{OES,texture_half_float})
      *      in WebGL 1.0 instead.
-     * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
-     *      for filtering using @ref SamplerFilter::Linear in WebGL 1.0.
      * @requires_gl Can't be used as a render target in OpenGL ES or WebGL 2.0.
      *      Use @ref TextureFormat::RGBA16F instead. Use @ref TextureFormat::RGB
      *      in combination with @ref PixelFormat::HalfFloat
@@ -734,8 +738,6 @@ enum class TextureFormat: GLenum {
      * @requires_webgl20 Use @ref TextureFormat::RGBA in combination with
      *      @ref PixelFormat::HalfFloat (@webgl_extension{OES,texture_half_float})
      *      in WebGL 1.0 instead.
-     * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
-     *      for filtering using @ref SamplerFilter::Linear in WebGL 1.0.
      * @requires_webgl_extension Extension @webgl_extension{EXT,color_buffer_float}
      *      to use as a render target in WebGL 2.0. Use @ref TextureFormat::RGBA16UI
      *      or @ref TextureFormat::RGBA16I instead if not available. Use
