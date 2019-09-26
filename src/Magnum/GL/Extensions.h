@@ -493,14 +493,15 @@ namespace ANDROID {
     _extension(120,OES,surfaceless_context,         GLES200, GLES300) // #116
     #endif
     #ifndef MAGNUM_TARGET_GLES2
-    _extension(121,OES,sample_shading,              GLES300, GLES320) // #169
-    _extension(122,OES,sample_variables,            GLES300, GLES320) // #170
-    _extension(123,OES,shader_image_atomic,         GLES310, GLES320) // #171
-    _extension(124,OES,shader_multisample_interpolation, GLES300, GLES320) // #172
+    _extension(121,OES,texture_compression_astc,    GLES300,    None) // #162
+    _extension(122,OES,sample_shading,              GLES300, GLES320) // #169
+    _extension(123,OES,sample_variables,            GLES300, GLES320) // #170
+    _extension(124,OES,shader_image_atomic,         GLES310, GLES320) // #171
+    _extension(125,OES,shader_multisample_interpolation, GLES300, GLES320) // #172
     #endif
-    _extension(125,OES,texture_stencil8,            GLES200, GLES320) // #173
+    _extension(126,OES,texture_stencil8,            GLES200, GLES320) // #173
     #ifndef MAGNUM_TARGET_GLES2
-    _extension(126,OES,texture_storage_multisample_2d_array, GLES310, GLES320) // #174
+    _extension(127,OES,texture_storage_multisample_2d_array, GLES310, GLES320) // #174
     #endif
 } namespace MAGNUM {
     #ifndef MAGNUM_TARGET_GLES2

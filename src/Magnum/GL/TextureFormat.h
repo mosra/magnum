@@ -2009,6 +2009,188 @@ enum class TextureFormat: GLenum {
     CompressedSRGB8Alpha8Astc12x12 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_12x12,
     #endif
 
+    #if defined(DOXYGEN_GENERATING_OUTPUT) || (defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL))
+    /**
+     * 3D ASTC compressed RGBA with 3x3x3 blocks. **Available only on 3D
+     * textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedRGBAAstc3x3x3 = GL_COMPRESSED_RGBA_ASTC_3x3x3_OES,
+
+    /**
+     * 3D ASTC compressed sRGB with alpha with 3x3x3 blocks. **Available only
+     * on 3D textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedSRGB8Alpha8Astc3x3x3 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_3x3x3_OES,
+
+    /**
+     * 3D ASTC compressed RGBA with 4x3x3 blocks. **Available only on 3D
+     * textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedRGBAAstc4x3x3 = GL_COMPRESSED_RGBA_ASTC_4x3x3_OES,
+
+    /**
+     * 3D ASTC compressed sRGB with alpha with 4x3x3 blocks. **Available only
+     * on 3D textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedSRGB8Alpha8Astc4x3x3 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x3x3_OES,
+
+    /**
+     * 3D ASTC compressed RGBA with 4x4x3 blocks. **Available only on 3D
+     * textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedRGBAAstc4x4x3 = GL_COMPRESSED_RGBA_ASTC_4x4x3_OES,
+
+    /**
+     * 3D ASTC compressed sRGB with alpha with 4x4x3 blocks. **Available only
+     * on 3D textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedSRGB8Alpha8Astc4x4x3 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4x3_OES,
+
+    /**
+     * 3D ASTC compressed RGBA with 4x4x4 blocks. **Available only on 3D
+     * textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedRGBAAstc4x4x4 = GL_COMPRESSED_RGBA_ASTC_4x4x4_OES,
+
+    /**
+     * 3D ASTC compressed sRGB with alpha with 4x4x4 blocks. **Available only
+     * on 3D textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedSRGB8Alpha8Astc4x4x4 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4x4_OES,
+
+    /**
+     * 3D ASTC compressed RGBA with 5x4x4 blocks. **Available only on 3D
+     * textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedRGBAAstc5x4x4 = GL_COMPRESSED_RGBA_ASTC_5x4x4_OES,
+
+    /**
+     * 3D ASTC compressed sRGB with alpha with 5x4x4 blocks. **Available only
+     * on 3D textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedSRGB8Alpha8Astc5x4x4 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4x4_OES,
+
+    /**
+     * 3D ASTC compressed RGBA with 5x5x4 blocks. **Available only on 3D
+     * textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedRGBAAstc5x5x4 = GL_COMPRESSED_RGBA_ASTC_5x5x4_OES,
+
+    /**
+     * 3D ASTC compressed sRGB with alpha with 5x5x4 blocks. **Available only
+     * on 3D textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedSRGB8Alpha8Astc5x5x4 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5x4_OES,
+
+    /**
+     * 3D ASTC compressed RGBA with 5x5x5 blocks. **Available only on 3D
+     * textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedRGBAAstc5x5x5 = GL_COMPRESSED_RGBA_ASTC_5x5x5_OES,
+
+    /**
+     * 3D ASTC compressed sRGB with alpha with 5x5x5 blocks. **Available only
+     * on 3D textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedSRGB8Alpha8Astc5x5x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5x5_OES,
+
+    /**
+     * 3D ASTC compressed RGBA with 6x5x5 blocks. **Available only on 3D
+     * textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedRGBAAstc6x5x5 = GL_COMPRESSED_RGBA_ASTC_6x5x5_OES,
+
+    /**
+     * 3D ASTC compressed sRGB with alpha with 6x5x5 blocks. **Available only
+     * on 3D textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedSRGB8Alpha8Astc6x5x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5x5_OES,
+
+    /**
+     * 3D ASTC compressed RGBA with 6x6x5 blocks. **Available only on 3D
+     * textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedRGBAAstc6x6x5 = GL_COMPRESSED_RGBA_ASTC_6x6x5_OES,
+
+    /**
+     * 3D ASTC compressed sRGB with alpha with 6x6x5 blocks. **Available only
+     * on 3D textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedSRGB8Alpha8Astc6x6x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6x5_OES,
+
+    /**
+     * 3D ASTC compressed RGBA with 6x6x6 blocks. **Available only on 3D
+     * textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedRGBAAstc6x6x6 = GL_COMPRESSED_RGBA_ASTC_6x6x6_OES,
+
+    /**
+     * 3D ASTC compressed sRGB with alpha with 6x6x6 blocks. **Available only
+     * on 3D textures.**
+     *
+     * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
+     * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     */
+    CompressedSRGB8Alpha8Astc6x6x6 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6x6_OES,
+    #endif
+
     #if defined(DOXYGEN_GENERATING_OUTPUT) || defined(MAGNUM_TARGET_GLES)
     /**
      * PVRTC compressed RGB, normalized unsigned byte with 2 bits per pixel.

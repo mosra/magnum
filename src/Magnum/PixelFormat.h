@@ -1090,7 +1090,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Etc2RGBA8Srgb,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 4x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x4,
@@ -1104,7 +1104,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc4x4RGBAUnorm,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 4x4
      * blocks.
      *
@@ -1118,7 +1118,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc4x4RGBASrgb,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 5x4 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x4,
@@ -1132,7 +1132,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc5x4RGBAUnorm,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 5x4
      * blocks.
      *
@@ -1146,7 +1146,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc5x4RGBASrgb,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 5x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x5,
@@ -1160,7 +1160,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc5x5RGBAUnorm,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 5x5
      * blocks.
      *
@@ -1174,7 +1174,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc5x5RGBASrgb,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 6x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x5,
@@ -1188,7 +1188,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc6x5RGBAUnorm,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 6x5
      * blocks.
      *
@@ -1202,7 +1202,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc6x5RGBASrgb,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 6x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x6,
@@ -1216,7 +1216,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc6x6RGBAUnorm,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 6x6
      * blocks.
      *
@@ -1230,7 +1230,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc6x6RGBASrgb,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 8x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x5,
@@ -1244,7 +1244,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc8x5RGBAUnorm,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 8x5
      * blocks.
      *
@@ -1258,7 +1258,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc8x5RGBASrgb,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 8x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x6,
@@ -1272,7 +1272,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc8x6RGBAUnorm,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 8x6
      * blocks.
      *
@@ -1286,7 +1286,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc8x6RGBASrgb,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 8x8 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc8x8,
@@ -1300,7 +1300,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc8x8RGBAUnorm,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 8x8
      * blocks.
      *
@@ -1314,7 +1314,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc8x8RGBASrgb,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 10x5 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x5,
@@ -1328,7 +1328,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc10x5RGBAUnorm,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 10x5
      * blocks.
      *
@@ -1342,7 +1342,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc10x5RGBASrgb,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 10x6 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x6,
@@ -1356,7 +1356,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc10x6RGBAUnorm,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 10x6
      * blocks.
      *
@@ -1370,7 +1370,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc10x6RGBASrgb,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 10x8 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x8,
@@ -1384,7 +1384,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc10x8RGBAUnorm,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 10x8
      * blocks.
      *
@@ -1398,7 +1398,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc10x8RGBASrgb,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 10x10 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc10x10,
@@ -1412,7 +1412,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc10x10RGBAUnorm,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 10x10
      * blocks.
      *
@@ -1426,7 +1426,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc10x10RGBASrgb,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 12x10 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc12x10,
@@ -1440,7 +1440,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc12x10RGBAUnorm,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 12x10
      * blocks.
      *
@@ -1454,7 +1454,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc12x10RGBASrgb,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed RGBA, normalized unsigned byte with 12x12 blocks.
      *
      * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc12x12,
@@ -1468,7 +1468,7 @@ enum class CompressedPixelFormat: UnsignedInt {
     Astc12x12RGBAUnorm,
 
     /**
-     * [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * 2D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
      * compressed sRGB + linear alpha, normalized unsigned byte with 12x12
      * blocks.
      *
@@ -1480,6 +1480,256 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_keywords{MTLPixelFormatASTC_12x12_sRGB}
      */
     Astc12x12RGBASrgb,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 3x3x3 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc3x3x3,
+     * @ref GL::TextureFormat::CompressedRGBAAstc3x3x3;
+     * and @def_vk_keyword{FORMAT_ASTC_3x3x3_UNORM_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc3x3x3RGBAUnorm,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 3x3x3
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc3x3x3,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc3x3x3;
+     * and @def_vk_keyword{FORMAT_ASTC_3x3x3_UNORM_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc3x3x3RGBASrgb,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 4x3x3 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x3x3,
+     * @ref GL::TextureFormat::CompressedRGBAAstc4x3x3;
+     * and @def_vk_keyword{FORMAT_ASTC_4x3x3_UNORM_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc4x3x3RGBAUnorm,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 4x3x3
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc4x3x3,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc4x3x3;
+     * and @def_vk_keyword{FORMAT_ASTC_4x3x3_SRGB_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc4x3x3RGBASrgb,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 4x4x3 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x4x3,
+     * @ref GL::TextureFormat::CompressedRGBAAstc4x4x3;
+     * and @def_vk_keyword{FORMAT_ASTC_4x4x3_UNORM_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc4x4x3RGBAUnorm,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 4x4x3
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc4x4x3,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc4x4x3;
+     * and @def_vk_keyword{FORMAT_ASTC_4x4x3_SRGB_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc4x4x3RGBASrgb,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 4x4x4 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc4x4x4,
+     * @ref GL::TextureFormat::CompressedRGBAAstc4x4x4;
+     * and @def_vk_keyword{FORMAT_ASTC_4x4x4_UNORM_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc4x4x4RGBAUnorm,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 4x4x4
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc4x4x4,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc4x4x4;
+     * and @def_vk_keyword{FORMAT_ASTC_4x4x4_SRGB_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc4x4x4RGBASrgb,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 5x4x4 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x4x4,
+     * @ref GL::TextureFormat::CompressedRGBAAstc5x4x4;
+     * and @def_vk_keyword{FORMAT_ASTC_5x4x4_UNORM_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc5x4x4RGBAUnorm,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 5x4x4
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc5x4x4,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc5x4x4;
+     * and @def_vk_keyword{FORMAT_ASTC_5x4x4_SRGB_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc5x4x4RGBASrgb,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 5x5x4 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x5x4,
+     * @ref GL::TextureFormat::CompressedRGBAAstc5x5x4;
+     * and @def_vk_keyword{FORMAT_ASTC_5x5x4_UNORM_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc5x5x4RGBAUnorm,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 5x5x4
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc5x5x4,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc5x5x4;
+     * and @def_vk_keyword{FORMAT_ASTC_5x5x4_SRGB_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc5x5x4RGBASrgb,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 5x5x5 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc5x5x5,
+     * @ref GL::TextureFormat::CompressedRGBAAstc5x5x5;
+     * and @def_vk_keyword{FORMAT_ASTC_5x5x5_UNORM_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc5x5x5RGBAUnorm,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 5x5x5
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc5x5x5,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc5x5x5;
+     * and @def_vk_keyword{FORMAT_ASTC_5x5x5_SRGB_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc5x5x5RGBASrgb,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 6x5x5 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x5x5,
+     * @ref GL::TextureFormat::CompressedRGBAAstc6x5x5;
+     * and @def_vk_keyword{FORMAT_ASTC_6x5x5_UNORM_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc6x5x5RGBAUnorm,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 6x5x5
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc6x5x5,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc6x5x5;
+     * and @def_vk_keyword{FORMAT_ASTC_6x5x5_SRGB_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc6x5x5RGBASrgb,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 6x6x5 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x6x5,
+     * @ref GL::TextureFormat::CompressedRGBAAstc6x6x5;
+     * and @def_vk_keyword{FORMAT_ASTC_6x6x5_UNORM_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc6x6x5RGBAUnorm,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 6x6x5
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc6x6x5,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc6x6x5;
+     * and @def_vk_keyword{FORMAT_ASTC_6x6x5_SRGB_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc6x6x5RGBASrgb,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed RGBA, normalized unsigned byte with 6x6x6 blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::RGBAAstc6x6x6,
+     * @ref GL::TextureFormat::CompressedRGBAAstc6x6x6;
+     * and @def_vk_keyword{FORMAT_ASTC_6x6x6_UNORM_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc6x6x6RGBAUnorm,
+
+    /**
+     * 3D [ASTC](https://en.wikipedia.org/wiki/Adaptive_Scalable_Texture_Compression)
+     * compressed sRGB + linear alpha, normalized unsigned byte with 6x6x6
+     * blocks.
+     *
+     * Corresponds to @ref GL::CompressedPixelFormat::SRGB8Alpha8Astc6x6x6,
+     * @ref GL::TextureFormat::CompressedSRGB8Alpha8Astc6x6x6;
+     * and @def_vk_keyword{FORMAT_ASTC_6x6x6_SRGB_BLOCK_EXT,Format} (not a
+     * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
+     * No equivalent in Metal or D3D.
+     */
+    Astc6x6x6RGBASrgb,
 
     /* See https://github.com/KhronosGroup/Vulkan-Docs/issues/512#issuecomment-307768667
        for Vulkan mapping. Ugh. */

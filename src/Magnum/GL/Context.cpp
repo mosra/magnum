@@ -335,7 +335,11 @@ constexpr Extension ExtensionList[]{
     _extension(OES,mapbuffer),
     _extension(OES,stencil1),
     _extension(OES,stencil4),
-    _extension(OES,texture_float_linear)};
+    _extension(OES,texture_float_linear),
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(OES,texture_compression_astc)
+    #endif
+    };
 constexpr Extension ExtensionListES300[]{
     #ifdef MAGNUM_TARGET_GLES2
     _extension(ANGLE,framebuffer_blit),

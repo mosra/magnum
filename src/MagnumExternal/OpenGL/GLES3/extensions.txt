@@ -22,6 +22,9 @@ extension KHR_debug                                 optional
 extension KHR_blend_equation_advanced               optional
 extension KHR_robustness                            optional
 extension KHR_robust_buffer_access_behavior         optional
+# unfortunately this adds back the KHR-suffixed ASTC enums I was so desperately
+# trying to get rid of
+extension OES_texture_compression_astc              optional
 extension OES_sample_shading                        optional
 extension OES_sample_variables                      optional
 extension OES_shader_image_atomic                   optional

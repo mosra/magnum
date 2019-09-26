@@ -323,16 +323,12 @@ void EnumsTest::mapVkFormatCompressedImplementationSpecific() {
 }
 
 void EnumsTest::mapVkFormatCompressedUnsupported() {
-    #if 1
-    CORRADE_SKIP("All compressed pixel formats are currently supported.");
-    #else
-    CORRADE_VERIFY(!hasVkFormat(Magnum::CompressedPixelFormat::Bc1RGBAUnorm));
+    CORRADE_VERIFY(!hasVkFormat(Magnum::CompressedPixelFormat::Astc3x3x3RGBAUnorm));
 
     std::ostringstream out;
     Error redirectError{&out};
-    vkFormat(Magnum::CompressedPixelFormat::Bc1RGBAUnorm);
-    CORRADE_COMPARE(out.str(), "Vk::vkFormat(): unsupported format CompressedPixelFormat::Bc1RGBAUnorm\n");
-    #endif
+    vkFormat(Magnum::CompressedPixelFormat::Astc3x3x3RGBAUnorm);
+    CORRADE_COMPARE(out.str(), "Vk::vkFormat(): unsupported format CompressedPixelFormat::Astc3x3x3RGBAUnorm\n");
 }
 
 void EnumsTest::mapVkFormatCompressedInvalid() {
