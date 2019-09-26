@@ -1947,9 +1947,9 @@ enum class CompressedPixelFormat: GLenum {
 /**
 @brief Check availability of generic compressed pixel format
 
-Some OpenGL targets don't support all generic pixel formats (for example ASTC
-compression might not be available on WebGL 1.0). Returns @cpp false @ce if
-current target can't support such format, @cpp true @ce otherwise. Moreover,
+Some OpenGL targets don't support all generic pixel formats (for example PVRTC
+compression might not be available on desktop OpenGL). Returns @cpp false @ce
+if current target can't support such format, @cpp true @ce otherwise. Moreover,
 returns @cpp true @ce also for all formats that are
 @ref isCompressedPixelFormatImplementationSpecific().The @p format value is
 expected to be valid.
