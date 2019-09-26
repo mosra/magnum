@@ -36,6 +36,7 @@ set(MagnumGL_SRCS
     Renderer.cpp
     Shader.cpp
     Texture.cpp
+    TextureFormat.cpp
     Version.cpp
 
     Implementation/BufferState.cpp

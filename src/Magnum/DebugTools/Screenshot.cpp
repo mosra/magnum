@@ -49,10 +49,12 @@ bool screenshot(PluginManager::Manager<Trade::AbstractImageConverter>& manager, 
     const GL::PixelType type = framebuffer.implementationColorReadType();
     auto genericFormat = [](GL::PixelFormat format, GL::PixelType type) -> Containers::Optional<PixelFormat> {
         #ifndef DOXYGEN_GENERATING_OUTPUT /* It gets *really* confused */
-        #define _c(generic, glFormat, glType) if(format == GL::PixelFormat::glFormat && type == GL::PixelType::glType) return PixelFormat::generic;
+        #define _c(generic, glFormat, glType, glTextureFormat) if(format == GL::PixelFormat::glFormat && type == GL::PixelType::glType) return PixelFormat::generic;
+        #define _n(generic, glFormat, glType) if(format == GL::PixelFormat::glFormat && type == GL::PixelType::glType) return PixelFormat::generic;
         #define _s(generic) return {};
         #include "Magnum/GL/Implementation/pixelFormatMapping.hpp"
         #undef _c
+        #undef _n
         #undef _s
         #endif
         return {};

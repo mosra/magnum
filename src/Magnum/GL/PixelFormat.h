@@ -1958,7 +1958,8 @@ expected to be valid.
     extension. Such check is outside of the scope of this function and you are
     expected to verify extension availability before using such format.
 
-@see @ref compressedPixelFormat(), @ref pixelFormat(), @ref pixelType()
+@see @ref compressedPixelFormat(), @ref hasPixelFormat(),
+    @ref hasTextureFormat()
 */
 MAGNUM_GL_EXPORT bool hasCompressedPixelFormat(Magnum::CompressedPixelFormat format);
 
@@ -1974,7 +1975,7 @@ returns @ref compressedPixelFormatUnwrap() cast to @ref GL::CompressedPixelForma
 Not all generic pixel formats may be available on all targets and this function
 expects that given format is available on the target. Use
 @ref hasCompressedPixelFormat() to query availability of given format.
-@see @ref pixelFormat()
+@see @ref pixelFormat(), @ref textureFormat()
 */
 MAGNUM_GL_EXPORT CompressedPixelFormat compressedPixelFormat(Magnum::CompressedPixelFormat format);
 

@@ -196,6 +196,10 @@ See also:
     texture classes now can read the pixels into
     @ref BasicMutableImageView "MutableImageView*D" and
     @ref BasicMutableCompressedImageView "MutableCompressedImageView*D" as well
+-   @ref GL::hasTextureFormat() and @ref GL::textureFormat() helpers for
+    converting @ref PixelFormat / @ref CompressedPixelFormat to
+    @ref GL::TextureFormat, similar to @ref GL::hasPixelFormat() /
+    @ref GL::pixelFormat() used for converting to @ref GL::PixelFormat
 
 @subsubsection changelog-latest-new-math Math library
 

@@ -29,7 +29,9 @@
  * @brief Enum @ref Magnum::GL::TextureFormat
  */
 
+#include "Magnum/Magnum.h"
 #include "Magnum/GL/OpenGL.h"
+#include "Magnum/GL/visibility.h"
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 #include <Corrade/Utility/Macros.h>
@@ -47,7 +49,8 @@ color format is then @ref PixelFormat::Red, @ref PixelFormat::RGB or
 documentation of these values for possible limitations when using OpenGL ES 2.0
 or WebGL.
 
-@see @ref Texture, @ref CubeMapTexture, @ref CubeMapTextureArray
+@see @ref textureFormat(), @ref hasTextureFormat(), @ref Texture,
+    @ref CubeMapTexture, @ref CubeMapTextureArray
 @m_enum_values_as_keywords
 */
 enum class TextureFormat: GLenum {
@@ -2419,6 +2422,96 @@ enum class TextureFormat: GLenum {
     Depth32FStencil8 = GL_DEPTH32F_STENCIL8
     #endif
 };
+
+/**
+@brief Check availability of a sized generic texture format
+
+Some OpenGL targets don't support sized texture formats at all (OpenGL ES 2.0
+and WebGL 1.0), some targets miss some variants (for example OpenGL ES doesn't
+have any 8-bit packed formats) Returns @cpp false @ce if current target can't
+support such format, @cpp true @ce otherwise. Expects
+@ref isPixelFormatImplementationSpecific() returns @cpp false @ce for given
+@p format as OpenGL pixel format enum values usually can't be used to specify
+internal texture format as well.
+
+For OpenGL ES 2.0 (and WebGL 1.0) targets in particular the mapping is very
+complex and instead of using this function it's recommend to do the mapping
+manually based on whether @ref Texture::setImage() or
+@ref Texture::setStorage() is used and whether @gl_extension{EXT,texture_storage}
+and other format-specific extensions are supported.
+
+@note Support of some formats depends on presence of a particular OpenGL
+    extension. Such check is outside of the scope of this function and you are
+    expected to verify extension availability before using such format.
+
+@see @ref textureFormat(), @ref hasPixelFormat(),
+    @ref hasCompressedPixelFormat()
+*/
+MAGNUM_GL_EXPORT bool hasTextureFormat(Magnum::PixelFormat format);
+
+/**
+@brief Convert a generic pixel format to sized OpenGL texture format
+
+Not all sized texture formats may be available on all targets and this function
+expects that given format is available on the target. See @ref hasTextureFormat()
+for more information about checking availability of given format. Expects
+@ref isPixelFormatImplementationSpecific() returns @cpp false @ce for given
+@p format as OpenGL pixel format enum values usually can't be used to specify
+internal texture format as well.
+
+For OpenGL ES 2.0 (and WebGL 1.0) targets in particular the mapping is very
+complex and instead of using this function it's recommend to do the mapping
+manually based on whether @ref Texture::setImage() or
+@ref Texture::setStorage() is used and whether @gl_extension{EXT,texture_storage}
+and other format-specific extensions are supported.
+
+@see @ref pixelType(), @ref compressedPixelFormat()
+*/
+MAGNUM_GL_EXPORT TextureFormat textureFormat(Magnum::PixelFormat format);
+
+/**
+@brief Check availability of a generic compressed texture format
+
+Some OpenGL targets don't support all generic pixel formats (for example PVRTC
+compression might not be available on desktop OpenGL). Returns @cpp false @ce
+if current target can't support such format, @cpp true @ce otherwise. Moreover,
+returns @cpp true @ce also for all formats that are
+@ref isCompressedPixelFormatImplementationSpecific(). The @p format value is
+expected to be valid. This is different from
+@ref hasTextureFormat(Magnum::PixelFormat), where the mapping of an
+implementation-specific pixel format to an OpenGL texture format can't be
+performed.
+
+@note Support of some formats depends on presence of a particular OpenGL
+    extension. Such check is outside of the scope of this function and you are
+    expected to verify extension availability before using such format.
+
+@see @ref textureFormat(), @ref hasCompressedPixelFormat(),
+    @ref hasPixelFormat()
+*/
+MAGNUM_GL_EXPORT bool hasTextureFormat(Magnum::CompressedPixelFormat format);
+
+/**
+@brief Convert generic compressed pixel format to OpenGL texture format
+
+In case @ref isCompressedPixelFormatImplementationSpecific() returns
+@cpp false @ce for @p format, maps it to a corresponding OpenGL pixel format.
+In case @ref isCompressedPixelFormatImplementationSpecific() returns
+@cpp true @ce, assumes @p format stores OpenGL-specific pixel format and
+returns @ref compressedPixelFormatUnwrap() cast to @ref GL::TextureFormat. This
+is different from @ref textureFormat(Magnum::PixelFormat), where the mapping of
+an implementation-specific pixel format to an OpenGL texture format can't be
+performed.
+
+Not all generic pixel formats may be available on all targets and this function
+expects that given format is available on the target. Use @ref hasTextureFormat()
+to query availability of given format.
+@see @ref compressedPixelFormat(), @ref pixelFormat()
+*/
+MAGNUM_GL_EXPORT TextureFormat textureFormat(Magnum::CompressedPixelFormat format);
+
+/** @debugoperatorenum{TextureFormat} */
+MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, TextureFormat value);
 
 }}
 
