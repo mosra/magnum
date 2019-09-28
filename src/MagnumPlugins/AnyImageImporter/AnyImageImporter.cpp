@@ -131,7 +131,7 @@ void AnyImageImporter::doOpenData(Containers::ArrayView<const char> data) {
 
     std::string plugin;
     /* https://github.com/BinomialLLC/basis_universal/blob/7d784c728844c007d8c95d63231f7adcc0f65364/transcoder/basisu_file_headers.h#L78 */
-    if(Utility::String::viewBeginsWith(data, "sB\0\x16"))
+    if(Utility::String::viewBeginsWith(data, "sB"))
         plugin = "BasisImporter";
     /* https://docs.microsoft.com/cs-cz/windows/desktop/direct3ddds/dx-graphics-dds-pguide */
     else if(Utility::String::viewBeginsWith(data, "DDS "))
