@@ -62,7 +62,8 @@ uniform lowp float smoothness
     ;
 
 #ifdef EXPLICIT_TEXTURE_LAYER
-layout(binding = 15)
+/* See AbstractVector.h for details about the ID */
+layout(binding = 6)
 #endif
 uniform lowp sampler2D vectorTexture;
 
@@ -83,8 +84,11 @@ void main() {
 
     /* Outline */
     if(outlineRange.x > outlineRange.y) {
-        lowp float mid = (outlineRange.x + outlineRange.y)/2.0;
-        lowp float halfRange = (outlineRange.x - outlineRange.y)/2.0;
+        /* Doing *0.5 instead of /2.0 because the latter causes iOS / WebGL to
+           complain that "Overflow in implicit constant conversion, minimum
+           range for lowp float is (-2,2)" */
+        lowp float mid = (outlineRange.x + outlineRange.y)*0.5;
+        lowp float halfRange = (outlineRange.x - outlineRange.y)*0.5;
         fragmentColor += smoothstep(halfRange+smoothness, halfRange-smoothness, distance(mid, intensity))*outlineColor;
     }
 }

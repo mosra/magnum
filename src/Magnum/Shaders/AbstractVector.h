@@ -100,7 +100,11 @@ template<UnsignedInt dimensions> class AbstractVector: public GL::AbstractShader
     #else
     private:
     #endif
-        enum: Int { VectorTextureLayer = 15 };
+        /* Those textures are quite specific (and likely reused multiple times
+           per frame for e.g. text rendering, so put them in a specific slot.
+           Older iOS (and iOS WebGL) has only 8 texture binding slots, so can't
+           go above that. Binding 7 is used by TextureTools::DistanceField. */
+        enum: Int { VectorTextureLayer = 6 };
 
         explicit AbstractVector(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
         explicit AbstractVector() = default;
