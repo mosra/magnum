@@ -62,7 +62,7 @@ uniform lowp float smoothness
     ;
 
 #ifdef EXPLICIT_TEXTURE_LAYER
-layout(binding = 15)
+layout(binding = 0)
 #endif
 uniform lowp sampler2D vectorTexture;
 
@@ -80,8 +80,8 @@ void main() {
 
     /* Outline */
     if(outlineRange.x > outlineRange.y) {
-        lowp float mid = (outlineRange.x + outlineRange.y)/2.0;
-        lowp float halfRange = (outlineRange.x - outlineRange.y)/2.0;
+        lowp float mid = (outlineRange.x + outlineRange.y)*0.5;
+        lowp float halfRange = (outlineRange.x - outlineRange.y)*0.5;
         fragmentColor += smoothstep(halfRange+smoothness, halfRange-smoothness, distance(mid, intensity))*outlineColor;
     }
 }

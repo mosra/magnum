@@ -91,7 +91,7 @@ template<UnsignedInt dimensions> class AbstractVector: public GL::AbstractShader
     #else
     private:
     #endif
-        enum: Int { VectorTextureLayer = 15 };
+        enum: Int { VectorTextureLayer = 0 };
 
         explicit AbstractVector(NoCreateT) noexcept: GL::AbstractShaderProgram{NoCreate} {}
         explicit AbstractVector() = default;
