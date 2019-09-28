@@ -114,6 +114,8 @@ Are the below lists missing your name or something's wrong?
     updates, algorithm bugfixes
 -   **Erik Wijmans** ([\@erikwijmans](https://github.com/erikwijmans)) ---
     NVidia-specific workarounds for headless EGL contexts
+-   **Florian Goujeon** ([\@fgoujeon](https://github.com/fgoujeon)) --- iOS
+    fixes in the @ref Shaders library
 -   **Gerhard de Clercq** --- Windows RT (Store/Phone) port
 -   **Guillaume Giraud** ([\@Guillaume227](https://github.com/Guillaume227)) ---
     algorithm bugfixes

@@ -619,6 +619,10 @@ See also:
     passing a freshly created @ref GL::Buffer to it was causing
     @ref GL::Renderer::Error::InvalidOperation on systems without
     @gl_extension{ARB,direct_state_access}.
+-   Fixed @ref Shaders::Vector and @ref Shaders::DistanceFieldVector to work
+    on iOS, which has only 8 texture binding slots in total (see
+    [mosra/magnum-examples#65](https://github.com/mosra/magnum-examples/issues/65)
+    and [mosra/magnum#374](https://github.com/mosra/magnum/pull/374))
 
 @subsection changelog-latest-docs Documentation
 
