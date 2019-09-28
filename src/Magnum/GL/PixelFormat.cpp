@@ -42,8 +42,9 @@ constexpr struct {
     PixelType type;
 } FormatMapping[] {
     #define _c(input, format, type, textureFormat) {PixelFormat::format, PixelType::type},
+    /* GCC 4.8 doesn't like just a {} for default enum values */
     #define _n(input, format, type) {PixelFormat::format, PixelType::type},
-    #define _s(input) {{}, {}},
+    #define _s(input) {PixelFormat{}, PixelType{}},
     #include "Magnum/GL/Implementation/pixelFormatMapping.hpp"
     #undef _s
     #undef _n
@@ -52,8 +53,9 @@ constexpr struct {
 
 constexpr TextureFormat TextureFormatMapping[] {
     #define _c(input, format, type, textureFormat) TextureFormat::textureFormat,
-    #define _n(input, format, type) {},
-    #define _s(input) {},
+    /* GCC 4.8 doesn't like just a {} for default enum values */
+    #define _n(input, format, type) TextureFormat{},
+    #define _s(input) TextureFormat{},
     #include "Magnum/GL/Implementation/pixelFormatMapping.hpp"
     #undef _s
     #undef _n
