@@ -500,7 +500,7 @@ See also:
     @cpp const @ce references to user data as well
 -   @ref Trade::AnyImageImporter "AnyImageImporter" and
     @ref Trade::AnyImageConverter "AnyImageConverter" plugins now recognize
-    Basis Universal files
+    Basis Universal files (see [mosra/magnum#370](https://github.com/mosra/magnum/pull/370))
 
 @subsection changelog-latest-buildsystem Build system
 
