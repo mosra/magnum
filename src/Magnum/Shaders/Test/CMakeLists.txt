@@ -72,7 +72,35 @@ if(BUILD_GL_TESTS)
                        ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
     endif()
 
-    corrade_add_test(ShadersDistanceFieldVectorGLTest DistanceFieldVectorGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
+    corrade_add_test(ShadersDistanceFieldVectorGLTest DistanceFieldVectorGLTest.cpp
+        LIBRARIES
+            MagnumDebugTools
+            MagnumMeshTools
+            MagnumPrimitives
+            MagnumShadersTestLib
+            MagnumOpenGLTester
+        FILES
+            TestFiles/vector-distancefield.tga
+
+            VectorTestFiles/defaults.tga
+            VectorTestFiles/defaults-distancefield.tga
+            VectorTestFiles/smooth0.1-2D.tga
+            VectorTestFiles/smooth0.1-3D.tga
+            VectorTestFiles/smooth0.2-2D.tga
+            VectorTestFiles/smooth0.2-3D.tga
+            VectorTestFiles/outline2D.tga
+            VectorTestFiles/outline3D.tga)
+    if(NOT BUILD_PLUGINS_STATIC)
+        target_include_directories(ShadersDistanceFieldVectorGLTest PRIVATE $<TARGET_FILE_DIR:ShadersDistanceFieldVectorGLTest>)
+    else()
+        target_include_directories(ShadersDistanceFieldVectorGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+        if(WITH_ANYIMAGEIMPORTER)
+            target_link_libraries(ShadersDistanceFieldVectorGLTest PRIVATE AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            target_link_libraries(ShadersDistanceFieldVectorGLTest PRIVATE TgaImporter)
+        endif()
+    endif()
 
     corrade_add_test(ShadersFlatGLTest FlatGLTest.cpp
         LIBRARIES
@@ -109,7 +137,31 @@ if(BUILD_GL_TESTS)
         endif()
     endif()
 
-    corrade_add_test(ShadersMeshVisualizerGLTest MeshVisualizerGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
+    corrade_add_test(ShadersMeshVisualizerGLTest MeshVisualizerGLTest.cpp
+        LIBRARIES
+            MagnumDebugTools
+            MagnumMeshTools
+            MagnumPrimitives
+            MagnumShadersTestLib
+            MagnumOpenGLTester
+        FILES
+            FlatTestFiles/defaults.tga
+            FlatTestFiles/colored3D.tga
+            MeshVisualizerTestFiles/defaults-wireframe.tga
+            MeshVisualizerTestFiles/wireframe.tga
+            MeshVisualizerTestFiles/wireframe-nogeo.tga
+            MeshVisualizerTestFiles/wireframe-wide.tga)
+    if(NOT BUILD_PLUGINS_STATIC)
+        target_include_directories(ShadersMeshVisualizerGLTest PRIVATE $<TARGET_FILE_DIR:ShadersPhongGLTest>)
+    else()
+        target_include_directories(ShadersMeshVisualizerGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+        if(WITH_ANYIMAGEIMPORTER)
+            target_link_libraries(ShadersMeshVisualizerGLTest PRIVATE AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            target_link_libraries(ShadersMeshVisualizerGLTest PRIVATE TgaImporter)
+        endif()
+    endif()
 
     corrade_add_test(ShadersPhongGLTest PhongGLTest.cpp
         LIBRARIES
@@ -158,8 +210,54 @@ if(BUILD_GL_TESTS)
         endif()
     endif()
 
-    corrade_add_test(ShadersVectorGLTest VectorGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
-    corrade_add_test(ShadersVertexColorGLTest VertexColorGLTest.cpp LIBRARIES MagnumShaders MagnumOpenGLTester)
+    corrade_add_test(ShadersVectorGLTest VectorGLTest.cpp
+        LIBRARIES
+            MagnumDebugTools
+            MagnumMeshTools
+            MagnumPrimitives
+            MagnumShadersTestLib
+            MagnumOpenGLTester
+        FILES
+            TestFiles/vector.tga
+
+            VectorTestFiles/defaults.tga
+            VectorTestFiles/vector2D.tga
+            VectorTestFiles/vector3D.tga)
+    if(NOT BUILD_PLUGINS_STATIC)
+        target_include_directories(ShadersVectorGLTest PRIVATE $<TARGET_FILE_DIR:ShadersVectorGLTest>)
+    else()
+        target_include_directories(ShadersVectorGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+        if(WITH_ANYIMAGEIMPORTER)
+            target_link_libraries(ShadersVectorGLTest PRIVATE AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            target_link_libraries(ShadersVectorGLTest PRIVATE TgaImporter)
+        endif()
+    endif()
+
+    corrade_add_test(ShadersVertexColorGLTest VertexColorGLTest.cpp
+        LIBRARIES
+            MagnumDebugTools
+            MagnumMeshTools
+            MagnumPrimitives
+            MagnumShadersTestLib
+            MagnumOpenGLTester
+        FILES
+            FlatTestFiles/defaults.tga
+
+            VertexColorTestFiles/vertexColor2D.tga
+            VertexColorTestFiles/vertexColor3D.tga)
+    if(NOT BUILD_PLUGINS_STATIC)
+        target_include_directories(ShadersVertexColorGLTest PRIVATE $<TARGET_FILE_DIR:ShadersPhongGLTest>)
+    else()
+        target_include_directories(ShadersVertexColorGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+        if(WITH_ANYIMAGEIMPORTER)
+            target_link_libraries(ShadersVertexColorGLTest PRIVATE AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            target_link_libraries(ShadersVertexColorGLTest PRIVATE TgaImporter)
+        endif()
+    endif()
 
     set_target_properties(
         ShadersDistanceFieldVectorGLTest
