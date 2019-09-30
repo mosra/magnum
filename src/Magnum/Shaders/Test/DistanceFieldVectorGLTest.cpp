@@ -31,23 +31,22 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct DistanceFieldVectorGLTest: GL::OpenGLTester {
     explicit DistanceFieldVectorGLTest();
 
-    void construct2D();
-    void construct3D();
-
-    void constructMove2D();
-    void constructMove3D();
+    template<UnsignedInt dimensions> void construct();
+    template<UnsignedInt dimensions> void constructMove();
 };
 
 DistanceFieldVectorGLTest::DistanceFieldVectorGLTest() {
-    addTests({&DistanceFieldVectorGLTest::construct2D,
-              &DistanceFieldVectorGLTest::construct3D,
-
-              &DistanceFieldVectorGLTest::constructMove2D,
-              &DistanceFieldVectorGLTest::constructMove3D});
+    addTests<DistanceFieldVectorGLTest>({
+        &DistanceFieldVectorGLTest::construct<2>,
+        &DistanceFieldVectorGLTest::construct<3>,
+        &DistanceFieldVectorGLTest::constructMove<2>,
+        &DistanceFieldVectorGLTest::constructMove<3>});
 }
 
-void DistanceFieldVectorGLTest::construct2D() {
-    DistanceFieldVector2D shader;
+template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::construct() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    DistanceFieldVector<dimensions> shader;
     CORRADE_VERIFY(shader.id());
     {
         #ifdef CORRADE_TARGET_APPLE
@@ -59,48 +58,20 @@ void DistanceFieldVectorGLTest::construct2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-void DistanceFieldVectorGLTest::construct3D() {
-    DistanceFieldVector3D shader;
-    CORRADE_VERIFY(shader.id());
-    {
-        #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
-        #endif
-        CORRADE_VERIFY(shader.validate().first);
-    }
+template<UnsignedInt dimensions> void DistanceFieldVectorGLTest::constructMove() {
+    setTestCaseTemplateName(std::to_string(dimensions));
 
-    MAGNUM_VERIFY_NO_GL_ERROR();
-}
-
-void DistanceFieldVectorGLTest::constructMove2D() {
-    DistanceFieldVector2D a;
+    DistanceFieldVector<dimensions> a;
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    DistanceFieldVector2D b{std::move(a)};
+    DistanceFieldVector<dimensions> b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_VERIFY(!a.id());
 
-    DistanceFieldVector2D c{NoCreate};
-    c = std::move(b);
-    CORRADE_COMPARE(c.id(), id);
-    CORRADE_VERIFY(!b.id());
-}
-
-void DistanceFieldVectorGLTest::constructMove3D() {
-    DistanceFieldVector3D a;
-    const GLuint id = a.id();
-    CORRADE_VERIFY(id);
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    DistanceFieldVector3D b{std::move(a)};
-    CORRADE_COMPARE(b.id(), id);
-    CORRADE_VERIFY(!a.id());
-
-    DistanceFieldVector3D c{NoCreate};
+    DistanceFieldVector<dimensions> c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_VERIFY(!b.id());

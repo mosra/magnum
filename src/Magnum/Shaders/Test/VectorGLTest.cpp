@@ -31,23 +31,22 @@ namespace Magnum { namespace Shaders { namespace Test { namespace {
 struct VectorGLTest: GL::OpenGLTester {
     explicit VectorGLTest();
 
-    void construct2D();
-    void construct3D();
-
-    void constructMove2D();
-    void constructMove3D();
+    template<UnsignedInt dimensions> void construct();
+    template<UnsignedInt dimensions> void constructMove();
 };
 
 VectorGLTest::VectorGLTest() {
-    addTests({&VectorGLTest::construct2D,
-              &VectorGLTest::construct3D,
-
-              &VectorGLTest::constructMove2D,
-              &VectorGLTest::constructMove3D});
+    addTests<VectorGLTest>({
+        &VectorGLTest::construct<2>,
+        &VectorGLTest::construct<3>,
+        &VectorGLTest::constructMove<2>,
+        &VectorGLTest::constructMove<3>});
 }
 
-void VectorGLTest::construct2D() {
-    Vector2D shader;
+template<UnsignedInt dimensions> void VectorGLTest::construct() {
+    setTestCaseTemplateName(std::to_string(dimensions));
+
+    Vector<dimensions> shader;
     CORRADE_VERIFY(shader.id());
     {
         #ifdef CORRADE_TARGET_APPLE
@@ -59,48 +58,20 @@ void VectorGLTest::construct2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 }
 
-void VectorGLTest::construct3D() {
-    Vector3D shader;
-    CORRADE_VERIFY(shader.id());
-    {
-        #ifdef CORRADE_TARGET_APPLE
-        CORRADE_EXPECT_FAIL("macOS drivers need insane amount of state to validate properly.");
-        #endif
-        CORRADE_VERIFY(shader.validate().first);
-    }
+template<UnsignedInt dimensions> void VectorGLTest::constructMove() {
+    setTestCaseTemplateName(std::to_string(dimensions));
 
-    MAGNUM_VERIFY_NO_GL_ERROR();
-}
-
-void VectorGLTest::constructMove2D() {
-    Vector2D a;
+    Vector<dimensions> a;
     const GLuint id = a.id();
     CORRADE_VERIFY(id);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    Vector2D b{std::move(a)};
+    Vector<dimensions> b{std::move(a)};
     CORRADE_COMPARE(b.id(), id);
     CORRADE_VERIFY(!a.id());
 
-    Vector2D c{NoCreate};
-    c = std::move(b);
-    CORRADE_COMPARE(c.id(), id);
-    CORRADE_VERIFY(!b.id());
-}
-
-void VectorGLTest::constructMove3D() {
-    Vector3D a;
-    const GLuint id = a.id();
-    CORRADE_VERIFY(id);
-
-    MAGNUM_VERIFY_NO_GL_ERROR();
-
-    Vector3D b{std::move(a)};
-    CORRADE_COMPARE(b.id(), id);
-    CORRADE_VERIFY(!a.id());
-
-    Vector3D c{NoCreate};
+    Vector<dimensions> c{NoCreate};
     c = std::move(b);
     CORRADE_COMPARE(c.id(), id);
     CORRADE_VERIFY(!b.id());
