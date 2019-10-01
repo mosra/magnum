@@ -24,9 +24,11 @@
 */
 
 #include <numeric>
+#include <sstream>
 #include <Corrade/Containers/ArrayViewStl.h>
 #include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/PluginManager/Manager.h>
+#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/DebugTools/CompareImage.h"
@@ -66,6 +68,8 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     void constructWireframeNoGeometryShader();
 
     void constructMove();
+
+    void setWireframeNotEnabled();
 
     void renderSetup();
     void renderTeardown();
@@ -121,7 +125,9 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
               #endif
               &MeshVisualizerGLTest::constructWireframeNoGeometryShader,
 
-              &MeshVisualizerGLTest::constructMove});
+              &MeshVisualizerGLTest::constructMove,
+
+              &MeshVisualizerGLTest::setWireframeNotEnabled});
 
     addTests({&MeshVisualizerGLTest::renderDefaults,
               #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
@@ -216,6 +222,21 @@ void MeshVisualizerGLTest::constructMove() {
     CORRADE_COMPARE(c.id(), id);
     CORRADE_COMPARE(c.flags(), MeshVisualizer::Flag::Wireframe|MeshVisualizer::Flag::NoGeometryShader);
     CORRADE_VERIFY(!b.id());
+}
+
+void MeshVisualizerGLTest::setWireframeNotEnabled() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    MeshVisualizer shader;
+    shader.setWireframeColor({})
+        .setWireframeWidth({})
+        .setSmoothness({});
+
+    CORRADE_COMPARE(out.str(),
+        "Shaders::MeshVisualizer::setWireframeColor(): the shader was not created with wireframe enabled\n"
+        "Shaders::MeshVisualizer::setWireframeWidth(): the shader was not created with wireframe enabled\n"
+        "Shaders::MeshVisualizer::setSmoothness(): the shader was not created with wireframe enabled\n");
 }
 
 constexpr Vector2i RenderSize{80, 80};

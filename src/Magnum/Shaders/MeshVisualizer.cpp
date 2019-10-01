@@ -164,6 +164,8 @@ MeshVisualizer& MeshVisualizer::setTransformationProjectionMatrix(const Matrix4&
 }
 
 MeshVisualizer& MeshVisualizer::setViewportSize(const Vector2& size) {
+    /* Not asserting here, since the relation to wireframe is a bit vague.
+       Also it's an ugly hack that should be removed, ideally. */
     if(_flags & Flag::Wireframe && !(_flags & Flag::NoGeometryShader))
         setUniform(_viewportSizeUniform, size);
     return *this;
@@ -175,18 +177,25 @@ MeshVisualizer& MeshVisualizer::setColor(const Color4& color) {
 }
 
 MeshVisualizer& MeshVisualizer::setWireframeColor(const Color4& color) {
-    if(_flags & Flag::Wireframe) setUniform(_wireframeColorUniform, color);
+    CORRADE_ASSERT(_flags & Flag::Wireframe,
+        "Shaders::MeshVisualizer::setWireframeColor(): the shader was not created with wireframe enabled", *this);
+    setUniform(_wireframeColorUniform, color);
     return *this;
 }
 
 MeshVisualizer& MeshVisualizer::setWireframeWidth(const Float width) {
-    if(_flags & Flag::Wireframe) setUniform(_wireframeWidthUniform, width);
+    CORRADE_ASSERT(_flags & Flag::Wireframe,
+        "Shaders::MeshVisualizer::setWireframeWidth(): the shader was not created with wireframe enabled", *this);
+    setUniform(_wireframeWidthUniform, width);
     return *this;
 }
 
 MeshVisualizer& MeshVisualizer::setSmoothness(const Float smoothness) {
-    if(_flags & Flag::Wireframe)
-        setUniform(_smoothnessUniform, smoothness);
+    /* This is a bit vaguely related too, but less vague than setViewportSize()
+       so asserting. */
+    CORRADE_ASSERT(_flags & Flag::Wireframe,
+        "Shaders::MeshVisualizer::setSmoothness(): the shader was not created with wireframe enabled", *this);
+    setUniform(_smoothnessUniform, smoothness);
     return *this;
 }
 

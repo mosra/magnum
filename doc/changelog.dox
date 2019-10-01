@@ -781,6 +781,10 @@ See also:
     to indicate an invalid format, better catching accidentally forgotten
     initialization. Valid code shouldn't be affected by this change, but broken
     code that seemingly worked before might start throwing assertions now.
+-   @ref Shaders::MeshVisualizer now asserts if its wireframe-related setters
+    are called when the @ref Shaders::MeshVisualizer::Flag::Wireframe flag was
+    not set, consistently with other shaders. This might cause failures in code
+    that was calling them unnecessarily before.
 
 @section changelog-2019-01 2019.01
 
