@@ -203,6 +203,7 @@ void printDeltaImage(Debug& out, Containers::ArrayView<const Float> deltas, cons
     const Vector2i blockCount = (size + pixelsPerBlock - Vector2i{1})/pixelsPerBlock;
 
     for(std::int_fast32_t y = 0; y != blockCount.y(); ++y) {
+        if(y) out << Debug::newline;
         out << "          |";
 
         for(std::int_fast32_t x = 0; x != blockCount.x(); ++x) {
@@ -232,7 +233,7 @@ void printDeltaImage(Debug& out, Containers::ArrayView<const Float> deltas, cons
             else out << Debug::nospace << std::string{c};
         }
 
-        out << Debug::nospace << "|" << Debug::newline;
+        out << Debug::nospace << "|";
     }
 }
 
@@ -654,6 +655,7 @@ void ImageComparatorBase::printMessage(TestSuite::ComparisonStatusFlags, Debug& 
 
         out << "Delta image:" << Debug::newline;
         DebugTools::Implementation::printDeltaImage(out, _state->delta, _state->expectedImage->size(), _state->max, _state->maxThreshold, _state->meanThreshold);
+        out << Debug::newline;
         CORRADE_INTERNAL_ASSERT(_state->actualFormat == _state->expectedImage->format());
         DebugTools::Implementation::printPixelDeltas(out, _state->delta, _state->actualFormat, _state->actualPixels, _state->expectedImage->pixels(), _state->maxThreshold, _state->meanThreshold, 10);
     }

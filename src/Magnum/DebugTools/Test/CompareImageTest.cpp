@@ -383,7 +383,7 @@ void CompareImageTest::deltaImage() {
         "          |,::::::~~~~===+++????77IIIZZZ$$$|\n"
         "          |,,,,,::::~~~===+++???777IIIZZZ$$|\n"
         "          |...,,,,:::~~~===+++??777IIIZZZ$$|\n"
-        "          | ....,,:::~~~===+++???777IIZZZ$$|\n");
+        "          | ....,,:::~~~===+++???777IIZZZ$$|");
 }
 
 void CompareImageTest::deltaImageScaling() {
@@ -406,15 +406,16 @@ void CompareImageTest::deltaImageScaling() {
         "          |::::~~~~===+++??777IIZZZ$$00088DD|\n"
         "          |,,::::~~~===++???777IIZZ$$$00888D|\n"
         "          |.,,,,:::~~===++???77IIZZZ$$000888|\n"
-        "          |...,,,::~~~==++???77IIIZZ$$000888|\n");
+        "          |...,,,::~~~==++???77IIIZZ$$000888|");
 }
 
 void CompareImageTest::deltaImageColors() {
     /* Print for visual color verification */
     {
-        Debug() << "Visual verification -- some letters should be yellow, some red, some white:";
-        Debug d{Debug::Flag::NoNewlineAtTheEnd};
-        Implementation::printDeltaImage(d, DeltaRed, {3, 3}, 2.0f, 0.5f, 0.2f);
+        Debug out;
+        out << "Visual verification -- some letters should be yellow, some red, some white:"
+            << Debug::newline;
+        Implementation::printDeltaImage(out, DeltaRed, {3, 3}, 2.0f, 0.5f, 0.2f);
     }
 
     std::ostringstream out;
@@ -424,7 +425,7 @@ void CompareImageTest::deltaImageColors() {
        preserve image ratio */
     CORRADE_COMPARE(out.str(),
         "          |.7 |\n"
-        "          |: ,|\n");
+        "          |: ,|");
 }
 
 void CompareImageTest::deltaImageSpecials() {
@@ -443,7 +444,7 @@ void CompareImageTest::deltaImageSpecials() {
        otherwise */
     CORRADE_COMPARE(out.str(),
         "          |MM |\n"
-        "          |~M8|\n");
+        "          |~M8|");
 }
 
 void CompareImageTest::pixelDelta() {
