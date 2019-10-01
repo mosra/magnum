@@ -14,11 +14,11 @@
    id="svg2"
    inkscape:label="Pozadí"
    version="1.1"
-   inkscape:version="0.48.5 r10040"
+   inkscape:version="0.92.4 5da689c313, 2019-01-14"
    sodipodi:docname="vector.svg"
-   inkscape:export-filename="/home/mosra/Code/magnum/doc/generated/vector-src.png"
-   inkscape:export-xdpi="360"
-   inkscape:export-ydpi="360">
+   inkscape:export-filename="/home/mosra/Code/magnum/src/Magnum/Shaders/Test/TestFiles/vector.png"
+   inkscape:export-xdpi="48"
+   inkscape:export-ydpi="48">
   <defs
      id="defs3" />
   <sodipodi:namedview
@@ -28,19 +28,19 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.98994949"
-     inkscape:cx="-237.32667"
-     inkscape:cy="-18.708048"
+     inkscape:zoom="3.959798"
+     inkscape:cx="138.74886"
+     inkscape:cy="106.20936"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      inkscape:snap-bbox="true"
      inkscape:bbox-nodes="true"
      inkscape:snap-page="true"
-     inkscape:window-width="1920"
-     inkscape:window-height="1032"
+     inkscape:window-width="3840"
+     inkscape:window-height="2060"
      inkscape:window-x="0"
-     inkscape:window-y="-3"
+     inkscape:window-y="0"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata6">
@@ -50,7 +50,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -67,13 +67,16 @@
     <flowRoot
        xml:space="preserve"
        id="flowRoot2984"
-       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       style="font-style:normal;font-weight:normal;line-height:0.01%;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none"
        transform="translate(0,852.36218)"><flowRegion
-         id="flowRegion2986"><rect
+         id="flowRegion2986"
+         style="font-family:sans-serif"><rect
            id="rect2988"
            width="109.28571"
            height="93.214287"
            x="46.42857"
-           y="64.285713" /></flowRegion><flowPara
-         id="flowPara2990"></flowPara></flowRoot>  </g>
+           y="64.285713"
+           style="font-family:sans-serif" /></flowRegion><flowPara
+         id="flowPara2990"
+         style="font-size:40px;line-height:1.25;font-family:sans-serif"> </flowPara></flowRoot>  </g>
 </svg>
