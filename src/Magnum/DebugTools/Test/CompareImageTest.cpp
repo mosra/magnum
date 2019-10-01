@@ -1254,7 +1254,7 @@ void CompareImageTest::pixelsToImage() {
 
     /* No diagnostic as there's no error */
     TestSuite::Comparator<CompareImage> compare{40.0f, 20.0f};
-    CORRADE_COMPARE(compare(ActualRgb, ExpectedRgb), TestSuite::ComparisonStatusFlags{});
+    CORRADE_COMPARE(compare(ActualRgb.pixels<Color3ub>(), ExpectedRgb), TestSuite::ComparisonStatusFlags{});
 }
 
 void CompareImageTest::pixelsToImageError() {
@@ -1288,7 +1288,7 @@ void CompareImageTest::pixelsToFile() {
 
     /* No diagnostic as there's no error */
     TestSuite::Comparator<CompareImageToFile> compare{&*_importerManager, nullptr, 40.0f, 20.0f};
-    CORRADE_COMPARE(compare(ActualRgb, Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga")),
+    CORRADE_COMPARE(compare(ActualRgb.pixels<Color3ub>(), Utility::Directory::join(DEBUGTOOLS_TEST_DIR, "CompareImageExpected.tga")),
         TestSuite::ComparisonStatusFlags{});
 }
 
