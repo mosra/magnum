@@ -45,7 +45,7 @@ in highp vec4 position;
 #if defined(WIREFRAME_RENDERING) && defined(NO_GEOMETRY_SHADER)
 #if (!defined(GL_ES) && __VERSION__ < 140) || (defined(GL_ES) && __VERSION__ < 300)
 #ifdef EXPLICIT_ATTRIB_LOCATION
-layout(location = 3)
+layout(location = 5)
 #endif
 in lowp float vertexIndex;
 #define gl_VertexID int(vertexIndex)

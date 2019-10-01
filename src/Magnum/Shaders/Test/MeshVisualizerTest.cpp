@@ -37,6 +37,8 @@ struct MeshVisualizerTest: TestSuite::Tester {
     void constructNoCreate();
     void constructCopy();
 
+    void vertexIndexNoConflict();
+
     void debugFlag();
     void debugFlags();
 };
@@ -44,6 +46,8 @@ struct MeshVisualizerTest: TestSuite::Tester {
 MeshVisualizerTest::MeshVisualizerTest() {
     addTests({&MeshVisualizerTest::constructNoCreate,
               &MeshVisualizerTest::constructCopy,
+
+              &MeshVisualizerTest::vertexIndexNoConflict,
 
               &MeshVisualizerTest::debugFlag,
               &MeshVisualizerTest::debugFlags});
@@ -61,6 +65,15 @@ void MeshVisualizerTest::constructNoCreate() {
 void MeshVisualizerTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_constructible<MeshVisualizer, const MeshVisualizer&>{}));
     CORRADE_VERIFY(!(std::is_assignable<MeshVisualizer, const MeshVisualizer&>{}));
+}
+
+void MeshVisualizerTest::vertexIndexNoConflict() {
+    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != Generic3D::Position::Location);
+    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != Generic3D::Normal::Location);
+    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != Generic3D::TextureCoordinates::Location);
+    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != Generic3D::Color3::Location);
+    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != Generic3D::Color4::Location);
+    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != Generic3D::Tangent::Location);
 }
 
 void MeshVisualizerTest::debugFlag() {

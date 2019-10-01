@@ -66,6 +66,10 @@ template<UnsignedInt dimensions> struct Generic {
         #endif
     };
 
+    /* Index 5 used by MeshVisualizer::VertexIndex. Update
+       MeshVisualizerTest::vertexIndexNoConflict() when adding new attributes
+       here. */
+
     /**
      * @brief Vertex position
      *

@@ -125,7 +125,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
          * @cb{.glsl} gl_VertexID @ce shader builtin, so the attribute is not
          * needed.
          */
-        typedef GL::Attribute<3, Float> VertexIndex;
+        typedef GL::Attribute<5, Float> VertexIndex;
 
         enum: UnsignedInt {
             /**
