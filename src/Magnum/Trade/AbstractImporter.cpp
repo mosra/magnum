@@ -224,7 +224,7 @@ Int AbstractImporter::doSceneForName(const std::string&) { return -1; }
 
 std::string AbstractImporter::sceneName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::sceneName(): no file opened", {});
-    CORRADE_ASSERT(id < doSceneCount(), "Trade::AbstractImporter::sceneName(): index out of range", {});
+    CORRADE_ASSERT(id < doSceneCount(), "Trade::AbstractImporter::sceneName(): index" << id << "out of range for" << doSceneCount() << "entries", {});
     return doSceneName(id);
 }
 
@@ -232,7 +232,7 @@ std::string AbstractImporter::doSceneName(UnsignedInt) { return {}; }
 
 Containers::Optional<SceneData> AbstractImporter::scene(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::scene(): no file opened", {});
-    CORRADE_ASSERT(id < doSceneCount(), "Trade::AbstractImporter::scene(): index out of range", {});
+    CORRADE_ASSERT(id < doSceneCount(), "Trade::AbstractImporter::scene(): index" << id << "out of range for" << doSceneCount() << "entries", {});
     return doScene(id);
 }
 
@@ -256,7 +256,7 @@ Int AbstractImporter::doAnimationForName(const std::string&) { return -1; }
 
 std::string AbstractImporter::animationName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animationName(): no file opened", {});
-    CORRADE_ASSERT(id < doAnimationCount(), "Trade::AbstractImporter::animationName(): index out of range", {});
+    CORRADE_ASSERT(id < doAnimationCount(), "Trade::AbstractImporter::animationName(): index" << id << "out of range for" << doAnimationCount() << "entries", {});
     return doAnimationName(id);
 }
 
@@ -264,7 +264,7 @@ std::string AbstractImporter::doAnimationName(UnsignedInt) { return {}; }
 
 Containers::Optional<AnimationData> AbstractImporter::animation(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animation(): no file opened", {});
-    CORRADE_ASSERT(id < doAnimationCount(), "Trade::AbstractImporter::animation(): index out of range", {});
+    CORRADE_ASSERT(id < doAnimationCount(), "Trade::AbstractImporter::animation(): index" << id << "out of range for" << doAnimationCount() << "entries", {});
     return doAnimation(id);
 }
 
@@ -288,7 +288,7 @@ Int AbstractImporter::doLightForName(const std::string&) { return -1; }
 
 std::string AbstractImporter::lightName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::lightName(): no file opened", {});
-    CORRADE_ASSERT(id < doLightCount(), "Trade::AbstractImporter::lightName(): index out of range", {});
+    CORRADE_ASSERT(id < doLightCount(), "Trade::AbstractImporter::lightName(): index" << id << "out of range for" << doLightCount() << "entries", {});
     return doLightName(id);
 }
 
@@ -296,7 +296,7 @@ std::string AbstractImporter::doLightName(UnsignedInt) { return {}; }
 
 Containers::Optional<LightData> AbstractImporter::light(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::light(): no file opened", {});
-    CORRADE_ASSERT(id < doLightCount(), "Trade::AbstractImporter::light(): index out of range", {});
+    CORRADE_ASSERT(id < doLightCount(), "Trade::AbstractImporter::light(): index" << id << "out of range for" << doLightCount() << "entries", {});
     return doLight(id);
 }
 
@@ -320,7 +320,7 @@ Int AbstractImporter::doCameraForName(const std::string&) { return -1; }
 
 std::string AbstractImporter::cameraName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::cameraName(): no file opened", {});
-    CORRADE_ASSERT(id < doCameraCount(), "Trade::AbstractImporter::cameraName(): index out of range", {});
+    CORRADE_ASSERT(id < doCameraCount(), "Trade::AbstractImporter::cameraName(): index" << id << "out of range for" << doCameraCount() << "entries", {});
     return doCameraName(id);
 }
 
@@ -328,7 +328,7 @@ std::string AbstractImporter::doCameraName(UnsignedInt) { return {}; }
 
 Containers::Optional<CameraData> AbstractImporter::camera(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::camera(): no file opened", {});
-    CORRADE_ASSERT(id < doCameraCount(), "Trade::AbstractImporter::camera(): index out of range", {});
+    CORRADE_ASSERT(id < doCameraCount(), "Trade::AbstractImporter::camera(): index" << id << "out of range for" << doCameraCount() << "entries", {});
     return doCamera(id);
 }
 
@@ -352,7 +352,7 @@ Int AbstractImporter::doObject2DForName(const std::string&) { return -1; }
 
 std::string AbstractImporter::object2DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object2DName(): no file opened", {});
-    CORRADE_ASSERT(id < doObject2DCount(), "Trade::AbstractImporter::object2DName(): index out of range", {});
+    CORRADE_ASSERT(id < doObject2DCount(), "Trade::AbstractImporter::object2DName(): index" << id << "out of range for" << doObject2DCount() << "entries", {});
     return doObject2DName(id);
 }
 
@@ -360,7 +360,7 @@ std::string AbstractImporter::doObject2DName(UnsignedInt) { return {}; }
 
 Containers::Pointer<ObjectData2D> AbstractImporter::object2D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object2D(): no file opened", {});
-    CORRADE_ASSERT(id < doObject2DCount(), "Trade::AbstractImporter::object2D(): index out of range", {});
+    CORRADE_ASSERT(id < doObject2DCount(), "Trade::AbstractImporter::object2D(): index" << id << "out of range for" << doObject2DCount() << "entries", {});
     return doObject2D(id);
 }
 
@@ -384,7 +384,7 @@ Int AbstractImporter::doObject3DForName(const std::string&) { return -1; }
 
 std::string AbstractImporter::object3DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object3DName(): no file opened", {});
-    CORRADE_ASSERT(id < doObject3DCount(), "Trade::AbstractImporter::object3DName(): index out of range", {});
+    CORRADE_ASSERT(id < doObject3DCount(), "Trade::AbstractImporter::object3DName(): index" << id << "out of range for" << doObject3DCount() << "entries", {});
     return doObject3DName(id);
 }
 
@@ -392,7 +392,7 @@ std::string AbstractImporter::doObject3DName(UnsignedInt) { return {}; }
 
 Containers::Pointer<ObjectData3D> AbstractImporter::object3D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::object3D(): no file opened", {});
-    CORRADE_ASSERT(id < doObject3DCount(), "Trade::AbstractImporter::object3D(): index out of range", {});
+    CORRADE_ASSERT(id < doObject3DCount(), "Trade::AbstractImporter::object3D(): index" << id << "out of range for" << doObject3DCount() << "entries", {});
     return doObject3D(id);
 }
 
@@ -416,7 +416,7 @@ Int AbstractImporter::doMesh2DForName(const std::string&) { return -1; }
 
 std::string AbstractImporter::mesh2DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh2DName(): no file opened", {});
-    CORRADE_ASSERT(id < doMesh2DCount(), "Trade::AbstractImporter::mesh2DName(): index out of range", {});
+    CORRADE_ASSERT(id < doMesh2DCount(), "Trade::AbstractImporter::mesh2DName(): index" << id << "out of range for" << doMesh2DCount() << "entries", {});
     return doMesh2DName(id);
 }
 
@@ -424,7 +424,7 @@ std::string AbstractImporter::doMesh2DName(UnsignedInt) { return {}; }
 
 Containers::Optional<MeshData2D> AbstractImporter::mesh2D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh2D(): no file opened", {});
-    CORRADE_ASSERT(id < doMesh2DCount(), "Trade::AbstractImporter::mesh2D(): index out of range", {});
+    CORRADE_ASSERT(id < doMesh2DCount(), "Trade::AbstractImporter::mesh2D(): index" << id << "out of range for" << doMesh2DCount() << "entries", {});
     return doMesh2D(id);
 }
 
@@ -448,7 +448,7 @@ Int AbstractImporter::doMesh3DForName(const std::string&) { return -1; }
 
 std::string AbstractImporter::mesh3DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh3DName(): no file opened", {});
-    CORRADE_ASSERT(id < doMesh3DCount(), "Trade::AbstractImporter::mesh3DName(): index out of range", {});
+    CORRADE_ASSERT(id < doMesh3DCount(), "Trade::AbstractImporter::mesh3DName(): index" << id << "out of range for" << doMesh3DCount() << "entries", {});
     return doMesh3DName(id);
 }
 
@@ -456,7 +456,7 @@ std::string AbstractImporter::doMesh3DName(UnsignedInt) { return {}; }
 
 Containers::Optional<MeshData3D> AbstractImporter::mesh3D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh3D(): no file opened", {});
-    CORRADE_ASSERT(id < doMesh3DCount(), "Trade::AbstractImporter::mesh3D(): index out of range", {});
+    CORRADE_ASSERT(id < doMesh3DCount(), "Trade::AbstractImporter::mesh3D(): index" << id << "out of range for" << doMesh3DCount() << "entries", {});
     return doMesh3D(id);
 }
 
@@ -480,7 +480,7 @@ Int AbstractImporter::doMaterialForName(const std::string&) { return -1; }
 
 std::string AbstractImporter::materialName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::materialName(): no file opened", {});
-    CORRADE_ASSERT(id < doMaterialCount(), "Trade::AbstractImporter::materialName(): index out of range", {});
+    CORRADE_ASSERT(id < doMaterialCount(), "Trade::AbstractImporter::materialName(): index" << id << "out of range for" << doMaterialCount() << "entries", {});
     return doMaterialName(id);
 }
 
@@ -488,7 +488,7 @@ std::string AbstractImporter::doMaterialName(UnsignedInt) { return {}; }
 
 Containers::Pointer<AbstractMaterialData> AbstractImporter::material(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::material(): no file opened", {});
-    CORRADE_ASSERT(id < doMaterialCount(), "Trade::AbstractImporter::material(): index out of range", {});
+    CORRADE_ASSERT(id < doMaterialCount(), "Trade::AbstractImporter::material(): index" << id << "out of range for" << doMaterialCount() << "entries", {});
     return doMaterial(id);
 }
 
@@ -512,7 +512,7 @@ Int AbstractImporter::doTextureForName(const std::string&) { return -1; }
 
 std::string AbstractImporter::textureName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::textureName(): no file opened", {});
-    CORRADE_ASSERT(id < doTextureCount(), "Trade::AbstractImporter::textureName(): index out of range", {});
+    CORRADE_ASSERT(id < doTextureCount(), "Trade::AbstractImporter::textureName(): index" << id << "out of range for" << doTextureCount() << "entries", {});
     return doTextureName(id);
 }
 
@@ -520,7 +520,7 @@ std::string AbstractImporter::doTextureName(UnsignedInt) { return {}; }
 
 Containers::Optional<TextureData> AbstractImporter::texture(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::texture(): no file opened", {});
-    CORRADE_ASSERT(id < doTextureCount(), "Trade::AbstractImporter::texture(): index out of range", {});
+    CORRADE_ASSERT(id < doTextureCount(), "Trade::AbstractImporter::texture(): index" << id << "out of range for" << doTextureCount() << "entries", {});
     return doTexture(id);
 }
 
@@ -544,7 +544,7 @@ Int AbstractImporter::doImage1DForName(const std::string&) { return -1; }
 
 std::string AbstractImporter::image1DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image1DName(): no file opened", {});
-    CORRADE_ASSERT(id < doImage1DCount(), "Trade::AbstractImporter::image1DName(): index out of range", {});
+    CORRADE_ASSERT(id < doImage1DCount(), "Trade::AbstractImporter::image1DName(): index" << id << "out of range for" << doImage1DCount() << "entries", {});
     return doImage1DName(id);
 }
 
@@ -552,7 +552,7 @@ std::string AbstractImporter::doImage1DName(UnsignedInt) { return {}; }
 
 Containers::Optional<ImageData1D> AbstractImporter::image1D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image1D(): no file opened", {});
-    CORRADE_ASSERT(id < doImage1DCount(), "Trade::AbstractImporter::image1D(): index out of range", {});
+    CORRADE_ASSERT(id < doImage1DCount(), "Trade::AbstractImporter::image1D(): index" << id << "out of range for" << doImage1DCount() << "entries", {});
     return doImage1D(id);
 }
 
@@ -576,7 +576,7 @@ Int AbstractImporter::doImage2DForName(const std::string&) { return -1; }
 
 std::string AbstractImporter::image2DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image2DName(): no file opened", {});
-    CORRADE_ASSERT(id < doImage2DCount(), "Trade::AbstractImporter::image2DName(): index out of range", {});
+    CORRADE_ASSERT(id < doImage2DCount(), "Trade::AbstractImporter::image2DName(): index" << id << "out of range for" << doImage2DCount() << "entries", {});
     return doImage2DName(id);
 }
 
@@ -584,7 +584,7 @@ std::string AbstractImporter::doImage2DName(UnsignedInt) { return {}; }
 
 Containers::Optional<ImageData2D> AbstractImporter::image2D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image2D(): no file opened", {});
-    CORRADE_ASSERT(id < doImage2DCount(), "Trade::AbstractImporter::image2D(): index out of range", {});
+    CORRADE_ASSERT(id < doImage2DCount(), "Trade::AbstractImporter::image2D(): index" << id << "out of range for" << doImage2DCount() << "entries", {});
     return doImage2D(id);
 }
 
@@ -608,7 +608,7 @@ Int AbstractImporter::doImage3DForName(const std::string&) { return -1; }
 
 std::string AbstractImporter::image3DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image3DName(): no file opened", {});
-    CORRADE_ASSERT(id < image3DCount(), "Trade::AbstractImporter::image3DName(): index out of range", {});
+    CORRADE_ASSERT(id < doImage3DCount(), "Trade::AbstractImporter::image3DName(): index" << id << "out of range for" << doImage3DCount() << "entries", {});
     return doImage3DName(id);
 }
 
@@ -616,7 +616,7 @@ std::string AbstractImporter::doImage3DName(UnsignedInt) { return {}; }
 
 Containers::Optional<ImageData3D> AbstractImporter::image3D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image3D(): no file opened", {});
-    CORRADE_ASSERT(id < doImage3DCount(), "Trade::AbstractImporter::image3D(): index out of range", {});
+    CORRADE_ASSERT(id < doImage3DCount(), "Trade::AbstractImporter::image3D(): index" << id << "out of range for" << doImage3DCount() << "entries", {});
     return doImage3D(id);
 }
 
