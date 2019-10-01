@@ -74,7 +74,7 @@ is optionally used for improving line appearance.
 
 @section Shaders-MeshVisualizer-usage Example usage
 
-@subsection Shaders-MeshVisualizer-usage-wireframe-geom Wireframe visualization with geometry shader (desktop GL)
+@subsection Shaders-MeshVisualizer-usage-wireframe-geom Wireframe visualization with a geometry shader (desktop GL, OpenGL ES 3.2)
 
 Common mesh setup:
 
@@ -84,22 +84,22 @@ Common rendering setup:
 
 @snippet MagnumShaders.cpp MeshVisualizer-usage-geom2
 
-@subsection Shaders-MeshVisualizer-usage-wireframe-no-geom-old Wireframe visualization without geometry shader on older hardware
+@subsection Shaders-MeshVisualizer-usage-wireframe-no-geom Wireframe visualization of indexed meshes without a geometry shader
+
+The vertices have to be be converted to a non-indexed array. Mesh setup:
+
+@snippet MagnumShaders.cpp MeshVisualizer-usage-no-geom1
+
+Rendering setup:
+
+@snippet MagnumShaders.cpp MeshVisualizer-usage-no-geom2
+
+@subsection Shaders-MeshVisualizer-usage-wireframe-no-geom-old Wireframe visualization of non-indexed meshes without a geometry shader on older hardware
 
 You need to provide also the @ref VertexIndex attribute. Mesh setup *in
 addition to the above*:
 
-@snippet MagnumShaders.cpp MeshVisualizer-usage-no-geom-old1
-
-Rendering setup:
-
-@snippet MagnumShaders.cpp MeshVisualizer-usage-no-geom-old2
-
-@subsection Shaders-MeshVisualizer-usage-wireframe-no-geom Wireframe visualization of indexed meshes without geometry shader
-
-The vertices must be converted to non-indexed array. Mesh setup:
-
-@snippet MagnumShaders.cpp MeshVisualizer-usage-no-geom
+@snippet MagnumShaders.cpp MeshVisualizer-usage-no-geom-old
 
 Rendering setup the same as above.
 
@@ -123,8 +123,9 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
          * 2.0 if @ref Flag::Wireframe is enabled. This attribute (modulo 3)
          * specifies index of given vertex in triangle, i.e. @cpp 0.0f @ce for
          * first, @cpp 1.0f @ce for second, @cpp 2.0f @ce for third. In OpenGL
-         * 3.1, OpenGL ES 3.0 and newer this value is provided by the shader
-         * itself, so the attribute is not needed.
+         * 3.1, OpenGL ES 3.0 and newer this value is provided via the
+         * @cb{.glsl} gl_VertexID @ce shader builtin, so the attribute is not
+         * needed.
          */
         typedef GL::Attribute<3, Float> VertexIndex;
 
@@ -156,7 +157,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
             /**
              * Don't use geometry shader for wireframe visualization. If
              * enabled, you might need to provide also @ref VertexIndex
-             * attribute in the mesh. In OpenGL ES enabled alongside
+             * attribute in the mesh. In OpenGL ES 2.0 enabled alongside
              * @ref Flag::Wireframe.
              */
             NoGeometryShader = 1 << 1

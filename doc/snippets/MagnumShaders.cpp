@@ -274,7 +274,7 @@ shader.setColor(0x2f83cc_rgbf)
 mesh.draw(shader);
 /* [MeshVisualizer-usage-geom2] */
 
-/* [MeshVisualizer-usage-no-geom-old1] */
+/* [MeshVisualizer-usage-no-geom-old] */
 Containers::Array<Float> vertexIndex{Containers::arraySize(data)};
 std::iota(vertexIndex.begin(), vertexIndex.end(), 0.0f);
 
@@ -282,27 +282,12 @@ GL::Buffer vertexIndices;
 vertexIndices.setData(vertexIndex, GL::BufferUsage::StaticDraw);
 
 mesh.addVertexBuffer(vertexIndices, 0, Shaders::MeshVisualizer::VertexIndex{});
-/* [MeshVisualizer-usage-no-geom-old1] */
+/* [MeshVisualizer-usage-no-geom-old] */
 }
 #endif
 
 {
-GL::Mesh mesh;
-/* [MeshVisualizer-usage-no-geom-old2] */
-Matrix4 transformationMatrix, projectionMatrix;
-
-Shaders::MeshVisualizer shader{Shaders::MeshVisualizer::Flag::Wireframe|
-                               Shaders::MeshVisualizer::Flag::NoGeometryShader};
-shader.setColor(0x2f83cc_rgbf)
-    .setWireframeColor(0xdcdcdc_rgbf)
-    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
-
-mesh.draw(shader);
-/* [MeshVisualizer-usage-no-geom-old2] */
-}
-
-{
-/* [MeshVisualizer-usage-no-geom] */
+/* [MeshVisualizer-usage-no-geom1] */
 std::vector<UnsignedInt> indices{
     // ...
 };
@@ -317,9 +302,23 @@ vertices.setData(MeshTools::duplicate(indices, indexedPositions),
 
 GL::Mesh mesh;
 mesh.addVertexBuffer(vertices, 0, Shaders::MeshVisualizer::Position{});
-/* [MeshVisualizer-usage-no-geom] */
+/* [MeshVisualizer-usage-no-geom1] */
 }
 
+{
+GL::Mesh mesh;
+/* [MeshVisualizer-usage-no-geom2] */
+Matrix4 transformationMatrix, projectionMatrix;
+
+Shaders::MeshVisualizer shader{Shaders::MeshVisualizer::Flag::Wireframe|
+                               Shaders::MeshVisualizer::Flag::NoGeometryShader};
+shader.setColor(0x2f83cc_rgbf)
+    .setWireframeColor(0xdcdcdc_rgbf)
+    .setTransformationProjectionMatrix(projectionMatrix*transformationMatrix);
+
+mesh.draw(shader);
+/* [MeshVisualizer-usage-no-geom2] */
+}
 #if !defined(__GNUC__) || defined(__clang__) || __GNUC__*100 + __GNUC_MINOR__ >= 500
 {
 /* [Phong-usage-colored1] */
