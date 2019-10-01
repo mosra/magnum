@@ -67,6 +67,7 @@ struct CompareImageTest: TestSuite::Tester {
     void deltaImageSpecials();
 
     void pixelDelta();
+    void pixelDeltaEmpty();
     void pixelDeltaOverflow();
     void pixelDeltaSpecials();
 
@@ -86,6 +87,7 @@ struct CompareImageTest: TestSuite::Tester {
 
     void imageZeroDelta();
     void imageNonZeroDelta();
+    void imageNonZeroDeltaNoPixels();
     void imageError();
     void imageFile();
     void imageFileZeroDelta();
@@ -137,6 +139,7 @@ CompareImageTest::CompareImageTest() {
               &CompareImageTest::deltaImageSpecials,
 
               &CompareImageTest::pixelDelta,
+              &CompareImageTest::pixelDeltaEmpty,
               &CompareImageTest::pixelDeltaOverflow,
               &CompareImageTest::pixelDeltaSpecials,
 
@@ -153,6 +156,7 @@ CompareImageTest::CompareImageTest() {
 
               &CompareImageTest::imageZeroDelta,
               &CompareImageTest::imageNonZeroDelta,
+              &CompareImageTest::imageNonZeroDeltaNoPixels,
               &CompareImageTest::imageError});
 
     addTests({&CompareImageTest::imageFileZeroDelta,
@@ -464,16 +468,16 @@ void CompareImageTest::deltaImageSpecials() {
 
 void CompareImageTest::pixelDelta() {
     {
-        Debug() << "Visual verification -- some lines should be yellow, some red:";
-        Debug d;
-        Implementation::printPixelDeltas(d, DeltaRed, ActualRed.format(), ActualRed.pixels(), ExpectedRed.pixels(), 0.5f, 0.1f, 10);
+        Debug out;
+        out << "Visual verification -- some lines should be yellow, some red:";
+        Implementation::printPixelDeltas(out, DeltaRed, ActualRed.format(), ActualRed.pixels(), ExpectedRed.pixels(), 0.5f, 0.1f, 10);
     }
 
     std::ostringstream out;
     Debug d{&out, Debug::Flag::DisableColors};
     Implementation::printPixelDeltas(d, DeltaRed, ActualRed.format(), ActualRed.pixels(), ExpectedRed.pixels(), 0.5f, 0.1f, 10);
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out.str(), "\n"
         "        Pixels above max/mean threshold:\n"
         "          [1,2] Vector(1), expected Vector(0) (Δ = 1)\n"
         "          [0,0] Vector(0.3), expected Vector(0.65) (Δ = 0.35)\n"
@@ -481,12 +485,20 @@ void CompareImageTest::pixelDelta() {
         "          [0,2] Vector(-0.1), expected Vector(0.02) (Δ = 0.12)");
 }
 
+void CompareImageTest::pixelDeltaEmpty() {
+    std::ostringstream out;
+    Debug d{&out, Debug::Flag::DisableColors};
+    Implementation::printPixelDeltas(d, DeltaRed, ActualRed.format(), ActualRed.pixels(), ExpectedRed.pixels(), 1.0f, 1.0f, 10);
+
+    CORRADE_COMPARE(out.str(), "");
+}
+
 void CompareImageTest::pixelDeltaOverflow() {
     std::ostringstream out;
     Debug d{&out, Debug::Flag::DisableColors};
     Implementation::printPixelDeltas(d, DeltaRed, ActualRed.format(), ActualRed.pixels(), ExpectedRed.pixels(), 0.5f, 0.1f, 3);
 
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out.str(), "\n"
         "        Top 3 out of 4 pixels above max/mean threshold:\n"
         "          [1,2] Vector(1), expected Vector(0) (Δ = 1)\n"
         "          [0,0] Vector(0.3), expected Vector(0.65) (Δ = 0.35)\n"
@@ -500,7 +512,7 @@ void CompareImageTest::pixelDeltaSpecials() {
 
     /* MSVC prints -nan(ind) instead of ±nan. But only sometimes. */
     #ifdef _MSC_VER
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out.str(), "\n"
         "        Pixels above max/mean threshold:\n"
         "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
         "          [3,0] Vector(0.3), expected Vector(-nan(ind)) (Δ = -nan(ind))\n"
@@ -509,7 +521,7 @@ void CompareImageTest::pixelDeltaSpecials() {
         "          [0,0] Vector(inf), expected Vector(1) (Δ = inf)\n"
         "          [8,0] Vector(3), expected Vector(-0.1) (Δ = 3.1)");
     #else
-    CORRADE_COMPARE(out.str(),
+    CORRADE_COMPARE(out.str(), "\n"
         "        Pixels above max/mean threshold:\n"
         "          [5,0] Vector(-inf), expected Vector(inf) (Δ = inf)\n"
         "          [3,0] Vector(0.3), expected Vector(nan) (Δ = nan)\n"
@@ -833,6 +845,28 @@ void CompareImageTest::imageNonZeroDelta() {
     }
 
     CORRADE_COMPARE(out.str(), ImageCompareVerbose);
+}
+
+void CompareImageTest::imageNonZeroDeltaNoPixels() {
+    /* This will produce output if --verbose is specified */
+    CORRADE_COMPARE_WITH(ActualRgb, ExpectedRgb, (CompareImage{40.0f, 40.0f}));
+
+    std::ostringstream out;
+
+    {
+        TestSuite::Comparator<CompareImage> compare{40.0f, 40.0f};
+        TestSuite::ComparisonStatusFlags flags = compare(ActualRgb, ExpectedRgb);
+        /* No diagnostic as there's no error */
+        CORRADE_COMPARE(flags, TestSuite::ComparisonStatusFlag::Verbose);
+        Debug d{&out, Debug::Flag::DisableColors};
+        compare.printMessage(flags, d, "a", "b");
+    }
+
+    /* No pixel list written as there are no outliers. Testing this just once
+       since all other combinations (image/file/pixels) use the same codepath. */
+    CORRADE_COMPARE(out.str(),
+        "Images a and b have deltas 39/18.5 below threshold 40/40. Delta image:\n"
+        "          |?M|\n");
 }
 
 void CompareImageTest::imageError() {

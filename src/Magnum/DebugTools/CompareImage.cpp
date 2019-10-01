@@ -328,7 +328,14 @@ void printPixelDeltas(Debug& out, Containers::ArrayView<const Float> delta, Pixe
     for(std::size_t i = 0; i != delta.size(); ++i)
         if(!(delta[i] <= meanThreshold)) large.emplace(delta[i], i);
 
-    CORRADE_INTERNAL_ASSERT(!large.empty());
+    /* If there's no outliers, don't print anything. This can happen only when
+       --verbose is used. */
+    if(large.empty()) return;
+
+    /* If there are outliers, adding a newline to separate itself from the
+       delta image -- calling code wouldn't know if we produce output or not,
+       so it can't do that on its own. */
+    out << Debug::newline;
 
     if(large.size() > maxCount)
         out << "        Top" << maxCount << "out of" << large.size() << "pixels above max/mean threshold:";
@@ -668,7 +675,6 @@ void ImageComparatorBase::printMessage(const TestSuite::ComparisonStatusFlags fl
 
         out << "Delta image:" << Debug::newline;
         DebugTools::Implementation::printDeltaImage(out, _state->delta, _state->expectedImage->size(), _state->max, _state->maxThreshold, _state->meanThreshold);
-        out << Debug::newline;
         CORRADE_INTERNAL_ASSERT(_state->actualFormat == _state->expectedImage->format());
         DebugTools::Implementation::printPixelDeltas(out, _state->delta, _state->actualFormat, _state->actualPixels, _state->expectedImage->pixels(), _state->maxThreshold, _state->meanThreshold, 10);
     }
