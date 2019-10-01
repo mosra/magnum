@@ -30,9 +30,6 @@
  */
 
 #include "Magnum/DimensionTraits.h"
-#include "Magnum/Math/Color.h"
-#include "Magnum/Math/Matrix3.h"
-#include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shaders/AbstractVector.h"
 #include "Magnum/Shaders/visibility.h"
 
@@ -107,10 +104,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          *
          * Initial value is an identity matrix.
          */
-        DistanceFieldVector& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
-            GL::AbstractShaderProgram::setUniform(_transformationProjectionMatrixUniform, matrix);
-            return *this;
-        }
+        DistanceFieldVector& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix);
 
         /**
          * @brief Set fill color
@@ -119,10 +113,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * Initial value is @cpp 0xffffffff_rgbaf @ce.
          * @see @ref setOutlineColor()
          */
-        DistanceFieldVector& setColor(const Color4& color) {
-            GL::AbstractShaderProgram::setUniform(_colorUniform, color);
-            return *this;
-        }
+        DistanceFieldVector& setColor(const Color4& color);
 
         /**
          * @brief Set outline color
@@ -132,10 +123,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * drawn --- see @ref setOutlineRange() for more information.
          * @see @ref setOutlineRange(), @ref setColor()
          */
-        DistanceFieldVector& setOutlineColor(const Color4& color) {
-            GL::AbstractShaderProgram::setUniform(_outlineColorUniform, color);
-            return *this;
-        }
+        DistanceFieldVector& setOutlineColor(const Color4& color);
 
         /**
          * @brief Set outline range
@@ -151,10 +139,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          *
          * @see @ref setOutlineColor()
          */
-        DistanceFieldVector& setOutlineRange(Float start, Float end) {
-            GL::AbstractShaderProgram::setUniform(_outlineRangeUniform, Vector2(start, end));
-            return *this;
-        }
+        DistanceFieldVector& setOutlineRange(Float start, Float end);
 
         /**
          * @brief Set smoothness radius
@@ -164,10 +149,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT DistanceFieldVector
          * smaller values will make them look more crisp (but possibly
          * aliased). Initial value is @cpp 0.04f @ce.
          */
-        DistanceFieldVector& setSmoothness(Float value) {
-            GL::AbstractShaderProgram::setUniform(_smoothnessUniform, value);
-            return *this;
-        }
+        DistanceFieldVector& setSmoothness(Float value);
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* Overloads to remove WTF-factor from method chaining order */

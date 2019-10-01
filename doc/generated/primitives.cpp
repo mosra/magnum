@@ -50,6 +50,9 @@
 #include <Magnum/GL/Renderer.h>
 #include <Magnum/GL/Texture.h>
 #include <Magnum/GL/TextureFormat.h>
+#include <Magnum/Math/Color.h>
+#include <Magnum/Math/Matrix3.h>
+#include <Magnum/Math/Matrix4.h>
 #include <Magnum/MeshTools/Compile.h>
 #include <Magnum/MeshTools/Interleave.h>
 #include <Magnum/MeshTools/Transform.h>

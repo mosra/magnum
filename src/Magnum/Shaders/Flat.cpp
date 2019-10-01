@@ -33,6 +33,9 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Shader.h"
 #include "Magnum/GL/Texture.h"
+#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
 
 #include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
@@ -129,6 +132,16 @@ template<UnsignedInt dimensions> Flat<dimensions>::Flat(const Flags flags): _fla
     if(flags & Flag::AlphaMask) setAlphaMask(0.5f);
     /* Object ID is zero by default */
     #endif
+}
+
+template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
+    setUniform(_transformationProjectionMatrixUniform, matrix);
+    return *this;
+}
+
+template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::setColor(const Magnum::Color4& color) {
+    setUniform(_colorUniform, color);
+    return *this;
 }
 
 template<UnsignedInt dimensions> Flat<dimensions>& Flat<dimensions>::bindTexture(GL::Texture2D& texture) {

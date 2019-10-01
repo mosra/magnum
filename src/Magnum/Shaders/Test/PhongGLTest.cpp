@@ -43,6 +43,8 @@
 #include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
+#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Matrix4.h"
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/MeshTools/Transform.h"
 #include "Magnum/Primitives/Plane.h"

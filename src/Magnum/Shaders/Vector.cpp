@@ -31,6 +31,9 @@
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Shader.h"
+#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
 
 #include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
@@ -102,6 +105,21 @@ template<UnsignedInt dimensions> Vector<dimensions>::Vector() {
     setTransformationProjectionMatrix({});
     setColor(Color4{1.0f}); /* Background color is zero by default */
     #endif
+}
+
+template<UnsignedInt dimensions> Vector<dimensions>& Vector<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
+    GL::AbstractShaderProgram::setUniform(_transformationProjectionMatrixUniform, matrix);
+    return *this;
+}
+
+template<UnsignedInt dimensions> Vector<dimensions>& Vector<dimensions>::setBackgroundColor(const Color4& color) {
+    GL::AbstractShaderProgram::setUniform(_backgroundColorUniform, color);
+    return *this;
+}
+
+template<UnsignedInt dimensions> Vector<dimensions>& Vector<dimensions>::setColor(const Color4& color) {
+    GL::AbstractShaderProgram::setUniform(_colorUniform, color);
+    return *this;
 }
 
 template class Vector<2>;

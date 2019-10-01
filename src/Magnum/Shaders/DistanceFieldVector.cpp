@@ -31,6 +31,9 @@
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Shader.h"
+#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
 
 #include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
@@ -107,6 +110,31 @@ template<UnsignedInt dimensions> DistanceFieldVector<dimensions>::DistanceFieldV
     setOutlineRange(0.5f, 1.0f);
     setSmoothness(0.04f);
     #endif
+}
+
+template<UnsignedInt dimensions> DistanceFieldVector<dimensions>& DistanceFieldVector<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
+    GL::AbstractShaderProgram::setUniform(_transformationProjectionMatrixUniform, matrix);
+    return *this;
+}
+
+template<UnsignedInt dimensions> DistanceFieldVector<dimensions>& DistanceFieldVector<dimensions>::setColor(const Color4& color) {
+    GL::AbstractShaderProgram::setUniform(_colorUniform, color);
+    return *this;
+}
+
+template<UnsignedInt dimensions> DistanceFieldVector<dimensions>& DistanceFieldVector<dimensions>::setOutlineColor(const Color4& color) {
+    GL::AbstractShaderProgram::setUniform(_outlineColorUniform, color);
+    return *this;
+}
+
+template<UnsignedInt dimensions> DistanceFieldVector<dimensions>& DistanceFieldVector<dimensions>::setOutlineRange(Float start, Float end) {
+    GL::AbstractShaderProgram::setUniform(_outlineRangeUniform, Vector2(start, end));
+    return *this;
+}
+
+template<UnsignedInt dimensions> DistanceFieldVector<dimensions>& DistanceFieldVector<dimensions>::setSmoothness(Float value) {
+    GL::AbstractShaderProgram::setUniform(_smoothnessUniform, value);
+    return *this;
 }
 
 template class DistanceFieldVector<2>;

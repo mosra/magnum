@@ -31,6 +31,9 @@
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Shader.h"
+#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
 
 #include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
@@ -92,6 +95,11 @@ template<UnsignedInt dimensions> VertexColor<dimensions>::VertexColor() {
     #ifdef MAGNUM_TARGET_GLES
     setTransformationProjectionMatrix(MatrixTypeFor<dimensions, Float>{});
     #endif
+}
+
+template<UnsignedInt dimensions> VertexColor<dimensions>& VertexColor<dimensions>::setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
+    setUniform(_transformationProjectionMatrixUniform, matrix);
+    return *this;
 }
 
 template class VertexColor<2>;

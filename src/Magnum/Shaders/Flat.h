@@ -31,9 +31,6 @@
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
-#include "Magnum/Math/Color.h"
-#include "Magnum/Math/Matrix3.h"
-#include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shaders/Generic.h"
 #include "Magnum/Shaders/visibility.h"
 
@@ -278,10 +275,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          *
          * Initial value is an identity matrix.
          */
-        Flat<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
-            setUniform(_transformationProjectionMatrixUniform, matrix);
-            return *this;
-        }
+        Flat<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix);
 
         /**
          * @brief Set color
@@ -292,10 +286,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          * texture.
          * @see @ref bindTexture()
          */
-        Flat<dimensions>& setColor(const Magnum::Color4& color) {
-            setUniform(_colorUniform, color);
-            return *this;
-        }
+        Flat<dimensions>& setColor(const Magnum::Color4& color);
 
         /**
          * @brief Bind a color texture

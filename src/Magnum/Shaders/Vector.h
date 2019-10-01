@@ -30,9 +30,6 @@
  */
 
 #include "Magnum/DimensionTraits.h"
-#include "Magnum/Math/Color.h"
-#include "Magnum/Math/Matrix3.h"
-#include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shaders/AbstractVector.h"
 #include "Magnum/Shaders/visibility.h"
 
@@ -103,10 +100,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
          *
          * Default is an identity matrix.
          */
-        Vector<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
-            GL::AbstractShaderProgram::setUniform(_transformationProjectionMatrixUniform, matrix);
-            return *this;
-        }
+        Vector<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix);
 
         /**
          * @brief Set background color
@@ -115,10 +109,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
          * Default is @cpp 0x00000000_rgbaf @ce.
          * @see @ref setColor()
          */
-        Vector<dimensions>& setBackgroundColor(const Color4& color) {
-            GL::AbstractShaderProgram::setUniform(_backgroundColorUniform, color);
-            return *this;
-        }
+        Vector<dimensions>& setBackgroundColor(const Color4& color);
 
         /**
          * @brief Set fill color
@@ -127,10 +118,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Vector: public Abst
          * Default is @cpp 0xffffffff_rgbaf @ce.
          * @see @ref setBackgroundColor()
          */
-        Vector<dimensions>& setColor(const Color4& color) {
-            GL::AbstractShaderProgram::setUniform(_colorUniform, color);
-            return *this;
-        }
+        Vector<dimensions>& setColor(const Color4& color);
 
         #ifndef DOXYGEN_GENERATING_OUTPUT
         /* Overloads to remove WTF-factor from method chaining order */

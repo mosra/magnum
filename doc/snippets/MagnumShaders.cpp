@@ -35,6 +35,8 @@
 #include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/Math/Color.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
 #include "Magnum/MeshTools/Duplicate.h"
 #include "Magnum/Shaders/DistanceFieldVector.h"
 #include "Magnum/Shaders/Flat.h"

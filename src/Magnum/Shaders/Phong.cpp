@@ -37,6 +37,8 @@
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Shader.h"
 #include "Magnum/GL/Texture.h"
+#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Matrix4.h"
 
 #include "Magnum/Shaders/Implementation/CreateCompatibilityShader.h"
 
@@ -198,6 +200,11 @@ Phong::Phong(const Flags flags, const UnsignedInt lightCount): _flags{flags}, _l
     #endif
 }
 
+Phong& Phong::setAmbientColor(const Magnum::Color4& color) {
+    setUniform(_ambientColorUniform, color);
+    return *this;
+}
+
 Phong& Phong::bindAmbientTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(_flags & Flag::AmbientTexture,
         "Shaders::Phong::bindAmbientTexture(): the shader was not created with ambient texture enabled", *this);
@@ -205,10 +212,20 @@ Phong& Phong::bindAmbientTexture(GL::Texture2D& texture) {
     return *this;
 }
 
+Phong& Phong::setDiffuseColor(const Magnum::Color4& color) {
+    if(_lightCount) setUniform(_diffuseColorUniform, color);
+    return *this;
+}
+
 Phong& Phong::bindDiffuseTexture(GL::Texture2D& texture) {
     CORRADE_ASSERT(_flags & Flag::DiffuseTexture,
         "Shaders::Phong::bindDiffuseTexture(): the shader was not created with diffuse texture enabled", *this);
     if(_lightCount) texture.bind(DiffuseTextureLayer);
+    return *this;
+}
+
+Phong& Phong::setSpecularColor(const Magnum::Color4& color) {
+    if(_lightCount) setUniform(_specularColorUniform, color);
     return *this;
 }
 
@@ -233,6 +250,11 @@ Phong& Phong::bindTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::T
     return *this;
 }
 
+Phong& Phong::setShininess(Float shininess) {
+    if(_lightCount) setUniform(_shininessUniform, shininess);
+    return *this;
+}
+
 Phong& Phong::setAlphaMask(Float mask) {
     CORRADE_ASSERT(_flags & Flag::AlphaMask,
         "Shaders::Phong::setAlphaMask(): the shader was not created with alpha mask enabled", *this);
@@ -249,6 +271,21 @@ Phong& Phong::setObjectId(UnsignedInt id) {
 }
 #endif
 
+Phong& Phong::setTransformationMatrix(const Matrix4& matrix) {
+    setUniform(_transformationMatrixUniform, matrix);
+    return *this;
+}
+
+Phong& Phong::setNormalMatrix(const Matrix3x3& matrix) {
+    if(_lightCount) setUniform(_normalMatrixUniform, matrix);
+    return *this;
+}
+
+Phong& Phong::setProjectionMatrix(const Matrix4& matrix) {
+    setUniform(_projectionMatrixUniform, matrix);
+    return *this;
+}
+
 Phong& Phong::setLightPositions(const Containers::ArrayView<const Vector3> positions) {
     CORRADE_ASSERT(_lightCount == positions.size(),
         "Shaders::Phong::setLightPositions(): expected" << _lightCount << "items but got" << positions.size(), *this);
@@ -263,11 +300,23 @@ Phong& Phong::setLightPosition(UnsignedInt id, const Vector3& position) {
     return *this;
 }
 
+/* It's light, but can't be in the header because MSVC needs to know the size
+   of Vector3 for the initializer list use */
+Phong& Phong::setLightPositions(std::initializer_list<Vector3> lights) {
+    return setLightPositions({lights.begin(), lights.size()});
+}
+
 Phong& Phong::setLightColors(const Containers::ArrayView<const Magnum::Color4> colors) {
     CORRADE_ASSERT(_lightCount == colors.size(),
         "Shaders::Phong::setLightColors(): expected" << _lightCount << "items but got" << colors.size(), *this);
     if(_lightCount) setUniform(_lightColorsUniform, colors);
     return *this;
+}
+
+/* It's light, but can't be in the header because MSVC needs to know the size
+   of Color for the initializer list use */
+Phong& Phong::setLightColors(std::initializer_list<Magnum::Color4> colors) {
+    return setLightColors({colors.begin(), colors.size()});
 }
 
 Phong& Phong::setLightColor(UnsignedInt id, const Magnum::Color4& color) {

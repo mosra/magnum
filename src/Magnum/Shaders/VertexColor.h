@@ -31,9 +31,6 @@
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/GL/AbstractShaderProgram.h"
-#include "Magnum/Math/Color.h"
-#include "Magnum/Math/Matrix3.h"
-#include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shaders/Generic.h"
 #include "Magnum/Shaders/visibility.h"
 
@@ -143,10 +140,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
          *
          * Default is an identity matrix.
          */
-        VertexColor<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix) {
-            setUniform(_transformationProjectionMatrixUniform, matrix);
-            return *this;
-        }
+        VertexColor<dimensions>& setTransformationProjectionMatrix(const MatrixTypeFor<dimensions, Float>& matrix);
 
     private:
         Int _transformationProjectionMatrixUniform{0};

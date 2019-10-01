@@ -30,8 +30,6 @@
  */
 
 #include "Magnum/GL/AbstractShaderProgram.h"
-#include "Magnum/Math/Color.h"
-#include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shaders/Generic.h"
 #include "Magnum/Shaders/visibility.h"
 
@@ -205,10 +203,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
          *
          * Initial value is an identity matrix.
          */
-        MeshVisualizer& setTransformationProjectionMatrix(const Matrix4& matrix) {
-            setUniform(_transformationProjectionMatrixUniform, matrix);
-            return *this;
-        }
+        MeshVisualizer& setTransformationProjectionMatrix(const Matrix4& matrix);
 
         /**
          * @brief Set viewport size
@@ -217,11 +212,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
          * Has effect only if @ref Flag::Wireframe is enabled and geometry
          * shaders are used. Initial value is a zero vector.
          */
-        MeshVisualizer& setViewportSize(const Vector2& size) {
-            if(_flags & Flag::Wireframe && !(_flags & Flag::NoGeometryShader))
-                setUniform(_viewportSizeUniform, size);
-            return *this;
-        }
+        MeshVisualizer& setViewportSize(const Vector2& size);
 
         /**
          * @brief Set base object color
@@ -229,10 +220,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
          *
          * Initial value is @cpp 0xffffffff_rgbaf @ce.
          */
-        MeshVisualizer& setColor(const Color4& color) {
-            setUniform(_colorUniform, color);
-            return *this;
-        }
+        MeshVisualizer& setColor(const Color4& color);
 
         /**
          * @brief Set wireframe color
@@ -241,10 +229,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
          * Initial value is @cpp 0x000000ff_rgbaf @ce. Has effect only if
          * @ref Flag::Wireframe is enabled.
          */
-        MeshVisualizer& setWireframeColor(const Color4& color) {
-            if(_flags & Flag::Wireframe) setUniform(_wireframeColorUniform, color);
-            return *this;
-        }
+        MeshVisualizer& setWireframeColor(const Color4& color);
 
         /**
          * @brief Set wireframe width
@@ -253,10 +238,7 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
          * Initial value is @cpp 1.0f @ce. Has effect only if @ref Flag::Wireframe
          * is enabled.
          */
-        MeshVisualizer& setWireframeWidth(Float width) {
-            if(_flags & Flag::Wireframe) setUniform(_wireframeWidthUniform, width);
-            return *this;
-        }
+        MeshVisualizer& setWireframeWidth(Float width);
 
         /**
          * @brief Set line smoothness
@@ -284,12 +266,6 @@ MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, MeshVisualizer::Flag value
 MAGNUM_SHADERS_EXPORT Debug& operator<<(Debug& debug, MeshVisualizer::Flags value);
 
 CORRADE_ENUMSET_OPERATORS(MeshVisualizer::Flags)
-
-inline MeshVisualizer& MeshVisualizer::setSmoothness(Float smoothness) {
-    if(_flags & Flag::Wireframe)
-        setUniform(_smoothnessUniform, smoothness);
-    return *this;
-}
 
 }}
 

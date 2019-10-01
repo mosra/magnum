@@ -28,6 +28,9 @@
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Directory.h>
 
+#include "Magnum/Image.h"
+#include "Magnum/ImageView.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/DebugTools/CompareImage.h"
 #include "Magnum/GL/Framebuffer.h"
 #include "Magnum/GL/Mesh.h"
@@ -36,9 +39,9 @@
 #include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
-#include "Magnum/Image.h"
-#include "Magnum/ImageView.h"
-#include "Magnum/PixelFormat.h"
+#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Matrix3.h"
+#include "Magnum/Math/Matrix4.h"
 #include "Magnum/MeshTools/Compile.h"
 #include "Magnum/Primitives/Plane.h"
 #include "Magnum/Primitives/Square.h"

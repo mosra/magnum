@@ -30,6 +30,8 @@
 #include <Corrade/Containers/Reference.h>
 #include <Corrade/Utility/Resource.h>
 
+#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Matrix4.h"
 #include "Magnum/GL/Context.h"
 #include "Magnum/GL/Extensions.h"
 #include "Magnum/GL/Shader.h"
@@ -154,6 +156,38 @@ MeshVisualizer::MeshVisualizer(const Flags flags): _flags{flags} {
         setSmoothness(2.0f);
     }
     #endif
+}
+
+MeshVisualizer& MeshVisualizer::setTransformationProjectionMatrix(const Matrix4& matrix) {
+    setUniform(_transformationProjectionMatrixUniform, matrix);
+    return *this;
+}
+
+MeshVisualizer& MeshVisualizer::setViewportSize(const Vector2& size) {
+    if(_flags & Flag::Wireframe && !(_flags & Flag::NoGeometryShader))
+        setUniform(_viewportSizeUniform, size);
+    return *this;
+}
+
+MeshVisualizer& MeshVisualizer::setColor(const Color4& color) {
+    setUniform(_colorUniform, color);
+    return *this;
+}
+
+MeshVisualizer& MeshVisualizer::setWireframeColor(const Color4& color) {
+    if(_flags & Flag::Wireframe) setUniform(_wireframeColorUniform, color);
+    return *this;
+}
+
+MeshVisualizer& MeshVisualizer::setWireframeWidth(const Float width) {
+    if(_flags & Flag::Wireframe) setUniform(_wireframeWidthUniform, width);
+    return *this;
+}
+
+MeshVisualizer& MeshVisualizer::setSmoothness(const Float smoothness) {
+    if(_flags & Flag::Wireframe)
+        setUniform(_smoothnessUniform, smoothness);
+    return *this;
 }
 
 Debug& operator<<(Debug& debug, const MeshVisualizer::Flag value) {

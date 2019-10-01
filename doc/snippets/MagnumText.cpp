@@ -30,6 +30,8 @@
 #include <Corrade/Utility/Resource.h>
 
 #include "Magnum/FileCallback.h"
+#include "Magnum/Math/Color.h"
+#include "Magnum/Math/Matrix3.h"
 #include "Magnum/Shaders/Vector.h"
 #include "Magnum/Text/AbstractFont.h"
 #include "Magnum/Text/DistanceFieldGlyphCache.h"

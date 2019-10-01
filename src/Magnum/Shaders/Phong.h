@@ -30,8 +30,6 @@
  */
 
 #include "Magnum/GL/AbstractShaderProgram.h"
-#include "Magnum/Math/Color.h"
-#include "Magnum/Math/Matrix4.h"
 #include "Magnum/Shaders/Generic.h"
 #include "Magnum/Shaders/visibility.h"
 
@@ -311,10 +309,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * ambient texture, otherwise default value is @cpp 0x00000000_rgbaf @ce.
          * @see @ref bindAmbientTexture()
          */
-        Phong& setAmbientColor(const Magnum::Color4& color) {
-            setUniform(_ambientColorUniform, color);
-            return *this;
-        }
+        Phong& setAmbientColor(const Magnum::Color4& color);
 
         /**
          * @brief Bind an ambient texture
@@ -344,10 +339,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * to the output in that case.
          * @see @ref bindDiffuseTexture()
          */
-        Phong& setDiffuseColor(const Magnum::Color4& color) {
-            if(_lightCount) setUniform(_diffuseColorUniform, color);
-            return *this;
-        }
+        Phong& setDiffuseColor(const Magnum::Color4& color);
 
         /**
          * @brief Bind a diffuse texture
@@ -393,10 +385,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * output in that case.
          * @see @ref bindSpecularTexture()
          */
-        Phong& setSpecularColor(const Magnum::Color4& color) {
-            if(_lightCount) setUniform(_specularColorUniform, color);
-            return *this;
-        }
+        Phong& setSpecularColor(const Magnum::Color4& color);
 
         /**
          * @brief Bind a specular texture
@@ -455,10 +444,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * function is a no-op, as specular color doesn't contribute to the
          * output in that case.
          */
-        Phong& setShininess(Float shininess) {
-            if(_lightCount) setUniform(_shininessUniform, shininess);
-            return *this;
-        }
+        Phong& setShininess(Float shininess);
 
         /**
          * @brief Set alpha mask value
@@ -494,10 +480,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * You need to set also @ref setNormalMatrix() with a corresponding
          * value. Initial value is an identity matrix.
          */
-        Phong& setTransformationMatrix(const Matrix4& matrix) {
-            setUniform(_transformationMatrixUniform, matrix);
-            return *this;
-        }
+        Phong& setTransformationMatrix(const Matrix4& matrix);
 
         /**
          * @brief Set normal matrix
@@ -510,10 +493,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * function is a no-op, as normals don't contribute to the output in
          * that case.
          */
-        Phong& setNormalMatrix(const Matrix3x3& matrix) {
-            if(_lightCount) setUniform(_normalMatrixUniform, matrix);
-            return *this;
-        }
+        Phong& setNormalMatrix(const Matrix3x3& matrix);
 
         /**
          * @brief Set projection matrix
@@ -523,10 +503,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * projection of the default @f$ [ -\boldsymbol{1} ; \boldsymbol{1} ] @f$
          * cube).
          */
-        Phong& setProjectionMatrix(const Matrix4& matrix) {
-            setUniform(_projectionMatrixUniform, matrix);
-            return *this;
-        }
+        Phong& setProjectionMatrix(const Matrix4& matrix);
 
         /**
          * @brief Set light positions
@@ -542,9 +519,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         Phong& setLightPositions(Containers::ArrayView<const Vector3> lights);
 
         /** @overload */
-        Phong& setLightPositions(std::initializer_list<Vector3> lights) {
-            return setLightPositions({lights.begin(), lights.size()});
-        }
+        Phong& setLightPositions(std::initializer_list<Vector3> lights);
 
         /**
          * @brief Set position for given light
@@ -578,9 +553,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         Phong& setLightColors(Containers::ArrayView<const Magnum::Color4> colors);
 
         /** @overload */
-        Phong& setLightColors(std::initializer_list<Magnum::Color4> colors) {
-            return setLightColors({colors.begin(), colors.size()});
-        }
+        Phong& setLightColors(std::initializer_list<Magnum::Color4> colors);
 
         /**
          * @brief Set position for given light
