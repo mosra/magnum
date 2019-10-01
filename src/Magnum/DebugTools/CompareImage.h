@@ -255,6 +255,13 @@ the max threshold are colored red, blocks with delta over the mean threshold
 are colored yellow. The delta list contains X,Y pixel position (with origin at
 bottom left), actual and expected pixel value and calculated delta.
 
+Sometimes it's desirable to print the delta image even if the comparison passed
+--- for example, to check that the thresholds aren't too high to hide real
+issues. If the `--verbose` @ref TestSuite-Tester-command-line "command-line option"
+is specified, every image comparison with a non-zero delta will print an
+@cb{.ansi} [1;39mINFO @ce message in the same form as the error diagnostic
+shown above.
+
 @section DebugTools-CompareImage-specials Special floating-point values
 
 For floating-point input, the comparator treats the values similarly to how

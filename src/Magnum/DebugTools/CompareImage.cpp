@@ -369,7 +369,8 @@ enum class Result: UnsignedByte {
     DifferentFormat,
     AboveThresholds,
     AboveMeanThreshold,
-    AboveMaxThreshold
+    AboveMaxThreshold,
+    VerboseMessage
 };
 
 class ImageComparatorBase::State {
@@ -450,19 +451,25 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::compare(const PixelFormat 
     CORRADE_INTERNAL_ASSERT(!(_state->mean < 0.0f));
     CORRADE_INTERNAL_ASSERT(_state->max >= 0.0f && !Math::isInf(_state->max) && !Math::isNan(_state->max));
 
-    /* If both values are not above threshold, success. Comparing this way in
-       order to properly catch NaNs in mean values. */
+    /* If both values are not above threshold, success. If the values are
+       above, save the delta. If the values are below thresholds but nonzero,
+       we can provide optional message -- save the delta in that case too. */
+    TestSuite::ComparisonStatusFlags flags = TestSuite::ComparisonStatusFlag::Failed;
     if(_state->max > _state->maxThreshold && !(_state->mean <= _state->meanThreshold))
         _state->result = Result::AboveThresholds;
     else if(_state->max > _state->maxThreshold)
         _state->result = Result::AboveMaxThreshold;
+    /* Comparing this way in order to propely catch NaNs in mean values */
     else if(!(_state->mean <= _state->meanThreshold))
         _state->result = Result::AboveMeanThreshold;
-    else return TestSuite::ComparisonStatusFlags{};
+    else if(_state->max > 0.0f || _state->mean > 0.0f) {
+        _state->result = Result::VerboseMessage;
+        flags = TestSuite::ComparisonStatusFlag::Verbose;
+    } else return TestSuite::ComparisonStatusFlags{};
 
     /* Otherwise save the deltas and fail */
     _state->delta = std::move(delta);
-    return TestSuite::ComparisonStatusFlag::Failed;
+    return flags;
 }
 
 TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const ImageView2D& actual, const ImageView2D& expected) {
@@ -605,7 +612,7 @@ TestSuite::ComparisonStatusFlags ImageComparatorBase::operator()(const std::stri
     return compare(_state->actualFormat, _state->actualPixels, expected);
 }
 
-void ImageComparatorBase::printMessage(TestSuite::ComparisonStatusFlags, Debug& out, const std::string& actual, const std::string& expected) const {
+void ImageComparatorBase::printMessage(const TestSuite::ComparisonStatusFlags flags, Debug& out, const std::string& actual, const std::string& expected) const {
     if(_state->result == Result::PluginLoadFailed) {
         out << "AnyImageImporter plugin could not be loaded.";
         return;
@@ -651,7 +658,13 @@ void ImageComparatorBase::printMessage(TestSuite::ComparisonStatusFlags, Debug& 
                 << "but at most" << _state->meanThreshold
                 << "expected. Max delta" << _state->max << "is within threshold"
                 << _state->maxThreshold << Debug::nospace << ".";
-        else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+        else if(_state->result == Result::VerboseMessage) {
+            CORRADE_INTERNAL_ASSERT(flags & TestSuite::ComparisonStatusFlag::Verbose);
+            out << "deltas" << _state->max << Debug::nospace << "/"
+                << Debug::nospace << _state->mean << "below threshold"
+                << _state->maxThreshold << Debug::nospace << "/"
+                << Debug::nospace << _state->meanThreshold << Debug::nospace << ".";
+        } else CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 
         out << "Delta image:" << Debug::newline;
         DebugTools::Implementation::printDeltaImage(out, _state->delta, _state->expectedImage->size(), _state->max, _state->maxThreshold, _state->meanThreshold);

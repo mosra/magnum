@@ -84,6 +84,9 @@ See also:
 -   @ref DebugTools::CompareImageFile and @ref DebugTools::CompareImageToFile
     now support the new @ref TestSuite-Tester-save-diagnostic "--save-diagnostic option",
     making it possible to save images when a comparison fails
+-   @ref DebugTools::CompareImage and variants can now print a verbose
+    diagnostic also if the `--verbose` @ref TestSuite-Tester-command-line "command-line option"
+    is specified and comparison delta is non-zero
 -   @ref DebugTools::CompareImage and @ref DebugTools::CompareImageToFile now
     accept also @ref Corrade::Containers::StridedArrayView2D on the left side
     of the comparison for added flexibility. See
