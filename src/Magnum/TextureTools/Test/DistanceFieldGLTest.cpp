@@ -206,9 +206,10 @@ void DistanceFieldGLTest::test() {
         Utility::Directory::join(_testDir, "output.tga"),
         /* Some mobile GPUs have slight (off-by-one) rounding errors compared
            to the ground truth, but it's just a very small amount of pixels
-           (20-50 out of the total 4k pixels). That's okay. It's also possible
-           that the ground truth itself has rounding errors ;) */
-        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0125f}));
+           (20-50 out of the total 4k pixels, iOS/WebGL has slightly more).
+           That's okay. It's also possible that the ground truth itself has
+           rounding errors ;) */
+        (DebugTools::CompareImageToFile{_manager, 1.0f, 0.178f}));
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
