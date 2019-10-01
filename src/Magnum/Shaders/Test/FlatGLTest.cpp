@@ -659,7 +659,7 @@ template<class T> void FlatGLTest::renderVertexColor2D() {
     const Float maxThreshold = 1.334f, meanThreshold = 0.015f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's worse */
-    const Float maxThreshold = 1.334f, meanThreshold = 0.013f;
+    const Float maxThreshold = 15.334f, meanThreshold = 4.355f;
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
@@ -717,7 +717,7 @@ template<class T> void FlatGLTest::renderVertexColor3D() {
     const Float maxThreshold = 76.67f, meanThreshold = 0.072f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's worse */
-    const Float maxThreshold = 76.67f, meanThreshold = 0.072f;
+    const Float maxThreshold = 76.67f, meanThreshold = 3.908f;
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */

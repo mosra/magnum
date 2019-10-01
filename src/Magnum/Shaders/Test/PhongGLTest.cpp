@@ -882,7 +882,7 @@ template<class T> void PhongGLTest::renderVertexColor() {
     const Float maxThreshold = 105.4f, meanThreshold = 0.075f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's worse */
-    const Float maxThreshold = 105.4f, meanThreshold = 0.075f;
+    const Float maxThreshold = 105.4f, meanThreshold = 3.254f;
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
