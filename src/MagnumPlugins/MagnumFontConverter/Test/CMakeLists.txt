@@ -26,30 +26,25 @@
 # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
 # https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since Corrade
 # doesn't support dynamic plugins on iOS, this sorta works around that. Should
-# be revisited when updating Travis to newer Xcode (current has CMake 3.6).
+# be revisited when updating Travis to newer Xcode (xcode7.3 has CMake 3.6).
 if(NOT BUILD_PLUGINS_STATIC)
     set(MAGNUMFONTCONVERTER_PLUGIN_FILENAME $<TARGET_FILE:MagnumFontConverter>)
     set(TGAIMAGECONVERTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImageConverter>)
     if(WITH_TGAIMPORTER)
         set(TGAIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
     endif()
-
-    # First replace ${} variables, then $<> generator expressions
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
-    file(GENERATE OUTPUT $<TARGET_FILE_DIR:MagnumFontConverterTest>/configure.h
-        INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
-else()
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 endif()
+
+# First replace ${} variables, then $<> generator expressions
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
+    INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 
 corrade_add_test(MagnumFontConverterTest MagnumFontConverterTest.cpp
     LIBRARIES MagnumText MagnumTrade)
-if(NOT BUILD_PLUGINS_STATIC)
-    target_include_directories(MagnumFontConverterTest PRIVATE $<TARGET_FILE_DIR:MagnumFontConverterTest>)
-else()
-    target_include_directories(MagnumFontConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(MagnumFontConverterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+if(BUILD_PLUGINS_STATIC)
     target_link_libraries(MagnumFontConverterTest PRIVATE
         MagnumFontConverter) # TgaImageConverter should get linked transitively
     if(WITH_TGAIMPORTER)

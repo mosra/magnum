@@ -32,31 +32,26 @@ endif()
 # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
 # https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since Corrade
 # doesn't support dynamic plugins on iOS, this sorta works around that. Should
-# be revisited when updating Travis to newer Xcode (current has CMake 3.6).
+# be revisited when updating Travis to newer Xcode (xcode7.3 has CMake 3.6).
 if(NOT BUILD_PLUGINS_STATIC)
     set(ANYSCENEIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:AnySceneImporter>)
     if(WITH_OBJIMPORTER)
         set(OBJIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:ObjImporter>)
     endif()
-
-    # First replace ${} variables, then $<> generator expressions
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
-    file(GENERATE OUTPUT $<TARGET_FILE_DIR:AnySceneImporterTest>/configure.h
-        INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
-else()
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 endif()
+
+# First replace ${} variables, then $<> generator expressions
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+               ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
+    INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 
 corrade_add_test(AnySceneImporterTest AnySceneImporterTest.cpp
     LIBRARIES MagnumTrade
     FILES
         ../../ObjImporter/Test/pointMesh.obj)
-if(NOT BUILD_PLUGINS_STATIC)
-    target_include_directories(AnySceneImporterTest PRIVATE $<TARGET_FILE_DIR:AnySceneImporterTest>)
-else()
-    target_include_directories(AnySceneImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+target_include_directories(AnySceneImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+if(BUILD_PLUGINS_STATIC)
     target_link_libraries(AnySceneImporterTest PRIVATE AnySceneImporter)
     if(WITH_OBJIMPORTER)
         target_link_libraries(AnySceneImporterTest PRIVATE ObjImporter)

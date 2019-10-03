@@ -52,7 +52,7 @@ if(BUILD_GL_TESTS)
     # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
     # https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since
     # Corrade doesn't support dynamic plugins on iOS, this sorta works around
-    # that. Should be revisited when updating Travis to newer Xcode (current
+    # that. Should be revisited when updating Travis to newer Xcode (xcode7.3
     # has CMake 3.6).
     if(NOT BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
@@ -61,16 +61,13 @@ if(BUILD_GL_TESTS)
         if(WITH_TGAIMPORTER)
             set(TGAIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
         endif()
-
-        # First replace ${} variables, then $<> generator expressions
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-                       ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
-        file(GENERATE OUTPUT $<TARGET_FILE_DIR:ShadersPhongGLTest>/configure.h
-            INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
-    else()
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-                       ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
     endif()
+
+    # First replace ${} variables, then $<> generator expressions
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+    file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
+        INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 
     corrade_add_test(ShadersDistanceFieldVectorGLTest DistanceFieldVectorGLTest.cpp
         LIBRARIES
@@ -90,10 +87,8 @@ if(BUILD_GL_TESTS)
             VectorTestFiles/smooth0.2-3D.tga
             VectorTestFiles/outline2D.tga
             VectorTestFiles/outline3D.tga)
-    if(NOT BUILD_PLUGINS_STATIC)
-        target_include_directories(ShadersDistanceFieldVectorGLTest PRIVATE $<TARGET_FILE_DIR:ShadersDistanceFieldVectorGLTest>)
-    else()
-        target_include_directories(ShadersDistanceFieldVectorGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(ShadersDistanceFieldVectorGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
             target_link_libraries(ShadersDistanceFieldVectorGLTest PRIVATE AnyImageImporter)
         endif()
@@ -125,10 +120,8 @@ if(BUILD_GL_TESTS)
             FlatTestFiles/textured3D-alpha-mask0.5.tga
             FlatTestFiles/vertexColor2D.tga
             FlatTestFiles/vertexColor3D.tga)
-    if(NOT BUILD_PLUGINS_STATIC)
-        target_include_directories(ShadersFlatGLTest PRIVATE $<TARGET_FILE_DIR:ShadersPhongGLTest>)
-    else()
-        target_include_directories(ShadersFlatGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(ShadersFlatGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
             target_link_libraries(ShadersFlatGLTest PRIVATE AnyImageImporter)
         endif()
@@ -151,10 +144,8 @@ if(BUILD_GL_TESTS)
             MeshVisualizerTestFiles/wireframe.tga
             MeshVisualizerTestFiles/wireframe-nogeo.tga
             MeshVisualizerTestFiles/wireframe-wide.tga)
-    if(NOT BUILD_PLUGINS_STATIC)
-        target_include_directories(ShadersMeshVisualizerGLTest PRIVATE $<TARGET_FILE_DIR:ShadersPhongGLTest>)
-    else()
-        target_include_directories(ShadersMeshVisualizerGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(ShadersMeshVisualizerGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
             target_link_libraries(ShadersMeshVisualizerGLTest PRIVATE AnyImageImporter)
         endif()
@@ -198,10 +189,8 @@ if(BUILD_GL_TESTS)
 
             # For zero lights test (equivalency to Flat3D)
             FlatTestFiles/textured3D-alpha-mask0.5.tga)
-    if(NOT BUILD_PLUGINS_STATIC)
-        target_include_directories(ShadersPhongGLTest PRIVATE $<TARGET_FILE_DIR:ShadersPhongGLTest>)
-    else()
-        target_include_directories(ShadersPhongGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(ShadersPhongGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
             target_link_libraries(ShadersPhongGLTest PRIVATE AnyImageImporter)
         endif()
@@ -223,10 +212,8 @@ if(BUILD_GL_TESTS)
             VectorTestFiles/defaults.tga
             VectorTestFiles/vector2D.tga
             VectorTestFiles/vector3D.tga)
-    if(NOT BUILD_PLUGINS_STATIC)
-        target_include_directories(ShadersVectorGLTest PRIVATE $<TARGET_FILE_DIR:ShadersVectorGLTest>)
-    else()
-        target_include_directories(ShadersVectorGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(ShadersVectorGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
             target_link_libraries(ShadersVectorGLTest PRIVATE AnyImageImporter)
         endif()
@@ -247,10 +234,8 @@ if(BUILD_GL_TESTS)
 
             VertexColorTestFiles/vertexColor2D.tga
             VertexColorTestFiles/vertexColor3D.tga)
-    if(NOT BUILD_PLUGINS_STATIC)
-        target_include_directories(ShadersVertexColorGLTest PRIVATE $<TARGET_FILE_DIR:ShadersPhongGLTest>)
-    else()
-        target_include_directories(ShadersVertexColorGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(ShadersVertexColorGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
             target_link_libraries(ShadersVertexColorGLTest PRIVATE AnyImageImporter)
         endif()

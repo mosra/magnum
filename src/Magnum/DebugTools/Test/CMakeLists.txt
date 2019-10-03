@@ -40,7 +40,7 @@ if(WITH_TRADE)
     # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
     # https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since
     # Corrade doesn't support dynamic plugins on iOS, this sorta works around
-    # that. Should be revisited when updating Travis to newer Xcode (current
+    # that. Should be revisited when updating Travis to newer Xcode (xcode7.3
     # has CMake 3.6).
     if(NOT BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGEIMPORTER)
@@ -55,16 +55,13 @@ if(WITH_TRADE)
         if(WITH_TGAIMAGECONVERTER)
             set(TGAIMAGECONVERTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImageConverter>)
         endif()
-
-        # First replace ${} variables, then $<> generator expressions
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-                       ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
-        file(GENERATE OUTPUT $<TARGET_FILE_DIR:DebugToolsCompareImageTest>/configure.h
-            INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
-    else()
-        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-                       ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
     endif()
+
+    # First replace ${} variables, then $<> generator expressions
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+    file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
+        INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 
     corrade_add_test(DebugToolsCompareImageTest CompareImageTest.cpp
         LIBRARIES MagnumDebugToolsTestLib
@@ -73,10 +70,8 @@ if(WITH_TRADE)
             CompareImageExpected.tga
             CompareImageCompressed.dds)
     set_target_properties(DebugToolsCompareImageTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
-    if(NOT BUILD_PLUGINS_STATIC)
-        target_include_directories(DebugToolsCompareImageTest PRIVATE $<TARGET_FILE_DIR:DebugToolsCompareImageTest>)
-    else()
-        target_include_directories(DebugToolsCompareImageTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(DebugToolsCompareImageTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    if(BUILD_PLUGINS_STATIC)
         if(WITH_ANYIMAGECONVERTER)
             target_link_libraries(DebugToolsCompareImageTest PRIVATE AnyImageConverter)
         endif()
@@ -113,10 +108,8 @@ if(TARGET_GL)
             set_target_properties(DebugToolsScreenshotGLTest PROPERTIES FOLDER "Magnum/DebugTools/Test")
             # The configure.h file is provided for DebugToolsCompareImageTest
             # already
-            if(NOT BUILD_PLUGINS_STATIC)
-                target_include_directories(DebugToolsScreenshotGLTest PRIVATE $<TARGET_FILE_DIR:DebugToolsCompareImageTest>)
-            else()
-                target_include_directories(DebugToolsScreenshotGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+            target_include_directories(DebugToolsScreenshotGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+            if(BUILD_PLUGINS_STATIC)
                 if(WITH_ANYIMAGECONVERTER)
                     target_link_libraries(DebugToolsScreenshotGLTest PRIVATE AnyImageConverter)
                 endif()
@@ -143,12 +136,9 @@ if(TARGET_GL)
                 DebugToolsForceRendererGLTest
                 DebugToolsObjectRendererGLTest
             PROPERTIES FOLDER "Magnum/DebugTools/Test")
-            if(NOT BUILD_PLUGINS_STATIC)
-                target_include_directories(DebugToolsForceRendererGLTest PRIVATE $<TARGET_FILE_DIR:DebugToolsCompareImageTest>)
-                target_include_directories(DebugToolsObjectRendererGLTest PRIVATE $<TARGET_FILE_DIR:DebugToolsCompareImageTest>)
-            else()
-                target_include_directories(DebugToolsForceRendererGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
-                target_include_directories(DebugToolsObjectRendererGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+            target_include_directories(DebugToolsForceRendererGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+            target_include_directories(DebugToolsObjectRendererGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+            if(BUILD_PLUGINS_STATIC)
                 if(WITH_ANYIMAGEIMPORTER)
                     target_link_libraries(DebugToolsForceRendererGLTest PRIVATE AnyImageImporter)
                     target_link_libraries(DebugToolsObjectRendererGLTest PRIVATE AnyImageImporter)
