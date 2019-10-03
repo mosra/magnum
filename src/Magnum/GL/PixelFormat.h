@@ -143,16 +143,22 @@ enum class PixelFormat: GLenum {
 
     #ifndef MAGNUM_TARGET_GLES
     /**
-     * Floating-point BGR.
-     * @requires_gl Only RGB component ordering is available in OpenGL ES and
-     *      WebGL.
+     * Floating-point BGR. On desktop OpenGL there's no corresponding dedicated
+     * texture format for BGR(A) --- simply use it with @ref TextureFormat::RGB8.
+     * @requires_gl For three-component formats, only RGB component ordering is
+     *      available in OpenGL ES and WebGL. See @ref PixelFormat::BGRA for an
+     *      alternative.
      */
     BGR = GL_BGR,
     #endif
 
     #ifndef MAGNUM_TARGET_WEBGL
     /**
-     * Floating-point BGRA.
+     * Floating-point BGRA. On desktop OpenGL there's no corresponding
+     * dedicated texture format for BGR(A) --- simply use it with
+     * @ref TextureFormat::RGBA8. On OpenGL ES however, you're required to
+     * use @ref TextureFormat::BGRA8 (which is on the other hand not defined
+     * for desktop OpenGL).
      * @requires_es_extension Extension @gl_extension{EXT,read_format_bgra}
      *      for framebuffer reading, extension @gl_extension{APPLE,texture_format_BGRA8888}
      *      or @gl_extension{EXT,texture_format_BGRA8888} for texture data.

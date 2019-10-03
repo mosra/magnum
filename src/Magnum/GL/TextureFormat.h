@@ -129,7 +129,9 @@ enum class TextureFormat: GLenum {
     /**
      * RGB, type/size implementation-dependent. Not allowed in unemulated
      * @ref Texture::setStorage() "*Texture::setStorage()" calls, in
-     * that case use @ref TextureFormat::RGB8 "TextureFormat::RGB8" instead.
+     * that case use @ref TextureFormat::RGB8 "TextureFormat::RGB8" instead. On
+     * desktop OpenGL this format is meant to be used for
+     * @ref PixelFormat::BGR as well.
      * @requires_gl Can't be used as a render target in OpenGL ES or WebGL. See
      *      @ref TextureFormat::RGBA for an alternative.
      * @deprecated_gl Prefer to use the exactly specified version of this
@@ -142,7 +144,8 @@ enum class TextureFormat: GLenum {
 
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     /**
-     * RGB, each component normalized unsigned byte.
+     * RGB, each component normalized unsigned byte. On desktop OpenGL this
+     * format is meant to be used for @ref PixelFormat::BGRA as well.
      * @requires_gles30 Extension @gl_extension{OES,required_internalformat}
      *      (for image specification) or @gl_extension{EXT,texture_storage}
      *      (for texture storage) in OpenGL ES 2.0. Use @ref TextureFormat::RGB
@@ -160,7 +163,10 @@ enum class TextureFormat: GLenum {
     /**
      * RGBA, type/size implementation-dependent. Not allowed in unemulated
      * @ref Texture::setStorage() "*Texture::setStorage()" calls, in that case
-     * use @ref TextureFormat::RGBA8 "TextureFormat::RGBA8" instead.
+     * use @ref TextureFormat::RGBA8 "TextureFormat::RGBA8" instead. On desktop
+     * OpenGL this format is meant to be used for @ref PixelFormat::BGRA as
+     * well, however on OpenGL ES you're required to use
+     * @ref TextureFormat::BGRA for BGRA pixel formats.
      * @deprecated_gl Prefer to use the exactly specified version of this
      *      format, e.g. @ref TextureFormat::RGBA8.
      * @requires_webgl20 Extension @webgl_extension{OES,texture_half_float_linear}
@@ -171,7 +177,10 @@ enum class TextureFormat: GLenum {
 
     #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     /**
-     * RGBA, each component normalized unsigned byte.
+     * RGBA, each component normalized unsigned byte. On desktop OpenGL this
+     * format is meant to be used with @ref PixelFormat::BGRA as well, however
+     * on OpenGL ES you're required to use @ref TextureFormat::BGRA8 for BGRA
+     * pixel formats.
      * @requires_gles30 Extension @gl_extension{OES,required_internalformat}
      *      (for image specification) or @gl_extension{EXT,texture_storage}
      *      (for texture storage) in OpenGL ES 2.0. Use @ref TextureFormat::RGBA
@@ -1016,6 +1025,34 @@ enum class TextureFormat: GLenum {
      * @requires_gl Packed 48bit types are not available in OpenGL ES or WebGL.
      */
     RGBA12 = GL_RGBA12,
+    #endif
+
+    #if defined(DOXYGEN_GENERATING_OUTPUT) || (defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL))
+    /**
+     * BGRA, type/size implementation-dependent. Not allowed in unemulated
+     * @ref Texture::setStorage() "*Texture::setStorage()" calls, in that case
+     * use @ref TextureFormat::RGBA8 "TextureFormat::RGBA8" instead.
+     * @deprecated_gl Prefer to use the exactly specified version of this
+     *      format, e.g. @ref TextureFormat::BGRA8.
+     * @requires_gles Not available on desktop OpenGL -- there it's perfectly
+     *      legal to use @ref TextureFormat::RGBA in combination with
+     *      @ref PixelFormat::BGRA.
+     * @requires_es_extension Extension @gl_extension{APPLE,texture_format_BGRA8888}
+     *      or @gl_extension{EXT,texture_format_BGRA8888}
+     * @requires_gles Only RGBA component ordering is available in WebGL.
+     */
+    BGRA = GL_BGRA_EXT,
+
+    /**
+     * BGRA, each component normalized unsigned byte.
+     * @requires_gles Not available on desktop OpenGL -- there it's perfectly
+     *      legal to use @ref TextureFormat::RGBA8 in combination with
+     *      @ref PixelFormat::BGRA.
+     * @requires_es_extension Extension @gl_extension{APPLE,texture_format_BGRA8888}. There are no signed
+     *      normalized, integral or floating-point types with BGRA ordering.
+     * @requires_gles Only RGBA component ordering is available in WebGL.
+     */
+    BGRA8 = GL_BGRA8_EXT,
     #endif
 
     #ifndef MAGNUM_TARGET_GLES

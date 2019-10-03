@@ -821,6 +821,12 @@ PixelFormat pixelFormatForInternalFormat(const TextureFormat internalFormat) {
             return PixelFormat::SRGBAlpha;
             #endif
 
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        case TextureFormat::BGRA:
+        case TextureFormat::BGRA8:
+            return PixelFormat::BGRA;
+        #endif
+
         #ifndef MAGNUM_TARGET_GLES2
         case TextureFormat::RGBA8UI:
         case TextureFormat::RGBA8I:
@@ -919,6 +925,12 @@ PixelType pixelTypeForInternalFormat(const TextureFormat internalFormat) {
         #endif
         #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::RGBA2: /**< @todo really? */
+        #endif
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        case TextureFormat::BGRA:
+        case TextureFormat::BGRA8:
+        #endif
+        #ifndef MAGNUM_TARGET_GLES
         case TextureFormat::CompressedRed:
         case TextureFormat::CompressedRG:
         case TextureFormat::CompressedRGB:

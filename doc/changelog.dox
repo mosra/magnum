@@ -123,6 +123,8 @@ See also:
     @gl_extension{EXT,texture_sRGB_RG8} extensions adding
     @ref GL::TextureFormat::SR8 and @ref GL::TextureFormat::SRG8 formats to
     complement new sRGB formats in @ref GL::PixelFormat
+-   Added ES-only @ref GL::TextureFormat::BGRA and @ref GL::TextureFormat::BGRA8
+    and clarified their purpose in relation to @ref GL::PixelFormat::BGRA
 -   New @ref GL::AbstractFramebuffer::implementationColorReadFormat() and
     @ref GL::AbstractFramebuffer::implementationColorReadType() queries for
     more robust checks when doing framebuffer readbacks; together with three

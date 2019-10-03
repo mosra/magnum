@@ -163,6 +163,10 @@ Debug& operator<<(Debug& debug, const TextureFormat value) {
         #ifndef MAGNUM_TARGET_GLES
         _c(RGBA12)
         #endif
+        #if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
+        _c(BGRA)
+        _c(BGRA8)
+        #endif
         #ifndef MAGNUM_TARGET_GLES
         _c(CompressedRed)
         _c(CompressedRG)
