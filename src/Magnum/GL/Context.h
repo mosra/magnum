@@ -144,7 +144,9 @@ Arguments:
     to be enabled for context creation for both windowed and windowless
     applications on supported platforms
 -   `--magnum-log default|quiet|verbose` --- console logging
-    (environment: `MAGNUM_LOG`) (default: `default`)
+    (environment: `MAGNUM_LOG`) (default: `default`). If you need to suppress
+    the engine startup log from code, the recommended way is to redirect
+    @ref Utility-Debug-scoped-output "debug output to null" during context creation.
 
 Note that all options are prefixed with `--magnum-` to avoid conflicts with
 options passed to the application itself. Options that don't have this prefix
