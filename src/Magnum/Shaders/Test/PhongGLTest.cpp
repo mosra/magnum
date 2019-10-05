@@ -973,8 +973,10 @@ template<class T> void PhongGLTest::renderVertexColor() {
     Trade::MeshData sphereData = Primitives::uvSphereSolid(16, 32,
         Primitives::UVSphereFlag::TextureCoordinates);
 
-    /* Highlight the middle rings */
+    /* Highlight the pole vertices and the middle rings */
     Containers::Array<T> colorData{Containers::DirectInit, sphereData.vertexCount(), 0x999999_rgbf};
+    for(std::size_t i = 0; i != 3*33 + 1; ++i)
+        colorData[sphereData.vertexCount()  - i - 1] = 0xff0000_rgbf*5.0f;
     for(std::size_t i = 6*33; i != 9*33; ++i)
         colorData[i + 1] = 0xffff99_rgbf*1.5f;
 
@@ -1006,6 +1008,7 @@ template<class T> void PhongGLTest::renderVertexColor() {
         .setNormalMatrix((Matrix4::rotationY(-15.0_degf)*
             Matrix4::rotationX(15.0_degf)).rotationScaling())
         .setProjectionMatrix(Matrix4::perspectiveProjection(60.0_degf, 1.0f, 0.1f, 10.0f))
+        .setAmbientColor(0x111111_rgbf)
         .setDiffuseColor(0x9999ff_rgbf)
         .bindDiffuseTexture(diffuse)
         .draw(sphere);
@@ -1015,10 +1018,10 @@ template<class T> void PhongGLTest::renderVertexColor() {
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has some minor differences on the edges, Apple A8 a bit
        more */
-    const Float maxThreshold = 105.4f, meanThreshold = 0.167f;
+    const Float maxThreshold = 115.4f, meanThreshold = 0.167f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's worse */
-    const Float maxThreshold = 105.4f, meanThreshold = 3.254f;
+    const Float maxThreshold = 115.4f, meanThreshold = 3.254f;
     #endif
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */

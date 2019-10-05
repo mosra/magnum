@@ -176,6 +176,9 @@ void main() {
         #ifdef AMBIENT_TEXTURE
         texture(ambientTexture, interpolatedTextureCoordinates)*
         #endif
+        #ifdef VERTEX_COLOR
+        interpolatedVertexColor*
+        #endif
         ambientColor;
     #if LIGHT_COUNT
     lowp const vec4 finalDiffuseColor =
