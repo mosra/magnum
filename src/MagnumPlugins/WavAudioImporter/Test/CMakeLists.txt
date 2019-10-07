@@ -84,13 +84,18 @@ target_include_directories(WavAudioImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_D
 if(BUILD_PLUGINS_STATIC)
     target_link_libraries(WavAudioImporterTest PRIVATE WavAudioImporter)
 endif()
-
 corrade_add_test(WavAudioImporterWavHeaderTest
     WavHeaderTest.cpp
     $<TARGET_OBJECTS:WavAudioImporterObjects>
     LIBRARIES MagnumAudio)
-
 set_target_properties(
     WavAudioImporterTest
     WavAudioImporterWavHeaderTest
     PROPERTIES FOLDER "MagnumPlugins/WavAudioImporter/Test")
+if(CORRADE_BUILD_STATIC AND NOT BUILD_PLUGINS_STATIC)
+    # CMake < 3.4 does this implicitly, but 3.4+ not anymore (see CMP0065).
+    # That's generally okay, *except if* the build is static, the executable
+    # uses a plugin manager and needs to share globals with the plugins (such
+    # as output redirection and so on).
+    set_target_properties(WavAudioImporterTest PROPERTIES ENABLE_EXPORTS ON)
+endif()

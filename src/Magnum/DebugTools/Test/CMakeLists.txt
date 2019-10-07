@@ -123,6 +123,15 @@ if(TARGET_GL)
                     target_link_libraries(DebugToolsScreenshotGLTest PRIVATE TgaImporter)
                 endif()
             endif()
+
+            if(CORRADE_BUILD_STATIC AND NOT BUILD_PLUGINS_STATIC)
+                # CMake < 3.4 does this implicitly, but 3.4+ not anymore (see
+                # CMP0065). That's generally okay, *except if* the build is
+                # static, the executable uses a plugin manager and needs to
+                # share globals with the plugins (such as output redirection
+                # and so on).
+                set_target_properties(DebugToolsScreenshotGLTest PROPERTIES ENABLE_EXPORTS ON)
+            endif()
         endif()
 
         if(WITH_SCENEGRAPH AND WITH_TRADE)
