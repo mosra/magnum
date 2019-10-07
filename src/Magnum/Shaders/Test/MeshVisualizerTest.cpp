@@ -68,12 +68,12 @@ void MeshVisualizerTest::constructCopy() {
 }
 
 void MeshVisualizerTest::vertexIndexNoConflict() {
-    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != Generic3D::Position::Location);
-    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != Generic3D::Normal::Location);
-    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != Generic3D::TextureCoordinates::Location);
-    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != Generic3D::Color3::Location);
-    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != Generic3D::Color4::Location);
-    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != Generic3D::Tangent::Location);
+    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != UnsignedInt(Generic3D::Position::Location));
+    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != UnsignedInt(Generic3D::Normal::Location));
+    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != UnsignedInt(Generic3D::TextureCoordinates::Location));
+    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != UnsignedInt(Generic3D::Color3::Location));
+    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != UnsignedInt(Generic3D::Color4::Location));
+    CORRADE_VERIFY(MeshVisualizer::VertexIndex::Location != UnsignedInt(Generic3D::Tangent::Location));
 }
 
 void MeshVisualizerTest::debugFlag() {
