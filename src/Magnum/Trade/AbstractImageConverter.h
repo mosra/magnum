@@ -44,6 +44,17 @@ Provides functionality for converting images between various internal formats
 or compressing them. See @ref plugins for more information and `*ImageConverter`
 classes in @ref Trade namespace for available image converter plugins.
 
+@section Trade-AbstractImageConverter-data-dependency Data dependency
+
+The instances returned from various functions *by design* have no dependency on
+the importer instance and neither on the dynamic plugin module. In other words,
+you don't need to keep the importer instance (or the plugin manager instance)
+around in order to have the `*Data` instances valid. Moreover, all
+@ref Corrade::Containers::Array instances returned through @ref Image,
+@ref CompressedImage and others are only allowed to have default deleters ---
+this is to avoid potential dangling function pointer calls when destructing
+such instances after the plugin module has been unloaded.
+
 @section Trade-AbstractImageConverter-subclassing Subclassing
 
 The plugin needs to implement the@ref doFeatures() function and one or more of
@@ -63,10 +74,15 @@ checked by the implementation:
 -   The function @ref doExportToData(const CompressedImageView2D&) is called
     only if @ref Feature::ConvertCompressedData is supported.
 
-@attention @ref Corrade::Containers::Array instances returned from the plugin
-    should *not* use anything else than the default deleter, otherwise this can
-    cause dangling function pointer call on array destruction if the plugin
-    gets unloaded before the array is destroyed.
+@m_class{m-block m-warning}
+
+@par Dangling function pointers on plugin unload
+    As @ref Trade-AbstractImageConverter-data-dependency "mentioned above",
+    @ref Corrade::Containers::Array instances returned from plugin
+    implementations are not allowed to use anything else than the default
+    deleter, otherwise this could cause dangling function pointer call on array
+    destruction if the plugin gets unloaded before the array is destroyed. This
+    is asserted by the base implementation on return.
 */
 class MAGNUM_TRADE_EXPORT AbstractImageConverter: public PluginManager::AbstractManagingPlugin<AbstractImageConverter> {
     public:

@@ -36,6 +36,11 @@
 
 namespace Magnum {
 
+#ifndef DOXYGEN_GENERATING_OUTPUT
+/** @todo remove once AbstractImageConverter returns ImageData instead */
+namespace Trade { class AbstractImageConverter; }
+#endif
+
 /**
 @brief Image
 
@@ -443,6 +448,14 @@ template<UnsignedInt dimensions> class Image {
         Containers::Array<char> release();
 
     private:
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* For custom deleter checks. Not done in the constructors here because
+           the restriction is pointless when used outside of plugin
+           implementations. */
+        /** @todo figure out a better way (return ImageData there instead?) */
+        friend Trade::AbstractImageConverter;
+        #endif
+
         PixelStorage _storage;
         PixelFormat _format;
         UnsignedInt _formatExtra;
@@ -660,6 +673,14 @@ template<UnsignedInt dimensions> class CompressedImage {
         Containers::Array<char> release();
 
     private:
+        #ifndef DOXYGEN_GENERATING_OUTPUT
+        /* For custom deleter checks. Not done in the constructors here because
+           the restriction is pointless when used outside of plugin
+           implementations. */
+        /** @todo figure out a better way (return ImageData there instead?) */
+        friend Trade::AbstractImageConverter;
+        #endif
+
         /* To be made public once block size and block data size are stored
            together with the image */
         explicit CompressedImage(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept;

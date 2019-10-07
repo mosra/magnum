@@ -105,6 +105,8 @@ struct AbstractImporterTest: TestSuite::Tester {
     void animationNotImplemented();
     void animationNoFile();
     void animationOutOfRange();
+    void animationCustomDataDeleter();
+    void animationCustomTrackDeleter();
 
     void light();
     void lightCountNotImplemented();
@@ -213,6 +215,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void image1DNotImplemented();
     void image1DNoFile();
     void image1DOutOfRange();
+    void image1DCustomDeleter();
 
     void image2D();
     void image2DCountNotImplemented();
@@ -225,6 +228,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void image2DNotImplemented();
     void image2DNoFile();
     void image2DOutOfRange();
+    void image2DCustomDeleter();
 
     void image3D();
     void image3DCountNotImplemented();
@@ -237,6 +241,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void image3DNotImplemented();
     void image3DNoFile();
     void image3DOutOfRange();
+    void image3DCustomDeleter();
 
     void importerState();
     void importerStateNotImplemented();
@@ -300,6 +305,8 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::animationNotImplemented,
               &AbstractImporterTest::animationNoFile,
               &AbstractImporterTest::animationOutOfRange,
+              &AbstractImporterTest::animationCustomDataDeleter,
+              &AbstractImporterTest::animationCustomTrackDeleter,
 
               &AbstractImporterTest::light,
               &AbstractImporterTest::lightCountNotImplemented,
@@ -408,6 +415,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::image1DNotImplemented,
               &AbstractImporterTest::image1DNoFile,
               &AbstractImporterTest::image1DOutOfRange,
+              &AbstractImporterTest::image1DCustomDeleter,
 
               &AbstractImporterTest::image2D,
               &AbstractImporterTest::image2DCountNotImplemented,
@@ -420,6 +428,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::image2DNotImplemented,
               &AbstractImporterTest::image2DNoFile,
               &AbstractImporterTest::image2DOutOfRange,
+              &AbstractImporterTest::image2DCustomDeleter,
 
               &AbstractImporterTest::image3D,
               &AbstractImporterTest::image3DCountNotImplemented,
@@ -432,6 +441,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::image3DNotImplemented,
               &AbstractImporterTest::image3DNoFile,
               &AbstractImporterTest::image3DOutOfRange,
+              &AbstractImporterTest::image3DCustomDeleter,
 
               &AbstractImporterTest::importerState,
               &AbstractImporterTest::importerStateNotImplemented,
@@ -1293,6 +1303,44 @@ void AbstractImporterTest::animationOutOfRange() {
 
     importer.animation(8);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animation(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::animationCustomDataDeleter() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doAnimationCount() const override { return 1; }
+        Containers::Optional<AnimationData> doAnimation(UnsignedInt) override {
+            return AnimationData{Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}}, nullptr};
+        }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.animation(0);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animation(): implementation is not allowed to use a custom Array deleter\n");
+}
+
+void AbstractImporterTest::animationCustomTrackDeleter() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doAnimationCount() const override { return 1; }
+        Containers::Optional<AnimationData> doAnimation(UnsignedInt) override {
+            return AnimationData{nullptr, Containers::Array<AnimationTrackData>{nullptr, 0, [](AnimationTrackData*, std::size_t) {}}};
+        }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.animation(0);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animation(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractImporterTest::light() {
@@ -2813,6 +2861,25 @@ void AbstractImporterTest::image1DOutOfRange() {
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image1D(): index 8 out of range for 8 entries\n");
 }
 
+void AbstractImporterTest::image1DCustomDeleter() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doImage1DCount() const override { return 1; }
+        Containers::Optional<ImageData1D> doImage1D(UnsignedInt) override {
+            return ImageData1D{PixelFormat::RGBA8Unorm, {}, Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}}};
+        }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.image1D(0);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image1D(): implementation is not allowed to use a custom Array deleter\n");
+}
+
 void AbstractImporterTest::image2D() {
     struct: AbstractImporter {
         Features doFeatures() const override { return {}; }
@@ -2979,6 +3046,25 @@ void AbstractImporterTest::image2DOutOfRange() {
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image2D(): index 8 out of range for 8 entries\n");
 }
 
+void AbstractImporterTest::image2DCustomDeleter() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doImage2DCount() const override { return 1; }
+        Containers::Optional<ImageData2D> doImage2D(UnsignedInt) override {
+            return ImageData2D{PixelFormat::RGBA8Unorm, {}, Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}}};
+        }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.image2D(0);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image2D(): implementation is not allowed to use a custom Array deleter\n");
+}
+
 void AbstractImporterTest::image3D() {
     struct: AbstractImporter {
         Features doFeatures() const override { return {}; }
@@ -3143,6 +3229,25 @@ void AbstractImporterTest::image3DOutOfRange() {
 
     importer.image3D(8);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image3D(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::image3DCustomDeleter() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doImage3DCount() const override { return 1; }
+        Containers::Optional<ImageData3D> doImage3D(UnsignedInt) override {
+            return ImageData3D{PixelFormat::RGBA8Unorm, {}, Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}}};
+        }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.image3D(0);
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image3D(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractImporterTest::importerState() {

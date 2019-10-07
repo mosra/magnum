@@ -145,6 +145,24 @@ Another option is making use of the @ref Containers::pointerCast() utility, but
 note that in that case the original @ref Corrade::Containers::Pointer will be
 * *moved into* a new instance and that might not be desirable.
 
+@section Trade-AbstractImporter-data-dependency Data dependency
+
+The `*Data` instances returned from various functions *by design* have no
+dependency on the importer instance and neither on the dynamic plugin module.
+In other words, you don't need to keep the importer instance (or the plugin
+manager instance) around in order to have the `*Data` instances valid.
+Moreover, all @ref Corrade::Containers::Array instances returned through
+@ref ImageData, @ref AnimationData and others are only allowed to have default
+deleters --- this is to avoid potential dangling function pointer calls when
+destructing such instances after the plugin module has been unloaded.
+
+The only exception are various `importerState()` functions
+@ref Trade-AbstractImporter-usage-state "described above", but in that case the
+relation is *weak* --- these are valid only as long as the currently opened
+file is kept open. If the file gets closed or the importer instance deleted,
+the state pointers become dangling, and that's fine as long as you don't access
+them.
+
 @section Trade-AbstractImporter-subclassing Subclassing
 
 The plugin needs to implement the @ref doFeatures(), @ref doIsOpened()
@@ -183,19 +201,25 @@ checked by the implementation:
 -   All `do*()` implementations taking data ID as parameter are called only if
     the ID is from valid range.
 
-@attention
-    @ref Corrade::Containers::Array instances returned from the plugin
-    should *not* use anything else than the default deleter, otherwise this can
-    cause dangling function pointer call on array destruction if the plugin
-    gets unloaded before the array is destroyed.
-@attention
+@m_class{m-block m-warning}
+
+@par Dangling function pointers on plugin unload
+    As @ref Trade-AbstractImporter-data-dependency "mentioned above",
+    @ref Corrade::Containers::Array instances returned from plugin
+    implementations are not allowed to use anything else than the default
+    deleter, otherwise this could cause dangling function pointer call on array
+    destruction if the plugin gets unloaded before the array is destroyed. This
+    is asserted by the base implementation on return.
+@par
     Similarly for interpolator functions passed through
     @ref Animation::TrackView instances to @ref AnimationData --- to avoid
     dangling pointers, be sure to always include an interpolator returned from
     @ref animationInterpolatorFor(), which guarantees the function is *not*
     instantiated in the plugin binary. Avoid using
-    @ref Animation::interpolatorFor() (or indirectly it by specifying
-    just @ref Animation::Interpolation), as it doesn't have such guarantee.
+    @ref Animation::interpolatorFor() (or indirectly using it by specifying
+    just @ref Animation::Interpolation), as it doesn't have such a guarantee.
+    Note that unlike with array instances, the base implementation can't easily
+    check for this.
 */
 class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlugin<AbstractImporter> {
     public:

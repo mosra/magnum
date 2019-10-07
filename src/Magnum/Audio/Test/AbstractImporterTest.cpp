@@ -61,6 +61,7 @@ struct AbstractImporterTest: TestSuite::Tester {
 
     void data();
     void dataNoFile();
+    void dataCustomDeleter();
 
     void debugFeature();
     void debugFeatures();
@@ -85,6 +86,7 @@ AbstractImporterTest::AbstractImporterTest() {
 
               &AbstractImporterTest::data,
               &AbstractImporterTest::dataNoFile,
+              &AbstractImporterTest::dataCustomDeleter,
 
               &AbstractImporterTest::debugFeature,
               &AbstractImporterTest::debugFeatures});
@@ -337,6 +339,26 @@ void AbstractImporterTest::dataNoFile() {
 
     importer.data();
     CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::data(): no file opened\n");
+}
+
+void AbstractImporterTest::dataCustomDeleter() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        BufferFormat doFormat() const override { return {}; }
+        UnsignedInt doFrequency() const override { return {}; }
+        Containers::Array<char> doData() override {
+            return Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}};
+        }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.data();
+    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::data(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractImporterTest::debugFeature() {

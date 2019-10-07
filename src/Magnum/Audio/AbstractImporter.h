@@ -43,6 +43,15 @@ Provides interface for importing various audio formats. See @ref plugins for
 more information and `*Importer` classes in @ref Audio namespace for available
 importer plugins.
 
+@section Audio-AbstractImporter-data-dependency Data dependency
+
+The data returned from various functions *by design* have no dependency on the
+importer instance and neither on the dynamic plugin module. In other words, you don't need to keep the importer instance (or the plugin manager instance)
+around in order to have the returned data valid. Moreover, all returned
+@ref Corrade::Containers::Array instances are only allowed to have default
+deleters --- this is to avoid potential dangling function pointer calls when
+destructing such instances after the plugin module has been unloaded.
+
 @section Audio-AbstractImporter-subclassing Subclassing
 
 Plugin implements function @ref doFeatures(), @ref doIsOpened(), one of or both
@@ -60,10 +69,15 @@ checked by the implementation:
 -   All `do*()` implementations working on opened file are called only if
     there is any file opened.
 
-@attention @ref Corrade::Containers::Array instances returned from the plugin
-    should *not* use anything else than the default deleter, otherwise this can
-    cause dangling function pointer call on array destruction if the plugin
-    gets unloaded before the array is destroyed.
+@m_class{m-block m-warning}
+
+@par Dangling function pointers on plugin unload
+    As @ref Trade-AbstractImporter-data-dependency "mentioned above",
+    @ref Corrade::Containers::Array instances returned from plugin
+    implementations are not allowed to use anything else than the default
+    deleter, otherwise this could cause dangling function pointer call on array
+    destruction if the plugin gets unloaded before the array is destroyed. This
+    is asserted by the base implementation on return.
 */
 class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagingPlugin<AbstractImporter> {
     public:

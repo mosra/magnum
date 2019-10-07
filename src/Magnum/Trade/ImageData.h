@@ -33,6 +33,7 @@
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/PixelStorage.h"
+#include "Magnum/Trade/Trade.h"
 #include "Magnum/Trade/visibility.h"
 
 namespace Magnum { namespace Trade {
@@ -427,6 +428,11 @@ template<UnsignedInt dimensions> class ImageData {
         const void* importerState() const { return _importerState; }
 
     private:
+        /* For custom deleter checks. Not done in the constructors here because
+           the restriction is pointless when used outside of plugin
+           implementations. */
+        friend AbstractImporter;
+
         explicit ImageData(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
 
         bool _compressed;

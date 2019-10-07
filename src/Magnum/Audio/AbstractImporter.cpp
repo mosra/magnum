@@ -127,7 +127,10 @@ UnsignedInt AbstractImporter::frequency() const {
 
 Containers::Array<char> AbstractImporter::data() {
     CORRADE_ASSERT(isOpened(), "Audio::AbstractImporter::data(): no file opened", nullptr);
-    return doData();
+
+    Containers::Array<char> out = doData();
+    CORRADE_ASSERT(!out.deleter(), "Audio::AbstractImporter::data(): implementation is not allowed to use a custom Array deleter", {});
+    return out;
 }
 
 Debug& operator<<(Debug& debug, const AbstractImporter::Feature value) {

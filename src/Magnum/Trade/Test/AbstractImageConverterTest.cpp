@@ -52,18 +52,22 @@ class AbstractImageConverterTest: public TestSuite::Tester {
         void exportToImage();
         void exportToImageNotSupported();
         void exportToImageNotImplemented();
+        void exportToImageCustomDeleter();
 
         void exportToCompressedImage();
         void exportToCompressedImageNotSupported();
         void exportToCompressedImageNotImplemented();
+        void exportToCompressedImageCustomDeleter();
 
         void exportToData();
         void exportToDataNotSupported();
         void exportToDataNotImplemented();
+        void exportToDataCustomDeleter();
 
         void exportCompressedToData();
         void exportCompressedToDataNotSupported();
         void exportCompressedToDataNotImplemented();
+        void exportCompressedToDataCustomDeleter();
 
         void exportImageDataToData();
 
@@ -92,18 +96,22 @@ AbstractImageConverterTest::AbstractImageConverterTest() {
               &AbstractImageConverterTest::exportToImage,
               &AbstractImageConverterTest::exportToImageNotSupported,
               &AbstractImageConverterTest::exportToImageNotImplemented,
+              &AbstractImageConverterTest::exportToImageCustomDeleter,
 
               &AbstractImageConverterTest::exportToCompressedImage,
               &AbstractImageConverterTest::exportToCompressedImageNotSupported,
               &AbstractImageConverterTest::exportToCompressedImageNotImplemented,
+              &AbstractImageConverterTest::exportToCompressedImageCustomDeleter,
 
               &AbstractImageConverterTest::exportToData,
               &AbstractImageConverterTest::exportToDataNotSupported,
               &AbstractImageConverterTest::exportToDataNotImplemented,
+              &AbstractImageConverterTest::exportToDataCustomDeleter,
 
               &AbstractImageConverterTest::exportCompressedToData,
               &AbstractImageConverterTest::exportCompressedToDataNotSupported,
               &AbstractImageConverterTest::exportCompressedToDataNotImplemented,
+              &AbstractImageConverterTest::exportCompressedToDataCustomDeleter,
 
               &AbstractImageConverterTest::exportImageDataToData,
 
@@ -192,6 +200,22 @@ void AbstractImageConverterTest::exportToImageNotImplemented() {
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::exportToImage(): feature advertised but not implemented\n");
 }
 
+void AbstractImageConverterTest::exportToImageCustomDeleter() {
+    class Converter: public AbstractImageConverter {
+        Features doFeatures() const override { return Feature::ConvertImage; }
+        Containers::Optional<Image2D> doExportToImage(const ImageView2D&) override {
+            return Image2D{PixelFormat::RGBA8Unorm, {}, Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}}};
+        }
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Converter converter;
+    converter.exportToImage(ImageView2D{PixelFormat::R8Unorm, {}});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::exportToImage(): implementation is not allowed to use a custom Array deleter\n");
+}
+
 void AbstractImageConverterTest::exportToCompressedImage() {
     class Converter: public AbstractImageConverter {
         Features doFeatures() const override { return Feature::ConvertCompressedImage; }
@@ -233,6 +257,22 @@ void AbstractImageConverterTest::exportToCompressedImageNotImplemented() {
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::exportToCompressedImage(): feature advertised but not implemented\n");
 }
 
+void AbstractImageConverterTest::exportToCompressedImageCustomDeleter() {
+    class Converter: public AbstractImageConverter {
+        Features doFeatures() const override { return Feature::ConvertCompressedImage; }
+        Containers::Optional<CompressedImage2D> doExportToCompressedImage(const ImageView2D&) override {
+            return CompressedImage2D{CompressedPixelFormat::Bc1RGBAUnorm, {}, Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}}};
+        }
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Converter converter;
+    converter.exportToCompressedImage(ImageView2D{PixelFormat::R8Unorm, {}});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::exportToCompressedImage(): implementation is not allowed to use a custom Array deleter\n");
+}
+
 void AbstractImageConverterTest::exportToData() {
     class Converter: public AbstractImageConverter {
         Features doFeatures() const override { return Feature::ConvertData; }
@@ -270,6 +310,22 @@ void AbstractImageConverterTest::exportToDataNotImplemented() {
     Converter converter;
     converter.exportToData(ImageView2D{PixelFormat::RGBA8Unorm, {4, 6}, Containers::ArrayView<char>{nullptr, 96}});
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::exportToData(): feature advertised but not implemented\n");
+}
+
+void AbstractImageConverterTest::exportToDataCustomDeleter() {
+    class Converter: public AbstractImageConverter {
+        Features doFeatures() const override { return Feature::ConvertData; }
+        Containers::Array<char> doExportToData(const ImageView2D&) override {
+            return Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}};
+        }
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Converter converter;
+    converter.exportToData(ImageView2D{PixelFormat::RGBA8Unorm, {}});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::exportToData(): implementation is not allowed to use a custom Array deleter\n");
 }
 
 void AbstractImageConverterTest::exportCompressedToData() {
@@ -311,16 +367,42 @@ void AbstractImageConverterTest::exportCompressedToDataNotImplemented() {
     CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::exportToData(): feature advertised but not implemented\n");
 }
 
+void AbstractImageConverterTest::exportCompressedToDataCustomDeleter() {
+    class Converter: public AbstractImageConverter {
+        Features doFeatures() const override { return Feature::ConvertCompressedData; }
+        Containers::Array<char> doExportToData(const CompressedImageView2D&) override {
+            return Containers::Array<char>{nullptr, 0, [](char*, std::size_t) {}};
+        }
+    };
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Converter converter;
+    converter.exportToData(CompressedImageView2D{CompressedPixelFormat::Bc1RGBAUnorm, {}});
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImageConverter::exportToData(): implementation is not allowed to use a custom Array deleter\n");
+}
+
 class ImageDataExporter: public Trade::AbstractImageConverter {
     private:
         Features doFeatures() const override { return Feature::ConvertData|Feature::ConvertCompressedData; }
 
         Containers::Array<char> doExportToData(const ImageView2D&) override {
-            return Containers::Array<char>{Containers::InPlaceInit, {'B'}};
+            /* DirectInit / InPlaceInit is unfortunately causing a custom
+               deleter right now */
+            /** @todo clean up when fixed */
+            Containers::Array<char> out{1};
+            out[0] = 'B';
+            return out;
         };
 
         Containers::Array<char> doExportToData(const CompressedImageView2D&) override {
-            return Containers::Array<char>{Containers::InPlaceInit, {'C'}};
+            /* DirectInit / InPlaceInit is unfortunately causing a custom
+               deleter right now */
+            /** @todo clean up when fixed */
+            Containers::Array<char> out{1};
+            out[0] = 'C';
+            return out;
         };
 };
 

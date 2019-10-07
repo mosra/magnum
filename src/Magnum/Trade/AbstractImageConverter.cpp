@@ -86,7 +86,9 @@ Containers::Optional<Image2D> AbstractImageConverter::exportToImage(const ImageV
     CORRADE_ASSERT(features() & Feature::ConvertImage,
         "Trade::AbstractImageConverter::exportToImage(): feature not supported", {});
 
-    return doExportToImage(image);
+    Containers::Optional<Image2D> out = doExportToImage(image);
+    CORRADE_ASSERT(!out || !out->_data.deleter(), "Trade::AbstractImageConverter::exportToImage(): implementation is not allowed to use a custom Array deleter", {});
+    return out;
 }
 
 Containers::Optional<Image2D> AbstractImageConverter::doExportToImage(const ImageView2D&) {
@@ -97,7 +99,9 @@ Containers::Optional<CompressedImage2D> AbstractImageConverter::exportToCompress
     CORRADE_ASSERT(features() & Feature::ConvertCompressedImage,
         "Trade::AbstractImageConverter::exportToCompressedImage(): feature not supported", {});
 
-    return doExportToCompressedImage(image);
+    Containers::Optional<CompressedImage2D> out = doExportToCompressedImage(image);
+    CORRADE_ASSERT(!out || !out->_data.deleter(), "Trade::AbstractImageConverter::exportToCompressedImage(): implementation is not allowed to use a custom Array deleter", {});
+    return out;
 }
 
 Containers::Optional<CompressedImage2D> AbstractImageConverter::doExportToCompressedImage(const ImageView2D&) {
@@ -108,7 +112,9 @@ Containers::Array<char> AbstractImageConverter::exportToData(const ImageView2D& 
     CORRADE_ASSERT(features() & Feature::ConvertData,
         "Trade::AbstractImageConverter::exportToData(): feature not supported", nullptr);
 
-    return doExportToData(image);
+    Containers::Array<char> out = doExportToData(image);
+    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::exportToData(): implementation is not allowed to use a custom Array deleter", {});
+    return out;
 }
 
 Containers::Array<char> AbstractImageConverter::doExportToData(const ImageView2D&) {
@@ -119,7 +125,9 @@ Containers::Array<char> AbstractImageConverter::exportToData(const CompressedIma
     CORRADE_ASSERT(features() & Feature::ConvertCompressedData,
         "Trade::AbstractImageConverter::exportToData(): feature not supported", nullptr);
 
-    return doExportToData(image);
+    Containers::Array<char> out = doExportToData(image);
+    CORRADE_ASSERT(!out.deleter(), "Trade::AbstractImageConverter::exportToData(): implementation is not allowed to use a custom Array deleter", {});
+    return out;
 }
 
 Containers::Array<char> AbstractImageConverter::doExportToData(const CompressedImageView2D&) {

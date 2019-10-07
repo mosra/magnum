@@ -265,7 +265,9 @@ std::string AbstractImporter::doAnimationName(UnsignedInt) { return {}; }
 Containers::Optional<AnimationData> AbstractImporter::animation(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::animation(): no file opened", {});
     CORRADE_ASSERT(id < doAnimationCount(), "Trade::AbstractImporter::animation(): index" << id << "out of range for" << doAnimationCount() << "entries", {});
-    return doAnimation(id);
+    Containers::Optional<AnimationData> animation = doAnimation(id);
+    CORRADE_ASSERT(!animation || (!animation->_data.deleter() && !animation->_tracks.deleter()), "Trade::AbstractImporter::animation(): implementation is not allowed to use a custom Array deleter", {});
+    return animation;
 }
 
 Containers::Optional<AnimationData> AbstractImporter::doAnimation(UnsignedInt) {
@@ -553,7 +555,9 @@ std::string AbstractImporter::doImage1DName(UnsignedInt) { return {}; }
 Containers::Optional<ImageData1D> AbstractImporter::image1D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image1D(): no file opened", {});
     CORRADE_ASSERT(id < doImage1DCount(), "Trade::AbstractImporter::image1D(): index" << id << "out of range for" << doImage1DCount() << "entries", {});
-    return doImage1D(id);
+    Containers::Optional<ImageData1D> image = doImage1D(id);
+    CORRADE_ASSERT(!image || !image->_data.deleter(), "Trade::AbstractImporter::image1D(): implementation is not allowed to use a custom Array deleter", {});
+    return image;
 }
 
 Containers::Optional<ImageData1D> AbstractImporter::doImage1D(UnsignedInt) {
@@ -585,7 +589,9 @@ std::string AbstractImporter::doImage2DName(UnsignedInt) { return {}; }
 Containers::Optional<ImageData2D> AbstractImporter::image2D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image2D(): no file opened", {});
     CORRADE_ASSERT(id < doImage2DCount(), "Trade::AbstractImporter::image2D(): index" << id << "out of range for" << doImage2DCount() << "entries", {});
-    return doImage2D(id);
+    Containers::Optional<ImageData2D> image = doImage2D(id);
+    CORRADE_ASSERT(!image || !image->_data.deleter(), "Trade::AbstractImporter::image2D(): implementation is not allowed to use a custom Array deleter", {});
+    return image;
 }
 
 Containers::Optional<ImageData2D> AbstractImporter::doImage2D(UnsignedInt) {
@@ -617,7 +623,9 @@ std::string AbstractImporter::doImage3DName(UnsignedInt) { return {}; }
 Containers::Optional<ImageData3D> AbstractImporter::image3D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::image3D(): no file opened", {});
     CORRADE_ASSERT(id < doImage3DCount(), "Trade::AbstractImporter::image3D(): index" << id << "out of range for" << doImage3DCount() << "entries", {});
-    return doImage3D(id);
+    Containers::Optional<ImageData3D> image = doImage3D(id);
+    CORRADE_ASSERT(!image || !image->_data.deleter(), "Trade::AbstractImporter::image3D(): implementation is not allowed to use a custom Array deleter", {});
+    return image;
 }
 
 Containers::Optional<ImageData3D> AbstractImporter::doImage3D(UnsignedInt) {
