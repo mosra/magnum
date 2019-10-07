@@ -480,7 +480,7 @@ void AbstractImporterTest::constructWithPluginManagerReference() {
 }
 
 void AbstractImporterTest::openData() {
-    struct Importer: AbstractImporter {
+    struct: AbstractImporter {
         Features doFeatures() const override { return Feature::OpenData; }
         bool doIsOpened() const override { return _opened; }
         void doClose() override { _opened = false; }
