@@ -193,6 +193,14 @@ class MAGNUM_AUDIO_EXPORT AbstractImporter: public PluginManager::AbstractManagi
         virtual Containers::Array<char> doData() = 0;
 };
 
+CORRADE_ENUMSET_OPERATORS(AbstractImporter::Features)
+
+/** @debugoperatorclassenum{AbstractImporter,AbstractImporter::Feature} */
+MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, AbstractImporter::Feature value);
+
+/** @debugoperatorclassenum{AbstractImporter,AbstractImporter::Features} */
+MAGNUM_AUDIO_EXPORT Debug& operator<<(Debug& debug, AbstractImporter::Features value);
+
 }}
 
 #endif

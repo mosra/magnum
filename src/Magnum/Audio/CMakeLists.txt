@@ -27,13 +27,15 @@ find_package(Corrade REQUIRED PluginManager)
 find_package(OpenAL REQUIRED)
 
 set(MagnumAudio_SRCS
-    AbstractImporter.cpp
     Audio.cpp
     Buffer.cpp
     BufferFormat.cpp
     Context.cpp
     Renderer.cpp
     Source.cpp)
+
+set(MagnumAudio_GracefulAssert_SRCS
+    AbstractImporter.cpp)
 
 set(MagnumAudio_HEADERS
     AbstractImporter.h
@@ -64,10 +66,26 @@ if(WITH_SCENEGRAPH)
         PlayableGroup.cpp)
 endif()
 
-# Audio library
-add_library(MagnumAudio ${SHARED_OR_STATIC}
+# Objects shared between main and test library
+add_library(MagnumAudioObjects OBJECT
     ${MagnumAudio_SRCS}
     ${MagnumAudio_HEADERS})
+target_include_directories(MagnumAudioObjects PUBLIC
+    ${OPENAL_INCLUDE_DIR}
+    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
+    $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>)
+if(NOT BUILD_STATIC)
+    target_compile_definitions(MagnumAudioObjects PRIVATE "MagnumAudioObjects_EXPORTS")
+endif()
+if(NOT BUILD_STATIC OR BUILD_STATIC_PIC)
+    set_target_properties(MagnumAudioObjects PROPERTIES POSITION_INDEPENDENT_CODE ON)
+endif()
+set_target_properties(MagnumAudioObjects PROPERTIES FOLDER "Magnum/Audio")
+
+# Audio library
+add_library(MagnumAudio ${SHARED_OR_STATIC}
+    $<TARGET_OBJECTS:MagnumAudioObjects>
+    ${MagnumAudio_GracefulAssert_SRCS})
 target_include_directories(MagnumAudio PUBLIC ${OPENAL_INCLUDE_DIR})
 set_target_properties(MagnumAudio PROPERTIES
     DEBUG_POSTFIX "-d"
@@ -123,5 +141,35 @@ if(WITH_AL_INFO)
 endif()
 
 if(BUILD_TESTS)
+    # Library with graceful assert for testing
+    add_library(MagnumAudioTestLib ${SHARED_OR_STATIC}
+        $<TARGET_OBJECTS:MagnumAudioObjects>
+        ${MagnumAudio_GracefulAssert_SRCS})
+    target_compile_definitions(MagnumAudioTestLib PRIVATE
+        "CORRADE_GRACEFUL_ASSERT" "MagnumAudio_EXPORTS")
+    target_include_directories(MagnumAudioTestLib PUBLIC ${OPENAL_INCLUDE_DIR})
+    set_target_properties(MagnumAudioTestLib PROPERTIES
+        DEBUG_POSTFIX "-d"
+        FOLDER "Magnum")
+    if(BUILD_STATIC_PIC)
+        set_target_properties(MagnumAudioTestLib PROPERTIES POSITION_INDEPENDENT_CODE ON)
+    endif()
+    target_link_libraries(MagnumAudioTestLib
+        Magnum
+        Corrade::PluginManager
+        ${OPENAL_LIBRARY})
+    if(WITH_SCENEGRAPH)
+        target_link_libraries(MagnumAudioTestLib MagnumSceneGraph)
+    endif()
+
+    # On Windows we need to install first and then run the tests to avoid "DLL
+    # not found" hell, thus we need to install this too
+    if(CORRADE_TARGET_WINDOWS AND NOT CMAKE_CROSSCOMPILING AND NOT BUILD_STATIC)
+        install(TARGETS MagnumAudioTestLib
+            RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
+            LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
+            ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+    endif()
+
     add_subdirectory(Test)
 endif()

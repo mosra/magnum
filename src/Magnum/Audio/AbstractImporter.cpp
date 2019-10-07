@@ -26,6 +26,7 @@
 #include "AbstractImporter.h"
 
 #include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/EnumSet.hpp>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
@@ -100,7 +101,7 @@ void AbstractImporter::doOpenFile(const std::string& filename) {
 
     /* Open file */
     if(!Utility::Directory::exists(filename)) {
-        Error() << "Trade::AbstractImporter::openFile(): cannot open file" << filename;
+        Error() << "Audio::AbstractImporter::openFile(): cannot open file" << filename;
         return;
     }
 
@@ -127,6 +128,23 @@ UnsignedInt AbstractImporter::frequency() const {
 Containers::Array<char> AbstractImporter::data() {
     CORRADE_ASSERT(isOpened(), "Audio::AbstractImporter::data(): no file opened", nullptr);
     return doData();
+}
+
+Debug& operator<<(Debug& debug, const AbstractImporter::Feature value) {
+    switch(value) {
+        /* LCOV_EXCL_START */
+        #define _c(v) case AbstractImporter::Feature::v: return debug << "Audio::AbstractImporter::Feature::" #v;
+        _c(OpenData)
+        #undef _c
+        /* LCOV_EXCL_STOP */
+    }
+
+    return debug << "Audio::AbstractImporter::Feature(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+}
+
+Debug& operator<<(Debug& debug, const AbstractImporter::Features value) {
+    return Containers::enumSetDebugOutput(debug, value, "Audio::AbstractImporter::Features{}", {
+        AbstractImporter::Feature::OpenData});
 }
 
 }}

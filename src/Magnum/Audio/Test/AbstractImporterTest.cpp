@@ -23,11 +23,15 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Tester.h>
+#include <Corrade/TestSuite/Compare/Container.h>
+#include <Corrade/Utility/DebugStl.h>
 #include <Corrade/Utility/Directory.h>
 
 #include "Magnum/Audio/AbstractImporter.h"
+#include "Magnum/Audio/BufferFormat.h"
 
 #include "configure.h"
 
@@ -36,39 +40,317 @@ namespace Magnum { namespace Audio { namespace Test { namespace {
 struct AbstractImporterTest: TestSuite::Tester {
     explicit AbstractImporterTest();
 
-    void openFile();
+    void construct();
+
+    void openData();
+    void openFileAsData();
+    void openFileAsDataNotFound();
+
+    void openFileNotImplemented();
+    void openDataNotSupported();
+    void openDataNotImplemented();
+
+    /* file callbacks not supported -- those will be once this gets merged with
+       Trade::AbstractImporter */
+
+    void format();
+    void formatNoFile();
+
+    void frequency();
+    void frequencyNoFile();
+
+    void data();
+    void dataNoFile();
+
+    void debugFeature();
+    void debugFeatures();
 };
 
 AbstractImporterTest::AbstractImporterTest() {
-    addTests({&AbstractImporterTest::openFile});
+    addTests({&AbstractImporterTest::construct,
+
+              &AbstractImporterTest::openData,
+              &AbstractImporterTest::openFileAsData,
+              &AbstractImporterTest::openFileAsDataNotFound,
+
+              &AbstractImporterTest::openFileNotImplemented,
+              &AbstractImporterTest::openDataNotSupported,
+              &AbstractImporterTest::openDataNotImplemented,
+
+              &AbstractImporterTest::format,
+              &AbstractImporterTest::formatNoFile,
+
+              &AbstractImporterTest::frequency,
+              &AbstractImporterTest::frequencyNoFile,
+
+              &AbstractImporterTest::data,
+              &AbstractImporterTest::dataNoFile,
+
+              &AbstractImporterTest::debugFeature,
+              &AbstractImporterTest::debugFeatures});
 }
 
-void AbstractImporterTest::openFile() {
-    class DataImporter: public Audio::AbstractImporter {
-        public:
-            explicit DataImporter(): opened(false) {}
+void AbstractImporterTest::construct() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
 
-        private:
-            Features doFeatures() const override { return Feature::OpenData; }
-            bool doIsOpened() const override { return opened; }
-            void doClose() override {}
+        BufferFormat doFormat() const override { return {}; }
+        UnsignedInt doFrequency() const override { return {}; }
+        Containers::Array<char> doData() override { return nullptr; }
+    } importer;
 
-            void doOpenData(Containers::ArrayView<const char> data) override {
-                opened = (data.size() == 1 && data[0] == '\xa5');
-            }
+    CORRADE_COMPARE(importer.features(), AbstractImporter::Features{});
+    CORRADE_VERIFY(!importer.isOpened());
 
-            BufferFormat doFormat() const override { return {}; }
-            UnsignedInt doFrequency() const override { return {}; }
-            Corrade::Containers::Array<char> doData() override { return nullptr; }
+    importer.close();
+    CORRADE_VERIFY(!importer.isOpened());
+}
 
-            bool opened;
-    };
+void AbstractImporterTest::openData() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return Feature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        void doOpenData(Containers::ArrayView<const char> data) override {
+            _opened = (data.size() == 1 && data[0] == '\xa5');
+        }
+
+        BufferFormat doFormat() const override { return {}; }
+        UnsignedInt doFrequency() const override { return {}; }
+        Containers::Array<char> doData() override { return nullptr; }
+
+        bool _opened = false;
+    } importer;
+
+    CORRADE_VERIFY(!importer.isOpened());
+    const char a5 = '\xa5';
+    CORRADE_VERIFY(importer.openData({&a5, 1}));
+    CORRADE_VERIFY(importer.isOpened());
+
+    importer.close();
+    CORRADE_VERIFY(!importer.isOpened());
+}
+
+void AbstractImporterTest::openFileAsData() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return Feature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        void doOpenData(Containers::ArrayView<const char> data) override {
+            _opened = (data.size() == 1 && data[0] == '\xa5');
+        }
+
+        BufferFormat doFormat() const override { return {}; }
+        UnsignedInt doFrequency() const override { return {}; }
+        Containers::Array<char> doData() override { return nullptr; }
+
+        bool _opened = false;
+    } importer;
 
     /* doOpenFile() should call doOpenData() */
-    DataImporter importer;
     CORRADE_VERIFY(!importer.isOpened());
     importer.openFile(Utility::Directory::join(AUDIO_TEST_DIR, "file.bin"));
     CORRADE_VERIFY(importer.isOpened());
+
+    importer.close();
+    CORRADE_VERIFY(!importer.isOpened());
+}
+
+void AbstractImporterTest::openFileAsDataNotFound() {
+    struct Importer: AbstractImporter {
+        Features doFeatures() const override { return Feature::OpenData; }
+        bool doIsOpened() const override { return _opened; }
+        void doClose() override { _opened = false; }
+
+        void doOpenData(Containers::ArrayView<const char>) override {
+            _opened = true;
+        }
+
+        BufferFormat doFormat() const override { return {}; }
+        UnsignedInt doFrequency() const override { return {}; }
+        Containers::Array<char> doData() override { return nullptr; }
+
+        bool _opened = false;
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_VERIFY(!importer.openFile("nonexistent.bin"));
+    CORRADE_VERIFY(!importer.isOpened());
+    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::openFile(): cannot open file nonexistent.bin\n");
+}
+
+void AbstractImporterTest::openFileNotImplemented() {
+    struct Importer: AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        BufferFormat doFormat() const override { return {}; }
+        UnsignedInt doFrequency() const override { return {}; }
+        Containers::Array<char> doData() override { return nullptr; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_VERIFY(!importer.openFile("file.dat"));
+    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::openFile(): not implemented\n");
+}
+
+void AbstractImporterTest::openDataNotSupported() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        BufferFormat doFormat() const override { return {}; }
+        UnsignedInt doFrequency() const override { return {}; }
+        Containers::Array<char> doData() override { return nullptr; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_VERIFY(!importer.openData(nullptr));
+    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::openData(): feature not supported\n");
+}
+
+void AbstractImporterTest::openDataNotImplemented() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return Feature::OpenData; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        BufferFormat doFormat() const override { return {}; }
+        UnsignedInt doFrequency() const override { return {}; }
+        Containers::Array<char> doData() override { return nullptr; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    CORRADE_VERIFY(!importer.openData(nullptr));
+    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::openData(): feature advertised but not implemented\n");
+}
+
+void AbstractImporterTest::format() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        BufferFormat doFormat() const override { return BufferFormat::Mono8; }
+        UnsignedInt doFrequency() const override { return {}; }
+        Containers::Array<char> doData() override { return nullptr; }
+    } importer;
+
+    CORRADE_COMPARE(importer.format(), BufferFormat::Mono8);
+}
+
+void AbstractImporterTest::formatNoFile() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        BufferFormat doFormat() const override { return {}; }
+        UnsignedInt doFrequency() const override { return {}; }
+        Containers::Array<char> doData() override { return nullptr; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.format();
+    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::format(): no file opened\n");
+}
+
+void AbstractImporterTest::frequency() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        BufferFormat doFormat() const override { return {}; }
+        UnsignedInt doFrequency() const override { return 44000; }
+        Containers::Array<char> doData() override { return nullptr; }
+    } importer;
+
+    CORRADE_COMPARE(importer.frequency(), 44000);
+}
+
+void AbstractImporterTest::frequencyNoFile() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        BufferFormat doFormat() const override { return {}; }
+        UnsignedInt doFrequency() const override { return {}; }
+        Containers::Array<char> doData() override { return nullptr; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.frequency();
+    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::frequency(): no file opened\n");
+}
+
+void AbstractImporterTest::data() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        BufferFormat doFormat() const override { return {}; }
+        UnsignedInt doFrequency() const override { return {}; }
+        Containers::Array<char> doData() override {
+            Containers::Array<char> out{1};
+            out[0] = 'H';
+            return out;
+        }
+    } importer;
+
+    CORRADE_COMPARE_AS(importer.data(), (Containers::Array<char>{Containers::InPlaceInit, {'H'}}), TestSuite::Compare::Container);
+}
+
+void AbstractImporterTest::dataNoFile() {
+    struct: AbstractImporter {
+        Features doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return false; }
+        void doClose() override {}
+
+        BufferFormat doFormat() const override { return {}; }
+        UnsignedInt doFrequency() const override { return {}; }
+        Containers::Array<char> doData() override { return nullptr; }
+    } importer;
+
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    importer.data();
+    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::data(): no file opened\n");
+}
+
+void AbstractImporterTest::debugFeature() {
+    std::ostringstream out;
+
+    Debug{&out} << AbstractImporter::Feature::OpenData << AbstractImporter::Feature(0xf0);
+    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::Feature::OpenData Audio::AbstractImporter::Feature(0xf0)\n");
+}
+
+void AbstractImporterTest::debugFeatures() {
+    std::ostringstream out;
+
+    Debug{&out} << AbstractImporter::Feature::OpenData << AbstractImporter::Features{};
+    CORRADE_COMPARE(out.str(), "Audio::AbstractImporter::Feature::OpenData Audio::AbstractImporter::Features{}\n");
 }
 
 }}}}

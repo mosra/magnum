@@ -34,7 +34,7 @@ configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
 
 corrade_add_test(AudioAbstractImporterTest AbstractImporterTest.cpp
-    LIBRARIES MagnumAudio
+    LIBRARIES MagnumAudioTestLib
     FILES file.bin)
 target_include_directories(AudioAbstractImporterTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 corrade_add_test(AudioBufferFormatTest BufferFormatTest.cpp LIBRARIES MagnumAudio)

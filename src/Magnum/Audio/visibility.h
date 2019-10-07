@@ -31,7 +31,7 @@
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_BUILD_STATIC
-    #ifdef MagnumAudio_EXPORTS
+    #if defined(MagnumAudio_EXPORTS) || defined(MagnumAudioObjects_EXPORTS)
         #define MAGNUM_AUDIO_EXPORT CORRADE_VISIBILITY_EXPORT
     #else
         #define MAGNUM_AUDIO_EXPORT CORRADE_VISIBILITY_IMPORT
