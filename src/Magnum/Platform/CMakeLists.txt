@@ -144,6 +144,7 @@ if(WITH_ANDROIDAPPLICATION)
     set(MagnumAndroidApplication_PRIVATE_HEADERS
         Implementation/Egl.h)
 
+    enable_language(C)
     add_library(MagnumAndroidApplicationGlue OBJECT
         "${CMAKE_ANDROID_NDK}/sources/android/native_app_glue/android_native_app_glue.c")
     set_target_properties(MagnumAndroidApplicationGlue PROPERTIES

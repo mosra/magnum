@@ -23,21 +23,14 @@
 #   DEALINGS IN THE SOFTWARE.
 #
 
-cmake_minimum_required(VERSION 3.1)
-
-# Configuration fails on < 3.4 if only C++ is enabled (CheckFunctionExists
-# macro called from FindX11). Also, Android needs C for compiling some glue
-# code.
-if(NOT CMAKE_VERSION VERSION_LESS 3.4.0 AND NOT CMAKE_SYSTEM_NAME STREQUAL "Android")
-    set(LANG CXX)
-endif()
+cmake_minimum_required(VERSION 3.4)
 
 option(HUNTER_ENABLED "Get dependencies (Corrade, GLFW, SDL2, ...) via Hunter" OFF)
 if(HUNTER_ENABLED)
     include(${CMAKE_CURRENT_LIST_DIR}/package/hunter/HunterInit.cmake)
 endif()
 
-project(Magnum ${LANG})
+project(Magnum CXX)
 
 if(HUNTER_ENABLED)
     include(${CMAKE_CURRENT_LIST_DIR}/package/hunter/HunterAddPackages.cmake)
