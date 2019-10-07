@@ -44,30 +44,51 @@ namespace Magnum { namespace GL {
 @brief Framebuffer
 
 Unlike @ref DefaultFramebuffer, which is used for on-screen rendering, this
-class is used for off-screen rendering, usable either in windowless
-applications, texture generation or for various post-processing effects.
+class is used for off-screen rendering, usable in windowless applications, for
+texture generation or for various post-processing effects.
 
-@section GL-Framebuffer-usage Example usage
+@section GL-Framebuffer-usage Basic usage
 
-See @ref GL-DefaultFramebuffer-usage "DefaultFramebuffer documentation" for
-introduction. Imagine you have shader with multiple outputs (e.g. for deferred
-rendering). You want to render them off-screen to textures and then use the
-textures for actual on-screen rendering. First you need to create the
-framebuffer with the same viewport as default framebuffer and attach textures
-and renderbuffers to desired outputs:
+A basic setup for rendering to a texture of a desired `size` might look like
+below. Apart from a color attachment, there's also a depth/stencil attachment
+in order to make depth test work properly. If you render 2D or don't need to
+use a depth/stencil test, you can have just a color attachment. It's possible
+to attach either a @ref Texture or a @ref Renderbuffer --- a texture allows
+you to read the rendered output later from a shader, while a renderbuffer
+allows you to only @ref read() or @ref blit() from it. In modern desktop OpenGL
+there's not much reason to use @ref Renderbuffer anymore, however in OpenGL ES
+and WebGL due to various texture format restrictions, renderbuffers are still
+the more flexible option if you don't need to use the result in a shader.
 
-@snippet MagnumGL.cpp Framebuffer-usage-attach
+@snippet MagnumGL.cpp Framebuffer-usage
 
-Then you need to map outputs of your shader to color attachments in the
-framebuffer:
+Rendering then usually consists of switching between different framebuffers
+using @ref bind() and reusing the rendered texture in subsequent draws:
 
-@snippet MagnumGL.cpp Framebuffer-usage-map
+@snippet MagnumGL.cpp Framebuffer-usage-rendering
 
-The actual @ref Platform::Sdl2Application::drawEvent() "drawEvent()" might look
-like this. First you clear all buffers you need, perform drawing to off-screen
-framebuffer, then bind the default and render the textures on screen:
+@section GL-Framebuffer-usage-multisample Multisampled rendering
 
-@snippet MagnumGL-framebuffer.cpp Framebuffer-usage-draw
+Another use case for custom framebuffers is multisampled rendering --- as
+you're not always allowed to control the MSAA setting on a default framebuffer,
+or you might want your rendered texture to be multisampled as well:
+
+@snippet MagnumGL.cpp Framebuffer-usage-multisample
+
+Here @ref Renderbuffer gets used for the color attachment as well. While it's
+possible to achieve the same with a @ref MultisampleTexture2D, support for it
+is rather sparse on OpenGL ES and completely nonexistent on WebGL or
+macOS / iOS.
+
+@section GL-Framebuffer-usage-multiple-output Multiple fragment shader outputs
+
+In a deferred rendering setup for example, a shader usually has more than one
+output. That's finally where non-zero @ref ColorAttachment and @ref mapForDraw()
+gets used. In builtin shaders this is also how the
+@ref Shaders::Flat::ColorOutput / @ref Shaders::Flat::ObjectIdOutput etc. get
+used:
+
+@snippet MagnumGL.cpp Framebuffer-usage-deferred
 
 @section GL-Framebuffer-performance-optimizations Performance optimizations
 

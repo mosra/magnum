@@ -42,8 +42,8 @@ namespace Implementation { struct FramebufferState; }
 /**
 @brief Renderbuffer
 
-Attachable to framebuffer as render target, see @ref Framebuffer documentation
-for more information.
+Attachable to a framebuffer as render target, see the @ref Framebuffer class
+for a detailed usage example.
 
 @section GL-Renderbuffer-performance-optimizations Performance optimizations
 

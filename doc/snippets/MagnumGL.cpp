@@ -41,6 +41,7 @@
 #include "Magnum/GL/PixelFormat.h"
 #include "Magnum/GL/Renderer.h"
 #include "Magnum/GL/Renderbuffer.h"
+#include "Magnum/GL/RenderbufferFormat.h"
 #include "Magnum/GL/Shader.h"
 #include "Magnum/GL/Texture.h"
 #include "Magnum/GL/TextureFormat.h"
@@ -893,21 +894,71 @@ GL::defaultFramebuffer.mapForDraw({
 
 #ifndef MAGNUM_TARGET_GLES2
 {
-/* [Framebuffer-usage-attach] */
-GL::Framebuffer framebuffer{GL::defaultFramebuffer.viewport()};
-GL::Texture2D color, normal;
+struct MyShader {
+    void bindTexture(GL::Texture2D&) {}
+} myShader;
+Vector2i size;
+/* [Framebuffer-usage] */
+GL::Texture2D color;
 GL::Renderbuffer depthStencil;
+color.setStorage(1, GL::TextureFormat::RGBA8, size);
+depthStencil.setStorage(GL::RenderbufferFormat::Depth24Stencil8, size);
 
-// configure the textures and allocate texture memory...
-
+GL::Framebuffer framebuffer{{{}, size}};
 framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{0}, color, 0);
-framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{1}, normal, 0);
 framebuffer.attachRenderbuffer(
     GL::Framebuffer::BufferAttachment::DepthStencil, depthStencil);
-/* [Framebuffer-usage-attach] */
+/* [Framebuffer-usage] */
+
+/* [Framebuffer-usage-rendering] */
+framebuffer
+    .clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth)
+    .bind();
+
+// draw to this framebuffer ...
+
+/* Switch back to the default framebuffer */
+GL::defaultFramebuffer
+    .clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth)
+    .bind();
+
+// use the rendered texture in a shader ...
+myShader.bindTexture(color);
+/* [Framebuffer-usage-rendering] */
 }
 #endif
 
+#ifndef MAGNUM_TARGET_GLES2
+{
+/* [Framebuffer-usage-multisample] */
+Vector2i size = GL::defaultFramebuffer.viewport().size();
+
+/* 8x MSAA */
+GL::Renderbuffer color, depthStencil;
+color.setStorageMultisample(8, GL::RenderbufferFormat::RGBA8, size);
+depthStencil.setStorageMultisample(8,
+    GL::RenderbufferFormat::Depth24Stencil8, size);
+
+GL::Framebuffer framebuffer{{{}, size}};
+framebuffer.attachRenderbuffer(GL::Framebuffer::ColorAttachment{0}, color);
+framebuffer.attachRenderbuffer(
+    GL::Framebuffer::BufferAttachment::DepthStencil, depthStencil);
+
+framebuffer.clear(GL::FramebufferClear::Color|GL::FramebufferClear::Depth)
+    .bind();
+
+// draw to the multisampled framebuffer ...
+
+/* Resolve the color output to a single-sampled default framebuffer */
+GL::defaultFramebuffer.clear(GL::FramebufferClear::Color)
+    .bind();
+GL::Framebuffer::blit(framebuffer, GL::defaultFramebuffer,
+    {{}, size}, GL::FramebufferBlit::Color);
+/* [Framebuffer-usage-multisample] */
+}
+#endif
+
+#ifndef MAGNUM_TARGET_GLES2
 {
 struct MyShader {
     enum: UnsignedInt {
@@ -915,12 +966,20 @@ struct MyShader {
         NormalOutput = 1
     };
 };
-GL::Framebuffer framebuffer{{}};
-/* [Framebuffer-usage-map] */
+/* [Framebuffer-usage-deferred] */
+GL::Framebuffer framebuffer{GL::defaultFramebuffer.viewport()};
+GL::Texture2D color, normal;
+GL::Renderbuffer depthStencil;
+// setStorage() ...
+
+framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{0}, color, 0);
+framebuffer.attachTexture(GL::Framebuffer::ColorAttachment{1}, normal, 0);
+framebuffer.attachRenderbuffer(
+    GL::Framebuffer::BufferAttachment::DepthStencil, depthStencil);
 framebuffer.mapForDraw({
     {MyShader::ColorOutput, GL::Framebuffer::ColorAttachment(0)},
     {MyShader::NormalOutput, GL::Framebuffer::ColorAttachment(1)}});
-/* [Framebuffer-usage-map] */
+/* [Framebuffer-usage-deferred] */
 
 /* [Framebuffer-mapForDraw] */
 framebuffer.mapForDraw({
@@ -928,6 +987,7 @@ framebuffer.mapForDraw({
     {MyShader::NormalOutput, GL::Framebuffer::DrawAttachment::None}});
 /* [Framebuffer-mapForDraw] */
 }
+#endif
 
 {
 /* [Mesh-nonindexed] */
