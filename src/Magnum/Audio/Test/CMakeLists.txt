@@ -78,12 +78,12 @@ if(BUILD_AL_TESTS)
             GlobalStateAcrossLibrariesLibrary.cpp)
         target_link_libraries(AudioGlobalStateAcrossLibrariesLibrary PUBLIC MagnumAudio)
 
-        corrade_add_test(AudioGlobalStateAcrossLibrariesALTest
+        corrade_add_test(AudioGlobalStateAcrossLibra___ALTest
             GlobalStateAcrossLibrariesALTest.cpp
             LIBRARIES AudioGlobalStateAcrossLibrariesLibrary)
         set_target_properties(
             AudioGlobalStateAcrossLibrariesLibrary
-            AudioGlobalStateAcrossLibrariesALTest
+            AudioGlobalStateAcrossLibra___ALTest
             PROPERTIES FOLDER "Magnum/Audio/Test")
     endif()
 endif()
