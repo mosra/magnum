@@ -165,7 +165,7 @@ OpenGL function                         | Matching API
 @fn_gl2{FramebufferParameter,FramebufferParameteri}, \n `glNamedFramebufferParameter()` | |
 @fn_gl{FramebufferRenderbuffer}, \n `glNamedFramebufferRenderbuffer()` | @ref GL::Framebuffer::attachRenderbuffer(), \n @ref GL::Framebuffer::detach()
 @fn_gl{FramebufferTexture}, \n `glNamedFramebufferTexture()` | @ref GL::Framebuffer::attachLayeredTexture()
-@fn_gl2{FramebufferTexture1D,FramebufferTexture}, \n `glFramebufferTexture2D()`, \n `glNamedFramebufferTexture2DEXT()` | @ref GL::Framebuffer::attachTexture(), \n @ref GL::Framebuffer::attachCubeMapTexture()
+@fn_gl2{FramebufferTexture1D,FramebufferTexture}, \n `glFramebufferTexture2D()` | @ref GL::Framebuffer::attachTexture(), \n @ref GL::Framebuffer::attachCubeMapTexture()
 @fn_gl2{FramebufferTexture3D,FramebufferTexture} | not used, @fn_gl{FramebufferTextureLayer} has more complete features
 @fn_gl{FramebufferTextureLayer}, \n `glNamedFramebufferTextureLayer()` | @ref GL::Framebuffer::attachTextureLayer(), \n @ref GL::Framebuffer::attachCubeMapTexture()
 @fn_gl{FrontFace}                       | @ref GL::Renderer::setFrontFace()
