@@ -332,6 +332,9 @@ See also:
     duplicated when Magnum is built statically and linked to more than one
     dynamic library or executable. Currently that holds only for Linux and
     macOS, Windows support will come next.
+-   The [base-qt](https://github.com/mosra/magnum-bootstrap/tree/base-qt)
+    bootstrap project is fixed to use OpenGL 4.1 on macOS instead of being
+    stuck on 2.1 (see [mosra/magnum-bootstrap#22](https://github.com/mosra/magnum-bootstrap/issues/22))
 
 @subsubsection changelog-latest-changes-animation Animation library
 
