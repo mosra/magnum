@@ -53,6 +53,11 @@ information. Additional functionality is provided separately in
 @ref building-extras "Magnum Extras" and
 @ref building-examples "Magnum Examples".
 
+@section building-cmake-subproject Using Magnum as a CMake subproject
+
+Magnum can be bundled into your project with the @cb{.cmake} add_subdirectory() @ce
+CMake command. See @ref cmake-subproject for more information.
+
 @section building-packages Prepared packages
 
 The easiest way to install Magnum is to use one of the ready-made packages for
@@ -707,9 +712,8 @@ using
 ctest --output-on-failure
 @endcode
 
-in the build directory. On Windows the tests require the library to be
-installed with DLLs accessible through @cb{.bat} %PATH% @ce. See the above
-@ref building-windows "Windows documentation" for more information.
+in the build directory. It's not needed to install anything anywhere to run the
+tests.
 
 The @ref Audio library has tests which require OpenAL to be able to create a
 context. That is the case on most platforms, so they are enabled by default.
@@ -1044,7 +1048,7 @@ through `PATH`.
 
 If you set `CMAKE_INSTALL_PREFIX` to `/usr` subdirectory of the particular
 Android platform sysroot, the package will get found automatically when
-compiling subprojects. Gradle and other Android buildsystems expect
+compiling depending projects. Gradle and other Android buildsystems expect
 platform-independent includes and other files to be stored in a central
 location, you can set `MAGNUM_INCLUDE_INSTALL_PREFIX` to `/usr` subdirectory of
 the global NDK sysroot. Another option is to explicitly set `CMAKE_PREFIX_PATH`

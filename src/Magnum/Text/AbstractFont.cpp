@@ -50,24 +50,24 @@ std::string AbstractFont::pluginInterface() {
 std::vector<std::string> AbstractFont::pluginSearchPaths() {
     return {
         #ifdef CORRADE_IS_DEBUG_BUILD
-        #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_BUILD_STATIC)
-        Utility::Directory::join(Utility::Directory::path(Utility::Directory::dllLocation(
-            #ifdef __MINGW32__
-            "lib"
-            #endif
-            "MagnumText-d")), "magnum-d/fonts"),
+        #ifndef MAGNUM_BUILD_STATIC
+        Utility::Directory::join(Utility::Directory::path(Utility::Directory::libraryLocation(&pluginInterface)), "magnum-d/fonts"),
         #else
+        #ifndef MAGNUM_TARGET_WINDOWS
+        /* On Windows, the plugin DLLs are next to the executable, so the one
+           below works. Elsewhere the plugins are in the lib dir instead */
+        "../lib/magnum-d/fonts",
+        #endif
         "magnum-d/fonts",
         #endif
         Utility::Directory::join(MAGNUM_PLUGINS_DEBUG_DIR, "fonts")
         #else
-        #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_BUILD_STATIC)
-        Utility::Directory::join(Utility::Directory::path(Utility::Directory::dllLocation(
-            #ifdef __MINGW32__
-            "lib"
-            #endif
-            "MagnumText")), "magnum/fonts"),
+        #ifndef MAGNUM_BUILD_STATIC
+        Utility::Directory::join(Utility::Directory::path(Utility::Directory::libraryLocation(&pluginInterface)), "magnum/fonts"),
         #else
+        #ifndef MAGNUM_TARGET_WINDOWS
+        "../lib/magnum/fonts",
+        #endif
         "magnum/fonts",
         #endif
         Utility::Directory::join(MAGNUM_PLUGINS_DIR, "fonts")

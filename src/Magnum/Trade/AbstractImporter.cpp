@@ -59,26 +59,26 @@ std::string AbstractImporter::pluginInterface() {
 std::vector<std::string> AbstractImporter::pluginSearchPaths() {
     return {
         #ifdef CORRADE_IS_DEBUG_BUILD
-        #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_BUILD_STATIC)
-        Utility::Directory::join(Utility::Directory::path(Utility::Directory::dllLocation(
-            #ifdef __MINGW32__
-            "lib"
-            #endif
-            "MagnumTrade-d")), "magnum-d/importers"),
+        #ifndef MAGNUM_BUILD_STATIC
+        Utility::Directory::join(Utility::Directory::path(Utility::Directory::libraryLocation(&pluginInterface)), "magnum-d/importers"),
         #else
+        #ifndef MAGNUM_TARGET_WINDOWS
+        /* On Windows, the plugin DLLs are next to the executable, so the one
+           below works. Elsewhere the plugins are in the lib dir instead */
+        "../lib/magnum-d/importers",
+        #endif
         "magnum-d/importers",
         #endif
         Utility::Directory::join(MAGNUM_PLUGINS_DEBUG_DIR, "importers")
         #ifdef CORRADE_TARGET_WINDOWS
         #endif
         #else
-        #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_BUILD_STATIC)
-        Utility::Directory::join(Utility::Directory::path(Utility::Directory::dllLocation(
-            #ifdef __MINGW32__
-            "lib"
-            #endif
-            "MagnumTrade")), "magnum/importers"),
+        #ifndef MAGNUM_BUILD_STATIC
+        Utility::Directory::join(Utility::Directory::path(Utility::Directory::libraryLocation(&pluginInterface)), "magnum/importers"),
         #else
+        #ifndef MAGNUM_TARGET_WINDOWS
+        "../lib/magnum/importers",
+        #endif
         "magnum/importers",
         #endif
         Utility::Directory::join(MAGNUM_PLUGINS_DIR, "importers")

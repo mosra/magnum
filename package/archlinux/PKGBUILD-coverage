@@ -65,8 +65,8 @@ check() {
     MAGNUM_DISABLE_EXTENSIONS="GL_ARB_get_texture_sub_image" CORRADE_TEST_SKIP_BENCHMARKS=ON CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest || true
     MAGNUM_DISABLE_EXTENSIONS="GL_ARB_vertex_array_object" CORRADE_TEST_SKIP_BENCHMARKS=ON CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest || true
     MAGNUM_DISABLE_EXTENSIONS="GL_KHR_debug" CORRADE_TEST_SKIP_BENCHMARKS=ON CORRADE_TEST_COLOR=ON ctest --output-on-failure -j5 -R GLTest || true
-    ./src/Magnum/Platform/magnum-gl-info --limits > /dev/null
-    ./src/Magnum/Audio/magnum-al-info > /dev/null
+    ./Debug/bin/magnum-al-info > /dev/null
+    ./Debug/bin/magnum-gl-info --limits > /dev/null
 
     rm -rf coverage
     mkdir coverage

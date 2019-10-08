@@ -36,6 +36,8 @@ Magnum uses CMake as a primary build system for both building and integration
 into your projects. The following guide explains how to use it. If you wish to
 use a different buildsystem, see @ref custom-buildsystems instead.
 
+@section cmake-installed Using Magnum that was externally built and installed
+
 The main logic is in the [FindMagnum.cmake](https://github.com/mosra/magnum/blob/master/modules/FindMagnum.cmake)
 module distributed with the engine in the `modules/` directory, you are
 encouraged to copy it along with [FindCorrade.cmake](https://github.com/mosra/corrade/blob/master/modules/FindCorrade.cmake)
@@ -44,6 +46,8 @@ into your project and add path to the files to `CMAKE_MODULE_PATH`:
 @code{.cmake}
 # Path where FindCorrade.cmake & FindMagnum.cmake can be found, adapt as needed
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
+
+find_package(Magnum REQUIRED ...) # see below
 @endcode
 
 Otherwise, if CMake won't be able to find this file in predefined locations, it
@@ -58,6 +62,51 @@ If you installed the library or its dependencies to non-standard location
 (other than `/usr`, e.g. `/home/xyz/projects`), set `CMAKE_PREFIX_PATH` to that
 directory to help CMake find it. You can enter more different dirs if you
 separate them with semicolons.
+
+@section cmake-subproject Using Magnum as a CMake subproject
+
+A self-contained alternative to the above is adding Corrade and Magnum
+repositories into your project (as a Git submodule, bundling a downloaded
+archive etc.) and use @cb{.cmake} add_subdirectory() @ce. With that approach
+you don't need to care about `FindCorrade.cmake` / `FindMagnum.cmake`, however
+the usual tradeoffs when bundling code apply --- slower full rebuilds, IDEs
+having more to parse etc.
+
+@code{.cmake}
+add_subdirectory(corrade EXCLUDE_FROM_ALL) # so only things you use are built
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
+
+find_package(Magnum REQUIRED ...) # see below
+@endcode
+
+Note that the @cb{.cmake} find_package() @ce call is needed in both the
+installed and the subproject case for a properly configured environment.
+
+To simplify your project setup, the subproject globally configures
+@m_class{m-doc-external} [CMAKE_RUNTIME_OUTPUT_DIRECTORY](https://cmake.org/cmake/help/latest/variable/CMAKE_RUNTIME_OUTPUT_DIRECTORY.html)
+and friends to `<CONFIG>/bin` / `<CONFIG>/lib` directories inside your build
+directory. This makes the subproject workflow easier when dynamically-loaded
+plugins are involved; and on Windows it makes it possible to run built
+executables without having to do a @cb{.sh} $PATH @ce setup for dependency
+DLLs. If your project already configures `CMAKE_{RUNTIME,LIBRARY,ARCHIVE}_OUTPUT_DIRECTORY`,
+those will get used instead (and you can also set your own output directories
+* *after* the @cb{.cmake} add_subdirectory() @ce call, which will make Magnum
+keep the above). If you want to disable this behavior altogether and keep
+all executables and libraries in their implicit locations, set those variables
+to an empty string (as opposed to nothing at all, which is the same as if the
+variable is not set) --- Magnum will detect and respect that:
+
+@code{.cmake}
+# I'm happy with having binaries scattered around the build dir
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "")
+set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "")
+
+add_subdirectory(corrade EXCLUDE_FROM_ALL)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
+@endcode
+
+@section cmake-find-module Finding the package and its component
 
 Basic usage is:
 

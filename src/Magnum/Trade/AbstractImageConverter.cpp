@@ -50,24 +50,24 @@ std::string AbstractImageConverter::pluginInterface() {
 std::vector<std::string> AbstractImageConverter::pluginSearchPaths() {
     return {
         #ifdef CORRADE_IS_DEBUG_BUILD
-        #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_BUILD_STATIC)
-        Utility::Directory::join(Utility::Directory::path(Utility::Directory::dllLocation(
-            #ifdef __MINGW32__
-            "lib"
-            #endif
-            "MagnumTrade-d")), "magnum-d/imageconverters"),
+        #ifndef MAGNUM_BUILD_STATIC
+        Utility::Directory::join(Utility::Directory::path(Utility::Directory::libraryLocation(&pluginInterface)), "magnum-d/imageconverters"),
         #else
+        #ifndef MAGNUM_TARGET_WINDOWS
+        /* On Windows, the plugin DLLs are next to the executable, so the one
+           below works. Elsewhere the plugins are in the lib dir instead */
+        "../lib/magnum-d/imageconverters",
+        #endif
         "magnum-d/imageconverters",
         #endif
         Utility::Directory::join(MAGNUM_PLUGINS_DEBUG_DIR, "imageconverters")
         #else
-        #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_BUILD_STATIC)
-        Utility::Directory::join(Utility::Directory::path(Utility::Directory::dllLocation(
-            #ifdef __MINGW32__
-            "lib"
-            #endif
-            "MagnumTrade")), "magnum/imageconverters"),
+        #ifndef MAGNUM_BUILD_STATIC
+        Utility::Directory::join(Utility::Directory::path(Utility::Directory::libraryLocation(&pluginInterface)), "magnum/imageconverters"),
         #else
+        #ifndef MAGNUM_TARGET_WINDOWS
+        "../lib/magnum/imageconverters",
+        #endif
         "magnum/imageconverters",
         #endif
         Utility::Directory::join(MAGNUM_PLUGINS_DIR, "imageconverters")

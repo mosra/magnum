@@ -45,23 +45,15 @@ std::string AbstractImporter::pluginInterface() {
 std::vector<std::string> AbstractImporter::pluginSearchPaths() {
     return {
         #ifdef CORRADE_IS_DEBUG_BUILD
-        #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_BUILD_STATIC)
-        Utility::Directory::join(Utility::Directory::path(Utility::Directory::dllLocation(
-            #ifdef __MINGW32__
-            "lib"
-            #endif
-            "MagnumAudio-d")), "magnum-d/audioimporters"),
+        #ifndef MAGNUM_BUILD_STATIC
+        Utility::Directory::join(Utility::Directory::path(Utility::Directory::libraryLocation(&pluginInterface)), "magnum-d/audioimporters"),
         #else
         "magnum-d/audioimporters",
         #endif
         Utility::Directory::join(MAGNUM_PLUGINS_DEBUG_DIR, "audioimporters")
         #else
-        #if defined(CORRADE_TARGET_WINDOWS) && !defined(MAGNUM_BUILD_STATIC)
-        Utility::Directory::join(Utility::Directory::path(Utility::Directory::dllLocation(
-            #ifdef __MINGW32__
-            "lib"
-            #endif
-            "MagnumAudio")), "magnum/audioimporters"),
+        #ifndef MAGNUM_BUILD_STATIC
+        Utility::Directory::join(Utility::Directory::path(Utility::Directory::libraryLocation(&pluginInterface)), "magnum/audioimporters"),
         #else
         "magnum/audioimporters",
         #endif

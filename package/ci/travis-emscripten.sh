@@ -75,3 +75,6 @@ ninja -j4
 
 # Test
 CORRADE_TEST_COLOR=ON ctest -V -E "(GL|AL)Test"
+
+# Test install, after running the tests as for them it shouldn't be needed
+ninja install

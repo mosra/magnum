@@ -65,3 +65,6 @@ cmake .. \
 # Otherwise the job gets killed (probably because using too much memory)
 ninja -j4
 ASAN_OPTIONS="color=always" LSAN_OPTIONS="color=always suppressions=$TRAVIS_BUILD_DIR/package/ci/leaksanitizer.conf" CORRADE_TEST_COLOR=ON ctest -V -E GLTest
+
+# Test install, after running the tests as for them it shouldn't be needed
+ninja install

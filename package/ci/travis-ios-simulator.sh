@@ -69,3 +69,6 @@ set -o pipefail && cmake --build . --config Release | xcpretty
 # Library not loaded: /System/Library/Frameworks/OpenGLES.framework/OpenGLES
 # error
 DYLD_FALLBACK_LIBRARY_PATH=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/System/Library/Frameworks/OpenGLES.framework/ DYLD_FALLBACK_FRAMEWORK_PATH=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk/System/Library/Frameworks CORRADE_TEST_COLOR=ON ctest -V -C Release -E GLTest
+
+# Test install, after running the tests as for them it shouldn't be needed
+set -o pipefail && cmake --build . --config Release --target install | xcpretty
