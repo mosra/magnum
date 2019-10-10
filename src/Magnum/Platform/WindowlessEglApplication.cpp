@@ -218,8 +218,8 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     const /* Is modified below to work around a SwiftShader limitation */
     #endif
     EGLint attributes[] = {
-        #ifdef MAGNUM_TARGET_GLES
         EGL_CONTEXT_CLIENT_VERSION,
+            #ifdef MAGNUM_TARGET_GLES
             #if defined(MAGNUM_TARGET_GLES2) || (defined(CORRADE_TARGET_EMSCRIPTEN) && __EMSCRIPTEN_major__*10000 + __EMSCRIPTEN_minor__*100 + __EMSCRIPTEN_tiny__ < 13824)
             /* Emscripten before 1.38.24 doesn't know about version 3 for WebGL
                2 and the whole thing is controlled by -s USE_WEBGL2=1 flag
@@ -231,7 +231,9 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
             #else
             #error unsupported OpenGL ES version
             #endif
-        #endif
+            #else
+            3,
+            #endif
         #ifndef MAGNUM_TARGET_WEBGL
         /* Needs to be last because we're zeroing this out for SwiftShader (see
            below) */
