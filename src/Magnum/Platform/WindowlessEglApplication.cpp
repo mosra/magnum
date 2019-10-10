@@ -29,6 +29,8 @@
 #include <string>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
+#include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/String.h>
 
 #include "Magnum/GL/Version.h"
 #include "Magnum/Platform/GLContext.h"
@@ -45,6 +47,18 @@ typedef void *EGLDeviceEXT;
 
 #ifndef EGL_EXT_platform_device
 #define EGL_PLATFORM_DEVICE_EXT 0x313F
+#endif
+
+#ifndef EGL_VERSION_1_5
+typedef intptr_t EGLAttrib;
+#endif
+
+#ifndef EGL_KHR_debug
+#define EGL_DEBUG_MSG_WARN_KHR 0x33BB
+#define EGL_DEBUG_MSG_INFO_KHR 0x33BC
+typedef void* EGLObjectKHR;
+typedef void* EGLLabelKHR;
+typedef void (APIENTRY *EGLDEBUGPROCKHR)(EGLenum error, const char* command, EGLint messageType, EGLLabelKHR threadLabel, EGLLabelKHR objectLabel, const char* message);
 #endif
 
 namespace Magnum { namespace Platform {
@@ -83,6 +97,24 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
            thousand extensions?!). This is supported only since Mesa 19.2. */
         extensionSupported(extensions, "EGL_EXT_platform_device")
     ) {
+        /* When libEGL_nvidia.so is present on a system w/o a NV GPU,
+           eglQueryDevicesEXT() fails there with EGL_BAD_ALLOC, but that is
+           never propagated to the glvnd wrapper. Enable debug output if
+           --magnum-gpu-validation is enabled because otherwise it's fucking
+           hard to discover what's to blame (lost > 3 hours already). See class
+           docs for more info and a workaround. */
+        if(extensionSupported(extensions, "EGL_KHR_debug") && magnumContext && (magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation)) {
+            auto eglDebugMessageControl = reinterpret_cast<EGLint(*)(EGLDEBUGPROCKHR, const EGLAttrib*)>(eglGetProcAddress("eglDebugMessageControlKHR"));
+            const EGLAttrib debugAttribs[] = {
+                EGL_DEBUG_MSG_WARN_KHR, EGL_TRUE,
+                EGL_DEBUG_MSG_INFO_KHR, EGL_TRUE,
+                EGL_NONE
+            };
+            CORRADE_INTERNAL_ASSERT_OUTPUT(eglDebugMessageControl([](EGLenum, const char* const command, EGLint, EGLLabelKHR, EGLLabelKHR, const char* message) {
+                Debug{} << command << Debug::nospace << "():" << Utility::String::rtrim(message);
+            }, debugAttribs) == EGL_SUCCESS);
+        }
+
         EGLint count;
         auto eglQueryDevices = reinterpret_cast<EGLBoolean(*)(EGLint, EGLDeviceEXT*, EGLint*)>(eglGetProcAddress("eglQueryDevicesEXT"));
         if(!eglQueryDevices(0, nullptr, &count)) {
@@ -91,7 +123,10 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
         }
 
         if(!count) {
-            Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): no EGL devices found";
+            Error e;
+            e << "Platform::WindowlessEglApplication::tryCreateContext(): no EGL devices found, likely a driver issue";
+            if(!magnumContext || !(magnumContext->internalFlags() & GL::Context::InternalFlag::GpuValidation))
+                e << Debug::nospace << "; enable --magnum-gpu-validation to see additional info";
             return;
         }
 

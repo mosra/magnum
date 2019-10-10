@@ -358,6 +358,38 @@ The application prefers to use the @m_class{m-doc-external}
 @m_class{m-doc-external} [EGL_EXT_platform_device](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_device.txt)
 where available instead of `EGL_DEFAULT_DISPLAY` to work better on headless
 setups. The application always chooses the first found device.
+
+@m_class{m-block m-danger}
+
+@par No EGL devices found
+@parblock
+Systems running Mesa 19.2 (which has the above extensions) that also have
+`libEGL_nvidia.so` installed (for example as a CUDA dependency) may fail
+to create the context with the following error (with additional output
+produced when the `--magnum-gpu-validation`
+@ref GL-Context-command-line "command-line option" is enabled):
+
+@m_class{m-console-wrap}
+
+@code{.shell-session}
+eglQueryDevicesEXT(): EGL_BAD_ALLOC error: In internal function: Additional INFO may be available
+eglQueryDevicesEXT(): EGL_BAD_ALLOC error: In function eglQueryDevicesEXT(), backend failed to query devices
+Platform::WindowlessEglApplication::tryCreateContext(): no EGL devices found
+@endcode
+
+This is due to the NVidia's EGL implementation failing to enumerate devices
+(because there aren't any), which then causes the GLVND wrapper to stop
+instead of enumerating the Mesa devices as well. The solution is
+whitelisting all EGL implementations except the NVidia one
+<a href="https://github.com/NVIDIA/libglvnd/blob/master/src/EGL/icd_enumeration.md">as described in the libglvnd documentation</a>
+using the `__EGL_VENDOR_LIBRARY_FILENAMES` environment variable, for example:
+
+@m_class{m-console-wrap}
+
+@code{.sh}
+__EGL_VENDOR_LIBRARY_FILENAMES=/usr/share/glvnd/egl_vendor.d/50_mesa.json ./my-application
+@endcode
+@endparblock
 */
 class WindowlessEglApplication {
     public:
