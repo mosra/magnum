@@ -41,6 +41,10 @@
 #include <Corrade/Containers/ArrayView.h>
 #endif
 
+/* None of this is in the Emscripten emulation layer, so no need to include
+   that there */
+#ifndef MAGNUM_TARGET_WEBGL
+
 #ifndef EGL_EXT_device_base
 typedef void *EGLDeviceEXT;
 #endif
@@ -60,9 +64,11 @@ typedef void* EGLObjectKHR;
 typedef void* EGLLabelKHR;
 typedef void (APIENTRY *EGLDEBUGPROCKHR)(EGLenum error, const char* command, EGLint messageType, EGLLabelKHR threadLabel, EGLLabelKHR objectLabel, const char* message);
 #endif
+#endif
 
 namespace Magnum { namespace Platform {
 
+#ifndef MAGNUM_TARGET_WEBGL
 namespace {
 
 bool extensionSupported(const char* const extensions, Containers::ArrayView<const char> extension) {
@@ -75,8 +81,10 @@ bool extensionSupported(const char* const extensions, Containers::ArrayView<cons
 }
 
 }
+#endif
 
 WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, GLContext* const magnumContext) {
+    #ifndef MAGNUM_TARGET_WEBGL
     /* If relevant extensions are supported, try to find some display using
        those APIs, as that works reliably also when running headless. This
        would ideally use EGL 1.5 APIs but since we still want to support
@@ -143,9 +151,11 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
             Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): cannot get platform display for a device:" << Implementation::eglErrorString(eglGetError());
             return;
         }
-
-    /* Otherwise initialize the classic way */
-    } else if(!(_display = eglGetDisplay(EGL_DEFAULT_DISPLAY))) {
+    } else
+    #endif
+    /* Otherwise initialize the classic way. WebGL doesn't have any of the
+       above, so no need to compile that at all. */
+    if(!(_display = eglGetDisplay(EGL_DEFAULT_DISPLAY))) {
         Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): cannot get default EGL display:" << Implementation::eglErrorString(eglGetError());
         return;
     }
