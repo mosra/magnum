@@ -272,6 +272,13 @@ See also:
     in @ref Platform::GlfwApplication and @ref Platform::EmscriptenApplication)
     for changing window title at runtime as opposed to setting them on
     application startup
+-   @ref Platform::WindowlessEglApplication now uses the
+    @m_class{m-doc-external} [EGL_EXT_device_enumeration](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_device_enumeration.txt),
+    @m_class{m-doc-external} [EGL_EXT_platform_base](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_base.txt) and
+    @m_class{m-doc-external} [EGL_EXT_platform_device](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_device.txt) extensions where
+    available instead of `EGL_DEFAULT_DISPLAY`, working better on headless
+    setups and allowing selection of an arbitrary GPU device on multi-GPU
+    systems
 
 @subsubsection changelog-latest-new-primitives Primitives library
 
@@ -484,12 +491,6 @@ See also:
     application. Users are encouraged to call
     @ref Platform::BasicScreen::hasApplication() to check if the application is
     accessible.
--   @ref Platform::WindowlessEglApplication now prefers to use the
-    @m_class{m-doc-external} [EGL_EXT_device_enumeration](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_device_enumeration.txt),
-    @m_class{m-doc-external} [EGL_EXT_platform_base](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_base.txt) and
-    @m_class{m-doc-external} [EGL_EXT_platform_device](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_device.txt) extensions where
-    available instead of `EGL_DEFAULT_DISPLAY` to work better on headless
-    setups
 
 @subsubsection changelog-latest-changes-text Text library
 

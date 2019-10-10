@@ -234,11 +234,34 @@ class WindowlessEglContext::Configuration {
             _flags &= ~flags;
             return *this;
         }
+
+        /**
+         * @brief Device ID to use
+         *
+         * @requires_gles Device selection is not available in WebGL.
+         */
+        UnsignedInt device() const { return _device; }
+
+        /**
+         * @brief Set device ID to use
+         * @return Reference to self (for method chaining)
+         *
+         * The device ID is expected to be smaller than the count of devices
+         * reported by EGL. When using @ref WindowlessEglApplication, this is
+         * also exposed as a `--magnum-device` command-line option and a
+         * `MAGNUM_DEVICE` environment variable.
+         * @requires_gles Device selection is not available in WebGL.
+         */
+        Configuration& setDevice(UnsignedInt id) {
+            _device = id;
+            return *this;
+        }
         #endif
 
     private:
         #ifndef MAGNUM_TARGET_WEBGL
         Flags _flags;
+        UnsignedInt _device;
         #endif
 };
 
@@ -350,14 +373,20 @@ If no other application header is included, this class is also aliased to
 @cpp Platform::WindowlessApplication @ce and the macro is aliased to
 @cpp MAGNUM_WINDOWLESSAPPLICATION_MAIN() @ce to simplify porting.
 
-@subsection Platform-WindowlessEglApplication-usage-device-enumeration EGL device enumeration
+@section Platform-WindowlessEglApplication-device-selection GPU device selection
 
 The application prefers to use the @m_class{m-doc-external}
 [EGL_EXT_device_enumeration](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_device_enumeration.txt),
 @m_class{m-doc-external} [EGL_EXT_platform_base](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_base.txt) and
 @m_class{m-doc-external} [EGL_EXT_platform_device](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_device.txt)
-where available instead of `EGL_DEFAULT_DISPLAY` to work better on headless
-setups. The application always chooses the first found device.
+extensions where available instead of `EGL_DEFAULT_DISPLAY` to work better on
+headless setups. The application chooses the first found device by default, you
+can override that either with @ref Configuration::setDevice() or using a
+`--magnum-device` command-line option (and the `MAGNUM_DEVICE` environment
+variable). Unfortunately EGL doesn't provide any reasonable way to enumerate or
+filter named devices, so the best you can do is checking reported device count
+printed by the `--magnum-log verbose` @ref GL-Context-command-line "command-line option",
+and then going from `0` up to figure out the desired device ID.
 
 @m_class{m-block m-danger}
 
@@ -492,6 +521,11 @@ class WindowlessEglApplication {
     private:
         WindowlessEglContext _glContext;
         Containers::Pointer<Platform::GLContext> _context;
+
+        #ifndef MAGNUM_TARGET_WEBGL
+        /* These are saved from command-line arguments */
+        UnsignedInt _commandLineDevice;
+        #endif
 };
 
 /** @hideinitializer

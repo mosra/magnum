@@ -153,6 +153,10 @@ options passed to the application itself. Options that don't have this prefix
 are completely ignored, see documentation of the
 @ref Utility-Arguments-delegating "Utility::Arguments" class for details.
 
+Particular application implementations add more options for DPI scaling or
+GPU selection, see @ref Platform::Sdl2Application, @ref Platform::GlfwApplication
+and @ref Platform::WindowlessEglApplication for details.
+
 @section GL-Context-multithreading Thread safety
 
 If Corrade is compiled with @ref CORRADE_BUILD_MULTITHREADED (the default), the

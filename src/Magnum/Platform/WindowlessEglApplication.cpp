@@ -27,6 +27,7 @@
 
 #include <cstring>
 #include <string>
+#include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
 #include <Corrade/Utility/DebugStl.h>
@@ -37,13 +38,10 @@
 
 #include "Implementation/Egl.h"
 
-#if defined(MAGNUM_TARGET_GLES) && !defined(MAGNUM_TARGET_WEBGL)
-#include <Corrade/Containers/ArrayView.h>
-#endif
-
 /* None of this is in the Emscripten emulation layer, so no need to include
    that there */
 #ifndef MAGNUM_TARGET_WEBGL
+#include <Corrade/Containers/Array.h>
 
 #ifndef EGL_EXT_device_base
 typedef void *EGLDeviceEXT;
@@ -138,16 +136,21 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
             return;
         }
 
+        if(configuration.device() >= UnsignedInt(count)) {
+            Error{} << "Platform::WindowlessEglContext: requested EGL device" << configuration.device() << "but found only" << count;
+            return;
+        }
+
         if(magnumContext && (magnumContext->internalFlags() >= GL::Context::InternalFlag::DisplayVerboseInitializationLog)) {
-            Debug{} << "Platform::WindowlessEglApplication: found" << count << "EGL devices, choosing the first one";
+            Debug{} << "Platform::WindowlessEglApplication: found" << count << "EGL devices, choosing device" << configuration.device();
         }
 
         /* Assuming the same thing won't suddenly start failing when called the
            second time */
-        EGLDeviceEXT device;
-        CORRADE_INTERNAL_ASSERT_OUTPUT(eglQueryDevices(1, &device, &count));
+        Containers::Array<EGLDeviceEXT> devices{configuration.device() + 1};
+        CORRADE_INTERNAL_ASSERT_OUTPUT(eglQueryDevices(configuration.device() + 1, devices, &count));
 
-        if(!(_display = reinterpret_cast<EGLDisplay(*)(EGLenum, void*, const EGLint*)>(eglGetProcAddress("eglGetPlatformDisplayEXT"))(EGL_PLATFORM_DEVICE_EXT, device, nullptr))) {
+        if(!(_display = reinterpret_cast<EGLDisplay(*)(EGLenum, void*, const EGLint*)>(eglGetProcAddress("eglGetPlatformDisplayEXT"))(EGL_PLATFORM_DEVICE_EXT, devices[configuration.device()], nullptr))) {
             Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): cannot get platform display for a device:" << Implementation::eglErrorString(eglGetError());
             return;
         }
@@ -155,9 +158,18 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
     #endif
     /* Otherwise initialize the classic way. WebGL doesn't have any of the
        above, so no need to compile that at all. */
-    if(!(_display = eglGetDisplay(EGL_DEFAULT_DISPLAY))) {
-        Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): cannot get default EGL display:" << Implementation::eglErrorString(eglGetError());
-        return;
+    {
+        #ifndef MAGNUM_TARGET_WEBGL
+        if(configuration.device() != 0) {
+            Error{} << "Platform::WindowlessEglContext: requested EGL device" << configuration.device() << "but EGL_EXT_platform_device is not supported and there's just the default one";
+            return;
+        }
+        #endif
+
+        if(!(_display = eglGetDisplay(EGL_DEFAULT_DISPLAY))) {
+            Error{} << "Platform::WindowlessEglApplication::tryCreateContext(): cannot get default EGL display:" << Implementation::eglErrorString(eglGetError());
+            return;
+        }
     }
 
     if(!eglInitialize(_display, nullptr, nullptr)) {
@@ -327,9 +339,9 @@ bool WindowlessEglContext::makeCurrent() {
 
 WindowlessEglContext::Configuration::Configuration()
     #ifndef MAGNUM_TARGET_GLES
-    : _flags{Flag::ForwardCompatible}
+    : _flags{Flag::ForwardCompatible}, _device{}
     #elif !defined(MAGNUM_TARGET_WEBGL)
-    : _flags{}
+    : _flags{}, _device{}
     #endif
     {}
 
@@ -341,7 +353,21 @@ WindowlessEglApplication::WindowlessEglApplication(const Arguments& arguments, c
     createContext(configuration);
 }
 
-WindowlessEglApplication::WindowlessEglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate}, _context{new GLContext{NoCreate, arguments.argc, arguments.argv}} {}
+WindowlessEglApplication::WindowlessEglApplication(const Arguments& arguments, NoCreateT): _glContext{NoCreate} {
+    Utility::Arguments args{"magnum"};
+    #ifndef MAGNUM_TARGET_WEBGL
+    args.addOption("device", "").setHelp("device", "GPU device to use", "N")
+        .setFromEnvironment("device");
+    #endif
+    _context.reset(new GLContext{NoCreate, args, arguments.argc, arguments.argv});
+
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(args.value("device").empty())
+        _commandLineDevice = 0;
+    else
+        _commandLineDevice = args.value<UnsignedInt>("device");
+    #endif
+}
 
 void WindowlessEglApplication::createContext() { createContext({}); }
 
@@ -352,7 +378,14 @@ void WindowlessEglApplication::createContext(const Configuration& configuration)
 bool WindowlessEglApplication::tryCreateContext(const Configuration& configuration) {
     CORRADE_ASSERT(_context->version() == GL::Version::None, "Platform::WindowlessEglApplication::tryCreateContext(): context already created", false);
 
-    WindowlessEglContext glContext{configuration, _context.get()};
+    /* Command-line arguments override what's set programatically */
+    Configuration mergedConfiguration{configuration};
+    #ifndef MAGNUM_TARGET_WEBGL
+    if(!mergedConfiguration.device())
+        mergedConfiguration.setDevice(_commandLineDevice);
+    #endif
+
+    WindowlessEglContext glContext{mergedConfiguration, _context.get()};
     if(!glContext.isCreated() || !glContext.makeCurrent() || !_context->tryCreate())
         return false;
 
