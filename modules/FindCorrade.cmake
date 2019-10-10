@@ -475,11 +475,7 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
 
         # PluginManager library
         elseif(_component STREQUAL PluginManager)
-            # At least static build needs this
-            if(CORRADE_TARGET_UNIX)
-                set_property(TARGET Corrade::${_component} APPEND PROPERTY
-                    INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
-            endif()
+            # -ldl is handled by Utility now
 
         # TestSuite library has some additional files
         elseif(_component STREQUAL TestSuite)
@@ -514,6 +510,11 @@ foreach(_component ${Corrade_FIND_COMPONENTS})
             set_property(TARGET Corrade::${_component} APPEND PROPERTY
                 COMPATIBLE_INTERFACE_NUMBER_MAX CORRADE_CXX_STANDARD)
 
+            # Directory::libraryLocation() needs this
+            if(CORRADE_TARGET_UNIX)
+                set_property(TARGET Corrade::${_component} APPEND PROPERTY
+                    INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
+            endif()
             # AndroidLogStreamBuffer class needs to be linked to log library
             if(CORRADE_TARGET_ANDROID)
                 set_property(TARGET Corrade::${_component} APPEND PROPERTY
