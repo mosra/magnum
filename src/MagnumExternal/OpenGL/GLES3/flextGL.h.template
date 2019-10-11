@@ -30,6 +30,7 @@
 
 #include "Magnum/configure.h"
 #include "Magnum/GL/GL.h"
+#include "MagnumExternal/OpenGL/KHR/khrplatform.h"
 
 /* Defensive include guards */
 

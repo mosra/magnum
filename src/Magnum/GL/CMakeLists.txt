@@ -182,8 +182,7 @@ add_library(MagnumGLObjects OBJECT
 # be overriden with system ones or explicit (MagnumExternal/OpenGL/GLES2/gl2ext.h)
 # where only our headers will be used
 target_include_directories(MagnumGLObjects PUBLIC
-    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
-    ${PROJECT_SOURCE_DIR}/src/MagnumExternal/OpenGL)
+    $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>)
 if(NOT BUILD_STATIC)
     target_compile_definitions(MagnumGLObjects PRIVATE "MagnumGLObjects_EXPORTS" "FlextGL_EXPORTS")
 endif()
@@ -211,11 +210,6 @@ if(NOT BUILD_STATIC)
 elseif(BUILD_STATIC_PIC)
     set_target_properties(MagnumGL PROPERTIES POSITION_INDEPENDENT_CODE ON)
 endif()
-# We can use both implicit include path (GLES2/gl2.h) where our headers can
-# be overriden with system ones or explicit (MagnumExternal/OpenGL/GLES2/gl2ext.h)
-# where only our headers will be used
-target_include_directories(MagnumGL PUBLIC
-    ${PROJECT_SOURCE_DIR}/src/MagnumExternal/OpenGL)
 target_link_libraries(MagnumGL PUBLIC Magnum)
 if(NOT TARGET_GLES OR TARGET_DESKTOP_GLES)
     # If the GLVND library (CMake 3.11+) was found, link to the imported
@@ -295,8 +289,6 @@ if(BUILD_TESTS)
         $<TARGET_OBJECTS:MagnumGLObjects>
         ${MagnumGL_FlextGL_SRCS}
         ${MagnumGL_GracefulAssert_SRCS})
-    target_include_directories(MagnumGLTestLib PUBLIC
-        ${PROJECT_SOURCE_DIR}/src/MagnumExternal/OpenGL)
     set_target_properties(MagnumGLTestLib PROPERTIES
         DEBUG_POSTFIX "-d"
         FOLDER "Magnum/GL")

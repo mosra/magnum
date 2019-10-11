@@ -29,6 +29,7 @@
 
 #include "Magnum/configure.h"
 #include "Magnum/GL/GL.h"
+#include "MagnumExternal/OpenGL/KHR/khrplatform.h"
 
 /* Defensive include guards */
 
@@ -86,7 +87,6 @@ void flextGLInit(Magnum::GL::Context& context);
 
 /* Data types */
 
-#include <KHR/khrplatform.h>
 typedef unsigned int GLenum;
 typedef unsigned char GLboolean;
 typedef unsigned int GLbitfield;

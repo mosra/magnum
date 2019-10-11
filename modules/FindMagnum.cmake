@@ -805,9 +805,6 @@ foreach(_component ${Magnum_FIND_COMPONENTS})
 
         # GL library
         elseif(_component STREQUAL GL)
-            set_property(TARGET Magnum::${_component} APPEND PROPERTY
-                INTERFACE_INCLUDE_DIRECTORIES ${MAGNUM_INCLUDE_DIR}/MagnumExternal/OpenGL)
-
             if(NOT MAGNUM_TARGET_GLES OR MAGNUM_TARGET_DESKTOP_GLES)
                 # If the GLVND library (CMake 3.11+) was found, link to the
                 # imported target. Otherwise (and also on all systems except
