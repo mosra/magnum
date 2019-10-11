@@ -37,7 +37,6 @@ void flextVkInit() {
 }
 
 void flextVkInitInstance(VkInstance instance, FlextVkInstance* data) {
-    data->GetPhysicalDevicePresentRectanglesKHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkPhysicalDevice, VkSurfaceKHR, uint32_t*, VkRect2D*)>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDevicePresentRectanglesKHR"));
     data->EnumeratePhysicalDeviceGroupsKHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkInstance, uint32_t*, VkPhysicalDeviceGroupProperties*)>(vkGetInstanceProcAddr(instance, "vkEnumeratePhysicalDeviceGroupsKHR"));
     data->GetPhysicalDeviceExternalFencePropertiesKHR = reinterpret_cast<void(VKAPI_PTR*)(VkPhysicalDevice, const VkPhysicalDeviceExternalFenceInfo*, VkExternalFenceProperties*)>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalFencePropertiesKHR"));
     data->GetPhysicalDeviceExternalBufferPropertiesKHR = reinterpret_cast<void(VKAPI_PTR*)(VkPhysicalDevice, const VkPhysicalDeviceExternalBufferInfo*, VkExternalBufferProperties*)>(vkGetInstanceProcAddr(instance, "vkGetPhysicalDeviceExternalBufferPropertiesKHR"));
@@ -78,16 +77,12 @@ void flextVkInitInstance(VkInstance instance, FlextVkInstance* data) {
 void flextVkInitDevice(VkDevice device, FlextVkDevice* data, PFN_vkVoidFunction(VKAPI_PTR *getDeviceProcAddr)(VkDevice, const char*)) {
     data->BindBufferMemory2KHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, uint32_t, const VkBindBufferMemoryInfo*)>(getDeviceProcAddr(device, "vkBindBufferMemory2KHR"));
     data->BindImageMemory2KHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, uint32_t, const VkBindImageMemoryInfo*)>(getDeviceProcAddr(device, "vkBindImageMemory2KHR"));
-    data->CmdPushDescriptorSetWithTemplateKHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, VkDescriptorUpdateTemplate, VkPipelineLayout, uint32_t, const void*)>(getDeviceProcAddr(device, "vkCmdPushDescriptorSetWithTemplateKHR"));
     data->CreateDescriptorUpdateTemplateKHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkDescriptorUpdateTemplateCreateInfo*, const VkAllocationCallbacks*, VkDescriptorUpdateTemplate*)>(getDeviceProcAddr(device, "vkCreateDescriptorUpdateTemplateKHR"));
     data->DestroyDescriptorUpdateTemplateKHR = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, VkDescriptorUpdateTemplate, const VkAllocationCallbacks*)>(getDeviceProcAddr(device, "vkDestroyDescriptorUpdateTemplateKHR"));
     data->UpdateDescriptorSetWithTemplateKHR = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, VkDescriptorSet, VkDescriptorUpdateTemplate, const void*)>(getDeviceProcAddr(device, "vkUpdateDescriptorSetWithTemplateKHR"));
-    data->AcquireNextImage2KHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, const VkAcquireNextImageInfoKHR*, uint32_t*)>(getDeviceProcAddr(device, "vkAcquireNextImage2KHR"));
     data->CmdDispatchBaseKHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t, uint32_t)>(getDeviceProcAddr(device, "vkCmdDispatchBaseKHR"));
     data->CmdSetDeviceMaskKHR = reinterpret_cast<void(VKAPI_PTR*)(VkCommandBuffer, uint32_t)>(getDeviceProcAddr(device, "vkCmdSetDeviceMaskKHR"));
     data->GetDeviceGroupPeerMemoryFeaturesKHR = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, uint32_t, uint32_t, uint32_t, VkPeerMemoryFeatureFlags*)>(getDeviceProcAddr(device, "vkGetDeviceGroupPeerMemoryFeaturesKHR"));
-    data->GetDeviceGroupPresentCapabilitiesKHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, VkDeviceGroupPresentCapabilitiesKHR*)>(getDeviceProcAddr(device, "vkGetDeviceGroupPresentCapabilitiesKHR"));
-    data->GetDeviceGroupSurfacePresentModesKHR = reinterpret_cast<VkResult(VKAPI_PTR*)(VkDevice, VkSurfaceKHR, VkDeviceGroupPresentModeFlagsKHR*)>(getDeviceProcAddr(device, "vkGetDeviceGroupSurfacePresentModesKHR"));
     data->GetBufferMemoryRequirements2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, const VkBufferMemoryRequirementsInfo2*, VkMemoryRequirements2*)>(getDeviceProcAddr(device, "vkGetBufferMemoryRequirements2KHR"));
     data->GetImageMemoryRequirements2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, const VkImageMemoryRequirementsInfo2*, VkMemoryRequirements2*)>(getDeviceProcAddr(device, "vkGetImageMemoryRequirements2KHR"));
     data->GetImageSparseMemoryRequirements2KHR = reinterpret_cast<void(VKAPI_PTR*)(VkDevice, const VkImageSparseMemoryRequirementsInfo2*, uint32_t*, VkSparseImageMemoryRequirements2*)>(getDeviceProcAddr(device, "vkGetImageSparseMemoryRequirements2KHR"));

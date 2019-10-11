@@ -44,7 +44,6 @@ extern FLEXTVK_EXPORT FlextVkInstance flextVkInstance;
 
 /* VK_KHR_device_group */
 
-#define vkGetPhysicalDevicePresentRectanglesKHR flextVkInstance.GetPhysicalDevicePresentRectanglesKHR
 
 /* VK_KHR_device_group_creation */
 
@@ -124,19 +123,15 @@ extern FLEXTVK_EXPORT FlextVkDevice flextVkDevice;
 
 /* VK_KHR_descriptor_update_template */
 
-#define vkCmdPushDescriptorSetWithTemplateKHR flextVkDevice.CmdPushDescriptorSetWithTemplateKHR
 #define vkCreateDescriptorUpdateTemplateKHR flextVkDevice.CreateDescriptorUpdateTemplateKHR
 #define vkDestroyDescriptorUpdateTemplateKHR flextVkDevice.DestroyDescriptorUpdateTemplateKHR
 #define vkUpdateDescriptorSetWithTemplateKHR flextVkDevice.UpdateDescriptorSetWithTemplateKHR
 
 /* VK_KHR_device_group */
 
-#define vkAcquireNextImage2KHR flextVkDevice.AcquireNextImage2KHR
 #define vkCmdDispatchBaseKHR flextVkDevice.CmdDispatchBaseKHR
 #define vkCmdSetDeviceMaskKHR flextVkDevice.CmdSetDeviceMaskKHR
 #define vkGetDeviceGroupPeerMemoryFeaturesKHR flextVkDevice.GetDeviceGroupPeerMemoryFeaturesKHR
-#define vkGetDeviceGroupPresentCapabilitiesKHR flextVkDevice.GetDeviceGroupPresentCapabilitiesKHR
-#define vkGetDeviceGroupSurfacePresentModesKHR flextVkDevice.GetDeviceGroupSurfacePresentModesKHR
 
 /* VK_KHR_device_group_creation */
 
