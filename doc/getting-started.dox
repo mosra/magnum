@@ -44,43 +44,39 @@ contains only the essential files. Download the branch
 extract it somewhere. Do it rather than cloning the full repository, as it's
 better to init your new project from scratch with clean Git history.
 
-@section getting-started-download Download, build and install Corrade and Magnum
+@subsection getting-started-setup-subproject Option A: add Magnum as a CMake subproject
 
-Magnum libraries support both separate compilation/installation and CMake
-subprojects. If you are lucky, you may already have Magnum packages ready for
-your platform and you can skip the rest of this section:
-
--   @ref building-packages-hunter
--   @ref building-packages-vcpkg
--   @ref building-packages-arch
--   @ref building-packages-msys
--   @ref building-packages-deb
--   @ref building-packages-gentoo
--   @ref building-packages-brew
-
-If you don't, don't worry, let's use the subproject approach instead. Adding
-the dependencies means just cloning them into your project tree:
+The easiest option to start without having to install anything is adding all
+dependencies as CMake subprojects. While it has an advantage of making your
+project nicely self-contained, it'll make your full rebuild times longer
+compared to magnum installed separately. For an alternative, see
+@ref getting-started-setup-install below. Clone the Corrade and Magnum sources
+like this (or use `git submodule add`, if you already have a Git repository):
 
 @code{.sh}
 cd /path/to/the/extracted/bootstrap/project
-git clone git://github.com/mosra/corrade.git
-git clone git://github.com/mosra/magnum.git
+git clone https://github.com/mosra/corrade.git
+git clone https://github.com/mosra/magnum.git
 @endcode
 
-Then open the `CMakeLists.txt` file in the root of bootstrap project and add
-these two new subdirectories using @cmake add_subdirectory() @ce so the file
-looks like this:
+Then open the `CMakeLists.txt` file in the root of the bootstrap project and
+add these two new subdirectories using @cmake add_subdirectory() @ce so the
+file looks like below. The `EXCLUDE_FROM_ALL` argument ensures only the parts
+you actually use are built (and excluding the subdirectory from the `install`
+target as well).
 
 @code{.cmake}
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.4)
 project(MyApplication)
 
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/modules/" ${CMAKE_MODULE_PATH})
 
-# Add Corrade and Magnum as subprojects, enable Sdl2Application
+# Add Corrade as a subproject
+add_subdirectory(corrade EXCLUDE_FROM_ALL)
+
+# Add Magnum as a subproject, enable Sdl2Application
 set(WITH_SDL2APPLICATION ON CACHE BOOL "" FORCE)
-add_subdirectory(corrade)
-add_subdirectory(magnum)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
 
 add_subdirectory(src)
 @endcode
@@ -102,28 +98,73 @@ add_subdirectory(src)
     ...
 
     set(WITH_SDL2APPLICATION ON)
-    add_subdirectory(corrade)
-    add_subdirectory(magnum)
+    add_subdirectory(magnum EXCLUDE_FROM_ALL)
     @endcode
 
-<b></b>
+The last missing piece before you can continue is the [SDL](http://libsdl.org/)
+library --- the bootstrap project (and most examples) use it to do window
+management and event handling. If you are on Linux or macOS, you can get it
+easily from your package manager:
 
-@m_class{m-block m-success}
+@code{.sh}
+sudo pacman -S sdl2             # on ArchLinux
+sudo apt install libsdl2-dev    # on Ubuntu / Debian
+brew install sdl2               # on macOS (via Homebrew)
+@endcode
 
-@par Building Magnum separately
-    Even though using Magnum as a CMake subproject is a fully supported use
-    case, in the long run it might be better to build & install Corrade and
-    Magnum separately instead of cloning them into your project tree, as that
-    vastly improves your iteration times. Follow
-    @ref building "the full installation guide" if you want to go that route;
-    don't forget to enable `WITH_SDL2APPLICATION` when building Magnum so the
-    bootstrap project can correctly find and use it. There are also
-    ready-to-use packages for various OSes and distributions, as listed above.
-@par
-    If you have a separate installation (or a package), you don't need to clone
-    the subprojects and modify the `CMakeLists.txt` file like above, you might
-    only need to set `CMAKE_PREFIX_PATH` if you installed Corrade and Magnum to
-    a non-standard location.
+If you are on Windows, by far the easiest is to bundle the prebuilt binaries
+into your project. Depending on whether you use Visual Studio or MinGW,
+download either [SDL2-devel-2.0.10-VC.zip](https://www.libsdl.org/release/SDL2-devel-2.0.10-VC.zip)
+or [SDL2-devel-2.0.10-mingw.tar.gz](https://www.libsdl.org/release/SDL2-devel-2.0.10-mingw.tar.gz),
+extract the archive to root of the project and tell CMake where it is by adding
+the `SDL2-2.0.10` directory to `CMAKE_PREFIX_PATH`:
+
+@code{.cmake}
+...
+
+set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/SDL-2.0.10 ${CMAKE_PREFIX_PATH})
+set(WITH_SDL2APPLICATION ON)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
+@endcode
+
+This is of course not the only possibility --- if you don't feel like bundling
+the binaries, you can put them outside of the project and then specify
+`CMAKE_PREFIX_PATH` externally on the command line. Listing all the
+possibilities is however outside of the scope of this short guide.
+
+@subsection getting-started-setup-install Option B: install Magnum separately and let CMake find it
+
+An alternative to the above is building & installing Magnum separately. Both
+approaches are equally-well supported and each has its pros and cons --- the
+subproject way shines when experimenting or when the project is developed on
+multiple workstations by multiple developers and you need to ensure the
+dependencies are the same version everywhere; while the separate installation
+makes sense when you have multiple projects depending on Magnum and want to
+integrate new upstream changes without having to update and compile it several
+times.
+
+If you are lucky, you may already have Magnum packages ready for your platform:
+
+-   @ref building-packages-hunter
+-   @ref building-packages-vcpkg
+-   @ref building-packages-arch
+-   @ref building-packages-msys
+-   @ref building-packages-deb
+-   @ref building-packages-gentoo
+-   @ref building-packages-brew
+
+If not, follow the full installation guides for @ref building-corrade "Corrade"
+and @ref building "Magnum" to build & install everything; don't forget to
+enable `WITH_SDL2APPLICATION` when building Magnum so the bootstrap project can
+correctly find and use it. This is "the hard way" and it's recommended only if
+you have at least some prior experience with building projects from source
+using CMake.
+
+Compared to @ref getting-started-setup-subproject "Option A", you don't need to
+clone the subprojects and modify the `CMakeLists.txt` file, however you'll need
+to set `CMAKE_PREFIX_PATH` if you installed Corrade and Magnum to a
+non-standard location (i.e., anything else than `/usr` or `/usr/local`, and
+always on Windows).
 
 @section getting-started-review Review project structure
 
@@ -142,16 +183,13 @@ It just sets up project name, specifies module directory and delegates
 everything important to `CMakeLists.txt` in the `src/` subdirectory.
 
 The `modules/` directory contains CMake modules for finding the needed
-dependencies. Unlike modules for finding e.g. OpenGL, which are part of
-standard CMake installation, these aren't part of it and thus must be
-distributed with the project. These files are just verbatim copied from Magnum
-repository.
-
-@note These modules are just the bare minimum you need for starting. If you
-    plan to use additional functionality that isn't part of the core library or
-    you are targeting specific platforms, you may need to include additional
-    modules. See @ref cmake, @ref cmake-plugins, @ref cmake-integration and
-    @ref cmake-extras for more information.
+dependencies. These are needed mainly with externally installed dependencies
+(@ref getting-started-setup-install "Option B" above), less so for the CMake
+subproject setup. Unlike modules for finding e.g. OpenGL, which are a part of
+the standard CMake installation, these aren't and thus have to be distributed
+with the project. These files are verbatim copied from the
+[modules/](https://github.com/mosra/magnum/tree/master/modules) directory in
+the Magnum repository.
 
 The `src/` directory contains the actual project. To keep things simple, the
 project consists of just a single `MyApplication.cpp` file with the most
@@ -160,89 +198,85 @@ minimal code possible:
 @snippet getting-started.cpp 0
 
 The application essentially does nothing, just clears the screen framebuffer to
-default (dark gray) color and then does buffer swap to actually display it on
-the screen. The `src/CMakeLists.txt` file finds Magnum, creates the executable
-and links it to all needed libraries:
+a dark gray color and then does buffer swap to actually display it on the
+screen. The `src/CMakeLists.txt` file finds Magnum, creates the executable and
+links all needed libraries to it:
 
 @code{.cmake}
-find_package(Magnum REQUIRED Sdl2Application)
+find_package(Magnum REQUIRED GL Sdl2Application)
 
 set_directory_properties(PROPERTIES CORRADE_USE_PEDANTIC_FLAGS ON)
 
 add_executable(MyApplication MyApplication.cpp)
 target_link_libraries(MyApplication PRIVATE
-    Magnum::Magnum
-    Magnum::Application)
+    Magnum::Application
+    Magnum::GL
+    Magnum::Magnum)
 @endcode
 
-In the following tutorials the code will be explained more thoroughly.
+The `CORRADE_USE_PEDANTIC_FLAGS` property enables a set of useful compiler
+warnings
 
-@section getting-started-build Build it and run
+@section getting-started-build Build the project
 
-@subsection getting-started-linux Linux, macOS and other Unix-based OSes
+@subsection getting-started-build-linux Linux, macOS and other Unix-based OSes
 
-Because the bootstrap project is based on SDL2, make sure you have SDL2
-installed. It's usually in your system's package manager, on macOS you can get
-it from Homebrew using @cb{.sh} brew install sdl2 @ce. The application along
-with the subprojects is built using the following three commands ---
-create an out-of-source build directory, run `cmake` to generate a project and
-then build everything. The compiled application binary will then appear in
-`src/` subdirectory of the build dir:
+The application along with the subprojects is built using the following three
+commands --- create an out-of-source build directory, run `cmake` to generate a
+project with a debug build type and then build everything.
 
 @code{.sh}
 mkdir -p build && cd build
-cmake ..
+cmake -DCMAKE_BUILD_TYPE=Debug ..
 cmake --build .
-./src/MyApplication
 @endcode
 
-@m_class{m-note m-success}
+By default, CMake generates Makefile projects on Unix platforms. You can change
+that to for example [Ninja](https://ninja-build.org/) by running CMake with
+`-G Ninja`; on macOS you can generate an Xcode project in the build directory
+using `-G Xcode`. If you have CMake 3.15 or newer, the default generator can be
+changed using the [CMAKE_GENERATOR](https://cmake.org/cmake/help/v3.15/envvar/CMAKE_GENERATOR.html)
+environment variable.
 
-@par Generating an Xcode project
-    On macOS it's possible to generate an Xcode project by running CMake as
-    `cmake -G Xcode ..`. After that's done, you can open the generated project
-    from the `build` directory.
+@subsection getting-started-build-windows Windows
 
-@subsection getting-started-windows Windows
-
-On Windows you can use either MSVC 2015+ or MinGW-w64. Prebuilt SDL2 binaries
-can be downloaded at https://libsdl.org/download-2.0.php. Depending on where
-you extract them you may need to specify `CMAKE_PREFIX_PATH` so CMake is able
-to find them. For running the executable properly, Windows also need to have
-all dependency DLLs copied along it. That can be done by setting
-`CMAKE_RUNTIME_OUTPUT_DIRECTORY`. It's then up to you whether you will use a
-command line, Visual Studio or for example QtCreator. With Visual Studio the
-most straightforward way to generate the project file is via the Developer
-Command Prompt, alternatively execute the correct `vcvarsall.bat` in order to
-populate the necessary environment variables.
+On Windows you can use either Visual Studio or MinGW-w64. With Visual Studio
+the most straightforward way to generate the project file is by executing the
+below two commands in the Developer Command Prompt, you can also use CMake GUI
+--- navigate it to the source directory, create a fresh build directory, select
+a generator and press @m_class{m-label m-default} **Configure** and
+@m_class{m-label m-default} **Generate**.
 
 @code{.bat}
 mkdir build && cd build
-cmake .. ^
-    -DCMAKE_PREFIX_PATH="C:/Users/you/where/you/extracted/SDL" ^
-    -DCMAKE_RUNTIME_OUTPUT_DIRECTORY="bin"
+cmake ..
 @endcode
 
-You can also use CMake GUI. Then open the `MyApplication.sln` project file
-generated by CMake in the `build/` directory.
+Once that's done, open the `MyApplication.sln` project file generated by CMake
+in the `build/` directory (or in the CMake GUI, use the
+@m_class{m-label m-default} **Open Project** button).
 
 With QtCreator just open project's root `CMakeLists.txt` file. It then asks you
 where to create build directory, allows you to specify initial CMake parameters
-and then you can just press *Configure* and everything is ready to be built.
+and then you can just press @m_class{m-label m-default} **Configure** and
+everything is ready to be built.
 
-@note If you installed Corrade and Magnum separately, the install directory
-    containing the DLLs needs to be in @cb{.bat} %PATH% @ce in order to
-    properly run the executable. You can also enable `BUILD_STATIC` to compile
-    everything as static, see @ref building "the full installation guide" for
-    details.
+@section getting-started-run Run the application
 
-@section getting-started-running Running the application
+If you went with the CMake subproject approach (@ref getting-started-setup-subproject "Option A"
+above), the project is configured to place all binaries into a common location
+--- the application will be placed in `Debug/bin/MyApplication` (on Windows
+along with all DLLs it needs), and libraries into `Debug/lib`; if you switch to
+a Release build, it'll be `Release/bin` instead. If you went with externally
+installed Magnum, the executable gets placed into its default location in
+`src/MyApplication` and dependency libraries stay where CMake found them --- on
+Windows you might need to adjust @cb{.sh} %PATH% @ce to make the application
+run.
 
-If everything went well and the application starts, you will see a blank window
-like this:
+Once built, if everything went well and the application starts, you will see a
+blank window like this:
 
-@image html getting-started.png
-@image latex getting-started.png
+@image html getting-started.png width=410px
 
 Now you can try to change something in the code. Without going too deep into
 the concepts of graphics programming, we can change the clear color to
@@ -265,16 +299,76 @@ $ ./MyApplication
 Hello! This application is running on OpenGL 4.5 using GeForce GT 740M
 @endcode
 
-@image html getting-started-blue.png
-@image latex getting-started-blue.png
+@image html getting-started-blue.png width=410px
+
+The barebones application accepts various @ref GL-Context-command-line "command-line arguments",
+pass `--magnum-help` to see them all. Depending on your platform, these can
+adjust HiDPI scaling, enable GPU command validation or for example switch to a
+different GPU device.
+
+@m_class{m-block m-success}
+
+@par Making the executable a Windows application
+    If you're on Windows, you noticed that, unlike common graphical apps, the
+    application has a terminal window lurking in the background. That's because
+    the default executable type in CMake is a console application. The terminal
+    is useful for printing logs (as we just did), but if you don't want it, it
+    can be hidden by specifying @cb{.cmake} add_executable(... WIN32 ...) @ce
+    and linking to the @ref main "Corrade::Main" library. Apart from this, the
+    library does other useful things such as enabling Unicode-aware environment
+    interaction on Windows.
+@par
+    @code{.cmake}
+    find_package(Corrade REQUIRED Main)
+    ...
+
+    add_executable(MyApplication WIN32 MyApplication.cpp)
+    target_link_libraries(MyApplication PRIVATE
+        Corrade::Main
+        ...)
+    @endcode
+
+@section getting-started-glfw Using GLFW and other toolkits instead of SDL2
+
+By no means Magnum forces you to use SDL2 --- it's only the default. For other
+toolkits such as [GLFW](https://www.glfw.org/) or [Qt](https://www.qt.io/)
+there are similar projects in other branches of the
+[bootstrap repository](https://github.com/mosra/magnum-bootstrap). If you
+download [base-glfw.zip](https://github.com/mosra/magnum-bootstrap/archive/base-glfw.zip), you get a GLFW-based project. It's mostly the same, with only minor
+differences. Enable `WITH_GLFWAPPLICATION` instead of `WITH_SDL2APPLICATION`,
+on Linux or Mac install one of the following packages:
+
+@code{.sh}
+sudo pacman -S glfw-x11         # on ArchLinux
+sudo apt install libglfw3-dev   # on Ubuntu / Debian
+brew install glfw               # on macOS (via Homebrew)
+@endcode
+
+On Windows download either [glfw-3.3.bin.WIN32.zip](https://github.com/glfw/glfw/releases/download/3.3/glfw-3.3.bin.WIN32.zip)
+or [glfw-3.3.bin.WIN64.zip](https://github.com/glfw/glfw/releases/download/3.3/glfw-3.3.bin.WIN64.zip), extract it to root of the bootstrap project and point
+`CMAKE_PREFIX_PATH` to it:
+
+@code{.cmake}
+...
+                                       # or glfw-3.3.bin.WIN32 here
+set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/glfw-3.3.bin.WIN64 ${CMAKE_PREFIX_PATH})
+set(WITH_GLFWAPPLICATION ON)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
+@endcode
+
+The rest is very similar to above. With the `Platform::*Application` classes,
+Magnum tries to have a common API for all toolkits to make switching from one
+to another easy, allowing you to choose the best fit for a particular platform.
+See @ref platform for more information.
 
 @section getting-started-tutorials Follow tutorials and learn the principles
 
 Now that you have your first application up and running, the best way to
-continue is to render your first triangle in a @ref examples-triangle "step-by-step tutorial".
-Then you can dig deeper and try other examples, read about
-@ref features "fundamental principles" in the documentation and start
-experimenting on your own!
+continue is to render your first triangle. Then you can dig deeper and try
+other examples, read about @ref features "fundamental principles" in the
+documentation and start experimenting on your own!
+
+@m_div{m-button m-success} <a href="examples-triangle.html">@m_div{m-big}Your First Triangle@m_enddiv @m_div{m-small} a step-by-step tutorial @m_enddiv </a> @m_enddiv
 
 @section getting-started-more Additional information
 
