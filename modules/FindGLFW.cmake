@@ -12,6 +12,8 @@
 # for internal usage:
 #
 #  GLFW_LIBRARY             - GLFW library
+#  GLFW_DLL_DEBUG           - GLFW debug DLL on Windows, if found
+#  GLFW_DLL_RELEASE         - GLFW release DLL on Windows, if found
 #  GLFW_INCLUDE_DIR         - Root include dir
 #
 
@@ -61,11 +63,46 @@ if(TARGET glfw)
     include(FindPackageHandleStandardArgs)
     find_package_handle_standard_args("GLFW" DEFAULT_MSG
         _GLFW_INTERFACE_INCLUDE_DIRECTORIES)
+
+    if(CORRADE_TARGET_WINDOWS)
+        # .dll is in LOCATION, .lib is in IMPLIB. Yay, useful!
+        get_target_property(GLFW_DLL_DEBUG glfw IMPORTED_LOCATION_DEBUG)
+        get_target_property(GLFW_DLL_RELEASE glfw IMPORTED_LOCATION_RELEASE)
+    endif()
+
     return()
 endif()
 
-# In case no config file was found, try manually finding the library.
-find_library(GLFW_LIBRARY NAMES glfw glfw3 glfw3dll)
+if(CORRADE_TARGET_WINDOWS)
+    if(MSVC)
+        if(MSVC_VERSION VERSION_LESS 1910)
+            set(_GLFW_LIBRARY_PATH_SUFFIX lib-vc2015)
+        elseif(MSVC_VERSION VERSION_LESS 1920)
+            set(_GLFW_LIBRARY_PATH_SUFFIX lib-vc2017)
+        elseif(MSVC_VERSION VERSION_LESS 1930)
+            set(_GLFW_LIBRARY_PATH_SUFFIX lib-vc2019)
+        else()
+            message(FATAL_ERROR "Unsupported MSVC version")
+        endif()
+    elseif(MINGW)
+        set(_GLFW_LIBRARY_PATH_SUFFIX lib-mingw-w64)
+    else()
+        message(FATAL_ERROR "Unsupported compiler")
+    endif()
+endif()
+
+# In case no config file was found, try manually finding the library. Prefer
+# the glfw3dll as it's a dynamic library.
+find_library(GLFW_LIBRARY
+    NAMES glfw glfw3dll glfw3
+    PATH_SUFFIXES ${_GLFW_LIBRARY_PATH_SUFFIX})
+
+if(CORRADE_TARGET_WINDOWS AND GLFW_LIBRARY MATCHES "glfw3dll.(lib|a)$")
+    # TODO: debug?
+    find_file(GLFW_DLL_RELEASE
+        NAMES glfw3.dll
+        PATH_SUFFIXES ${_GLFW_LIBRARY_PATH_SUFFIX})
+endif()
 
 # Include dir
 find_path(GLFW_INCLUDE_DIR
