@@ -251,6 +251,23 @@ problem). See https://stackoverflow.com/a/37872393 for more information.
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /utf-8")
 @endcode
 
+@subsection platform-windows-troubleshooting-default-project The ALL_BUILD project can't be executed
+
+When CMake generates Visual Studio projects, it will set `ALL_BUILD` as a
+default project. This can be annoying since the `ALL_BUILD` can be only built
+but not executed, and thus pressing *Build & Run* will fail with an error. A
+workaround is to right-click the actual executable target (such as
+`MyApplication`) and select *Set as Startup Project*. With CMake 3.6 and newer,
+this can be also changed by setting the [VS_STARTUP_PROJECT](https://cmake.org/cmake/help/latest/prop_dir/VS_STARTUP_PROJECT.html)
+property for the project directory:
+
+@code{.cmake}
+add_executable(MyApplication ...)
+set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT MyApplication)
+@endcode
+
+The Magnum bootstrap projects set this automatically.
+
 @todoc DLL paths
 @todoc vcpkg
 @todoc desktop ES
