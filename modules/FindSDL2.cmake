@@ -11,6 +11,8 @@
 #
 #  SDL2_LIBRARY_DEBUG       - SDL2 debug library, if found
 #  SDL2_LIBRARY_RELEASE     - SDL2 release library, if found
+#  SDL2_DLL_DEBUG           - SDL2 debug DLL on Windows, if found
+#  SDL2_DLL_RELEASE         - SDL2 release DLL on Windows, if found
 #  SDL2_INCLUDE_DIR         - Root include dir
 #
 
@@ -62,9 +64,11 @@ else()
         elseif(MINGW)
             if(CMAKE_SIZEOF_VOID_P EQUAL 8)
                 set(_SDL2_LIBRARY_PATH_SUFFIX x86_64-w64-mingw32/lib)
+                set(_SDL2_RUNTIME_PATH_SUFFIX x86_64-w64-mingw32/bin)
                 list(APPEND _SDL2_PATH_SUFFIXES x86_64-w64-mingw32/include/SDL2)
             elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
                 set(_SDL2_LIBRARY_PATH_SUFFIX i686-w64-mingw32/lib)
+                set(_SDL2_RUNTIME_PATH_SUFFIX i686-w64-mingw32/lib)
                 list(APPEND _SDL2_PATH_SUFFIXES i686-w64-mingw32/include/SDL2)
             endif()
         endif()
@@ -100,6 +104,16 @@ find_path(SDL2_INCLUDE_DIR
     # find SDL.framework/Headers/SDL.h if SDL1 is installed, which is wrong.
     NAMES SDL_scancode.h
     PATH_SUFFIXES ${_SDL2_PATH_SUFFIXES})
+
+# DLL on Windows
+if(CORRADE_TARGET_WINDOWS)
+    find_file(SDL2_DLL_RELEASE
+        NAMES SDL2.dll
+        PATH_SUFFIXES ${_SDL2_RUNTIME_PATH_SUFFIX} ${_SDL2_LIBRARY_PATH_SUFFIX})
+    find_file(SDL2_DLL_DEBUG
+        NAMES SDL2d.dll # not sure?
+        PATH_SUFFIXES ${_SDL2_RUNTIME_PATH_SUFFIX} ${_SDL2_LIBRARY_PATH_SUFFIX})
+endif()
 
 # iOS dependencies
 if(CORRADE_TARGET_IOS)
