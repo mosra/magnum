@@ -13,7 +13,8 @@
 #  SDL2_LIBRARY_RELEASE     - SDL2 release library, if found
 #  SDL2_DLL_DEBUG           - SDL2 debug DLL on Windows, if found
 #  SDL2_DLL_RELEASE         - SDL2 release DLL on Windows, if found
-#  SDL2_INCLUDE_DIR         - Root include dir
+#  SDL2_INCLUDE_DIR         - Root include dir. By adding it to PATH,
+#   <SDL2/SDL.h> will work on all sane systems and <SDL/SDL.h> on Emscripten.
 #
 
 #
@@ -45,9 +46,12 @@
 # In Emscripten SDL is linked automatically, thus no need to find the library.
 # Also the includes are in SDL subdirectory, not SDL2.
 if(CORRADE_TARGET_EMSCRIPTEN)
-    set(_SDL2_PATH_SUFFIXES SDL)
+    set(_SDL2_INCLUDE_PREFIX SDL)
 else()
-    set(_SDL2_PATH_SUFFIXES SDL2)
+    # macOS *.dmg distribution puts everything directly into the root inside
+    # the framework, but according to https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPFrameworks/Tasks/IncludingFrameworks.html,
+    # <framweworkName>/<headerName> works so SDL2/SDL.h should work too.
+    set(_SDL2_INCLUDE_PREFIX SDL2)
     if(WIN32)
         # Precompiled libraries for MSVC are in x86/x64 subdirectories
         if(MSVC)
@@ -65,11 +69,11 @@ else()
             if(CMAKE_SIZEOF_VOID_P EQUAL 8)
                 set(_SDL2_LIBRARY_PATH_SUFFIX x86_64-w64-mingw32/lib)
                 set(_SDL2_RUNTIME_PATH_SUFFIX x86_64-w64-mingw32/bin)
-                list(APPEND _SDL2_PATH_SUFFIXES x86_64-w64-mingw32/include/SDL2)
+                set(_SDL2_INCLUDE_PATH_SUFFIX x86_64-w64-mingw32/include)
             elseif(CMAKE_SIZEOF_VOID_P EQUAL 4)
                 set(_SDL2_LIBRARY_PATH_SUFFIX i686-w64-mingw32/lib)
                 set(_SDL2_RUNTIME_PATH_SUFFIX i686-w64-mingw32/lib)
-                list(APPEND _SDL2_PATH_SUFFIXES i686-w64-mingw32/include/SDL2)
+                set(_SDL2_INCLUDE_PATH_SUFFIX i686-w64-mingw32/include)
             endif()
         else()
             message(FATAL_ERROR "Unsupported compiler")
@@ -97,15 +101,15 @@ select_library_configurations(SDL2)
 
 # Include dir
 find_path(SDL2_INCLUDE_DIR
-    # We must search file which is present only in SDL2 and not in SDL1.
+    # We have to look for a file which is present only in SDL2 and not in SDL1.
     # Apparently when both SDL.h and SDL_scancode.h are specified, CMake is
     # happy enough that it found SDL.h and doesn't bother about the other.
     #
     # On macOS, where the includes are not in SDL2/SDL.h form (which would
     # solve this issue), but rather SDL2.framework/Headers/SDL.h, CMake might
     # find SDL.framework/Headers/SDL.h if SDL1 is installed, which is wrong.
-    NAMES SDL_scancode.h
-    PATH_SUFFIXES ${_SDL2_PATH_SUFFIXES})
+    NAMES ${_SDL2_INCLUDE_PREFIX}/SDL_scancode.h
+    PATH_SUFFIXES ${_SDL2_INCLUDE_PATH_SUFFIX})
 
 # DLL on Windows
 if(CORRADE_TARGET_WINDOWS)

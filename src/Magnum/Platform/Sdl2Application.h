@@ -47,10 +47,18 @@
 #define SDL_MAIN_HANDLED
 #endif
 /* SDL.h includes the world, adding 50k LOC. We don't want that either. */
-#include <SDL_keycode.h>
-#include <SDL_mouse.h>
-#include <SDL_video.h>
-#include <SDL_scancode.h>
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+#include <SDL2/SDL_keycode.h>
+#include <SDL2/SDL_mouse.h>
+#include <SDL2/SDL_video.h>
+#include <SDL2/SDL_scancode.h>
+#else
+/* Emscripten has a SDL1/2 hybrid, with includes in SDL/ instead of SDL2/ */
+#include <SDL/SDL_keycode.h>
+#include <SDL/SDL_mouse.h>
+#include <SDL/SDL_video.h>
+#include <SDL/SDL_scancode.h>
+#endif
 
 #ifdef CORRADE_TARGET_WINDOWS_RT
 #include <SDL_main.h> /* For SDL_WinRTRunApp */
