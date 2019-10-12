@@ -65,7 +65,7 @@ if(TARGET glfw)
 endif()
 
 # In case no config file was found, try manually finding the library.
-find_library(GLFW_LIBRARY NAMES glfw glfw3)
+find_library(GLFW_LIBRARY NAMES glfw glfw3 glfw3dll)
 
 # Include dir
 find_path(GLFW_INCLUDE_DIR
