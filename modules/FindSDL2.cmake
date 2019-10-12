@@ -71,6 +71,8 @@ else()
                 set(_SDL2_RUNTIME_PATH_SUFFIX i686-w64-mingw32/lib)
                 list(APPEND _SDL2_PATH_SUFFIXES i686-w64-mingw32/include/SDL2)
             endif()
+        else()
+            message(FATAL_ERROR "Unsupported compiler")
         endif()
     endif()
 
