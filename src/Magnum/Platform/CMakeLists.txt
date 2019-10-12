@@ -268,6 +268,21 @@ if(WITH_GLFWAPPLICATION)
         LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
         ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
 
+    # Copy the GLFW DLL next to the place where all executables are stored to
+    # help people running the apps
+    if(CMAKE_RUNTIME_OUTPUT_DIRECTORY AND CORRADE_TARGET_WINDOWS AND (GLFW_DLL_DEBUG OR GLFW_DLL_RELEASE))
+        if(GLFW_DLL_DEBUG AND GLFW_DLL_RELEASE)
+            add_custom_command(TARGET MagnumGlfwApplication POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${GLFW_DLL_DEBUG}>$<$<NOT:$<CONFIG:Debug>>:${GLFW_DLL_RELEASE}> ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        elseif(GLFW_DLL_DEBUG)
+            add_custom_command(TARGET MagnumGlfwApplication POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${GLFW_DLL_DEBUG} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        else()
+            add_custom_command(TARGET MagnumGlfwApplication POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${GLFW_DLL_RELEASE} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        endif()
+    endif()
+
     # Magnum GlfwApplication target alias for superprojects
     add_library(Magnum::GlfwApplication ALIAS MagnumGlfwApplication)
 endif()
@@ -322,6 +337,21 @@ if(WITH_SDL2APPLICATION)
         RUNTIME DESTINATION ${MAGNUM_BINARY_INSTALL_DIR}
         LIBRARY DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR}
         ARCHIVE DESTINATION ${MAGNUM_LIBRARY_INSTALL_DIR})
+
+    # Copy the SDL2 DLL next to the place where all executables are stored to
+    # help people running the apps
+    if(CMAKE_RUNTIME_OUTPUT_DIRECTORY AND CORRADE_TARGET_WINDOWS AND (SDL2_DLL_DEBUG OR SDL2_DLL_RELEASE))
+        if(SDL2_DLL_DEBUG AND SDL2_DLL_RELEASE)
+            add_custom_command(TARGET MagnumSdl2Application POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different $<$<CONFIG:Debug>:${SDL2_DLL_DEBUG}>$<$<NOT:$<CONFIG:Debug>>,${SDL2_DLL_RELEASE}> ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        elseif(SDL2_DLL_DEBUG)
+            add_custom_command(TARGET MagnumSdl2Application POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDL2_DLL_DEBUG} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        else()
+            add_custom_command(TARGET MagnumSdl2Application POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy_if_different ${SDL2_DLL_RELEASE} ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+        endif()
+    endif()
 
     # Magnum Sdl2Application target alias for superprojects
     add_library(Magnum::Sdl2Application ALIAS MagnumSdl2Application)
