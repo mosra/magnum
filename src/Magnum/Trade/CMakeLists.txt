@@ -109,10 +109,15 @@ install(TARGETS MagnumTrade
 install(FILES ${MagnumTrade_HEADERS} DESTINATION ${MAGNUM_INCLUDE_INSTALL_DIR}/Trade)
 
 if(WITH_IMAGECONVERTER)
+    find_package(Threads REQUIRED)
+
     add_executable(magnum-imageconverter imageconverter.cpp)
     target_link_libraries(magnum-imageconverter PRIVATE
         Magnum
-        MagnumTrade)
+        MagnumTrade
+        # BasisImageConverter uses these, and linking pthread to just the
+        # plugin doesn't work. See its documentation for details.
+        Threads::Threads)
     set_target_properties(magnum-imageconverter PROPERTIES FOLDER "Magnum/Trade")
 
     install(TARGETS magnum-imageconverter DESTINATION ${MAGNUM_BINARY_INSTALL_DIR})
