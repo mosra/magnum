@@ -313,6 +313,12 @@ See also:
 -   New @ref Text::AbstractFont::setFileCallback() to allow opening multi-file
     fonts with an API similar to @ref Trade::AbstractImporter
 
+@subsubsection changelog-latest-new-trade Trade library
+
+-   The @ref magnum-imageconverter "magnum-imageconverter" utility now
+    implements new `-i` / `--importer-options` and `-c` / `--converter-options`
+    command-line options for setting plugin-specific configuration
+
 @subsection changelog-latest-changes Changes and improvements
 
 -   The @ref ResourceManager class now accepts also
