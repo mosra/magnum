@@ -252,11 +252,11 @@ class MAGNUM_SHADERS_EXPORT MeshVisualizer: public GL::AbstractShaderProgram {
     private:
         Flags _flags;
         Int _transformationProjectionMatrixUniform{0},
-            _viewportSizeUniform{1},
-            _colorUniform{2},
-            _wireframeColorUniform{3},
-            _wireframeWidthUniform{4},
-            _smoothnessUniform{5};
+            _colorUniform{1},
+            _wireframeColorUniform{2},
+            _wireframeWidthUniform{3},
+            _smoothnessUniform{4},
+            _viewportSizeUniform{5};
 };
 
 /** @debugoperatorclassenum{MeshVisualizer,MeshVisualizer::Flag} */

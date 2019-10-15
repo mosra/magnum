@@ -45,7 +45,7 @@
 #endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 2)
+layout(location = 1)
 #endif
 uniform lowp vec4 color
     #ifndef GL_ES
@@ -55,7 +55,7 @@ uniform lowp vec4 color
 
 #ifdef WIREFRAME_RENDERING
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 3)
+layout(location = 2)
 #endif
 uniform lowp vec4 wireframeColor
     #ifndef GL_ES
@@ -64,7 +64,7 @@ uniform lowp vec4 wireframeColor
     ;
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 4)
+layout(location = 3)
 #endif
 uniform lowp float wireframeWidth
     #ifndef GL_ES
@@ -73,7 +73,7 @@ uniform lowp float wireframeWidth
     ;
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 5)
+layout(location = 4)
 #endif
 uniform lowp float smoothness
     #ifndef GL_ES

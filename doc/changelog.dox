@@ -449,6 +449,10 @@ See also:
 -   @ref Shaders::Phong can now handle zero lights, in which case its output is
     equivalent to @ref Shaders::Flat3D. See @ref Shaders-Phong-zero-lights for
     more information.
+-   @ref Shaders::MeshVisualizer is fixed to work properly on Intel Windows
+    drivers, adding a new
+    @cpp "intel-windows-explicit-uniform-location-is-less-explicit-than-you-hoped" @ce
+    workaround
 
 @subsubsection changelog-latest-changes-texturetools TextureTools library
 

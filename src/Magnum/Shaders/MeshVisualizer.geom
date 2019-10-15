@@ -35,7 +35,7 @@
 #endif
 
 #ifdef EXPLICIT_UNIFORM_LOCATION
-layout(location = 1)
+layout(location = 5)
 #endif
 uniform lowp vec2 viewportSize; /* defaults to zero */
 
