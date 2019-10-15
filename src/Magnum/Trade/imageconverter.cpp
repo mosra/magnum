@@ -94,7 +94,7 @@ using namespace Magnum;
 namespace {
 
 void setOptions(PluginManager::AbstractPlugin& plugin, const std::string& options) {
-    for(const std::string& option: Utility::String::splitWithoutEmptyParts(options, ';')) {
+    for(const std::string& option: Utility::String::splitWithoutEmptyParts(options, ',')) {
         auto keyValue = Utility::String::partition(option, '=');
         Utility::String::trimInPlace(keyValue[0]);
         Utility::String::trimInPlace(keyValue[2]);
@@ -125,9 +125,8 @@ int main(int argc, char** argv) {
         .addOption("importer", "AnyImageImporter").setHelp("importer", "image importer plugin")
         .addOption("converter", "AnyImageConverter").setHelp("converter", "image converter plugin")
         .addOption("plugin-dir").setHelp("plugin-dir", "override base plugin dir", "DIR")
-        .addOption('i', "importer-options").setHelp("options", "configuration options to pass to the importer", "key=val,key2=val2,…")
-        .addOption('c', "converter-options").setHelp("options", "configuration options to pass to the converter", "key=val,key2=val2,…")
-        .addOption("raw").setHelp("raw", "treat the image as raw pixels of given format", "FORMAT")
+        .addOption('i', "importer-options").setHelp("importer-options", "configuration options to pass to the importer", "key=val,key2=val2,…")
+        .addOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter", "key=val,key2=val2,…")
         .setGlobalHelp(R"(Converts images of different formats.
 
 The -i / --importer-options and -c / --converter-options arguments accept a
