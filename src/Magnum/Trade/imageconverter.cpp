@@ -76,6 +76,10 @@ Arguments:
 -   `--converter CONVERTER` --- image converter plugin (default:
     @ref Trade::AnyImageConverter "AnyImageConverter")
 -   `--plugin-dir DIR` --- override base plugin dir
+-   `-i`, `--importer-options key=val,key2=val2,…` --- configuration options to
+    pass to the importer
+-   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
+    to pass to the converter
 
 @section magnum-imageconverter-example Example usage
 
@@ -85,6 +89,18 @@ Converting a JPEG file to a PNG:
 magnum-imageconverter image.jpg image.png
 @endcode
 
+Creating a JPEG file with 95% quality from a PNG, by setting a
+@ref Trade-JpegImageConverter-configuration "plugin-specific configuration option".
+Note that currently the proxy @ref Trade::AnyImageImporter "AnyImageImporter"
+and @ref Trade::AnyImageConverter "AnyImageConverter" plugins don't know how to
+correctly propagate options to the target plugin, so you need to specify
+`--importer` / `--converter` explicitly when using the `-i` / `-c` options.
+
+@m_class{m-console-wrap}
+
+@code{.sh}
+magnum-imageconverter image.png image.jpg -c jpegQuality=0.95 --converter JpegImageConverter
+@endcode
 */
 
 }
