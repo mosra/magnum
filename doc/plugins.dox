@@ -42,16 +42,16 @@ embedded systems that don't support dynamic loading, built statically into the
 executable. Depending on the target platform requirements, different set of
 plugins can be deployed for different platforms.
 
-The @ref building "Magnum repository" contains a few basic plugins for opening
-simple formats, such as TGA images or WAV audio files. These plugins are
-included because the file formats are so simple that no external library is
-needed for loading their contents and thus they are suitable for quick demos
-and prototyping without needing to deal with additional dependencies.
+The @ref building "core Magnum repository" contains a few basic plugins for
+opening simple formats, such as TGA images or WAV audio files. These plugins
+are included because the file formats are so simple that no 3rd party libraries
+are needed  for loading their contents and thus they are suitable for quick
+demos and prototyping without needing to deal with additional dependencies.
 
-Additional plugins (such as importers for PNG and JPEG images, TrueType fonts
-etc.) are available in the @ref building-plugins "Magnum Plugins" repository.
-Majority of these plugins depends on external libraries, thus not all of them
-might be available on all platforms.
+Additional plugins (such as importers for PNG and JPEG images, glTF scenes,
+TrueType fonts etc.) are available in the @ref building-plugins "Magnum Plugins"
+repository. Majority of these plugins depends on external libraries, thus not
+all of them might be available on all platforms.
 
 @section plugins-types Plugin interfaces
 
@@ -91,7 +91,7 @@ whole lifetime of all plugin instances created using it.
 
 @section plugins-dependencies Plugin dependencies
 
-Some plugins have dependencies, for example the @ref Trade::OpenGexImporter "OpenGexImporter"
+Some plugins have dependencies, for example the @ref Trade::TinyGltfImporter "TinyGltfImporter"
 plugin uses @ref Trade::AnyImageImporter "AnyImageImporter" to load texture
 data. The dependency loading is done automatically, but in some cases it's
 across plugin types (for example the @ref Text::MagnumFont "MagnumFont" plugin

@@ -53,6 +53,11 @@ See also:
     MSVC 2017. See also [mosra/magnum-bootstrap#18](https://github.com/mosra/magnum-bootstrap/issues/18),
     [mosra/magnum#343](https://github.com/mosra/magnum/pull/343) and
     [mosra/magnum#354](https://github.com/mosra/magnum/issues/354).
+-   When using Magnum as a CMake subproject, it now puts all binaries into a
+    common directory to simplify `PATH` handling and dynamic plugin loading.
+    For more information see @ref cmake-subproject,
+    [mosra/magnum#357](https://github.com/mosra/magnum/issues/357) and
+    [mosra/magnum-plugins#63](https://github.com/mosra/magnum-plugins/issues/63).
 -   New @ref Image::pixels(), @ref ImageView::pixels() and
     @ref Trade::ImageData::pixels() accessors for convenient direct access to
     pixel data of any image

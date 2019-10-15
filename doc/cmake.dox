@@ -70,10 +70,16 @@ repositories into your project (as a Git submodule, bundling a downloaded
 archive etc.) and use @cb{.cmake} add_subdirectory() @ce. With that approach
 you don't need to care about `FindCorrade.cmake` / `FindMagnum.cmake`, however
 the usual tradeoffs when bundling code apply --- slower full rebuilds, IDEs
-having more to parse etc.
+having more to parse etc. In this case, the
+@ref building-features "build-time options" are @cmake set() @ce before
+the @cmake add_subdirectory() @ce call. Note that, unless you require CMake
+3.13 at least, it's needed to use the `CACHE ... FORCE` arguments
+[in order to have the options set properly](https://cmake.org/cmake/help/latest/policy/CMP0077.html). For example:
 
 @code{.cmake}
 add_subdirectory(corrade EXCLUDE_FROM_ALL) # so only things you use are built
+
+set(WITH_ANYIMAGEIMPORTER ON CACHE BOOL "" FORCE) # enable what you need
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 
 find_package(Magnum REQUIRED ...) # see below
@@ -106,7 +112,24 @@ add_subdirectory(corrade EXCLUDE_FROM_ALL)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 
-@section cmake-find-module Finding the package and its component
+Please note that in case of the (by default) dynamic plugins, because these are
+loaded at runtime, CMake doesn't know we need them to be built --- one option
+is to list them explicitly like shown below, another (but uglier) is to not use
+`EXCLUDE_FROM_ALL` on the `magnum` subdirectory, so everything is always built
+implicitly.
+
+@code{.cmake}
+set(WITH_ANYIMAGEIMPORTER ON CACHE BOOL "" FORCE)
+set(WITH_ANYSCENEIMPORTER ON CACHE BOOL "" FORCE)
+add_subdirectory(magnum EXCLUDE_FROM_ALL)
+
+# So the AnyImageImporter / AnySceneImporter gets built implicitly
+add_custom_target(plugins ALL DEPENDS
+    Magnum::AnyImageImporter
+    Magnum::AnySceneImporter)
+@endcode
+
+@section cmake-find-module Finding the package and its components
 
 Basic usage is:
 
