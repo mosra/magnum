@@ -200,14 +200,20 @@ void ScreenshotGLTest::r8() {
 
     MAGNUM_VERIFY_NO_GL_ERROR();
     CORRADE_VERIFY(succeeded);
-    CORRADE_COMPARE(out.str(),
-        Utility::formatString("DebugTools::screenshot(): saved a PixelFormat::R8Unorm image of size Vector(4, 3) to {}\n", file));
 
-    if(!(_importerManager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
-       !(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
-        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+    {
+        CORRADE_EXPECT_FAIL_IF(framebuffer.implementationColorReadFormat() != GL::PixelFormat::Red,
+            "Implementation-defined color read format is not single-channel.");
 
-    CORRADE_COMPARE_WITH(file, r, CompareFileToImage{_importerManager});
+        CORRADE_COMPARE(out.str(),
+            Utility::formatString("DebugTools::screenshot(): saved a PixelFormat::R8Unorm image of size Vector(4, 3) to {}\n", file));
+
+        if(!(_importerManager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+        !(_importerManager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+            CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+        CORRADE_COMPARE_WITH(file, r, CompareFileToImage{_importerManager});
+    }
     #endif
 }
 
