@@ -679,6 +679,9 @@ See also:
     [mosra/magnum#355](https://github.com/mosra/magnum/issues/355))
 -   Extended info about the `--head` option in @ref building-packages-vcpkg
     (see [mosra/magnum#367](https://github.com/mosra/magnum/issues/367))
+-   The @ref getting-started "Getting Started Guide" was rewritten to be easier
+    to follow for Windows users, removing usual pain points (see
+    [mosra/magnum#378](https://github.com/mosra/magnum/issues/378))
 
 @subsection changelog-latest-deprecated Deprecated APIs
 

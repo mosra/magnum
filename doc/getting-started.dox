@@ -25,26 +25,27 @@
 
 namespace Magnum {
 /** @page getting-started Getting started
-@brief Get started with Magnum in matter of minutes.
+@brief Get started with Magnum using a bootstrap project
 
 @tableofcontents
 
 Setting up a new project can be pretty gruesome and nobody likes repeating the
 same process every time. Magnum provides "bootstrap" project structures for
-many use cases, helping you get up and running in no time.
+many target uses with the essentials and best practices laid out. This guide,
+as well as Magnum itself, uses the CMake build system.
 
-@section getting-started-bootstrap Download the bootstrap project
+@section getting-started-bootstrap 1. Download the bootstrap project
 
 The [bootstrap repository](https://github.com/mosra/magnum-bootstrap) is
 located on GitHub. The `master` branch contains just a README file and the
 actual bootstrap projects are in various other branches, each covering some
-particular use case. For the first project you need the `base` branch, which
-contains only the essential files. Download the branch
-[as an archive](https://github.com/mosra/magnum-bootstrap/archive/base.zip) and
-extract it somewhere. Do it rather than cloning the full repository, as it's
-better to init your new project from scratch with clean Git history.
+particular use case. For the first project you'll need the `base` branch, which
+contains only the essential files. Download the branch as an archive and
+extract it somewhere:
 
-@subsection getting-started-setup-subproject Option A: add Magnum as a CMake subproject
+@m_div{m-button m-primary} <a href="https://github.com/mosra/magnum-bootstrap/archive/base.zip.html">@m_div{m-big}base.zip@m_enddiv @m_div{m-small} download the project @m_enddiv </a> @m_enddiv
+
+@subsection getting-started-setup-subproject 1a. Option A: add Magnum as a CMake subproject
 
 The easiest option to start without having to install anything is adding all
 dependencies as CMake subprojects. While it has an advantage of making your
@@ -81,26 +82,6 @@ add_subdirectory(magnum EXCLUDE_FROM_ALL)
 add_subdirectory(src)
 @endcode
 
-@m_class{m-block m-warning}
-
-@par What the heck is ON CACHE BOOL? FORCE?!
-    CMake is a buildsystem with a long history and even though some design
-    decisions were not good in retrospect, preserving the behavior is crucial
-    for its reliability. The above is needed due to an unfortunate behavior of
-    the @cmake option() @ce command that got
-    [fixed in CMake 3.13](https://cmake.org/cmake/help/latest/policy/CMP0077.html).
-    If you can afford requiring CMake 3.13 for your project, you can change the
-    above to just the following:
-@par
-    @code{.cmake}
-    cmake_minimum_required(VERSION 3.13) # important
-
-    ...
-
-    set(WITH_SDL2APPLICATION ON)
-    add_subdirectory(magnum EXCLUDE_FROM_ALL)
-    @endcode
-
 The last missing piece before you can continue is the [SDL](http://libsdl.org/)
 library --- the bootstrap project (and most examples) use it to do window
 management and event handling. If you are on Linux or macOS, you can get it
@@ -122,17 +103,16 @@ the `SDL2-2.0.10` directory to `CMAKE_PREFIX_PATH`:
 @code{.cmake}
 ...
 
-set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/SDL-2.0.10 ${CMAKE_PREFIX_PATH})
+set(CMAKE_PREFIX_PATH ${PROJECT_SOURCE_DIR}/SDL2-2.0.10 ${CMAKE_PREFIX_PATH})
 set(WITH_SDL2APPLICATION ON)
 add_subdirectory(magnum EXCLUDE_FROM_ALL)
 @endcode
 
 This is of course not the only possibility --- if you don't feel like bundling
 the binaries, you can put them outside of the project and then specify
-`CMAKE_PREFIX_PATH` externally on the command line. Listing all the
-possibilities is however outside of the scope of this short guide.
+`CMAKE_PREFIX_PATH` externally on the command line.
 
-@subsection getting-started-setup-install Option B: install Magnum separately and let CMake find it
+@subsection getting-started-setup-install 1b. Option B: install Magnum separately and let CMake find it
 
 An alternative to the above is building & installing Magnum separately. Both
 approaches are equally-well supported and each has its pros and cons --- the
@@ -166,10 +146,10 @@ to set `CMAKE_PREFIX_PATH` if you installed Corrade and Magnum to a
 non-standard location (i.e., anything else than `/usr` or `/usr/local`, and
 always on Windows).
 
-@section getting-started-review Review project structure
+@section getting-started-review 2. Review project structure
 
-The base project consists of just six files in two subfolders. Magnum uses the
-CMake build system, you can read more about it in @ref cmake.
+The base project consists of just six files in two subfolders (plus the three
+extra directories with dependencies you might have added):
 
     modules/FindCorrade.cmake
     modules/FindMagnum.cmake
@@ -215,9 +195,10 @@ target_link_libraries(MyApplication PRIVATE
 @endcode
 
 The `CORRADE_USE_PEDANTIC_FLAGS` property enables a set of useful compiler
-warnings
+warnings. It's not required, but recommended to enforce good C++ coding
+practices.
 
-@section getting-started-build Build the project
+@section getting-started-build 3. Build the project
 
 @subsection getting-started-build-linux Linux, macOS and other Unix-based OSes
 
@@ -261,7 +242,7 @@ where to create build directory, allows you to specify initial CMake parameters
 and then you can just press @m_class{m-label m-default} **Configure** and
 everything is ready to be built.
 
-@section getting-started-run Run the application
+@section getting-started-run 4. Run the application
 
 If you went with the CMake subproject approach (@ref getting-started-setup-subproject "Option A"
 above), the project is configured to place all binaries into a common location
@@ -330,9 +311,9 @@ different GPU device.
 
 @section getting-started-glfw Using GLFW and other toolkits instead of SDL2
 
-By no means Magnum forces you to use SDL2 --- it's only the default. For other
-toolkits such as [GLFW](https://www.glfw.org/) or [Qt](https://www.qt.io/)
-there are similar projects in other branches of the
+By no means Magnum forces you to use SDL2 --- it's only the default. If you
+want to try it with other toolkits such as [GLFW](https://www.glfw.org/) or
+[Qt](https://www.qt.io/) there are similar projects in other branches of the
 [bootstrap repository](https://github.com/mosra/magnum-bootstrap). If you
 download [base-glfw.zip](https://github.com/mosra/magnum-bootstrap/archive/base-glfw.zip), you get a GLFW-based project. It's mostly the same, with only minor
 differences. Enable `WITH_GLFWAPPLICATION` instead of `WITH_SDL2APPLICATION`,
