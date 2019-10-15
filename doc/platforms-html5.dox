@@ -512,12 +512,21 @@ export LLVM=/usr/local/opt/emscripten/libexec/llvm/bin
 
 On Windows, running CMake as-is without specifying a generator via `-G` will
 always use the Visual Studio compiler and seemingly ignore the Emscripten
-toolchain file altogether. This is because Visual Studio Project Files as the
-default generator on Windows is not able to build for any other system than
-Windows itself. To fix it, use a different generator --- for example
-[Ninja](https://ninja-build.org/). Download the binary, put it somewhere on
-your `PATH` and pass `-G Ninja` to CMake. Alternatively, pass the path to it
-using `-DCMAKE_MAKE_PROGRAM=C:/path/to/ninja.exe`.
+toolchain file altogether. With recent toolchain files, you may get this
+message instead:
+
+@code{.shell-session}
+CMake Error at toolchains/generic/Emscripten-wasm.cmake:19 (message):
+  Visual Studio project generator doesn't support cross-compiling to
+  Emscripten.  Please use -G Ninja or other generators instead.
+@endcode
+
+This is because Visual Studio Project Files as the default generator on Windows
+is not able to build for any other system than Windows itself. To fix it, use a
+different generator --- for example [Ninja](https://ninja-build.org/). Download
+the binary, put it somewhere on your `PATH` and pass `-G Ninja` to CMake.
+Alternatively, pass the path to it using
+`-DCMAKE_MAKE_PROGRAM=C:/path/to/ninja.exe`.
 
 @m_class{m-block m-success}
 
