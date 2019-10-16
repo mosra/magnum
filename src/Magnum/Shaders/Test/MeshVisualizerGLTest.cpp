@@ -83,6 +83,7 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
+        std::string _testDir;
 
         GL::Renderbuffer _color{NoCreate};
         #ifndef MAGNUM_TARGET_GLES2
@@ -150,6 +151,20 @@ MeshVisualizerGLTest::MeshVisualizerGLTest() {
     #ifdef TGAIMPORTER_PLUGIN_FILENAME
     CORRADE_INTERNAL_ASSERT(_manager.load(TGAIMPORTER_PLUGIN_FILENAME) & PluginManager::LoadState::Loaded);
     #endif
+
+    #ifdef CORRADE_TARGET_APPLE
+    if(Utility::Directory::isSandboxed()
+        #if defined(CORRADE_TARGET_IOS) && defined(CORRADE_TESTSUITE_TARGET_XCTEST)
+        /** @todo Fix this once I persuade CMake to run XCTest tests properly */
+        && std::getenv("SIMULATOR_UDID")
+        #endif
+    ) {
+        _testDir = Utility::Directory::path(Utility::Directory::executableLocation());
+    } else
+    #endif
+    {
+        _testDir = SHADERS_TEST_DIR;
+    }
 }
 
 void MeshVisualizerGLTest::construct() {
@@ -288,7 +303,7 @@ void MeshVisualizerGLTest::renderDefaults() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(SHADERS_TEST_DIR, "FlatTestFiles/defaults.tga"),
+        Utility::Directory::join(_testDir, "FlatTestFiles/defaults.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -323,7 +338,7 @@ void MeshVisualizerGLTest::renderDefaultsWireframe() {
         CORRADE_COMPARE_WITH(
             /* Dropping the alpha channel, as it's always 1.0 */
             Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-            Utility::Directory::join(SHADERS_TEST_DIR, "MeshVisualizerTestFiles/defaults-wireframe.tga"),
+            Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe.tga"),
             (DebugTools::CompareImageToFile{_manager}));
     }
 
@@ -336,7 +351,7 @@ void MeshVisualizerGLTest::renderDefaultsWireframe() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(SHADERS_TEST_DIR, "MeshVisualizerTestFiles/defaults-wireframe.tga"),
+        Utility::Directory::join(_testDir, "MeshVisualizerTestFiles/defaults-wireframe.tga"),
         /* AMD has off-by-one errors on edges compared to Intel */
         (DebugTools::CompareImageToFile{_manager, 1.0f, 0.06f}));
 }
@@ -370,7 +385,7 @@ void MeshVisualizerGLTest::render() {
     CORRADE_COMPARE_WITH(
         /* Dropping the alpha channel, as it's always 1.0 */
         Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-        Utility::Directory::join(SHADERS_TEST_DIR, "FlatTestFiles/colored3D.tga"),
+        Utility::Directory::join(_testDir, "FlatTestFiles/colored3D.tga"),
         (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
 }
 
@@ -451,7 +466,7 @@ void MeshVisualizerGLTest::renderWireframe() {
         CORRADE_COMPARE_WITH(
             /* Dropping the alpha channel, as it's always 1.0 */
             Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-            Utility::Directory::join({SHADERS_TEST_DIR, "MeshVisualizerTestFiles", data.file}),
+            Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.file}),
             (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
     }
 
@@ -467,7 +482,7 @@ void MeshVisualizerGLTest::renderWireframe() {
         CORRADE_COMPARE_WITH(
             /* Dropping the alpha channel, as it's always 1.0 */
             Containers::arrayCast<Color3ub>(_framebuffer.read(_framebuffer.viewport(), {PixelFormat::RGBA8Unorm}).pixels<Color4ub>()),
-            Utility::Directory::join({SHADERS_TEST_DIR, "MeshVisualizerTestFiles", data.fileXfail}),
+            Utility::Directory::join({_testDir, "MeshVisualizerTestFiles", data.fileXfail}),
             (DebugTools::CompareImageToFile{_manager, maxThreshold, meanThreshold}));
     }
 }

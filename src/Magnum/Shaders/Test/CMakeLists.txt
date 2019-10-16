@@ -69,7 +69,11 @@ if(BUILD_GL_TESTS)
     file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
         INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
 
-    corrade_add_test(ShadersDistanceFieldVectorGLTest DistanceFieldVectorGLTest.cpp
+    set(ShadersDistanceFieldVectorGLTest_SRCS DistanceFieldVectorGLTest.cpp)
+    if(CORRADE_TARGET_IOS)
+        list(APPEND ShadersDistanceFieldVectorGLTest_SRCS TestFiles VectorTestFiles)
+    endif()
+    corrade_add_test(ShadersDistanceFieldVectorGLTest ${ShadersDistanceFieldVectorGLTest_SRCS}
         LIBRARIES
             MagnumDebugTools
             MagnumMeshTools
@@ -97,7 +101,11 @@ if(BUILD_GL_TESTS)
         endif()
     endif()
 
-    corrade_add_test(ShadersFlatGLTest FlatGLTest.cpp
+    set(ShadersFlatGLTest_SRCS FlatGLTest.cpp)
+    if(CORRADE_TARGET_IOS)
+        list(APPEND ShadersFlatGLTest_SRCS TestFiles FlatTestFiles)
+    endif()
+    corrade_add_test(ShadersFlatGLTest ${ShadersFlatGLTest_SRCS}
         LIBRARIES
             MagnumDebugTools
             MagnumMeshTools
@@ -130,7 +138,11 @@ if(BUILD_GL_TESTS)
         endif()
     endif()
 
-    corrade_add_test(ShadersMeshVisualizerGLTest MeshVisualizerGLTest.cpp
+    set(ShadersMeshVisualizerGLTest_SRCS MeshVisualizerGLTest.cpp)
+    if(CORRADE_TARGET_IOS)
+        list(APPEND ShadersMeshVisualizerGLTest_SRCS FlatTestFiles MeshVisualizerTestFiles)
+    endif()
+    corrade_add_test(ShadersMeshVisualizerGLTest ${ShadersMeshVisualizerGLTest_SRCS}
         LIBRARIES
             MagnumDebugTools
             MagnumMeshTools
@@ -154,7 +166,11 @@ if(BUILD_GL_TESTS)
         endif()
     endif()
 
-    corrade_add_test(ShadersPhongGLTest PhongGLTest.cpp
+    set(ShadersPhongGLTest_SRCS PhongGLTest.cpp)
+    if(CORRADE_TARGET_IOS)
+        list(APPEND ShadersPhongGLTest_SRCS TestFiles PhongTestFiles FlatTestFiles)
+    endif()
+    corrade_add_test(ShadersPhongGLTest ${ShadersPhongGLTest_SRCS}
         LIBRARIES
             MagnumDebugTools
             MagnumMeshTools
@@ -199,7 +215,11 @@ if(BUILD_GL_TESTS)
         endif()
     endif()
 
-    corrade_add_test(ShadersVectorGLTest VectorGLTest.cpp
+    set(ShadersVectorGLTest_SRCS VectorGLTest.cpp)
+    if(CORRADE_TARGET_IOS)
+        list(APPEND ShadersVectorGLTest_SRCS TestFiles VectorTestFiles)
+    endif()
+    corrade_add_test(ShadersVectorGLTest ${ShadersVectorGLTest_SRCS}
         LIBRARIES
             MagnumDebugTools
             MagnumMeshTools
@@ -222,7 +242,11 @@ if(BUILD_GL_TESTS)
         endif()
     endif()
 
-    corrade_add_test(ShadersVertexColorGLTest VertexColorGLTest.cpp
+    set(ShadersVertexColorGLTest_SRCS VertexColorGLTest.cpp)
+    if(CORRADE_TARGET_IOS)
+        list(APPEND ShadersVertexColorGLTest_SRCS FlatTestFiles VertexColorTestFiles)
+    endif()
+    corrade_add_test(ShadersVertexColorGLTest ${ShadersVertexColorGLTest_SRCS}
         LIBRARIES
             MagnumDebugTools
             MagnumMeshTools
@@ -242,6 +266,18 @@ if(BUILD_GL_TESTS)
         if(WITH_TGAIMPORTER)
             target_link_libraries(ShadersVertexColorGLTest PRIVATE TgaImporter)
         endif()
+    endif()
+
+    if(CORRADE_TARGET_IOS)
+        set_source_files_properties(
+            TestFiles
+            VectorTestFiles
+            FlatTestFiles
+            MeshVisualizerTestFiles
+            PhongTestFiles
+            VectorTestFiles
+            VertexColorTestFiles
+            PROPERTIES MACOSX_PACKAGE_LOCATION Resources)
     endif()
 
     set_target_properties(
