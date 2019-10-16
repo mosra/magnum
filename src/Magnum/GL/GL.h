@@ -111,8 +111,12 @@ enum class CompressedPixelFormat: GLenum;
 
 /* ObjectFlag, ObjectFlags are used only in conjunction with *::wrap() function */
 
+#ifndef MAGNUM_TARGET_GLES2
 class PrimitiveQuery;
+#endif
+#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 class SampleQuery;
+#endif
 class TimeQuery;
 
 #ifndef MAGNUM_TARGET_GLES
