@@ -449,6 +449,8 @@ See also:
 
 @subsubsection changelog-latest-changes-shaders Shaders library
 
+-   All shaders now have rendering output tests, making them more robust for
+    future additions and refactorings. See also [mosra/magnum#382](https://github.com/mosra/magnum/pull/382).
 -   @ref Shaders::Phong now clamps the specular factor to minimize artifacts
     when shininess is near zero
 -   @ref Shaders::Phong can now handle zero lights, in which case its output is
@@ -681,6 +683,7 @@ See also:
     (see [mosra/magnum#367](https://github.com/mosra/magnum/issues/367))
 -   The @ref getting-started "Getting Started Guide" was rewritten to be easier
     to follow for Windows users, removing usual pain points (see
+    [mosra/magnum#377](https://github.com/mosra/magnum/issues/377) and
     [mosra/magnum#378](https://github.com/mosra/magnum/issues/378))
 
 @subsection changelog-latest-deprecated Deprecated APIs
