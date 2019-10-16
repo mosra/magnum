@@ -42,8 +42,22 @@ OpenGLTester::~OpenGLTester() = default;
 void OpenGLTester::gpuTimeBenchmarkBegin() {
     setBenchmarkName("GPU time");
 
-    /* Initialize, if not already */
-    if(!_gpuTimeQuery.id()) _gpuTimeQuery = TimeQuery{TimeQuery::Target::TimeElapsed};
+    /* Initialize, if not already; check for extension presence and skip if not
+       available. This function is always called from inside CORRADE_BENCHMARK,
+       which does the test case registration on a proper function. */
+    if(!_gpuTimeQuery.id()) {
+        #ifndef MAGNUM_TARGET_GLES
+        if(!Context::current().isExtensionSupported<Extensions::ARB::timer_query>())
+            skip("GL_ARB_timer_query is not supported");
+        #elif defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+        if(!Context::current().isExtensionSupported<Extensions::EXT::disjoint_timer_query_webgl2>())
+            skip("GL_EXT_disjoint_timer_query_webgl2 is not supported");
+        #else
+        if(!Context::current().isExtensionSupported<Extensions::EXT::disjoint_timer_query>())
+            skip("GL_EXT_disjoint_timer_query is not supported");
+        #endif
+        _gpuTimeQuery = TimeQuery{TimeQuery::Target::TimeElapsed};
+    }
 
     _gpuTimeQuery.begin();
 }
