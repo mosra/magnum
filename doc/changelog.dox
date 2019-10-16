@@ -346,6 +346,9 @@ See also:
 -   The [base-qt](https://github.com/mosra/magnum-bootstrap/tree/base-qt)
     bootstrap project is fixed to use OpenGL 4.1 on macOS instead of being
     stuck on 2.1 (see [mosra/magnum-bootstrap#22](https://github.com/mosra/magnum-bootstrap/issues/22))
+-   Since asm.js days are long over and WebAssembly supports 64-bit integers
+    natively, the @ref UnsignedLong and @ref Long types are now exposed on
+    @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" as well
 
 @subsubsection changelog-latest-changes-animation Animation library
 

@@ -43,10 +43,8 @@ typedef std::uint16_t UnsignedShort;
 typedef std::int16_t Short;
 typedef std::uint32_t UnsignedInt;
 typedef std::int32_t Int;
-#ifndef CORRADE_TARGET_EMSCRIPTEN
 typedef std::uint64_t UnsignedLong;
 typedef std::int64_t Long;
-#endif
 
 typedef float Float;
 typedef double Double;

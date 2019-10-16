@@ -201,23 +201,11 @@ Equivalent to GLSL @glsl int @ce.
 */
 typedef std::int32_t Int;
 
-#ifndef CORRADE_TARGET_EMSCRIPTEN
-/**
-@brief Unsigned long (64bit)
-
-@partialsupport 64-bit integers are not available under
-    @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-*/
+/** @brief Unsigned long (64bit) */
 typedef std::uint64_t UnsignedLong;
 
-/**
-@brief Signed long (64bit)
-
-@partialsupport 64-bit integers are not available in
-    @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
-*/
+/** @brief Signed long (64bit) */
 typedef std::int64_t Long;
-#endif
 
 /**
 @brief Float (32bit)
