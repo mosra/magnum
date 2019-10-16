@@ -986,6 +986,14 @@ if(WITH_GL_INFO)
             MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/MacOSXBundleInfo.plist.in
             XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED "YES")
     elseif(CORRADE_TARGET_EMSCRIPTEN)
+        add_custom_command(TARGET magnum-gl-info POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${CMAKE_CURRENT_SOURCE_DIR}/WebApplication.css
+                ${CMAKE_CURRENT_SOURCE_DIR}/WindowlessEmscriptenApplication.js
+                $<TARGET_FILE_DIR:magnum-gl-info>
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${CMAKE_CURRENT_SOURCE_DIR}/gl-info.html
+                $<TARGET_FILE_DIR:magnum-gl-info>/magnum-gl-info.html)
         install(FILES gl-info.html DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-gl-info RENAME index.html)
         install(TARGETS magnum-gl-info DESTINATION ${MAGNUM_DEPLOY_PREFIX}/magnum-gl-info)
         install(FILES
