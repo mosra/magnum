@@ -88,6 +88,7 @@ struct VectorGLTest: GL::OpenGLTester {
     -   SwiftShader ES2/ES3
     -   ARM Mali (Huawei P10) ES2/ES3
     -   WebGL 1 / 2 (on Mesa Intel)
+    -   iPhone 6 w/ iOS 12.4
 */
 
 using namespace Math::Literals;

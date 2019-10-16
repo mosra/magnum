@@ -123,6 +123,7 @@ struct PhongGLTest: GL::OpenGLTester {
     -   NVidia Windows
     -   Intel Windows
     -   AMD on macOS
+    -   iPhone 6 w/ iOS 12.4
 */
 
 constexpr struct {
@@ -565,8 +566,8 @@ void PhongGLTest::renderColored() {
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has some minor rounding differences (max = 1). ARM Mali G71
-       has bigger rounding differences. */
-    const Float maxThreshold = 8.34f, meanThreshold = 0.066f;
+       and Apple A8 has bigger rounding differences. */
+    const Float maxThreshold = 8.34f, meanThreshold = 0.100f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 15.34f, meanThreshold = 3.33f;
@@ -651,8 +652,8 @@ void PhongGLTest::renderSinglePixelTextured() {
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has some minor rounding differences (max = 1). ARM Mali G71
-       has bigger rounding differences. */
-    const Float maxThreshold = 7.0f, meanThreshold = 0.066f;
+       and Apple A8 has bigger rounding differences. */
+    const Float maxThreshold = 7.67f, meanThreshold = 0.100f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 15.34f, meanThreshold = 3.33f;
@@ -749,8 +750,8 @@ void PhongGLTest::renderTextured() {
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has few rounding errors at the edges (giving a large max
-       error), but that's basically it. */
-    const Float maxThreshold = 210.4f, meanThreshold = 0.126f;
+       error), but that's basically it. Apple A8 has more. */
+    const Float maxThreshold = 210.4f, meanThreshold = 0.202f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's a bit worse */
     const Float maxThreshold = 210.4f, meanThreshold = 3.434f;
@@ -834,8 +835,9 @@ void PhongGLTest::renderTexturedNormal() {
     /* One pixel in the center didn't survive the transformation. But that's
        okay. Due to the density of the normal map, SwiftShader has an overally
        consistent off-by-a-bit error. AMD macOS drivers have one pixel off
-       due to a rounding error on the edge. */
-    const Float maxThreshold = 191.0f, meanThreshold = 0.3421f;
+       due to a rounding error on the edge. Apple A8 has a slightly larger
+       overall difference. */
+    const Float maxThreshold = 191.0f, meanThreshold = 0.438f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 191.0f, meanThreshold = 3.017f;
@@ -895,8 +897,9 @@ template<class T> void PhongGLTest::renderVertexColor() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    /* SwiftShader has some minor differences on the edges */
-    const Float maxThreshold = 105.4f, meanThreshold = 0.075f;
+    /* SwiftShader has some minor differences on the edges, Apple A8 a bit
+       more */
+    const Float maxThreshold = 105.4f, meanThreshold = 0.167f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's worse */
     const Float maxThreshold = 105.4f, meanThreshold = 3.254f;
@@ -931,7 +934,12 @@ void PhongGLTest::renderShininess() {
         CORRADE_SKIP("AnyImageImporter / TgaImageImporter plugins not found.");
 
     {
-        #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
+        #ifdef CORRADE_TARGET_IOS
+        /* Apple A8 has a large single-pixel difference in the shininess ~= 0
+           case, but it's not nearly as bad as in the "huge ring" case on Mesa
+           etc. */
+        const Float maxThreshold = 211.0f, meanThreshold = 0.052f;
+        #elif !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
         /* SwiftShader has some minor rounding differences (max = 1.67). ARM
            Mali G71 has bigger rounding differences. */
         const Float maxThreshold = 12.0f, meanThreshold = 0.043f;
@@ -1072,8 +1080,9 @@ void PhongGLTest::renderAlpha() {
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* In some cases (separate vs combined alpha) there are off-by-one errors.
        That's okay, as we have only 8bit texture precision. SwiftShader has
-       additionally a few minor rounding errors at the edges. */
-    const Float maxThreshold = 172.667f, meanThreshold = 0.171f;
+       additionally a few minor rounding errors at the edges, Apple A8 a bit
+       more. */
+    const Float maxThreshold = 172.667f, meanThreshold = 0.229f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 172.667f, meanThreshold = 4.736f;
@@ -1142,8 +1151,8 @@ void PhongGLTest::renderObjectId() {
     /* Color output should have no difference -- same as in colored() */
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has some minor rounding differences (max = 1). ARM Mali G71
-       has bigger rounding differences. */
-    const Float maxThreshold = 8.34f, meanThreshold = 0.066f;
+       and Apple A8 has bigger rounding differences. */
+    const Float maxThreshold = 8.34f, meanThreshold = 0.100f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 15.34f, meanThreshold = 3.33f;
@@ -1233,8 +1242,9 @@ void PhongGLTest::renderZeroLights() {
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* Compared to FlatGLTest::renderAlpha3D(0.5), there's a bit more different
        pixels on the edges, caused by matrix multiplication being done in the
-       shader and not on the CPU side. */
-    const Float maxThreshold = 139.0f, meanThreshold = 0.122f;
+       shader and not on the CPU side. Apple A8 sprinkles a bunch of tiny
+       differences here and there. */
+    const Float maxThreshold = 139.0f, meanThreshold = 0.140f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 139.0f, meanThreshold = 2.896f;

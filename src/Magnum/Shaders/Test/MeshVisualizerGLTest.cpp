@@ -100,6 +100,7 @@ struct MeshVisualizerGLTest: GL::OpenGLTester {
     -   SwiftShader ES2/ES3
     -   ARM Mali (Huawei P10) ES2/ES3
     -   WebGL 1 / 2 (on Mesa Intel)
+    -   iPhone 6 w/ iOS 12.4
 */
 
 using namespace Math::Literals;
@@ -473,8 +474,9 @@ void MeshVisualizerGLTest::renderWireframe() {
     /* Test it's not *too* off, at least */
     if(data.flags & MeshVisualizer::Flag::NoGeometryShader) {
         #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-        /* SwiftShader has differently rasterized edges on four pixels */
-        const Float maxThreshold = 170.0f, meanThreshold = 0.327f;
+        /* SwiftShader has differently rasterized edges on four pixels. Apple
+           A8 on more. */
+        const Float maxThreshold = 170.0f, meanThreshold = 0.330f;
         #else
         /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
         const Float maxThreshold = 170.0f, meanThreshold = 1.699f;

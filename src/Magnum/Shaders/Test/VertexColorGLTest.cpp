@@ -85,6 +85,7 @@ struct VertexColorGLTest: GL::OpenGLTester {
     -   SwiftShader ES2/ES3
     -   ARM Mali (Huawei P10) ES2/ES3
     -   WebGL 1 / 2 (on Mesa Intel)
+    -   iPhone 6 w/ iOS 12.4
 */
 
 using namespace Math::Literals;
@@ -340,8 +341,8 @@ template<class T> void VertexColorGLTest::render3D() {
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* AMD has one different pixel compared to Intel, SwiftShader has
-       differently rasterized edges on five pixels */
-    const Float maxThreshold = 204.0f, meanThreshold = 0.158f;
+       differently rasterized edges on five pixels. Apple A8 some more. */
+    const Float maxThreshold = 204.0f, meanThreshold = 0.167f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 204.0f, meanThreshold = 1.284f;

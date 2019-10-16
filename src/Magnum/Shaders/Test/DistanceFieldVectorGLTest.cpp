@@ -88,6 +88,7 @@ struct DistanceFieldVectorGLTest: GL::OpenGLTester {
     -   SwiftShader ES2/ES3
     -   ARM Mali (Huawei P10) ES2/ES3
     -   WebGL 1 / 2 (on Mesa Intel)
+    -   iPhone 6 w/ iOS 12.4
 */
 
 using namespace Math::Literals;
@@ -257,8 +258,8 @@ void DistanceFieldVectorGLTest::renderDefaults2D() {
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences on edges, ARM Mali off-by-one in
-       all channels. */
-    const Float maxThreshold = 3.0f, meanThreshold = 0.076f;
+       all channels. Apple A8 off-by-more. */
+    const Float maxThreshold = 4.0f, meanThreshold = 0.077f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 17.0f, meanThreshold = 0.480f;
@@ -313,8 +314,8 @@ void DistanceFieldVectorGLTest::renderDefaults3D() {
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences on edges, ARM Mali off-by-one in
-       all channels. */
-    const Float maxThreshold = 3.0f, meanThreshold = 0.076f;
+       all channels. Apple A8 off-by-more. */
+    const Float maxThreshold = 4.0f, meanThreshold = 0.077f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 17.0f, meanThreshold = 0.480f;
@@ -369,8 +370,9 @@ void DistanceFieldVectorGLTest::render2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    /* SwiftShader has off-by-one differences when smoothing */
-    const Float maxThreshold = 5.667f, meanThreshold = 0.268f;
+    /* SwiftShader has off-by-one differences when smoothing, Apple A8 a bit
+       more. */
+    const Float maxThreshold = 6.0f, meanThreshold = 0.360f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 17.0f, meanThreshold = 2.386f;
@@ -430,8 +432,8 @@ void DistanceFieldVectorGLTest::render3D() {
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
     /* SwiftShader has off-by-one differences when smoothing plus a bunch of
-       different pixels on primitive edges */
-    const Float maxThreshold = 17.0f, meanThreshold = 0.192f;
+       different pixels on primitive edges, Apple A8 a bit more. */
+    const Float maxThreshold = 17.0f, meanThreshold = 0.204f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 17.0f, meanThreshold = 1.613f;

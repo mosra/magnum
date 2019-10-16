@@ -122,6 +122,7 @@ struct FlatGLTest: GL::OpenGLTester {
     -   NVidia Windows
     -   Intel Windows
     -   AMD on macOS
+    -   iPhone 6 w/ iOS 12.4
 */
 
 using namespace Math::Literals;
@@ -571,8 +572,8 @@ void FlatGLTest::renderTextured2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    /* SwiftShader has minor rounding errors */
-    const Float maxThreshold = 1.334f, meanThreshold = 0.012f;
+    /* SwiftShader has minor rounding errors, Apple A8 slightly more */
+    const Float maxThreshold = 2.334f, meanThreshold = 0.023f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's way worse */
     const Float maxThreshold = 15.667f, meanThreshold = 3.254f;
@@ -673,8 +674,8 @@ template<class T> void FlatGLTest::renderVertexColor2D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    /* SwiftShader has minor rounding errors. ARM Mali slightly more */
-    const Float maxThreshold = 1.334f, meanThreshold = 0.015f;
+    /* SwiftShader has minor rounding errors. ARM Mali / Apple A8 a bit more */
+    const Float maxThreshold = 3.334f, meanThreshold = 0.064f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's worse */
     const Float maxThreshold = 15.334f, meanThreshold = 4.355f;
@@ -731,8 +732,8 @@ template<class T> void FlatGLTest::renderVertexColor3D() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     #if !(defined(MAGNUM_TARGET_GLES2) && defined(MAGNUM_TARGET_WEBGL))
-    /* SwiftShader has some minor differences on the edges */
-    const Float maxThreshold = 76.67f, meanThreshold = 0.072f;
+    /* SwiftShader has some minor differences on the edges, Apple A8 more */
+    const Float maxThreshold = 76.67f, meanThreshold = 0.138f;
     #else
     /* WebGL 1 doesn't have 8bit renderbuffer storage, so it's worse */
     const Float maxThreshold = 76.67f, meanThreshold = 3.908f;
