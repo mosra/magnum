@@ -438,6 +438,28 @@ WebGL specification provide even more detail:
 -   [Differences Between WebGL and OpenGL ES 2.0](http://www.khronos.org/registry/webgl/specs/latest/1.0/#6)
 -   [Differences Between WebGL and OpenGL ES 3.0](https://www.khronos.org/registry/webgl/specs/latest/2.0/#5)
 
+@subsection platforms-html5-webgl-timer-queries Timer queries not available in the browser
+
+Similarly to [Rowhammer](https://en.wikipedia.org/wiki/Row_hammer), GPU timer
+queries could be abused to do a bit-flip attack, which is the reason why
+@webgl_extension{EXT,disjoint_timer_query} / @webgl_extension{EXT,disjoint_timer_query_webgl2} might not be available in
+your browser. Recent versions of Chrome [expose it again](https://bugs.chromium.org/p/chromium/issues/detail?id=823863),
+and Firefox exposes it if you enable `webgl.enable-privileged-extensions` in
+`about:config` ([source](https://www.khronos.org/webgl/public-mailing-list/public_webgl/1803/msg00017.php)).
+[More details about the GLitch vulnerability.](https://www.vusec.net/wp-content/uploads/2018/05/glitch.pdf)
+
+@subsection platforms-html5-webgl-queries-zero Queries always report zero results
+
+Compared to OpenGL ES, WebGL [has an additional restriction](https://www.khronos.org/registry/webgl/specs/latest/2.0/#3.7.12)
+where it's not guaranteed for a @ref GL::PrimitiveQuery, @ref GL::SampleQuery
+or @ref GL::TimeQuery to return a result in the same frame, which in practice
+means that the queries will return zero. This is particularly problematic in
+headless tests / benchmarks and currently there's no builtin way in Magnum to
+circumvent this limitation.
+
+If you're on Firefox, you can enable the `webgl.allow-immediate-queries` option
+in `about:flags`, which will make these working.
+
 @section platforms-html5-code-size Compilation time / code size tradeoffs
 
 By default, the toolchain configures the compiler and linker to use `-O3` in

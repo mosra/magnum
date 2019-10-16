@@ -25,6 +25,7 @@
 
 set(MagnumGL_SRCS
     AbstractObject.cpp
+    AbstractQuery.cpp
     AbstractShaderProgram.cpp
     Attribute.cpp
     Buffer.cpp
@@ -43,6 +44,7 @@ set(MagnumGL_SRCS
     Implementation/ContextState.cpp
     Implementation/FramebufferState.cpp
     Implementation/MeshState.cpp
+    Implementation/QueryState.cpp
     Implementation/RendererState.cpp
     Implementation/ShaderProgramState.cpp
     Implementation/ShaderState.cpp
@@ -63,6 +65,7 @@ set(MagnumGL_GracefulAssert_SRCS
 set(MagnumGL_HEADERS
     AbstractFramebuffer.h
     AbstractObject.h
+    AbstractQuery.h
     AbstractShaderProgram.h
     AbstractTexture.h
     Attribute.h
@@ -84,6 +87,7 @@ set(MagnumGL_HEADERS
     Shader.h
     Texture.h
     TextureFormat.h
+    TimeQuery.h
     Version.h
 
     visibility.h)
@@ -95,6 +99,7 @@ set(MagnumGL_PRIVATE_HEADERS
     Implementation/FramebufferState.h
     Implementation/maxTextureSize.h
     Implementation/MeshState.h
+    Implementation/QueryState.h
     Implementation/RendererState.h
     Implementation/ShaderProgramState.h
     Implementation/ShaderState.h
@@ -137,8 +142,7 @@ if(NOT TARGET_WEBGL)
         Implementation/DebugState.cpp)
 
     list(APPEND MagnumGL_HEADERS
-        DebugOutput.h
-        TimeQuery.h)
+        DebugOutput.h)
 
     list(APPEND MagnumGL_PRIVATE_HEADERS
         Implementation/DebugState.h)
@@ -160,17 +164,8 @@ endif()
 
 # Desktop, OpenGL ES and WebGL 2.0 stuff that is not available in WebGL 1.0
 if(NOT (TARGET_WEBGL AND TARGET_GLES2))
-    list(APPEND MagnumGL_SRCS
-        AbstractQuery.cpp
-
-        Implementation/QueryState.cpp)
-
     list(APPEND MagnumGL_HEADERS
-        AbstractQuery.h
         SampleQuery.h)
-
-    list(APPEND MagnumGL_PRIVATE_HEADERS
-        Implementation/QueryState.h)
 endif()
 
 # Objects shared between main and test library

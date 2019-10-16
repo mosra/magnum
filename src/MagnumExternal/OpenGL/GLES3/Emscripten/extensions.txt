@@ -5,6 +5,7 @@
 version 3.0 es
 
 extension EXT_texture_filter_anisotropic        optional
+# It's actually EXT_disjoint_timer_query_webgl2, but that's not known to gl.xml
 extension EXT_disjoint_timer_query              optional
 extension EXT_color_buffer_float                optional
 extension EXT_texture_compression_rgtc          optional

@@ -35,6 +35,7 @@
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/GL/Renderer.h"
+#include "Magnum/GL/TimeQuery.h"
 
 #if defined(MAGNUM_TARGET_HEADLESS) || defined(CORRADE_TARGET_EMSCRIPTEN) || defined(CORRADE_TARGET_ANDROID)
 #include "Magnum/Platform/WindowlessEglApplication.h"
@@ -56,10 +57,6 @@
 #endif
 #else
 #error cannot run OpenGL tests on this platform
-#endif
-
-#ifndef MAGNUM_TARGET_WEBGL
-#include "Magnum/GL/TimeQuery.h"
 #endif
 
 namespace Magnum { namespace GL {
@@ -134,7 +131,12 @@ which is supported here as well as in all other application implementations.
 
 This class adds @ref BenchmarkType::GpuTime to the benchmark type enum,
 allowing you to measure time spent on GPU as opposed to CPU or wall clock time.
-@requires_gles GPU time benchmarking is not available on WebGL.
+If @gl_extension{ARB,timer_query} desktop extension (part of OpenGL 3.3),
+@gl_extension{EXT,disjoint_timer_query} OpenGL ES extension,
+@webgl_extension{EXT,disjoint_timer_query} WebGL 1 extension or
+@gl_extension{EXT,disjoint_timer_query_webgl2} WebGL 2 extension is not
+available, GPU time benchmarks will get automatically skipped, producing a
+@cb{.ansi} [1;39mSKIP @ce message on the output.
 
 @note This class is available only if Magnum is compiled with
     @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
@@ -142,7 +144,6 @@ allowing you to measure time spent on GPU as opposed to CPU or wall clock time.
 */
 class OpenGLTester: public TestSuite::Tester {
     public:
-        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Benchmark type
          *
@@ -178,14 +179,19 @@ class OpenGLTester: public TestSuite::Tester {
             /**
              * GPU time, measured using @ref TimeQuery::Target::TimeElapsed.
              * Note that the result of the query is retrieved synchronously and
-             * thus may cause pipeline bubble. Increase number of iterations
+             * thus may cause a pipeline bubble. Increase number of iterations
              * passed to @ref CORRADE_BENCHMARK() to amortize the measurement
              * error.
-             * @requires_gles GPU time benchmarking is not available on WebGL.
+             *
+             * If @gl_extension{ARB,timer_query} desktop extension (part of
+             * OpenGL 3.3), @gl_extension{EXT,disjoint_timer_query} OpenGL ES
+             * extension, @webgl_extension{EXT,disjoint_timer_query} WebGL 1
+             * extension or @gl_extension{EXT,disjoint_timer_query_webgl2}
+             * WebGL 2 extension is not available, GPU time benchmarks will get
+             * automatically skipped.
              */
             GpuTime = 32
         };
-        #endif
 
         /**
          * @brief Constructor
@@ -196,13 +202,18 @@ class OpenGLTester: public TestSuite::Tester {
 
         ~OpenGLTester();
 
-        #ifndef MAGNUM_TARGET_WEBGL
         /**
          * @brief Add benchmarks
          *
          * Extends @ref Corrade::TestSuite::Tester::addBenchmarks(std::initializer_list<void(Derived::*)()>, std::size_t, BenchmarkType) with support
          * for GPU benchmark types.
-         * @requires_gles GPU time benchmarking is not available on WebGL.
+         *
+         * If @gl_extension{ARB,timer_query} desktop extension (part of OpenGL
+         * 3.3), @gl_extension{EXT,disjoint_timer_query} OpenGL ES extension,
+         * @webgl_extension{EXT,disjoint_timer_query} WebGL 1 extension or
+         * @gl_extension{EXT,disjoint_timer_query_webgl2} WebGL 2 extension is
+         * not available, @ref BenchmarkType::GpuTime benchmarks will get
+         * automatically skipped.
          */
         template<class Derived> void addBenchmarks(std::initializer_list<void(Derived::*)()> benchmarks, std::size_t batchCount, BenchmarkType benchmarkType = BenchmarkType::Default) {
             if(benchmarkType == BenchmarkType::GpuTime)
@@ -216,7 +227,13 @@ class OpenGLTester: public TestSuite::Tester {
          *
          * Extends @ref Corrade::TestSuite::Tester::addBenchmarks(std::initializer_list<void(Derived::*)()>, std::size_t, void(Derived::*)(), void(Derived::*)(), BenchmarkType) with support
          * for GPU benchmark types.
-         * @requires_gles GPU time benchmarking is not available on WebGL.
+         *
+         * If @gl_extension{ARB,timer_query} desktop extension (part of OpenGL
+         * 3.3), @gl_extension{EXT,disjoint_timer_query} OpenGL ES extension,
+         * @webgl_extension{EXT,disjoint_timer_query} WebGL 1 extension or
+         * @gl_extension{EXT,disjoint_timer_query_webgl2} WebGL 2 extension is
+         * not available, @ref BenchmarkType::GpuTime benchmarks will get
+         * automatically skipped.
          */
         template<class Derived> void addBenchmarks(std::initializer_list<void(Derived::*)()> benchmarks, std::size_t batchCount, void(Derived::*setup)(), void(Derived::*teardown)(), BenchmarkType benchmarkType = BenchmarkType::Default) {
             if(benchmarkType == BenchmarkType::GpuTime)
@@ -230,7 +247,13 @@ class OpenGLTester: public TestSuite::Tester {
          *
          * Extends @ref Corrade::TestSuite::Tester::addInstancedBenchmarks(std::initializer_list<void(Derived::*)()>, std::size_t, std::size_t, BenchmarkType) with support for GPU
          * benchmark types.
-         * @requires_gles GPU time benchmarking is not available on WebGL.
+         *
+         * If @gl_extension{ARB,timer_query} desktop extension (part of OpenGL
+         * 3.3), @gl_extension{EXT,disjoint_timer_query} OpenGL ES extension,
+         * @webgl_extension{EXT,disjoint_timer_query} WebGL 1 extension or
+         * @gl_extension{EXT,disjoint_timer_query_webgl2} WebGL 2 extension is
+         * not available, @ref BenchmarkType::GpuTime benchmarks will get
+         * automatically skipped.
          */
         template<class Derived> void addInstancedBenchmarks(std::initializer_list<void(Derived::*)()> benchmarks, std::size_t batchCount, std::size_t instanceCount, BenchmarkType benchmarkType = BenchmarkType::Default) {
             if(benchmarkType == BenchmarkType::GpuTime)
@@ -244,30 +267,31 @@ class OpenGLTester: public TestSuite::Tester {
          *
          * Extends @ref Corrade::TestSuite::Tester::addInstancedBenchmarks(std::initializer_list<void(Derived::*)()>, std::size_t, std::size_t, void(Derived::*)(), void(Derived::*)(), BenchmarkType)
          * with support for GPU benchmark types.
-         * @requires_gles GPU time benchmarking is not available on WebGL.
+         *
+         * If @gl_extension{ARB,timer_query} desktop extension (part of OpenGL
+         * 3.3), @gl_extension{EXT,disjoint_timer_query} OpenGL ES extension,
+         * @webgl_extension{EXT,disjoint_timer_query} WebGL 1 extension or
+         * @gl_extension{EXT,disjoint_timer_query_webgl2} WebGL 2 extension is
+         * not available, @ref BenchmarkType::GpuTime benchmarks will get
+         * automatically skipped.
          */
         template<class Derived> void addInstancedBenchmarks(std::initializer_list<void(Derived::*)()> benchmarks, std::size_t batchCount, std::size_t instanceCount, void(Derived::*setup)(), void(Derived::*teardown)(), BenchmarkType benchmarkType = BenchmarkType::Default) {
             if(benchmarkType == BenchmarkType::GpuTime)
-                addCustomInstancedBenchmarks<Derived>(benchmarks, batchCount, instanceCount, &OpenGLTester::gpuTimeBenchmarkBegin, &OpenGLTester::gpuTimeBenchmarkEnd, setup, teardown, BenchmarkUnits::Nanoseconds);
+                addCustomInstancedBenchmarks<Derived>(benchmarks, batchCount, instanceCount, setup, teardown, &OpenGLTester::gpuTimeBenchmarkBegin, &OpenGLTester::gpuTimeBenchmarkEnd, BenchmarkUnits::Nanoseconds);
             else
                 Tester::addInstancedBenchmarks(benchmarks, batchCount, instanceCount, setup, teardown, Tester::BenchmarkType(Int(benchmarkType)));
         }
-        #endif
 
     private:
-        #ifndef MAGNUM_TARGET_WEBGL
         void gpuTimeBenchmarkBegin();
         std::uint64_t gpuTimeBenchmarkEnd();
-        #endif
 
         struct WindowlessApplication: Platform::WindowlessApplication {
             explicit WindowlessApplication(const Arguments& arguments): Platform::WindowlessApplication{arguments} {}
             int exec() override final { return 0; }
         } _windowlessApplication;
 
-        #ifndef MAGNUM_TARGET_WEBGL
         TimeQuery _gpuTimeQuery{NoCreate};
-        #endif
 };
 
 /** @hideinitializer

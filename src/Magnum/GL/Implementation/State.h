@@ -39,9 +39,7 @@ struct DebugState;
 #endif
 struct FramebufferState;
 struct MeshState;
-#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 struct QueryState;
-#endif
 struct RendererState;
 struct ShaderState;
 struct ShaderProgramState;
@@ -65,9 +63,7 @@ struct State {
     #endif
     Containers::Pointer<FramebufferState> framebuffer;
     Containers::Pointer<MeshState> mesh;
-    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     Containers::Pointer<QueryState> query;
-    #endif
     Containers::Pointer<RendererState> renderer;
     Containers::Pointer<ShaderState> shader;
     Containers::Pointer<ShaderProgramState> shaderProgram;

@@ -274,16 +274,21 @@ namespace ANGLE {
     _extension( 4,EXT,sRGB,                         GLES200, GLES300) // #17
     _extension( 5,EXT,blend_minmax,                 GLES200, GLES300) // #25
     #endif
+    #ifdef MAGNUM_TARGET_GLES2
+    /* Replaced by EXT_disjoint_timer_query_webgl2 in WebGL 2 */
     _extension( 6,EXT,disjoint_timer_query,         GLES200,    None) // #26
+    #endif
     #ifdef MAGNUM_TARGET_GLES2
     _extension( 7,EXT,shader_texture_lod,           GLES200, GLES300) // #27
     #endif
     #ifndef MAGNUM_TARGET_GLES2
     /* Replaces WEBGL_color_buffer_float from WebGL 1 */
     _extension( 8,EXT,color_buffer_float,           GLES300,    None) // #31
+    /* Replaces WEBGL_disjoint_timer_query from WebGL 1 */
+    _extension( 9,EXT,disjoint_timer_query_webgl2,  GLES300,    None) // #33
     #endif
-    _extension( 9,EXT,texture_compression_rgtc,     GLES200,    None) // #38
-    _extension(10,EXT,texture_compression_bptc,     GLES200,    None) // #39
+    _extension(10,EXT,texture_compression_rgtc,     GLES200,    None) // #38
+    _extension(11,EXT,texture_compression_bptc,     GLES200,    None) // #39
 } namespace OES {
     #ifdef MAGNUM_TARGET_GLES2
     _extension(15,OES,texture_float,                GLES200, GLES300) // #1

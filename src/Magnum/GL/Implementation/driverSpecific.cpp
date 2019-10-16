@@ -280,6 +280,19 @@ namespace {
    framebuffer size, otherwise it assumes it's zero-sized. */
 "apitrace-zero-initial-viewport",
 #endif
+
+#if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+/* While the EXT_disjoint_timer_query extension should be only on WebGL 1 and
+   EXT_disjoint_timer_query_webgl2 only on WebGL 2, Firefox reports
+   EXT_disjoint_timer_query on both. The entry points work correctly however,
+   so this workaround makes Magnum pretend EXT_disjoint_timer_query_webgl2 is
+   available when it detects EXT_disjoint_timer_query on WebGL 2 builds on
+   Firefox. See also https://bugzilla.mozilla.org/show_bug.cgi?id=1328882,
+   https://www.khronos.org/webgl/public-mailing-list/public_webgl/1705/msg00015.php
+   and https://github.com/emscripten-core/emscripten/pull/9652 for the
+   Emscripten-side part of this workaround. */
+"firefox-fake-disjoint-timer-query-webgl2",
+#endif
 /* [workarounds] */
     };
 }
@@ -468,6 +481,16 @@ void Context::setupDriverWorkarounds() {
         GLint viewport[4];
         glGetIntegerv(GL_VIEWPORT, viewport);
         glViewport(viewport[0], viewport[1], viewport[2], viewport[3]);
+    }
+    #endif
+
+    #if defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+    if(rendererString() == "Mozilla") {
+        for(const auto& extension: extensionStrings()) {
+            if(extension == "GL_EXT_disjoint_timer_query" && !isDriverWorkaroundDisabled("firefox-fake-disjoint-timer-query-webgl2")) {
+                _extensionStatus.set(Extensions::EXT::disjoint_timer_query_webgl2::Index, true);
+            }
+        }
     }
     #endif
 }

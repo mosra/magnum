@@ -247,9 +247,12 @@ constexpr Extension ExtensionList460[]{
 #elif defined(MAGNUM_TARGET_WEBGL)
 constexpr Extension ExtensionList[]{
     _extension(EXT,texture_filter_anisotropic),
+    #ifdef MAGNUM_TARGET_GLES2
     _extension(EXT,disjoint_timer_query),
+    #endif
     #ifndef MAGNUM_TARGET_GLES2
     _extension(EXT,color_buffer_float),
+    _extension(EXT,disjoint_timer_query_webgl2),
     #endif
     _extension(EXT,texture_compression_rgtc),
     _extension(EXT,texture_compression_bptc),

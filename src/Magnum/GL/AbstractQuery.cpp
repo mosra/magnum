@@ -46,10 +46,8 @@ AbstractQuery::~AbstractQuery() {
 
     #ifndef MAGNUM_TARGET_GLES2
     glDeleteQueries(1, &_id);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
-    glDeleteQueriesEXT(1, &_id);
     #else
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glDeleteQueriesEXT(1, &_id);
     #endif
     _flags |= ObjectFlag::Created;
 }
@@ -57,10 +55,8 @@ AbstractQuery::~AbstractQuery() {
 void AbstractQuery::createImplementationDefault() {
     #ifndef MAGNUM_TARGET_GLES2
     glGenQueries(1, &_id);
-    #elif !defined(CORRADE_TARGET_EMSCRIPTEN)
-    glGenQueriesEXT(1, &_id);
     #else
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    glGenQueriesEXT(1, &_id);
     #endif
 }
 
@@ -112,7 +108,6 @@ template<> UnsignedInt AbstractQuery::result<UnsignedInt>() {
 
 template<> bool AbstractQuery::result<bool>() { return result<UnsignedInt>() != 0; }
 
-#ifndef MAGNUM_TARGET_WEBGL
 template<> Int AbstractQuery::result<Int>() {
     Int result;
     #ifndef MAGNUM_TARGET_GLES
@@ -142,7 +137,6 @@ template<> Long AbstractQuery::result<Long>() {
     #endif
     return result;
 }
-#endif
 #endif
 
 void AbstractQuery::begin() {

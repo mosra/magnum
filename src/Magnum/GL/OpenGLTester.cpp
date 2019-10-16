@@ -39,7 +39,6 @@ OpenGLTester::OpenGLTester(): TestSuite::Tester{TestSuite::Tester::TesterConfigu
 
 OpenGLTester::~OpenGLTester() = default;
 
-#ifndef MAGNUM_TARGET_WEBGL
 void OpenGLTester::gpuTimeBenchmarkBegin() {
     setBenchmarkName("GPU time");
 
@@ -53,6 +52,5 @@ std::uint64_t OpenGLTester::gpuTimeBenchmarkEnd() {
     _gpuTimeQuery.end();
     return _gpuTimeQuery.result<UnsignedLong>();
 }
-#endif
 
 }}

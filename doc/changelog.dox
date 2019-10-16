@@ -194,6 +194,12 @@ See also:
     shell (as opposed to an APK) because using it causes the
     @ref GL::Renderer::Error::OutOfMemory error. See @ref opengl-workarounds
     for more information.
+-   Implemented @webgl_extension{EXT,disjoint_timer_query} and
+    @webgl_extension{EXT,disjoint_timer_query_webgl2} for WebGL, together with
+    a new @cpp "firefox-fake-disjoint-timer-query-webgl2" @ce workaround. See
+    @ref opengl-workarounds, @ref platforms-html5-webgl-timer-queries and
+    @ref platforms-html5-webgl-queries-zero for more information about various
+    caveats.
 -   New `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
     and a corresponding environment variable to conveniently enable
     @gl_extension{KHR,debug} debug output. This flag also causes

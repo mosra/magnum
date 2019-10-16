@@ -37,9 +37,7 @@
 #endif
 #include "Magnum/GL/Implementation/FramebufferState.h"
 #include "Magnum/GL/Implementation/MeshState.h"
-#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 #include "Magnum/GL/Implementation/QueryState.h"
-#endif
 #include "Magnum/GL/Implementation/RendererState.h"
 #include "Magnum/GL/Implementation/ShaderState.h"
 #include "Magnum/GL/Implementation/ShaderProgramState.h"
@@ -67,9 +65,7 @@ State::State(Context& context, std::ostream* const out) {
     #endif
     framebuffer.reset(new FramebufferState{context, extensions});
     mesh.reset(new MeshState{context, *this->context, extensions});
-    #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
     query.reset(new QueryState{context, extensions});
-    #endif
     renderer.reset(new RendererState{context, extensions});
     shader.reset(new ShaderState(context, extensions));
     shaderProgram.reset(new ShaderProgramState{context, extensions});

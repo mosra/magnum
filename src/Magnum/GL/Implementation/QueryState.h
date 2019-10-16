@@ -37,10 +37,6 @@
 #include "Magnum/GL/AbstractQuery.h"
 #endif
 
-#if defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2)
-#error this header is not available in WebGL 1.0 build
-#endif
-
 namespace Magnum { namespace GL { namespace Implementation {
 
 struct QueryState {

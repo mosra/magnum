@@ -37,6 +37,7 @@ corrade_add_test(GLRenderbufferTest RenderbufferTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLSamplerTest SamplerTest.cpp LIBRARIES MagnumGLTestLib)
 corrade_add_test(GLShaderTest ShaderTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLTextureTest TextureTest.cpp LIBRARIES MagnumGL)
+corrade_add_test(GLTimeQueryTest TimeQueryTest.cpp LIBRARIES MagnumGL)
 corrade_add_test(GLVersionTest VersionTest.cpp LIBRARIES MagnumGL)
 
 set_target_properties(
@@ -54,6 +55,7 @@ set_target_properties(
     GLSamplerTest
     GLShaderTest
     GLTextureTest
+    GLTimeQueryTest
     GLVersionTest
     PROPERTIES FOLDER "Magnum/GL/Test")
 
@@ -93,11 +95,6 @@ if(NOT (MAGNUM_TARGET_WEBGL AND MAGNUM_TARGET_GLES2))
     set_target_properties(GLSampleQueryTest PROPERTIES FOLDER "Magnum/GL/Test")
 endif()
 
-if(NOT MAGNUM_TARGET_WEBGL)
-    corrade_add_test(GLTimeQueryTest TimeQueryTest.cpp LIBRARIES MagnumGL)
-    set_target_properties(GLTimeQueryTest PROPERTIES FOLDER "Magnum/GL/Test")
-endif()
-
 if(NOT MAGNUM_TARGET_GLES)
     corrade_add_test(GLRectangleTextureTest RectangleTextureTest.cpp LIBRARIES MagnumGL)
     set_target_properties(GLRectangleTextureTest PROPERTIES FOLDER "Magnum/GL/Test")
@@ -112,6 +109,7 @@ if(BUILD_GL_TESTS)
     corrade_add_test(GLRendererGLTest RendererGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLRenderbufferGLTest RenderbufferGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLTextureGLTest TextureGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
+    corrade_add_test(GLTimeQueryGLTest TimeQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
 
     corrade_add_resource(GLAbstractShaderProgramGLTest_RES AbstractShaderProgramGLTestFiles/resources.conf)
     corrade_add_test(GLAbstractShaderProgramGLTest
@@ -147,6 +145,7 @@ if(BUILD_GL_TESTS)
         GLMeshGLTest
         GLRenderbufferGLTest
         GLTextureGLTest
+        GLTimeQueryGLTest
 
         GLAbstractShaderProgramGLTest
         GLAbstractShaderProgramGLTest_RES-dependencies
@@ -157,12 +156,10 @@ if(BUILD_GL_TESTS)
     if(NOT MAGNUM_TARGET_WEBGL)
         corrade_add_test(GLAbstractObjectGLTest AbstractObjectGLTest.cpp LIBRARIES MagnumOpenGLTester)
         corrade_add_test(GLDebugOutputGLTest DebugOutputGLTest.cpp LIBRARIES MagnumOpenGLTester)
-        corrade_add_test(GLTimeQueryGLTest TimeQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
 
         set_target_properties(
             GLAbstractObjectGLTest
             GLDebugOutputGLTest
-            GLTimeQueryGLTest
             PROPERTIES FOLDER "Magnum/GL/Test")
     endif()
 

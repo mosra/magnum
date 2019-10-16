@@ -52,6 +52,9 @@ void TimeQueryGLTest::wrap() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::timer_query>())
         CORRADE_SKIP(Extensions::ARB::timer_query::string() + std::string(" is not available"));
+    #elif defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current().isExtensionSupported<Extensions::EXT::disjoint_timer_query_webgl2>())
+        CORRADE_SKIP(Extensions::EXT::disjoint_timer_query_webgl2::string() + std::string(" is not available"));
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::disjoint_timer_query>())
         CORRADE_SKIP(Extensions::EXT::disjoint_timer_query::string() + std::string(" is not available"));
@@ -83,6 +86,9 @@ void TimeQueryGLTest::queryTime() {
     #ifndef MAGNUM_TARGET_GLES
     if(!Context::current().isExtensionSupported<Extensions::ARB::timer_query>())
         CORRADE_SKIP(Extensions::ARB::timer_query::string() + std::string(" is not available"));
+    #elif defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current().isExtensionSupported<Extensions::EXT::disjoint_timer_query_webgl2>())
+        CORRADE_SKIP(Extensions::EXT::disjoint_timer_query_webgl2::string() + std::string(" is not available"));
     #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::disjoint_timer_query>())
         CORRADE_SKIP(Extensions::EXT::disjoint_timer_query::string() + std::string(" is not available"));
@@ -107,7 +113,13 @@ void TimeQueryGLTest::queryTime() {
 }
 
 void TimeQueryGLTest::queryTimestamp() {
-    #ifdef MAGNUM_TARGET_GLES
+    #ifndef MAGNUM_TARGET_GLES
+    if(!Context::current().isExtensionSupported<Extensions::ARB::timer_query>())
+        CORRADE_SKIP(Extensions::ARB::timer_query::string() + std::string(" is not available"));
+    #elif defined(MAGNUM_TARGET_WEBGL) && !defined(MAGNUM_TARGET_GLES2)
+    if(!Context::current().isExtensionSupported<Extensions::EXT::disjoint_timer_query_webgl2>())
+        CORRADE_SKIP(Extensions::EXT::disjoint_timer_query_webgl2::string() + std::string(" is not available"));
+    #else
     if(!Context::current().isExtensionSupported<Extensions::EXT::disjoint_timer_query>())
         CORRADE_SKIP(Extensions::EXT::disjoint_timer_query::string() + std::string(" is not available"));
     #endif

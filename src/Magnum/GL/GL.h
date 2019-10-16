@@ -44,9 +44,7 @@ namespace Magnum { namespace GL {
    FramebufferTarget enums used only directly with framebuffer instance */
 class AbstractFramebuffer;
 
-#if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 class AbstractQuery;
-#endif
 class AbstractShaderProgram;
 class AbstractTexture;
 
