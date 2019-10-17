@@ -487,6 +487,33 @@ class GlfwApplication {
         /** @{ @name Mouse handling */
 
     public:
+        /**
+         * @brief Cursor type
+         *
+         * @see @ref setCursor()
+         */
+        enum class Cursor : UnsignedInt {
+            Arrow,          /**< Arrow */
+            TextInput,      /**< Text input */
+            Crosshair,      /**< Crosshair */
+            ResizeWE,       /**< Double arrow pointing west and east */
+            ResizeNS,       /**< Double arrow pointing north and south */
+            Hand,           /**< Hand */
+            Hidden,         /**< Hidden */
+            HiddenLocked    /**< Hidden and locked */
+        };
+
+    public:
+        /**
+         * @brief Set the cursor to the @p type
+         */
+        void setCursor(Cursor cursor);
+
+        /**
+         * @brief Get the current cursor type
+         */
+        Cursor cursor();
+
         /** @brief Warp mouse cursor to given coordinates */
         void warpCursor(const Vector2i& position) {
             glfwSetCursorPos(_window, Double(position.x()), Double(position.y()));
@@ -576,6 +603,9 @@ class GlfwApplication {
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
 
         void setupCallbacks();
+
+        GLFWcursor* _cursors[8]{};
+        Cursor _cursor = Cursor::Arrow;
 
         /* These are saved from command-line arguments */
         bool _verboseLog{};

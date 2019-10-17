@@ -685,6 +685,11 @@ Sdl2Application::~Sdl2Application() {
     #endif
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
+    for(auto& cursor: _cursors)
+        SDL_FreeCursor(cursor);
+    #endif
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     SDL_DestroyWindow(_window);
     #endif
     SDL_Quit();
@@ -879,6 +884,64 @@ bool Sdl2Application::mainLoopIteration() {
     #endif
     return !(_flags & Flag::Exit);
 }
+
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+void Sdl2Application::setCursor(Cursor cursor) {
+    CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(_cursors));
+
+    if(cursor == Cursor::Hidden) {
+        SDL_ShowCursor(SDL_DISABLE);
+        SDL_SetWindowGrab(_window, SDL_FALSE);
+        SDL_SetRelativeMouseMode(SDL_FALSE);
+        return;
+    } else if(cursor == Cursor::HiddenLocked) {
+        SDL_SetWindowGrab(_window, SDL_TRUE);
+        SDL_SetRelativeMouseMode(SDL_TRUE);
+        return;
+    } else {
+        SDL_ShowCursor(SDL_ENABLE);
+        SDL_SetWindowGrab(_window, SDL_FALSE);
+        SDL_SetRelativeMouseMode(SDL_FALSE);
+    }
+
+    if(!_cursors[UnsignedInt(cursor)]) {
+        constexpr SDL_SystemCursor CursorMap[] {
+            SDL_SYSTEM_CURSOR_ARROW,
+            SDL_SYSTEM_CURSOR_IBEAM,
+            SDL_SYSTEM_CURSOR_WAIT,
+            SDL_SYSTEM_CURSOR_CROSSHAIR,
+            SDL_SYSTEM_CURSOR_WAITARROW,
+            SDL_SYSTEM_CURSOR_SIZENWSE,
+            SDL_SYSTEM_CURSOR_SIZENESW,
+            SDL_SYSTEM_CURSOR_SIZEWE,
+            SDL_SYSTEM_CURSOR_SIZENS,
+            SDL_SYSTEM_CURSOR_SIZEALL,
+            SDL_SYSTEM_CURSOR_NO,
+            SDL_SYSTEM_CURSOR_HAND
+        };
+
+        _cursors[UnsignedInt(cursor)] = SDL_CreateSystemCursor(CursorMap[UnsignedInt(cursor)]);
+    }
+
+    SDL_SetCursor(_cursors[UnsignedInt(cursor)]);
+}
+
+Sdl2Application::Cursor Sdl2Application::cursor() {
+    if(SDL_GetRelativeMouseMode())
+        return Cursor::HiddenLocked;
+    else if(!SDL_ShowCursor(SDL_QUERY))
+        return Cursor::Hidden;
+
+    SDL_Cursor* cursor = SDL_GetCursor();
+
+    if(cursor)
+        for(UnsignedInt i = 0; i < sizeof(_cursors); i++)
+            if(_cursors[i] == cursor)
+                return Cursor(i);
+
+    return Cursor::Arrow;
+}
+#endif
 
 void Sdl2Application::setMouseLocked(bool enabled) {
     /** @todo Implement this in Emscripten */
