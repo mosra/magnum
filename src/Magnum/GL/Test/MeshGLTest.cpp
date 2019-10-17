@@ -1071,11 +1071,9 @@ void MeshGLTest::addVertexBufferMatrixNxNd() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     {
-        auto drivers = Context::DetectedDriver::Amd|Context::DetectedDriver::NVidia;
-        #ifdef CORRADE_TARGET_WINDOWS
-        drivers |= Context::DetectedDriver::IntelWindows;
-        #endif
-        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & drivers, "Somehow only first two values are extracted on AMD, NVidia and Intel Windows drivers.");
+        /* Used to be a problem on Intel Windows drivers 23, not a problem on
+           26 anymore */
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & (Context::DetectedDriver::Amd|Context::DetectedDriver::NVidia), "Somehow only first two values are extracted on AMD and NVidia drivers.");
         CORRADE_COMPARE(value.xyz(), Math::Vector3<UnsignedShort>(315, 65201, 2576));
     }
 
@@ -1173,11 +1171,9 @@ void MeshGLTest::addVertexBufferMatrixMxNd() {
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     {
-        auto drivers = Context::DetectedDriver::Amd|Context::DetectedDriver::NVidia;
-        #ifdef CORRADE_TARGET_WINDOWS
-        drivers |= Context::DetectedDriver::IntelWindows;
-        #endif
-        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & drivers, "Somehow only first two values are extracted on AMD, NVidia and Intel Windows drivers.");
+        /* Used to be a problem on Intel Windows drivers 23, not a problem on
+           26 anymore */
+        CORRADE_EXPECT_FAIL_IF(Context::current().detectedDriver() & (Context::DetectedDriver::Amd|Context::DetectedDriver::NVidia), "Somehow only first two values are extracted on AMD and NVidia drivers.");
         CORRADE_COMPARE(value.xyz(), Math::Vector3<UnsignedShort>(315, 65201, 2576));
     }
 
