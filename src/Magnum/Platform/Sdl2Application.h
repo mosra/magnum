@@ -830,6 +830,48 @@ class Sdl2Application {
         /** @{ @name Mouse handling */
 
     public:
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Cursor type
+         *
+         * @see @ref setCursor()
+         */
+        enum class Cursor : UnsignedInt {
+            Arrow,          /**< Arrow */
+            TextInput,      /**< Text input */
+            Wait,           /**< Wait */
+            Crosshair,      /**< Crosshair */
+            WaitArrow,      /**< Small wait cursor */
+            ResizeNWSE,     /**< Double arrow pointing northwest and southeast */
+            ResizeNESW,     /**< Double arrow pointing northeast and southwest */
+            ResizeWE,       /**< Double arrow pointing west and east */
+            ResizeNS,       /**< Double arrow pointing north and south */
+            ResizeAll,      /**< Four pointed arrow pointing north, south, east, and west */
+            No,             /**< Slashed circle or crossbones */
+            Hand,           /**< Hand */
+            Hidden,         /**< Hidden */
+            HiddenLocked    /**< Hidden and locked */
+        };
+        #endif
+
+    public:
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Set the cursor to the @p type
+         */
+        void setCursor(Cursor cursor);
+
+        /**
+         * @brief Get the current cursor type
+         */
+        Cursor cursor();
+        #endif
+
+        /** @brief Warp mouse cursor to given coordinates */
+        void warpCursor(const Vector2i& position) {
+            SDL_WarpMouseInWindow(_window, position.x(), position.y());
+        }
+
         /** @brief Whether mouse is locked */
         bool isMouseLocked() const { return SDL_GetRelativeMouseMode(); }
 
@@ -1014,6 +1056,10 @@ class Sdl2Application {
 
         typedef Containers::EnumSet<Flag> Flags;
         CORRADE_ENUMSET_FRIEND_OPERATORS(Flags)
+
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        SDL_Cursor* _cursors[14]{};
+        #endif
 
         /* These are saved from command-line arguments */
         bool _verboseLog{};

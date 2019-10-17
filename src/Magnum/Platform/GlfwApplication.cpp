@@ -549,6 +549,8 @@ void GlfwApplication::setupCallbacks() {
 
 GlfwApplication::~GlfwApplication() {
     glfwDestroyWindow(_window);
+    for(auto& cursor: _cursors)
+        glfwDestroyCursor(cursor);
     glfwTerminate();
 }
 
@@ -601,6 +603,41 @@ int GlfwApplication::exec() {
         glfwPollEvents();
     }
     return _exitCode;
+}
+
+void GlfwApplication::setCursor(Cursor cursor) {
+    CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(_cursors));
+
+    _cursor = cursor;
+
+    if(cursor == Cursor::Hidden) {
+        glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_HIDDEN);
+        return;
+    } else if(cursor == Cursor::HiddenLocked) {
+        glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+        return;
+    } else {
+        glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+    }
+
+    if(!_cursors[UnsignedInt(cursor)]) {
+        constexpr Int CursorMap[] {
+            GLFW_ARROW_CURSOR,
+            GLFW_IBEAM_CURSOR,
+            GLFW_CROSSHAIR_CURSOR,
+            GLFW_HRESIZE_CURSOR,
+            GLFW_VRESIZE_CURSOR,
+            GLFW_HAND_CURSOR
+        };
+
+        _cursors[UnsignedInt(cursor)] = glfwCreateStandardCursor(CursorMap[UnsignedInt(cursor)]);
+    }
+
+    glfwSetCursor(_window, _cursors[UnsignedInt(cursor)]);
+}
+
+GlfwApplication::Cursor GlfwApplication::cursor() {
+    return _cursor;
 }
 
 auto GlfwApplication::MouseMoveEvent::buttons() -> Buttons {
