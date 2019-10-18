@@ -46,6 +46,19 @@ namespace {
 "arm-mali-timer-queries-oom-in-shell",
 #endif
 
+#if !defined(MAGNUM_TARGET_GLES) && defined(CORRADE_TARGET_WINDOWS)
+/* ARB_direct_state_access on AMD Windows drivers has broken
+   glTextureSubImage3D() / glGetTextureImage() on cube map textures (but not
+   cube map arrays), always failing with erros like
+   `glTextureSubImage3D has generated an error (GL_INVALID_VALUE)` if Z size or
+   offset is larger than 1. Working around that by up/downloading
+   slice-by-slice using non-DSA APIs, similarly to the
+   svga3d-texture-upload-slice-by-slice workaround. The compressed image up/
+   download is affected as well, but we lack APIs for easy format-dependent
+   slicing and offset calculation, so those currently still fail. */
+"amd-windows-cubemap-image3d-slice-by-slice",
+#endif
+
 #if !defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)
 /* Creating core context with specific version on AMD and NV proprietary
    drivers on Linux/Windows and Intel drivers on Windows causes the context to
@@ -224,8 +237,8 @@ namespace {
    *everything* related to cube map textures (but not cube map arrays) -- data
    upload, data queries, framebuffer attachment, framebuffer copies, all
    complaining about "Wrong <func> 6 provided for <target> 34067" and similar
-   (GL_TEXTURE_CUBE_MAP is 34067). Using the non-DSA code path as a
-   workaround. */
+   (GL_TEXTURE_CUBE_MAP is 34067). Using the non-DSA code paths as a
+   workaround (for the 3D image up/download as well). */
 "intel-windows-broken-dsa-for-cubemaps",
 
 /* DSA glBindTextureUnit() on Intel Windows drivers simply doesn't work when

@@ -76,7 +76,7 @@ void CubeMapTexture::image(const Int level, Image3D& image) {
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer->applyPixelStoragePack(image.storage());
-    glGetTextureImage(_id, level, GLenum(pixelFormat(image.format())), GLenum(pixelType(image.format(), image.formatExtra())), data.size(), data);
+    (this->*Context::current().state().texture->getFullCubeImageImplementation)(level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), data.size(), data, image.storage());
     image = Image3D{image.storage(), image.format(), image.formatExtra(), image.pixelSize(), size, std::move(data)};
 }
 
@@ -86,17 +86,15 @@ Image3D CubeMapTexture::image(const Int level, Image3D&& image) {
 }
 
 void CubeMapTexture::image(const Int level, const MutableImageView3D& image) {
-    #ifndef CORRADE_NO_ASSERT
     const Vector3i size{imageSize(level), 6};
     CORRADE_ASSERT(image.data().data() != nullptr || !size.product(),
         "GL::CubeMapTexture::image(): image view is nullptr", );
     CORRADE_ASSERT(image.size() == size,
         "GL::CubeMapTexture::image(): expected image view size" << size << "but got" << image.size(), );
-    #endif
 
     Buffer::unbindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer->applyPixelStoragePack(image.storage());
-    glGetTextureImage(_id, level, GLenum(pixelFormat(image.format())), GLenum(pixelType(image.format(), image.formatExtra())), image.data().size(), image.data());
+    (this->*Context::current().state().texture->getFullCubeImageImplementation)(level, size, pixelFormat(image.format()), pixelType(image.format(), image.formatExtra()), image.data().size(), image.data(), image.storage());
 }
 
 void CubeMapTexture::image(const Int level, BufferImage3D& image, const BufferUsage usage) {
@@ -113,7 +111,7 @@ void CubeMapTexture::image(const Int level, BufferImage3D& image, const BufferUs
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelPack);
     Context::current().state().renderer->applyPixelStoragePack(image.storage());
-    glGetTextureImage(_id, level, GLenum(image.format()), GLenum(image.type()), dataSize, nullptr);
+    (this->*Context::current().state().texture->getFullCubeImageImplementation)(level, size, image.format(), image.type(), dataSize, nullptr, image.storage());
 }
 
 BufferImage3D CubeMapTexture::image(const Int level, BufferImage3D&& image, const BufferUsage usage) {
@@ -500,7 +498,7 @@ CubeMapTexture& CubeMapTexture::setSubImage(const Int level, const Vector3i& off
 
     image.buffer().bindInternal(Buffer::TargetHint::PixelUnpack);
     Context::current().state().renderer->applyPixelStorageUnpack(image.storage());
-    glTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), image.size().x(), image.size().y(), image.size().z(), GLenum(image.format()), GLenum(image.type()), nullptr);
+    (this->*Context::current().state().texture->cubeSubImage3DImplementation)(level, offset, image.size(), image.format(), image.type(), nullptr, image.storage());
     return *this;
 }
 
@@ -613,6 +611,24 @@ GLint CubeMapTexture::getLevelCompressedImageSizeImplementationDSANonImmutableWo
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
+void CubeMapTexture::getImageImplementationDSA(const GLint level, const Vector3i&, const PixelFormat format, const PixelType type, const std::size_t dataSize, GLvoid* const data, const PixelStorage&) {
+    glGetTextureImage(_id, level, GLenum(format), GLenum(type), dataSize, data);
+}
+
+void CubeMapTexture::getImageImplementationDSAAmdSliceBySlice(const GLint level, const Vector3i& size, const PixelFormat format, const PixelType type, std::size_t, GLvoid* const data, const PixelStorage& storage) {
+    auto dataProperties = storage.dataProperties(pixelSize(format, type), size);
+    const std::size_t stride = dataProperties.second.xy().product();
+    for(Int i = 0; i != size.z(); ++i)
+        glGetTextureSubImage(_id, level, 0, 0, i, size.x(), size.y(), 1, GLenum(format), GLenum(type), stride, static_cast<char*>(data) + dataProperties.first.sum() + stride*i);
+}
+
+void CubeMapTexture::getImageImplementationSliceBySlice(const GLint level, const Vector3i& size, const PixelFormat format, const PixelType type, std::size_t, GLvoid* const data, const PixelStorage& storage) {
+    auto dataProperties = storage.dataProperties(pixelSize(format, type), size);
+    const std::size_t stride = dataProperties.second.xy().product();
+    for(Int i = 0; i != size.z(); ++i)
+        getImageImplementationDefault(CubeMapCoordinate(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i), level, size.xy(), format, type, stride, static_cast<char*>(data) + stride*i);
+}
+
 void CubeMapTexture::getCompressedImageImplementationDSA(const GLint level, const Vector2i&, const std::size_t dataOffset, const std::size_t dataSize, GLvoid* const data) {
     glGetCompressedTextureImage(_id, level, dataOffset + dataSize, data);
 }
@@ -654,14 +670,20 @@ void CubeMapTexture::getCompressedImageImplementationRobustness(const CubeMapCoo
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-void CubeMapTexture::subImageImplementationDefault(const GLint level, const Vector3i& offset, const Vector3i& size, const PixelFormat format, const PixelType type, const GLvoid* const data, const PixelStorage&) {
+void CubeMapTexture::subImageImplementationDSA(const GLint level, const Vector3i& offset, const Vector3i& size, const PixelFormat format, const PixelType type, const GLvoid* const data, const PixelStorage&) {
     glTextureSubImage3D(_id, level, offset.x(), offset.y(), offset.z(), size.x(), size.y(), size.z(), GLenum(format), GLenum(type), data);
 }
 
-void CubeMapTexture::subImageImplementationSvga3DSliceBySlice(const GLint level, const Vector3i& offset, const Vector3i& size, const PixelFormat format, const PixelType type, const GLvoid* const data, const PixelStorage& storage) {
+void CubeMapTexture::subImageImplementationDSASliceBySlice(const GLint level, const Vector3i& offset, const Vector3i& size, const PixelFormat format, const PixelType type, const GLvoid* const data, const PixelStorage& storage) {
     const std::size_t stride = std::get<1>(storage.dataProperties(pixelSize(format, type), size)).xy().product();
     for(Int i = 0; i != size.z(); ++i)
-        subImageImplementationDefault(level, {offset.xy(), offset.z() + i}, {size.xy(), 1}, format, type, static_cast<const char*>(data) + stride*i, storage);
+        subImageImplementationDSA(level, {offset.xy(), offset.z() + i}, {size.xy(), 1}, format, type, static_cast<const char*>(data) + stride*i, storage);
+}
+
+void CubeMapTexture::subImageImplementationSliceBySlice(const GLint level, const Vector3i& offset, const Vector3i& size, const PixelFormat format, const PixelType type, const GLvoid* const data, const PixelStorage& storage) {
+    const std::size_t stride = std::get<1>(storage.dataProperties(pixelSize(format, type), size)).xy().product();
+    for(Int i = 0; i != size.z(); ++i)
+        subImageImplementationDefault(CubeMapCoordinate(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i), level, offset.xy(), size.xy(), format, type, static_cast<const char*>(data) + stride*i);
 }
 #endif
 

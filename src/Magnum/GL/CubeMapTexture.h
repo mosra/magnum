@@ -1212,6 +1212,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_GL_LOCAL getImageImplementationDSA(GLint level, const Vector3i& size, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data, const PixelStorage& storage);
+        void MAGNUM_GL_LOCAL getImageImplementationDSAAmdSliceBySlice(GLint level, const Vector3i& size, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data, const PixelStorage& storage);
+        void MAGNUM_GL_LOCAL getImageImplementationSliceBySlice(GLint level, const Vector3i& size, PixelFormat format, PixelType type, std::size_t dataSize, GLvoid* data, const PixelStorage& storage);
+
         void MAGNUM_GL_LOCAL getCompressedImageImplementationDSA(GLint level, const Vector2i& size, std::size_t dataOffset, std::size_t dataSize, GLvoid* data);
         void MAGNUM_GL_LOCAL getCompressedImageImplementationDSASingleSliceWorkaround(GLint level, const Vector2i& size, std::size_t dataOffset, std::size_t dataSize, GLvoid* data);
 
@@ -1224,9 +1228,10 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
         void MAGNUM_GL_LOCAL getCompressedImageImplementationRobustness(CubeMapCoordinate coordinate, GLint level, const Vector2i& size, std::size_t dataSize, GLvoid* data);
         #endif
 
-        void MAGNUM_GL_LOCAL subImageImplementationDefault(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
-        #ifndef MAGNUM_TARGET_WEBGL
-        void MAGNUM_GL_LOCAL subImageImplementationSvga3DSliceBySlice(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        #ifndef MAGNUM_TARGET_GLES
+        void MAGNUM_GL_LOCAL subImageImplementationDSA(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        void MAGNUM_GL_LOCAL subImageImplementationDSASliceBySlice(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
+        void MAGNUM_GL_LOCAL subImageImplementationSliceBySlice(GLint level, const Vector3i& offset, const Vector3i& size, PixelFormat format, PixelType type, const GLvoid* data, const PixelStorage&);
         #endif
 
         void MAGNUM_GL_LOCAL subImageImplementationDefault(CubeMapCoordinate coordinate, GLint level, const Vector2i& offset, const Vector2i& size, PixelFormat format, PixelType type, const GLvoid* data);
