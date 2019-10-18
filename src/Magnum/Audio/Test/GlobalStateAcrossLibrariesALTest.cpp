@@ -44,12 +44,7 @@ GlobalStateAcrossLibrariesALTest::GlobalStateAcrossLibrariesALTest() {
 void GlobalStateAcrossLibrariesALTest::test() {
     Context context;
     CORRADE_VERIFY(Context::hasCurrent());
-    {
-        #ifdef CORRADE_TARGET_WINDOWS
-        CORRADE_EXPECT_FAIL("Deduplication of global data across shared libraries isn't implemented on Windows yet.");
-        #endif
-        CORRADE_COMPARE(currentContextInALibrary(), &context);
-    }
+    CORRADE_COMPARE(currentContextInALibrary(), &context);
 }
 
 }}}}

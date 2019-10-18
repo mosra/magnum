@@ -1,3 +1,5 @@
+#ifndef Magnum_Implementation_WindowsWeakSymbol_h
+#define Magnum_Implementation_WindowsWeakSymbol_h
 /*
     This file is part of Magnum.
 
@@ -23,29 +25,20 @@
     DEALINGS IN THE SOFTWARE.
 */
 
-#include "Magnum/GL/Context.h"
-#include "Magnum/GL/OpenGLTester.h"
+#include <Magnum/configure.h>
 
-#include "GlobalStateAcrossLibrariesLibrary.h"
+/* This is a copy of Corrade/Utility/Implementation/windowsWeakSymbol.{h,cpp},
+   just adapted for Magnum. Yeah, it's only in order to avoid including
+   windows.h in all the code. */
 
-namespace Magnum { namespace GL { namespace Test { namespace {
+#if !defined(CORRADE_TARGET_WINDOWS) || !defined(MAGNUM_BUILD_STATIC) || defined(CORRADE_TARGET_WINDOWS_RT)
+#error this file is only meant to be used in non-RT Windows static builds
+#endif
 
-struct GlobalStateAcrossLibrariesGLTest: OpenGLTester {
-    explicit GlobalStateAcrossLibrariesGLTest();
+namespace Magnum { namespace Implementation {
 
-    void test();
-};
+void* windowsWeakSymbol(const char* name);
 
-GlobalStateAcrossLibrariesGLTest::GlobalStateAcrossLibrariesGLTest() {
-    addTests({&GlobalStateAcrossLibrariesGLTest::test});
-}
+}}
 
-void GlobalStateAcrossLibrariesGLTest::test() {
-    CORRADE_VERIFY(GL::Context::hasCurrent());
-    CORRADE_COMPARE(currentContextInALibrary(), &GL::Context::current());
-}
-
-}}}}
-
-CORRADE_TEST_MAIN(Magnum::GL::Test::GlobalStateAcrossLibrariesGLTest)
-
+#endif

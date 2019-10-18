@@ -41,6 +41,10 @@
 
 #include "Magnum/Audio/Extensions.h"
 
+#if defined(CORRADE_TARGET_WINDOWS) && defined(MAGNUM_BUILD_STATIC) && !defined(CORRADE_TARGET_WINDOWS_RT)
+#include "Magnum/Implementation/WindowsWeakSymbol.h"
+#endif
+
 namespace Magnum { namespace Audio {
 
 namespace {
@@ -113,14 +117,16 @@ std::vector<std::string> Context::deviceSpecifierStrings() {
     return list;
 }
 
-#ifndef MAGNUM_BUILD_STATIC
-/* (Of course) can't be in an unnamed namespace in order to export it below */
+#if !defined(MAGNUM_BUILD_STATIC) || defined(CORRADE_TARGET_WINDOWS)
+/* (Of course) can't be in an unnamed namespace in order to export it below
+   (except for Windows, where we do extern "C" so this doesn't matter) */
 namespace {
 #endif
 
 /* Unlike GL, this isn't thread-local. Would need to implement
    ALC_EXT_thread_local_context first */
-#if defined(MAGNUM_BUILD_STATIC) && !defined(CORRADE_TARGET_WINDOWS)
+#if !defined(MAGNUM_BUILD_STATIC) || (defined(MAGNUM_BUILD_STATIC) && !defined(CORRADE_TARGET_WINDOWS))
+#ifdef MAGNUM_BUILD_STATIC
 /* On static builds that get linked to multiple shared libraries and then used
    in a single app we want to ensure there's just one global symbol. On Linux
    it's apparently enough to just export, macOS needs the weak attribute.
@@ -134,9 +140,34 @@ CORRADE_VISIBILITY_EXPORT
     #endif
 #endif
 Context* currentContext = nullptr;
+#else
+/* On Windows the symbol is exported unmangled and then fetched via
+   GetProcAddress() to emulate weak linking. */
+extern "C" CORRADE_VISIBILITY_EXPORT Context* magnumAudioUniqueCurrentContext = nullptr;
+#endif
 
-#ifndef MAGNUM_BUILD_STATIC
+#if !defined(MAGNUM_BUILD_STATIC) || defined(CORRADE_TARGET_WINDOWS)
 }
+#endif
+
+/* Windows don't have any concept of weak symbols, instead GetProcAddress() on
+   GetModuleHandle(nullptr) "emulates" the weak linking as it's guaranteed to
+   pick up the same symbol of the final exe independently of the DLL it was
+   called from. To avoid #ifdef hell in code below, the currentContext is
+   redefined to return a value from this uniqueness-ensuring function. */
+#if defined(CORRADE_TARGET_WINDOWS) && defined(MAGNUM_BUILD_STATIC) && !defined(CORRADE_TARGET_WINDOWS_RT)
+namespace {
+
+Context*& windowsCurrentContext() {
+    /* A function-local static to ensure it's only initialized once without any
+       race conditions among threads */
+    static Context** const uniqueGlobals = reinterpret_cast<Context**>(Magnum::Implementation::windowsWeakSymbol("magnumAudioUniqueCurrentContext"));
+    return *uniqueGlobals;
+}
+
+}
+
+#define currentContext windowsCurrentContext()
 #endif
 
 bool Context::hasCurrent() { return currentContext; }

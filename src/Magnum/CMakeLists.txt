@@ -66,6 +66,12 @@ set(Magnum_HEADERS
 set(Magnum_PRIVATE_HEADERS
     Implementation/ImageProperties.h)
 
+# Functionality specific to static Windows builds
+if(CORRADE_TARGET_WINDOWS AND NOT CORRADE_TARGET_WINDOWS_RT AND MAGNUM_BUILD_STATIC)
+    list(APPEND Magnum_SRCS Implementation/WindowsWeakSymbol.cpp)
+    list(APPEND Magnum_PRIVATE_HEADERS Implementation/WindowsWeakSymbol.h)
+endif()
+
 # Files shared between main library and math unit test library
 set(MagnumMath_SRCS
     Math/Angle.cpp

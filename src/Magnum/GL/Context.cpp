@@ -65,6 +65,10 @@
 #include "Magnum/GL/Implementation/TransformFeedbackState.h"
 #endif
 
+#if defined(CORRADE_TARGET_WINDOWS) && defined(MAGNUM_BUILD_STATIC) && !defined(CORRADE_TARGET_WINDOWS_RT)
+#include "Magnum/Implementation/WindowsWeakSymbol.h"
+#endif
+
 namespace Magnum { namespace GL {
 
 namespace {
@@ -473,8 +477,9 @@ Containers::ArrayView<const Extension> Extension::extensions(Version version) {
     CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-#ifndef MAGNUM_BUILD_STATIC
-/* (Of course) can't be in an unnamed namespace in order to export it below */
+#if !defined(MAGNUM_BUILD_STATIC) || defined(CORRADE_TARGET_WINDOWS)
+/* (Of course) can't be in an unnamed namespace in order to export it below
+   (except for Windows, where we do extern "C" so this doesn't matter) */
 namespace {
 #endif
 
@@ -485,8 +490,7 @@ CORRADE_THREAD_LOCAL
 /* On static builds that get linked to multiple shared libraries and then used
    in a single app we want to ensure there's just one global symbol. On Linux
    it's apparently enough to just export, macOS needs the weak attribute.
-   Windows not handled yet, as it needs a workaround using DllMain() and
-   GetProcAddress(). */
+   Windows handled differently below. */
 CORRADE_VISIBILITY_EXPORT
     #ifdef __GNUC__
     __attribute__((weak))
@@ -496,8 +500,35 @@ CORRADE_VISIBILITY_EXPORT
 #endif
 Context* currentContext = nullptr;
 
-#ifndef MAGNUM_BUILD_STATIC
+#if !defined(MAGNUM_BUILD_STATIC) || defined(CORRADE_TARGET_WINDOWS)
 }
+#endif
+
+/* Windows can't have a symbol both thread-local and exported, moreover there
+   isn't any concept of weak symbols. Exporting thread-local symbols can be
+   worked around by exporting a function that then returns a reference to a
+   non-exported thread-local symbol; and finally GetProcAddress() on
+   GetModuleHandle(nullptr) "emulates" the weak linking as it's guaranteed to
+   pick up the same symbol of the final exe independently of the DLL it was
+   called from. To avoid #ifdef hell in code below, the currentContext is
+   redefined to return a value from this uniqueness-ensuring function. */
+#if defined(CORRADE_TARGET_WINDOWS) && defined(MAGNUM_BUILD_STATIC) && !defined(CORRADE_TARGET_WINDOWS_RT)
+extern "C" CORRADE_VISIBILITY_EXPORT Context*& magnumGLUniqueCurrentContext() {
+    return currentContext;
+}
+
+namespace {
+
+Context*& windowsCurrentContext() {
+    /* A function-local static to ensure it's only initialized once without any
+       race conditions among threads */
+    static Context*&(*const uniqueGlobals)() = reinterpret_cast<Context*&(*)()>(Magnum::Implementation::windowsWeakSymbol("magnumGLUniqueCurrentContext"));
+    return uniqueGlobals();
+}
+
+}
+
+#define currentContext windowsCurrentContext()
 #endif
 
 bool Context::hasCurrent() { return currentContext; }
