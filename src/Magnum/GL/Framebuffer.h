@@ -379,6 +379,8 @@ class MAGNUM_GL_EXPORT Framebuffer: public AbstractFramebuffer, public AbstractO
          *
          * This function can be safely used for constructing (and later
          * destructing) objects even without any OpenGL context being active.
+         * However note that this is a low-level and a potentially dangerous
+         * API, see the documentation of @ref NoCreate for alternatives.
          * @see @ref Framebuffer(const Range2Di&), @ref wrap()
          */
         explicit Framebuffer(NoCreateT) noexcept: AbstractFramebuffer{{}, {}, {}} {}

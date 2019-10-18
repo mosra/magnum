@@ -151,6 +151,8 @@ class MAGNUM_GL_EXPORT CubeMapTextureArray: public AbstractTexture {
          *
          * This function can be safely used for constructing (and later
          * destructing) objects even without any OpenGL context being active.
+         * However note that this is a low-level and a potentially dangerous
+         * API, see the documentation of @ref NoCreate for alternatives.
          * @see @ref CubeMapTextureArray(), @ref wrap()
          */
         explicit CubeMapTextureArray(NoCreateT) noexcept: AbstractTexture{NoCreate, GL_TEXTURE_CUBE_MAP_ARRAY} {}

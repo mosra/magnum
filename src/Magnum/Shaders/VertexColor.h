@@ -119,6 +119,8 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT VertexColor: public
          *
          * This function can be safely used for constructing (and later
          * destructing) objects even without any OpenGL context being active.
+         * However note that this is a low-level and a potentially dangerous
+         * API, see the documentation of @ref NoCreate for alternatives.
          */
         explicit VertexColor(NoCreateT) noexcept: AbstractShaderProgram{NoCreate} {}
 

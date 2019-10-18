@@ -51,7 +51,11 @@ struct NoCreateT {
 /**
 @brief No creation tag
 
-Use for construction without creating the underlying OpenGL object.
+Use for construction without creating the underlying OpenGL object. Note that
+calling anything on objects created this way is not defined (and not checked or
+guarded in any way) and may result in crashes. If you want delayed object
+creation with safety checks (however with some extra memory overhead), wrap
+the objects in an @ref Corrade::Containers::Optional.
 */
 constexpr NoCreateT NoCreate{NoCreateT::Init{}};
 

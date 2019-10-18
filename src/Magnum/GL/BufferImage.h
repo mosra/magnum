@@ -245,6 +245,8 @@ template<UnsignedInt dimensions> class BufferImage {
          *
          * This function can be safely used for constructing (and later
          * destructing) objects even without any OpenGL context being active.
+         * However note that this is a low-level and a potentially dangerous
+         * API, see the documentation of @ref NoCreate for alternatives.
          * @see @ref BufferImage(), @ref Buffer::wrap()
          */
         explicit BufferImage(NoCreateT) noexcept;
@@ -561,6 +563,11 @@ template<UnsignedInt dimensions> class CompressedBufferImage {
          * The constructed instance is equivalent to moved-from state. Useful
          * in cases where you will overwrite the instance later anyway. Move
          * another object over it to make it useful.
+         *
+         * This function can be safely used for constructing (and later
+         * destructing) objects even without any OpenGL context being active.
+         * However note that this is a low-level and a potentially dangerous
+         * API, see the documentation of @ref NoCreate for alternatives.
          * @see @ref CompressedBufferImage(), @ref Buffer::wrap()
          */
         explicit CompressedBufferImage(NoCreateT) noexcept;
