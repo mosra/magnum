@@ -504,13 +504,15 @@ class Sdl2Application {
 
         /**
          * @brief Run one iteration of application main loop
+         * @return @cpp false @ce if @ref exit() was called and the application
+         *      should exit, @cpp true @ce otherwise
          *
          * Called internally from @ref exec(). If you want to have better
          * control over how the main loop behaves, you can call this function
          * yourself from your own `main()` function instead of it being called
          * automatically from @ref exec() / @ref MAGNUM_SDL2APPLICATION_MAIN().
          */
-        void mainLoopIteration();
+        bool mainLoopIteration();
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
@@ -1003,9 +1005,7 @@ class Sdl2Application {
             VSyncEnabled = 1 << 1,
             NoTickEvent = 1 << 2,
             NoAnyEvent = 1 << 3,
-            #ifndef CORRADE_TARGET_EMSCRIPTEN
-            Exit = 1 << 4
-            #endif
+            Exit = 1 << 4,
             #ifdef CORRADE_TARGET_EMSCRIPTEN
             TextInputActive = 1 << 5,
             Resizable = 1 << 6

@@ -692,7 +692,7 @@ Sdl2Application::~Sdl2Application() {
 
 int Sdl2Application::exec() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
-    while(!(_flags & Flag::Exit)) mainLoopIteration();
+    while(mainLoopIteration()) {}
     #else
     emscripten_set_main_loop_arg([](void* arg) {
         static_cast<Sdl2Application*>(arg)->mainLoopIteration();
@@ -701,16 +701,17 @@ int Sdl2Application::exec() {
     return _exitCode;
 }
 
-void Sdl2Application::exit(int exitCode) {
-    #ifndef CORRADE_TARGET_EMSCRIPTEN
+void Sdl2Application::exit(const int exitCode) {
+    /* On Emscripten this flag is used only to indicate a desire to exit from
+       mainLoopIteration() */
     _flags |= Flag::Exit;
-    #else
+    #ifdef CORRADE_TARGET_EMSCRIPTEN
     emscripten_cancel_main_loop();
     #endif
     _exitCode = exitCode;
 }
 
-void Sdl2Application::mainLoopIteration() {
+bool Sdl2Application::mainLoopIteration() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN
     const UnsignedInt timeBefore = _minimalLoopPeriod ? SDL_GetTicks() : 0;
     #endif
@@ -828,12 +829,13 @@ void Sdl2Application::mainLoopIteration() {
                 ExitEvent e{event};
                 exitEvent(e);
                 if(e.isAccepted()) {
-                    #ifndef CORRADE_TARGET_EMSCRIPTEN
+                    /* On Emscripten this flag is used only to indicate a
+                       desire to exit from mainLoopIteration() */
                     _flags |= Flag::Exit;
-                    #else
+                    #ifdef CORRADE_TARGET_EMSCRIPTEN
                     emscripten_cancel_main_loop();
                     #endif
-                    return;
+                    return !(_flags & Flag::Exit);
                 }
             } break;
 
@@ -860,7 +862,7 @@ void Sdl2Application::mainLoopIteration() {
         }
         #endif
 
-        return;
+        return !(_flags & Flag::Exit);
     }
 
     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -875,6 +877,7 @@ void Sdl2Application::mainLoopIteration() {
        indefinitely for next input event */
     if(_flags & Flag::NoTickEvent) SDL_WaitEvent(nullptr);
     #endif
+    return !(_flags & Flag::Exit);
 }
 
 void Sdl2Application::setMouseLocked(bool enabled) {

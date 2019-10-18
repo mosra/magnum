@@ -500,6 +500,8 @@ See also:
     @ref Platform::GlfwApplication::exit() now have an optional parameter to
     specify the actual application return code (see
     [mosra/magnum#332](https://github.com/mosra/magnum/pull/332))
+-   @ref Platform::Sdl2Application::mainLoopIteration() now returns a
+    @cpp bool @ce to indicate if the application should exit
 -   @ref Platform::GlfwApplication and @ref Platform::EmscriptenApplication now
     implement @ref Platform::GlfwApplication::MouseMoveEvent::relativePosition()
     as well for better compatibility with @ref Platform::Sdl2Application. The
