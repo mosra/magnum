@@ -60,7 +60,7 @@ Equivalent to calling @ref gradient2D() like this:
 
 @see @ref gradient2DVertical(), @ref gradient3DHorizontal(), @ref squareSolid()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D gradient2DHorizontal(const Color4& colorLeft, const Color4& color);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData2D gradient2DHorizontal(const Color4& colorLeft, const Color4& colorRight);
 
 /**
 @brief 2D square with a vertical gradient
@@ -101,7 +101,7 @@ Equivalent to calling @ref gradient3D() like this:
 
 @see @ref gradient3DVertical(), @ref gradient2DHorizontal(), @ref planeSolid()
 */
-MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D gradient3DHorizontal(const Color4& colorLeft, const Color4& color);
+MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D gradient3DHorizontal(const Color4& colorLeft, const Color4& colorRight);
 
 /**
 @brief 3D plane with a vertical gradient

@@ -33,21 +33,23 @@ using namespace Magnum;
 
 int main() {
 {
-Color4 colorA, colorB;
+Color4 colorLeft, colorRight, colorBottom, colorTop;
 /* [gradient2DHorizontal] */
-Primitives::gradient2D({-1.0f, 0.0f}, colorA, {1.0f, 0.0f}, colorB);
+Primitives::gradient2D({-1.0f, 0.0f}, colorLeft, {1.0f, 0.0f}, colorRight);
 /* [gradient2DHorizontal] */
 
 /* [gradient2DVertical] */
-Primitives::gradient2D({0.0f, -1.0f}, colorA, {0.0f, 1.0f}, colorB);
+Primitives::gradient2D({0.0f, -1.0f}, colorBottom, {0.0f, 1.0f}, colorTop);
 /* [gradient2DVertical] */
 
 /* [gradient3DHorizontal] */
-Primitives::gradient3D({-1.0f, 0.0f, 0.0f}, colorA, {1.0f, 0.0f, 0.0f}, colorB);
+Primitives::gradient3D({-1.0f, 0.0f, 0.0f}, colorLeft,
+                       { 1.0f, 0.0f, 0.0f}, colorRight);
 /* [gradient3DHorizontal] */
 
 /* [gradient3DVertical] */
-Primitives::gradient3D({0.0f, -1.0f, 0.0f}, colorA, {0.0f, 1.0f, 0.0f}, colorB);
+Primitives::gradient3D({0.0f, -1.0f, 0.0f}, colorBottom,
+                       {0.0f,  1.0f, 0.0f}, colorTop);
 /* [gradient3DVertical] */
 }
 

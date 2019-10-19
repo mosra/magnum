@@ -54,12 +54,12 @@ Trade::MeshData2D gradient2D(const Vector2& a, const Color4& colorA, const Vecto
     return Trade::MeshData2D{MeshPrimitive::TriangleStrip, {}, {std::move(positions)}, {}, {std::move(colors)}, nullptr};
 }
 
-Trade::MeshData2D gradient2DHorizontal(const Color4& colorA, const Color4& colorB) {
-    return Primitives::gradient2D({-1.0f, 0.0f}, colorA, {1.0f, 0.0f}, colorB);
+Trade::MeshData2D gradient2DHorizontal(const Color4& colorLeft, const Color4& colorRight) {
+    return Primitives::gradient2D({-1.0f, 0.0f}, colorLeft, {1.0f, 0.0f}, colorRight);
 }
 
-Trade::MeshData2D gradient2DVertical(const Color4& colorA, const Color4& colorB) {
-    return Primitives::gradient2D({0.0f, -1.0f}, colorA, {0.0f, 1.0f}, colorB);
+Trade::MeshData2D gradient2DVertical(const Color4& colorBottom, const Color4& colorTop) {
+    return Primitives::gradient2D({0.0f, -1.0f}, colorBottom, {0.0f, 1.0f}, colorTop);
 }
 
 Trade::MeshData3D gradient3D(const Vector3& a, const Color4& colorA, const Vector3& b, const Color4& colorB) {
@@ -88,12 +88,12 @@ Trade::MeshData3D gradient3D(const Vector3& a, const Color4& colorA, const Vecto
     }}, {}, {std::move(colors)}, nullptr};
 }
 
-Trade::MeshData3D gradient3DHorizontal(const Color4& colorA, const Color4& colorB) {
-    return Primitives::gradient3D({-1.0f, 0.0f, 0.0f}, colorA, {1.0f, 0.0f, 0.0f}, colorB);
+Trade::MeshData3D gradient3DHorizontal(const Color4& colorLeft, const Color4& colorRight) {
+    return Primitives::gradient3D({-1.0f, 0.0f, 0.0f}, colorLeft, {1.0f, 0.0f, 0.0f}, colorRight);
 }
 
-Trade::MeshData3D gradient3DVertical(const Color4& colorA, const Color4& colorB) {
-    return Primitives::gradient3D({0.0f, -1.0f, 0.0f}, colorA, {0.0f, 1.0f, 0.0f}, colorB);
+Trade::MeshData3D gradient3DVertical(const Color4& colorBottom, const Color4& colorTop) {
+    return Primitives::gradient3D({0.0f, -1.0f, 0.0f}, colorBottom, {0.0f, 1.0f, 0.0f}, colorTop);
 }
 
 }}
