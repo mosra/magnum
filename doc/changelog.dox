@@ -193,6 +193,8 @@ See also:
     @ref opengl-workarounds for more information:
     -   @cpp "amd-windows-cubemap-image3d-slice-by-slice" @ce for broken
         handling of cube map image download and upload in DSA APIs
+    -   @cpp "amd-windows-broken-dsa-cubemap-copy" @ce for broken
+        framebuffer-to-cubemap copies in DSA APIs
     -   @cpp "amd-windows-dsa-createquery-except-xfb-overflow" @ce using a
         non-DSA code path for creating
         @ref PrimitiveQuery::Target::TransformFeedbackOverflow queries

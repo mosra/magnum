@@ -58,6 +58,10 @@ namespace {
    slicing and offset calculation, so those currently still fail. */
 "amd-windows-cubemap-image3d-slice-by-slice",
 
+/* AMD Windows drivers have broken the DSA glCopyTextureSubImage3D(), returning
+   GL_INVALID_VALUE. The non-DSA code path works. */
+"amd-windows-broken-dsa-cubemap-copy",
+
 /* AMD Windows glCreateQueries() works for everything except
    GL_TRANSFORM_FEEDBACK_[STREAM_]OVERFLOW, probably they just forgot to adapt
    it to this new GL 4.6 addition. Calling the non-DSA code path in that case

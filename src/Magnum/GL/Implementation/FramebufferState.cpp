@@ -124,18 +124,26 @@ FramebufferState::FramebufferState(Context& context, std::vector<std::string>& e
     }
 
     /* DSA/non-DSA implementation for cubemaps, because Intel Windows drivers
-       have to be broken in a special way */
+       have to be broken in a special way. Also reusing this branch for and AMD
+       workaround for cubemap copy. */
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
         #ifdef CORRADE_TARGET_WINDOWS
-        && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
-            context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps"))
+        if(context.detectedDriver() & Context::DetectedDriver::IntelWindows && !context.isDriverWorkaroundDisabled("intel-windows-broken-dsa-for-cubemaps")) {
+            copySubCubeMapImplementation = &AbstractFramebuffer::copySub2DImplementationDefault;
+            textureCubeMapImplementation = &Framebuffer::texture2DImplementationDefault;
+        } else if(context.detectedDriver() & Context::DetectedDriver::Amd && !context.isDriverWorkaroundDisabled("amd-windows-broken-dsa-cubemap-copy")) {
+            copySubCubeMapImplementation = &AbstractFramebuffer::copySub2DImplementationDefault;
+            /* Cube map attachment is not broken */
+            textureCubeMapImplementation = &Framebuffer::texture2DImplementationDSA;
+        } else
         #endif
-    ) {
-        /* Extension name added above */
+        {
+            /* Extension name added above */
 
-        copySubCubeMapImplementation = &AbstractFramebuffer::copySubCubeMapImplementationDSA;
-        textureCubeMapImplementation = &Framebuffer::textureCubeMapImplementationDSA;
+            copySubCubeMapImplementation = &AbstractFramebuffer::copySubCubeMapImplementationDSA;
+            textureCubeMapImplementation = &Framebuffer::textureCubeMapImplementationDSA;
+        }
     } else
     #endif
     {
