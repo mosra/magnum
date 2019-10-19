@@ -57,6 +57,12 @@ namespace {
    download is affected as well, but we lack APIs for easy format-dependent
    slicing and offset calculation, so those currently still fail. */
 "amd-windows-cubemap-image3d-slice-by-slice",
+
+/* AMD Windows glCreateQueries() works for everything except
+   GL_TRANSFORM_FEEDBACK_[STREAM_]OVERFLOW, probably they just forgot to adapt
+   it to this new GL 4.6 addition. Calling the non-DSA code path in that case
+   instead. */
+"amd-windows-dsa-createquery-except-xfb-overflow",
 #endif
 
 #if !defined(MAGNUM_TARGET_GLES) && !defined(CORRADE_TARGET_APPLE)

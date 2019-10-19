@@ -64,6 +64,13 @@ void AbstractQuery::createImplementationDefault() {
 void AbstractQuery::createImplementationDSA() {
     glCreateQueries(_target, 1, &_id);
 }
+
+void AbstractQuery::createImplementationDSAExceptXfbOverflow() {
+    if(_target == GL_TRANSFORM_FEEDBACK_OVERFLOW || _target == GL_TRANSFORM_FEEDBACK_STREAM_OVERFLOW)
+        createImplementationDefault();
+    else
+        createImplementationDSA();
+}
 #endif
 
 #ifndef MAGNUM_TARGET_WEBGL

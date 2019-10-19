@@ -190,6 +190,7 @@ class MAGNUM_GL_EXPORT AbstractQuery: public AbstractObject {
         void MAGNUM_GL_LOCAL createImplementationDefault();
         #ifndef MAGNUM_TARGET_GLES
         void MAGNUM_GL_LOCAL createImplementationDSA();
+        void MAGNUM_GL_LOCAL createImplementationDSAExceptXfbOverflow();
         #endif
 
         ObjectFlags _flags;

@@ -188,9 +188,14 @@ See also:
     -   @cpp "intel-windows-broken-dsa-integer-vertex-attributes" @ce fixing
         @ref GL::Mesh::addVertexBuffer() with @ref Magnum::Short "Short"
         attributes
--   New @cpp "amd-windows-cubemap-image3d-slice-by-slice" @ce workaround for
-    broken handling of cube map image download and upload in DSA APIs on AMD
-    Windows drivers
+-   New AMD Windows driver workarounds, related to
+    @gl_extension{ARB,direct_state_access} as well --- see
+    @ref opengl-workarounds for more information:
+    -   @cpp "amd-windows-cubemap-image3d-slice-by-slice" @ce for broken
+        handling of cube map image download and upload in DSA APIs
+    -   @cpp "amd-windows-dsa-createquery-except-xfb-overflow" @ce using a
+        non-DSA code path for creating
+        @ref PrimitiveQuery::Target::TransformFeedbackOverflow queries
 -   New @cpp "arm-mali-timer-queries-oom-in-shell" @ce workaround for
     @ref GL::Context::DetectedDriver::ArmMali "ARM Mali" drivers on Android
     disabling the @gl_extension{EXT,disjoint_timer_query} extension in Android
