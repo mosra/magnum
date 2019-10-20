@@ -25,6 +25,7 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/configure.h>
 #include <Magnum/configure.h>
 
 /* This is a copy of Corrade/Utility/Implementation/windowsWeakSymbol.{h,cpp},
