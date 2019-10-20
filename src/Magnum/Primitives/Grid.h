@@ -64,7 +64,7 @@ typedef Containers::EnumSet<GridFlag> GridFlags;
 CORRADE_ENUMSET_OPERATORS(GridFlags)
 
 /**
-@brief 3D solid grid
+@brief Solid 3D grid
 
 2x2 grid in the XY plane with normals in positive Z direction. Indexed
 @ref MeshPrimitive::Triangles with optional normals and texture coordinates.
@@ -81,7 +81,7 @@ cells horizontally and 4 vertically. In particular, this is different from the
 MAGNUM_PRIMITIVES_EXPORT Trade::MeshData3D grid3DSolid(const Vector2i& subdivisions, GridFlags flags = GridFlag::GenerateNormals);
 
 /**
-@brief 3D wireframe grid
+@brief Wireframe 3D grid
 
 2x2 grid in the XY plane. Indexed @ref MeshPrimitive::Lines.
 

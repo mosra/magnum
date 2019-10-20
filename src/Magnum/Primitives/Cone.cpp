@@ -61,7 +61,7 @@ Trade::MeshData3D coneSolid(const UnsignedInt rings, const UnsignedInt segments,
 
 Trade::MeshData3D coneWireframe(const UnsignedInt segments, const Float halfLength) {
     CORRADE_ASSERT(segments >= 4 && segments%4 == 0,
-        "Primitives::cylinderWireframe(): multiples of 4 segments expected",
+        "Primitives::coneWireframe(): multiples of 4 segments expected",
         (Trade::MeshData3D{MeshPrimitive::Lines, {}, {}, {}, {}, {}, nullptr}));
 
     Implementation::WireframeSpheroid cone{segments/4};
