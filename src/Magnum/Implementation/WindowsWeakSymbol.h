@@ -26,7 +26,8 @@
 */
 
 #include <Corrade/configure.h>
-#include <Magnum/configure.h>
+
+#include "Magnum/configure.h"
 
 /* This is a copy of Corrade/Utility/Implementation/windowsWeakSymbol.{h,cpp},
    just adapted for Magnum. Yeah, it's only in order to avoid including
