@@ -210,6 +210,11 @@ See also:
     @ref opengl-workarounds, @ref platforms-html5-webgl-timer-queries and
     @ref platforms-html5-webgl-queries-zero for more information about various
     caveats.
+-   Explicitly calling @cpp glEnable(GL_POINT_SPRITE) @ce on compatibility
+    contexts in order to ensure the GLSL @cpp gl_PointCoord @ce variable has
+    a defined output. On core and ES/WebGL contexts this is enabled implicitly,
+    but for example NVidia drivers have @cpp gl_PointCoord @ce undefined when
+    `GL_POINT_SPRITE` is not enabled on compatibility contexts.
 -   New `--magnum-gpu-validation` @ref GL-Context-command-line "command-line option"
     and a corresponding environment variable to conveniently enable
     @gl_extension{KHR,debug} debug output. This flag also causes

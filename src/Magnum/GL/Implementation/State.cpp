@@ -66,7 +66,7 @@ State::State(Context& context, std::ostream* const out) {
     framebuffer.reset(new FramebufferState{context, extensions});
     mesh.reset(new MeshState{context, *this->context, extensions});
     query.reset(new QueryState{context, extensions});
-    renderer.reset(new RendererState{context, extensions});
+    renderer.reset(new RendererState{context, *this->context, extensions});
     shader.reset(new ShaderState(context, extensions));
     shaderProgram.reset(new ShaderProgramState{context, extensions});
     texture.reset(new TextureState{context, extensions});

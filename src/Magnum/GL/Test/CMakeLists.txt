@@ -101,12 +101,14 @@ if(NOT MAGNUM_TARGET_GLES)
 endif()
 
 if(BUILD_GL_TESTS)
+    # Otherwise CMake complains that Corrade::PluginManager is not found, wtf
+    find_package(Corrade REQUIRED PluginManager)
+
     corrade_add_test(GLAbstractTextureGLTest AbstractTextureGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
     corrade_add_test(GLBufferGLTest BufferGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLCubeMapTextureGLTest CubeMapTextureGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
     corrade_add_test(GLFramebufferGLTest FramebufferGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
     corrade_add_test(GLMeshGLTest MeshGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
-    corrade_add_test(GLRendererGLTest RendererGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLRenderbufferGLTest RenderbufferGLTest.cpp LIBRARIES MagnumOpenGLTester)
     corrade_add_test(GLTextureGLTest TextureGLTest.cpp LIBRARIES MagnumOpenGLTesterTestLib)
     corrade_add_test(GLTimeQueryGLTest TimeQueryGLTest.cpp LIBRARIES MagnumOpenGLTester)
@@ -125,16 +127,49 @@ if(BUILD_GL_TESTS)
 
     if(CORRADE_TARGET_EMSCRIPTEN OR CORRADE_TARGET_ANDROID)
         set(SHADERGLTEST_FILES_DIR "ShaderGLTestFiles")
+        set(RENDERERGLTEST_FILES_DIR "RendererGLTestFiles")
     else()
         set(SHADERGLTEST_FILES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/ShaderGLTestFiles)
+        set(RENDERERGLTEST_FILES_DIR ${CMAKE_CURRENT_SOURCE_DIR}/RendererGLTestFiles)
     endif()
 
+    # CMake before 3.8 has broken $<TARGET_FILE*> expressions for iOS (see
+    # https://gitlab.kitware.com/cmake/cmake/merge_requests/404) and since
+    # Corrade doesn't support dynamic plugins on iOS, this sorta works around
+    # that. Should be revisited when updating Travis to newer Xcode (xcode7.3
+    # has CMake 3.6).
+    if(NOT BUILD_PLUGINS_STATIC)
+        if(WITH_ANYIMAGEIMPORTER)
+            set(ANYIMAGEIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:AnyImageImporter>)
+        endif()
+        if(WITH_TGAIMPORTER)
+            set(TGAIMPORTER_PLUGIN_FILENAME $<TARGET_FILE:TgaImporter>)
+        endif()
+    endif()
+
+    # First replace ${} variables, then $<> generator expressions
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
-                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
+                   ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+    file(GENERATE OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>/configure.h
+        INPUT ${CMAKE_CURRENT_BINARY_DIR}/configure.h.in)
+
+    corrade_add_test(GLRendererGLTest RendererGLTest.cpp
+        LIBRARIES MagnumOpenGLTester MagnumDebugTools
+        FILES RendererGLTestFiles/pointcoord.tga)
+    target_include_directories(GLRendererGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
+    if(BUILD_PLUGINS_STATIC)
+        if(WITH_ANYIMAGEIMPORTER)
+            target_link_libraries(GLRendererGLTest PRIVATE AnyImageImporter)
+        endif()
+        if(WITH_TGAIMPORTER)
+            target_link_libraries(GLRendererGLTest PRIVATE TgaImporter)
+        endif()
+    endif()
+
     corrade_add_test(GLShaderGLTest ShaderGLTest.cpp
         LIBRARIES MagnumOpenGLTester
         FILES ShaderGLTestFiles/shader.glsl)
-    target_include_directories(GLShaderGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
+    target_include_directories(GLShaderGLTest PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/$<CONFIG>)
 
     set_target_properties(
         GLAbstractTextureGLTest

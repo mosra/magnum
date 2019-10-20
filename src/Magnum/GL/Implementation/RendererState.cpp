@@ -31,7 +31,7 @@
 
 namespace Magnum { namespace GL { namespace Implementation {
 
-RendererState::RendererState(Context& context, std::vector<std::string>& extensions)
+RendererState::RendererState(Context& context, ContextState& contextState, std::vector<std::string>& extensions)
     #ifndef MAGNUM_TARGET_WEBGL
     : resetNotificationStrategy()
     #endif
@@ -105,6 +105,20 @@ RendererState::RendererState(Context& context, std::vector<std::string>& extensi
         minSampleShadingImplementation = &Renderer::minSampleShadingImplementationOES;
     else
         minSampleShadingImplementation = nullptr;
+    #endif
+
+    #ifndef MAGNUM_TARGET_GLES
+    /* On compatibility profile we need to explicitly enable GL_POINT_SPRITE
+       in order to have gl_PointCoord working (on NVidia at least, Mesa behaves
+       as if it was always enabled). On core profile this is enabled
+       implicitly, thus GL_POINT_SPRITE is not even in headers and calling
+       glEnable(GL_POINT_SPRITE) would cause a GL error. See
+       RendererGLTest::pointCoord() for more information. */
+    if(!context.isCoreProfileInternal(contextState)) {
+        glEnable(0x8861 /*GL_POINT_SPRITE*/);
+    }
+    #else
+    static_cast<void>(contextState);
     #endif
 }
 

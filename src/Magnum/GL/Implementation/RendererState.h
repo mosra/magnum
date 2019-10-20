@@ -33,8 +33,10 @@
 
 namespace Magnum { namespace GL { namespace Implementation {
 
+struct ContextState;
+
 struct RendererState {
-    explicit RendererState(Context& context, std::vector<std::string>& extensions);
+    explicit RendererState(Context& context, ContextState& contextState, std::vector<std::string>& extensions);
 
     Range1D(*lineWidthRangeImplementation)();
     void(*clearDepthfImplementation)(GLfloat);
