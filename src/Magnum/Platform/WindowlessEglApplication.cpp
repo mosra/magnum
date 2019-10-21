@@ -226,16 +226,6 @@ WindowlessEglContext::WindowlessEglContext(const Configuration& configuration, G
         flags |= Configuration::Flag::Debug;
     #endif
 
-    #ifndef MAGNUM_TARGET_GLES
-    /* NVidia doesn't like EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR for
-       some reason, failing eglCreateContext() with EGL_BAD_MATCH. If this flag
-       is set, wipe it away. */
-    const char* vendor = eglQueryString(_display, EGL_VENDOR);
-    if((flags & Configuration::Flag::ForwardCompatible) && vendor && std::strcmp(vendor, "NVIDIA") == 0 && (!magnumContext || !magnumContext->isDriverWorkaroundDisabled("nv-egl-forward-compatible-context-unhappy"))) {
-        flags &= ~Configuration::Flag::ForwardCompatible;
-    }
-    #endif
-
     #if !defined(MAGNUM_TARGET_GLES) || defined(MAGNUM_TARGET_WEBGL)
     const /* Is modified below to work around a SwiftShader limitation */
     #endif

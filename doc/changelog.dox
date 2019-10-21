@@ -420,11 +420,6 @@ See also:
     would assume a zero-sized framebuffer. This behavior is no longer silent
     but advertised as a @cpp "apitrace-zero-initial-viewport" @ce workaround.
     See @ref opengl-workarounds for more information.
--   Added a @cpp "nv-egl-forward-compatible-context-unhappy" @ce workaround
-    that removes @ref Platform::WindowlessEglApplication::Configuration::Flag::ForwardCompatible
-    from flags passed to `eglCreateContext()` as that otherwise causes NVidia
-    to fail with `EGL_BAD_MATCH`. See @ref opengl-workarounds for more
-    information.
 -   @ref GL::OpenGLTester no longer implicitly enables @ref GL::DebugOutput as
     it can be quite spammy when complex shaders or benchmarks are allowed. For
     easier debugging, users are encouraged to use the new

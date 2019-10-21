@@ -128,12 +128,6 @@ namespace {
    possible to get driver version through EGL, so enabling this unconditionally
    on all EGL NV contexts. */
 "nv-egl-incorrect-gl11-function-pointers",
-
-/* NVidia is unhappy when EGL_CONTEXT_OPENGL_FORWARD_COMPATIBLE_BIT_KHR is
-   present among attributes passed to eglCreateContext(), blowing up with
-   EGL_BAD_MATCH. This flag is enabled by default, wiping it away to make the
-   context creation work. */
-"nv-egl-forward-compatible-context-unhappy",
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
