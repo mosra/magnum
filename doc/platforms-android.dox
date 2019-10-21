@@ -971,7 +971,21 @@ TERM=xterm gradle build
 
 @subsection platforms-android-troubleshooting-licenses Accepting SDK licenses for Gradle
 
-Gradle might refuse to build a project if SDK licenses are not accepted.
+Gradle might refuse to build a project if SDK licenses are not accepted, with
+an error that might look like this:
+
+@code{.shell-session}
+$ gradle build
+
+FAILURE: Build failed with an exception.
+
+A problem occurred configuring root project 'MyApplication'.
+> You have not accepted the license agreements of the following SDK components:
+  [Android SDK Platform 22].
+  Before building your project, you need to accept the license agreements and complete the installation of the missing components using the Android Studio SDK Manager.
+  Alternatively, to learn how to transfer the license agreements from one workstation to another, go to http://d.android.com/r/studio-ui/export-licenses.html
+@endcode
+
 Depending on where your SDKs are installed, you might need to execute the
 following (assuming you have SDK version 26 at least):
 
