@@ -55,15 +55,21 @@ template<> struct Renderer<3> {
 }
 
 /* Doxygen gets confused when using {} to initialize parent object */
-template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): SceneGraph::Drawable<dimensions, Float>(object, drawables), _options{ResourceManager::instance().get<ObjectRendererOptions>(options)} {
+template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(ResourceManager& manager, SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): SceneGraph::Drawable<dimensions, Float>(object, drawables), _options{manager.get<ObjectRendererOptions>(options)} {
     /* Shader */
-    _shader = ResourceManager::instance().get<GL::AbstractShaderProgram, Shaders::VertexColor<dimensions>>(Renderer<dimensions>::shader());
-    if(!_shader) ResourceManager::instance().set<GL::AbstractShaderProgram>(_shader.key(), new Shaders::VertexColor<dimensions>);
+    _shader = manager.get<GL::AbstractShaderProgram, Shaders::VertexColor<dimensions>>(Renderer<dimensions>::shader());
+    if(!_shader) manager.set<GL::AbstractShaderProgram>(_shader.key(), new Shaders::VertexColor<dimensions>);
 
     /* Mesh */
-    _mesh = ResourceManager::instance().get<GL::Mesh>(Renderer<dimensions>::mesh());
-    if(!_mesh) ResourceManager::instance().set<GL::Mesh>(_mesh.key(), MeshTools::compile(Renderer<dimensions>::meshData()));
+    _mesh = manager.get<GL::Mesh>(Renderer<dimensions>::mesh());
+    if(!_mesh) manager.set<GL::Mesh>(_mesh.key(), MeshTools::compile(Renderer<dimensions>::meshData()));
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
+template<UnsignedInt dimensions> ObjectRenderer<dimensions>::ObjectRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options, SceneGraph::DrawableGroup<dimensions, Float>* drawables): ObjectRenderer<dimensions>{static_cast<ResourceManager&>(ResourceManager::instance()), object, options, drawables} {}
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 /* To avoid deleting pointers to incomplete type on destruction of Resource members */
 template<UnsignedInt dimensions> ObjectRenderer<dimensions>::~ObjectRenderer() = default;

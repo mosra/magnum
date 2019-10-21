@@ -41,32 +41,11 @@ namespace Implementation {
 
 namespace DebugTools {
 
-namespace {
-    #ifdef CORRADE_BUILD_MULTITHREADED
-    CORRADE_THREAD_LOCAL
-    #endif
-    ResourceManager* resourceManagerInstance = nullptr;
-}
-
-ResourceManager& ResourceManager::instance() {
-    CORRADE_ASSERT(resourceManagerInstance,
-        "DebugTools::ResourceManager::instance(): no instance exists",
-        *resourceManagerInstance);
-    return *resourceManagerInstance;
-}
-
 ResourceManager::ResourceManager() {
-    CORRADE_ASSERT(!resourceManagerInstance,
-        "DebugTools::ResourceManager: another instance is already created", );
-    resourceManagerInstance = this;
-
     setFallback(new ForceRendererOptions);
     setFallback(new ObjectRendererOptions);
 }
 
-ResourceManager::~ResourceManager() {
-    CORRADE_INTERNAL_ASSERT(resourceManagerInstance == this);
-    resourceManagerInstance = nullptr;
-}
+ResourceManager::~ResourceManager() = default;
 
 }}

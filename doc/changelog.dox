@@ -773,9 +773,11 @@ See also:
 -   Passing @cpp nullptr @ce to @ref ImageView constructors is deprecated and
     will print a warning at runtime. Use a constructor without the @p data
     parameter instead.
--   The @cpp ResourceManager::instance() @ce singleton is deprecated as it
-    makes some use cases harder than they should be. Make your own singleton
-    or explicitly pass a @ref ResourceManager reference around instead.
+-   The @cpp ResourceManager::instance() @ce singleton (and its implicit use in
+    @ref DebugTools::ForceRenderer and @ref DebugTools::ObjectRenderer) is
+    deprecated as it makes some use cases harder than they should be. Make your
+    own singleton or explicitly pass a @ref ResourceManager reference around
+    instead.
 -   @ref Platform::BasicScreen::application() now returns a reference instead
     of a pointer and together with @ref Platform::BasicScreen::redraw() checks
     that the screen is actually added to the application instead of returning

@@ -32,11 +32,12 @@
 #endif
 
 #include "Magnum/Resource.h"
+#include "Magnum/DebugTools/DebugTools.h"
+#include "Magnum/DebugTools/visibility.h"
 #include "Magnum/GL/GL.h"
 #include "Magnum/Math/Color.h"
 #include "Magnum/SceneGraph/Drawable.h"
 #include "Magnum/Shaders/Shaders.h"
-#include "Magnum/DebugTools/visibility.h"
 
 #ifdef MAGNUM_TARGET_GL
 namespace Magnum { namespace DebugTools {
@@ -121,21 +122,36 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: p
     public:
         /**
          * @brief Constructor
+         * @param manager       Resource manager instance
          * @param object        Object for which to create debug renderer
          * @param forcePosition Where to render the force, relative to object
-         * @param force         Force vector
+         * @param force         Reference to the force vector
          * @param options       Options resource key. See
          *      @ref DebugTools-ForceRenderer-usage "class documentation" for
          *      more information.
          * @param drawables     Drawable group
          */
-        explicit ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, const VectorTypeFor<dimensions, Float>& forcePosition, const VectorTypeFor<dimensions, Float>& force, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
+        explicit ForceRenderer(ResourceManager& manager, SceneGraph::AbstractObject<dimensions, Float>& object, const VectorTypeFor<dimensions, Float>& forcePosition, const VectorTypeFor<dimensions, Float>& force, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
 
         /**
-         * You have to pass reference to existing force instance, as the
-         * renderer uses the current value when rendering.
+         * You have to pass a reference to an external force vector --- the
+         * renderer doesn't store a copy.
          */
-        ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, VectorTypeFor<dimensions, Float>&&, ResourceKey = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* = nullptr) = delete;
+        explicit ForceRenderer(ResourceManager&, SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, VectorTypeFor<dimensions, Float>&&, ResourceKey = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* = nullptr) = delete;
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Constructor
+         * @deprecated Implicit @ref ResourceManager singleton is deprecated,
+         *      use @ref ForceRenderer(ResourceManager&, SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, ResourceKey, SceneGraph::DrawableGroup<dimensions, Float>*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("implicit ResourceManager singleton is deprecated, use a constructor with explicit ResourceManager reference instead") ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, const VectorTypeFor<dimensions, Float>& forcePosition, const VectorTypeFor<dimensions, Float>& force, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
+
+        #ifndef DOXYGEN_GENERATOR_OUTPUT
+        explicit CORRADE_DEPRECATED("implicit ResourceManager singleton is deprecated, use a constructor with explicit DebugTools::ResourceManager reference instead") ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, VectorTypeFor<dimensions, Float>&&, ResourceKey = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* = nullptr) = delete;
+        #endif
+        #endif
 
         ~ForceRenderer();
 

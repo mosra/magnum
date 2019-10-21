@@ -90,7 +90,7 @@ void ForceRendererGLTest::render2D() {
     SceneGraph::Object<SceneGraph::MatrixTransformation2D> object{&scene};
     object.translate({-1.0f, -1.0f});
     Vector2 force{2.0f, 2.0f};
-    ForceRenderer2D renderer{object, {}, force, "my", &drawables};
+    ForceRenderer2D renderer{manager, object, {}, force, "my", &drawables};
 
     GL::Renderbuffer color;
     color.setStorage(
@@ -146,7 +146,7 @@ void ForceRendererGLTest::render3D() {
         .rotateY(-90.0_degf)
         .translate({-0.5f, -1.0f, 1.0f});
     Vector3 force{2.0f, 2.0f, 0.0f};
-    ForceRenderer3D renderer{object, {}, force, "my", &drawables};
+    ForceRenderer3D renderer{manager, object, {}, force, "my", &drawables};
 
     GL::Renderbuffer color;
     color.setStorage(

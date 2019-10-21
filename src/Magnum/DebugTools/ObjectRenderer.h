@@ -32,6 +32,7 @@
 #endif
 
 #include "Magnum/Resource.h"
+#include "Magnum/DebugTools/DebugTools.h"
 #include "Magnum/DebugTools/visibility.h"
 #include "Magnum/GL/GL.h"
 #include "Magnum/SceneGraph/Drawable.h"
@@ -93,6 +94,7 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: 
     public:
         /**
          * @brief Constructor
+         * @param manager   Resource manager instance
          * @param object    Object for which to create debug renderer
          * @param options   Options resource key. See
          *      @ref DebugTools-ObjectRenderer-usage "class documentation" for
@@ -101,7 +103,17 @@ template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: 
          *
          * The renderer is automatically added to object's features.
          */
-        explicit ObjectRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
+        explicit ObjectRenderer(ResourceManager& manager, SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Constructor
+         * @deprecated Implicit @ref ResourceManager singleton is deprecated,
+         *      use @ref ObjectRenderer(ResourceManager&, SceneGraph::AbstractObject<dimensions, Float>&, ResourceKey, SceneGraph::DrawableGroup<dimensions, Float>*)
+         *      instead.
+         */
+        explicit CORRADE_DEPRECATED("implicit ResourceManager singleton is deprecated, use a constructor with explicit ResourceManager reference instead") ObjectRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);
+        #endif
 
         ~ObjectRenderer();
 

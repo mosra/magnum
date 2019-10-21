@@ -91,7 +91,7 @@ void ObjectRendererGLTest::render2D() {
     object
         .rotate(-17.3_degf)
         .translate({-1.0f, -1.0f});
-    ObjectRenderer2D renderer{object, "my", &drawables};
+    ObjectRenderer2D renderer{manager, object, "my", &drawables};
 
     GL::Renderbuffer color;
     color.setStorage(
@@ -136,7 +136,7 @@ void ObjectRendererGLTest::render3D() {
         .rotateZ(17.3_degf)
         .rotateY(45.0_degf)
         .translate({-1.0f, -1.0f, -1.0f});
-    ObjectRenderer3D renderer{object, "my", &drawables};
+    ObjectRenderer3D renderer{manager, object, "my", &drawables};
 
     GL::Renderbuffer color;
     color.setStorage(

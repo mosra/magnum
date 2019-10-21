@@ -251,6 +251,9 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          * @brief Global instance
          *
          * Assumes that the instance exists.
+         *
+         * @deprecated Implicit @ref ResourceManager singleton is deprecated,
+         *      make your own or pass a reference around instead
          */
         static CORRADE_DEPRECATED("implicit ResourceManager singleton is deprecated, make your own or pass a reference around instead") ResourceManager<Types...>& instance();
         #endif

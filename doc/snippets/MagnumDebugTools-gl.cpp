@@ -58,43 +58,43 @@ DebugTools::ResourceManager manager;
 SceneGraph::DrawableGroup3D debugDrawables;
 
 // Create renderer options which will be referenced later by "my" resource key
-DebugTools::ResourceManager::instance().set("my",
-    DebugTools::ObjectRendererOptions{}.setSize(0.3f));
+manager.set("my", DebugTools::ObjectRendererOptions{}.setSize(0.3f));
 
 // Create debug renderer for given object, use "my" options for it. The
 // renderer is automatically added to the object features and also to
 // specified drawable group.
-new DebugTools::ObjectRenderer3D{*object, "my", &debugDrawables};
+new DebugTools::ObjectRenderer3D{manager, *object, "my", &debugDrawables};
 /* [debug-tools-renderers] */
 }
 
 {
+DebugTools::ResourceManager manager;
 SceneGraph::Object<SceneGraph::MatrixTransformation3D>* object{};
 SceneGraph::DrawableGroup3D debugDrawables;
 /* [ForceRenderer] */
-DebugTools::ResourceManager::instance().set("my",
-    DebugTools::ForceRendererOptions{}
-        .setSize(5.0f)
-        .setColor(Color3::fromHsv({120.0_degf, 1.0f, 0.7f})));
+manager.set("my", DebugTools::ForceRendererOptions{}
+    .setSize(5.0f)
+    .setColor(Color3::fromHsv({120.0_degf, 1.0f, 0.7f})));
 
 Vector3 force; // taken as a reference, has to be kept in scope
 
 // Create debug renderer for given force, use "my" options for it
-new DebugTools::ForceRenderer3D(*object, {0.3f, 1.5f, -0.7f}, force, "my",
-        &debugDrawables);
+new DebugTools::ForceRenderer3D(manager, *object, {0.3f, 1.5f, -0.7f}, force,
+    "my", &debugDrawables);
 /* [ForceRenderer] */
 }
 
 {
 SceneGraph::Object<SceneGraph::MatrixTransformation3D>* object{};
-SceneGraph::DrawableGroup3D debugDrawables;
 /* [ObjectRenderer] */
+DebugTools::ResourceManager manager;
+SceneGraph::DrawableGroup3D debugDrawables;
+
 // Create some options
-DebugTools::ResourceManager::instance().set("my",
-    DebugTools::ObjectRendererOptions{}.setSize(0.3f));
+manager.set("my", DebugTools::ObjectRendererOptions{}.setSize(0.3f));
 
 // Create debug renderer for given object, use "my" options for it
-new DebugTools::ObjectRenderer3D(*object, "my", &debugDrawables);
+new DebugTools::ObjectRenderer3D{manager, *object, "my", &debugDrawables};
 /* [ObjectRenderer] */
 }
 {
