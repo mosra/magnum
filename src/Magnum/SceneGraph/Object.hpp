@@ -170,17 +170,17 @@ template<class Transformation> void Object<Transformation>::setClean() {
     }
 }
 
-template<class Transformation> auto Object<Transformation>::doTransformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<Transformation::Dimensions, typename Transformation::Type>>>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
+template<class Transformation> auto Object<Transformation>::doTransformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<Transformation::Dimensions, typename Transformation::Type>>>& objects, const MatrixType& finalTransformationMatrix) const -> std::vector<MatrixType> {
     std::vector<std::reference_wrapper<Object<Transformation>>> castObjects;
     castObjects.reserve(objects.size());
     /** @todo Ensure this doesn't crash, somehow */
     for(auto o: objects) castObjects.push_back(static_cast<Object<Transformation>&>(o.get()));
 
-    return transformationMatrices(std::move(castObjects), initialTransformationMatrix);
+    return transformationMatrices(std::move(castObjects), finalTransformationMatrix);
 }
 
-template<class Transformation> auto Object<Transformation>::transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>& objects, const MatrixType& initialTransformationMatrix) const -> std::vector<MatrixType> {
-    std::vector<typename Transformation::DataType> transformations = this->transformations(std::move(objects), Implementation::Transformation<Transformation>::fromMatrix(initialTransformationMatrix));
+template<class Transformation> auto Object<Transformation>::transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>& objects, const MatrixType& finalTransformationMatrix) const -> std::vector<MatrixType> {
+    std::vector<typename Transformation::DataType> transformations = this->transformations(std::move(objects), Implementation::Transformation<Transformation>::fromMatrix(finalTransformationMatrix));
     std::vector<MatrixType> transformationMatrices(transformations.size());
     for(std::size_t i = 0; i != objects.size(); ++i)
         transformationMatrices[i] = Implementation::Transformation<Transformation>::toMatrix(transformations[i]);
@@ -202,7 +202,7 @@ Then for all joints their transformation (relative to parent joint) is
 computed and recursively concatenated together. Resulting transformations for
 joints which were originally in `object` list is then returned.
 */
-template<class Transformation> std::vector<typename Transformation::DataType> Object<Transformation>::transformations(std::vector<std::reference_wrapper<Object<Transformation>>> objects, const typename Transformation::DataType& initialTransformation) const {
+template<class Transformation> std::vector<typename Transformation::DataType> Object<Transformation>::transformations(std::vector<std::reference_wrapper<Object<Transformation>>> objects, const typename Transformation::DataType& finalTransformation) const {
     CORRADE_ASSERT(objects.size() < 0xFFFFu, "SceneGraph::Object::transformations(): too large scene", {});
 
     /* Remember object count for later */
@@ -274,7 +274,7 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
 
     /* Compute transformations for all joints */
     for(std::size_t i = 0; i != jointTransformations.size(); ++i)
-        computeJointTransformation(jointObjects, jointTransformations, i, initialTransformation);
+        computeJointTransformation(jointObjects, jointTransformations, i, finalTransformation);
 
     /* Copy transformation for second or next occurences from first occurence
        of duplicate object */
@@ -297,7 +297,7 @@ template<class Transformation> std::vector<typename Transformation::DataType> Ob
     return jointTransformations;
 }
 
-template<class Transformation> typename Transformation::DataType Object<Transformation>::computeJointTransformation(const std::vector<std::reference_wrapper<Object<Transformation>>>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const {
+template<class Transformation> typename Transformation::DataType Object<Transformation>::computeJointTransformation(const std::vector<std::reference_wrapper<Object<Transformation>>>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& finalTransformation) const {
     std::reference_wrapper<Object<Transformation>> o = jointObjects[joint];
 
     /* Transformation already computed ("unvisited" by this function before
@@ -315,16 +315,16 @@ template<class Transformation> typename Transformation::DataType Object<Transfor
 
         Object<Transformation>* parent = o.get().parent();
 
-        /* Root object, compose transformation with initial, done */
+        /* Root object, compose transformation with final, done */
         if(!parent) {
             CORRADE_INTERNAL_ASSERT(o.get().isScene());
             return (jointTransformations[joint] =
-                Implementation::Transformation<Transformation>::compose(initialTransformation, jointTransformations[joint]));
+                Implementation::Transformation<Transformation>::compose(finalTransformation, jointTransformations[joint]));
 
         /* Joint object, compose transformation with the joint, done */
         } else if(parent->flags & Flag::Joint) {
             return (jointTransformations[joint] =
-                Implementation::Transformation<Transformation>::compose(computeJointTransformation(jointObjects, jointTransformations, parent->counter, initialTransformation), jointTransformations[joint]));
+                Implementation::Transformation<Transformation>::compose(computeJointTransformation(jointObjects, jointTransformations, parent->counter, finalTransformation), jointTransformations[joint]));
 
         /* Else compose transformation with parent, go up the hierarchy */
         } else {

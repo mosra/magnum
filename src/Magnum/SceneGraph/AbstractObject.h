@@ -162,14 +162,16 @@ template<UnsignedInt dimensions, class T> class AbstractObject
         /**
          * @brief Transformation matrices of given set of objects relative to this object
          *
-         * All transformations are premultiplied with @p initialTransformationMatrix,
-         * if specified.
+         * All transformations are post-multiplied with
+         * @p finalTransformationMatrix, if specified (it gets applied on the
+         * left-most side, suitable for example for an inverse camera
+         * transformation or a projection matrix).
          * @warning This function cannot check if all objects are of the same
          *      @ref Object type, use typesafe @ref Object::transformationMatrices()
          *      when possible.
          */
-        std::vector<MatrixType> transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const {
-            return doTransformationMatrices(objects, initialTransformationMatrix);
+        std::vector<MatrixType> transformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects, const MatrixType& finalTransformationMatrix = MatrixType()) const {
+            return doTransformationMatrices(objects, finalTransformationMatrix);
         }
 
         /*@}*/
@@ -248,7 +250,7 @@ template<UnsignedInt dimensions, class T> class AbstractObject
 
         virtual MatrixType doTransformationMatrix() const = 0;
         virtual MatrixType doAbsoluteTransformationMatrix() const = 0;
-        virtual std::vector<MatrixType> doTransformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects, const MatrixType& initialTransformationMatrix) const = 0;
+        virtual std::vector<MatrixType> doTransformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<dimensions, T>>>& objects, const MatrixType& finalTransformationMatrix) const = 0;
 
         virtual bool doIsDirty() const = 0;
         virtual void doSetDirty() = 0;

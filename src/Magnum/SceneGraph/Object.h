@@ -248,22 +248,26 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
         /**
          * @brief Transformation matrices of given set of objects relative to this object
          *
-         * All transformations are premultiplied with @p initialTransformationMatrix,
-         * if specified.
+         * All transformations are post-multiplied with
+         * @p finalTransformationMatrix, if specified (it gets applied on the
+         * left-most side, suitable for example for an inverse camera
+         * transformation or a projection matrix).
          * @see @ref transformations()
          */
-        std::vector<MatrixType> transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>& objects, const MatrixType& initialTransformationMatrix = MatrixType()) const;
+        std::vector<MatrixType> transformationMatrices(const std::vector<std::reference_wrapper<Object<Transformation>>>& objects, const MatrixType& finalTransformationMatrix = MatrixType()) const;
 
         /**
          * @brief Transformations of given group of objects relative to this object
          *
-         * All transformations can be premultiplied with @p initialTransformation,
-         * if specified.
+         * All transformations are post-multiplied with
+         * @p finalTransformation, if specified (it gets applied on the
+         * left-most side, suitable for example for an inverse camera
+         * transformation).
          * @see @ref transformationMatrices()
          */
         /* `objects` passed by copy intentionally (to allow move from
            transformationMatrices() and avoid copy in the function itself) */
-        std::vector<typename Transformation::DataType> transformations(std::vector<std::reference_wrapper<Object<Transformation>>> objects, const typename Transformation::DataType& initialTransformation =
+        std::vector<typename Transformation::DataType> transformations(std::vector<std::reference_wrapper<Object<Transformation>>> objects, const typename Transformation::DataType& finalTransformation =
             #ifndef CORRADE_MSVC2015_COMPATIBILITY /* I hate this inconsistency */
             typename Transformation::DataType()
             #else
@@ -346,9 +350,9 @@ template<class Transformation> class Object: public AbstractObject<Transformatio
             return absoluteTransformationMatrix();
         }
 
-        std::vector<MatrixType> doTransformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<Transformation::Dimensions, typename Transformation::Type>>>& objects, const MatrixType& initialTransformationMatrix) const override final;
+        std::vector<MatrixType> doTransformationMatrices(const std::vector<std::reference_wrapper<AbstractObject<Transformation::Dimensions, typename Transformation::Type>>>& objects, const MatrixType& finalTransformationMatrix) const override final;
 
-        typename Transformation::DataType MAGNUM_SCENEGRAPH_LOCAL computeJointTransformation(const std::vector<std::reference_wrapper<Object<Transformation>>>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& initialTransformation) const;
+        typename Transformation::DataType MAGNUM_SCENEGRAPH_LOCAL computeJointTransformation(const std::vector<std::reference_wrapper<Object<Transformation>>>& jointObjects, std::vector<typename Transformation::DataType>& jointTransformations, const std::size_t joint, const typename Transformation::DataType& finalTransformation) const;
 
         bool MAGNUM_SCENEGRAPH_LOCAL doIsDirty() const override final { return isDirty(); }
         void MAGNUM_SCENEGRAPH_LOCAL doSetDirty() override final { setDirty(); }
