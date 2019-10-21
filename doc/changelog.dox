@@ -518,11 +518,12 @@ See also:
     [mosra/magnum#332](https://github.com/mosra/magnum/pull/332))
 -   @ref Platform::Sdl2Application::mainLoopIteration() now returns a
     @cpp bool @ce to indicate if the application should exit
--   @ref Platform::GlfwApplication and @ref Platform::EmscriptenApplication now
-    implement @ref Platform::GlfwApplication::MouseMoveEvent::relativePosition()
-    as well for better compatibility with @ref Platform::Sdl2Application. The
-    relative position is not supplied by the underlying toolkits, so it's
-    emulated on the application side.
+-   @ref Platform::GlfwApplication, @ref Platform::EmscriptenApplication and
+    @ref Platform::AndroidApplication now implement
+    @ref Platform::GlfwApplication::MouseMoveEvent::relativePosition() as well
+    for better compatibility with @ref Platform::Sdl2Application. The relative
+    position is not supplied by the underlying toolkits, so it's emulated on
+    the application side.
 -   Extended @ref Platform::BasicScreen with
     @ref Platform::BasicScreen::mouseScrollEvent() "mouseScrollEvent()",
     @ref Platform::BasicScreen::textInputEvent() "textInputEvent()" and

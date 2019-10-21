@@ -418,6 +418,7 @@ class AndroidApplication {
         EGLDisplay _display;
         EGLSurface _surface;
         EGLContext _glContext;
+        Vector2i _previousMouseMovePosition{-1};
 
         Containers::Pointer<Platform::GLContext> _context;
         Containers::Pointer<LogOutput> _logOutput;
@@ -765,6 +766,16 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
                     Int(AMotionEvent_getY(_event, 0))};
         }
 
+        /**
+         * @brief Relative position
+         *
+         * Position relative to previous move event. Unlike
+         * @ref Sdl2Application, Android APIs don't provide relative position
+         * directly, so this is calculated explicitly as a delta from previous
+         * move event position.
+         */
+        Vector2i relativePosition() const { return _relativePosition; }
+
         /** @brief Mouse buttons */
         Buttons buttons() const {
             #if __ANDROID_API__ >= 14
@@ -775,7 +786,9 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
         }
 
     private:
-        explicit MouseMoveEvent(AInputEvent* event): InputEvent(event) {}
+        explicit MouseMoveEvent(AInputEvent* event, Vector2i relativePosition): InputEvent{event}, _relativePosition{relativePosition} {}
+
+        const Vector2i _relativePosition;
 };
 
 CORRADE_ENUMSET_OPERATORS(AndroidApplication::MouseMoveEvent::Buttons)
