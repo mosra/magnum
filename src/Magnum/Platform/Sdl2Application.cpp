@@ -295,7 +295,7 @@ bool Sdl2Application::tryCreate(const Configuration& configuration) {
         #endif
         SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         scaledWindowSize.x(), scaledWindowSize.y(),
-        SDL_WINDOW_ALLOW_HIGHDPI|Uint32(configuration.windowFlags() & ~Configuration::WindowFlag::Contextless))))
+        SDL_WINDOW_ALLOW_HIGHDPI|SDL_WINDOW_OPENGL|Uint32(configuration.windowFlags() & ~Configuration::WindowFlag::Contextless))))
     {
         Error() << "Platform::Sdl2Application::tryCreate(): cannot create window:" << SDL_GetError();
         return false;

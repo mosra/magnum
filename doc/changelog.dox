@@ -298,6 +298,10 @@ See also:
     in @ref Platform::GlfwApplication and @ref Platform::EmscriptenApplication)
     for changing window title at runtime as opposed to setting them on
     application startup
+-   Added @ref Platform::Sdl2Application::Configuration::WindowFlag::OpenGL and
+    @ref Platform::Sdl2Application::Configuration::WindowFlag::Vulkan "WindowFlag::Vulkan",
+    meant to be used together with @ref Platform::Sdl2Application::Configuration::WindowFlag::Contextless for
+    manual creation of OpenGL contexts and Vulkan instances
 -   @ref Platform::WindowlessEglApplication now uses the
     @m_class{m-doc-external} [EGL_EXT_device_enumeration](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_device_enumeration.txt),
     @m_class{m-doc-external} [EGL_EXT_platform_base](https://www.khronos.org/registry/EGL/extensions/EXT/EGL_EXT_platform_base.txt) and

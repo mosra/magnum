@@ -1415,7 +1415,28 @@ class Sdl2Application::Configuration {
              * @ref tryCreate(const Configuration&) to prevent implicit
              * creation of an OpenGL context.
              */
-            Contextless = 1u << 31 /* Hope this won't ever conflict with anything */
+            Contextless = 1u << 31, /* Hope this won't ever conflict with anything */
+
+            /**
+             * Request a window for use with OpenGL. Useful in combination with
+             * @ref WindowFlag::Contextless, otherwise enabled implicitly when
+             * creating an OpenGL context using @ref Sdl2Application(const Arguments&),
+             * @ref Sdl2Application(const Arguments, const Configuration&, const GLConfiguration&),
+             * @ref create(const Configuration&, const GLConfiguration&) or
+             * @ref tryCreate(const Configuration&, const GLConfiguration&).
+             */
+            OpenGL = SDL_WINDOW_OPENGL,
+
+            #if !defined(CORRADE_TARGET_EMSCRIPTEN) && (SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2006 || defined(DOXYGEN_GENERATING_OUTPUT))
+            /**
+             * Request a window for use with Vulkan. Useful in combination with
+             * @ref WindowFlag::Contextless.
+             *
+             * @note Available since SDL 2.0.6, not available on
+             *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             */
+            Vulkan = SDL_WINDOW_VULKAN
+            #endif
         };
 
         /**
@@ -1429,7 +1450,10 @@ class Sdl2Application::Configuration {
             SDL_WINDOW_FULLSCREEN|SDL_WINDOW_BORDERLESS|SDL_WINDOW_HIDDEN|
             SDL_WINDOW_MAXIMIZED|SDL_WINDOW_MINIMIZED|SDL_WINDOW_INPUT_GRABBED|
             #endif
-            Uint32(WindowFlag::Contextless)
+            Uint32(WindowFlag::Contextless)|SDL_WINDOW_OPENGL
+            #if !defined(CORRADE_TARGET_EMSCRIPTEN) && SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2006
+            |SDL_WINDOW_VULKAN
+            #endif
             > WindowFlags;
         #else
         typedef Containers::EnumSet<WindowFlag> WindowFlags;
