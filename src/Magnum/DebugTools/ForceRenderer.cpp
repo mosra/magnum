@@ -92,7 +92,7 @@ template<UnsignedInt dimensions> void ForceRenderer<dimensions>::draw(const Matr
     _mesh->draw(*_shader);
 }
 
-template class ForceRenderer<2>;
-template class ForceRenderer<3>;
+template class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer<2>;
+template class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer<3>;
 
 }}

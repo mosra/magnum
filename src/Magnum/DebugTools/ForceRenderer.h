@@ -118,7 +118,7 @@ to it.
 
 @see @ref ForceRenderer2D, @ref ForceRenderer3D, @ref ForceRendererOptions
 */
-template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ForceRenderer: public SceneGraph::Drawable<dimensions, Float> {
+template<UnsignedInt dimensions> class ForceRenderer: public SceneGraph::Drawable<dimensions, Float> {
     public:
         /**
          * @brief Constructor

@@ -79,7 +79,7 @@ template<UnsignedInt dimensions> void ObjectRenderer<dimensions>::draw(const Mat
     _mesh->draw(*_shader);
 }
 
-template class ObjectRenderer<2>;
-template class ObjectRenderer<3>;
+template class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer<2>;
+template class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer<3>;
 
 }}

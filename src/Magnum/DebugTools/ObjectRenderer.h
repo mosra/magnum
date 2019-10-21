@@ -90,7 +90,7 @@ Example code:
 
 @see @ref ObjectRenderer2D, @ref ObjectRenderer3D, @ref ObjectRendererOptions
 */
-template<UnsignedInt dimensions> class MAGNUM_DEBUGTOOLS_EXPORT ObjectRenderer: public SceneGraph::Drawable<dimensions, Float> {
+template<UnsignedInt dimensions> class ObjectRenderer: public SceneGraph::Drawable<dimensions, Float> {
     public:
         /**
          * @brief Constructor
