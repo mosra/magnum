@@ -197,7 +197,7 @@ See also:
         framebuffer-to-cubemap copies in DSA APIs
     -   @cpp "amd-windows-dsa-createquery-except-xfb-overflow" @ce using a
         non-DSA code path for creating
-        @ref PrimitiveQuery::Target::TransformFeedbackOverflow queries
+        @ref GL::PrimitiveQuery::Target::TransformFeedbackOverflow queries
 -   New @cpp "arm-mali-timer-queries-oom-in-shell" @ce workaround for
     @ref GL::Context::DetectedDriver::ArmMali "ARM Mali" drivers on Android
     disabling the @gl_extension{EXT,disjoint_timer_query} extension in Android

@@ -1421,7 +1421,7 @@ class Sdl2Application::Configuration {
              * Request a window for use with OpenGL. Useful in combination with
              * @ref WindowFlag::Contextless, otherwise enabled implicitly when
              * creating an OpenGL context using @ref Sdl2Application(const Arguments&),
-             * @ref Sdl2Application(const Arguments, const Configuration&, const GLConfiguration&),
+             * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
              * @ref create(const Configuration&, const GLConfiguration&) or
              * @ref tryCreate(const Configuration&, const GLConfiguration&).
              */
