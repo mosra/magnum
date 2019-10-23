@@ -39,7 +39,7 @@
 
 namespace Magnum { namespace Implementation {
 
-void* windowsWeakSymbol(const char* name);
+void* windowsWeakSymbol(const char* name, void* backup);
 
 }}
 

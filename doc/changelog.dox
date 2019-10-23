@@ -371,7 +371,9 @@ See also:
     @ref Corrade::Containers::Array instead of being deleted
 -   Global state used by @ref GL::Context and @ref Audio::Context is no longer
     duplicated when Magnum is built statically and linked to more than one
-    dynamic library or executable.
+    dynamic library or executable. This works on all platforms except for
+    Python bindings on Windows at the moment, where the workaround is to build
+    both Corrade and Magnum dynamically.
 -   The [base-qt](https://github.com/mosra/magnum-bootstrap/tree/base-qt)
     bootstrap project is fixed to use OpenGL 4.1 on macOS instead of being
     stuck on 2.1 (see [mosra/magnum-bootstrap#22](https://github.com/mosra/magnum-bootstrap/issues/22))

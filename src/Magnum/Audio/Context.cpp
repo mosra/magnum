@@ -161,7 +161,7 @@ namespace {
 Context*& windowsCurrentContext() {
     /* A function-local static to ensure it's only initialized once without any
        race conditions among threads */
-    static Context** const uniqueGlobals = reinterpret_cast<Context**>(Magnum::Implementation::windowsWeakSymbol("magnumAudioUniqueCurrentContext"));
+    static Context** const uniqueGlobals = reinterpret_cast<Context**>(Magnum::Implementation::windowsWeakSymbol("magnumAudioUniqueCurrentContext", &magnumAudioUniqueCurrentContext));
     return *uniqueGlobals;
 }
 

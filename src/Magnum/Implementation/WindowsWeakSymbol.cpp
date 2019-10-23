@@ -25,7 +25,7 @@
 
 #include "WindowsWeakSymbol.h"
 
-#include <Corrade/Utility/Assert.h>
+#include <cstdio>
 
 #define WIN32_LEAN_AND_MEAN 1
 #define VC_EXTRALEAN
@@ -33,10 +33,15 @@
 
 namespace Magnum { namespace Implementation {
 
-void* windowsWeakSymbol(const char* name) {
+void* windowsWeakSymbol(const char* name, void* backup) {
     /* FARPROC?! I want either a function pointer or a variable pointer */
     void* address = reinterpret_cast<void*>(GetProcAddress(GetModuleHandleA(nullptr), name));
-    CORRADE_INTERNAL_ASSERT(address);
+    /* This shouldn't fail, except in Python, where it's a sad, sad misery. */
+    if(!address) {
+        std::fprintf(stderr, "Cannot query global symbol %s and make it unique\n"
+            "across DLLs. App may misbehave, sorry. Build Magnum as dynamic as a workaround.\n", name);
+        address = backup;
+    }
     return address;
 }
 
