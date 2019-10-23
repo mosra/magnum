@@ -162,7 +162,7 @@ std::string ShaderVisualizer::phong() {
         .setLightPosition({5.0f, 5.0f, 7.0f})
         .setProjectionMatrix(Projection)
         .setTransformationMatrix(Transformation)
-        .setNormalMatrix(Transformation.rotationScaling()));
+        .setNormalMatrix(Transformation.normalMatrix()));
 
     return "phong.png";
 }

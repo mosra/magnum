@@ -439,7 +439,7 @@ void CompileGLTest::threeDimensions() {
         _phong
             .setDiffuseColor(0x33ff66_rgbf)
             .setTransformationMatrix(transformation)
-            .setNormalMatrix(transformation.rotationScaling())
+            .setNormalMatrix(transformation.normalMatrix())
             .setProjectionMatrix(projection);
         mesh.draw(_phong);
 
@@ -459,7 +459,7 @@ void CompileGLTest::threeDimensions() {
         _phong
             .setDiffuseColor(0x33ff66_rgbf)
             .setTransformationMatrix(transformation)
-            .setNormalMatrix(transformation.rotationScaling())
+            .setNormalMatrix(transformation.normalMatrix())
             .setProjectionMatrix(projection);
         mesh.draw(_phong);
 
@@ -474,7 +474,7 @@ void CompileGLTest::threeDimensions() {
         _phong
             .setDiffuseColor(0x33ff66_rgbf)
             .setTransformationMatrix(transformation)
-            .setNormalMatrix(transformation.rotationScaling())
+            .setNormalMatrix(transformation.normalMatrix())
             .setProjectionMatrix(projection);
         mesh.draw(_phong);
 

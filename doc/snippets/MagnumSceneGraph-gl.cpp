@@ -106,7 +106,7 @@ class RedCubeDrawable: public SceneGraph::Drawable3D {
                 .setLightPosition(camera.cameraMatrix().transformPoint(
                     {5.0f, 5.0f, 7.0f}))
                 .setTransformationMatrix(transformationMatrix)
-                .setNormalMatrix(transformationMatrix.rotationScaling())
+                .setNormalMatrix(transformationMatrix.normalMatrix())
                 .setProjectionMatrix(camera.projectionMatrix());
             _mesh.draw(_shader);
         }

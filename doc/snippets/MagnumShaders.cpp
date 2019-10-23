@@ -82,7 +82,7 @@ Shaders::Phong shader{Shaders::Phong::Flag::DiffuseTexture};
 shader.bindDiffuseTexture(diffuseTexture)
     .setLightPosition({5.0f, 5.0f, 7.0f})
     .setTransformationMatrix(transformationMatrix)
-    .setNormalMatrix(transformationMatrix.rotation())
+    .setNormalMatrix(transformationMatrix.normalMatrix())
     .setProjectionMatrix(projectionMatrix);
 
 mesh.draw(shader);
@@ -351,7 +351,7 @@ shader.setDiffuseColor(0x2f83cc_rgbf)
     .setShininess(200.0f)
     .setLightPosition({5.0f, 5.0f, 7.0f})
     .setTransformationMatrix(transformationMatrix)
-    .setNormalMatrix(transformationMatrix.rotation())
+    .setNormalMatrix(transformationMatrix.normalMatrix())
     .setProjectionMatrix(projectionMatrix);
 
 mesh.draw(shader);
@@ -388,7 +388,7 @@ Shaders::Phong shader{Shaders::Phong::Flag::DiffuseTexture|
 shader.bindTextures(nullptr, &diffuseTexture, &specularTexture, nullptr)
     .setLightPosition({5.0f, 5.0f, 7.0f})
     .setTransformationMatrix(transformationMatrix)
-    .setNormalMatrix(transformationMatrix.rotation())
+    .setNormalMatrix(transformationMatrix.normalMatrix())
     .setProjectionMatrix(projectionMatrix);
 
 mesh.draw(shader);

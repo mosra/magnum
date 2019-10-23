@@ -334,7 +334,7 @@ int PrimitiveVisualizer::exec() {
             .setLightPosition({5.0f, 5.0f, 7.0f})
             .setProjectionMatrix(Projection3D)
             .setTransformationMatrix(Transformation3D)
-            .setNormalMatrix(Transformation3D.rotationScaling());
+            .setNormalMatrix(Transformation3D.normalMatrix());
 
         for(auto fun: {&PrimitiveVisualizer::capsule3DSolid,
                        &PrimitiveVisualizer::circle3DSolid,

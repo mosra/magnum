@@ -494,6 +494,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * value is an identity matrix. If @ref lightCount() is zero, this
          * function is a no-op, as normals don't contribute to the output in
          * that case.
+         * @see @ref Math::Matrix4::normalMatrix()
          */
         Phong& setNormalMatrix(const Matrix3x3& matrix);
 
