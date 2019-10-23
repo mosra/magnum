@@ -372,6 +372,10 @@ template<std::size_t size, class T> struct MatrixDeterminant {
 
         return out;
     }
+
+    T operator()(const Matrix<size + 1, T>& m, const std::size_t skipCol, const std::size_t skipRow) {
+        return m.ij(skipCol, skipRow).determinant();
+    }
 };
 
 /* This is not *critically* needed here (the specializations for 2x2 and 1x1
@@ -386,6 +390,19 @@ template<class T> struct MatrixDeterminant<3, T> {
             m._data[0]._data[1]*(m._data[1]._data[0]*m._data[2]._data[2] - m._data[2]._data[0]*m._data[1]._data[2]) +
             m._data[0]._data[2]*(m._data[1]._data[0]*m._data[2]._data[1] - m._data[2]._data[0]*m._data[1]._data[1]);
     }
+
+    /* Used internally by cofactor(), basically just an inlined variant of
+       ij(skipCol, skipRow).determinant() */
+    constexpr T operator()(const Matrix<4, T>& m, const std::size_t skipCol, const std::size_t skipRow) const {
+        #define _col(i) _data[i + (i >= skipCol)]
+        #define _row(i) _data[i + (i >= skipRow)]
+        return
+            m._col(0)._row(0)*((m._col(1)._row(1)*m._col(2)._row(2)) - (m._col(2)._row(1)*m._col(1)._row(2))) -
+            m._col(0)._row(1)*(m._col(1)._row(0)*m._col(2)._row(2) - m._col(2)._row(0)*m._col(1)._row(2)) +
+            m._col(0)._row(2)*(m._col(1)._row(0)*m._col(2)._row(1) - m._col(2)._row(0)*m._col(1)._row(1));
+        #undef _col
+        #undef _row
+    }
 };
 
 template<class T> struct MatrixDeterminant<2, T> {
@@ -394,6 +411,16 @@ template<class T> struct MatrixDeterminant<2, T> {
            on debug builds (saves a lot, yet doesn't obfuscate too much) */
         return m._data[0]._data[0]*m._data[1]._data[1] - m._data[1]._data[0]*m._data[0]._data[1];
     }
+
+    /* Used internally by cofactor(), basically just an inlined variant of
+       ij(skipCol, skipRow).determinant() */
+    constexpr T operator()(const Matrix<3, T>& m, const std::size_t skipCol, const std::size_t skipRow) const {
+        #define _col(i) _data[i + (i >= skipCol)]
+        #define _row(i) _data[i + (i >= skipRow)]
+        return m._col(0)._row(0)*m._col(1)._row(1) - m._col(1)._row(0)*m._col(0)._row(1);
+        #undef _col
+        #undef _row
+    }
 };
 
 template<class T> struct MatrixDeterminant<1, T> {
@@ -401,6 +428,12 @@ template<class T> struct MatrixDeterminant<1, T> {
         /* Using ._data[] instead of [] to avoid function call indirection
            on debug builds (saves a lot, yet doesn't obfuscate too much) */
         return m._data[0]._data[0];
+    }
+
+    /* Used internally by cofactor(), basically just an inlined variant of
+       ij(skipCol, skipRow).determinant() */
+    constexpr T operator()(const Matrix<2, T>& m, const std::size_t skipCol, const std::size_t skipRow) const {
+        return m._data[0 + (0 >= skipCol)]._data[0 + (0 >= skipRow)];
     }
 };
 
@@ -441,7 +474,7 @@ template<std::size_t size, class T> Matrix<size-1, T> Matrix<size, T>::ij(const 
 }
 
 template<std::size_t size, class T> T Matrix<size, T>::cofactor(std::size_t col, std::size_t row) const {
-    return (((row+col) & 1) ? -1 : 1)*ij(col, row).determinant();
+    return (((row+col) & 1) ? -1 : 1)*Implementation::MatrixDeterminant<size - 1, T>()(*this, col, row);
 }
 
 template<std::size_t size, class T> Matrix<size, T> Matrix<size, T>::comatrix() const {
