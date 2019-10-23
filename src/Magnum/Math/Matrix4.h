@@ -798,6 +798,29 @@ template<class T> class Matrix4: public Matrix4x4<T> {
         T uniformScaling() const { return std::sqrt(uniformScalingSquared()); }
 
         /**
+         * @brief Normal matrix
+         *
+         * Returns @ref comatrix() of the upper-left 3x3 part of the matrix.
+         * Compared to the classic transformation @f$ (\boldsymbol{M}^{-1})^T @f$,
+         * which is done in order to preserve correct normal orientation for
+         * non-uniform scale and skew, this preserves it also when reflection
+         * is involved. Moreover it's also faster to calculate since we need
+         * just the @m_class{m-success} @f$ \boldsymbol{C} @f$ part of the
+         * inverse transpose: @f[
+         *  (\boldsymbol{M}^{-1})^T = \frac{1}{\det \boldsymbol{A}} \color{m-success} \boldsymbol{C}
+         * @f]
+         *
+         * Based on the [Normals Revisited](https://github.com/graphitemaster/normals_revisited)
+         * article by Dale Weiler.
+         * @see @ref inverted()
+         */
+        Matrix3x3<T> normalMatrix() const {
+            return Matrix3x3<T>{(*this)[0].xyz(),
+                                (*this)[1].xyz(),
+                                (*this)[2].xyz()}.comatrix();
+        }
+
+        /**
          * @brief Right-pointing 3D vector
          *
          * First three elements of first column. @f[

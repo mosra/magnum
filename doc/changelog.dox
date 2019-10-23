@@ -261,6 +261,11 @@ See also:
     operators return a single @cpp bool @ce
 -   @ref Math::scatter() as an inverse operation to @ref Math::gather(), both
     functions now support addressing via component indices as well
+-   Added @ref Math::Matrix::cofactor(), @ref Math::Matrix::comatrix() and
+    a new @ref Math::Matrix4::normalMatrix() accessor that implements a faster
+    and more robust normal matrix calculation; and mainly for testing purposes
+    exposed @ref Math::Matrix::adjugate() that was an internal part of
+    @ref Math::Matrix::inverted() before
 
 @subsubsection changelog-latest-new-meshtools MeshTools library
 

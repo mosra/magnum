@@ -75,6 +75,7 @@ struct MatrixTest: Corrade::TestSuite::Tester {
 
     void trace();
     void ij();
+    void adjugateCofactor();
     void determinant();
     void inverted();
     void invertedOrthogonal();
@@ -114,6 +115,7 @@ MatrixTest::MatrixTest() {
 
               &MatrixTest::trace,
               &MatrixTest::ij,
+              &MatrixTest::adjugateCofactor,
               &MatrixTest::determinant,
               &MatrixTest::inverted,
               &MatrixTest::invertedOrthogonal,
@@ -339,6 +341,17 @@ void MatrixTest::ij() {
                       Vector3(12.0f, 13.0f, 15.0f));
 
     CORRADE_COMPARE(original.ij(1, 2), skipped);
+}
+
+void MatrixTest::adjugateCofactor() {
+    Matrix4x4 m(Vector4(3.0f,  5.0f, 8.0f, 4.0f),
+                Vector4(4.0f,  4.0f, 7.0f, 3.0f),
+                Vector4(7.0f, -1.0f, 8.0f, 0.0f),
+                Vector4(9.0f,  4.0f, 5.0f, 9.0f));
+
+    /* Adjugate is used in inverted(), which is tested below; so just verify
+       these are a transpose of each other */
+    CORRADE_COMPARE(m.adjugate().transposed(), m.comatrix());
 }
 
 void MatrixTest::determinant() {

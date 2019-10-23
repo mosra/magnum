@@ -37,10 +37,12 @@ struct MatrixBenchmark: Corrade::TestSuite::Tester {
     void multiply3();
     void multiply4();
 
+    void comatrix3();
     void invert3();
     void invert3GaussJordan();
     void invert3Rigid();
     void invert3Orthogonal();
+    void comatrix4();
     void invert4();
     void invert4GaussJordan();
     void invert4Rigid();
@@ -56,10 +58,12 @@ MatrixBenchmark::MatrixBenchmark() {
     addBenchmarks({&MatrixBenchmark::multiply3,
                    &MatrixBenchmark::multiply4}, 500);
 
-    addBenchmarks({&MatrixBenchmark::invert3,
+    addBenchmarks({&MatrixBenchmark::comatrix3,
+                   &MatrixBenchmark::invert3,
                    &MatrixBenchmark::invert3GaussJordan,
                    &MatrixBenchmark::invert3Rigid,
                    &MatrixBenchmark::invert3Orthogonal,
+                   &MatrixBenchmark::comatrix4,
                    &MatrixBenchmark::invert4,
                    &MatrixBenchmark::invert4GaussJordan,
                    &MatrixBenchmark::invert4Rigid,
@@ -107,6 +111,15 @@ void MatrixBenchmark::multiply4() {
     CORRADE_VERIFY(a.toVector().sum() != 0);
 }
 
+void MatrixBenchmark::comatrix3() {
+    Matrix3 a = Data3;
+    CORRADE_BENCHMARK(Repeats) {
+        a = a.comatrix();
+    }
+
+    CORRADE_VERIFY(a.toVector().sum() != 0);
+}
+
 void MatrixBenchmark::invert3() {
     Matrix3 a = Data3;
     CORRADE_BENCHMARK(Repeats) {
@@ -138,6 +151,15 @@ void MatrixBenchmark::invert3Orthogonal() {
     Matrix3 a = Data3Orthogonal;
     CORRADE_BENCHMARK(Repeats) {
         a = a.invertedOrthogonal();
+    }
+
+    CORRADE_VERIFY(a.toVector().sum() != 0);
+}
+
+void MatrixBenchmark::comatrix4() {
+    Matrix4 a = Data4;
+    CORRADE_BENCHMARK(Repeats) {
+        a = a.comatrix();
     }
 
     CORRADE_VERIFY(a.toVector().sum() != 0);
