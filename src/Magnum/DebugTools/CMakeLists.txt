@@ -51,6 +51,14 @@ if(TARGET_GL)
     if(MAGNUM_TARGET_GLES AND NOT MAGNUM_TARGET_GLES2)
         corrade_add_resource(MagnumDebugTools_RESOURCES resources.conf)
         list(APPEND MagnumDebugTools_SRCS ${MagnumDebugTools_RESOURCES})
+        if(BUILD_STATIC)
+            # On the static build we're importing the resources manually, so no
+            # need to have the implicit initializers as well.
+            set_property(SOURCE ${MagnumDebugTools_RESOURCES} APPEND PROPERTY
+                COMPILE_DEFINITIONS
+                    "CORRADE_AUTOMATIC_INITIALIZER=CORRADE_NOOP"
+                    "CORRADE_AUTOMATIC_FINALIZER=CORRADE_NOOP")
+        endif()
     endif()
 
     if(NOT MAGNUM_TARGET_WEBGL)

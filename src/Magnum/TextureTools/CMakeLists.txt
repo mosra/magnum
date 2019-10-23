@@ -34,6 +34,14 @@ set(MagnumTextureTools_HEADERS
 if(TARGET_GL)
     corrade_add_resource(MagnumTextureTools_RCS resources.conf)
     set_target_properties(MagnumTextureTools_RCS-dependencies PROPERTIES FOLDER "Magnum/TextureTools")
+    if(BUILD_STATIC)
+        # On the static build we're importing the resources manually, so no
+        # need to have the implicit initializers as well.
+        set_property(SOURCE ${MagnumTextureTools_RCS} APPEND PROPERTY
+            COMPILE_DEFINITIONS
+                "CORRADE_AUTOMATIC_INITIALIZER=CORRADE_NOOP"
+                "CORRADE_AUTOMATIC_FINALIZER=CORRADE_NOOP")
+    endif()
 
     list(APPEND MagnumTextureTools_SRCS
         DistanceField.cpp

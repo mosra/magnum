@@ -63,6 +63,13 @@ set(MagnumShaders_PRIVATE_HEADERS Implementation/CreateCompatibilityShader.h)
 add_library(MagnumShadersObjects OBJECT
     ${MagnumShaders_SRCS}
     ${MagnumShaders_HEADERS})
+if(BUILD_STATIC)
+    # On the static build we're importing the resources manually, so no need to
+    # have the implicit initializers as well.
+    set_property(SOURCE ${MagnumShaders_RCS} APPEND PROPERTY COMPILE_DEFINITIONS
+        "CORRADE_AUTOMATIC_INITIALIZER=CORRADE_NOOP"
+        "CORRADE_AUTOMATIC_FINALIZER=CORRADE_NOOP")
+endif()
 target_include_directories(MagnumShadersObjects PUBLIC
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:MagnumGL,INTERFACE_INCLUDE_DIRECTORIES>)
