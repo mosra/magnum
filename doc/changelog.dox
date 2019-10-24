@@ -36,9 +36,14 @@ See also:
 -   @subpage changelog-extras "Extras changelog"
 -   @subpage changelog-examples "Examples changelog"
 
-@section changelog-latest Changes since 2019.01
+@anchor changelog-latest
 
-@subsection changelog-latest-dependencies Dependency changes
+@section changelog-2019-10 2019.10
+
+Released 2019-10-24, tagged as
+[v2019.10](https://github.com/mosra/magnum/releases/tag/v2019.10).
+
+@subsection changelog-2019-10-dependencies Dependency changes
 
 -   Minimal supported CMake version is now 3.4. Older versions are not
     supported anymore and all workarounds for them were removed. Download a
@@ -47,7 +52,7 @@ See also:
     that shouldn't affect any additional distribution compared to the CMake 3.1
     requirement in 2019.01.
 
-@subsection changelog-latest-new New features
+@subsection changelog-2019-10-new New features
 
 -   MSVC 2019 compatibility, with slightly less workarounds needed compared to
     MSVC 2017. See also [mosra/magnum-bootstrap#18](https://github.com/mosra/magnum-bootstrap/issues/18),
@@ -76,7 +81,7 @@ See also:
     for querying parameters of @ref CompressedPixelFormat entries, similar to
     what @ref pixelSize() is for @ref PixelFormat
 
-@subsubsection changelog-latest-new-audio Audio library
+@subsubsection changelog-2019-10-new-audio Audio library
 
 -   Ability to (un)queue buffers in @ref Audio::Source (see
     [mosra/magnum#338](https://github.com/mosra/magnum/pull/338))
@@ -89,7 +94,7 @@ See also:
     @ref GL::Context (see
     [mosra/magnum#362](https://github.com/mosra/magnum/pull/362))
 
-@subsubsection changelog-latest-new-debugtools DebugTools library
+@subsubsection changelog-2019-10-new-debugtools DebugTools library
 
 -   New @ref DebugTools::screenshot() function for convenient saving of
     screenshots
@@ -106,7 +111,7 @@ See also:
     of the comparison for added flexibility. See
     @ref DebugTools-CompareImage-pixels for more infromation.
 
-@subsubsection changelog-latest-new-gl GL library
+@subsubsection changelog-2019-10-new-gl GL library
 
 -   Additions to @ref GL::CompressedPixelFormat and compressed
     @link GL::TextureFormat @endlink:
@@ -241,7 +246,7 @@ See also:
     @ref GL::TextureFormat, similar to @ref GL::hasPixelFormat() /
     @ref GL::pixelFormat() used for converting to @ref GL::PixelFormat
 
-@subsubsection changelog-latest-new-math Math library
+@subsubsection changelog-2019-10-new-math Math library
 
 -   @ref Math::Frustum::begin() / @ref Math::Frustum::end() accessors for
     easy range-for access to @ref Math::Frustum planes
@@ -267,7 +272,7 @@ See also:
     exposed @ref Math::Matrix::adjugate() that was an internal part of
     @ref Math::Matrix::inverted() before
 
-@subsubsection changelog-latest-new-meshtools MeshTools library
+@subsubsection changelog-2019-10-new-meshtools MeshTools library
 
 -   @ref MeshTools::duplicateInto() alternative to @ref MeshTools::duplicate()
     that writes the output to an existing location
@@ -279,7 +284,7 @@ See also:
 -   @ref MeshTools::compile(const Trade::MeshData3D&, CompileFlags) now accepts
     optional flags to control normal generation
 
-@subsubsection changelog-latest-new-platform Platform libraries
+@subsubsection changelog-2019-10-new-platform Platform libraries
 
 -   Added @ref Platform::EmscriptenApplication, implementing a lightweight and
     more flexible alternative to @ref Platform::Sdl2Application for Emscripten.
@@ -315,12 +320,12 @@ See also:
     setups and allowing selection of an arbitrary GPU device on multi-GPU
     systems
 
-@subsubsection changelog-latest-new-primitives Primitives library
+@subsubsection changelog-2019-10-new-primitives Primitives library
 
 -   @ref Primitives::circle2DSolid() and @ref Primitives::circle3DSolid()
     can now generate a textured mesh
 
-@subsubsection changelog-latest-new-scenegraph SceneGraph library
+@subsubsection changelog-2019-10-new-scenegraph SceneGraph library
 
 -   Added @ref SceneGraph::AbstractObject::Type /
     @ref SceneGraph::AbstractFeature::Type /
@@ -330,14 +335,14 @@ See also:
     @ref SceneGraph::AbstractFeatureGroup::Dimensions constants for querying
     underlying type and dimension template parameters
 
-@subsubsection changelog-latest-new-shaders Shaders library
+@subsubsection changelog-2019-10-new-shaders Shaders library
 
 -   Normal texture support in @ref Shaders::Phong
 -   Added @ref Shaders::Generic3D::Tangent generic vertex attribute definition
 -   Object ID output in @ref Shaders::Flat and @ref Shaders::Phong
 -   Vertex color support in @ref Shaders::Flat and @ref Shaders::Phong
 
-@subsubsection changelog-latest-new-text Text library
+@subsubsection changelog-2019-10-new-text Text library
 
 -   A new @ref Text::AbstractGlyphCache base now makes @ref Text::AbstractFont
     and @ref Text::AbstractFontConverter independent on the graphics API used,
@@ -348,13 +353,13 @@ See also:
 -   New @ref Text::AbstractFont::setFileCallback() to allow opening multi-file
     fonts with an API similar to @ref Trade::AbstractImporter
 
-@subsubsection changelog-latest-new-trade Trade library
+@subsubsection changelog-2019-10-new-trade Trade library
 
 -   The @ref magnum-imageconverter "magnum-imageconverter" utility now
     implements new `-i` / `--importer-options` and `-c` / `--converter-options`
     command-line options for setting plugin-specific configuration
 
-@subsection changelog-latest-changes Changes and improvements
+@subsection changelog-2019-10-changes Changes and improvements
 
 -   The @ref ResourceManager class now accepts also
     @ref Corrade::Containers::Pointer instances in addition to raw pointers
@@ -381,20 +386,20 @@ See also:
     natively, the @ref UnsignedLong and @ref Long types are now exposed on
     @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten" as well
 
-@subsubsection changelog-latest-changes-animation Animation library
+@subsubsection changelog-2019-10-changes-animation Animation library
 
 -   Default extrapolation of @ref Animation::TrackView was changed from
     @ref Animation::Extrapolation::Extrapolated to
     @ref Animation::Extrapolation::Constant to be consistent with
     @ref Animation::Track
 
-@subsubsection changelog-latest-changes-audio Audio library
+@subsubsection changelog-2019-10-changes-audio Audio library
 
 -   The @ref Audio::AnyImporter "AnyAudioImporter" plugin now correctly
     recognizes also uppercase file extensions (see
     [mosra/magnum#312](https://github.com/mosra/magnum/pull/312))
 
-@subsubsection changelog-latest-changes-debugtools DebugTools library
+@subsubsection changelog-2019-10-changes-debugtools DebugTools library
 
 -   @ref DebugTools::CompareImage, @ref DebugTools::CompareImageToFile and
     other variants are now usable directly through @ref CORRADE_COMPARE_AS(),
@@ -403,7 +408,7 @@ See also:
 -   @ref DebugTools::textureSubImage() for float textures was updated to work
     with SwiftShader (which has broken @glsl gl_VertexID @ce)
 
-@subsubsection changelog-latest-changes-gl GL library
+@subsubsection changelog-2019-10-changes-gl GL library
 
 -   Fully dropped support for @gl_extension{EXT,direct_state_access}. All
     contemporary drivers supporting @gl_extension{EXT,direct_state_access}
@@ -435,7 +440,7 @@ See also:
 -   Added an ability to create @ref GL::DynamicAttribute directly from a
     @ref GL::Attribute
 
-@subsubsection changelog-latest-changes-math Math library
+@subsubsection changelog-2019-10-changes-math Math library
 
 -   @ref Math::BoolVector now implements component-wise @cpp && @ce,
     @cpp || @ce and @cpp ! @ce for better consistency with boolean operations
@@ -468,7 +473,7 @@ See also:
 -   @ref Math::Vector::operator-() and @ref Math::Vector2::perpendicular() are
     now enabled only for signed types to prevent accidents
 
-@subsubsection changelog-latest-changes-meshtools MeshTools library
+@subsubsection changelog-2019-10-changes-meshtools MeshTools library
 
 -   @ref MeshTools::fullScreenTriangle() was updated to work on ES3 SwiftShader
     contexts (which have broken @glsl gl_VertexID @ce)
@@ -476,7 +481,7 @@ See also:
     also with @ref Corrade::Containers::ArrayView,
     @ref Corrade::Containers::StridedArrayView and friends
 
-@subsubsection changelog-latest-changes-shaders Shaders library
+@subsubsection changelog-2019-10-changes-shaders Shaders library
 
 -   All shaders now have rendering output tests, making them more robust for
     future additions and refactorings. See also [mosra/magnum#382](https://github.com/mosra/magnum/pull/382).
@@ -490,12 +495,12 @@ See also:
     @cpp "intel-windows-explicit-uniform-location-is-less-explicit-than-you-hoped" @ce
     workaround
 
-@subsubsection changelog-latest-changes-texturetools TextureTools library
+@subsubsection changelog-2019-10-changes-texturetools TextureTools library
 
 -   @ref TextureTools::distanceField() was updated to work on ES3 SwiftShader
     contexts (which have broken @glsl gl_VertexID @ce)
 
-@subsubsection changelog-latest-changes-platform Platform libraries
+@subsubsection changelog-2019-10-changes-platform Platform libraries
 
 -   @ref Platform::Sdl2Application::anyEvent() is now fired also for window
     events that are not exposed through
@@ -544,7 +549,7 @@ See also:
     @ref Platform::BasicScreen::hasApplication() to check if the application is
     accessible.
 
-@subsubsection changelog-latest-changes-text Text library
+@subsubsection changelog-2019-10-changes-text Text library
 
 -   For consistency with @ref Trade::AbstractImporter, @ref Text::AbstractFont
     now doesn't fail when opening empty files --- instead this is handled in
@@ -554,7 +559,7 @@ See also:
     now expect that a font is opened, consistently with other accessor
     functions
 
-@subsubsection changelog-latest-changes-trade Trade library
+@subsubsection changelog-2019-10-changes-trade Trade library
 
 -   The @ref Trade::AnyImageImporter "AnyImageImporter",
     @ref Trade::AnyImageConverter "AnyImageConverter" and
@@ -569,7 +574,7 @@ See also:
     @ref Trade::AnyImageConverter "AnyImageConverter" plugins now recognize
     Basis Universal files (see [mosra/magnum#370](https://github.com/mosra/magnum/pull/370))
 
-@subsection changelog-latest-buildsystem Build system
+@subsection changelog-2019-10-buildsystem Build system
 
 -   @ref building-packages-msys "MSYS2 packages" are now in official
     repositories, installable directly via `pacman`
@@ -592,7 +597,8 @@ See also:
     [base-emscripten bootstrap project](https://github.com/mosra/magnum-bootstrap/tree/base-emscripten)
     (the HTML markup was unchanged since 2013, heh)
 -   ES 2.0 and ES 3.0 subset of tests requiring GL context is now run on Travis
-    CI using SwiftShader for better code coverage
+    CI using SwiftShader for better code coverage (see
+    [mosra/magnum#207](https://github.com/mosra/magnum/issues/207))
 -   On CMake 3.13 and up, WebGL2 build on Emscripten (and the `-s USE_WEBGL2=1`
     flag in particular) is now handled by the `FindOpenGLES3.cmake` module
     and the new `INTERFACE_LINK_OPTIONS` property instead of `FindMagnum.cmake`. On older versions this is handled in `FindMagnum.cmake` by modifying the
@@ -639,7 +645,7 @@ See also:
 
         Target "Magnum::Sdl2Application" not found.
 
-@subsection changelog-latest-bugfixes Bug fixes
+@subsection changelog-2019-10-bugfixes Bug fixes
 
 -   Fixed compilation of the @ref Vk library on 32-bit Windows
 -   @ref Math::pack() was incorrectly not selecting the nearest integral value,
@@ -698,7 +704,7 @@ See also:
     [mosra/magnum-examples#65](https://github.com/mosra/magnum-examples/issues/65)
     and [mosra/magnum#374](https://github.com/mosra/magnum/pull/374))
 
-@subsection changelog-latest-docs Documentation
+@subsection changelog-2019-10-docs Documentation
 
 -   Extended @ref platforms-html5-code-size "Emscripten" documentation with
     available compiler switches for code size / compile time tradeoffs (instead
@@ -707,6 +713,7 @@ See also:
 -   Fixed Gentoo build instructions (see
     [mosra/magnum#344](https://github.com/mosra/magnum/pull/344))
 -   Various documentation improvements and copy editing (see
+    [mosra/magnum#341](https://github.com/mosra/magnum/issues/341),
     [mosra/magnum#361](https://github.com/mosra/magnum/pull/361))
 -   Populating the Troubleshooting section of
     @ref platforms-windows "Windows-specific platform notes" (see
@@ -718,7 +725,7 @@ See also:
     [mosra/magnum#377](https://github.com/mosra/magnum/issues/377) and
     [mosra/magnum#378](https://github.com/mosra/magnum/issues/378))
 
-@subsection changelog-latest-deprecated Deprecated APIs
+@subsection changelog-2019-10-deprecated Deprecated APIs
 
 -   @cpp Math::Color3::Hsv @ce and @cpp Math::Color4::Hsv @ce tuple typedefs
     are deprecated in favor of tuple-less @ref Math::ColorHsv, working
@@ -791,7 +798,7 @@ See also:
 -   @cpp Math::swizzle() @ce is deprecated, use @ref Math::gather() instead as
     that fits better with the new @ref Math::scatter()
 
-@subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
+@subsection changelog-2019-10-compatibility Potential compatibility breakages, removed APIs
 
 -   Configuration value parsers and writers for @ref Math types were moved to
     a dedicated @ref Magnum/Math/ConfigurationValue.h header in order to speed
