@@ -893,7 +893,7 @@ inverse.
     note at the end of the article, reupload that change
 22. Update versions of ArchLinux AUR packages:
     -   run `makepkg` in `package/archlinux/magnum*-git`, verify it builds and
-        says correct version, ideally with `r0` at the ennd
+        says correct version, ideally with `r0` at the end
     -   copy the updated `PKGBUILD` to the AUR package repo, run
         @cb{.sh} makepkg --printsrcinfo > .SRCINFO @ce there
     -   commit the updated `PKGBUILD` and `.SRCINFO`, push
