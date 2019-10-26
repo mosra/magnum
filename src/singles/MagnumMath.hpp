@@ -15,6 +15,16 @@
     -   GitHub project page — https://github.com/mosra/magnum
     -   GitHub Singles repository — https://github.com/mosra/magnum-singles
 
+    v2019.10-0-g8412e8f99 (2019-10-24)
+    -   New IsScalar, IsVector, IsIntegral, IsFloatingPoint type traits,
+        correct handling of Deg and Rad types in all APIs
+    -   Guaranteed NaN handling semantic in min()/max()/minmax() APIs
+    -   Using a GCC compiler builtin in sincos()
+    -   swizzle() is replaced with gather() and scatter()
+    -   Added Matrix::{cofactor,comatrix,adjugate}(), Matrix4::normalMatrix()
+    -   New Matrix4::perspectiveProjection() overload taking corner positions
+    -   Handling also Eigen::Ref types; EigenIntegration::eigenCast() is now
+        just EigenIntegration::cast()
     v2019.01-241-g93686746a (2019-04-03)
     -   Initial release
 
