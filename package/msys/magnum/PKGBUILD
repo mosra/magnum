@@ -5,7 +5,7 @@
 _realname=magnum
 pkgbase=mingw-w64-${_realname}
 pkgname="${MINGW_PACKAGE_PREFIX}-${_realname}"
-pkgver=2019.01
+pkgver=2019.10
 pkgrel=1
 pkgdesc='C++11/C++14 graphics middleware for games and data visualization'
 arch=('any')
