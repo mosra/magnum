@@ -41,6 +41,7 @@
 /* undef Xlib nonsense to avoid conflicts */
 #undef Always
 #undef Complex
+#undef Convex
 #undef None
 #undef Status
 
