@@ -142,8 +142,12 @@ CORRADE_VISIBILITY_EXPORT
 Context* currentContext = nullptr;
 #else
 /* On Windows the symbol is exported unmangled and then fetched via
-   GetProcAddress() to emulate weak linking. */
-extern "C" CORRADE_VISIBILITY_EXPORT Context* magnumAudioUniqueCurrentContext = nullptr;
+   GetProcAddress() to emulate weak linking. Using an extern "C" block instead
+   of just a function annotation because otherwise MinGW prints a warning:
+   '...' initialized and declared 'extern' (uh?) */
+extern "C" {
+    CORRADE_VISIBILITY_EXPORT Context* magnumAudioUniqueCurrentContext = nullptr;
+}
 #endif
 
 #if !defined(MAGNUM_BUILD_STATIC) || defined(CORRADE_TARGET_WINDOWS)
