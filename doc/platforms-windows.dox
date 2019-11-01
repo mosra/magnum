@@ -71,7 +71,7 @@ if(CORRADE_TARGET_WINDOWS)
 endif()
 @endcode
 
-Some toolkits (such as GLFW in @ref Platform-GlfwApplication-dpi "Platform::GlfwApplication")
+If you're not using CMake, [here's how to do it directly with mt.exe](https://docs.microsoft.com/en-us/cpp/build/how-to-embed-a-manifest-inside-a-c-cpp-application). Some toolkits (such as GLFW in @ref Platform-GlfwApplication-dpi "Platform::GlfwApplication")
 are advertising HiDPI support implicitly programatically. In that case the
 manifest file doesn't need to be supplied, but there may be some disadvantages
 compared to supplying the manifest. See the
@@ -81,7 +81,7 @@ for more information.
 @m_class{m-block m-info}
 
 @par Supplying manifests with MinGW
-    With MinGw the operation is slightly more involved, as you need to pass it
+    With MinGW the operation is slightly more involved, as you need to pass it
     through a `*.rc` file. A downside is that MinGW is not able to merge
     information from multiple manifests like the MSVC toolchain can.
 @par
