@@ -36,7 +36,15 @@ See also:
 -   @subpage changelog-extras "Extras changelog"
 -   @subpage changelog-examples "Examples changelog"
 
-@anchor changelog-latest
+@section changelog-latest Changes since 2019.10
+
+@subsection changelog-latest-changes Changes and improvements
+
+@subsubsection changelog-latest-changes-trade Trade library
+
+-   For better usability, the @ref magnum-imageconverter "magnum-imageconverter"
+    utility now prints available importer/converter plugins when loading a
+    plugin fails
 
 @section changelog-2019-10 2019.10
 

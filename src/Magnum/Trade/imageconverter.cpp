@@ -156,14 +156,20 @@ key=true.)")
         args.value("plugin-dir").empty() ? std::string{} :
         Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractImporter::pluginSearchPaths()[0])};
     Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
-    if(!importer) return 1;
+    if(!importer) {
+        Debug{} << "Available importer plugins:" << Utility::String::join(importerManager.aliasList(), ", ");
+        return 1;
+    }
 
     /* Load converter plugin */
     PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
         args.value("plugin-dir").empty() ? std::string{} :
         Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractImageConverter::pluginSearchPaths()[0])};
     Containers::Pointer<Trade::AbstractImageConverter> converter = converterManager.loadAndInstantiate(args.value("converter"));
-    if(!converter) return 2;
+    if(!converter) {
+        Debug{} << "Available converter plugins:" << Utility::String::join(converterManager.aliasList(), ", ");
+        return 2;
+    }
 
     /* Set options, if passed */
     setOptions(*importer, args.value("importer-options"));
