@@ -81,6 +81,14 @@ Arguments:
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
     to pass to the converter
 
+Specifying `--converter raw` will save raw imported data instead of using a
+converter plugin.
+
+The `-i` / `--importer-options` and `-c` / `--converter-options` arguments
+accept a comma-separated list of key/value pairs to set in the importer /
+converter plugin configuration. If the `=` character is omitted, it's
+equivalent to saying `key=true`.
+
 @section magnum-imageconverter-example Example usage
 
 Converting a JPEG file to a PNG:
@@ -145,6 +153,9 @@ int main(int argc, char** argv) {
         .addOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter", "key=val,key2=val2,…")
         .setGlobalHelp(R"(Converts images of different formats.
 
+Specifying --converter raw will save raw imported data instead of using a
+converter plugin.
+
 The -i / --importer-options and -c / --converter-options arguments accept a
 comma-separated list of key/value pairs to set in the importer / converter
 plugin configuration. If the = character is omitted, it's equivalent to saying
@@ -161,6 +172,24 @@ key=true.)")
         return 1;
     }
 
+    /* Set options, if passed */
+    setOptions(*importer, args.value("importer-options"));
+
+    /* Open input file */
+    Containers::Optional<Trade::ImageData2D> image;
+    if(!importer->openFile(args.value("input")) || !(image = importer->image2D(0))) {
+        Error() << "Cannot open file" << args.value("input");
+        return 3;
+    }
+
+    Debug() << "Converting image of size" << image->size() << "and format" << image->format() << "to" << args.value("output");
+
+    /* Save raw data, if requested */
+    if(args.value("converter") == "raw") {
+        Utility::Directory::write(args.value("output"), image->data());
+        return 0;
+    }
+
     /* Load converter plugin */
     PluginManager::Manager<Trade::AbstractImageConverter> converterManager{
         args.value("plugin-dir").empty() ? std::string{} :
@@ -172,17 +201,7 @@ key=true.)")
     }
 
     /* Set options, if passed */
-    setOptions(*importer, args.value("importer-options"));
     setOptions(*converter, args.value("converter-options"));
-
-    /* Open input file */
-    Containers::Optional<Trade::ImageData2D> image;
-    if(!importer->openFile(args.value("input")) || !(image = importer->image2D(0))) {
-        Error() << "Cannot open file" << args.value("input");
-        return 3;
-    }
-
-    Debug() << "Converting image of size" << image->size() << "and format" << image->format() << "to" << args.value("output");
 
     /* Save output file */
     if(!converter->exportToFile(*image, args.value("output"))) {
