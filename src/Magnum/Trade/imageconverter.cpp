@@ -109,6 +109,13 @@ correctly propagate options to the target plugin, so you need to specify
 @code{.sh}
 magnum-imageconverter image.png image.jpg -c jpegQuality=0.95 --converter JpegImageConverter
 @endcode
+
+Extracting raw (uncompressed, compressed) data from a DDS file for manual
+inspection:
+
+@code{.sh}
+magnum-imageconverter image.dds --converter raw data.dat
+@endcode
 */
 
 }
@@ -182,7 +189,17 @@ key=true.)")
         return 3;
     }
 
-    Debug() << "Converting image of size" << image->size() << "and format" << image->format() << "to" << args.value("output");
+    {
+        Debug d;
+        if(args.value("converter") == "raw")
+            d << "Writing raw image data of size";
+        else
+            d << "Converting image of size";
+        d << image->size() << "and format";
+        if(image->isCompressed()) d << image->compressedFormat();
+        else d << image->format();
+        d << "to" << args.value("output");
+    }
 
     /* Save raw data, if requested */
     if(args.value("converter") == "raw") {
