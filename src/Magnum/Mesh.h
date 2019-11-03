@@ -29,7 +29,7 @@
  * @brief Enum @ref Magnum::MeshPrimitive, @ref Magnum::MeshIndexType, function @ref Magnum::meshIndexTypeSize()
  */
 
-#include <string>
+#include <Corrade/Utility/StlForwardString.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
