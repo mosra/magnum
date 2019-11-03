@@ -25,6 +25,7 @@
 
 #include "PixelFormat.h"
 
+#include <string>
 #include <Corrade/Containers/ArrayView.h>
 #include <Corrade/Utility/Assert.h>
 #include <Corrade/Utility/Debug.h>
@@ -205,3 +206,39 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
 #endif
 
 }
+
+namespace Corrade { namespace Utility {
+
+std::string ConfigurationValue<Magnum::PixelFormat>::toString(Magnum::PixelFormat value, ConfigurationValueFlags) {
+    if(Magnum::UnsignedInt(value) - 1 < Containers::arraySize(Magnum::PixelFormatNames))
+        return Magnum::PixelFormatNames[Magnum::UnsignedInt(value) - 1];
+
+    return {};
+}
+
+Magnum::PixelFormat ConfigurationValue<Magnum::PixelFormat>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
+    /** @todo This is extremely slow with >100 values. Do a binary search on a
+        sorted index list instead (extracted into a common utility) */
+    for(std::size_t i = 0; i != Containers::arraySize(Magnum::PixelFormatNames); ++i)
+        if(stringValue == Magnum::PixelFormatNames[i]) return Magnum::PixelFormat(i + 1);
+
+    return {};
+}
+
+std::string ConfigurationValue<Magnum::CompressedPixelFormat>::toString(Magnum::CompressedPixelFormat value, ConfigurationValueFlags) {
+    if(Magnum::UnsignedInt(value) - 1 < Containers::arraySize(Magnum::CompressedPixelFormatNames))
+        return Magnum::CompressedPixelFormatNames[Magnum::UnsignedInt(value) - 1];
+
+    return {};
+}
+
+Magnum::CompressedPixelFormat ConfigurationValue<Magnum::CompressedPixelFormat>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
+    /** @todo This is extremely slow with >100 values. Do a binary search on a
+        sorted index list instead (extracted into a common utility) */
+    for(std::size_t i = 0; i != Containers::arraySize(Magnum::CompressedPixelFormatNames); ++i)
+        if(stringValue == Magnum::CompressedPixelFormatNames[i]) return Magnum::CompressedPixelFormat(i + 1);
+
+    return {};
+}
+
+}}

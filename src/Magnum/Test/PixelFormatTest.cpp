@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/TestSuite/Compare/Numeric.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Configuration.h>
 
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/Vector3.h"
@@ -64,6 +65,9 @@ struct PixelFormatTest: TestSuite::Tester {
 
     void compressedDebug();
     void compressedDebugImplementationSpecific();
+
+    void configuration();
+    void compresedConfiguration();
 };
 
 PixelFormatTest::PixelFormatTest() {
@@ -94,7 +98,10 @@ PixelFormatTest::PixelFormatTest() {
               &PixelFormatTest::debugImplementationSpecific,
 
               &PixelFormatTest::compressedDebug,
-              &PixelFormatTest::compressedDebugImplementationSpecific});
+              &PixelFormatTest::compressedDebugImplementationSpecific,
+
+              &PixelFormatTest::configuration,
+              &PixelFormatTest::compresedConfiguration});
 }
 
 void PixelFormatTest::mapping() {
@@ -349,6 +356,38 @@ void PixelFormatTest::compressedDebugImplementationSpecific() {
     Debug{&out} << compressedPixelFormatWrap(0xdead);
 
     CORRADE_COMPARE(out.str(), "CompressedPixelFormat::ImplementationSpecific(0xdead)\n");
+}
+
+void PixelFormatTest::configuration() {
+    Utility::Configuration c;
+
+    c.setValue("format", PixelFormat::RGB8Srgb);
+    CORRADE_COMPARE(c.value("format"), "RGB8Srgb");
+    CORRADE_COMPARE(c.value<PixelFormat>("format"), PixelFormat::RGB8Srgb);
+
+    c.setValue("zero", PixelFormat(0));
+    CORRADE_COMPARE(c.value("zero"), "");
+    CORRADE_COMPARE(c.value<PixelFormat>("zero"), PixelFormat{});
+
+    c.setValue("invalid", PixelFormat(0xdead));
+    CORRADE_COMPARE(c.value("invalid"), "");
+    CORRADE_COMPARE(c.value<PixelFormat>("invalid"), PixelFormat{});
+}
+
+void PixelFormatTest::compresedConfiguration() {
+    Utility::Configuration c;
+
+    c.setValue("format", CompressedPixelFormat::Astc3x3x3RGBASrgb);
+    CORRADE_COMPARE(c.value("format"), "Astc3x3x3RGBASrgb");
+    CORRADE_COMPARE(c.value<CompressedPixelFormat>("format"), CompressedPixelFormat::Astc3x3x3RGBASrgb);
+
+    c.setValue("zero", CompressedPixelFormat(0));
+    CORRADE_COMPARE(c.value("zero"), "");
+    CORRADE_COMPARE(c.value<CompressedPixelFormat>("zero"), CompressedPixelFormat{});
+
+    c.setValue("invalid", CompressedPixelFormat(0xdead));
+    CORRADE_COMPARE(c.value("invalid"), "");
+    CORRADE_COMPARE(c.value<CompressedPixelFormat>("invalid"), CompressedPixelFormat{});
 }
 
 }}}

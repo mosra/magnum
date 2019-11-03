@@ -30,6 +30,7 @@
  */
 
 #include <Corrade/Utility/Assert.h>
+#include <Corrade/Utility/StlForwardString.h>
 
 #include "Magnum/Magnum.h"
 #include "Magnum/visibility.h"
@@ -2196,5 +2197,47 @@ template<class T = UnsignedInt> constexpr T compressedPixelFormatUnwrap(Compress
 }
 
 }
+
+namespace Corrade { namespace Utility {
+
+/** @configurationvalue{Magnum::PixelFormat} */
+template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::PixelFormat> {
+    ConfigurationValue() = delete;
+
+    /**
+     * @brief Writes enum value as string
+     *
+     * If the value is invalid, returns empty string.
+     */
+    static std::string toString(Magnum::PixelFormat value, ConfigurationValueFlags);
+
+    /**
+     * @brief Reads enum value as string
+     *
+     * If the value is invalid, returns a zero (invalid) format.
+     */
+    static Magnum::PixelFormat fromString(const std::string& stringValue, ConfigurationValueFlags);
+};
+
+/** @configurationvalue{Magnum::CompressedPixelFormat} */
+template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::CompressedPixelFormat> {
+    ConfigurationValue() = delete;
+
+    /**
+     * @brief Write enum value as string
+     *
+     * If the value is invalid, returns empty string.
+     */
+    static std::string toString(Magnum::CompressedPixelFormat value, ConfigurationValueFlags);
+
+    /**
+     * @brief Read enum value as string
+     *
+     * If the value is invalid, returns a zero (invalid) format.
+     */
+    static Magnum::CompressedPixelFormat fromString(const std::string& stringValue, ConfigurationValueFlags);
+};
+
+}}
 
 #endif
