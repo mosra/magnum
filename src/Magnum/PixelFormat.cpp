@@ -159,7 +159,6 @@ constexpr UnsignedShort CompressedBlockData[] {
         ((depth - 1) << 4) | \
         ((size >> 3) - 1),
     #include "Magnum/Implementation/compressedPixelFormatMapping.hpp"
-    #undef _s
     #undef _c
 };
 #endif
