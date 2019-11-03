@@ -68,7 +68,8 @@ set(Magnum_PRIVATE_HEADERS
 
     Implementation/meshIndexTypeMapping.hpp
     Implementation/meshPrimitiveMapping.hpp
-    Implementation/compressedPixelFormatMapping.hpp)
+    Implementation/compressedPixelFormatMapping.hpp
+    Implementation/pixelFormatMapping.hpp)
 
 # Functionality specific to static Windows builds
 if(CORRADE_TARGET_WINDOWS AND NOT CORRADE_TARGET_WINDOWS_RT AND MAGNUM_BUILD_STATIC)

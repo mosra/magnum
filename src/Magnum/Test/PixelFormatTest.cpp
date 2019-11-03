@@ -36,6 +36,9 @@ namespace Magnum { namespace Test { namespace {
 struct PixelFormatTest: TestSuite::Tester {
     explicit PixelFormatTest();
 
+    void mapping();
+    void compressedMapping();
+
     void size();
     void sizeInvalid();
     void sizeImplementationSpecific();
@@ -64,7 +67,10 @@ struct PixelFormatTest: TestSuite::Tester {
 };
 
 PixelFormatTest::PixelFormatTest() {
-    addTests({&PixelFormatTest::size,
+    addTests({&PixelFormatTest::mapping,
+              &PixelFormatTest::compressedMapping,
+
+              &PixelFormatTest::size,
               &PixelFormatTest::sizeInvalid,
               &PixelFormatTest::sizeImplementationSpecific,
 
@@ -91,49 +97,47 @@ PixelFormatTest::PixelFormatTest() {
               &PixelFormatTest::compressedDebugImplementationSpecific});
 }
 
-void PixelFormatTest::size() {
-    CORRADE_COMPARE(pixelSize(PixelFormat::R8I), 1);
-    CORRADE_COMPARE(pixelSize(PixelFormat::R16UI), 2);
-    CORRADE_COMPARE(pixelSize(PixelFormat::RGB8Unorm), 3);
-    CORRADE_COMPARE(pixelSize(PixelFormat::RGBA8Snorm), 4);
-    CORRADE_COMPARE(pixelSize(PixelFormat::RGB16I), 6);
-    CORRADE_COMPARE(pixelSize(PixelFormat::RGBA16F), 8);
-    CORRADE_COMPARE(pixelSize(PixelFormat::RGB32UI), 12);
-    CORRADE_COMPARE(pixelSize(PixelFormat::RGBA32F), 16);
+void PixelFormatTest::mapping() {
+    /* This goes through the first 16 bits, which should be enough. Going
+       through 32 bits takes 8 seconds, too much. */
+    UnsignedInt firstUnhandled = 0xffff;
+    UnsignedInt nextHandled = 1; /* 0 is an invalid format */
+    for(UnsignedInt i = 1; i <= 0xffff; ++i) {
+        const auto format = PixelFormat(i);
+        /* Each case verifies:
+           - that the cases are ordered by number (so insertion here is done in
+             proper place)
+           - that there was no gap (unhandled value inside the range)
+           - that a particular pixel format maps to a particular GL format
+           - that a particular pixel type maps to a particular GL type */
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic error "-Wswitch"
+        #endif
+        switch(format) {
+            #define _c(format) \
+                case PixelFormat::format: \
+                    CORRADE_COMPARE(nextHandled, i); \
+                    CORRADE_COMPARE(firstUnhandled, 0xffff); \
+                    ++nextHandled; \
+                    continue;
+            #include "Magnum/Implementation/pixelFormatMapping.hpp"
+            #undef _c
+        }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
+
+        /* Not handled by any value, remember -- we might either be at the end
+           of the enum range (which is okay) or some value might be unhandled
+           here */
+        firstUnhandled = i;
+    }
+
+    CORRADE_COMPARE(firstUnhandled, 0xffff);
 }
 
-void PixelFormatTest::sizeInvalid() {
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    pixelSize(PixelFormat{});
-    pixelSize(PixelFormat(0xdead));
-
-    CORRADE_COMPARE(out.str(),
-        "pixelSize(): invalid format PixelFormat(0x0)\n"
-        "pixelSize(): invalid format PixelFormat(0xdead)\n");
-}
-
-void PixelFormatTest::sizeImplementationSpecific() {
-    std::ostringstream out;
-    Error redirectError{&out};
-
-    pixelSize(pixelFormatWrap(0xdead));
-
-    CORRADE_COMPARE(out.str(), "pixelSize(): can't determine size of an implementation-specific format\n");
-}
-
-void PixelFormatTest::compressedBlockSize() {
-    /* Touchstone verification */
-    CORRADE_COMPARE(Magnum::compressedBlockSize(CompressedPixelFormat::Etc2RGB8A1Srgb), (Vector3i{4, 4, 1}));
-    CORRADE_COMPARE(compressedBlockDataSize(CompressedPixelFormat::Etc2RGB8A1Srgb), 8);
-    CORRADE_COMPARE(Magnum::compressedBlockSize(CompressedPixelFormat::Astc5x4RGBAUnorm), (Vector3i{5, 4, 1}));
-    CORRADE_COMPARE(compressedBlockDataSize(CompressedPixelFormat::Astc5x4RGBAUnorm), 16);
-    CORRADE_COMPARE(Magnum::compressedBlockSize(CompressedPixelFormat::Astc12x10RGBAUnorm), (Vector3i{12, 10, 1}));
-    CORRADE_COMPARE(compressedBlockDataSize(CompressedPixelFormat::Astc12x10RGBAUnorm), 16);
-    CORRADE_COMPARE(Magnum::compressedBlockSize(CompressedPixelFormat::PvrtcRGBA2bppUnorm), (Vector3i{8, 4, 1}));
-    CORRADE_COMPARE(compressedBlockDataSize(CompressedPixelFormat::PvrtcRGBA2bppUnorm), 8);
-
+void PixelFormatTest::compressedMapping() {
     /* This goes through the first 16 bits, which should be enough. Going
        through 32 bits takes 8 seconds, too much. */
     UnsignedInt firstUnhandled = 0xffff;
@@ -178,6 +182,51 @@ void PixelFormatTest::compressedBlockSize() {
     }
 
     CORRADE_COMPARE(firstUnhandled, 0xffff);
+}
+
+void PixelFormatTest::size() {
+    CORRADE_COMPARE(pixelSize(PixelFormat::R8I), 1);
+    CORRADE_COMPARE(pixelSize(PixelFormat::R16UI), 2);
+    CORRADE_COMPARE(pixelSize(PixelFormat::RGB8Unorm), 3);
+    CORRADE_COMPARE(pixelSize(PixelFormat::RGBA8Snorm), 4);
+    CORRADE_COMPARE(pixelSize(PixelFormat::RGB16I), 6);
+    CORRADE_COMPARE(pixelSize(PixelFormat::RGBA16F), 8);
+    CORRADE_COMPARE(pixelSize(PixelFormat::RGB32UI), 12);
+    CORRADE_COMPARE(pixelSize(PixelFormat::RGBA32F), 16);
+}
+
+void PixelFormatTest::sizeInvalid() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    pixelSize(PixelFormat{});
+    pixelSize(PixelFormat(0xdead));
+
+    CORRADE_COMPARE(out.str(),
+        "pixelSize(): invalid format PixelFormat(0x0)\n"
+        "pixelSize(): invalid format PixelFormat(0xdead)\n");
+}
+
+void PixelFormatTest::sizeImplementationSpecific() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    pixelSize(pixelFormatWrap(0xdead));
+
+    CORRADE_COMPARE(out.str(), "pixelSize(): can't determine size of an implementation-specific format\n");
+}
+
+void PixelFormatTest::compressedBlockSize() {
+    CORRADE_COMPARE(Magnum::compressedBlockSize(CompressedPixelFormat::Etc2RGB8A1Srgb), (Vector3i{4, 4, 1}));
+    CORRADE_COMPARE(compressedBlockDataSize(CompressedPixelFormat::Etc2RGB8A1Srgb), 8);
+    CORRADE_COMPARE(Magnum::compressedBlockSize(CompressedPixelFormat::Astc5x4RGBAUnorm), (Vector3i{5, 4, 1}));
+    CORRADE_COMPARE(compressedBlockDataSize(CompressedPixelFormat::Astc5x4RGBAUnorm), 16);
+    CORRADE_COMPARE(Magnum::compressedBlockSize(CompressedPixelFormat::Astc12x10RGBAUnorm), (Vector3i{12, 10, 1}));
+    CORRADE_COMPARE(compressedBlockDataSize(CompressedPixelFormat::Astc12x10RGBAUnorm), 16);
+    CORRADE_COMPARE(Magnum::compressedBlockSize(CompressedPixelFormat::PvrtcRGBA2bppUnorm), (Vector3i{8, 4, 1}));
+    CORRADE_COMPARE(compressedBlockDataSize(CompressedPixelFormat::PvrtcRGBA2bppUnorm), 8);
+
+    /* The rest tested in compressedMapping() */
 }
 
 void PixelFormatTest::compressedBlockSizeInvalid() {
