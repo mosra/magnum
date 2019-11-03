@@ -49,7 +49,7 @@ enum class FramebufferClear: GLbitfield {
 };
 
 /**
-@brief Mask for clearing
+@brief Mask for framebuffer clearing
 
 @see @ref AbstractFramebuffer::clear()
 */
@@ -212,7 +212,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
 
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         /**
-         * @brief Copy block of pixels
+         * @brief Copy a block of pixels
          * @param source            Source framebuffer
          * @param destination       Destination framebuffer
          * @param sourceRectangle   Source rectangle
@@ -236,7 +236,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         static void blit(AbstractFramebuffer& source, AbstractFramebuffer& destination, const Range2Di& sourceRectangle, const Range2Di& destinationRectangle, FramebufferBlitMask mask, FramebufferBlitFilter filter);
 
         /**
-         * @brief Copy block of pixels
+         * @brief Copy a block of pixels
          *
          * Convenience alternative to the above function when source rectangle
          * is the same as destination rectangle. As the image is copied
@@ -374,7 +374,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         #endif
 
         /**
-         * @brief Read block of pixels from the framebuffer to an image
+         * @brief Read a block of pixels from the framebuffer to an image
          * @param rectangle         Framebuffer rectangle to read
          * @param image             Image where to put the data
          *
@@ -408,7 +408,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
         Image2D read(const Range2Di& rectangle, Image2D&& image);
 
         /**
-         * @brief Read block of pixels from the framebuffer to an image view
+         * @brief Read a block of pixels from the framebuffer to an image view
          *
          * Compared to @ref read(const Range2Di&, Image2D&) the function
          * reads the pixels into the memory provided by @p image, expecting
@@ -419,7 +419,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
 
         #ifndef MAGNUM_TARGET_GLES2
         /**
-         * @brief Read block of pixels from framebuffer to buffer image
+         * @brief Read a block of pixels from the framebuffer to a buffer image
          * @param rectangle         Framebuffer rectangle to read
          * @param image             Buffer image where to put the data
          * @param usage             Buffer usage
