@@ -64,7 +64,11 @@ set(Magnum_HEADERS
     visibility.h)
 
 set(Magnum_PRIVATE_HEADERS
-    Implementation/ImageProperties.h)
+    Implementation/ImageProperties.h
+
+    Implementation/meshIndexTypeMapping.hpp
+    Implementation/meshPrimitiveMapping.hpp
+    Implementation/compressedPixelFormatMapping.hpp)
 
 # Functionality specific to static Windows builds
 if(CORRADE_TARGET_WINDOWS AND NOT CORRADE_TARGET_WINDOWS_RT AND MAGNUM_BUILD_STATIC)

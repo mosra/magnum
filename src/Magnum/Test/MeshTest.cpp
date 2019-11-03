@@ -35,6 +35,9 @@ namespace Magnum { namespace Test { namespace {
 struct MeshTest: TestSuite::Tester {
     explicit MeshTest();
 
+    void primitiveMapping();
+    void indexTypeMapping();
+
     void indexTypeSize();
 
     void debugPrimitive();
@@ -44,12 +47,89 @@ struct MeshTest: TestSuite::Tester {
 };
 
 MeshTest::MeshTest() {
-    addTests({&MeshTest::indexTypeSize,
+    addTests({&MeshTest::primitiveMapping,
+              &MeshTest::indexTypeMapping,
+
+              &MeshTest::indexTypeSize,
 
               &MeshTest::debugPrimitive,
               &MeshTest::debugIndexType,
               &MeshTest::configurationPrimitive,
               &MeshTest::configurationIndexType});
+}
+
+void MeshTest::primitiveMapping() {
+    /* This goes through the first 8 bits, which should be enough. */
+    UnsignedInt firstUnhandled = 0xff;
+    UnsignedInt nextHandled = 0;
+    for(UnsignedInt i = 0; i <= 0xff; ++i) {
+        const auto primitive = MeshPrimitive(i);
+        /* Each case verifies:
+           - that the cases are ordered by number (so insertion here is done in
+             proper place)
+           - that there was no gap (unhandled value inside the range) */
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic error "-Wswitch"
+        #endif
+        switch(primitive) {
+            #define _c(primitive) \
+                case MeshPrimitive::primitive: \
+                    CORRADE_COMPARE(nextHandled, i); \
+                    CORRADE_COMPARE(firstUnhandled, 0xff); \
+                    ++nextHandled; \
+                    continue;
+            #include "Magnum/Implementation/meshPrimitiveMapping.hpp"
+            #undef _c
+        }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
+
+        /* Not handled by any value, remember -- we might either be at the end
+           of the enum range (which is okay) or some value might be unhandled
+           here */
+        firstUnhandled = i;
+    }
+
+    CORRADE_COMPARE(firstUnhandled, 0xff);
+}
+
+void MeshTest::indexTypeMapping() {
+    /* This goes through the first 8 bits, which should be enough. */
+    UnsignedInt firstUnhandled = 0xff;
+    UnsignedInt nextHandled = 0;
+    for(UnsignedInt i = 0; i <= 0xff; ++i) {
+        const auto type = MeshIndexType(i);
+        /* Each case verifies:
+           - that the cases are ordered by number (so insertion here is done in
+             proper place)
+           - that there was no gap (unhandled value inside the range) */
+        #ifdef __GNUC__
+        #pragma GCC diagnostic push
+        #pragma GCC diagnostic error "-Wswitch"
+        #endif
+        switch(type) {
+            #define _c(type) \
+                case MeshIndexType::type: \
+                    CORRADE_COMPARE(nextHandled, i); \
+                    CORRADE_COMPARE(firstUnhandled, 0xff); \
+                    ++nextHandled; \
+                    continue;
+            #include "Magnum/Implementation/meshIndexTypeMapping.hpp"
+            #undef _c
+        }
+        #ifdef __GNUC__
+        #pragma GCC diagnostic pop
+        #endif
+
+        /* Not handled by any value, remember -- we might either be at the end
+           of the enum range (which is okay) or some value might be unhandled
+           here */
+        firstUnhandled = i;
+    }
+
+    CORRADE_COMPARE(firstUnhandled, 0xff);
 }
 
 void MeshTest::indexTypeSize() {
