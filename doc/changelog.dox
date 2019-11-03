@@ -49,8 +49,10 @@ See also:
 -   For better usability, the @ref magnum-imageconverter "magnum-imageconverter"
     utility now prints available importer/converter plugins when loading a
     plugin fails
--   @ref magnum-imageconverter "magnum-imageconverter" can save raw imported
-    data instead of going through a converter plugins if you specify
+-   @ref magnum-imageconverter "magnum-imageconverter" can load a
+    tightly-packed square of raw pixels instead of going through an importer
+    plugin if you specify `--importer raw:&lt;format&gt;`; and save raw
+    imported data instead of going through a converter plugin if you specify
     `--converter raw`
 
 @section changelog-2019-10 2019.10

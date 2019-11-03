@@ -81,8 +81,10 @@ Arguments:
 -   `-c`, `--converter-options key=val,key2=val2,…` --- configuration options
     to pass to the converter
 
-Specifying `--converter raw` will save raw imported data instead of using a
-converter plugin.
+Specifying `--importer raw:&lt;format&gt;` will treat the input as a raw
+tightly-packed square of pixels in given @ref PixelFormat. Specifying
+`--converter raw` will save raw imported data instead of using a converter
+plugin.
 
 The `-i` / `--importer-options` and `-c` / `--converter-options` arguments
 accept a comma-separated list of key/value pairs to set in the importer /
@@ -160,8 +162,10 @@ int main(int argc, char** argv) {
         .addOption('c', "converter-options").setHelp("converter-options", "configuration options to pass to the converter", "key=val,key2=val2,…")
         .setGlobalHelp(R"(Converts images of different formats.
 
-Specifying --converter raw will save raw imported data instead of using a
-converter plugin.
+Specifying --importer raw:<format>` will treat the input as a raw
+tightly-packed square of pixels in given pixel format. Specifying
+--converter raw will save raw imported data instead of using a converter
+plugin.
 
 The -i / --importer-options and -c / --converter-options arguments accept a
 comma-separated list of key/value pairs to set in the importer / converter
@@ -169,24 +173,54 @@ plugin configuration. If the = character is omitted, it's equivalent to saying
 key=true.)")
         .parse(argc, argv);
 
-    /* Load importer plugin */
     PluginManager::Manager<Trade::AbstractImporter> importerManager{
         args.value("plugin-dir").empty() ? std::string{} :
         Utility::Directory::join(args.value("plugin-dir"), Trade::AbstractImporter::pluginSearchPaths()[0])};
-    Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
-    if(!importer) {
-        Debug{} << "Available importer plugins:" << Utility::String::join(importerManager.aliasList(), ", ");
-        return 1;
-    }
 
-    /* Set options, if passed */
-    setOptions(*importer, args.value("importer-options"));
-
-    /* Open input file */
+    /* Load raw data, if requested; assume it's a tightly-packed square of
+       given format */
+    /** @todo implement image slicing and then use `--slice "0 0 w h"` to
+        specify non-rectangular size (and +x +y to specify padding?) */
     Containers::Optional<Trade::ImageData2D> image;
-    if(!importer->openFile(args.value("input")) || !(image = importer->image2D(0))) {
-        Error() << "Cannot open file" << args.value("input");
-        return 3;
+    if(Utility::String::beginsWith(args.value("importer"), "raw:")) {
+        /** @todo Any chance to do this without using internal APIs? */
+        const PixelFormat format = Utility::ConfigurationValue<PixelFormat>::fromString(args.value("importer").substr(4), {});
+        const UnsignedInt pixelSize = Magnum::pixelSize(format);
+        if(format == PixelFormat{}) {
+            Error{} << "Invalid raw pixel format" << args.value("importer");
+            return 4;
+        }
+
+        /** @todo simplify once read() reliably returns an Optional */
+        if(!Utility::Directory::exists(args.value("input"))) {
+            Error{} << "Cannot open file" << args.value("input");
+            return 3;
+        }
+        Containers::Array<char> data = Utility::Directory::read(args.value("input"));
+        auto side = Int(std::sqrt(data.size()/pixelSize));
+        if(data.size() % pixelSize || side*side*pixelSize != data.size()) {
+            Error{} << "File of size" << data.size() << "is not a tightly-packed square of" << format;
+            return 5;
+        }
+
+        image = Trade::ImageData2D(format, Vector2i{side}, std::move(data));
+
+    /* Otherwise load it using an importer plugin */
+    } else {
+        Containers::Pointer<Trade::AbstractImporter> importer = importerManager.loadAndInstantiate(args.value("importer"));
+        if(!importer) {
+            Debug{} << "Available importer plugins:" << Utility::String::join(importerManager.aliasList(), ", ");
+            return 1;
+        }
+
+        /* Set options, if passed */
+        setOptions(*importer, args.value("importer-options"));
+
+        /* Open input file */
+        if(!importer->openFile(args.value("input")) || !(image = importer->image2D(0))) {
+            Error() << "Cannot open file" << args.value("input");
+            return 3;
+        }
     }
 
     {
