@@ -268,6 +268,21 @@ set_property(DIRECTORY ${PROJECT_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT MyAppli
 
 The Magnum bootstrap projects set this automatically.
 
+@subsection platform-windows-troubleshooting-bom-in-shaders UTF-8 BOM in shader code
+
+If your GLSL shaders fail to compile with the following error, it means you
+have your file saved as UTF-8 with a BOM:
+
+@code{.shell-session}
+GL::Shader::compile(): compilation of vertex shader 1 failed with the following message:
+ERROR:2:1: `` : syntax error: illegal extended ASCII character (0xef)
+ERROR:2:1: `` : syntax error: illegal extended ASCII character (0xbb)
+ERROR:2:1: `` : syntax error: illegal extended ASCII character (0xbf)
+@endcode
+
+While the C++ compilers can usually ignore the BOM marker, it's not so common
+with GLSL compilers in the drivers. Save your file as UTF-8 without BOM.
+
 @todoc DLL paths
 @todoc vcpkg
 @todoc desktop ES
