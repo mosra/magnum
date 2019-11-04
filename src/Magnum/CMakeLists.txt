@@ -39,6 +39,7 @@ set(Magnum_GracefulAssert_SRCS
     ImageView.cpp
     Mesh.cpp
     PixelFormat.cpp
+    VertexFormat.cpp
 
     Animation/Player.cpp
     Animation/Interpolation.cpp)
@@ -60,6 +61,7 @@ set(Magnum_HEADERS
     Tags.h
     Timeline.h
     Types.h
+    VertexFormat.h
     visibility.h)
 
 set(Magnum_PRIVATE_HEADERS
@@ -68,7 +70,8 @@ set(Magnum_PRIVATE_HEADERS
     Implementation/meshIndexTypeMapping.hpp
     Implementation/meshPrimitiveMapping.hpp
     Implementation/compressedPixelFormatMapping.hpp
-    Implementation/pixelFormatMapping.hpp)
+    Implementation/pixelFormatMapping.hpp
+    Implementation/vertexFormatMapping.hpp)
 
 # Functionality specific to static Windows builds
 if(CORRADE_TARGET_WINDOWS AND NOT CORRADE_TARGET_WINDOWS_RT AND MAGNUM_BUILD_STATIC)

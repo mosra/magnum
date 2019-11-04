@@ -29,6 +29,7 @@
 #include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Mesh.h"
+#include "Magnum/Math/Vector4.h"
 
 namespace Magnum { namespace Test { namespace {
 
@@ -43,6 +44,7 @@ struct MeshTest: TestSuite::Tester {
 
     void debugPrimitive();
     void debugIndexType();
+
     void configurationPrimitive();
     void configurationIndexType();
 };
@@ -56,6 +58,7 @@ MeshTest::MeshTest() {
 
               &MeshTest::debugPrimitive,
               &MeshTest::debugIndexType,
+
               &MeshTest::configurationPrimitive,
               &MeshTest::configurationIndexType});
 }

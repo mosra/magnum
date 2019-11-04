@@ -61,7 +61,8 @@ For D3D, corresponds to @m_class{m-doc-external} [DXGI_FORMAT](https://docs.micr
 and import is provided by the @ref Trade::DdsImporter "DdsImporter" plugin; for
 Metal, corresponds to @m_class{m-doc-external} [MTLPixelFormat](https://developer.apple.com/documentation/metal/mtlpixelformat?language=objc).
 See documentation of each value for more information about the mapping.
-@see @ref pixelSize(), @ref CompressedPixelFormat, @ref Image, @ref ImageView
+@see @ref pixelSize(), @ref CompressedPixelFormat, @ref Image, @ref ImageView,
+    @ref VertexFormat
 */
 enum class PixelFormat: UnsignedInt {
     /* Zero reserved for an invalid format (but not being a named value) */

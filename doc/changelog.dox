@@ -49,6 +49,7 @@ See also:
     @ref Vector2s, @ref Vector3s, @ref Vector4s, @ref Color3h, @ref Color4h,
     @ref Color3us, @ref Color4us convenience typedefs for half-float, 8- and
     16-bit integer vector and color types
+-   New @ref VertexFormat enum for vertex formats and related utilities
 
 @subsubsection changelog-latest-new-audio Audio library
 

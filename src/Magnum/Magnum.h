@@ -862,6 +862,7 @@ typedef BasicMutableCompressedImageView<3> MutableCompressedImageView3D;
 
 enum class MeshPrimitive: UnsignedInt;
 enum class MeshIndexType: UnsignedInt;
+enum class VertexFormat: UnsignedInt;
 
 enum class PixelFormat: UnsignedInt;
 enum class CompressedPixelFormat: UnsignedInt;

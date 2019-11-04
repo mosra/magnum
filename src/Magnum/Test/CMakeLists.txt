@@ -34,8 +34,8 @@ corrade_add_test(PixelStorageTest PixelStorageTest.cpp LIBRARIES Magnum)
 corrade_add_test(ResourceManagerTest ResourceManagerTest.cpp LIBRARIES Magnum)
 target_compile_definitions(ResourceManagerTest PRIVATE "CORRADE_GRACEFUL_ASSERT")
 corrade_add_test(SamplerTest SamplerTest.cpp LIBRARIES MagnumTestLib)
-
 corrade_add_test(TagsTest TagsTest.cpp LIBRARIES Magnum)
+corrade_add_test(VertexFormatTest VertexFormatTest.cpp LIBRARIES MagnumTestLib)
 
 set_target_properties(
     ArrayTest
@@ -47,4 +47,5 @@ set_target_properties(
     ResourceManagerTest
     SamplerTest
     TagsTest
+    VertexFormatTest
     PROPERTIES FOLDER "Magnum/Test")
