@@ -41,6 +41,7 @@ set(MagnumTrade_GracefulAssert_SRCS
     AnimationData.cpp
     CameraData.cpp
     ImageData.cpp
+    MeshData.cpp
     ObjectData2D.cpp
     ObjectData3D.cpp
     PhongMaterialData.cpp)
@@ -53,6 +54,7 @@ set(MagnumTrade_HEADERS
     CameraData.h
     ImageData.h
     LightData.h
+    MeshData.h
     MeshData2D.h
     MeshData3D.h
     MeshObjectData2D.h
@@ -66,6 +68,9 @@ set(MagnumTrade_HEADERS
 
     visibility.h)
 
+set(MagnumTrade_PRIVATE_HEADERS
+    Implementation/arrayUtilities.h)
+
 if(NOT CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT)
     configure_file(${CMAKE_CURRENT_SOURCE_DIR}/configure.h.cmake
                    ${CMAKE_CURRENT_BINARY_DIR}/configure.h)
@@ -74,7 +79,8 @@ endif()
 # Objects shared between main and test library
 add_library(MagnumTradeObjects OBJECT
     ${MagnumTrade_SRCS}
-    ${MagnumTrade_HEADERS})
+    ${MagnumTrade_HEADERS}
+    ${MagnumTrade_PRIVATE_HEADERS})
 target_include_directories(MagnumTradeObjects PUBLIC
     $<TARGET_PROPERTY:Magnum,INTERFACE_INCLUDE_DIRECTORIES>
     $<TARGET_PROPERTY:Corrade::PluginManager,INTERFACE_INCLUDE_DIRECTORIES>)

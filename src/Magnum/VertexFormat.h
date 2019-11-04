@@ -42,6 +42,8 @@ namespace Magnum {
 
 Like @ref PixelFormat, but for mesh attributes --- including double-precision
 types and matrices.
+@see @ref Trade::MeshData, @ref Trade::MeshAttributeData,
+    @ref Trade::MeshAttribute
 */
 enum class VertexFormat: UnsignedInt {
     /* Zero reserved for an invalid type (but not being a named value) */

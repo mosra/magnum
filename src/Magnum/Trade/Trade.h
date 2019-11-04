@@ -65,6 +65,12 @@ typedef ImageData<2> ImageData2D;
 typedef ImageData<3> ImageData3D;
 
 class LightData;
+
+enum class MeshAttribute: UnsignedShort;
+class MeshIndexData;
+class MeshAttributeData;
+class MeshData;
+
 class MeshData2D;
 class MeshData3D;
 class MeshObjectData2D;

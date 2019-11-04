@@ -30,12 +30,15 @@
 
 #include "Magnum/FileCallback.h"
 #include "Magnum/ImageView.h"
+#include "Magnum/Mesh.h"
 #include "Magnum/PixelFormat.h"
+#include "Magnum/MeshTools/Interleave.h"
 #include "Magnum/Animation/Player.h"
 #include "Magnum/MeshTools/Transform.h"
 #include "Magnum/Trade/AbstractImporter.h"
 #include "Magnum/Trade/AnimationData.h"
 #include "Magnum/Trade/ImageData.h"
+#include "Magnum/Trade/MeshData.h"
 #include "Magnum/Trade/MeshData2D.h"
 #include "Magnum/Trade/MeshData3D.h"
 #include "Magnum/Trade/ObjectData2D.h"
@@ -43,6 +46,8 @@
 #include "Magnum/Trade/PhongMaterialData.h"
 #ifdef MAGNUM_TARGET_GL
 #include "Magnum/GL/Texture.h"
+#include "Magnum/GL/Mesh.h"
+#include "Magnum/Shaders/Phong.h"
 #endif
 
 using namespace Magnum;
@@ -198,6 +203,66 @@ if(!image->isCompressed())
 else
     texture.setCompressedSubImage(0, {}, *image);
 /* [ImageData-usage] */
+}
+#endif
+
+#ifdef MAGNUM_TARGET_GL
+{
+Trade::MeshData data{MeshPrimitive::Points, 0};
+/* [MeshData-usage] */
+/* Check that we have at least positions and normals */
+GL::Mesh mesh{data.primitive()};
+if(!data.hasAttribute(Trade::MeshAttribute::Position) ||
+   !data.hasAttribute(Trade::MeshAttribute::Normal))
+    Fatal{} << "Oh well";
+
+/* Interleave vertex data */
+GL::Buffer vertices;
+vertices.setData(MeshTools::interleave(data.positions3DAsArray(),
+                                       data.normalsAsArray()));
+mesh.addVertexBuffer(std::move(vertices), 0,
+    Shaders::Phong::Position{}, Shaders::Phong::Normal{});
+
+/* Set up an index buffer, if the mesh is indexed*/
+if(data.isIndexed()) {
+    GL::Buffer indices;
+    indices.setData(data.indicesAsArray());
+    mesh.setIndexBuffer(std::move(indices), 0, MeshIndexType::UnsignedInt)
+        .setCount(data.indexCount());
+} else mesh.setCount(data.vertexCount());
+/* [MeshData-usage] */
+}
+
+{
+Trade::MeshData data{MeshPrimitive::Points, 0};
+GL::Mesh mesh{data.primitive()};
+/* [MeshData-usage-advanced] */
+/* Upload the original packed vertex data */
+GL::Buffer vertices;
+vertices.setData(data.vertexData());
+
+/* Set up the position attribute */
+Shaders::Phong::Position position;
+auto positionFormat = data.attributeFormat(Trade::MeshAttribute::Position);
+if(positionFormat == VertexFormat::Vector2)
+    position = {Shaders::Phong::Position::Components::Two};
+else if(positionFormat == VertexFormat::Vector3)
+    position = {Shaders::Phong::Position::Components::Three};
+else Fatal{} << "Huh?";
+mesh.addVertexBuffer(vertices,
+    data.attributeOffset(Trade::MeshAttribute::Position),
+    data.attributeStride(Trade::MeshAttribute::Position), position);
+
+// Set up other attributes ...
+
+/* Upload the original packed index data */
+if(data.isIndexed()) {
+    GL::Buffer indices;
+    indices.setData(data.indexData());
+    mesh.setIndexBuffer(std::move(indices), 0, data.indexType())
+        .setCount(data.indexCount());
+} else mesh.setCount(data.vertexCount());
+/* [MeshData-usage-advanced] */
 }
 #endif
 

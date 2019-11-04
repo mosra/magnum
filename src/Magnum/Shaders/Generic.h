@@ -78,21 +78,23 @@ template<UnsignedInt dimensions> struct Generic {
      * @brief Vertex position
      *
      * @ref Magnum::Vector2 "Vector2" in 2D and @ref Magnum::Vector3 "Vector3"
-     * in 3D.
+     * in 3D. Corresponds to @ref Trade::MeshAttribute::Position.
      */
     typedef GL::Attribute<0, T> Position;
 
     /**
      * @brief 2D texture coordinates
      *
-     * @ref Magnum::Vector2 "Vector2".
+     * @ref Magnum::Vector2 "Vector2". Corresponds to
+     * @ref Trade::MeshAttribute::TextureCoordinates.
      */
     typedef GL::Attribute<1, Vector2> TextureCoordinates;
 
     /**
      * @brief Vertex normal
      *
-     * @ref Magnum::Vector3 "Vector3", defined only in 3D.
+     * @ref Magnum::Vector3 "Vector3", defined only in 3D.  Corresponds to
+     * @ref Trade::MeshAttribute::Normal.
      */
     typedef GL::Attribute<2, Vector3> Normal;
 
@@ -108,6 +110,7 @@ template<UnsignedInt dimensions> struct Generic {
      * @brief Three-component vertex color.
      *
      * @ref Magnum::Color3. Use either this or the @ref Color4 attribute.
+     * Corresponds to @ref Trade::MeshAttribute::Color.
      */
     typedef GL::Attribute<3, Magnum::Color3> Color3;
 
@@ -115,6 +118,7 @@ template<UnsignedInt dimensions> struct Generic {
      * @brief Four-component vertex color.
      *
      * @ref Magnum::Color4. Use either this or the @ref Color3 attribute.
+     * Corresponds to @ref Trade::MeshAttribute::Color.
      */
     typedef GL::Attribute<3, Magnum::Color4> Color4;
 
