@@ -795,14 +795,14 @@ bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shader
         /* Show error log */
         if(!success) {
             Error out{Debug::Flag::NoNewlineAtTheEnd};
-            out << "Shader::compile(): compilation of" << shaderName(shader._type) << "shader";
+            out << "GL::Shader::compile(): compilation of" << shaderName(shader._type) << "shader";
             if(shaders.size() != 1) out << i;
             out << "failed with the following message:" << Debug::newline << message;
 
         /* Or just warnings, if any */
         } else if(!message.empty() && !Implementation::isShaderCompilationLogEmpty(message)) {
             Warning out{Debug::Flag::NoNewlineAtTheEnd};
-            out << "Shader::compile(): compilation of" << shaderName(shader._type) << "shader";
+            out << "GL::Shader::compile(): compilation of" << shaderName(shader._type) << "shader";
             if(shaders.size() != 1) out << i;
             out << "succeeded with the following message:" << Debug::newline << message;
         }
