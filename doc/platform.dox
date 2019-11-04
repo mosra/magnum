@@ -173,8 +173,7 @@ following code listing.
     top of Qt toolkit is available in `base-qt` branch of
     [Magnum Bootstrap](https://github.com/mosra/magnum-bootstrap) repository.
 @note
-    There's also an example showing @ref examples-triangle-plain-glfw "usage of
-    plain GLFW to render a basic triangle".
+    There's also an example showing @ref examples-triangle-plain-glfw "usage of plain GLFW to render a basic triangle".
 
 @snippet MagnumPlatform-custom.cpp custom
 
