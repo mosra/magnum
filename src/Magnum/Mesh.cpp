@@ -39,7 +39,7 @@ UnsignedInt meshIndexTypeSize(MeshIndexType type) {
         case MeshIndexType::UnsignedInt: return 4;
     }
 
-    CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
+    CORRADE_ASSERT(false, "meshIndexTypeSize(): invalid type" << type, {});
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

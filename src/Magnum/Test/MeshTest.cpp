@@ -39,6 +39,7 @@ struct MeshTest: TestSuite::Tester {
     void indexTypeMapping();
 
     void indexTypeSize();
+    void indexTypeSizeInvalid();
 
     void debugPrimitive();
     void debugIndexType();
@@ -51,6 +52,7 @@ MeshTest::MeshTest() {
               &MeshTest::indexTypeMapping,
 
               &MeshTest::indexTypeSize,
+              &MeshTest::indexTypeSizeInvalid,
 
               &MeshTest::debugPrimitive,
               &MeshTest::debugIndexType,
@@ -136,6 +138,15 @@ void MeshTest::indexTypeSize() {
     CORRADE_COMPARE(meshIndexTypeSize(MeshIndexType::UnsignedByte), 1);
     CORRADE_COMPARE(meshIndexTypeSize(MeshIndexType::UnsignedShort), 2);
     CORRADE_COMPARE(meshIndexTypeSize(MeshIndexType::UnsignedInt), 4);
+}
+
+void MeshTest::indexTypeSizeInvalid() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    meshIndexTypeSize(MeshIndexType(0xdead));
+
+    CORRADE_COMPARE(out.str(), "meshIndexTypeSize(): invalid type MeshIndexType(0xdead)\n");
 }
 
 void MeshTest::debugPrimitive() {
