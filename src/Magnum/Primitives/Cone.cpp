@@ -52,9 +52,14 @@ Trade::MeshData3D coneSolid(const UnsignedInt rings, const UnsignedInt segments,
     /* Vertex rings */
     cone.cylinderVertexRings(rings+1, -halfLength, {-1.0f/rings, length/rings}, textureCoordsV, length/(rings*(flags & ConeFlag::CapEnd ? length + 1.0f : length)));
 
-    /* Faces */
+    /* Faces. Account for the extra vertices for caps and texture coords. */
     if(flags & ConeFlag::CapEnd) cone.bottomFaceRing();
-    cone.faceRings(rings, flags & ConeFlag::CapEnd ? (1 + segments) : 0);
+    if(flags >= (ConeFlag::CapEnd|ConeFlag::GenerateTextureCoords))
+        cone.faceRings(rings, 2 + segments);
+    else if(flags & ConeFlag::CapEnd)
+        cone.faceRings(rings, 1 + segments);
+    else
+        cone.faceRings(rings, 0);
 
     return cone.finalize();
 }

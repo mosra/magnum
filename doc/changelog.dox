@@ -55,6 +55,12 @@ See also:
     imported data instead of going through a converter plugin if you specify
     `--converter raw`
 
+@subsection changelog-latest-bugfixes Bug fixes
+
+-   The @ref Primitives::cylinderSolid() and @ref Primitives::coneSolid()
+    primitives were missing a face when both caps and texture coordinates were
+    enabled (see [mosra/magnum#386](https://github.com/mosra/magnum/issues/386))
+
 @section changelog-2019-10 2019.10
 
 Released 2019-10-24, tagged as

@@ -286,11 +286,11 @@ void ConeTest::solidWithTextureCoordsAndCaps() {
     }), TestSuite::Compare::Container);
 
     /* Faces of the caps and sides do not share any vertices due to different
-       normals */
+       normals, each ring has an extra vertex for texture coords */
     CORRADE_COMPARE_AS(cone.indices(), (std::vector<UnsignedInt>{
          0,  2,  1,  0,  3,  2,  0,  4,  3,
-         4,  5,  9,  4,  9,  8,  5,  6, 10,  5, 10,  9,  6,  7, 11,  6, 11, 10,
-         8,  9, 13,  8, 13, 12,  9, 10, 14,  9, 14, 13, 10, 11, 15, 10, 15, 14
+         5,  6, 10,  5, 10,  9,  6,  7, 11,  6, 11, 10,  7,  8, 12,  7, 12, 11,
+         9, 10, 14,  9, 14, 13, 10, 11, 15, 10, 15, 14, 11, 12, 16, 11, 16, 15
     }), TestSuite::Compare::Container);
 }
 
