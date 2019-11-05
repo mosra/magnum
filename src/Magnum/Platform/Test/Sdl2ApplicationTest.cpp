@@ -86,6 +86,9 @@ struct Sdl2ApplicationTest: Platform::Application {
         } else if(event.key() == KeyEvent::Key::T) {
             Debug{} << "setting window title";
             setWindowTitle("This is a UTF-8 Window Title™!");
+        } else if(event.key() == KeyEvent::Key::H) {
+            Debug{} << "toggling hand cursor";
+            setCursor(cursor() == Cursor::Arrow ? Cursor::Hand : Cursor::Arrow);
         }
         #ifdef CORRADE_TARGET_EMSCRIPTEN
         else if(event.key() == KeyEvent::Key::F) {
