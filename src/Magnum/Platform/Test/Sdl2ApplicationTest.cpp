@@ -90,7 +90,12 @@ struct Sdl2ApplicationTest: Platform::Application {
             Debug{} << "toggling hand cursor";
             setCursor(cursor() == Cursor::Arrow ? Cursor::Hand : Cursor::Arrow);
         }
-        #ifdef CORRADE_TARGET_EMSCRIPTEN
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        else if(event.key() == KeyEvent::Key::L) {
+            Debug{} << "toggling locked mouse";
+            setCursor(cursor() == Cursor::Arrow ? Cursor::HiddenLocked : Cursor::Arrow);
+        }
+        #else
         else if(event.key() == KeyEvent::Key::F) {
             Debug{} << "toggling fullscreen";
             setContainerCssClass((_fullscreen ^= true) ? "fullsize" : "");
