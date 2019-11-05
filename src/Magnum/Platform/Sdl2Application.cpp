@@ -885,9 +885,9 @@ bool Sdl2Application::mainLoopIteration() {
     return !(_flags & Flag::Exit);
 }
 
-#ifndef CORRADE_TARGET_EMSCRIPTEN
 namespace {
 
+#ifndef CORRADE_TARGET_EMSCRIPTEN
 constexpr SDL_SystemCursor CursorMap[] {
     SDL_SYSTEM_CURSOR_ARROW,
     SDL_SYSTEM_CURSOR_IBEAM,
@@ -902,10 +902,29 @@ constexpr SDL_SystemCursor CursorMap[] {
     SDL_SYSTEM_CURSOR_NO,
     SDL_SYSTEM_CURSOR_HAND
 };
+#else
+constexpr const char* CursorMap[] {
+    "default",
+    "text",
+    "wait",
+    "crosshair",
+    "progress",
+    "nwse-resize",
+    "nesw-resize",
+    "ew-resize",
+    "ns-resize",
+    "move",
+    "not-allowed",
+    "pointer",
+    "none"
+    /* Hidden & locked not supported yet */
+};
+#endif
 
 }
 
 void Sdl2Application::setCursor(Cursor cursor) {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(_cursors));
 
     if(cursor == Cursor::Hidden) {
@@ -927,9 +946,18 @@ void Sdl2Application::setCursor(Cursor cursor) {
         _cursors[UnsignedInt(cursor)] = SDL_CreateSystemCursor(CursorMap[UnsignedInt(cursor)]);
 
     SDL_SetCursor(_cursors[UnsignedInt(cursor)]);
+    #else
+    _cursor = cursor;
+    CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(CursorMap));
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
+    EM_ASM_({document.getElementById('canvas').style.cursor = AsciiToString($0);}, CursorMap[UnsignedInt(cursor)]);
+    #pragma GCC diagnostic pop
+    #endif
 }
 
 Sdl2Application::Cursor Sdl2Application::cursor() {
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
     if(SDL_GetRelativeMouseMode())
         return Cursor::HiddenLocked;
     else if(!SDL_ShowCursor(SDL_QUERY))
@@ -941,8 +969,10 @@ Sdl2Application::Cursor Sdl2Application::cursor() {
         if(_cursors[i] == cursor) return Cursor(i);
 
     return Cursor::Arrow;
+    #else
+    return _cursor;
+    #endif
 }
-#endif
 
 void Sdl2Application::setMouseLocked(bool enabled) {
     /** @todo Implement this in Emscripten */

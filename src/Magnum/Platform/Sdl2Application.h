@@ -832,7 +832,6 @@ class Sdl2Application {
         /** @{ @name Mouse handling */
 
     public:
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
          * @brief Cursor type
          *
@@ -852,11 +851,17 @@ class Sdl2Application {
             No,             /**< Slashed circle or crossbones */
             Hand,           /**< Hand */
             Hidden,         /**< Hidden */
-            HiddenLocked    /**< Hidden and locked */
-        };
-        #endif
 
-        #ifndef CORRADE_TARGET_EMSCRIPTEN
+            #ifndef CORRADE_TARGET_EMSCRIPTEN
+            /**
+             * Hidden and locked.
+             *
+             * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             */
+            HiddenLocked
+            #endif
+        };
+
         /**
          * @brief Set cursor type
          *
@@ -866,7 +871,6 @@ class Sdl2Application {
 
         /** @brief Get current cursor type */
         Cursor cursor();
-        #endif
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
@@ -1064,6 +1068,8 @@ class Sdl2Application {
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         SDL_Cursor* _cursors[14]{};
+        #else
+        Cursor _cursor;
         #endif
 
         /* These are saved from command-line arguments */
