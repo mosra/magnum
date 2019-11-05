@@ -47,13 +47,17 @@ information about the mapping.
 @see @ref SamplerMipmap, @ref SamplerWrapping
 */
 enum class SamplerFilter: UnsignedInt {
+    /* Unlike with MeshIndexType, MeshPrimitive, VertexFormat, PixelFormat
+       etc., this enum doesn't have zero as an invalid value -- Nearest is a
+       good default */
+
     /**
      * Nearest neighbor filtering.
      *
      * Corresponds to @ref GL::SamplerFilter::Nearest /
      * @def_vk_keyword{FILTER_NEAREST,Filter}.
      */
-    Nearest,
+    Nearest = 0,
 
     /**
      * Linear interpolation filtering.
@@ -77,6 +81,10 @@ each value for more information about the mapping.
 @see @ref SamplerFilter, @ref SamplerWrapping
 */
 enum class SamplerMipmap: UnsignedInt {
+    /* Unlike with MeshIndexType, MeshPrimitive, VertexFormat, PixelFormat
+       etc., this enum doesn't have zero as an invalid value -- Base is a
+       good default */
+
     /**
      * Select base mip level
      *
@@ -85,7 +93,7 @@ enum class SamplerMipmap: UnsignedInt {
      * @def_vk_keyword{SAMPLER_MIPMAP_MODE_NEAREST,SamplerMipmapMode} and you
      * have to configure the sampler to use just a single mipmap level.
      */
-    Base,
+    Base = 0,
 
     /**
      * Select nearest mip level.
@@ -119,13 +127,17 @@ presence.
 @see @ref SamplerFilter, @ref SamplerMipmap
 */
 enum class SamplerWrapping: UnsignedInt {
+    /* Unlike with MeshIndexType, MeshPrimitive, VertexFormat, PixelFormat
+       etc., this enum doesn't have zero as an invalid value -- Repeat is a
+       good default */
+
     /**
      * Repeat texture.
      *
      * Corresponds to @ref GL::SamplerWrapping::Repeat /
      * @def_vk_keyword{SAMPLER_ADDRESS_MODE_REPEAT,SamplerAddressMode}.
      */
-    Repeat,
+    Repeat = 0,
 
     /**
      * Repeat mirrored texture.

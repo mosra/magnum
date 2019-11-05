@@ -93,30 +93,30 @@ constexpr VkSamplerAddressMode SamplerAddressModeMapping[]{
 }
 
 bool hasVkPrimitiveTopology(const Magnum::MeshPrimitive primitive) {
-    CORRADE_ASSERT(UnsignedInt(primitive) < Containers::arraySize(PrimitiveTopologyMapping),
+    CORRADE_ASSERT(UnsignedInt(primitive) - 1 < Containers::arraySize(PrimitiveTopologyMapping),
         "Vk::hasVkPrimitiveTopology(): invalid primitive" << primitive, {});
-    return UnsignedInt(PrimitiveTopologyMapping[UnsignedInt(primitive)]) != ~UnsignedInt{};
+    return UnsignedInt(PrimitiveTopologyMapping[UnsignedInt(primitive) - 1]) != ~UnsignedInt{};
 }
 
 VkPrimitiveTopology vkPrimitiveTopology(const Magnum::MeshPrimitive primitive) {
-    CORRADE_ASSERT(UnsignedInt(primitive) < Containers::arraySize(PrimitiveTopologyMapping),
+    CORRADE_ASSERT(UnsignedInt(primitive) - 1 < Containers::arraySize(PrimitiveTopologyMapping),
         "Vk::vkPrimitiveTopology(): invalid primitive" << primitive, {});
-    const VkPrimitiveTopology out = PrimitiveTopologyMapping[UnsignedInt(primitive)];
+    const VkPrimitiveTopology out = PrimitiveTopologyMapping[UnsignedInt(primitive) - 1];
     CORRADE_ASSERT(out != VkPrimitiveTopology(~UnsignedInt{}),
         "Vk::vkPrimitiveTopology(): unsupported primitive" << primitive, {});
     return out;
 }
 
 bool hasVkIndexType(const Magnum::MeshIndexType type) {
-    CORRADE_ASSERT(UnsignedInt(type) < Containers::arraySize(IndexTypeMapping),
+    CORRADE_ASSERT(UnsignedInt(type) - 1 < Containers::arraySize(IndexTypeMapping),
         "Vk::hasVkIndexType(): invalid type" << type, {});
-    return UnsignedInt(IndexTypeMapping[UnsignedInt(type)]) != ~UnsignedInt{};
+    return UnsignedInt(IndexTypeMapping[UnsignedInt(type) - 1]) != ~UnsignedInt{};
 }
 
 VkIndexType vkIndexType(const Magnum::MeshIndexType type) {
-    CORRADE_ASSERT(UnsignedInt(type) < Containers::arraySize(IndexTypeMapping),
+    CORRADE_ASSERT(UnsignedInt(type) - 1 < Containers::arraySize(IndexTypeMapping),
         "Vk::vkIndexType(): invalid type" << type, {});
-    const VkIndexType out = IndexTypeMapping[UnsignedInt(type)];
+    const VkIndexType out = IndexTypeMapping[UnsignedInt(type) - 1];
     CORRADE_ASSERT(out != VkIndexType(~UnsignedInt{}),
         "Vk::vkIndexType(): unsupported type" << type, {});
     return out;

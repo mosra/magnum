@@ -66,15 +66,15 @@ constexpr MeshIndexType IndexTypeMapping[]{
 }
 
 MeshPrimitive meshPrimitive(const Magnum::MeshPrimitive primitive) {
-    CORRADE_ASSERT(UnsignedInt(primitive) < Containers::arraySize(PrimitiveMapping),
+    CORRADE_ASSERT(UnsignedInt(primitive) - 1 < Containers::arraySize(PrimitiveMapping),
         "GL::meshPrimitive(): invalid primitive" << primitive, {});
-    return PrimitiveMapping[UnsignedInt(primitive)];
+    return PrimitiveMapping[UnsignedInt(primitive) - 1];
 }
 
 MeshIndexType meshIndexType(const Magnum::MeshIndexType type) {
-    CORRADE_ASSERT(UnsignedInt(type) < Containers::arraySize(IndexTypeMapping),
+    CORRADE_ASSERT(UnsignedInt(type) - 1 < Containers::arraySize(IndexTypeMapping),
         "GL::meshIndexType(): invalid type" << type, {});
-    return IndexTypeMapping[UnsignedInt(type)];
+    return IndexTypeMapping[UnsignedInt(type) - 1];
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT

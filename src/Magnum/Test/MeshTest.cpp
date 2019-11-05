@@ -63,8 +63,8 @@ MeshTest::MeshTest() {
 void MeshTest::primitiveMapping() {
     /* This goes through the first 8 bits, which should be enough. */
     UnsignedInt firstUnhandled = 0xff;
-    UnsignedInt nextHandled = 0;
-    for(UnsignedInt i = 0; i <= 0xff; ++i) {
+    UnsignedInt nextHandled = 1; /* 0 is an invalid primitive */
+    for(UnsignedInt i = 1; i <= 0xff; ++i) {
         const auto primitive = MeshPrimitive(i);
         /* Each case verifies:
            - that the entries are ordered by number by comparing a function to
@@ -101,8 +101,8 @@ void MeshTest::primitiveMapping() {
 void MeshTest::indexTypeMapping() {
     /* This goes through the first 8 bits, which should be enough. */
     UnsignedInt firstUnhandled = 0xff;
-    UnsignedInt nextHandled = 0;
-    for(UnsignedInt i = 0; i <= 0xff; ++i) {
+    UnsignedInt nextHandled = 1; /* 0 is an invalid type */
+    for(UnsignedInt i = 1; i <= 0xff; ++i) {
         const auto type = MeshIndexType(i);
         /* Each case verifies:
            - that the entries are ordered by number by comparing a function to
@@ -146,9 +146,12 @@ void MeshTest::indexTypeSizeInvalid() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    meshIndexTypeSize(MeshIndexType{});
     meshIndexTypeSize(MeshIndexType(0xdead));
 
-    CORRADE_COMPARE(out.str(), "meshIndexTypeSize(): invalid type MeshIndexType(0xdead)\n");
+    CORRADE_COMPARE(out.str(),
+        "meshIndexTypeSize(): invalid type MeshIndexType(0x0)\n"
+        "meshIndexTypeSize(): invalid type MeshIndexType(0xdead)\n");
 }
 
 void MeshTest::debugPrimitive() {
@@ -170,9 +173,13 @@ void MeshTest::configurationPrimitive() {
     CORRADE_COMPARE(c.value("primitive"), "LineStrip");
     CORRADE_COMPARE(c.value<MeshPrimitive>("primitive"), MeshPrimitive::LineStrip);
 
+    c.setValue("zero", MeshPrimitive{});
+    CORRADE_COMPARE(c.value("zero"), "");
+    CORRADE_COMPARE(c.value<MeshPrimitive>("zero"), MeshPrimitive{});
+
     c.setValue("invalid", MeshPrimitive(0xdead));
     CORRADE_COMPARE(c.value("invalid"), "");
-    CORRADE_COMPARE(c.value<MeshPrimitive>("invalid"), MeshPrimitive::Points);
+    CORRADE_COMPARE(c.value<MeshPrimitive>("invalid"), MeshPrimitive{});
 }
 
 void MeshTest::configurationIndexType() {
@@ -182,9 +189,13 @@ void MeshTest::configurationIndexType() {
     CORRADE_COMPARE(c.value("type"), "UnsignedShort");
     CORRADE_COMPARE(c.value<MeshIndexType>("type"), MeshIndexType::UnsignedShort);
 
+    c.setValue("zero", MeshIndexType{});
+    CORRADE_COMPARE(c.value("zero"), "");
+    CORRADE_COMPARE(c.value<MeshIndexType>("zero"), MeshIndexType{});
+
     c.setValue("invalid", MeshIndexType(0xdead));
     CORRADE_COMPARE(c.value("invalid"), "");
-    CORRADE_COMPARE(c.value<MeshIndexType>("invalid"), MeshIndexType::UnsignedInt);
+    CORRADE_COMPARE(c.value<MeshIndexType>("invalid"), MeshIndexType{});
 }
 
 }}}

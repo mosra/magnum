@@ -418,6 +418,14 @@ See also:
         @ref Shaders::Phong::bindDiffuseTexture(),
         @ref Shaders::Phong::bindSpecularTexture() and
         @ref Shaders::Phong::bindTextures() instead
+-   @ref MeshPrimitive and @ref MeshIndexType now reserve the zero value to
+    indicate an invalid primitive / type, better catching accidentally
+    forgotten initialization. Valid code shouldn't be affected by this change,
+    but broken code that seemingly worked before might start throwing
+    assertions now. In contrast, @ref SamplerFilter, @ref SamplerMipmap and
+    @ref SamplerWrapping keep the zero value as a reasonable default. This
+    follows a similar change done for @ref PixelFormat and
+    @ref CompressedPixelFormat in 2019.10.
 
 @subsection changelog-latest-documentation Documentation
 

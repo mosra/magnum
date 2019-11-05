@@ -56,8 +56,8 @@ constexpr const char* MeshPrimitiveNames[] {
 Debug& operator<<(Debug& debug, const MeshPrimitive value) {
     debug << "MeshPrimitive" << Debug::nospace;
 
-    if(UnsignedInt(value) < Containers::arraySize(MeshPrimitiveNames)) {
-        return debug << "::" << Debug::nospace << MeshPrimitiveNames[UnsignedInt(value)];
+    if(UnsignedInt(value) - 1 < Containers::arraySize(MeshPrimitiveNames)) {
+        return debug << "::" << Debug::nospace << MeshPrimitiveNames[UnsignedInt(value) - 1];
     }
 
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
@@ -76,8 +76,8 @@ constexpr const char* MeshIndexTypeNames[] {
 Debug& operator<<(Debug& debug, const MeshIndexType value) {
     debug << "MeshIndexType" << Debug::nospace;
 
-    if(UnsignedInt(value) < Containers::arraySize(MeshIndexTypeNames)) {
-        return debug << "::" << Debug::nospace << MeshIndexTypeNames[UnsignedInt(value)];
+    if(UnsignedInt(value) - 1 < Containers::arraySize(MeshIndexTypeNames)) {
+        return debug << "::" << Debug::nospace << MeshIndexTypeNames[UnsignedInt(value) - 1];
     }
 
     return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
@@ -89,31 +89,31 @@ Debug& operator<<(Debug& debug, const MeshIndexType value) {
 namespace Corrade { namespace Utility {
 
 std::string ConfigurationValue<Magnum::MeshPrimitive>::toString(Magnum::MeshPrimitive value, ConfigurationValueFlags) {
-    if(Magnum::UnsignedInt(value) < Containers::arraySize(Magnum::MeshPrimitiveNames))
-        return Magnum::MeshPrimitiveNames[Magnum::UnsignedInt(value)];
+    if(Magnum::UnsignedInt(value) - 1 < Containers::arraySize(Magnum::MeshPrimitiveNames))
+        return Magnum::MeshPrimitiveNames[Magnum::UnsignedInt(value) - 1];
 
     return {};
 }
 
 Magnum::MeshPrimitive ConfigurationValue<Magnum::MeshPrimitive>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
     for(std::size_t i = 0; i != Containers::arraySize(Magnum::MeshPrimitiveNames); ++i)
-        if(stringValue == Magnum::MeshPrimitiveNames[i]) return Magnum::MeshPrimitive(i);
+        if(stringValue == Magnum::MeshPrimitiveNames[i]) return Magnum::MeshPrimitive(i + 1);
 
-    return Magnum::MeshPrimitive::Points;
+    return {};
 }
 
 std::string ConfigurationValue<Magnum::MeshIndexType>::toString(Magnum::MeshIndexType value, ConfigurationValueFlags) {
-    if(Magnum::UnsignedInt(value) < Containers::arraySize(Magnum::MeshIndexTypeNames))
-        return Magnum::MeshIndexTypeNames[Magnum::UnsignedInt(value)];
+    if(Magnum::UnsignedInt(value) - 1 < Containers::arraySize(Magnum::MeshIndexTypeNames))
+        return Magnum::MeshIndexTypeNames[Magnum::UnsignedInt(value) - 1];
 
     return {};
 }
 
 Magnum::MeshIndexType ConfigurationValue<Magnum::MeshIndexType>::fromString(const std::string& stringValue, ConfigurationValueFlags) {
     for(std::size_t i = 0; i != Containers::arraySize(Magnum::MeshIndexTypeNames); ++i)
-        if(stringValue == Magnum::MeshIndexTypeNames[i]) return Magnum::MeshIndexType(i);
+        if(stringValue == Magnum::MeshIndexTypeNames[i]) return Magnum::MeshIndexType(i + 1);
 
-    return Magnum::MeshIndexType::UnsignedInt;
+    return {};
 }
 
 }}

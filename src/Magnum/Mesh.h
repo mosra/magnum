@@ -53,6 +53,8 @@ for Metal, corresponds to @m_class{m-doc-external} [MTLPrimitiveType](https://de
 See documentation of each value for more information about the mapping.
 */
 enum class MeshPrimitive: UnsignedInt {
+    /* Zero reserved for an invalid type (but not being a named value) */
+
     /**
      * Single points.
      *
@@ -62,7 +64,7 @@ enum class MeshPrimitive: UnsignedInt {
      * or @m_class{m-doc-external} [MTLPrimitiveTypePoint](https://developer.apple.com/documentation/metal/mtlprimitivetype/mtlprimitivetypepoint?language=objc).
      * @m_keywords{D3D_PRIMITIVE_TOPOLOGY_POINTLIST MTLPrimitiveTypePoint}
      */
-    Points,
+    Points = 1,
 
     /**
      * Each pair of vertices defines a single line, lines aren't
@@ -147,6 +149,8 @@ there, use @ref Vk::hasVkIndexType() to check for its presence.
 @see @ref meshIndexTypeSize()
 */
 enum class MeshIndexType: UnsignedInt {
+    /* Zero reserved for an invalid type (but not being a named value) */
+
     /**
      * Unsigned byte
      *
@@ -155,7 +159,7 @@ enum class MeshIndexType: UnsignedInt {
      * suggest (via debug output) using 16-byte types instead for better
      * efficiency.
      */
-    UnsignedByte,
+    UnsignedByte = 1,
 
     /**
      * Unsigned short
@@ -198,7 +202,7 @@ template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::MeshPrimitive> {
     /**
      * @brief Reads enum value as string
      *
-     * If the value is invalid, returns @ref Magnum::MeshPrimitive::Points "MeshPrimitive::Points".
+     * If the value is invalid, returns a zero (invalid) primitive.
      */
     static Magnum::MeshPrimitive fromString(const std::string& stringValue, ConfigurationValueFlags);
 };
@@ -217,7 +221,7 @@ template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::MeshIndexType> {
     /**
      * @brief Read enum value as string
      *
-     * If the value is invalid, returns @ref Magnum::MeshIndexType::UnsignedInt "MeshIndexType::UnsignedInt".
+     * If the value is invalid, returns a zero (invalid) type.
      */
     static Magnum::MeshIndexType fromString(const std::string& stringValue, ConfigurationValueFlags);
 };
