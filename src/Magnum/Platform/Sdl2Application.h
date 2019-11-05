@@ -838,7 +838,7 @@ class Sdl2Application {
          *
          * @see @ref setCursor()
          */
-        enum class Cursor : UnsignedInt {
+        enum class Cursor: UnsignedInt {
             Arrow,          /**< Arrow */
             TextInput,      /**< Text input */
             Wait,           /**< Wait */
@@ -856,16 +856,15 @@ class Sdl2Application {
         };
         #endif
 
-    public:
         #ifndef CORRADE_TARGET_EMSCRIPTEN
         /**
-         * @brief Set the cursor to the @p type
+         * @brief Set cursor type
+         *
+         * Default is @ref Cursor::Arrow.
          */
         void setCursor(Cursor cursor);
 
-        /**
-         * @brief Get the current cursor type
-         */
+        /** @brief Get current cursor type */
         Cursor cursor();
         #endif
 

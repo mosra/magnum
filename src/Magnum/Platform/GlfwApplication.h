@@ -492,7 +492,7 @@ class GlfwApplication {
          *
          * @see @ref setCursor()
          */
-        enum class Cursor : UnsignedInt {
+        enum class Cursor: UnsignedInt {
             Arrow,          /**< Arrow */
             TextInput,      /**< Text input */
             Crosshair,      /**< Crosshair */
@@ -503,15 +503,14 @@ class GlfwApplication {
             HiddenLocked    /**< Hidden and locked */
         };
 
-    public:
         /**
-         * @brief Set the cursor to the @p type
+         * @brief Set cursor type
+         *
+         * Default is @ref Cursor::Arrow.
          */
         void setCursor(Cursor cursor);
 
-        /**
-         * @brief Get the current cursor type
-         */
+        /** @brief Get current cursor type */
         Cursor cursor();
 
         /** @brief Warp mouse cursor to given coordinates */

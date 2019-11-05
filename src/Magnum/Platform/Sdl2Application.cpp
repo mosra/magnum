@@ -886,6 +886,25 @@ bool Sdl2Application::mainLoopIteration() {
 }
 
 #ifndef CORRADE_TARGET_EMSCRIPTEN
+namespace {
+
+constexpr SDL_SystemCursor CursorMap[] {
+    SDL_SYSTEM_CURSOR_ARROW,
+    SDL_SYSTEM_CURSOR_IBEAM,
+    SDL_SYSTEM_CURSOR_WAIT,
+    SDL_SYSTEM_CURSOR_CROSSHAIR,
+    SDL_SYSTEM_CURSOR_WAITARROW,
+    SDL_SYSTEM_CURSOR_SIZENWSE,
+    SDL_SYSTEM_CURSOR_SIZENESW,
+    SDL_SYSTEM_CURSOR_SIZEWE,
+    SDL_SYSTEM_CURSOR_SIZENS,
+    SDL_SYSTEM_CURSOR_SIZEALL,
+    SDL_SYSTEM_CURSOR_NO,
+    SDL_SYSTEM_CURSOR_HAND
+};
+
+}
+
 void Sdl2Application::setCursor(Cursor cursor) {
     CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(_cursors));
 
@@ -904,24 +923,8 @@ void Sdl2Application::setCursor(Cursor cursor) {
         SDL_SetRelativeMouseMode(SDL_FALSE);
     }
 
-    if(!_cursors[UnsignedInt(cursor)]) {
-        constexpr SDL_SystemCursor CursorMap[] {
-            SDL_SYSTEM_CURSOR_ARROW,
-            SDL_SYSTEM_CURSOR_IBEAM,
-            SDL_SYSTEM_CURSOR_WAIT,
-            SDL_SYSTEM_CURSOR_CROSSHAIR,
-            SDL_SYSTEM_CURSOR_WAITARROW,
-            SDL_SYSTEM_CURSOR_SIZENWSE,
-            SDL_SYSTEM_CURSOR_SIZENESW,
-            SDL_SYSTEM_CURSOR_SIZEWE,
-            SDL_SYSTEM_CURSOR_SIZENS,
-            SDL_SYSTEM_CURSOR_SIZEALL,
-            SDL_SYSTEM_CURSOR_NO,
-            SDL_SYSTEM_CURSOR_HAND
-        };
-
+    if(!_cursors[UnsignedInt(cursor)])
         _cursors[UnsignedInt(cursor)] = SDL_CreateSystemCursor(CursorMap[UnsignedInt(cursor)]);
-    }
 
     SDL_SetCursor(_cursors[UnsignedInt(cursor)]);
 }
@@ -934,10 +937,8 @@ Sdl2Application::Cursor Sdl2Application::cursor() {
 
     SDL_Cursor* cursor = SDL_GetCursor();
 
-    if(cursor)
-        for(UnsignedInt i = 0; i < sizeof(_cursors); i++)
-            if(_cursors[i] == cursor)
-                return Cursor(i);
+    if(cursor) for(UnsignedInt i = 0; i < sizeof(_cursors); i++)
+        if(_cursors[i] == cursor) return Cursor(i);
 
     return Cursor::Arrow;
 }
