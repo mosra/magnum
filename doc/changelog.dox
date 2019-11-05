@@ -73,6 +73,13 @@ See also:
     primitives were missing a face when both caps and texture coordinates were
     enabled (see [mosra/magnum#386](https://github.com/mosra/magnum/issues/386))
 
+@subsection changelog-latest-deprecated Deprecated APIs
+
+-   @cpp Platform::GlfwApplication::Configuration::setCursorMode() @ce and
+    related enum & getter are deprecated in favor of the new extended and more
+    flexible @ref Platform::GlfwApplication::setCursor(). The setting didn't
+    allow changing the cursor later, which made it pretty useless.
+
 @section changelog-2019-10 2019.10
 
 Released 2019-10-24, tagged as

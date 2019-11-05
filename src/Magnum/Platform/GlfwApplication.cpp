@@ -271,7 +271,11 @@ bool GlfwApplication::tryCreate(const Configuration& configuration) {
        hints */
     if(configuration.windowFlags() >= Configuration::WindowFlag::Minimized)
         glfwIconifyWindow(_window);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
     glfwSetInputMode(_window, GLFW_CURSOR, Int(configuration.cursorMode()));
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
 
     /* Set callbacks */
     setupCallbacks();
@@ -451,7 +455,11 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
        hints */
     if(configuration.windowFlags() >= Configuration::WindowFlag::Minimized)
         glfwIconifyWindow(_window);
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    CORRADE_IGNORE_DEPRECATED_PUSH
     glfwSetInputMode(_window, GLFW_CURSOR, Int(configuration.cursorMode()));
+    CORRADE_IGNORE_DEPRECATED_POP
+    #endif
 
     /* Set callbacks */
     setupCallbacks();
@@ -721,8 +729,7 @@ GlfwApplication::Configuration::Configuration():
     _title{"Magnum GLFW Application"},
     _size{800, 600},
     _windowFlags{WindowFlag::Focused},
-    _dpiScalingPolicy{DpiScalingPolicy::Default},
-    _cursorMode{CursorMode::Normal} {}
+    _dpiScalingPolicy{DpiScalingPolicy::Default} {}
 
 GlfwApplication::Configuration::~Configuration() = default;
 

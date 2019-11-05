@@ -981,17 +981,38 @@ class GlfwApplication::Configuration {
         typedef Implementation::GlfwDpiScalingPolicy DpiScalingPolicy;
         #endif
 
-        /** @brief Cursor mode */
-        enum class CursorMode: Int {
-            /** Visible unconstrained cursor */
-            Normal = GLFW_CURSOR_NORMAL,
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Cursor mode
+         *
+         * @deprecated Use @ref GlfwApplication::setCursor() instead.
+         */
+        enum class CORRADE_DEPRECATED_ENUM("use GlfwApplication::setCursor() instead") CursorMode: Int {
+            /**
+             * Visible unconstrained cursor
+             *
+             * @deprecated Use @ref GlfwApplication::setCursor() with
+             *      @ref Cursor::Arrow (or any other) instead.
+             */
+            Normal CORRADE_DEPRECATED_ENUM("use GlfwApplication::setCursor() with Cursor::Arrow instead") = GLFW_CURSOR_NORMAL,
 
-            /** Hidden cursor */
-            Hidden = GLFW_CURSOR_HIDDEN,
+            /**
+             * Hidden cursor
+             *
+             * @deprecated Use @ref GlfwApplication::setCursor() with
+             *      @ref Cursor::Hidden instead.
+             */
+            Hidden CORRADE_DEPRECATED_ENUM("use GlfwApplication::setCursor() with Cursor::Hidden instead") = GLFW_CURSOR_HIDDEN,
 
-            /** Cursor hidden and locked window */
-            Disabled = GLFW_CURSOR_DISABLED
+            /**
+             * Cursor hidden and locked window
+             *
+             * @deprecated Use @ref GlfwApplication::setCursor() with
+             *      @ref Cursor::HiddenLocked instead.
+             */
+            Disabled CORRADE_DEPRECATED_ENUM("use GlfwApplication::setCursor() with Cursor::HiddenLocked instead") = GLFW_CURSOR_DISABLED
         };
+        #endif
 
         /*implicit*/ Configuration();
         ~Configuration();
@@ -1084,21 +1105,33 @@ class GlfwApplication::Configuration {
             return *this;
         }
 
-        /** @brief Cursor mode */
-        CursorMode cursorMode() const {
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Cursor mode
+         *
+         * @deprecated Use @ref GlfwApplication::cursor() instead.
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        CORRADE_DEPRECATED("use GlfwApplication::cursor() instead") CursorMode cursorMode() const {
             return _cursorMode;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Set cursor mode
          * @return  Reference to self (for method chaining)
          *
          * Default is @ref CursorMode::Normal.
+         *
+         * @deprecated Use @ref GlfwApplication::setCursor() instead.
          */
-        Configuration& setCursorMode(CursorMode cursorMode) {
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        CORRADE_DEPRECATED("use GlfwApplication::setCursor() instead") Configuration& setCursorMode(CursorMode cursorMode) {
             _cursorMode = cursorMode;
             return *this;
         }
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
     private:
         std::string _title;
@@ -1106,7 +1139,11 @@ class GlfwApplication::Configuration {
         WindowFlags _windowFlags;
         DpiScalingPolicy _dpiScalingPolicy;
         Vector2 _dpiScaling;
-        CursorMode _cursorMode;
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        CORRADE_IGNORE_DEPRECATED_PUSH
+        CursorMode _cursorMode = CursorMode::Normal;
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 };
 
 CORRADE_ENUMSET_OPERATORS(GlfwApplication::Configuration::WindowFlags)
