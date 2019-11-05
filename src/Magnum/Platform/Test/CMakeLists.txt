@@ -25,8 +25,6 @@
 
 find_package(Corrade REQUIRED Main)
 
-set(ADDITIONAL_WEB_FILES "")
-
 if(WITH_ANDROIDAPPLICATION)
     add_library(PlatformAndroidApplicationTest SHARED AndroidApplicationTest.cpp)
     target_link_libraries(PlatformAndroidApplicationTest PRIVATE MagnumAndroidApplication)
@@ -40,8 +38,14 @@ if(WITH_EMSCRIPTENAPPLICATION)
     add_executable(PlatformEmscriptenApplicationTest EmscriptenApplicationTest.cpp)
     target_link_libraries(PlatformEmscriptenApplicationTest PRIVATE MagnumEmscriptenApplication MagnumGL)
     set_target_properties(PlatformEmscriptenApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
-    # So we can spin up a webserver in the build dir for easy testing
-    list(APPEND ADDITIONAL_WEB_FILES EmscriptenApplicationTest.html)
+    add_custom_command(TARGET PlatformEmscriptenApplicationTest POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css
+            ${CMAKE_CURRENT_SOURCE_DIR}/../EmscriptenApplication.js
+            $<TARGET_FILE_DIR:PlatformEmscriptenApplicationTest>
+        COMMAND ${CMAKE_COMMAND} -E copy_if_different
+            ${CMAKE_CURRENT_SOURCE_DIR}/EmscriptenApplicationTest.html
+            $<TARGET_FILE_DIR:PlatformEmscriptenApplicationTest>/PlatformEmscriptenApplicationTest.html)
 endif()
 
 if(WITH_GLFWAPPLICATION)
@@ -69,7 +73,14 @@ if(WITH_SDL2APPLICATION)
     target_link_libraries(PlatformSdl2ApplicationTest PRIVATE MagnumSdl2Application Corrade::Main)
     set_target_properties(PlatformSdl2ApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
     if(CORRADE_TARGET_EMSCRIPTEN)
-        list(APPEND ADDITIONAL_WEB_FILES Sdl2ApplicationTest.html)
+        add_custom_command(TARGET PlatformSdl2ApplicationTest POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css
+                ${CMAKE_CURRENT_SOURCE_DIR}/../EmscriptenApplication.js
+                $<TARGET_FILE_DIR:PlatformSdl2ApplicationTest>
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${CMAKE_CURRENT_SOURCE_DIR}/Sdl2ApplicationTest.html
+                $<TARGET_FILE_DIR:PlatformSdl2ApplicationTest>/PlatformSdl2ApplicationTest.html)
     elseif(CORRADE_TARGET_IOS OR CORRADE_TARGET_APPLE)
         # The plist is needed in order to mark the app as DPI-aware
         set_target_properties(PlatformSdl2ApplicationTest PROPERTIES
@@ -96,10 +107,14 @@ if(WITH_WINDOWLESSEGLAPPLICATION)
     target_link_libraries(PlatformWindowlessEglApplicationTest PRIVATE MagnumWindowlessEglApplication)
     set_target_properties(PlatformWindowlessEglApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
     if(CORRADE_TARGET_EMSCRIPTEN)
-        # So we can spin up a webserver in the build dir for easy testing
-        list(APPEND ADDITIONAL_WEB_FILES
-            ../WindowlessEmscriptenApplication.js
-            WindowlessEglApplicationTest.html)
+        add_custom_command(TARGET PlatformWindowlessEglApplicationTest POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${CMAKE_CURRENT_SOURCE_DIR}/../WebApplication.css
+                ${CMAKE_CURRENT_SOURCE_DIR}/../WindowlessEmscriptenApplication.js
+                $<TARGET_FILE_DIR:PlatformWindowlessEglApplicationTest>
+            COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                ${CMAKE_CURRENT_SOURCE_DIR}/WindowlessEglApplicationTest.html
+                $<TARGET_FILE_DIR:PlatformWindowlessEglApplicationTest>/PlatformWindowlessEglApplicationTest.html)
     endif()
 endif()
 
@@ -128,14 +143,4 @@ if(WITH_WINDOWLESSWINDOWSEGLAPPLICATION)
     add_executable(PlatformWindowlessWindowsEglApplicationTest WindowlessWindowsEglApplicationTest.cpp)
     target_link_libraries(PlatformWindowlessWindowsEglApplicationTest PRIVATE MagnumWindowlessWindowsEglApplication)
     set_target_properties(PlatformWindowlessWindowsEglApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
-endif()
-
-if(WITH_EMSCRIPTENAPPLICATION OR (WITH_SDL2APPLICATION AND CORRADE_TARGET_EMSCRIPTEN))
-    list(APPEND ADDITIONAL_WEB_FILES ../EmscriptenApplication.js)
-endif()
-
-if(WITH_EMSCRIPTENAPPLICATION OR (WITH_SDL2APPLICATION AND CORRADE_TARGET_EMSCRIPTEN) OR WITH_WINDOWLESSWINDOWSEGLAPPLICATION)
-    # So we can spin up a webserver in the build dir for easy testing
-    file(COPY ../WebApplication.css ${ADDITIONAL_WEB_FILES}
-        DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
 endif()
