@@ -854,8 +854,9 @@ class Sdl2Application {
 
             #ifndef CORRADE_TARGET_EMSCRIPTEN
             /**
-             * Hidden and locked.
-             *
+             * Hidden and locked. When the mouse is locked, only
+             * @ref MouseMoveEvent::relativePosition() is changing, absolute
+             * position stays the same.
              * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
              */
             HiddenLocked
@@ -883,17 +884,23 @@ class Sdl2Application {
         }
         #endif
 
-        /** @brief Whether mouse is locked */
-        bool isMouseLocked() const { return SDL_GetRelativeMouseMode(); }
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Whether mouse is locked
+         *
+         * @deprecated Use @ref cursor() together with
+         *      @ref Cursor::HiddenLocked instead.
+         */
+        CORRADE_DEPRECATED("use cursor() together with Cursor::HiddenLocked instead") bool isMouseLocked() const { return SDL_GetRelativeMouseMode(); }
 
         /**
          * @brief Enable or disable mouse locking
          *
-         * When mouse is locked, the cursor is hidden and only
-         * @ref MouseMoveEvent::relativePosition() is changing, absolute
-         * position stays the same.
+         * @deprecated Use @ref setCursor() together with
+         *      @ref Cursor::HiddenLocked instead.
          */
-        void setMouseLocked(bool enabled);
+        CORRADE_DEPRECATED("use setCursor() together with Cursor::HiddenLocked instead") void setMouseLocked(bool enabled);
+        #endif
 
     private:
         /**

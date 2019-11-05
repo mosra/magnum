@@ -974,6 +974,7 @@ Sdl2Application::Cursor Sdl2Application::cursor() {
     #endif
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 void Sdl2Application::setMouseLocked(bool enabled) {
     /** @todo Implement this in Emscripten */
     #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -984,6 +985,7 @@ void Sdl2Application::setMouseLocked(bool enabled) {
     static_cast<void>(enabled);
     #endif
 }
+#endif
 
 bool Sdl2Application::isTextInputActive() {
     #ifndef CORRADE_TARGET_EMSCRIPTEN

@@ -79,6 +79,10 @@ See also:
     related enum & getter are deprecated in favor of the new extended and more
     flexible @ref Platform::GlfwApplication::setCursor(). The setting didn't
     allow changing the cursor later, which made it pretty useless.
+-   @cpp Platform::Sdl2Application::Configuration::setMouseLocked() @ce and
+    @cpp Platform::Sdl2Application::Configuration::isMouseLocked() @ce is
+    deprecated in favor of the new @ref Platform::Sdl2Application::setCursor()
+    together with @ref Platform::Sdl2Application::Cursor::HiddenLocked
 
 @section changelog-2019-10 2019.10
 
