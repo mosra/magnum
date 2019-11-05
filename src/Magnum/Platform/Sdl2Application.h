@@ -868,10 +868,16 @@ class Sdl2Application {
         Cursor cursor();
         #endif
 
-        /** @brief Warp mouse cursor to given coordinates */
+        #ifndef CORRADE_TARGET_EMSCRIPTEN
+        /**
+         * @brief Warp mouse cursor to given coordinates
+         *
+         * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+         */
         void warpCursor(const Vector2i& position) {
             SDL_WarpMouseInWindow(_window, position.x(), position.y());
         }
+        #endif
 
         /** @brief Whether mouse is locked */
         bool isMouseLocked() const { return SDL_GetRelativeMouseMode(); }
