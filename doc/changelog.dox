@@ -42,8 +42,9 @@ See also:
 
 @subsubsection changelog-latest-new-platform Platform libraries
 
--   Cursor management using @ref Platform::Sdl2Application::setCursor() and
-    @ref Platform::GlfwApplication::setCursor() (see
+-   Cursor management using @ref Platform::Sdl2Application::setCursor(),
+    @ref Platform::GlfwApplication::setCursor() and
+    @ref Platform::EmscriptenApplication::setCursor() (see
     [mosra/magnum#383](https://github.com/mosra/magnum/pull/383))
 -   Added @ref Platform::GlfwApplication::warpCursor() to match the equivalent
     API in @ref Platform::Sdl2Application (see

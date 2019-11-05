@@ -116,6 +116,9 @@ struct EmscriptenApplicationTest: Platform::Application {
         } else if(event.key() == KeyEvent::Key::T) {
             Debug{} << "setting window title";
             setWindowTitle("This is a UTF-8 Window Title™!");
+        } else if(event.key() == KeyEvent::Key::H) {
+            Debug{} << "toggling hand cursor";
+            setCursor(cursor() == Cursor::Arrow ? Cursor::Hand : Cursor::Arrow);
         }
 
         event.setAccepted();

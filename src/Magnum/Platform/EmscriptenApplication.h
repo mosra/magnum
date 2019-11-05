@@ -534,6 +534,205 @@ class EmscriptenApplication {
 
         /** @{ @name Mouse handling */
 
+    public:
+        /**
+         * @brief Cursor type
+         *
+         * Value names in this enum don't necessarily match the CSS names in
+         * order to be compatible with @ref Sdl2Application and
+         * @ref GlfwApplication.
+         * @see @ref setCursor()
+         */
+        enum class Cursor: UnsignedInt {
+            /* Keeping the same order as at
+               https://developer.mozilla.org/en-US/docs/Web/CSS/cursor, which
+               is different than in Sdl2Application / GlfwApplication */
+
+            /**
+             * The browser determines the cursor depending on the context.
+             * Since this affects the cursor when hovering the
+             * @cb{.html} <canvas> @ce element, this is usually equivalent to
+             * @ref Cursor::Arrow. Matches @cb{.css} cursor: auto @ce in CSS.
+             */
+            Auto,
+
+            /** Arrow. Matches @cb{.css} cursor: default @ce in CSS. */
+            Arrow,
+
+            /** Hidden. Matches @cb{.css} cursor: none @ce in CSS. */
+            Hidden,
+
+            /**
+             * Context menu. Matches @cb{.css} cursor: context-menu @ce in CSS.
+             */
+            ContextMenu,
+
+            /** Help. Matches @cb{.css} cursor: help @ce in CSS. */
+            Help,
+
+            /** Hand. Matches @cb{.css} cursor: pointer @ce in CSS. */
+            Hand,
+
+            /**
+             * Small wait cursor. Matches @cb{.css} cursor: progress @ce in
+             * CSS.
+             */
+            WaitArrow,
+
+            /** Wait. Matches @cb{.css} cursor: wait @ce in CSS. */
+            Wait,
+
+            /** Cell. Matches @cb{.css} cursor: cell @ce in CSS. */
+            Cell,
+
+            /** Crosshair. Matches @cb{.css} cursor: crosshair @ce in CSS. */
+            Crosshair,
+
+            /** Text input. Matches @cb{.css} cursor: text @ce in CSS. */
+            TextInput,
+
+            /**
+             * Vertical text input. Matches @cb{.css} cursor: vertical-text @ce
+             * in CSS.
+             */
+            VerticalTextInput,
+
+            /** Alias. Matches @cb{.css} cursor: alias @ce in CSS. */
+            Alias,
+
+            /** Copy. Matches @cb{.css} cursor: copy @ce in CSS. */
+            Copy,
+
+            /**
+             * Four pointed arrow pointing north, south, east, and west.
+             * Matches @cb{.css} cursor: move @ce in CSS.
+             */
+            ResizeAll,
+
+            /**
+             * Drop not allowed. Matches @cb{.css} cursor: no-drop @ce in CSS.
+             */
+            NoDrop,
+
+            /**
+             * Slashed circle or crossbones. Matches
+             * @cb{.css} cursor: not-allowed @ce in CSS.
+             */
+            No,
+
+            /** Grab. Matches @cb{.css} cursor: grab @ce in CSS. */
+            Grab,
+
+            /** Grabbing. Matches @cb{.css} cursor: grabbing @ce in CSS. */
+            Grabbing,
+
+            /**
+             * Scroll in any direction. Matches
+             * @cb{.css} cursor: all-scroll @ce in CSS.
+             */
+            AllScroll,
+
+            /**
+             * Column resize. Matches @cb{.css} cursor: col-resize @ce in CSS.
+             */
+            ColResize,
+
+            /**
+             * Row resize. Matches @cb{.css} cursor: row-resize @ce in CSS.
+             */
+            RowResize,
+
+            /**
+             * Resize arrow pointing north. Matches
+             * @cb{.css} cursor: n-resize @ce in CSS.
+             */
+            ResizeN,
+
+            /**
+             * Resize arrow pointing east. Matches
+             * @cb{.css} cursor: e-resize @ce in CSS.
+             */
+            ResizeE,
+
+            /**
+             * Resize arrow pointing south. Matches
+             * @cb{.css} cursor: s-resize @ce in CSS.
+             */
+            ResizeS,
+
+            /**
+             * Resize arrow pointing west. Matches
+             * @cb{.css} cursor: w-resize @ce in CSS.
+             */
+            ResizeW,
+
+            /**
+             * Resize arrow pointing northeast. Matches
+             * @cb{.css} cursor: ne-resize @ce in CSS.
+             */
+            ResizeNE,
+
+            /**
+             * Resize arrow pointing northwest. Matches
+             * @cb{.css} cursor: nw-resize @ce in CSS.
+             */
+            ResizeNW,
+
+            /**
+             * Resize arrow pointing southeast. Matches
+             * @cb{.css} cursor: se-resize @ce in CSS.
+             */
+            ResizeSE,
+
+            /**
+             * Resize arrow pointing southwest. Matches
+             * @cb{.css} cursor: se-resize @ce in CSS.
+             */
+            ResizeSW,
+
+            /**
+             * Double resize arrow pointing west and east. Matches
+             * @cb{.css} cursor: ew-resize @ce in CSS.
+             */
+            /* Kept like this for compatibility with Sdl2 and GlfwApp (winapi
+               has it like this, too) */
+            ResizeWE,
+
+            /**
+             * Double resize arrow pointing north and south. Matches
+             * @cb{.css} cursor: ns-resize @ce in CSS.
+             */
+            ResizeNS,
+
+            /**
+             * Double resize arrow pointing northeast and southwest. Matches
+             * @cb{.css} cursor: nesw-resize @ce in CSS.
+             */
+            ResizeNESW,
+
+            /**
+             * Double resize arrow pointing northwest and southeast. Matches
+             * @cb{.css} cursor: nwse-resize @ce in CSS.
+             */
+            ResizeNWSE,
+
+            /** Zoom in. Matches @cb{.css} cursor: zoom-in @ce in CSS. */
+            ZoomIn,
+
+            /** Zoom out. Matches @cb{.css} cursor: zoom-out @ce in CSS. */
+            ZoomOut
+        };
+
+        /**
+         * @brief Set cursor type
+         *
+         * Default is @ref Cursor::Arrow.
+         */
+        void setCursor(Cursor cursor);
+
+        /** @brief Get current cursor type */
+        Cursor cursor();
+
     private:
         /**
          * @brief Mouse press event
@@ -642,6 +841,7 @@ class EmscriptenApplication {
         Vector2i _lastKnownCanvasSize, _previousMouseMovePosition{-1};
 
         Flags _flags;
+        Cursor _cursor;
 
         #ifdef MAGNUM_TARGET_GL
         EMSCRIPTEN_WEBGL_CONTEXT_HANDLE _glContext{};

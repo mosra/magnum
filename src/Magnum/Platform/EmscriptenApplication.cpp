@@ -605,6 +605,62 @@ void EmscriptenApplication::setupAnimationFrame(bool forceAnimationFrame) {
     }
 }
 
+namespace {
+
+constexpr const char* CursorMap[] {
+    "auto",
+    "default",
+    "none",
+    "context-menu",
+    "help",
+    "pointer",
+    "progress",
+    "wait",
+    "cell",
+    "crosshair",
+    "text",
+    "vertical-text",
+    "alias",
+    "copy",
+    "move",
+    "no-drop",
+    "not-allowed",
+    "grab",
+    "grabbing",
+    "all-scroll",
+    "col-resize",
+    "row-resize",
+    "n-resize",
+    "e-resize",
+    "s-resize",
+    "w-resize",
+    "ne-resize",
+    "nw-resize",
+    "se-resize",
+    "sw-resize",
+    "ew-resize",
+    "ns-resize",
+    "nesw-resize",
+    "nwse-resize",
+    "zoom-in",
+    "zoom-out"
+};
+
+}
+
+void EmscriptenApplication::setCursor(Cursor cursor) {
+    _cursor = cursor;
+    CORRADE_INTERNAL_ASSERT(UnsignedInt(cursor) < Containers::arraySize(CursorMap));
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdollar-in-identifier-extension"
+    EM_ASM_({document.getElementById('canvas').style.cursor = AsciiToString($0);}, CursorMap[UnsignedInt(cursor)]);
+    #pragma GCC diagnostic pop
+}
+
+EmscriptenApplication::Cursor EmscriptenApplication::cursor() {
+    return _cursor;
+}
+
 void EmscriptenApplication::startTextInput() {
     _flags |= Flag::TextInputActive;
 }
