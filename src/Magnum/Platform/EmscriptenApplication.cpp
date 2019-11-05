@@ -564,7 +564,6 @@ void EmscriptenApplication::setupCallbacks(bool resizable) {
     }
 }
 
-
 void EmscriptenApplication::setupAnimationFrame(bool forceAnimationFrame) {
     if(forceAnimationFrame) {
         _callback = [](void* userData) -> int {
