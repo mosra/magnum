@@ -537,8 +537,8 @@ Extension                                   | Status
 @webgl_extension{EXT,sRGB}                  | done
 @webgl_extension{EXT,disjoint_timer_query}  | only time elapsed query
 @webgl_extension{EXT,color_buffer_float}    | |
-@gl_extension{EXT,texture_compression_rgtc} | done
-@gl_extension{EXT,texture_compression_bptc} | done
+@webgl_extension{EXT,texture_compression_rgtc} | done
+@webgl_extension{EXT,texture_compression_bptc} | done
 @webgl_extension{OES,texture_float_linear}  | done
 @webgl_extension{WEBGL,compressed_texture_s3tc} | done
 @webgl_extension{WEBGL,compressed_texture_pvrtc} | done
