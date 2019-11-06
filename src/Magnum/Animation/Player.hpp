@@ -60,10 +60,10 @@ namespace Implementation {
 template<class T, class K> struct Player<T, K>::Track  {
     /* Not sure why is this still needed for emplace_back(). It's 2018,
        COME ON  ¯\_(ツ)_/¯ */
-    /*implicit*/ Track(const TrackViewStorage<K>& track, void (*advancer)(const TrackViewStorage<K>&, K, std::size_t&, void*, void(*)(), void*), void* destination, void(*userCallback)(), void* userCallbackData, std::size_t hint) noexcept: track{track}, advancer{advancer}, destination{destination}, userCallback{userCallback}, userCallbackData{userCallbackData}, hint{hint} {}
+    /*implicit*/ Track(const TrackViewStorage<const K>& track, void (*advancer)(const TrackViewStorage<const K>&, K, std::size_t&, void*, void(*)(), void*), void* destination, void(*userCallback)(), void* userCallbackData, std::size_t hint) noexcept: track{track}, advancer{advancer}, destination{destination}, userCallback{userCallback}, userCallbackData{userCallbackData}, hint{hint} {}
 
-    TrackViewStorage<K> track;
-    void (*advancer)(const TrackViewStorage<K>&, K, std::size_t&, void*, void(*)(), void*);
+    TrackViewStorage<const K> track;
+    void (*advancer)(const TrackViewStorage<const K>&, K, std::size_t&, void*, void(*)(), void*);
     void* destination;
     void(*userCallback)();
     void* userCallbackData;
@@ -93,14 +93,14 @@ template<class T, class K> std::size_t Player<T, K>::size() const {
     return _tracks.size();
 }
 
-template<class T, class K> const TrackViewStorage<K>& Player<T, K>::track(std::size_t i) const {
+template<class T, class K> const TrackViewStorage<const K>& Player<T, K>::track(std::size_t i) const {
     CORRADE_ASSERT(i < _tracks.size(),
         /* Returning track 0 so we can test this w/ MSVC debug iterators */
         "Animation::Player::track(): index out of range", _tracks[0].track);
     return _tracks[i].track;
 }
 
-template<class T, class K> Player<T, K>& Player<T, K>::addInternal(const TrackViewStorage<K>& track, void(*const advancer)(const TrackViewStorage<K>&, K, std::size_t&, void*, void(*)(), void*), void* const destination, void(*const userCallback)(), void* const userCallbackData) {
+template<class T, class K> Player<T, K>& Player<T, K>::addInternal(const TrackViewStorage<const K>& track, void(*const advancer)(const TrackViewStorage<const K>&, K, std::size_t&, void*, void(*)(), void*), void* const destination, void(*const userCallback)(), void* const userCallbackData) {
     if(_tracks.empty() && _duration == Math::Range1D<K>{})
         _duration = track.duration();
     else

@@ -77,17 +77,26 @@ struct PlayerTest: TestSuite::Tester {
 
     void setState();
 
-    void add();
-    void addWithCallback();
-    void addWithCallbackTemplate();
-    void addWithCallbackOnChange();
-    void addWithCallbackOnChangeTemplate();
-    void addRawCallback();
+    template<class T> const T& addTemplateTrack();
+    template<class T> void add();
+    template<class T> void addWithCallback();
+    template<class T> void addWithCallbackTemplate();
+    template<class T> void addWithCallbackOnChange();
+    template<class T> void addWithCallbackOnChangeTemplate();
+    template<class T> void addRawCallback();
 
     void runFor100YearsFloat();
     void runFor100YearsChrono();
 
     void debugState();
+
+    Animation::Track<Float, Float> mutableTrack{{
+        {1.0f, 1.5f},
+        {2.5f, 3.0f},
+        {3.0f, 5.0f},
+        {4.0f, 2.0f}
+    }, Math::lerp};
+    Animation::TrackView<Float, Float> mutableView = mutableTrack;
 };
 
 const struct {
@@ -159,12 +168,18 @@ PlayerTest::PlayerTest() {
 
               &PlayerTest::setState,
 
-              &PlayerTest::add,
-              &PlayerTest::addWithCallback,
-              &PlayerTest::addWithCallbackTemplate,
-              &PlayerTest::addWithCallbackOnChange,
-              &PlayerTest::addWithCallbackOnChangeTemplate,
-              &PlayerTest::addRawCallback});
+              &PlayerTest::add<Track<Float, Float>>,
+              &PlayerTest::add<TrackView<Float, Float>>,
+              &PlayerTest::addWithCallback<Track<Float, Float>>,
+              &PlayerTest::addWithCallback<TrackView<Float, Float>>,
+              &PlayerTest::addWithCallbackTemplate<Track<Float, Float>>,
+              &PlayerTest::addWithCallbackTemplate<TrackView<Float, Float>>,
+              &PlayerTest::addWithCallbackOnChange<Track<Float, Float>>,
+              &PlayerTest::addWithCallbackOnChange<TrackView<Float, Float>>,
+              &PlayerTest::addWithCallbackOnChangeTemplate<Track<Float, Float>>,
+              &PlayerTest::addWithCallbackOnChangeTemplate<TrackView<Float, Float>>,
+              &PlayerTest::addRawCallback<Track<Float, Float>>,
+              &PlayerTest::addRawCallback<TrackView<Float, Float>>});
 
     addInstancedTests({
         &PlayerTest::runFor100YearsFloat,
@@ -1114,10 +1129,27 @@ void PlayerTest::setState() {
     CORRADE_COMPARE(player.state(), State::Stopped);
 }
 
-void PlayerTest::add() {
+/* So we don't need to duplicate the add*() tests by hand */
+template<class T> struct AddTemplate;
+template<> struct AddTemplate<Animation::Track<Float, Float>> {
+    static const char* name() { return "Track<Float, Float>"; };
+};
+template<> struct AddTemplate<Animation::TrackView<Float, Float>> {
+    static const char* name() { return "TrackView<Float, Float>"; };
+};
+template<> const Animation::Track<Float, Float>& PlayerTest::addTemplateTrack() {
+    return Track;
+}
+template<> const Animation::TrackView<Float, Float>& PlayerTest::addTemplateTrack() {
+    return mutableView;
+}
+
+template<class T> void PlayerTest::add() {
+    setTestCaseTemplateName(AddTemplate<T>::name());
+
     Float value = -1.0f;
     Player<Float> player;
-    player.add(Track, value)
+    player.add(addTemplateTrack<T>(), value)
         .play(2.0f);
 
     CORRADE_COMPARE(player.duration().size(), 3.0f);
@@ -1130,13 +1162,15 @@ void PlayerTest::add() {
     CORRADE_COMPARE(value, 4.0f);
 }
 
-void PlayerTest::addWithCallback() {
+template<class T> void PlayerTest::addWithCallback() {
+    setTestCaseTemplateName(AddTemplate<T>::name());
+
     struct Data {
         Float value = -1.0f;
         Int called = 0;
     } data;
     Player<Float> player;
-    player.addWithCallback(Track, [](Float, const Float& value, void* userData) {
+    player.addWithCallback(addTemplateTrack<T>(), [](Float, const Float& value, void* userData) {
         static_cast<Data*>(userData)->value = value;
         ++static_cast<Data*>(userData)->called;
     }, &data)
@@ -1154,13 +1188,15 @@ void PlayerTest::addWithCallback() {
     CORRADE_COMPARE(data.called, 1);
 }
 
-void PlayerTest::addWithCallbackTemplate() {
+template<class T> void PlayerTest::addWithCallbackTemplate() {
+    setTestCaseTemplateName(AddTemplate<T>::name());
+
     struct Data {
         Float value = -1.0f;
         Int called = 0;
     } data;
     Player<Float> player;
-    player.addWithCallback(Track, [](Float, const Float& value, Data& userData) {
+    player.addWithCallback(addTemplateTrack<T>(), [](Float, const Float& value, Data& userData) {
         userData.value = value;
         ++userData.called;
     }, data)
@@ -1178,13 +1214,15 @@ void PlayerTest::addWithCallbackTemplate() {
     CORRADE_COMPARE(data.called, 1);
 }
 
-void PlayerTest::addWithCallbackOnChange() {
+template<class T> void PlayerTest::addWithCallbackOnChange() {
+    setTestCaseTemplateName(AddTemplate<T>::name());
+
     struct Data {
         Float value = -1.0f;
         Int called = 0;
     } data;
     Player<Float> player;
-    player.addWithCallbackOnChange(Track, [](Float, const Float& value, void* userData) {
+    player.addWithCallbackOnChange(addTemplateTrack<T>(), [](Float, const Float& value, void* userData) {
         static_cast<Data*>(userData)->value = value;
         ++static_cast<Data*>(userData)->called;
     }, data.value, &data)
@@ -1212,13 +1250,15 @@ void PlayerTest::addWithCallbackOnChange() {
     CORRADE_COMPARE(data.called, 2);
 }
 
-void PlayerTest::addWithCallbackOnChangeTemplate() {
+template<class T> void PlayerTest::addWithCallbackOnChangeTemplate() {
+    setTestCaseTemplateName(AddTemplate<T>::name());
+
     struct Data {
         Float value = -1.0f;
         Int called = 0;
     } data;
     Player<Float> player;
-    player.addWithCallbackOnChange(Track, [](Float, const Float& value, Data& userData) {
+    player.addWithCallbackOnChange(addTemplateTrack<T>(), [](Float, const Float& value, Data& userData) {
         userData.value = value;
         ++userData.called;
     }, data.value, data)
@@ -1251,17 +1291,19 @@ void callback(std::vector<Int>& data, Int value) {
     data.push_back(value);
 }
 
-void PlayerTest::addRawCallback() {
-    Animation::Track<Float, Int> track;
+template<class T> void PlayerTest::addRawCallback() {
+    setTestCaseTemplateName(AddTemplate<T>::name());
+
+    T track;
 
     Int result = -1;
     std::vector<Int> data;
 
     Animation::Player<Float> player;
     player.addRawCallback(track,
-        [](const Animation::TrackViewStorage<Float>& track, Float key,
+        [](const Animation::TrackViewStorage<const Float>& track, Float key,
         std::size_t& hint, void* destination, void(*callback)(), void* userData) {
-            Int value = static_cast<const Animation::TrackView<Float, Int>&>(track).at(key, hint);
+            Int value = static_cast<const Animation::TrackView<const Float, const Int>&>(track).at(key, hint);
             if(value == *static_cast<Int*>(destination)) return;
             *static_cast<Int*>(destination) = value;
             reinterpret_cast<void(*)(std::vector<Int>&, Int)>(callback)(*static_cast<std::vector<Int>*>(userData), value);

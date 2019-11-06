@@ -293,9 +293,12 @@ namespace Implementation {
 
 /* Generic types where result type is the same as value type */
 template<class V> struct ResultTraits {
-    typedef V Type;
+    typedef typename std::remove_const<V>::type Type;
 };
 template<class T> struct ResultTraits<Math::CubicHermite<T>> {
+    typedef T Type;
+};
+template<class T> struct ResultTraits<const Math::CubicHermite<T>> {
     typedef T Type;
 };
 template<class V> struct TypeTraits<V, V> {
@@ -365,7 +368,7 @@ template<class T> struct MAGNUM_EXPORT TypeTraits<Math::CubicHermite<T>, T> {
 
 /* Needs to be defined later so it can pick up the TypeTraits definitions */
 template<class V, class R> auto interpolatorFor(Interpolation interpolation) -> R(*)(const V&, const V&, Float) {
-    return Implementation::TypeTraits<V, R>::interpolator(interpolation);
+    return Implementation::TypeTraits<typename std::remove_const<V>::type, R>::interpolator(interpolation);
 }
 
 template<class K, class V, class R> R interpolate(const Containers::StridedArrayView1D<const K>& keys, const Containers::StridedArrayView1D<const V>& values, const Extrapolation before, const Extrapolation after, R(*const interpolator)(const V&, const V&, Float), K frame, std::size_t& hint) {

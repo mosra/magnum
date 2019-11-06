@@ -105,6 +105,13 @@ See also:
     deprecated in favor of the new @ref Platform::Sdl2Application::setCursor()
     together with @ref Platform::Sdl2Application::Cursor::HiddenLocked
 
+@subsection changelog-latest-compatibility Potential compatibility breakages, removed APIs
+
+-   @ref Animation::TrackView "TrackView" in the still-experimental
+    @ref Animation library was changed to allow mutable access to the keys &
+    values it references. Existing code needs to be changed to say
+    @cpp TrackView<const K, const V> @ce instead of @cpp TrackView<K, V> @ce.
+
 @section changelog-2019-10 2019.10
 
 Released 2019-10-24, tagged as

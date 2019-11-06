@@ -276,9 +276,9 @@ auto callback = [](std::vector<Int>& data, Int value) {
 
 Animation::Player<Float> player;
 player.addRawCallback(track,
-    [](const Animation::TrackViewStorage<Float>& track, Float key,
+    [](const Animation::TrackViewStorage<const Float>& track, Float key,
     std::size_t& hint, void* destination, void(*callback)(), void* userData) {
-        Int value = static_cast<const Animation::TrackView<Float, Int>&>(track)
+        Int value = static_cast<const Animation::TrackView<const Float, const Int>&>(track)
             .atStrict(key, hint);
         if(value == *static_cast<Int*>(destination)) return;
         *static_cast<Int*>(destination) = value;
@@ -341,11 +341,11 @@ const Keyframe data[]{
     {6.0f, Vector2::yAxis(0.0f), 180.0_degf}
 };
 
-Animation::TrackView<Float, Vector2> positions{
+Animation::TrackView<const Float, const Vector2> positions{
     {data, &data[0].time, Containers::arraySize(data), sizeof(Keyframe)},
     {data, &data[0].position, Containers::arraySize(data), sizeof(Keyframe)},
     Math::lerp};
-Animation::TrackView<Float, Deg> rotations{
+Animation::TrackView<const Float, const Deg> rotations{
     {data, &data[0].time, Containers::arraySize(data), sizeof(Keyframe)},
     {data, &data[0].rotation, Containers::arraySize(data), sizeof(Keyframe)},
     Math::lerp};

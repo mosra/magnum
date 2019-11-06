@@ -55,8 +55,8 @@ struct Benchmark: TestSuite::Tester {
     Containers::Array<std::pair<Float, Int>> _interleaved;
     Containers::StridedArrayView1D<const Float> _keysInterleaved;
     Containers::StridedArrayView1D<const Int> _valuesInterleaved;
-    TrackView<Float, Int> _track;
-    TrackView<Float, Int> _trackInterleaved;
+    TrackView<const Float, const Int> _track;
+    TrackView<const Float, const Int> _trackInterleaved;
 };
 
 namespace {
@@ -91,7 +91,7 @@ Benchmark::Benchmark() {
     _keysInterleaved = {_interleaved, &_interleaved[0].first, _interleaved.size(), sizeof(std::pair<Float, Int>)};
     _valuesInterleaved = {_interleaved, &_interleaved[0].second, _interleaved.size(), sizeof(std::pair<Float, Int>)};
 
-    _track = TrackView<Float, Int>{
+    _track = TrackView<const Float, const Int>{
         Containers::arrayView(_keys), Containers::arrayView(_values), Math::select};
     _trackInterleaved = {_keysInterleaved, _valuesInterleaved, Math::select};
 }
@@ -235,8 +235,8 @@ void Benchmark::playerAdvanceCallback() {
 void Benchmark::playerAdvanceRawCallback() {
     Int result{};
     Player<Float> player;
-    player.addRawCallback(_track, [](const TrackViewStorage<Float>& track, Float key, std::size_t& hint, void* destination, void(*)(), void*) {
-            *static_cast<Int*>(destination) += static_cast<const TrackView<Float, Int>&>(track).atStrict(key, hint);
+    player.addRawCallback(_track, [](const TrackViewStorage<const Float>& track, Float key, std::size_t& hint, void* destination, void(*)(), void*) {
+            *static_cast<Int*>(destination) += static_cast<const TrackView<const Float, const Int>&>(track).atStrict(key, hint);
         }, &result, nullptr, nullptr)
         .play({});
     CORRADE_BENCHMARK(250) {
@@ -249,8 +249,8 @@ void Benchmark::playerAdvanceRawCallback() {
 void Benchmark::playerAdvanceRawCallbackDirectInterpolator() {
     Int result{};
     Player<Float> player;
-    player.addRawCallback(_track, [](const TrackViewStorage<Float>& track, Float key, std::size_t& hint, void* destination, void(*)(), void*) {
-            *static_cast<Int*>(destination) += static_cast<const TrackView<Float, Int>&>(track).atStrict(Math::select, key, hint);
+    player.addRawCallback(_track, [](const TrackViewStorage<const Float>& track, Float key, std::size_t& hint, void* destination, void(*)(), void*) {
+            *static_cast<Int*>(destination) += static_cast<const TrackView<const Float, const Int>&>(track).atStrict(Math::select, key, hint);
         }, &result, nullptr, nullptr)
         .play({});
     CORRADE_BENCHMARK(250) {
