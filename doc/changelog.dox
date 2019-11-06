@@ -40,6 +40,14 @@ See also:
 
 @subsection changelog-latest-new New features
 
+@subsubsection changelog-latest-new-gl GL library
+
+-   Exposed entry points from the desktop / ES @gl_extension{OVR,multiview} and
+    @gl_extension{OVR,multiview2} extensions and the WebGL
+    @webgl_extension{OVR,multiview2} extension. Note that no wrapper API in the
+    @ref GL namespace is provided for these at the moment. See also
+    [mosra/magnum#385](https://github.com/mosra/magnum/issues/385).
+
 @subsubsection changelog-latest-new-platform Platform libraries
 
 -   Cursor management using @ref Platform::Sdl2Application::setCursor(),

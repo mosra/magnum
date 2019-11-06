@@ -105,7 +105,9 @@ constexpr Extension ExtensionList[]{
     _extension(KHR,texture_compression_astc_hdr),
     _extension(KHR,blend_equation_advanced),
     _extension(KHR,blend_equation_advanced_coherent),
-    _extension(KHR,texture_compression_astc_sliced_3d)};
+    _extension(KHR,texture_compression_astc_sliced_3d),
+    _extension(OVR,multiview),
+    _extension(OVR,multiview2)};
 constexpr Extension ExtensionList300[]{
     _extension(ARB,map_buffer_range),
     _extension(ARB,color_buffer_float),
@@ -261,6 +263,9 @@ constexpr Extension ExtensionList[]{
     _extension(EXT,texture_compression_rgtc),
     _extension(EXT,texture_compression_bptc),
     _extension(OES,texture_float_linear),
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(OVR,multiview2),
+    #endif
     _extension(WEBGL,compressed_texture_s3tc),
     _extension(WEBGL,compressed_texture_pvrtc),
     _extension(WEBGL,compressed_texture_astc),
@@ -344,7 +349,9 @@ constexpr Extension ExtensionList[]{
     _extension(OES,stencil4),
     _extension(OES,texture_float_linear),
     #ifndef MAGNUM_TARGET_GLES2
-    _extension(OES,texture_compression_astc)
+    _extension(OES,texture_compression_astc),
+    _extension(OVR,multiview),
+    _extension(OVR,multiview2)
     #endif
     };
 constexpr Extension ExtensionListES300[]{

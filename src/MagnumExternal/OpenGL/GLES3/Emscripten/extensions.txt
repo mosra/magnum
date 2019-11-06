@@ -10,6 +10,9 @@ extension EXT_disjoint_timer_query              optional
 extension EXT_color_buffer_float                optional
 extension EXT_texture_compression_rgtc          optional
 extension EXT_texture_compression_bptc          optional
+# WebGL has only OVR_multiview2, but we need the definitions from OVR_multiview
+extension OVR_multiview                         optional
+extension OVR_multiview2                        optional
 # These are used as a base for WEBGL_* extensions
 extension EXT_texture_compression_s3tc          optional
 extension EXT_texture_compression_s3tc_srgb     optional

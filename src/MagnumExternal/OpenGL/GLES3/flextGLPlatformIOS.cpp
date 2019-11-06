@@ -139,6 +139,7 @@
 #undef glUnmapBufferOES
 #undef glMinSampleShadingOES
 #undef glTexStorage3DMultisampleOES
+#undef glFramebufferTextureMultiviewOVR
 
 #include <OpenGLES/ES3/glext.h>
 
@@ -344,5 +345,10 @@ void flextGLInit(Magnum::GL::Context&) {
     /* GL_OES_texture_storage_multisample_2d_array */
     #if GL_OES_texture_storage_multisample_2d_array
     flextglTexStorage3DMultisampleOES = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean)>(glTexStorage3DMultisampleOES);
+    #endif
+
+    /* GL_OVR_multiview */
+    #if GL_OVR_multiview
+    flextglFramebufferTextureMultiviewOVR = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLint, GLint, GLsizei)>(glFramebufferTextureMultiviewOVR);
     #endif
 }

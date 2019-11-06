@@ -257,6 +257,9 @@ namespace AMD {
     _extension(176,NV,depth_buffer_float,               GL210, GL300) // #334
     _extension(177,NV,conditional_render,               GL210, GL300) // #346
     /* NV_draw_texture not supported */                               // #430
+} namespace OVR {
+    _extension(178,OVR,multiview,                       GL300,  None) // #478
+    _extension(179,OVR,multiview2,                      GL300,  None) // #479
 } namespace MAGNUM {
     _extension(180,MAGNUM,shader_vertex_id,             GL300, GL300)
 }
@@ -301,6 +304,10 @@ namespace ANGLE {
     #ifdef MAGNUM_TARGET_GLES2
     _extension(21,OES,texture_half_float_linear,    GLES200, GLES300) // #21
     _extension(22,OES,fbo_render_mipmap,            GLES200, GLES300) // #28
+    #endif
+} namespace OVR {
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(23,OVR,multiview2,                   GLES300,    None) // #36
     #endif
 } namespace WEBGL {
     _extension(25,WEBGL,compressed_texture_s3tc,    GLES200,    None) // #8
@@ -507,6 +514,11 @@ namespace ANDROID {
     _extension(126,OES,texture_stencil8,            GLES200, GLES320) // #173
     #ifndef MAGNUM_TARGET_GLES2
     _extension(127,OES,texture_storage_multisample_2d_array, GLES310, GLES320) // #174
+    #endif
+} namespace OVR {
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(128,OVR,multiview,                   GLES300,    None) // #241
+    _extension(129,OVR,multiview2,                  GLES300,    None) // #242
     #endif
 } namespace MAGNUM {
     #ifndef MAGNUM_TARGET_GLES2

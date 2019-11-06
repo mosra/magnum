@@ -37,5 +37,7 @@ extension KHR_texture_compression_astc_ldr      optional
 extension KHR_blend_equation_advanced           optional
 extension KHR_blend_equation_advanced_coherent  optional
 # extension KHR_texture_compression_astc_sliced_3d optional
+extension OVR_multiview                         optional
+extension OVR_multiview2                        optional
 
 # kate: hl python

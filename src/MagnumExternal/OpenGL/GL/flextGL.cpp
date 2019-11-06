@@ -86,6 +86,9 @@ FLEXTGL_EXPORT void(APIENTRY *flextglStringMarkerGREMEDY)(GLsizei, const void *)
 /* GL_KHR_blend_equation_advanced */
 FLEXTGL_EXPORT void(APIENTRY *flextglBlendBarrierKHR)(void) = nullptr;
 
+/* GL_OVR_multiview */
+FLEXTGL_EXPORT void(APIENTRY *flextglFramebufferTextureMultiviewOVR)(GLenum, GLenum, GLuint, GLint, GLint, GLsizei) = nullptr;
+
 /* GL_VERSION_1_0 */
 #undef glBlendFunc
 #undef glClear

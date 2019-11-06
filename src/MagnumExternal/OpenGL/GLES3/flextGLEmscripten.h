@@ -745,6 +745,13 @@ typedef struct __GLsync *GLsync;
 #define GL_COMPRESSED_RGB_BPTC_SIGNED_FLOAT_EXT 0x8E8E
 #define GL_COMPRESSED_RGB_BPTC_UNSIGNED_FLOAT_EXT 0x8E8F
 
+/* GL_OVR_multiview */
+
+#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_NUM_VIEWS_OVR 0x9630
+#define GL_FRAMEBUFFER_ATTACHMENT_TEXTURE_BASE_VIEW_INDEX_OVR 0x9632
+#define GL_MAX_VIEWS_OVR 0x9631
+#define GL_FRAMEBUFFER_INCOMPLETE_VIEW_TARGETS_OVR 0x9633
+
 /* GL_EXT_texture_compression_s3tc */
 
 #define GL_COMPRESSED_RGB_S3TC_DXT1_EXT 0x83F0
@@ -1064,6 +1071,10 @@ GLAPI void glGetQueryObjectuivEXT(GLuint, GLenum, GLuint *);
 GLAPI void glGetQueryivEXT(GLenum, GLenum, GLint *);
 GLAPI GLboolean glIsQueryEXT(GLuint);
 GLAPI void glQueryCounterEXT(GLuint, GLenum);
+
+/* GL_OVR_multiview */
+
+GLAPI void glFramebufferTextureMultiviewOVR(GLenum, GLenum, GLuint, GLint, GLint, GLsizei);
 
 #ifdef __cplusplus
 }

@@ -508,4 +508,7 @@ void flextGLInit(Magnum::GL::Context&) {
 
     /* GL_OES_texture_storage_multisample_2d_array */
     flextglTexStorage3DMultisampleOES = reinterpret_cast<void(APIENTRY*)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean)>(loader.load("glTexStorage3DMultisampleOES"));
+
+    /* GL_OVR_multiview */
+    flextglFramebufferTextureMultiviewOVR = reinterpret_cast<void(APIENTRY*)(GLenum, GLenum, GLuint, GLint, GLint, GLsizei)>(loader.load("glFramebufferTextureMultiviewOVR"));
 }

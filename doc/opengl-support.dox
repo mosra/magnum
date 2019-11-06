@@ -321,6 +321,8 @@ Extension                                   | Status
 @gl_extension{EXT,debug_marker}             | done
 @gl_extension{EXT,sRGB_R8}                  | done
 @gl_extension{GREMEDY,string_marker}        | done
+@gl_extension{OVR,multiview}                | |
+@gl_extension{OVR,multiview2}               | |
 
 @subsection opengl-support-es20 OpenGL ES 2.0
 
@@ -486,6 +488,8 @@ Extension                                   | Status
 @gl_extension{OES,stencil1}                 | done
 @gl_extension{OES,stencil4}                 | done
 @gl_extension{OES,texture_float_linear}     | done
+@gl_extension{OVR,multiview}                | |
+@gl_extension{OVR,multiview2}               | |
 
 @subsection opengl-support-webgl10 WebGL 1.0
 
@@ -540,6 +544,7 @@ Extension                                   | Status
 @webgl_extension{EXT,texture_compression_rgtc} | done
 @webgl_extension{EXT,texture_compression_bptc} | done
 @webgl_extension{OES,texture_float_linear}  | done
+@webgl_extension{OVR,multiview2}            | |
 @webgl_extension{WEBGL,compressed_texture_s3tc} | done
 @webgl_extension{WEBGL,compressed_texture_pvrtc} | done
 @webgl_extension{WEBGL,compressed_texture_astc} | done

@@ -303,6 +303,9 @@ FLEXTGL_EXPORT void(APIENTRY *flextglMinSampleShadingOES)(GLfloat) = nullptr;
 /* GL_OES_texture_storage_multisample_2d_array */
 FLEXTGL_EXPORT void(APIENTRY *flextglTexStorage3DMultisampleOES)(GLenum, GLsizei, GLenum, GLsizei, GLsizei, GLsizei, GLboolean) = nullptr;
 
+/* GL_OVR_multiview */
+FLEXTGL_EXPORT void(APIENTRY *flextglFramebufferTextureMultiviewOVR)(GLenum, GLenum, GLuint, GLint, GLint, GLsizei) = nullptr;
+
 #ifdef __cplusplus
 }
 #endif

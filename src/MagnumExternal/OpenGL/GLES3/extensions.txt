@@ -79,5 +79,7 @@ extension OES_depth32                               optional
 extension OES_mapbuffer                             optional
 extension OES_stencil1                              optional
 extension OES_stencil4                              optional
+extension OVR_multiview                             optional
+extension OVR_multiview2                            optional
 
 # kate: hl python
