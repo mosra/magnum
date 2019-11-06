@@ -359,7 +359,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
         template<UnsignedInt otherDimensions, class = typename std::enable_if<(otherDimensions < dimensions)>::type> /*implicit*/ ImageView(const ImageView<otherDimensions, T>& other) noexcept;
 
         /** @brief Convert a mutable view to a const one */
-        template<class U, class = typename std::enable_if<std::is_const<T>::value &&!std::is_const<U>::value>::type> /*implicit*/ ImageView(const ImageView<dimensions, U>& other) noexcept;
+        template<class U, class = typename std::enable_if<std::is_const<T>::value && !std::is_const<U>::value>::type> /*implicit*/ ImageView(const ImageView<dimensions, U>& other) noexcept;
 
         /** @brief Storage of pixel data */
         PixelStorage storage() const { return _storage; }
@@ -728,7 +728,7 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
         template<UnsignedInt otherDimensions, class = typename std::enable_if<(otherDimensions < dimensions)>::type> /*implicit*/ CompressedImageView(const CompressedImageView<otherDimensions, T>& other) noexcept;
 
         /** @brief Convert a mutable view to a const one */
-        template<class U, class = typename std::enable_if<std::is_const<T>::value &&!std::is_const<U>::value>::type> /*implicit*/ CompressedImageView(const CompressedImageView<dimensions, U>& other) noexcept;
+        template<class U, class = typename std::enable_if<std::is_const<T>::value && !std::is_const<U>::value>::type> /*implicit*/ CompressedImageView(const CompressedImageView<dimensions, U>& other) noexcept;
 
         /** @brief Storage of compressed pixel data */
         CompressedPixelStorage storage() const { return _storage; }
