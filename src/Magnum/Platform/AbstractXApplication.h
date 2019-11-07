@@ -109,6 +109,18 @@ class AbstractXApplication {
          */
         int exec();
 
+        /**
+         * @brief Run one iteration of application main loop
+         * @return @cpp false @ce if @ref exit() was called and the application
+         *      should exit, @cpp true @ce otherwise
+         *
+         * Called internally from @ref exec(). If you want to have better
+         * control over how the main loop behaves, you can call this function
+         * yourself from your own `main()` function instead of it being called
+         * automatically from @ref exec().
+         */
+        bool mainLoopIteration();
+
         /** @brief Exit application main loop */
         void exit() { _flags |= Flag::Exit; }
 
