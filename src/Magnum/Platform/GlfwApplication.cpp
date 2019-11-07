@@ -181,6 +181,10 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) const {
         const GLFWvidmode* const mode = glfwGetVideoMode(monitor);
         Vector2i monitorSize;
         glfwGetMonitorPhysicalSize(monitor, &monitorSize.x(), &monitorSize.y());
+        if(monitorSize.isZero()) {
+            Warning{verbose} << "Platform::GlfwApplication: the physical monitor size is zero? DPI scaling won't be used";
+            return Vector2{1.0f};
+        }
         auto dpi = Vector2{Vector2i{mode->width, mode->height}*25.4f/Vector2{monitorSize}};
         const Vector2 dpiScaling{dpi/96.0f};
         Debug{verbose} << "Platform::GlfwApplication: virtual DPI scaling" << dpiScaling;
@@ -205,6 +209,10 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) const {
     const GLFWvidmode* const mode = glfwGetVideoMode(monitor);
     Vector2i monitorSize;
     glfwGetMonitorPhysicalSize(monitor, &monitorSize.x(), &monitorSize.y());
+    if(monitorSize.isZero()) {
+        Warning{verbose} << "Platform::GlfwApplication: the physical monitor size is zero? DPI scaling won't be used";
+        return Vector2{1.0f};
+    }
     auto dpi = Vector2{Vector2i{mode->width, mode->height}*25.4f/Vector2{monitorSize}};
     const Vector2 dpiScaling{dpi/96.0f};
     Debug{verbose} << "Platform::GlfwApplication: physical DPI scaling" << dpiScaling;
