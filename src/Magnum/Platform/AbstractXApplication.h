@@ -44,6 +44,11 @@
 #undef Convex
 #undef None
 #undef Status
+#undef Button1
+#undef Button2
+#undef Button3
+#undef Button4
+#undef Button5
 
 #include "Magnum/Magnum.h"
 #include "Magnum/Tags.h"
@@ -588,11 +593,11 @@ class AbstractXApplication::MouseEvent: public AbstractXApplication::InputEvent 
          * @see @ref button()
          */
         enum class Button: unsigned int {
-            Left = Button1,         /**< Left button */
-            Middle = Button2,       /**< Middle button */
-            Right = Button3,        /**< Right button */
-            WheelUp = Button4,      /**< Wheel up */
-            WheelDown = Button5     /**< Wheel down */
+            Left      = 1,  /**< Left button   -- Button1*/
+            Middle    = 2,  /**< Middle button -- Button2 */
+            Right     = 3,  /**< Right button  -- Button3 */
+            WheelUp   = 4,  /**< Wheel up      -- Button4 */
+            WheelDown = 5   /**< Wheel down    -- Button5 */
         };
 
         /** @brief Button */
