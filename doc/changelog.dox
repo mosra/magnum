@@ -49,12 +49,20 @@ See also:
 -   Added @ref Platform::GlfwApplication::warpCursor() to match the equivalent
     API in @ref Platform::Sdl2Application (see
     [mosra/magnum#383](https://github.com/mosra/magnum/pull/383))
+-   Implemented @ref Platform::GlfwApplication::mainLoopIteration() and
+    @ref Platform::AbstractXApplication::mainLoopIteration() for consistency
+    with @ref Platform::Sdl2Application (see
+    [mosra/magnum#387](https://github.com/mosra/magnum/pull/387))
 
 @subsection changelog-latest-changes Changes and improvements
 
 -   The @ref PixelFormat and @ref CompressedPixelFormat enums can now be saved
     and retrieved from @ref Corrade::Utility::Configuration /
     @ref Corrade::Utility::Arguments
+-   @ref Platform::GlfwApplication now gracefully handles monitor sizes of zero
+    when calculating DPI scaling (see [mosra/magnum#388](https://github.com/mosra/magnum/pull/388))
+-   Ability to specify application return code in
+    @ref Platform::AbstractXApplication::exit()
 
 @subsubsection changelog-latest-changes-trade Trade library
 
@@ -66,6 +74,11 @@ See also:
     plugin if you specify `--importer raw:&lt;format&gt;`; and save raw
     imported data instead of going through a converter plugin if you specify
     `--converter raw`
+
+@subsection changelog-latest-buildsystem Build system
+
+-   Fixed a bad interaction between @ref Magnum/Platform/AbstractXApplication.h
+    and @ref Magnum/Platform/GlfwApplication.h (see [mosra/magnum#389](https://github.com/mosra/magnum/pull/389))
 
 @subsection changelog-latest-bugfixes Bug fixes
 

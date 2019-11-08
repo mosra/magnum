@@ -140,7 +140,8 @@ Are the below lists missing your name or something's wrong?
     improvements and tons of other stuff
 -   **Joel Clay** ([\@jclay](https://github.com/jclay)) --- Vcpkg packages
 -   **Konstantinos Chatzilygeroudis** ([\@costashatz](https://github.com/costashatz))
-    --- Debian package
+    --- Debian package, improvements to @ref Platform::GlfwApplication and
+    @ref Platform::AbstractXApplication
 -   **Krzysztof Szenk** ([\@Crisspl](https://github.com/Crisspl)) --- math
     fixes
 -   **Leon Moctezuma** ([\@leonidax](https://github.com/leonidax)) ---
