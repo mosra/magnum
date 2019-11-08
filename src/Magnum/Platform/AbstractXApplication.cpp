@@ -137,7 +137,7 @@ bool AbstractXApplication::mainLoopIteration() {
     /* Closed window */
     if(XCheckTypedWindowEvent(_display, _window, ClientMessage, &event) &&
         Atom(event.xclient.data.l[0]) == _deleteWindow) {
-        return 0;
+        return false;
     }
 
     while(XCheckWindowEvent(_display, _window, INPUT_MASK, &event)) {
