@@ -677,7 +677,9 @@ template<class K, class V, class R
         /*implicit*/ TrackView(Containers::ArrayView<KeyValueType> data, Interpolation interpolation, Extrapolation extrapolation = Extrapolation::Constant) noexcept: TrackView<K, V, R>{data, interpolation, extrapolation, extrapolation} {}
 
         /** @brief Convert a mutable view to a const one */
-        template<class L = K, class = typename std::enable_if<std::is_const<L>::value>::type> /*implicit*/ TrackView(const TrackView<typename std::remove_const<K>::type, typename std::remove_const<V>::type, R>& other) noexcept: TrackViewStorage<K>{other._keys, reinterpret_cast<const Containers::StridedArrayView1D<V>&>(other._values), other._interpolation, reinterpret_cast<Interpolator>(other._interpolator), other._before, other._after} {}
+        /* This is the only variant that works on MSVC 2015, std::remove_const
+           in the signature didn't work there */
+        template<class K2, class V2, class = typename std::enable_if<std::is_same<const K2, K>::value && std::is_same<const V2, V>::value>::type> /*implicit*/ TrackView(const TrackView<K2, V2, R>& other) noexcept: TrackViewStorage<K>{other._keys, reinterpret_cast<const Containers::StridedArrayView1D<V>&>(other._values), other._interpolation, reinterpret_cast<Interpolator>(other._interpolator), other._before, other._after} {}
 
         /**
          * @brief Interpolation function
