@@ -126,8 +126,14 @@ class AbstractXApplication {
          */
         bool mainLoopIteration();
 
-        /** @brief Exit application main loop */
-        void exit() { _flags |= Flag::Exit; }
+        /**
+         * @brief Exit application main loop
+         * @param exitCode  The exit code the application should return
+         */
+        void exit(int exitCode = 0) {
+            _flags |= Flag::Exit;
+            _exitCode = exitCode;
+        }
 
     protected:
         /* Nobody will need to have (and delete) AbstractXApplication*, thus
@@ -283,6 +289,7 @@ class AbstractXApplication {
 
         Containers::Pointer<Implementation::AbstractContextHandler<GLConfiguration, Display*, VisualID, Window>> _contextHandler;
         Containers::Pointer<Platform::GLContext> _context;
+        int _exitCode = 0;
 
         /** @todo Get this from the created window */
         Vector2i _windowSize;

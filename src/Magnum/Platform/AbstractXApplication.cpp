@@ -128,7 +128,7 @@ int AbstractXApplication::exec() {
 
     while(mainLoopIteration()) {}
 
-    return 0;
+    return _exitCode;
 }
 
 bool AbstractXApplication::mainLoopIteration() {
