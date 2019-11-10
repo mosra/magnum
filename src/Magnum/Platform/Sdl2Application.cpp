@@ -26,10 +26,11 @@
 #include "Sdl2Application.h"
 
 #include <cstring>
-#include <SDL.h>
 #ifndef CORRADE_TARGET_EMSCRIPTEN
 #include <tuple>
+#include <SDL2/SDL.h>
 #else
+#include <SDL/SDL.h>
 #include <emscripten/emscripten.h>
 #include <emscripten/html5.h>
 #endif

@@ -27,7 +27,11 @@
 
 #include "Magnum/Platform/Sdl2Application.h"
 
-#include <SDL_events.h>
+#ifndef CORRADE_TARGET_EMSCRIPTEN
+#include <SDL2/SDL_events.h>
+#else
+#include <SDL/SDL_events.h>
+#endif
 
 namespace Magnum { namespace Platform { namespace Test { namespace {
 

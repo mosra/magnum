@@ -660,6 +660,9 @@ Released 2019-10-24, tagged as
 -   `FindSDL2.cmake` was updated to work with MinGW version 2.0.5 and newer,
     since these dropped the old directory hierarchy. Older versions have both
     the original and the new hierarchy, so it should work with these as well.
+-   `FindSDL2.cmake` now points `SDL2_INCLUDE_DIR` to the root and the
+    @ref Platform::Sdl2Application was updated to follow that; people using
+    custom buildsystems don't need to add `SDL2/` to their include path anymore
 -   When using Magnum as a CMake subproject, @ref Platform::GlfwApplication and
     @ref Platform::Sdl2Application now copy the GLFW / SDL2 DLLs to
     `CMAKE_RUNTIME_OUTPUT_DIRECTORY` (if set) as a post-build step. The DLL
