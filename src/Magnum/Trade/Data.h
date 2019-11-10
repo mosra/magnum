@@ -1,5 +1,5 @@
-#ifndef Magnum_Trade_Trade_h
-#define Magnum_Trade_Trade_h
+#ifndef Magnum_Trade_Data_h
+#define Magnum_Trade_Data_h
 /*
     This file is part of Magnum.
 
@@ -26,64 +26,61 @@
 */
 
 /** @file
- * @brief Forward declarations for the @ref Magnum::Trade namespace
+ * @brief Enum @ref Magnum::Trade::DataFlag, enum set @ref Magnum::Trade::DataFlags
+ * @m_since_latest
  */
 
-#include <Corrade/Containers/Containers.h>
+#include <Corrade/Containers/EnumSet.h>
 
 #include "Magnum/Magnum.h"
-
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#endif
+#include "Magnum/Trade/visibility.h"
 
 namespace Magnum { namespace Trade {
 
-#ifndef DOXYGEN_GENERATING_OUTPUT
-class AbstractImageConverter;
-class AbstractImporter;
+/**
+@brief Data flag
+@m_since_latest
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-typedef CORRADE_DEPRECATED("use InputFileCallbackPolicy instead") InputFileCallbackPolicy ImporterFileCallbackPolicy;
-#endif
+@see @ref DataFlags, @ref MeshData::dataFlags()
+*/
+enum class DataFlag: UnsignedByte {
+    /**
+     * Data are owned by the instance. If this flag is not set, the instance
+     * might be for example referencing a memory-mapped file or a constant
+     * memory.
+     */
+    Owned = 1 << 0,
 
-enum class MaterialType: UnsignedByte;
-enum class MaterialAlphaMode: UnsignedByte;
-class AbstractMaterialData;
+    /**
+     * Data are mutable. If this flag is not set, the instance might be for
+     * example referencing a readonly memory-mapped file or a constant memory.
+     */
+    Mutable = 2 << 0
 
-enum class AnimationTrackTargetType: UnsignedByte;
-enum class AnimationTrackType: UnsignedByte;
-class AnimationTrackData;
-class AnimationData;
+    /** @todo owned by importer, owned by the GPU, ... */
+};
 
-enum class CameraType: UnsignedByte;
-class CameraData;
+/**
+@debugoperatorenum{DataFlag}
+@m_since_latest
+*/
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, DataFlag value);
 
-enum class DataFlag: UnsignedByte;
+/**
+@brief Data flags
+@m_since_latest
+
+@see @ref MeshData::dataFlags()
+*/
 typedef Containers::EnumSet<DataFlag> DataFlags;
 
-template<UnsignedInt> class ImageData;
-typedef ImageData<1> ImageData1D;
-typedef ImageData<2> ImageData2D;
-typedef ImageData<3> ImageData3D;
+CORRADE_ENUMSET_OPERATORS(DataFlags)
 
-class LightData;
-
-enum class MeshAttribute: UnsignedShort;
-class MeshIndexData;
-class MeshAttributeData;
-class MeshData;
-
-class MeshData2D;
-class MeshData3D;
-class MeshObjectData2D;
-class MeshObjectData3D;
-class ObjectData2D;
-class ObjectData3D;
-class PhongMaterialData;
-class TextureData;
-class SceneData;
-#endif
+/**
+@debugoperatorenum{DataFlags}
+@m_since_latest
+*/
+MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, DataFlags value);
 
 }}
 

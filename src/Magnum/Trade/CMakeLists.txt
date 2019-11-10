@@ -27,6 +27,7 @@ find_package(Corrade REQUIRED PluginManager)
 
 set(MagnumTrade_SRCS
     AbstractMaterialData.cpp
+    Data.cpp
     LightData.cpp
     MeshData2D.cpp
     MeshData3D.cpp
@@ -52,6 +53,7 @@ set(MagnumTrade_HEADERS
     AbstractMaterialData.h
     AnimationData.h
     CameraData.h
+    Data.h
     ImageData.h
     LightData.h
     MeshData.h
