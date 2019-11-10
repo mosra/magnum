@@ -150,23 +150,23 @@ void MeshTest::indexTypeSizeInvalid() {
     Error redirectError{&out};
 
     meshIndexTypeSize(MeshIndexType{});
-    meshIndexTypeSize(MeshIndexType(0xdead));
+    meshIndexTypeSize(MeshIndexType(0xfe));
 
     CORRADE_COMPARE(out.str(),
         "meshIndexTypeSize(): invalid type MeshIndexType(0x0)\n"
-        "meshIndexTypeSize(): invalid type MeshIndexType(0xdead)\n");
+        "meshIndexTypeSize(): invalid type MeshIndexType(0xfe)\n");
 }
 
 void MeshTest::debugPrimitive() {
     std::ostringstream o;
-    Debug(&o) << MeshPrimitive::TriangleFan << MeshPrimitive(0xdead);
-    CORRADE_COMPARE(o.str(), "MeshPrimitive::TriangleFan MeshPrimitive(0xdead)\n");
+    Debug(&o) << MeshPrimitive::TriangleFan << MeshPrimitive(0xfe);
+    CORRADE_COMPARE(o.str(), "MeshPrimitive::TriangleFan MeshPrimitive(0xfe)\n");
 }
 
 void MeshTest::debugIndexType() {
     std::ostringstream o;
-    Debug(&o) << MeshIndexType::UnsignedShort << MeshIndexType(0xdead);
-    CORRADE_COMPARE(o.str(), "MeshIndexType::UnsignedShort MeshIndexType(0xdead)\n");
+    Debug(&o) << MeshIndexType::UnsignedShort << MeshIndexType(0xfe);
+    CORRADE_COMPARE(o.str(), "MeshIndexType::UnsignedShort MeshIndexType(0xfe)\n");
 }
 
 void MeshTest::configurationPrimitive() {

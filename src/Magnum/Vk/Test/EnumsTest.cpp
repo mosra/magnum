@@ -158,14 +158,14 @@ void EnumsTest::mapVkPrimitiveTopologyInvalid() {
     Error redirectError{&out};
 
     hasVkPrimitiveTopology(Magnum::MeshPrimitive{});
-    hasVkPrimitiveTopology(Magnum::MeshPrimitive(0x123));
+    hasVkPrimitiveTopology(Magnum::MeshPrimitive(0x12));
     vkPrimitiveTopology(Magnum::MeshPrimitive{});
-    vkPrimitiveTopology(Magnum::MeshPrimitive(0x123));
+    vkPrimitiveTopology(Magnum::MeshPrimitive(0x12));
     CORRADE_COMPARE(out.str(),
         "Vk::hasVkPrimitiveTopology(): invalid primitive MeshPrimitive(0x0)\n"
-        "Vk::hasVkPrimitiveTopology(): invalid primitive MeshPrimitive(0x123)\n"
+        "Vk::hasVkPrimitiveTopology(): invalid primitive MeshPrimitive(0x12)\n"
         "Vk::vkPrimitiveTopology(): invalid primitive MeshPrimitive(0x0)\n"
-        "Vk::vkPrimitiveTopology(): invalid primitive MeshPrimitive(0x123)\n");
+        "Vk::vkPrimitiveTopology(): invalid primitive MeshPrimitive(0x12)\n");
 }
 
 void EnumsTest::mapVkIndexType() {
@@ -218,14 +218,14 @@ void EnumsTest::mapVkIndexTypeInvalid() {
     Error redirectError{&out};
 
     hasVkIndexType(Magnum::MeshIndexType(0x0));
-    hasVkIndexType(Magnum::MeshIndexType(0x123));
+    hasVkIndexType(Magnum::MeshIndexType(0x12));
     vkIndexType(Magnum::MeshIndexType(0x0));
-    vkIndexType(Magnum::MeshIndexType(0x123));
+    vkIndexType(Magnum::MeshIndexType(0x12));
     CORRADE_COMPARE(out.str(),
         "Vk::hasVkIndexType(): invalid type MeshIndexType(0x0)\n"
-        "Vk::hasVkIndexType(): invalid type MeshIndexType(0x123)\n"
+        "Vk::hasVkIndexType(): invalid type MeshIndexType(0x12)\n"
         "Vk::vkIndexType(): invalid type MeshIndexType(0x0)\n"
-        "Vk::vkIndexType(): invalid type MeshIndexType(0x123)\n");
+        "Vk::vkIndexType(): invalid type MeshIndexType(0x12)\n");
 }
 
 void EnumsTest::mapVkFormatPixelFormat() {

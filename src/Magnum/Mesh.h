@@ -52,7 +52,7 @@ For D3D, corresponds to @m_class{m-doc-external} [D3D_PRIMITIVE_TOPOLOGY](https:
 for Metal, corresponds to @m_class{m-doc-external} [MTLPrimitiveType](https://developer.apple.com/documentation/metal/mtlprimitivetype?language=objc).
 See documentation of each value for more information about the mapping.
 */
-enum class MeshPrimitive: UnsignedInt {
+enum class MeshPrimitive: UnsignedByte {
     /* Zero reserved for an invalid type (but not being a named value) */
 
     /**
@@ -148,7 +148,7 @@ for more information about the mapping. Note that not every type is available
 there, use @ref Vk::hasVkIndexType() to check for its presence.
 @see @ref meshIndexTypeSize()
 */
-enum class MeshIndexType: UnsignedInt {
+enum class MeshIndexType: UnsignedByte {
     /* Zero reserved for an invalid type (but not being a named value) */
 
     /**
