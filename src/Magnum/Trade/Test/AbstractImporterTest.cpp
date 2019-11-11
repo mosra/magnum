@@ -988,9 +988,6 @@ void AbstractImporterTest::scene() {
         }
     } importer;
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     CORRADE_COMPARE(importer.sceneCount(), 8);
     CORRADE_COMPARE(importer.sceneForName("eighth"), 7);
     CORRADE_COMPARE(importer.sceneName(7), "eighth");
@@ -1156,9 +1153,6 @@ void AbstractImporterTest::animation() {
             else return AnimationData{{}, {}};
         }
     } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
 
     CORRADE_COMPARE(importer.animationCount(), 8);
     CORRADE_COMPARE(importer.animationForName("eighth"), 7);
@@ -1364,9 +1358,6 @@ void AbstractImporterTest::light() {
         }
     } importer;
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     CORRADE_COMPARE(importer.lightCount(), 8);
     CORRADE_COMPARE(importer.lightForName("eighth"), 7);
     CORRADE_COMPARE(importer.lightName(7), "eighth");
@@ -1532,9 +1523,6 @@ void AbstractImporterTest::camera() {
             else return {};
         }
     } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
 
     CORRADE_COMPARE(importer.cameraCount(), 8);
     CORRADE_COMPARE(importer.cameraForName("eighth"), 7);
@@ -1702,9 +1690,6 @@ void AbstractImporterTest::object2D() {
         }
     } importer;
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     CORRADE_COMPARE(importer.object2DCount(), 8);
     CORRADE_COMPARE(importer.object2DForName("eighth"), 7);
     CORRADE_COMPARE(importer.object2DName(7), "eighth");
@@ -1870,9 +1855,6 @@ void AbstractImporterTest::object3D() {
             else return {};
         }
     } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
 
     CORRADE_COMPARE(importer.object3DCount(), 8);
     CORRADE_COMPARE(importer.object3DForName("eighth"), 7);
@@ -2040,9 +2022,6 @@ void AbstractImporterTest::mesh2D() {
         }
     } importer;
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     CORRADE_COMPARE(importer.mesh2DCount(), 8);
     CORRADE_COMPARE(importer.mesh2DForName("eighth"), 7);
     CORRADE_COMPARE(importer.mesh2DName(7), "eighth");
@@ -2208,9 +2187,6 @@ void AbstractImporterTest::mesh3D() {
             else return {};
         }
     } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
 
     CORRADE_COMPARE(importer.mesh3DCount(), 8);
     CORRADE_COMPARE(importer.mesh3DForName("eighth"), 7);
@@ -2378,9 +2354,6 @@ void AbstractImporterTest::material() {
         }
     } importer;
 
-    std::ostringstream out;
-    Error redirectError{&out};
-
     CORRADE_COMPARE(importer.materialCount(), 8);
     CORRADE_COMPARE(importer.materialForName("eighth"), 7);
     CORRADE_COMPARE(importer.materialName(7), "eighth");
@@ -2546,9 +2519,6 @@ void AbstractImporterTest::texture() {
             else return {};
         }
     } importer;
-
-    std::ostringstream out;
-    Error redirectError{&out};
 
     CORRADE_COMPARE(importer.textureCount(), 8);
     CORRADE_COMPARE(importer.textureForName("eighth"), 7);
