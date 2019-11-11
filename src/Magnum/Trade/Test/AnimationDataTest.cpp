@@ -36,15 +36,21 @@ struct AnimationDataTest: TestSuite::Tester {
     explicit AnimationDataTest();
 
     void construct();
+    void constructNotOwned();
     void constructImplicitDuration();
     void constructImplicitDurationEmpty();
+    void constructImplicitDurationNotOwned();
+    void constructNotOwnedFlagOwned();
+    void constructImplicitDurationNotOwnedFlagOwned();
+
     void constructCopy();
     void constructMove();
 
     void constructTrackDataDefault();
 
-    void trackCustomResultType();
+    void mutableAccessNotAllowed();
 
+    void trackCustomResultType();
     void trackWrongIndex();
     void trackWrongType();
     void trackWrongResultType();
@@ -53,17 +59,34 @@ struct AnimationDataTest: TestSuite::Tester {
     void debugAnimationTrackTargetType();
 };
 
+struct {
+    const char* name;
+    DataFlags dataFlags;
+} NotOwnedData[] {
+    {"", {}},
+    {"mutable", DataFlag::Mutable},
+};
+
 AnimationDataTest::AnimationDataTest() {
     addTests({&AnimationDataTest::construct,
               &AnimationDataTest::constructImplicitDuration,
-              &AnimationDataTest::constructImplicitDurationEmpty,
+              &AnimationDataTest::constructImplicitDurationEmpty});
+
+    addInstancedTests({&AnimationDataTest::constructNotOwned,
+                       &AnimationDataTest::constructImplicitDurationNotOwned},
+        Containers::arraySize(NotOwnedData));
+
+    addTests({&AnimationDataTest::constructNotOwnedFlagOwned,
+              &AnimationDataTest::constructImplicitDurationNotOwnedFlagOwned,
+
               &AnimationDataTest::constructCopy,
               &AnimationDataTest::constructMove,
 
               &AnimationDataTest::constructTrackDataDefault,
 
-              &AnimationDataTest::trackCustomResultType,
+              &AnimationDataTest::mutableAccessNotAllowed,
 
+              &AnimationDataTest::trackCustomResultType,
               &AnimationDataTest::trackWrongIndex,
               &AnimationDataTest::trackWrongType,
               &AnimationDataTest::trackWrongResultType,
@@ -106,8 +129,10 @@ void AnimationDataTest::construct() {
             animationInterpolatorFor<Quaternion>(Animation::Interpolation::Linear)}}
         }}, {-1.0f, 7.0f}, &state};
 
+    CORRADE_COMPARE(data.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.duration(), (Range1D{-1.0f, 7.0f}));
-    CORRADE_COMPARE(data.data().size(), sizeof(Data)*3);
+    CORRADE_COMPARE(static_cast<const void*>(data.data().data()), view.data());
+    CORRADE_COMPARE(static_cast<void*>(data.mutableData().data()), view.data());
     CORRADE_COMPARE(data.trackCount(), 2);
     CORRADE_COMPARE(data.importerState(), &state);
 
@@ -122,6 +147,12 @@ void AnimationDataTest::construct() {
         CORRADE_COMPARE(track.values().size(), 3);
         CORRADE_COMPARE(track.interpolation(), Animation::Interpolation::Constant);
         CORRADE_COMPARE(track.at(2.5f), (Vector3{3.0f, 1.0f, 0.1f}));
+
+        Animation::TrackView<Float, Vector3> mutableTrack = data.mutableTrack<Vector3>(0);
+        CORRADE_COMPARE(mutableTrack.keys().size(), 3);
+        CORRADE_COMPARE(mutableTrack.values().size(), 3);
+        CORRADE_COMPARE(mutableTrack.interpolation(), Animation::Interpolation::Constant);
+        CORRADE_COMPARE(mutableTrack.at(2.5f), (Vector3{3.0f, 1.0f, 0.1f}));
     } {
         CORRADE_COMPARE(data.trackType(1), AnimationTrackType::Quaternion);
         CORRADE_COMPARE(data.trackResultType(1), AnimationTrackType::Quaternion);
@@ -133,6 +164,8 @@ void AnimationDataTest::construct() {
         CORRADE_COMPARE(track.values().size(), 3);
         CORRADE_COMPARE(track.interpolation(), Animation::Interpolation::Linear);
         CORRADE_COMPARE(track.at(2.5f), Quaternion::rotation(32.5_degf, Vector3::yAxis()));
+
+        /* Testing the mutable track just once is enough */
     }
 }
 
@@ -166,6 +199,7 @@ void AnimationDataTest::constructImplicitDuration() {
             Animation::Interpolation::Linear}}
         }}, &state};
 
+    CORRADE_COMPARE(data.dataFlags(), DataFlag::Owned|DataFlag::Mutable);
     CORRADE_COMPARE(data.duration(), (Range1D{1.0f, 7.0f}));
     CORRADE_COMPARE(data.trackCount(), 2);
     CORRADE_COMPARE(data.importerState(), &state);
@@ -181,6 +215,13 @@ void AnimationDataTest::constructImplicitDuration() {
         CORRADE_COMPARE(track.values().size(), 2);
         CORRADE_COMPARE(track.interpolation(), Animation::Interpolation::Constant);
         CORRADE_COMPARE(track.at(6.0f), false);
+
+        Animation::TrackView<Float, bool> mutableTrack = data.mutableTrack<bool>(0);
+        CORRADE_COMPARE(mutableTrack.duration(), (Range1D{1.0f, 5.0f}));
+        CORRADE_COMPARE(mutableTrack.keys().size(), 2);
+        CORRADE_COMPARE(mutableTrack.values().size(), 2);
+        CORRADE_COMPARE(mutableTrack.interpolation(), Animation::Interpolation::Constant);
+        CORRADE_COMPARE(mutableTrack.at(6.0f), false);
     } {
         CORRADE_COMPARE(data.trackType(1), AnimationTrackType::Bool);
         CORRADE_COMPARE(data.trackResultType(1), AnimationTrackType::Bool);
@@ -193,12 +234,127 @@ void AnimationDataTest::constructImplicitDuration() {
         CORRADE_COMPARE(track.values().size(), 2);
         CORRADE_COMPARE(track.interpolation(), Animation::Interpolation::Linear);
         CORRADE_COMPARE(track.at(4.5f), true);
+
+        /* Testing the mutable track just once is enough */
     }
 }
 
 void AnimationDataTest::constructImplicitDurationEmpty() {
     AnimationData data{nullptr, nullptr};
     CORRADE_COMPARE(data.duration(), Range1D{});
+}
+
+void AnimationDataTest::constructNotOwned() {
+    auto&& instanceData = NotOwnedData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
+
+    std::pair<Float, Vector3> keyframes[] {
+        {0.0f, {3.0f, 1.0f, 0.1f}},
+        {5.0f, {0.3f, 0.6f, 1.0f}}
+    };
+
+    const int state = 5;
+    AnimationData data{instanceData.dataFlags, keyframes, Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
+        {AnimationTrackType::Vector3,
+         AnimationTrackTargetType::Translation3D, 42,
+         Animation::TrackView<const Float, const Vector3>{
+            keyframes,
+            Animation::Interpolation::Constant,
+            animationInterpolatorFor<Vector3>(Animation::Interpolation::Constant)}}
+        }}, {-1.0f, 7.0f}, &state};
+
+    CORRADE_COMPARE(data.dataFlags(), instanceData.dataFlags);
+    CORRADE_COMPARE(data.duration(), (Range1D{-1.0f, 7.0f}));
+    CORRADE_COMPARE(static_cast<const void*>(data.data().data()), keyframes);
+    if(instanceData.dataFlags & DataFlag::Mutable)
+        CORRADE_COMPARE(static_cast<const void*>(data.mutableData().data()), keyframes);
+    CORRADE_COMPARE(data.trackCount(), 1);
+    CORRADE_COMPARE(data.importerState(), &state);
+
+    {
+        CORRADE_COMPARE(data.trackType(0), AnimationTrackType::Vector3);
+        CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Vector3);
+        CORRADE_COMPARE(data.trackTargetType(0), AnimationTrackTargetType::Translation3D);
+        CORRADE_COMPARE(data.trackTarget(0), 42);
+
+        Animation::TrackView<const Float, const Vector3> track = data.track<Vector3>(0);
+        CORRADE_COMPARE(track.keys().size(), 2);
+        CORRADE_COMPARE(track.values().size(), 2);
+        CORRADE_COMPARE(track.interpolation(), Animation::Interpolation::Constant);
+        CORRADE_COMPARE(track.at(2.5f), (Vector3{3.0f, 1.0f, 0.1f}));
+
+        if(instanceData.dataFlags & DataFlag::Mutable) {
+            Animation::TrackView<Float, Vector3> mutableTrack = data.mutableTrack<Vector3>(0);
+            CORRADE_COMPARE(mutableTrack.keys().size(), 2);
+            CORRADE_COMPARE(mutableTrack.values().size(), 2);
+            CORRADE_COMPARE(mutableTrack.interpolation(), Animation::Interpolation::Constant);
+            CORRADE_COMPARE(mutableTrack.at(2.5f), (Vector3{3.0f, 1.0f, 0.1f}));
+        }
+    }
+}
+
+void AnimationDataTest::constructImplicitDurationNotOwned() {
+    auto&& instanceData = NotOwnedData[testCaseInstanceId()];
+    setTestCaseDescription(instanceData.name);
+
+    std::pair<Float, bool> keyframes[] {
+        {1.0f, true},
+        {5.0f, false}
+    };
+
+    const int state = 5;
+    AnimationData data{instanceData.dataFlags, keyframes, Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
+        {AnimationTrackType::Bool,
+         AnimationTrackTargetType(129), 0,
+         Animation::TrackView<const Float, const bool>{keyframes, Animation::Interpolation::Constant}},
+        }}, &state};
+
+    CORRADE_COMPARE(data.dataFlags(), instanceData.dataFlags);
+    CORRADE_COMPARE(data.duration(), (Range1D{1.0f, 5.0f}));
+    CORRADE_COMPARE(static_cast<const void*>(data.data().data()), keyframes);
+    if(instanceData.dataFlags & DataFlag::Mutable)
+        CORRADE_COMPARE(static_cast<const void*>(data.mutableData().data()), keyframes);
+    CORRADE_COMPARE(data.trackCount(), 1);
+    CORRADE_COMPARE(data.importerState(), &state);
+
+    {
+        CORRADE_COMPARE(data.trackType(0), AnimationTrackType::Bool);
+        CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Bool);
+        CORRADE_COMPARE(data.trackTargetType(0), AnimationTrackTargetType(129));
+        CORRADE_COMPARE(data.trackTarget(0), 0);
+
+        Animation::TrackView<const Float, const bool> track = data.track<bool>(0);
+        CORRADE_COMPARE(track.duration(), (Range1D{1.0f, 5.0f}));
+        CORRADE_COMPARE(track.keys().size(), 2);
+        CORRADE_COMPARE(track.values().size(), 2);
+        CORRADE_COMPARE(track.interpolation(), Animation::Interpolation::Constant);
+        CORRADE_COMPARE(track.at(3.0f), true);
+
+        if(instanceData.dataFlags & DataFlag::Mutable) {
+            Animation::TrackView<Float, bool> mutableTrack = data.mutableTrack<bool>(0);
+            CORRADE_COMPARE(mutableTrack.duration(), (Range1D{1.0f, 5.0f}));
+            CORRADE_COMPARE(mutableTrack.keys().size(), 2);
+            CORRADE_COMPARE(mutableTrack.values().size(), 2);
+            CORRADE_COMPARE(mutableTrack.interpolation(), Animation::Interpolation::Constant);
+            CORRADE_COMPARE(mutableTrack.at(3.0f), true);
+        }
+    }
+}
+
+void AnimationDataTest::constructNotOwnedFlagOwned() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    AnimationData data{DataFlag::Owned, nullptr, {}, {-1.0f, 7.0f}};
+    CORRADE_COMPARE(out.str(),
+        "Trade::AnimationData: can't construct a non-owned instance with Trade::DataFlag::Owned\n");
+}
+
+void AnimationDataTest::constructImplicitDurationNotOwnedFlagOwned() {
+    std::ostringstream out;
+    Error redirectError{&out};
+    AnimationData data{DataFlag::Owned, nullptr, {}};
+    CORRADE_COMPARE(out.str(),
+        "Trade::AnimationData: can't construct a non-owned instance with Trade::DataFlag::Owned\n");
 }
 
 void AnimationDataTest::constructCopy() {
@@ -308,6 +464,30 @@ void AnimationDataTest::constructMove() {
 void AnimationDataTest::constructTrackDataDefault() {
     AnimationTrackData data;
     CORRADE_VERIFY(true); /* no public accessors here, so nothing to check */
+}
+
+void AnimationDataTest::mutableAccessNotAllowed() {
+    const std::pair<Float, bool> keyframes[] {
+        {1.0f, true},
+        {5.0f, false}
+    };
+
+    AnimationData data{{}, keyframes, Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
+        {AnimationTrackType::Bool,
+         AnimationTrackTargetType(129), 0,
+         Animation::TrackView<const Float, const bool>{keyframes, Animation::Interpolation::Constant}},
+        }}};
+    CORRADE_COMPARE(data.dataFlags(), DataFlags{});
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    data.mutableData();
+    data.mutableTrack(0);
+    data.mutableTrack<bool>(0);
+    CORRADE_COMPARE(out.str(),
+        "Trade::AnimationData::mutableData(): the animation is not mutable\n"
+        "Trade::AnimationData::mutableTrack(): the animation is not mutable\n"
+        "Trade::AnimationData::mutableTrack(): the animation is not mutable\n");
 }
 
 void AnimationDataTest::trackCustomResultType() {

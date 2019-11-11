@@ -32,9 +32,15 @@
 
 namespace Magnum { namespace Trade {
 
-AnimationData::AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const Range1D& duration, const void* importerState) noexcept: _duration{duration}, _data{std::move(data)}, _tracks{std::move(tracks)}, _importerState{importerState} {}
+AnimationData::AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const Range1D& duration, const void* importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _duration{duration}, _data{std::move(data)}, _tracks{std::move(tracks)}, _importerState{importerState} {}
 
-AnimationData::AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const void* importerState) noexcept: _data{std::move(data)}, _tracks{std::move(tracks)}, _importerState{importerState} {
+AnimationData::AnimationData(const DataFlags dataFlags, const Containers::ArrayView<const void> data, Containers::Array<AnimationTrackData>&& tracks, const Range1D& duration, const void* importerState) noexcept: AnimationData{Containers::Array<char>{const_cast<char*>(static_cast<const char*>(data.data())), data.size(), Implementation::nonOwnedArrayDeleter}, std::move(tracks), duration, importerState} {
+    CORRADE_ASSERT(!(dataFlags & DataFlag::Owned),
+        "Trade::AnimationData: can't construct a non-owned instance with" << dataFlags, );
+    _dataFlags = dataFlags;
+}
+
+AnimationData::AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const void* importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _data{std::move(data)}, _tracks{std::move(tracks)}, _importerState{importerState} {
     if(!_tracks.empty()) {
         /* Reset duration to duration of the first track so it properly support
            cases where tracks don't start at 0 */
@@ -44,11 +50,23 @@ AnimationData::AnimationData(Containers::Array<char>&& data, Containers::Array<A
     }
 }
 
+AnimationData::AnimationData(const DataFlags dataFlags, const Containers::ArrayView<const void> data, Containers::Array<AnimationTrackData>&& tracks, const void* importerState) noexcept: AnimationData{Containers::Array<char>{const_cast<char*>(static_cast<const char*>(data.data())), data.size(), Implementation::nonOwnedArrayDeleter}, std::move(tracks), importerState} {
+    CORRADE_ASSERT(!(dataFlags & DataFlag::Owned),
+        "Trade::AnimationData: can't construct a non-owned instance with" << dataFlags, );
+    _dataFlags = dataFlags;
+}
+
 AnimationData::~AnimationData() = default;
 
 AnimationData::AnimationData(AnimationData&&) noexcept = default;
 
 AnimationData& AnimationData::operator=(AnimationData&&) noexcept = default;
+
+Containers::ArrayView<char> AnimationData::mutableData() & {
+    CORRADE_ASSERT(_dataFlags & DataFlag::Mutable,
+        "Trade::AnimationData::mutableData(): the animation is not mutable", {});
+    return _data;
+}
 
 AnimationTrackType AnimationData::trackType(UnsignedInt id) const {
     CORRADE_ASSERT(id < _tracks.size(), "Trade::AnimationData::trackType(): index out of range", {});
@@ -73,6 +91,13 @@ UnsignedInt AnimationData::trackTarget(UnsignedInt id) const {
 const Animation::TrackViewStorage<const Float>& AnimationData::track(UnsignedInt id) const {
     CORRADE_ASSERT(id < _tracks.size(), "Trade::AnimationData::track(): index out of range", _tracks[id]._view);
     return _tracks[id]._view;
+}
+
+const Animation::TrackViewStorage<Float>& AnimationData::mutableTrack(UnsignedInt id) {
+    CORRADE_ASSERT(_dataFlags & DataFlag::Mutable,
+        "Trade::AnimationData::mutableTrack(): the animation is not mutable", reinterpret_cast<const Animation::TrackViewStorage<Float>&>(_tracks[id]._view));
+    CORRADE_ASSERT(id < _tracks.size(), "Trade::AnimationData::track(): index out of range", reinterpret_cast<const Animation::TrackViewStorage<Float>&>(_tracks[id]._view));
+    return reinterpret_cast<const Animation::TrackViewStorage<Float>&>(_tracks[id]._view);
 }
 
 template<class V, class R> auto animationInterpolatorFor(Animation::Interpolation interpolation) -> R(*)(const V&, const V&, Float) {

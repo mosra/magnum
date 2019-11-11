@@ -175,6 +175,23 @@ Containers::Array<char> animationData = data->release(); /* Take ownership */
 }
 
 {
+Trade::AnimationData data{nullptr, {}};
+/* [AnimationData-usage-mutable] */
+for(UnsignedInt i = 0; i != data.trackCount(); ++i) {
+    if(data.trackTargetType(i) != Trade::AnimationTrackTargetType::Translation3D)
+        continue;
+    /* Check prerequisites */
+    if(!(data.dataFlags() & Trade::DataFlag::Mutable) ||
+       data.trackType(i) != Trade::AnimationTrackType::Vector2)
+        Fatal{} << "Oops";
+
+    MeshTools::transformVectorsInPlace(Matrix4::scaling(Vector3::yScale(-1.0f)),
+        data.mutableTrack<Vector3>(i).values());
+}
+/* [AnimationData-usage-mutable] */
+}
+
+{
 /* [ImageData-construction] */
 Containers::Array<char> data;
 Trade::ImageData2D image{PixelFormat::RGB8Unorm, {32, 32}, std::move(data)};

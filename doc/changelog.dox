@@ -168,6 +168,11 @@ See also:
     @ref Trade::AbstractImporter::image2D(),
     @ref Trade::AbstractImporter::image2DLevelCount() and similar APIs for 1D
     and 3D images
+-   The @ref Trade::AnimationData class received support for mutable data
+    access with new constructors and the
+    @ref Trade::AnimationData::mutableData() "mutableData()" and
+    @ref Trade::AnimationData::mutableTrack() "mutableTrack()" accessors. See
+    @ref Trade-AnimationData-usage-mutable for more information.
 
 @subsubsection changelog-latest-new-vk Vk library
 
@@ -391,7 +396,9 @@ See also:
     values it references. Existing code needs to be changed to say
     @cpp TrackView<const K, const V> @ce instead of @cpp TrackView<K, V> @ce.
     Following this change, @ref Trade::AnimationData now also return instances
-    with @cpp const @ce types.
+    with @cpp const @ce types and the non-const
+    @ref Trade::AnimationData::data() was renamed to
+    @ref Trade::AnimationData::mutableData() "mutableData()".
 -   The 4-argument @ref GL::DynamicAttribute constructor was not marked as
     @cpp explicit @ce by mistake, it's done now to enforce readability in long
     expressions.
