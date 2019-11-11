@@ -237,14 +237,14 @@ class AnimationTrackData {
          * @param target        Track target
          * @param view          Type-erased @ref Animation::TrackView instance
          */
-        /*implicit*/ AnimationTrackData(AnimationTrackType type, AnimationTrackType resultType, AnimationTrackTargetType targetType, UnsignedInt target, Animation::TrackViewStorage<Float> view) noexcept: _type{type}, _resultType{resultType}, _targetType{targetType}, _target{target}, _view{view} {}
+        /*implicit*/ AnimationTrackData(AnimationTrackType type, AnimationTrackType resultType, AnimationTrackTargetType targetType, UnsignedInt target, Animation::TrackViewStorage<const Float> view) noexcept: _type{type}, _resultType{resultType}, _targetType{targetType}, _target{target}, _view{view} {}
 
         /** @overload
          *
          * Equivalent to the above with @p type used as both value type and
          * result type.
          */
-        /*implicit*/ AnimationTrackData(AnimationTrackType type, AnimationTrackTargetType targetType, UnsignedInt target, Animation::TrackViewStorage<Float> view) noexcept: _type{type}, _resultType{type}, _targetType{targetType}, _target{target}, _view{view} {}
+        /*implicit*/ AnimationTrackData(AnimationTrackType type, AnimationTrackTargetType targetType, UnsignedInt target, Animation::TrackViewStorage<const Float> view) noexcept: _type{type}, _resultType{type}, _targetType{targetType}, _target{target}, _view{view} {}
 
     private:
         friend AnimationData;
@@ -252,7 +252,7 @@ class AnimationTrackData {
         AnimationTrackType _type, _resultType;
         AnimationTrackTargetType _targetType;
         UnsignedInt _target;
-        Animation::TrackViewStorage<Float> _view;
+        Animation::TrackViewStorage<const Float> _view;
 };
 
 /**
@@ -400,7 +400,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
          * checked version below to access a concrete @ref Animation::TrackView
          * type.
          */
-        const Animation::TrackViewStorage<Float>& track(UnsignedInt id) const;
+        const Animation::TrackViewStorage<const Float>& track(UnsignedInt id) const;
 
         /**
          * @brief Track data
@@ -414,7 +414,7 @@ class MAGNUM_TRADE_EXPORT AnimationData {
          * use the view or you need to release the data array using
          * @ref release() and manage its lifetime yourself.
          */
-        template<class V, class R = Animation::ResultOf<V>> const Animation::TrackView<Float, V, R>& track(UnsignedInt id) const;
+        template<class V, class R = Animation::ResultOf<V>> const Animation::TrackView<const Float, const V, R>& track(UnsignedInt id) const;
 
         /**
          * @brief Release data storage
@@ -505,11 +505,11 @@ namespace Implementation {
 }
 #endif
 
-template<class V, class R> const Animation::TrackView<Float, V, R>& AnimationData::track(UnsignedInt id) const {
-    const Animation::TrackViewStorage<Float>& storage = track(id);
-    CORRADE_ASSERT(Implementation::animationTypeFor<V>() == _tracks[id]._type, "Trade::AnimationData::track(): improper type requested for" << _tracks[id]._type, (static_cast<const Animation::TrackView<Float, V, R>&>(storage)));
-    CORRADE_ASSERT(Implementation::animationTypeFor<R>() == _tracks[id]._resultType, "Trade::AnimationData::track(): improper result type requested for" << _tracks[id]._resultType, (static_cast<const Animation::TrackView<Float, V, R>&>(storage)));
-    return static_cast<const Animation::TrackView<Float, V, R>&>(storage);
+template<class V, class R> const Animation::TrackView<const Float, const V, R>& AnimationData::track(UnsignedInt id) const {
+    const Animation::TrackViewStorage<const Float>& storage = track(id);
+    CORRADE_ASSERT(Implementation::animationTypeFor<V>() == _tracks[id]._type, "Trade::AnimationData::track(): improper type requested for" << _tracks[id]._type, (static_cast<const Animation::TrackView<const Float, const V, R>&>(storage)));
+    CORRADE_ASSERT(Implementation::animationTypeFor<R>() == _tracks[id]._resultType, "Trade::AnimationData::track(): improper result type requested for" << _tracks[id]._resultType, (static_cast<const Animation::TrackView<const Float, const V, R>&>(storage)));
+    return static_cast<const Animation::TrackView<const Float, const V, R>&>(storage);
 }
 
 }}

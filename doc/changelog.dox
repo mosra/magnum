@@ -390,6 +390,8 @@ See also:
     @ref Animation library was changed to allow mutable access to the keys &
     values it references. Existing code needs to be changed to say
     @cpp TrackView<const K, const V> @ce instead of @cpp TrackView<K, V> @ce.
+    Following this change, @ref Trade::AnimationData now also return instances
+    with @cpp const @ce types.
 -   The 4-argument @ref GL::DynamicAttribute constructor was not marked as
     @cpp explicit @ce by mistake, it's done now to enforce readability in long
     expressions.

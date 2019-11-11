@@ -70,7 +70,7 @@ UnsignedInt AnimationData::trackTarget(UnsignedInt id) const {
     return _tracks[id]._target;
 }
 
-const Animation::TrackViewStorage<Float>& AnimationData::track(UnsignedInt id) const {
+const Animation::TrackViewStorage<const Float>& AnimationData::track(UnsignedInt id) const {
     CORRADE_ASSERT(id < _tracks.size(), "Trade::AnimationData::track(): index out of range", _tracks[id]._view);
     return _tracks[id]._view;
 }
