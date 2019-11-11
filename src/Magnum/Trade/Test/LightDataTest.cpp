@@ -63,6 +63,9 @@ void LightDataTest::construct() {
 void LightDataTest::constructCopy() {
     CORRADE_VERIFY(!(std::is_constructible<LightData, const LightData&>{}));
     CORRADE_VERIFY(!(std::is_assignable<LightData, const LightData&>{}));
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<LightData>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<LightData>::value);
 }
 
 void LightDataTest::constructMove() {

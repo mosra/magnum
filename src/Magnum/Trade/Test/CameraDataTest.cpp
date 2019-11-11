@@ -150,6 +150,9 @@ void CameraDataTest::constructMove() {
     CORRADE_COMPARE(d.near(), 1.0f);
     CORRADE_COMPARE(d.far(), 1000.0f);
     CORRADE_COMPARE(d.importerState(), &a);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<CameraData>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<CameraData>::value);
 }
 
 void CameraDataTest::fovNonPerspective() {

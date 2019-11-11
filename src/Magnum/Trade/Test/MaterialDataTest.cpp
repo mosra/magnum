@@ -204,6 +204,9 @@ void MaterialDataTest::constructMovePhongNoAmbientTexture() {
     CORRADE_COMPARE(d.specularTexture(), 13);
     CORRADE_COMPARE(d.shininess(), 80.0f);
     CORRADE_COMPARE(d.importerState(), &a);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<PhongMaterialData>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<PhongMaterialData>::value);
 }
 
 void MaterialDataTest::constructMovePhongNoDiffuseTexture() {

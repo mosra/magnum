@@ -300,6 +300,9 @@ void AnimationDataTest::constructMove() {
         CORRADE_COMPARE(track.interpolation(), Animation::Interpolation::Linear);
         CORRADE_COMPARE(track.at(2.5f), Quaternion::rotation(32.5_degf, Vector3::yAxis()));
     }
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<AnimationData>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<AnimationData>::value);
 }
 
 void AnimationDataTest::constructTrackDataDefault() {

@@ -201,6 +201,9 @@ void ObjectData3DTest::constructMoveTransformations() {
     CORRADE_COMPARE(d.instanceType(), ObjectInstanceType3D::Light);
     CORRADE_COMPARE(d.instance(), 13);
     CORRADE_COMPARE(d.importerState(), &a);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<ObjectData3D>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<ObjectData3D>::value);
 }
 
 void ObjectData3DTest::constructMoveMesh() {
@@ -229,6 +232,9 @@ void ObjectData3DTest::constructMoveMesh() {
     CORRADE_COMPARE(d.instance(), 13);
     CORRADE_COMPARE(d.material(), 42);
     CORRADE_COMPARE(d.importerState(), &a);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<MeshObjectData3D>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<MeshObjectData3D>::value);
 }
 
 void ObjectData3DTest::accessInvalidTransformations() {

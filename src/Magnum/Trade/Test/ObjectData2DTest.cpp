@@ -187,6 +187,9 @@ void ObjectData2DTest::constructMoveTransformations() {
     CORRADE_COMPARE(d.instanceType(), ObjectInstanceType2D::Camera);
     CORRADE_COMPARE(d.instance(), 13);
     CORRADE_COMPARE(d.importerState(), &a);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<ObjectData2D>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<ObjectData2D>::value);
 }
 
 void ObjectData2DTest::constructMoveMesh() {
@@ -215,6 +218,9 @@ void ObjectData2DTest::constructMoveMesh() {
     CORRADE_COMPARE(d.instance(), 13);
     CORRADE_COMPARE(d.material(), 42);
     CORRADE_COMPARE(d.importerState(), &a);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<MeshObjectData2D>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<MeshObjectData2D>::value);
 }
 
 void ObjectData2DTest::accessInvalidTransformations() {

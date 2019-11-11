@@ -365,6 +365,9 @@ void ImageDataTest::constructMoveGeneric() {
     CORRADE_COMPARE(c.data(), data);
     CORRADE_COMPARE(c.data().size(), 3*16);
     CORRADE_COMPARE(c.importerState(), &state);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<ImageData2D>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<ImageData2D>::value);
 }
 
 void ImageDataTest::constructMoveImplementationSpecific() {

@@ -75,6 +75,9 @@ void SceneDataTest::constructMove() {
     CORRADE_COMPARE(d.children2D(), (std::vector<UnsignedInt>{0, 1, 4}));
     CORRADE_COMPARE(d.children3D(), (std::vector<UnsignedInt>{2, 5}));
     CORRADE_COMPARE(d.importerState(), &a);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<SceneData>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<SceneData>::value);
 }
 
 }}}}

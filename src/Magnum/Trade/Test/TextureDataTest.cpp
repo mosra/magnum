@@ -111,6 +111,9 @@ void TextureDataTest::constructMove() {
     CORRADE_COMPARE(d.wrapping(), (Array3D<SamplerWrapping>{SamplerWrapping::Repeat, SamplerWrapping::ClampToEdge, SamplerWrapping::MirroredRepeat}));
     CORRADE_COMPARE(d.image(), 42);
     CORRADE_COMPARE(d.importerState(), &a);
+
+    CORRADE_VERIFY(std::is_nothrow_move_constructible<TextureData>::value);
+    CORRADE_VERIFY(std::is_nothrow_move_assignable<TextureData>::value);
 }
 
 void TextureDataTest::debugType() {
