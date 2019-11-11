@@ -210,9 +210,11 @@ void DebugOutput::callbackImplementationKhrES(const Callback callback, const voi
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const DebugOutput::Source value) {
+    debug << "GL::DebugOutput::Source" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case DebugOutput::Source::value: return debug << "GL::DebugOutput::Source::" #value;
+        #define _c(value) case DebugOutput::Source::value: return debug << "::" #value;
         _c(Api)
         _c(WindowSystem)
         _c(ShaderCompiler)
@@ -223,13 +225,15 @@ Debug& operator<<(Debug& debug, const DebugOutput::Source value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::DebugOutput::Source(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DebugOutput::Type value) {
+    debug << "GL::DebugOutput::Type" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case DebugOutput::Type::value: return debug << "GL::DebugOutput::Type::" #value;
+        #define _c(value) case DebugOutput::Type::value: return debug << "::" #value;
         _c(Error)
         _c(DeprecatedBehavior)
         _c(UndefinedBehavior)
@@ -243,12 +247,14 @@ Debug& operator<<(Debug& debug, const DebugOutput::Type value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::DebugOutput::Type(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DebugOutput::Severity value) {
+    debug << "GL::DebugOutput::Severity" << Debug::nospace;
+
     switch(value) {
-        #define _c(value) case DebugOutput::Severity::value: return debug << "GL::DebugOutput::Severity::" #value;
+        #define _c(value) case DebugOutput::Severity::value: return debug << "::" #value;
         _c(High)
         _c(Medium)
         _c(Low)
@@ -256,7 +262,7 @@ Debug& operator<<(Debug& debug, const DebugOutput::Severity value) {
         #undef _c
     }
 
-    return debug << "GL::DebugOutput::Severity(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
@@ -290,21 +296,25 @@ void DebugMessage::insertImplementationGremedy(Source, Type, UnsignedInt, DebugO
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const DebugMessage::Source value) {
+    debug << "GL::DebugMessage::Source" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case DebugMessage::Source::value: return debug << "GL::DebugMessage::Source::" #value;
+        #define _c(value) case DebugMessage::Source::value: return debug << "::" #value;
         _c(ThirdParty)
         _c(Application)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::DebugMessage::Source(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const DebugMessage::Type value) {
+    debug << "GL::DebugMessage::Type" << Debug::nospace;
+
     switch(value) {
-        #define _c(value) case DebugMessage::Type::value: return debug << "GL::DebugMessage::Type::" #value;
+        #define _c(value) case DebugMessage::Type::value: return debug << "::" #value;
         _c(Error)
         _c(DeprecatedBehavior)
         _c(UndefinedBehavior)
@@ -315,7 +325,7 @@ Debug& operator<<(Debug& debug, const DebugMessage::Type value) {
         #undef _c
     }
 
-    return debug << "GL::DebugMessage::Type(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
@@ -386,16 +396,18 @@ void DebugGroup::popImplementationExt() {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const DebugGroup::Source value) {
+    debug << "GL::DebugGroup::Source" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case DebugGroup::Source::value: return debug << "GL::DebugGroup::Source::" #value;
+        #define _c(value) case DebugGroup::Source::value: return debug << "::" #value;
         _c(ThirdParty)
         _c(Application)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::DebugGroup::Source(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

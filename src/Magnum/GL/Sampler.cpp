@@ -131,22 +131,26 @@ Float Sampler::maxMaxAnisotropy() {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const SamplerFilter value) {
+    debug << "GL::SamplerFilter" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SamplerFilter::value: return debug << "GL::SamplerFilter::" #value;
+        #define _c(value) case SamplerFilter::value: return debug << "::" #value;
         _c(Nearest)
         _c(Linear)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::SamplerFilter(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const SamplerMipmap value) {
+    debug << "GL::SamplerMipmap" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SamplerMipmap::value: return debug << "GL::SamplerMipmap::" #value;
+        #define _c(value) case SamplerMipmap::value: return debug << "::" #value;
         _c(Base)
         _c(Nearest)
         _c(Linear)
@@ -154,13 +158,15 @@ Debug& operator<<(Debug& debug, const SamplerMipmap value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::SamplerMipmap(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const SamplerWrapping value) {
+    debug << "GL::SamplerWrapping" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SamplerWrapping::value: return debug << "GL::SamplerWrapping::" #value;
+        #define _c(value) case SamplerWrapping::value: return debug << "::" #value;
         _c(Repeat)
         _c(MirroredRepeat)
         _c(ClampToEdge)
@@ -174,27 +180,31 @@ Debug& operator<<(Debug& debug, const SamplerWrapping value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::SamplerWrapping(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
 Debug& operator<<(Debug& debug, const SamplerCompareMode value) {
+    debug << "GL::SamplerCompareMode" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SamplerCompareMode::value: return debug << "GL::SamplerCompareMode::" #value;
+        #define _c(value) case SamplerCompareMode::value: return debug << "::" #value;
         _c(None)
         _c(CompareRefToTexture)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::SamplerCompareMode(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const SamplerCompareFunction value) {
+    debug << "GL::SamplerCompareFunction" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SamplerCompareFunction::value: return debug << "GL::SamplerCompareFunction::" #value;
+        #define _c(value) case SamplerCompareFunction::value: return debug << "::" #value;
         _c(Never)
         _c(Always)
         _c(Less)
@@ -207,22 +217,24 @@ Debug& operator<<(Debug& debug, const SamplerCompareFunction value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::SamplerCompareFunction(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
 Debug& operator<<(Debug& debug, const SamplerDepthStencilMode value) {
+    debug << "GL::SamplerDepthStencilMode" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SamplerDepthStencilMode::value: return debug << "GL::SamplerDepthStencilMode::" #value;
+        #define _c(value) case SamplerDepthStencilMode::value: return debug << "::" #value;
         _c(DepthComponent)
         _c(StencilIndex)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::SamplerDepthStencilMode(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 #endif

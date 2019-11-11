@@ -30,10 +30,12 @@
 
 namespace Magnum { namespace GL {
 
-Debug& operator<<(Debug& debug, DynamicAttribute::Kind value) {
+Debug& operator<<(Debug& debug, const DynamicAttribute::Kind value) {
+    debug << "GL::DynamicAttribute::Kind" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case DynamicAttribute::Kind::value: return debug << "GL::DynamicAttribute::Kind::" #value;
+        #define _c(value) case DynamicAttribute::Kind::value: return debug << "::" #value;
         _c(Generic)
         _c(GenericNormalized)
         #ifndef MAGNUM_TARGET_GLES2
@@ -46,13 +48,15 @@ Debug& operator<<(Debug& debug, DynamicAttribute::Kind value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::DynamicAttribute::Kind(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, DynamicAttribute::Components value) {
+Debug& operator<<(Debug& debug, const DynamicAttribute::Components value) {
+    debug << "GL::DynamicAttribute::Components" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case DynamicAttribute::Components::value: return debug << "GL::DynamicAttribute::Components::" #value;
+        #define _c(value) case DynamicAttribute::Components::value: return debug << "::" #value;
         _c(One)
         _c(Two)
         _c(Three)
@@ -64,13 +68,15 @@ Debug& operator<<(Debug& debug, DynamicAttribute::Components value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::DynamicAttribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, DynamicAttribute::DataType value) {
+Debug& operator<<(Debug& debug, const DynamicAttribute::DataType value) {
+    debug << "GL::DynamicAttribute::DataType" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case DynamicAttribute::DataType::value: return debug << "GL::DynamicAttribute::DataType::" #value;
+        #define _c(value) case DynamicAttribute::DataType::value: return debug << "::" #value;
         _c(UnsignedByte)
         _c(Byte)
         _c(UnsignedShort)
@@ -93,7 +99,7 @@ Debug& operator<<(Debug& debug, DynamicAttribute::DataType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::DynamicAttribute::DataType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 namespace Implementation {
@@ -213,120 +219,138 @@ UnsignedInt Attribute<Math::Vector<4, Float>>::size(GLint components, DataType d
     CORRADE_ASSERT_UNREACHABLE(); /* LCOV_EXCL_LINE */
 }
 
-Debug& operator<<(Debug& debug, SizedAttribute<1, 1>::Components value) {
+Debug& operator<<(Debug& debug, const SizedAttribute<1, 1>::Components value) {
+    debug << "GL::Attribute::Components" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
         case SizedAttribute<1, 1>::Components::One:
-            return debug << "GL::Attribute::Components::One";
+            return debug << "::One";
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Attribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, SizedAttribute<1, 2>::Components value) {
+Debug& operator<<(Debug& debug, const SizedAttribute<1, 2>::Components value) {
+    debug << "GL::Attribute::Components" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
         case SizedAttribute<1, 2>::Components::One:
-            return debug << "GL::Attribute::Components::One";
+            return debug << "::One";
         case SizedAttribute<1, 2>::Components::Two:
-            return debug << "GL::Attribute::Components::Two";
+            return debug << "::Two";
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Attribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, SizedAttribute<1, 3>::Components value) {
+Debug& operator<<(Debug& debug, const SizedAttribute<1, 3>::Components value) {
+    debug << "GL::Attribute::Components" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
         case SizedAttribute<1, 3>::Components::One:
-            return debug << "GL::Attribute::Components::One";
+            return debug << "::One";
         case SizedAttribute<1, 3>::Components::Two:
-            return debug << "GL::Attribute::Components::Two";
+            return debug << "::Two";
         case SizedAttribute<1, 3>::Components::Three:
-            return debug << "GL::Attribute::Components::Three";
+            return debug << "::Three";
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Attribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, SizedAttribute<1, 4>::Components value) {
+Debug& operator<<(Debug& debug, const SizedAttribute<1, 4>::Components value) {
+    debug << "GL::Attribute::Components" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
         case SizedAttribute<1, 4>::Components::One:
-            return debug << "GL::Attribute::Components::One";
+            return debug << "::One";
         case SizedAttribute<1, 4>::Components::Two:
-            return debug << "GL::Attribute::Components::Two";
+            return debug << "::Two";
         case SizedAttribute<1, 4>::Components::Three:
-            return debug << "GL::Attribute::Components::Three";
+            return debug << "::Three";
         case SizedAttribute<1, 4>::Components::Four:
-            return debug << "GL::Attribute::Components::Four";
+            return debug << "::Four";
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Attribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, SizedMatrixAttribute<2>::Components value) {
+Debug& operator<<(Debug& debug, const SizedMatrixAttribute<2>::Components value) {
+    debug << "GL::Attribute::Components" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
         case SizedMatrixAttribute<2>::Components::Two:
-            return debug << "GL::Attribute::Components::Two";
+            return debug << "::Two";
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Attribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, SizedMatrixAttribute<3>::Components value) {
+Debug& operator<<(Debug& debug, const SizedMatrixAttribute<3>::Components value) {
+    debug << "GL::Attribute::Components" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
         case SizedMatrixAttribute<3>::Components::Three:
-            return debug << "GL::Attribute::Components::Three";
+            return debug << "::Three";
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Attribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, SizedMatrixAttribute<4>::Components value) {
+Debug& operator<<(Debug& debug, const SizedMatrixAttribute<4>::Components value) {
+    debug << "GL::Attribute::Components" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
         case SizedMatrixAttribute<4>::Components::Four:
-            return debug << "GL::Attribute::Components::Four";
+            return debug << "::Four";
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Attribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::Components value) {
+Debug& operator<<(Debug& debug, const Attribute<Math::Vector<4, Float>>::Components value) {
+    debug << "GL::Attribute::Components" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
         case Attribute<Math::Vector<4, Float>>::Components::One:
-            return debug << "GL::Attribute::Components::One";
+            return debug << "::One";
         case Attribute<Math::Vector<4, Float>>::Components::Two:
-            return debug << "GL::Attribute::Components::Two";
+            return debug << "::Two";
         case Attribute<Math::Vector<4, Float>>::Components::Three:
-            return debug << "GL::Attribute::Components::Three";
+            return debug << "::Three";
         case Attribute<Math::Vector<4, Float>>::Components::Four:
-            return debug << "GL::Attribute::Components::Four";
+            return debug << "::Four";
         #ifndef MAGNUM_TARGET_GLES
         case Attribute<Math::Vector<4, Float>>::Components::BGRA:
-            return debug << "GL::Attribute::Components::BGRA";
+            return debug << "::BGRA";
         #endif
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Attribute::Components(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, FloatAttribute::DataType value) {
+Debug& operator<<(Debug& debug, const FloatAttribute::DataType value) {
+    debug << "GL::Attribute::DataType" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case FloatAttribute::DataType::value: return debug << "GL::Attribute::DataType::" #value;
+        #define _c(value) case FloatAttribute::DataType::value: return debug << "::" #value;
         _c(UnsignedByte)
         _c(Byte)
         _c(UnsignedShort)
@@ -344,14 +368,16 @@ Debug& operator<<(Debug& debug, FloatAttribute::DataType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Attribute::DataType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-Debug& operator<<(Debug& debug, IntAttribute::DataType value) {
+Debug& operator<<(Debug& debug, const IntAttribute::DataType value) {
+    debug << "GL::Attribute::DataType" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case IntAttribute::DataType::value: return debug << "GL::Attribute::DataType::" #value;
+        #define _c(value) case IntAttribute::DataType::value: return debug << "::" #value;
         _c(UnsignedByte)
         _c(Byte)
         _c(UnsignedShort)
@@ -362,28 +388,32 @@ Debug& operator<<(Debug& debug, IntAttribute::DataType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Attribute::DataType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
 #ifndef MAGNUM_TARGET_GLES
-Debug& operator<<(Debug& debug, DoubleAttribute::DataType value) {
+Debug& operator<<(Debug& debug, const DoubleAttribute::DataType value) {
+    debug << "GL::Attribute::DataType" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case DoubleAttribute::DataType::value: return debug << "GL::Attribute::DataType::" #value;
+        #define _c(value) case DoubleAttribute::DataType::value: return debug << "::" #value;
         _c(Double)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Attribute::DataType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 
-Debug& operator<<(Debug& debug, Attribute<Math::Vector<3, Float>>::DataType value) {
+Debug& operator<<(Debug& debug, const Attribute<Math::Vector<3, Float>>::DataType value) {
+    debug << "GL::Attribute::DataType" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Attribute<Math::Vector<3, Float>>::DataType::value: return debug << "GL::Attribute::DataType::" #value;
+        #define _c(value) case Attribute<Math::Vector<3, Float>>::DataType::value: return debug << "::" #value;
         _c(UnsignedByte)
         _c(Byte)
         _c(UnsignedShort)
@@ -402,13 +432,15 @@ Debug& operator<<(Debug& debug, Attribute<Math::Vector<3, Float>>::DataType valu
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Attribute::DataType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::DataType value) {
+Debug& operator<<(Debug& debug, const Attribute<Math::Vector<4, Float>>::DataType value) {
+    debug << "GL::Attribute::DataType" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Attribute<Math::Vector<4, Float>>::DataType::value: return debug << "GL::Attribute::DataType::" #value;
+        #define _c(value) case Attribute<Math::Vector<4, Float>>::DataType::value: return debug << "::" #value;
         _c(UnsignedByte)
         _c(Byte)
         _c(UnsignedShort)
@@ -430,7 +462,7 @@ Debug& operator<<(Debug& debug, Attribute<Math::Vector<4, Float>>::DataType valu
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Attribute::DataType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 }

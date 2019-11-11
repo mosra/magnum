@@ -397,9 +397,11 @@ void Framebuffer::textureLayerImplementationDSA(const BufferAttachment attachmen
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Framebuffer::Status value) {
+    debug << "GL::Framebuffer::Status" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Framebuffer::Status::value: return debug << "GL::Framebuffer::Status::" #value;
+        #define _c(value) case Framebuffer::Status::value: return debug << "::" #value;
         _c(Complete)
         _c(IncompleteAttachment)
         _c(IncompleteMissingAttachment)
@@ -418,7 +420,7 @@ Debug& operator<<(Debug& debug, const Framebuffer::Status value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Framebuffer::Status(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

@@ -31,22 +31,26 @@ namespace Magnum {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const SamplerFilter value) {
+    debug << "SamplerFilter" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SamplerFilter::value: return debug << "SamplerFilter::" #value;
+        #define _c(value) case SamplerFilter::value: return debug << "::" #value;
         _c(Nearest)
         _c(Linear)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "SamplerFilter(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const SamplerMipmap value) {
+    debug << "SamplerMipmap" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SamplerMipmap::value: return debug << "SamplerMipmap::" #value;
+        #define _c(value) case SamplerMipmap::value: return debug << "::" #value;
         _c(Base)
         _c(Nearest)
         _c(Linear)
@@ -54,13 +58,15 @@ Debug& operator<<(Debug& debug, const SamplerMipmap value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "SamplerMipmap(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const SamplerWrapping value) {
+    debug << "SamplerWrapping" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case SamplerWrapping::value: return debug << "SamplerWrapping::" #value;
+        #define _c(value) case SamplerWrapping::value: return debug << "::" #value;
         _c(Repeat)
         _c(MirroredRepeat)
         _c(ClampToEdge)
@@ -70,7 +76,7 @@ Debug& operator<<(Debug& debug, const SamplerWrapping value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "SamplerWrapping(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedInt(value)) << Debug::nospace << ")";
 }
 #endif
 

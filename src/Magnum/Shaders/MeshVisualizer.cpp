@@ -200,16 +200,18 @@ MeshVisualizer& MeshVisualizer::setSmoothness(const Float smoothness) {
 }
 
 Debug& operator<<(Debug& debug, const MeshVisualizer::Flag value) {
+    debug << "Shaders::MeshVisualizer::Flag" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case MeshVisualizer::Flag::v: return debug << "Shaders::MeshVisualizer::Flag::" #v;
+        #define _c(v) case MeshVisualizer::Flag::v: return debug << "::" #v;
         _c(NoGeometryShader)
         _c(Wireframe)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Shaders::MeshVisualizer::Flag(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const MeshVisualizer::Flags value) {

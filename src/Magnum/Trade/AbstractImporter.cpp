@@ -640,9 +640,11 @@ const void* AbstractImporter::importerState() const {
 const void* AbstractImporter::doImporterState() const { return nullptr; }
 
 Debug& operator<<(Debug& debug, const AbstractImporter::Feature value) {
+    debug << "Trade::AbstractImporter::Feature" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case AbstractImporter::Feature::v: return debug << "Trade::AbstractImporter::Feature::" #v;
+        #define _c(v) case AbstractImporter::Feature::v: return debug << "::" #v;
         _c(OpenData)
         _c(OpenState)
         _c(FileCallback)
@@ -650,7 +652,7 @@ Debug& operator<<(Debug& debug, const AbstractImporter::Feature value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Trade::AbstractImporter::Feature(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const AbstractImporter::Features value) {

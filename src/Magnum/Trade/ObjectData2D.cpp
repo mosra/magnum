@@ -78,10 +78,12 @@ Matrix3 ObjectData2D::transformation() const {
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug& operator<<(Debug& debug, ObjectInstanceType2D value) {
+Debug& operator<<(Debug& debug, const ObjectInstanceType2D value) {
+    debug << "Trade::ObjectInstanceType2D" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case ObjectInstanceType2D::value: return debug << "Trade::ObjectInstanceType2D::" #value;
+        #define _c(value) case ObjectInstanceType2D::value: return debug << "::" #value;
         _c(Camera)
         _c(Mesh)
         _c(Empty)
@@ -89,22 +91,24 @@ Debug& operator<<(Debug& debug, ObjectInstanceType2D value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Trade::ObjectInstanceType2D(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, ObjectFlag2D value) {
+Debug& operator<<(Debug& debug, const ObjectFlag2D value) {
+    debug << "Trade::ObjectFlag2D" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case ObjectFlag2D::value: return debug << "Trade::ObjectFlag2D::" #value;
+        #define _c(value) case ObjectFlag2D::value: return debug << "::" #value;
         _c(HasTranslationRotationScaling)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Trade::ObjectFlag2D(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, ObjectFlags2D value) {
+Debug& operator<<(Debug& debug, const ObjectFlags2D value) {
     return enumSetDebugOutput(debug, value, "Trade::ObjectFlags2D{}", {
         ObjectFlag2D::HasTranslationRotationScaling});
 }

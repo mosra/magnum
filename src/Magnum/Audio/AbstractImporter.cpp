@@ -126,15 +126,17 @@ Containers::Array<char> AbstractImporter::data() {
 }
 
 Debug& operator<<(Debug& debug, const AbstractImporter::Feature value) {
+    debug << "Audio::AbstractImporter::Feature" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case AbstractImporter::Feature::v: return debug << "Audio::AbstractImporter::Feature::" #v;
+        #define _c(v) case AbstractImporter::Feature::v: return debug << "::" #v;
         _c(OpenData)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Audio::AbstractImporter::Feature(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const AbstractImporter::Features value) {

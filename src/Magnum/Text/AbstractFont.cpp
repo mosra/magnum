@@ -276,9 +276,11 @@ Containers::Pointer<AbstractLayouter> AbstractFont::layout(const AbstractGlyphCa
 }
 
 Debug& operator<<(Debug& debug, const AbstractFont::Feature value) {
+    debug << "Text::AbstractFont::Feature" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case AbstractFont::Feature::v: return debug << "Text::AbstractFont::Feature::" #v;
+        #define _c(v) case AbstractFont::Feature::v: return debug << "::" #v;
         _c(OpenData)
         _c(FileCallback)
         _c(PreparedGlyphCache)
@@ -286,7 +288,7 @@ Debug& operator<<(Debug& debug, const AbstractFont::Feature value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Text::AbstractFont::Feature(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const AbstractFont::Features value) {

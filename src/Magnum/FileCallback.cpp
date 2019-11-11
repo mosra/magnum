@@ -30,9 +30,11 @@
 namespace Magnum {
 
 Debug& operator<<(Debug& debug, const InputFileCallbackPolicy value) {
+    debug << "InputFileCallbackPolicy" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case InputFileCallbackPolicy::v: return debug << "InputFileCallbackPolicy::" #v;
+        #define _c(v) case InputFileCallbackPolicy::v: return debug << "::" #v;
         _c(LoadTemporary)
         _c(LoadPermanent)
         _c(Close)
@@ -40,7 +42,7 @@ Debug& operator<<(Debug& debug, const InputFileCallbackPolicy value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "InputFileCallbackPolicy(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 }

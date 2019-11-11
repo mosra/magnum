@@ -106,9 +106,11 @@ template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<CubicHermiteComplex, 
 template MAGNUM_TRADE_EXPORT auto animationInterpolatorFor<CubicHermiteQuaternion, Quaternion>(Animation::Interpolation) -> Quaternion(*)(const CubicHermiteQuaternion&, const CubicHermiteQuaternion&, Float);
 
 Debug& operator<<(Debug& debug, const AnimationTrackType value) {
+    debug << "Trade::AnimationTrackType" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case AnimationTrackType::value: return debug << "Trade::AnimationTrackType::" #value;
+        #define _c(value) case AnimationTrackType::value: return debug << "::" #value;
         _c(Bool)
         _c(Float)
         _c(UnsignedInt)
@@ -137,7 +139,7 @@ Debug& operator<<(Debug& debug, const AnimationTrackType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Trade::AnimationTrackType(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const AnimationTrackTargetType value) {

@@ -29,9 +29,11 @@ namespace Magnum { namespace Trade {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const LightData::Type value) {
+    debug << "Trade::LightData::Type" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case LightData::Type::value: return debug << "Trade::LightData::Type::" #value;
+        #define _c(value) case LightData::Type::value: return debug << "::" #value;
         _c(Infinite)
         _c(Point)
         _c(Spot)
@@ -39,7 +41,7 @@ Debug& operator<<(Debug& debug, const LightData::Type value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Trade::LightData::Type(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 #endif
 

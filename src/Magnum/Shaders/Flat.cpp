@@ -173,9 +173,11 @@ template class Flat<3>;
 namespace Implementation {
 
 Debug& operator<<(Debug& debug, const FlatFlag value) {
+    debug << "Shaders::Flat::Flag" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case FlatFlag::v: return debug << "Shaders::Flat::Flag::" #v;
+        #define _c(v) case FlatFlag::v: return debug << "::" #v;
         _c(Textured)
         _c(AlphaMask)
         _c(VertexColor)
@@ -186,7 +188,7 @@ Debug& operator<<(Debug& debug, const FlatFlag value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Shaders::Flat::Flag(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const FlatFlags value) {

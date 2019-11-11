@@ -71,9 +71,11 @@ Containers::ArrayView<const Extension> Extension::extensions() {
 }
 
 Debug& operator<<(Debug& debug, const Context::HrtfStatus value) {
+    debug << "Audio::Context::HrtfStatus" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Context::HrtfStatus::value: return debug << "Audio::Context::HrtfStatus::" #value;
+        #define _c(value) case Context::HrtfStatus::value: return debug << "::" #value;
         _c(Disabled)
         _c(Enabled)
         _c(Denied)
@@ -84,7 +86,7 @@ Debug& operator<<(Debug& debug, const Context::HrtfStatus value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Audio::Context::HrtfStatus(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
 }
 
 namespace {

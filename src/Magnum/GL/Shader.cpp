@@ -817,9 +817,11 @@ bool Shader::compile(std::initializer_list<Containers::Reference<Shader>> shader
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Shader::Type value) {
+    debug << "GL::Shader::Type" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Shader::Type::value: return debug << "GL::Shader::Type::" #value;
+        #define _c(value) case Shader::Type::value: return debug << "::" #value;
         _c(Vertex)
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         _c(TessellationControl)
@@ -832,7 +834,7 @@ Debug& operator<<(Debug& debug, const Shader::Type value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Shader::Type(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

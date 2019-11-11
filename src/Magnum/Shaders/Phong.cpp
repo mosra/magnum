@@ -327,9 +327,11 @@ Phong& Phong::setLightColor(UnsignedInt id, const Magnum::Color4& color) {
 }
 
 Debug& operator<<(Debug& debug, const Phong::Flag value) {
+    debug << "Shaders::Phong::Flag" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case Phong::Flag::v: return debug << "Shaders::Phong::Flag::" #v;
+        #define _c(v) case Phong::Flag::v: return debug << "::" #v;
         _c(AmbientTexture)
         _c(DiffuseTexture)
         _c(SpecularTexture)
@@ -343,7 +345,7 @@ Debug& operator<<(Debug& debug, const Phong::Flag value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Shaders::Phong::Flag(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Phong::Flags value) {

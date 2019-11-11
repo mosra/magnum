@@ -78,10 +78,12 @@ MeshIndexType meshIndexType(const Magnum::MeshIndexType type) {
 }
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug& operator<<(Debug& debug, MeshPrimitive value) {
+Debug& operator<<(Debug& debug, const MeshPrimitive value) {
+    debug << "GL::MeshPrimitive" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case MeshPrimitive::value: return debug << "GL::MeshPrimitive::" #value;
+        #define _c(value) case MeshPrimitive::value: return debug << "::" #value;
         _c(Points)
         _c(Lines)
         _c(LineLoop)
@@ -102,13 +104,15 @@ Debug& operator<<(Debug& debug, MeshPrimitive value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::MeshPrimitive(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
-Debug& operator<<(Debug& debug, MeshIndexType value) {
+Debug& operator<<(Debug& debug, const MeshIndexType value) {
+    debug << "GL::MeshIndexType" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case MeshIndexType::value: return debug << "GL::MeshIndexType::" #value;
+        #define _c(value) case MeshIndexType::value: return debug << "::" #value;
         _c(UnsignedByte)
         _c(UnsignedShort)
         _c(UnsignedInt)
@@ -116,7 +120,7 @@ Debug& operator<<(Debug& debug, MeshIndexType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::MeshIndexType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

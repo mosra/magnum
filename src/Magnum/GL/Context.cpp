@@ -1036,9 +1036,11 @@ void Context::resetState(const States states) {
 #ifndef DOXYGEN_GENERATING_OUTPUT
 #ifndef MAGNUM_TARGET_WEBGL
 Debug& operator<<(Debug& debug, const Context::Flag value) {
+    debug << "GL::Context::Flag" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Context::Flag::value: return debug << "GL::Context::Flag::" #value;
+        #define _c(value) case Context::Flag::value: return debug << "::" #value;
         _c(Debug)
         #ifndef MAGNUM_TARGET_GLES
         _c(ForwardCompatible)
@@ -1051,7 +1053,7 @@ Debug& operator<<(Debug& debug, const Context::Flag value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Context::Flag(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Context::Flags value) {
@@ -1069,9 +1071,11 @@ Debug& operator<<(Debug& debug, const Context::Flags value) {
 #endif
 
 Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
+    debug << "GL::Context::DetectedDriver" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Context::DetectedDriver::value: return debug << "GL::Context::DetectedDriver::" #value;
+        #define _c(value) case Context::DetectedDriver::value: return debug << "::" #value;
         #ifndef MAGNUM_TARGET_WEBGL
         _c(Amd)
         #endif
@@ -1094,7 +1098,7 @@ Debug& operator<<(Debug& debug, const Context::DetectedDriver value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Context::DetectedDriver(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Context::DetectedDrivers value) {

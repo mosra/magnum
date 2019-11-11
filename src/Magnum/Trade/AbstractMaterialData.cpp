@@ -39,27 +39,31 @@ AbstractMaterialData::AbstractMaterialData(const MaterialType type, const Flags 
 AbstractMaterialData::~AbstractMaterialData() = default;
 
 Debug& operator<<(Debug& debug, const MaterialType value) {
+    debug << "Trade::MaterialType" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case MaterialType::value: return debug << "Trade::MaterialType::" #value;
+        #define _c(value) case MaterialType::value: return debug << "::" #value;
         _c(Phong)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Trade::MaterialType(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const AbstractMaterialData::Flag value) {
+    debug << "Trade::AbstractMaterialData::Flag" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case AbstractMaterialData::Flag::value: return debug << "Trade::AbstractMaterialData::Flag::" #value;
+        #define _c(value) case AbstractMaterialData::Flag::value: return debug << "::" #value;
         _c(DoubleSided)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Trade::AbstractMaterialData::Flag(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const AbstractMaterialData::Flags value) {
@@ -69,9 +73,11 @@ Debug& operator<<(Debug& debug, const AbstractMaterialData::Flags value) {
 }
 
 Debug& operator<<(Debug& debug, const MaterialAlphaMode value) {
+    debug << "Trade::MaterialAlphaMode" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case MaterialAlphaMode::value: return debug << "Trade::MaterialAlphaMode::" #value;
+        #define _c(value) case MaterialAlphaMode::value: return debug << "::" #value;
         _c(Opaque)
         _c(Mask)
         _c(Blend)
@@ -79,7 +85,7 @@ Debug& operator<<(Debug& debug, const MaterialAlphaMode value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Trade::MaterialAlphaMode(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 }}

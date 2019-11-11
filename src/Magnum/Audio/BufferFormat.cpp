@@ -30,9 +30,11 @@
 namespace Magnum { namespace Audio {
 
 Debug& operator<<(Debug& debug, const BufferFormat value) {
+    debug << "Audio::BufferFormat" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case BufferFormat::value: return debug << "Audio::BufferFormat::" #value;
+        #define _c(value) case BufferFormat::value: return debug << "::" #value;
         _c(Mono8)
         _c(Mono16)
         _c(Stereo8)
@@ -73,7 +75,7 @@ Debug& operator<<(Debug& debug, const BufferFormat value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Audio::BufferFormat(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
 }
 
 }}

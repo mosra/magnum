@@ -187,9 +187,11 @@ bool AbstractImageConverter::exportToFile(const ImageData2D& image, const std::s
 }
 
 Debug& operator<<(Debug& debug, const AbstractImageConverter::Feature value) {
+    debug << "Trade::AbstractImageConverter::Feature" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(v) case AbstractImageConverter::Feature::v: return debug << "Trade::AbstractImageConverter::Feature::" #v;
+        #define _c(v) case AbstractImageConverter::Feature::v: return debug << "::" #v;
         _c(ConvertImage)
         _c(ConvertCompressedImage)
         _c(ConvertFile)
@@ -200,7 +202,7 @@ Debug& operator<<(Debug& debug, const AbstractImageConverter::Feature value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Trade::AbstractImageConverter::Feature(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const AbstractImageConverter::Features value) {

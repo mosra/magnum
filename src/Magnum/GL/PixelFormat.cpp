@@ -263,13 +263,15 @@ UnsignedInt pixelSize(const PixelFormat format, const PixelType type) {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const PixelFormat value) {
+    debug << "GL::PixelFormat" << Debug::nospace;
+
     #ifdef __GNUC__
     #pragma GCC diagnostic push
     #pragma GCC diagnostic error "-Wswitch"
     #endif
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case PixelFormat::value: return debug << "GL::PixelFormat::" #value;
+        #define _c(value) case PixelFormat::value: return debug << "::" #value;
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         _c(Red)
         #endif
@@ -324,17 +326,19 @@ Debug& operator<<(Debug& debug, const PixelFormat value) {
     #pragma GCC diagnostic pop
     #endif
 
-    return debug << "GL::PixelFormat(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const PixelType value) {
+    debug << "GL::PixelType" << Debug::nospace;
+
     #ifdef __GNUC__
     #pragma GCC diagnostic push
     #pragma GCC diagnostic error "-Wswitch"
     #endif
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case PixelType::value: return debug << "GL::PixelType::" #value;
+        #define _c(value) case PixelType::value: return debug << "::" #value;
         _c(UnsignedByte)
         #ifndef MAGNUM_TARGET_GLES2
         _c(Byte)
@@ -388,7 +392,7 @@ Debug& operator<<(Debug& debug, const PixelType value) {
     #pragma GCC diagnostic pop
     #endif
 
-    return debug << "GL::PixelType(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 namespace {
@@ -452,13 +456,15 @@ TextureFormat textureFormat(const Magnum::CompressedPixelFormat format) {
 }
 
 Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
+    debug << "GL::CompressedPixelFormat" << Debug::nospace;
+
     #ifdef __GNUC__
     #pragma GCC diagnostic push
     #pragma GCC diagnostic error "-Wswitch"
     #endif
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case CompressedPixelFormat::value: return debug << "GL::CompressedPixelFormat::" #value;
+        #define _c(value) case CompressedPixelFormat::value: return debug << "::" #value;
         #ifndef MAGNUM_TARGET_GLES
         _c(Red)
         _c(RG)
@@ -570,7 +576,7 @@ Debug& operator<<(Debug& debug, const CompressedPixelFormat value) {
     #pragma GCC diagnostic pop
     #endif
 
-    return debug << "GL::CompressedPixelFormat(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

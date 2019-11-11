@@ -30,7 +30,7 @@
 namespace Magnum { namespace GL {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug& operator<<(Debug& debug, Version value) {
+Debug& operator<<(Debug& debug, const Version value) {
     switch(value) {
         /* LCOV_EXCL_START */
         #define _c(value, string) case Version::value: return debug << (string);

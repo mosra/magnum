@@ -47,9 +47,11 @@ Rad CameraData::fov() const {
 }
 
 Debug& operator<<(Debug& debug, const CameraType value) {
+    debug << "Trade::CameraType" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case CameraType::value: return debug << "Trade::CameraType::" #value;
+        #define _c(value) case CameraType::value: return debug << "::" #value;
         _c(Orthographic2D)
         _c(Orthographic3D)
         _c(Perspective3D)
@@ -57,7 +59,7 @@ Debug& operator<<(Debug& debug, const CameraType value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Trade::CameraType(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 }}

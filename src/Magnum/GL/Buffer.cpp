@@ -559,10 +559,12 @@ bool Buffer::unmapImplementationDSA() {
 #endif
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
-Debug& operator<<(Debug& debug, Buffer::TargetHint value) {
+Debug& operator<<(Debug& debug, const Buffer::TargetHint value) {
+    debug << "GL::Buffer::TargetHint" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Buffer::TargetHint::value: return debug << "GL::Buffer::TargetHint::" #value;
+        #define _c(value) case Buffer::TargetHint::value: return debug << "::" #value;
         _c(Array)
         #ifndef MAGNUM_TARGET_GLES2
         #ifndef MAGNUM_TARGET_WEBGL
@@ -594,13 +596,15 @@ Debug& operator<<(Debug& debug, Buffer::TargetHint value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Buffer::TargetHint(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 #ifndef MAGNUM_TARGET_GLES2
-Debug& operator<<(Debug& debug, Buffer::Target value) {
+Debug& operator<<(Debug& debug, const Buffer::Target value) {
+    debug << "GL::Buffer::Target" << Debug::nospace;
+
     switch(value) {
-        #define _c(value) case Buffer::Target::value: return debug << "GL::Buffer::Target::" #value;
+        #define _c(value) case Buffer::Target::value: return debug << "::" #value;
         #ifndef MAGNUM_TARGET_WEBGL
         _c(AtomicCounter)
         _c(ShaderStorage)
@@ -609,7 +613,7 @@ Debug& operator<<(Debug& debug, Buffer::Target value) {
         #undef _c
     }
 
-    return debug << "GL::Buffer::Target(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 #endif

@@ -125,9 +125,11 @@ void DefaultFramebuffer::initializeContextBasedFunctionality(Context& context) {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const DefaultFramebuffer::Status value) {
+    debug << "GL::DefaultFramebuffer::Status" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case DefaultFramebuffer::Status::value: return debug << "GL::DefaultFramebuffer::Status::" #value;
+        #define _c(value) case DefaultFramebuffer::Status::value: return debug << "::" #value;
         _c(Complete)
         #ifndef MAGNUM_TARGET_WEBGL
         _c(Undefined)
@@ -136,7 +138,7 @@ Debug& operator<<(Debug& debug, const DefaultFramebuffer::Status value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::DefaultFramebuffer::Status(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

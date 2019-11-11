@@ -274,9 +274,11 @@ Renderer::GraphicsResetStatus Renderer::graphicsResetStatusImplementationRobustn
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Renderer::Error value) {
+    debug << "GL::Renderer::Error" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Renderer::Error::value: return debug << "GL::Renderer::Error::" #value;
+        #define _c(value) case Renderer::Error::value: return debug << "::" #value;
         _c(NoError)
         _c(InvalidEnum)
         _c(InvalidValue)
@@ -291,27 +293,31 @@ Debug& operator<<(Debug& debug, const Renderer::Error value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Renderer::Error(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 #ifndef MAGNUM_TARGET_WEBGL
 Debug& operator<<(Debug& debug, const Renderer::ResetNotificationStrategy value) {
+    debug << "GL::Renderer::ResetNotificationStrategy" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Renderer::ResetNotificationStrategy::value: return debug << "GL::Renderer::ResetNotificationStrategy::" #value;
+        #define _c(value) case Renderer::ResetNotificationStrategy::value: return debug << "::" #value;
         _c(NoResetNotification)
         _c(LoseContextOnReset)
         #undef _c
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Renderer::ResetNotificationStrategy(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Renderer::GraphicsResetStatus value) {
+    debug << "GL::Renderer::GraphicsResetStatus" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Renderer::GraphicsResetStatus::value: return debug << "GL::Renderer::GraphicsResetStatus::" #value;
+        #define _c(value) case Renderer::GraphicsResetStatus::value: return debug << "::" #value;
         _c(NoError)
         _c(GuiltyContextReset)
         _c(InnocentContextReset)
@@ -320,7 +326,7 @@ Debug& operator<<(Debug& debug, const Renderer::GraphicsResetStatus value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "GL::Renderer::GraphicsResetStatus(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 #endif

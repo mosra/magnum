@@ -30,9 +30,11 @@
 namespace Magnum { namespace Audio {
 
 Debug& operator<<(Debug& debug, const Renderer::Error value) {
+    debug << "Audio::Renderer::Error" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Renderer::Error::value: return debug << "Audio::Renderer::Error::" #value;
+        #define _c(value) case Renderer::Error::value: return debug << "::" #value;
         _c(NoError)
         _c(InvalidName)
         _c(InvalidEnum)
@@ -43,13 +45,15 @@ Debug& operator<<(Debug& debug, const Renderer::Error value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Audio::Renderer::Error(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Renderer::DistanceModel value) {
+    debug << "Audio::Renderer::DistanceModel" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Renderer::DistanceModel::value: return debug << "Audio::Renderer::DistanceModel::" #value;
+        #define _c(value) case Renderer::DistanceModel::value: return debug << "::" #value;
         _c(None)
         _c(Inverse)
         _c(InverseClamped)
@@ -61,7 +65,7 @@ Debug& operator<<(Debug& debug, const Renderer::DistanceModel value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Audio::Renderer::DistanceModel(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(ALenum(value)) << Debug::nospace << ")";
 }
 
 }}

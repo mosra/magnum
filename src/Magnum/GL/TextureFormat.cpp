@@ -40,13 +40,15 @@ namespace Magnum { namespace GL {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const TextureFormat value) {
+    debug << "GL::TextureFormat" << Debug::nospace;
+
     #ifdef __GNUC__
     #pragma GCC diagnostic push
     #pragma GCC diagnostic error "-Wswitch"
     #endif
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case TextureFormat::value: return debug << "GL::TextureFormat::" #value;
+        #define _c(value) case TextureFormat::value: return debug << "::" #value;
         #if !(defined(MAGNUM_TARGET_WEBGL) && defined(MAGNUM_TARGET_GLES2))
         _c(Red)
         _c(R8)
@@ -299,7 +301,7 @@ Debug& operator<<(Debug& debug, const TextureFormat value) {
     #pragma GCC diagnostic pop
     #endif
 
-    return debug << "GL::TextureFormat(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(GLenum(value)) << Debug::nospace << ")";
 }
 #endif
 

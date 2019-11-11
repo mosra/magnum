@@ -126,9 +126,11 @@ void Source::rewind(const std::vector<std::reference_wrapper<Source>>& sources) 
 }
 
 Debug& operator<<(Debug& debug, const Source::State value) {
+    debug << "Audio::Source::State" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Source::State::value: return debug << "Audio::Source::State::" #value;
+        #define _c(value) case Source::State::value: return debug << "::" #value;
         _c(Initial)
         _c(Playing)
         _c(Paused)
@@ -137,13 +139,15 @@ Debug& operator<<(Debug& debug, const Source::State value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Audio::Source::State(" << Debug::nospace << reinterpret_cast<void*>(ALint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(ALint(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Source::Type value) {
+    debug << "Audio::Source::Type" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Source::Type::value: return debug << "Audio::Source::Type::" #value;
+        #define _c(value) case Source::Type::value: return debug << "::" #value;
         _c(Undetermined)
         _c(Static)
         _c(Streaming)
@@ -151,7 +155,7 @@ Debug& operator<<(Debug& debug, const Source::Type value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Audio::Source::Type(" << Debug::nospace << reinterpret_cast<void*>(ALint(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(ALint(value)) << Debug::nospace << ")";
 }
 
 }}

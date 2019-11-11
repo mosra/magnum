@@ -32,9 +32,11 @@ namespace Magnum { namespace Animation {
 
 #ifndef DOXYGEN_GENERATING_OUTPUT
 Debug& operator<<(Debug& debug, const Interpolation value) {
+    debug << "Animation::Interpolation" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Interpolation::value: return debug << "Animation::Interpolation::" #value;
+        #define _c(value) case Interpolation::value: return debug << "::" #value;
         _c(Constant)
         _c(Linear)
         _c(Spline)
@@ -43,13 +45,15 @@ Debug& operator<<(Debug& debug, const Interpolation value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Animation::Interpolation(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 Debug& operator<<(Debug& debug, const Extrapolation value) {
+    debug << "Animation::Extrapolation" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case Extrapolation::value: return debug << "Animation::Extrapolation::" #value;
+        #define _c(value) case Extrapolation::value: return debug << "::" #value;
         _c(DefaultConstructed)
         _c(Constant)
         _c(Extrapolated)
@@ -57,7 +61,7 @@ Debug& operator<<(Debug& debug, const Extrapolation value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "Animation::Extrapolation(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 #endif
 

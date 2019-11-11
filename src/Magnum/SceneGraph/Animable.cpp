@@ -29,10 +29,12 @@
 
 namespace Magnum { namespace SceneGraph {
 
-Debug& operator<<(Debug& debug, AnimationState value) {
+Debug& operator<<(Debug& debug, const AnimationState value) {
+    debug << "SceneGraph::AnimationState" << Debug::nospace;
+
     switch(value) {
         /* LCOV_EXCL_START */
-        #define _c(value) case AnimationState::value: return debug << "SceneGraph::AnimationState::" #value;
+        #define _c(value) case AnimationState::value: return debug << "::" #value;
         _c(Stopped)
         _c(Paused)
         _c(Running)
@@ -40,7 +42,7 @@ Debug& operator<<(Debug& debug, AnimationState value) {
         /* LCOV_EXCL_STOP */
     }
 
-    return debug << "SceneGraph::AnimationState(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
+    return debug << "(" << Debug::nospace << reinterpret_cast<void*>(UnsignedByte(value)) << Debug::nospace << ")";
 }
 
 }}
