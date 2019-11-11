@@ -112,6 +112,10 @@ See also:
     values it references. Existing code needs to be changed to say
     @cpp TrackView<const K, const V> @ce instead of @cpp TrackView<K, V> @ce.
 
+@subsection changelog-latest-documentation Documentation
+
+-   Various fixes (see [mosra/magnum#390](https://github.com/mosra/magnum/pull/390))
+
 @section changelog-2019-10 2019.10
 
 Released 2019-10-24, tagged as

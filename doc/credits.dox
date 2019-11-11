@@ -150,7 +150,7 @@ Are the below lists missing your name or something's wrong?
     WebGL 2 build fixes
 -   **Marco Melorio** ([\@Melix19](https://github.com/Melix19)) --- iOS test
     updates and fixes, cursor management in @ref Platform::Sdl2Application and
-    @ref Platform::GlfwApplication
+    @ref Platform::GlfwApplication, doc fixes
 -   **Max Schwarz** ([\@xqms](https://github.com/xqms)) --- `Any*` plugin
     improvements, fixes in the @ref GL library
 -   **Michael Tao** ([\@mtao](https://github.com/mtao)) --- Gentoo build fixes
