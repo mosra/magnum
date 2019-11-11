@@ -50,4 +50,8 @@ Debug& operator<<(Debug& debug, const DataFlags value) {
         DataFlag::Mutable});
 }
 
+namespace Implementation {
+    void nonOwnedArrayDeleter(char*, std::size_t) { /* does nothing */ }
+}
+
 }}

@@ -32,9 +32,8 @@
 
 namespace Magnum { namespace Trade { namespace Implementation {
 
-/* Can't use InPlaceInit as that uses a custom deleters. Compared to
-   InPlaceInit it does an an unnecessary default-initialization of all
-   elements */
+/* Can't use InPlaceInit as that uses custom deleters. Compared to InPlaceInit
+   it does an an unnecessary default-initialization of all elements. */
 /** @todo isn't there some C++56 feature that would allow me to allocate
     without calling constructors? */
 template<class T> Containers::Array<T> initializerListToArrayWithDefaultDeleter(const std::initializer_list<T> list) {

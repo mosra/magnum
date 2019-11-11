@@ -41,7 +41,8 @@ namespace Magnum { namespace Trade {
 @brief Data flag
 @m_since_latest
 
-@see @ref DataFlags, @ref MeshData::dataFlags()
+@see @ref DataFlags, @ref MeshData::indexDataFlags(),
+    @ref MeshData::vertexDataFlags()
 */
 enum class DataFlag: UnsignedByte {
     /**
@@ -70,7 +71,7 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, DataFlag value);
 @brief Data flags
 @m_since_latest
 
-@see @ref MeshData::dataFlags()
+@see @ref MeshData::indexDataFlags(), @ref MeshData::vertexDataFlags()
 */
 typedef Containers::EnumSet<DataFlag> DataFlags;
 
@@ -81,6 +82,11 @@ CORRADE_ENUMSET_OPERATORS(DataFlags)
 @m_since_latest
 */
 MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, DataFlags value);
+
+namespace Implementation {
+    /* Used internally by MeshData */
+    MAGNUM_TRADE_EXPORT void nonOwnedArrayDeleter(char*, std::size_t);
+}
 
 }}
 

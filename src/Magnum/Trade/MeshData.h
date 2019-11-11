@@ -35,8 +35,8 @@
 
 #include "Magnum/Mesh.h"
 #include "Magnum/VertexFormat.h"
+#include "Magnum/Trade/Data.h"
 #include "Magnum/Trade/Trade.h"
-#include "Magnum/Trade/visibility.h"
 
 namespace Magnum { namespace Trade {
 
@@ -243,6 +243,16 @@ class MAGNUM_TRADE_EXPORT MeshAttributeData {
         Containers::StridedArrayView1D<const char> data;
 };
 
+/** @relatesalso MeshAttributeData
+@brief Create a non-owning array of @ref MeshAttributeData items
+@m_since_latest
+
+Useful when you have the attribute definitions statically defined (for example
+when the vertex data themselves are already defined at compile time) and don't
+want to allocate just to pass those to @ref MeshData.
+*/
+Containers::Array<MeshAttributeData> MAGNUM_TRADE_EXPORT meshAttributeDataNonOwningArray(Containers::ArrayView<const MeshAttributeData> view);
+
 /**
 @brief Mesh data
 @m_since_latest
@@ -275,6 +285,20 @@ the GPU know of the format and layout:
 
 @snippet MagnumTrade.cpp MeshData-usage-advanced
 
+@section Trade-MeshData-usage-mutable Mutable data access
+
+The interfaces implicitly provide @cpp const @ce views on the contained index
+and vertex data through the @ref indexData(), @ref vertexData(),
+@ref indices() and @ref attribute() accessors. This is done because in general
+case the data can also refer to a memory-mapped file or constant memory. In
+cases when it's desirable to modify the data in-place, there's the
+@ref mutableIndexData(), @ref mutableVertexData(), @ref mutableIndices() and
+@ref mutableAttribute() set of functions. To use these, you need to check that
+the data are mutable using @ref indexDataFlags() or @ref vertexDataFlags()
+first. The following snippet applies a transformation to the mesh data:
+
+@snippet MagnumTrade.cpp MeshData-usage-mutable
+
 @see @ref AbstractImporter::mesh()
 */
 class MAGNUM_TRADE_EXPORT MeshData {
@@ -295,12 +319,89 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * index-less attribute-less mesh, use
          * @ref MeshData(MeshPrimitive, UnsignedInt, const void*) to specify
          * desired vertex count.
+         *
+         * The @ref indexDataFlags() / @ref vertexDataFlags() are implicitly
+         * set to a combination of @ref DataFlag::Owned and
+         * @ref DataFlag::Mutable. For non-owned data use the
+         * @ref MeshData(MeshPrimitive, DataFlags, Containers::ArrayView<const void>, const MeshIndexData&, DataFlags, Containers::ArrayView<const void>, Containers::Array<MeshAttributeData>&&, const void*)
+         * constructor or its variants instead.
          */
         explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* importerState = nullptr) noexcept;
 
         /** @overload */
         /* Not noexcept because allocation happens inside */
         explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, std::initializer_list<MeshAttributeData> attributes, const void* importerState = nullptr);
+
+        /**
+         * @brief Construct indexed mesh data with non-owned index and vertex data
+         * @param primitive         Primitive
+         * @param indexDataFlags    Index data flags
+         * @param indexData         View on index data
+         * @param indices           Index data description
+         * @param vertexDataFlags   Vertex data flags
+         * @param vertexData        View on vertex data
+         * @param attributes        Description of all vertex attribute data
+         * @param importerState     Importer-specific state
+         *
+         * Compared to @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, const void*)
+         * creates an instance that doesn't own the passed vertex and index
+         * data. The @p indexDataFlags / @p vertexDataFlags parameters can
+         * contain @ref DataFlag::Mutable to indicate the external data can be
+         * modified, and is expected to *not* have @ref DataFlag::Owned set.
+         */
+        explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* importerState = nullptr) noexcept;
+
+        /** @overload */
+        /* Not noexcept because allocation happens inside */
+        explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, std::initializer_list<MeshAttributeData> attributes, const void* importerState = nullptr);
+
+        /**
+         * @brief Construct indexed mesh data with non-owned index data
+         * @param primitive         Primitive
+         * @param indexDataFlags    Index data flags
+         * @param indexData         View on index data
+         * @param indices           Index data description
+         * @param vertexData        Vertex data
+         * @param attributes        Description of all vertex attribute data
+         * @param importerState     Importer-specific state
+         *
+         * Compared to @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, const void*)
+         * creates an instance that doesn't own the passed index data. The
+         * @p indexDataFlags parameter can contain @ref DataFlag::Mutable to
+         * indicate the external data can be modified, and is expected to *not*
+         * have @ref DataFlag::Owned set. The @ref vertexDataFlags() are
+         * implicitly set to a combination of @ref DataFlag::Owned and
+         * @ref DataFlag::Mutable.
+         */
+        explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* importerState = nullptr) noexcept;
+
+        /** @overload */
+        /* Not noexcept because allocation happens inside */
+        explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, Containers::Array<char>&& vertexData, std::initializer_list<MeshAttributeData> attributes, const void* importerState = nullptr);
+
+        /**
+         * @brief Construct indexed mesh data with non-owned vertex data
+         * @param primitive         Primitive
+         * @param indexData         Index data
+         * @param indices           Index data description
+         * @param vertexDataFlags   Vertex data flags
+         * @param vertexData        View on vertex data
+         * @param attributes        Description of all vertex attribute data
+         * @param importerState     Importer-specific state
+         *
+         * Compared to @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, const void*)
+         * creates an instance that doesn't own the passed vertex data. The
+         * @p vertexDataFlags parameter can contain @ref DataFlag::Mutable to
+         * indicate the external data can be modified, and is expected to *not*
+         * have @ref DataFlag::Owned set. The @ref indexDataFlags() are
+         * implicitly set to a combination of @ref DataFlag::Owned and
+         * @ref DataFlag::Mutable.
+         */
+        explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* importerState = nullptr) noexcept;
+
+        /** @overload */
+        /* Not noexcept because allocation happens inside */
+        explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, std::initializer_list<MeshAttributeData> attributes, const void* importerState = nullptr);
 
         /**
          * @brief Construct a non-indexed mesh data
@@ -311,12 +412,43 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *
          * Same as calling @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, const void*)
          * with default-constructed @p indexData and @p indices arguments.
+         *
+         * The @ref vertexDataFlags() are implicitly set to a combination of
+         * @ref DataFlag::Owned and @ref DataFlag::Mutable. For consistency,
+         * the @ref indexDataFlags() are implicitly set to a combination of
+         * @ref DataFlag::Owned and @ref DataFlag::Mutable, even though there
+         * isn't any data to own or to mutate. For non-owned data use the
+         * @ref MeshData(MeshPrimitive, DataFlags, Containers::ArrayView<const void>, Containers::Array<MeshAttributeData>&&, const void*)
+         * constructor instead.
          */
         explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* importerState = nullptr) noexcept;
 
         /** @overload */
         /* Not noexcept because allocation happens inside */
         explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& vertexData, std::initializer_list<MeshAttributeData> attributes, const void* importerState = nullptr);
+
+        /**
+         * @brief Construct a non-owned non-indexed mesh data
+         * @param primitive         Primitive
+         * @param vertexDataFlags   Vertex data flags
+         * @param vertexData        View on vertex data
+         * @param attributes        Description of all vertex attribute data
+         * @param importerState     Importer-specific state
+         *
+         * Compared to @ref MeshData(MeshPrimitive, Containers::Array<char>&&, Containers::Array<MeshAttributeData>&&, const void*)
+         * creates an instance that doesn't own the passed data. The
+         * @p vertexDataFlags parameter can contain @ref DataFlag::Mutable to
+         * indicate the external data can be modified, and is expected to *not*
+         * have @ref DataFlag::Owned set. For consistency, the
+         * @ref indexDataFlags() are implicitly set to a combination of
+         * @ref DataFlag::Owned and @ref DataFlag::Mutable, even though there
+         * isn't any data to own or to mutate.
+         */
+        explicit MeshData(MeshPrimitive primitive, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, Containers::Array<MeshAttributeData>&& attributes, const void* importerState = nullptr) noexcept;
+
+        /** @overload */
+        /* Not noexcept because allocation happens inside */
+        explicit MeshData(MeshPrimitive primitive, DataFlags vertexDataFlags, Containers::ArrayView<const void> vertexData, std::initializer_list<MeshAttributeData> attributes, const void* importerState = nullptr);
 
         /**
          * @brief Construct an attribute-less indexed mesh data
@@ -331,8 +463,35 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * to create an index-less attribute-less mesh, use
          * @ref MeshData(MeshPrimitive, UnsignedInt, const void*) to specify
          * desired vertex count.
+         *
+         * The @ref indexDataFlags() are implicitly set to a combination of
+         * @ref DataFlag::Owned and @ref DataFlag::Mutable. For consistency,
+         * the @ref vertexDataFlags() are implicitly set to a combination of
+         * @ref DataFlag::Owned and @ref DataFlag::Mutable, even though there
+         * isn't any data to own or to mutate. For non-owned data use the
+         * @ref MeshData(MeshPrimitive, DataFlags, Containers::ArrayView<const void>, const MeshIndexData&, const void*)
+         * constructor instead.
          */
         explicit MeshData(MeshPrimitive primitive, Containers::Array<char>&& indexData, const MeshIndexData& indices, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @brief Construct a non-owned attribute-less indexed mesh data
+         * @param primitive         Primitive
+         * @param indexDataFlags    Index data flags
+         * @param indexData         View on index data
+         * @param indices           Index data description
+         * @param importerState     Importer-specific state
+         *
+         * Compared to @ref MeshData(MeshPrimitive, Containers::Array<char>&&, const MeshIndexData&, const void*)
+         * creates an instance that doesn't own the passed data. The
+         * @p indexDataFlags parameter can contain @ref DataFlag::Mutable to
+         * indicate the external data can be modified, and is expected to *not*
+         * have @ref DataFlag::Owned set. For consistency, the
+         * @ref vertexDataFlags() are implicitly set to a combination of
+         * @ref DataFlag::Owned and @ref DataFlag::Mutable, even though there
+         * isn't any data to own or to mutate.
+         */
+        explicit MeshData(MeshPrimitive primitive, DataFlags indexDataFlags, Containers::ArrayView<const void> indexData, const MeshIndexData& indices, const void* importerState = nullptr) noexcept;
 
         /**
          * @brief Construct an index-less attribute-less mesh data
@@ -340,7 +499,11 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @param vertexCount   Desired count of vertices to draw
          * @param importerState Importer-specific state
          *
-         * Useful in case the drawing is fully driven by a shader.
+         * Useful in case the drawing is fully driven by a shader. For
+         * consistency, the @ref indexDataFlags() / @ref vertexDataFlags() are
+         * implicitly set to a combination of @ref DataFlag::Owned and
+         * @ref DataFlag::Mutable, even though there isn't any data to own or
+         * to mutate.
          */
         explicit MeshData(MeshPrimitive primitive, UnsignedInt vertexCount, const void* importerState = nullptr) noexcept;
 
@@ -358,6 +521,22 @@ class MAGNUM_TRADE_EXPORT MeshData {
         /** @brief Move assignment */
         MeshData& operator=(MeshData&&) noexcept;
 
+        /**
+         * @brief Index data flags
+         *
+         * @see @ref releaseIndexData(), @ref mutableIndexData(),
+         *      @ref mutableIndices()
+         */
+        DataFlags indexDataFlags() const { return _indexDataFlags; }
+
+        /**
+         * @brief Vertex data flags
+         *
+         * @see @ref releaseVertexData(), @ref mutableVertexData(),
+         *      @ref mutableAttribute()
+         */
+        DataFlags vertexDataFlags() const { return _vertexDataFlags; }
+
         /** @brief Primitive */
         MeshPrimitive primitive() const { return _primitive; }
 
@@ -366,12 +545,24 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *
          * Returns @cpp nullptr @ce if the mesh is not indexed.
          * @see @ref isIndexed(), @ref indexCount(), @ref indexType(),
-         *      @ref indices(), @ref releaseIndexData()
+         *      @ref indices(), @ref mutableIndexData(), @ref releaseIndexData()
          */
         Containers::ArrayView<const char> indexData() const & { return _indexData; }
 
         /** @brief Taking a view to a r-value instance is not allowed */
         Containers::ArrayView<const char> indexData() const && = delete;
+
+        /**
+         * @brief Mutable raw index data
+         *
+         * Like @ref indexData(), but returns a non-const view. Expects that
+         * the mesh is mutable.
+         * @see @ref indexDataFlags()
+         */
+        Containers::ArrayView<char> mutableIndexData() &;
+
+        /** @brief Taking a view to a r-value instance is not allowed */
+        Containers::ArrayView<char> mutableIndexData() && = delete;
 
         /**
          * @brief Raw vertex data
@@ -380,12 +571,24 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * the mesh has no attributes.
          * @see @ref attributeCount(), @ref attributeName(),
          *      @ref attributeFormat(), @ref attribute(),
-         *      @ref releaseVertexData()
+         *      @ref mutableVertexData(), @ref releaseVertexData()
          */
         Containers::ArrayView<const char> vertexData() const & { return _vertexData; }
 
         /** @brief Taking a view to a r-value instance is not allowed */
         Containers::ArrayView<const char> vertexData() const && = delete;
+
+        /**
+         * @brief Mutable raw vertex data
+         *
+         * Like @ref vertexData(), but returns a non-const view. Expects that
+         * the mesh is mutable.
+         * @see @ref vertexDataFlags()
+         */
+        Containers::ArrayView<char> mutableVertexData() &;
+
+        /** @brief Taking a view to a r-value instance is not allowed */
+        Containers::ArrayView<char> mutableVertexData() && = delete;
 
         /** @brief Whether the mesh is indexed */
         bool isIndexed() const { return _indexType != MeshIndexType{}; }
@@ -418,9 +621,18 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref indicesAsArray() accessor to get indices converted to 32-bit,
          * but note that such operation involves extra allocation and data
          * conversion.
-         * @see @ref isIndexed(), @ref attribute()
+         * @see @ref isIndexed(), @ref attribute(), @ref mutableIndices()
          */
         template<class T> Containers::ArrayView<const T> indices() const;
+
+        /**
+         * @brief Mutable mesh indices
+         *
+         * Like @ref indices() const, but returns a mutable view. Expects that
+         * the mesh is mutable.
+         * @see @ref indexDataFlags()
+         */
+        template<class T> Containers::ArrayView<T> mutableIndices();
 
         /**
          * @brief Mesh vertex count
@@ -548,9 +760,19 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * @ref colorsAsArray() accessors to get common attributes converted to
          * usual types, but note that these operations involve extra allocation
          * and data conversion.
-         * @see @ref attribute(MeshAttribute, UnsignedInt) const
+         * @see @ref attribute(MeshAttribute, UnsignedInt) const,
+         *      @ref mutableAttribute(MeshAttribute, UnsignedInt)
          */
         template<class T> Containers::StridedArrayView1D<const T> attribute(UnsignedInt id) const;
+
+        /**
+         * @brief Mutable data for given attribute array
+         *
+         * Like @ref attribute(UnsignedInt) const, but returns a mutable view.
+         * Expects that the mesh is mutable.
+         * @see @ref vertexDataFlags()
+         */
+        template<class T> Containers::StridedArrayView1D<T> mutableAttribute(UnsignedInt id);
 
         /**
          * @brief Data for given named attribute array
@@ -564,9 +786,19 @@ class MAGNUM_TRADE_EXPORT MeshData {
          * accessors to get common attributes converted to usual types, but
          * note that these operations involve extra data conversion and an
          * allocation.
-         * @see @ref attribute(UnsignedInt) const
+         * @see @ref attribute(UnsignedInt) const,
+         *      @ref mutableAttribute(MeshAttribute, UnsignedInt)
          */
         template<class T> Containers::StridedArrayView1D<const T> attribute(MeshAttribute name, UnsignedInt id = 0) const;
+
+        /**
+         * @brief Mutable data for given named attribute array
+         *
+         * Like @ref attribute(MeshAttribute, UnsignedInt) const, but returns a
+         * mutable view. Expects that the mesh is mutable.
+         * @see @ref vertexDataFlags()
+         */
+        template<class T> Containers::StridedArrayView1D<T> mutableAttribute(MeshAttribute name, UnsignedInt id = 0);
 
         /**
          * @brief Indices as 32-bit integers
@@ -701,8 +933,10 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *
          * Releases the ownership of the index data array and resets internal
          * index-related state to default. The mesh then behaves like
-         * non-indexed.
-         * @see @ref indexData()
+         * non-indexed. Note that the returned array has a custom no-op deleter
+         * when the data are not owned by the mesh, and while the returned
+         * array type is mutable, the actual memory might be not.
+         * @see @ref indexData(), @ref indexDataFlags()
          */
         Containers::Array<char> releaseIndexData();
 
@@ -711,8 +945,10 @@ class MAGNUM_TRADE_EXPORT MeshData {
          *
          * Releases the ownership of the index data array and resets internal
          * attribute-related state to default. The mesh then behaves like if
-         * it has no attributes.
-         * @see @ref vertexData()
+         * it has no attributes. Note that the returned array has a custom
+         * no-op deleter when the data are not owned by the mesh, and while the
+         * returned array type is mutable, the actual memory might be not.
+         * @see @ref vertexData(), @ref vertexDataFlags()
          */
         Containers::Array<char> releaseVertexData();
 
@@ -734,6 +970,7 @@ class MAGNUM_TRADE_EXPORT MeshData {
         UnsignedInt _vertexCount;
         MeshIndexType _indexType;
         MeshPrimitive _primitive;
+        DataFlags _indexDataFlags, _vertexDataFlags;
         const void* _importerState;
         Containers::Array<char> _indexData, _vertexData;
         Containers::Array<MeshAttributeData> _attributes;
@@ -789,6 +1026,16 @@ template<class T> Containers::ArrayView<const T> MeshData::indices() const {
     return Containers::arrayCast<const T>(_indices);
 }
 
+template<class T> Containers::ArrayView<T> MeshData::mutableIndices() {
+    CORRADE_ASSERT(_indexDataFlags & DataFlag::Mutable,
+        "Trade::MeshData::mutableIndices(): index data not mutable", {});
+    CORRADE_ASSERT(isIndexed(),
+        "Trade::MeshData::mutableIndices(): the mesh is not indexed", {});
+    CORRADE_ASSERT(Implementation::meshIndexTypeFor<T>() == _indexType,
+        "Trade::MeshData::mutableIndices(): improper type requested for" << _indexType, nullptr);
+    return Containers::arrayCast<T>(reinterpret_cast<Containers::ArrayView<char>&>(_indices));
+}
+
 template<class T> Containers::StridedArrayView1D<const T> MeshData::attribute(UnsignedInt id) const {
     CORRADE_ASSERT(id < _attributes.size(),
         "Trade::MeshData::attribute(): index" << id << "out of range for" << _attributes.size() << "attributes", nullptr);
@@ -797,10 +1044,28 @@ template<class T> Containers::StridedArrayView1D<const T> MeshData::attribute(Un
     return Containers::arrayCast<const T>(_attributes[id].data);
 }
 
+template<class T> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(UnsignedInt id) {
+    CORRADE_ASSERT(_vertexDataFlags & DataFlag::Mutable,
+        "Trade::MeshData::mutableAttribute(): vertex data not mutable", {});
+    CORRADE_ASSERT(id < _attributes.size(),
+        "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << _attributes.size() << "attributes", nullptr);
+    CORRADE_ASSERT(Implementation::vertexFormatFor<T>() == _attributes[id].format,
+        "Trade::MeshData::mutableAttribute(): improper type requested for" << _attributes[id].name << "of format" << _attributes[id].format, nullptr);
+    return Containers::arrayCast<T>(reinterpret_cast<Containers::StridedArrayView1D<char>&>(_attributes[id].data));
+}
+
 template<class T> Containers::StridedArrayView1D<const T> MeshData::attribute(MeshAttribute name, UnsignedInt id) const {
     const UnsignedInt attributeId = attributeFor(name, id);
     CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::attribute(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
     return attribute<T>(attributeId);
+}
+
+template<class T> Containers::StridedArrayView1D<T> MeshData::mutableAttribute(MeshAttribute name, UnsignedInt id) {
+    CORRADE_ASSERT(_vertexDataFlags & DataFlag::Mutable,
+        "Trade::MeshData::mutableAttribute(): vertex data not mutable", {});
+    const UnsignedInt attributeId = attributeFor(name, id);
+    CORRADE_ASSERT(attributeId != ~UnsignedInt{}, "Trade::MeshData::mutableAttribute(): index" << id << "out of range for" << attributeCount(name) << name << "attributes", {});
+    return mutableAttribute<T>(attributeId);
 }
 
 }}
