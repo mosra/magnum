@@ -522,12 +522,13 @@ class MAGNUM_TRADE_EXPORT AnimationData {
          * @brief Release data storage
          *
          * Releases the ownership of the data array and resets internal state
-         * to default. Note that the returned array has a custom no-op deleter
-         * when the data are not owned by the animation, and while the returned
-         * array type is mutable, the actual memory might be not.
+         * to default. The animation then behaves like it's empty. Note that
+         * the returned array has a custom no-op deleter when the data are not
+         * owned by the animation, and while the returned array type is
+         * mutable, the actual memory might be not.
          * @see @ref data(), @ref dataFlags()
          */
-        Containers::Array<char> release() { return std::move(_data); }
+        Containers::Array<char> release();
 
         /**
          * @brief Importer-specific state

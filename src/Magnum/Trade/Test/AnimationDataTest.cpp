@@ -55,6 +55,8 @@ struct AnimationDataTest: TestSuite::Tester {
     void trackWrongType();
     void trackWrongResultType();
 
+    void release();
+
     void debugAnimationTrackType();
     void debugAnimationTrackTargetType();
 };
@@ -90,6 +92,8 @@ AnimationDataTest::AnimationDataTest() {
               &AnimationDataTest::trackWrongIndex,
               &AnimationDataTest::trackWrongType,
               &AnimationDataTest::trackWrongResultType,
+
+              &AnimationDataTest::release,
 
               &AnimationDataTest::debugAnimationTrackType,
               &AnimationDataTest::debugAnimationTrackTargetType});
@@ -564,6 +568,25 @@ void AnimationDataTest::trackWrongResultType() {
     data.track<Vector3i, Vector2>(0);
 
     CORRADE_COMPARE(out.str(), "Trade::AnimationData::track(): improper result type requested for Trade::AnimationTrackType::Vector3\n");
+}
+
+void AnimationDataTest::release() {
+    const std::pair<Float, bool> keyframes[] {
+        {1.0f, true},
+        {5.0f, false}
+    };
+
+    AnimationData data{{}, keyframes, Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
+        {AnimationTrackType::Bool,
+         AnimationTrackTargetType(129), 0,
+         Animation::TrackView<const Float, const bool>{keyframes, Animation::Interpolation::Constant}},
+        }}};
+    CORRADE_COMPARE(data.trackCount(), 1);
+
+    Containers::Array<char> released = data.release();
+    CORRADE_COMPARE(data.data(), nullptr);
+    CORRADE_COMPARE(data.trackCount(), 0);
+    CORRADE_COMPARE(static_cast<const void*>(released.data()), keyframes);
 }
 
 void AnimationDataTest::debugAnimationTrackType() {

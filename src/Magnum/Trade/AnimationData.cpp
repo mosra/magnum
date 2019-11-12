@@ -100,6 +100,11 @@ const Animation::TrackViewStorage<Float>& AnimationData::mutableTrack(UnsignedIn
     return reinterpret_cast<const Animation::TrackViewStorage<Float>&>(_tracks[id]._view);
 }
 
+Containers::Array<char> AnimationData::release() {
+    _tracks = nullptr;
+    return std::move(_data);
+}
+
 template<class V, class R> auto animationInterpolatorFor(Animation::Interpolation interpolation) -> R(*)(const V&, const V&, Float) {
     return Animation::interpolatorFor<V, R>(interpolation);
 }
