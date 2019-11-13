@@ -406,9 +406,11 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
        succeeds, make the context current so we can query GL_VENDOR below.
        If we are on Wayland, this is causing a segfault; a blinking window is
        acceptable in this case. */
-    constexpr static const char waylandString[] = "wayland";
+    constexpr const char waylandString[] = "wayland";
     if(std::strncmp(std::getenv("XDG_SESSION_TYPE"), waylandString, sizeof(waylandString)) != 0)
         glfwWindowHint(GLFW_VISIBLE, false);
+    else if(_verboseLog)
+        Warning{} << "Platform::GlfwApplication: Wayland detected, GL context has to be created with the window visible and may cause flicker on startup";
     if((_window = glfwCreateWindow(scaledWindowSize.x(), scaledWindowSize.y(), configuration.title().c_str(), monitor, nullptr)))
         glfwMakeContextCurrent(_window);
 
