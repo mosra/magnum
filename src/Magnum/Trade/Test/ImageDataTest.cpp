@@ -712,6 +712,9 @@ void ImageDataTest::pixelsCompressed() {
     Error redirectError{&out};
 
     a.pixels();
+    /* a.pixels<T>() calls non-templated pixels(), so assume there it will
+       blow up correctly as well (can't test because it asserts inside
+       arrayCast() due to zero stride) */
     CORRADE_COMPARE(out.str(), "Trade::ImageData::pixels(): the image is compressed\n");
 }
 
