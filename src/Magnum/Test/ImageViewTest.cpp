@@ -604,7 +604,7 @@ void ImageViewTest::constructNullptr() {
     std::ostringstream out;
     Error redirectError{&out};
     ImageView2D{PixelFormat::RGB8Unorm, {1, 3},  nullptr};
-    CORRADE_COMPARE(out.str(), "ImageView::ImageView(): data too small, got 0 but expected at least 12 bytes\n");
+    CORRADE_COMPARE(out.str(), "ImageView: data too small, got 0 but expected at least 12 bytes\n");
 }
 
 void ImageViewTest::constructInvalidSize() {
@@ -614,7 +614,7 @@ void ImageViewTest::constructInvalidSize() {
     /* Doesn't consider alignment */
     const char data[3*3]{};
     ImageView2D{PixelFormat::RGB8Unorm, {1, 3}, data};
-    CORRADE_COMPARE(out.str(), "ImageView::ImageView(): data too small, got 9 but expected at least 12 bytes\n");
+    CORRADE_COMPARE(out.str(), "ImageView: data too small, got 9 but expected at least 12 bytes\n");
 }
 
 void ImageViewTest::constructCompressedInvalidSize() {
@@ -627,14 +627,14 @@ void ImageViewTest::constructCompressedInvalidSize() {
         std::ostringstream out;
         Error redirectError{&out};
         CompressedImageView2D{CompressedPixelFormat::Bc2RGBAUnorm, {4, 4}, data};
-        CORRADE_COMPARE(out.str(), "CompressedImageView::CompressedImageView(): data too small, got 2 but expected at least 4 bytes\n");
+        CORRADE_COMPARE(out.str(), "CompressedImageView: data too small, got 2 but expected at least 4 bytes\n");
 
     /* Size should be rounded up even if the image size is not full block */
     } {
         std::ostringstream out;
         Error redirectError{&out};
         CompressedImageView2D{CompressedPixelFormat::Bc2RGBAUnorm, {2, 2}, data};
-        CORRADE_COMPARE(out.str(), "CompressedImageView::CompressedImageView(): data too small, got 2 but expected at least 4 bytes\n");
+        CORRADE_COMPARE(out.str(), "CompressedImageView: data too small, got 2 but expected at least 4 bytes\n");
     }
 }
 

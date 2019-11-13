@@ -38,11 +38,11 @@ template<UnsignedInt dimensions, class T> ImageView<dimensions, T>::ImageView(co
     #ifdef MAGNUM_BUILD_DEPRECATED
     #ifndef CORRADE_NO_ASSERT
     if(size.product() && !_data && !_data.size())
-        Warning{} << "ImageView::ImageView(): passing empty data to a non-empty view is deprecated, use a constructor without the data parameter instead";
+        Warning{} << "ImageView: passing empty data to a non-empty view is deprecated, use a constructor without the data parameter instead";
     #endif
-    CORRADE_ASSERT(!_data || Implementation::imageDataSize(*this) <= _data.size(), "ImageView::ImageView(): data too small, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this) << "bytes", );
+    CORRADE_ASSERT(!_data || Implementation::imageDataSize(*this) <= _data.size(), "ImageView: data too small, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this) << "bytes", );
     #else
-    CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "ImageView::ImageView(): data too small, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this) << "bytes", );
+    CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "ImageView: data too small, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this) << "bytes", );
     #endif
 }
 

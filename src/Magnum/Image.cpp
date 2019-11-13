@@ -36,7 +36,7 @@ template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage sto
 template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const UnsignedInt format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: Image{storage, pixelFormatWrap(format), formatExtra, pixelSize, size, std::move(data)} {}
 
 template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format, const UnsignedInt formatExtra, const UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data) noexcept: _storage{storage}, _format{format}, _formatExtra{formatExtra}, _pixelSize{pixelSize}, _size{size}, _data{std::move(data)} {
-    CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "Image::Image(): data too small, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this) << "bytes", );
+    CORRADE_ASSERT(Implementation::imageDataSize(*this) <= _data.size(), "Image: data too small, got" << _data.size() << "but expected at least" << Implementation::imageDataSize(*this) << "bytes", );
 }
 
 template<UnsignedInt dimensions> Image<dimensions>::Image(const PixelStorage storage, const PixelFormat format) noexcept: Image{storage, format, {}, Magnum::pixelSize(format)} {}

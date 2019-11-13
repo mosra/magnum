@@ -302,7 +302,7 @@ void ImageDataTest::constructInvalidSize() {
 
     /* Doesn't consider alignment */
     ImageData2D{PixelFormat::RGB8Unorm, {1, 3}, Containers::Array<char>{3*3}};
-    CORRADE_COMPARE(out.str(), "Trade::ImageData::ImageData(): data too small, got 9 but expected at least 12 bytes\n");
+    CORRADE_COMPARE(out.str(), "Trade::ImageData: data too small, got 9 but expected at least 12 bytes\n");
 }
 
 void ImageDataTest::constructCompressedInvalidSize() {
