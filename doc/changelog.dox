@@ -72,6 +72,12 @@ See also:
 -   Ability to specify application return code in
     @ref Platform::AbstractXApplication::exit()
 
+@subsubsection changelog-latest-changes-platform Platform libraries
+
+-   Worked around @ref Platform::GlfwApplication crash while creating GL
+    context on a hidden window on Wayland (see
+    [mosra/magnum#392](https://github.com/mosra/magnum/pull/392))
+
 @subsubsection changelog-latest-changes-trade Trade library
 
 -   For better usability, the @ref magnum-imageconverter "magnum-imageconverter"
