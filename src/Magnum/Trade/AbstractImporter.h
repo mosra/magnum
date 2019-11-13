@@ -194,9 +194,11 @@ dependency on the importer instance and neither on the dynamic plugin module.
 In other words, you don't need to keep the importer instance (or the plugin
 manager instance) around in order to have the `*Data` instances valid.
 Moreover, all @ref Corrade::Containers::Array instances returned through
-@ref ImageData, @ref AnimationData and others are only allowed to have default
-deleters --- this is to avoid potential dangling function pointer calls when
-destructing such instances after the plugin module has been unloaded.
+@ref ImageData, @ref AnimationData and @ref MeshData are only allowed to have
+default deleters (or be non-owning instances created from
+@ref Corrade::Containers::ArrayView) --- this is to avoid potential dangling
+function pointer calls when destructing such instances after the plugin module
+has been unloaded.
 
 The only exception are various `importerState()` functions
 @ref Trade-AbstractImporter-usage-state "described above", but in that case the

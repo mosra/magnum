@@ -106,6 +106,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void animationNotImplemented();
     void animationNoFile();
     void animationOutOfRange();
+    void animationNonOwningDeleters();
     void animationCustomDataDeleter();
     void animationCustomTrackDeleter();
 
@@ -168,6 +169,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void meshNotImplemented();
     void meshNoFile();
     void meshOutOfRange();
+    void meshNonOwningDeleters();
     void meshCustomIndexDataDeleter();
     void meshCustomVertexDataDeleter();
     void meshCustomAttributesDeleter();
@@ -240,6 +242,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void image1DNoFile();
     void image1DOutOfRange();
     void image1DLevelOutOfRange();
+    void image1DNonOwningDeleter();
     void image1DCustomDeleter();
 
     void image2D();
@@ -258,6 +261,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void image2DNoFile();
     void image2DOutOfRange();
     void image2DLevelOutOfRange();
+    void image2DNonOwningDeleter();
     void image2DCustomDeleter();
 
     void image3D();
@@ -276,6 +280,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void image3DNoFile();
     void image3DOutOfRange();
     void image3DLevelOutOfRange();
+    void image3DNonOwningDeleter();
     void image3DCustomDeleter();
 
     void importerState();
@@ -340,6 +345,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::animationNotImplemented,
               &AbstractImporterTest::animationNoFile,
               &AbstractImporterTest::animationOutOfRange,
+              &AbstractImporterTest::animationNonOwningDeleters,
               &AbstractImporterTest::animationCustomDataDeleter,
               &AbstractImporterTest::animationCustomTrackDeleter,
 
@@ -402,6 +408,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::meshNotImplemented,
               &AbstractImporterTest::meshNoFile,
               &AbstractImporterTest::meshOutOfRange,
+              &AbstractImporterTest::meshNonOwningDeleters,
               &AbstractImporterTest::meshCustomIndexDataDeleter,
               &AbstractImporterTest::meshCustomVertexDataDeleter,
               &AbstractImporterTest::meshCustomAttributesDeleter,
@@ -474,6 +481,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::image1DNoFile,
               &AbstractImporterTest::image1DOutOfRange,
               &AbstractImporterTest::image1DLevelOutOfRange,
+              &AbstractImporterTest::image1DNonOwningDeleter,
               &AbstractImporterTest::image1DCustomDeleter,
 
               &AbstractImporterTest::image2D,
@@ -492,6 +500,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::image2DNoFile,
               &AbstractImporterTest::image2DOutOfRange,
               &AbstractImporterTest::image2DLevelOutOfRange,
+              &AbstractImporterTest::image2DNonOwningDeleter,
               &AbstractImporterTest::image2DCustomDeleter,
 
               &AbstractImporterTest::image3D,
@@ -510,6 +519,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::image3DNoFile,
               &AbstractImporterTest::image3DOutOfRange,
               &AbstractImporterTest::image3DLevelOutOfRange,
+              &AbstractImporterTest::image3DNonOwningDeleter,
               &AbstractImporterTest::image3DCustomDeleter,
 
               &AbstractImporterTest::importerState,
@@ -1366,6 +1376,28 @@ void AbstractImporterTest::animationOutOfRange() {
 
     importer.animation(8);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::animation(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::animationNonOwningDeleters() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doAnimationCount() const override { return 1; }
+        Containers::Optional<AnimationData> doAnimation(UnsignedInt) override {
+            return AnimationData{Containers::Array<char>{data, 1, Implementation::nonOwnedArrayDeleter},
+                Containers::Array<AnimationTrackData>{&track, 1,
+                reinterpret_cast<void(*)(AnimationTrackData*, std::size_t)>(Implementation::nonOwnedArrayDeleter)}};
+        }
+
+        char data[1];
+        AnimationTrackData track;
+    } importer;
+
+    auto data = importer.animation(0);
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE(static_cast<const void*>(data->data()), importer.data);
 }
 
 void AbstractImporterTest::animationCustomDataDeleter() {
@@ -2236,6 +2268,31 @@ void AbstractImporterTest::meshOutOfRange() {
 
     importer.mesh(8);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh(): index 8 out of range for 8 entries\n");
+}
+
+void AbstractImporterTest::meshNonOwningDeleters() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 1; }
+        Containers::Optional<MeshData> doMesh(UnsignedInt) override {
+            return MeshData{MeshPrimitive::Triangles,
+                Containers::Array<char>{indexData, 1, Implementation::nonOwnedArrayDeleter}, MeshIndexData{MeshIndexType::UnsignedByte, indexData},
+                Containers::Array<char>{nullptr, 0, Implementation::nonOwnedArrayDeleter},
+                meshAttributeDataNonOwningArray(attributes)};
+        }
+
+        char indexData[1];
+        MeshAttributeData attributes[1]{
+            MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}
+        };
+    } importer;
+
+    auto data = importer.mesh(0);
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE(static_cast<const void*>(data->indexData()), importer.indexData);
 }
 
 void AbstractImporterTest::meshCustomIndexDataDeleter() {
@@ -3263,6 +3320,25 @@ void AbstractImporterTest::image1DLevelOutOfRange() {
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image1D(): level 3 out of range for 3 entries\n");
 }
 
+void AbstractImporterTest::image1DNonOwningDeleter() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doImage1DCount() const override { return 1; }
+        Containers::Optional<ImageData1D> doImage1D(UnsignedInt, UnsignedInt) override {
+            return ImageData1D{PixelFormat::RGBA8Unorm, {}, Containers::Array<char>{data, 1, Implementation::nonOwnedArrayDeleter}};
+        }
+
+        char data[1];
+    } importer;
+
+    auto data = importer.image1D(0);
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE(static_cast<const void*>(data->data()), importer.data);
+}
+
 void AbstractImporterTest::image1DCustomDeleter() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -3528,6 +3604,25 @@ void AbstractImporterTest::image2DLevelOutOfRange() {
     Error redirectError{&out};
     importer.image2D(7, 3);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image2D(): level 3 out of range for 3 entries\n");
+}
+
+void AbstractImporterTest::image2DNonOwningDeleter() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doImage2DCount() const override { return 1; }
+        Containers::Optional<ImageData2D> doImage2D(UnsignedInt, UnsignedInt) override {
+            return ImageData2D{PixelFormat::RGBA8Unorm, {}, Containers::Array<char>{data, 1, Implementation::nonOwnedArrayDeleter}};
+        }
+
+        char data[1];
+    } importer;
+
+    auto data = importer.image2D(0);
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE(static_cast<const void*>(data->data()), importer.data);
 }
 
 void AbstractImporterTest::image2DCustomDeleter() {
@@ -3796,6 +3891,25 @@ void AbstractImporterTest::image3DLevelOutOfRange() {
     Error redirectError{&out};
     importer.image3D(7, 3);
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::image3D(): level 3 out of range for 3 entries\n");
+}
+
+void AbstractImporterTest::image3DNonOwningDeleter() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doImage3DCount() const override { return 1; }
+        Containers::Optional<ImageData3D> doImage3D(UnsignedInt, UnsignedInt) override {
+            return ImageData3D{PixelFormat::RGBA8Unorm, {}, Containers::Array<char>{data, 1, Implementation::nonOwnedArrayDeleter}};
+        }
+
+        char data[1];
+    } importer;
+
+    auto data = importer.image3D(0);
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE(static_cast<const void*>(data->data()), importer.data);
 }
 
 void AbstractImporterTest::image3DCustomDeleter() {
