@@ -403,8 +403,12 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
 
     /* Create window. Hide it by default so we don't have distracting window
        blinking in case we have to destroy it again right away. If the creation
-       succeeds, make the context current so we can query GL_VENDOR below. */
-    glfwWindowHint(GLFW_VISIBLE, false);
+       succeeds, make the context current so we can query GL_VENDOR below.
+       If we are on Wayland, this is causing a segfault; a blinking window is
+       acceptable in this case. */
+    constexpr static const char waylandString[] = "wayland";
+    if(std::strncmp(std::getenv("XDG_SESSION_TYPE"), waylandString, sizeof(waylandString)) != 0)
+        glfwWindowHint(GLFW_VISIBLE, false);
     if((_window = glfwCreateWindow(scaledWindowSize.x(), scaledWindowSize.y(), configuration.title().c_str(), monitor, nullptr)))
         glfwMakeContextCurrent(_window);
 
