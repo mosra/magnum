@@ -223,6 +223,20 @@ else
 }
 #endif
 
+{
+Trade::ImageData2D data{PixelFormat::RGB8Unorm, {}, nullptr};
+/* [ImageData-usage-mutable] */
+if(data.isCompressed() ||
+   data.format() != PixelFormat::RGB8Unorm ||
+   !(data.dataFlags() & Trade::DataFlag::Mutable))
+    Fatal{} << ":(";
+
+for(auto&& row: data.mutablePixels<Color3ub>())
+    for(Color3ub& pixel: row)
+        pixel = Math::gather<'b', 'g', 'r'>(pixel);
+/* [ImageData-usage-mutable] */
+}
+
 #ifdef MAGNUM_TARGET_GL
 {
 Trade::MeshData data{MeshPrimitive::Points, 0};

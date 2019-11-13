@@ -45,7 +45,7 @@ template<std::size_t dimensions, class T> std::pair<Math::Vector<dimensions, std
     return std::make_pair(Math::Vector<dimensions, std::size_t>::pad(dataProperties.first), Math::Vector<dimensions, std::size_t>::pad(dataProperties.second));
 }
 
-template<UnsignedInt dimensions, class T, class Image> Containers::StridedArrayView<dimensions + 1, T> imagePixelView(Image& image) {
+template<UnsignedInt dimensions, class T, class Image, class Data> Containers::StridedArrayView<dimensions + 1, T> imagePixelView(Image& image, const Data data) {
     const std::pair<VectorTypeFor<dimensions, std::size_t>, VectorTypeFor<dimensions, std::size_t>> properties = image.dataProperties();
 
     /* Size in the last dimension is byte size of the pixel, the remaining
@@ -70,7 +70,7 @@ template<UnsignedInt dimensions, class T, class Image> Containers::StridedArrayV
 
     static_assert(sizeof(decltype(image.data().front())) == 1,
         "pointer arithmetic expects image data type to have 1 byte");
-    return {image.data().suffix(properties.first[dimensions - 1]), image.data() + properties.first.sum(), size, stride};
+    return {data.suffix(properties.first[dimensions - 1]), data + properties.first.sum(), size, stride};
 }
 
 }}

@@ -42,7 +42,8 @@ namespace Magnum { namespace Trade {
 @m_since_latest
 
 @see @ref DataFlags, @ref AnimationData::dataFlags(),
-    @ref MeshData::indexDataFlags(), @ref MeshData::vertexDataFlags()
+    @ref ImageData::dataFlags(), @ref MeshData::indexDataFlags(),
+    @ref MeshData::vertexDataFlags()
 */
 enum class DataFlag: UnsignedByte {
     /**
@@ -71,8 +72,8 @@ MAGNUM_TRADE_EXPORT Debug& operator<<(Debug& debug, DataFlag value);
 @brief Data flags
 @m_since_latest
 
-@see @ref AnimationData::dataFlags(), @ref MeshData::indexDataFlags(),
-    @ref MeshData::vertexDataFlags()
+@see @ref AnimationData::dataFlags(), @ref ImageData::dataFlags(),
+    @ref MeshData::indexDataFlags(), @ref MeshData::vertexDataFlags()
 */
 typedef Containers::EnumSet<DataFlag> DataFlags;
 

@@ -171,8 +171,10 @@ See also:
 -   The @ref Trade::AnimationData class received support for mutable data
     access with new constructors and the
     @ref Trade::AnimationData::mutableData() "mutableData()" and
-    @ref Trade::AnimationData::mutableTrack() "mutableTrack()" accessors. See
-    @ref Trade-AnimationData-usage-mutable for more information.
+    @ref Trade::AnimationData::mutableTrack() "mutableTrack()" accessors.
+    Equivalent APIs are exposed in both @ref Trade::ImageData and
+    @ref Trade::MeshData as well. See @ref Trade-AnimationData-usage-mutable
+    for more information.
 
 @subsubsection changelog-latest-new-vk Vk library
 
@@ -405,6 +407,10 @@ See also:
 -   The @ref Magnum/Math/FunctionsBatch.h header is no longer included from
     @ref Magnum/Math/Functions.h for backwards compatibility in order to speed
     up compile times.
+-   Non-const @ref Trade::ImageData::data() and @ref Trade::ImageData::pixels()
+    were renamed to @ref Trade::ImageData::mutableData() and
+    @ref Trade::ImageData::mutablePixels() to follow the new
+    @ref Trade::MeshData API and similar changes in @ref Trade::AnimationData.
 -   @ref Platform::GlfwApplication::setMinWindowSize() /
     @ref Platform::GlfwApplication::setMaxWindowSize() and equivalent APIs in
     @ref Platform::Sdl2Application now premultiply the value with

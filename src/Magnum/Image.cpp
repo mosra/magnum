@@ -73,11 +73,11 @@ template<UnsignedInt dimensions> std::pair<VectorTypeFor<dimensions, std::size_t
 }
 
 template<UnsignedInt dimensions> Containers::StridedArrayView<dimensions + 1, char> Image<dimensions>::pixels() {
-    return Implementation::imagePixelView<dimensions, char>(*this);
+    return Implementation::imagePixelView<dimensions, char>(*this, data());
 }
 
 template<UnsignedInt dimensions> Containers::StridedArrayView<dimensions + 1, const char> Image<dimensions>::pixels() const {
-    return Implementation::imagePixelView<dimensions, const char>(*this);
+    return Implementation::imagePixelView<dimensions, const char>(*this, data());
 }
 
 template<UnsignedInt dimensions> Containers::Array<char> Image<dimensions>::release() {

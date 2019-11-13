@@ -33,6 +33,7 @@
 
 #include "Magnum/DimensionTraits.h"
 #include "Magnum/PixelStorage.h"
+#include "Magnum/Trade/Data.h"
 #include "Magnum/Trade/Trade.h"
 #include "Magnum/Trade/visibility.h"
 
@@ -87,6 +88,18 @@ compressed properties through @ref compressedStorage() and
 
 @snippet MagnumTrade.cpp ImageData-usage
 
+@section Trade-ImageData-usage-mutable Mutable data access
+
+The interfaces implicitly provide @cpp const @ce views on the contained
+pixel data through the @ref data() and @ref pixels() accessors. This is done
+because in general case the data can also refer to a memory-mapped file or
+constant memory. In cases when it's desirable to modify the data in-place,
+there's the @ref mutableData() and @ref mutablePixels() set of functions. To
+use these, you need to check that the data are mutable using @ref dataFlags()
+first. The following snippet flips the R and B channels of the imported image:
+
+@snippet MagnumTrade.cpp ImageData-usage-mutable
+
 @see @ref ImageData1D, @ref ImageData2D, @ref ImageData3D,
     @ref Image-pixel-views
 */
@@ -97,7 +110,7 @@ template<UnsignedInt dimensions> class ImageData {
         };
 
         /**
-         * @brief Construct uncompressed image data
+         * @brief Construct an uncompressed image data
          * @param storage           Storage of pixel data
          * @param format            Format of pixel data
          * @param size              Image size
@@ -106,11 +119,34 @@ template<UnsignedInt dimensions> class ImageData {
          *
          * The @p data array is expected to be of proper size for given
          * parameters.
+         *
+         * The @ref dataFlags() are implicitly set to a combination of
+         * @ref DataFlag::Owned and @ref DataFlag::Mutable. For non-owned data
+         * use the @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, const void*)
+         * constructor instead.
          */
         explicit ImageData(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
 
         /**
-         * @brief Construct uncompressed image data
+         * @brief Construct a non-owned uncompressed image data
+         * @param storage           Storage of pixel data
+         * @param format            Format of pixel data
+         * @param size              Image size
+         * @param dataFlags         Data flags
+         * @param data              View on image data
+         * @param importerState     Importer-specific state
+         * @m_since_latest
+         *
+         * Compared to @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * creates an instance that doesn't own the passed data. The
+         * @p dataFlags parameter can contain @ref DataFlag::Mutable to
+         * indicate the external data can be modified, and is expected to *not*
+         * have @ref DataFlag::Owned set.
+         */
+        explicit ImageData(PixelStorage storage, PixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @brief Construct an uncompressed image data
          * @param format            Format of pixel data
          * @param size              Image size
          * @param data              Image data
@@ -119,10 +155,27 @@ template<UnsignedInt dimensions> class ImageData {
          * Equivalent to calling @ref ImageData(PixelStorage, PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
          * with default-constructed @ref PixelStorage.
          */
-        explicit ImageData(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept: ImageData{{}, format, size, std::move(data), importerState} {}
+        explicit ImageData(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
 
         /**
-         * @brief Construct uncompressed image data with implementation-specific pixel format
+         * @brief Construct a non-owned uncompressed image data
+         * @param format            Format of pixel data
+         * @param size              Image size
+         * @param dataFlags         Data flags
+         * @param data              View on image data
+         * @param importerState     Importer-specific state
+         * @m_since_latest
+         *
+         * Compared to @ref ImageData(PixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * creates an instance that doesn't own the passed data. The
+         * @p dataFlags parameter can contain @ref DataFlag::Mutable to
+         * indicate the external data can be modified, and is expected to *not*
+         * have @ref DataFlag::Owned set.
+         */
+        explicit ImageData(PixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @brief Construct an uncompressed image data with implementation-specific pixel format
          * @param storage           Storage of pixel data
          * @param format            Format of pixel data
          * @param formatExtra       Additional pixel format specifier
@@ -139,7 +192,10 @@ template<UnsignedInt dimensions> class ImageData {
          * @ref Magnum::PixelFormat "PixelFormat".
          *
          * The @p data array is expected to be of proper size for given
-         * parameters.
+         * parameters. The @ref dataFlags() are implicitly set to a combination
+         * of @ref DataFlag::Owned and @ref DataFlag::Mutable. For non-owned
+         * data use the @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, DataFlags, Containers::ArrayView<const void>, const void*)
+         * constructor instead.
          */
         explicit ImageData(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
 
@@ -151,7 +207,35 @@ template<UnsignedInt dimensions> class ImageData {
         explicit ImageData(PixelStorage storage, PixelFormat format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
 
         /**
-         * @brief Construct uncompressed image data with implementation-specific pixel format
+         * @brief Construct a non-owned uncompressed image data with implementation-specific pixel format
+         * @param storage           Storage of pixel data
+         * @param format            Format of pixel data
+         * @param formatExtra       Additional pixel format specifier
+         * @param pixelSize         Size of a pixel in given format
+         * @param size              Image size
+         * @param dataFlags         Data flags
+         * @param data              View on image data
+         * @param importerState     Importer-specific state
+         * @m_since_latest
+         *
+         * Compared to @ref ImageData(PixelStorage, UnsignedInt, UnsignedInt, UnsignedInt, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * creates an instance that doesn't own the passed data. The
+         * @p dataFlags parameter can contain @ref DataFlag::Mutable to
+         * indicate the external data can be modified, and is expected to *not*
+         * have @ref DataFlag::Owned set.
+         */
+        explicit ImageData(PixelStorage storage, UnsignedInt format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+
+        /** @overload
+         * @m_since_latest
+         *
+         * Equivalent to the above for @p format already wrapped with
+         * @ref pixelFormatWrap().
+         */
+        explicit ImageData(PixelStorage storage, PixelFormat format, UnsignedInt formatExtra, UnsignedInt pixelSize, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @brief Construct an uncompressed image data with implementation-specific pixel format
          * @param storage           Storage of pixel data
          * @param format            Format of pixel data
          * @param formatExtra       Additional pixel format specifier
@@ -166,7 +250,26 @@ template<UnsignedInt dimensions> class ImageData {
         template<class T, class U> explicit ImageData(PixelStorage storage, T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
 
         /**
-         * @brief Construct uncompressed image data with implementation-specific pixel format
+         * @brief Construct a non-owned uncompressed image data with implementation-specific pixel format
+         * @param storage           Storage of pixel data
+         * @param format            Format of pixel data
+         * @param formatExtra       Additional pixel format specifier
+         * @param size              Image size
+         * @param dataFlags         Data flags
+         * @param data              View on image data
+         * @param importerState     Importer-specific state
+         * @m_since_latest
+         *
+         * Compared to @ref ImageData(PixelStorage, T, U, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * creates an instance that doesn't own the passed data. The
+         * @p dataFlags parameter can contain @ref DataFlag::Mutable to
+         * indicate the external data can be modified, and is expected to *not*
+         * have @ref DataFlag::Owned set.
+         */
+        template<class T, class U> explicit ImageData(PixelStorage storage, T format, U formatExtra, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @brief Construct an uncompressed image data with implementation-specific pixel format
          * @param storage           Storage of pixel data
          * @param format            Format of pixel data
          * @param size              Image size
@@ -180,7 +283,25 @@ template<UnsignedInt dimensions> class ImageData {
         template<class T> explicit ImageData(PixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
 
         /**
-         * @brief Construct compressed image data
+         * @brief Construct a non-owned uncompressed image data with implementation-specific pixel format
+         * @param storage           Storage of pixel data
+         * @param format            Format of pixel data
+         * @param size              Image size
+         * @param dataFlags         Data flags
+         * @param data              view on image data
+         * @param importerState     Importer-specific state
+         * @m_since_latest
+         *
+         * Compared to @ref ImageData(PixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * creates an instance that doesn't own the passed data. The
+         * @p dataFlags parameter can contain @ref DataFlag::Mutable to
+         * indicate the external data can be modified, and is expected to *not*
+         * have @ref DataFlag::Owned set.
+         */
+        template<class T> explicit ImageData(PixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @brief Construct a compressed image data
          * @param storage           Storage of compressed pixel data
          * @param format            Format of compressed pixel data
          * @param size              Image size
@@ -190,7 +311,25 @@ template<UnsignedInt dimensions> class ImageData {
         explicit ImageData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
 
         /**
-         * @brief Construct compressed image data
+         * @brief Construct a non-owned compressed image data
+         * @param storage           Storage of compressed pixel data
+         * @param format            Format of compressed pixel data
+         * @param size              Image size
+         * @param dataFlags         Data flags
+         * @param data              View on image data
+         * @param importerState     Importer-specific state
+         * @m_since_latest
+         *
+         * Compared to @ref ImageData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * creates an instance that doesn't own the passed data. The
+         * @p dataFlags parameter can contain @ref DataFlag::Mutable to
+         * indicate the external data can be modified, and is expected to *not*
+         * have @ref DataFlag::Owned set.
+         */
+        explicit ImageData(CompressedPixelStorage storage, CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @brief Construct a compressed image data
          * @param format            Format of compressed pixel data
          * @param size              Image size
          * @param data              Image data
@@ -199,10 +338,27 @@ template<UnsignedInt dimensions> class ImageData {
          * Equivalent to calling @ref ImageData(CompressedPixelStorage, CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
          * with default-constructed @ref CompressedPixelStorage.
          */
-        explicit ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept: ImageData{{}, format, size, std::move(data), importerState} {}
+        explicit ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
 
         /**
-         * @brief Construct compressed image data
+         * @brief Construct a non-owned compressed image data
+         * @param format            Format of compressed pixel data
+         * @param size              Image size
+         * @param dataFlags         Data flags
+         * @param data              View on image data
+         * @param importerState     Importer-specific state
+         * @m_since_latest
+         *
+         * Compared to @ref ImageData(CompressedPixelFormat, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * creates an instance that doesn't own the passed data. The
+         * @p dataFlags parameter can contain @ref DataFlag::Mutable to
+         * indicate the external data can be modified, and is expected to *not*
+         * have @ref DataFlag::Owned set.
+         */
+        explicit ImageData(CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @brief Construct a compressed image data
          * @param storage           Storage of compressed pixel data
          * @param format            Format of compressed pixel data
          * @param size              Image size
@@ -213,6 +369,24 @@ template<UnsignedInt dimensions> class ImageData {
          * @p format to @ref CompressedPixelFormat.
          */
         template<class T> explicit ImageData(CompressedPixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @brief Construct a non-owned compressed image data
+         * @param storage           Storage of compressed pixel data
+         * @param format            Format of compressed pixel data
+         * @param size              Image size
+         * @param dataFlags         Data flags
+         * @param data              View on image data
+         * @param importerState     Importer-specific state
+         * @m_since_latest
+         *
+         * Compared to @ref ImageData(CompressedPixelStorage, T, const VectorTypeFor<dimensions, Int>&, Containers::Array<char>&&, const void*)
+         * creates an instance that doesn't own the passed data. The
+         * @p dataFlags parameter can contain @ref DataFlag::Mutable to
+         * indicate the external data can be modified, and is expected to *not*
+         * have @ref DataFlag::Owned set.
+         */
+        template<class T> explicit ImageData(CompressedPixelStorage storage, T format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
 
         /**
          * @brief Construct from existing data with attached importer state
@@ -237,6 +411,12 @@ template<UnsignedInt dimensions> class ImageData {
         /** @brief Move assignment */
         ImageData<dimensions>& operator=(ImageData<dimensions>&& other) noexcept;
 
+        /**
+         * @brief Data flags
+         * @m_since_latest
+         */
+        DataFlags dataFlags() const { return _dataFlags; }
+
         /** @brief Whether the image is compressed */
         bool isCompressed() const { return _compressed; }
 
@@ -253,6 +433,9 @@ template<UnsignedInt dimensions> class ImageData {
         /**
          * @brief Conversion to a mutable view
          * @m_since{2019,10}
+         *
+         * The image is expected to be uncompressed and mutable.
+         * @see @ref isCompressed(), @ref dataFlags()
          */
         /*implicit*/ operator BasicMutableImageView<dimensions>();
 
@@ -269,6 +452,9 @@ template<UnsignedInt dimensions> class ImageData {
         /**
          * @brief Conversion to a mutable compressed view
          * @m_since{2019,10}
+         *
+         * The image is expected to be compressed and mutable.
+         * @see @ref isCompressed(), @ref dataFlags()
          */
         /*implicit*/ operator BasicMutableCompressedImageView<dimensions>();
 
@@ -358,9 +544,6 @@ template<UnsignedInt dimensions> class ImageData {
          *
          * @see @ref release(), @ref pixels()
          */
-        Containers::ArrayView<char> data() & { return _data; }
-
-        /** @overload */
         Containers::ArrayView<const char> data() const & { return _data; }
 
         /**
@@ -369,7 +552,9 @@ template<UnsignedInt dimensions> class ImageData {
          *
          * Unlike @ref data(), which returns a view, this is equivalent to
          * @ref release() to avoid a dangling view when the temporary instance
-         * goes out of scope.
+         * goes out of scope. Note that the returned array has a custom no-op
+         * deleter when the data are not owned by the image, and while the
+         * returned array type is mutable, the actual memory might be not.
          * @todoc stupid doxygen can't link to & overloads ffs
          */
         Containers::Array<char> data() && { return release(); }
@@ -379,6 +564,16 @@ template<UnsignedInt dimensions> class ImageData {
          * @todo what to do here?!
          */
         Containers::Array<char> data() const && = delete;
+
+        /**
+         * @brief Mutable image data
+         * @m_since_latest
+         *
+         * Like @ref data(), but returns a non-const view. Expects that the
+         * image is mutable.
+         * @see @ref dataFlags()
+         */
+        Containers::ArrayView<char> mutableData() &;
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
@@ -414,8 +609,17 @@ template<UnsignedInt dimensions> class ImageData {
          * @see @ref isCompressed(),
          *      @ref Corrade::Containers::StridedArrayView::isContiguous()
          */
-        Containers::StridedArrayView<dimensions + 1, char> pixels();
-        Containers::StridedArrayView<dimensions + 1, const char> pixels() const; /**< @overload */
+        Containers::StridedArrayView<dimensions + 1, const char> pixels() const;
+
+        /**
+         * @brief Mutable view on pixel data
+         * @m_since_latest
+         *
+         * Like @ref pixels() const, but returns a non-const view. Expects that
+         * the image is mutable.
+         * @see @ref dataFlags()
+         */
+        Containers::StridedArrayView<dimensions + 1, char> mutablePixels();
 
         /**
          * @brief View on pixel data with a concrete pixel type
@@ -426,26 +630,35 @@ template<UnsignedInt dimensions> class ImageData {
          * correct type for given @ref format() --- checking it on the library
          * side is not possible for the general case.
          */
-        template<class T> Containers::StridedArrayView<dimensions, T> pixels() {
+        template<class T> Containers::StridedArrayView<dimensions, const T> pixels() const {
             /* Deliberately not adding a StridedArrayView include, it should
                work without since this is a templated function and we declare
                arrayCast() above to satisfy two-phase lookup. */
-            return Containers::arrayCast<dimensions, T>(pixels());
+            return Containers::arrayCast<dimensions, const T>(pixels());
         }
 
         /**
-         * @overload
+         * @brief Mutable view on pixel data with a concrete pixel type
          * @m_since{2019,10}
+         *
+         * Like @ref pixels() const, but returns a non-const view. Expects that
+         * the image is mutable.
+         * @see @ref dataFlags()
          */
-        template<class T> Containers::StridedArrayView<dimensions, const T> pixels() const {
-            return Containers::arrayCast<dimensions, const T>(pixels());
+        template<class T> Containers::StridedArrayView<dimensions, T> mutablePixels() {
+            /* Deliberately not adding a StridedArrayView include, it should
+               work without since this is a templated function */
+            return Containers::arrayCast<dimensions, T>(mutablePixels());
         }
 
         /**
          * @brief Release data storage
          *
          * Releases the ownership of the data array and resets internal state
-         * to default.
+         * to default. The image then behaves like it's empty. Note that
+         * the returned array has a custom no-op deleter when the data are not
+         * owned by the image, and while the returned array type is mutable,
+         * the actual memory might be not.
          * @see @ref data()
          */
         Containers::Array<char> release();
@@ -465,6 +678,9 @@ template<UnsignedInt dimensions> class ImageData {
 
         explicit ImageData(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* importerState = nullptr) noexcept;
 
+        explicit ImageData(CompressedPixelStorage storage, UnsignedInt format, const VectorTypeFor<dimensions, Int>& size, DataFlags dataFlags, Containers::ArrayView<const void> data, const void* importerState = nullptr) noexcept;
+
+        DataFlags _dataFlags;
         bool _compressed;
         union {
             PixelStorage _storage;
@@ -495,12 +711,27 @@ template<UnsignedInt dimensions> template<class T, class U> ImageData<dimensions
         "format types larger than 32bits are not supported");
 }
 
+template<UnsignedInt dimensions> template<class T, class U> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const U formatExtra, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), UnsignedInt(formatExtra), Magnum::Implementation::pixelSizeAdl(format, formatExtra), size, dataFlags, data, importerState} {
+    static_assert(sizeof(T) <= 4 && sizeof(U) <= 4,
+        "format types larger than 32bits are not supported");
+}
+
 template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), {}, Magnum::Implementation::pixelSizeAdl(format), size, std::move(data), importerState} {
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
 }
 
+template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const PixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), {}, Magnum::Implementation::pixelSizeAdl(format), size, dataFlags, data, importerState} {
+    static_assert(sizeof(T) <= 4,
+        "format types larger than 32bits are not supported");
+}
+
 template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, Containers::Array<char>&& data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), size, std::move(data), importerState} {
+    static_assert(sizeof(T) <= 4,
+        "format types larger than 32bits are not supported");
+}
+
+template<UnsignedInt dimensions> template<class T> ImageData<dimensions>::ImageData(const CompressedPixelStorage storage, const T format, const VectorTypeFor<dimensions, Int>& size, const DataFlags dataFlags, const Containers::ArrayView<const void> data, const void* const importerState) noexcept: ImageData{storage, UnsignedInt(format), size, dataFlags, data, importerState} {
     static_assert(sizeof(T) <= 4,
         "format types larger than 32bits are not supported");
 }

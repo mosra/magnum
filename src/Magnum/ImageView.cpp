@@ -63,7 +63,7 @@ template<UnsignedInt dimensions, class T> void ImageView<dimensions, T>::setData
 
 template<UnsignedInt dimensions, class T> auto ImageView<dimensions, T>::pixels() const -> Containers::StridedArrayView<dimensions + 1, Type> {
     if(!_data && !_data.size()) return {};
-    return Implementation::imagePixelView<dimensions, Type>(*this);
+    return Implementation::imagePixelView<dimensions, Type>(*this, data());
 }
 
 template<UnsignedInt dimensions, class T> CompressedImageView<dimensions, T>::CompressedImageView(const CompressedPixelStorage storage, const CompressedPixelFormat format, const VectorTypeFor<dimensions, Int>& size, const Containers::ArrayView<ErasedType> data) noexcept: _storage{storage}, _format{format}, _size{size}, _data{reinterpret_cast<Type*>(data.data()), data.size()} {}
