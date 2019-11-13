@@ -178,6 +178,29 @@ if(NOT TARGET SDL2::SDL2)
             set_property(TARGET SDL2::SDL2 APPEND PROPERTY
                 INTERFACE_LINK_LIBRARIES ${_SDL2_FRAMEWORK_LIBRARIES})
         endif()
+
+        # Windows dependencies for a static library. Unfortunately there's no
+        # easy way to figure out if a *.lib is static or dynamic, so we're
+        # adding only if a DLL is not found.
+        if(CORRADE_TARGET_WINDOWS AND NOT CORRADE_TARGET_WINDOWS_RT AND SDL2_DLL_RELEASE AND NOT SDL2_DLL_DEBUG)
+            set_property(TARGET SDL2::SDL2 APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+                # https://github.com/SDL-mirror/SDL/blob/release-2.0.10/CMakeLists.txt#L1338
+                user32 gdi32 winmm imm32 ole32 oleaut32 version uuid advapi32 setupapi shell32
+                # https://github.com/SDL-mirror/SDL/blob/release-2.0.10/CMakeLists.txt#L1384
+                dinput8)
+            # https://github.com/SDL-mirror/SDL/blob/release-2.0.10/CMakeLists.txt#L1422
+            # additionally has dxerr for MSVC if DirectX SDK is not used, but
+            # according to https://walbourn.github.io/wheres-dxerr-lib/ this
+            # thing is long deprecated.
+            if(MINGW)
+                set_property(TARGET SDL2::SDL2 APPEND PROPERTY INTERFACE_LINK_LIBRARIES
+                    # https://github.com/SDL-mirror/SDL/blob/release-2.0.10/CMakeLists.txt#L1386
+                    dxerr8
+                    # https://github.com/SDL-mirror/SDL/blob/release-2.0.10/CMakeLists.txt#L1388
+                    mingw32)
+            endif()
+        endif()
+
     else()
         add_library(SDL2::SDL2 INTERFACE IMPORTED)
     endif()

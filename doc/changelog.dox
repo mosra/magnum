@@ -93,6 +93,8 @@ See also:
 
 -   Fixed a bad interaction between @ref Magnum/Platform/AbstractXApplication.h
     and @ref Magnum/Platform/GlfwApplication.h (see [mosra/magnum#389](https://github.com/mosra/magnum/pull/389))
+-   `FindSDL2.cmake` got updated to link to all dependencies when using a
+    statically built SDL on Windows
 
 @subsection changelog-latest-bugfixes Bug fixes
 
