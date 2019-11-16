@@ -30,7 +30,7 @@
 namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct GlfwApplicationTest: Platform::Application {
-    explicit GlfwApplicationTest(const Arguments& arguments): Platform::Application{arguments} {
+    explicit GlfwApplicationTest(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setWindowFlags(Configuration::WindowFlag::Resizable)} {
         Debug{} << "window size" << windowSize()
             #ifdef MAGNUM_TARGET_GL
             << framebufferSize()
