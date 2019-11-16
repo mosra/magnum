@@ -12,7 +12,7 @@ cmake .. \
     -DCMAKE_BUILD_TYPE=Debug \
     -DBUILD_DEPRECATED=$BUILD_DEPRECATED \
     -DWITH_INTERCONNECT=OFF \
-    -DWITH_PLUGINMANAGER=OFF \
+    -DWITH_PLUGINMANAGER=ON \
     -G Ninja
 ninja install
 cd ../..
@@ -22,7 +22,8 @@ cd ../..
 g++ package/ci/libvulkan.cpp -std=c++11 -shared -o $HOME/libvulkan.so
 
 # Enabling only stuff that's directly affected by Vulkan (which means also
-# parts of Platform), disabling everything else.
+# parts of Platform, which need Trade for icon import in tests), disabling
+# everything else.
 mkdir build && cd build
 # Not using CXXFLAGS in order to avoid affecting dependencies
 cmake .. \
@@ -39,7 +40,7 @@ cmake .. \
     -DWITH_SHADERS=OFF \
     -DWITH_TEXT=OFF \
     -DWITH_TEXTURETOOLS=OFF \
-    -DWITH_TRADE=OFF \
+    -DWITH_TRADE=ON \
     -DWITH_VK=ON \
     -DWITH_AL_INFO=OFF \
     -DWITH_GL_INFO=OFF \

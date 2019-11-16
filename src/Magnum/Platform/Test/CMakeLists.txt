@@ -25,6 +25,11 @@
 
 find_package(Corrade REQUIRED Main)
 
+# Icons for SDL/GLFW
+if(NOT CORRADE_TARGET_EMSCRIPTEN AND (WITH_SDL2APPLICATION OR WITH_GLFWAPPLICATION))
+    corrade_add_resource(Platform_RESOURCES resources.conf)
+endif()
+
 if(WITH_ANDROIDAPPLICATION)
     add_library(PlatformAndroidApplicationTest SHARED AndroidApplicationTest.cpp)
     target_link_libraries(PlatformAndroidApplicationTest PRIVATE MagnumAndroidApplication)
@@ -52,6 +57,11 @@ if(WITH_GLFWAPPLICATION)
     add_executable(PlatformGlfwApplicationTest WIN32 GlfwApplicationTest.cpp)
     # HiDPi.manifest not needed, as GLFW sets that on its own
     target_link_libraries(PlatformGlfwApplicationTest PRIVATE MagnumGlfwApplication Corrade::Main)
+    # Window icon loading
+    if(NOT CORRADE_TARGET_EMSCRIPTEN)
+        target_sources(PlatformGlfwApplicationTest PRIVATE ${Platform_RESOURCES})
+        target_link_libraries(PlatformGlfwApplicationTest PRIVATE MagnumTrade)
+    endif()
     set_target_properties(PlatformGlfwApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
 endif()
 
@@ -71,6 +81,11 @@ if(WITH_SDL2APPLICATION)
         endif()
     endif()
     target_link_libraries(PlatformSdl2ApplicationTest PRIVATE MagnumSdl2Application Corrade::Main)
+    # Window icon loading
+    if(NOT CORRADE_TARGET_EMSCRIPTEN)
+        target_sources(PlatformSdl2ApplicationTest PRIVATE ${Platform_RESOURCES})
+        target_link_libraries(PlatformSdl2ApplicationTest PRIVATE MagnumTrade)
+    endif()
     set_target_properties(PlatformSdl2ApplicationTest PROPERTIES FOLDER "Magnum/Platform/Test")
     if(CORRADE_TARGET_EMSCRIPTEN)
         add_custom_command(TARGET PlatformSdl2ApplicationTest POST_BUILD

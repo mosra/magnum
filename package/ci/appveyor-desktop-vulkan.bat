@@ -21,7 +21,8 @@ cl.exe /c package/ci/libvulkan.cpp || exit /b
 lib.exe /OUT:%APPVEYOR_BUILD_FOLDER%/deps/lib/libvulkan.lib libvulkan.obj || exit /b
 
 rem Enabling only stuff that's directly affected by Vulkan (which means also
-rem parts of Platform), disabling everything else.
+rem parts of Platform, which need Trade for icon import in tests), disabling
+rem everything else.
 mkdir build && cd build || exit /b
 cmake .. ^
     -DCMAKE_BUILD_TYPE=Debug ^
@@ -37,7 +38,7 @@ cmake .. ^
     -DWITH_SHADERS=OFF ^
     -DWITH_TEXT=OFF ^
     -DWITH_TEXTURETOOLS=OFF ^
-    -DWITH_TRADE=OFF ^
+    -DWITH_TRADE=ON ^
     -DWITH_VK=ON ^
     -DWITH_ANYAUDIOIMPORTER=OFF ^
     -DWITH_ANYIMAGECONVERTER=OFF ^

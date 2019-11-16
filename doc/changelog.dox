@@ -54,6 +54,9 @@ See also:
     @ref Platform::GlfwApplication::setCursor() and
     @ref Platform::EmscriptenApplication::setCursor() (see
     [mosra/magnum#383](https://github.com/mosra/magnum/pull/383))
+-   Window icon management using @ref Platform::Sdl2Application::setWindowIcon()
+    and @ref Platform::GlfwApplication::setWindowIcon() (see
+    [mosra/magnum#393](https://github.com/mosra/magnum/issues/393))
 -   Added @ref Platform::GlfwApplication::warpCursor() to match the equivalent
     API in @ref Platform::Sdl2Application (see
     [mosra/magnum#383](https://github.com/mosra/magnum/pull/383))

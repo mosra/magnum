@@ -23,23 +23,22 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Optional.h>
+#include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Resource.h>
 
+#include "Magnum/ImageView.h"
 #include "Magnum/Platform/Sdl2Application.h"
+#include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/ImageData.h"
 
 #include <SDL_events.h>
 
 namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct Sdl2ApplicationTest: Platform::Application {
-    /* For testing resize events */
-    explicit Sdl2ApplicationTest(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setWindowFlags(Configuration::WindowFlag::Resizable)} {
-        Debug{} << "window size" << windowSize()
-            #ifdef MAGNUM_TARGET_GL
-            << framebufferSize()
-            #endif
-            << dpiScaling();
-    }
+    explicit Sdl2ApplicationTest(const Arguments& arguments);
 
     void exitEvent(ExitEvent& event) override {
         Debug{} << "application exiting";
@@ -128,6 +127,30 @@ struct Sdl2ApplicationTest: Platform::Application {
         bool _fullscreen = false;
     #endif
 };
+
+Sdl2ApplicationTest::Sdl2ApplicationTest(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setWindowFlags(Configuration::WindowFlag::Resizable)} {
+    /* For testing resize events */
+    Debug{} << "window size" << windowSize()
+        #ifdef MAGNUM_TARGET_GL
+        << framebufferSize()
+        #endif
+        << dpiScaling();
+
+    #ifndef CORRADE_TARGET_EMSCRIPTEN
+    #if SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005
+    Utility::Resource rs{"icons"};
+    PluginManager::Manager<Trade::AbstractImporter> manager;
+    Containers::Pointer<Trade::AbstractImporter> importer;
+    Containers::Optional<Trade::ImageData2D> image;
+    if((importer = manager.loadAndInstantiate("AnyImageImporter")) &&
+       importer->openData(rs.getRaw("icon-64.tga")) &&
+       (image = importer->image2D(0))) setWindowIcon(*image);
+    else Warning{} << "Can't load the plugin / file, not setting window icon";
+    #else
+    Debug{} << "SDL too old, can't set window icon";
+    #endif
+    #endif
+}
 
 }}}}
 

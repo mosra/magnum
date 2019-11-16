@@ -35,6 +35,8 @@
 #endif
 #include <Corrade/Utility/Arguments.h>
 
+#include "Magnum/ImageView.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
@@ -274,6 +276,32 @@ void Sdl2Application::setWindowTitle(const std::string& title) {
     SDL_SetWindowTitle(nullptr, title.data());
     #endif
 }
+
+#if !defined(CORRADE_TARGET_EMSCRIPTEN) && SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005
+void Sdl2Application::setWindowIcon(const ImageView2D& image) {
+    Uint32 format; /** @todo handle sRGB differently? */
+    switch(image.format()) {
+        case PixelFormat::RGB8Srgb:
+        case PixelFormat::RGB8Unorm:
+            format = SDL_PIXELFORMAT_RGB24;
+            break;
+        case PixelFormat::RGBA8Srgb:
+        case PixelFormat::RGBA8Unorm:
+            format = SDL_PIXELFORMAT_RGBA32;
+            break;
+        default:
+            CORRADE_ASSERT(false, "Platform::Sdl2Application::setWindowIcon(): unexpected format" << image.format(), );
+    }
+
+    /* Images are loaded with origin at bottom left, flip it to top left.
+       Fortunately SDL accepts negative stride, so we don't need to do an
+       expensive flip ourselves. */
+    Containers::StridedArrayView3D<const char> pixels = image.pixels().flipped<0>();
+    SDL_Surface* icon = SDL_CreateRGBSurfaceWithFormatFrom(const_cast<void*>(pixels.data()) , image.size().x(), image.size().y(), 32, pixels.stride()[0], format);
+    SDL_SetWindowIcon(_window, icon);
+    SDL_FreeSurface(icon);
+}
+#endif
 
 bool Sdl2Application::tryCreate(const Configuration& configuration) {
     #ifdef MAGNUM_TARGET_GL

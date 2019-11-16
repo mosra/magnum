@@ -702,6 +702,27 @@ class Sdl2Application {
          */
         void setWindowTitle(const std::string& title);
 
+        #if !defined(CORRADE_TARGET_EMSCRIPTEN) && (SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005 || defined(DOXYGEN_GENERATING_OUTPUT))
+        /**
+         * @brief Set window icon
+         *
+         * The @p image is expected to be with origin at bottom left (which is
+         * the default for imported images) and in one of
+         * @ref PixelFormat::RGB8Unorm, @ref PixelFormat::RGB8Srgb,
+         * @ref PixelFormat::RGBA8Unorm or @ref PixelFormat::RGBA8Srgb formats.
+         * Unlike @ref GlfwApplication::setWindowIcon(), SDL doesn't provide a
+         * way to supply multiple images in different sizes.
+         * @note Available since SDL 2.0.5. Not available on
+         *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten", use
+         *      @cb{.html} <link rel="icon"> @ce in your HTML markup instead.
+         *      Although it's not documented in SDL itself, the function might
+         *      have no effect on macOS / Wayland, similarly to how
+         *      @ref GlfwApplication::setWindowIcon() behaves on those
+         *      platforms.
+         */
+        void setWindowIcon(const ImageView2D& image);
+        #endif
+
         #if defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
          * @brief Set container CSS class

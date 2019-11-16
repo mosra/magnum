@@ -427,6 +427,24 @@ class GlfwApplication {
          */
         void setWindowTitle(const std::string& title);
 
+        #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302 || defined(DOXYGEN_GENERATING_OUTPUT)
+        /**
+         * @brief Set window icon
+         *
+         * The @p images are expected to be with origin at bottom left (which
+         * is the default for imported images) and in one of
+         * @ref PixelFormat::RGB8Unorm, @ref PixelFormat::RGB8Srgb,
+         * @ref PixelFormat::RGBA8Unorm or @ref PixelFormat::RGBA8Srgb formats.
+         * If you have just one image, you can use
+         * @ref setWindowIcon(const ImageView2D&) instead.
+         * @note Available since GLFW 3.2. The function has no effect on macOS
+         *      / Wayland, see @m_class{m-doc-external} [glfwSetWindowIcon()](https://www.glfw.org/docs/latest/group__window.html#gadd7ccd39fe7a7d1f0904666ae5932dc5)
+         *      for more information.
+         */
+        void setWindowIcon(std::initializer_list<ImageView2D> images);
+        void setWindowIcon(const ImageView2D& image); /**< @overload */
+        #endif
+
         /**
          * @brief Swap buffers
          *

@@ -28,10 +28,14 @@
 
 #include <cstring>
 #include <tuple>
+#include <Corrade/Containers/Array.h>
+#include <Corrade/Containers/StridedArrayView.h>
 #include <Corrade/Utility/Arguments.h>
 #include <Corrade/Utility/String.h>
 #include <Corrade/Utility/Unicode.h>
 
+#include "Magnum/ImageView.h"
+#include "Magnum/PixelFormat.h"
 #include "Magnum/Math/ConfigurationValue.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 #include "Magnum/Platform/Implementation/DpiScaling.h"
@@ -229,6 +233,64 @@ Vector2 GlfwApplication::dpiScaling(const Configuration& configuration) const {
 void GlfwApplication::setWindowTitle(const std::string& title) {
     glfwSetWindowTitle(_window, title.data());
 }
+
+#if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
+void GlfwApplication::setWindowIcon(const ImageView2D& image) {
+    setWindowIcon({image});
+}
+
+namespace {
+
+template<class T> inline void packPixels(const Containers::StridedArrayView2D<const T>& in, const Containers::StridedArrayView2D<Color4ub>& out) {
+    for(std::size_t row = 0; row != in.size()[0]; ++row)
+        for(std::size_t col = 0; col != in.size()[1]; ++col)
+            out[row][col] = in[row][col];
+}
+
+}
+
+void GlfwApplication::setWindowIcon(std::initializer_list<ImageView2D> images) {
+    /* Calculate the total size needed to allocate first so we don't allocate
+       a ton of tiny arrays */
+    std::size_t size = 0;
+    for(const ImageView2D& image: images)
+        size += sizeof(GLFWimage) + 4*image.size().product();
+    Containers::Array<char> data{size};
+
+    /* Pack array of GLFWimages and pixel data together into the memory
+       allocated above */
+    std::size_t offset = images.size()*sizeof(GLFWimage);
+    Containers::ArrayView<GLFWimage> glfwImages = Containers::arrayCast<GLFWimage>(data.prefix(offset));
+    std::size_t i = 0;
+    for(const ImageView2D& image: images) {
+        /* Copy and tightly pack pixels. GLFW doesn't allow arbitrary formats
+           or strides (for subimages and/or Y flip), so we have to copy */
+        Containers::ArrayView<char> target = data.slice(offset, offset + 4*image.size().product());
+        auto out = Containers::StridedArrayView2D<Color4ub>{
+            Containers::arrayCast<Color4ub>(target),
+            {std::size_t(image.size().y()),
+             std::size_t(image.size().x())}}.flipped<0>();
+        /** @todo handle sRGB differently? */
+        if(image.format() == PixelFormat::RGB8Snorm ||
+           image.format() == PixelFormat::RGB8Unorm)
+            packPixels(image.pixels<Color3ub>(), out);
+        else if(image.format() == PixelFormat::RGBA8Snorm ||
+                image.format() == PixelFormat::RGBA8Unorm)
+            packPixels(image.pixels<Color4ub>(), out);
+        else CORRADE_ASSERT(false, "Platform::GlfwApplication::setWindowIcon(): unexpected format" << image.format(), );
+
+        /* Specify the image metadata */
+        glfwImages[i].width = image.size().x();
+        glfwImages[i].height = image.size().y();
+        glfwImages[i].pixels = reinterpret_cast<unsigned char*>(target.data());
+
+        ++i;
+        offset += target.size();
+    }
+
+    glfwSetWindowIcon(_window, glfwImages.size(), glfwImages);
+}
+#endif
 
 bool GlfwApplication::tryCreate(const Configuration& configuration) {
     #ifdef MAGNUM_TARGET_GL

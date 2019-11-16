@@ -23,20 +23,20 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <Corrade/Containers/Optional.h>
+#include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/DebugStl.h>
+#include <Corrade/Utility/Resource.h>
 
+#include "Magnum/ImageView.h"
 #include "Magnum/Platform/GlfwApplication.h"
+#include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/ImageData.h"
 
 namespace Magnum { namespace Platform { namespace Test { namespace {
 
 struct GlfwApplicationTest: Platform::Application {
-    explicit GlfwApplicationTest(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setWindowFlags(Configuration::WindowFlag::Resizable)} {
-        Debug{} << "window size" << windowSize()
-            #ifdef MAGNUM_TARGET_GL
-            << framebufferSize()
-            #endif
-            << dpiScaling();
-    }
+    explicit GlfwApplicationTest(const Arguments& arguments);
 
     /* For testing HiDPI resize events */
     void viewportEvent(ViewportEvent& event) override {
@@ -92,6 +92,29 @@ struct GlfwApplicationTest: Platform::Application {
 
     void drawEvent() override {}
 };
+
+GlfwApplicationTest::GlfwApplicationTest(const Arguments& arguments): Platform::Application{arguments, Configuration{}.setWindowFlags(Configuration::WindowFlag::Resizable)} {
+    /* For testing resize events */
+    Debug{} << "window size" << windowSize()
+        #ifdef MAGNUM_TARGET_GL
+        << framebufferSize()
+        #endif
+        << dpiScaling();
+
+    #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
+    Utility::Resource rs{"icons"};
+    PluginManager::Manager<Trade::AbstractImporter> manager;
+    Containers::Pointer<Trade::AbstractImporter> importer;
+    Containers::Optional<Trade::ImageData2D> image16, image32, image64;
+    if((importer = manager.loadAndInstantiate("AnyImageImporter")) &&
+        importer->openData(rs.getRaw("icon-16.tga")) && (image16 = importer->image2D(0)) &&
+        importer->openData(rs.getRaw("icon-32.tga")) && (image32 = importer->image2D(0)) &&
+        importer->openData(rs.getRaw("icon-64.tga")) && (image64 = importer->image2D(0))) setWindowIcon({*image16, *image32, *image64});
+    else Warning{} << "Can't load the plugin / images, not setting window icon";
+    #else
+    Debug{} << "GLFW too old, can't set window icon";
+    #endif
+}
 
 }}}}
 
