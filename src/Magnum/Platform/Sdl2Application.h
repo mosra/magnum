@@ -49,6 +49,7 @@
 /* SDL.h includes the world, adding 50k LOC. We don't want that either. */
 #include <SDL_keycode.h>
 #include <SDL_mouse.h>
+#include <SDL_version.h> /* huh, why is this not pulled in implicitly?! */
 #include <SDL_video.h>
 #include <SDL_scancode.h>
 

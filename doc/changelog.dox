@@ -107,6 +107,9 @@ See also:
 -   The @ref Primitives::cylinderSolid() and @ref Primitives::coneSolid()
     primitives were missing a face when both caps and texture coordinates were
     enabled (see [mosra/magnum#386](https://github.com/mosra/magnum/issues/386))
+-   @ref Platform::Sdl2Application::Configuration::WindowFlag::Vulkan was
+    enabled conditionally only for SDL >= 2.0.6, but the version defines were
+    never included so it was always disabled
 
 @subsection changelog-latest-deprecated Deprecated APIs
 
