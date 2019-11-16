@@ -98,6 +98,9 @@ See also:
 
 @subsection changelog-latest-bugfixes Bug fixes
 
+-   @ref Platform::Sdl2Application::viewportEvent() gets properly fired also
+    when window size changes programmatically (such as through
+    @ref Platform::Sdl2Application::setMinWindowSize() "setMinWindowSize()")
 -   The @ref Primitives::cylinderSolid() and @ref Primitives::coneSolid()
     primitives were missing a face when both caps and texture coordinates were
     enabled (see [mosra/magnum#386](https://github.com/mosra/magnum/issues/386))

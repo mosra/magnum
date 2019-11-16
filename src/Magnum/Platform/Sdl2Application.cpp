@@ -755,7 +755,10 @@ bool Sdl2Application::mainLoopIteration() {
         switch(event.type) {
             case SDL_WINDOWEVENT:
                 switch(event.window.event) {
-                    case SDL_WINDOWEVENT_RESIZED: {
+                    /* Not using SDL_WINDOWEVENT_RESIZED, because that doens't
+                       get fired when the window is resized programmatically
+                       (such as through setMaxWindowSize()) */
+                    case SDL_WINDOWEVENT_SIZE_CHANGED: {
                         #ifdef CORRADE_TARGET_EMSCRIPTEN
                         /* If anybody sees this assert, then emscripten finally
                            implemented resize events. Praise them for that.
