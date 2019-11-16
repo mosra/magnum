@@ -163,6 +163,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
 
         /**
          * @brief Cofactor
+         * @m_since{2019,10}
          *
          * Cofactor @f$ C_{i,j} @f$ of a matrix @f$ \boldsymbol{M} @f$ is
          * defined as @f$ C_{i,j} = (-1)^{i + j} \det \boldsymbol{M}_{i,j} @f$,
@@ -195,6 +196,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
 
         /**
          * @brief Matrix of cofactors
+         * @m_since{2019,10}
          *
          * A cofactor matrix @f$ \boldsymbol{C} @f$ of a matrix
          * @f$ \boldsymbol{M} @f$ is defined as the following, with each
@@ -213,6 +215,7 @@ template<std::size_t size, class T> class Matrix: public RectangularMatrix<size,
 
         /**
          * @brief Adjugate matrix
+         * @m_since{2019,10}
          *
          * @f$ adj(A) @f$. Transpose of a @ref comatrix(), used for example to
          * calculate an @ref inverted() matrix.

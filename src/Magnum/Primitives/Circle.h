@@ -36,6 +36,7 @@ namespace Magnum { namespace Primitives {
 
 /**
 @brief Whether to generate circle texture coordinates
+@m_since{2019,10}
 
 @see @ref circle2DSolid(), @ref circle3DSolid()
 */

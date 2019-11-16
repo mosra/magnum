@@ -96,7 +96,13 @@ ALIASES                = \
     "fn_al_keyword{1}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"al\1()\" />@endxmlonly @fn_al{\1}" \
     "fn_alc_keyword{1}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"alc\1()\" />@endxmlonly @fn_alc{\1}" \
     "def_al_keyword{1}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"AL_\1\" />@endxmlonly @def_al{\1}" \
-    "def_alc_keyword{1}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"ALC_\1\" />@endxmlonly @def_alc{\1}"
+    "def_alc_keyword{1}=@xmlonly<mcss:search xmlns:mcss=\"http://mcss.mosra.cz/doxygen/\" mcss:keywords=\"ALC_\1\" />@endxmlonly @def_alc{\1}" \
+    "m_since{2}=@since @m_class{m-label m-success m-flat} @ref changelog-\1-\2 \"new&nbsp;in&nbsp;\1.\2\"" \
+    "m_since_{3}=@since @m_class{m-label m-success m-flat} @ref changelog-\1-\2-\3 \"new&nbsp;in&nbsp;\2.\3\"" \
+    "m_since_latest=@since @m_class{m-label m-success m-flat} @ref changelog-latest \"new&nbsp;in&nbsp;Git&nbsp;master\"" \
+    "m_since_latest_{1}=@since @m_class{m-label m-success m-flat} @ref changelog-\1-latest \"new&nbsp;in&nbsp;Git&nbsp;master\"" \
+    "m_deprecated_since{2}=@since deprecated&nbsp;in&nbsp;\1.\2 @deprecated" \
+    "m_deprecated_since_latest=@since deprecated&nbsp;in&nbsp;Git&nbsp;master @deprecated"
 
 HTML_EXTRA_STYLESHEET = \
     https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,600,600i%7CSource+Code+Pro:400,400i,600&subset=latin-ext \
@@ -117,5 +123,7 @@ HTML_EXTRA_STYLESHEET = \
 ##!  "annotated" \
 ##!  "files" \
 ##!  "<a href="../../../../magnum-bindings/build/doc/python/index.html">Python API</a>"
+
+##! M_VERSION_LABELS = YES
 
 # kate: hl Doxyfile

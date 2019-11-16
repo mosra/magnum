@@ -242,6 +242,7 @@ class GlfwApplication {
          * @brief Run one iteration of application main loop
          * @return @cpp false @ce if @ref exit() was called and the application
          *      should exit, @cpp true @ce otherwise
+         * @m_since_latest
          *
          * Called internally from @ref exec(). If you want to have better
          * control over how the main loop behaves, you can call this function
@@ -358,6 +359,7 @@ class GlfwApplication {
         /**
          * @brief Set window minimum size
          * @param size    The minimum size, in screen coordinates
+         * @m_since{2019,10}
          *
          * If a value is set to @cpp -1 @ce, it will disable/remove the
          * corresponding limit. To make the sizing work independently of the
@@ -370,6 +372,7 @@ class GlfwApplication {
         /**
          * @brief Set window maximum size
          * @param size    The maximum size, in screen coordinates
+         * @m_since{2019,10}
          *
          * If a value is set to @cpp -1 @ce, it will disable/remove the
          * corresponding limit. To make the sizing work independently of the
@@ -422,6 +425,7 @@ class GlfwApplication {
 
         /**
          * @brief Set window title
+         * @m_since{2019,10}
          *
          * The @p title is expected to be encoded in UTF-8.
          */
@@ -430,6 +434,7 @@ class GlfwApplication {
         #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302 || defined(DOXYGEN_GENERATING_OUTPUT)
         /**
          * @brief Set window icon
+         * @m_since_latest
          *
          * The @p images are expected to be with origin at bottom left (which
          * is the default for imported images) and in one of
@@ -442,7 +447,12 @@ class GlfwApplication {
          *      for more information.
          */
         void setWindowIcon(std::initializer_list<ImageView2D> images);
-        void setWindowIcon(const ImageView2D& image); /**< @overload */
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        void setWindowIcon(const ImageView2D& image);
         #endif
 
         /**
@@ -491,9 +501,9 @@ class GlfwApplication {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief viewportEvent(ViewportEvent&)
-         * @deprecated Use @ref viewportEvent(ViewportEvent&) instead.
-         *      To preserve backwards compatibility, this function is called
-         *      from @ref viewportEvent(ViewportEvent&) with
+         * @m_deprecated_since{2018,10} Use @ref viewportEvent(ViewportEvent&)
+         *      instead. To preserve backwards compatibility, this function is
+         *      called from @ref viewportEvent(ViewportEvent&) with
          *      @ref ViewportEvent::windowSize() passed to @p size. Overriding
          *      the new function will cause this function to not be called
          *      anymore.
@@ -521,6 +531,7 @@ class GlfwApplication {
     public:
         /**
          * @brief Cursor type
+         * @m_since_latest
          *
          * @see @ref setCursor()
          */
@@ -537,15 +548,22 @@ class GlfwApplication {
 
         /**
          * @brief Set cursor type
+         * @m_since_latest
          *
          * Default is @ref Cursor::Arrow.
          */
         void setCursor(Cursor cursor);
 
-        /** @brief Get current cursor type */
+        /**
+         * @brief Get current cursor type
+         * @m_since_latest
+         */
         Cursor cursor();
 
-        /** @brief Warp mouse cursor to given coordinates */
+        /**
+         * @brief Warp mouse cursor to given coordinates
+         * @m_since_latest
+         */
         void warpCursor(const Vector2i& position) {
             glfwSetCursorPos(_window, Double(position.x()), Double(position.y()));
         }
@@ -850,13 +868,13 @@ class GlfwApplication::GLConfiguration {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief @copybrief isSrgbCapable()
-         * @deprecated Use @ref isSrgbCapable() instead.
+         * @m_deprecated_since{2018,10} Use @ref isSrgbCapable() instead.
          */
         CORRADE_DEPRECATED("use isSrgbCapable() instead") bool isSRGBCapable() const { return isSrgbCapable(); }
 
         /**
          * @brief @copybrief setSrgbCapable()
-         * @deprecated Use @ref setSrgbCapable() instead.
+         * @m_deprecated_since{2018,10} Use @ref setSrgbCapable() instead.
          */
         CORRADE_DEPRECATED("use setSrgbCapable() instead") GLConfiguration& setSRGBCapable(bool enabled) {
             return setSrgbCapable(enabled);
@@ -1017,30 +1035,31 @@ class GlfwApplication::Configuration {
         /**
          * @brief Cursor mode
          *
-         * @deprecated Use @ref GlfwApplication::setCursor() instead.
+         * @m_deprecated_since_latest Use @ref GlfwApplication::setCursor()
+         *      instead.
          */
         enum class CORRADE_DEPRECATED_ENUM("use GlfwApplication::setCursor() instead") CursorMode: Int {
             /**
              * Visible unconstrained cursor
              *
-             * @deprecated Use @ref GlfwApplication::setCursor() with
-             *      @ref Cursor::Arrow (or any other) instead.
+             * @m_deprecated_since_latest Use @ref GlfwApplication::setCursor()
+             *      with @ref Cursor::Arrow (or any other) instead.
              */
             Normal CORRADE_DEPRECATED_ENUM("use GlfwApplication::setCursor() with Cursor::Arrow instead") = GLFW_CURSOR_NORMAL,
 
             /**
              * Hidden cursor
              *
-             * @deprecated Use @ref GlfwApplication::setCursor() with
-             *      @ref Cursor::Hidden instead.
+             * @m_deprecated_since_latest Use @ref GlfwApplication::setCursor()
+             *      with @ref Cursor::Hidden instead.
              */
             Hidden CORRADE_DEPRECATED_ENUM("use GlfwApplication::setCursor() with Cursor::Hidden instead") = GLFW_CURSOR_HIDDEN,
 
             /**
              * Cursor hidden and locked window
              *
-             * @deprecated Use @ref GlfwApplication::setCursor() with
-             *      @ref Cursor::HiddenLocked instead.
+             * @m_deprecated_since_latest Use @ref GlfwApplication::setCursor()
+             *      with @ref Cursor::HiddenLocked instead.
              */
             Disabled CORRADE_DEPRECATED_ENUM("use GlfwApplication::setCursor() with Cursor::HiddenLocked instead") = GLFW_CURSOR_DISABLED
         };
@@ -1141,7 +1160,8 @@ class GlfwApplication::Configuration {
         /**
          * @brief Cursor mode
          *
-         * @deprecated Use @ref GlfwApplication::cursor() instead.
+         * @m_deprecated_since_latest Use @ref GlfwApplication::cursor()
+         *      instead.
          */
         CORRADE_IGNORE_DEPRECATED_PUSH
         CORRADE_DEPRECATED("use GlfwApplication::cursor() instead") CursorMode cursorMode() const {
@@ -1155,7 +1175,8 @@ class GlfwApplication::Configuration {
          *
          * Default is @ref CursorMode::Normal.
          *
-         * @deprecated Use @ref GlfwApplication::setCursor() instead.
+         * @m_deprecated_since_latest Use @ref GlfwApplication::setCursor()
+         *      instead.
          */
         CORRADE_IGNORE_DEPRECATED_PUSH
         CORRADE_DEPRECATED("use GlfwApplication::setCursor() instead") Configuration& setCursorMode(CursorMode cursorMode) {
@@ -1490,7 +1511,7 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
 
             #ifdef MAGNUM_BUILD_DEPRECATED
             /** Semicolon
-             * @deprecated Use @ref Key::Semicolon instead.
+             * @m_deprecated_since{2019,01} Use @ref Key::Semicolon instead.
              */
             Smicolon CORRADE_DEPRECATED_ENUM("use Key::Semicolon instead") = Semicolon,
             #endif
@@ -1690,6 +1711,7 @@ class GlfwApplication::MouseMoveEvent: public GlfwApplication::InputEvent {
 
         /**
          * @brief Relative position
+         * @m_since{2019,10}
          *
          * Position relative to previous move event. Unlike
          * @ref Sdl2Application, GLFW doesn't provide relative position

@@ -355,10 +355,16 @@ template<UnsignedInt dimensions, class T> class ImageView {
          */
         template<class U> explicit ImageView(U format, const VectorTypeFor<dimensions, Int>& size) noexcept: ImageView{{}, format, size} {}
 
-        /** @brief Construct from a view of lower dimension count */
+        /**
+         * @brief Construct from a view of lower dimension count
+         * @m_since{2019,10}
+         */
         template<UnsignedInt otherDimensions, class = typename std::enable_if<(otherDimensions < dimensions)>::type> /*implicit*/ ImageView(const ImageView<otherDimensions, T>& other) noexcept;
 
-        /** @brief Convert a mutable view to a const one */
+        /**
+         * @brief Convert a mutable view to a const one
+         * @m_since{2019,10}
+         */
         template<class U, class = typename std::enable_if<std::is_const<T>::value && !std::is_const<U>::value>::type> /*implicit*/ ImageView(const ImageView<dimensions, U>& other) noexcept;
 
         /** @brief Storage of pixel data */
@@ -412,8 +418,8 @@ template<UnsignedInt dimensions, class T> class ImageView {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Image data in a particular type
-         * @deprecated Use non-templated @ref data() together with
-         *      @ref Corrade::Containers::arrayCast() instead for properly
+         * @m_deprecated_since{2019,10} Use non-templated @ref data() together
+         *      with @ref Corrade::Containers::arrayCast() instead for properly
          *      bounds-checked type conversion.
          */
         template<class U> CORRADE_DEPRECATED("use data() together with Containers::arrayCast() instead") const U* data() const {
@@ -431,6 +437,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
 
         /**
          * @brief View on pixel data
+         * @m_since{2019,10}
          *
          * Provides direct and easy-to-use access to image pixels. See
          * @ref Image-pixel-views for more information. If the view is empty
@@ -441,6 +448,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
 
         /**
          * @brief View on pixel data with a concrete pixel type
+         * @m_since{2019,10}
          *
          * Compared to non-templated @ref pixels() in addition casts the pixel
          * data to a specified type. The user is responsible for choosing
@@ -470,6 +478,7 @@ template<UnsignedInt dimensions, class T> class ImageView {
 
 /**
 @brief Const image view
+@m_since{2019,10}
 
 @see @ref ImageView1D, @ref ImageView2D, @ref ImageView3D,
     @ref BasicMutableImageView
@@ -501,6 +510,7 @@ typedef BasicImageView<3> ImageView3D;
 
 /**
 @brief Mutable image view
+@m_since{2019,10}
 
 @see @ref MutableImageView1D, @ref MutableImageView2D, @ref MutableImageView3D,
     @ref BasicImageView
@@ -511,6 +521,7 @@ template<UnsignedInt dimensions> using BasicMutableImageView = ImageView<dimensi
 
 /**
 @brief One-dimensional mutable image view
+@m_since{2019,10}
 
 @see @ref ImageView1D, @ref MutableCompressedImageView1D, @ref ImageView
 */
@@ -518,6 +529,7 @@ typedef BasicMutableImageView<1> MutableImageView1D;
 
 /**
 @brief Two-dimensional mutable image view
+@m_since{2019,10}
 
 @see @ref ImageView2D, @ref MutableCompressedImageView2D, @ref ImageView
 */
@@ -525,6 +537,7 @@ typedef BasicMutableImageView<2> MutableImageView2D;
 
 /**
 @brief Three-dimensional mutable image view
+@m_since{2019,10}
 
 @see @ref ImageView3D, @ref MutableCompressedImageView3D, @ref ImageView
 */
@@ -724,10 +737,16 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
          */
         template<class U> explicit CompressedImageView(U format, const VectorTypeFor<dimensions, Int>& size) noexcept: CompressedImageView{{}, format, size} {}
 
-        /** @brief Construct from a view of lower dimension count */
+        /**
+         * @brief Construct from a view of lower dimension count
+         * @m_since{2019,10}
+         */
         template<UnsignedInt otherDimensions, class = typename std::enable_if<(otherDimensions < dimensions)>::type> /*implicit*/ CompressedImageView(const CompressedImageView<otherDimensions, T>& other) noexcept;
 
-        /** @brief Convert a mutable view to a const one */
+        /**
+         * @brief Convert a mutable view to a const one
+         * @m_since{2019,10}
+         */
         template<class U, class = typename std::enable_if<std::is_const<T>::value && !std::is_const<U>::value>::type> /*implicit*/ CompressedImageView(const CompressedImageView<dimensions, U>& other) noexcept;
 
         /** @brief Storage of compressed pixel data */
@@ -761,8 +780,8 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Image data in a particular type
-         * @deprecated Use non-templated @ref data() together with
-         *      @ref Corrade::Containers::arrayCast() instead for properly
+         * @m_deprecated_since{2019,10} Use non-templated @ref data() together
+         *      with @ref Corrade::Containers::arrayCast() instead for properly
          *      bounds-checked type conversion.
          */
         template<class U> CORRADE_DEPRECATED("use data() together with Containers::arrayCast() instead") const U* data() const {
@@ -797,6 +816,7 @@ template<UnsignedInt dimensions, class T> class CompressedImageView {
 
 /**
 @brief Const compressed image view
+@m_since{2019,10}
 
 @see @ref CompressedImageView1D, @ref CompressedImageView2D,
     @ref CompressedImageView3D, @ref BasicMutableImageView
@@ -831,6 +851,7 @@ typedef BasicCompressedImageView<3> CompressedImageView3D;
 
 /**
 @brief Mutable compressed image view
+@m_since{2019,10}
 
 @see @ref MutableCompressedImageView1D, @ref MutableCompressedImageView2D,
     @ref MutableCompressedImageView3D, @ref BasicCompressedImageView
@@ -841,6 +862,7 @@ template<UnsignedInt dimensions> using BasicMutableCompressedImageView = Compres
 
 /**
 @brief One-dimensional mutable compressed image view
+@m_since{2019,10}
 
 @see @ref CompressedImageView1D, @ref MutableImageView1D,
     @ref CompressedImageView
@@ -849,6 +871,7 @@ typedef BasicMutableCompressedImageView<1> MutableCompressedImageView1D;
 
 /**
 @brief Two-dimensional mutable compressed image view
+@m_since{2019,10}
 
 @see @ref CompressedImageView2D, @ref MutableImageView2D,
     @ref CompressedImageView
@@ -857,6 +880,7 @@ typedef BasicMutableCompressedImageView<2> MutableCompressedImageView2D;
 
 /**
 @brief Three-dimensional mutable compressed image view
+@m_since{2019,10}
 
 @see @ref CompressedImageView3D, @ref MutableImageView3D,
     @ref CompressedImageView

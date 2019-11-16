@@ -491,6 +491,7 @@ class MAGNUM_AUDIO_EXPORT Source {
 
         /**
          * @brief Source type
+         * @m_since{2019,10}
          *
          * @see @ref setBuffer(), @fn_al_keyword{GetSourcei} with
          *      @def_al{SOURCE_TYPE}
@@ -513,6 +514,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Queue buffers
          * @param buffers       Buffers to queue
          * @return Reference to self (for method chaining)
+         * @m_since{2019,10}
          *
          * Changes source type to @ref Type::Streaming. The buffers must be
          * already filled with data.
@@ -524,6 +526,7 @@ class MAGNUM_AUDIO_EXPORT Source {
          * @brief Unqueue buffers
          * @param buffers       Buffers to unqueue
          * @return The number of unqueued buffers
+         * @m_since{2019,10}
          *
          * The unqueued buffers will be listed in the prefix of the array. Use
          * @ref Corrade::Containers::ArrayView::prefix() to get it.

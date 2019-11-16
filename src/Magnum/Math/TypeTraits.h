@@ -82,6 +82,7 @@ namespace Magnum { namespace Math {
 
 /**
 @brief Whether @p T is an arithmetic scalar type
+@m_since{2019,10}
 
 Equivalent to @ref std::true_type for all builtin scalar integer and
 floating-point types and in addition also @ref Deg and @ref Rad; equivalent to
@@ -127,6 +128,7 @@ template<class T> struct IsScalar<Rad<T>>: std::true_type {};
 
 /**
 @brief Whether @p T is an arithmetic vector type
+@m_since{2019,10}
 
 Equivalent to @ref std::true_type for all @ref Vector types and their
 subclasses; equivalent to @ref std::false_type otherwise. In particular, gives
@@ -151,6 +153,7 @@ template<class T> struct IsVector<Color4<T>>: std::true_type {};
 
 /**
 @brief Whether @p T is integral
+@m_since{2019,10}
 
 Equivalent to @ref std::true_type for all integral scalar and vector types
 supported by Magnum math; equivalent to @ref std::false_type otherwise.
@@ -190,6 +193,7 @@ template<class T> struct IsIntegral<Color4<T>>: IsIntegral<T> {};
 
 /**
 @brief Whether @p T is floating-point
+@m_since{2019,10}
 
 Equivalent to @ref std::true_type for all floating-point scalar and vector
 types supported by Magnum math including @ref Deg and @ref Rad; equivalent to
@@ -223,7 +227,8 @@ template<class T> struct IsFloatingPoint<Rad<T>>: IsFloatingPoint<T> {};
 #endif
 
 /**
-@brief Whether @p T is a unitless tpye
+@brief Whether @p T is a unitless type
+@m_since{2019,10}
 
 Equivalent to @ref std::true_type for scalar or vector types that have an
 unitless underlying type (i.e., not @ref Deg or @ref Rad); @ref std::false_type
@@ -270,6 +275,7 @@ namespace Implementation {
 
 /**
 @brief Underlying type of a math type
+@m_since{2019,10}
 
 For builtin scalar types returns the type itself, for wrapped types like
 @ref Deg or @ref Rad returns the underlying builtin type, for vector and matrix
@@ -364,6 +370,7 @@ template<class T> struct TypeTraits: Implementation::TypeTraitsDefault<T> {
 
 /**
 @brief Equality comparison of scalar types
+@m_since{2019,10}
 
 Calls @ref TypeTraits<T>::equals() --- using fuzzy compare for floating-point
 types and doing equality comparison on integral types. Scalar complement to
@@ -375,6 +382,7 @@ template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type
 
 /**
 @brief Non-equality comparison of scalar types
+@m_since{2019,10}
 
 Calls @ref TypeTraits<T>::equals() --- using fuzzy compare for floating-point
 types and doing equality comparison on integral types. Scalar complement to

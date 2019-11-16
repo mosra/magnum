@@ -26,7 +26,7 @@
 */
 
 /** @file
- * @deprecated Use @ref Magnum/MeshTools/GenerateNormals.h instead.
+ * @m_deprecated_since{2019,10} Use @ref Magnum/MeshTools/GenerateNormals.h instead.
  */
 
 #include "Magnum/configure.h"

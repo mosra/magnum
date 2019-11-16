@@ -141,6 +141,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
 
         /**
          * @brief Three-component vertex color
+         * @m_since{2019,10}
          *
          * @ref shaders-generic "Generic attribute", @ref Magnum::Color3. Use
          * either this or the @ref Color4 attribute. Used only if
@@ -150,6 +151,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
 
         /**
          * @brief Four-component vertex color
+         * @m_since{2019,10}
          *
          * @ref shaders-generic "Generic attribute", @ref Magnum::Color4. Use
          * either this or the @ref Color3 attribute. Used only if
@@ -161,6 +163,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
             /**
              * Color shader output. Present always, expects three- or
              * four-component floating-point or normalized buffer attachment.
+             * @m_since{2019,10}
              */
             ColorOutput = Generic<dimensions>::ColorOutput,
 
@@ -174,6 +177,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              * @requires_gles30 Object ID output requires integer buffer
              *      attachments, which are not available in OpenGL ES 2.0 or
              *      WebGL 1.0.
+             * @m_since{2019,10}
              */
             ObjectIdOutput = Generic<dimensions>::ObjectIdOutput
             #endif
@@ -208,6 +212,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
             /**
              * Multiply diffuse color with a vertex color. Requires either
              * the @ref Color3 or @ref Color4 attribute to be present.
+             * @m_since{2019,10}
              */
             VertexColor = 1 << 2,
 
@@ -218,6 +223,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
              * @requires_gles30 Object ID output requires integer buffer
              *      attachments, which are not available in OpenGL ES 2.0 or
              *      WebGL 1.0.
+             * @m_since{2019,10}
              */
             ObjectId = 1 << 3
             #endif

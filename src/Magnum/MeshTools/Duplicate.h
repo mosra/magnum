@@ -67,6 +67,7 @@ template<class IndexType, class T> Containers::Array<T> duplicate(const Containe
 @param[in]  indices Index array to use
 @param[in]  data    Input data
 @param[out] out     Where to store the output
+@m_since{2019,10}
 
 A variant of @ref duplicate() that fills existing memory instead of allocating
 a new array.

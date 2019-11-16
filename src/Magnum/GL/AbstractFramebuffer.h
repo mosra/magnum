@@ -278,6 +278,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
 
         /**
          * @brief Implementation-specific color read format
+         * @m_since{2019,10}
          *
          * The result is not cached in any way. If
          * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
@@ -294,6 +295,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
 
         /**
          * @brief Implementation-specific color read type
+         * @m_since{2019,10}
          *
          * The result is not cached in any way. If
          * @gl_extension{ARB,direct_state_access} (part of OpenGL 4.5) is not
@@ -409,6 +411,7 @@ class MAGNUM_GL_EXPORT AbstractFramebuffer {
 
         /**
          * @brief Read a block of pixels from the framebuffer to an image view
+         * @m_since{2019,10}
          *
          * Compared to @ref read(const Range2Di&, Image2D&) the function
          * reads the pixels into the memory provided by @p image, expecting

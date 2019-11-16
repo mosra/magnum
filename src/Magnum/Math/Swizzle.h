@@ -104,6 +104,7 @@ namespace Implementation {
 
 /**
 @brief Gather @ref Vector components
+@m_since{2019,10}
 
 Creates a new vector from given components. Example:
 
@@ -130,6 +131,7 @@ template<char ...components, class T> constexpr typename Implementation::TypeFor
 @param vector   Vector to update
 @param values   Values to update it with
 @return Updated vector
+@m_since{2019,10}
 
 Returns a copy of @p vector with particular components updated from @p values.
 Inverse to @ref gather(), supporting the same component addressing except for
@@ -153,7 +155,7 @@ template<char ...components, class T> constexpr T scatter(const T& vector, const
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /** @brief @copybrief gather()
- * @deprecated Use @ref gather instead.
+ * @m_deprecated_since{2019,10} Use @ref gather() instead.
  */
 template<char ...components, class T> CORRADE_DEPRECATED("use gather() instead") constexpr typename Implementation::TypeForSize<sizeof...(components), T>::Type swizzle(const T& vector) {
     return gather<components...>(vector);

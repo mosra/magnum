@@ -163,7 +163,7 @@ class MAGNUM_TRADE_EXPORT AbstractMaterialData {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief Constructor
-         * @deprecated Use @ref AbstractMaterialData(MaterialType, Flags, MaterialAlphaMode, Float, const void*)
+         * @m_deprecated_since{2018,10} Use @ref AbstractMaterialData(MaterialType, Flags, MaterialAlphaMode, Float, const void*)
          *      instead.
          */
         explicit CORRADE_DEPRECATED("use AbstractMaterialData(MaterialType, UnsignedInt, MaterialAlphaMode, Float) instead") AbstractMaterialData(MaterialType type, const void* importerState = nullptr) noexcept: AbstractMaterialData{type, {}, MaterialAlphaMode::Opaque, 0.5f, importerState} {}

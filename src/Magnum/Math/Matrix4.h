@@ -366,6 +366,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
          *      ahead
          * @param far           Distance to far clipping plane, positive is
          *      ahead
+         * @m_since{2019,10}
          *
          * If @p far is finite, the result is: @f[
          *      \boldsymbol{A} = \begin{pmatrix}
@@ -799,6 +800,7 @@ template<class T> class Matrix4: public Matrix4x4<T> {
 
         /**
          * @brief Normal matrix
+         * @m_since{2019,10}
          *
          * Returns @ref comatrix() of the upper-left 3x3 part of the matrix.
          * Compared to the classic transformation @f$ (\boldsymbol{M}^{-1})^T @f$,

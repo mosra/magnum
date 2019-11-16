@@ -133,6 +133,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
              *
              * See @ref Text-AbstractFont-usage-callbacks and particular font
              * plugin documentation for more information.
+             * @m_since{2019,10}
              */
             FileCallback = 1 << 1,
 
@@ -140,7 +141,8 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
             /**
              * The format is multi-file, thus @ref openSingleData() convenience
              * function cannot be used.
-             * @deprecated Obsolete, use file callbacks instead.
+             * @m_deprecated_since{2019,10} Obsolete, use file callbacks
+             *      instead.
              */
             MultiFile CORRADE_DEPRECATED_ENUM("obsolete, use file callbacks instead") = FileCallback,
             #endif
@@ -195,6 +197,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
 
         /**
          * @brief File opening callback function
+         * @m_since{2019,10}
          *
          * @see @ref Text-AbstractFont-usage-callbacks
          */
@@ -202,6 +205,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
 
         /**
          * @brief File opening callback user data
+         * @m_since{2019,10}
          *
          * @see @ref Text-AbstractFont-usage-callbacks
          */
@@ -209,6 +213,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
 
         /**
          * @brief Set file opening callback
+         * @m_since{2019,10}
          *
          * In case the font plugin supports @ref Feature::FileCallback, files
          * opened through @ref openFile() will be loaded through the provided
@@ -258,6 +263,7 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
 
         /**
          * @brief Set file opening callback
+         * @m_since{2019,10}
          *
          * Equivalent to calling the above with a lambda wrapper that casts
          * @cpp void* @ce back to @cpp T* @ce and dereferences it in order to
@@ -294,13 +300,13 @@ class MAGNUM_TEXT_EXPORT AbstractFont: public PluginManager::AbstractPlugin {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief openData(Containers::ArrayView<const char>, Float)
-         * @deprecated Use @ref openFile() with @ref setFileCallback() for
-         *      opening multi-file fonts instead.
+         * @m_deprecated_since{2019,10} Use @ref openFile() with
+         *      @ref setFileCallback() for opening multi-file fonts instead.
          */
         CORRADE_DEPRECATED("use openFile() with setFileCallback() for opening multi-file fonts instead") bool openData(const std::vector<std::pair<std::string, Containers::ArrayView<const char>>>& data, Float size);
 
         /** @brief @copybrief openData(Containers::ArrayView<const char>, Float)
-         * @deprecated Use @ref openData(Containers::ArrayView<const char>, Float)
+         * @m_deprecated_since{2019,10} Use @ref openData(Containers::ArrayView<const char>, Float)
          *      instead.
          */
         CORRADE_DEPRECATED("use openData(Containers::ArrayView<const char>, Float) instead") bool openSingleData(Containers::ArrayView<const char> data, Float size);

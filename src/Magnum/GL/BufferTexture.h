@@ -160,6 +160,7 @@ class MAGNUM_GL_EXPORT BufferTexture: public AbstractTexture {
 
         /**
          * @brief Texture size
+         * @m_since{2019,10}
          *
          * Equivalent to size of the buffer attached to @ref setBuffer()
          * divided by size of a particular @ref BufferTextureFormat. The result

@@ -768,6 +768,7 @@ class AndroidApplication::MouseMoveEvent: public InputEvent {
 
         /**
          * @brief Relative position
+         * @m_since{2019,10}
          *
          * Position relative to previous move event. Unlike
          * @ref Sdl2Application, Android APIs don't provide relative position

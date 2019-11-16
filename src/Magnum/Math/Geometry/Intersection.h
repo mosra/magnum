@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @deprecated Use @ref Magnum/Math/Intersection.h instead.
+ * @m_deprecated_since{201,10} Use @ref Magnum/Math/Intersection.h instead.
  */
 
 #include "Magnum/configure.h"
@@ -38,13 +38,13 @@
 CORRADE_DEPRECATED_FILE("use Magnum/Math/Intersection.h instead")
 
 /** @namespace Magnum::Math::Geometry::Intersection
- * @deprecated Use @ref Magnum::Math::Intersection instead.
+ * @m_deprecated_since{2018,10} Use @ref Magnum::Math::Intersection instead.
  */
 
 namespace Magnum { namespace Math { namespace Geometry { namespace Intersection {
 
 /** @brief @copybrief Math::Intersection::lineSegmentLineSegment(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
- * @deprecated Use @ref Math::Intersection::lineSegmentLineSegment(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
+ * @m_deprecated_since{2018,10} Use @ref Math::Intersection::lineSegmentLineSegment(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
  *      instead.
  */
 template<class T> inline CORRADE_DEPRECATED("use Math::Intersection::lineSegmentLineSegment() instead") std::pair<T, T> lineSegmentLineSegment(const Vector2<T>& p, const Vector2<T>& r, const Vector2<T>& q, const Vector2<T>& s) {
@@ -52,7 +52,7 @@ template<class T> inline CORRADE_DEPRECATED("use Math::Intersection::lineSegment
 }
 
 /** @brief @copybrief Math::Intersection::lineSegmentLine(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
- * @deprecated Use @ref Math::Intersection::lineSegmentLine(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
+ * @m_deprecated_since{2018,10} Use @ref Math::Intersection::lineSegmentLine(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
  *      instead.
  */
 template<class T> inline CORRADE_DEPRECATED("use Math::Intersection::lineSegmentLine() instead") T lineSegmentLine(const Vector2<T>& p, const Vector2<T>& r, const Vector2<T>& q, const Vector2<T>& s) {
@@ -60,7 +60,7 @@ template<class T> inline CORRADE_DEPRECATED("use Math::Intersection::lineSegment
 }
 
 /** @brief @copybrief Math::Intersection::planeLine(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
- * @deprecated Use @ref Math::Intersection::planeLine(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
+ * @m_deprecated_since{2018,10} Use @ref Math::Intersection::planeLine(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
  *      instead.
  */
 template<class T> inline CORRADE_DEPRECATED("use Math::Intersection::planeLine() instead") T planeLine(const Vector3<T>& planePosition, const Vector3<T>& planeNormal, const Vector3<T>& p, const Vector3<T>& r) {
@@ -68,7 +68,7 @@ template<class T> inline CORRADE_DEPRECATED("use Math::Intersection::planeLine()
 }
 
 /** @brief @copybrief Math::Intersection::pointFrustum(const Vector3<T>&, const Frustum<T>&)
- * @deprecated Use @ref Math::Intersection::pointFrustum(const Vector3<T>&, const Frustum<T>&)
+ * @m_deprecated_since{2018,10} Use @ref Math::Intersection::pointFrustum(const Vector3<T>&, const Frustum<T>&)
  *      instead.
  */
 template<class T> inline CORRADE_DEPRECATED("use Math::Intersection::pointFrustum() instead") bool pointFrustum(const Vector3<T>& point, const Frustum<T>& frustum) {
@@ -77,7 +77,7 @@ template<class T> inline CORRADE_DEPRECATED("use Math::Intersection::pointFrustu
 
 /**
  * @brief @copybrief Math::Intersection::rangeFrustum(const Range3D<T>&, const Frustum<T>&)
- * @deprecated Use Math::Intersection::rangeFrustum(const Range3D<T>&, const Frustum<T>&)
+ * @m_deprecated_since{2018,10} Use @ref Math::Intersection::rangeFrustum(const Range3D<T>&, const Frustum<T>&)
  *      instead.
  */
 template<class T> inline CORRADE_DEPRECATED("use Math::Intersection::rangeFrustum() instead") bool boxFrustum(const Range3D<T>& box, const Frustum<T>& frustum) {

@@ -136,11 +136,18 @@ template<UnsignedInt dimensions, class T> class AbstractFeature
     #endif
 {
     public:
-        /** @brief Object transformation underlying type */
+        /**
+         * @brief Object transformation underlying type
+         * @m_since{2019,10}
+         */
         typedef T Type;
 
         enum: UnsignedInt {
-            Dimensions = dimensions /**< Dimension count */
+            /**
+             * Dimension count
+             * @m_since{2019,10}
+             */
+            Dimensions = dimensions
         };
 
         /**

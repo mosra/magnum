@@ -206,6 +206,7 @@ template<std::size_t size> class BoolVector {
 
         /**
          * @brief Component-wise boolean negation
+         * @m_since{2019,10}
          *
          * Equivalent to @ref operator~(). See @ref Math-BoolVector-boolean for
          * more information.
@@ -235,6 +236,7 @@ template<std::size_t size> class BoolVector {
 
         /**
          * @brief Component-wise boolean AND
+         * @m_since{2019,10}
          *
          * Equivalent to @ref operator&(). See @ref Math-BoolVector-boolean for
          * more information.
@@ -266,8 +268,9 @@ template<std::size_t size> class BoolVector {
 
         /**
          * @brief Component-wise boolean OR
+         * @m_since{2019,10}
          *
-         * Equivalent to @ref operator&(). See @ref Math-BoolVector-boolean for
+         * Equivalent to @ref operator|(). See @ref Math-BoolVector-boolean for
          * more information.
          */
         BoolVector<size> operator||(const BoolVector<size>& other) const {

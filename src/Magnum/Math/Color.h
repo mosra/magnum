@@ -254,7 +254,7 @@ template<class T> class Color3: public Vector3<T> {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief ColorHsv
-         * @deprecated Use @ref ColorHsv instead.
+         * @m_deprecated_since{2019,10} Use @ref ColorHsv instead.
          */
         typedef CORRADE_DEPRECATED("use ColorHsv instead") std::tuple<Deg<FloatingPointType>, FloatingPointType, FloatingPointType> Hsv;
         #endif
@@ -338,7 +338,8 @@ template<class T> class Color3: public Vector3<T> {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief fromHsv(const ColorHsv<FloatingPointType>&)
-         * @deprecated Use @ref fromHsv(const ColorHsv<FloatingPointType>&) instead.
+         * @m_deprecated_since{2019,10} Use @ref fromHsv(const ColorHsv<FloatingPointType>&)
+         *      instead.
          */
         static CORRADE_DEPRECATED("use fromHsv(const ColorHsv<FloatingPointType>&) instead") Color3<T> fromHsv(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value) {
             return fromHsv({hue, saturation, value});
@@ -613,7 +614,7 @@ class Color4: public Vector4<T> {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief ColorHsv
-         * @deprecated Use @ref ColorHsv instead.
+         * @m_deprecated_since{2019,10} Use @ref ColorHsv instead.
          */
         typedef CORRADE_DEPRECATED("use ColorHsv instead") std::tuple<Deg<FloatingPointType>, FloatingPointType, FloatingPointType> Hsv;
         #endif
@@ -694,7 +695,8 @@ class Color4: public Vector4<T> {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief fromHsv(const ColorHsv<FloatingPointType>&, T)
-         * @deprecated Use @ref fromHsv(const ColorHsv<FloatingPointType>&, T) instead.
+         * @m_deprecated_since{2019,10} Use @ref fromHsv(const ColorHsv<FloatingPointType>&, T)
+         *      instead.
          */
         static CORRADE_DEPRECATED("use fromHsv(const ColorHsv<FloatingPointType>&, T) instead") Color4<T> fromHsv(Deg<FloatingPointType> hue, FloatingPointType saturation, FloatingPointType value, T alpha = Implementation::fullChannel<T>()) {
             return fromHsv({hue, saturation, value}, alpha);
@@ -1023,6 +1025,7 @@ template<class T> inline Vector3<T> xyzToXyY(const Vector3<T>& xyz) {
 
 /**
 @brief HSV color
+@m_since{2019,10}
 
 Storage-only type with just the usual constructors and (non-)equality
 comparison.
@@ -1061,14 +1064,16 @@ template<class T> struct ColorHsv {
     #ifdef MAGNUM_BUILD_DEPRECATED
     /**
      * @brief Construct from @ref Color3::Hsv
-     * @deprecated Use @ref ColorHsv instead of @ref Color3::Hsv
+     * @m_deprecated_since{2019,10} Use @ref ColorHsv instead of
+     *      @ref Color3::Hsv
      */
     constexpr CORRADE_DEPRECATED("use ColorHsv instead of Color3::Hsv") /*implicit*/ ColorHsv(std::tuple<Deg<T>, T, T> hsv) noexcept:
         hue{std::get<0>(hsv)}, saturation{std::get<1>(hsv)}, value{std::get<2>(hsv)} {}
 
     /**
      * @brief Convert to @ref Color3::Hsv
-     * @deprecated Use @ref ColorHsv instead of @ref Color3::Hsv
+     * @m_deprecated_since{2019,10} Use @ref ColorHsv instead of
+     *      @ref Color3::Hsv
      */
     constexpr CORRADE_DEPRECATED("use ColorHsv instead of Color3::Hsv") /*implicit*/ operator std::tuple<Deg<T>, T, T>() const {
         return std::make_tuple(hue, saturation, value);

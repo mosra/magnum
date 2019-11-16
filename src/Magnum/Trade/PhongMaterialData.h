@@ -97,7 +97,7 @@ class MAGNUM_TRADE_EXPORT PhongMaterialData: public AbstractMaterialData {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Constructor
-         * @deprecated Use @ref PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*)
+         * @m_deprecated_since{2018,10} Use @ref PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*)
          *      instead.
          */
         explicit CORRADE_DEPRECATED("use PhongMaterialData(Flags, MaterialAlphaMode, Float, Float, const void*) instead") PhongMaterialData(Flags flags, Float shininess, const void* importerState = nullptr) noexcept: PhongMaterialData{flags, MaterialAlphaMode::Opaque, 0.5f, shininess, importerState} {}

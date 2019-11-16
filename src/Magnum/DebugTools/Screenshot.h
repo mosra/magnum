@@ -43,6 +43,7 @@ namespace Magnum { namespace DebugTools {
 @brief Save a screenshot to a file
 @param framebuffer  Framebuffer which to read
 @param filename     File where to save
+@m_since{2019,10}
 
 Reads a rectangle of given @p framebuffer, defined by its
 @ref GL::AbstractFramebuffer::viewport() "viewport()". Pixel format is queried
@@ -68,6 +69,7 @@ example due to unsupported pixel format). A message is printed in each case.
 bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(GL::AbstractFramebuffer& framebuffer, const std::string& filename);
 
 /** @overload
+@m_since{2019,10}
 
 Useful in case you already have an instance of the converter plugin manager in
 your application or if you intend to save screenshots often, as the operation
@@ -80,6 +82,7 @@ bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(PluginManager::Manager<Trade::AbstractI
 @param framebuffer  Framebuffer which to read
 @param format       Pixel format to use
 @param filename     File where to save
+@m_since{2019,10}
 
 Similar to @ref screenshot(GL::AbstractFramebuffer&, PixelFormat, const std::string&)
 but with an explicit pixel format. Useful in cases where the driver-suggested
@@ -89,6 +92,7 @@ incompatible with the framebuffer may result in GL errors.
 bool MAGNUM_DEBUGTOOLS_EXPORT screenshot(GL::AbstractFramebuffer& framebuffer, PixelFormat format, const std::string& filename);
 
 /** @overload
+@m_since{2019,10}
 
 Useful in case you already have an instance of the converter plugin manager in
 your application or if you intend to save screenshots often, as the operation

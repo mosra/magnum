@@ -49,6 +49,7 @@ namespace Magnum { namespace MeshTools {
 
 /**
 @brief Mesh compilation flag
+@m_since{2019,10}
 
 @see @ref CompileFlags, @ref compile(const Trade::MeshData3D&, CompileFlags)
 */
@@ -74,6 +75,7 @@ enum class CompileFlag: UnsignedByte {
 
 /**
 @brief Mesh compilation flags
+@m_since{2019,10}
 
 @see @ref compile(const Trade::MeshData3D&, CompileFlags)
 */
@@ -109,8 +111,9 @@ MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData2D& meshData);
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /** @brief @copybrief compile(const Trade::MeshData2D&)
- * @deprecated Use @ref compile(const Trade::MeshData2D&) instead. The @p usage
- *      parameter is ignored and returned buffer instances are empty.
+ * @m_deprecated_since{2018,10} Use @ref compile(const Trade::MeshData2D&)
+ *      instead. The @p usage parameter is ignored and returned buffer
+ *      instances are empty.
  */
 CORRADE_DEPRECATED("use compile(const Trade::MeshData2D&) instead") MAGNUM_MESHTOOLS_EXPORT std::tuple<GL::Mesh, std::unique_ptr<GL::Buffer>, std::unique_ptr<GL::Buffer>> compile(const Trade::MeshData2D& meshData, GL::BufferUsage usage);
 #endif
@@ -144,7 +147,7 @@ MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData3D& meshData, Comp
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /** @brief @copybrief compile(const Trade::MeshData3D&, CompileFlags)
- * @deprecated Use @ref compile(const Trade::MeshData3D&, CompileFlags)
+ * @m_deprecated_since{2018,10} Use @ref compile(const Trade::MeshData3D&, CompileFlags)
  *      instead. The @p usage parameter is ignored and returned buffer
  *      instances are empty.
  */

@@ -972,6 +972,7 @@ enum class CompressedPixelFormat: GLenum {
      * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
      * @requires_es_extension Extension @gl_extension{EXT,texture_compression_s3tc_srgb}
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc_srgb}
+     * @m_since{2019,10}
      */
     SRGBS3tcDxt1 = GL_COMPRESSED_SRGB_S3TC_DXT1_EXT,
 
@@ -993,6 +994,7 @@ enum class CompressedPixelFormat: GLenum {
      * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
      * @requires_es_extension Extension @gl_extension{EXT,texture_compression_s3tc_srgb}
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc_srgb}
+     * @m_since{2019,10}
      */
     SRGBAlphaS3tcDxt1 = GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT1_EXT,
 
@@ -1012,6 +1014,7 @@ enum class CompressedPixelFormat: GLenum {
      * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
      * @requires_es_extension Extension @gl_extension{EXT,texture_compression_s3tc_srgb}
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc_srgb}
+     * @m_since{2019,10}
      */
     SRGBAlphaS3tcDxt3 = GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT3_EXT,
 
@@ -1031,6 +1034,7 @@ enum class CompressedPixelFormat: GLenum {
      * @requires_extension Extension @gl_extension{EXT,texture_compression_s3tc}
      * @requires_es_extension Extension @gl_extension{EXT,texture_compression_s3tc_srgb}
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_s3tc_srgb}
+     * @m_since{2019,10}
      */
     SRGBAlphaS3tcDxt5 = GL_COMPRESSED_SRGB_ALPHA_S3TC_DXT5_EXT,
 
@@ -1685,6 +1689,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     RGBAAstc3x3x3 = GL_COMPRESSED_RGBA_ASTC_3x3x3_OES,
 
@@ -1694,6 +1699,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     SRGB8Alpha8Astc3x3x3 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_3x3x3_OES,
 
@@ -1703,6 +1709,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     RGBAAstc4x3x3 = GL_COMPRESSED_RGBA_ASTC_4x3x3_OES,
 
@@ -1712,6 +1719,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     SRGB8Alpha8Astc4x3x3 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x3x3_OES,
 
@@ -1721,6 +1729,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     RGBAAstc4x4x3 = GL_COMPRESSED_RGBA_ASTC_4x4x3_OES,
 
@@ -1730,6 +1739,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     SRGB8Alpha8Astc4x4x3 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4x3_OES,
 
@@ -1739,6 +1749,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     RGBAAstc4x4x4 = GL_COMPRESSED_RGBA_ASTC_4x4x4_OES,
 
@@ -1748,6 +1759,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     SRGB8Alpha8Astc4x4x4 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_4x4x4_OES,
 
@@ -1757,6 +1769,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     RGBAAstc5x4x4 = GL_COMPRESSED_RGBA_ASTC_5x4x4_OES,
 
@@ -1766,6 +1779,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     SRGB8Alpha8Astc5x4x4 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x4x4_OES,
 
@@ -1775,6 +1789,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     RGBAAstc5x5x4 = GL_COMPRESSED_RGBA_ASTC_5x5x4_OES,
 
@@ -1784,6 +1799,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     SRGB8Alpha8Astc5x5x4 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5x4_OES,
 
@@ -1793,6 +1809,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     RGBAAstc5x5x5 = GL_COMPRESSED_RGBA_ASTC_5x5x5_OES,
 
@@ -1802,6 +1819,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     SRGB8Alpha8Astc5x5x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_5x5x5_OES,
 
@@ -1811,6 +1829,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     RGBAAstc6x5x5 = GL_COMPRESSED_RGBA_ASTC_6x5x5_OES,
 
@@ -1820,6 +1839,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     SRGB8Alpha8Astc6x5x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x5x5_OES,
 
@@ -1829,6 +1849,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     RGBAAstc6x6x5 = GL_COMPRESSED_RGBA_ASTC_6x6x5_OES,
 
@@ -1838,6 +1859,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     SRGB8Alpha8Astc6x6x5 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6x5_OES,
 
@@ -1847,6 +1869,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     RGBAAstc6x6x6 = GL_COMPRESSED_RGBA_ASTC_6x6x6_OES,
 
@@ -1856,6 +1879,7 @@ enum class CompressedPixelFormat: GLenum {
      *
      * @requires_gles30 Not defined on desktop OpenGL, WebGL or OpenGL ES 2.0.
      * @requires_es_extension Extension @gl_extension{OES,texture_compression_astc}
+     * @m_since{2019,10}
      */
     SRGB8Alpha8Astc6x6x6 = GL_COMPRESSED_SRGB8_ALPHA8_ASTC_6x6x6_OES,
     #endif
@@ -1868,6 +1892,7 @@ enum class CompressedPixelFormat: GLenum {
      * @requires_gles Not available on desktop OpenGL.
      * @requires_es_extension Extension @gl_extension{IMG,texture_compression_pvrtc}
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_pvrtc}
+     * @m_since{2019,10}
      */
     RGBPvrtc2bppV1 = GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG,
 
@@ -1878,6 +1903,7 @@ enum class CompressedPixelFormat: GLenum {
      * textures.**
      * @requires_gles Not available on desktop OpenGL or WebGL.
      * @requires_es_extension Extension @gl_extension{EXT,pvrtc_sRGB}
+     * @m_since{2019,10}
      */
     SRGBPvrtc2bppV1 = GL_COMPRESSED_SRGB_PVRTC_2BPPV1_EXT,
     #endif
@@ -1889,6 +1915,7 @@ enum class CompressedPixelFormat: GLenum {
      * @requires_gles Not available on desktop OpenGL.
      * @requires_es_extension Extension @gl_extension{IMG,texture_compression_pvrtc}
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_pvrtc}
+     * @m_since{2019,10}
      */
     RGBAPvrtc2bppV1 = GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG,
 
@@ -1899,6 +1926,7 @@ enum class CompressedPixelFormat: GLenum {
      * map array textures.**
      * @requires_gles Not available on desktop OpenGL or WebGL.
      * @requires_es_extension Extension @gl_extension{EXT,pvrtc_sRGB}
+     * @m_since{2019,10}
      */
     SRGBAlphaPvrtc2bppV1 = GL_COMPRESSED_SRGB_ALPHA_PVRTC_2BPPV1_EXT,
     #endif
@@ -1910,6 +1938,7 @@ enum class CompressedPixelFormat: GLenum {
      * @requires_gles Not available on desktop OpenGL.
      * @requires_es_extension Extension @gl_extension{IMG,texture_compression_pvrtc}
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_pvrtc}
+     * @m_since{2019,10}
      */
     RGBPvrtc4bppV1 = GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG,
 
@@ -1920,6 +1949,7 @@ enum class CompressedPixelFormat: GLenum {
      * textures.**
      * @requires_gles Not available on desktop OpenGL or WebGL.
      * @requires_es_extension Extension @gl_extension{EXT,pvrtc_sRGB}
+     * @m_since{2019,10}
      */
     SRGBPvrtc4bppV1 = GL_COMPRESSED_SRGB_PVRTC_4BPPV1_EXT,
     #endif
@@ -1931,6 +1961,7 @@ enum class CompressedPixelFormat: GLenum {
      * @requires_gles Not available on desktop OpenGL.
      * @requires_es_extension Extension @gl_extension{IMG,texture_compression_pvrtc}
      * @requires_webgl_extension Extension @webgl_extension{WEBGL,compressed_texture_pvrtc}
+     * @m_since{2019,10}
      */
     RGBAPvrtc4bppV1 = GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG,
 
@@ -1941,6 +1972,7 @@ enum class CompressedPixelFormat: GLenum {
      * map array textures.**
      * @requires_gles Not available on desktop OpenGL or WebGL.
      * @requires_es_extension Extension @gl_extension{EXT,pvrtc_sRGB}
+     * @m_since{2019,10}
      */
     SRGBAlphaPvrtc4bppV1 = GL_COMPRESSED_SRGB_ALPHA_PVRTC_4BPPV1_EXT
     #endif

@@ -68,7 +68,7 @@ Defined if built as static libraries. Default are shared libraries.
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /** @brief Multi-threaded build
- * @deprecated Use @ref CORRADE_BUILD_MULTITHREADED instead.
+ * @m_deprecated_since{2019,10} Use @ref CORRADE_BUILD_MULTITHREADED instead.
  */
 #define MAGNUM_BUILD_MULTITHREADED
 #undef MAGNUM_BUILD_MULTITHREADED
@@ -220,6 +220,7 @@ typedef Math::Half Half;
 
 /**
 @brief Two-component bool vector
+@m_since{2019,10}
 
 Equivalent to GLSL @glsl bvec2 @ce.
 @m_keyword{bvec2,GLSL bvec2,}
@@ -228,6 +229,7 @@ typedef Math::BoolVector<2> BoolVector2;
 
 /**
 @brief Three-component bool vector
+@m_since{2019,10}
 
 Equivalent to GLSL @glsl bvec3 @ce.
 @m_keyword{bvec3,GLSL bvec3,}
@@ -236,6 +238,7 @@ typedef Math::BoolVector<3> BoolVector3;
 
 /**
 @brief Four-component bool vector
+@m_since{2019,10}
 
 Equivalent to GLSL @glsl bvec4 @ce.
 @m_keyword{bvec4,GLSL bvec4,}

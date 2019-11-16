@@ -683,6 +683,7 @@ template<std::size_t size, class T> class Vector {
 
 /** @relatesalso Vector
 @brief Component-wise equality comparison
+@m_since{2019,10}
 
 Unlike @ref Vector::operator==() returns a @ref BoolVector instead of a single
 value. Vector complement to @ref equal(T, T).
@@ -698,6 +699,7 @@ template<std::size_t size, class T> inline BoolVector<size> equal(const Vector<s
 
 /** @relatesalso Vector
 @brief Component-wise non-equality comparison
+@m_since{2019,10}
 
 Unlike @ref Vector::operator!=() returns a @ref BoolVector instead of a single
 value. Vector complement to @ref notEqual(T, T).

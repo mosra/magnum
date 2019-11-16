@@ -135,8 +135,8 @@ template<class T> class Frustum {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Frustum planes
-         * @deprecated Use @ref operator[](std::size_t) const, @ref data() or
-         *      @ref begin() / @ref end() instead.
+         * @m_deprecated_since{2019,10} Use @ref operator[](std::size_t) const,
+         *      @ref data() or @ref begin() / @ref end() instead.
          */
         constexpr CORRADE_DEPRECATED("use operator[](), data() or begin() / end() instead") Corrade::Containers::StaticArrayView<6, const Vector4<T>> planes() const {
             /* GCC 4.8 needs explicit construction */
@@ -156,6 +156,7 @@ template<class T> class Frustum {
 
         /**
          * @brief First plane
+         * @m_since{2019,10}
          *
          * Together with @ref end() useful for range access, for example here
          * to check for a point/frustum intersection, similarly to
@@ -164,13 +165,36 @@ template<class T> class Frustum {
          * @snippet MagnumMath.cpp Frustum-range
          */
         Vector4<T>* begin() { return _data; }
-        constexpr const Vector4<T>* begin() const { return _data; }     /**< @overload */
-        constexpr const Vector4<T>* cbegin() const { return _data; }    /**< @overload */
 
-        /** @brief (One after) last plane */
+        /**
+         * @overload
+         * @m_since{2019,10}
+         */
+        constexpr const Vector4<T>* begin() const { return _data; }
+
+        /**
+         * @overload
+         * @m_since{2019,10}
+         */
+        constexpr const Vector4<T>* cbegin() const { return _data; }
+
+        /**
+         * @brief (One after) last plane
+         * @m_since{2019,10}
+         */
         Vector4<T>* end() { return _data + 6; }
-        constexpr const Vector4<T>* end() const { return _data + 6; }   /**< @overload */
-        constexpr const Vector4<T>* cend() const { return _data + 6; }  /**< @overload */
+
+        /**
+         * @overload
+         * @m_since{2019,10}
+         */
+        constexpr const Vector4<T>* end() const { return _data + 6; }
+
+        /**
+         * @overload
+         * @m_since{2019,10}
+         */
+        constexpr const Vector4<T>* cend() const { return _data + 6; }
 
         /** @brief Left plane */
         constexpr Vector4<T> left() const { return _data[0]; }

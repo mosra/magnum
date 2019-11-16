@@ -417,7 +417,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief setSrgbDecode()
-         * @deprecated Use @ref setSrgbDecode() instead.
+         * @m_deprecated_since{2018,10} Use @ref setSrgbDecode() instead.
          */
         CORRADE_DEPRECATED("use setSrgbDecode() instead") TextureArray<dimensions>& setSRGBDecode(bool decode) {
             return setSrgbDecode(decode);
@@ -526,6 +526,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         /**
          * @brief Read given texture mip level to an image view
+         * @m_since{2019,10}
          *
          * Compared to @ref image(Int, Image<dimensions+1>&) the function reads
          * the pixels into the memory provided by @p image, expecting it's not
@@ -581,6 +582,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         /**
          * @brief Read given compressed texture mip level to an image view
+         * @m_since{2019,10}
          *
          * Compared to @ref compressedImage(Int, CompressedImage<dimensions+1>&)
          * the function reads the pixels into the memory provided by @p image,
@@ -638,6 +640,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         /**
          * @brief Read a range of given texture mip level to an image view
+         * @m_since{2019,10}
          *
          * Compared to @ref subImage(Int, const RangeTypeFor<dimensions+1, Int>&, Image<dimensions+1>&)
          * the function reads the pixels into the memory provided by @p image,
@@ -700,6 +703,7 @@ template<UnsignedInt dimensions> class TextureArray: public AbstractTexture {
 
         /**
          * @brief Read a range of given compressed texture mip level to an image view
+         * @m_since{2019,10}
          *
          * Compared to @ref compressedSubImage(Int, const RangeTypeFor<dimensions+1, Int>&, CompressedImage<dimensions+1>&)
          * the function reads the pixels into the memory provided by @p image,

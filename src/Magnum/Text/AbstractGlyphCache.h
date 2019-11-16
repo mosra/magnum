@@ -27,6 +27,7 @@
 
 /** @file
  * @brief Class @ref Magnum::Text::AbstractGlyphCache
+ * @m_since{2019,10}
  */
 
 #include <vector>
@@ -40,6 +41,7 @@ namespace Magnum { namespace Text {
 
 /**
 @brief Features supported by a particular glyph cache implementation
+@m_since{2019,10}
 
 @see @ref GlyphCacheFeatures, @ref AbstractGlyphCache::features()
 */
@@ -55,6 +57,7 @@ enum class GlyphCacheFeature: UnsignedByte {
 
 /**
 @brief Set of features supported by a glyph cache
+@m_since{2019,10}
 
 @see @ref AbstractGlyphCache::features()
 */
@@ -64,6 +67,7 @@ CORRADE_ENUMSET_OPERATORS(GlyphCacheFeatures)
 
 /**
 @brief Base for glyph caches
+@m_since{2019,10}
 
 An API-agnostic base for glyph caches. See @ref GlyphCache and
 @ref DistanceFieldGlyphCache for concrete implementations.

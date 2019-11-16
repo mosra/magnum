@@ -46,7 +46,7 @@ namespace Magnum { namespace Trade {
 
 #ifdef MAGNUM_BUILD_DEPRECATED
 /** @brief @copybrief InputFileCallbackPolicy
- * @deprecated Use @ref InputFileCallbackPolicy instead.
+ * @m_deprecated_since{2019,10} Use @ref InputFileCallbackPolicy instead.
  */
 typedef CORRADE_DEPRECATED("use InputFileCallbackPolicy instead") InputFileCallbackPolicy ImporterFileCallbackPolicy;
 #endif

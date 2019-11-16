@@ -75,7 +75,7 @@ class ForceRendererOptions {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief @copybrief size()
-         * @deprecated Use @ref size() instead.
+         * @m_deprecated_since{2019,10} Use @ref size() instead.
          */
         constexpr CORRADE_DEPRECATED("use size() instead") Float scale() const { return _size; }
         #endif
@@ -142,8 +142,8 @@ template<UnsignedInt dimensions> class ForceRenderer: public SceneGraph::Drawabl
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Constructor
-         * @deprecated Implicit @ref ResourceManager singleton is deprecated,
-         *      use @ref ForceRenderer(ResourceManager&, SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, ResourceKey, SceneGraph::DrawableGroup<dimensions, Float>*)
+         * @m_deprecated_since{2019,10} Implicit @ref ResourceManager singleton
+         *      is deprecated, use @ref ForceRenderer(ResourceManager&, SceneGraph::AbstractObject<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, const VectorTypeFor<dimensions, Float>&, ResourceKey, SceneGraph::DrawableGroup<dimensions, Float>*)
          *      instead.
          */
         explicit CORRADE_DEPRECATED("implicit ResourceManager singleton is deprecated, use a constructor with explicit ResourceManager reference instead") ForceRenderer(SceneGraph::AbstractObject<dimensions, Float>& object, const VectorTypeFor<dimensions, Float>& forcePosition, const VectorTypeFor<dimensions, Float>& force, ResourceKey options = ResourceKey(), SceneGraph::DrawableGroup<dimensions, Float>* drawables = nullptr);

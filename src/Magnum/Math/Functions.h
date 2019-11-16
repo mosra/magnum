@@ -186,6 +186,7 @@ the operations component-wise.
 
 /**
 @brief If given number is a positive or negative infinity
+@m_since{2019,10}
 
 @see @ref isNan(), @ref Constants::inf(),
     @ref isInf(Corrade::Containers::StridedArrayView1D<const T>)
@@ -194,7 +195,10 @@ template<class T> inline typename std::enable_if<IsScalar<T>::value, bool>::type
     return std::isinf(UnderlyingTypeOf<T>(value));
 }
 
-/** @overload */
+/**
+@overload
+@m_since{2019,10}
+*/
 template<std::size_t size, class T> inline BoolVector<size> isInf(const Vector<size, T>& value) {
     BoolVector<size> out;
     for(std::size_t i = 0; i != size; ++i)
@@ -204,6 +208,7 @@ template<std::size_t size, class T> inline BoolVector<size> isInf(const Vector<s
 
 /**
 @brief If given number is a NaN
+@m_since{2019,10}
 
 Equivalent to @cpp value != value @ce.
 @see @ref isInf(), @ref Constants::nan(),
@@ -212,7 +217,10 @@ Equivalent to @cpp value != value @ce.
 /* defined in Vector.h */
 template<class T> typename std::enable_if<IsScalar<T>::value, bool>::type isNan(T value);
 
-/** @overload */
+/**
+@overload
+@m_since{2019,10}
+*/
 template<std::size_t size, class T> inline BoolVector<size> isNan(const Vector<size, T>& value) {
     BoolVector<size> out;
     for(std::size_t i = 0; i != size; ++i)

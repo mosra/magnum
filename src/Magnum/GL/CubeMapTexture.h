@@ -438,7 +438,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief setSrgbDecode()
-         * @deprecated Use @ref setSrgbDecode() instead.
+         * @m_deprecated_since{2018,10} Use @ref setSrgbDecode() instead.
          */
         CORRADE_DEPRECATED("use setSrgbDecode() instead") CubeMapTexture& setSRGBDecode(bool decode) {
             return setSrgbDecode(decode);
@@ -694,6 +694,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
 
         /**
          * @brief Read given texture mip level and coordinate to an image view
+         * @m_since{2019,10}
          *
          * Compared to @ref image(CubeMapCoordinate, Int, Image2D&) the
          * function reads the pixels into the memory provided by @p image,
@@ -760,6 +761,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
 
         /**
          * @brief Read given compressed texture mip level to an image view
+         * @m_since{2019,10}
          *
          * Compared to @ref compressedImage(CubeMapCoordinate, Int, CompressedImage2D&)
          * the function reads the pixels into the memory provided by @p image,
@@ -815,6 +817,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
 
         /**
          * @brief Read a range of given texture mip level to an image view
+         * @m_since{2019,10}
          *
          * Compared to @ref subImage(Int, const Range3Di&, Image3D&) the
          * function reads the pixels into the memory provided by @p image,
@@ -875,6 +878,7 @@ class MAGNUM_GL_EXPORT CubeMapTexture: public AbstractTexture {
 
         /**
          * @brief Read a range of given compressed texture mip level to an image view
+         * @m_since{2019,10}
          *
          * Compared to @ref compressedSubImage(Int, const Range3Di&, CompressedImage3D&)
          * the function reads the pixels into the memory provided by @p image,

@@ -515,7 +515,10 @@ class DynamicAttribute {
          */
         constexpr DynamicAttribute(Kind kind, UnsignedInt location, Components components, DataType dataType): _kind{kind}, _location{location}, _components{components}, _dataType{dataType} {}
 
-        /** @brief Construct from a compile-time attribute */
+        /**
+         * @brief Construct from a compile-time attribute
+         * @m_since{2019,10}
+         */
         template<UnsignedInt location_, class T> constexpr DynamicAttribute(const Attribute<location_, T>& attribute);
 
         /** @brief Attribute kind */

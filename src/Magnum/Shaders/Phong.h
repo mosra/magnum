@@ -137,6 +137,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
 
         /**
          * @brief Tangent direction
+         * @m_since{2019,10}
          *
          * @ref shaders-generic "Generic attribute",
          * @ref Magnum::Vector3 "Vector3", used only if
@@ -156,6 +157,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
 
         /**
          * @brief Three-component vertex color
+         * @m_since{2019,10}
          *
          * @ref shaders-generic "Generic attribute", @ref Magnum::Color3. Use
          * either this or the @ref Color4 attribute. Used only if
@@ -165,6 +167,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
 
         /**
          * @brief Four-component vertex color
+         * @m_since{2019,10}
          *
          * @ref shaders-generic "Generic attribute", @ref Magnum::Color4. Use
          * either this or the @ref Color3 attribute. Used only if
@@ -177,6 +180,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              * Color shader output. @ref shaders-generic "Generic output",
              * present always. Expects three- or four-component floating-point
              * or normalized buffer attachment.
+             * @m_since{2019,10}
              */
             ColorOutput = Generic3D::ColorOutput,
 
@@ -190,6 +194,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              * @requires_gles30 Object ID output requires integer buffer
              *      attachments, which are not available in OpenGL ES 2.0 or
              *      WebGL 1.0.
+             * @m_since{2019,10}
              */
             ObjectIdOutput = Generic3D::ObjectIdOutput
             #endif
@@ -222,6 +227,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
             /**
              * Modify normals according to a texture. Requires the
              * @ref Tangent attribute to be present.
+             * @m_since{2019,10}
              */
             NormalTexture = 1 << 4,
 
@@ -241,6 +247,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
             /**
              * Multiply diffuse color with a vertex color. Requires either
              * the @ref Color3 or @ref Color4 attribute to be present.
+             * @m_since{2019,10}
              */
             VertexColor = 1 << 5,
 
@@ -251,6 +258,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
              * @requires_gles30 Object ID output requires integer buffer
              *      attachments, which are not available in OpenGL ES 2.0 or
              *      WebGL 1.0.
+             * @m_since{2019,10}
              */
             ObjectId = 1 << 6
             #endif
@@ -348,6 +356,7 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         /**
          * @brief Bind a normal texture
          * @return Reference to self (for method chaining)
+         * @m_since{2019,10}
          *
          * Expects that the shader was created with @ref Flag::NormalTexture
          * enabled and the @ref Tangent attribute was supplied. If

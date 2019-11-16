@@ -315,7 +315,13 @@ ALIASES                = \
     "fn_al_keyword{1}=@fn_al{\1}" \
     "fn_alc_keyword{1}=@fn_alc{\1}" \
     "def_al_keyword{1}=@def_al{\1}" \
-    "def_alc_keyword{1}=@def_alc{\1}"
+    "def_alc_keyword{1}=@def_alc{\1}" \
+    "m_since{2}=@since \1.\2" \
+    "m_since_{2}=@since \2.\3" \
+    "m_since_latest=" \
+    "m_since_latest_=" \
+    "m_deprecated_since{2}=@deprecated" \
+    "m_deprecated_since_latest=@deprecated"
 
 # This tag can be used to specify a number of word-keyword mappings (TCL only).
 # A mapping has the form "name=value". For example adding "class=itcl::class"

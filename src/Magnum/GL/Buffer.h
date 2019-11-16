@@ -993,7 +993,10 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          */
         Buffer& setData(Containers::ArrayView<const void> data, BufferUsage usage = BufferUsage::StaticDraw);
 
-        /** @overload */
+        /**
+         * @overload
+         * @m_since{2019,10}
+         */
         template<class T> Buffer& setData(std::initializer_list<T> data, BufferUsage usage = BufferUsage::StaticDraw) {
             return setData({data.begin(), data.size()}, usage);
         }
@@ -1012,7 +1015,10 @@ class MAGNUM_GL_EXPORT Buffer: public AbstractObject {
          */
         Buffer& setSubData(GLintptr offset, Containers::ArrayView<const void> data);
 
-        /** @overload */
+        /**
+         * @overload
+         * @m_since{2019,10}
+         */
         template<class T> Buffer& setSubData(GLintptr offset, std::initializer_list<T> data) {
             return setSubData(offset, {data.begin(), data.size()});
         }

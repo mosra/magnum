@@ -203,6 +203,7 @@ enum class TextureFormat: GLenum {
      * @requires_gles One- and two-component sRGB texture formats are not
      *      available in WebGL, use @ref TextureFormat::SRGB8 or
      *      @ref TextureFormat::SRGB8Alpha8
+     * @m_since{2019,10}
      */
     SR8 = GL_SR8_EXT,
 
@@ -215,6 +216,7 @@ enum class TextureFormat: GLenum {
      *      @ref TextureFormat::SRGB8Alpha8 instead. Only
      *      @ref TextureFormat::SR8, @ref TextureFormat::SRGB8 or
      *      @ref TextureFormat::SRGB8Alpha8 is available in desktop OpenGL.
+     * @m_since{2019,10}
      */
     SRG8 = GL_SRG8_EXT,
     #endif
@@ -884,8 +886,8 @@ enum class TextureFormat: GLenum {
 
     #ifdef MAGNUM_BUILD_DEPRECATED
     /** RGB, normalized unsigned, red and green component 3bit, blue 2bit.
-     * @deprecated This one had a misleading typo in the name, use
-     *      @ref TextureFormat::R3G3B2 instead.
+     * @m_deprecated_since{2019,10} This one had a misleading typo in the name,
+     *      use @ref TextureFormat::R3G3B2 instead.
      */
     R3B3G2 CORRADE_DEPRECATED_ENUM("use R3G3B2 instead") = R3G3B2,
     #endif
@@ -1040,6 +1042,7 @@ enum class TextureFormat: GLenum {
      * @requires_es_extension Extension @gl_extension{APPLE,texture_format_BGRA8888}
      *      or @gl_extension{EXT,texture_format_BGRA8888}
      * @requires_gles Only RGBA component ordering is available in WebGL.
+     * @m_since{2019,10}
      */
     BGRA = GL_BGRA_EXT,
 
@@ -1051,6 +1054,7 @@ enum class TextureFormat: GLenum {
      * @requires_es_extension Extension @gl_extension{APPLE,texture_format_BGRA8888}. There are no signed
      *      normalized, integral or floating-point types with BGRA ordering.
      * @requires_gles Only RGBA component ordering is available in WebGL.
+     * @m_since{2019,10}
      */
     BGRA8 = GL_BGRA8_EXT,
     #endif
@@ -2464,6 +2468,7 @@ enum class TextureFormat: GLenum {
 
 /**
 @brief Check availability of a sized generic texture format
+@m_since{2019,10}
 
 Some OpenGL targets don't support sized texture formats at all (OpenGL ES 2.0
 and WebGL 1.0), some targets miss some variants (for example OpenGL ES doesn't
@@ -2490,6 +2495,7 @@ MAGNUM_GL_EXPORT bool hasTextureFormat(Magnum::PixelFormat format);
 
 /**
 @brief Convert a generic pixel format to sized OpenGL texture format
+@m_since{2019,10}
 
 Not all sized texture formats may be available on all targets and this function
 expects that given format is available on the target. See @ref hasTextureFormat()
@@ -2510,6 +2516,7 @@ MAGNUM_GL_EXPORT TextureFormat textureFormat(Magnum::PixelFormat format);
 
 /**
 @brief Check availability of a generic compressed texture format
+@m_since{2019,10}
 
 Some OpenGL targets don't support all generic pixel formats (for example PVRTC
 compression might not be available on desktop OpenGL). Returns @cpp false @ce
@@ -2532,6 +2539,7 @@ MAGNUM_GL_EXPORT bool hasTextureFormat(Magnum::CompressedPixelFormat format);
 
 /**
 @brief Convert generic compressed pixel format to OpenGL texture format
+@m_since{2019,10}
 
 In case @ref isCompressedPixelFormatImplementationSpecific() returns
 @cpp false @ce for @p format, maps it to a corresponding OpenGL pixel format.
@@ -2549,7 +2557,10 @@ to query availability of given format.
 */
 MAGNUM_GL_EXPORT TextureFormat textureFormat(Magnum::CompressedPixelFormat format);
 
-/** @debugoperatorenum{TextureFormat} */
+/**
+@debugoperatorenum{TextureFormat}
+@m_since{2019,10}
+*/
 MAGNUM_GL_EXPORT Debug& operator<<(Debug& debug, TextureFormat value);
 
 }}

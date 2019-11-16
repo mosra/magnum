@@ -346,6 +346,7 @@ template<UnsignedInt dimensions> class ImageData {
 
         /**
          * @brief Image data from a r-value
+         * @m_since{2019,10}
          *
          * Unlike @ref data(), which returns a view, this is equivalent to
          * @ref release() to avoid a dangling view when the temporary instance
@@ -355,6 +356,7 @@ template<UnsignedInt dimensions> class ImageData {
         Containers::Array<char> data() && { return release(); }
 
         /** @overload
+         * @m_since{2019,10}
          * @todo what to do here?!
          */
         Containers::Array<char> data() const && = delete;
@@ -362,8 +364,8 @@ template<UnsignedInt dimensions> class ImageData {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Image data in a particular type
-         * @deprecated Use non-templated @ref data() together with
-         *      @ref Corrade::Containers::arrayCast() instead for properly
+         * @m_deprecated_since{2019,10} Use non-templated @ref data() together
+         *      with @ref Corrade::Containers::arrayCast() instead for properly
          *      bounds-checked type conversion.
          */
         template<class T> CORRADE_DEPRECATED("use data() together with Containers::arrayCast() instead") T* data() {
@@ -372,8 +374,8 @@ template<UnsignedInt dimensions> class ImageData {
 
         /**
          * @brief Image data in a particular type
-         * @deprecated Use non-templated @ref data() together with
-         *      @ref Corrade::Containers::arrayCast() instead for properly
+         * @m_deprecated_since{2019,10} Use non-templated @ref data() together
+         *      with @ref Corrade::Containers::arrayCast() instead for properly
          *      bounds-checked type conversion.
          */
         template<class T> CORRADE_DEPRECATED("use data() together with Containers::arrayCast() instead") const T* data() const {
@@ -383,6 +385,7 @@ template<UnsignedInt dimensions> class ImageData {
 
         /**
          * @brief View on pixel data
+         * @m_since{2019,10}
          *
          * Provides direct and easy-to-use access to image pixels. Expects that
          * the image is not compressed. See @ref Image-pixel-views for more
@@ -394,6 +397,7 @@ template<UnsignedInt dimensions> class ImageData {
 
         /**
          * @brief View on pixel data with a concrete pixel type
+         * @m_since{2019,10}
          *
          * Compared to non-templated @ref pixels() in addition casts the pixel
          * data to a specified type. The user is responsible for choosing
@@ -406,7 +410,10 @@ template<UnsignedInt dimensions> class ImageData {
             return Containers::arrayCast<dimensions, T>(pixels());
         }
 
-        /** @overload */
+        /**
+         * @overload
+         * @m_since{2019,10}
+         */
         template<class T> Containers::StridedArrayView<dimensions, const T> pixels() const {
             return Containers::arrayCast<dimensions, const T>(pixels());
         }

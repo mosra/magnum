@@ -585,7 +585,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief setSrgbDecode()
-         * @deprecated Use @ref setSrgbDecode() instead.
+         * @m_deprecated_since{2018,10} Use @ref setSrgbDecode() instead.
          */
         CORRADE_DEPRECATED("use setSrgbDecode() instead") Texture<dimensions>& setSRGBDecode(bool decode) {
             return setSrgbDecode(decode);
@@ -791,6 +791,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         /**
          * @brief Read given texture mip level to an image view
+         * @m_since{2019,10}
          *
          * Compared to @ref image(Int, Image<dimensions>&) the function reads
          * the pixels into the memory provided by @p image, expecting it's not
@@ -873,6 +874,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         /**
          * @brief Read given compressed texture mip level to an image view
+         * @m_since{2019,10}
          *
          * Compared to @ref compressedImage(Int, CompressedImage<dimensions>&)
          * the function reads the pixels into the memory provided by @p image,
@@ -945,6 +947,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         /**
          * @brief Read a range of given texture mip level to an image view
+         * @m_since{2019,10}
          *
          * Compared to @ref subImage(Int, const RangeTypeFor<dimensions, Int>&, Image<dimensions>&)
          * the function reads the pixels into the memory provided by @p image,
@@ -1026,6 +1029,7 @@ template<UnsignedInt dimensions> class Texture: public AbstractTexture {
 
         /**
          * @brief Read a range of given compressed texture mip level to an image view
+         * @m_since{2019,10}
          *
          * Compared to @ref compressedSubImage(Int, const RangeTypeFor<dimensions, Int>&, CompressedImage<dimensions>&)
          * the function reads the pixels into the memory provided by @p image,

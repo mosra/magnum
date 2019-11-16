@@ -94,6 +94,7 @@ template<UnsignedInt dimensions> struct Generic {
 
     /**
      * @brief Vertex tangent
+     * @m_since{2019,10}
      *
      * @ref Magnum::Vector3 "Vector3", defined only in 3D.
      */
@@ -116,7 +117,7 @@ template<UnsignedInt dimensions> struct Generic {
     #ifdef MAGNUM_BUILD_DEPRECATED
     /**
      * @brief Vertex color
-     * @deprecated Use @ref Color3 or @ref Color4 instead.
+     * @m_deprecated_since{2018,10} Use @ref Color3 or @ref Color4 instead.
      */
     struct Color: GL::Attribute<3, Magnum::Color4> {
         /**
@@ -125,12 +126,12 @@ template<UnsignedInt dimensions> struct Generic {
          * @param dataType      Type of passed data
          * @param dataOptions   Data options
          *
-         * @deprecated Use @ref Color3 or @ref Color4 instead.
+         * @m_deprecated_since{2018,10} Use @ref Color3 or @ref Color4 instead.
          */
         CORRADE_DEPRECATED("use Color3 or Color4 instead") constexpr explicit Color(Components components, DataType dataType = DataType::Float, DataOptions dataOptions = {});
 
         /** @brief @copybrief Color(Components, DataType, DataOptions)
-         * @deprecated Use @ref Color3 or @ref Color4 instead.
+         * @m_deprecated_since{2018,10} Use @ref Color3 or @ref Color4 instead.
          */
         CORRADE_DEPRECATED("use Color3 or Color4 instead") constexpr explicit Color(DataType dataType = DataType::Float, DataOptions dataOptions = {});
     };

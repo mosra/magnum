@@ -27,7 +27,7 @@
 */
 
 /** @file
- * @deprecated Use @ref Magnum/Math/Distance.h instead.
+ * @m_deprecated_since{2018,10} Use @ref Magnum/Math/Distance.h instead.
  */
 
 #include "Magnum/configure.h"
@@ -38,13 +38,13 @@
 CORRADE_DEPRECATED_FILE("use Magnum/Math/Distance.h instead")
 
 /** @namespace Magnum::Math::Geometry::Distance
- * @deprecated Use @ref Magnum::Math::Distance instead.
+ * @m_deprecated_since{2018,10} Use @ref Magnum::Math::Distance instead.
  */
 
 namespace Magnum { namespace Math { namespace Geometry { namespace Distance {
 
 /** @brief @copybrief Math::Distance::linePointSquared(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
- * @deprecated Use @ref Math::Distance::linePointSquared(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
+ * @m_deprecated_since{2018,10} Use @ref Math::Distance::linePointSquared(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
  *      instead.
  */
 template<class T> inline CORRADE_DEPRECATED("use Math::Distance::linePointSquared() instead") T linePointSquared(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
@@ -52,7 +52,7 @@ template<class T> inline CORRADE_DEPRECATED("use Math::Distance::linePointSquare
 }
 
 /** @brief @copybrief Math::Distance::linePoint(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
- * @deprecated Use @ref Math::Distance::linePoint(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
+ * @m_deprecated_since{2018,10} Use @ref Math::Distance::linePoint(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
  *      instead.
  */
 template<class T> inline CORRADE_DEPRECATED("use Math::Distance::linePoint() instead") T linePoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
@@ -60,7 +60,7 @@ template<class T> inline CORRADE_DEPRECATED("use Math::Distance::linePoint() ins
 }
 
 /** @brief @copybrief Math::Distance::linePointSquared(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
- * @deprecated Use @ref Math::Distance::linePointSquared(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
+ * @m_deprecated_since{2018,10} Use @ref Math::Distance::linePointSquared(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
  *      instead.
  */
 template<class T> inline CORRADE_DEPRECATED("use Math::Distance::linePointSquared() instead") T linePointSquared(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
@@ -68,7 +68,7 @@ template<class T> inline CORRADE_DEPRECATED("use Math::Distance::linePointSquare
 }
 
 /** @brief @copybrief Math::Distance::linePoint(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
- * @deprecated Use @ref Math::Distance::linePoint(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
+ * @m_deprecated_since{2018,10} Use @ref Math::Distance::linePoint(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
  *      instead.
  */
 template<class T> inline CORRADE_DEPRECATED("use Math::Distance::linePoint() instead") T linePoint(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
@@ -76,7 +76,7 @@ template<class T> inline CORRADE_DEPRECATED("use Math::Distance::linePoint() ins
 }
 
 /** @brief @copybrief Math::Distance::lineSegmentPointSquared(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
- * @deprecated Use @ref Math::Distance::lineSegmentPointSquared(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
+ * @m_deprecated_since{2018,10} Use @ref Math::Distance::lineSegmentPointSquared(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
  *      instead.
  */
 template<class T> inline CORRADE_DEPRECATED("use Math::Distance::lineSegmentPointSquared() instead") T lineSegmentPointSquared(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
@@ -84,7 +84,7 @@ template<class T> inline CORRADE_DEPRECATED("use Math::Distance::lineSegmentPoin
 }
 
 /** @brief @copybrief Math::Distance::lineSegmentPoint(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
- * @deprecated Use @ref Math::Distance::lineSegmentPoint(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
+ * @m_deprecated_since{2018,10} Use @ref Math::Distance::lineSegmentPoint(const Vector2<T>&, const Vector2<T>&, const Vector2<T>&)
  *      instead.
  */
 template<class T> inline CORRADE_DEPRECATED("use Math::Distance::lineSegmentPoint() instead") T lineSegmentPoint(const Vector2<T>& a, const Vector2<T>& b, const Vector2<T>& point) {
@@ -92,7 +92,7 @@ template<class T> inline CORRADE_DEPRECATED("use Math::Distance::lineSegmentPoin
 }
 
 /** @brief @copybrief Math::Distance::lineSegmentPointSquared(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
- * @deprecated Use @ref Math::Distance::lineSegmentPointSquared(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
+ * @m_deprecated_since{2018,10} Use @ref Math::Distance::lineSegmentPointSquared(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
  *      instead.
  */
 template<class T> inline CORRADE_DEPRECATED("use Math::Distance::lineSegmentPointSquared() instead") T lineSegmentPointSquared(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
@@ -100,7 +100,7 @@ template<class T> inline CORRADE_DEPRECATED("use Math::Distance::lineSegmentPoin
 }
 
 /** @brief @copybrief Math::Distance::lineSegmentPoint(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
- * @deprecated Use @ref Math::Distance::lineSegmentPoint(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
+ * @m_deprecated_since{2018,10} Use @ref Math::Distance::lineSegmentPoint(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
  *      instead.
  */
 template<class T> inline CORRADE_DEPRECATED("use Math::Distance::lineSegmentPointSquared() instead") T lineSegmentPoint(const Vector3<T>& a, const Vector3<T>& b, const Vector3<T>& point) {
@@ -108,7 +108,7 @@ template<class T> inline CORRADE_DEPRECATED("use Math::Distance::lineSegmentPoin
 }
 
 /** @brief @copybrief Math::Distance::pointPlaneScaled(const Vector3<T>&, const Vector4<T>&)
- * @deprecated Use @ref Math::Distance::pointPlaneScaled(const Vector3<T>&, const Vector4<T>&)
+ * @m_deprecated_since{2018,10} Use @ref Math::Distance::pointPlaneScaled(const Vector3<T>&, const Vector4<T>&)
  *      instead.
  */
 template<class T> inline CORRADE_DEPRECATED("use Math::Distance::pointPlaneScaled() instead") T pointPlaneScaled(const Vector3<T>& point, const Vector4<T>& plane) {
@@ -116,7 +116,7 @@ template<class T> inline CORRADE_DEPRECATED("use Math::Distance::pointPlaneScale
 }
 
 /** @brief @copybrief Math::Distance::pointPlane(const Vector3<T>&, const Vector4<T>&)
- * @deprecated Use @ref Math::Distance::pointPlane(const Vector3<T>&, const Vector4<T>&)
+ * @m_deprecated_since{2018,10} Use @ref Math::Distance::pointPlane(const Vector3<T>&, const Vector4<T>&)
  *      instead.
  */
 template<class T> inline CORRADE_DEPRECATED("use Math::Distance::pointPlane() instead") T pointPlane(const Vector3<T>& point, const Vector4<T>& plane) {
@@ -124,7 +124,7 @@ template<class T> inline CORRADE_DEPRECATED("use Math::Distance::pointPlane() in
 }
 
 /** @brief @copybrief Math::Distance::pointPlaneNormalized(const Vector3<T>&, const Vector4<T>&)
- * @deprecated Use @ref Math::Distance::pointPlaneNormalized(const Vector3<T>&, const Vector4<T>&)
+ * @m_deprecated_since{2018,10} Use @ref Math::Distance::pointPlaneNormalized(const Vector3<T>&, const Vector4<T>&)
  *      instead.
  */
 template<class T> inline CORRADE_DEPRECATED("use Math::Distance::pointPlaneNormalized() instead") T pointPlaneNormalized(const Vector3<T>& point, const Vector4<T>& plane) {

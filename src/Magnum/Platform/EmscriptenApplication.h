@@ -29,6 +29,7 @@
 #if defined(CORRADE_TARGET_EMSCRIPTEN) || defined(DOXYGEN_GENERATING_OUTPUT)
 /** @file
  * @brief Class @ref Magnum::Platform::EmscriptenApplication, macro @ref MAGNUM_EMSCRIPTENAPPLICATION_MAIN()
+ * @m_since{2019,10}
  */
 #endif
 
@@ -56,6 +57,7 @@ namespace Magnum { namespace Platform {
 
 /** @nosubgrouping
 @brief Emscripten application
+@m_since{2019,10}
 
 @m_keywords{Application}
 
@@ -537,6 +539,7 @@ class EmscriptenApplication {
     public:
         /**
          * @brief Cursor type
+         * @m_since_latest
          *
          * Value names in this enum don't necessarily match the CSS names in
          * order to be compatible with @ref Sdl2Application and
@@ -725,12 +728,16 @@ class EmscriptenApplication {
 
         /**
          * @brief Set cursor type
+         * @m_since_latest
          *
          * Default is @ref Cursor::Arrow.
          */
         void setCursor(Cursor cursor);
 
-        /** @brief Get current cursor type */
+        /**
+         * @brief Get current cursor type
+         * @m_since_latest
+         */
         Cursor cursor();
 
     private:

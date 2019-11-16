@@ -252,8 +252,8 @@ template<class... Types> class ResourceManager: private Implementation::Resource
          *
          * Assumes that the instance exists.
          *
-         * @deprecated Implicit @ref ResourceManager singleton is deprecated,
-         *      make your own or pass a reference around instead
+         * @m_deprecated_since{2019,10} Implicit @ref ResourceManager singleton
+         *      is deprecated, make your own or pass a reference around instead
          */
         static CORRADE_DEPRECATED("implicit ResourceManager singleton is deprecated, make your own or pass a reference around instead") ResourceManager<Types...>& instance();
         #endif
@@ -331,7 +331,10 @@ template<class... Types> class ResourceManager: private Implementation::Resource
             return *this;
         }
 
-        /** @overload */
+        /**
+         * @overload
+         * @m_since{2019,10}
+         */
         template<class T> ResourceManager<Types...>& set(ResourceKey key, Containers::Pointer<T>&& data, ResourceDataState state, ResourcePolicy policy) {
             set(key, data.release(), state, policy);
             return *this;
@@ -382,7 +385,10 @@ template<class... Types> class ResourceManager: private Implementation::Resource
             return *this;
         }
 
-        /** @overload */
+        /**
+         * @overload
+         * @m_since{2019,10}
+         */
         template<class T> ResourceManager<Types...>& setFallback(Containers::Pointer<T>&& data) {
             setFallback(data.release());
             return *this;

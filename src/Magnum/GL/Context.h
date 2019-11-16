@@ -417,6 +417,7 @@ class MAGNUM_GL_EXPORT Context {
              * @requires_gles SwiftShader doesn't support desktop OpenGL
              *      contexts. Not detectable on WebGL, as browsers
              *      intentionally hide most of the driver information.
+             * @m_since{2019,10}
              */
             SwiftShader = 1 << 6,
             #endif
@@ -427,6 +428,7 @@ class MAGNUM_GL_EXPORT Context {
              * ARM Mali drivers on OpenGL ES.
              * @partialsupport Available only on
              *      @ref CORRADE_TARGET_ANDROID "Android".
+             * @m_since{2019,10}
              */
             ArmMali = 1 << 7
             #endif
@@ -460,6 +462,7 @@ class MAGNUM_GL_EXPORT Context {
 
         /**
          * @brief Make a context current
+         * @m_since{2019,10}
          *
          * To be used when you need to manage multiple OpenGL contexts. See
          * @ref GL-Context-multiple for more information.

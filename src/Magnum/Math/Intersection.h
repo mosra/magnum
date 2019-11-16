@@ -143,7 +143,7 @@ template<class T> inline T planeLine(const Vector4<T>& plane, const Vector3<T>& 
 @param p                Starting point of the line
 @param r                Direction of the line
 
-@deprecated Use @ref planeLine(const Vector4<T>&, const Vector3<T>&, const Vector3<T>&)
+@m_deprecated_since{201,10} Use @ref planeLine(const Vector4<T>&, const Vector3<T>&, const Vector3<T>&)
     together with @ref planeEquation(const Vector3<T>&, const Vector3<T>&, const Vector3<T>&)
     instead.
 */

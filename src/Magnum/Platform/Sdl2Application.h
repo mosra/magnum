@@ -529,6 +529,7 @@ class Sdl2Application {
         #if defined(MAGNUM_TARGET_GL) && !defined(CORRADE_TARGET_EMSCRIPTEN)
         /**
          * @brief Underlying OpenGL context
+         * @m_since{2019,10}
          *
          * Use in case you need to call SDL functionality directly. Returns
          * @cpp nullptr @ce in case the context was not created yet.
@@ -633,6 +634,7 @@ class Sdl2Application {
         /**
          * @brief Set minimum window size
          * @param size    The minimum size, in screen coordinates
+         * @m_since{2019,10}
          *
          * Note that, unlike in @ref GlfwApplication, SDL2 doesn't have a way
          * to disable/remove a size limit. To make the sizing work
@@ -645,6 +647,7 @@ class Sdl2Application {
         /**
          * @brief Set maximal window size
          * @param size    The maximum size, in screen coordinates
+         * @m_since{2019,10}
          *
          * Note that, unlike in @ref GlfwApplication, SDL2 doesn't have a way
          * to disable/remove a size limit. To make the sizing work
@@ -697,6 +700,7 @@ class Sdl2Application {
 
         /**
          * @brief Set window title
+         * @m_since{2019,10}
          *
          * The @p title is expected to be encoded in UTF-8.
          */
@@ -705,6 +709,7 @@ class Sdl2Application {
         #if !defined(CORRADE_TARGET_EMSCRIPTEN) && (SDL_MAJOR_VERSION*1000 + SDL_MINOR_VERSION*100 + SDL_PATCHLEVEL >= 2005 || defined(DOXYGEN_GENERATING_OUTPUT))
         /**
          * @brief Set window icon
+         * @m_since_latest
          *
          * The @p image is expected to be with origin at bottom left (which is
          * the default for imported images) and in one of
@@ -812,9 +817,9 @@ class Sdl2Application {
 
         #ifdef MAGNUM_BUILD_DEPRECATED
         /** @brief @copybrief viewportEvent(ViewportEvent&)
-         * @deprecated Use @ref viewportEvent(ViewportEvent&) instead.
-         *      To preserve backwards compatibility, this function is called
-         *      from @ref viewportEvent(ViewportEvent&) with
+         * @m_deprecated_since{2018,10} Use @ref viewportEvent(ViewportEvent&)
+         *      instead. To preserve backwards compatibility, this function is
+         *      called from @ref viewportEvent(ViewportEvent&) with
          *      @ref ViewportEvent::framebufferSize() passed to @p size.
          *      Overriding the new function will cause this function to not be
          *      called anymore.
@@ -858,6 +863,7 @@ class Sdl2Application {
     public:
         /**
          * @brief Cursor type
+         * @m_since_latest
          *
          * @see @ref setCursor()
          */
@@ -889,12 +895,16 @@ class Sdl2Application {
 
         /**
          * @brief Set cursor type
+         * @m_since_latest
          *
          * Default is @ref Cursor::Arrow.
          */
         void setCursor(Cursor cursor);
 
-        /** @brief Get current cursor type */
+        /**
+         * @brief Get current cursor type
+         * @m_since_latest
+         */
         Cursor cursor();
 
         #ifndef CORRADE_TARGET_EMSCRIPTEN
@@ -912,7 +922,7 @@ class Sdl2Application {
         /**
          * @brief Whether mouse is locked
          *
-         * @deprecated Use @ref cursor() together with
+         * @m_deprecated_since_latest Use @ref cursor() together with
          *      @ref Cursor::HiddenLocked instead.
          */
         CORRADE_DEPRECATED("use cursor() together with Cursor::HiddenLocked instead") bool isMouseLocked() const { return SDL_GetRelativeMouseMode(); }
@@ -920,7 +930,7 @@ class Sdl2Application {
         /**
          * @brief Enable or disable mouse locking
          *
-         * @deprecated Use @ref setCursor() together with
+         * @m_deprecated_since_latest Use @ref setCursor() together with
          *      @ref Cursor::HiddenLocked instead.
          */
         CORRADE_DEPRECATED("use setCursor() together with Cursor::HiddenLocked instead") void setMouseLocked(bool enabled);
@@ -1357,13 +1367,13 @@ class Sdl2Application::GLConfiguration {
         #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief @copybrief isSrgbCapable()
-         * @deprecated Use @ref isSrgbCapable() instead.
+         * @m_deprecated_since{2018,10} Use @ref isSrgbCapable() instead.
          */
         CORRADE_DEPRECATED("use isSrgbCapable() instead") bool isSRGBCapable() const { return isSrgbCapable(); }
 
         /**
          * @brief @copybrief setSrgbCapable()
-         * @deprecated Use @ref setSrgbCapable() instead.
+         * @m_deprecated_since{2018,10} Use @ref setSrgbCapable() instead.
          */
         CORRADE_DEPRECATED("use setSrgbCapable() instead") GLConfiguration& setSRGBCapable(bool enabled) {
             return setSrgbCapable(enabled);
@@ -1459,8 +1469,8 @@ class Sdl2Application::Configuration {
             /**
              * Allow high DPI.
              *
-             * @deprecated Has no effect, as this flag is passed implicitly
-             *      on platforms where needed. See
+             * @m_deprecated_since{2018,10} Has no effect, as this flag is
+             *      passed implicitly on platforms where needed. See
              *      @ref Platform-Sdl2Application-dpi for more information.
              */
             AllowHighDpi CORRADE_DEPRECATED_ENUM("has no effect, passed implicitly on platforms that need it") = 0,
@@ -1512,6 +1522,7 @@ class Sdl2Application::Configuration {
              * @ref Sdl2Application(const Arguments&, const Configuration&, const GLConfiguration&),
              * @ref create(const Configuration&, const GLConfiguration&) or
              * @ref tryCreate(const Configuration&, const GLConfiguration&).
+             * @m_since{2019,10}
              */
             OpenGL = SDL_WINDOW_OPENGL,
 
@@ -1519,9 +1530,9 @@ class Sdl2Application::Configuration {
             /**
              * Request a window for use with Vulkan. Useful in combination with
              * @ref WindowFlag::Contextless.
-             *
              * @note Available since SDL 2.0.6, not available on
              *      @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
+             * @m_since{2019,10}
              */
             Vulkan = SDL_WINDOW_VULKAN
             #endif

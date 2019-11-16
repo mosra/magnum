@@ -166,6 +166,7 @@ enum class PixelFormat: UnsignedInt {
      * @def_vk_keyword{FORMAT_R8_SRGB,Format} or
      * @m_class{m-doc-external} [MTLPixelFormatR8Unorm_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatr8unorm_srgb?language=objc). No D3D equivalent.
      * @m_keywords{MTLPixelFormatR8Unorm_sRGB}
+     * @m_since{2019,10}
      */
     R8Srgb,
 
@@ -177,6 +178,7 @@ enum class PixelFormat: UnsignedInt {
      * @def_vk_keyword{FORMAT_R8G8_SRGB,Format} or
      * @m_class{m-doc-external} [MTLPixelFormatRG8Unorm_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatrg8unorm_srgb?language=objc). No D3D equivalent.
      * @m_keywords{MTLPixelFormatRG8Unorm_sRGB}
+     * @m_since{2019,10}
      */
     RG8Srgb,
 
@@ -187,6 +189,7 @@ enum class PixelFormat: UnsignedInt {
      * @ref GL::PixelType::UnsignedByte, @ref GL::TextureFormat::SRGB8 or
      * @def_vk_keyword{FORMAT_R8G8B8_SRGB,Format}. No 24-bit D3D or Metal
      * equivalent.
+     * @m_since{2019,10}
      */
     RGB8Srgb,
 
@@ -199,6 +202,7 @@ enum class PixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [DXGI_FORMAT_R8G8B8A8_UNORM_SRGB](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatRGBA8Unorm_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatrgba8unorm_srgb?language=objc).
      * @m_keywords{DXGI_FORMAT_R8G8B8A8_UNORM_SRGB MTLPixelFormatRGBA8Unorm_sRGB}
+     * @m_since{2019,10}
      */
     RGBA8Srgb,
 
@@ -775,6 +779,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @ref GL::TextureFormat::CompressedSRGBS3tcDxt1 or
      * @def_vk_keyword{FORMAT_BC1_RGB_SRGB_BLOCK,Format}. No D3D or Metal
      * equivalent.
+     * @m_since{2019,10}
      */
     Bc1RGBSrgb,
 
@@ -801,6 +806,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [DXGI_FORMAT_BC1_UNORM_SRGB](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC1_RGBA_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc1_rgba_srgb?language=objc).
      * @m_keywords{DXGI_FORMAT_BC1_UNORM_SRGB MTLPixelFormatBC1_RGBA_sRGB}
+     * @m_since{2019,10}
      */
     Bc1RGBASrgb,
 
@@ -827,6 +833,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [DXGI_FORMAT_BC2_UNORM_SRGB](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC2_RGBA_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc2_rgba_srgb?language=objc).
      * @m_keywords{DXGI_FORMAT_BC2_UNORM_SRGB MTLPixelFormatBC2_RGBA_sRGB}
+     * @m_since{2019,10}
      */
     Bc2RGBASrgb,
 
@@ -853,6 +860,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [DXGI_FORMAT_BC3_UNORM_SRGB](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC3_RGBA_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc3_rgba_srgb?language=objc).
      * @m_keywords{DXGI_FORMAT_BC3_UNORM_SRGB MTLPixelFormatBC3_RGBA_sRGB}
+     * @m_since{2019,10}
      */
     Bc3RGBASrgb,
 
@@ -866,6 +874,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [DXGI_FORMAT_BC4_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC4_RUnorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc4_runorm?language=objc).
      * @m_keywords{DXGI_FORMAT_BC4_UNORM MTLPixelFormatBC4_RUnorm}
+     * @m_since{2019,10}
      */
     Bc4RUnorm,
 
@@ -879,6 +888,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [DXGI_FORMAT_BC4_SNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC4_RSnorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc4_rsnorm?language=objc).
      * @m_keywords{DXGI_FORMAT_BC4_SNORM MTLPixelFormatBC4_RSnorm}
+     * @m_since{2019,10}
      */
     Bc4RSnorm,
 
@@ -892,6 +902,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [DXGI_FORMAT_BC5_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC5_RGUnorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc5_rgunorm?language=objc).
      * @m_keywords{DXGI_FORMAT_BC5_UNORM MTLPixelFormatBC5_RGUnorm}
+     * @m_since{2019,10}
      */
     Bc5RGUnorm,
 
@@ -905,6 +916,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [DXGI_FORMAT_BC5_SNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC5_RGSnorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc5_rgsnorm?language=objc).
      * @m_keywords{DXGI_FORMAT_BC5_SNORM MTLPixelFormatBC5_RGSnorm}
+     * @m_since{2019,10}
      */
     Bc5RGSnorm,
 
@@ -918,6 +930,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [DXGI_FORMAT_BC6H_UF16](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC6H_RGBUfloat](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc6h_rgbufloat?language=objc).
      * @m_keywords{DXGI_FORMAT_BC6H_UF16 MTLPixelFormatBC6H_RGBUfloat}
+     * @m_since{2019,10}
      */
     Bc6hRGBUfloat,
 
@@ -931,6 +944,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [DXGI_FORMAT_BC6H_SF16](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC6H_RGBFloat](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc6h_rgbfloat?language=objc).
      * @m_keywords{DXGI_FORMAT_BC6H_UF16 MTLPixelFormatBC6H_RGBFloat}
+     * @m_since{2019,10}
      */
     Bc6hRGBSfloat,
 
@@ -944,6 +958,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [DXGI_FORMAT_BC7_UNORM](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC7_RGBAUnorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc7_rgbaunorm?language=objc).
      * @m_keywords{DXGI_FORMAT_BC7_UNORM MTLPixelFormatBC7_RGBAUnorm}
+     * @m_since{2019,10}
      */
     Bc7RGBAUnorm,
 
@@ -957,6 +972,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [DXGI_FORMAT_BC7_UNORM_SRGB](https://docs.microsoft.com/en-us/windows/win32/api/dxgiformat/ne-dxgiformat-dxgi_format)
      * or @m_class{m-doc-external} [MTLPixelFormatBC7_RGBAUnorm_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatbc7_rgbaunorm_srgb?language=objc).
      * @m_keywords{DXGI_FORMAT_BC7_UNORM_SRGB MTLPixelFormatBC7_RGBAUnorm_sRGB}
+     * @m_since{2019,10}
      */
     Bc7RGBASrgb,
 
@@ -970,6 +986,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatEAC_R11Unorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformateac_r11unorm?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatEAC_R11Unorm}
+     * @m_since{2019,10}
      */
     EacR11Unorm,
 
@@ -983,6 +1000,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatEAC_R11Snorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformateac_r11snorm?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatEAC_R11Unorm}
+     * @m_since{2019,10}
      */
     EacR11Snorm,
 
@@ -996,6 +1014,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatEAC_RG11Unorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformateac_rg11unorm?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatEAC_R11Unorm}
+     * @m_since{2019,10}
      */
     EacRG11Unorm,
 
@@ -1009,6 +1028,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatEAC_RG11Snorm](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformateac_rg11snorm?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatEAC_RG11Snorm}
+     * @m_since{2019,10}
      */
     EacRG11Snorm,
 
@@ -1022,6 +1042,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatETC2_RGB8](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatetc2_rgb8?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatETC2_RGB8}
+     * @m_since{2019,10}
      */
     Etc2RGB8Unorm,
 
@@ -1035,6 +1056,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatETC2_RGB8_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatetc2_rgb8_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatETC2_RGB8_sRGB}
+     * @m_since{2019,10}
      */
     Etc2RGB8Srgb,
 
@@ -1048,6 +1070,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatETC2_RGB8A1](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatetc2_rgb8a1?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatETC2_RGB8A1}
+     * @m_since{2019,10}
      */
     Etc2RGB8A1Unorm,
 
@@ -1061,6 +1084,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatETC2_RGB8A1_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatetc2_rgb8a1_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatETC2_RGB8A1_sRGB}
+     * @m_since{2019,10}
      */
     Etc2RGB8A1Srgb,
 
@@ -1074,6 +1098,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatEAC_RGBA8](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformateac_rgba8?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatEAC_RGBA8}
+     * @m_since{2019,10}
      */
     Etc2RGBA8Unorm,
 
@@ -1087,6 +1112,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatEAC_RGBA8_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformateac_rgba8_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatEAC_RGBA8_sRGB}
+     * @m_since{2019,10}
      */
     Etc2RGBA8Srgb,
 
@@ -1100,6 +1126,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_4x4_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_4x4_ldr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_4x4_LDR}
+     * @m_since{2019,10}
      */
     Astc4x4RGBAUnorm,
 
@@ -1114,6 +1141,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_4x4_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_4x4_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_4x4_sRGB}
+     * @m_since{2019,10}
      */
     Astc4x4RGBASrgb,
 
@@ -1127,6 +1155,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_4x4_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_4x4_hdr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_4x4_HDR}
+     * @m_since{2019,10}
      */
     Astc4x4RGBAF,
 
@@ -1140,6 +1169,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_5x4_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_5x4_ldr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_5x4_LDR}
+     * @m_since{2019,10}
      */
     Astc5x4RGBAUnorm,
 
@@ -1154,6 +1184,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_5x4_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_5x4_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_5x4_sRGB}
+     * @m_since{2019,10}
      */
     Astc5x4RGBASrgb,
 
@@ -1167,6 +1198,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_5x4_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_5x4_hdr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_5x4_HDR}
+     * @m_since{2019,10}
      */
     Astc5x4RGBAF,
 
@@ -1180,6 +1212,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_5x5_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_5x5_ldr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_5x5_LDR}
+     * @m_since{2019,10}
      */
     Astc5x5RGBAUnorm,
 
@@ -1194,6 +1227,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_5x5_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_5x5_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_5x5_sRGB}
+     * @m_since{2019,10}
      */
     Astc5x5RGBASrgb,
 
@@ -1207,6 +1241,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_5x5_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_5x5_hdr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_5x5_HDR}
+     * @m_since{2019,10}
      */
     Astc5x5RGBAF,
 
@@ -1220,6 +1255,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_6x5_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_6x5_ldr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_6x5_LDR}
+     * @m_since{2019,10}
      */
     Astc6x5RGBAUnorm,
 
@@ -1234,6 +1270,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_6x5_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_6x5_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_6x5_sRGB}
+     * @m_since{2019,10}
      */
     Astc6x5RGBASrgb,
 
@@ -1247,6 +1284,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_6x5_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_6x5_hdr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_6x5_HDR}
+     * @m_since{2019,10}
      */
     Astc6x5RGBAF,
 
@@ -1260,6 +1298,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_6x6_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_6x6_ldr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_6x6_LDR}
+     * @m_since{2019,10}
      */
     Astc6x6RGBAUnorm,
 
@@ -1274,6 +1313,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_6x6_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_6x6_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_6x6_sRGB}
+     * @m_since{2019,10}
      */
     Astc6x6RGBASrgb,
 
@@ -1287,6 +1327,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_6x6_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_6x6_hdr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_6x6_HDR}
+     * @m_since{2019,10}
      */
     Astc6x6RGBAF,
 
@@ -1300,6 +1341,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_8x5_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x5_ldr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_8x5_LDR}
+     * @m_since{2019,10}
      */
     Astc8x5RGBAUnorm,
 
@@ -1314,6 +1356,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_8x5_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x5_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_8x5_sRGB}
+     * @m_since{2019,10}
      */
     Astc8x5RGBASrgb,
 
@@ -1327,6 +1370,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_8x5_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x5_hdr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_8x5_HDR}
+     * @m_since{2019,10}
      */
     Astc8x5RGBAF,
 
@@ -1340,6 +1384,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_8x6_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x6_ldr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_8x6_LDR}
+     * @m_since{2019,10}
      */
     Astc8x6RGBAUnorm,
 
@@ -1354,6 +1399,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_8x6_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x6_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_8x6_sRGB}
+     * @m_since{2019,10}
      */
     Astc8x6RGBASrgb,
 
@@ -1367,6 +1413,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_8x6_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x6_hdr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_8x6_HDR}
+     * @m_since{2019,10}
      */
     Astc8x6RGBAF,
 
@@ -1380,6 +1427,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_8x8_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x8_ldr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_8x8_LDR}
+     * @m_since{2019,10}
      */
     Astc8x8RGBAUnorm,
 
@@ -1394,6 +1442,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_8x8_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x8_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_8x8_sRGB}
+     * @m_since{2019,10}
      */
     Astc8x8RGBASrgb,
 
@@ -1407,6 +1456,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_8x8_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_8x8_hdr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_8x8_HDR}
+     * @m_since{2019,10}
      */
     Astc8x8RGBAF,
 
@@ -1420,6 +1470,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_10x5_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x5_ldr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_10x5_LDR}
+     * @m_since{2019,10}
      */
     Astc10x5RGBAUnorm,
 
@@ -1434,6 +1485,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_10x5_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x5_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_10x5_sRGB}
+     * @m_since{2019,10}
      */
     Astc10x5RGBASrgb,
 
@@ -1447,6 +1499,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_10x5_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x5_hdr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_10x5_HDR}
+     * @m_since{2019,10}
      */
     Astc10x5RGBAF,
 
@@ -1460,6 +1513,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_10x6_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x6_ldr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_10x6_LDR}
+     * @m_since{2019,10}
      */
     Astc10x6RGBAUnorm,
 
@@ -1474,6 +1528,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_10x6_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x6_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_10x6_sRGB}
+     * @m_since{2019,10}
      */
     Astc10x6RGBASrgb,
 
@@ -1487,6 +1542,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_10x6_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x6_hdr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_10x6_HDR}
+     * @m_since{2019,10}
      */
     Astc10x6RGBAF,
 
@@ -1500,6 +1556,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_10x8_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x8_ldr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_10x8_LDR}
+     * @m_since{2019,10}
      */
     Astc10x8RGBAUnorm,
 
@@ -1514,6 +1571,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_10x8_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x8_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_10x8_sRGB}
+     * @m_since{2019,10}
      */
     Astc10x8RGBASrgb,
 
@@ -1527,6 +1585,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_10x8_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x8_hdr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_10x8_HDR}
+     * @m_since{2019,10}
      */
     Astc10x8RGBAF,
 
@@ -1540,6 +1599,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_10x10_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x10_ldr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_10x10_LDR}
+     * @m_since{2019,10}
      */
     Astc10x10RGBAUnorm,
 
@@ -1554,6 +1614,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_10x10_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x10_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_10x10_sRGB}
+     * @m_since{2019,10}
      */
     Astc10x10RGBASrgb,
 
@@ -1567,6 +1628,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_10x10_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_10x10_hdr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_10x10_HDR}
+     * @m_since{2019,10}
      */
     Astc10x10RGBAF,
 
@@ -1580,6 +1642,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_12x10_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_12x10_ldr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_12x10_LDR}
+     * @m_since{2019,10}
      */
     Astc12x10RGBAUnorm,
 
@@ -1594,6 +1657,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_12x10_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_12x10_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_12x10_sRGB}
+     * @m_since{2019,10}
      */
     Astc12x10RGBASrgb,
 
@@ -1607,6 +1671,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_12x10_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_12x10_hdr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_12x10_HDR}
+     * @m_since{2019,10}
      */
     Astc12x10RGBAF,
 
@@ -1620,6 +1685,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_12x12_LDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_12x12_ldr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_12x12_LDR}
+     * @m_since{2019,10}
      */
     Astc12x12RGBAUnorm,
 
@@ -1634,6 +1700,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_12x12_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_12x12_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_12x12_sRGB}
+     * @m_since{2019,10}
      */
     Astc12x12RGBASrgb,
 
@@ -1647,6 +1714,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatASTC_12x12_HDR](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatastc_12x12_hdr?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatASTC_12x12_HDR}
+     * @m_since{2019,10}
      */
     Astc12x12RGBAF,
 
@@ -1659,6 +1727,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_3x3x3_UNORM_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc3x3x3RGBAUnorm,
 
@@ -1672,6 +1741,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_3x3x3_UNORM_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc3x3x3RGBASrgb,
 
@@ -1684,6 +1754,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_3x3x3_SFLOAT_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc3x3x3RGBAF,
 
@@ -1696,6 +1767,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_4x3x3_UNORM_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc4x3x3RGBAUnorm,
 
@@ -1709,6 +1781,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_4x3x3_SRGB_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc4x3x3RGBASrgb,
 
@@ -1721,6 +1794,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_4x3x3_SFLOAT_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc4x3x3RGBAF,
 
@@ -1733,6 +1807,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_4x4x3_UNORM_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc4x4x3RGBAUnorm,
 
@@ -1746,6 +1821,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_4x4x3_SRGB_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc4x4x3RGBASrgb,
 
@@ -1758,6 +1834,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_4x4x3_SFLOAT_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc4x4x3RGBAF,
 
@@ -1770,6 +1847,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_4x4x4_UNORM_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc4x4x4RGBAUnorm,
 
@@ -1783,6 +1861,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_4x4x4_SRGB_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc4x4x4RGBASrgb,
 
@@ -1795,6 +1874,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_4x4x4_SFLOAT_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc4x4x4RGBAF,
 
@@ -1807,6 +1887,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_5x4x4_UNORM_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc5x4x4RGBAUnorm,
 
@@ -1820,6 +1901,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_5x4x4_SRGB_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc5x4x4RGBASrgb,
 
@@ -1832,6 +1914,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_5x4x4_SFLOAT_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc5x4x4RGBAF,
 
@@ -1844,6 +1927,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_5x5x4_UNORM_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc5x5x4RGBAUnorm,
 
@@ -1857,6 +1941,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_5x5x4_SRGB_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc5x5x4RGBASrgb,
 
@@ -1869,6 +1954,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_5x5x4_SFLOAT_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc5x5x4RGBAF,
 
@@ -1881,6 +1967,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_5x5x5_UNORM_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc5x5x5RGBAUnorm,
 
@@ -1894,6 +1981,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_5x5x5_SRGB_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc5x5x5RGBASrgb,
 
@@ -1906,6 +1994,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_5x5x5_SFLOAT_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc5x5x5RGBAF,
 
@@ -1918,6 +2007,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_6x5x5_UNORM_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc6x5x5RGBAUnorm,
 
@@ -1931,6 +2021,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_6x5x5_SRGB_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc6x5x5RGBASrgb,
 
@@ -1943,6 +2034,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_6x5x5_SFLOAT_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc6x5x5RGBAF,
 
@@ -1955,6 +2047,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_6x6x5_UNORM_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc6x6x5RGBAUnorm,
 
@@ -1968,6 +2061,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_6x6x5_SRGB_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc6x6x5RGBASrgb,
 
@@ -1980,6 +2074,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_6x6x5_SFLOAT_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc6x6x5RGBAF,
 
@@ -1992,6 +2087,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_6x6x6_UNORM_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc6x6x6RGBAUnorm,
 
@@ -2005,6 +2101,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_6x6x6_SRGB_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc6x6x6RGBASrgb,
 
@@ -2017,6 +2114,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * and @def_vk_keyword{FORMAT_ASTC_6x6x6_SFLOAT_BLOCK_EXT,Format} (not a
      * part of the spec yet, [only defined in KTX](https://github.com/KhronosGroup/KTX-Specification/pull/97/files)).
      * No equivalent in Metal or D3D.
+     * @m_since{2019,10}
      */
     Astc6x6x6RGBAF,
 
@@ -2033,6 +2131,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatPVRTC_RGB_2BPP](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatpvrtc_rgb_2bpp?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatPVRTC_RGB_2BPP}
+     * @m_since{2019,10}
      */
     PvrtcRGB2bppUnorm,
 
@@ -2046,6 +2145,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatPVRTC_RGB_2BPP_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatpvrtc_rgb_2bpp_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatPVRTC_RGB_2BPP_sRGB}
+     * @m_since{2019,10}
      */
     PvrtcRGB2bppSrgb,
 
@@ -2059,6 +2159,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatPVRTC_RGBA_2BPP](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatpvrtc_rgba_2bpp?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatPVRTC_RGBA_2BPP}
+     * @m_since{2019,10}
      */
     PvrtcRGBA2bppUnorm,
 
@@ -2072,6 +2173,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatPVRTC_RGBA_2BPP_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatpvrtc_rgba_2bpp_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatPVRTC_RGBA_2BPP_sRGB}
+     * @m_since{2019,10}
      */
     PvrtcRGBA2bppSrgb,
 
@@ -2085,6 +2187,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatPVRTC_RGB_4BPP](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatpvrtc_rgb_4bpp?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatPVRTC_RGB_4BPP}
+     * @m_since{2019,10}
      */
     PvrtcRGB4bppUnorm,
 
@@ -2098,6 +2201,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatPVRTC_RGB_4BPP_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatpvrtc_rgb_4bpp_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatPVRTC_RGB_4BPP_sRGB}
+     * @m_since{2019,10}
      */
     PvrtcRGB4bppSrgb,
 
@@ -2111,6 +2215,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatPVRTC_RGBA_4BPP](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatpvrtc_rgba_4bpp?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatPVRTC_RGBA_4BPP}
+     * @m_since{2019,10}
      */
     PvrtcRGBA4bppUnorm,
 
@@ -2124,6 +2229,7 @@ enum class CompressedPixelFormat: UnsignedInt {
      * @m_class{m-doc-external} [MTLPixelFormatPVRTC_RGBA_4BPP_sRGB](https://developer.apple.com/documentation/metal/mtlpixelformat/mtlpixelformatpvrtc_rgba_4bpp_srgb?language=objc).
      * No equivalent in D3D.
      * @m_keywords{MTLPixelFormatPVRTC_RGBA_4BPP_sRGB}
+     * @m_since{2019,10}
      */
     PvrtcRGBA4bppSrgb
 
@@ -2133,6 +2239,7 @@ enum class CompressedPixelFormat: UnsignedInt {
 
 /**
 @brief Compressed block size
+@m_since{2019,10}
 
 For 2D formats the Z dimension is always 1. Expects that the pixel format is
 * *not* implementation-specific.
@@ -2143,6 +2250,7 @@ MAGNUM_EXPORT Vector3i compressedBlockSize(CompressedPixelFormat format);
 
 /**
 @brief Compressed block data size
+@m_since{2019,10}
 
 Byte size of each compressed block. Expects that the pixel format is *not*
 implementation-specific.
@@ -2200,7 +2308,10 @@ template<class T = UnsignedInt> constexpr T compressedPixelFormatUnwrap(Compress
 
 namespace Corrade { namespace Utility {
 
-/** @configurationvalue{Magnum::PixelFormat} */
+/**
+@configurationvalue{Magnum::PixelFormat}
+@m_since_latest
+*/
 template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::PixelFormat> {
     ConfigurationValue() = delete;
 
@@ -2219,7 +2330,10 @@ template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::PixelFormat> {
     static Magnum::PixelFormat fromString(const std::string& stringValue, ConfigurationValueFlags);
 };
 
-/** @configurationvalue{Magnum::CompressedPixelFormat} */
+/**
+@configurationvalue{Magnum::CompressedPixelFormat}
+@m_since_latest
+*/
 template<> struct MAGNUM_EXPORT ConfigurationValue<Magnum::CompressedPixelFormat> {
     ConfigurationValue() = delete;
 

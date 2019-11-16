@@ -27,6 +27,7 @@
 
 /** @file
  * @brief Configuration value parsers and writers for @ref Magnum::Math types
+ * @m_since{2019,10}
  */
 
 #include <string>
