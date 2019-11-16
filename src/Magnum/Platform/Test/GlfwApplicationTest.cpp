@@ -61,7 +61,14 @@ struct GlfwApplicationTest: Platform::Application {
         } else if(event.key() == KeyEvent::Key::T) {
             Debug{} << "setting window title";
             setWindowTitle("This is a UTF-8 Window Title™!");
-        } else if(event.key() == KeyEvent::Key::H) {
+        }
+        #if GLFW_VERSION_MAJOR*100 + GLFW_VERSION_MINOR >= 302
+        else if(event.key() == KeyEvent::Key::W) {
+            Debug{} << "setting max window size, which should trigger a viewport event if the size changes";
+            setMaxWindowSize(Vector2i{700, 500});
+        }
+        #endif
+        else if(event.key() == KeyEvent::Key::H) {
             Debug{} << "toggling hand cursor";
             setCursor(cursor() == Cursor::Arrow ? Cursor::Hand : Cursor::Arrow);
         } else if(event.key() == KeyEvent::Key::L) {
