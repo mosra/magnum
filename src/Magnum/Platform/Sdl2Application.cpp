@@ -612,12 +612,16 @@ Vector2i Sdl2Application::windowSize() const {
 #ifndef CORRADE_TARGET_EMSCRIPTEN
 void Sdl2Application::setMinWindowSize(const Vector2i& size) {
     CORRADE_ASSERT(_window, "Platform::Sdl2Application::setMinWindowSize(): no window opened", );
-    SDL_SetWindowMinimumSize(_window, size.x(), size.y());
+
+    const Vector2i newSize = _dpiScaling*size;
+    SDL_SetWindowMinimumSize(_window, newSize.x(), newSize.y());
 }
 
 void Sdl2Application::setMaxWindowSize(const Vector2i& size) {
     CORRADE_ASSERT(_window, "Platform::Sdl2Application::setMaxWindowSize(): no window opened", );
-    SDL_SetWindowMaximumSize(_window, size.x(), size.y());
+
+    const Vector2i newSize = _dpiScaling*size;
+    SDL_SetWindowMaximumSize(_window, newSize.x(), newSize.y());
 }
 #endif
 

@@ -588,15 +588,17 @@ Vector2i GlfwApplication::windowSize() const {
 void GlfwApplication::setMinWindowSize(const Vector2i& size) {
     CORRADE_ASSERT(_window, "Platform::GlfwApplication::setMinWindowSize(): no window opened", );
 
-    glfwSetWindowSizeLimits(_window, size.x(), size.y(), _maxWindowSize.x(), _maxWindowSize.y());
-    _minWindowSize = size;
+    const Vector2i newSize = _dpiScaling*size;
+    glfwSetWindowSizeLimits(_window, newSize.x(), newSize.y(), _maxWindowSize.x(), _maxWindowSize.y());
+    _minWindowSize = newSize;
 }
 
 void GlfwApplication::setMaxWindowSize(const Vector2i& size) {
     CORRADE_ASSERT(_window, "Platform::GlfwApplication::setMaxWindowSize(): no window opened", );
 
-    glfwSetWindowSizeLimits(_window, _minWindowSize.x(), _minWindowSize.y(), size.x(), size.y());
-    _maxWindowSize = size;
+    const Vector2i newSize = _dpiScaling*size;
+    glfwSetWindowSizeLimits(_window, _minWindowSize.x(), _minWindowSize.y(), newSize.x(), newSize.y());
+    _maxWindowSize = newSize;
 }
 #endif
 

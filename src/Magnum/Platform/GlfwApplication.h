@@ -360,8 +360,9 @@ class GlfwApplication {
          * @param size    The minimum size, in screen coordinates
          *
          * If a value is set to @cpp -1 @ce, it will disable/remove the
-         * corresponding limit.
-         *
+         * corresponding limit. To make the sizing work independently of the
+         * display DPI, @p size is internally multiplied with @ref dpiScaling()
+         * before getting applied.
          * @note Supported since GLFW 3.2.
          */
         void setMinWindowSize(const Vector2i& size = {-1, -1});
@@ -371,8 +372,9 @@ class GlfwApplication {
          * @param size    The maximum size, in screen coordinates
          *
          * If a value is set to @cpp -1 @ce, it will disable/remove the
-         * corresponding limit.
-         *
+         * corresponding limit. To make the sizing work independently of the
+         * display DPI, @p size is internally multiplied with @ref dpiScaling()
+         * before getting applied.
          * @note Supported since GLFW 3.2.
          */
         void setMaxWindowSize(const Vector2i& size = {-1, -1});

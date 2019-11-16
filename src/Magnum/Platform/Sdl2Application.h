@@ -634,8 +634,9 @@ class Sdl2Application {
          * @param size    The minimum size, in screen coordinates
          *
          * Note that, unlike in @ref GlfwApplication, SDL2 doesn't have a way
-         * to disable/remove a size limit.
-         *
+         * to disable/remove a size limit. To make the sizing work
+         * independently of the display DPI, @p size is internally multiplied
+         * with @ref dpiScaling() before getting applied.
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
         void setMinWindowSize(const Vector2i& size);
@@ -645,8 +646,9 @@ class Sdl2Application {
          * @param size    The maximum size, in screen coordinates
          *
          * Note that, unlike in @ref GlfwApplication, SDL2 doesn't have a way
-         * to disable/remove a size limit.
-         *
+         * to disable/remove a size limit. To make the sizing work
+         * independently of the display DPI, @p size is internally multiplied
+         * with @ref dpiScaling() before getting applied.
          * @note Not available in @ref CORRADE_TARGET_EMSCRIPTEN "Emscripten".
          */
         void setMaxWindowSize(const Vector2i& size);
