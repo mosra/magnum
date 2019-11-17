@@ -810,14 +810,14 @@ make it able to find the dependencies.
 @m_class{m-block m-primary}
 
 @par Native build of corrade-rc
-    You also need to have *both* target and native version of Corrade
-    installed, because Corrade needs to run `corrade-rc` utility on the host
-    system as part of the build process. If native version of `corrade-rc` is
-    not found on the system, cross-compilation will fail. If `corrade-rc` is
-    not in `PATH`, point CMake to it using
-    `-DCORRADE_RC_EXECUTABLE=/path/to/corrade-rc`.
+    For all cross-compilation except the UWP / Windows RT build, you need to
+    have a native version of Corrade installed, because Corrade needs to run
+    the `corrade-rc` utility on the host system as part of the build process.
+    If native version of `corrade-rc` is not found on the system,
+    cross-compilation will fail. If `corrade-rc` is not in `PATH`, point CMake
+    to it using `-DCORRADE_RC_EXECUTABLE=/path/to/corrade-rc`.
 
-@subsection building-cross-winrt Cross-compiling for Windows RT
+@subsection building-cross-winrt Cross-compiling for UWP / Windows RT
 
 As said above, you need a native build of the `corrade-rc` executable and
 @ref building-corrade-cross-winrt "Corrade built for Windows RT". The below
@@ -833,16 +833,13 @@ SDL has support for WinRT applications --- download the source from
 https://www.libsdl.org/download-2.0.php and use project files from the
 `VisualC-WinRT` directory. Because WinRT applications run in a sandbox, it's
 recommended to build the library as static so you don't have to bundle all the
-DLLs. Example is below, you can omit specifying `CORRADE_RC_EXECUTABLE` if
-@ref building-cross-corrade-rc "natively-built corrade-rc" is accessible
-through `PATH`.
+DLLs. Example is below:
 
 @code{.bat}
 mkdir build-winrt && cd build-winrt
 cmake .. ^
     -DCMAKE_SYSTEM_NAME=WindowsStore ^
     -DCMAKE_SYSTEM_VERSION=10 ^
-    -DCORRADE_RC_EXECUTABLE="C:/Sys/bin/corrade-rc.exe" ^
     -DCMAKE_INSTALL_PREFIX="C:/Sys-winrt" ^
     -DBUILD_STATIC=ON ^
     -DWITH_SDL2APPLICATION=ON ^
