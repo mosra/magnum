@@ -203,19 +203,19 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
         enum class Flag: UnsignedByte {
             /**
              * Multiply ambient color with a texture.
-             * @see @ref setAmbientColor(), @ref setAmbientTexture()
+             * @see @ref setAmbientColor(), @ref bindAmbientTexture()
              */
             AmbientTexture = 1 << 0,
 
             /**
              * Multiply diffuse color with a texture.
-             * @see @ref setDiffuseColor(), @ref setDiffuseTexture()
+             * @see @ref setDiffuseColor(), @ref bindDiffuseTexture()
              */
             DiffuseTexture = 1 << 1,
 
             /**
              * Multiply specular color with a texture.
-             * @see @ref setSpecularColor(), @ref setSpecularTexture()
+             * @see @ref setSpecularColor(), @ref bindSpecularTexture()
              */
             SpecularTexture = 1 << 2,
 
@@ -323,15 +323,6 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          */
         Phong& bindAmbientTexture(GL::Texture2D& texture);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief bindAmbientTexture()
-         * @deprecated Use @ref bindAmbientTexture() instead.
-         */
-        CORRADE_DEPRECATED("use bindAmbientTexture() instead") Phong& setAmbientTexture(GL::Texture2D& texture) {
-            return bindAmbientTexture(texture);
-        }
-        #endif
-
         /**
          * @brief Set diffuse color
          * @return Reference to self (for method chaining)
@@ -353,15 +344,6 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          * @see @ref bindTextures(), @ref setDiffuseColor()
          */
         Phong& bindDiffuseTexture(GL::Texture2D& texture);
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief bindDiffuseTexture()
-         * @deprecated Use @ref bindDiffuseTexture() instead.
-         */
-        CORRADE_DEPRECATED("use bindDiffuseTexture() instead") Phong& setDiffuseTexture(GL::Texture2D& texture) {
-            return bindDiffuseTexture(texture);
-        }
-        #endif
 
         /**
          * @brief Bind a normal texture
@@ -400,15 +382,6 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
          */
         Phong& bindSpecularTexture(GL::Texture2D& texture);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief bindSpecularTexture()
-         * @deprecated Use @ref bindSpecularTexture() instead.
-         */
-        CORRADE_DEPRECATED("use bindSpecularTexture() instead") Phong& setSpecularTexture(GL::Texture2D& texture) {
-            return bindSpecularTexture(texture);
-        }
-        #endif
-
         /**
          * @brief Bind textures
          * @return Reference to self (for method chaining)
@@ -427,15 +400,6 @@ class MAGNUM_SHADERS_EXPORT Phong: public GL::AbstractShaderProgram {
             = nullptr
             #endif
         );
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief bindTextures()
-         * @deprecated Use @ref bindTextures() instead.
-         */
-        CORRADE_DEPRECATED("use bindTextures() instead") Phong& setTextures(GL::Texture2D* ambient, GL::Texture2D* diffuse, GL::Texture2D* specular) {
-            return bindTextures(ambient, diffuse, specular);
-        }
-        #endif
 
         /**
          * @brief Set shininess

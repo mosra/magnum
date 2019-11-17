@@ -86,15 +86,6 @@ template<UnsignedInt dimensions> class AbstractVector: public GL::AbstractShader
          */
         AbstractVector<dimensions>& bindVectorTexture(GL::Texture2D& texture);
 
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief bindVectorTexture()
-         * @deprecated Use @ref bindVectorTexture() instead.
-         */
-        CORRADE_DEPRECATED("use bindVectorTexture() instead") AbstractVector<dimensions>& setVectorTexture(GL::Texture2D& texture) {
-            return bindVectorTexture(texture);
-        }
-        #endif
-
     #ifndef DOXYGEN_GENERATING_OUTPUT
     protected:
     #else

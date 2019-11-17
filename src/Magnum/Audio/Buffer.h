@@ -42,23 +42,11 @@
 #include "Magnum/Audio/Audio.h"
 #include "Magnum/Audio/visibility.h"
 
-#ifdef MAGNUM_BUILD_DEPRECATED
-#include <Corrade/Utility/Macros.h>
-#include "Magnum/Audio/BufferFormat.h"
-#endif
-
 namespace Magnum { namespace Audio {
 
 /** @brief Sample buffer */
 class MAGNUM_AUDIO_EXPORT Buffer {
     public:
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief BufferFormat
-         * @deprecated Use @ref BufferFormat instead.
-         */
-        typedef CORRADE_DEPRECATED("use BufferFormat instead") BufferFormat Format;
-        #endif
-
         /**
          * @brief Constructor
          *

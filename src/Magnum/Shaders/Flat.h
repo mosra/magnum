@@ -188,7 +188,7 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
         enum class Flag: UnsignedByte {
             /**
              * Multiply color with a texture.
-             * @see @ref setColor(), @ref setTexture()
+             * @see @ref setColor(), @ref bindTexture()
              */
             Textured = 1 << 0,
 
@@ -325,15 +325,6 @@ template<UnsignedInt dimensions> class MAGNUM_SHADERS_EXPORT Flat: public GL::Ab
          *      1.0.
          */
         Flat<dimensions>& setObjectId(UnsignedInt id);
-        #endif
-
-        #ifdef MAGNUM_BUILD_DEPRECATED
-        /** @brief @copybrief bindTexture()
-         * @deprecated Use @ref bindTexture() instead.
-         */
-        CORRADE_DEPRECATED("use bindTexture() instead") Flat<dimensions>& setTexture(GL::Texture2D& texture) {
-            return bindTexture(texture);
-        }
         #endif
 
     private:
