@@ -400,6 +400,19 @@ template<class T> class Quaternion {
         Matrix3x3<T> toMatrix() const;
 
         /**
+         * @brief Convert to an euler vector
+         *
+         * Expects that the quaternion is normalized and that the values
+         * are combined in ZYX order.
+         * The returned vector of radians is in XYZ order.
+         * @see @ref rotation(), @ref DualQuaternion::rotation()
+         * To convert the euler angles back to the Quaternion you can use:
+         *
+         * @snippet MagnumMath.cpp Quaternion-fromEuler
+         */
+        Vector3<Rad<T>> toEuler() const;
+
+        /**
          * @brief Negated quaternion
          *
          * @f[
@@ -731,6 +744,37 @@ template<class T> Matrix3x3<T> Quaternion<T>::toMatrix() const {
             2*_vector.y()*_vector.z() - 2*_vector.x()*_scalar,
                 T(1) - 2*pow2(_vector.x()) - 2*pow2(_vector.y()))
     };
+}
+
+/* Algorithm from:
+   https://github.com/mrdoob/three.js/blob/6892dd0aba1411d35c5e2b44dc6ff280b24d6aa2/src/math/Euler.js#L197 */
+template<class T> Vector3<Rad<T>> Quaternion<T>::toEuler() const {
+    CORRADE_ASSERT(isNormalized(),
+        "Math::Quaternion::toEuler():" << *this << "is not normalized", {});
+
+    Vector3<Rad<T>> euler{NoInit};
+
+    Matrix3x3<T> rotMatrix = toMatrix();
+
+    T m11 = rotMatrix[0][0];
+    T m12 = rotMatrix[0][1];
+    T m13 = rotMatrix[0][2];
+    T m21 = rotMatrix[1][0];
+    T m22 = rotMatrix[1][1];
+    T m23 = rotMatrix[1][2];
+    T m33 = rotMatrix[2][2];
+
+    euler.y() = Rad<T>(std::asin(-Math::min(Math::max(m13, T(-1.0)), T(1.0))));
+
+    if(!TypeTraits<T>::equalsZero(m13 - T(1.0), T(1.0))) {
+        euler.x() = Rad<T>(std::atan2(m23, m33));
+        euler.z() = Rad<T>(std::atan2(m12, m11));
+    } else {
+        euler.x() = Rad<T>(0.0);
+        euler.z() = Rad<T>(std::atan2(-m21, m22));
+    }
+
+    return euler;
 }
 
 template<class T> inline Quaternion<T> Quaternion<T>::operator*(const Quaternion<T>& other) const {

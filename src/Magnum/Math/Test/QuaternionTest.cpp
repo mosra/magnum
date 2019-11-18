@@ -96,6 +96,8 @@ struct QuaternionTest: Corrade::TestSuite::Tester {
     void angleNotNormalized();
     void matrix();
     void matrixNotOrthogonal();
+    void euler();
+    void eulerNotNormalized();
 
     void lerp();
     void lerp2D();
@@ -171,6 +173,8 @@ QuaternionTest::QuaternionTest() {
               &QuaternionTest::angleNotNormalized,
               &QuaternionTest::matrix,
               &QuaternionTest::matrixNotOrthogonal,
+              &QuaternionTest::euler,
+              &QuaternionTest::eulerNotNormalized,
 
               &QuaternionTest::lerp,
               &QuaternionTest::lerp2D,
@@ -552,6 +556,35 @@ void QuaternionTest::matrixNotOrthogonal() {
         "Matrix(1.70083, -1.05177, 0.0308525,\n"
         "       0.982733, 1.60878, 0.667885,\n"
         "       -0.376049, -0.552819, 1.88493)\n");
+}
+
+void QuaternionTest::euler() {
+    Quaternion a = Quaternion({0.35f, 0.134f, 0.37f}, 0.02f).normalized();
+    Math::Vector3<Rad> b{1.59867_radf, -1.15100_radf, 1.85697_radf};
+
+    CORRADE_COMPARE(a.toEuler(), b);
+    CORRADE_COMPARE(a,
+        Quaternion::rotation(b.z(), Vector3::zAxis())*
+        Quaternion::rotation(b.y(), Vector3::yAxis())*
+        Quaternion::rotation(b.x(), Vector3::xAxis()));
+
+    Quaternion a2 = Quaternion({-0.624252f, -0.331868f, -0.624468f}, 0.331983f);
+    Math::Vector3<Rad> b2{0.0_radf, -1.57045_radf, -2.16434_radf};
+
+    CORRADE_COMPARE(a2.toEuler(), b2);
+    CORRADE_COMPARE(a2,
+        Quaternion::rotation(b2.z(), Vector3::zAxis())*
+        Quaternion::rotation(b2.y(), Vector3::yAxis())*
+        Quaternion::rotation(b2.x(), Vector3::xAxis()));
+}
+
+void QuaternionTest::eulerNotNormalized() {
+    std::ostringstream out;
+    Error redirectError{&out};
+
+    Quaternion{{1.0f, 3.0f, -2.0f}, -4.0f}.toEuler();
+    CORRADE_COMPARE(out.str(),
+        "Math::Quaternion::toEuler(): Quaternion({1, 3, -2}, -4) is not normalized\n");
 }
 
 void QuaternionTest::lerp() {
