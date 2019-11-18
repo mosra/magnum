@@ -988,6 +988,17 @@ Math::Matrix2x2<Byte> integral{floatingPoint}; // {{1, 2}, {-15, 7}}
 }
 
 {
+/* [Quaternion-fromEuler] */
+Rad x, y, z;
+Quaternion a =
+    Quaternion::rotation(z, Vector3::zAxis())*
+    Quaternion::rotation(y, Vector3::yAxis())*
+    Quaternion::rotation(x, Vector3::xAxis());
+/* [Quaternion-fromEuler] */
+static_cast<void>(a);
+}
+
+{
 /* [unpack-template-explicit] */
 // Literal type is (signed) char, but we assumed unsigned char, a != 1.0f
 Float a = Math::unpack<Float>('\xFF');
