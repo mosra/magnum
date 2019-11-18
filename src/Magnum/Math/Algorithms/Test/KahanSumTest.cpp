@@ -24,7 +24,7 @@
 */
 
 #include <numeric>
-#include <vector>
+#include <Corrade/Containers/Array.h>
 #include <Corrade/TestSuite/Tester.h>
 
 #include "Magnum/Magnum.h"
@@ -39,8 +39,9 @@ struct KahanSumTest: TestSuite::Tester {
     void integers();
     void iterative();
 
-    void accumulate100k();
-    void kahan100k();
+    void accumulate100kFloats();
+    void accumulate100kDoubles();
+    void kahan100kFloats();
 
 };
 
@@ -49,8 +50,9 @@ KahanSumTest::KahanSumTest() {
               &KahanSumTest::integers,
               &KahanSumTest::iterative});
 
-    addBenchmarks({&KahanSumTest::accumulate100k,
-                   &KahanSumTest::kahan100k}, 50);
+    addBenchmarks({&KahanSumTest::accumulate100kFloats,
+                   &KahanSumTest::accumulate100kDoubles,
+                   &KahanSumTest::kahan100kFloats}, 50);
 }
 
 /* Custom iterator class to avoid allocating half a gigabyte for hundred
@@ -140,8 +142,8 @@ void KahanSumTest::iterative() {
     }
 }
 
-void KahanSumTest::accumulate100k() {
-    std::vector<Float> data(100000, 1.0f);
+void KahanSumTest::accumulate100kFloats() {
+    Containers::Array<Float> data(Containers::DirectInit, 100000, 1.0f);
 
     volatile Float a; /* to avoid optimizing the loop out */
     CORRADE_BENCHMARK(10) {
@@ -151,8 +153,19 @@ void KahanSumTest::accumulate100k() {
     CORRADE_COMPARE(Float(a), 100000.0f);
 }
 
-void KahanSumTest::kahan100k() {
-    std::vector<Float> data(100000, 1.0f);
+void KahanSumTest::accumulate100kDoubles() {
+    Containers::Array<Double> data(Containers::DirectInit, 100000, 1.0);
+
+    volatile Double a; /* to avoid optimizing the loop out */
+    CORRADE_BENCHMARK(10) {
+        a = std::accumulate(data.begin(), data.end(), 0.0);
+    }
+
+    CORRADE_COMPARE(Double(a), 100000.0);
+}
+
+void KahanSumTest::kahan100kFloats() {
+    Containers::Array<Float> data(Containers::DirectInit, 100000, 1.0f);
 
     volatile Float a; /* to avoid optimizing the loop out */
     CORRADE_BENCHMARK(10) {
