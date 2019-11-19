@@ -71,8 +71,9 @@ Vector2 ObjectData2D::scaling() const {
 
 Matrix3 ObjectData2D::transformation() const {
     if(_flags & ObjectFlag2D::HasTranslationRotationScaling)
-        return Matrix3::from(_transformation.trs.rotation.toMatrix(),
-                             _transformation.trs.translation)*
+        /* Has to be on a single line otherwise lcov reports an uncovered
+           line. Ugh. */
+        return Matrix3::from(_transformation.trs.rotation.toMatrix(), _transformation.trs.translation)*
                Matrix3::scaling(_transformation.trs.scaling);
     return _transformation.matrix;
 }

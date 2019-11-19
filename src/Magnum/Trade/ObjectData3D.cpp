@@ -71,8 +71,9 @@ Vector3 ObjectData3D::scaling() const {
 
 Matrix4 ObjectData3D::transformation() const {
     if(_flags & ObjectFlag3D::HasTranslationRotationScaling)
-        return Matrix4::from(_transformation.trs.rotation.toMatrix(),
-                             _transformation.trs.translation)*
+        /* Has to be on a single line otherwise lcov reports an uncovered
+           line. Ugh. */
+        return Matrix4::from(_transformation.trs.rotation.toMatrix(), _transformation.trs.translation)*
                Matrix4::scaling(_transformation.trs.scaling);
     return _transformation.matrix;
 }
