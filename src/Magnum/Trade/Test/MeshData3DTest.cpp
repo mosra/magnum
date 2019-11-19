@@ -43,66 +43,125 @@ struct MeshData3DTest: TestSuite::Tester {
     void constructMove();
 };
 
+using namespace Math::Literals;
+
+const UnsignedByte Indices[]{12, 1, 0};
+const struct Vertex {
+    Vector3 position1, position2;
+    Vector3 normal;
+    Vector2 textureCoords1, textureCoords2, textureCoords3;
+    Color4 color;
+} Vertices[] {
+    {{0.5f, 1.0f, 0.1f}, {1.4f, 0.2f, 0.5f},
+        {0.0f, 1.0f, 0.0f},
+        {0.0f, 0.0f}, {0.1f, 0.2f}, {0.0f, 0.0f},
+        0xff98ab_rgbf},
+    {{-1.0f, 0.3f, -1.0f}, {1.1f, 0.13f, -0.3f},
+        {-1.0f, 0.0f, 0.0f},
+        {0.3f, 0.7f}, {0.7f, 1.0f}, {1.0f, 1.0f},
+        0xff3366_rgbf}
+};
+const int State = 3;
+
+CORRADE_IGNORE_DEPRECATED_PUSH
+struct {
+    const char* name;
+    const MeshData3D data, dataNonIndexed;
+} ConstructData[] {
+    {"",
+        MeshData3D{MeshPrimitive::Lines, {12, 1, 0},
+            {{{0.5f, 1.0f, 0.1f}, {-1.0f, 0.3f, -1.0f}},
+             {{1.4f, 0.2f, 0.5f}, {1.1f, 0.13f, -0.3f}}},
+            {{{0.0f, 1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}}},
+            {{{0.0f, 0.0f}, {0.3f, 0.7f}},
+             {{0.1f, 0.2f}, {0.7f, 1.0f}},
+             {{0.0f, 0.0f}, {1.0f, 1.0f}}},
+            {{0xff98ab_rgbf, 0xff3366_rgbf}},
+            &State},
+        MeshData3D{MeshPrimitive::Lines, {},
+            {{{0.5f, 1.0f, 0.1f}, {-1.0f, 0.3f, -1.0f}}},
+            {{{0.0f, 1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}}},
+            {{{0.0f, 0.0f}, {0.3f, 0.7f}}},
+            {{0xff98ab_rgbf, 0xff3366_rgbf}},
+            &State}},
+    {"from MeshData",
+        MeshData{MeshPrimitive::Lines, {}, Indices, MeshIndexData{Indices}, {}, Vertices, {
+                MeshAttributeData{MeshAttribute::Position,
+                    Containers::StridedArrayView1D<const Vector3>{Vertices, &Vertices[0].position1, 2, sizeof(Vertex)}},
+                MeshAttributeData{MeshAttribute::Position,
+                    Containers::StridedArrayView1D<const Vector3>{Vertices, &Vertices[0].position2, 2, sizeof(Vertex)}},
+                MeshAttributeData{MeshAttribute::Normal,
+                    Containers::StridedArrayView1D<const Vector3>{Vertices, &Vertices[0].normal, 2, sizeof(Vertex)}},
+                MeshAttributeData{MeshAttribute::TextureCoordinates,
+                    Containers::StridedArrayView1D<const Vector2>{Vertices, &Vertices[0].textureCoords1, 2, sizeof(Vertex)}},
+                MeshAttributeData{MeshAttribute::TextureCoordinates,
+                    Containers::StridedArrayView1D<const Vector2>{Vertices, &Vertices[0].textureCoords2, 2, sizeof(Vertex)}},
+                MeshAttributeData{MeshAttribute::TextureCoordinates,
+                    Containers::StridedArrayView1D<const Vector2>{Vertices, &Vertices[0].textureCoords3, 2, sizeof(Vertex)}},
+                MeshAttributeData{MeshAttribute::Color,
+                    Containers::StridedArrayView1D<const Color4>{Vertices, &Vertices[0].color, 2, sizeof(Vertex)}},
+            },  &State},
+        MeshData{MeshPrimitive::Lines, {}, Vertices, {
+                MeshAttributeData{MeshAttribute::Position,
+                    Containers::StridedArrayView1D<const Vector3>{Vertices, &Vertices[0].position1, 2, sizeof(Vertex)}},
+                MeshAttributeData{MeshAttribute::Normal,
+                    Containers::StridedArrayView1D<const Vector3>{Vertices, &Vertices[0].normal, 2, sizeof(Vertex)}},
+                MeshAttributeData{MeshAttribute::TextureCoordinates,
+                    Containers::StridedArrayView1D<const Vector2>{Vertices, &Vertices[0].textureCoords1, 2, sizeof(Vertex)}},
+                MeshAttributeData{MeshAttribute::Color,
+                    Containers::StridedArrayView1D<const Color4>{Vertices, &Vertices[0].color, 2, sizeof(Vertex)}},
+            },  &State}
+    }
+};
+CORRADE_IGNORE_DEPRECATED_POP
+
 MeshData3DTest::MeshData3DTest() {
-    addTests({&MeshData3DTest::construct,
-              &MeshData3DTest::constructNonIndexed,
-              &MeshData3DTest::constructNoNormals,
+    addInstancedTests({&MeshData3DTest::construct,
+                       &MeshData3DTest::constructNonIndexed},
+        Containers::arraySize(ConstructData));
+
+    addTests({&MeshData3DTest::constructNoNormals,
               &MeshData3DTest::constructNoTexCoords,
               &MeshData3DTest::constructNoColors,
               &MeshData3DTest::constructCopy,
               &MeshData3DTest::constructMove});
 }
 
-using namespace Math::Literals;
-
 void MeshData3DTest::construct() {
-    const int a{};
-    const MeshData3D data{MeshPrimitive::Lines, {12, 1, 0},
-        {{{0.5f, 1.0f, 0.1f}, {-1.0f, 0.3f, -1.0f}},
-         {{1.4f, 0.2f, 0.5f}, {1.1f, 0.13f, -0.3f}}},
-        {{{0.0f, 1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}}},
-        {{{0.0f, 0.0f}, {0.3f, 0.7f}},
-         {{0.1f, 0.2f}, {0.7f, 1.0f}},
-         {{0.0f, 0.0f}, {1.0f, 1.0f}}},
-        {{0xff98ab_rgbf, 0xff3366_rgbf}},
-        &a};
+    auto&& data = ConstructData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
-    CORRADE_COMPARE(data.primitive(), MeshPrimitive::Lines);
+    CORRADE_COMPARE(data.data.primitive(), MeshPrimitive::Lines);
 
-    CORRADE_VERIFY(data.isIndexed());
-    CORRADE_COMPARE(data.indices(), (std::vector<UnsignedInt>{12, 1, 0}));
+    CORRADE_VERIFY(data.data.isIndexed());
+    CORRADE_COMPARE(data.data.indices(), (std::vector<UnsignedInt>{12, 1, 0}));
 
-    CORRADE_COMPARE(data.positionArrayCount(), 2);
-    CORRADE_COMPARE(data.positions(0), (std::vector<Vector3>{{0.5f, 1.0f, 0.1f}, {-1.0f, 0.3f, -1.0f}}));
-    CORRADE_COMPARE(data.positions(1), (std::vector<Vector3>{{1.4f, 0.2f, 0.5f}, {1.1f, 0.13f, -0.3f}}));
+    CORRADE_COMPARE(data.data.positionArrayCount(), 2);
+    CORRADE_COMPARE(data.data.positions(0), (std::vector<Vector3>{{0.5f, 1.0f, 0.1f}, {-1.0f, 0.3f, -1.0f}}));
+    CORRADE_COMPARE(data.data.positions(1), (std::vector<Vector3>{{1.4f, 0.2f, 0.5f}, {1.1f, 0.13f, -0.3f}}));
 
-    CORRADE_VERIFY(data.hasNormals());
-    CORRADE_COMPARE(data.normalArrayCount(), 1);
-    CORRADE_COMPARE(data.normals(0), (std::vector<Vector3>{{0.0f, 1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}}));
+    CORRADE_VERIFY(data.data.hasNormals());
+    CORRADE_COMPARE(data.data.normalArrayCount(), 1);
+    CORRADE_COMPARE(data.data.normals(0), (std::vector<Vector3>{{0.0f, 1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}}));
 
-    CORRADE_VERIFY(data.hasTextureCoords2D());
-    CORRADE_COMPARE(data.textureCoords2DArrayCount(), 3);
-    CORRADE_COMPARE(data.textureCoords2D(0), (std::vector<Vector2>{{0.0f, 0.0f}, {0.3f, 0.7f}}));
-    CORRADE_COMPARE(data.textureCoords2D(1), (std::vector<Vector2>{{0.1f, 0.2f}, {0.7f, 1.0f}}));
-    CORRADE_COMPARE(data.textureCoords2D(2), (std::vector<Vector2>{{0.0f, 0.0f}, {1.0f, 1.0f}}));
+    CORRADE_VERIFY(data.data.hasTextureCoords2D());
+    CORRADE_COMPARE(data.data.textureCoords2DArrayCount(), 3);
+    CORRADE_COMPARE(data.data.textureCoords2D(0), (std::vector<Vector2>{{0.0f, 0.0f}, {0.3f, 0.7f}}));
+    CORRADE_COMPARE(data.data.textureCoords2D(1), (std::vector<Vector2>{{0.1f, 0.2f}, {0.7f, 1.0f}}));
+    CORRADE_COMPARE(data.data.textureCoords2D(2), (std::vector<Vector2>{{0.0f, 0.0f}, {1.0f, 1.0f}}));
 
-    CORRADE_VERIFY(data.hasColors());
-    CORRADE_COMPARE(data.colorArrayCount(), 1);
-    CORRADE_COMPARE(data.colors(0), (std::vector<Color4>{0xff98ab_rgbf, 0xff3366_rgbf}));
+    CORRADE_VERIFY(data.data.hasColors());
+    CORRADE_COMPARE(data.data.colorArrayCount(), 1);
+    CORRADE_COMPARE(data.data.colors(0), (std::vector<Color4>{0xff98ab_rgbf, 0xff3366_rgbf}));
 
-    CORRADE_COMPARE(data.importerState(), &a);
+    CORRADE_COMPARE(data.data.importerState(), &State);
 }
 
 void MeshData3DTest::constructNonIndexed() {
-    const int a{};
-    const MeshData3D data{MeshPrimitive::Lines, {},
-        {{{0.5f, 1.0f, 0.1f}, {-1.0f, 0.3f, -1.0f}}},
-        {{{0.0f, 1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}}},
-        {{{0.0f, 0.0f}, {0.3f, 0.7f}}},
-        {{0xff98ab_rgbf, 0xff3366_rgbf}},
-        &a};
+    auto&& data = ConstructData[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
 
-    CORRADE_VERIFY(!data.isIndexed());
+    CORRADE_VERIFY(!data.dataNonIndexed.isIndexed());
 }
 
 void MeshData3DTest::constructNoNormals() {

@@ -30,8 +30,6 @@ set(MagnumTrade_SRCS
     ArrayAllocator.cpp
     Data.cpp
     LightData.cpp
-    MeshData2D.cpp
-    MeshData3D.cpp
     MeshObjectData2D.cpp
     MeshObjectData3D.cpp
     SceneData.cpp
@@ -44,6 +42,16 @@ set(MagnumTrade_GracefulAssert_SRCS
     CameraData.cpp
     ImageData.cpp
     MeshData.cpp
+
+    # These have to be here instead of in MagnumTrade_SRCS because they include
+    # MeshData.h and call (and thus instantiate) various functions with inline
+    # asserts. We need the linker to pick the variant with graceful asserts for
+    # tests, and if there would be two different copies, it may happen it picks
+    # the non-graceful-assert variant, causing the tests to blow up. Happens
+    # only on the MSVC linker, but let's be safe and do this everywhere.
+    MeshData2D.cpp
+    MeshData3D.cpp
+
     ObjectData2D.cpp
     ObjectData3D.cpp
     PhongMaterialData.cpp)

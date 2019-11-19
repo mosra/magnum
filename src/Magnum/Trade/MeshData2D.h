@@ -31,8 +31,7 @@
 
 #include <vector>
 
-#include "Magnum/Magnum.h"
-#include "Magnum/Trade/visibility.h"
+#include "Magnum/Trade/MeshData.h"
 
 namespace Magnum { namespace Trade {
 
@@ -66,6 +65,16 @@ class MAGNUM_TRADE_EXPORT MeshData2D {
          * @param importerState     Importer-specific state
          */
         explicit MeshData2D(MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector2>> positions, std::vector<std::vector<Vector2>> textureCoords2D, std::vector<std::vector<Color4>> colors, const void* importerState = nullptr);
+
+        #ifdef MAGNUM_BUILD_DEPRECATED
+        /**
+         * @brief Construct from @ref MeshData
+         * @m_deprecated_since_latest Use @ref MeshData directly instead.
+         */
+        /* No data moving can take place because std::vector is damn shitty
+           regarding memory ownership transfer, so it can well be a copy. */
+        CORRADE_DEPRECATED("use MeshData directly instead") /*implicit*/ MeshData2D(const MeshData& other);
+        #endif
 
         /** @brief Copying is not allowed */
         MeshData2D(const MeshData2D&) = delete;

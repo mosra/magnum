@@ -25,6 +25,8 @@
 
 #include "MeshData2D.h"
 
+#include <Corrade/Containers/ArrayViewStl.h>
+
 #include "Magnum/Math/Color.h"
 
 namespace Magnum { namespace Trade {
@@ -32,6 +34,35 @@ namespace Magnum { namespace Trade {
 MeshData2D::MeshData2D(const MeshPrimitive primitive, std::vector<UnsignedInt> indices, std::vector<std::vector<Vector2>> positions, std::vector<std::vector<Vector2>> textureCoords2D, std::vector<std::vector<Color4>> colors, const void* const importerState): _primitive{primitive}, _indices{std::move(indices)}, _positions{std::move(positions)}, _textureCoords2D{std::move(textureCoords2D)}, _colors{std::move(colors)}, _importerState{importerState} {
     CORRADE_ASSERT(!_positions.empty(), "Trade::MeshData2D: no position array specified", );
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+MeshData2D::MeshData2D(const MeshData& other): _primitive{other.primitive()}, _importerState{other.importerState()} {
+    /* Copy indices, if any */
+    if(other.isIndexed()) {
+        _indices.resize(other.indexCount());
+        other.indicesInto(_indices);
+    }
+
+    /* Copy attributes */
+    _positions.resize(other.attributeCount(MeshAttribute::Position));
+    for(UnsignedInt i = 0; i != _positions.size(); ++i) {
+        _positions[i].resize(other.vertexCount());
+        other.positions2DInto(_positions[i], i);
+    }
+    _textureCoords2D.resize(other.attributeCount(MeshAttribute::TextureCoordinates));
+    for(UnsignedInt i = 0; i != _textureCoords2D.size(); ++i) {
+        _textureCoords2D[i].resize(other.vertexCount());
+        other.textureCoordinates2DInto(_textureCoords2D[i], i);
+    }
+    _colors.resize(other.attributeCount(MeshAttribute::Color));
+    for(UnsignedInt i = 0; i != _colors.size(); ++i) {
+        _colors[i].resize(other.vertexCount());
+        other.colorsInto(_colors[i], i);
+    }
+
+    CORRADE_ASSERT(!_positions.empty(), "Trade::MeshData3D: no position array specified in MeshData", );
+}
+#endif
 
 MeshData2D::MeshData2D(MeshData2D&&)
     #if !defined(__GNUC__) || __GNUC__*100 + __GNUC_MINOR__ != 409
