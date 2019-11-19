@@ -328,6 +328,13 @@ class MAGNUM_TRADE_EXPORT AnimationData {
         explicit AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const void* importerState = nullptr) noexcept;
 
         /**
+         * @overload
+         * @m_since_latest
+         */
+        /* Not noexcept because allocation happens inside */
+        explicit AnimationData(Containers::Array<char>&& data, std::initializer_list<AnimationTrackData> tracks, const void* importerState = nullptr);
+
+        /**
          * @brief Construct a non-owned animation data
          * @param dataFlags     Data flags
          * @param data          View on a buffer containing all keyframe data
@@ -343,6 +350,13 @@ class MAGNUM_TRADE_EXPORT AnimationData {
          * have @ref DataFlag::Owned set.
          */
         explicit AnimationData(DataFlags dataFlags, Containers::ArrayView<const void> data, Containers::Array<AnimationTrackData>&& tracks, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        /* Not noexcept because allocation happens inside */
+        explicit AnimationData(DataFlags dataFlags, Containers::ArrayView<const void> data, std::initializer_list<AnimationTrackData> tracks, const void* importerState = nullptr);
 
         /**
          * @brief Construct an animation data with explicit duration
@@ -363,6 +377,13 @@ class MAGNUM_TRADE_EXPORT AnimationData {
         explicit AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const Range1D& duration, const void* importerState = nullptr) noexcept;
 
         /**
+         * @overload
+         * @m_since_latest
+         */
+        /* Not noexcept because allocation happens inside */
+        explicit AnimationData(Containers::Array<char>&& data, std::initializer_list<AnimationTrackData> tracks, const Range1D& duration, const void* importerState = nullptr);
+
+        /**
          * @brief Construct a non-owned animation data with explicit duration
          * @param dataFlags     Data flags
          * @param data          View on a buffer containing all keyframe data
@@ -379,6 +400,13 @@ class MAGNUM_TRADE_EXPORT AnimationData {
          * have @ref DataFlag::Owned set.
          */
         explicit AnimationData(DataFlags dataFlags, Containers::ArrayView<const void> data, Containers::Array<AnimationTrackData>&& tracks, const Range1D& duration, const void* importerState = nullptr) noexcept;
+
+        /**
+         * @overload
+         * @m_since_latest
+         */
+        /* Not noexcept because allocation happens inside */
+        explicit AnimationData(DataFlags dataFlags, Containers::ArrayView<const void> data, std::initializer_list<AnimationTrackData> tracks, const Range1D& duration, const void* importerState = nullptr);
 
         ~AnimationData();
 

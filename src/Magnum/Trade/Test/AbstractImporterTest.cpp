@@ -1228,7 +1228,12 @@ void AbstractImporterTest::animation() {
             else return {};
         }
         Containers::Optional<AnimationData> doAnimation(UnsignedInt id) override {
-            if(id == 7) return AnimationData{{}, {}, &state};
+            /* Verify that initializer list is converted to an array with
+               the default deleter and not something disallowed */
+            if(id == 7) return AnimationData{nullptr, {
+                {AnimationTrackType::Vector3,
+                 AnimationTrackTargetType::Scaling3D, 0, {}}
+                }, &state};
             else return AnimationData{{}, {}};
         }
     } importer;

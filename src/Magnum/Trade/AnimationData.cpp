@@ -29,16 +29,21 @@
 
 #include "Magnum/Math/Vector4.h"
 #include "Magnum/Math/Quaternion.h"
+#include "Magnum/Trade/Implementation/arrayUtilities.h"
 
 namespace Magnum { namespace Trade {
 
 AnimationData::AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const Range1D& duration, const void* importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _duration{duration}, _data{std::move(data)}, _tracks{std::move(tracks)}, _importerState{importerState} {}
+
+AnimationData::AnimationData(Containers::Array<char>&& data, std::initializer_list<AnimationTrackData> tracks, const Range1D& duration, const void* importerState): AnimationData{std::move(data), Implementation::initializerListToArrayWithDefaultDeleter(tracks), duration, importerState} {}
 
 AnimationData::AnimationData(const DataFlags dataFlags, const Containers::ArrayView<const void> data, Containers::Array<AnimationTrackData>&& tracks, const Range1D& duration, const void* importerState) noexcept: AnimationData{Containers::Array<char>{const_cast<char*>(static_cast<const char*>(data.data())), data.size(), Implementation::nonOwnedArrayDeleter}, std::move(tracks), duration, importerState} {
     CORRADE_ASSERT(!(dataFlags & DataFlag::Owned),
         "Trade::AnimationData: can't construct a non-owned instance with" << dataFlags, );
     _dataFlags = dataFlags;
 }
+
+AnimationData::AnimationData(const DataFlags dataFlags, const Containers::ArrayView<const void> data, std::initializer_list<AnimationTrackData> tracks, const Range1D& duration, const void* importerState): AnimationData{dataFlags, data, Implementation::initializerListToArrayWithDefaultDeleter(tracks), duration, importerState} {}
 
 AnimationData::AnimationData(Containers::Array<char>&& data, Containers::Array<AnimationTrackData>&& tracks, const void* importerState) noexcept: _dataFlags{DataFlag::Owned|DataFlag::Mutable}, _data{std::move(data)}, _tracks{std::move(tracks)}, _importerState{importerState} {
     if(!_tracks.empty()) {
@@ -50,11 +55,15 @@ AnimationData::AnimationData(Containers::Array<char>&& data, Containers::Array<A
     }
 }
 
+AnimationData::AnimationData(Containers::Array<char>&& data, std::initializer_list<AnimationTrackData> tracks, const void* importerState): AnimationData{std::move(data), Implementation::initializerListToArrayWithDefaultDeleter(tracks), importerState} {}
+
 AnimationData::AnimationData(const DataFlags dataFlags, const Containers::ArrayView<const void> data, Containers::Array<AnimationTrackData>&& tracks, const void* importerState) noexcept: AnimationData{Containers::Array<char>{const_cast<char*>(static_cast<const char*>(data.data())), data.size(), Implementation::nonOwnedArrayDeleter}, std::move(tracks), importerState} {
     CORRADE_ASSERT(!(dataFlags & DataFlag::Owned),
         "Trade::AnimationData: can't construct a non-owned instance with" << dataFlags, );
     _dataFlags = dataFlags;
 }
+
+AnimationData::AnimationData(const DataFlags dataFlags, const Containers::ArrayView<const void> data, std::initializer_list<AnimationTrackData> tracks, const void* importerState): AnimationData{dataFlags, data, Implementation::initializerListToArrayWithDefaultDeleter(tracks), importerState} {}
 
 AnimationData::~AnimationData() = default;
 

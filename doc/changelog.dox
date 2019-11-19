@@ -283,6 +283,8 @@ See also:
 -   New convenience @ref Trade::AnimationTrackData constructor taking a
     templated @ref Animation::TrackView type, autodetecting value and result
     @ref Trade::AnimationTrackType out of it
+-   New convenience @ref Trade::AnimationData constructors taking an
+    @ref std::initializer_list of @ref Trade::AnimationTrackData
 
 @subsection changelog-latest-buildsystem Build system
 
