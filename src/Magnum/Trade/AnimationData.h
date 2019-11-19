@@ -231,7 +231,7 @@ class AnimationTrackData {
         /*implicit*/ AnimationTrackData() noexcept: _type{}, _resultType{}, _targetType{}, _target{}, _view{} {}
 
         /**
-         * @brief Constructor
+         * @brief Type-erased constructor
          * @param type          Value type
          * @param resultType    Result type
          * @param targetType    Track target type
@@ -246,6 +246,18 @@ class AnimationTrackData {
          * result type.
          */
         /*implicit*/ AnimationTrackData(AnimationTrackType type, AnimationTrackTargetType targetType, UnsignedInt target, Animation::TrackViewStorage<const Float> view) noexcept: _type{type}, _resultType{type}, _targetType{targetType}, _target{target}, _view{view} {}
+
+        /**
+         * @brief Constructor
+         * @param targetType    Track target type
+         * @param target        Track target
+         * @param view          @ref Animation::TrackView instance
+         * @m_since_latest
+         *
+         * Detects @ref AnimationTrackType from @p view type and delegates to
+         * @ref AnimationTrackData(AnimationTrackType, AnimationTrackType, AnimationTrackTargetType, UnsignedInt, Animation::TrackViewStorage<const Float>).
+         */
+        template<class V, class R> /*implicit*/ AnimationTrackData(AnimationTrackTargetType targetType, UnsignedInt target, Animation::TrackView<const Float, const V, R> view) noexcept;
 
     private:
         friend AnimationData;
@@ -610,6 +622,8 @@ namespace Implementation {
     /* LCOV_EXCL_STOP */
 }
 #endif
+
+template<class V, class R> inline AnimationTrackData::AnimationTrackData(AnimationTrackTargetType targetType, UnsignedInt target, Animation::TrackView<const Float, const V, R> view) noexcept: AnimationTrackData{Implementation::animationTypeFor<V>(), Implementation::animationTypeFor<R>(), targetType, target, view} {}
 
 template<class V, class R> const Animation::TrackView<const Float, const V, R>& AnimationData::track(UnsignedInt id) const {
     const Animation::TrackViewStorage<const Float>& storage = track(id);

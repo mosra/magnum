@@ -27,6 +27,7 @@
 #include <Corrade/TestSuite/Tester.h>
 #include <Corrade/Utility/DebugStl.h>
 
+#include "Magnum/Math/CubicHermite.h"
 #include "Magnum/Math/Quaternion.h"
 #include "Magnum/Trade/AnimationData.h"
 
@@ -34,6 +35,11 @@ namespace Magnum { namespace Trade { namespace Test { namespace {
 
 struct AnimationDataTest: TestSuite::Tester {
     explicit AnimationDataTest();
+
+    void constructTrackData();
+    void constructTrackDataResultType();
+    void constructTrackDataTemplate();
+    void constructTrackDataDefault();
 
     void construct();
     void constructNotOwned();
@@ -45,8 +51,6 @@ struct AnimationDataTest: TestSuite::Tester {
 
     void constructCopy();
     void constructMove();
-
-    void constructTrackDataDefault();
 
     void mutableAccessNotAllowed();
 
@@ -70,7 +74,12 @@ struct {
 };
 
 AnimationDataTest::AnimationDataTest() {
-    addTests({&AnimationDataTest::construct,
+    addTests({&AnimationDataTest::constructTrackData,
+              &AnimationDataTest::constructTrackDataResultType,
+              &AnimationDataTest::constructTrackDataTemplate,
+              &AnimationDataTest::constructTrackDataDefault,
+
+              &AnimationDataTest::construct,
               &AnimationDataTest::constructImplicitDuration,
               &AnimationDataTest::constructImplicitDurationEmpty});
 
@@ -83,8 +92,6 @@ AnimationDataTest::AnimationDataTest() {
 
               &AnimationDataTest::constructCopy,
               &AnimationDataTest::constructMove,
-
-              &AnimationDataTest::constructTrackDataDefault,
 
               &AnimationDataTest::mutableAccessNotAllowed,
 
@@ -100,6 +107,61 @@ AnimationDataTest::AnimationDataTest() {
 }
 
 using namespace Math::Literals;
+
+void AnimationDataTest::constructTrackData() {
+    AnimationTrackData trackData{
+         AnimationTrackType::Vector3,
+         AnimationTrackTargetType::Translation3D, 42,
+         Animation::TrackView<const Float, const Vector3>{
+            nullptr,
+            Animation::Interpolation::Linear,
+            animationInterpolatorFor<Vector3>(Animation::Interpolation::Linear)}};
+    AnimationData data{nullptr, Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {trackData}}};
+    CORRADE_COMPARE(data.trackType(0), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.trackTargetType(0), AnimationTrackTargetType::Translation3D);
+    CORRADE_COMPARE(data.trackTarget(0), 42);
+    CORRADE_COMPARE(data.track(0).interpolation(), Animation::Interpolation::Linear);
+}
+
+void AnimationDataTest::constructTrackDataResultType() {
+    AnimationTrackData trackData{
+         AnimationTrackType::CubicHermite3D,
+         AnimationTrackType::Vector3,
+         AnimationTrackTargetType::Translation3D, 42,
+         Animation::TrackView<const Float, const CubicHermite3D>{
+            nullptr,
+            Animation::Interpolation::Linear,
+            animationInterpolatorFor<CubicHermite3D>(Animation::Interpolation::Linear)}};
+    AnimationData data{nullptr, Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {trackData}}};
+    CORRADE_COMPARE(data.trackType(0), AnimationTrackType::CubicHermite3D);
+    CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.trackTargetType(0), AnimationTrackTargetType::Translation3D);
+    CORRADE_COMPARE(data.trackTarget(0), 42);
+    CORRADE_COMPARE(data.track(0).interpolation(), Animation::Interpolation::Linear);
+}
+
+void AnimationDataTest::constructTrackDataTemplate() {
+    AnimationTrackData trackData{
+         AnimationTrackTargetType::Translation3D, 42,
+         Animation::TrackView<const Float, const CubicHermite3D>{
+            nullptr,
+            Animation::Interpolation::Linear,
+            animationInterpolatorFor<CubicHermite3D>(Animation::Interpolation::Linear)}};
+    AnimationData data{nullptr, Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {trackData}}};
+    CORRADE_COMPARE(data.trackType(0), AnimationTrackType::CubicHermite3D);
+    CORRADE_COMPARE(data.trackResultType(0), AnimationTrackType::Vector3);
+    CORRADE_COMPARE(data.trackTargetType(0), AnimationTrackTargetType::Translation3D);
+    CORRADE_COMPARE(data.trackTarget(0), 42);
+    CORRADE_COMPARE(data.track(0).interpolation(), Animation::Interpolation::Linear);
+}
+
+void AnimationDataTest::constructTrackDataDefault() {
+    AnimationTrackData data;
+    /* no public accessors here, so nothing to check -- and such a track
+       shouldn't get added to AnimationData anyway */
+    CORRADE_VERIFY(true);
+}
 
 void AnimationDataTest::construct() {
     /* Ain't the prettiest, but trust me: you won't do it like this in the
@@ -117,15 +179,13 @@ void AnimationDataTest::construct() {
 
     const int state = 5;
     AnimationData data{std::move(buffer), Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
-        {AnimationTrackType::Vector3,
-         AnimationTrackTargetType::Translation3D, 42,
+        {AnimationTrackTargetType::Translation3D, 42,
          Animation::TrackView<const Float, const Vector3>{
             {view, &view[0].time, view.size(), sizeof(Data)},
             {view, &view[0].position, view.size(), sizeof(Data)},
             Animation::Interpolation::Constant,
             animationInterpolatorFor<Vector3>(Animation::Interpolation::Constant)}},
-        {AnimationTrackType::Quaternion,
-         AnimationTrackTargetType::Rotation3D, 1337,
+        {AnimationTrackTargetType::Rotation3D, 1337,
          Animation::TrackView<const Float, const Quaternion>{
             {view, &view[0].time, view.size(), sizeof(Data)},
             {view, &view[0].rotation, view.size(), sizeof(Data)},
@@ -189,14 +249,12 @@ void AnimationDataTest::constructImplicitDuration() {
 
     const int state = 5;
     AnimationData data{std::move(buffer), Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
-        {AnimationTrackType::Bool,
-         AnimationTrackTargetType(129), 0,
+        {AnimationTrackTargetType(129), 0,
          Animation::TrackView<const Float, const bool>{
             {view, &view[0].time, 2, sizeof(Data)},
             {view, &view[0].value, 2, sizeof(Data)},
             Animation::Interpolation::Constant}},
-        {AnimationTrackType::Bool,
-         AnimationTrackTargetType(130), 1,
+        {AnimationTrackTargetType(130), 1,
          Animation::TrackView<const Float, const bool>{
             {view, &view[2].time, 2, sizeof(Data)},
             {view, &view[2].value, 2, sizeof(Data)},
@@ -259,8 +317,7 @@ void AnimationDataTest::constructNotOwned() {
 
     const int state = 5;
     AnimationData data{instanceData.dataFlags, keyframes, Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
-        {AnimationTrackType::Vector3,
-         AnimationTrackTargetType::Translation3D, 42,
+        {AnimationTrackTargetType::Translation3D, 42,
          Animation::TrackView<const Float, const Vector3>{
             keyframes,
             Animation::Interpolation::Constant,
@@ -308,8 +365,7 @@ void AnimationDataTest::constructImplicitDurationNotOwned() {
 
     const int state = 5;
     AnimationData data{instanceData.dataFlags, keyframes, Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
-        {AnimationTrackType::Bool,
-         AnimationTrackTargetType(129), 0,
+        {AnimationTrackTargetType(129), 0,
          Animation::TrackView<const Float, const bool>{keyframes, Animation::Interpolation::Constant}},
         }}, &state};
 
@@ -381,15 +437,13 @@ void AnimationDataTest::constructMove() {
 
     const int state = 5;
     AnimationData a{std::move(buffer), Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
-        {AnimationTrackType::Vector3,
-         AnimationTrackTargetType::Translation3D, 42,
+        {AnimationTrackTargetType::Translation3D, 42,
          Animation::TrackView<const Float, const Vector3>{
             {view, &view[0].time, view.size(), sizeof(Data)},
             {view, &view[0].position, view.size(), sizeof(Data)},
             Animation::Interpolation::Constant,
             animationInterpolatorFor<Vector3>(Animation::Interpolation::Constant)}},
-        {AnimationTrackType::Quaternion,
-         AnimationTrackTargetType::Rotation3D, 1337,
+        {AnimationTrackTargetType::Rotation3D, 1337,
          Animation::TrackView<const Float, const Quaternion>{
             {view, &view[0].time, view.size(), sizeof(Data)},
             {view, &view[0].rotation, view.size(), sizeof(Data)},
@@ -465,11 +519,6 @@ void AnimationDataTest::constructMove() {
     CORRADE_VERIFY(std::is_nothrow_move_assignable<AnimationData>::value);
 }
 
-void AnimationDataTest::constructTrackDataDefault() {
-    AnimationTrackData data;
-    CORRADE_VERIFY(true); /* no public accessors here, so nothing to check */
-}
-
 void AnimationDataTest::mutableAccessNotAllowed() {
     const std::pair<Float, bool> keyframes[] {
         {1.0f, true},
@@ -477,8 +526,7 @@ void AnimationDataTest::mutableAccessNotAllowed() {
     };
 
     AnimationData data{{}, keyframes, Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
-        {AnimationTrackType::Bool,
-         AnimationTrackTargetType(129), 0,
+        {AnimationTrackTargetType(129), 0,
          Animation::TrackView<const Float, const bool>{keyframes, Animation::Interpolation::Constant}},
         }}};
     CORRADE_COMPARE(data.dataFlags(), DataFlags{});
@@ -507,9 +555,7 @@ void AnimationDataTest::trackCustomResultType() {
     view[1] = {5.0f, {30, 60, 100}};
 
     AnimationData data{std::move(buffer), Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
-        {AnimationTrackType::Vector3i,
-         AnimationTrackType::Vector3,
-         AnimationTrackTargetType::Scaling3D, 0,
+        {AnimationTrackTargetType::Scaling3D, 0,
          Animation::TrackView<const Float, const Vector3i, Vector3>{
              {view, &view[0].time, view.size(), sizeof(Data)},
              {view, &view[0].position, view.size(), sizeof(Data)},
@@ -577,8 +623,7 @@ void AnimationDataTest::release() {
     };
 
     AnimationData data{{}, keyframes, Containers::Array<AnimationTrackData>{Containers::InPlaceInit, {
-        {AnimationTrackType::Bool,
-         AnimationTrackTargetType(129), 0,
+        {AnimationTrackTargetType(129), 0,
          Animation::TrackView<const Float, const bool>{keyframes, Animation::Interpolation::Constant}},
         }}};
     CORRADE_COMPARE(data.trackCount(), 1);
