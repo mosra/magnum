@@ -230,28 +230,36 @@ template<UnsignedInt dimensions> class ImageData {
         bool isCompressed() const { return _compressed; }
 
         /**
-         * @brief Conversion to view
+         * @brief Conversion to a view
          *
          * The image is expected to be uncompressed.
          * @see @ref isCompressed()
          */
         /* Not restricted to const&, because we might want to pass the view to
            another function in an oneliner (e.g. saving screenshot) */
-        /*implicit*/ operator BasicMutableImageView<dimensions>();
-        /** @overload */
         /*implicit*/ operator BasicImageView<dimensions>() const;
 
         /**
-         * @brief Conversion to compressed view
+         * @brief Conversion to a mutable view
+         * @m_since{2019,10}
+         */
+        /*implicit*/ operator BasicMutableImageView<dimensions>();
+
+        /**
+         * @brief Conversion to a compressed view
          *
          * The image is expected to be compressed.
          * @see @ref isCompressed()
          */
         /* Not restricted to const&, because we might want to pass the view to
            another function in an oneliner (e.g. saving screenshot) */
-        /*implicit*/ operator BasicMutableCompressedImageView<dimensions>();
-        /** @overload */
         /*implicit*/ operator BasicCompressedImageView<dimensions>() const;
+
+        /**
+         * @brief Conversion to a mutable compressed view
+         * @m_since{2019,10}
+         */
+        /*implicit*/ operator BasicMutableCompressedImageView<dimensions>();
 
         /**
          * @brief Storage of pixel data

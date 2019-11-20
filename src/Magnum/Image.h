@@ -315,12 +315,16 @@ template<UnsignedInt dimensions> class Image {
         /** @brief Move assignment */
         Image<dimensions>& operator=(Image<dimensions>&& other) noexcept;
 
-        /** @brief Conversion to view */
+        /** @brief Conversion to a view */
+        /*implicit*/ operator BasicImageView<dimensions>() const;
+
+        /**
+         * @brief Conversion to a mutable view
+         * @m_since{2019,10}
+         */
         /* Not restricted to const&, because we might want to pass the view to
            another function in an oneliner (e.g. saving screenshot) */
         /*implicit*/ operator BasicMutableImageView<dimensions>();
-        /** @overload */
-        /*implicit*/ operator BasicImageView<dimensions>() const;
 
         /** @brief Storage of pixel data */
         PixelStorage storage() const { return _storage; }
@@ -591,12 +595,16 @@ template<UnsignedInt dimensions> class CompressedImage {
         /** @brief Move assignment */
         CompressedImage<dimensions>& operator=(CompressedImage<dimensions>&& other) noexcept;
 
-        /** @brief Conversion to view */
+        /** @brief Conversion to a view */
+        /*implicit*/ operator BasicCompressedImageView<dimensions>() const;
+
+        /**
+         * @brief Conversion to a mutable view
+         * @m_since{2019,10}
+         */
         /* Not restricted to const&, because we might want to pass the view to
            another function in an oneliner (e.g. saving screenshot) */
         /*implicit*/ operator BasicMutableCompressedImageView<dimensions>();
-        /** @overload */
-        /*implicit*/ operator BasicCompressedImageView<dimensions>() const;
 
         /** @brief Storage of compressed pixel data */
         CompressedPixelStorage storage() const { return _storage; }
