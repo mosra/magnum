@@ -79,7 +79,9 @@ See also:
 
 -   Worked around @ref Platform::GlfwApplication crash while creating GL
     context on a hidden window on Wayland (see
-    [mosra/magnum#392](https://github.com/mosra/magnum/pull/392))
+    [mosra/magnum#392](https://github.com/mosra/magnum/pull/392),
+    [mosra/magnum#400](https://github.com/mosra/magnum/issues/400),
+    [mosra/magnum#401](https://github.com/mosra/magnum/pull/401),)
 
 @subsubsection changelog-latest-changes-trade Trade library
 
