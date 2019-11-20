@@ -43,7 +43,7 @@ particular use case. For the first project you'll need the `base` branch, which
 contains only the essential files. Download the branch as an archive and
 extract it somewhere:
 
-@m_div{m-button m-primary} <a href="https://github.com/mosra/magnum-bootstrap/archive/base.zip.html">@m_div{m-big}base.zip@m_enddiv @m_div{m-small} download the project @m_enddiv </a> @m_enddiv
+@m_div{m-button m-primary} <a href="https://github.com/mosra/magnum-bootstrap/archive/base.zip">@m_div{m-big}base.zip@m_enddiv @m_div{m-small} download the project @m_enddiv </a> @m_enddiv
 
 @subsection getting-started-setup-subproject 1a. Option A: add Magnum as a CMake subproject
 
