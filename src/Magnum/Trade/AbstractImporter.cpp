@@ -40,12 +40,15 @@
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/LightData.h"
 #include "Magnum/Trade/MeshData.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
 #include "Magnum/Trade/ObjectData2D.h"
 #include "Magnum/Trade/ObjectData3D.h"
 #include "Magnum/Trade/SceneData.h"
 #include "Magnum/Trade/TextureData.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
+#endif
 
 #ifndef CORRADE_PLUGINMANAGER_NO_DYNAMIC_PLUGIN_SUPPORT
 #include "Magnum/Trade/configure.h"
@@ -465,32 +468,41 @@ std::string AbstractImporter::meshAttributeName(MeshAttribute name) {
 
 std::string AbstractImporter::doMeshAttributeName(UnsignedShort) { return {}; }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 UnsignedInt AbstractImporter::mesh2DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh2DCount(): no file opened", {});
+    CORRADE_IGNORE_DEPRECATED_PUSH
     return doMesh2DCount();
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 UnsignedInt AbstractImporter::doMesh2DCount() const { return 0; }
 
 Int AbstractImporter::mesh2DForName(const std::string& name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh2DForName(): no file opened", {});
+    CORRADE_IGNORE_DEPRECATED_PUSH
     return doMesh2DForName(name);
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 Int AbstractImporter::doMesh2DForName(const std::string&) { return -1; }
 
 std::string AbstractImporter::mesh2DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh2DName(): no file opened", {});
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_ASSERT(id < doMesh2DCount(), "Trade::AbstractImporter::mesh2DName(): index" << id << "out of range for" << doMesh2DCount() << "entries", {});
     return doMesh2DName(id);
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 std::string AbstractImporter::doMesh2DName(UnsignedInt) { return {}; }
 
 Containers::Optional<MeshData2D> AbstractImporter::mesh2D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh2D(): no file opened", {});
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_ASSERT(id < doMesh2DCount(), "Trade::AbstractImporter::mesh2D(): index" << id << "out of range for" << doMesh2DCount() << "entries", {});
     return doMesh2D(id);
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 Containers::Optional<MeshData2D> AbstractImporter::doMesh2D(UnsignedInt) {
@@ -499,35 +511,54 @@ Containers::Optional<MeshData2D> AbstractImporter::doMesh2D(UnsignedInt) {
 
 UnsignedInt AbstractImporter::mesh3DCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh3DCount(): no file opened", {});
+    CORRADE_IGNORE_DEPRECATED_PUSH
     return doMesh3DCount();
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
-UnsignedInt AbstractImporter::doMesh3DCount() const { return 0; }
+UnsignedInt AbstractImporter::doMesh3DCount() const {
+    return doMeshCount();
+}
 
 Int AbstractImporter::mesh3DForName(const std::string& name) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh3DForName(): no file opened", {});
+    CORRADE_IGNORE_DEPRECATED_PUSH
     return doMesh3DForName(name);
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
-Int AbstractImporter::doMesh3DForName(const std::string&) { return -1; }
+Int AbstractImporter::doMesh3DForName(const std::string& name) {
+    return doMeshForName(name);
+}
 
 std::string AbstractImporter::mesh3DName(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh3DName(): no file opened", {});
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_ASSERT(id < doMesh3DCount(), "Trade::AbstractImporter::mesh3DName(): index" << id << "out of range for" << doMesh3DCount() << "entries", {});
     return doMesh3DName(id);
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
-std::string AbstractImporter::doMesh3DName(UnsignedInt) { return {}; }
+std::string AbstractImporter::doMesh3DName(const UnsignedInt id) {
+    return doMeshName(id);
+}
 
 Containers::Optional<MeshData3D> AbstractImporter::mesh3D(const UnsignedInt id) {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::mesh3D(): no file opened", {});
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_ASSERT(id < doMesh3DCount(), "Trade::AbstractImporter::mesh3D(): index" << id << "out of range for" << doMesh3DCount() << "entries", {});
     return doMesh3D(id);
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
-Containers::Optional<MeshData3D> AbstractImporter::doMesh3D(UnsignedInt) {
-    CORRADE_ASSERT(false, "Trade::AbstractImporter::mesh3D(): not implemented", {});
+Containers::Optional<MeshData3D> AbstractImporter::doMesh3D(const UnsignedInt id) {
+    Containers::Optional<MeshData> out = doMesh(id);
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    if(out) return MeshData3D{*out};
+    CORRADE_IGNORE_DEPRECATED_POP
+    return Containers::NullOpt;
 }
+#endif
 
 UnsignedInt AbstractImporter::materialCount() const {
     CORRADE_ASSERT(isOpened(), "Trade::AbstractImporter::materialCount(): no file opened", {});

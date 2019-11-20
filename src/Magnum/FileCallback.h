@@ -67,7 +67,7 @@ enum class InputFileCallbackPolicy: UnsignedByte {
      * function is called or another file is opened.
      *
      * This can be the case for example when importing mesh data using
-     * @ref Trade::AbstractImporter::mesh3D() --- all vertex data might be
+     * @ref Trade::AbstractImporter::mesh() --- all vertex data might be
      * combined in a single binary file and each mesh occupies only a portion
      * of it. Note, however, that this might not be the case for all importers
      * --- see documentation of a particular plugin for concrete info.

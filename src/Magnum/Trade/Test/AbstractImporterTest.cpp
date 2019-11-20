@@ -39,13 +39,16 @@
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/LightData.h"
 #include "Magnum/Trade/MeshData.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
 #include "Magnum/Trade/MeshObjectData2D.h"
 #include "Magnum/Trade/MeshObjectData3D.h"
 #include "Magnum/Trade/PhongMaterialData.h"
 #include "Magnum/Trade/SceneData.h"
 #include "Magnum/Trade/TextureData.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
+#endif
 
 #include "configure.h"
 
@@ -161,6 +164,9 @@ struct AbstractImporterTest: TestSuite::Tester {
     void object3DOutOfRange();
 
     void mesh();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void meshDeprecatedFallback();
+    #endif
     void meshCountNotImplemented();
     void meshCountNoFile();
     void meshForNameNotImplemented();
@@ -181,6 +187,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void meshAttributeNameNotImplemented();
     void meshAttributeNameNotCustom();
 
+    #ifdef MAGNUM_BUILD_DEPRECATED
     void mesh2D();
     void mesh2DCountNotImplemented();
     void mesh2DCountNoFile();
@@ -204,6 +211,7 @@ struct AbstractImporterTest: TestSuite::Tester {
     void mesh3DNotImplemented();
     void mesh3DNoFile();
     void mesh3DOutOfRange();
+    #endif
 
     void material();
     void materialCountNotImplemented();
@@ -405,6 +413,9 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::object3DOutOfRange,
 
               &AbstractImporterTest::mesh,
+              #ifdef MAGNUM_BUILD_DEPRECATED
+              &AbstractImporterTest::meshDeprecatedFallback,
+              #endif
               &AbstractImporterTest::meshCountNotImplemented,
               &AbstractImporterTest::meshCountNoFile,
               &AbstractImporterTest::meshForNameNotImplemented,
@@ -425,6 +436,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::meshAttributeNameNotImplemented,
               &AbstractImporterTest::meshAttributeNameNotCustom,
 
+              #ifdef MAGNUM_BUILD_DEPRECATED
               &AbstractImporterTest::mesh2D,
               &AbstractImporterTest::mesh2DCountNotImplemented,
               &AbstractImporterTest::mesh2DCountNoFile,
@@ -448,6 +460,7 @@ AbstractImporterTest::AbstractImporterTest() {
               &AbstractImporterTest::mesh3DNotImplemented,
               &AbstractImporterTest::mesh3DNoFile,
               &AbstractImporterTest::mesh3DOutOfRange,
+              #endif
 
               &AbstractImporterTest::material,
               &AbstractImporterTest::materialCountNotImplemented,
@@ -2169,6 +2182,45 @@ void AbstractImporterTest::mesh() {
     CORRADE_COMPARE(data->importerState(), &state);
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AbstractImporterTest::meshDeprecatedFallback() {
+    struct: AbstractImporter {
+        ImporterFeatures doFeatures() const override { return {}; }
+        bool doIsOpened() const override { return true; }
+        void doClose() override {}
+
+        UnsignedInt doMeshCount() const override { return 8; }
+        Int doMeshForName(const std::string& name) override {
+            if(name == "eighth") return 7;
+            else return -1;
+        }
+        std::string doMeshName(UnsignedInt id) override {
+            if(id == 7) return "eighth";
+            else return {};
+        }
+        Containers::Optional<MeshData> doMesh(UnsignedInt id) override {
+            if(id == 7) return MeshData{MeshPrimitive::Points, nullptr, {MeshAttributeData{MeshAttribute::Position, VertexFormat::Vector3, nullptr}}, &state};
+            else return {};
+        }
+    } importer;
+
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    /* Nothing done for 2D as there were no known importers for these */
+    CORRADE_COMPARE(importer.mesh2DCount(), 0);
+    CORRADE_COMPARE(importer.mesh2DForName("eighth"), -1);
+
+    /* For 3D it's called through */
+    CORRADE_COMPARE(importer.mesh3DCount(), 8);
+    CORRADE_COMPARE(importer.mesh3DForName("eighth"), 7);
+    CORRADE_COMPARE(importer.mesh3DName(7), "eighth");
+
+    auto data = importer.mesh3D(7);
+    CORRADE_VERIFY(data);
+    CORRADE_COMPARE(data->importerState(), &state);
+    CORRADE_IGNORE_DEPRECATED_POP
+}
+#endif
+
 void AbstractImporterTest::meshCountNotImplemented() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -2470,6 +2522,7 @@ void AbstractImporterTest::meshAttributeNameNotCustom() {
         "Trade::AbstractImporter::meshAttributeName(): Trade::MeshAttribute::Position is not custom\n");
 }
 
+#ifdef MAGNUM_BUILD_DEPRECATED
 void AbstractImporterTest::mesh2D() {
     struct: AbstractImporter {
         ImporterFeatures doFeatures() const override { return {}; }
@@ -2485,12 +2538,15 @@ void AbstractImporterTest::mesh2D() {
             if(id == 7) return "eighth";
             else return {};
         }
+        CORRADE_IGNORE_DEPRECATED_PUSH
         Containers::Optional<MeshData2D> doMesh2D(UnsignedInt id) override {
             if(id == 7) return MeshData2D{{}, {}, {{}}, {}, {}, &state};
             else return {};
         }
+        CORRADE_IGNORE_DEPRECATED_POP
     } importer;
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(importer.mesh2DCount(), 8);
     CORRADE_COMPARE(importer.mesh2DForName("eighth"), 7);
     CORRADE_COMPARE(importer.mesh2DName(7), "eighth");
@@ -2498,6 +2554,7 @@ void AbstractImporterTest::mesh2D() {
     auto data = importer.mesh2D(7);
     CORRADE_VERIFY(data);
     CORRADE_COMPARE(data->importerState(), &state);
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 void AbstractImporterTest::mesh2DCountNotImplemented() {
@@ -2507,7 +2564,9 @@ void AbstractImporterTest::mesh2DCountNotImplemented() {
         void doClose() override {}
     } importer;
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(importer.mesh2DCount(), 0);
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 void AbstractImporterTest::mesh2DCountNoFile() {
@@ -2520,7 +2579,9 @@ void AbstractImporterTest::mesh2DCountNoFile() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.mesh2DCount();
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh2DCount(): no file opened\n");
 }
 
@@ -2531,7 +2592,9 @@ void AbstractImporterTest::mesh2DForNameNotImplemented() {
         void doClose() override {}
     } importer;
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(importer.mesh2DForName(""), -1);
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 void AbstractImporterTest::mesh2DForNameNoFile() {
@@ -2544,7 +2607,9 @@ void AbstractImporterTest::mesh2DForNameNoFile() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.mesh2DForName("");
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh2DForName(): no file opened\n");
 }
 
@@ -2557,7 +2622,9 @@ void AbstractImporterTest::mesh2DNameNotImplemented() {
         UnsignedInt doMesh2DCount() const override { return 8; }
     } importer;
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(importer.mesh2DName(7), "");
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 void AbstractImporterTest::mesh2DNameNoFile() {
@@ -2570,7 +2637,9 @@ void AbstractImporterTest::mesh2DNameNoFile() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.mesh2DName(42);
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh2DName(): no file opened\n");
 }
 
@@ -2586,7 +2655,9 @@ void AbstractImporterTest::mesh2DNameOutOfRange() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.mesh2DName(8);
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh2DName(): index 8 out of range for 8 entries\n");
 }
 
@@ -2602,7 +2673,9 @@ void AbstractImporterTest::mesh2DNotImplemented() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.mesh2D(7);
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh2D(): not implemented\n");
 }
 
@@ -2616,7 +2689,9 @@ void AbstractImporterTest::mesh2DNoFile() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.mesh2D(42);
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh2D(): no file opened\n");
 }
 
@@ -2632,7 +2707,9 @@ void AbstractImporterTest::mesh2DOutOfRange() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.mesh2D(8);
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh2D(): index 8 out of range for 8 entries\n");
 }
 
@@ -2651,12 +2728,15 @@ void AbstractImporterTest::mesh3D() {
             if(id == 7) return "eighth";
             else return {};
         }
+        CORRADE_IGNORE_DEPRECATED_PUSH
         Containers::Optional<MeshData3D> doMesh3D(UnsignedInt id) override {
             if(id == 7) return MeshData3D{{}, {}, {{}}, {}, {}, {}, &state};
             else return {};
         }
+        CORRADE_IGNORE_DEPRECATED_POP
     } importer;
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(importer.mesh3DCount(), 8);
     CORRADE_COMPARE(importer.mesh3DForName("eighth"), 7);
     CORRADE_COMPARE(importer.mesh3DName(7), "eighth");
@@ -2664,6 +2744,7 @@ void AbstractImporterTest::mesh3D() {
     auto data = importer.mesh3D(7);
     CORRADE_VERIFY(data);
     CORRADE_COMPARE(data->importerState(), &state);
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 void AbstractImporterTest::mesh3DCountNotImplemented() {
@@ -2673,7 +2754,9 @@ void AbstractImporterTest::mesh3DCountNotImplemented() {
         void doClose() override {}
     } importer;
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(importer.mesh3DCount(), 0);
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 void AbstractImporterTest::mesh3DCountNoFile() {
@@ -2686,7 +2769,9 @@ void AbstractImporterTest::mesh3DCountNoFile() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.mesh3DCount();
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh3DCount(): no file opened\n");
 }
 
@@ -2697,7 +2782,9 @@ void AbstractImporterTest::mesh3DForNameNotImplemented() {
         void doClose() override {}
     } importer;
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(importer.mesh3DForName(""), -1);
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 void AbstractImporterTest::mesh3DForNameNoFile() {
@@ -2710,7 +2797,9 @@ void AbstractImporterTest::mesh3DForNameNoFile() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.mesh3DForName("");
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh3DForName(): no file opened\n");
 }
 
@@ -2723,7 +2812,9 @@ void AbstractImporterTest::mesh3DNameNotImplemented() {
         UnsignedInt doMesh3DCount() const override { return 8; }
     } importer;
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     CORRADE_COMPARE(importer.mesh3DName(7), "");
+    CORRADE_IGNORE_DEPRECATED_POP
 }
 
 void AbstractImporterTest::mesh3DNameNoFile() {
@@ -2736,7 +2827,9 @@ void AbstractImporterTest::mesh3DNameNoFile() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.mesh3DName(42);
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh3DName(): no file opened\n");
 }
 
@@ -2752,7 +2845,9 @@ void AbstractImporterTest::mesh3DNameOutOfRange() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.mesh3DName(8);
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh3DName(): index 8 out of range for 8 entries\n");
 }
 
@@ -2768,8 +2863,12 @@ void AbstractImporterTest::mesh3DNotImplemented() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.mesh3D(7);
-    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh3D(): not implemented\n");
+    CORRADE_IGNORE_DEPRECATED_POP
+    /* Not mesh3D() because this one delegates into mesh() for backwards
+       compatibility */
+    CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh(): not implemented\n");
 }
 
 void AbstractImporterTest::mesh3DNoFile() {
@@ -2782,7 +2881,9 @@ void AbstractImporterTest::mesh3DNoFile() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.mesh3D(42);
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh3D(): no file opened\n");
 }
 
@@ -2798,9 +2899,12 @@ void AbstractImporterTest::mesh3DOutOfRange() {
     std::ostringstream out;
     Error redirectError{&out};
 
+    CORRADE_IGNORE_DEPRECATED_PUSH
     importer.mesh3D(8);
+    CORRADE_IGNORE_DEPRECATED_POP
     CORRADE_COMPARE(out.str(), "Trade::AbstractImporter::mesh3D(): index 8 out of range for 8 entries\n");
 }
+#endif
 
 void AbstractImporterTest::material() {
     struct: AbstractImporter {

@@ -749,30 +749,34 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          */
         std::string meshAttributeName(MeshAttribute name);
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Two-dimensional mesh count
          *
          * Expects that a file is opened.
+         * @m_deprecated_since_latest Use @ref meshCount() instead.
          */
-        UnsignedInt mesh2DCount() const;
+        CORRADE_DEPRECATED("use meshCount() instead") UnsignedInt mesh2DCount() const;
 
         /**
          * @brief Two-dimensional mesh ID for given name
          *
          * If no mesh for given name exists, returns @cpp -1 @ce. Expects that
          * a file is opened.
+         * @m_deprecated_since_latest Use @ref meshForName() instead.
          * @see @ref mesh2DName()
          */
-        Int mesh2DForName(const std::string& name);
+        CORRADE_DEPRECATED("use meshForName() instead") Int mesh2DForName(const std::string& name);
 
         /**
          * @brief Two-dimensional mesh name
          * @param id        Mesh ID, from range [0, @ref mesh2DCount()).
          *
          * Expects that a file is opened.
+         * @m_deprecated_since_latest Use @ref meshName() instead.
          * @see @ref mesh2DForName()
          */
-        std::string mesh2DName(UnsignedInt id);
+        CORRADE_DEPRECATED("use meshName() instead") std::string mesh2DName(UnsignedInt id);
 
         /**
          * @brief Two-dimensional mesh
@@ -780,29 +784,39 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given mesh or @ref Containers::NullOpt if importing failed.
          * Expects that a file is opened.
+         * @m_deprecated_since_latest Use @ref mesh() instead.
          */
-        Containers::Optional<MeshData2D> mesh2D(UnsignedInt id);
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
+        CORRADE_DEPRECATED("use mesh() instead") Containers::Optional<MeshData2D> mesh2D(UnsignedInt id);
+        CORRADE_IGNORE_DEPRECATED_POP
 
-        /** @brief Three-dimensional mesh count */
-        UnsignedInt mesh3DCount() const;
+        /**
+         * @brief Three-dimensional mesh count
+         *
+         * Expects that a file is opened.
+         * @m_deprecated_since_latest Use @ref meshCount() instead.
+         */
+        CORRADE_DEPRECATED("use meshCount() instead") UnsignedInt mesh3DCount() const;
 
         /**
          * @brief Three-dimensional mesh ID for given name
          *
          * If no mesh for given name exists, returns @cpp -1 @ce. Expects that
          * a file is opened.
+         * @m_deprecated_since_latest Use @ref meshForName() instead.
          * @see @ref mesh3DName()
          */
-        Int mesh3DForName(const std::string& name);
+        CORRADE_DEPRECATED("use meshForName() instead") Int mesh3DForName(const std::string& name);
 
         /**
          * @brief Three-dimensional mesh name
          * @param id        Mesh ID, from range [0, @ref mesh3DCount()).
          *
          * Expects that a file is opened.
+         * @m_deprecated_since_latest Use @ref meshName() instead.
          * @see @ref mesh3DForName()
          */
-        std::string mesh3DName(UnsignedInt id);
+        CORRADE_DEPRECATED("use meshName() instead") std::string mesh3DName(UnsignedInt id);
 
         /**
          * @brief Three-dimensional mesh
@@ -810,8 +824,12 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          *
          * Returns given mesh or @ref Containers::NullOpt if importing failed.
          * Expects that a file is opened.
+         * @m_deprecated_since_latest Use @ref meshName() instead.
          */
-        Containers::Optional<MeshData3D> mesh3D(UnsignedInt id);
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
+        CORRADE_DEPRECATED("use mesh() instead") Containers::Optional<MeshData3D> mesh3D(UnsignedInt id);
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
         /**
          * @brief Material count
@@ -1280,53 +1298,118 @@ class MAGNUM_TRADE_EXPORT AbstractImporter: public PluginManager::AbstractManagi
          */
         virtual std::string doMeshAttributeName(UnsignedShort name);
 
+        #ifdef MAGNUM_BUILD_DEPRECATED
         /**
          * @brief Implementation for @ref mesh2DCount()
          *
-         * Default implementation returns @cpp 0 @ce.
+         * Default implementation returns @cpp 0 @ce. There weren't any
+         * importers in existence known to implement 2D mesh import, so unlike
+         * @ref doMesh3DCount() this function doesn't delegate to
+         * @ref doMeshCount().
+         * @m_deprecated_since_latest Implement @ref doMeshCount() instead.
          */
+        /* MSVC warns when overriding such methods and there's no way to
+           suppress that warning, making the RT build (which treats deprecation
+           warnings as errors) fail and other builds extremely noisy. So
+           disabling those on MSVC. */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doMeshCount() instead")
+        #endif
         virtual UnsignedInt doMesh2DCount() const;
 
         /**
          * @brief Implementation for @ref mesh2DForName()
          *
-         * Default implementation returns @cpp -1 @ce.
+         * Default implementation returns @cpp -1 @ce. There weren't any
+         * importers in existence known to implement 2D mesh import, so unlike
+         * @ref doMesh3DForName() this function doesn't delegate to
+         * @ref doMeshForName().
+         * @m_deprecated_since_latest Implement @ref doMeshForName() instead.
          */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doMeshForName() instead")
+        #endif /* See above */
         virtual Int doMesh2DForName(const std::string& name);
 
         /**
          * @brief Implementation for @ref mesh2DName()
          *
-         * Default implementation returns empty string.
+         * Default implementation returns empty string. There weren't any
+         * importers in existence known to implement 2D mesh import, so unlike
+         * @ref doMesh3DName() this function doesn't delegate to
+         * @ref doMeshName().
+         * @m_deprecated_since_latest Implement @ref doMeshName() instead.
          */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doMeshName() instead")
+        #endif /* See above */
         virtual std::string doMesh2DName(UnsignedInt id);
 
-        /** @brief Implementation for @ref mesh2D() */
+        /**
+         * @brief Implementation for @ref mesh2D()
+         *
+         * There weren't any importers in existence known to implement 2D mesh
+         * import, so unlike @ref doMesh3D() this function doesn't
+         * delegate to @ref doMesh().
+         * @m_deprecated_since_latest Implement @ref doMesh() instead.
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doMesh() instead")
+        #endif /* See above */
         virtual Containers::Optional<MeshData2D> doMesh2D(UnsignedInt id);
+        CORRADE_IGNORE_DEPRECATED_POP
 
         /**
          * @brief Implementation for @ref mesh3DCount()
          *
-         * Default implementation returns @cpp 0 @ce.
+         * Default implementation returns @ref doMeshCount() for backwards
+         * compatibility.
+         * @m_deprecated_since_latest Implement @ref doMeshCount() instead.
          */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doMeshCount() instead")
+        #endif /* See above */
         virtual UnsignedInt doMesh3DCount() const;
 
         /**
          * @brief Implementation for @ref mesh3DForName()
          *
-         * Default implementation returns @cpp -1 @ce.
+         * Default implementation returns @ref doMeshForName() for backwards
+         * compatibility.
+         * @m_deprecated_since_latest Implement @ref doMeshForName() instead.
          */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doMeshForName() instead")
+        #endif /* See above */
         virtual Int doMesh3DForName(const std::string& name);
 
         /**
          * @brief Implementation for @ref mesh3DName()
          *
-         * Default implementation returns empty string.
+         * Default implementation returns @ref doMeshName() for backwards
+         * compatibility.
+         * @m_deprecated_since_latest Implement @ref doMeshName() instead.
          */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doMeshName() instead")
+        #endif /* See above */
         virtual std::string doMesh3DName(UnsignedInt id);
 
-        /** @brief Implementation for @ref mesh3D() */
+        /**
+         * @brief Implementation for @ref mesh3D()
+         *
+         * Default implementation returns @ref doMesh() converted to
+         * @ref MeshData3D for backwards compatibility.
+         * @m_deprecated_since_latest Implement @ref doMesh() instead.
+         */
+        CORRADE_IGNORE_DEPRECATED_PUSH /* Clang doesn't warn, but GCC does */
+        #if !(defined(CORRADE_TARGET_MSVC) && !defined(CORRADE_TARGET_CLANG))
+        CORRADE_DEPRECATED("implement doMesh() instead")
+        #endif /* See above */
         virtual Containers::Optional<MeshData3D> doMesh3D(UnsignedInt id);
+        CORRADE_IGNORE_DEPRECATED_POP
+        #endif
 
         /**
          * @brief Implementation for @ref materialCount()

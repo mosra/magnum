@@ -378,6 +378,13 @@ See also:
     @ref GL::Attribute::DataType::Half,
     @ref GL::DynamicAttribute::DataType::Half and @ref GL::PixelType::Half that
     are consistent with the @ref Half type used elsewhere.
+-   @cpp Trade::AbstractImporter::mesh2D() @ce,
+    @cpp Trade::AbstractImporter::mesh3D() @ce and related APIs are
+    deprecated in favor of @ref Trade::AbstractImporter::mesh() and the new
+    @ref Trade::MeshData API. For backwards compatibility, importers
+    implementing the new API have it exposed through @cpp mesh3D() @ce as well,
+    returning a subset of @ref Trade::MeshData functionality supported by the
+    old @cpp Trade::MeshData3D @ce APIs
 -   @cpp Platform::GlfwApplication::Configuration::setCursorMode() @ce and
     related enum & getter are deprecated in favor of the new extended and more
     flexible @ref Platform::GlfwApplication::setCursor(). The setting didn't
