@@ -38,6 +38,7 @@
 #include "Magnum/ImageView.h"
 #include "Magnum/PixelFormat.h"
 #include "Magnum/Math/ConfigurationValue.h"
+#include "Magnum/Math/FunctionsBatch.h"
 #include "Magnum/Math/Range.h"
 #include "Magnum/Platform/ScreenedApplication.hpp"
 #include "Magnum/Platform/Implementation/DpiScaling.h"
