@@ -469,7 +469,7 @@ bool GlfwApplication::tryCreate(const Configuration& configuration, const GLConf
        If we are on Wayland, this is causing a segfault; a blinking window is
        acceptable in this case. */
     constexpr const char waylandString[] = "wayland";
-    const char* xdgSessionType = std::getenv("XDG_SESSION_TYPE");
+    const char* const xdgSessionType = std::getenv("XDG_SESSION_TYPE");
     if(!xdgSessionType || std::strncmp(xdgSessionType, waylandString, sizeof(waylandString)) != 0)
         glfwWindowHint(GLFW_VISIBLE, false);
     else if(_verboseLog)
