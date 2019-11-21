@@ -229,17 +229,20 @@ Trade::MeshData Spheroid::finalize() {
 
     auto typedVertices = reinterpret_cast<VertexTextureCoords*>(_vertexData.data());
     Trade::MeshAttributeData positions{Trade::MeshAttribute::Position,
-    Containers::stridedArrayView(_vertexData, &typedVertices[0].position,
-        size, stride)};
+        /* GCC 4.8 needs the arrayView() */
+        Containers::stridedArrayView(Containers::arrayView(_vertexData),
+        &typedVertices[0].position, size, stride)};
     Trade::MeshAttributeData normals{Trade::MeshAttribute::Normal,
-    Containers::stridedArrayView(_vertexData, &typedVertices[0].normal,
-        size, stride)};
+        /* GCC 4.8 needs the arrayView() */
+        Containers::stridedArrayView(Containers::arrayView(_vertexData),
+        &typedVertices[0].normal, size, stride)};
 
     Containers::Array<Trade::MeshAttributeData> attributes;
     if(_textureCoords == TextureCoords::Generate) {
         Trade::MeshAttributeData textureCoords{Trade::MeshAttribute::TextureCoordinates,
-        Containers::stridedArrayView(_vertexData, &typedVertices[0].textureCoords,
-            size, stride)};
+            /* GCC 4.8 needs the arrayView() */
+            Containers::stridedArrayView(Containers::arrayView(_vertexData),
+            &typedVertices[0].textureCoords, size, stride)};
         attributes = Containers::Array<Trade::MeshAttributeData>{Containers::InPlaceInit, {positions, normals, textureCoords}};
     } else {
         attributes = Containers::Array<Trade::MeshAttributeData>{Containers::InPlaceInit, {positions, normals}};

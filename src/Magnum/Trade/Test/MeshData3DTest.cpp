@@ -89,7 +89,9 @@ struct {
             {{0xff98ab_rgbf, 0xff3366_rgbf}},
             &State}},
     {"from MeshData",
-        MeshData{MeshPrimitive::Lines, {}, Indices, MeshIndexData{Indices}, {}, Vertices, {
+        /* GCC 4.8 needs the explicit MeshData3D conversion otherwise it tries
+           to use a deleted copy constructor */
+        MeshData3D{MeshData{MeshPrimitive::Lines, {}, Indices, MeshIndexData{Indices}, {}, Vertices, {
                 MeshAttributeData{MeshAttribute::Position,
                     Containers::StridedArrayView1D<const Vector3>{Vertices, &Vertices[0].position1, 2, sizeof(Vertex)}},
                 MeshAttributeData{MeshAttribute::Position,
@@ -104,8 +106,10 @@ struct {
                     Containers::StridedArrayView1D<const Vector2>{Vertices, &Vertices[0].textureCoords3, 2, sizeof(Vertex)}},
                 MeshAttributeData{MeshAttribute::Color,
                     Containers::StridedArrayView1D<const Color4>{Vertices, &Vertices[0].color, 2, sizeof(Vertex)}},
-            },  &State},
-        MeshData{MeshPrimitive::Lines, {}, Vertices, {
+            },  &State}},
+        /* GCC 4.8 needs the explicit MeshData3D conversion otherwise it tries
+           to use a deleted copy constructor */
+        MeshData3D{MeshData{MeshPrimitive::Lines, {}, Vertices, {
                 MeshAttributeData{MeshAttribute::Position,
                     Containers::StridedArrayView1D<const Vector3>{Vertices, &Vertices[0].position1, 2, sizeof(Vertex)}},
                 MeshAttributeData{MeshAttribute::Normal,
@@ -114,7 +118,7 @@ struct {
                     Containers::StridedArrayView1D<const Vector2>{Vertices, &Vertices[0].textureCoords1, 2, sizeof(Vertex)}},
                 MeshAttributeData{MeshAttribute::Color,
                     Containers::StridedArrayView1D<const Color4>{Vertices, &Vertices[0].color, 2, sizeof(Vertex)}},
-            },  &State}
+            },  &State}}
     }
 };
 
