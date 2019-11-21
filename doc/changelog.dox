@@ -412,6 +412,8 @@ See also:
 -   The @ref Magnum/Math/FunctionsBatch.h header is no longer included from
     @ref Magnum/Math/Functions.h for backwards compatibility in order to speed
     up compile times.
+-   @ref Trade::AnimationTrackData constructors are now explicit as that
+    enforces better readability in long initializer expressions
 -   Non-const @ref Trade::ImageData::data() and @ref Trade::ImageData::pixels()
     were renamed to @ref Trade::ImageData::mutableData() and
     @ref Trade::ImageData::mutablePixels() to follow the new
