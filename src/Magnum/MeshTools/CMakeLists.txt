@@ -60,8 +60,10 @@ endif()
 
 if(TARGET_GL)
     list(APPEND MagnumMeshTools_SRCS
-        Compile.cpp
         FullScreenTriangle.cpp)
+
+    list(APPEND MagnumMeshTools_GracefulAssert_SRCS
+        Compile.cpp)
 
     list(APPEND MagnumMeshTools_HEADERS
         Compile.h

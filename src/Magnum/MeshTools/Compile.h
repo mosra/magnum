@@ -86,6 +86,97 @@ typedef Containers::EnumSet<CompileFlag> CompileFlags;
 CORRADE_ENUMSET_OPERATORS(CompileFlags)
 
 /**
+@brief Compile mesh data
+@m_since_latest
+
+Configures a mesh for a @ref Shaders::Generic shader with a vertex buffer and
+possibly also an index buffer, if the mesh is indexed.
+
+-   If the mesh contains positions, these are bound to the
+    @ref Shaders::Generic2D::Position attribute if they are 2D or to
+    @ref Shaders::Generic3D::Position if they are 3D.
+-   If the mesh contains normals or if @ref CompileFlag::GenerateFlatNormals /
+    @ref CompileFlag::GenerateSmoothNormals is set, these are bound to
+    @ref Shaders::Generic3D::Normal.
+-   If the mesh contains texture coordinates, these are bound to
+    @ref Shaders::Generic::TextureCoordinates.
+-   If the mesh contains colors, these are bound to
+    @ref Shaders::Generic::Color3 / @ref Shaders::Generic::Color4 based on
+    their type.
+
+If normal generation is not requested, @ref Trade::MeshData::indexData() and
+@ref Trade::MeshData::vertexData() are uploaded as-is without any further
+modifications, keeping the original layout and vertex formats. If
+@ref CompileFlag::GenerateSmoothNormals is requested, vertex data is
+interleaved together with the generated normals; if
+@ref CompileFlag::GenerateFlatNormals is requested, the mesh is first
+deindexed and then the vertex data is interleaved together with the generated
+normals.
+
+The generated mesh owns the index and vertex buffers and there's no possibility
+to access them afterwards. For alternative solutions see the
+@ref compile(const Trade::MeshData&, GL::Buffer&, GL::Buffer&) overloads.
+
+@note This function is available only if Magnum is compiled with
+    @ref MAGNUM_TARGET_GL enabled (done by default). See @ref building-features
+    for more information.
+
+@see @ref shaders-generic
+*/
+MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData, CompileFlags flags);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+/* Separately because this one doesn't rely on duplicate() / interleave() /
+   generate*Normals() and thus the exe can be smaller when using this function
+   directly */
+MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData);
+
+/**
+@brief Compile mesh data using external buffers
+@m_since_latest
+
+Assumes the whole vertex / index data are already uploaded to @p indices /
+@p vertices and sets up the mesh using those. Can be used to have a single
+index/vertex buffer when multiple @ref Trade::MeshData instances share the same
+data arrays, or to allow buffer access later. For example:
+
+@snippet MagnumMeshTools-gl.cpp compile-external
+
+Another use case is specifying additional vertex attributes that are not
+recognized by the function itself. You can choose among various r-value
+overloads depending on whether you want to have the index/vertex buffers owned
+by the mesh or not:
+
+@snippet MagnumMeshTools-gl.cpp compile-external-attributes
+
+If @p meshData is not indexed, the @p indices parameter is ignored --- in that
+case you can pass a @ref NoCreate "NoCreate"-d instance to avoid allocating an
+unnecessary OpenGL buffer object.
+*/
+MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer& indices, GL::Buffer& vertices);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer& indices, GL::Buffer&& vertices);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buffer& vertices);
+
+/**
+ * @overload
+ * @m_since_latest
+ */
+MAGNUM_MESHTOOLS_EXPORT GL::Mesh compile(const Trade::MeshData& meshData, GL::Buffer&& indices, GL::Buffer&& vertices);
+
+/**
 @brief Compile 2D mesh data
 
 Configures a mesh for @ref Shaders::Generic2D shader with vertex buffer and

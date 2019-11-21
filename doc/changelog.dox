@@ -109,6 +109,8 @@ See also:
 
 @subsubsection changelog-latest-new-meshtools MeshTools library
 
+-   Added @ref MeshTools::compile(const Trade::MeshData&) operating on the new
+    @ref Trade::MeshData API
 -   New @ref MeshTools::isInterleaved() utility for checking if
     @ref Trade::MeshData is interleaved
 -   Added @ref MeshTools::interleavedLayout() for convenient creation of an

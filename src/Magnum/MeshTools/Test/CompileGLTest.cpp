@@ -23,9 +23,12 @@
     DEALINGS IN THE SOFTWARE.
 */
 
+#include <sstream>
 #include <Corrade/Containers/EnumSet.h>
+#include <Corrade/Containers/GrowableArray.h>
 #include <Corrade/PluginManager/Manager.h>
 #include <Corrade/Utility/Directory.h>
+#include <Corrade/Utility/DebugStl.h>
 
 #include "Magnum/Image.h"
 #include "Magnum/ImageView.h"
@@ -78,8 +81,14 @@ struct CompileGLTest: GL::OpenGLTester {
     public:
         explicit CompileGLTest();
 
-        void twoDimensions();
-        void threeDimensions();
+        template<class T> void twoDimensions();
+        template<class T> void threeDimensions();
+        void unknownAttribute();
+        void generateNormalsNoPosition();
+        void generateNormals2DPosition();
+
+        void externalBuffers();
+        void externalBuffersInvalid();
 
     private:
         PluginManager::Manager<Trade::AbstractImporter> _manager{"nonexistent"};
@@ -138,6 +147,17 @@ constexpr struct {
     {"positions, nonindexed + gen smooth normals", Flag::NonIndexed|Flag::GeneratedSmoothNormals},
 };
 
+constexpr struct {
+    const char* name;
+    bool indexed, moveIndices, moveVertices;
+} DataExternal[] {
+    {"indexed", true, false, false},
+    {"", false, false, false},
+    {"move indices", true, true, false},
+    {"move vertices", false, false, true},
+    {"move both", true, true, true}
+};
+
 using namespace Math::Literals;
 
 constexpr Color4ub ImageData[] {
@@ -148,11 +168,24 @@ constexpr Color4ub ImageData[] {
 };
 
 CompileGLTest::CompileGLTest() {
-    addInstancedTests({&CompileGLTest::twoDimensions},
-                      Containers::arraySize(Data2D));
+    addInstancedTests<CompileGLTest>({
+        &CompileGLTest::twoDimensions<Trade::MeshData>,
+        &CompileGLTest::twoDimensions<Trade::MeshData2D>},
+        Containers::arraySize(Data2D));
 
-    addInstancedTests({&CompileGLTest::threeDimensions},
-                      Containers::arraySize(Data3D));
+    addInstancedTests<CompileGLTest>({
+        &CompileGLTest::threeDimensions<Trade::MeshData>,
+        &CompileGLTest::threeDimensions<Trade::MeshData3D>},
+        Containers::arraySize(Data3D));
+
+    addTests({&CompileGLTest::unknownAttribute,
+              &CompileGLTest::generateNormalsNoPosition,
+              &CompileGLTest::generateNormals2DPosition});
+
+    addInstancedTests({&CompileGLTest::externalBuffers},
+        Containers::arraySize(DataExternal));
+
+    addTests({&CompileGLTest::externalBuffersInvalid});
 
     /* Load the plugins directly from the build tree. Otherwise they're either
        static and already loaded or not present in the build tree */
@@ -187,7 +220,19 @@ CompileGLTest::CompileGLTest() {
         .setSubImage(0, {}, ImageView2D{PixelFormat::RGBA8Unorm, {4, 4}, ImageData});
 }
 
-void CompileGLTest::twoDimensions() {
+template<class T> struct MeshTypeName;
+template<> struct MeshTypeName<Trade::MeshData> {
+    static const char* name() { return "Trade::MeshData"; }
+};
+template<> struct MeshTypeName<Trade::MeshData2D> {
+    static const char* name() { return "Trade::MeshData2D"; }
+};
+template<> struct MeshTypeName<Trade::MeshData3D> {
+    static const char* name() { return "Trade::MeshData3D"; }
+};
+
+template<class T> void CompileGLTest::twoDimensions() {
+    setTestCaseTemplateName(MeshTypeName<T>::name());
     auto&& data = Data2D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -202,69 +247,57 @@ void CompileGLTest::twoDimensions() {
         |/    |/    |
         0-----1-----2
     */
-    std::vector<Vector2> positions{
-        {-0.75f, -0.75f},
-        { 0.00f, -0.75f},
-        { 0.75f, -0.75f},
+    const struct Vertex {
+        Vector2 position;
+        Vector2 textureCoordinates;
+        Color3 color;
+    } vertexData[]{
+        {{-0.75f, -0.75f}, {0.0f, 0.0f}, 0x00ff00_rgbf},
+        {{ 0.00f, -0.75f}, {0.5f, 0.0f}, 0x808000_rgbf},
+        {{ 0.75f, -0.75f}, {1.0f, 0.0f}, 0xff0000_rgbf},
 
-        {-0.75f,  0.0f},
-        { 0.00f,  0.0f},
-        { 0.75f,  0.0f},
+        {{-0.75f,  0.00f}, {0.0f, 0.5f}, 0x00ff80_rgbf},
+        {{ 0.00f,  0.00f}, {0.5f, 0.5f}, 0x808080_rgbf},
+        {{ 0.75f,  0.00f}, {1.0f, 0.5f}, 0xff0080_rgbf},
 
-        {-0.75f,  0.75f},
-        { 0.0f,   0.75f},
-        { 0.75f,  0.75f}
+        {{-0.75f,  0.75f}, {0.0f, 1.0f}, 0x00ffff_rgbf},
+        {{ 0.0f,   0.75f}, {0.5f, 1.0f}, 0x8080ff_rgbf},
+        {{ 0.75f,  0.75f}, {1.0f, 1.0f}, 0xff00ff_rgbf}
     };
 
-    std::vector<std::vector<Vector2>> textureCoordinates2D;
-    if(data.flags & Flag::TextureCoordinates2D) textureCoordinates2D.push_back(std::vector<Vector2>{
-        {0.0f, 0.0f},
-        {0.5f, 0.0f},
-        {1.0f, 0.0f},
+    Containers::Array<Trade::MeshAttributeData> attributeData;
+    arrayAppend(attributeData, Trade::MeshAttributeData{
+        Trade::MeshAttribute::Position,
+        Containers::stridedArrayView(vertexData, &vertexData[0].position,
+            Containers::arraySize(vertexData), sizeof(Vertex))});
+    if(data.flags & Flag::TextureCoordinates2D)
+        arrayAppend(attributeData, Trade::MeshAttributeData{
+            Trade::MeshAttribute::TextureCoordinates,
+            Containers::stridedArrayView(vertexData, &vertexData[0].textureCoordinates,
+                Containers::arraySize(vertexData), sizeof(Vertex))});
+    if(data.flags & Flag::Colors)
+        arrayAppend(attributeData, Trade::MeshAttributeData{
+            Trade::MeshAttribute::Color,
+            Containers::stridedArrayView(vertexData, &vertexData[0].color,
+                Containers::arraySize(vertexData), sizeof(Vertex))});
 
-        {0.0f, 0.5f},
-        {0.5f, 0.5f},
-        {1.0f, 0.5f},
-
-        {0.0f, 1.0f},
-        {0.5f, 1.0f},
-        {1.0f, 1.0f}
-    });
-
-    std::vector<std::vector<Color4>> colors;
-    if(data.flags & Flag::Colors) colors.push_back(std::vector<Color4> {
-        0x00ff00_rgbf,
-        0x808000_rgbf,
-        0xff0000_rgbf,
-
-        0x00ff80_rgbf,
-        0x808080_rgbf,
-        0xff0080_rgbf,
-
-        0x00ffff_rgbf,
-        0x8080ff_rgbf,
-        0xff00ff_rgbf
-    });
-
-    std::vector<UnsignedInt> indices{
+    const UnsignedInt indexData[]{
         0, 1, 4, 0, 4, 3,
         1, 2, 5, 1, 5, 4,
         3, 4, 7, 3, 7, 6,
         4, 5, 8, 4, 8, 7
     };
 
-    /* Duplicate positions if data are non-indexed. Testing only positions
-       alone ATM, don't bother with other attribs. */
-    if(data.flags & Flag::NonIndexed) {
-        CORRADE_INTERNAL_ASSERT(textureCoordinates2D.empty());
-        CORRADE_INTERNAL_ASSERT(colors.empty());
-        positions = duplicate(indices, positions);
-        indices.clear();
-    }
+    Trade::MeshData meshData{MeshPrimitive::Triangles,
+        {}, indexData, Trade::MeshIndexData{indexData},
+        {}, vertexData, std::move(attributeData)};
+
+    /* Duplicate everything if data is non-indexed */
+    if(data.flags & Flag::NonIndexed) meshData = duplicate(meshData);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
-    GL::Mesh mesh = compile(Trade::MeshData2D{MeshPrimitive::Triangles, indices, {positions}, textureCoordinates2D, colors});
+    GL::Mesh mesh = compile(T{std::move(meshData)});
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -312,7 +345,8 @@ void CompileGLTest::twoDimensions() {
     }
 }
 
-void CompileGLTest::threeDimensions() {
+template<class T> void CompileGLTest::threeDimensions() {
+    setTestCaseTemplateName(MeshTypeName<T>::name());
     auto&& data = Data3D[testCaseInstanceId()];
     setTestCaseDescription(data.name);
 
@@ -327,96 +361,77 @@ void CompileGLTest::threeDimensions() {
         |/    |/    |
         0-----1-----2
     */
-    std::vector<Vector3> positions{
-        {-0.75f, -0.75f, -0.35f},
-        { 0.00f, -0.75f, -0.25f},
-        { 0.75f, -0.75f, -0.35f},
+    const struct Vertex {
+        Vector3 position;
+        Vector3 normal;
+        Vector2 textureCoordinates;
+        Color4 color;
+    } vertexData[]{
+        {{-0.75f, -0.75f, -0.35f}, Vector3{-0.5f, -0.5f, 1.0f}.normalized(),
+         {0.0f, 0.0f}, 0x00ff00_rgbf},
+        {{ 0.00f, -0.75f, -0.25f}, Vector3{ 0.0f, -0.5f, 1.0f}.normalized(),
+         {0.5f, 0.0f}, 0x808000_rgbf},
+        {{ 0.75f, -0.75f, -0.35f}, Vector3{ 0.5f, -0.5f, 1.0f}.normalized(),
+         {1.0f, 0.0f}, 0xff0000_rgbf},
 
-        {-0.75f,  0.00f, -0.25f},
-        { 0.00f,  0.00f,  0.00f},
-        { 0.75f,  0.00f, -0.25f},
+        {{-0.75f,  0.00f, -0.25f}, Vector3{-0.5f,  0.0f, 1.0f}.normalized(),
+         {0.0f, 0.5f}, 0x00ff80_rgbf},
+        {{ 0.00f,  0.00f,  0.00f}, Vector3{ 0.0f,  0.0f, 1.0f}.normalized(),
+         {0.5f, 0.5f}, 0x808080_rgbf},
+        {{ 0.75f,  0.00f, -0.25f}, Vector3{ 0.5f,  0.0f, 1.0f}.normalized(),
+         {1.0f, 0.5f}, 0xff0080_rgbf},
 
-        {-0.75f,  0.75f, -0.35f},
-        { 0.0f,   0.75f, -0.25f},
-        { 0.75f,  0.75f, -0.35f}
+        {{-0.75f,  0.75f, -0.35f}, Vector3{-0.5f,  0.5f, 1.0f}.normalized(),
+         {0.0f, 1.0f}, 0x00ffff_rgbf},
+        {{ 0.0f,   0.75f, -0.25f}, Vector3{ 0.0f,  0.5f, 1.0f}.normalized(),
+         {0.5f, 1.0f}, 0x8080ff_rgbf},
+        {{ 0.75f,  0.75f, -0.35f}, Vector3{ 0.5f,  0.5f, 1.0f}.normalized(),
+         {1.0f, 1.0f}, 0xff00ff_rgbf}
     };
 
-    std::vector<std::vector<Vector3>> normals;
-    if(data.flags & Flag::Normals) normals.push_back(std::vector<Vector3>{
-        Vector3{-0.5f, -0.5f, 1.0f}.normalized(),
-        Vector3{ 0.0f, -0.5f, 1.0f}.normalized(),
-        Vector3{ 0.5f, -0.5f, 1.0f}.normalized(),
+    Containers::Array<Trade::MeshAttributeData> attributeData;
+    arrayAppend(attributeData, Trade::MeshAttributeData{
+        Trade::MeshAttribute::Position,
+        Containers::stridedArrayView(vertexData, &vertexData[0].position,
+            Containers::arraySize(vertexData), sizeof(Vertex))});
+    if(data.flags & Flag::Normals)
+        arrayAppend(attributeData, Trade::MeshAttributeData{
+            Trade::MeshAttribute::Normal,
+            Containers::stridedArrayView(vertexData, &vertexData[0].normal,
+                Containers::arraySize(vertexData), sizeof(Vertex))});
+    if(data.flags & Flag::TextureCoordinates2D)
+        arrayAppend(attributeData, Trade::MeshAttributeData{
+            Trade::MeshAttribute::TextureCoordinates,
+            Containers::stridedArrayView(vertexData, &vertexData[0].textureCoordinates,
+                Containers::arraySize(vertexData), sizeof(Vertex))});
+    if(data.flags & Flag::Colors)
+        arrayAppend(attributeData, Trade::MeshAttributeData{
+            Trade::MeshAttribute::Color,
+            Containers::stridedArrayView(vertexData, &vertexData[0].color,
+                Containers::arraySize(vertexData), sizeof(Vertex))});
 
-        Vector3{-0.5f, 0.0f, 1.0f}.normalized(),
-        Vector3{ 0.0f, 0.0f, 1.0f}.normalized(),
-        Vector3{ 0.5f, 0.0f, 1.0f}.normalized(),
-
-        Vector3{-0.5f, 0.5f, 1.0f}.normalized(),
-        Vector3{ 0.0f, 0.5f, 1.0f}.normalized(),
-        Vector3{ 0.5f, 0.5f, 1.0f}.normalized(),
-    });
-
-    std::vector<std::vector<Vector2>> textureCoordinates2D;
-    if(data.flags & Flag::TextureCoordinates2D) textureCoordinates2D.push_back(std::vector<Vector2>{
-        {0.0f, 0.0f},
-        {0.5f, 0.0f},
-        {1.0f, 0.0f},
-
-        {0.0f, 0.5f},
-        {0.5f, 0.5f},
-        {1.0f, 0.5f},
-
-        {0.0f, 1.0f},
-        {0.5f, 1.0f},
-        {1.0f, 1.0f}
-    });
-
-    std::vector<std::vector<Color4>> colors;
-    if(data.flags & Flag::Colors) colors.push_back(std::vector<Color4> {
-        0x00ff00_rgbf,
-        0x808000_rgbf,
-        0xff0000_rgbf,
-
-        0x00ff80_rgbf,
-        0x808080_rgbf,
-        0xff0080_rgbf,
-
-        0x00ffff_rgbf,
-        0x8080ff_rgbf,
-        0xff00ff_rgbf
-    });
-
-    std::vector<UnsignedInt> indices{
+    const UnsignedByte indexData[]{
         0, 1, 4, 0, 4, 3,
         1, 2, 5, 1, 5, 4,
         3, 4, 7, 3, 7, 6,
         4, 5, 8, 4, 8, 7
     };
 
-    /* Duplicate everything if data are non-indexed */
-    if(data.flags & Flag::NonIndexed) {
-        positions = duplicate(indices, positions);
+    Trade::MeshData meshData{MeshPrimitive::Triangles,
+        {}, indexData, Trade::MeshIndexData{indexData},
+        {}, vertexData, std::move(attributeData)};
 
-        if(data.flags & Flag::Normals)
-            normals[0] = duplicate(indices, normals[0]);
-
-        if(data.flags & Flag::TextureCoordinates2D)
-            textureCoordinates2D[0] = duplicate(indices, textureCoordinates2D[0]);
-
-        if(data.flags & Flag::Colors)
-            colors[0] = duplicate(indices, colors[0]);
-
-        indices.clear();
-    }
+    /* Duplicate everything if data is non-indexed */
+    if(data.flags & Flag::NonIndexed) meshData = duplicate(meshData);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
     CompileFlags flags;
     if(data.flags & Flag::GeneratedFlatNormals)
         flags |= CompileFlag::GenerateFlatNormals;
-    else if(data.flags & Flag::GeneratedSmoothNormals)
+    if(data.flags & Flag::GeneratedSmoothNormals)
         flags |= CompileFlag::GenerateSmoothNormals;
-    GL::Mesh mesh = compile(Trade::MeshData3D{MeshPrimitive::Triangles, indices, {positions}, normals, textureCoordinates2D, colors}, flags);
+    GL::Mesh mesh = compile(T{std::move(meshData)}, flags);
 
     MAGNUM_VERIFY_NO_GL_ERROR();
 
@@ -525,6 +540,137 @@ void CompileGLTest::threeDimensions() {
             /* SwiftShader has some minor off-by-one precision differences */
             (DebugTools::CompareImageToFile{_manager, 1.0f, 0.0948f}));
     }
+}
+
+void CompileGLTest::unknownAttribute() {
+    Trade::MeshData data{MeshPrimitive::Triangles,
+        nullptr, {Trade::MeshAttributeData{Trade::meshAttributeCustom(115),
+            VertexFormat::Short, nullptr}}};
+
+    std::ostringstream out;
+    Warning redirectError{&out};
+    MeshTools::compile(data);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::compile(): ignoring unknown attribute Trade::MeshAttribute::Custom(115)\n");
+}
+
+void CompileGLTest::generateNormalsNoPosition() {
+    Trade::MeshData data{MeshPrimitive::Triangles, 1};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::compile(data, CompileFlag::GenerateFlatNormals);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::compile(): the mesh has no positions, can't generate normals\n");
+}
+
+void CompileGLTest::generateNormals2DPosition() {
+    Trade::MeshData data{MeshPrimitive::Triangles,
+        nullptr, {Trade::MeshAttributeData{Trade::MeshAttribute::Position,
+            VertexFormat::Vector2, nullptr}}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    MeshTools::compile(data, CompileFlag::GenerateFlatNormals);
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::compile(): can't generate normals for VertexFormat::Vector2 positions\n");
+}
+
+void CompileGLTest::externalBuffers() {
+    auto&& data = DataExternal[testCaseInstanceId()];
+    setTestCaseDescription(data.name);
+
+    /*
+        6-----7-----8
+        |    /|    /|
+        |  /  |  /  |
+        |/    |/    |
+        3-----4-----5
+        |    /|    /|
+        |  /  |  /  |
+        |/    |/    |
+        0-----1-----2
+    */
+    Vector2 positions[] {
+        {-0.75f, -0.75f},
+        { 0.00f, -0.75f},
+        { 0.75f, -0.75f},
+
+        {-0.75f,  0.00f},
+        { 0.00f,  0.00f},
+        { 0.75f,  0.00f},
+
+        {-0.75f,  0.75f},
+        { 0.0f,   0.75f},
+        { 0.75f,  0.75f}
+    };
+
+    const UnsignedShort indexData[]{
+        0, 1, 4, 0, 4, 3,
+        1, 2, 5, 1, 5, 4,
+        3, 4, 7, 3, 7, 6,
+        4, 5, 8, 4, 8, 7
+    };
+
+    Trade::MeshData meshData{MeshPrimitive::Triangles,
+        {}, indexData, Trade::MeshIndexData{indexData},
+        {}, positions, {Trade::MeshAttributeData{Trade::MeshAttribute::Position, Containers::arrayView(positions)}}};
+
+    /* Duplicate everything if data is non-indexed */
+    if(!data.indexed) meshData = duplicate(meshData);
+
+    GL::Buffer indices{NoCreate};
+    if(meshData.isIndexed()) {
+        indices = GL::Buffer{GL::Buffer::TargetHint::ElementArray};
+        indices.setData(meshData.indexData());
+    }
+
+    GL::Buffer vertices{GL::Buffer::TargetHint::Array};
+    vertices.setData(meshData.vertexData());
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    GL::Mesh mesh{NoCreate};
+    if(data.moveIndices && data.moveVertices)
+        mesh = compile(meshData, std::move(indices), std::move(vertices));
+    else if(data.moveIndices && !data.moveVertices)
+        mesh = compile(meshData, std::move(indices), vertices);
+    else if(!data.moveIndices && data.moveVertices)
+        mesh = compile(meshData, indices, std::move(vertices));
+    else
+        mesh = compile(meshData, indices, vertices);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+
+    if(!(_manager.loadState("AnyImageImporter") & PluginManager::LoadState::Loaded) ||
+       !(_manager.loadState("TgaImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("AnyImageImporter / TgaImporter plugins not found.");
+
+    _framebuffer.clear(GL::FramebufferClear::Color);
+    _flat2D.setColor(0xff3366_rgbf);
+    mesh.draw(_flat2D);
+
+    MAGNUM_VERIFY_NO_GL_ERROR();
+    CORRADE_COMPARE_WITH(
+        _framebuffer.read({{}, {32, 32}}, {PixelFormat::RGBA8Unorm}),
+        Utility::Directory::join(COMPILEGLTEST_TEST_DIR, "flat2D.tga"),
+        (DebugTools::CompareImageToFile{_manager}));
+}
+
+void CompileGLTest::externalBuffersInvalid() {
+    Trade::MeshData data{MeshPrimitive::Triangles, 5};
+    Trade::MeshData indexedData{MeshPrimitive::Triangles,
+        nullptr, Trade::MeshIndexData{MeshIndexType::UnsignedInt, nullptr},
+        {}};
+
+    std::ostringstream out;
+    Error redirectError{&out};
+    compile(data, GL::Buffer{NoCreate}, GL::Buffer{}); /* this is okay */
+    compile(data, GL::Buffer{NoCreate}, GL::Buffer{NoCreate});
+    compile(indexedData, GL::Buffer{NoCreate}, GL::Buffer{});
+    CORRADE_COMPARE(out.str(),
+        "MeshTools::compile(): invalid external buffer(s)\n"
+        "MeshTools::compile(): invalid external buffer(s)\n");
 }
 
 }}}}

@@ -100,7 +100,7 @@ if(BUILD_GL_TESTS)
             MagnumDebugTools
             MagnumGL
             MagnumOpenGLTester
-            MagnumMeshTools
+            MagnumMeshToolsTestLib
             MagnumShaders
         FILES
             CompileTestFiles/color2D.tga

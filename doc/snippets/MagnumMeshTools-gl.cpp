@@ -29,12 +29,45 @@
 #include "Magnum/GL/Buffer.h"
 #include "Magnum/GL/Mesh.h"
 #include "Magnum/Math/Vector3.h"
+#include "Magnum/MeshTools/Compile.h"
 #include "Magnum/MeshTools/CompressIndices.h"
 #include "Magnum/MeshTools/Interleave.h"
+#include "Magnum/Trade/MeshData.h"
 
 using namespace Magnum;
 
 int main() {
+
+{
+Trade::MeshData meshData{MeshPrimitive::Lines, 5};
+/* [compile-external] */
+GL::Buffer indices, vertices;
+indices.setData(meshData.indexData());
+vertices.setData(meshData.vertexData());
+
+GL::Mesh mesh = MeshTools::compile(meshData, indices, vertices);
+/* [compile-external] */
+}
+
+{
+Trade::MeshData meshData{MeshPrimitive::Lines, 5};
+Trade::MeshAttribute myCustomAttribute{};
+/* [compile-external-attributes] */
+GL::Buffer indices, vertices;
+indices.setData(meshData.indexData());
+vertices.setData(meshData.vertexData());
+
+/* Let compile() handle the usual attributes and configure custom ones after */
+GL::Mesh mesh = MeshTools::compile(meshData, std::move(indices), vertices);
+mesh.addVertexBuffer(std::move(vertices),
+    meshData.attributeOffset(myCustomAttribute),
+    meshData.attributeStride(myCustomAttribute),
+    GL::DynamicAttribute{
+        GL::DynamicAttribute::Kind::Generic, 7,
+        GL::DynamicAttribute::Components::One,
+        GL::DynamicAttribute::DataType::Float});
+/* [compile-external-attributes] */
+}
 
 {
 /* [compressIndices] */
