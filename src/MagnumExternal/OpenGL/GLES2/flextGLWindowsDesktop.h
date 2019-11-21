@@ -1337,6 +1337,8 @@ GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglDiscardFramebufferEXT)(GLenum, GLsize
 
 /* GL_EXT_disjoint_timer_query */
 
+GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetInteger64vEXT)(GLenum, GLint64 *);
+#define glGetInteger64vEXT flextglGetInteger64vEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryObjecti64vEXT)(GLuint, GLenum, GLint64 *);
 #define glGetQueryObjecti64vEXT flextglGetQueryObjecti64vEXT
 GLAPI FLEXTGL_EXPORT void(APIENTRY *flextglGetQueryObjectivEXT)(GLuint, GLenum, GLint *);

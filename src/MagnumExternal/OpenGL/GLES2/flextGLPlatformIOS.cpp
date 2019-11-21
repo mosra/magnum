@@ -38,6 +38,7 @@
 #undef glPopGroupMarkerEXT
 #undef glPushGroupMarkerEXT
 #undef glDiscardFramebufferEXT
+#undef glGetInteger64vEXT
 #undef glGetQueryObjecti64vEXT
 #undef glGetQueryObjectivEXT
 #undef glGetQueryObjectui64vEXT
@@ -201,6 +202,7 @@ void flextGLInit(Magnum::GL::Context&) {
 
     /* GL_EXT_disjoint_timer_query */
     #if GL_EXT_disjoint_timer_query
+    flextglGetInteger64vEXT = reinterpret_cast<void(APIENTRY*)(GLenum, GLint64 *)>(glGetInteger64vEXT);
     flextglGetQueryObjecti64vEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLint64 *)>(glGetQueryObjecti64vEXT);
     flextglGetQueryObjectivEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLint *)>(glGetQueryObjectivEXT);
     flextglGetQueryObjectui64vEXT = reinterpret_cast<void(APIENTRY*)(GLuint, GLenum, GLuint64 *)>(glGetQueryObjectui64vEXT);

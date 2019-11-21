@@ -717,6 +717,7 @@ GLAPI void glBeginQueryEXT(GLenum, GLuint);
 GLAPI void glDeleteQueriesEXT(GLsizei, const GLuint *);
 GLAPI void glEndQueryEXT(GLenum);
 GLAPI void glGenQueriesEXT(GLsizei, GLuint *);
+GLAPI void glGetInteger64vEXT(GLenum, GLint64 *);
 GLAPI void glGetQueryObjecti64vEXT(GLuint, GLenum, GLint64 *);
 GLAPI void glGetQueryObjectivEXT(GLuint, GLenum, GLint *);
 GLAPI void glGetQueryObjectui64vEXT(GLuint, GLenum, GLuint64 *);
