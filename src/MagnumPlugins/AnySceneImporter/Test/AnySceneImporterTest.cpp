@@ -33,7 +33,13 @@
 
 #include "Magnum/Math/Vector3.h"
 #include "Magnum/Trade/AbstractImporter.h"
+#include "Magnum/Trade/MeshData.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#define _MAGNUM_NO_DEPRECATED_MESHDATA /* So it doesn't yell here */
+
 #include "Magnum/Trade/MeshData3D.h"
+#endif
 
 #include "configure.h"
 
@@ -43,6 +49,9 @@ struct AnySceneImporterTest: TestSuite::Tester {
     explicit AnySceneImporterTest();
 
     void load();
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    void loadDeprecatedMeshData();
+    #endif
     void detect();
 
     void unknown();
@@ -79,6 +88,10 @@ AnySceneImporterTest::AnySceneImporterTest() {
     addInstancedTests({&AnySceneImporterTest::load},
         Containers::arraySize(LoadData));
 
+    #ifdef MAGNUM_BUILD_DEPRECATED
+    addTests({&AnySceneImporterTest::loadDeprecatedMeshData});
+    #endif
+
     addInstancedTests({&AnySceneImporterTest::detect},
         Containers::arraySize(DetectData));
 
@@ -106,13 +119,35 @@ void AnySceneImporterTest::load() {
     CORRADE_VERIFY(importer->openFile(data.filename));
 
     /* Check only size, as it is good enough proof that it is working */
-    Containers::Optional<MeshData3D> mesh = importer->mesh3D(0);
+    Containers::Optional<MeshData> mesh = importer->mesh(0);
     CORRADE_VERIFY(mesh);
-    CORRADE_COMPARE(mesh->positions(0).size(), 3);
+    CORRADE_COMPARE(mesh->vertexCount(), 3);
 
     importer->close();
     CORRADE_VERIFY(!importer->isOpened());
 }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+void AnySceneImporterTest::loadDeprecatedMeshData() {
+    if(!(_manager.loadState("ObjImporter") & PluginManager::LoadState::Loaded))
+        CORRADE_SKIP("ObjImporter plugin not enabled, cannot test");
+
+    Containers::Pointer<AbstractImporter> importer = _manager.instantiate("AnySceneImporter");
+    CORRADE_VERIFY(importer->openFile(OBJ_FILE));
+
+    /* Check only size, as it is good enough proof that it is working */
+
+    /* MSVC warns also on positions() */
+    CORRADE_IGNORE_DEPRECATED_PUSH
+    Containers::Optional<MeshData3D> mesh = importer->mesh3D(0);
+    CORRADE_VERIFY(mesh);
+    CORRADE_COMPARE(mesh->positions(0).size(), 3);
+    CORRADE_IGNORE_DEPRECATED_POP
+
+    importer->close();
+    CORRADE_VERIFY(!importer->isOpened());
+}
+#endif
 
 void AnySceneImporterTest::detect() {
     auto&& data = DetectData[testCaseInstanceId()];

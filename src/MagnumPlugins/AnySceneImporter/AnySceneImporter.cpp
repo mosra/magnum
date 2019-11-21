@@ -36,12 +36,18 @@
 #include "Magnum/Trade/CameraData.h"
 #include "Magnum/Trade/ImageData.h"
 #include "Magnum/Trade/LightData.h"
-#include "Magnum/Trade/MeshData2D.h"
-#include "Magnum/Trade/MeshData3D.h"
+#include "Magnum/Trade/MeshData.h"
 #include "Magnum/Trade/ObjectData2D.h"
 #include "Magnum/Trade/ObjectData3D.h"
 #include "Magnum/Trade/SceneData.h"
 #include "Magnum/Trade/TextureData.h"
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+#define _MAGNUM_NO_DEPRECATED_MESHDATA /* So it doesn't yell here */
+
+#include "Magnum/Trade/MeshData2D.h"
+#include "Magnum/Trade/MeshData3D.h"
+#endif
 
 namespace Magnum { namespace Trade {
 
@@ -175,6 +181,16 @@ Int AnySceneImporter::doObject3DForName(const std::string& name) { return _in->o
 std::string AnySceneImporter::doObject3DName(const UnsignedInt id) { return _in->object3DName(id); }
 Containers::Pointer<ObjectData3D> AnySceneImporter::doObject3D(const UnsignedInt id) { return _in->object3D(id); }
 
+UnsignedInt AnySceneImporter::doMeshCount() const { return _in->meshCount(); }
+Int AnySceneImporter::doMeshForName(const std::string& name) { return _in->meshForName(name); }
+std::string AnySceneImporter::doMeshName(const UnsignedInt id) { return _in->meshName(id); }
+Containers::Optional<MeshData> AnySceneImporter::doMesh(const UnsignedInt id, const UnsignedInt level) { return _in->mesh(id, level); }
+
+MeshAttribute AnySceneImporter::doMeshAttributeForName(const std::string& name) { return _in->meshAttributeForName(name); }
+std::string AnySceneImporter::doMeshAttributeName(const UnsignedShort id) { return _in->meshAttributeName(meshAttributeCustom(id)); }
+
+#ifdef MAGNUM_BUILD_DEPRECATED
+CORRADE_IGNORE_DEPRECATED_PUSH
 UnsignedInt AnySceneImporter::doMesh2DCount() const { return _in->mesh2DCount(); }
 Int AnySceneImporter::doMesh2DForName(const std::string& name) { return _in->mesh2DForName(name); }
 std::string AnySceneImporter::doMesh2DName(const UnsignedInt id) { return _in->mesh2DName(id); }
@@ -184,6 +200,8 @@ UnsignedInt AnySceneImporter::doMesh3DCount() const { return _in->mesh3DCount();
 Int AnySceneImporter::doMesh3DForName(const std::string& name) { return _in->mesh3DForName(name); }
 std::string AnySceneImporter::doMesh3DName(const UnsignedInt id) { return _in->mesh3DName(id); }
 Containers::Optional<MeshData3D> AnySceneImporter::doMesh3D(const UnsignedInt id) { return _in->mesh3D(id); }
+CORRADE_IGNORE_DEPRECATED_POP
+#endif
 
 UnsignedInt AnySceneImporter::doMaterialCount() const { return _in->materialCount(); }
 Int AnySceneImporter::doMaterialForName(const std::string& name) { return _in->materialForName(name); }
