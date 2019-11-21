@@ -336,7 +336,9 @@ template<class T> void PackingBatchTest::castUnsigned() {
         {{13, 255}, {}}
     };
 
-    constexpr Vector2 expectedFloat[] {
+    /* GCC 4.8 doesn't like constexpr here (cannot initialize aggregate of type
+       ‘const Vector2 [3]’ with a compound literal), wtf */
+    const Vector2 expectedFloat[] {
         {0.0f, 89.0f},
         {149.0f, 22.0f},
         {13.0f, 255.0f}
@@ -374,7 +376,9 @@ template<class T> void PackingBatchTest::castSigned() {
         {{13, 127}, {}}
     };
 
-    constexpr Vector2 expectedFloat[] {
+    /* GCC 4.8 doesn't like constexpr here (cannot initialize aggregate of type
+       ‘const Vector2 [3]’ with a compound literal), wtf */
+    const Vector2 expectedFloat[] {
         {0.0f, -89.0f},
         {-119.0f, 22.0f},
         {13.0f, 127.0f}
