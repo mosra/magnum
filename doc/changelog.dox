@@ -42,11 +42,16 @@ See also:
 
 @subsubsection changelog-latest-new-gl GL library
 
--   Exposed entry points from the desktop / ES @gl_extension{OVR,multiview} and
-    @gl_extension{OVR,multiview2} extensions and the WebGL
-    @webgl_extension{OVR,multiview2} extension. Note that no wrapper API in the
-    @ref GL namespace is provided for these at the moment. See also
-    [mosra/magnum#385](https://github.com/mosra/magnum/issues/385).
+-   Exposed new entry points. Note that no wrapper API in the @ref GL namespace
+    is provided for the extensions listed below, at the moment:
+    -   Desktop / ES @gl_extension{OVR,multiview} and
+        @gl_extension{OVR,multiview2} extensions and the WebGL
+        @webgl_extension{OVR,multiview2} extension. See also
+        [mosra/magnum#385](https://github.com/mosra/magnum/issues/385).
+    -   @gl_extension{ARB,sample_locations} desktop extension
+-   Recognizing @gl_extension{AMD,shader_explicit_vertex_parameter} desktop
+    and @gl_extension{NV,fragment_shader_barycentric} desktop / ES extensions.
+    These add only shading language features.
 
 @subsubsection changelog-latest-new-platform Platform libraries
 

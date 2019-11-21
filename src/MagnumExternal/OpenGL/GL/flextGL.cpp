@@ -63,6 +63,11 @@ FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformivARB)(GLuint, GLint, GLsizei, G
 FLEXTGL_EXPORT void(APIENTRY *flextglGetnUniformuivARB)(GLuint, GLint, GLsizei, GLuint *) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglReadnPixelsARB)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *) = nullptr;
 
+/* GL_ARB_sample_locations */
+FLEXTGL_EXPORT void(APIENTRY *flextglEvaluateDepthValuesARB)(void) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglFramebufferSampleLocationsfvARB)(GLenum, GLuint, GLsizei, const GLfloat *) = nullptr;
+FLEXTGL_EXPORT void(APIENTRY *flextglNamedFramebufferSampleLocationsfvARB)(GLuint, GLuint, GLsizei, const GLfloat *) = nullptr;
+
 /* GL_ARB_sparse_buffer */
 FLEXTGL_EXPORT void(APIENTRY *flextglBufferPageCommitmentARB)(GLenum, GLintptr, GLsizeiptr, GLboolean) = nullptr;
 FLEXTGL_EXPORT void(APIENTRY *flextglNamedBufferPageCommitmentARB)(GLuint, GLintptr, GLsizeiptr, GLboolean) = nullptr;

@@ -151,6 +151,7 @@ OpenGL function                         | Matching API
 --------------------------------------- | ------------
 @fn_gl{Enable}, `glDisable()`           | @ref GL::Renderer::setFeature()
 @fn_gl{EnableVertexAttribArray}, \n `glEnableVertexArrayAttrib()`, \n `glDisableVertexAttribArray()`, \n `glDisableVertexArrayAttrib()`, \n `glDisableVertexArrayAttribEXT()` | @ref GL::Mesh::addVertexBuffer()
+@fn_gl_extension{EvaluateDepthValues,ARB,sample_locations} | |
 
 @subsection opengl-mapping-functions-f F
 
@@ -164,6 +165,7 @@ OpenGL function                         | Matching API
 @fn_gl{FlushMappedBufferRange}, \n `glFlushMappedNamedBufferRange()` | @ref GL::Buffer::flushMappedRange()
 @fn_gl2{FramebufferParameter,FramebufferParameteri}, \n `glNamedFramebufferParameter()` | |
 @fn_gl{FramebufferRenderbuffer}, \n `glNamedFramebufferRenderbuffer()` | @ref GL::Framebuffer::attachRenderbuffer(), \n @ref GL::Framebuffer::detach()
+@fn_gl_extension{FramebufferSampleLocationsfv,ARB,sample_locations}, \n `glNamedFramebufferSampleLocationsfvARB` | |
 @fn_gl{FramebufferTexture}, \n `glNamedFramebufferTexture()` | @ref GL::Framebuffer::attachLayeredTexture()
 @fn_gl2{FramebufferTexture1D,FramebufferTexture}, \n `glFramebufferTexture2D()` | @ref GL::Framebuffer::attachTexture(), \n @ref GL::Framebuffer::attachCubeMapTexture()
 @fn_gl2{FramebufferTexture3D,FramebufferTexture} | not used, @fn_gl{FramebufferTextureLayer} has more complete features

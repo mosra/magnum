@@ -291,6 +291,7 @@ Extension                                   | Status
 @gl_extension{ARB,sparse_texture}           | |
 @gl_extension{ARB,sparse_buffer}            | |
 @gl_extension{ARB,ES3_2_compatibility}      | |
+@gl_extension{ARB,sample_locations}         | |
 @gl_extension2{KHR,texture_compression_astc_ldr,KHR_texture_compression_astc_hdr} | done
 @gl_extension{KHR,robust_buffer_access_behavior} | done (nothing to do)
 @gl_extension{KHR,blend_equation_advanced}  | done
@@ -310,6 +311,7 @@ Extension                                   | Status
 @gl_extension{AMD,transform_feedback3_lines_triangles} | done (nothing to do)
 @gl_extension{AMD,vertex_shader_layer}      | done (shading language only)
 @gl_extension{AMD,shader_trinary_minmax}    | done (shading language only)
+@gl_extension{AMD,shader_explicit_vertex_parameter} | done (shading language only)
 @gl_extension{ATI,texture_mirror_once}      | done (GL 4.4 subset)
 @gl_extension{EXT,texture_filter_anisotropic} | done
 @gl_extension{EXT,texture_compression_s3tc} | done
@@ -321,6 +323,7 @@ Extension                                   | Status
 @gl_extension{EXT,debug_marker}             | done
 @gl_extension{EXT,sRGB_R8}                  | done
 @gl_extension{GREMEDY,string_marker}        | done
+@gl_extension{NV,fragment_shader_barycentric} | done (shading language only)
 @gl_extension{OVR,multiview}                | |
 @gl_extension{OVR,multiview2}               | |
 

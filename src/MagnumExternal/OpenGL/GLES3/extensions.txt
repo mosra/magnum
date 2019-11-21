@@ -75,6 +75,7 @@ extension NV_read_depth_stencil                     optional
 extension NV_texture_border_clamp                   optional
 extension NV_shader_noperspective_interpolation     optional
 extension NV_polygon_mode                           optional
+extension NV_fragment_shader_barycentric            optional
 extension OES_depth32                               optional
 extension OES_mapbuffer                             optional
 extension OES_stencil1                              optional

@@ -152,6 +152,11 @@ void flextGLInit(Magnum::GL::Context& context) {
     flextglGetnUniformuivARB = reinterpret_cast<void(APIENTRY*)(GLuint, GLint, GLsizei, GLuint *)>(loader.load("glGetnUniformuivARB"));
     flextglReadnPixelsARB = reinterpret_cast<void(APIENTRY*)(GLint, GLint, GLsizei, GLsizei, GLenum, GLenum, GLsizei, void *)>(loader.load("glReadnPixelsARB"));
 
+    /* GL_ARB_sample_locations */
+    flextglEvaluateDepthValuesARB = reinterpret_cast<void(APIENTRY*)(void)>(loader.load("glEvaluateDepthValuesARB"));
+    flextglFramebufferSampleLocationsfvARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLuint, GLsizei, const GLfloat *)>(loader.load("glFramebufferSampleLocationsfvARB"));
+    flextglNamedFramebufferSampleLocationsfvARB = reinterpret_cast<void(APIENTRY*)(GLuint, GLuint, GLsizei, const GLfloat *)>(loader.load("glNamedFramebufferSampleLocationsfvARB"));
+
     /* GL_ARB_sparse_buffer */
     flextglBufferPageCommitmentARB = reinterpret_cast<void(APIENTRY*)(GLenum, GLintptr, GLsizeiptr, GLboolean)>(loader.load("glBufferPageCommitmentARB"));
     flextglNamedBufferPageCommitmentARB = reinterpret_cast<void(APIENTRY*)(GLuint, GLintptr, GLsizeiptr, GLboolean)>(loader.load("glNamedBufferPageCommitmentARB"));

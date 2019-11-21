@@ -80,6 +80,7 @@ constexpr Extension ExtensionList[]{
     _extension(AMD,transform_feedback3_lines_triangles),
     _extension(AMD,vertex_shader_layer),
     _extension(AMD,shader_trinary_minmax),
+    _extension(AMD,shader_explicit_vertex_parameter),
     _extension(ARB,robustness),
     _extension(ARB,robustness_isolation),
     _extension(ARB,robustness_application_isolation),
@@ -90,6 +91,7 @@ constexpr Extension ExtensionList[]{
     _extension(ARB,sparse_texture),
     _extension(ARB,sparse_buffer),
     _extension(ARB,ES3_2_compatibility),
+    _extension(ARB,sample_locations),
     _extension(ATI,texture_mirror_once),
     _extension(EXT,texture_filter_anisotropic),
     _extension(EXT,texture_compression_s3tc),
@@ -106,6 +108,7 @@ constexpr Extension ExtensionList[]{
     _extension(KHR,blend_equation_advanced),
     _extension(KHR,blend_equation_advanced_coherent),
     _extension(KHR,texture_compression_astc_sliced_3d),
+    _extension(NV,fragment_shader_barycentric),
     _extension(OVR,multiview),
     _extension(OVR,multiview2)};
 constexpr Extension ExtensionList300[]{
@@ -343,6 +346,9 @@ constexpr Extension ExtensionList[]{
     _extension(NV,shader_noperspective_interpolation),
     #endif
     _extension(NV,polygon_mode),
+    #ifndef MAGNUM_TARGET_GLES2
+    _extension(NV,fragment_shader_barycentric),
+    #endif
     _extension(OES,depth32),
     _extension(OES,mapbuffer),
     _extension(OES,stencil1),
