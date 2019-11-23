@@ -231,11 +231,12 @@ namespace {
 /* Intel drivers on Windows have some synchronization / memory alignment bug in
    the DSA glNamedBufferData() when the same buffer is set as an index buffer
    to a mesh right after or repeatedly. Calling glBindBuffer() right before or
-   after the data upload fixes the issue. Note that this workaround is done
-   only for buffers with TargetHint::ElementArray, as the issue was not
-   observed elsewhere. Reproducible with the 2019.01 ImGui example,
-   unfortunately I was not able to create a standalone minimal repro case. */
-"intel-windows-buggy-dsa-bufferdata-for-index-buffers",
+   after the data upload fixes the issue. The above is reproducible with the
+   2019.01 ImGui example, however there are numerous reports of things going
+   *bad* in heavier ImGui-based apps and none of my tests are able to reproduce
+   anything. Since I lost patience already, I'm disabling the DSA code paths
+   for everything related to buffers. */
+"intel-windows-crazy-broken-buffer-dsa",
 
 /* ARB_direct_state_access implementation on Intel Windows drivers has broken
    *everything* related to cube map textures (but not cube map arrays) -- data

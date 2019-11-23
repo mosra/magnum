@@ -52,6 +52,14 @@ See also:
 -   Recognizing @gl_extension{AMD,shader_explicit_vertex_parameter} desktop
     and @gl_extension{NV,fragment_shader_barycentric} desktop / ES extensions.
     These add only shading language features.
+-   A @cpp "intel-windows-crazy-broken-buffer-dsa" @ce workaround for Intel
+    Windows drivers, disabling @gl_extension{ARB,direct_state_access} code
+    paths in everything releated to buffers. There are several issues occuring
+    only in heavier apps, impossible to track down and reproduce in a
+    controlled environment. This replaces the previous
+    @cpp "intel-windows-buggy-dsa-bufferdata-for-index-buffers" @ce workaround
+    that attempted to fix this by doing an explicit buffer binding in some
+    cases. See @ref opengl-workarounds for more information.
 
 @subsubsection changelog-latest-new-math Math library
 
