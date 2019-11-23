@@ -559,7 +559,7 @@ void QuaternionTest::matrixNotOrthogonal() {
 }
 
 void QuaternionTest::euler() {
-    Quaternion a = Quaternion({0.35f, 0.134f, 0.37f}, 0.02f).normalized();
+    Quaternion a = Quaternion{{0.35f, 0.134f, 0.37f}, 0.02f}.normalized();
     Math::Vector3<Rad> b{1.59867_radf, -1.15100_radf, 1.85697_radf};
 
     CORRADE_COMPARE(a.toEuler(), b);
@@ -568,7 +568,7 @@ void QuaternionTest::euler() {
         Quaternion::rotation(b.y(), Vector3::yAxis())*
         Quaternion::rotation(b.x(), Vector3::xAxis()));
 
-    Quaternion a2 = Quaternion({-0.624252f, -0.331868f, -0.624468f}, 0.331983f);
+    Quaternion a2{{-0.624252f, -0.331868f, -0.624468f}, 0.331983f};
     Math::Vector3<Rad> b2{0.0_radf, -1.57045_radf, -2.16434_radf};
 
     CORRADE_COMPARE(a2.toEuler(), b2);

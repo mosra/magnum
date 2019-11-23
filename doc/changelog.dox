@@ -53,6 +53,11 @@ See also:
     and @gl_extension{NV,fragment_shader_barycentric} desktop / ES extensions.
     These add only shading language features.
 
+@subsubsection changelog-latest-new-math Math library
+
+-   Added @ref Math::Quaternion::toEuler() and documented how to convert Euler
+    angles to a quaternion (see [mosra/magnum#397](https://github.com/mosra/magnum/pull/397))
+
 @subsubsection changelog-latest-new-platform Platform libraries
 
 -   Cursor management using @ref Platform::Sdl2Application::setCursor(),

@@ -401,14 +401,14 @@ template<class T> class Quaternion {
 
         /**
          * @brief Convert to an euler vector
+         * @m_since_latest
          *
-         * Expects that the quaternion is normalized and that the values
-         * are combined in ZYX order.
-         * The returned vector of radians is in XYZ order.
-         * @see @ref rotation(), @ref DualQuaternion::rotation()
-         * To convert the euler angles back to the Quaternion you can use:
+         * Expects that the quaternion is normalized. Returs the angles in an
+         * XYZ order, you can combine them back to a quaternion like this:
          *
          * @snippet MagnumMath.cpp Quaternion-fromEuler
+         *
+         * @see @ref rotation(), @ref DualQuaternion::rotation()
          */
         Vector3<Rad<T>> toEuler() const;
 
