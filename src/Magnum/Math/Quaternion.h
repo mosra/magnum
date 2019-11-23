@@ -403,7 +403,7 @@ template<class T> class Quaternion {
          * @brief Convert to an euler vector
          * @m_since_latest
          *
-         * Expects that the quaternion is normalized. Returs the angles in an
+         * Expects that the quaternion is normalized. Returns the angles in an
          * XYZ order, you can combine them back to a quaternion like this:
          *
          * @snippet MagnumMath.cpp Quaternion-fromEuler
