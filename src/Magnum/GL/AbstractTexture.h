@@ -244,7 +244,12 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          * @see @ref Shader::maxCombinedTextureImageUnits(),
          *      @fn_gl_keyword{BindTextures}
          */
-        static void bind(Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures);
+        static void bind(Int firstTextureUnit, Containers::ArrayView<AbstractTexture* const> textures);
+
+        /** @overload */
+        static void bind(Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures) {
+            AbstractTexture::bind(firstTextureUnit, Containers::arrayView(textures.begin(), textures.size()));
+        }
 
         #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
         /**
@@ -284,7 +289,7 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          * @requires_gl Multi bind is not available in OpenGL ES and WebGL.
          */
         static void unbindImages(Int firstImageUnit, std::size_t count) {
-            bindImagesInternal(firstImageUnit, {nullptr, count});
+            bindImages(firstImageUnit, {nullptr, count});
         }
 
         /**
@@ -306,8 +311,11 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
          * @requires_gl44 Extension @gl_extension{ARB,multi_bind}
          * @requires_gl Multi bind is not available in OpenGL ES and WebGL.
          */
+        static void bindImages(Int firstImageUnit, Containers::ArrayView<AbstractTexture* const> textures);
+
+        /** @overload */
         static void bindImages(Int firstImageUnit, std::initializer_list<AbstractTexture*> textures) {
-            bindImagesInternal(firstImageUnit, {textures.begin(), textures.size()});
+            bindImages(firstImageUnit, Containers::arrayView(textures.begin(), textures.size()));
         }
         #endif
 
@@ -425,10 +433,6 @@ class MAGNUM_GL_EXPORT AbstractTexture: public AbstractObject {
 
         #ifndef MAGNUM_TARGET_GLES
         static Int compressedBlockDataSize(GLenum target, TextureFormat format);
-        #endif
-
-        #if !defined(MAGNUM_TARGET_GLES2) && !defined(MAGNUM_TARGET_WEBGL)
-        static void bindImagesInternal(Int firstImageUnit, Containers::ArrayView<AbstractTexture* const> textures);
         #endif
 
         explicit AbstractTexture(GLenum target);

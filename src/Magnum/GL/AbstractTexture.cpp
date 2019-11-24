@@ -156,7 +156,7 @@ void AbstractTexture::unbind(const Int firstTextureUnit, const std::size_t count
 }
 
 /** @todoc const std::initializer_list makes Doxygen grumpy */
-void AbstractTexture::bind(const Int firstTextureUnit, std::initializer_list<AbstractTexture*> textures) {
+void AbstractTexture::bind(const Int firstTextureUnit, Containers::ArrayView<AbstractTexture* const> textures) {
     /* State tracker is updated in the implementations */
     Context::current().state().texture->bindMultiImplementation(firstTextureUnit, {textures.begin(), textures.size()});
 }
@@ -289,7 +289,7 @@ void AbstractTexture::unbindImage(const Int imageUnit) {
 
 #ifndef MAGNUM_TARGET_GLES
 /** @todoc const Containers::ArrayView makes Doxygen grumpy */
-void AbstractTexture::bindImagesInternal(const Int firstImageUnit, Containers::ArrayView<AbstractTexture* const> textures) {
+void AbstractTexture::bindImages(const Int firstImageUnit, Containers::ArrayView<AbstractTexture* const> textures) {
     Implementation::TextureState& textureState = *Context::current().state().texture;
 
     /* Create array of IDs and also update bindings in state tracker */
