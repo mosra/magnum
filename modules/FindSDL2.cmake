@@ -182,7 +182,7 @@ if(NOT TARGET SDL2::SDL2)
         # Windows dependencies for a static library. Unfortunately there's no
         # easy way to figure out if a *.lib is static or dynamic, so we're
         # adding only if a DLL is not found.
-        if(CORRADE_TARGET_WINDOWS AND NOT CORRADE_TARGET_WINDOWS_RT AND SDL2_DLL_RELEASE AND NOT SDL2_DLL_DEBUG)
+        if(CORRADE_TARGET_WINDOWS AND NOT CORRADE_TARGET_WINDOWS_RT AND NOT SDL2_DLL_RELEASE AND NOT SDL2_DLL_DEBUG)
             set_property(TARGET SDL2::SDL2 APPEND PROPERTY INTERFACE_LINK_LIBRARIES
                 # https://github.com/SDL-mirror/SDL/blob/release-2.0.10/CMakeLists.txt#L1338
                 user32 gdi32 winmm imm32 ole32 oleaut32 version uuid advapi32 setupapi shell32
