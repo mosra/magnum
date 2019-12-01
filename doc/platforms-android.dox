@@ -215,16 +215,14 @@ Gradle.
     used for the final release builds.
 
 Download contents of the toolchains repository from https://github.com/mosra/toolchains
-or add it as a Git submodule, add its module path to `CMAKE_MODULE_PATH` and
-include the `UseAndroid` module. Wrapping it in a check for presence of
-`CMAKE_ANDROID_NDK` will make it possible to have the pure CMake and a Gradle
-build coexist --- because Gradle internally uses CMake 3.6 which doesn't know
-about `CMAKE_ANDROID_NDK` yet.
+or add it as a Git submodule and include the `UseAndroid` module from there.
+Wrapping it in a check for presence of `CMAKE_ANDROID_NDK` will make it
+possible to have the pure CMake and a Gradle build coexist --- because Gradle
+internally uses CMake 3.6 which doesn't know about `CMAKE_ANDROID_NDK` yet.
 
 @code{.cmake}
 if(CORRADE_TARGET_ANDROID AND CMAKE_ANDROID_NDK)
-    list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/toolchains/modules/")
-    include(UseAndroid)
+    include(${PROJECT_SOURCE_DIR}/toolchains/modules/UseAndroid.cmake)
 endif()
 @endcode
 

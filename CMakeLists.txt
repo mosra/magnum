@@ -200,8 +200,7 @@ if(BUILD_TESTS)
     # that has builtin Android support -- Gradle uses 3.6 so this will nicely
     # work in both cases.
     if(CORRADE_TARGET_ANDROID AND CMAKE_ANDROID_NDK)
-        list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/toolchains/modules/")
-        include(UseAndroid)
+        include(${PROJECT_SOURCE_DIR}/toolchains/modules/UseAndroid.cmake)
     endif()
 endif()
 
