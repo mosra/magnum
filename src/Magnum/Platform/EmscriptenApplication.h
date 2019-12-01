@@ -1656,7 +1656,7 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
 
             Space,              /**< Space */
             Tab,                /**< Tab */
-            Quote,              /**< Quote (`'`) */
+            Quote,              /**< Quote (<tt>'</tt>) */
             Comma,              /**< Comma */
             Period,             /**< Period */
             Minus,              /**< Minus */

@@ -2101,7 +2101,7 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
             Tab = SDLK_TAB,             /**< Tab */
 
             /**
-             * Quote (`'`)
+             * Quote (<tt>'</tt>)
              * @m_since_latest
              */
             Quote = SDLK_QUOTE,

@@ -1503,7 +1503,7 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
             Tab = GLFW_KEY_TAB,                 /**< Tab */
 
             /**
-             * Quote (`'`)
+             * Quote (<tt>'</tt>)
              * @m_since_latest
              */
             Quote = GLFW_KEY_APOSTROPHE,
