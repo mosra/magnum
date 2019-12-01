@@ -2099,14 +2099,47 @@ class Sdl2Application::KeyEvent: public Sdl2Application::InputEvent {
 
             Space = SDLK_SPACE,         /**< Space */
             Tab = SDLK_TAB,             /**< Tab */
+
+            /**
+             * Quote (`'`)
+             * @m_since_latest
+             */
+            Quote = SDLK_QUOTE,
+
             Comma = SDLK_COMMA,         /**< Comma */
             Period = SDLK_PERIOD,       /**< Period */
             Minus = SDLK_MINUS,         /**< Minus */
             Plus = SDLK_PLUS,           /**< Plus */
             Slash = SDLK_SLASH,         /**< Slash */
             Percent = SDLK_PERCENT,     /**< Percent */
-            Semicolon = SDLK_SEMICOLON, /**< Semicolon */
+            Semicolon = SDLK_SEMICOLON, /**< Semicolon (`;`) */
             Equal = SDLK_EQUALS,        /**< Equal */
+
+            /**
+             * Left bracket (`[`)
+             * @m_since_latest
+             */
+            LeftBracket = SDLK_LEFTBRACKET,
+
+            /**
+             * Right bracket (`]`)
+             * @m_since_latest
+             */
+            RightBracket = SDLK_RIGHTBRACKET,
+
+            /**
+             * Backslash (`\`)
+             * @m_since_latest
+             */
+            Backslash = SDLK_BACKSLASH,
+
+            /**
+             * Backquote (<tt>`</tt>)
+             * @m_since_latest
+             */
+            Backquote = SDLK_BACKQUOTE,
+
+            /* no equivalent for GlfwApplication's World1 / World2 */
 
             Zero = SDLK_0,              /**< Zero */
             One = SDLK_1,               /**< One */

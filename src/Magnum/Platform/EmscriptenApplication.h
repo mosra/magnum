@@ -1586,6 +1586,8 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
              */
             RightSuper,
 
+            /* no equivalent for Sdl2Application's AltGr */
+
             Enter,              /**< Enter */
             Esc,                /**< Escape */
 
@@ -1654,6 +1656,7 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
 
             Space,              /**< Space */
             Tab,                /**< Tab */
+            Quote,              /**< Quote (`'`) */
             Comma,              /**< Comma */
             Period,             /**< Period */
             Minus,              /**< Minus */
@@ -1662,13 +1665,20 @@ class EmscriptenApplication::KeyEvent: public EmscriptenApplication::InputEvent 
             Slash,              /**< Slash */
             /* Note: This may only be represented as SHIFT + 5 */
             Percent,            /**< Percent */
-            Equal,              /**< Equal */
 
-            Backquote,          /**< Backquote */
-            Backslash,          /**< Backslash */
-            Quote,              /**< Quote */
-            BracketRight,       /**< BracketRight */
-            BracketLeft,        /**< BracketLeft */
+            /**
+             * Semicolon (`;`)
+             * @m_since_latest
+             */
+            Semicolon,
+
+            Equal,              /**< Equal */
+            LeftBracket,        /**< Left bracket (`[`) */
+            RightBracket,       /**< Right bracket (`]`) */
+            Backslash,          /**< Backslash (`\`) */
+            Backquote,          /**< Backquote (<tt>`</tt>) */
+
+            /* no equivalent for GlfwApplication's World1 / World2 */
 
             CapsLock,           /**< Caps lock */
             ScrollLock,         /**< Scroll lock */

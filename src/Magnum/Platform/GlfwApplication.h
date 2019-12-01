@@ -1469,6 +1469,8 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
              */
             RightSuper = GLFW_KEY_RIGHT_SUPER,
 
+            /* no equivalent for Sdl2Application's AltGr */
+
             Enter = GLFW_KEY_ENTER,             /**< Enter */
             Esc = GLFW_KEY_ESCAPE,              /**< Escape */
 
@@ -1499,6 +1501,13 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
 
             Space = GLFW_KEY_SPACE,             /**< Space */
             Tab = GLFW_KEY_TAB,                 /**< Tab */
+
+            /**
+             * Quote (`'`)
+             * @m_since_latest
+             */
+            Quote = GLFW_KEY_APOSTROPHE,
+
             Comma = GLFW_KEY_COMMA,             /**< Comma */
             Period = GLFW_KEY_PERIOD,           /**< Period */
             Minus = GLFW_KEY_MINUS,             /**< Minus */
@@ -1507,16 +1516,52 @@ class GlfwApplication::KeyEvent: public GlfwApplication::InputEvent {
             Slash = GLFW_KEY_SLASH,             /**< Slash */
             /* Note: This may only be represented as SHIFT + 5 */
             Percent = '%',                      /**< Percent */
-            Semicolon = GLFW_KEY_SEMICOLON,     /**< Semicolon */
+            Semicolon = GLFW_KEY_SEMICOLON,     /**< Semicolon (`;`) */
 
             #ifdef MAGNUM_BUILD_DEPRECATED
-            /** Semicolon
+            /** Semicolon (`;`)
              * @m_deprecated_since{2019,01} Use @ref Key::Semicolon instead.
              */
             Smicolon CORRADE_DEPRECATED_ENUM("use Key::Semicolon instead") = Semicolon,
             #endif
 
             Equal = GLFW_KEY_EQUAL,             /**< Equal */
+
+            /**
+             * Left bracket (`[`)
+             * @m_since_latest
+             */
+            LeftBracket = GLFW_KEY_LEFT_BRACKET,
+
+            /**
+             * Right bracket (`]`)
+             * @m_since_latest
+             */
+            RightBracket = GLFW_KEY_RIGHT_BRACKET,
+
+            /**
+             * Backslash (`\`)
+             * @m_since_latest
+             */
+            Backslash = GLFW_KEY_BACKSLASH,
+
+            /**
+             * Backquote (<tt>`</tt>)
+             * @m_since_latest
+             */
+            Backquote = GLFW_KEY_GRAVE_ACCENT,
+
+            /**
+             * Non-US \#1
+             * @m_since_latest
+             */
+            World1 = GLFW_KEY_WORLD_1,
+
+            /**
+             * Non-US \#2
+             * @m_since_latest
+             */
+            World2 = GLFW_KEY_WORLD_2,
 
             Zero = GLFW_KEY_0,                  /**< Zero */
             One = GLFW_KEY_1,                   /**< One */
