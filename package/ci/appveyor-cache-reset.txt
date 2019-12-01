@@ -1,0 +1,3 @@
+# Increase this number every time you want to reset AppVeyor cache.
+# http://help.appveyor.com/discussions/questions/1310-delete-cache
+0

@@ -60,7 +60,11 @@ notifications:
   on_build_status_changed: true
 
 install:
-- cinst ninja
+# Ninja. `cinst ninja` started 503ing in late November 2019 and wasn't really
+# reliable before either. So install by hand, as that's reliable always.
+- IF NOT EXIST %APPVEYOR_BUILD_FOLDER%\ninja-win.zip appveyor DownloadFile https://github.com/ninja-build/ninja/releases/download/v1.9.0/ninja-win.zip
+- 7z x ninja-win.zip -oC:/tools/ninja
+
 - set PATH=C:/tools/ninja;%PATH%
 - IF "%TARGET%" == "desktop" IF "%COMPILER%" == "mingw" pip install codecov
 
@@ -101,7 +105,8 @@ build_script:
 - IF "%TARGET%" == "rt" call package\ci\appveyor-rt.bat
 
 cache:
-- SDL2-devel-2.0.9-VC.zip
-- SDL2-devel-2.0.9-mingw.zip
-- openal-soft-1.19.1-bin.zip
-- glfw-3.2.1.bin.WIN64.zip
+- ninja-win.zip -> package/ci/appveyor-cache-reset.txt
+- SDL2-devel-2.0.9-VC.zip -> package/ci/appveyor-cache-reset.txt
+- SDL2-devel-2.0.9-mingw.zip -> package/ci/appveyor-cache-reset.txt
+- openal-soft-1.19.1-bin.zip -> package/ci/appveyor-cache-reset.txt
+- glfw-3.2.1.bin.WIN64.zip -> package/ci/appveyor-cache-reset.txt
