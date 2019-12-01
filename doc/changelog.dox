@@ -156,6 +156,10 @@ See also:
     @ref Platform::Sdl2Application now premultiply the value with
     @ref Platform::GlfwApplication::dpiScaling() "dpiScaling()" to work
     independently on display DPI. This might break existing uses.
+-   @ref Primitives::uvSphereWireframe() now correctly asserts when the
+    @p segments parameter isn't divisible by four. Before it mistakenly
+    asserted only if @p segments wasn't divisible by two, and now code that
+    mistakenly used a disallowed value will start asserting.
 -   Removed remaining APIs deprecated in version 2018.04:
     -   @cpp Audio::Buffer::Format @ce, use @ref Audio::BufferFormat instead
     -   @cpp Shaders::*Vector::setVectorTexture() @ce,

@@ -63,7 +63,7 @@ Trade::MeshData3D uvSphereSolid(UnsignedInt rings, UnsignedInt segments, UVSpher
 }
 
 Trade::MeshData3D uvSphereWireframe(const UnsignedInt rings, const UnsignedInt segments) {
-    CORRADE_ASSERT(rings >= 2 && rings%2 == 0 && segments >= 4 && segments%2 == 0,
+    CORRADE_ASSERT(rings >= 2 && rings%2 == 0 && segments >= 4 && segments%4 == 0,
         "Primitives::uvSphereWireframe(): multiples of 2 rings and multiples of 4 segments expected",
         (Trade::MeshData3D{MeshPrimitive::Triangles, {}, {}, {}, {}, {}, nullptr}));
 
