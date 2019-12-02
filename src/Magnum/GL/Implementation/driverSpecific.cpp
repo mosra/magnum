@@ -232,11 +232,34 @@ namespace {
    the DSA glNamedBufferData() when the same buffer is set as an index buffer
    to a mesh right after or repeatedly. Calling glBindBuffer() right before or
    after the data upload fixes the issue. The above is reproducible with the
-   2019.01 ImGui example, however there are numerous reports of things going
-   *bad* in heavier ImGui-based apps and none of my tests are able to reproduce
-   anything. Since I lost patience already, I'm disabling the DSA code paths
-   for everything related to buffers. */
+   2019.01 ImGui example, and used to be worked around in a more hopeful way.
+   However, the reports about things going *bad* in heavier ImGui-based apps
+   didn't stop with that and none of my tests were able to reproduce anything.
+   Since I lost patience already, I'm disabling the DSA code paths for
+   everything related to buffers. (Two weeks pass.) But wait! while that fixed
+   all issues for *some* users, it made things completely broken elsewhere,
+   causing an app to render just a clear color and nothing else. The cancer
+   apparently spread further, so I'm disabling all VAO-related DSA code paths
+   as well now. Workarounds listed separately, in case someone might want to
+   dig further or experience the misery of only one of them being active.
+
+   To save you time experimenting:
+
+   - (Epilepsy warning!) With the former disabled and no matter whether the
+     second is disabled or not, the ImGui example (or any other ImGui-based
+     app, really), the screen will start flickering heavily under *some*
+     circumstances. This is known since drivers 24 at least.
+   - With the former enabled and the second disabled, you might either
+     experience a total doom, where just the framebuffer clear color is
+     visible, or your app is totally fine. This is reproducible with drivers 25
+     or 26 at least. Note that modifying the code to enable this workaround on
+     other drivers (AMD on Windows, e.g.) doesn't break anything, so it's not
+     like the workaround would be incomplete with some code paths still relying
+     on DSA that's not there. It's clearly Intel drivers fault.
+   - With both enabled, things seem to be fine, and I hope it stays that way
+     also for future driver updates. */
 "intel-windows-crazy-broken-buffer-dsa",
+"intel-windows-crazy-broken-vao-dsa",
 
 /* ARB_direct_state_access implementation on Intel Windows drivers has broken
    *everything* related to cube map textures (but not cube map arrays) -- data

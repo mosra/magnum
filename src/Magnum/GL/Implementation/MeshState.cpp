@@ -54,7 +54,12 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
         #endif
 
         #ifndef MAGNUM_TARGET_GLES
-        if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()) {
+        if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
+            #ifdef CORRADE_TARGET_WINDOWS
+            && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
+            context.isDriverWorkaroundDisabled("intel-windows-crazy-broken-vao-dsa"))
+            #endif
+        ) {
             extensions.emplace_back(Extensions::ARB::direct_state_access::string());
 
             /* Intel Windows drivers are ... special */
@@ -150,7 +155,12 @@ MeshState::MeshState(Context& context, ContextState& contextState, std::vector<s
     #endif
 
     #ifndef MAGNUM_TARGET_GLES
-    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>())
+    if(context.isExtensionSupported<Extensions::ARB::direct_state_access>()
+        #ifdef CORRADE_TARGET_WINDOWS
+        && (!(context.detectedDriver() & Context::DetectedDriver::IntelWindows) ||
+        context.isDriverWorkaroundDisabled("intel-windows-crazy-broken-vao-dsa"))
+        #endif
+    )
         vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationVAODSA;
     else if(context.isExtensionSupported<Extensions::ARB::vertex_array_object>())
         vertexAttribDivisorImplementation = &Mesh::vertexAttribDivisorImplementationVAO;
